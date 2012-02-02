@@ -42,31 +42,14 @@ Blacklight.configure(:shared) do |config|
   # TODO: Reorganize facet data structures supplied in config to make simpler
   # for human reading/writing, kind of like search_fields. Eg,
   # config[:facet] << {:field_name => "format", :label => "Format", :limit => 10}
-  #
-  # Hydra uses active_fedora_model_s by default for displaying Format because that field is automatically 
-  # populated by active-fedora from your RELS-EXT.  You can change this to anything you want to use though.
-  # for example, the sample Hydra::ModsAsset Datastream Class adds object_type_facet = "Article" in its to_solr method.\
-  # You could use that as the format field instead of active_fedora_model_s to have a more nicer value displayed.
-  # 
-  #
   config[:facet] = {
     :field_names => (facet_fields = [
-      "object_type_facet",
-      "pub_date",
-      "subject_topic_facet",
-      "language_facet",
-      "lc_1letter_facet",
-      "subject_geo_facet",
-      "subject_era_facet"
+      "subject_facet",
+      "creator_facet"
     ]),
     :labels => {
-      "object_type_facet"   => "Format",
-      "pub_date"            => "Publication Year",
-      "subject_topic_facet" => "Topic",
-      "language_facet"      => "Language",
-      "lc_1letter_facet"    => "Call Number",
-      "subject_era_facet"   => "Era",
-      "subject_geo_facet"   => "Region"
+      "subject_facet" => "Subject",
+      "creator_facet" => "Creator"
     },
     # Setting a limit will trigger Blacklight's 'more' facet values link.
     # * If left unset, then all facet values returned by solr will be displayed.
@@ -82,8 +65,8 @@ Blacklight.configure(:shared) do |config|
     # sniffing requires solr requests to be made with "echoParams=all", for
     # app code to actually have it echo'd back to see it.     
     :limits => {
-      "subject_topic_facet" => 20,
-      "language_facet" => true
+      "subject_facet" => 20,
+      "creator_facet" => 20
     }
   }
 

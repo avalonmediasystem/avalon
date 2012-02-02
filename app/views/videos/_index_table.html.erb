@@ -1,0 +1,7 @@
+<tr class="document <%= cycle("even","odd") %>">
+  <td class="document_title"><%= link_to_document(document, :label => :title_t, :counter => (counter + 1 + @response.params[:start].to_i)) %></td>
+  <td class="document_author"><%= document.fetch(:creator_t, nil) %></td>
+  <td class="document_work"><%= document.fetch(:title_t, nil) %></td>
+  <td class="document_date"><%= format_date(DateTime.parse(document.fetch(:system_create_dt, "")).to_time) %></td>
+  <td class="document_files"><%= get_file_asset_count(document) %></td>
+</tr>

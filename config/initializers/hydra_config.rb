@@ -26,6 +26,12 @@ if Hydra.respond_to?(:configure)
     }
     
     config[:submission_workflow] = {
+        :videos =>           [{:name => "contributor",     :edit_partial => "videos/contributor_form",     :show_partial => "videos/show_contributors"},
+                              {:name => "publication",     :edit_partial => "videos/publication_form",     :show_partial => "videos/show_publication"},
+			      {:name => "additional_info", :edit_partial => "videos/additional_info_form", :show_partial => "videos/show_additional_info"},
+			      {:name => "video_files",     :edit_partial => "video_assets/video_assets_form",   :show_partial => "videos/show_video_assets"},
+                              {:name => "permissions",     :edit_partial => "permissions/permissions_form",     :show_partial => "videos/show_permissions"}
+                             ],
         :mods_assets =>      [{:name => "contributor",     :edit_partial => "mods_assets/contributor_form",     :show_partial => "mods_assets/show_contributors"},
                               {:name => "publication",     :edit_partial => "mods_assets/publication_form",     :show_partial => "mods_assets/show_publication"},
                               {:name => "additional_info", :edit_partial => "mods_assets/additional_info_form", :show_partial => "mods_assets/show_additional_info"},

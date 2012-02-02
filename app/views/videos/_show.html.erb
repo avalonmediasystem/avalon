@@ -1,0 +1,46 @@
+<div class="document_viewer" id="cover_container">
+
+	<h1 class="document-heading">
+		<% unless get_values_from_datastream(@document_fedora,"descMetadata", [:title]).first.empty? %>
+	      <%= get_values_from_datastream(@document_fedora,"descMetadata", [:title]).first %>
+		<% else %>
+			<%= params[:id] %>
+		 <% end %>
+	</h1>
+
+	<% unless @document_fedora.file_objects(:response_format=>:solr).hits.empty? %>
+<script>
+ function failed(e) {
+   // video playback failed - show a message saying why
+   switch (e.target.error.code) {
+     case e.target.error.MEDIA_ERR_ABORTED:
+       alert('You aborted the video playback.');
+       break;
+     case e.target.error.MEDIA_ERR_NETWORK:
+       alert('A network error caused the video download to fail part-way.');
+       break;
+     case e.target.error.MEDIA_ERR_DECODE:
+       alert('The video playback was aborted due to a corruption problem or because the video used features your browser did not support.');
+       break;
+     case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+       alert('The video could not be loaded, either because the server or network failed or because the format is not supported.');
+       break;
+     default:
+       alert('An unknown error occurred.');
+       break;
+   }
+ }
+</script>
+        <div class="video_player">
+          <video width="320" height="240" controls preload id="video1" onerror="failed(event)">
+<!--            <source src="<%= file_asset_path(@document_fedora.file_objects(:response_format=>:solr).hits.first["id"]) %>" type='video/ogg; codecs="theora, vorbis"'/> -->
+<!--            <source src="<%= asset_downloads_path(@document_fedora.file_objects(:response_format=>:solr).hits.first["id"], :download_id => "content") %>" type='video/ogg; codecs="theora, vorbis"'/> -->
+                <source src="<%= @document_fedora.file_objects.first.datastreams["descMetadata"].identifier_values.first %>" type='video/ogg; codecs="theora, vorbis"'/>
+            Your browser does not support the video tag.
+          </video>
+        </div>
+	<% end %>
+
+  <%= render_all_show_workflow_steps.html_safe %>
+
+</div>
