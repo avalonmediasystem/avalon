@@ -1,0 +1,103 @@
+#mediaplayer {
+}
+
+#progressBar {
+	width: 480px; 
+	height: 30px; 
+	background-color: grey;
+	position: relative;
+}
+
+#progressElapsed {
+	background-color: silver; 
+	height: 30px; 
+	width: 0px;
+}
+
+/* Annotation stuff */
+
+.marker {
+	position: absolute;
+	height: 30px;
+	width: 2px;
+	background-color: orange;
+}
+
+.marker.lv1 {
+	height: 50px;
+	background-color: purple;
+}
+
+.marker.lv2 {
+	height: 70px;
+	background-color: red;
+}
+
+.note {
+	width: 477px; 
+	height: 18px;
+	border: 2px solid orange;
+	border-bottom: none;
+	vertical-align: middle;	
+	cursor: pointer;
+}
+
+.note.lv1 {
+	border-color: purple;
+	border-bottom: none;
+}
+
+.note.lv2 {
+	border-color: red;
+}
+
+.bubble {
+	display: none;
+	border: 1px solid orange;
+	position: absolute;
+	color: white;
+}
+
+.bubble.lv0 {
+	border-color: orange;
+	background-color: rgba(255, 165, 0, 0.5);
+}
+
+.bubble.lv1 {
+	border-color: purple;
+	background-color: rgba(160, 32, 240, 0.5);
+}
+
+.bubble.lv2 {
+	border-color: red;
+	background-color: rgba(255, 0, 0, 0.5);
+}
+
+.bottomRight {
+	position: absolute;
+	right: 2px;
+	bottom: 2px;
+}
+
+.expand, .collapse {
+	float: right;
+}
+
+/*** Buttons and controls ***/
+
+#buttons {
+	margin:0;
+	background-color: black; 
+	height: 30px; 
+	width: 480px; 
+}
+
+#buttons li {
+	list-style-type: none;
+	float:left;
+	padding: 7px;
+	cursor: pointer; 
+	background-color: grey; 
+	color:white;	
+	text-decoration: none;
+}
