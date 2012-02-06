@@ -28,5 +28,6 @@
 
          # Added 
          gem 'net-http-digest_auth'
+         gem 'rubyhorn', :git => "git://github.com/cjcolvar/rubyhorn.git"
+
   end # (leave this comment here to catch a stray line inserted by blacklight!)
-gem "devise"
