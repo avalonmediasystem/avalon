@@ -1,3 +1,4 @@
+
 (function($){
 
 
@@ -5,12 +6,9 @@ $.widget("ui.iuplayer", {
 	options: {
 		library: 'jwplayer', // using jwplayer by default
 		width: '480',
-		height: '270',
-		annotations: ''
+		height: '270'
 	},
-	_init: function(){ 
-		console.log(this.options.width);
-		
+	_init: function(){ 		
 		// Initiates using a chosen player library
 		if (this.options.library === 'jwplayer') {
 			var jwmap = {
@@ -53,7 +51,9 @@ $.widget("ui.iuplayer", {
 			
 			// Populates
 		}
-	}
+	},
+	_create: function() {},
+	foo: function() { console.log("foo"); }
 });
 
 })(jQuery);

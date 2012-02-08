@@ -32,8 +32,6 @@
 	<script src="/javascripts/hydrant/oac_rdf.js" type="text/javascript"></script>
 	<script src="/javascripts/hydrant/oac_rdfjson.js" type="text/javascript"></script>		
 
-	
-	
 	<% unless @document_fedora.file_objects(:response_format=>:solr).hits.empty? %>
 		<script>
 		 function failed(e) {
@@ -59,17 +57,21 @@
 		</script>
 
 		<script type="text/javascript">
-			$('#mediaplayer').iuplayer({
-				'playlistfile': '/jwplayer/playlist.xml',
-				'playlistposition': 'top',
-				'playlistsize': '1'
-				// provider: 'rtmp',
-				// file: '<%= /rtmp:\/\/pawpaw.dlib.indiana.edu\/matterhorn-engage\/(.*)/.match(@document_fedora.file_objects.first.datastreams["descMetadata"].identifier_values.first)[1] %>',
-				// 	 			streamer: 'rtmp://pawpaw.dlib.indiana.edu/matterhorn-engage/'
-			});
+			var player = $('#mediaplayer').iuplayer({
+				// 'playlistfile': '/jwplayer/playlist.xml',
+				// 'playlistposition': 'top',
+				// 'playlistsize': '1'
+				// annotationfile: '/Transcriptions-f1rc.xml'
+				provider: 'rtmp',
+	 			streamer: 'rtmp://pawpaw.dlib.indiana.edu/matterhorn-engage/',
+				file: '<%= /rtmp:\/\/pawpaw.dlib.indiana.edu\/matterhorn-engage\/(.*)/.match(@document_fedora.file_objects.first.datastreams["descMetadata"].identifier_values.first)[1] %>',
+				annotationfile: '/Transcriptions-f2rc.xml'
+			}).data('iuplayer');
 		</script>
 
-		<script type="text/javascript" src="/javascripts/hydrant/main.js"></script>
+		<script type="text/javascript" src="/javascripts/hydrant/main.js"></script>	
+
+
 	<% end %>
 
   <%= render_all_show_workflow_steps.html_safe %>

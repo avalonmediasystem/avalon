@@ -57,7 +57,6 @@ function playVidIndexFromElapsed(time) {
 
 function getPlaylistDuration() {
 	var list = jwplayer().getPlaylist();
-	console.log(list);
 	if (list == null) {
 		return 0;
 	}
@@ -137,7 +136,6 @@ function processAnnos(annos) {
 
 		if (i == curAnnos.length - 1) {
 			var css = annoNote.css('border');
-			console.log(css);
 			annoNote.css('border-bottom', '2px solid');
 		}
 		$('#notes').append(annoNote);
@@ -162,7 +160,7 @@ function checkMetaAndAnnoComplete() {
 	}
 }
 
-fetch_annotations('/Transcriptions-f1rc.xml', storeAnnos);
+fetch_annotations(player.options.annotationfile, storeAnnos);
 
 
 /*******************************************
@@ -172,20 +170,16 @@ fetch_annotations('/Transcriptions-f1rc.xml', storeAnnos);
 // Keeps track of the last time we processed
 var prevT = 0;
 jwplayer().onTime(function(data){
-				// console.log(data);
 				var totalT = getDuration();
 				var curT = getPlaylistElapsed(data.position);
 				var curW = totalW * curT / totalT;
 				$("#progressElapsed").width(curW);
 
-				
 				// Checks every second to see if we need to display any bubble
 				if ( Math.floor(curT) - prevT > 0 || curT < prevT ) {
-
 					
 					// Remembers the time so we can check if we've already run this job in this second 
 					prevT = Math.floor(curT);
-					
 					for (var i in annoStart) {
 						var curBubble = $('.bubble.lv' + i);
 						if (curT >= annoStart[i] && curT < annoEnd[i]) {
@@ -229,7 +223,6 @@ $('.expand').live('click', function(){
 			for (var j = i + 1; j < 100; j++) {
 				var nextMarker = $('.marker.lv' + j);
 				if (!nextMarker[0]) {
-					console.log("break");
 					break;
 				}
 				nextMarker.height(nextMarker.height() + change);
@@ -259,7 +252,6 @@ $('.collapse').live('click', function(){
 			for (var j = i + 1; j < 100; j++) {
 				var nextMarker = $('.marker.lv' + j);
 				if (!nextMarker[0]) {
-					console.log("break");
 					break;
 				}
 				nextMarker.height(nextMarker.height() - change);
