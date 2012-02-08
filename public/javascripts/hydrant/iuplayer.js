@@ -6,9 +6,6 @@ $.widget("ui.iuplayer", {
 		library: 'jwplayer', // using jwplayer by default
 		width: '480',
 		height: '270',
-		file: null,
-		streamer: null,
-		provider: null, // streaming RTMP by default
 		annotations: ''
 	},
 	_init: function(){ 
@@ -16,16 +13,14 @@ $.widget("ui.iuplayer", {
 		
 		// Initiates using a chosen player library
 		if (this.options.library === 'jwplayer') {
-			jwplayer(this.element.attr('id')).setup({
+			var jwmap = {
 				'id': 'playerID',
 				'width': this.options.width,
 				'height': this.options.height,
-				'playlistfile': this.options.playlistfile,
-			    'playlist.position': this.options.playlistposition,
-			    'playlist.size': this.options.playlistsize,
 				'dock': 'true',
 				'controlbar.position': 'bottom',
 				'bufferlength': '0',
+				'repeat': 'always',
 				modes: [
 					{
 						type: 'flash',
@@ -34,21 +29,20 @@ $.widget("ui.iuplayer", {
 					}
 					,{type:'html5'}
 				]
-				// // 'provider': this.options.provider,
-				// // 'streamer': this.options.streamer,
-
-				// // 'file': this.options.file,
-				// // 			'preload': 'all',
-				// // 			'bufferlength': '0',
-				// modes: [
-				// 	{
-				// 		type: 'flash',
-				// 		src: "/jwplayer/player.swf",
-				// 		config: { skin: "/jwplayer/modieus5.zip"}
-				// 	},
-				// 	{type:'html5'}
-				// ]
-			});			
+			};
+			
+			if (this.options.playlistfile) {
+				jwmap['playlistfile'] = this.options.playlistfile;
+			    jwmap['playlist.position'] = this.options.playlistposition;
+			    jwmap['playlist.size'] = 1;
+			}
+			else {
+				jwmap['provider'] = this.options.provider;
+				jwmap['streamer'] = this.options.streamer;
+				jwmap['file'] = this.options.file;
+			}
+			
+			jwplayer(this.element.attr('id')).setup(jwmap);			
 		}
 		
 		// Reads annotations file and populates, if path exists

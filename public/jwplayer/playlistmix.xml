@@ -13,13 +13,10 @@
   </item> 
   <item> 
     <title>Sintel</title> 
-    <media:content url="cf117fdc-9e1c-4b8d-9b58-dcca4bec4ca9/5073f408-5279-4b87-96f6-712ab2d7e9fe/FelixGoldenGoose_qtp.flv" /> 
+    <media:content url="/jwplayer/videolong.mp4" /> 
     <!-- <media:thumbnail url="http://localhost:3000/images/hydra/search-button.png" />  -->
     <description>Sintel follows a girl who is searching for a baby dragon she calls Scales.</description>
-    <jwplayer:provider>rtmp</jwplayer:provider> 
-    <jwplayer:streamer>rtmp://pawpaw.dlib.indiana.edu/matterhorn-engage/</jwplayer:streamer> 
-    <jwplayer:start>30</jwplayer:start> 
-    <jwplayer:duration>50</jwplayer:duration>
+    <jwplayer:duration>45</jwplayer:duration>
   </item> 
 </channel> 
 </rss>

@@ -15,10 +15,10 @@
 	  <rdf:type rdf:resource="http://dms.stanford.edu/ns/TextAnnotation"/>
 	  <rdf:type rdf:resource="http://www.openannotation.org/ns/Annotation"/>
 	  <oac:hasBody rdf:resource="http://vov.indiana.edu/demo1/Line-f1r-15"/>
-	  <oac:hasTarget rdf:resource="http://vov.indiana.edu/demo1/Canvas-f1r#xywh=73,83,240,135&amp;t=npt:10,25"/>
+	  <oac:hasTarget rdf:resource="http://vov.indiana.edu/demo1/Canvas-f1r#xywh=73,83,240,135&amp;t=npt:0,5"/>
 	</rdf:Description>
 
-	<rdf:Description rdf:about="http://vov.indiana.edu/demo1/Canvas-f1r#xywh=73,83,240,135&amp;t=npt:10,25">
+	<rdf:Description rdf:about="http://vov.indiana.edu/demo1/Canvas-f1r#xywh=73,83,240,135&amp;t=npt:0,5">
 	  <rdf:type rdf:resource="http://dms.stanford.edu/ns/CanvasSegment"/>
 	  <dcterms:isPartOf rdf:resource="http://vov.indiana.edu/demo1/Canvas-f1r"/>
 	</rdf:Description>
@@ -26,8 +26,8 @@
 	<rdf:Description rdf:about="http://vov.indiana.edu/demo1/Line-f1r-15">
 	  <rdf:type rdf:resource="http://purl.org/dc/dcmitype/Text"/>
 	  <rdf:type rdf:resource="http://www.w3.org/2008/content#ContentAsText"/>
-	  <dc:title>Title 1 goes here</dc:title>
-	  <cnt:chars>Content 1 goes here</cnt:chars>
+	  <dc:title>Video #1</dc:title>
+	  <cnt:chars>Cheerios Rocket kit</cnt:chars>
 	  <cnt:characterEncoding>UTF-8</cnt:characterEncoding>
 	</rdf:Description>
 
@@ -35,10 +35,10 @@
 	  <rdf:type rdf:resource="http://dms.stanford.edu/ns/TextAnnotation"/>
 	  <rdf:type rdf:resource="http://www.openannotation.org/ns/Annotation"/>
 	  <oac:hasBody rdf:resource="http://vov.indiana.edu/demo1/Line-f1r-16"/>
-	  <oac:hasTarget rdf:resource="http://vov.indiana.edu/demo1/Canvas-f1r#xywh=23,53,200,145&amp;t=npt:20,45"/>
+	  <oac:hasTarget rdf:resource="http://vov.indiana.edu/demo1/Canvas-f1r#xywh=23,53,200,145&amp;t=npt:5,25"/>
 	</rdf:Description>
 
-	<rdf:Description rdf:about="http://vov.indiana.edu/demo1/Canvas-f1r#xywh=23,53,200,145&amp;t=npt:20,45">
+	<rdf:Description rdf:about="http://vov.indiana.edu/demo1/Canvas-f1r#xywh=23,53,200,145&amp;t=npt:5,25">
 	  <rdf:type rdf:resource="http://dms.stanford.edu/ns/CanvasSegment"/>
 	  <dcterms:isPartOf rdf:resource="http://vov.indiana.edu/demo1/Canvas-f1r"/>
 	</rdf:Description>
@@ -46,8 +46,8 @@
 	<rdf:Description rdf:about="http://vov.indiana.edu/demo1/Line-f1r-16">
 	  <rdf:type rdf:resource="http://purl.org/dc/dcmitype/Text"/>
 	  <rdf:type rdf:resource="http://www.w3.org/2008/content#ContentAsText"/>
-	  <dc:title>Title 2 goes here</dc:title>
-	  <cnt:chars>Content 2 goes here</cnt:chars>
+	  <dc:title>Video #2</dc:title>
+	  <cnt:chars>Felix and his Golden Goose</cnt:chars>
 	  <cnt:characterEncoding>UTF-8</cnt:characterEncoding>
 	</rdf:Description>
 	

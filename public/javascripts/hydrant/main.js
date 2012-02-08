@@ -20,7 +20,8 @@ $('#progressBar').click(function(e){
 		jwplayer().play();
 	}
 	var x = e.pageX - barOffsetLeft;
-	jwplayer().seek(dur * x / totalW);
+	var elapsed = getTimeFromOffset(x);
+	playVidIndexFromElapsed(elapsed);
 })
 
 function getDuration() {
@@ -30,11 +31,28 @@ function getDuration() {
 // Returns elapsed time of the mashup based on elapsed time of current video
 function getPlaylistElapsed(vidPosition) {
 	var pos = 0;
-	for (var i = 0; i < vidStart.length; i++) {
-		pos += vidStart[i];
+	for (var i = 0; i < curVid; i++) {
+		pos += vidEnd[i] - vidStart[i];
 	}
 	
-	return pos + vidPosition;
+	return pos + vidPosition - vidStart[curVid];
+}
+
+// Plays index of current vid in a playlist, based on elapsed time
+function playVidIndexFromElapsed(time) {
+	var temp = 0;
+	for (var i = 0; i < vidStart.length; i++) {
+		var prevTemp = temp;
+		temp += vidEnd[i] - vidStart[i];
+		if (temp > time) {
+			if (curVid != i) {
+				curVid = i;
+				jwplayer().playlistItem(curVid);
+			}
+			jwplayer().seek(time - prevTemp + vidStart[i]);
+			return;
+		}
+	}
 }
 
 function getPlaylistDuration() {
@@ -47,15 +65,25 @@ function getPlaylistDuration() {
 	var dur = 0;
 	for (var i in list) {
 		dur += list[i].duration - list[i].start;
+		vidStart[i] = list[i].start;
+		vidEnd[i] = list[i].duration;
 	}
 
 	return dur;
 }
 
+// Gets position on progressbar from elapsed time, factoring in playlist
 function getOffsetFromTime(time) {
-	var dur = jwplayer().getDuration();
+	var dur = getDuration();
 	return totalW * time / dur;
 }
+
+// Gets elapsed time from position on progressbar, with playlist in mind
+function getTimeFromOffset(offset) {
+	var dur = getDuration();
+	return dur * offset / totalW;
+}
+
 
 /*******************************************
 **** Annotations processing & populating ***
@@ -71,7 +99,7 @@ jwplayer().onMeta(function(data){
 	if (durList == 0) {
 		durList = getPlaylistDuration();
 	}
-	if (!metaReady && data.metadata.duration > 0) {	
+	if (!metaReady && getDuration() > 0) {	
 		metaReady = true;
 		checkMetaAndAnnoComplete();
 	}
@@ -146,9 +174,10 @@ var prevT = 0;
 jwplayer().onTime(function(data){
 				// console.log(data);
 				var totalT = getDuration();
-				var curT = data.position;
+				var curT = getPlaylistElapsed(data.position);
 				var curW = totalW * curT / totalT;
 				$("#progressElapsed").width(curW);
+
 				
 				// Checks every second to see if we need to display any bubble
 				if ( Math.floor(curT) - prevT > 0 || curT < prevT ) {
@@ -156,11 +185,6 @@ jwplayer().onTime(function(data){
 					
 					// Remembers the time so we can check if we've already run this job in this second 
 					prevT = Math.floor(curT);
-
-					// Playlist manipulation
-					if (prevT == 9) {
-						jwplayer().playlistNext();
-					}
 					
 					for (var i in annoStart) {
 						var curBubble = $('.bubble.lv' + i);
@@ -180,6 +204,11 @@ jwplayer().onTime(function(data){
 				}
 			})
 			
+				
+// Moves on to the next video in the playlist when current one is done
+jwplayer().onPlaylistItem(function(data){
+	curVid = data.index;
+})
 
 $('.expand').live('click', function(){
 	var change = 30;
