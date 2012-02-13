@@ -31,8 +31,8 @@ $.widget("ui.iuplayer", {
 				modes: [
 					{
 						type: 'flash',
-						src: "/jwplayer/player.swf",
-						config: { skin: "/jwplayer/modieus5.zip"}
+						src: "http://pawpaw.dlib.indiana.edu:3000/jwplayer/player.swf",
+						config: { skin: "http://pawpaw.dlib.indiana.edu:3000/jwplayer/modieus5.zip"}
 					}
 					,{type:'html5'}
 				]

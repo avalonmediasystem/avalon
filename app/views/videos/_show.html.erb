@@ -17,7 +17,6 @@
 
 	<div id='mediaplayer'></div>
 
-
 	<% unless @document_fedora.file_objects(:response_format=>:solr).hits.empty? %>
 		<script>
 		 function failed(e) {
@@ -49,7 +48,7 @@
 				'playlistsize': '1',
 				annotationfile: '/Transcriptions-f1rc.xml'
 				// provider: 'rtmp',
-				// 	 			streamer: 'rtmp://pawpaw.dlib.indiana.edu/matterhorn-engage/',
+				// streamer: 'rtmp://pawpaw.dlib.indiana.edu/matterhorn-engage/',
 				// file: '<%= /rtmp:\/\/pawpaw.dlib.indiana.edu\/matterhorn-engage\/(.*)/.match(@document_fedora.file_objects.first.datastreams["descMetadata"].identifier_values.first)[1] %>',
 				// annotationfile: '/Transcriptions-f2rc.xml'
 			});
