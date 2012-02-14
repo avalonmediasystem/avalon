@@ -1,3 +1,16 @@
+GIT
+  remote: git://github.com/variations-on-video/rubyhorn.git
+  revision: dc1b2df752b4ebefc545bd7e44f7861d28353406
+  specs:
+    rubyhorn (0.0.1)
+      activemodel
+      activesupport
+      json
+      mime-types
+      multipart-post
+      net-http-digest_auth
+      om
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -246,7 +259,7 @@ GEM
       savon
     rubyzip (0.9.5)
     sanitize (2.0.3)
-      nokogiri (< 1.6, >= 1.4.4)
+      nokogiri (>= 1.4.4, < 1.6)
     savon (0.9.7)
       akami (~> 1.0)
       builder (>= 2.1.2)
@@ -314,5 +327,6 @@ DEPENDENCIES
   rspec
   rspec-rails (>= 2.5.0)
   ruby-debug
+  rubyhorn!
   solrizer-fedora (>= 1.2.2)
   sqlite3
