@@ -70,3 +70,5 @@ db/schema.rb
 /.yardoc
 /doc
 ## PROJECT::SPECIFIC
+
+config/initializers/rubyhorn.rb
