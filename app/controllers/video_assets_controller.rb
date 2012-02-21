@@ -39,7 +39,8 @@ class VideoAssetsController < ApplicationController
   
   def sendOriginalToMatterhorn
 	params[:Filedata].each do |file|
-	  Rubyhorn.client.addMediaPackage(file, {"title" => params[:container_id], "flavor" => "video/source", "workflow" => "fedora-test", "filename" => file.original_filename})
+          args = {"title" => params[:container_id], "flavor" => "presenter/source", "workflow" => "hydrant", "filename" => file.original_filename}
+	  Rubyhorn.client.addMediaPackage(file, args)
 	end
    end
 
