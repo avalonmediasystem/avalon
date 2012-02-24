@@ -4,6 +4,7 @@
 
   gem 'blacklight', '~> 3.1.2'
   gem 'hydra-head', '~> 3.3.0'
+  gem 'rbx-require-relative', '=0.0.5'
 
   # We will assume that you're using sqlite3 for testing/demo, 
   # but in a production setup you probably want to use a real sql database like mysql or postgres
