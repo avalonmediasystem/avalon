@@ -6,16 +6,20 @@
   gem 'hydra-head', '~> 3.3.0'
   gem 'rbx-require-relative', '=0.0.5'
 
-  # We will assume that you're using sqlite3 for testing/demo, 
-  # but in a production setup you probably want to use a real sql database like mysql or postgres
-  gem 'sqlite3'
-
   #  We will assume you're using devise in tutorials/documentation. 
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise'
 
+  group :production do
+	 gem 'pg'
+  end
+
   # For testing.  You will probably want to use all of these to run the tests you write for your hydra head
   group :development, :test do 
+	 # We will assume that you're using sqlite3 for testing/demo, 
+  	 # but in a production setup you probably want to use a real sql database like mysql or postgres
+  	 gem 'sqlite3'
+
          gem 'solrizer-fedora', '>=1.2.2'
          gem 'ruby-debug'
          gem 'rspec'
