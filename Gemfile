@@ -34,5 +34,6 @@
          # Added 
          gem 'net-http-digest_auth'
          gem 'rubyhorn', :git => "git://github.com/variations-on-video/rubyhorn.git"
+         gem 'felixwrapper', :git => "git://github.com/cjcolvar/felixwrapper.git"
 
   end # (leave this comment here to catch a stray line inserted by blacklight!)

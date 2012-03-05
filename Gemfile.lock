@@ -1,4 +1,15 @@
 GIT
+  remote: git://github.com/cjcolvar/felixwrapper.git
+  revision: c6f8724c27dcdb3a4d8b72d5d1450f27b70e9668
+  specs:
+    felixwrapper (0.0.1)
+      activesupport (>= 3.0.0)
+      childprocess
+      i18n
+      logger
+      mediashelf-loggable
+
+GIT
   remote: git://github.com/variations-on-video/rubyhorn.git
   revision: 7e96f546e35a9b5390a66c76cd9f4be9686e14b3
   specs:
@@ -319,6 +330,7 @@ DEPENDENCIES
   cucumber-rails
   database_cleaner
   devise
+  felixwrapper!
   hydra-head (~> 3.3.0)
   jettywrapper
   mocha
