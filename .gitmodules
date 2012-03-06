@@ -4,6 +4,3 @@
 [submodule "felix"]
 	path = felix
 	url = git://github.com/variations-on-video/hydrant-felix.git
-[submodule "hydrant-red5"]
-	path = hydrant-red5
-	url = git://github.com/variations-on-video/hydrant-red5.git
