@@ -49,7 +49,7 @@
 				//annotationfile: '/Transcriptions-f1rc.xml'
 				 provider: 'rtmp',
 				 streamer: 'rtmp://localhost/matterhorn-engage/',
-				 file: '<%= /\/matterhorn-engage\/(.*)/.match(@document_fedora.file_objects.first.datastreams["descMetadata"].identifier_values.first)[1] %>',
+				 file: '<%= /\/matterhorn-engage\/(.*)/.match(@document_fedora.file_objects.first.datastreams["descMetadata"].identifier.first)[1] %>',
 				// annotationfile: '/Transcriptions-f2rc.xml'
 			});
 		</script>
