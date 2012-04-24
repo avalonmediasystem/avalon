@@ -10,7 +10,7 @@
 		<% @document_fedora.file_objects(:response_format=>:solr).each do |result| %>
 			<tr class="file_asset" >
 <!--			  <td><%= link_to result[solr_name("title", :text)], file_asset_path(result["id"]) %></td> -->
-<!--			  <td><%= link_to result[solr_name("title", :text)], asset_downloads_path(result["id"], :download_id => "content") %></td> -->
+<!--			  <td><%= link_to result[solr_name("title", :text)], hydra_asset_downloads_path(result["id"], :download_id => "content") %></td> -->
 			  <td><%= result[solr_name("title", :text)] %></td>
 			  <td><%= result[solr_name("extent", :text)] unless result[solr_name("extent", :text)].nil? %></td>
 			  <td>

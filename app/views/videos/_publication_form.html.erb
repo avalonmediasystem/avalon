@@ -1,5 +1,4 @@
-<%= form_tag(url_for(:controller=>"assets", :action=>"update", :id=>params[:id]), :class => "step") do -%>
-  <%= hidden_field_tag("_method","put") %>
+<%= form_tag(hydra_asset_path(:asset_id=>params[:id]), :method => "PUT", :class => "step") do -%>
   <p id="title_field" class="fedora-text-field">
     <%= fedora_field_label("descMetadata", [:title], "Title<span class=\"required-note\">Required</span>".html_safe) %>
     <%= fedora_text_field(@document_fedora,"descMetadata", [:title], :multiple=>false, :required=>true) %>

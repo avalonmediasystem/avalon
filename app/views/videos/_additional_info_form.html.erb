@@ -1,5 +1,4 @@
-<%= form_tag(url_for(:controller=>"assets", :action=>"update", :id=>params[:id]), :class => "step") do -%>
-  <%= hidden_field_tag("_method","put", :id=>"assets_method") %>
+<%= form_tag(hydra_asset_path(:asset_id=>params[:id]), :method=> "PUT", :class => "step") do -%>
   <p id="abstract_field" class="fedora-text-area">
     <%= fedora_field_label("descMetadata", [:description], "Abstract") %>
     <span class="field-caption">Provide the abstract of the work, or if none exists, a short summary.</span>
