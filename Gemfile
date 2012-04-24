@@ -3,8 +3,8 @@
   gem 'rails', '~>3.2.3'
 
   gem 'blacklight', '~> 3.3.2'
-#  gem 'hydra-head', '~> 4.0.0'
-  gem 'hydra-head', :git=>"git://github.com/projecthydra/hydra-head.git"
+  gem 'hydra-head', '~> 4.0.0'
+#  gem 'hydra-head', :git=>"git://github.com/projecthydra/hydra-head.git"
 
   # We will assume that you're using sqlite3 for testing/demo, 
   # but in a production setup you probably want to use a real sql database like mysql or postgres
@@ -16,6 +16,7 @@
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do 
+         gem 'sass-rails', '~> 3.2.0'
          gem 'jquery-rails'
          gem 'rspec-rails', '>=2.9.0'
          gem "jettywrapper"
