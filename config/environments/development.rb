@@ -22,5 +22,9 @@ Hydrant::Application.configure do
 
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
+
+# Copy Blacklight assets to public folder in current app on application startup.
+#  require File.join(Hydra.root, "lib", "generators", "hydra", "assets_generator.rb")
+#  Hydra::Assets.start(["--force", "--quiet"])
 end
 
