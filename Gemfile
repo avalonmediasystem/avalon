@@ -16,6 +16,7 @@
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do 
+         gem 'jquery-rails'
          gem 'rspec-rails', '>=2.9.0'
          gem "jettywrapper"
 
