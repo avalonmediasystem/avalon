@@ -17,7 +17,7 @@
 
 	<div id='mediaplayer'></div>
 
-	<% unless @document_fedora.file_objects(:response_format=>:solr).hits.empty? %>
+	<% unless @document_fedora.file_objects(:response_format=>:solr).empty? %>
 		<script>
 		 function failed(e) {
 		   // video playback failed - show a message saying why
