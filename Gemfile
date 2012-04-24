@@ -14,9 +14,16 @@
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise'
 
+  group :assets do
+    gem 'coffee-rails', "~> 3.2.1"
+    gem 'uglifier', '>= 1.0.3'
+    gem 'compass-rails', '~> 1.0.0'
+    gem 'compass-susy-plugin', '~> 0.9.0', :require => 'susy'
+  end
+
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do 
-         gem 'sass-rails', '~> 3.2.0'
+         gem 'sass-rails', '~> 3.2.3'
          gem 'jquery-rails'
          gem 'rspec-rails', '>=2.9.0'
          gem "jettywrapper"
