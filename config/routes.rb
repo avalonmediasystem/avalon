@@ -9,9 +9,9 @@ Hydrant::Application.routes.draw do
 
   # My routes go here
   # Routes for subjects and pbcore controller
-  resources :assets do
+#  resources :assets do
     resources :video_assets
-  end
+#  end
 
 
 
