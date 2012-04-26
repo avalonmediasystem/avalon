@@ -56,6 +56,12 @@
 
 	<% end %>
 
-  <%= render_all_show_workflow_steps.html_safe %>
+     <%= render "videos/show_contributors" %>
+     <%= render "videos/show_publication" %>
+     <%= render "videos/show_additional_info" %>
 
+     <% if can?(:edit,@document_fedora) %>
+	<%= render "videos/show_video_assets" %>
+	<%= render "videos/show_permissions" %>
+     <% end %>
 </div>

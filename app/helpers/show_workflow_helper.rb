@@ -11,6 +11,7 @@ module ShowWorkflowHelper
     show_partials = []
     unless model_config.nil?
       model_config.each do |config|
+#FIXME next line should use can? instead of editor?
         show_partials << config[:show_partial] unless not editor? and (config[:name] == "permissions" || config[:name] == "files")
       end
     end

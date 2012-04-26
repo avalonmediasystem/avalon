@@ -1,17 +1,17 @@
-<% unless get_values_from_datastream(@document_fedora,"descMetadata", [:subject]).first.empty? %>
+<% unless @document_fedora.descMetadata.subject.first.empty? %>
   <fieldset>
     <legend>Keywords</legend>
   	<div class="browse_value">
-  	  <%= get_values_from_datastream(@document_fedora,"descMetadata", [:subject]).join(', ') %>
+  	  <%= @document_fedora.descMetadata.subject.join(', ') %>
   	</div>
   </fieldset>
 <% end %>
 
-<% unless get_values_from_datastream(@document_fedora,"descMetadata", [:description]).first.empty? %>
+<% unless @document_fedora.descMetadata.description.first.empty? %>
   <fieldset>
     <legend>Abstract</legend>
     <div id="abstract" class="browse_value">
-      <%= Sanitize.clean( RedCloth.new(get_values_from_datastream(@document_fedora,"descMetadata", [:description]).first, [:sanitize_html]).to_html, Sanitize::Config::BASIC).html_safe %>    	
+      <%= Sanitize.clean( RedCloth.new(@document_fedora.descMetadata.description.first, [:sanitize_html]).to_html, Sanitize::Config::BASIC).html_safe %>    	
     </div>
   </fieldset>
 <% end %>
