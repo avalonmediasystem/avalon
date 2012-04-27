@@ -15,7 +15,7 @@ class VideoAssetsController < ApplicationController
     if params.has_key?(:number_of_files) and params[:number_of_files] != "0"
       return redirect_to({:controller => "catalog", :action => "edit", :id => params[:id], :wf_step => :files, :number_of_files => params[:number_of_files]})
     elsif params.has_key?(:number_of_files) and params[:number_of_files] == "0"
-      return redirect_to( {:controller => "catalog", :action => "edit", :id => params[:id]}.merge(params_for_next_step_in_wokflow) )
+      return redirect_to( {:controller => "catalog", :action => "edit", :id => params[:id]} )
     end
     
     if params.has_key?(:Filedata) and params.has_key?(:original)
@@ -30,7 +30,7 @@ class VideoAssetsController < ApplicationController
     end
     
     unless params[:container_id].nil?
-      redirect_params = {:controller => "catalog", :action => "edit", :id => params[:container_id]}.merge(params_for_next_step_in_wokflow)
+      redirect_params = {:controller => "catalog", :action => "edit", :id => params[:container_id]}
     end
     redirect_params ||= {:controller => "catalog", :action => "index"}
     
