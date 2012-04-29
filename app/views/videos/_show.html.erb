@@ -1,8 +1,8 @@
 <div class="document_viewer" id="cover_container">
 
 	<h1 class="document-heading">
-		<% unless get_values_from_datastream(@document_fedora,"descMetadata", [:title]).first.empty? %>
-	      <%= get_values_from_datastream(@document_fedora,"descMetadata", [:title]).first %>
+		<% unless @document_fedora.descMetadata.title.empty? %>
+	      <%= @document_fedora.descMetadata.title.first %>
 		<% else %>
 			<%= params[:id] %>
 		 <% end %>
