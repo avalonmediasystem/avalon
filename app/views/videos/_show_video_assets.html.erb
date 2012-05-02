@@ -1,4 +1,4 @@
-<% unless @document_fedora.file_objects(:response_format=>:solr).empty? %>
+<% unless @document_fedora.parts(:response_format=>:solr).empty? %>
   <h2 class="section-title">Files</h2>
   <div class="uploads" id="uploads_<%= format_pid(params[:id]) %>">	
     <table id="file_assets" class="multipleEdit">
@@ -7,7 +7,7 @@
 	      <th>Size</th>
 	      <th>Uploaded</th>
 	    </tr>
-		<% @document_fedora.file_objects(:response_format=>:solr).each do |result| %>
+		<% @document_fedora.parts(:response_format=>:solr).each do |result| %>
 			<tr class="video_asset" >
 <!--			  <td><%= link_to result[solr_name("title", :text)], hydra_file_asset_path(result["id"]) %></td> -->
 			  <td><%= link_to result[solr_name("title", :text)].first, hydra_asset_downloads_path(result["id"], :download_id => "content") %></td>
