@@ -29,8 +29,8 @@
          gem "jettywrapper"
 
          # Added 
-         gem 'rubyhorn', :git => "git://github.com/variations-on-video/rubyhorn.git"
-         gem 'felixwrapper', :git => "git://github.com/cjcolvar/felixwrapper.git"
-         gem 'red5wrapper', :git => "git://github.com/cjcolvar/red5wrapper.git"
+         gem 'rubyhorn', :git => "git://github.com/variations-on-video/rubyhorn.git", :branch=>"HH4"
+         gem 'felixwrapper', :git => "git://github.com/cjcolvar/felixwrapper.git", :branch=>"HH4"
+         gem 'red5wrapper', :git => "git://github.com/cjcolvar/red5wrapper.git", :branch=>"HH4"
 
   end # (leave this comment here to catch a stray line inserted by blacklight!)
