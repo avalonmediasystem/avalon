@@ -21,6 +21,21 @@ GIT
       mediashelf-loggable
 
 GIT
+  remote: git://github.com/projecthydra/hydra-head.git
+  revision: 7572b1cece23b08e4a249e176f003620aabfd5ca
+  specs:
+    hydra-head (4.0.0)
+      RedCloth (= 4.2.9)
+      active-fedora (~> 4.0.0)
+      blacklight (~> 3.3.2)
+      block_helpers
+      cancan
+      devise
+      jquery-rails
+      rails (= 3.2.3)
+      sanitize
+
+GIT
   remote: git://github.com/variations-on-video/rubyhorn.git
   revision: 09c4c73060155dba3c5487818a96a4e014f8091b
   specs:
@@ -78,7 +93,7 @@ GEM
     activesupport (3.2.3)
       i18n (~> 0.6)
       multi_json (~> 1.0)
-    addressable (2.2.7)
+    addressable (2.2.8)
     akami (1.0.0)
       gyoku (>= 0.4.0)
     arel (3.0.2)
@@ -134,17 +149,8 @@ GEM
     gyoku (0.4.4)
       builder (>= 2.1.2)
     hike (1.2.1)
-    httpi (0.9.6)
+    httpi (0.9.7)
       rack
-    hydra-head (4.0.0)
-      RedCloth (= 4.2.9)
-      active-fedora (~> 4.0.0)
-      blacklight (~> 3.3.2)
-      block_helpers
-      cancan
-      devise
-      rails (= 3.2.3)
-      sanitize
     i18n (0.6.0)
     jettywrapper (1.2.1)
       activesupport (>= 3.0.0)
@@ -290,7 +296,7 @@ DEPENDENCIES
   compass-susy-plugin (~> 0.9.0)
   devise
   felixwrapper!
-  hydra-head (~> 4.0.0)
+  hydra-head!
   jettywrapper
   jquery-rails
   rails (~> 3.2.3)
