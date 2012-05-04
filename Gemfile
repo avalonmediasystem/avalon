@@ -25,7 +25,6 @@
   group :development, :test do 
          gem 'sass-rails', '~> 3.2.3'
          gem 'jquery-rails'
-         gem 'rspec-rails', '>=2.9.0'
          gem "jettywrapper"
 
          # Added 
@@ -34,3 +33,8 @@
          gem 'red5wrapper', :git => "git://github.com/cjcolvar/red5wrapper.git"
 
   end # (leave this comment here to catch a stray line inserted by blacklight!)
+
+  group :test do
+	gem 'cucumber-rails', '>=1.2.0', :require=>false
+        gem 'rspec-rails', '>=2.9.0'
+  end
