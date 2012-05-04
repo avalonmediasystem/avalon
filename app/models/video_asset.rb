@@ -17,7 +17,7 @@ class VideoAsset < FileAsset
   def set_url(new_url)
     if self.datastreams.has_key?("descMetadata")
       desc_metadata_ds = self.datastreams["descMetadata"]
-      desc_metadata_ds.identifier_values = new_url
+      desc_metadata_ds.identifier = new_url
     end
   end
 
