@@ -15,8 +15,10 @@ class VideoDCDatastream < ActiveFedora::NokogiriDatastream
     t.relation
     t.coverage
     t.rights
+  
+    t.date_of_creation(:ref => :date, :attributes => {:type => 'created_on'})
   end
-
+  
     # Generates an empty Video(used when you call Video.new without passing in existing xml)
     #  (overrides default behavior of creating a plain xml document)
     def self.xml_template
