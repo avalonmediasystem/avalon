@@ -20,15 +20,14 @@
   gem 'felixwrapper', :git => "git://github.com/cjcolvar/felixwrapper.git"
   gem 'red5wrapper', :git => "git://github.com/cjcolvar/red5wrapper.git"
 
-  group :assets do
+  group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
     gem 'uglifier', '>= 1.0.3'
     gem 'jquery-rails'
+    gem 'sass-rails', '~> 3.2.3' # moved out of assets to avoid error
+    gem 'compass-rails', '~> 1.0.0'
+    gem 'compass-susy-plugin', '~> 0.9.0', :require => 'susy'
   end
-
-  gem 'sass-rails', '~> 3.2.3' # moved out of assets to avoid error
-  gem 'compass-rails', '~> 1.0.0'
-  gem 'compass-susy-plugin', '~> 0.9.0', :require => 'susy'
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do 
