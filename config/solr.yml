@@ -7,4 +7,5 @@ test: &TEST
 cucumber:
   <<: *TEST
 production:
-  url: http://your.production.server:8080/bl_solr/core0 
+  url: http://127.0.0.1:8983/solr/test
+#  url: http://your.production.server:8080/bl_solr/core0 
