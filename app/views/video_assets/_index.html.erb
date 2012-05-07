@@ -7,7 +7,7 @@
 			</table>
 <% end %>
 
-<% if !@document.nil? && editor? && params[:number_of_files].to_i > 0 %>
+<% if !@document.nil? && editor? %>
   <%- container_content_type_param = defined?(container_content_type) ? "?container_content_type=#{container_content_type}" : "" %>
   <fieldset id='uploader'>
     <legend>File Upload</legend>
@@ -15,9 +15,7 @@
     <%= form_tag(video_assets_path,:method=>"post",:enctype=>"multipart/form-data", :class=>"uploader-form step") do -%>
       <input type="hidden" name="container_id" value="<%=h container_id %>"/>
       <%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>
-      <%- params[:number_of_files].to_i.times do -%>
-        <%= render :partial=>"hydra/file_assets/new"%>
-      <%- end -%>
+      <%= render :partial=>"hydra/file_assets/new"%>
       <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
       <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
 

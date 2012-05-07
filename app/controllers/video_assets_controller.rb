@@ -6,22 +6,17 @@ class VideoAssetsController < ApplicationController
   include Hydra::FileAssets
 
   skip_before_filter :verify_authenticity_token, :only => [:create]
-  
+
   # Creates and Saves a File Asset to contain the the Uploaded file 
   # If container_id is provided:
   # * the File Asset will use RELS-EXT to assert that it's a part of the specified container
   # * the method will redirect to the container object's edit view after saving
   def create
-    if params.has_key?(:number_of_files) and params[:number_of_files] != "0"
-      return redirect_to({:controller => "catalog", :action => "edit", :id => params[:id], :wf_step => :files, :number_of_files => params[:number_of_files]})
-    elsif params.has_key?(:number_of_files) and params[:number_of_files] == "0"
-      return redirect_to( {:controller => "catalog", :action => "edit", :id => params[:id]} )
-    end
-    
     if params.has_key?(:Filedata) and params.has_key?(:original)
-	sendOriginalToMatterhorn
-	#TODO store Workflow instance id and/or MediaPackage in VideoDCDatastream so we can show processing status on edit page later
-	flash[:notice] = "The uploaded file has been sent to Matterhorn for processing."
+			saveOriginalToHydrant
+			#sendOriginalToMatterhorn
+			#TODO store Workflow instance id and/or MediaPackage in VideoDCDatastream so we can show processing status on edit page later
+			flash[:notice] = "The uploaded file has been sent to Matterhorn for processing."
     elsif params.has_key?(:video_url)
       notice = process_files
       flash[:notice] = notice.join("<br/>".html_safe) unless notice.blank?
@@ -37,12 +32,26 @@ class VideoAssetsController < ApplicationController
     redirect_to redirect_params
   end
   
-  def sendOriginalToMatterhorn
-	params[:Filedata].each do |file|
-          args = {"title" => params[:container_id], "flavor" => "presenter/source", "workflow" => "hydrant", "filename" => file.original_filename}
-	  Rubyhorn.client.addMediaPackage(file, args)
+	def saveOriginalToHydrant
+		params[:Filedata].each do |file|
+			newDir = 'public/videos/' + params[:container_id].gsub(":", "_")
+			newFile = newDir + "/" + file.original_filename
+			FileUtils.mkdir newDir unless File.exists?(newDir)
+			FileUtils.rm newFile if File.exists?(newFile)
+			FileUtils.cp file.tempfile, newFile
+
+			logger.debug(@document.descMetadata.inspect) 
+			@document.descMetadata.source = newFile
+			@document.save
+		end
 	end
-   end
+
+  def sendOriginalToMatterhorn
+		params[:Filedata].each do |file|
+      args = {"title" => params[:container_id], "flavor" => "presenter/source", "workflow" => "hydrant", "filename" => file.original_filename}
+	  	Rubyhorn.client.addMediaPackage(file, args)
+		end
+  end
 
   def process_files
     logger.debug "In process_files of video_assets_controller"

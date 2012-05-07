@@ -28,9 +28,10 @@ class VideoDCDatastream < ActiveFedora::NokogiriDatastream
            "xsi:schemaLocation"=>"http://dublincore.org/schemas/xmls/simpledc20021212.xsd") {
           xml.title
           xml.creator
-	  xml.subject
+	  			xml.subject
           xml.description
           xml.date
+					xml.source
         }
       end
       # return a Nokogiri::XML::Document, not an OM::XML::Document
