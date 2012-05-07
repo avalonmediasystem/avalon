@@ -14,6 +14,11 @@
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise'
 
+         # Added 
+         gem 'rubyhorn', :git => "git://github.com/variations-on-video/rubyhorn.git"
+         gem 'felixwrapper', :git => "git://github.com/cjcolvar/felixwrapper.git"
+         gem 'red5wrapper', :git => "git://github.com/cjcolvar/red5wrapper.git"
+
   group :assets do
     gem 'coffee-rails', "~> 3.2.1"
     gem 'uglifier', '>= 1.0.3'
@@ -26,11 +31,6 @@
          gem 'sass-rails', '~> 3.2.3'
          gem 'jquery-rails'
          gem "jettywrapper"
-
-         # Added 
-         gem 'rubyhorn', :git => "git://github.com/variations-on-video/rubyhorn.git"
-         gem 'felixwrapper', :git => "git://github.com/cjcolvar/felixwrapper.git"
-         gem 'red5wrapper', :git => "git://github.com/cjcolvar/red5wrapper.git"
 
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
