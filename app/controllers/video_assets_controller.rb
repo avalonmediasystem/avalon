@@ -50,7 +50,7 @@ class VideoAssetsController < ApplicationController
     notice = []
       apply_depositor_metadata(video_asset)
 
-      notice << render_to_string(:partial=>'file_assets/asset_saved_flash', :locals => { :file_asset => video_asset })
+      notice << render_to_string(:partial=>'hydra/file_assets/asset_saved_flash', :locals => { :file_asset => video_asset })
         
       if !params[:container_id].nil?
         associate_file_asset_with_container(video_asset,'info:fedora/' + params[:container_id])
