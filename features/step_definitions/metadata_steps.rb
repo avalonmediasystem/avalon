@@ -10,6 +10,7 @@ end
 
 # Paths for matching actions that occur when updating an existing record
 When /^I edit (\w*:\d*)$/ do |id|
+  #prepare_object(id)
   visit path_to("the edit page for id #{id}")
   puts page.body
   
@@ -24,7 +25,17 @@ end
 # Paths for matching actions that occur when updating an existing record
 Then /^I should see the changes to the metadata$/ do
   click_on 'Switch to browse view'
-  assert page.should have_selector('contributors_list').has_content('Rake task')
+  within "#contributors_list" do
+    assert page.should have_content('Rake task')
+  end
+
+  within "#creation_date" do
+    assert page.should have_content('2012.04.21')
+  end
+
+  within "h1.document-heading" do
+    assert page.should have_content('Cucumber Test Record')
+  end
 end
 
 def test_for_field(field)
@@ -34,4 +45,8 @@ def test_for_field(field)
     
     assert page.has_selector?("\##{field}")
   end
+end
+
+def prepare_hydra(id)
+  
 end
