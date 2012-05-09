@@ -1,20 +1,14 @@
-<%= form_tag(hydra_asset_path(:asset_id=>params[:id]), :method => "PUT", :class => "step") do -%>
+<%= form_tag(hydra_asset_path(:asset_id=>params[:id]), :method => "PUT", :class => "step", id: 'contributors_form') do -%>
   <fieldset id="contributors_fields">
 		<legend>Authors</legend>
 	  <p class="legend-caption">An individual or organizational author of work.</p>	
     <p class="fedora-text-field">
       <%= fedora_text_field(@document_fedora,"descMetadata", [:creator], :multiple=>true, :required=>false ) %>
     </p>
-        <p class="fedora-text-field-add">
-          <%-
-            # fedora_text_field_insert_link "descMetadata", [:creator] 
-          -%>
-        </p>
 
     <%= hidden_field_tag(:wf_step, params[:wf_step]) %>
     <%= hidden_field_tag(:new_asset, true, :id => "contributor_new_asset") if params[:new_asset] %>
     <%= hidden_field_tag(:content_type,"video") %>
-		<!-- <%= submit_tag("Add Another Author", :name=>"add_another_author") %> -->
 		<%= submit_tag(submit_name, :name=>"continue", :class=>"save-submit") %>
 		<%= submit_tag("Save and Finish", :name=>"finish", :class=>"save-submit") unless params[:new_asset] %>
 	</fieldset>
