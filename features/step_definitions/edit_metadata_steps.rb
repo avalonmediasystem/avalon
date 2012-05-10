@@ -48,8 +48,7 @@ end
 
 Given /^that "([^"]*)" has been loaded into fedora$/ do |pid|
   puts "Refreshed #{pid}"
-  #ActiveFedora::FixtureLoader.new(File.dirname(__FILE__) + '/../../fixtures').reload(pid)
-  ActiveFedora::FixtureLoader.new(File.dirname(__FILE__) + '/../fixtures').reload(pid)
+  ActiveFedora::FixtureLoader.new(File.dirname(__FILE__) + '/../../spec/fixtures').reload(pid)
 end
 
 

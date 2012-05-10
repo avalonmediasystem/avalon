@@ -10,6 +10,6 @@ Feature: Check basic metadata fields (form)
   @edit
   Scenario: Values persist in the system
     Given I am logged in as "archivist1@example.com"
-    And that "hydrant-test:74" has been loaded into fedora
-    When I edit "hydrant-test:74"
+    And that "hydrant:basic-metadata" has been loaded into fedora
+    When I edit "hydrant:basic-metadata"
     Then I should see the changes to the metadata
