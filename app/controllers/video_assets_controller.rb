@@ -34,15 +34,33 @@ class VideoAssetsController < ApplicationController
   
 	def saveOriginalToHydrant
 		params[:Filedata].each do |file|
-			newDir = 'public/videos/' + params[:container_id].gsub(":", "_")
-			newFile = newDir + "/" + file.original_filename
-			FileUtils.mkdir newDir unless File.exists?(newDir)
-			FileUtils.rm newFile if File.exists?(newFile)
-			FileUtils.cp file.tempfile, newFile
+			public_dir_path = "public/"
+			new_dir_path = public_dir_path + 'videos/' + params[:container_id].gsub(":", "_") + "/"
+			new_file_path = new_dir_path + file.original_filename
+			FileUtils.mkdir new_dir_path unless File.exists?(new_dir_path)
+			FileUtils.rm new_file_path if File.exists?(new_file_path)
+			FileUtils.cp file.tempfile, new_file_path
 
-			logger.debug(@document.descMetadata.inspect) 
-			@document.descMetadata.source = newFile
-			@document.save
+			video_asset = create_video_asset_from_temp_path(new_file_path[public_dir_path.length, new_file_path.length - 1])		
+ 
+   		notice = []
+      apply_depositor_metadata(video_asset)
+
+      #notice << render_to_string(:partial=>'file_assets/asset_saved_flash', :locals => { :file_asset => video_asset })
+
+      if !params[:container_id].nil?
+        associate_file_asset_with_container(video_asset,'info:fedora/' + params[:container_id])
+      end
+
+      ## Apply any posted file metadata
+      unless params[:asset].nil?
+        logger.debug("applying submitted file metadata: #{@sanitized_params.inspect}")
+        apply_file_metadata
+      end
+
+      # If redirect_params has not been set, use {:action=>:index}
+      logger.debug "Created #{video_asset.pid}."
+    	notice	
 		end
 	end
 
@@ -92,17 +110,19 @@ class VideoAssetsController < ApplicationController
     video_asset = VideoAsset.new
     filename = url.split(/\//).last
     video_asset.label = filename
-
-#    ds = ActiveFedora::Datastream.new(:dsid=> "content", :label => filename, :controlGroup => "E", :dsLocation => url, :mimeType=>mime_type(filename))
-#    video_asset.add_datastream(ds)
-#    ds = video_asset.create_datastream(ActiveFedora::Datastream, "content", :dsid=> "content", :dsLabel => filename, :controlGroup => "R", :dsLocation => url, :mimeType=>mime_type(filename))
-#    video_asset.add_datastream(ds)
-
-#    video_asset.add_named_datastream("content", :dsid=>"content", :label=>filename, :dsLocation=>url, :mimeType=>mime_type(filename))
     video_asset.set_url(url)
-    video_asset.set_title_and_label( filename, :only_if_blank=>true )
+		video_asset.save
 
     return video_asset
   end
 
+	def create_video_asset_from_temp_path(path)
+		video_asset = VideoAsset.new
+    filename = path.split(/\//).last
+		video_asset.label = filename
+		video_asset.url = path
+		video_asset.description = "Original file uploaded"
+		
+		return video_asset		
+	end
 end
