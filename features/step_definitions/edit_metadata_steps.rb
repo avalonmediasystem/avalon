@@ -47,8 +47,9 @@ Then /^I should see a "([^"]*)" button(?: within "([^"]*)")?$/ do |button_locato
 end
 
 Given /^that "([^"]*)" has been loaded into fedora$/ do |pid|
-  ActiveFedora::FixtureLoader.new(File.dirname(__FILE__) + '/../../fixtures').reload(pid)
-  
+  puts "Refreshed #{pid}"
+  #ActiveFedora::FixtureLoader.new(File.dirname(__FILE__) + '/../../fixtures').reload(pid)
+  ActiveFedora::FixtureLoader.new(File.dirname(__FILE__) + '/../fixtures').reload(pid)
 end
 
 
