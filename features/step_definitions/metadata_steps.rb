@@ -9,10 +9,8 @@ Then /I should see a simple metadata form/ do
 end
 
 # Paths for matching actions that occur when updating an existing record
-When /^I edit (\w*:\d*)$/ do |id|
-  #prepare_object(id)
+When /^I edit "([^"]*)"$/ do |id|
   visit path_to("the edit page for id #{id}")
-  puts page.body
   
   within ('#publication_history_form') do  
     fill_in 'creator', with: 'Rake task'
@@ -45,8 +43,4 @@ def test_for_field(field)
     
     assert page.has_selector?("\##{field}")
   end
-end
-
-def prepare_hydra(id)
-  
 end
