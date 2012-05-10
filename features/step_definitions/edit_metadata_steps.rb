@@ -48,7 +48,7 @@ end
 
 Given /^that "([^"]*)" has been loaded into fedora$/ do |pid|
  	video = Video.find(pid)
-  	video.parts.each do |part|
+  video.parts.each do |part|
     ActiveFedora::FixtureLoader.delete(part.pid)
   	puts "Deleted #{part.pid}"
   end
