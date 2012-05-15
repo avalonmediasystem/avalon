@@ -222,3 +222,13 @@ end
 Then  /^I should get a status code (\d+)/ do |http_status|
   page.driver.status_code.should == http_status.to_i
 end
+
+Given /^I want to see debugging information$/ do
+  if page.nil? 
+    puts "WARNING: No page was found"
+  else  
+    puts page.current_url
+    puts page.body
+    puts page.source
+  end
+end
