@@ -4,7 +4,6 @@ Feature: Upload file into a document
   As an editor 
   I want to upload files in the edit form
   
-  @nojs
   Scenario: Upload files on catalog edit page
     Given I am logged in as "archivist1@example.com"
 		And that "hydrant:318" has been loaded into fedora
