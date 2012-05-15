@@ -37,7 +37,7 @@ class VideoAssetsController < ApplicationController
 			public_dir_path = "public/"
 			new_dir_path = public_dir_path + 'videos/' + params[:container_id].gsub(":", "_") + "/"
 			new_file_path = new_dir_path + file.original_filename
-			FileUtils.mkdir new_dir_path unless File.exists?(new_dir_path)
+			FileUtils.mkdir_p new_dir_path unless File.exists?(new_dir_path)
 			FileUtils.rm new_file_path if File.exists?(new_file_path)
 			FileUtils.cp file.tempfile, new_file_path
 
