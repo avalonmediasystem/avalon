@@ -59,6 +59,12 @@ Given /^that "([^"]*)" has been loaded into fedora$/ do |pid|
   puts "Refreshed #{pid}"
 end
 
+Given /^that "([^"]*)" can edit "([^"]*)"$/ do |email, pid|
+	user = User.find_by_email(email)
+	ability = Ability.new(user)
+	assert ability.can? :edit, pid
+end
+
 # Find a select tag on the page
 # @param [String] locator Capybara locator
 # @return [Capybara::Node]
