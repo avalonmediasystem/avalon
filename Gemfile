@@ -6,11 +6,18 @@
 #  gem 'hydra-head', '~> 4.0.0'
   gem 'hydra-head', :git=>"git://github.com/projecthydra/hydra-head.git"
 
-  # We will assume that you're using sqlite3 for testing/demo, 
-  # but in a production setup you probably want to use a real sql database like mysql or postgres
-  gem 'sqlite3'
-	gem 'therubyracer'
-	gem 'execjs'
+	platforms :jruby do
+  	gem 'jruby-openssl'
+		gem 'activerecord-jdbcsqlite3-adapter'
+		gem 'jdbc-sqlite3'
+		gem 'therubyrhino'
+	end
+
+	platforms :ruby do
+  	gem 'sqlite3'
+		gem 'execjs'
+    gem 'therubyracer'
+	end
 
   # We will assume you're using devise in tutorials/documentation. 
   # You are free to implement your own User/Authentication solution in its place.
