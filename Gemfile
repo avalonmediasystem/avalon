@@ -9,6 +9,8 @@
   # We will assume that you're using sqlite3 for testing/demo, 
   # but in a production setup you probably want to use a real sql database like mysql or postgres
   gem 'sqlite3'
+	gem 'therubyracer'
+	gem 'execjs'
 
   # We will assume you're using devise in tutorials/documentation. 
   # You are free to implement your own User/Authentication solution in its place.
