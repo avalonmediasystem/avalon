@@ -1,5 +1,4 @@
-require "rvm" 
-require "rvm/capistrano" 
+require 'rvm/capistrano'
 
 set :application, "hydrant"
 set :repository,  "git://github.com/variations-on-video/hydrant.git"
@@ -15,7 +14,7 @@ set :deploy_to, "/srv/rails/hydrant-test"
 set :user, "vov"
 set :use_sudo, false
 
-set :rvm_type, :root
+#set :rvm_type, :root
 set :rvm_ruby_string, 'ruby-1.9.3@hydrant'                     # Or:
 #set :rvm_ruby_string, ENV['GEM_HOME'].gsub(/.*\//,"") # Read from local system
 
