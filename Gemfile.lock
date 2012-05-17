@@ -98,7 +98,7 @@ GEM
       gyoku (>= 0.4.0)
     arel (3.0.2)
     bcrypt-ruby (3.0.1)
-    blacklight (3.4.1)
+    blacklight (3.4.2)
       compass-rails (~> 1.0.0)
       compass-susy-plugin (>= 0.9.0)
       kaminari

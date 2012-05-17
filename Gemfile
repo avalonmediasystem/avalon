@@ -41,6 +41,7 @@
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do 
 	gem 'capistrano'
+	gem 'rvm-capistrano'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do
