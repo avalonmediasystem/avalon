@@ -46,4 +46,16 @@ namespace :deploy do
   task :restart, :roles => :app do
     run "touch #{current_release}/tmp/restart.txt"
   end
+
+  namespace :bundle do
+    task :install, :roles => :app do
+      run "cd #{current_release}; bundle install"
+    end
+  end
+
+  namespace :db do
+    task :setup, roles => :db do
+      run "cd #{current_release}; rake RAILS_ENV=production db:schema:load"
+    end
+  end
 end
