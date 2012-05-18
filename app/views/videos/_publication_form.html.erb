@@ -17,6 +17,9 @@
   <%= hidden_field_tag(:wf_step, params[:wf_step], :id => "publisher_wf_step") %>
   <%= hidden_field_tag(:new_asset, true, :id => "publisher_new_asset") if params[:new_asset] %>
   <%= hidden_field_tag(:content_type,"video", :id => "publisher_content_type") %>
-  <%= submit_tag(submit_name, :name=>"continue", :class=>"save-submit") %>
-  <%= submit_tag("Save and Finish", :name=>"finish", :class=>"save-submit") unless params[:new_asset] %>
+
+  <div class="all-steps-actions">
+    <button id="all_save_continue" name="all_save_continue">Save and Continue Editing</button>
+    <button id="all_save_finish" name="all_save_finish">Save and Finish</button>
+  </div>
 <%- end -%>

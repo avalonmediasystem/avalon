@@ -23,6 +23,9 @@
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise'
 
+	# Needed for AJAX file upload
+	gem 'remotipart'
+
   # Added 
   gem "jettywrapper"
   gem 'rubyhorn', :git => "git://github.com/variations-on-video/rubyhorn.git"

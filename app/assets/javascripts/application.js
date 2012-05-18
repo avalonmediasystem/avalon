@@ -10,8 +10,11 @@
 // WARNING: THE FIRST BLANK LINE MARKS THE END OF WHAT'S TO BE PROCESSED, ANY BLANK LINE SHOULD
 // GO AFTER THE REQUIRES BELOW.
 //
+//= stub hydra/hydra-head
+//
 //= require jquery
 //= require jquery_ujs
+//= require jquery.remotipart
 //
 // Required by Hydra
 //= require 'jquery.ui.datepicker.js'      
@@ -20,4 +23,6 @@
 // Required by Blacklight
 //= require jquery-ui
 //= require blacklight/blacklight
-//= require_tree .
+//= require_directory .
+//
+//= require_self

@@ -24,12 +24,15 @@ class VideoAssetsController < ApplicationController
       flash[:notice] = "You must specify a file to upload."
     end
     
-    unless params[:container_id].nil?
-      redirect_params = {:controller => "catalog", :action => "edit", :id => params[:container_id]}
+    respond_to do |format|
+      if !params[:container_id].nil?
+      	format.html { redirect_to :controller => "catalog", :action => "edit", :id => params[:container_id] }
+      	format.js
+      else 
+        format.html { redirect_to :controller => "catalog", :action => "index"}
+        format.js
+      end
     end
-    redirect_params ||= {:controller => "catalog", :action => "index"}
-    
-    redirect_to redirect_params
   end
   
 	def saveOriginalToHydrant
@@ -41,15 +44,16 @@ class VideoAssetsController < ApplicationController
 			FileUtils.rm new_file_path if File.exists?(new_file_path)
 			FileUtils.cp file.tempfile, new_file_path
 
-			video_asset = create_video_asset_from_temp_path(new_file_path[public_dir_path.length, new_file_path.length - 1])		
- 
+			@video_asset = create_video_asset_from_temp_path(new_file_path[public_dir_path.length, new_file_path.length - 1])		
+      
    		notice = []
-      apply_depositor_metadata(video_asset)
+      apply_depositor_metadata(@video_asset)
 
       #notice << render_to_string(:partial=>'file_assets/asset_saved_flash', :locals => { :file_asset => video_asset })
-
-      if !params[:container_id].nil?
-        associate_file_asset_with_container(video_asset,'info:fedora/' + params[:container_id])
+      @container_id = params[:container_id]
+      if !@container_id.nil?
+        associate_file_asset_with_container(@video_asset,'info:fedora/' + @container_id)
+        
       end
 
       ## Apply any posted file metadata
@@ -59,7 +63,7 @@ class VideoAssetsController < ApplicationController
       end
 
       # If redirect_params has not been set, use {:action=>:index}
-      logger.debug "Created #{video_asset.pid}."
+      logger.debug "Created #{@video_asset.pid}."
     	notice	
 		end
 	end
@@ -88,6 +92,7 @@ class VideoAssetsController < ApplicationController
         logger.debug("applying submitted file metadata: #{@sanitized_params.inspect}")
         apply_file_metadata
       end
+
       # If redirect_params has not been set, use {:action=>:index}
       logger.debug "Created #{video_asset.pid}."
     notice

@@ -1,3 +1,11 @@
+#uploader {
+	float: none;
+}
+
+.document {
+	min-height: 0px;
+}
+
 #mediaplayer {
 }
 
