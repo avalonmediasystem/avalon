@@ -13,9 +13,11 @@ class VideoAssetsController < ApplicationController
   # * the method will redirect to the container object's edit view after saving
   def create
     if params.has_key?(:Filedata) and params.has_key?(:original)
-			saveOriginalToHydrant
-			#sendOriginalToMatterhorn
+		params[:Filedata].each do |file|
+			video_asset = saveOriginalToHydrant(file)
+			sendOriginalToMatterhorn(video_asset, file)
 			#TODO store Workflow instance id and/or MediaPackage in VideoDCDatastream so we can show processing status on edit page later
+		end
 			flash[:notice] = "The uploaded file has been sent to Matterhorn for processing."
     elsif params.has_key?(:video_url)
       notice = process_files
@@ -35,8 +37,7 @@ class VideoAssetsController < ApplicationController
     end
   end
   
-	def saveOriginalToHydrant
-		params[:Filedata].each do |file|
+	def saveOriginalToHydrant file
 			public_dir_path = "public/"
 			new_dir_path = public_dir_path + 'videos/' + params[:container_id].gsub(":", "_") + "/"
 			new_file_path = new_dir_path + file.original_filename
@@ -44,17 +45,16 @@ class VideoAssetsController < ApplicationController
 			FileUtils.rm new_file_path if File.exists?(new_file_path)
 			FileUtils.cp file.tempfile, new_file_path
 
-			@video_asset = create_video_asset_from_temp_path(new_file_path[public_dir_path.length, new_file_path.length - 1])		
+			video_asset = create_video_asset_from_temp_path(new_file_path[public_dir_path.length, new_file_path.length - 1])		
       
    		notice = []
-      apply_depositor_metadata(@video_asset)
+      apply_depositor_metadata(video_asset)
 
       #notice << render_to_string(:partial=>'file_assets/asset_saved_flash', :locals => { :file_asset => video_asset })
       @container_id = params[:container_id]
       if !@container_id.nil?
-        associate_file_asset_with_container(@video_asset,'info:fedora/' + @container_id)
+        associate_file_asset_with_container(video_asset,'info:fedora/' + @container_id)
         
-      end
 
       ## Apply any posted file metadata
       unless params[:asset].nil?
@@ -63,16 +63,15 @@ class VideoAssetsController < ApplicationController
       end
 
       # If redirect_params has not been set, use {:action=>:index}
-      logger.debug "Created #{@video_asset.pid}."
+      logger.debug "Created #{video_asset.pid}."
     	notice	
 		end
+	video_asset
 	end
 
-  def sendOriginalToMatterhorn
-		params[:Filedata].each do |file|
-      args = {"title" => params[:container_id], "flavor" => "presenter/source", "workflow" => "hydrant", "filename" => file.original_filename}
-	  	Rubyhorn.client.addMediaPackage(file, args)
-		end
+  def sendOriginalToMatterhorn(video_asset, file)
+    args = {"title" => video_asset.pid , "flavor" => "presenter/source", "workflow" => "hydrant", "filename" => video_asset.label}
+    mp = Rubyhorn.client.addMediaPackage(file, args)
   end
 
   def process_files

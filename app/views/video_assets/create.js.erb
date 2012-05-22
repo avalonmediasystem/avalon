@@ -2,8 +2,8 @@
 	console.log('TADA');
 	$('#uploader').html(
 		'<legend>File Upload</legend>'
-		+ '<a href="/<%= @video_asset.descMetadata.identifier[0]%>"><%= @video_asset.descMetadata.title[0]%></a>'
-		+ '<span id="file_status"> (<%= @video_asset.descMetadata.description[0] %>)</span>'
-		+ '<%= button_to("Delete", "/hydra/assets/#{@video_asset.pid}/file_assets/#{@video_asset.pid}?container_id=#{@container_id}", :confirm => "Are you sure you want to delete this file?", :method => :delete, :class => "delete-button") %>'
+		+ '<a href="/<%= @document.parts.first.descMetadata.identifier[0]%>"><%= @document.parts.first.descMetadata.title[0]%></a>'
+		+ '<span id="file_status"> (<%= @document.parts.first.descMetadata.description[0] %>)</span>'
+		+ '<%= button_to("Delete", "/hydra/assets/#{@document.parts.first.pid}/file_assets/#{@document.parts.first.pid}?container_id=#{@container_id}", :confirm => "Are you sure you want to delete this file?", :method => :delete, :class => "delete-button") %>'
 	);
 <% end %>
