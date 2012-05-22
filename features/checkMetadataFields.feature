@@ -4,11 +4,8 @@ Feature: Check basic metadata fields (form)
   @create
   Scenario: Limited fields present
     Given I am logged in as "archivist1@example.com"
-    And I want to see debugging information
     When I create a new video
-    And I want to see debugging information
     Then I should see a simple metadata form
-    And I want to see debugging information
 
   @edit
   Scenario: Values persist in the system
