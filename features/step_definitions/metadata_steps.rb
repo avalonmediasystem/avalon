@@ -37,7 +37,7 @@ Then /^I should see the changes to the metadata$/ do
 end
 
 def test_for_field(field)
-  within ('form') do
+  within ('body') do
     field.gsub!(' ', '_')
     field.downcase!
     
