@@ -114,7 +114,7 @@ class VideoAssetsController < ApplicationController
     video_asset = VideoAsset.new
     filename = url.split(/\//).last
     video_asset.label = filename
-    video_asset.set_url(url)
+    video_asset.url = url
 		video_asset.save
 
     return video_asset
