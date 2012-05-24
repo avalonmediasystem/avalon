@@ -45,7 +45,7 @@ class VideoAssetsController < ApplicationController
 			FileUtils.rm new_file_path if File.exists?(new_file_path)
 			FileUtils.cp file.tempfile, new_file_path
 
-			video_asset = create_video_asset_from_temp_path(new_file_path[public_dir_path.length, new_file_path.length - 1])		
+			video_asset = create_video_asset_from_temp_path(new_file_path[public_dir_path.length - 1, new_file_path.length - 1])		
       
    		notice = []
       apply_depositor_metadata(video_asset)
@@ -76,48 +76,19 @@ class VideoAssetsController < ApplicationController
 
   def process_files
     logger.debug "In process_files of video_assets_controller"
-    video_asset = create_and_save_video_asset_from_params
-    notice = []
-      apply_depositor_metadata(video_asset)
+    video_asset = VideoAsset.find(params[:container_id]) 
+	video_asset.url = params[:video_url]
 
-      notice << render_to_string(:partial=>'hydra/file_assets/asset_saved_flash', :locals => { :file_asset => video_asset })
+	if video_asset.save
+		notice = []
+		notice << render_to_string(:partial=>'hydra/file_assets/asset_saved_flash', :locals => { :file_asset => video_asset })
         
-      if !params[:container_id].nil?
-        associate_file_asset_with_container(video_asset,'info:fedora/' + params[:container_id])
-      end
-
-      ## Apply any posted file metadata
-      unless params[:asset].nil?
-        logger.debug("applying submitted file metadata: #{@sanitized_params.inspect}")
-        apply_file_metadata
-      end
-
       # If redirect_params has not been set, use {:action=>:index}
-      logger.debug "Created #{video_asset.pid}."
+      logger.debug "Updated #{video_asset.pid} with URL #{params[:video_url]}."
     notice
-  end
-
-  # Creates a Video Asset, adding the posted blob to the Video Asset's datastreams and saves the Video Asset
-  #
-  # @return [VideoAsset] the Video Asset  
-  def create_and_save_video_asset_from_params
-    if params.has_key?(:video_url)
-        video_asset = create_asset_from_video_url(params[:video_url])
-        video_asset.save
-      return video_asset
-    else
-      render :text => "400 Bad Request", :status => 400
-    end
-  end
-  
-  def create_asset_from_video_url(url)
-    video_asset = VideoAsset.new
-    filename = url.split(/\//).last
-    video_asset.label = filename
-    video_asset.url = url
-		video_asset.save
-
-    return video_asset
+	else 
+		notice = "File updating failed"
+	end
   end
 
 	def create_video_asset_from_temp_path(path)
