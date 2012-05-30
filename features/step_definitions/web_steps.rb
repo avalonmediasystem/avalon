@@ -227,8 +227,11 @@ Given /^I want to see debugging information$/ do
   if page.nil? 
     puts "WARNING: No page was found"
   else  
+    puts "-- DEBUG --"
+    puts page.current_host
     puts page.current_url
     puts page.body
     puts page.source
+    puts "-- DEBUG --"
   end
 end
