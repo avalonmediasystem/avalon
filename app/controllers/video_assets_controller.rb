@@ -88,7 +88,7 @@ class VideoAssetsController < ApplicationController
 
   def process_files
     logger.debug "In process_files of video_assets_controller"
-    video_asset = VideoAsset.find(params[:container_id]) 
+    video_asset = VideoAsset.find(params[:id]) 
 		video_asset.url = params[:video_url]
 
 		if video_asset.save
