@@ -1,0 +1,61 @@
+<div class="document_viewer" id="cover_container">
+
+	<h1 class="document-heading">
+		<% unless get_values_from_datastream(@document_fedora,"descMetadata", ['pbcoreTitle.title']).first.empty? %>
+	      <%= get_values_from_datastream(@document_fedora,"descMetadata", ['pbcoreTitle.title']).first %>
+		<% else %>
+			<%= params[:id] %>
+		 <% end %>
+	</h1>
+	
+	<script src="/javascripts/hydrant/jquery.rdfquery.rdfa.min-1.0.js" type="text/javascript"></script>
+	<script src="/javascripts/hydrant/oac_utils.js" type="text/javascript"></script>
+	<script src="/javascripts/hydrant/oac_rdf.js" type="text/javascript"></script>
+	<script src="/javascripts/hydrant/oac_rdfjson.js" type="text/javascript"></script>		
+	<script type='text/javascript' src='/jwplayer/jwplayer.js'></script>
+	<script type="text/javascript" src="/javascripts/hydrant/iuplayer.js"></script>
+
+	<div id='mediaplayer'></div>
+
+	<% unless @document_fedora.file_objects(:response_format=>:solr).hits.empty? %>
+		<script>
+		 function failed(e) {
+		   // video playback failed - show a message saying why
+		   switch (e.target.error.code) {
+		     case e.target.error.MEDIA_ERR_ABORTED:
+		       alert('You aborted the video playback.');
+		       break;
+		     case e.target.error.MEDIA_ERR_NETWORK:
+		       alert('A network error caused the video download to fail part-way.');
+		       break;
+		     case e.target.error.MEDIA_ERR_DECODE:
+		       alert('The video playback was aborted due to a corruption problem or because the video used features your browser did not support.');
+		       break;
+		     case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+		       alert('The video could not be loaded, either because the server or network failed or because the format is not supported.');
+		       break;
+		     default:
+		       alert('An unknown error occurred.');
+		       break;
+		   }
+		 }
+		</script>
+
+		<script type="text/javascript">
+			$('#mediaplayer').iuplayer({
+				//'playlistfile': '/jwplayer/playlist.xml',
+				//'playlistposition': 'top',
+				//'playlistsize': '1',
+				//annotationfile: '/Transcriptions-f1rc.xml'
+				 provider: 'rtmp',
+				 streamer: 'rtmp://localhost/matterhorn-engage/',
+				 file: '<%= /\/matterhorn-engage\/(.*)/.match(@document_fedora.file_objects.first.datastreams["descMetadata"].identifier_values.first)[1] %>',
+				// annotationfile: '/Transcriptions-f2rc.xml'
+			});
+		</script>
+
+	<% end %>
+
+  <%= render_all_show_workflow_steps.html_safe %>
+
+</div>

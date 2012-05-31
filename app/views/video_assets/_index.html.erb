@@ -1,16 +1,26 @@
 	<% if !@document.nil? && editor? %>
+
+    <div id="upload_status"></div>
+    
+	<!-- Run LINT on this later to clean up the formatting -->		
+    <div id="file_status">
+      <% unless file_assets.empty? %>
+        STATUS: <%= file_assets[0]["description_t"][0] %>
+      <% end %>
+    </div>
+    
   	<%- container_content_type_param = defined?(container_content_type) ? "?container_content_type=#{container_content_type}" : "" %>
+    
   	<fieldset id='uploader'>
    		<legend>File Upload</legend>
 
 			<% if !file_assets.empty? %>
-	  		<a href="<%=file_assets[0]["identifier_t"][0]%>"><%=file_assets[0]["title_t"][0]%></a>
-				<span id="file_status"> (<%= file_assets[0]["description_t"][0] %>)</span>
+
+	  		<a href="<%=file_assets[0]["identifier_t"][0]%>"><%=file_assets[0]["title_t"][0] %></a>
 	 			<% if can? :edit, @document %>
 	    		<%= button_to("Delete", "/hydra/assets/#{file_assets[0]["id"]}/file_assets/#{file_assets[0]["id"]}?container_id=#{@document[:id]}", :confirm => "Are you sure you want to delete this file?", :method => :delete, :class => "delete-button") %>
 	 			<% end %>
 			<% else %>
-	    	<!-- This form will be progressively enhanced by the Fluid Uploader component. -->
 	    	<%= form_tag(video_assets_path, :remote => true, :enctype=>"multipart/form-data", :class=>"uploader-form step") do -%>
 	      	<input type="hidden" name="container_id" value="<%=h container_id %>"/>
 	      	<%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>

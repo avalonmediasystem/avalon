@@ -1,0 +1,9 @@
+<div id="contributors_list">
+<% unless get_values_from_datastream(@document_fedora,"descMetadata", [:author]).first.empty? %>
+<fieldset><legend>Contributors</legend>
+<div id="contributors_list" class="browse_value">
+        <%= get_values_from_datastream(@document_fedora,"descMetadata", [:author]).join(', ') %>
+</div>
+</fieldset>
+<% end %>
+</div>
