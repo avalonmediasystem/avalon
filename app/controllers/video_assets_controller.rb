@@ -83,6 +83,7 @@ class VideoAssetsController < ApplicationController
    if params.has_key?(:video_url)
       notice = process_files
       flash[:notice] = notice.join("<br/>".html_safe) unless notice.blank?
+	render :nothing => true
 		end
 	end
 
