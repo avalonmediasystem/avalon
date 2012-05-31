@@ -1,4 +1,6 @@
 <%= remotipart_response do %>
+  alert(upload_format);
+  
 	<% if @video_assets.count > 0 %>
 		$('#uploader').html(
 			'<legend>File Upload</legend>'
