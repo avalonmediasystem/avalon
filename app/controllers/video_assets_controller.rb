@@ -24,7 +24,10 @@ class VideoAssetsController < ApplicationController
   		  end
   		  
   			@video_assets << video_asset = saveOriginalToHydrant(file)
-  			sendOriginalToMatterhorn(video_asset, file)
+  			if video_asset.save
+    			video_asset = sendOriginalToMatterhorn(video_asset, file)
+    			video_asset.save
+			  end
   			#TODO store Workflow instance id and/or MediaPackage in VideoDCDatastream so we can show processing status on edit page later
   		end
     else
@@ -32,7 +35,7 @@ class VideoAssetsController < ApplicationController
     end
     
     respond_to do |format|
-      if !params[:container_id].nil? && !wrong_format
+      if !params[:container_id].nil?
       	format.html { redirect_to :controller => "catalog", :action => "edit", :id => params[:container_id] }
       	format.js
       else 
@@ -77,6 +80,8 @@ class VideoAssetsController < ApplicationController
     args = {"title" => video_asset.pid , "flavor" => "presenter/source", "workflow" => "hydrant", "filename" => video_asset.label}
     mp = Rubyhorn.client.addMediaPackage(file, args)
     flash[:notice] = "The uploaded file has been sent to Matterhorn for processing."
+    video_asset.description = "File is being processed in Matterhorn"
+    video_asset
   end
 
 	def update
