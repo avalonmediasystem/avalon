@@ -12,7 +12,6 @@ class VideoAssetsController < ApplicationController
   # * the File Asset will use RELS-EXT to assert that it's a part of the specified container
   # * the method will redirect to the container object's edit view after saving
   def create
-
     audio_types = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav"]
     video_types = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime"]
     wrong_format = false
@@ -32,7 +31,10 @@ class VideoAssetsController < ApplicationController
   		  end
   		  
   			@video_assets << video_asset = saveOriginalToHydrant(file)
-  			sendOriginalToMatterhorn(video_asset, file)
+  			if video_asset.save
+    			video_asset = sendOriginalToMatterhorn(video_asset, file)
+    			video_asset.save
+			  end
   			#TODO store Workflow instance id and/or MediaPackage in VideoDCDatastream so we can show processing status on edit page later
   		end
     else
@@ -40,7 +42,7 @@ class VideoAssetsController < ApplicationController
     end
     
     respond_to do |format|
-      if !params[:container_id].nil? && !wrong_format
+      if !params[:container_id].nil?
       	format.html { redirect_to :controller => "catalog", :action => "edit", :id => params[:container_id] }
       	format.js
       else 
@@ -85,12 +87,15 @@ class VideoAssetsController < ApplicationController
     args = {"title" => video_asset.pid , "flavor" => "presenter/source", "workflow" => "hydrant", "filename" => video_asset.label}
     mp = Rubyhorn.client.addMediaPackage(file, args)
     flash[:notice] = "The uploaded file has been sent to Matterhorn for processing."
+    video_asset.description = "File is being processed in Matterhorn"
+    video_asset
   end
 
 	def update
    if params.has_key?(:video_url)
       notice = process_files
       flash[:notice] = notice.join("<br/>".html_safe) unless notice.blank?
+	render :nothing => true
 		end
 	end
 
@@ -98,7 +103,8 @@ class VideoAssetsController < ApplicationController
     logger.debug "In process_files of video_assets_controller"
     video_asset = VideoAsset.find(params[:id]) 
 		video_asset.url = params[:video_url]
-
+		video_asset.description = "File processed and ready for streaming"
+		
 		if video_asset.save
 			notice = []
 			notice << render_to_string(:partial=>'hydra/file_assets/asset_saved_flash', :locals => { :file_asset => video_asset })

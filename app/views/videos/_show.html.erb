@@ -15,9 +15,11 @@
 	<script type='text/javascript' src='/jwplayer/jwplayer.js'></script>
 	<script type="text/javascript" src="/javascripts/hydrant/iuplayer.js"></script>
 
-	<div id='mediaplayer'></div>
+	<div id='StrobeMediaPlayback'></div>
 
-	<% unless @document_fedora.parts(:response_format=>:solr).empty? %>
+	<% if @document_fedora.parts(:response_format=>:solr).empty? || !@document_fedora.parts.first.descMetadata.identifier.first.start_with?("rtmp")%>
+		<p> <%= @document_fedora.parts.first.descMetadata.description.first %> </p>
+	<% else %>
 		<script>
 		 function failed(e) {
 		   // video playback failed - show a message saying why
@@ -41,27 +43,57 @@
 		 }
 		</script>
 
+		<%= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js" %>
+
 		<script type="text/javascript">
-			$('#mediaplayer').iuplayer({
-				//'playlistfile': '/jwplayer/playlist.xml',
-				//'playlistposition': 'top',
-				//'playlistsize': '1',
-				//annotationfile: '/Transcriptions-f1rc.xml'
-				 provider: 'rtmp',
-				 streamer: 'rtmp://localhost/matterhorn-engage/',
-				 file: '<%= /\/matterhorn-engage\/(.*)/.match(@document_fedora.parts.first.descMetadata.identifier.first)[1] %>',
-				// annotationfile: '/Transcriptions-f2rc.xml'
-			});
+		
+	    var parameters = {
+	        src: "<%= @document_fedora.parts.first.descMetadata.identifier.first %>",
+	        autoPlay: "false",
+	        verbose: true,
+	        controlBarAutoHide: "false",
+	        controlBarPosition: "bottom",
+	        poster: "images/poster.png"
+	    };
+    
+	    var wmodeValue = "direct";
+	    var wmodeOptions = ["direct", "opaque", "transparent", "window"];
+	    if (parameters.hasOwnProperty("wmode"))
+	    {
+	    	if (wmodeOptions.indexOf(parameters.wmode) >= 0)
+	    	{
+	    		wmodeValue = parameters.wmode;
+	    	}	            	
+	    	delete parameters.wmode;
+	    }
+    
+	    // Embed the player SWF:	            
+	    swfobject.embedSWF(
+				"/StrobeMediaPlayback.swf"
+				, "StrobeMediaPlayback"
+				, 640
+				, 480
+				, "10.1.0"
+				, "expressInstall.swf"
+				, parameters
+				, {
+						allowFullScreen: "true",
+						wmode: wmodeValue
+           }
+				, {
+            name: "StrobeMediaPlayback"
+        }
+			);
 		</script>
 
 	<% end %>
 
-     <%= render "videos/show_contributors" %>
-     <%= render "videos/show_publication" %>
-     <!-- <%= render "videos/show_additional_info" %> -->
+	<%= render "videos/show_contributors" %>
+	<%= render "videos/show_publication" %>
+	<!-- <%= render "videos/show_additional_info" %> -->
 
-     <% if can?(:edit,@document_fedora) %>
-	<%= render "videos/show_video_assets" %>
-	<!-- <%= render "videos/show_permissions" %> -->
-     <% end %>
+	<% if can?(:edit,@document_fedora) %>
+		<%= render "videos/show_video_assets" %>
+		<!-- <%= render "videos/show_permissions" %> -->
+	<% end %>
 </div>
