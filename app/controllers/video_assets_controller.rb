@@ -91,7 +91,8 @@ class VideoAssetsController < ApplicationController
     logger.debug "In process_files of video_assets_controller"
     video_asset = VideoAsset.find(params[:id]) 
 		video_asset.url = params[:video_url]
-
+		video_asset.description = "File processed and ready for streaming"
+		
 		if video_asset.save
 			notice = []
 			notice << render_to_string(:partial=>'hydra/file_assets/asset_saved_flash', :locals => { :file_asset => video_asset })
