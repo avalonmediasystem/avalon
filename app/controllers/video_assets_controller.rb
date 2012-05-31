@@ -13,7 +13,7 @@ class VideoAssetsController < ApplicationController
   # * the method will redirect to the container object's edit view after saving
   def create
     audio_types = ["audio/vnd.wave", "audio/mpeg", "audio/mp4"]
-    video_types = ["video/mpeg2", "video/mp4"]
+    video_types = ["video/mpeg2", "video/mp4", "application/mp4"]
     wrong_format = false
     if params.has_key?(:Filedata) and params.has_key?(:original)
       @video_assets = []
