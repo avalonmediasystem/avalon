@@ -1,0 +1,33 @@
+  source 'http://rubygems.org'
+
+  gem 'rails', '~>3.2.3'
+
+  gem 'blacklight', '~> 3.3.2'
+#  gem 'hydra-head', '~> 4.0.0'
+  gem 'hydra-head', :git=>"git://github.com/projecthydra/hydra-head.git"
+
+  # We will assume that you're using sqlite3 for testing/demo, 
+  # but in a production setup you probably want to use a real sql database like mysql or postgres
+  gem 'sqlite3'
+
+  # We will assume you're using devise in tutorials/documentation. 
+  # You are free to implement your own User/Authentication solution in its place.
+  gem 'devise'
+
+  # For testing.  You will probably want to use these to run the tests you write for your hydra head
+  group :development, :test do 
+         gem 'rspec-rails', '>=2.9.0'
+         gem "jettywrapper"
+
+	 # Below this line needed by git dependencies and need to be added here to avoid error
+	 gem 'logger'
+	 gem 'mediashelf-loggable'
+	 gem 'childprocess'
+	 gem 'i18n'
+	 gem 'mime-types'
+	 gem 'json'
+         gem 'net-http-digest_auth'
+	 gem 'multipart-post'
+	 gem 'om'
+
+  end # (leave this comment here to catch a stray line inserted by blacklight!)
