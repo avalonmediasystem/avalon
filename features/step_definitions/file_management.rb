@@ -23,11 +23,15 @@ When /^I upload the file "(.*?)"$/ do |file|
     end
   end
   
-  attach_file("Filedata[]", file)
+  puts "<< Uploading #{File.expand_path(file)} to server >>"
+  attach_file("Filedata[]", File.expand_path(file))
   click_button('Upload File')
 end
 
 Then /^I should see confirmation that it was uploaded/ do
+  sleep(30)
+  puts "Waiting #{Capybara.default_wait_time} seconds ..."
+  
   within "#file_status" do
     page.should satisfy {
       |page| page.has_content? "Original file uploaded" or 
@@ -38,15 +42,18 @@ end
 
 # This is a very brittle test that really needs some refactoring 
 Then /^I should see confirmation that it is (audio|video) content$/ do |format|
-  puts page.html
+  sleep(30)
+
   within "#upload_status" do
     page.should have_content "appears to be #{format}"
   end
 end
 
 # So is this one
-Then /^I should an error message that the file is not recognized$/ do
+Then /^I should see an error message that the file is not recognized$/ do
+  sleep(30)
+
   within "#upload_status" do
-    page.should have_content "format is not recognized"
+    page.should have_content "could not be identified"
   end
 end
