@@ -29,7 +29,10 @@ end
 
 Then /^I should see confirmation that it was uploaded/ do
   within "#file_status" do
-    page.should have_content "File is being processed in Matterhorn"
+    page.should satisfy {
+      |page| page.has_content? "Original file uploaded" or 
+        page.has_content?("File is being processed in Matterhorn")
+    }
   end
 end
 
