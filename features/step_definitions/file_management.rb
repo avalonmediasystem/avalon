@@ -1,12 +1,5 @@
 # Condense some repeated steps into a single repeatable step
 Given /^I want to edit "(.*?)" as "(.*?)"$/ do |identifier, user|
-   puts "User >> #{user}"
-   puts "ID   >> #{identifier}"
-   puts "--"
-   puts "I am logged in as \"#{user}\""
-   puts "that \"#{identifier}\" has been loaded into fedora"
-   puts "that \"#{user}\" can edit \"#{identifier}\""
-   
    step "I am logged in as \"#{user}\""
    step "that \"#{identifier}\" has been loaded into fedora"
    step "that \"#{user}\" can edit \"#{identifier}\""
@@ -37,13 +30,15 @@ end
 Then /^I should see confirmation that it was uploaded/ do
   within "#file_status" do
     page.should satisfy {
-      |page| page.has_content?("Original file uploaded") or page.has_content?("File is being processed in Matterhorn")
+      |page| page.has_content? "Original file uploaded" or 
+        page.has_content?("File is being processed in Matterhorn")
     }
   end
 end
 
 # This is a very brittle test that really needs some refactoring 
 Then /^I should see confirmation that it is (audio|video) content$/ do |format|
+  puts page.html
   within "#upload_status" do
     page.should have_content "appears to be #{format}"
   end

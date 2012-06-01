@@ -1,18 +1,17 @@
 <%= remotipart_response do %>  
 	/* Update the status to reflect the state of the current video and as a next
 	     step enable the basic metadata form */
-	target = $("#upload_status");
-
 	<% case @upload_format
 	   when /^audio$/ %>
-	     target.text('The uploaded content appears to be audio');
+	     text = 'The uploaded content appears to be audio';
 	<% when /^video$/ %>
-	     target.text('The uploaded content appears to be video');
+	     text = 'The uploaded content appears to be video';
 	<% else %>
-	     target.text('The uploaded content could not be identified');
+	     text = 'The uploaded content could not be identified';
 	<% end %>
-
-	$('#file_status').text('STATUS: <%= @video_assets.first.descMetadata.description[0] %>')
+	
+	$('#upload_status').text(text);
+	$('#file_status').text('STATUS: <%= @video_assets.first.descMetadata.description[0] %>');
 
 	<% if @video_assets.count > 0 %>
 		$('#uploader').html(

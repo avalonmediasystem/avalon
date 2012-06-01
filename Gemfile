@@ -45,9 +45,10 @@
   group :development, :test do 
 	gem 'capistrano'
 	gem 'rvm-capistrano'
+	gem 'database_cleaner'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do
 	gem 'cucumber-rails', '>=1.2.0', :require=>false
-        gem 'rspec-rails', '>=2.9.0'
+    gem 'rspec-rails', '>=2.9.0'
   end
