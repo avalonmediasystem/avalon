@@ -54,3 +54,15 @@ ActionController::Base.allow_rescue = false
 # warning: regexp match /.../n against to UTF-8 string
 $VERBOSE = nil
 
+Before('@javascript') do
+  if ENV["SELENIUM_HEADLESS"] == 'true'
+    require "headless"
+    @headless = Headless.new
+    @headless.start
+  end
+end
+
+After('@javascript') do
+  @headless.destroy if @headless.present?
+end
+

@@ -173,6 +173,7 @@ GEM
       json (>= 1.4.6)
     gyoku (0.4.4)
       builder (>= 2.1.2)
+    headless (0.3.1)
     highline (1.6.12)
     hike (1.2.1)
     httpi (0.9.7)
@@ -353,6 +354,7 @@ DEPENDENCIES
   devise
   execjs
   felixwrapper!
+  headless
   hydra-head!
   jdbc-sqlite3
   jettywrapper
