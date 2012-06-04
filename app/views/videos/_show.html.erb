@@ -17,9 +17,9 @@
 
 	<div id='StrobeMediaPlayback'></div>
 
-	<% if @document_fedora.parts(:response_format=>:solr).empty? || !@document_fedora.parts.first.descMetadata.identifier.first.start_with?("rtmp")%>
-		<p> <%= @document_fedora.descMetadata.description.first %> </p>
-	<% else %>
+	<% if !@document_fedora.parts(:response_format=>:solr).empty? && @document_fedora.parts.first && !@document_fedora.parts.first.descMetadata.identifier.first.start_with?("rtmp") %>
+		<p> <%= @document_fedora.parts.first.descMetadata.description.first %> </p>
+	<% elsif !@document_fedora.parts(:response_format=>:solr).empty? %>
 		<script>
 		 function failed(e) {
 		   // video playback failed - show a message saying why

@@ -26,7 +26,6 @@ require 'cucumber/rails'
 # prefer to use XPath just remove this line and adjust any selectors in your
 # steps to use the XPath syntax.
 Capybara.default_selector = :css
-Capybara.default_wait_time = 30
 
 # By default, any exception happening in your Rails application will bubble up
 # to Cucumber so that your scenario will fail. This is a different from how 
@@ -53,17 +52,4 @@ ActionController::Base.allow_rescue = false
 # ~/.rvm/gems/ruby-1.9.2-p0@global/gems/rack-1.2.1/lib/rack/utils.rb:16: 
 # warning: regexp match /.../n against to UTF-8 string
 $VERBOSE = nil
-
-Before('@selenium') do
-  if ENV["SELENIUM_HEADLESS"] == 'true'
-    require "headless"
-    @headless = Headless.new
-    @headless.start
-  end
-end
-
-After('@selenium') do
-  @headless.destroy if @headless.present?
-end
-
 

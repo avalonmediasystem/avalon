@@ -23,14 +23,13 @@ When /^I upload the file "(.*?)"$/ do |file|
     end
   end
   
-  puts "<< Uploading #{File.expand_path(file)} to server >>"
-  attach_file("Filedata[]", File.expand_path(file))
+  attach_file("Filedata[]", file)
   click_button('Upload File')
 end
 
 Then /^I should see confirmation that it was uploaded/ do
   puts "Waiting #{Capybara.default_wait_time} seconds ..."
-  
+
   within "#file_status" do
     page.should satisfy {
       |page| page.has_content? "Original file uploaded" or 
@@ -49,6 +48,6 @@ end
 # So is this one
 Then /^I should see an error message that the file is not recognized$/ do
   within "#upload_status" do
-    page.should have_content "could not be identified"
+    page.should have_content "format is not recognized"
   end
 end

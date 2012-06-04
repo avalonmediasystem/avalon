@@ -11,15 +11,13 @@
 	<% end %>
 	
 	$('#upload_status').text(text);
-        
-	<% if @video_assets.count > 0 %>
-	  $('#file_status').text('STATUS: <%= @video_assets.first.descMetadata.description[0] %>');
+	$('#file_status').text('STATUS: <%= @video_assets.first.descMetadata.description[0] %>');
 
+	<% if @video_assets.count > 0 %>
 		$('#uploader').html(
 			'<legend>File Upload</legend>'
 			+ '<a href="/<%= @video_assets.first.descMetadata.identifier[0]%>"><%= @video_assets.first.descMetadata.title[0]%></a>'
 			+ '<%= button_to("Delete", "/hydra/assets/#{@video_assets.first.pid}/file_assets/#{@video_assets.first.pid}?container_id=#{@container_id}", :confirm => "Are you sure you want to delete this file?", :method => :delete, :class => "delete-button") %>'
 		);
-
 	<% end %>
 <% end %>
