@@ -3,5 +3,6 @@ class Video < ActiveFedora::Base
 #  include ActiveFedora::FileManagement
 
   has_metadata :name => "descMetadata", :type => VideoDCDatastream
+  has_metadata :name => "testMetadata", type: PbcoreDocument
   has_metadata :name => "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
 end
