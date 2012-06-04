@@ -22,32 +22,41 @@ When /^I upload the file "(.*?)"$/ do |file|
       click_on('Delete')
     end
   end
-  
-  attach_file("Filedata[]", File.expand_path(file))
-  click_button('Upload File')
+  upload_file("Filedata[]", file)  
 end
 
 Then /^I should see confirmation that it was uploaded/ do
-  puts "Waiting #{Capybara.default_wait_time} seconds ..."
-
-  within "#file_status" do
-    page.should satisfy {
-      |page| page.has_content? "Original file uploaded" or 
-        page.has_content?("File is being processed in Matterhorn")
-    }
+  page.wait_until do
+    within "#file_status" do
+      page.should satisfy {
+        |page| page.has_content? "Original file uploaded" or 
+          page.has_content?("File is being processed in Matterhorn")
+      }
+    end
   end
 end
 
 # This is a very brittle test that really needs some refactoring 
 Then /^I should see confirmation that it is (audio|video) content$/ do |format|
-  within "#upload_status" do
-    page.should have_content "appears to be #{format}"
+  page.wait_until do
+    within "#upload_status" do
+      page.should have_content "appears to be #{format}"
+    end
   end
 end
 
 # So is this one
 Then /^I should see an error message that the file is not recognized$/ do
-  within "#upload_status" do
-    page.should have_content "format is not recognized"
+  page.wait_until do
+    within "#upload_status" do
+      page.should have_content "content could not be identified"
+    end
+  end
+end
+
+def upload_file(field, file)
+  page.wait_until do
+    attach_file(field, File.expand_path(file))
+    click_button('Upload File')
   end
 end

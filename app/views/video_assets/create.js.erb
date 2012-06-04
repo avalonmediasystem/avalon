@@ -11,9 +11,10 @@
 	<% end %>
 	
 	$('#upload_status').text(text);
-	$('#file_status').text('STATUS: <%= @video_assets.first.descMetadata.description[0] %>');
-
+	
 	<% if @video_assets.count > 0 %>
+    	$('#file_status').text('STATUS: <%= @video_assets.first.descMetadata.description[0] %>');
+
 		$('#uploader').html(
 			'<legend>File Upload</legend>'
 			+ '<a href="/<%= @video_assets.first.descMetadata.identifier[0]%>"><%= @video_assets.first.descMetadata.title[0]%></a>'
