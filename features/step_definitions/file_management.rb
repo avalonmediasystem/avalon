@@ -23,7 +23,7 @@ When /^I upload the file "(.*?)"$/ do |file|
     end
   end
   
-  attach_file("Filedata[]", file)
+  attach_file("Filedata[]", File.expand_path(file))
   click_button('Upload File')
 end
 
