@@ -15,16 +15,34 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
       xmlns: '', namespace_prefix: nil)
     
     # Contributors, creators, and publishers
+    t.creator(path: "pbcoreCreator/creator", xmlns: '', namespace_prefix: nil)
+    t.pbcore_contributor(path: "pbcoreContributor") {
+      t.contributor(path: "contributor")
+      t.contributor_role(path: "contributorRole")
+    }
+    
     # Coverage information
+    t.pbcore_coverage(path: "pbcoreCoverage") {
+      t.coverage(path: "coverage")
+    }
+    t.spatial(ref: :pbcore_coverage, 
+      path: "pbcoreCoverage[coverageType='spatial']",
+      namespace_prefix: nil)
+    t.temporal(ref: :pbcore_coverage, 
+      path: "pbcoreCoverage[coverageType='temporal']",
+      namespace_prefix: nil)
   end
   
   def self.xml_template
     builder = Nokogiri::XML::Builder.new do |xml|
       xml.pbcoreDescriptionDocument("xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance", "xsi:schemaLocation" => "http://www.pbcore.org/PBCore/PBCoreNamespace.html") {
-        xml.pbcoreIdentifier(annotation: "PID")
+        xml.pbcoreAssetDate(Time.now, dateType: "created")
+        xml.pbcoreIdentifier(annotation: "pid")
         xml.pbcoreTitle(titleType: "main")
         xml.pbcoreDescription
-        xml.pbcoreAssetDate(Time.now, dateType: "created")
+        xml.pbcoreCreator {
+          xml.creator
+        }
       }
     end
     return builder.doc

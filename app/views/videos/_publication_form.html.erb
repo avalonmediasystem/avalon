@@ -10,13 +10,9 @@
   </p>
 
   <p id="doc_field" class="fedora-text-field">
-    <%= fedora_field_label("descMetadata", [:date_of_creation], "Date of creation") %>
-    <%= fedora_text_field(@document_fedora,"descMetadata", [:date_of_creation], :multiple=>false, :required=>false) %>
+    <%= fedora_field_label("descMetadata", [:created_on], "Date of creation") %>
+    <%= fedora_text_field(@document_fedora,"descMetadata", [:created_on], :multiple=>false, :required=>false) %>
   </p>
-
-  <%= hidden_field_tag(:wf_step, params[:wf_step], :id => "publisher_wf_step") %>
-  <%= hidden_field_tag(:new_asset, true, :id => "publisher_new_asset") if params[:new_asset] %>
-  <%= hidden_field_tag(:content_type,"video", :id => "publisher_content_type") %>
 
   <div class="all-steps-actions">
     <button id="all_save_continue" name="all_save_continue">Save and Continue Editing</button>
