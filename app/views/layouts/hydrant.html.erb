@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Hydrant: Audio and Video Repository</title>
+    <%= stylesheet_link_tag "application", media: "all" %>
+    <%= csrf_meta_tags %>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  
+  <body>
+    <div class="container">
+    <header class="span12">
+      <div class="row span12">
+        <div class="logo span2">
+          <img src="images/placeholder-logo.png" alt="[Project logo]" />
+        </div>
+        <div class="banner span6">
+           <h1>Hydrant: Release zero prototype</h1>
+        </div>
+      </div>
+      
+      <div class="row" id="authentication">
+        <%= render "modules/user_management" %>
+      </div>
+    </header>
+      
+      <div class="row">
+        <form action="#" method="POST" id="search_form" class="form-search offset1 span9">
+          <input type="text" name="keywords" class="span6" />
+          <button type="submit" class="btn">search</button>
+        </form>
+      </div>
+      
+      <div class="row"><%= yield %></div>
+    </div>
+    
+    <footer>
+    </footer>
+    
+    <%= javascript_include_tag "application" %>
+  </body>
+</html>
