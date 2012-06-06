@@ -36,12 +36,13 @@
     gem 'coffee-rails', "~> 3.2.1"
     gem 'uglifier', '>= 1.0.3'
     gem 'jquery-rails'
-    gem 'sass-rails', '~> 3.2.3' # moved out of assets to avoid error
     gem 'compass-rails', '~> 1.0.0'
     gem 'compass-susy-plugin', '~> 0.9.0', :require => 'susy'
     
     # For overriding the default interface with Twitter Bootstrap
+    gem 'sass-rails', '~> 3.2.3'
     gem 'twitter-bootstrap-rails', "~> 2.0"
+    gem 'twitter_bootstrap_form_for', "~> 1.0"
     gem 'bootstrap-will_paginate'
   end
 
