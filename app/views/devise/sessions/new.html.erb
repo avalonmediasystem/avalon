@@ -1,17 +1,37 @@
+<% unless devise_error_messages!.empty? %>
+  <div class="alert alert-error"><%= flash[:error] %></div>
+<% end %>
+
 <h2>Sign in</h2>
+<%= form_for(resource, :as => resource_name, :url => session_path(resource_name), 
+  html: {class: "form-horizontal"}) do |f| %>
+  
+  <div class="control-group <% if resource.errors.include?(:email) %>error<% end %>">
+    <div class="control-label">
+      <%= f.label :email %>
+      <% if resource.errors.include?(:email) %><p class="help-block"><%= resource.errors[:email] %></p><% end %>
+    </div>
+    <div class="controls"><%= f.email_field :email %></div>
+  </div>
 
-<%= form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
-  <div><%= f.label :email %><br />
-  <%= f.email_field :email %></div>
-
-  <div><%= f.label :password %><br />
-  <%= f.password_field :password %></div>
+  <div class="control-group <% if resource.errors.include?(:password) %>error<% end %>">
+    <div class="control-label">
+      <%= f.label :password %>
+      <% if resource.errors.include?(:password) %><p class="help-block"><%= resource.errors[:password] %></p><% end %>
+    </div>
+    <div class="controls"><%= f.password_field :password %></div>
+  </div>
 
   <% if devise_mapping.rememberable? -%>
-    <div><%= f.check_box :remember_me %> <%= f.label :remember_me %></div>
+    <div class="control-group">
+      <div class="control-label"><%= f.label :remember_me %></div>
+      <div class="controls"><%= f.check_box :remember_me %></div>
+    </div>
   <% end -%>
 
-  <div><%= f.submit "Sign in" %></div>
+  <div class="control-group">
+    <div class="controls"><%= f.submit "Sign in", class: "btn" %></div>
+  </div>
 <% end %>
 
 <%= render :partial => "devise/shared/links" %>

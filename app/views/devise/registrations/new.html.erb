@@ -1,18 +1,38 @@
-<h2>Sign up</h2>
+<% unless devise_error_messages!.empty? %>
+  <div class="alert alert-error"><%= flash[:error] %></div>
+<% end %>
 
-<%= form_for(resource, :as => resource_name, :url => registration_path(resource_name)) do |f| %>
-  <%= devise_error_messages! %>
+<h2>Create an account</h2>
+<%= form_for(resource, :as => resource_name, 
+  :url => registration_path(resource_name), 
+  html: {class: "form-horizontal"}) do |f| %>
 
-  <div><%= f.label :email %><br />
-  <%= f.email_field :email %></div>
+  <div class="control-group <% if resource.errors.include?(:email) %>error<% end %>">
+    <div class="control-label">
+      <%= f.label :email %>
+      <% if resource.errors.include?(:email) %><p class="help-block"><%= resource.errors[:email] %></p><% end %>
+    </div>
+    <div class="controls"><%= f.email_field :email %></div>
+  </div>
 
-  <div><%= f.label :password %><br />
-  <%= f.password_field :password %></div>
+  <div class="control-group <% if resource.errors.include?(:password) %>error<% end %>">
+    <div class="control-label">
+      <%= f.label :password %>
+      <% if resource.errors.include?(:password) %><p class="help-block"><%= resource.errors[:password] %></p><% end %>
+    </div>
+    <div class="controls"><%= f.password_field :password %></div>
+  </div>
 
-  <div><%= f.label :password_confirmation %><br />
-  <%= f.password_field :password_confirmation %></div>
+  <div class="control-group <% if resource.errors.include?(:password) %>error<% end %>">
+    <div class="control-label">
+      <%= f.label :password_confirmation %>
+    </div>
+     <div class="controls"><%= f.password_field :password_confirmation %></div>
+  </div>
 
-  <div><%= f.submit "Sign up" %></div>
+  <div class="control-group">
+    <div class="controls"><%= f.submit "Sign up", class: "btn" %></div>
+  </div>
 <% end %>
 
 <%= render :partial => "devise/shared/links" %>
