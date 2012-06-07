@@ -1,21 +1,42 @@
-<%= form_tag(hydra_asset_path(:asset_id=>params[:id]), :method => "PUT", :class => "step", id: 'publication_history_form') do -%>
-  <p id="title_field" class="fedora-text-field">
-    <%= fedora_field_label("descMetadata", [:title], "Title<span class=\"required-note\">Required</span>".html_safe) %>
-    <%= fedora_text_field(@document_fedora,"descMetadata", [:title], :multiple=>false, :required=>true) %>
-  </p>
+  	<fieldset id='required_metadata'>
+   		<legend>Basic Metadata</legend>
 
-  <p id="doc_field" class="fedora-text-field">
-    <%= fedora_field_label("descMetadata", [:creator], "Creator<span class=\"required-note\">Required</span>".html_safe) %>
-    <%= fedora_text_field(@document_fedora,"descMetadata", [:creator], :multiple=>false, :required=>true) %>
-  </p>
+<%= form_tag(hydra_asset_path(:asset_id=>params[:id]), :method => "PUT", :class => "step form-horizontal", id: 'publication_history_form') do -%>
+  <div id="title-field" class="control-group">
+    <div class="control-label">
+      <%= label_tag(["descMetadata", :title], "Title") %>
+      <p class="information">Required</p>
+    </div>
+    <div class="controls">
+      <%= text_field_tag ["descMetadata", :title], '', required: true %>
+    </div>
+  </div>
 
-  <p id="doc_field" class="fedora-text-field">
-    <%= fedora_field_label("descMetadata", [:created_on], "Date of creation") %>
-    <%= fedora_text_field(@document_fedora,"descMetadata", [:created_on], :multiple=>false, :required=>false) %>
-  </p>
+  <div id="creator-field" class="control-group">
+    <div class="control-label">
+      <%= label_tag(["descMetadata", :creator], "Creator") %>
+      <p class="information">Required</p>
+    </div>
+    <div class="controls">
+      <%= text_field_tag ["descMetadata", :creator], '', required: true %>
+    </div>
+  </div>
 
-  <div class="all-steps-actions">
-    <button id="all_save_continue" name="all_save_continue">Save and Continue Editing</button>
-    <button id="all_save_finish" name="all_save_finish">Save and Finish</button>
+  <div id="createdon-field" class="control-group">
+    <div class="control-label">
+      <%= label_tag(["descMetadata", :created_on], "Created on") %>
+      <p class="information">Required</p>
+    </div>
+    <div class="controls">
+      <%= text_field_tag ["descMetadata", :created_on], '', required: true %>
+    </div>
+  </div>
+
+  <div class="all-steps-actions control-group">
+    <div class="controls">
+      <button id="all_save_continue" class="btn" name="all_save_continue">Save and Continue Editing</button>
+      <button id="all_save_finish" class="btn" name="all_save_finish">Save and Finish</button>
+    </div>
   </div>
 <%- end -%>
+</fieldset>

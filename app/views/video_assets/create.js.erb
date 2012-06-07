@@ -10,7 +10,8 @@
 	     text = 'The uploaded content could not be identified';
 	<% end %>
 	
-	$('#upload_status').text(text);
+	$('#upload_status p.notice').text(text);
+	$('#upload_status').show();
 	
 	<% if @video_assets.count > 0 %>
     	$('#file_status').text('STATUS: <%= @video_assets.first.descMetadata.description[0] %>');
