@@ -28,7 +28,8 @@
 
   # Added 
   gem "jettywrapper"
-  gem 'rubyhorn', :git => "git://github.com/variations-on-video/rubyhorn.git"
+#  gem 'rubyhorn', :git => "git://github.com/variations-on-video/rubyhorn.git"
+  gem 'rubyhorn'
   gem 'felixwrapper', :git => "git://github.com/cjcolvar/felixwrapper.git"
   gem 'red5wrapper', :git => "git://github.com/cjcolvar/red5wrapper.git"
 
@@ -51,5 +52,6 @@
   group :test do
 	gem 'cucumber-rails', '>=1.2.0', :require=>false
     gem 'rspec-rails', '>=2.9.0'
+    gem 'selenium-webdriver', '>=2.22.2'
     gem 'headless'
   end
