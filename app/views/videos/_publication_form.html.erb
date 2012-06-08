@@ -4,31 +4,31 @@
 <%= form_tag(hydra_asset_path(:asset_id=>params[:id]), :method => "PUT", :class => "step form-horizontal", id: 'publication_history_form') do -%>
   <div id="title-field" class="control-group">
     <div class="control-label">
-      <%= label_tag(["descMetadata", :title], "Title") %>
+      <%= label_tag :title, "Title" %>
       <p class="information">Required</p>
     </div>
     <div class="controls">
-      <%= text_field_tag ["descMetadata", :title], '', required: true %>
+      <%= text_field_tag :title, '', required: true %>
     </div>
   </div>
 
   <div id="creator-field" class="control-group">
     <div class="control-label">
-      <%= label_tag(["descMetadata", :creator], "Creator") %>
+      <%= label_tag :creator, "Creator" %>
       <p class="information">Required</p>
     </div>
     <div class="controls">
-      <%= text_field_tag ["descMetadata", :creator], '', required: true %>
+      <%= text_field_tag :creator, '', required: true %>
     </div>
   </div>
 
   <div id="createdon-field" class="control-group">
     <div class="control-label">
-      <%= label_tag(["descMetadata", :created_on], "Created on") %>
+      <%= label_tag :created_on, "Created on" %>
       <p class="information">Required</p>
     </div>
     <div class="controls">
-      <%= text_field_tag ["descMetadata", :created_on], '', required: true %>
+      <%= text_field_tag :created_on, '', required: true %>
     </div>
   </div>
 

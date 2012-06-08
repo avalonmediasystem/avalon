@@ -1,14 +1,16 @@
+<div id="breadcrumbs offset1" class="row">
+  <ul class="breadcrumb">
+    <li><%= link_to 'Home', catalog_index_path %></li> /
+    <li><strong><%= @document[:id] %></strong></li>
+  </ul>
+</div>
+
 <div id="document" class="<%= controller.action_name == "edit" ? "document_edit" : "document_show" %> <%= "combined_document_view" if session[:scripts] %>">
   <div id="<%= format_pid(@document[:id]) %>">
-    <%= "<h1>Add Your Work</h1>".html_safe if controller.action_name == "edit" %>
+    <h1><%= @document[:id] %></h1>
     <div class="document">
       <%= render_document_partial @document, params["action"] %>
     </div>
   </div>
 </div>
 
-<% if controller.action_name == "edit" %>
-  <div class="delete-asset">
-    <%= button_to("Delete This Item", {:action => :destroy, :controller => :"hydra/assets", :id => @document_fedora.pid}, :confirm => 'Are you sure?', :method => :delete )%>
-  </div>
-<% end %>

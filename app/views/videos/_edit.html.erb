@@ -1,7 +1,24 @@
-<div class="row offset1">
-  <%= render "video_assets/video_assets_form" %> 
-</div>
-<div class="row offset1">
-  <%= render "videos/publication_form" %> 
+<div class="row-fluid">
+  <div class="span3" id="left_column">
+    <%= render "video_assets/upload_status", files: @file_assets %>
+  </div>
+
+  <div id="main_body" class="offset1 span7">
+    <div id="permalink" class="alert alert-success">
+      <h4 class="alert-heading">Permalink</h4>
+      <p>To share this resource with others use the following canonical link</p>
+      <address><%= link_to "http://localhost:3000/catalog/#{params[:id]}", "http://localhost:3000/catalog/#{params[:id]}" %></address>
+    </div>
+
+    <%= render "video_assets/video_assets_form" %> 
+    <%= render "videos/publication_form" %> 
+    
+    <!-- Refactor this into a partial at some point -->
+    <fieldset id="delete_asset">
+      <legend>Withdraw item</legend>
+      <p>If you are certain that this asset is no longer needed it can be withdrawn from the system using the link below. This action cannot be undone without reuploading and describing the content.</p>
+      <%= button_to("Delete This Item", {:action => :destroy, :controller => :"hydra/assets", :id => @document_fedora.pid}, :confirm => 'Are you sure?', :method => :delete, class: "btn" )%>
+    </fieldset>
+  </div>
 </div>
 

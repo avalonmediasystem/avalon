@@ -1,24 +1,10 @@
+	<div id="upload_format" class="alert">
+	  <button class="close" href="#" data-dismiss="alert">x</button>
+	  <h4 class="alert=heading">File content</h4>
+	  <p class="notice"></p>
+	</div>
+	
 	<% if !@document.nil? && editor? %>
-
-    <div id="permalink" class="alert alert-success">
-      <h4 class="alert-heading">Permalink</h4>
-      <p>To share this resource with others use the following canonical link</p>
-      <address><%= link_to "http://localhost:3000/catalog/#{params[:id]}", "http://localhost:3000/catalog/#{params[:id]}" %></address>
-    </div>
-
-    
-	<!-- Run LINT on this later to clean up the formatting -->		
-    <div id="upload_status" class="alert">
-      <button class="close" data-dismiss="alert">×</button>
-      <h4 class="alert-heading">Upload status</h4>
-      <p class="notice"></p>
-    </div>
-          
-    <% unless file_assets.empty? %>
-    <div id="file_status" class="alert">
-        <%= file_assets[0]["description_t"][0] %>
-    </div>
-      <% end %>
     
   	<%- container_content_type_param = defined?(container_content_type) ? "?container_content_type=#{container_content_type}" : "" %>
     
@@ -30,7 +16,7 @@
 	 			<% if can? :edit, @document %>
 	 			<!-- This should be refactored to act more in line with the typical
 	 			     Twitter bootstrap code at some point -->
-	    		<%= button_to("Delete", "/hydra/assets/#{file_assets[0]["id"]}/file_assets/#{file_assets[0]["id"]}?container_id=#{@document[:id]}", :confirm => "Are you sure you want to delete this file?", :method => :delete, :class => "delete-button") %>
+	    		<%= button_to("Delete", "/hydra/assets/#{file_assets[0]["id"]}/file_assets/#{file_assets[0]["id"]}?container_id=#{@document[:id]}", :confirm => "Are you sure you want to delete this file?", :method => :delete, :class => "delete-button btn") %>
 	 			<% end %>
 			<% else %>
 	    	  <%= form_tag(video_assets_path, :remote => true, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
@@ -46,7 +32,7 @@
 	      	    <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
 	      	    <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
 	      	    <div class="control-group">
-	      	      <div class="controls"><%= submit_tag("Upload File", :name=>"upload_file", html: { class: "btn" })%></div>
+	      	      <div class="controls"><%= submit_tag("Upload File", :name=>"upload_file", class: "btn") %></div>
 	      	    </div>
 	    	<%- end -%>
 		<% end %>

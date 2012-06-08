@@ -2,7 +2,7 @@ class Pbcore
   def self.insert_pbcore_namespace(document)
     index = doc.to_s.index("xmlns:xsi")
      new_document = doc.to_s.insert(index.to_i, 'xmlns="http://www.pbcore.org/PBCoreNamespace.html" ')
-    new_doc = Nokogiri::XML(new_document
+    new_doc = Nokogiri::XML(new_document)
   end
   
   def self.validate
