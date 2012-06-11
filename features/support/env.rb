@@ -54,15 +54,12 @@ ActionController::Base.allow_rescue = false
 # warning: regexp match /.../n against to UTF-8 string
 $VERBOSE = nil
 
-require 'selenium-webdriver'
-
-Capybara.default_driver = :selenium
-
 Before('@javascript') do
-  if ENV["SELENIUM_HEADLESS"] == 'true'
-    require "headless"
-    @headless = Headless.new
-    @headless.start
+  if Capybara.current_driver == :selenium
+    require 'headless'
+
+    headless = Headless.new
+    headless.start
   end
 end
 
