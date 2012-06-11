@@ -60,10 +60,18 @@ Before('@javascript') do
 
     headless = Headless.new
     headless.start
+    headless.video.start_capture
   end
 end
 
 After('@javascript') do
-  @headless.destroy if @headless.present?
+  if headless.present? do
+    if scenario.failed?
+      headless.video.stop_and_save("/tmp/#{BUILD_ID}/#{scenario.name.split.join("_")}.mov")
+    else
+      headless.video.stop_and_discard
+    end
+    headless.destroy
+  end
 end
 

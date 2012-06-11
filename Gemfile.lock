@@ -22,11 +22,7 @@ GIT
 
 GIT
   remote: git://github.com/projecthydra/hydra-head.git
-<<<<<<< HEAD
   revision: deb382346bdaf46afd651c5696fe23aeb64b1f95
-=======
-  revision: fbe6a714d77bf0f94541dbedfdb704dce23fd32d
->>>>>>> pbcore
   specs:
     hydra-head (4.0.3)
       RedCloth (= 4.2.9)
@@ -41,21 +37,6 @@ GIT
       rails (~> 3.2.3)
       sanitize
 
-<<<<<<< HEAD
-=======
-GIT
-  remote: git://github.com/variations-on-video/rubyhorn.git
-  revision: c1bae0fda6990e8a0601579d88035620dcc791eb
-  specs:
-    rubyhorn (0.0.2)
-      activesupport
-      json
-      mime-types
-      multipart-post
-      net-http-digest_auth
-      om
-
->>>>>>> pbcore
 GEM
   remote: http://rubygems.org/
   specs:
@@ -148,10 +129,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.3.3)
-<<<<<<< HEAD
-=======
     commonjs (0.2.6)
->>>>>>> pbcore
     compass (0.12.1)
       chunky_png (~> 1.2)
       fssm (>= 0.2.7)
@@ -240,7 +218,7 @@ GEM
     net-ssh (2.5.2)
     net-ssh-gateway (1.1.0)
       net-ssh (>= 1.99.1)
-    nokogiri (1.5.3)
+    nokogiri (1.5.4)
     nori (1.1.0)
     om (1.6.0)
       mediashelf-loggable
@@ -305,7 +283,7 @@ GEM
       nokogiri
       rest-client
       savon
-    rubyhorn (0.0.3)
+    rubyhorn (0.0.4)
       activesupport
       json
       mime-types
@@ -322,11 +300,7 @@ GEM
       railties (~> 3.2.0)
       sass (>= 3.1.10)
       tilt (~> 1.3)
-<<<<<<< HEAD
     savon (1.0.0)
-=======
-    savon (0.9.11)
->>>>>>> pbcore
       akami (~> 1.1)
       builder (>= 2.1.2)
       gyoku (>= 0.4.0)
@@ -360,7 +334,7 @@ GEM
     treetop (1.4.10)
       polyglot
       polyglot (>= 0.3.1)
-    twitter-bootstrap-rails (2.0.9)
+    twitter-bootstrap-rails (2.1.0)
       actionpack (>= 3.1)
       less-rails (~> 2.2.2)
       railties (>= 3.1)
@@ -375,12 +349,8 @@ GEM
     unicode (0.4.2)
     warden (1.1.1)
       rack (>= 1.0)
-<<<<<<< HEAD
     wasabi (2.4.0)
       httpi (~> 1.0)
-=======
-    wasabi (2.2.0)
->>>>>>> pbcore
       nokogiri (>= 1.4.0)
     will_paginate (3.0.3)
     xml-simple (1.1.1)
