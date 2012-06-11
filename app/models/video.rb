@@ -1,7 +1,7 @@
 class Video < ActiveFedora::Base
   include Hydra::ModelMethods
-#  include ActiveFedora::FileManagement
 
-  has_metadata :name => "descMetadata", :type => VideoDCDatastream
-  has_metadata :name => "rightsMetadata", :type => Hydra::Datastream::RightsMetadata
+  has_metadata name: "dcMetadata", type: DublinCoreDocument
+  has_metadata name: "descMetadata", type: PbcoreDocument
+  has_metadata name: "rightsMetadata", type: Hydra::Datastream::RightsMetadata
 end

@@ -1,13 +1,10 @@
+	<div id="upload_format" class="alert">
+	  <button class="close" href="#" data-dismiss="alert">x</button>
+	  <h4 class="alert=heading">File content</h4>
+	  <p class="notice"></p>
+	</div>
+	
 	<% if !@document.nil? && editor? %>
-
-    <div id="upload_status"></div>
-    
-	<!-- Run LINT on this later to clean up the formatting -->		
-    <div id="file_status">
-      <% unless file_assets.empty? %>
-        STATUS: <%= file_assets[0]["description_t"][0] %>
-      <% end %>
-    </div>
     
   	<%- container_content_type_param = defined?(container_content_type) ? "?container_content_type=#{container_content_type}" : "" %>
     
@@ -15,23 +12,29 @@
    		<legend>File Upload</legend>
 
 			<% if !file_assets.empty? %>
-
 	  		<a href="<%=file_assets[0]["identifier_t"][0]%>"><%=file_assets[0]["title_t"][0] %></a>
 	 			<% if can? :edit, @document %>
-	    		<%= button_to("Delete", "/hydra/assets/#{file_assets[0]["id"]}/file_assets/#{file_assets[0]["id"]}?container_id=#{@document[:id]}", :confirm => "Are you sure you want to delete this file?", :method => :delete, :class => "delete-button") %>
+	 			<!-- This should be refactored to act more in line with the typical
+	 			     Twitter bootstrap code at some point -->
+	    		<%= button_to("Delete", "/hydra/assets/#{file_assets[0]["id"]}/file_assets/#{file_assets[0]["id"]}?container_id=#{@document[:id]}", :confirm => "Are you sure you want to delete this file?", :method => :delete, :class => "delete-button btn") %>
 	 			<% end %>
 			<% else %>
-	    	<%= form_tag(video_assets_path, :remote => true, :enctype=>"multipart/form-data", :class=>"uploader-form step") do -%>
-	      	<input type="hidden" name="container_id" value="<%=h container_id %>"/>
-	      	<%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>
-	      	<%= render :partial=>"hydra/file_assets/new"%>
-	      	<%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
-	      	<%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
-	      	<%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
-	      	<p>
-	        	<%= submit_tag("Upload File", :name=>"upload_file")%>
-	      	</p>
+	    	  <%= form_tag(video_assets_path, :remote => true, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
+	      	    <input type="hidden" name="container_id" value="<%=h container_id %>"/>
+	      	    <%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>
+
+                <%- field_tag_options = defined?(uploader_options) ? uploader_options : {:id => nil} %>
+                <div class="uploader-contents">
+                  <div class="control-label">File</div>
+                  <div class="controls"><%= file_field_tag "Filedata[]", field_tag_options %></div>
+                </div>	      	    
+                <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
+	      	    <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
+	      	    <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
+	      	    <div class="control-group">
+	      	      <div class="controls"><%= submit_tag("Upload File", :name=>"upload_file", class: "btn") %></div>
+	      	    </div>
 	    	<%- end -%>
-			<% end %>
+		<% end %>
   	</fieldset>
 	<% end %>

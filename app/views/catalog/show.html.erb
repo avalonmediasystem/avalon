@@ -1,0 +1,16 @@
+<div id="breadcrumbs offset1" class="row">
+  <ul class="breadcrumb">
+    <li><%= link_to 'Home', catalog_index_path %></li> /
+    <li><strong><%= @document[:id] %></strong></li>
+  </ul>
+</div>
+
+<div id="document" class="<%= controller.action_name == "edit" ? "document_edit" : "document_show" %> <%= "combined_document_view" if session[:scripts] %>">
+  <div id="<%= format_pid(@document[:id]) %>">
+    <h1><%= @document[:id] %></h1>
+    <div class="document">
+      <%= render_document_partial @document, params["action"] %>
+    </div>
+  </div>
+</div>
+

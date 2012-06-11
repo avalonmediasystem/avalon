@@ -4,7 +4,7 @@ end
 
 Then /I should see a simple metadata form/ do 
   test_for_field('title')
-  test_for_field('date_of_creation')
+  test_for_field('created_on')
   test_for_field('creator')
 end
 
@@ -15,7 +15,7 @@ When /^I edit "([^"]*)"$/ do |id|
   within ('#publication_history_form') do  
     fill_in 'creator', with: 'Rake task'
     fill_in 'title', with: 'Cucumber Test Record'
-    fill_in 'date_of_creation', with: '2012.04.21'
+    fill_in 'created_on', with: '2012.04.21'
     click_on 'Continue'
   end
 end
