@@ -26,7 +26,8 @@ require 'cucumber/rails'
 # prefer to use XPath just remove this line and adjust any selectors in your
 # steps to use the XPath syntax.
 Capybara.default_selector = :css
-Capybara.default_wait_time = 45
+Capybara.default_wait_time = 30
+Capybara.javascript_driver = :webkit
 
 # By default, any exception happening in your Rails application will bubble up
 # to Cucumber so that your scenario will fail. This is a different from how 
@@ -53,25 +54,4 @@ ActionController::Base.allow_rescue = false
 # ~/.rvm/gems/ruby-1.9.2-p0@global/gems/rack-1.2.1/lib/rack/utils.rb:16: 
 # warning: regexp match /.../n against to UTF-8 string
 $VERBOSE = nil
-
-Before('@javascript') do
-  if Capybara.current_driver == :selenium
-    require 'headless'
-
-    headless = Headless.new
-    headless.start
-    headless.video.start_capture
-  end
-end
-
-After('@javascript') do
-  if headless.present?
-    if scenario.failed?
-      headless.video.stop_and_save("/tmp/#{BUILD_ID}/#{scenario.name.split.join("_")}.mov")
-    else
-      headless.video.stop_and_discard
-    end
-    headless.destroy
-  end
-end
 
