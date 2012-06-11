@@ -65,7 +65,7 @@ Before('@javascript') do
 end
 
 After('@javascript') do
-  if headless.present? do
+  if headless.present?
     if scenario.failed?
       headless.video.stop_and_save("/tmp/#{BUILD_ID}/#{scenario.name.split.join("_")}.mov")
     else
