@@ -7,7 +7,7 @@
     <div id="permalink" class="alert alert-success">
       <h4 class="alert-heading">Permalink</h4>
       <p>To share this resource with others use the following canonical link</p>
-      <address><%= link_to "http://localhost:3000/catalog/#{params[:id]}", "http://localhost:3000/catalog/#{params[:id]}" %></address>
+      <address><%= link_to catalog_url(params[:id]), catalog_url(params[:id]) %></address>
     </div>
 
     <%= render "video_assets/video_assets_form" %> 
