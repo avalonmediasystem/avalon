@@ -3,8 +3,8 @@
   gem 'rails', '~>3.2.3'
 
   gem 'blacklight', '~> 3.4.1'
-#  gem 'hydra-head', '~> 4.0.0'
-  gem 'hydra-head', :git=>"git://github.com/projecthydra/hydra-head.git"
+  gem 'hydra-head', '~> 4.0.0'
+  #gem 'hydra-head', :git=>"git://github.com/projecthydra/hydra-head.git"
 
 	platforms :jruby do
   	gem 'jruby-openssl'
