@@ -3,15 +3,12 @@
   <h4 class="alert-heading">Conversion status</h4>
   <p id="file_status">
     <% unless files.empty? %>
-      <ul class="nobullet status">
+      <dl class="nobullet status">
         <% files.each do |file| %>
-        <li>
-          <strong><%= file["title_t"][0] %></strong>
-          <br />
-          <%= file["description_t"][0] %>
-        </li>
+        <dt><%= file["title_t"][0] %></dt>
+        <dd><%= file["description_t"][0] %></dd>
         <% end %>
-      </ul>
+      </dl>
     <% else %>
       No file(s) have been loaded
     <% end %>  

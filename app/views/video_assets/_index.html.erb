@@ -1,7 +1,8 @@
-	<div id="upload_format" class="alert">
+	
+    <div id="upload_format" class="alert <%- if flash[:upload] %>visible<% end %>">
 	  <button class="close" href="#" data-dismiss="alert">x</button>
 	  <h4 class="alert=heading">File content</h4>
-	  <p class="notice"></p>
+	  <p class="notice"><%- if flash[:upload] %><%= flash[:upload] %><% end %></p>
 	</div>
 	
 	<% if !@document.nil? && editor? %>

@@ -14,8 +14,9 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery-fileupload
 //= require twitter/bootstrap
-//= require jquery.remotipart
+// require jquery.remotipart
 //
 // Required by Hydra
 //= require 'jquery.ui.datepicker.js'      

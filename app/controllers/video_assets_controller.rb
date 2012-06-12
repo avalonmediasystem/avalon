@@ -50,12 +50,21 @@ class VideoAssetsController < ApplicationController
     end
     
     respond_to do |format|
-      if !params[:container_id].nil?
-      	format.html { redirect_to :controller => "catalog", :action => "edit", :id => params[:container_id] }
-      	format.js
+      flash[:upload] = create_upload_notice(@upload_format)
+      puts "<< #{flash[:upload]} >>"
+      
+      unless params[:container_id].nil?
+      	format.html { 
+  puts "<< HTML one >>"
+  redirect_to :controller => "catalog", :action => "edit", :id => params[:container_id] }
+      	format.js {
+      	  puts "<< Javascript one >>"
+      	}
       else 
-        format.html { redirect_to :controller => "catalog", :action => "index"}
-        format.js 
+        format.html { 
+  puts "<< HTML Two >>"
+  redirect_to :controller => "catalog", :action => "index"}
+        format.js { puts "<< Javascript two >>" }
       end
     end
   end
@@ -152,5 +161,17 @@ class VideoAssetsController < ApplicationController
     format = 'audio' if audio_extensions.include?(extension)
 
     return format
+  end
+  
+  def create_upload_notice(format) 
+    case format
+	   when /^audio$/
+	     text = 'The uploaded content appears to be audio';
+	   when /^video$/ 
+	     text = 'The uploaded content appears to be video';
+	   else
+	     text = 'The uploaded content could not be identified';
+	end 
+	return text
   end
 end

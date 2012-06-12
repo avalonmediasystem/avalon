@@ -1,16 +1,4 @@
-<%= remotipart_response do %>  
-	/* Update the status to reflect the state of the current video and as a next
-	     step enable the basic metadata form */
-	<% case @upload_format
-	   when /^audio$/ %>
-	     text = 'The uploaded content appears to be audio';
-	<% when /^video$/ %>
-	     text = 'The uploaded content appears to be video';
-	<% else %>
-	     text = 'The uploaded content could not be identified';
-	<% end %>
-	
-	$('#upload_format p.notice').text(text);
+$('#upload_format p.notice').text(text);
 	$('#upload_format').fadeIn(5);
 	
 	<% if @video_assets.count > 0 %>
@@ -22,4 +10,4 @@
 			+ '<%= button_to("Delete", "/hydra/assets/#{@video_assets.first.pid}/file_assets/#{@video_assets.first.pid}?container_id=#{@container_id}", :confirm => "Are you sure you want to delete this file?", :method => :delete, :class => "delete-button") %>'
 		);
 	<% end %>
-<% end %>
+

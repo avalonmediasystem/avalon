@@ -24,7 +24,8 @@
   gem 'devise'
 
 	# Needed for AJAX file upload
-	gem 'remotipart'
+	#gem 'remotipart'
+        gem 'jquery-fileupload-rails', '>= 0.3'
 
   # Added 
   gem "jettywrapper"

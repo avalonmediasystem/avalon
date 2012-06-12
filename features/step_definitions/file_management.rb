@@ -31,8 +31,9 @@ When /^I upload the file "(.*?)" with MIME type "(.*)"$/ do |file, mime_type|
 end
 
 Then /^I should see confirmation that it was uploaded/ do
+  sleep 15
   page.wait_until do
-    within "#file_status" do
+    within "#workflow_status" do
       page.should satisfy {
         |page| page.has_content? "Original file uploaded" or 
           page.has_content? "File is being processed in Matterhorn"
