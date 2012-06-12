@@ -14,8 +14,9 @@ class VideoAssetsController < ApplicationController
   def create
     audio_types = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav"]
     video_types = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime"]
-    wrong_format = false
+    unknown_types = ["application/octet-stream"]
     
+    wrong_format = false    
     @upload_format = 'other'
     
     if params.has_key?(:Filedata) and params.has_key?(:original)
@@ -25,9 +26,16 @@ class VideoAssetsController < ApplicationController
   		  @upload_format = 'video' if video_types.include?(file.content_type)
   		  @upload_format = 'audio' if audio_types.include?(file.content_type)
   		  
-  		  if !video_types.include?(file.content_type) && !audio_types.include?(file.content_type)
+  		  # If the content type cannot be inferred from the MIME type fall back on the
+  		  # list of unknown types. This is different than a generic fallback because it
+  		  # is skipped for known invalid extensions like application/pdf
+  		  @upload_format = determine_format_by_extension(file) if unknown_types.include?(file.content_type)
+  		  puts "<< Uploaded file appears to be #{@upload_format} >>"
+  		  
+  		  if 'unknown' == @upload_format
   	        wrong_format = true
   	      break
+  	      
   		  end
   		  
   			@video_assets << video_asset = saveOriginalToHydrant(file)
@@ -51,6 +59,7 @@ class VideoAssetsController < ApplicationController
       end
     end
   end
+  
   
 	def saveOriginalToHydrant file
 		public_dir_path = "public/"
@@ -126,4 +135,22 @@ class VideoAssetsController < ApplicationController
 		
 		return video_asset		
 	end
+	
+  protected
+  def determine_format_by_extension(file) 
+    audio_extensions = ["mp3", "wav", "aac", "flac"]
+    video_extensions = ["mpeg4", "mp4", "avi", "mov"]
+
+    puts "<< Using fallback method to guess the format >>"
+
+    extension = file.original_filename.split(".").last.downcase
+    puts "<< File extension is #{extension} >>"
+    
+    # Default to unknown
+    format = 'unknown'
+    format = 'video' if video_extensions.include?(extension)
+    format = 'audio' if audio_extensions.include?(extension)
+
+    return format
+  end
 end

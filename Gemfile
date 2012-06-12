@@ -58,5 +58,6 @@
 	gem 'cucumber-rails', '>=1.2.0', :require=>false
     gem 'rspec-rails', '>=2.9.0'
     gem 'capybara-webkit'
+    gem 'capybara-screenshot'
     gem 'mime-types', ">=1.1"
   end
