@@ -55,16 +55,14 @@ ActionController::Base.allow_rescue = false
 # warning: regexp match /.../n against to UTF-8 string
 $VERBOSE = nil
 
-Before(@javascript) do
   if ENV["USE_HEADLESS"] == 'true'
     require 'headless'
 
     headless = Headless.new
     headless.start
   end
-end
 
-After(@javascript) do
+at_exit do
   if ENV["USE_HEADLESS"] == "true" and headless.present?
     headless.destroy
   end
