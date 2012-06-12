@@ -30,8 +30,8 @@ Capybara.default_selector = :css
 Capybara.default_wait_time = 30
 Capybara.javascript_driver = :webkit
 
-Before do
-  
+# Set up headless once instead of for every single feature
+AfterConfiguration do
   if "true" == ENV["USE_HEADLESS"]
 
     headless = Headless.new
@@ -40,7 +40,8 @@ Before do
   end
 end
 
-After do
+# Shut down headless when you are done
+at_exit do
     puts "<< Tearing down the headless instance >>"
     if ENV["USE_HEADLESS"] == "true" and @headless.present?
       puts "<< Destroying headless X server >>"
