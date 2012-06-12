@@ -8,8 +8,6 @@ require 'rspec/autorun'
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
-Capybara.default_wait_time = 15
-
 RSpec.configure do |config|
   # ## Mock Framework
   #
@@ -31,4 +29,18 @@ RSpec.configure do |config|
   # automatically. This will be the default behavior in future versions of
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
+
+  config.befure(:suite) do
+    require 'headless'
+
+    headless = Headless.new
+    headless.start
+  end
+
+
+  config.after(:suite) do
+    if ENV["USE_HEADLESS"] == "true" and headless.present?
+      headless.destroy
+    end
+  end
 end

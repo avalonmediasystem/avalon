@@ -54,16 +54,3 @@ ActionController::Base.allow_rescue = false
 # ~/.rvm/gems/ruby-1.9.2-p0@global/gems/rack-1.2.1/lib/rack/utils.rb:16: 
 # warning: regexp match /.../n against to UTF-8 string
 $VERBOSE = nil
-
-  if ENV["USE_HEADLESS"] == 'true'
-    require 'headless'
-
-    headless = Headless.new
-    headless.start
-  end
-
-at_exit do
-  if ENV["USE_HEADLESS"] == "true" and headless.present?
-    headless.destroy
-  end
-end
