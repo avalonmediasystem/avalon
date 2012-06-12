@@ -30,16 +30,19 @@ RSpec.configure do |config|
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
 
-  config.befure(:suite) do
+  config.before(:suite) do
     require 'headless'
 
     headless = Headless.new
     headless.start
+    
+    puts "<< headless now running on #{headless.display} >>"
   end
 
 
   config.after(:suite) do
     if ENV["USE_HEADLESS"] == "true" and headless.present?
+      puts "<< headless now running on #{headless.display} >>"
       headless.destroy
     end
   end

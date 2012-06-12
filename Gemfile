@@ -61,4 +61,5 @@
     gem 'capybara-webkit'
     gem 'capybara-screenshot'
     gem 'mime-types', ">=1.1"
+    gem "headless"
   end

@@ -20,6 +20,7 @@
 #
 
 require 'cucumber/rails'
+require 'headless'
 
 # Capybara defaults to XPath selectors rather than Webrat's default of CSS3. In
 # order to ease the transition to Capybara we set the default here. If you'd
@@ -28,6 +29,25 @@ require 'cucumber/rails'
 Capybara.default_selector = :css
 Capybara.default_wait_time = 30
 Capybara.javascript_driver = :webkit
+
+Before do
+  puts "<< Setting up headless? #{ENV["USE_HEADLESS"]} >>"
+  
+  if "true" == ENV["USE_HEADLESS"]
+
+    headless = Headless.new
+    headless.start
+    puts "<< headless now running on #{headless.display} >>"
+  end
+end
+
+After do
+    puts "<< Tearing down the headless instance >>"
+    if ENV["USE_HEADLESS"] == "true" and @headless.present?
+      puts "<< headless now running on #{headless.display} >>"
+      headless.destroy
+    end
+  end
 
 # By default, any exception happening in your Rails application will bubble up
 # to Cucumber so that your scenario will fail. This is a different from how 
