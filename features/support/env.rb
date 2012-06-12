@@ -31,20 +31,19 @@ Capybara.default_wait_time = 30
 Capybara.javascript_driver = :webkit
 
 Before do
-  puts "<< Setting up headless? #{ENV["USE_HEADLESS"]} >>"
   
   if "true" == ENV["USE_HEADLESS"]
 
     headless = Headless.new
     headless.start
-    puts "<< headless now running on #{headless.display} >>"
+    puts "<< Headless X server now running on #{headless.display} >>"
   end
 end
 
 After do
     puts "<< Tearing down the headless instance >>"
     if ENV["USE_HEADLESS"] == "true" and @headless.present?
-      puts "<< headless now running on #{headless.display} >>"
+      puts "<< Destroying headless X server >>"
       headless.destroy
     end
   end

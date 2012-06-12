@@ -55,16 +55,12 @@ class VideoAssetsController < ApplicationController
       
       unless params[:container_id].nil?
       	format.html { 
-  puts "<< HTML one >>"
   redirect_to :controller => "catalog", :action => "edit", :id => params[:container_id] }
-      	format.js {
-      	  puts "<< Javascript one >>"
-      	}
+      	format.js { }
       else 
         format.html { 
-  puts "<< HTML Two >>"
   redirect_to :controller => "catalog", :action => "index"}
-        format.js { puts "<< Javascript two >>" }
+        format.js { }
       end
     end
   end
