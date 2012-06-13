@@ -1,14 +1,18 @@
   	<fieldset id='required_metadata'>
    		<legend>Basic Metadata</legend>
 
-<%= form_tag(hydra_asset_path(:asset_id=>params[:id]), :method => "PUT", :class => "step form-horizontal", id: 'publication_history_form') do -%>
+<%= form_tag video_path(asset_id: params[:id]), 
+  :method => "PUT", 
+  :class => "form-horizontal", 
+  id: 'publication_history_form' do -%>
+  <%= hidden_field_tag 'pid', @document_fedora.pid %>
   <div id="title-field" class="control-group">
     <div class="control-label">
       <%= label_tag :title, "Title" %>
       <p class="information">Required</p>
     </div>
     <div class="controls">
-      <%= text_field_tag :title, '', required: true %>
+      <%= text_field_tag :title, @document_fedora.descMetadata.title, required: true %>
     </div>
   </div>
 
@@ -18,7 +22,7 @@
       <p class="information">Required</p>
     </div>
     <div class="controls">
-      <%= text_field_tag :creator, '', required: true %>
+      <%= text_field_tag :creator, @document_fedora.descMetadata.creator, required: true %>
     </div>
   </div>
 
@@ -28,7 +32,7 @@
       <p class="information">Required</p>
     </div>
     <div class="controls">
-      <%= text_field_tag :created_on, '', required: true %>
+      <%= text_field_tag :created_on, @document_fedora.descMetadata.created_on, required: true %>
     </div>
   </div>
 

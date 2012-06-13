@@ -6,11 +6,11 @@ Hydrant::Application.routes.draw do
 
   devise_for :users
 
-
   # My routes go here
   # Routes for subjects and pbcore controller
 #  resources :assets do
     resources :video_assets
+    resources :videos, only: [:create, :update]
 #  end
 
 
