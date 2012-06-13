@@ -22,7 +22,7 @@ class VideoAssetsController < ApplicationController
     if params.has_key?(:Filedata) and params.has_key?(:original)
       @video_assets = []
   		params[:Filedata].each do |file|
-                  puts "<< MIME type is #{file.content_type} >>"
+          puts "<< MIME type is #{file.content_type} >>"
   		  @upload_format = 'video' if video_types.include?(file.content_type)
   		  @upload_format = 'audio' if audio_types.include?(file.content_type)
   		  

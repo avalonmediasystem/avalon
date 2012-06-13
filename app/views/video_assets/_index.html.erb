@@ -13,7 +13,7 @@
    		<legend>File Upload</legend>
 
 			<% if !file_assets.empty? %>
-	  		<a href="<%=file_assets[0]["identifier_t"][0]%>"><%=file_assets[0]["title_t"][0] %></a>
+	  		<a href="<%=file_assets[0]["identifier_t"][0]%>"><%= file_assets[0]["title_t"][0] %> (<strong>File size</strong>)</a>
 	 			<% if can? :edit, @document %>
 	 			<!-- This should be refactored to act more in line with the typical
 	 			     Twitter bootstrap code at some point -->

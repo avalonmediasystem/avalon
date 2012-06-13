@@ -4,12 +4,11 @@ class VideosController < ApplicationController
   def create
     puts "<< Making a new Video object with a PBCore datastream >>"
     @video = Video.new
-
-    @video.descMetadata.title = "Testing"
-    @video.descMetadata.creator = "Phuong Dinh"
-    @video.descMetadata.created_on = Time.now
+    @video.descMetadata.title = params[:title]
+    @video.descMetadata.creator = params[:creator]
+    @video.descMetadata.created_on = params[:created_on]
     @video.save
-
+    
     redirect_to hydra_asset_path(id: params[:pid])
   end
 

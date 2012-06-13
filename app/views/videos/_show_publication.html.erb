@@ -1,8 +1,8 @@
 <div id="contributors_list">
 <fieldset><legend>Date of creation</legend>
 <div id="creation_date" class="browse_value">
-<% unless @document_fedora.descMetadata.date_of_creation.empty? %>
-  <%= @document_fedora.descMetadata.date_of_creation.first %>
+<% unless @document_fedora.descMetadata.created_on.empty? %>
+  <%= @document_fedora.descMetadata.created_on.first %>
 <% else -%>
   <em>No date specified</em>
 <% end -%>
