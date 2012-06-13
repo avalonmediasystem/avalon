@@ -1,6 +1,7 @@
 <div class="row-fluid">
   <div class="span3" id="left_column">
     <%= render "video_assets/upload_status", files: @file_assets %>
+    <%= render "videos/withdraw_object", document: @document %>
   </div>
 
   <div id="main_body" class="offset1 span7">
@@ -12,13 +13,6 @@
 
     <%= render "video_assets/video_assets_form" %> 
     <%= render "videos/publication_form" %> 
-    
-    <!-- Refactor this into a partial at some point -->
-    <fieldset id="delete_asset">
-      <legend>Withdraw item</legend>
-      <p>If you are certain that this asset is no longer needed it can be withdrawn from the system using the link below. This action cannot be undone without reuploading and describing the content.</p>
-      <%= button_to("Delete This Item", {:action => :destroy, :controller => :"hydra/assets", :id => @document_fedora.pid}, :confirm => 'Are you sure?', :method => :delete, class: "btn" )%>
-    </fieldset>
   </div>
 </div>
 

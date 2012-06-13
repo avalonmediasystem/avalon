@@ -1,0 +1,6 @@
+    <!-- Refactor this into a partial at some point -->
+    <fieldset id="delete_asset">
+      <legend>Withdraw item</legend>
+      <p>If you are certain that this asset is no longer needed it can be withdrawn from the system using the link below. This action cannot be undone without reuploading and describing the content.</p>
+      <%= button_to("Delete This Item", {:action => :destroy, :controller => :"hydra/assets", :id => @document_fedora.pid}, :confirm => 'Are you sure?', :method => :delete, class: "btn" )%>
+    </fieldset>
