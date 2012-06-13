@@ -4,7 +4,7 @@ require 'rubyhorn'
 
 class VideoAssetsController < ApplicationController
   include Hydra::FileAssets
-
+  
   skip_before_filter :verify_authenticity_token, :only => [:create]
 
   # Creates and Saves a File Asset to contain the the Uploaded file 

@@ -2,7 +2,7 @@
 <div id="workflow_status" class="alert">
   <h4 class="alert-heading">Conversion status</h4>
   <p id="file_status">
-    <% unless files.empty? %>
+    <% unless @file_assets.empty? %>
       <dl class="nobullet status">
         <% files.each do |file| %>
         <dt><%= file["title_t"][0] %></dt>
