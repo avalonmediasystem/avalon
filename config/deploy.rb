@@ -49,7 +49,7 @@ namespace :deploy do
 
   namespace :bundle do
     task :install, :roles => :app do
-      run "cd #{current_release}; bundle install"
+      run "cd #{current_release}; QMAKE=/usr/bin/qmake-qt4 bundle install"
     end
   end
 
