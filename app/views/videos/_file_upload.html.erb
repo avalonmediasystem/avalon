@@ -21,6 +21,8 @@
 		<% else %>
 	      <%= form_tag(video_assets_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
 	      <input type="hidden" name="container_id" value="<%=h container_id %>"/>
+	      <input type="hidden" name="step" value="file_upload"/>
+	      
 	      <%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>
 
           <%- field_tag_options = defined?(uploader_options) ? uploader_options : {:id => nil} %>
@@ -40,6 +42,12 @@
 	     <% end %>
   	  </fieldset>
 <% end %>
+
+<div class="row-fluid">
+  <div class="span8">
+    <%= link_to "Continue to required metadata", edit_video_path(@video, step: 'basic_metadata'), class: "btn" %>
+  </div>
+</div>
 
 <% content_for :page_scripts do %>
 <script>

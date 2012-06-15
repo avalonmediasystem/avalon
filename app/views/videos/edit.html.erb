@@ -16,13 +16,11 @@
    # richer version down the road might show all at once and use some clever
    # Javascript to do accordion style on the fly switching. For now keep it 
    # simple and without any extra functionality %>
-   <h1><%= params[:step] %></h1>
-
    <% case params[:step]
      when 'file_upload' -%>
        <%= render 'file_upload' %>
-   <% when 'required_metadata' %>
-       <%= render 'required_metadata' %>
+   <% when 'basic_metadata' %>
+       <%= render 'basic_metadata' %>
    <% when 'optional_metadata' %>
        <%= render 'optional_metadata' %>
    <% else %>

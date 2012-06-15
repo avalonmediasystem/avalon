@@ -1,0 +1,54 @@
+<fieldset id='basic_metadata'>
+  <legend>Basic Metadata</legend>
+
+  <% if flash[:errors] %>
+  <div class="alert alert-error"><%= flash[:errors] %></div
+  <% end %>
+  
+<%= form_tag video_path(params[:id]), 
+  :method => "put", 
+  :class => "form-horizontal", 
+  id: 'basic_metadata_form' do -%>
+  <%= hidden_field_tag 'pid', @document_fedora.pid %>
+  <%= hidden_field_tag 'step', 'basic_metadata' %>
+  
+  <div id="title-field" class="control-group">
+    <div class="control-label">
+      <%= label_tag :title, "Title" %>
+      <p class="information">Required</p>
+    </div>
+    <div class="controls">
+      <%= text_field_tag :title, @document_fedora.descMetadata.title, required: true %>
+    </div>
+  </div>
+
+  <div id="creator-field" class="control-group">
+    <div class="control-label">
+      <%= label_tag :creator, "Creator" %>
+      <p class="information">Required</p>
+    </div>
+    <div class="controls">
+      <%= text_field_tag :creator, @document_fedora.descMetadata.creator, required: true %>
+    </div>
+  </div>
+
+  <div id="createdon-field" class="control-group">
+    <div class="control-label">
+      <%= label_tag :created_on, "Created on" %>
+      <p class="information">Required</p>
+    </div>
+    <div class="controls">
+      <%= text_field_tag :created_on, @document_fedora.descMetadata.created_on, required: true %>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <div class="controls">
+      <%= link_to "Back to file upload", 
+          video_path(@video, step: 'file_upload'), 
+          id: "previous_screen", class: "btn", name: "previous_screen" %>
+      <%= submit_tag "Save and finish", class: 'btn', id: 'next_screen' %>
+    </div>
+  </div>
+<%- end -%>
+</fieldset>

@@ -51,16 +51,14 @@ class VideoAssetsController < ApplicationController
     
     respond_to do |format|
       flash[:upload] = create_upload_notice(@upload_format)
-      puts "<< #{flash[:upload]} >>"
       
       unless params[:container_id].nil?
       	format.html { 
-          redirect_to edit_video_path(params[:container_id]), step: 'metadata' }
+          redirect_to edit_video_path(params[:container_id], step: 'file-upload') }
       	format.js { }
       else 
         format.html { 
-  redirect_to edit_video_path(params[:container_id]),
-    step: 'file-upload'}
+  redirect_to edit_video_path(params[:container_id], step: 'file-upload') }
         format.js { }
       end
     end
@@ -101,8 +99,8 @@ class VideoAssetsController < ApplicationController
   def sendOriginalToMatterhorn(video_asset, file)
     args = {"title" => video_asset.pid , "flavor" => "presenter/source", "workflow" => "hydrant", "filename" => video_asset.label}
     mp = Rubyhorn.client.addMediaPackage(file, args)
-    flash[:notice] = "The uploaded file has been sent to Matterhorn for processing."
-    video_asset.description = "File is being processed in Matterhorn"
+    flash[:notice] = "The uploaded file has been sent for processing."
+    video_asset.description = "File is being processed"
     video_asset
   end
 
