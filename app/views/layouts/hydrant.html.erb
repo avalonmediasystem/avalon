@@ -25,10 +25,8 @@
 
       <!-- TO DO : Relocate the breadcrumbs to be here on every page except for the
                    home page -->
-      <div class="row-fluid" id="global_tools">
-        <%= render "modules/add_new_resource" %>
-        <%= render "modules/user_management" %>
-      </div>
+      <%= render "modules/global_navigation" %>
+      <%= render "modules/user_management" %>
 
       <div class="row-fluid"><%= yield %></div>
     

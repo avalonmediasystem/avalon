@@ -1,9 +1,21 @@
 class VideosController < ApplicationController
   include Hydra::FileAssets
-  before_filter :load_fedora_document, :only=>[:show,:edit]
+  
+  before_filter :load_fedora_document, :only=>[:show, :edit]
+  before_filter :load_document
+
+  # These before_filters apply the hydra access controls
+  #before_filter :enforce_access_controls
+  #before_filter :enforce_viewing_context_for_show_requests, :only=>:show
+  # This applies appropriate access controls to all solr queries
+  #CatalogController.solr_search_params_logic << :add_access_controls_to_solr_params
+  # This filters out objects that you want to exclude from search results, like FileAssets
+  #CatalogController.solr_search_params_logic << :exclude_unwanted_models
+
 
   def new
     @video = Video.new
+    apply_depositor_metadata(@video)
     @video.save
     
     redirect_to edit_video_path(@video), step: 'file_upload'

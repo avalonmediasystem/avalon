@@ -55,11 +55,12 @@ class VideoAssetsController < ApplicationController
       
       unless params[:container_id].nil?
       	format.html { 
-  redirect_to :controller => "catalog", :action => "edit", :id => params[:container_id] }
+          redirect_to edit_video_path(params[:container_id]), step: 'metadata' }
       	format.js { }
       else 
         format.html { 
-  redirect_to :controller => "catalog", :action => "index"}
+  redirect_to edit_video_path(params[:container_id]),
+    step: 'file-upload'}
         format.js { }
       end
     end
