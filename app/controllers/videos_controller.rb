@@ -66,4 +66,10 @@ class VideosController < ApplicationController
   def show
     @video = Video.find(params[:id])
   end
+
+  def destroy
+    @video = Video.find(params[:id]).delete
+    flash[:notice] = "#{params[:id]} has been withdrawn from the system"
+    redirect_to root_path 
+  end
 end
