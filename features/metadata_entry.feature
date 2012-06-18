@@ -8,8 +8,7 @@ Feature: Check basic metadata fields (form)
 
   Scenario: Basic metadata fields are present in the workflow
     Given I am logged in as "archivist1@example.com"
-    When I create a new video
-    And I go to the "basic metadata" step
+    And I go to the "basic metadata" step for "hydrant:basic-metadata"
     Then I should see only required fields
     
   # Temporarily disabled until the 'browse' link comes back next week
