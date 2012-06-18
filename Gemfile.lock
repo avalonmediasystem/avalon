@@ -20,6 +20,18 @@ GIT
       logger
       mediashelf-loggable
 
+GIT
+  remote: git://github.com/variations-on-video/rubyhorn.git
+  revision: b15041a8beb82652084e02fec6d1074bc4ce3eda
+  specs:
+    rubyhorn (0.0.4)
+      activesupport
+      json
+      mime-types
+      multipart-post
+      net-http-digest_auth
+      om
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -282,13 +294,6 @@ GEM
       nokogiri
       rest-client
       savon
-    rubyhorn (0.0.4)
-      activesupport
-      json
-      mime-types
-      multipart-post
-      net-http-digest_auth
-      om
     rubyzip (0.9.8)
     rvm-capistrano (1.2.2)
       capistrano (>= 2.0.0)
@@ -385,7 +390,7 @@ DEPENDENCIES
   rails (~> 3.2.3)
   red5wrapper!
   rspec-rails (>= 2.9.0)
-  rubyhorn
+  rubyhorn!
   rvm-capistrano
   sass-rails (~> 3.2.3)
   sqlite3

@@ -29,8 +29,8 @@
 
   # Added 
   gem "jettywrapper"
-#  gem 'rubyhorn', :git => "git://github.com/variations-on-video/rubyhorn.git"
-  gem 'rubyhorn'
+  gem 'rubyhorn', :git => "git://github.com/variations-on-video/rubyhorn.git"
+#  gem 'rubyhorn'
   gem 'felixwrapper', :git => "git://github.com/cjcolvar/felixwrapper.git"
   gem 'red5wrapper', :git => "git://github.com/cjcolvar/red5wrapper.git"
 

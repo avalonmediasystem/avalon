@@ -47,7 +47,24 @@ at_exit do
       puts "<< Destroying headless X server >>"
       headless.destroy
     end
-  end
+
+    # Stop any workflows that have been instatiated or started running due to these tests
+    # Make sure to only run tests against a test instance of Matterhorn and not production!!!
+    ids = []
+    workflows_json = Rubyhorn.client.instances_json({"state" => "RUNNING"})
+    begin
+      workflows_json["workflows"]["workflow"].each {|w| ids << w["id"]}
+    rescue Exception
+      puts "<< Exception caught when getting running workflows from Matterhorn >>"
+    end
+    workflows_json = Rubyhorn.client.instances_json({"state" => "INSTANTIATED"})
+    begin
+      workflows_json["workflows"]["workflow"].each {|w| ids << w["id"]}
+    rescue Exception
+      puts "<< Exception caught when getting instantiated workflows from Matterhorn >>"
+    end
+    ids.each {|id| Rubyhorn.client.stop id}
+end
 
 # By default, any exception happening in your Rails application will bubble up
 # to Cucumber so that your scenario will fail. This is a different from how 
