@@ -9,9 +9,12 @@ class VideosController < ApplicationController
 
   def new
     @video = Video.new
+    puts "<< 1 >>"
     apply_depositor_metadata(@video)
+    puts "<< 2 >>"
     @video.save
-    
+    puts "<< 3 >>"
+
     redirect_to edit_video_path(@video, step: 'file_upload')
   end
   
