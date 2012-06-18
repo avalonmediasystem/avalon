@@ -1,6 +1,5 @@
 When /^I create a new ([^"]*)$/ do |asset_type|
   visit new_video_path
-  puts "<< Page location : #{page.current_url} >>"
 end
 
 # Shortcut for the more verbose step so that the PID does not have to be constantly
@@ -49,7 +48,7 @@ end
 # properly at the moment. It should check for the absence of any fields without the
 # required property
 Then /^I should see only required fields$/ do 
-  within "form" do
+  within "#basic_metadata_form" do
     page.should have_selector("input[name='title']")
     page.should have_selector("input[name='creator']")
     page.should have_selector("input[name='created_on']")
