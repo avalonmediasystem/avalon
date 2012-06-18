@@ -1,0 +1,29 @@
+<div class="row-fluid">
+  <div class="span3" id="left_column">
+    <%= render "conversion_status", files: @file_assets %>
+    <%= render "withdraw_object", video: @video %>
+  </div>
+
+  <div id="main_body" class="offset1 span7">
+    <div id="permalink" class="alert alert-success">
+      <h4 class="alert-heading">Permalink</h4>
+      <p>To share this resource with others use the following canonical link</p>
+      <address><%= link_to catalog_url(params[:id]), catalog_url(params[:id]) %></address>
+    </div>
+
+  <%
+   # Switch based on the current step to display the appropriate content. A
+   # richer version down the road might show all at once and use some clever
+   # Javascript to do accordion style on the fly switching. For now keep it 
+   # simple and without any extra functionality %>
+   <% case params[:step]
+     when 'file_upload' -%>
+       <%= render 'file_upload' %>
+   <% when 'basic_metadata' %>
+       <%= render 'basic_metadata' %>
+   <% when 'optional_metadata' %>
+       <%= render 'optional_metadata' %>
+   <% else %>
+       <%= render 'file_upload' %>
+   <% end %>
+</div>

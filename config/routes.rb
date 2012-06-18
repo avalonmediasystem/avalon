@@ -10,13 +10,8 @@ Hydrant::Application.routes.draw do
   # Routes for subjects and pbcore controller
 #  resources :assets do
     resources :video_assets
-    resources :videos, only: [:create, :update]
+    resources :videos, except: [:index]
 #  end
-
-
-
-
-
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

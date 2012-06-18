@@ -4,7 +4,7 @@ require 'rubyhorn'
 
 class VideoAssetsController < ApplicationController
   include Hydra::FileAssets
-
+  
   skip_before_filter :verify_authenticity_token, :only => [:create]
 
   # Creates and Saves a File Asset to contain the the Uploaded file 
@@ -22,7 +22,7 @@ class VideoAssetsController < ApplicationController
     if params.has_key?(:Filedata) and params.has_key?(:original)
       @video_assets = []
   		params[:Filedata].each do |file|
-                  puts "<< MIME type is #{file.content_type} >>"
+          puts "<< MIME type is #{file.content_type} >>"
   		  @upload_format = 'video' if video_types.include?(file.content_type)
   		  @upload_format = 'audio' if audio_types.include?(file.content_type)
   		  
@@ -51,15 +51,14 @@ class VideoAssetsController < ApplicationController
     
     respond_to do |format|
       flash[:upload] = create_upload_notice(@upload_format)
-      puts "<< #{flash[:upload]} >>"
       
       unless params[:container_id].nil?
       	format.html { 
-  redirect_to :controller => "catalog", :action => "edit", :id => params[:container_id] }
+          redirect_to edit_video_path(params[:container_id], step: 'file-upload') }
       	format.js { }
       else 
         format.html { 
-  redirect_to :controller => "catalog", :action => "index"}
+  redirect_to edit_video_path(params[:container_id], step: 'file-upload') }
         format.js { }
       end
     end
@@ -100,8 +99,8 @@ class VideoAssetsController < ApplicationController
   def sendOriginalToMatterhorn(video_asset, file)
     args = {"title" => video_asset.pid , "flavor" => "presenter/source", "workflow" => "hydrant", "filename" => video_asset.label}
     mp = Rubyhorn.client.addMediaPackage(file, args)
-    flash[:notice] = "The uploaded file has been sent to Matterhorn for processing."
-    video_asset.description = "File is being processed in Matterhorn"
+    flash[:notice] = "The uploaded file has been sent for processing."
+    video_asset.description = "File is being processed"
     video_asset
   end
 

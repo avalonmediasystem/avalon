@@ -27,7 +27,7 @@ Feature: Associate bitstreams with an object and return feedback based on the co
 
   @javascript
   Scenario: The system acknowledges that a file is invalid (JPG)
-    Given I want to edit "hydrant:318" as "archivist1@example.com"
+    Given I want to edit "hydrant:book-demo" as "archivist1@example.com"
     When I upload the file "spec/fixtures/fire-hydrant.jpg" with MIME type "image/jpeg"
     Then I should see an error message that the file is not recognized
     

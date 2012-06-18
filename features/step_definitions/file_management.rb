@@ -3,7 +3,7 @@ Given /^I want to edit "(.*?)" as "(.*?)"$/ do |identifier, user|
    step "I am logged in as \"#{user}\""
    step "that \"#{identifier}\" has been loaded into fedora"
    step "that \"#{user}\" can edit \"#{identifier}\""
-   step "I go to the edit document page for #{identifier}"
+   step "I go to the \"file_upload\" step for \"#{identifier}\""
 end
 
 Then /show me the page/ do
@@ -36,7 +36,7 @@ Then /^I should see confirmation that it was uploaded/ do
     within "#workflow_status" do
       page.should satisfy {
         |page| page.has_content? "Original file uploaded" or 
-          page.has_content? "File is being processed in Matterhorn"
+          page.has_content? "File is being processed"
       }
     end
   end
