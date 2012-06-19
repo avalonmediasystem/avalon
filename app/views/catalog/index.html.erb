@@ -1,24 +1,34 @@
-        <div id="row_fluid">
-          <div class="span10">
-            <% if flash[:notice] %>
-            <div class="alert"><%= flash[:notice] %></div>
-            <% end %>
-         </div>
+    <section id="global_search">
+    <div class="row-fluid">
          <div class="span10">
             <%= render "modules/global_search" %>
          </div>
-         <div class="span10"
+    </div>
+    </section>
+    
+    <section id="main_body">
+      <div class="row_fluid" id="marquee">
+        <% if flash[:notice] %>
+        <div id="row_fluid">
+          <div class="span10">
+            <div class="alert"><%= flash[:notice] %></div>
+         </div>
+         <% end %>
+    
+         <div class="span10">
             <%= render "modules/add_new_item" %>
             <hr />
           </div>
         </div>
-         
-        <div id="row_fluid">
-          <div id="left_column" class="offset1 span4">
-            <%= render "modules/my_items" %>
-          </div>
-        
-          <div id="right_column" class="offset1 span4">
-            <%= render "modules/activity_stream" %>
-          </div>
+      </div>
+    
+      <div id="row_fluid">
+        <div id="left_column" class="span5">
+          <%= render "modules/my_items" %>
         </div>
+        
+        <div id="right_column" class="span5">
+          <%= render "modules/activity_stream" %>
+        </div>
+      </div>
+   </section>

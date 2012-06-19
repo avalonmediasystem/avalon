@@ -11,21 +11,21 @@
   
   <body>
     <div class="container">
-      <header class="row-fluid page-header">
+      <header class="jumbotron page-header">
         <div class="logo span2">
           <!-- Image taken from http://www.flickr.com/photos/jdhancock/6010107241/in/photostream/ under a
               Creative Commons license. Replace later with a proper logo -->
           <%= image_tag "temporary_logo.jpg", alt: "Hydrant - Release Zero" %>
         </div>
         
-        <div class="span7">
-          <h1>Hydrant <small>Release Zero prototype</small></h1>
-        </div>
+          <h1>Hydrant</h1>
+          <p class="lead">Release Zero prototype</p>
+        
+        <%= render "modules/global_navigation" %>
       </header>
-
+      
       <!-- TO DO : Relocate the breadcrumbs to be here on every page except for the
                    home page -->
-      <%= render "modules/global_navigation" %>
       <%= render "modules/user_management" %>
 
       <div class="row-fluid"><%= yield %></div>
