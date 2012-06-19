@@ -17,7 +17,8 @@
  *
  *= require bootstrap_and_overrides
  *= require jquery.fileupload-ui
- *
+ *= require hydrant
+ 
  * Required by Hydra
  * require 'hydra/styles'         
  *

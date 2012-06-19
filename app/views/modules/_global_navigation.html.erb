@@ -1,12 +1,16 @@
-<div class="subnav">
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
       <ul class="nav nav-pills">
-        <li><%= link_to 'Home', root_url %></li>
+        <li class="span1"><%= link_to 'Home', root_url %></li>
         <li class="divider-vertical"></li>
-        <li><%= link_to 'Add new resource', new_video_path %></li>
+        <li class="span2"><%= link_to 'Add new resource', new_video_path %></li>
         <li class="divider-vertical"></li>
-        <li><a href="#">Browse the repository</a></li>
-        <li><a href="#">Search for resources</a></li>
+        <li class="span1"><a href="#">Browse</a></li>
+        <li class="span1"><a href="#">Search</a></li>
         <li class="divider-vertical"></li>
-        <li><a href="#">Help</a></li>
+        <li class="span1"><a href="#">Help</a></li>
       </ul>
+    </div>
+  </div>
 </div>
