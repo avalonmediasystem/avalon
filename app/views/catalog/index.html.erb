@@ -3,17 +3,22 @@
             <% if flash[:notice] %>
             <div class="alert"><%= flash[:notice] %></div>
             <% end %>
+         </div>
+         <div class="span10">
+            <%= render "modules/global_search" %>
+         </div>
+         <div class="span10"
             <%= render "modules/add_new_item" %>
             <hr />
           </div>
         </div>
          
         <div id="row_fluid">
-          <div id="left_column" class="offset1 span5">
+          <div id="left_column" class="offset1 span4">
             <%= render "modules/my_items" %>
           </div>
         
-          <div id="right_column" class="offset1 span3">
+          <div id="right_column" class="offset1 span4">
             <%= render "modules/activity_stream" %>
           </div>
         </div>
