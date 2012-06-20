@@ -163,7 +163,7 @@ class CatalogController < ApplicationController
   end
 
   def index
-    @recent_items = Video.find(:all)[0..4]
+    @recent_items = Video.find(:all).reverse.first(5)
     @my_items = nil
   end
 

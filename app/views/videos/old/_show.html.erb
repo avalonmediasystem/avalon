@@ -20,7 +20,10 @@
 	<div id='StrobeMediaPlayback'></div>
 
 	<% if !@document_fedora.parts(:response_format=>:solr).empty? && @document_fedora.parts.first && !@document_fedora.parts.first.descMetadata.identifier.first.start_with?("rtmp") %>
-		<p> <%= @document_fedora.parts.first.descMetadata.description.first %> </p>
+		<div class="well">
+		   <h2>Video status</h2>
+		   <%= @document_fedora.parts.first.descMetadata.description.first %>
+		</div>
 	<% elsif !@document_fedora.parts(:response_format=>:solr).empty? %>
 		<script>
 		 function failed(e) {

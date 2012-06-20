@@ -100,6 +100,8 @@ class VideoAssetsController < ApplicationController
     workflow_doc = Rubyhorn.client.addMediaPackage(file, args)
     flash[:notice] = "The uploaded file has been sent for processing."
     video_asset.description = "File is being processed"
+    
+    # I don't know why this has to be double escaped with two arrays
     video_asset.source = workflow_doc.workflow.id[0]
     video_asset
   end

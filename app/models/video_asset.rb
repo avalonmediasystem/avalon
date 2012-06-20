@@ -3,7 +3,6 @@ require "file_asset"
 
 class VideoAsset < FileAsset
   include ActiveFedora::DatastreamCollections
-  attr_reader :status
   
   def initialize(attrs = {})
     super(attrs)
@@ -30,6 +29,7 @@ class VideoAsset < FileAsset
   end
   
   def source=(source)
+    puts "<< SOURCE : #{source} >>"
     descMetadata.source = source
   end
   
@@ -37,15 +37,24 @@ class VideoAsset < FileAsset
     descMetadata.source
   end
 
+  # A hacky way to handle the description for now. This should probably be refactored
+  # to stop pulling if the status is stopped or completed
+  def status
+    unless source.nil? or source.empty?
+      refresh_status
+    end
+  end
+  
   protected
   def refresh_status
-    workflow_id = source
-    matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
+    matterhorn_response = Rubyhorn.client.instance_xml(source)
     workflow_status = matterhorn_response.workflow.state[0]
  
     puts "<< Matterhorn status is #{workflow_status} >>"
     video_asset.description = workflow_status
     video_asset.save
+    
+    workflow_status
   end
 
 end
