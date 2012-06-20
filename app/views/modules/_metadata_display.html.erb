@@ -1,0 +1,8 @@
+<dl id="creation_metadata" class="dl-horizontal">
+  <dt>Creator</dt>
+  <dd><%= @video.descMetadata.creator[0] %></dd>
+
+  <dt>Created on</dt>
+  <dd><%= @video.descMetadata.created_on[0] %></dd>
+</dl>
+<%= link_to "Edit metadata", edit_video_path(@video, step: 'basic_metadata') %>
