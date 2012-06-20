@@ -6,12 +6,13 @@ Given /^I (?:am )?log(?:ged)? in as "([^\"]*)"$/ do |email|
   # Given %{a User exists with a Login of "#{login}"}
   user = User.create(:email => email, :password => "password", :password_confirmation => "password")
   User.find_by_email(email).should_not be_nil
+
   visit destroy_user_session_path
   visit new_user_session_path
+
   fill_in "Email", :with => email 
   fill_in "Password", :with => "password"
   click_button "Sign in"
-  #step %{I should see a link to "my account info" with label "#{email}"} 
   step %{I should see a link to "logout"} 
 end
 
