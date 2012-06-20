@@ -10,8 +10,9 @@
 
 	<% if !@document_fedora.parts(:response_format=>:solr).empty? && @document_fedora.parts.first && !@document_fedora.parts.first.descMetadata.identifier.first.start_with?("rtmp") %>
 		<div class="well">
-		   <h2>Video status</h2>
-		   <%= @document_fedora.parts.first.descMetadata.description.first %>
+		   
+		   <h3><i class="icon-time"></i> Video status</h3>
+		   <p>The file is still being processed by the system. Please check back later for a preview.</p>
 		</div>
 	<% elsif !@document_fedora.parts(:response_format=>:solr).empty? %>
 		<script>
@@ -81,5 +82,5 @@
 		</script>
 	<% end %>
 	
-	<%= link_to "Manage file(s)", edit_video_path(@video, step: 'file_upload') %>
+	<%= link_to "Manage file(s)", edit_video_path(@video, step: 'file_upload'), class: "btn" %>
     
