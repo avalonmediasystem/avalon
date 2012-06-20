@@ -162,6 +162,9 @@ class CatalogController < ApplicationController
     config.spell_max = 5
   end
 
-
+  def index
+    @recent_items = Video.find(:all)[0..4]
+    @my_items = nil
+  end
 
 end 

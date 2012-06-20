@@ -1,0 +1,11 @@
+<% # Write a helper method to handle this logic since it will be repeated
+   # in other places %>
+<dt>
+  <%= link_to(item) do %> 
+    <% unless item.descMetadata.title[0].empty? %><%= item.descMetadata.title[0] %><% else %>No title provided<% end%> (<%= item.pid %>)
+  <% end %>
+</dt>
+<dd>
+  <!-- Need to shorten the asbtract if it is too long -->
+  <% unless item.descMetadata.abstract[0].empty? %><%= item.descMetadata.abstract[0] %><% else %><em>No description available</em><% end %>
+</dd>
