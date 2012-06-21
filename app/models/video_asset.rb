@@ -25,6 +25,7 @@ class VideoAsset < FileAsset
   end
 
   def description
+	status
 	descMetadata.description
   end
   
@@ -47,12 +48,12 @@ class VideoAsset < FileAsset
   
   protected
   def refresh_status
-    matterhorn_response = Rubyhorn.client.instance_xml(source)
+    matterhorn_response = Rubyhorn.client.instance_xml(source[0])
     workflow_status = matterhorn_response.workflow.state[0]
  
     puts "<< Matterhorn status is #{workflow_status} >>"
-    video_asset.description = workflow_status
-    video_asset.save
+    descMetadata.description = workflow_status
+    save
     
     workflow_status
   end

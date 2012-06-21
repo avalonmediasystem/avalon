@@ -2,11 +2,12 @@
 <div id="workflow_status" class="alert">
   <h4 class="alert-heading">Conversion status</h4>
   <p id="file_status">
-    <% unless @file_assets.empty? %>
+    <% unless @video.parts.empty? %>
       <dl class="nobullet status">
-        <% files.each do |file| %>
-        <dt><%= file["title_t"][0] %></dt>
-        <dd><%= file["description_t"][0] %></dd>
+        <% @video.parts.each do |file_asset| %>
+        <% video_asset = VideoAsset.find(file_asset.pid) %>
+        <dt><%= video_asset.descMetadata.title[0] %></dt>
+        <dd><%= video_asset.description[0] %></dd>
         <% end %>
       </dl>
     <% else %>
