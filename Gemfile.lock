@@ -369,6 +369,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  active-fedora (~> 4.2)
   activerecord-jdbcsqlite3-adapter
   blacklight (~> 3.4.1)
   bootstrap-will_paginate
