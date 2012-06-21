@@ -2,7 +2,8 @@
   <nav id="authentication">
     <ul>
     <% if user_signed_in? %>
-      Welcome back <%= current_user.email %> |</li>
+      <!-- Eventually this shoud link to a profile edit page -->
+      <%= current_user.email %> |</li>
       <li><%= link_to "Sign out", destroy_user_session_path %></li>
     <% else %>
       <%= link_to "Sign up", new_user_registration_path %> |

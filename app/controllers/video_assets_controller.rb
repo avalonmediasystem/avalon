@@ -142,6 +142,18 @@ class VideoAssetsController < ApplicationController
 		return video_asset		
 	end
 	
+  # When destroying a file asset be sure to stop it first
+  def destroy
+    video_asset = VideoAsset.find(params[:id])
+    parent = video_asset.container
+    
+    puts "<< Stopping #{video_asset.source[0]} >>"
+    Rubyhorn.client.stop(video_asset.source[0])
+    
+    video_asset.delete
+    redirect_to edit_video_path(parent.pid, step: "file-upload")
+  end
+  
   protected
   def determine_format_by_extension(file) 
     audio_extensions = ["mp3", "wav", "aac", "flac"]
