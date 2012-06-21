@@ -163,7 +163,8 @@ class CatalogController < ApplicationController
   end
 
   def index
-    @recent_items = Video.find(:all).reverse.first(5)
+    @recent_items = []
+    VideoAsset.find({}, {:sort=>'system_create_dt desc', :rows=>5}).each {|asset| @recent_items << asset.container}
     @my_items = nil
   end
 
