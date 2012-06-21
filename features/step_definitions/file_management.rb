@@ -35,8 +35,8 @@ Then /^I should see confirmation that it was uploaded/ do
   page.wait_until do
     within "#workflow_status" do
       page.should satisfy {
-        |page| page.has_content? "Original file uploaded" or 
-          page.has_content? "File is being processed"
+        |page| page.has_content? "Preparing file for conversion" or 
+          page.has_content? "Creating derivatives"
       }
     end
   end

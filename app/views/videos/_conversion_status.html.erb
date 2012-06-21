@@ -5,12 +5,15 @@
     <% unless @video.parts.empty? %>
       <dl class="nobullet status">
         <% @video.parts.each do |file_asset| %>
-        <% video_asset = VideoAsset.find(file_asset.pid) %>
+        <% # Refactor this in the future?
+           video_asset = VideoAsset.find(file_asset.pid) %>
         <dt><%= video_asset.descMetadata.title[0] %></dt>
         <dd><%= video_asset.description[0] %></dd>
+        <!--
         <div class="progress progress-striped active">
           <div class="bar" style="width: 45%;"></div>
         </div>
+        -->
         <% end %>
       </dl>
     <% else %>

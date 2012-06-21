@@ -7,6 +7,7 @@ class VideoAsset < FileAsset
   def initialize(attrs = {})
     super(attrs)
     add_relationship(:has_model, "info:fedora/afmodel:FileAsset")
+    refresh_status
   end
 
   has_datastream :name => "content", :type => ActiveFedora::Datastream, 
@@ -25,7 +26,7 @@ class VideoAsset < FileAsset
   end
 
   def description
-	status
+	puts "<< #{status} >>"
 	descMetadata.description
   end
   
@@ -49,13 +50,23 @@ class VideoAsset < FileAsset
   protected
   def refresh_status
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
-    workflow_status = matterhorn_response.workflow.state[0]
+    status = matterhorn_response.workflow.state[0]
  
-    puts "<< Matterhorn status is #{workflow_status} >>"
-    descMetadata.description = workflow_status
+    descMetadata.description = case status
+      when "INSTANTIATED"
+        "Preparing file for conversion"
+      when "RUNNING"
+        "Creating derivatives"
+      when "SUCCEEDED"
+        "Processing is complete"
+      when "FAILED"
+        "File(s) could not be processed"
+      when "STOPPED"
+        "Processing has been stopped"
+      else
+        "No file(s) uploaded"
+      end
     save
-    
-    workflow_status
   end
 
 end

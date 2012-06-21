@@ -14,7 +14,7 @@ class VideoAssetsController < ApplicationController
   def create
     audio_types = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav"]
     video_types = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime"]
-    unknown_types = ["application/octet-stream"]
+    unknown_types = ["application/octet-stream", "application/x-upload-data"]
     
     wrong_format = false    
     @upload_format = 'other'

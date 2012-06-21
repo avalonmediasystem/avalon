@@ -164,7 +164,12 @@ class CatalogController < ApplicationController
 
   def index
     @recent_items = []
-    VideoAsset.find({}, {:sort=>'system_create_dt desc', :rows=>5}).each {|asset| @recent_items << asset.container}
+    VideoAsset.find({}, {
+      :sort => 'system_create_dt desc', 
+      :rows => 5}).each { |asset| 
+        # This might be something to refactor to not be n+1 queries 
+        @recent_items << Video.find(asset.container.pid) 
+      }
     @my_items = nil
   end
 
