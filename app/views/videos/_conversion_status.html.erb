@@ -8,6 +8,9 @@
         <% video_asset = VideoAsset.find(file_asset.pid) %>
         <dt><%= video_asset.descMetadata.title[0] %></dt>
         <dd><%= video_asset.description[0] %></dd>
+        <div class="progress progress-striped active">
+          <div class="bar" style="width: 45%;"></div>
+        </div>
         <% end %>
       </dl>
     <% else %>

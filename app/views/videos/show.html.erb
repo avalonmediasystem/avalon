@@ -8,7 +8,7 @@
     <div id="permalink" class="alert alert-success">
       <h4 class="alert-heading">Permalink</h4>
       <p>To share this resource with others use the following canonical link</p>
-      <address><%= link_to catalog_url(@video.pid) %></address>
+      <address><%= link_to video_url(@video.pid) %></address>
     </div>
     
     <h2><% unless @video.descMetadata.title[0].empty? %><%= @video.descMetadata.title[0] %><% end %></h2>
