@@ -7,6 +7,10 @@
         <% files.each do |file| %>
         <dt><%= file["title_t"][0] %></dt>
         <dd><%= file["description_t"][0] %></dd>
+
+        <div class="progress progress-striped active">
+          <div class="bar" style="width: 45%;"></div>
+        </div>
         <% end %>
       </dl>
     <% else %>
