@@ -7,15 +7,15 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     
     # Required fields
     t.primary_id(path: "pbcoreIdentifier", xmlns: '', namespace_prefix: nil)
-    t.title(path: "pbcoreTitle", xmlns: '', namespace_prefix: nil)
+    t.title(path: "pbcoreTitle", xmlns: '', namespace_prefix: nil, indexAs: [:facetable])
     t.abstract(path: "pbcoreDescription", xmlns: '', namespace_prefix: nil)
     
     # Other fields required by the data dictionary
     t.created_on(path: "pbcoreAssetDate", attributes: {dateType: 'created'}, 
-      xmlns: '', namespace_prefix: nil)
+      xmlns: '', namespace_prefix: nil, indexAs: [:facetable])
     
     # Contributors, creators, and publishers
-    t.creator(path: "pbcoreCreator/creator", xmlns: '', namespace_prefix: nil)
+    t.creator(path: "pbcoreCreator/creator", xmlns: '', namespace_prefix: nil, indexAs: [:facetable])
     t.pbcore_contributor(path: "pbcoreContributor") {
       t.contributor(path: "contributor")
       t.contributor_role(path: "contributorRole")

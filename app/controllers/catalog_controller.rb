@@ -51,6 +51,7 @@ class CatalogController < ApplicationController
     # facet bar
     config.add_facet_field 'subject_facet', :label => 'Subject', :limit => 20
     config.add_facet_field 'creator_facet', :label => 'Creator', :limit => 20
+    config.add_facet_field 'created_on_facet', :label => 'Created On', :limit => 20
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
