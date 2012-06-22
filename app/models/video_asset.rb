@@ -46,6 +46,14 @@ class VideoAsset < FileAsset
       refresh_status
     end
   end
+
+  def statusPercent
+    matterhorn_response = Rubyhorn.client.instance_xml(source[0])
+    totalOperations = matterhorn_response.workflow.operations.operation.length
+    finishedOperations = 0
+    matterhorn_response.workflow.operations.operation.operationState.each {|state| finishedOperations = finishedOperations + 1 if state == "FINISHED" || state == "SKIPPED"}
+    (finishedOperations / totalOperations) * 100
+  end
   
   protected
   def refresh_status
