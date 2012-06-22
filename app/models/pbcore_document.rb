@@ -17,8 +17,8 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     # Contributors, creators, and publishers
     t.creator(path: "pbcoreCreator/creator", xmlns: '', namespace_prefix: nil)
     t.pbcore_contributor(path: "pbcoreContributor") {
-      t.contributor(path: "contributor")
-      t.contributor_role(path: "contributorRole")
+      t.contributor
+      t.contributor_role
     }
     
     # Coverage information
@@ -31,6 +31,14 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     t.temporal(ref: :pbcore_coverage, 
       path: "pbcoreCoverage[coverageType='temporal']",
       namespace_prefix: nil)
+
+    # Instantiation information
+    t.pbcoreInstantiation(path: "pbcoreInstantiation", xmlns: '', namespace_prefix: nil){
+      t.mediaType(path: "instantiationMediaType",
+        namespace_prefix: nil, xmlns: '')
+    }
+    #t.format(proxy: [:pbcoreInstantiation, :mediaType])
+    t.format(path: "pbcoreInstantiation/instantiationMediaType", xmlns: '', namespace_prefix: nil)
   end
   
   def self.xml_template
@@ -42,6 +50,9 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
         xml.pbcoreDescription
         xml.pbcoreCreator {
           xml.creator
+        }
+        xml.pbcoreInstantiation {
+          xml.instantiationMediaType("Testing")
         }
       }
     end

@@ -1,9 +1,14 @@
 <h3>Details</h3>
-<dl id="creation_metadata" class="dl-horizontal">
+<dl id="creation_metadata">
   <dt>Creator</dt>
   <dd><%= @video.descMetadata.creator[0] %></dd>
 
   <dt>Created on</dt>
   <dd><%= @video.descMetadata.created_on[0] %></dd>
+  
+  <% unless @video.descMetadata.format.nil? %>
+  <dt>Format</dt>
+  <dd><%= @video.descMetadata.format[0] %></dd>
+  <% end %>
 </dl>
 <%= link_to "Edit metadata", edit_video_path(@video, step: 'basic_metadata'), class: "btn" %>
