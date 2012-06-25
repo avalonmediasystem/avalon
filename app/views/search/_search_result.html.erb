@@ -1,0 +1,17 @@
+<div class="result">
+  <div class="preview-icon">[ Preview image]</div>
+  <h4 class="title">
+    <% if can? :read, item %>
+      <% link_to item.descMetadata.title[0], video_path(item) %>
+    <% else %>
+      <%= item.descMetadata.title[0] %>
+    <% end %>
+  </h4>
+  <p class="creator"><%= item.descMetadata.creator[0] %></h4>
+  <% unless item.descMetadata.abstract.nil? or 
+    item.descMetadata.abstract[0].empty? %>
+    <p class="summary"><%= item.descMetadata.abstract[0] %></p>
+  <% else %>
+    <p class="summary">No summary available</p>
+  <% end %>
+</div>

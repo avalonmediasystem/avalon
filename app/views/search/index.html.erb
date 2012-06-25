@@ -1,0 +1,17 @@
+<%= render 'modules/global_search' %>
+
+<div class="row-fluid">
+  <div class="span7" id="search_results">
+    <% unless params[:q].nil? do %>
+      <h2>Search results for <em><%= params[:q] %></em></h2>
+    <% end %>
+      <h2>Browse items</h2>
+    <% end %>
+    
+    <%= render partial: 'search_result', collection: @results, as: :item %>
+  </div>
+  
+  <div class="span3" id="facets">
+    <h3>Limit to</h3>
+  </div>
+</div>
