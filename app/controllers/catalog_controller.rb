@@ -151,9 +151,9 @@ class CatalogController < ApplicationController
         #
         # Skip orphaned items which have been isolated from their
         # parent containers
-        #unless asset.container.nil? 
+        unless asset.container.nil? 
           @recent_items << Video.find(asset.container.pid) 
-        #end 
+        end 
       }
     @my_items = nil
   end
