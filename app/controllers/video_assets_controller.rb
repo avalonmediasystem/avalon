@@ -108,8 +108,14 @@ class VideoAssetsController < ApplicationController
   	video_asset
 	end
 
-  def sendOriginalToMatterhorn(video_asset, file)
-    args = {"title" => video_asset.pid , "flavor" => "presenter/source", "workflow" => "hydrant", "filename" => video_asset.label}
+  def sendOriginalToMatterhorn(video_asset, file, upload_format)
+    args = {"title" => video_asset.pid , "flavor" => "presenter/source", "filename" => video_asset.label}
+    if upload_format == 'audio'
+      args['workflow'] = "fullaudio"
+    elsif upload_format == 'video'
+      args['workflow'] = "hydrant"
+    end
+    puts "<< Callling Matterhorn with arguments: #{args} >>"
     workflow_doc = Rubyhorn.client.addMediaPackage(file, args)
     flash[:notice] = "The uploaded file has been sent for processing."
     video_asset.description = "File is being processed"
