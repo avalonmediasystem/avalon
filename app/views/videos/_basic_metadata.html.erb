@@ -9,7 +9,7 @@
   :method => "put", 
   :class => "form-horizontal", 
   id: 'basic_metadata_form' do -%>
-  <%= hidden_field_tag 'pid', @document_fedora.pid %>
+  <%= hidden_field_tag 'pid', @video.pid %>
   <%= hidden_field_tag 'step', 'basic_metadata' %>
   
   <div id="title-field" class="control-group">
@@ -18,7 +18,7 @@
       <p class="information">Required</p>
     </div>
     <div class="controls">
-      <%= text_field_tag :title, @document_fedora.descMetadata.title, required: true %>
+      <%= text_field_tag :title, @video.descMetadata.title, required: true %>
     </div>
   </div>
 
@@ -28,7 +28,7 @@
       <p class="information">Required</p>
     </div>
     <div class="controls">
-      <%= text_field_tag :creator, @document_fedora.descMetadata.creator, required: true %>
+      <%= text_field_tag :creator, @video.descMetadata.creator, required: true %>
     </div>
   </div>
 
@@ -38,7 +38,7 @@
       <p class="information">Required</p>
     </div>
     <div class="controls">
-      <%= text_field_tag :created_on, @document_fedora.descMetadata.created_on, required: true %>
+      <%= text_field_tag :created_on, @video.descMetadata.created_on, required: true %>
     </div>
   </div>
 

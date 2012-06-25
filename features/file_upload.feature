@@ -3,7 +3,7 @@ Feature: Associate bitstreams with an object and return feedback based on the co
   
   @javascript
   Scenario: Upload files on catalog edit page
-    Given I want to edit "hydrant:318" as "archivist1@example.com"
+    Given I want to edit "hydrant:short-form-video" as "archivist1@example.com"
     When I upload the file "spec/fixtures/videoshort.mp4" with MIME type "application/MP4"
     Then I should see confirmation that it was uploaded
 
