@@ -42,6 +42,8 @@ class VideoAssetsController < ApplicationController
   			if video_asset.save
     			video_asset = sendOriginalToMatterhorn(video_asset, file)
                         video = Video.find(video_asset.container.pid)
+                        
+                        puts "<< #{video.pid} >>"
                         video.descMetadata.format = case @upload_format
                           when 'audio'
                             'Sound'
@@ -50,7 +52,8 @@ class VideoAssetsController < ApplicationController
                           else
                             'Unknown'
                         end
-
+                        puts "<< #{video.descMetadata.format} >>"
+                        
                         video.save
    			video_asset.save
 			  end

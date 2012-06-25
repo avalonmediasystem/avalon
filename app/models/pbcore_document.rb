@@ -33,12 +33,11 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
       namespace_prefix: nil)
 
     # Instantiation information
-    t.pbcoreInstantiation(path: "pbcoreInstantiation", xmlns: '', namespace_prefix: nil){
-      t.mediaType(path: "instantiationMediaType",
-        namespace_prefix: nil, xmlns: '')
-    }
-    #t.format(proxy: [:pbcoreInstantiation, :mediaType])
-    t.format(path: "pbcoreInstantiation/instantiationMediaType", xmlns: '', namespace_prefix: nil)
+    #t.pbcoreInstantiation(path: "pbcoreInstantiation", xmlns: '', namespace_prefix: nil){
+    #  t.mediaType(path: "instantiationMediaType",
+    #    namespace_prefix: nil, xmlns: '')
+    #}
+    t.format(path: "pbcoreInstantiation/instantiationMediaType", xmlns: '', namespace_prefix: nil, indexAs: [:facetable])
   end
   
   def self.xml_template
