@@ -12,6 +12,7 @@ Hydrant::Application.routes.draw do
     resources :video_assets
     resources :videos, except: [:index]
 #  end
+  match 'search/index' => 'search#index'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
