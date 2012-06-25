@@ -11,7 +11,7 @@
       <address><%= link_to video_url(@video.pid) %></address>
     </div>
     
-    <h2><% unless @video.descMetadata.title[0].empty? %><%= @video.descMetadata.title[0] %><% end %></h2>
+    <h2><% unless @video.descMetadata.title.empty? %><%= @video.descMetadata.title[0] %><% end %></h2>
     <%= render "modules/video_player" %>
     <section id="metadata">
       <%= render "modules/metadata_display" %>
