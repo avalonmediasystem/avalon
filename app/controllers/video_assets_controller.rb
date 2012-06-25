@@ -39,7 +39,7 @@ class VideoAssetsController < ApplicationController
   		  
   			@video_assets << video_asset = saveOriginalToHydrant(file)
   			if video_asset.save
-    			video_asset = sendOriginalToMatterhorn(video_asset, file)
+    			video_asset = sendOriginalToMatterhorn(video_asset, file, @upload_format)
                         video = Video.find(video_asset.container.pid)
                         
                         puts "<< #{video.pid} >>"
