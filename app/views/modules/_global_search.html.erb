@@ -1,4 +1,7 @@
-      <form action="#" method="POST" id="search_form" class="form-search">
-        <input type="text" name="keywords" class="input-xlarge search-query" />
-        <button type="submit" class="btn">search</button>
-      </form>
+ <%= form_tag catalog_index_path, 
+       method: 'get',  
+       id: "search_form",
+       class: "form-search" do %>
+   <%= text_field_tag :q, params[:q], class: 'q' %>
+   <%= submit_tag 'Search', class: "btn" %>
+ <% end %>

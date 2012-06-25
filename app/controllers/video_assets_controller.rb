@@ -17,26 +17,25 @@ class VideoAssetsController < ApplicationController
     unknown_types = ["application/octet-stream", "application/x-upload-data"]
     
     wrong_format = false    
-    @upload_format = 'other'
+    @upload_format = 'unknown'
     
     if params.has_key?(:Filedata) and params.has_key?(:original)
       @video_assets = []
-  		params[:Filedata].each do |file|
-          puts "<< MIME type is #{file.content_type} >>"
-  		  @upload_format = 'video' if video_types.include?(file.content_type)
-  		  @upload_format = 'audio' if audio_types.include?(file.content_type)
+      params[:Filedata].each do |file|
+        puts "<< MIME type is #{file.content_type} >>"
+  	@upload_format = 'video' if video_types.include?(file.content_type)
+  	@upload_format = 'audio' if audio_types.include?(file.content_type)
   		  
-  		  # If the content type cannot be inferred from the MIME type fall back on the
-  		  # list of unknown types. This is different than a generic fallback because it
-  		  # is skipped for known invalid extensions like application/pdf
-  		  @upload_format = determine_format_by_extension(file) if unknown_types.include?(file.content_type)
-  		  puts "<< Uploaded file appears to be #{@upload_format} >>"
+  	# If the content type cannot be inferred from the MIME type fall back on the
+  	# list of unknown types. This is different than a generic fallback because it
+  	# is skipped for known invalid extensions like application/pdf
+  	@upload_format = determine_format_by_extension(file) if unknown_types.include?(file.content_type)
+  	puts "<< Uploaded file appears to be #{@upload_format} >>"
   		  
-  		  if 'unknown' == @upload_format
-  	        wrong_format = true
-  	      break
-  	      
-  		  end
+  	if 'unknown' == @upload_format
+  	  wrong_format = true
+  	  break
+  	end
   		  
   			@video_assets << video_asset = saveOriginalToHydrant(file)
   			if video_asset.save
@@ -71,7 +70,7 @@ class VideoAssetsController < ApplicationController
       	format.js { }
       else 
         format.html { 
-  redirect_to edit_video_path(params[:container_id], step: 'file-upload') }
+	  redirect_to edit_video_path(params[:container_id], step: 'file-upload') }
         format.js { }
       end
     end

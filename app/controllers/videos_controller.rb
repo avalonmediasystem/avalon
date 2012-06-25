@@ -1,8 +1,8 @@
 class VideosController < ApplicationController
   include Hydra::FileAssets
   
-  before_filter :load_fedora_document, :only=>[:show, :edit]
-  before_filter :load_document, :only=>[:show, :edit]
+#  before_filter :load_fedora_document, :only=>[:show, :edit]
+#  before_filter :load_document, :only=>[:show, :edit]
 
   # TO DO : Need to import solr logic at some point for indexing and configuration
   #         of facets
@@ -31,6 +31,7 @@ class VideosController < ApplicationController
   def edit
     puts "<< Retrieving #{params[:id]} from Fedora >>"
     @video = Video.find(params[:id])
+    @video_assets = @video.parts
   end
   
   # TODO: Refactor this to reflect the new code model. This is not the ideal way to
