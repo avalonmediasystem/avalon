@@ -9,7 +9,7 @@ class VideosController < ApplicationController
 
   def new
     @video = Video.new
-    set_item_permissions
+    set_default_item_permissions
     @video.save
 
     redirect_to edit_video_path(@video, step: 'file_upload')
@@ -23,6 +23,7 @@ class VideosController < ApplicationController
     @video.descMetadata.title = params[:title]
     @video.descMetadata.creator = params[:creator]
     @video.descMetadata.created_on = params[:created_on]
+    set_item_permissions
     @video.save
     
     redirect_to edit_video_path(id: params[:pid], step: 'file_upload')
@@ -32,22 +33,25 @@ class VideosController < ApplicationController
     puts "<< Retrieving #{params[:id]} from Fedora >>"
     @video = Video.find(params[:id])
     @video_assets = @video.parts
+    puts "<< Calling update method >>"
   end
   
   # TODO: Refactor this to reflect the new code model. This is not the ideal way to
   #       handle a multi-screen workflow I suspect
   def update
-    puts "<< Updating the video object including a PBCore datastream >>"
+    puts "<< Updating the video object (including a PBCore datastream) >>"
     @video = Video.find(params[:id])
     
     case params[:step]
       when 'basic_metadata' then
-        puts "<< Populuting required metadata fields >>"
-        @video.descMetadata.title = params[:title]
-        @video.descMetadata.creator = params[:creator]
-        @video.descMetadata.created_on = params[:created_on]
-        @video.save
+        puts "<< Populating required metadata fields >>"
+        @video.descMetadata.title = params[:metadata_title]
+        @video.descMetadata.creator = params[:metadata_creator]
+        @video.descMetadata.created_on = params[:metadata_createdon]
+        @video.descMetadata.abstract = params[:metadata_abstract]
+
         puts "<< #{@video.descMetadata.to_xml} >>"
+        @video.save
         next_step = 'preview'
       else
         next_step = 'file_upload'
@@ -75,10 +79,16 @@ class VideosController < ApplicationController
   end
   
   protected
-  def set_item_permissions
-    permission = {
-      "group" => { "public" => "read", "archivist" => "edit"},
-      "person" => {"archivist1@example.com" => "edit"}}
-    @video.rightsMetadata.update_permissions(permission)
+  def set_default_item_permissions
+    unless @video.rightsMetadata.nil?
+      permission = {
+        "group" => { 
+          "public" => "discover",
+          "public" => "read", 
+          "archivist" => "discover",
+          "archivist" => "edit"},
+        "person" => {"archivist1@example.com" => "edit"}}
+      @video.rightsMetadata.update_permissions(permission)
+    end
   end
 end

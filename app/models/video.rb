@@ -1,11 +1,9 @@
 class Video < ActiveFedora::Base
   include Hydra::ModelMethods
-  
+  # This is the new and apparently preferred way of handling mixins
+  include Hydra::ModelMixins::RightsMetadata
+    
   #has_metadata name: "dc", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: PbcoreDocument
-  delegate :title, to: 'descMetadata', at: 'title'
-  delegate :creator, to: 'descMetadata', at: 'creator'
-  delegate :created_on, to: 'descMetadata', at: 'created_on'
-
   has_metadata name: "rightsMetadata", type: Hydra::Datastream::RightsMetadata
 end

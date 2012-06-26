@@ -1,0 +1,12 @@
+<div class="well">
+  <p class="lead">This system makes it easy to manage materials for my course and share them with students and other members of the academic community. - Satisfied instructor</p>
+</div>
+<div class="row-fluid">
+  <div class="span8">
+  <% unless current_user.nil? %>
+    <p><%= link_to "Get started", new_video_path %> by uploading some content into the system.</p>
+  <% else %>
+   <p><%= link_to "Sign in", new_user_session_path %> to get started and upload content.</p>
+  <% end %>
+</div>
+</div>

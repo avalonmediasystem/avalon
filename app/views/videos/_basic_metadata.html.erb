@@ -14,31 +14,41 @@
   
   <div id="title-field" class="control-group">
     <div class="control-label">
-      <%= label_tag :title, "Title" %>
+      <%= label_tag 'metadata_title', "Title" %>
       <p class="information">Required</p>
     </div>
     <div class="controls">
-      <%= text_field_tag :title, @video.descMetadata.title, required: true %>
+      <%= text_field_tag 'metadata_title', @video.descMetadata.title, required: true %>
     </div>
   </div>
 
   <div id="creator-field" class="control-group">
     <div class="control-label">
-      <%= label_tag :creator, "Creator" %>
+      <%= label_tag 'metadata_creator', "Creator" %>
       <p class="information">Required</p>
     </div>
     <div class="controls">
-      <%= text_field_tag :creator, @video.descMetadata.creator, required: true %>
+      <%= text_field_tag 'metadata_creator', @video.descMetadata.creator, required: true %>
     </div>
   </div>
 
   <div id="createdon-field" class="control-group">
     <div class="control-label">
-      <%= label_tag :created_on, "Created on" %>
+      <%= label_tag 'metadata_createdon', "Created on" %>
       <p class="information">Required</p>
     </div>
     <div class="controls">
-      <%= text_field_tag :created_on, @video.descMetadata.created_on, required: true %>
+      <%= text_field_tag 'metadata_createdon', @video.descMetadata.created_on, required: true %>
+    </div>
+  </div>
+  
+  <div id="abstract-field" class="control-group">
+    <div class="control-label">
+      <%= label_tag 'metadata_abstract', "Summary" %>
+    </div>
+    <div class="controls">
+      <%= text_area_tag 'metadata_abstract', @video.descMetadata.abstract[0], 
+        rows: 10 %>
     </div>
   </div>
 

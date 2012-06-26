@@ -20,9 +20,9 @@ When /^I go to the "([^"]*)" step for "([^"]*)"$/ do |step, id|
 end
 
 Then /I should see a simple metadata form/ do 
-  test_for_field('title')
-  test_for_field('created_on')
-  test_for_field('creator')
+  test_for_field('metadata_title')
+  test_for_field('metadata_createdon')
+  test_for_field('metadata_creator')
 end
 
 # Paths for matching actions that occur when updating an existing record
@@ -49,9 +49,9 @@ end
 # required property
 Then /^I should see only required fields$/ do 
   within "#basic_metadata_form" do
-    page.should have_selector("input[name='title']")
-    page.should have_selector("input[name='creator']")
-    page.should have_selector("input[name='created_on']")
+    page.should have_selector("input[name='metadata_title']")
+    page.should have_selector("input[name='metadata_creator']")
+    page.should have_selector("input[name='metadata_createdon']")
   end
 end
 

@@ -7,8 +7,8 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     
     # Required fields
     t.primary_id(path: "pbcoreIdentifier", xmlns: '', namespace_prefix: nil)
-    t.title(path: "pbcoreTitle", xmlns: '', namespace_prefix: nil, indexAs: [:facetable])
-    t.abstract(path: "pbcoreDescription", xmlns: '', namespace_prefix: nil)
+    t.title(path: "pbcoreTitle", xmlns: '', namespace_prefix: nil, indexAs: [:searchable])
+    t.abstract(path: "pbcoreDescription", xmlns: '', namespace_prefix: nil, indexAs: [:searchable])
     
     # Other fields required by the data dictionary
     t.created_on(path: "pbcoreAssetDate", attributes: {dateType: 'created'}, 
@@ -51,7 +51,7 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
           xml.creator
         }
         xml.pbcoreInstantiation {
-          xml.instantiationMediaType("Testing")
+          xml.instantiationMediaType("Unknown content")
         }
       }
     end
