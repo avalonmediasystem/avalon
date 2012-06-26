@@ -67,7 +67,7 @@
 				"/StrobeMediaPlayback.swf"
 				, "StrobeMediaPlayback"
 				, 640
-				, 480
+	    		<%= @video.descMetadata.format.first == "Moving image" ? ", 480" : ", 35" %>
 				, "10.1.0"
 				, "expressInstall.swf"
 				, parameters
@@ -82,5 +82,4 @@
 		</script>
 	<% end %>
 	
-	<%= link_to "Manage file(s)", edit_video_path(@video, step: 'file_upload'), class: "btn" %>
     
