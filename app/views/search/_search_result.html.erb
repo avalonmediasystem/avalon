@@ -1,15 +1,10 @@
-ITEM PID => <%= item.pid %>
-ITEM TITLE => <%= item.descMetadata.to_xml %>
-
-<li class="thumbnail span2">
+<li class="thumbnail span3">
   <div class="thumbnail">
     <img class="preview-icon">[ Preview image]</img>  
     <div class="caption">
       <h4 class="title">
-        <%= can? :discover, item %> / <%= can? :read, item %> / <%= can? :edit, item %>
-        
         <% if can? :read, item %>
-          <% link_to "#{item.descMetadata.title[0]} (#{item.pid})", video_path(item) %> 
+          <%= link_to "#{item.descMetadata.title[0]} (#{item.pid})", video_path(item) %> 
         <% else %>
            <%= item.descMetadata.title[0] %> (<%= item.pid %>)
         <% end %>
@@ -18,7 +13,8 @@ ITEM TITLE => <%= item.descMetadata.to_xml %>
       <p class="creator"><%= item.descMetadata.creator[0] %></h4>
       <% unless item.descMetadata.abstract.nil? or 
          item.descMetadata.abstract[0].empty? %>
-        <p class="summary"><%= item.descMetadata.abstract[0] %></p>
+        <p class="summary"><%= truncate(item.descMetadata.abstract[0], 
+          length: 50) %></p>
       <% else %>
         <p class="summary">No summary available</p>
       <% end %>
