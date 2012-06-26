@@ -37,23 +37,26 @@ class VideoAssetsController < ApplicationController
   	  break
   	end
   		  
-  	@video_assets << video_asset = saveOriginalToHydrant(file)
-  	if video_asset.save
-    	  video_asset = sendOriginalToMatterhorn(video_asset, file, @upload_format)
-          video = Video.find(video_asset.container.pid)
-          video.descMetadata.format = case @upload_format
-            when 'audio'
-              'Sound'
-            when 'video'
-              'Moving image'
-            else
-              'Unknown'
-          end
-
-          video.save
-   	  video_asset.save
-        end
-      end
+  			@video_assets << video_asset = saveOriginalToHydrant(file)
+  			if video_asset.save
+    			video_asset = sendOriginalToMatterhorn(video_asset, file, @upload_format)
+                        video = Video.find(video_asset.container.pid)
+                        
+                        puts "<< #{video.pid} >>"
+                        video.descMetadata.format = case @upload_format
+                          when 'audio'
+                            'Sound'
+                          when 'video'
+                            'Moving image'
+                          else
+                            'Unknown'
+                        end
+                        puts "<< #{video.descMetadata.format} >>"
+                        
+                        video.save
+   			video_asset.save
+			  end
+  		end
     else
       flash[:notice] = "You must specify a file to upload"
     end

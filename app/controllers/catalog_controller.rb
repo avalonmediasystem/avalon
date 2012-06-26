@@ -68,27 +68,6 @@ class CatalogController < ApplicationController
     config.add_index_field 'author_display', :label => 'Author:' 
     config.add_index_field 'author_vern_display', :label => 'Author:' 
     config.add_index_field 'format', :label => 'Format:' 
-    config.add_index_field 'language_facet', :label => 'Language:'
-    config.add_index_field 'published_display', :label => 'Published:'
-    config.add_index_field 'published_vern_display', :label => 'Published:'
-    config.add_index_field 'lc_callnum_display', :label => 'Call number:'
-
-    # solr fields to be displayed in the show (single result) view
-    #   The ordering of the field names is the order of the display 
-    config.add_show_field 'title_display', :label => 'Title:' 
-    config.add_show_field 'title_vern_display', :label => 'Title:' 
-    config.add_show_field 'subtitle_display', :label => 'Subtitle:' 
-    config.add_show_field 'subtitle_vern_display', :label => 'Subtitle:' 
-    config.add_show_field 'author_display', :label => 'Author:' 
-    config.add_show_field 'author_vern_display', :label => 'Author:' 
-    config.add_show_field 'format', :label => 'Format:' 
-    config.add_show_field 'url_fulltext_display', :label => 'URL:'
-    config.add_show_field 'url_suppl_display', :label => 'More Information:'
-    config.add_show_field 'language_facet', :label => 'Language:'
-    config.add_show_field 'published_display', :label => 'Published:'
-    config.add_show_field 'published_vern_display', :label => 'Published:'
-    config.add_show_field 'lc_callnum_display', :label => 'Call number:'
-    config.add_show_field 'isbn_t', :label => 'ISBN:'
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -160,7 +139,7 @@ class CatalogController < ApplicationController
 
     # If there are more than this many search results, no spelling ("did you 
     # mean") suggestion is offered.
-    config.spell_max = 5
+    config.spell_max = 3
   end
 
   def index
@@ -168,8 +147,13 @@ class CatalogController < ApplicationController
     VideoAsset.find({}, {
       :sort => 'system_create_dt desc', 
       :rows => 5}).each { |asset| 
-        # This might be something to refactor to not be n+1 queries 
-        @recent_items << Video.find(asset.container.pid) 
+        # This might be something to refactor to not be n+1 queries
+        #
+        # Skip orphaned items which have been isolated from their
+        # parent containers
+        unless asset.container.nil? 
+          @recent_items << Video.find(asset.container.pid) 
+        end 
       }
     @my_items = nil
   end

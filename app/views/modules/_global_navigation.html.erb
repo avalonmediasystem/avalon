@@ -2,14 +2,26 @@
   <div class="navbar-inner">
     <div class="container">
       <ul class="nav nav-pills">
-        <li class="span1"><%= link_to 'Home', root_url %></li>
+        <li class="span2"><%= link_to 'Home', root_url %></li>
         <li class="divider-vertical"></li>
-        <li class="span2"><%= link_to 'Add new resource', new_video_path %></li>
+        <li class="span2">
+          <% unless current_user.nil? %>
+            <%= link_to 'Add new resource', new_video_path %>
+          <% else %>
+            <%= link_to 'Add new resource', new_user_session_path %>
+          <% end %>
+        </li>
         <li class="divider-vertical"></li>
-        <li class="span1"><a href="#">Browse</a></li>
-        <li class="span1"><a href="#">Search</a></li>
-        <li class="divider-vertical"></li>
-        <li class="span1"><a href="#">Help</a></li>
+        <li class="span2"><%= link_to 'Browse items', search_index_path %></li>
+        <li>
+          <%= form_tag search_index_path, 
+             method: 'post',  
+             id: "search_form",
+             class: "navbar-search pull-right" do %>
+             <%= text_field_tag :q, params[:q], class: 'q' %>
+             <%= submit_tag 'Search', class: "btn" %>
+           <% end %>
+        </li>
       </ul>
     </div>
   </div>

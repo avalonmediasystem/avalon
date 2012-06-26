@@ -1,4 +1,8 @@
 <div class="hero-unit">
   <p><em><< A short blurb that gives the elevator pitch about what the system is designed to do. Keep it short, sweet, and to the point >></em></p>
-  <p><%= link_to "Get started", new_video_path %> by uploading some content into the system.</p>
+  <% unless current_user.nil? %>
+    <p><%= link_to "Get started", new_video_path %> by uploading some content into the system.</p>
+  <% else %>
+   <p><%= link_to "Sign in", new_user_session_path %> to get started and upload content.</p>
+  <% end %>
 </div>

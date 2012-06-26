@@ -9,7 +9,7 @@ class VideosController < ApplicationController
 
   def new
     @video = Video.new
-    apply_depositor_metadata(@video)
+    set_item_permissions
     @video.save
 
     redirect_to edit_video_path(@video, step: 'file_upload')
@@ -25,7 +25,7 @@ class VideosController < ApplicationController
     @video.descMetadata.created_on = params[:created_on]
     @video.save
     
-    redirect_to hydra_asset_path(id: params[:pid])
+    redirect_to edit_video_path(id: params[:pid], step: 'file_upload')
   end
 
   def edit
@@ -72,5 +72,13 @@ class VideosController < ApplicationController
     @video = Video.find(params[:id]).delete
     flash[:notice] = "#{params[:id]} has been withdrawn from the system"
     redirect_to :back 
+  end
+  
+  protected
+  def set_item_permissions
+    permission = {
+      "group" => { "public" => "read", "archivist" => "edit"},
+      "person" => {"archivist1@example.com" => "edit"}}
+    @video.rightsMetadata.update_permissions(permission)
   end
 end
