@@ -13,6 +13,7 @@ Hydrant::Application.routes.draw do
     resources :videos, except: [:index]
 #  end
   match 'search/index' => 'search#index'
+  match 'search/facet/:id' => 'search#facet'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
