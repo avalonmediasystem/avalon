@@ -1,4 +1,6 @@
 <section id="facets">
+<%= render 'facets' %>
+<!--
   <div class="row-fluid">
     <div class="span2">
       <h3>Facet 1</h3>
@@ -19,14 +21,15 @@
       </ul>
     </div>
   </div>
+-->
 </section>
 
 <section id="search_results">
   <div class="row-fluid"><%= render 'modules/global_search' %></div>
   <div class="row-fluid">
-      <% unless @results.empty? %>
+      <% unless @document_list.empty? %>
       <ul class="thumbnails">
-        <%= render partial: 'search_result', collection: @results, as: :item %>      
+        <%= render partial: 'search_result', collection: @document_list, as: :item %>      
       </ul>
       <% else %>
         <h3>No results were found. Try a different search term.</h3>

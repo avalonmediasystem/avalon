@@ -2,18 +2,21 @@
   <div class="thumbnail">
     <img class="preview-icon">[ Preview image]</img>  
     <div class="caption">
-      <h4 class="title">
-        <% if can? :read, item %>
-          <%= link_to "#{item.descMetadata.title[0]} (#{item.pid})", video_path(item) %> 
-        <% else %>
-           <%= item.descMetadata.title[0] %> (<%= item.pid %>)
-        <% end %>
-      </h4>
-      
-      <p class="creator"><%= item.descMetadata.creator[0] %></h4>
-      <% unless item.descMetadata.abstract.nil? or 
-         item.descMetadata.abstract[0].empty? %>
-        <p class="summary"><%= truncate(item.descMetadata.abstract[0], 
+      <% unless item["title_t"].nil? or item["title_t"].empty? %>
+        <h4 class="title">
+          <% if can? :read, item %>
+            <%= link_to "#{item["title_t"].first} (#{item[:id]})", video_path(item[:id]) %> 
+          <% else %>
+            <%= item["title_t"].first %> (<%= item[:id] %>)
+          <% end %>
+        </h4>
+      <% end %>
+      <% unless item["creator_t"].nil? or item["creator_t"].empty? %>
+        <p class="creator"><%= item["creator_t"].first %></h4>
+      <% end %>
+      <% unless item["abstract_t"].nil? or 
+         item["abstract_t"].empty? %>
+        <p class="summary"><%= truncate(item["abstract_t"].first, 
           length: 50) %></p>
       <% else %>
         <p class="summary">No summary available</p>
