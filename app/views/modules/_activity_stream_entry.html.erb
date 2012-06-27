@@ -9,7 +9,7 @@
 <dd>
   <!-- Need to shorten the asbtract if it is too long -->
   <% unless not item.descMetadata.abstract[0].nil? and item.descMetadata.abstract[0].empty? %>
-    <%= item.descMetadata.abstract[0] %>
+    <%= truncate(item.descMetadata.abstract[0], length: 120) %>
   <% else %>
     <em>No description available</em>
   <% end %>
