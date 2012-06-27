@@ -1,3 +1,9 @@
-<h2>My items</h2>
-<hr />
-<p>You have not yet added anything to the system.</p>
+          <h2>My items</h2>
+          <hr />
+          <% unless @my_items.empty? %>
+            <dl>
+              <%= render partial: "modules/activity_stream_entry", collection: @my_items, as: :item %>
+            </dl>
+          <% else %>
+            <p>You have not yet added anything to the system.</p>
+          <% end %>

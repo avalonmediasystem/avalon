@@ -1,22 +1,20 @@
 class DublinCoreDocument < ActiveFedora::NokogiriDatastream
   set_terminology do |t|
-    t.root(:path=>"dc", :xmlns=>"http://purl.org/dc/elements/1.1/", :schema=>"http://dublincore.org/schemas/xmls/simpledc20021212.xsd")
-    t.title(:index_as=>[:facetable])
-    t.creator(:index_as=>[:facetable])
-    t.subject(:index_as=>[:facetable])
-    t.description
-    t.publisher
-    t.contributor
-    t.date
-    t._type
-    t.identifier
-    t.source
-    t.language
-    t.relation
-    t.coverage
-    t.rights
-  
-    t.created_on(:ref => :date, :attributes => {:type => 'created_on'})
+    t.root(:path=>"dc", :namespace_prefix=>"oai_dc", "xmlns:oai_dc"=>"http://www.openarchives.org/OAI/2.0/oai_dc/", "xmlns:dc"=>"http://purl.org/dc/elements/1.1/", :schema=>"http://www.openarchives.org/OAI/2.0/oai_dc.xsd")
+    t.title(:namespace_prefix=>"dc")
+    t.creator(:index_as=>[:searchable], :namespace_prefix=>"dc")
+    t.subject(:namespace_prefix=>"dc")
+    t.description(:namespace_prefix=>"dc")
+    t.publisher(:namespace_prefix=>"dc")
+    t.contributor(:namespace_prefix=>"dc")
+    t.date(:namespace_prefix=>"dc")
+    t.dc_type(:namespace_prefix=>"dc")
+    t.identifier(:namespace_prefix=>"dc")
+    t.source(:namespace_prefix=>"dc")
+    t.language(:namespace_prefix=>"dc")
+    t.relation(:namespace_prefix=>"dc")
+    t.coverage(:namespace_prefix=>"dc")
+    t.rights(:namespace_prefix=>"dc")
   end
   
     # Generates an empty Video(used when you call Video.new without passing in existing xml)
@@ -24,19 +22,23 @@ class DublinCoreDocument < ActiveFedora::NokogiriDatastream
     def self.xml_template
       # use Nokogiri to build the XML
       builder = Nokogiri::XML::Builder.new do |xml|
-        xml.dc(:version=>"1.1",
+        xml.dc("xmlns:oai_dc"=>"http://www.openarchives.org/OAI/2.0/oai_dc/",
+           "xmlns:dc"=>"http://purl.org/dc/elements/1.1/",
            "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
-           "xmlns"=>"http://purl.org/dc/elements/1.1/",
-           "xsi:schemaLocation"=>"http://dublincore.org/schemas/xmls/simpledc20021212.xsd") {
-          xml.title
-          xml.creator
-	  			xml.subject
-          xml.description
-          xml.date
-					xml.source
+           "xsi:schemaLocation"=>"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd") {
+	  xml.parent.namespace_definitions.each {|ns|
+            xml.parent.namespace = ns if ns.prefix == 'oai_dc'
+          }
         }
       end
       # return a Nokogiri::XML::Document, not an OM::XML::Document
       return builder.doc
     end
+
+    def to_solr(solr_doc = {})
+      super(solr_doc)
+      solr_doc["dc_creator_t"] = self.creator
+      return solr_doc
+    end
+
 end

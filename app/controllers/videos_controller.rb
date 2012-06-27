@@ -9,6 +9,7 @@ class VideosController < ApplicationController
 
   def new
     @video = Video.new
+    @video.DC.creator = user_key
     set_default_item_permissions
     @video.save
 
@@ -20,6 +21,7 @@ class VideosController < ApplicationController
     puts "<< Making a new Video object with a PBCore datastream >>"
 
     @video = Video.new
+    @video.DC.creator = user_key
     @video.descMetadata.title = params[:title]
     @video.descMetadata.creator = params[:creator]
     @video.descMetadata.created_on = params[:created_on]

@@ -155,7 +155,9 @@ class CatalogController < ApplicationController
           @recent_items << Video.find(asset.container.pid) 
         end 
       }
-    @my_items = nil
+    @my_items = Video.find({'dc_creator_t' => user_key}, {
+      :sort => 'system_create_dt desc', 
+      :rows => 5})
   end
 
 end 
