@@ -1,9 +1,11 @@
 <div class="row-fluid">
   <div class="span3" id="left_column">
+    <% if can? :edit, @video %>
     <%= render "conversion_status", files: @video_assets %>
     <%= render "withdraw_object", video: @video %>
+    <% end %>
   </div>
-
+  
   <div id="main_body" class="offset1 span7">
     <div id="permalink" class="alert alert-success">
       <h4 class="alert-heading">Permalink</h4>

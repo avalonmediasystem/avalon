@@ -9,7 +9,9 @@
    		<legend>File Upload</legend>
                 <% @video_assets = @video.parts %>
 		<% unless @video_assets.empty? %>
-	  	   <a href="<%= @video_assets.first.descMetadata.identifier[0]%>"><%= @video_assets.first.descMetadata.title[0] %> <strong>(&lt;&lt;File size&gt;&gt;)</strong></a>
+	  	   <a href="<%= @video_assets.first.descMetadata.identifier[0]%>"><%= @video_assets.first.descMetadata.title[0] %> 
+                   <strong>(<%= number_to_human_size(3546123) %>)</strong>
+                   </a>
 	  	   <% if can? :edit, @video %>
 	 	     <!-- This should be refactored to act more in line with the typical
 	 			Twitter bootstrap code at some point -->

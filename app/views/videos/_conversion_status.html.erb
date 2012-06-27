@@ -7,7 +7,10 @@
         <% @video.parts.each do |file_asset| %>
         <% # Refactor this in the future?
            video_asset = VideoAsset.find(file_asset.pid) %>
-        <dt><%= video_asset.descMetadata.title[0] %></dt>
+        <dt>
+          <%= link_to file_download_label(video_asset),
+              edit_video_path(id: video_asset.container.pid, 
+                step: 'file-upload') %></dt>
         <dd><%= video_asset.description[0] %></dd>
         <!--
         <div class="progress progress-striped active">
@@ -20,4 +23,6 @@
       No file(s) have been loaded
     <% end %>  
   </p>
+  
+  <%= link_to "Manage file(s)", edit_video_path(@video, step: 'file_upload'), class: "btn" %>	
 </div>
