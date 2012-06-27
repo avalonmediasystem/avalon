@@ -157,7 +157,7 @@ class CatalogController < ApplicationController
       }
     @my_items = Video.find({'dc_creator_t' => user_key}, {
       :sort => 'system_create_dt desc', 
-      :rows => 5})
+      :rows => 5}) unless current_user.nil?
   end
 
 end 

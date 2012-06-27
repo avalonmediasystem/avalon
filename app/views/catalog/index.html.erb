@@ -15,7 +15,7 @@
     
       <div id="row_fluid">
         <div id="left_column" class="span5">
-          <%= render "modules/my_items" %>
+          <%= render "modules/my_items" unless current_user.nil? %>
         </div>
         
         <div id="right_column" class="span5">
