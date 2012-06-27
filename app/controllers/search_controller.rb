@@ -44,9 +44,9 @@ class SearchController < ApplicationController
     #
     # :show may be set to false if you don't want the facet to be drawn in the 
     # facet bar
-    config.add_facet_field 'subject_t', :label => 'Subject', :limit => 20
-    config.add_facet_field 'creator_t', :label => 'Creator', :limit => 20
-    config.add_facet_field 'created_on_t', :label => 'Created On', :limit => 20
+    config.add_facet_field 'subject_t', :label => 'Subject', :limit => 5
+    config.add_facet_field 'creator_t', :label => 'Creator', :limit => 5
+    config.add_facet_field 'format_t', :label => 'Format', :limit => 5
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
