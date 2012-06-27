@@ -66,11 +66,11 @@ class VideoAssetsController < ApplicationController
       
       unless params[:container_id].nil?
       	format.html { 
-          redirect_to edit_video_path(params[:container_id], step: 'file-upload') }
+          redirect_to edit_video_path(params[:container_id], step: 'file_upload') }
       	format.js { }
       else 
         format.html { 
-	  redirect_to edit_video_path(params[:container_id], step: 'file-upload') }
+	  redirect_to edit_video_path(params[:container_id], step: 'file_upload') }
         format.js { }
       end
     end
@@ -133,8 +133,8 @@ class VideoAssetsController < ApplicationController
 		end
 	end
 
+  # Does this code do anything with the changes to the model?
   def process_files
-    logger.debug "In process_files of video_assets_controller"
     video_asset = VideoAsset.find(params[:id]) 
 		video_asset.url = params[:video_url]
 		video_asset.description = "File processed and ready for streaming"
@@ -144,7 +144,6 @@ class VideoAssetsController < ApplicationController
 			notice << render_to_string(:partial=>'hydra/file_assets/asset_saved_flash', :locals => { :file_asset => video_asset })
         
       # If redirect_params has not been set, use {:action=>:index}
-      logger.debug "Updated #{video_asset.pid} with URL #{params[:video_url]}."
     	notice
 		else 
 			notice = "File updating failed"
