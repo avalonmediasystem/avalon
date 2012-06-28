@@ -79,7 +79,7 @@ class VideosController < ApplicationController
     flash[:notice] = "#{params[:id]} has been withdrawn from the system"
     redirect_to :back 
   end
-  
+    
   protected
   def set_default_item_permissions
     unless @video.rightsMetadata.nil?
