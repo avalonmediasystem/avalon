@@ -29,3 +29,8 @@
        <%= render 'file_upload' %>
    <% end %>
 </div>
+
+<% content_for :breadcrumbs do %>
+  <% links = [{label: 'Home', link: root_path}, {label: params[:id], link: ''}] %>
+  <%= render "modules/breadcrumbs" %>
+<% end %>

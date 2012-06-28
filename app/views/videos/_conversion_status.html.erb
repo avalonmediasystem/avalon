@@ -24,5 +24,7 @@
     <% end %>  
   </p>
   
+  <% unless params[:step].nil? and "file_upload" == params[:step] %>
   <%= link_to "Manage file(s)", edit_video_path(@video, step: 'file_upload'), class: "btn" %>	
+  <% end %>
 </div>

@@ -1,9 +1,13 @@
           <h2>My items</h2>
           <hr />
-          <% unless @my_items.empty? %>
-            <dl>
-              <%= render partial: "modules/activity_stream_entry", collection: @my_items, as: :item %>
-            </dl>
+          <% if current_user.nil? %>
+            <p><%= link_to 'Sign in', new_user_session_path %> to see recent contributions to the system.</p>
           <% else %>
-            <p>You have not yet added anything to the system.</p>
+            <% unless @my_items.empty? %>
+              <dl>
+                <%= render partial: "modules/activity_stream_entry", collection: @my_items, as: :item %>
+              </dl>
+            <% else %>
+              <p>You have not yet added anything to the system.</p>
+            <% end %>
           <% end %>

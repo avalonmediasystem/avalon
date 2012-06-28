@@ -7,7 +7,7 @@ module VideosHelper
 		if 25 > video_asset.descMetadata.title[0].length 
 		  label_display = video_asset.descMetadata.title[0]
 		else
-		  label_display = truncate(video_asset.descMetadata.title[0], length: 25)
+		  label_display = truncate(video_asset.descMetadata.title[0], length: 20)
                   label_display << "."
 		  label_display << video_asset.descMetadata.title[0].split('.').last
 		end

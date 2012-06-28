@@ -1,6 +1,9 @@
 <li class="thumbnail span3">
-  <div class="thumbnail">
-    <img class="preview-icon">[ Preview image]</img>  
+  <div class="thumbnail search-result">
+    <div class="preview-image">
+      <img>[ Preview image]</img> 
+    </div>
+     
     <div class="caption">
       <% unless item["title_t"].nil? or item["title_t"].empty? %>
         <h4 class="title">
@@ -17,7 +20,7 @@
       <% unless item["abstract_t"].nil? or 
          item["abstract_t"].empty? %>
         <p class="summary"><%= truncate(item["abstract_t"].first, 
-          length: 50) %></p>
+          length: 75) %></p>
       <% else %>
         <p class="summary">No summary available</p>
       <% end %>

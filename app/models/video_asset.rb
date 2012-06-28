@@ -55,6 +55,22 @@ class VideoAsset < FileAsset
     (finishedOperations / totalOperations) * 100
   end
   
+  # Eventually this should be baked into the technical metadata instead of a one-off
+  # Release Zero hack
+  def size
+    # Start with the root relative to Rails root
+    file_path = "public/videos"
+    # Add the parent container ID with colons (:) replaced by underscores (_)
+    file_path << "/#{container.pid.gsub(":", "_")}"
+    # Now tack on the original file name
+    file_path << "/#{descMetadata.title[0]}"
+    # Finally expand it to an absolute URL
+    file_path = File.expand_path(file_path)
+    
+    puts "<< Retrieving file size for #{file_path} >>"
+    File.size?(file_path)
+  end
+  
   protected
   def refresh_status
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])

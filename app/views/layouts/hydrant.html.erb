@@ -5,8 +5,6 @@
     <meta charset="utf-8" />
     <title>Hydrant: Audio and Video Repository</title>
     <%= stylesheet_link_tag "application", media: "all" %>
-    <%= javascript_include_tag "application" %>
-    <%= yield :page_scripts %>
 
     <%= csrf_meta_tags %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,17 +12,24 @@
   
   <body>
     <div class="container">
-      <header class="jumbotron page-header">
-        <div class="logo">
+      <div class="row-fluid">
+      <header class="jumbotron">
+        <div class="logo span2">
           <!-- Image taken from http://www.flickr.com/photos/jdhancock/6015618395/sizes/q/in/photostream/ 
               under a Creative Commons license. Replace later with a proper logo -->
           <%= image_tag "temporary_logo.jpg", alt: "Hydrant - Release Zero" %>
         </div>
         
+        <div class="span7">
           <h1>Hydrant</h1>
-          <p class="lead">Release Zero prototype</p>        
+          <p class="lead">Release Zero prototype</p>     
+        </div>   
       </header>
+      </div>
+      
       <%= render "modules/global_navigation" %>
+      
+      <%= yield :breadcrumbs %>
       
       <!-- TO DO : Relocate the breadcrumbs to be here on every page except for the
                    home page -->
@@ -37,5 +42,7 @@
       </footer>
     </div>
 
+    <%= javascript_include_tag "application" %>
+    <%= yield :page_scripts %>
   </body>
 </html>
