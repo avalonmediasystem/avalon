@@ -21,5 +21,8 @@
   <dd><%= @video.descMetadata.created_on.first %></dd>
   
 </dl>
-<%= link_to "Edit metadata", edit_video_path(@video, step: 'basic_metadata'), class: "btn" %>
+
+<% if can? :edit, @video %>
+  <%= link_to "Edit metadata", edit_video_path(@video, step: 'basic_metadata'), class: "btn" %>
+<% end %>
 
