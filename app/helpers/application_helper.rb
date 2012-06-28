@@ -6,6 +6,13 @@ module ApplicationHelper
     def image_for_result(item)
       # Overwrite this to return the preview from Matterhorn. Be sure to include the
       # image_tag call so it renders properly
-      image_tag "reel-to-reel.jpg"
+      video = Video.find(item[:id])
+      imageurl = "reel-to-reel.jpg"
+      unless (video.parts.nil? or video.parts.empty?)
+        video_asset = VideoAsset.find(video.parts.first.pid)
+        workflow_doc = Rubyhorn.client.instance_xml video_asset.descMetadata.source.first
+        imageurl = workflow_doc.searchpreview.first unless (workflow_doc.searchpreview.nil? or workflow_doc.searchpreview.empty?)
+      end
+      image_tag imageurl
     end
 end

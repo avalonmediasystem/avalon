@@ -1,5 +1,7 @@
 <div class="well">
-    <p><%= free_text(@video.descMetadata.abstract[0]) %></p>
+    <% unless @video.descMetadata.abstract.nil? or @video.descMetadata.abstract.empty? %>
+      <p><%= @video.descMetadata.abstract[0] %></p>
+    <% end %>
 </div>
 
 <h3>Basic Metadata</h3>
