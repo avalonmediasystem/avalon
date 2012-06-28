@@ -8,11 +8,14 @@ module ApplicationHelper
       # image_tag call so it renders properly
       video = Video.find(item[:id])
       imageurl = "reel-to-reel.jpg"
+      
       unless (video.parts.nil? or video.parts.empty?)
         video_asset = VideoAsset.find(video.parts.first.pid)
         workflow_doc = Rubyhorn.client.instance_xml video_asset.descMetadata.source.first
         imageurl = workflow_doc.searchpreview.first unless (workflow_doc.searchpreview.nil? or workflow_doc.searchpreview.empty?)
       end
+      # Audio files do not currently have an icon so provide the default
+      
       image_tag imageurl
     end
 end
