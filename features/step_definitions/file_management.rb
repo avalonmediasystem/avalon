@@ -22,10 +22,10 @@ When /^I upload the file "(.*?)" with MIME type "(.*)"$/ do |file, mime_type|
   # deleted from the repository. This step definitely needs some refinement.
   #
   #if page.has_selector? "#delete_asset"
-    #within '#delete_asset' do
-    #  click_on('Delete')
-    #end
-  #
+  #  within '#delete_asset' do
+  #    click_on('Delete file')
+  #  end
+  
   #end
   upload_file("Filedata[]", file, mime_type)  
 end

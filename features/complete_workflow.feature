@@ -1,0 +1,8 @@
+Feature: Create a new object in the system, upload a file, enter basic metadata, and
+  then see it appear on the browse page
+  
+  Scenario: I can create a new record then browse to it
+    Given I am logged in as "archivist1@example.com"
+    When I create a new video 
+    And provide basic metadata for it
+    Then I should be able to find the record in the browse view

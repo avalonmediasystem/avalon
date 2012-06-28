@@ -1,5 +1,10 @@
+# This is kludgy but it works - after you spawn a new ID immediately pull it back so
+# you can use it in later steps to avoid constantly repeating the identifier
 When /^I create a new ([^"]*)$/ do |asset_type|
   visit new_video_path
+
+  @resource = Video.find(:all).last
+  puts "<< Storing #{@resource.pid} for later use >>"
 end
 
 # Shortcut for the more verbose step so that the PID does not have to be constantly
@@ -29,12 +34,56 @@ end
 When /^I edit "([^"]*)"$/ do |id|
   visit edit_video_path(id)
   
-  within ('#publication_history_form') do  
+  within ('#basic_metadata_form') do  
     fill_in 'creator', with: 'Rake task'
     fill_in 'title', with: 'Cucumber Test Record'
     fill_in 'created_on', with: '2012.04.21'
     click_on 'Continue'
   end
+end
+
+# Use 'it' as a shortcut in complex steps to retrieve the current PID from the
+# active test's scope. This assumes that you have first called the 'create a new'
+# step earlier in the sequence
+When /^I edit it$/ do
+  step "I edit #{@resource.pid}"
+end
+
+When /^provide basic metadata for it$/ do 
+  # Refactor this for be more DRY since it is very similar to the edit methods
+  # above
+  puts "<< Going to #{edit_video_path(@resource.pid, step: 'basic-metadata')} >>"
+  
+  visit edit_video_path(@resource.pid, step: 'basic_metadata')
+  
+  within ('#basic_metadata_form') do  
+    fill_in 'metadata_creator', with: 'Cucumber'
+    fill_in 'metadata_title', with: 'New test record'
+    fill_in 'metadata_createdon', with: '2012.04.21'
+    fill_in 'metadata_abstract', with: 'A test record generated as part of Cucumber automated testing'
+    click_on 'Save and finish'
+  end
+end
+
+# Refactor this at some point to be more generic instead of quick and dirty
+# This also assumes the @resource variable has been set earlier in the session and is
+# available for the current test (such as in 'create a new video')
+Then /^I should be able to find the record in the browse view$/ do
+  visit search_index_path
+  
+  within '#search_results' do
+    test_for_search_result(@resource.pid)
+  end
+end
+
+Then /^I should be able to search for "(.*)"$/ do |pid|
+  visit search_path(q: pid)
+  test_for_search_result(@resource.pid)  
+end
+
+# Alias for explicit ID which assumes that the PID is in scope at the moment
+Then /^I should be able to search for it$/ do
+  step "I should be able to search for #{@resource.pid}"
 end
 
 Then /^I should be prompted to upload a file$/ do
@@ -57,7 +106,7 @@ end
 
 # Paths for matching actions that occur when updating an existing record
 Then /^I should see the changes to the metadata$/ do
-  visit video_path()
+  visit video_path
   within "#contributors_list" do
     assert page.should have_content('Rake task')
   end
@@ -77,5 +126,13 @@ def test_for_field(field)
     field.downcase!
     
     assert page.has_selector?("\##{field}")
+  end
+end
+
+def test_for_search_result(pid)
+  within ".search-result" do
+    puts "<< Testing for presence of #{video_path(pid)} >>"
+    
+    #assert page.should have_content("a[href='#{link_to video_path(pid)}']")
   end
 end

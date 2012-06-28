@@ -64,6 +64,15 @@ at_exit do
       puts "<< Exception caught when getting instantiated workflows from Matterhorn >>"
     end
     ids.each {|id| Rubyhorn.client.stop id}
+    
+    # Also be sure to delete all objects so the repository is pristine. Only those
+    # fixtures that are not numeric will be retained
+    Video.find(:all).each do |video|
+      if video.pid =~ /^hydrant:\d+$/
+        puts "<< Deleting #{video.pid} from the Fedora repository >>"
+        video.delete
+      end
+    end
 end
 
 # By default, any exception happening in your Rails application will bubble up
