@@ -14,11 +14,11 @@ module VideosHelper
 	  end
 	  
 	  # Not the best way to do this but it works for the time being
-	  def free_text(content)
+	  def wrap_text(content)
 	    unless content.nil?
-	      content.gsub!(/\n/, '<br />').html_safe
+	      content.gsub(/\n/, '<br />').html_safe
 	    else
-	      "No description provided"
+	      ""
 	    end
 	  end
 

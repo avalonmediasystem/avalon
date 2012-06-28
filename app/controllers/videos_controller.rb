@@ -3,7 +3,7 @@ class VideosController < ApplicationController
   
 #  before_filter :load_fedora_document, :only=>[:show, :edit]
 #  before_filter :load_document, :only=>[:show, :edit]
-
+   
   # TO DO : Need to import solr logic at some point for indexing and configuration
   #         of facets
 
@@ -34,7 +34,7 @@ class VideosController < ApplicationController
   def edit
     puts "<< Retrieving #{params[:id]} from Fedora >>"
     @video = Video.find(params[:id])
-    @video_assets = @video.parts
+    @video_asset = load_videoasset
     puts "<< Calling update method >>"
   end
   
@@ -72,6 +72,7 @@ class VideosController < ApplicationController
   
   def show
     @video = Video.find(params[:id])
+    @video_asset = load_videoasset
   end
 
   def destroy
@@ -93,4 +94,13 @@ class VideosController < ApplicationController
       @video.rightsMetadata.update_permissions(permission)
     end
   end
+  
+  def load_videoasset
+    unless @video.parts.nil? or @video.parts.empty?
+      VideoAsset.find(@video.parts.first.pid)
+    else
+      nil
+    end
+  end
+  
 end

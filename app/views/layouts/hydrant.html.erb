@@ -5,6 +5,8 @@
     <meta charset="utf-8" />
     <title>Hydrant: Audio and Video Repository</title>
     <%= stylesheet_link_tag "application", media: "all" %>
+    <%= javascript_include_tag "application" %>
+    <%= yield :page_scripts %>
 
     <%= csrf_meta_tags %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,8 +43,5 @@
         <!-- TODO : Create a rudimentary footer with basic links -->
       </footer>
     </div>
-
-    <%= javascript_include_tag "application" %>
-    <%= yield :page_scripts %>
   </body>
 </html>
