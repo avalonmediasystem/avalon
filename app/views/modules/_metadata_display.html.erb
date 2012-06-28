@@ -1,10 +1,5 @@
 <div class="well">
-  <% unless @video.descMetadata.abstract[0].nil? or
-    @video.descMetadata.abstract[0].empty? %>
     <p><%= free_text(@video.descMetadata.abstract[0]) %></p>
-  <% else %>
-    <p>No description provided.</p>
-  <% end %>
 </div>
 
 <h3>Basic Metadata</h3>
