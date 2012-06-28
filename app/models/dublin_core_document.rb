@@ -2,7 +2,7 @@ class DublinCoreDocument < ActiveFedora::NokogiriDatastream
   set_terminology do |t|
     t.root(:path=>"dc", :namespace_prefix=>"oai_dc", "xmlns:oai_dc"=>"http://www.openarchives.org/OAI/2.0/oai_dc/", "xmlns:dc"=>"http://purl.org/dc/elements/1.1/", :schema=>"http://www.openarchives.org/OAI/2.0/oai_dc.xsd")
     t.title(:namespace_prefix=>"dc")
-    t.creator(:index_as=>[:searchable], :namespace_prefix=>"dc")
+    t.creator(:index_as=>[:not_searchable], :namespace_prefix=>"dc")
     t.subject(:namespace_prefix=>"dc")
     t.description(:namespace_prefix=>"dc")
     t.publisher(:namespace_prefix=>"dc")
