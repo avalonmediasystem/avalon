@@ -1,3 +1,6 @@
+<div id='StrobeMediaPlayback'></div>
+
+<% content_for :page_scripts do %>
 	<!-- Refactor these into a yield / single call for readability -->
 	<script src="/javascripts/hydrant/jquery.rdfquery.rdfa.min-1.0.js" type="text/javascript"></script>
 	<script src="/javascripts/hydrant/oac_utils.js" type="text/javascript"></script>
@@ -6,12 +9,11 @@
 	<script type='text/javascript' src='/jwplayer/jwplayer.js'></script>
 	<script type="text/javascript" src="/javascripts/hydrant/iuplayer.js"></script>
 
-	<div id='StrobeMediaPlayback'></div>
 
 	<% if !@video.parts.empty? && @video.parts.first && !@video.parts.first.descMetadata.identifier.first.start_with?("rtmp") %>
 		<div class="well">
 		   
-		   <h3><i class="icon-time"></i> Video status</h3>
+		   <h3><i class="icon-time"></i>Video status</h3>
 		   <p>The file is still being processed by the system. Please check back later for a preview.</p>
 		</div>
 	<% elsif !@video.parts.empty? %>
@@ -81,3 +83,4 @@
 			);
 		</script>
 	<% end %>
+<% end %>

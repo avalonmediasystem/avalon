@@ -13,9 +13,13 @@
       <address><%= link_to video_url(@video.pid) %></address>
     </div>
     
-    <h2><% unless @video.descMetadata.title.empty? %><%= @video.descMetadata.title[0] %><% end %></h2>
-    <%= render "modules/video_player" %>
-    <section id="metadata">
-      <%= render "modules/metadata_display" %>
-    </section>
+    <% unless @video.descMetadata.title.empty? %>
+      <div class="page-header">
+        <h2><%= @video.descMetadata.title[0] %></h2>
+      </div>
+    <% end %>
+    
+    <section id="player"><%= render "modules/video_player" %></section>
+    
+    <section id="metadata"><%= render "modules/metadata_display" %></section>
 </div>

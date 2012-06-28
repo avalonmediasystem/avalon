@@ -1,24 +1,24 @@
 <div class="well">
   <% unless @video.descMetadata.abstract[0].nil? or
     @video.descMetadata.abstract[0].empty? %>
-    <p><%= @video.descMetadata.abstract[0] %></p>
+    <p><%= free_text(@video.descMetadata.abstract[0]) %></p>
   <% else %>
     <p>No description provided.</p>
   <% end %>
 </div>
 
-<h3>Details</h3>
-<dl id="creation_metadata">
+<h3>Basic Metadata</h3>
+<dl id="creation_metadata" class="dl-horizontal">
   <dt>Creator</dt>
-  <dd><%= @video.descMetadata.creator[0] %></dd>
+  <dd><%= @video.descMetadata.creator.first %></dd>
 
   <% unless @video.descMetadata.format.nil? %>
   <dt>Format</dt>
-  <dd><%= @video.descMetadata.format[0] %></dd>
+  <dd><%= @video.descMetadata.format.first %></dd>
   <% end %>
 
   <dt>Created on</dt>
-  <dd><%= @video.descMetadata.created_on[0] %></dd>
+  <dd><%= @video.descMetadata.created_on.first %></dd>
   
 </dl>
 <%= link_to "Edit metadata", edit_video_path(@video, step: 'basic_metadata'), class: "btn" %>

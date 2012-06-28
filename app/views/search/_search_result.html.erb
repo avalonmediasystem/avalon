@@ -5,18 +5,17 @@
     </div>
      
     <div class="caption">
-      <% unless item["title_t"].nil? or item["title_t"].empty? %>
         <h4 class="title">
           <% if can? :read, item %>
-            <%= link_to "#{item["title_t"].first} (#{item[:id]})", video_path(item[:id]) %> 
+            <%= link_to search_result_label(item), video_path(item[:id]) %> 
           <% else %>
-            <%= item["title_t"].first %> (<%= item[:id] %>)
+            <%= search_result_label(item) %>)
           <% end %>
         </h4>
-      <% end %>
       <% unless item["creator_t"].nil? or item["creator_t"].empty? %>
         <p class="creator"><%= item["creator_t"].first %></h4>
       <% end %>
+
       <% unless item["abstract_t"].nil? or 
          item["abstract_t"].empty? %>
         <p class="summary"><%= truncate(item["abstract_t"].first, 
@@ -24,6 +23,5 @@
       <% else %>
         <p class="summary">No summary available</p>
       <% end %>
-    </div>
   </div>
 </li>
