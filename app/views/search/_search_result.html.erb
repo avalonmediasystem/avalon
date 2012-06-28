@@ -1,7 +1,9 @@
 <li class="thumbnail span3">
   <div class="thumbnail search-result">
     <div class="preview-image">
-      <img>[ Preview image]</img> 
+      <% unless Video.find(item[:id]).parts.empty? %>
+        <img src="<%= VideoAsset.find(Video.find(item[:id]).parts.first.pid).thumbnail %>"/>
+      <% end %>
     </div>
      
     <div class="caption">

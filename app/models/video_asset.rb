@@ -71,6 +71,11 @@ class VideoAsset < FileAsset
     File.size?(file_path)
   end
   
+  def thumbnail
+    w = Rubyhorn.client.instance_xml source[0]
+    w.searchpreview.first
+  end   
+
   protected
   def refresh_status
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
