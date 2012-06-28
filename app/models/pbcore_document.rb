@@ -7,15 +7,15 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     
     # Required fields
     t.primary_id(path: "pbcoreIdentifier", xmlns: '', namespace_prefix: nil)
-    t.title(path: "pbcoreTitle", xmlns: '', namespace_prefix: nil, indexAs: [:searchable])
-    t.abstract(path: "pbcoreDescription", xmlns: '', namespace_prefix: nil, indexAs: [:searchable])
+    t.title(path: "pbcoreTitle", xmlns: '', namespace_prefix: nil, index_as: [:searchable])
+    t.abstract(path: "pbcoreDescription", xmlns: '', namespace_prefix: nil, index_as: [:searchable])
     
     # Other fields required by the data dictionary
     t.created_on(path: "pbcoreAssetDate", attributes: {dateType: 'created'}, 
-      xmlns: '', namespace_prefix: nil, indexAs: [:facetable])
+      xmlns: '', namespace_prefix: nil, index_as: [:facetable])
     
     # Contributors, creators, and publishers
-    t.creator(path: "pbcoreCreator/creator", xmlns: '', namespace_prefix: nil, indexAs: [:facetable])
+    t.creator(path: "pbcoreCreator/creator", xmlns: '', namespace_prefix: nil, index_as: [:facetable])
     t.pbcore_contributor(path: "pbcoreContributor") {
       t.contributor
       t.contributor_role
@@ -37,7 +37,7 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     #  t.mediaType(path: "instantiationMediaType",
     #    namespace_prefix: nil, xmlns: '')
     #}
-    t.format(path: "pbcoreInstantiation/instantiationMediaType", xmlns: '', namespace_prefix: nil, indexAs: [:facetable])
+    t.format(path: "pbcoreInstantiation/instantiationMediaType", xmlns: '', namespace_prefix: nil, index_as: [:facetable])
   end
   
   def self.xml_template
