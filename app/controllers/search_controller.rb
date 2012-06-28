@@ -13,7 +13,8 @@ class SearchController < ApplicationController
   configure_blacklight do |config|
     config.default_solr_params = { 
       :qt => 'search',
-      :rows => 16 
+      :rows => 16,
+      :fq => 'active_fedora_model_s:Video' 
     }
 
     # solr field configuration for search results/index views
