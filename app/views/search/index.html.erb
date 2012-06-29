@@ -11,7 +11,7 @@
   <% end %>
   </div>
   
-  <div class="row-fluid">
+    <div class="span10">
       <% unless @document_list.empty? %>
       <ul class="thumbnails">
         <%= render partial: 'search_result', collection: @document_list, as: :item %>      
@@ -19,6 +19,6 @@
       <% else %>
         <h3>No results were found. Try a different search term.</h3>
       <% end %>
-  </div>
+    </div>
 </section>
 

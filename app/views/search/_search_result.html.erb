@@ -1,8 +1,6 @@
-<li class="thumbnail span3">
+<li class="span3">
   <div class="thumbnail search-result">
-    <div class="preview-image">
-      <%= image_for_result(item) %>
-    </div>
+    <%= image_for_result(item) %>
      
     <div class="caption">
         <h4 class="title">
@@ -13,7 +11,7 @@
           <% end %>
         </h4>
       <% unless item["creator_t"].nil? or item["creator_t"].empty? %>
-        <p class="creator"><%= item["creator_t"].first %></h4>
+        <p class="creator"><%= item["creator_t"].first %></p></h4>
       <% end %>
 
       <% unless item["abstract_t"].nil? or 

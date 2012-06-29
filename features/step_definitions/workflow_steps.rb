@@ -52,8 +52,6 @@ end
 When /^provide basic metadata for it$/ do 
   # Refactor this for be more DRY since it is very similar to the edit methods
   # above
-  puts "<< Going to #{edit_video_path(@resource.pid, step: 'basic-metadata')} >>"
-  
   visit edit_video_path(@resource.pid, step: 'basic_metadata')
   
   within ('#basic_metadata_form') do  

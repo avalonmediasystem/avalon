@@ -26,10 +26,7 @@ module VideosHelper
 	  def search_result_label(item)
 	     label = ''
 	     unless item["title_t"].nil? or item["title_t"].empty?
-	       label << item["title_t"].first
-	       label << " ("
-	       label << item.id
-	       label << ")"
+	       label << truncate(item["title_t"].first, length: 20)
 	     else
 	       label << item.id
 	     end
