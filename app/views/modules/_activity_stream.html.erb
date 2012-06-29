@@ -1,7 +1,7 @@
           <h2>Recent uploads</h2>
           <hr />
           <% unless @recent_items.empty? %>
-            <dl>
+            <dl class="activity-stream">
               <%= render partial: "modules/activity_stream_entry", collection: @recent_items, as: :item %>
             </dl>
           <% else %>

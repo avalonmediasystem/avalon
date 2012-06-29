@@ -4,7 +4,7 @@
             <p><%= link_to 'Sign in', new_user_session_path %> to see recent contributions to the system.</p>
           <% else %>
             <% unless @my_items.empty? %>
-              <dl>
+              <dl class="activity-stream">
                 <%= render partial: "modules/activity_stream_entry", collection: @my_items, as: :item %>
               </dl>
             <% else %>
