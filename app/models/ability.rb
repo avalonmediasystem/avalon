@@ -18,6 +18,6 @@ class Ability
   end
   
   def enforce_new_permissions(opts={})
-    enforce_new_permissions(opts)
+    enforce_create_permissions(opts)
   end
 end
