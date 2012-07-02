@@ -3,6 +3,8 @@ class VideosController < ApplicationController
   
 #  before_filter :load_fedora_document, :only=>[:show, :edit]
 #  before_filter :load_document, :only=>[:show, :edit]
+
+   before_filter :enforce_access_controls
    
   # TO DO : Need to import solr logic at some point for indexing and configuration
   #         of facets
@@ -102,5 +104,6 @@ class VideosController < ApplicationController
       nil
     end
   end
-  
+
+
 end

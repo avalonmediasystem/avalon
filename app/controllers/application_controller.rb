@@ -3,6 +3,9 @@ class ApplicationController < ActionController::Base
    include Blacklight::Controller  
 # Adds Hydra behaviors into the application controller 
   include Hydra::Controller
+
+  include AccessControlsHelper
+
   def layout_name
    'hydrant'
   end
