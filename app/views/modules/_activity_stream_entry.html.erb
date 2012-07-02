@@ -11,7 +11,7 @@
   <% unless not item.descMetadata.abstract[0].nil? and item.descMetadata.abstract[0].empty? %>
     <%= truncate(item.descMetadata.abstract[0], length: 120) %>
   <% else %>
-    <em>No description available</em>
+    <em>No summary available</em>
   <% end %>
 </dd>
 <% end %>

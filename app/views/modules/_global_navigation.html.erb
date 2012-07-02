@@ -7,9 +7,9 @@
         <li class="divider-vertical"></li>
         <li class="span2">
           <% unless current_user.nil? %>
-              <%= link_to 'Add new resource', new_video_path %>
+              <%= link_to 'Add new item', new_video_path %>
           <% else %>
-            <%= link_to 'Add new resource', new_user_session_path %>
+            <%= link_to 'Add new item', new_user_session_path %>
           <% end %>
         </li>
         <li class="divider-vertical"></li>
