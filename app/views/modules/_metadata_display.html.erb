@@ -1,14 +1,7 @@
-<div class="well">
-  <% unless @video.descMetadata.abstract.nil? or
-       @video.descMetadata.abstract.empty? %>
-    <p><%= wrap_text(@video.descMetadata.abstract.first) %></p>
-  <% else %>
-    <p>No description available</p>
-  <% end %>
-</div>
-
-<h3>Basic Metadata</h3>
 <dl id="creation_metadata" class="dl-horizontal">
+  <dt>Title</dt>
+  <dd><%= @video.descMetadata.title.first %></dd>
+
   <dt>Creator</dt>
   <dd><%= @video.descMetadata.creator.first %></dd>
 
@@ -17,8 +10,16 @@
   <dd><%= @video.descMetadata.format.first %></dd>
   <% end %>
 
-  <dt>Created on</dt>
+  <dt>Date</dt>
   <dd><%= @video.descMetadata.created_on.first %></dd>
+
+  <dt>Summary</dt>
+  <% unless @video.descMetadata.abstract.nil? or
+       @video.descMetadata.abstract.empty? %>
+    <dd><%= wrap_text(@video.descMetadata.abstract.first) %></dd>
+  <% else %>
+    <dd>No summary available</dd>
+  <% end %>
   
 </dl>
 

@@ -7,12 +7,6 @@
   </div>
 
   <div id="main_body" class="offset1 span7">
-    <div id="permalink" class="alert alert-success">
-      <h4 class="alert-heading">Permalink</h4>
-      <p>To share this resource with others use the following canonical link</p>
-      <address><%= link_to video_url(@video.pid) %></address>
-    </div>
-    
     <% unless @video.descMetadata.title.empty? %>
       <div class="page-header">
         <h2><%= @video.descMetadata.title[0] %></h2>
@@ -22,4 +16,10 @@
     <section id="player"><%= render "modules/video_player" %></section>
     
     <section id="metadata"><%= render "modules/metadata_display" %></section>
+
+    <div id="permalink" class="alert alert-success">
+      <h4 class="alert-heading">Permalink</h4>
+      <p>To share this item with others use the following canonical link</p>
+      <address><%= link_to video_url(@video.pid) %></address>
+    </div>
 </div>

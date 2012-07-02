@@ -1,9 +1,9 @@
-  <div id="upload_format" class="alert <%- if flash[:upload] %>active<% end %>">
+<!--  <div id="upload_format" class="alert <%- if flash[:upload] %>active<% end %>">
 	  <button class="close" href="#" data-dismiss="alert">x</button>
 	  <h4 class="alert=heading">File content</h4>
 	  <p class="notice"><%- if flash[:upload] %><%= flash[:upload] if flash[:upload] %><% else %>No file has been selected<% end %></p>
 	</div>
-	
+-->	
 	<% if not @video.nil? and can? :edit, @video %> 
   	  <fieldset id='uploader'>
    		<legend>File Upload</legend>
