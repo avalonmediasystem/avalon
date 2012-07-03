@@ -22,4 +22,4 @@ Feature: Check basic metadata fields (form)
     Given I am logged in as "archivist1@example.com"
     When I create a new video
     And I delete it
-    Then I should see it has been deleted
+    Then I should see confirmation it has been deleted
