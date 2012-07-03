@@ -12,9 +12,14 @@ Feature: Check basic metadata fields (form)
     When I go to the "basic metadata" step for "hydrant:basic-metadata"
     Then I should see only required fields
     
-  # Temporarily disabled until the 'browse' link comes back next week
-  #Scenario: Values persist in the system
-  #  Given I am logged in as "archivist1@example.com"
-  #  And that "hydrant:basic-metadata" has been loaded into fedora
-  #  When I edit "hydrant:basic-metadata"
-  #  Then I should see the changes to the metadata
+  Scenario: Values persist in the system
+    Given I am logged in as "archivist1@example.com"
+    When I create a new video
+    And provide basic metadata for it
+    Then I should see the changes to the metadata
+
+  Scenario: Deleting an item
+    Given I am logged in as "archivist1@example.com"
+    When I create a new video
+    And I delete it
+    Then I should see it has been deleted

@@ -79,8 +79,8 @@ class VideosController < ApplicationController
 
   def destroy
     @video = Video.find(params[:id]).delete
-    flash[:notice] = "#{params[:id]} has been withdrawn from the system"
-    redirect_to :back 
+    flash[:notice] = "#{params[:id]} has been deleted from the system"
+    redirect_to root_path
   end
     
   protected

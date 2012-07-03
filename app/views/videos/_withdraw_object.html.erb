@@ -1,6 +1,6 @@
     <!-- Refactor this into a partial at some point -->
     <fieldset id="delete_asset">
-      <legend>Withdraw item</legend>
-      <p>If you are certain that this item is no longer needed it can be withdrawn from the system using the button below. This action cannot be undone without reuploading and describing the content.</p>
-      <%= button_to("Delete This Item", {:action => :destroy, :controller => :"videos", :id => @video.pid}, :data => { :confirm => 'Are you sure?' }, :method => :delete, class: "btn" )%>
+      <legend>Delete item</legend>
+      <p>If you are certain that this item is no longer needed it can be deleted from the system using the button below. This action cannot be undone without reuploading and describing the content.</p>
+      <%= button_to("Delete item", {:action => :destroy, :controller => :"videos", :id => @video.pid}, :data => { :confirm => 'Are you sure?' }, :method => :delete, class: "btn" )%>
     </fieldset>

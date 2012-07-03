@@ -11,18 +11,23 @@ module NavigationHelpers
   
     when /the home\s?page/
       '/'
+    when /the sign\s?in page/
+      '/users/sign_in'
     when /the search page/
-      '/catalog'
+      '/search'
     when /logout/
       destroy_user_session_path
     when /my account info/
       edit_user_registration_path
+    when /the document page for id (.+)/ 
+      video_path(CGI.escape($1))
+    when /the edit page for id (.+)/ 
+      edit_video_path(CGI.escape($1))
+    when /an edit page/ 
+      '/videos/*/edit'
+
     when /the base search page/
       '/catalog?q=&search_field=search&action=index&controller=catalog&commit=search'
-    when /the document page for id (.+)/ 
-      catalog_path(CGI.escape($1))
-    when /the edit page for id (.+)/ 
-      edit_catalog_path(CGI.escape($1))
     when /the catalog index page/
       catalog_index_path
     # Add more mappings here.

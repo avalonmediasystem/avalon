@@ -32,13 +32,16 @@ end
 
 # Paths for matching actions that occur when updating an existing record
 When /^I edit "([^"]*)"$/ do |id|
-  visit edit_video_path(id)
+  # Refactor this for be more DRY since it is very similar to the edit methods
+  # above
+  visit edit_video_path(id, step: 'basic_metadata')
   
   within ('#basic_metadata_form') do  
-    fill_in 'creator', with: 'Rake task'
-    fill_in 'title', with: 'Cucumber Test Record'
-    fill_in 'created_on', with: '2012.04.21'
-    click_on 'Continue'
+    fill_in 'metadata_creator', with: 'Cucumber'
+    fill_in 'metadata_title', with: 'New test record'
+    fill_in 'metadata_createdon', with: '2012.04.21'
+    fill_in 'metadata_abstract', with: 'A test record generated as part of Cucumber automated testing'
+    click_on 'Save and finish'
   end
 end
 
@@ -61,6 +64,11 @@ When /^provide basic metadata for it$/ do
     fill_in 'metadata_abstract', with: 'A test record generated as part of Cucumber automated testing'
     click_on 'Save and finish'
   end
+end
+
+When /^I delete it$/ do
+  visit edit_video_path(@resource.pid)
+  click_on 'Delete item'
 end
 
 # Refactor this at some point to be more generic instead of quick and dirty
@@ -104,17 +112,17 @@ end
 
 # Paths for matching actions that occur when updating an existing record
 Then /^I should see the changes to the metadata$/ do
-  visit video_path
-  within "#contributors_list" do
-    assert page.should have_content('Rake task')
-  end
-
-  within "#creation_date" do
+  visit video_path(@resource.pid) 
+  within "#metadata" do
+    assert page.should have_content('Cucumber')
     assert page.should have_content('2012.04.21')
+    assert page.should have_content('New test record')
   end
+end
 
-  within "h1.document-heading" do
-    assert page.should have_content('Cucumber Test Record')
+Then /^I should see it has been deleted$/ do
+  within "#marquee" do
+    assert page.should have_content("#{@resource.pid} has been deleted from the system")
   end
 end
 
