@@ -55,5 +55,12 @@ module Hydrant
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+  :address              => "mail-relay.iu.edu",
+  :port                 => 465,
+  :enable_starttls_auto => true  }
+
   end
 end
