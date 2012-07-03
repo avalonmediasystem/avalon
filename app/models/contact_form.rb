@@ -8,8 +8,7 @@ class ContactForm < MailForm::Base
     { 
 		  :subject => "Comment for VoV",
       :from => %("#{fullname}" <#{email}>),
-			:to => "phuongdh@gmail.com"
-			#:to => "vovcomment@dlib.indiana.edu" 
+			:to => "vovcomment@dlib.indiana.edu" 
 		}
   end
 end
