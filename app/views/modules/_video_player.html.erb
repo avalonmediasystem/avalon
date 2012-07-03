@@ -12,7 +12,7 @@
 	<% if (not @video_asset.nil?) and 
 	    (not @video_asset.descMetadata.identifier.first.start_with?("rtmp")) %>
 		<div class="well">	   
-		   <h3><i class="icon-time"></i>Video status</h3>
+		   <h3><i class="icon-time"></i> Video status</h3>
 		   <p>The file is still being processed by the system. Please check back later for a preview.</p>
 		</div>
 	<% elsif !@video_asset.nil? %>
