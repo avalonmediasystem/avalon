@@ -8,9 +8,9 @@ class Video < ActiveFedora::Base
   has_metadata name: "rightsMetadata", type: Hydra::Datastream::RightsMetadata
 
   after_create :after_create
-  validates :creator, :has_valid_metadata_value
-  validates :created_on, :has_valid_metadata_value
-  validates :title, :has_valid_metadata_value
+#  validates :creator, :has_valid_metadata_value
+#  validates :created_on, :has_valid_metadata_value
+#  validates :title, :has_valid_metadata_value
 
   private
   def validate
