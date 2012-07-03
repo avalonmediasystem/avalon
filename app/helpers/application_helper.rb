@@ -7,8 +7,14 @@ module ApplicationHelper
       # Overwrite this to return the preview from Matterhorn. Be sure to include the
       # image_tag call so it renders properly
       video = Video.find(item[:id])
-      imageurl = "reel-to-reel.jpg"
-      
+      if video.descMetadata.format.first == "Moving image"
+        imageurl = "reel-to-reel.jpg"
+      elsif video.descMetadata.format.first == "Sound"
+        imageurl = "audio-icon.png"
+      else
+        imageurl = "Question_mark.png"
+      end
+
       unless (video.parts.nil? or video.parts.empty?)
         video_asset = VideoAsset.find(video.parts.first.pid)
         workflow_doc = Rubyhorn.client.instance_xml video_asset.descMetadata.source.first
