@@ -56,7 +56,7 @@ class VideosController < ApplicationController
 
         puts "<< #{@video.descMetadata.to_xml} >>"
         @video.save
-        unless @video.errors.nil?
+        unless @video.errors.empty?
           flash[:error] = "There are errors with your submission. Please correct them before continuing."
           next_step = 'basic_metadata'
         else
@@ -71,9 +71,9 @@ class VideosController < ApplicationController
     # Quick, dirty, and elegant solution to how to post back to the previous
     # screen
     unless 'preview' == next_step
-      puts "<< Redirecting to the preview screen >>"
       redirect_to edit_video_path(@video, step: next_step)
     else
+      puts "<< Redirecting to the preview screen >>"
       redirect_to video_path(@video)
     end
   end

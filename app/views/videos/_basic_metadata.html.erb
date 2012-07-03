@@ -54,7 +54,7 @@
   <div class="control-group">
     <div class="controls">
       <%= link_to "Back to file upload", 
-          video_path(@video, step: 'file_upload'), 
+          edit_video_path(@video, step: 'file_upload'), 
           id: "previous_screen", class: "btn", name: "previous_screen" %>
       <%= submit_tag "Save and finish", class: 'btn', id: 'next_screen' %>
     </div>
