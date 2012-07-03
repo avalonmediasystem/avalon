@@ -56,6 +56,20 @@ footer {
   margin-bottom: 18px;
 }
 
-footer {
-	/* text-align: center; */
+footer ul {
+	margin-left: 0px;
 }
+
+footer li {
+	list-style-type: none;
+	display: inline;
+}
+
+footer li:before {
+	content: " - ";
+}
+
+footer li:first-child:before {
+	content: none;
+}
+
