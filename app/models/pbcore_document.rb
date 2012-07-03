@@ -15,7 +15,10 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
       xmlns: '', namespace_prefix: nil, index_as: [:facetable])
     
     # Contributors, creators, and publishers
-    t.creator(path: "pbcoreCreator/creator", xmlns: '', namespace_prefix: nil, index_as: [:facetable])
+    t.pbcore_creator(path: "pbcoreCreator", xmlns: '', namespace_prefix: nil){
+     t._creator(path: "creator", xmlns: '', namespace_prefix: nil)
+    }
+    t.creator(ref: [:pbcore_creator, :_creator], xmlns: '', namespace_prefix: nil, index_as: [:facetable])
     t.pbcore_contributor(path: "pbcoreContributor") {
       t.contributor
       t.contributor_role
