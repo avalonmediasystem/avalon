@@ -56,10 +56,16 @@ class VideosController < ApplicationController
 
         puts "<< #{@video.descMetadata.to_xml} >>"
         @video.save
-        next_step = 'preview'
+        unless @video.errors.nil?
+          flash[:error] = "There are errors with your submission. Please correct them before continuing."
+          next_step = 'basic_metadata'
+        else
+          next_step = 'preview'
+        end
       else
         next_step = 'file_upload'
     end
+        
     puts "<< #{@video.pid} has been updated in Fedora >>"
     
     # Quick, dirty, and elegant solution to how to post back to the previous
