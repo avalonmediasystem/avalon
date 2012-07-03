@@ -13,7 +13,7 @@ class VideosController < ApplicationController
     @video = Video.new
     @video.DC.creator = user_key
     set_default_item_permissions
-    @video.save
+    @video.save(:validate=>false)
 
     redirect_to edit_video_path(@video, step: 'file_upload')
   end
