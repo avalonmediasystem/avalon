@@ -14,7 +14,7 @@
   <%= hidden_field_tag 'pid', @video.pid %>
   <%= hidden_field_tag 'step', 'basic_metadata' %>
   
-  <div id="title-field" class="control-group">
+  <div id="title-field" class="control-group <% if @video.errors.has_key?(:title) %>error<% end %>">
     <div class="control-label">
       <%= label_tag 'metadata_title', "Title <strong>(*)</strong>".html_safe %>
     </div>
@@ -23,7 +23,7 @@
     </div>
   </div>
 
-  <div id="creator-field" class="control-group">
+  <div id="creator-field" class="control-group <% if @video.errors.has_key?(:creator)error<% end %>">
     <div class="control-label">
       <%= label_tag 'metadata_creator', "Creator <strong>(*)</strong>".html_safe %>
     </div>
@@ -32,7 +32,7 @@
     </div>
   </div>
 
-  <div id="createdon-field" class="control-group">
+  <div id="createdon-field" class="control-group <% if @video.errors.has_key?(:created_on) %>error<% end %>">
     <div class="control-label">
       <%= label_tag 'metadata_createdon', "Date <strong>(*)</strong>".html_safe %>
     </div>
