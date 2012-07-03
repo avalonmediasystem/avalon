@@ -59,7 +59,8 @@ class VideosController < ApplicationController
           puts "<< Errors found -> #{@video.errors} >>"
 
           flash[:error] = "There are errors with your submission. Please correct them before continuing."
-          next_step = 'basic_metadata'
+          render :edit
+          return
         else
           next_step = 'preview'
         end
