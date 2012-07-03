@@ -14,16 +14,13 @@
         </li>
         <li class="divider-vertical"></li>
         <li class="span2"><%= link_to 'Browse items', search_index_path %></li>
-        <li>
-          <%= form_tag search_index_path, 
-             method: 'post',  
-             id: "search_form",
-             class: "navbar-search pull-right" do %>
-             <%= text_field_tag :q, params[:q], class: 'q' %>
-             <%= submit_tag 'Search', class: "btn" %>
-           <% end %>
-        </li>
       </ul>
+      <%= form_tag search_index_path, 
+         method: 'post',  
+         id: "search_form",
+         class: "navbar-search pull-right" do %>
+         <%= text_field_tag :q, params[:q], placeholder: 'Search' %>
+       <% end %>
     </div>
   </div>
 </div>
