@@ -1,4 +1,14 @@
 <dl id="creation_metadata" class="dl-horizontal">
+  <dt>Title</dt>
+  <dd>
+    <% unless @video.descMetadata.title.empty? or
+      "" == @video.descMetadata.title.first %>
+      <%= @video.descMetadata.title.first %>
+    <% else %>
+      <em>Not provided</em>
+    <% end %>
+  </dd>
+
   <dt>Creator</dt>
   <dd>
     <% unless @video.descMetadata.creator.empty? or

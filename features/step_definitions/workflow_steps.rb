@@ -121,7 +121,7 @@ Then /^I should see the changes to the metadata$/ do
   within "#metadata" do
     assert page.should have_content('Cucumber')
     assert page.should have_content('2012.04.21')
-    assert page.should have_content('New test record')
+    assert page.should have_content('A test record generated as part of Cucumber automated testing')
   end
 end
 

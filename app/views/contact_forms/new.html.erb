@@ -2,6 +2,8 @@
     <div class="alert"><%= flash[:notice] %></div>
 <% end %>
 
+<p>Please give us your comments or request edit access.</p>
+
 <%= form_for @mail, :url => { :action => "create" } do |f| %>
   <p>
 		<%= f.label :fullname %>
