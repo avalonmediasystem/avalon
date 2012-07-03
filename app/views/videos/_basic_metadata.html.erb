@@ -1,10 +1,11 @@
 <fieldset id='basic_metadata'>
   <legend>Basic Metadata</legend>
 
-  <% if flash[:errors] %>
-    <div class="alert alert-error"><%= flash[:errors] %></div
+  <% if flash[:error] %>
+    <div class="alert alert-error"><%= flash[:error] %>
+    <%= @video.errors.keys %>
+    </div>
   <% end %>
-  
   <p><strong>(*)</strong> marked fields are required.</p>
   
 <%= form_tag video_path(params[:id]), 

@@ -56,7 +56,7 @@ class VideosController < ApplicationController
 
         @video.save
         unless @video.errors.empty?
-          puts "<< #{@video.errors} >>"
+          puts "<< Errors found -> #{@video.errors} >>"
 
           flash[:error] = "There are errors with your submission. Please correct them before continuing."
           next_step = 'basic_metadata'

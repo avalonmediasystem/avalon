@@ -8,26 +8,24 @@ class Video < ActiveFedora::Base
   has_metadata name: "rightsMetadata", type: Hydra::Datastream::RightsMetadata
 
   after_create :after_create
-  validates :creator, :has_valid_metadata_value
-  validates :created_on, :has_valid_metadata_value
-  validates :title, :has_valid_metadata_value
+  validate :presence_of_required_metadata
 
-  private
-  def validate
+   def presence_of_required_metadata
     puts "<< Validating required metadata fields >>"
-    unless is_valid_metadata_field?(creator, true)
+    unless has_valid_metadata_value(:creator, true)
       errors.add(:creator, "This field is required")
     end
     
-    unless is_valid_metadata_field(created_on, true)
+    unless has_valid_metadata_value(:created_on, true)
       errors.add(:created_on, "This field is required")
     end
     
-    unless is_valid_metadata_field(title, true)
+    unless has_valid_metadata_value(:title, true)
       errors.add(:title, "This field is required")
     end
   end
   
+  private
     def after_create
       self.DC.identifier = pid
       save
@@ -39,10 +37,10 @@ class Video < ActiveFedora::Base
       puts "<< Validating #{field} >>"
       
       # True cases to fail validation should live here
-      unless descMetadata[field].nil?
+      unless descMetadata.term_values(field).nil?
         if required 
-          return ((not descMetadata[field].empty?) and 
-            (not "" == descMetadata[field].first))
+          return ((not descMetadata.term_values(field).empty?) and 
+            (not "" == descMetadata.term_values(field).first))
         else 
           # If it isn't required then return true even if it is empty
           return true
