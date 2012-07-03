@@ -35,6 +35,8 @@
   gem 'felixwrapper', :git => "git://github.com/cjcolvar/felixwrapper.git"
   gem 'red5wrapper', :git => "git://github.com/cjcolvar/red5wrapper.git"
 
+	gem 'mail_form'
+
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
     gem 'uglifier', '>= 1.0.3'

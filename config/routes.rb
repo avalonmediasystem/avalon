@@ -14,6 +14,7 @@ Hydrant::Application.routes.draw do
 #  end
   match 'search/index' => 'search#index'
   match 'search/facet/:id' => 'search#facet'
+	resources :contact_forms
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
