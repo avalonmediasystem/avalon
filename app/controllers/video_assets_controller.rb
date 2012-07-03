@@ -4,6 +4,8 @@ require 'rubyhorn'
 
 class VideoAssetsController < ApplicationController
   include Hydra::FileAssets
+
+#  before_filter :enforce_access_controls
   
   skip_before_filter :verify_authenticity_token, :only => [:create]
 
@@ -12,6 +14,12 @@ class VideoAssetsController < ApplicationController
   # * the File Asset will use RELS-EXT to assert that it's a part of the specified container
   # * the method will redirect to the container object's edit view after saving
   def create
+    if cannot? :create, VideoAsset
+      flash[:notice] = "You do not have sufficient priviledges to add files"
+      redirect_to root_path 
+      return
+    end
+
     audio_types = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav"]
     video_types = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime"]
     unknown_types = ["application/octet-stream", "application/x-upload-data"]
@@ -126,6 +134,13 @@ class VideoAssetsController < ApplicationController
   end
 
 	def update
+   va = VideoAsset.find(params[:id])
+   if cannot? :edit, va.container.pid
+      flash[:notice] = "You do not have sufficient priviledges to edit files"
+     redirect_to root_path
+     return
+   end
+
    if params.has_key?(:video_url)
       notice = process_files
       flash[:notice] = notice.join("<br/>".html_safe) unless notice.blank?
@@ -163,12 +178,21 @@ class VideoAssetsController < ApplicationController
   # When destroying a file asset be sure to stop it first
   def destroy
     video_asset = VideoAsset.find(params[:id])
+    if cannot? :edit, video_asset.container.pid
+      flash[:notice] = "You do not have sufficient priviledges to delete files"
+      redirect_to root_path
+      return
+    end
+
     parent = video_asset.container
     
     puts "<< Stopping #{video_asset.source[0]} >>"
     Rubyhorn.client.stop(video_asset.source[0])
     
+    filename = video_asset.label
+
     video_asset.delete
+    flash[:upload] = "#{filename} has been deleted from the system"
     redirect_to edit_video_path(parent.pid, step: "file-upload")
   end
   

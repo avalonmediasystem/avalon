@@ -64,7 +64,7 @@ def upload_file(field, file, mime_type="application/octet-stream")
   page.wait_until do
     attach_file(field, File.expand_path(file))
     
-    click_button('Upload File')
+    click_button('Upload file')
   end
 end
 
