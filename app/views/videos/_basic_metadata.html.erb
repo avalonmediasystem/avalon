@@ -23,7 +23,7 @@
     </div>
   </div>
 
-  <div id="creator-field" class="control-group <% if @video.errors.has_key?(:creator)error<% end %>">
+  <div id="creator-field" class="control-group <% if @video.errors.has_key?(:creator) %>error<% end %>">
     <div class="control-label">
       <%= label_tag 'metadata_creator', "Creator <strong>(*)</strong>".html_safe %>
     </div>
