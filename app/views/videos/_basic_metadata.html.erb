@@ -2,7 +2,7 @@
   <legend>Basic Metadata</legend>
 
   <% if flash[:errors] %>
-  <div class="alert alert-error"><%= flash[:errors] %></div
+    <div class="alert alert-error"><%= flash[:errors] %></div
   <% end %>
   
   <p><strong>(*)</strong> marked fields are required.</p>
@@ -19,7 +19,7 @@
       <%= label_tag 'metadata_title', "Title <strong>(*)</strong>".html_safe %>
     </div>
     <div class="controls">
-      <%= text_field_tag 'metadata_title', @video.descMetadata.title, required: true, class: 'span12' %>
+      <%= text_field_tag 'metadata_title', @video.descMetadata.title, class: 'span12' %>
     </div>
   </div>
 
@@ -28,7 +28,7 @@
       <%= label_tag 'metadata_creator', "Creator <strong>(*)</strong>".html_safe %>
     </div>
     <div class="controls">
-      <%= text_field_tag 'metadata_creator', @video.descMetadata.creator, required: true, class: 'span12' %>
+      <%= text_field_tag 'metadata_creator', @video.descMetadata.creator, class: 'span12' %>
     </div>
   </div>
 
@@ -37,7 +37,7 @@
       <%= label_tag 'metadata_createdon', "Date <strong>(*)</strong>".html_safe %>
     </div>
     <div class="controls">
-      <%= text_field_tag 'metadata_createdon', @video.descMetadata.created_on, required: true, class: 'span12' %>
+      <%= text_field_tag 'metadata_createdon', @video.descMetadata.created_on, class: 'span12' %>
     </div>
   </div>
   

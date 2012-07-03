@@ -8,8 +8,13 @@ class Video < ActiveFedora::Base
   has_metadata name: "rightsMetadata", type: Hydra::Datastream::RightsMetadata
 
   after_create :after_create
+  validates :creator, :has_valid_metadata_value
+  validates :created_on, :has_valid_metadata_value
+  validates :title, :has_valid_metadata_value
 
+  private
   def validate
+    puts "<< Validating required metadata fields >>"
     unless is_valid_metadata_field?(creator, true)
       errors.add(:creator, "This field is required")
     end
@@ -23,7 +28,6 @@ class Video < ActiveFedora::Base
     end
   end
   
-  private
     def after_create
       self.DC.identifier = pid
       save
@@ -31,7 +35,9 @@ class Video < ActiveFedora::Base
     
     # This really should live in a Validation helper, the OM model, or somewhere
     # else that is not a quick and dirty hack
-    def is_valid_metadata_field?(field, required=false)
+    def has_valid_metadata_value(field, required=false)
+      puts "<< Validating #{field} >>"
+      
       # True cases to fail validation should live here
       unless descMetadata[field].nil?
         if required 

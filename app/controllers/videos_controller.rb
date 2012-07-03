@@ -49,14 +49,14 @@ class VideosController < ApplicationController
     case params[:step]
       when 'basic_metadata' then
         puts "<< Populating required metadata fields >>"
-        @video.descMetadata.title = params[:metadata_title]
+        @video.descMetadata.title = params[:metadata_title]        
         @video.descMetadata.creator = params[:metadata_creator]
         @video.descMetadata.created_on = params[:metadata_createdon]
         @video.descMetadata.abstract = params[:metadata_abstract]
 
-        puts "<< #{@video.descMetadata.to_xml} >>"
         @video.save
-        unless @video.errors.nil?
+        unless @video.errors.empty?
+          puts "<< #{@video.errors} >>"
           flash[:error] = "There are errors with your submission. Please correct them before continuing."
           next_step = 'basic_metadata'
         else
