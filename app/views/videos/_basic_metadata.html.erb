@@ -5,6 +5,8 @@
   <div class="alert alert-error"><%= flash[:errors] %></div
   <% end %>
   
+  <p><strong>(*)</strong> marked fields are required.</p>
+  
 <%= form_tag video_path(params[:id]), 
   :method => "put", 
   :class => "form-horizontal", 
@@ -14,31 +16,28 @@
   
   <div id="title-field" class="control-group">
     <div class="control-label">
-      <%= label_tag 'metadata_title', "Title" %>
-      <p class="information">Required</p>
+      <%= label_tag 'metadata_title', "Title <strong>(*)</strong>".html_safe %>
     </div>
     <div class="controls">
-      <%= text_field_tag 'metadata_title', @video.descMetadata.title, required: true %>
+      <%= text_field_tag 'metadata_title', @video.descMetadata.title, required: true, class: 'span12' %>
     </div>
   </div>
 
   <div id="creator-field" class="control-group">
     <div class="control-label">
-      <%= label_tag 'metadata_creator', "Creator" %>
-      <p class="information">Required</p>
+      <%= label_tag 'metadata_creator', "Creator <strong>(*)</strong>".html_safe %>
     </div>
     <div class="controls">
-      <%= text_field_tag 'metadata_creator', @video.descMetadata.creator, required: true %>
+      <%= text_field_tag 'metadata_creator', @video.descMetadata.creator, required: true, class: 'span12' %>
     </div>
   </div>
 
   <div id="createdon-field" class="control-group">
     <div class="control-label">
-      <%= label_tag 'metadata_createdon', "Date" %>
-      <p class="information">Required</p>
+      <%= label_tag 'metadata_createdon', "Date <strong>(*)</strong>".html_safe %>
     </div>
     <div class="controls">
-      <%= text_field_tag 'metadata_createdon', @video.descMetadata.created_on, required: true %>
+      <%= text_field_tag 'metadata_createdon', @video.descMetadata.created_on, required: true, class: 'span12' %>
     </div>
   </div>
   
@@ -48,7 +47,7 @@
     </div>
     <div class="controls">
       <%= text_area_tag 'metadata_abstract', @video.descMetadata.abstract[0], 
-        rows: 10 %>
+        rows: 10, class: 'span12' %>
     </div>
   </div>
 

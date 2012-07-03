@@ -15,10 +15,10 @@ module VideosHelper
 	  
 	  # Not the best way to do this but it works for the time being
 	  def wrap_text(content)
-	    unless content.nil?
+	    unless content.nil? or content.empty?
 	      content.gsub(/\n/, '<br />').html_safe
 	    else
-	      ""
+	      "<em>Not provided</em>".html_safe
 	    end
 	  end
 

@@ -6,7 +6,7 @@
     <% unless not item.descMetadata.title[0].nil? and item.descMetadata.title[0].empty? %><%= item.descMetadata.title[0] %><% else %>No title provided<% end%> (<%= item.pid %>)
   <% end %>
 </dt>
-<dd>
+<dd class="whitespace">
   <!-- Need to shorten the asbtract if it is too long -->
   <% unless not item.descMetadata.abstract[0].nil? and item.descMetadata.abstract[0].empty? %>
     <%= truncate(item.descMetadata.abstract[0], length: 120) %>
