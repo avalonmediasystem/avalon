@@ -40,10 +40,11 @@
       <div><%= yield %></div>
     
       <div class="row-fluid">
-      <footer class="span12">
-        <!-- TODO : Create a rudimentary footer with basic links -->
-        <a href="http://variationsonvideo.org">Variations on Video Project Website</a>
-      </footer>
+	      <footer class="span12">
+	        <!-- TODO : Create a rudimentary footer with basic links -->
+	        <a href="http://variationsonvideo.org">Variations on Video Project Website</a> 
+	        <%= link_to "Contact Us", new_contact_form_path %>
+	      </footer>
       </div>
     </div>
   </body>

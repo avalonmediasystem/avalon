@@ -71,6 +71,11 @@ When /^I delete it$/ do
   click_on 'Delete item'
 end
 
+When /^I delete the file$/ do
+  visit edit_video_path(@resource.pid, step: 'file-upload')
+  click_on 'Delete file'
+end
+
 # Refactor this at some point to be more generic instead of quick and dirty
 # This also assumes the @resource variable has been set earlier in the session and is
 # available for the current test (such as in 'create a new video')
@@ -120,9 +125,15 @@ Then /^I should see the changes to the metadata$/ do
   end
 end
 
-Then /^I should see it has been deleted$/ do
+Then /^I should see confirmation it has been deleted$/ do
   within "#marquee" do
     assert page.should have_content("#{@resource.pid} has been deleted from the system")
+  end
+end
+
+Then /^I should see confirmation the file has been deleted$/ do
+  within "#marquee" do
+    assert page.should have_content("#{@resource.parts.first.label} has been deleted from the system")
   end
 end
 

@@ -1,8 +1,21 @@
+<% if flash[:notice] %>
+    <div class="alert"><%= flash[:notice] %></div>
+<% end %>
+
 <%= form_for @mail, :url => { :action => "create" } do |f| %>
-  <p><%= f.text_field :fullname %></p>
-	<p><%= f.text_field :email %></p>
-  <p><%= f.text_area :comment, :size => "60x12" %></p>
-	<p><%= f.text_field :nickname, class: "hidden" %>
-  <p><%= f.submit "Send" %></p>
+  <p>
+		<%= f.label :fullname %>
+		<%= f.text_field :fullname, class: "span5" %>
+	</p>
+	<p>
+		<%= f.label :email %>
+		<%= f.text_field :email, class: "span5" %>
+	</p>
+  <p>
+		<%= f.label :comment %>
+		<%= f.text_area :comment, :size => "70x12", class: "span5" %>
+	</p>
+  <p><%= f.submit "Send", class: "btn" %></p>
+	<%= f.text_field :nickname, class: "hidden" %>
 <% end %>
 
