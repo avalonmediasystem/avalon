@@ -2,7 +2,9 @@
     <div class="alert"><%= flash[:notice] %></div>
 <% end %>
 
-<p>Please give us your comments or request edit access.</p>
+<h2 class="whitespace">Contact Us</h2>
+
+<p class="whitespace">Please use this form to send your comments, questions, and feedback to the Variations on Video development team.</p>
 
 <%= form_for @mail, :url => { :action => "create" } do |f| %>
   <p>
