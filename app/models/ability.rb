@@ -11,11 +11,11 @@ class Ability
 
   def enforce_create_permissions(opts={})
     if cannot? :create, Video
-      flash[:notice] = "You do not have sufficient priviledges to add items"
+      flash[:notice] = "You do not have sufficient privileges to add items"
       redirect_to root_path
       return
     elsif cannot? :create, VideoAsset
-      flash[:notice] = "You do not have sufficient priviledges to add files"
+      flash[:notice] = "You do not have sufficient privileges to add files"
       redirect_to root_path
       return
     else 

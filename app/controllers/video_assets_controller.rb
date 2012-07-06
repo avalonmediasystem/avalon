@@ -7,7 +7,7 @@ class VideoAssetsController < ApplicationController
 
 #  before_filter :enforce_access_controls
   
-  skip_before_filter :verify_authenticity_token, :only => [:create]
+  skip_before_filter :verify_authenticity_token, :only => [:update]
 
   # Creates and Saves a File Asset to contain the the Uploaded file 
   # If container_id is provided:
@@ -15,7 +15,7 @@ class VideoAssetsController < ApplicationController
   # * the method will redirect to the container object's edit view after saving
   def create
     if cannot? :create, VideoAsset
-      flash[:notice] = "You do not have sufficient priviledges to add files"
+      flash[:notice] = "You do not have sufficient privileges to add files"
       redirect_to root_path 
       return
     end
@@ -136,7 +136,7 @@ class VideoAssetsController < ApplicationController
 	def update
    va = VideoAsset.find(params[:id])
    if cannot? :edit, va.container.pid
-      flash[:notice] = "You do not have sufficient priviledges to edit files"
+      flash[:notice] = "You do not have sufficient privileges to edit files"
      redirect_to root_path
      return
    end
@@ -179,7 +179,7 @@ class VideoAssetsController < ApplicationController
   def destroy
     video_asset = VideoAsset.find(params[:id])
     if cannot? :edit, video_asset.container.pid
-      flash[:notice] = "You do not have sufficient priviledges to delete files"
+      flash[:notice] = "You do not have sufficient privileges to delete files"
       redirect_to root_path
       return
     end
