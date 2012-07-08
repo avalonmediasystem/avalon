@@ -8,6 +8,7 @@ class VideoAssetsController < ApplicationController
 #  before_filter :enforce_access_controls
   
   skip_before_filter :verify_authenticity_token, :only => [:update]
+  before_filter :authenticate_user!, :only => [:update]
 
   # Creates and Saves a File Asset to contain the the Uploaded file 
   # If container_id is provided:
