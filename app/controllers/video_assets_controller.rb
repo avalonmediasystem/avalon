@@ -5,6 +5,13 @@ require 'rubyhorn'
 class VideoAssetsController < ApplicationController
   include Hydra::FileAssets
 
+    # First and simplest test - make sure that the uploaded file does not exceed the
+    # limits of the system. For now this is hard coded but should probably eventually
+    # be set up in a configuration file somewhere
+    #
+    # 250 MB is the file limit for now
+    MAXIMUM_UPLOAD_SIZE = 2**20 * 250
+
 #  before_filter :enforce_access_controls
   
   skip_before_filter :verify_authenticity_token, :only => [:update]
@@ -20,7 +27,7 @@ class VideoAssetsController < ApplicationController
       redirect_to root_path 
       return
     end
-
+    
     audio_types = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav"]
     video_types = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime"]
     unknown_types = ["application/octet-stream", "application/x-upload-data"]
@@ -32,6 +39,15 @@ class VideoAssetsController < ApplicationController
       @video_assets = []
       params[:Filedata].each do |file|
         puts "<< MIME type is #{file.content_type} >>"
+        
+        if (file.size > MAXIMUM_UPLOAD_SIZE)
+          # Use the errors key to signal that it should be a red notice box rather
+          # than the default
+          flash[:errors] = "The file you have uploaded is too large"
+          redirect_to :back
+          return
+        end
+        
   	@upload_format = 'video' if video_types.include?(file.content_type)
   	@upload_format = 'audio' if audio_types.include?(file.content_type)
   		  
