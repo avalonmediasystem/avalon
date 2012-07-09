@@ -1,6 +1,9 @@
 module AccessControlsHelper
   def enforce_create_permissions(opts={})
-    if cannot? :create, Video
+    if current_user.nil? 
+      flash[:notice] = "You need to login to add resources"
+      redirect_to new_user_session_path
+    elsif cannot?(:create, Video)
       flash[:notice] = "You do not have sufficient priviledges to add resources"
       redirect_to root_path
     else
