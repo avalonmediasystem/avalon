@@ -3,8 +3,8 @@ module AccessControlsHelper
     if current_user.nil? 
       flash[:notice] = "You need to login to add resources"
       redirect_to new_user_session_path
-    elsif cannot?(:create, Video)
-      flash[:notice] = "You do not have sufficient priviledges to add resources"
+    elsif cannot? :create, Video
+      flash[:notice] = "You do not have sufficient privileges to add resources"
       redirect_to root_path
     else
       session[:viewing_context] = "create"
