@@ -26,7 +26,7 @@
 
 	# Needed for AJAX file upload
 	#gem 'remotipart'
-        gem 'jquery-fileupload-rails', '>= 0.3'
+  gem 'jquery-fileupload-rails', '>= 0.3'
 
   # Added 
   gem "jettywrapper"
@@ -53,9 +53,10 @@
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do 
-	gem 'capistrano'
-	gem 'rvm-capistrano'
-	gem 'database_cleaner'
+		gem 'capistrano'
+		gem 'rvm-capistrano'
+		gem 'database_cleaner'
+		gem 'factory_girl_rails'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do

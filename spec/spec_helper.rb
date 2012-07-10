@@ -55,4 +55,7 @@ RSpec.configure do |config|
     workflows_json["workflows"]["workflow"].each {|w| ids << w["id"]}
     ids.each {|id| Rubyhorn.client.stop id}
   end
+  
+  config.include Devise::TestHelpers, :type => :controller
+  config.include ControllerMacros, :type => :controller
 end
