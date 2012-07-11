@@ -46,7 +46,7 @@ end
 Then /^I should see confirmation that it is (audio|video|invalid) content$/ do |format|
   page.wait_until do
     within "#upload_format" do
-      unless "invalid" == 'format'
+      unless "invalid" == format
         page.should have_content "appears to be #{format}"
       else
         page.should have_content "content could not be identified"
