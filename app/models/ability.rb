@@ -8,22 +8,4 @@ class Ability
 			can :create, VideoAsset
 		end
 	end
-
-  def enforce_create_permissions(opts={})
-    if cannot? :create, Video
-      flash[:notice] = "You do not have sufficient privileges to add items"
-      redirect_to root_path
-      return
-    elsif cannot? :create, VideoAsset
-      flash[:notice] = "You do not have sufficient privileges to add files"
-      redirect_to root_path
-      return
-    else 
-      session[:viewing_context] = "create"
-    end
-  end
-  
-  def enforce_new_permissions(opts={})
-    enforce_create_permissions(opts)
-  end
 end
