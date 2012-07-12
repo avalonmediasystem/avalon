@@ -31,7 +31,7 @@ When /^I upload the file "(.*?)" with MIME type "(.*)"$/ do |file, mime_type|
 end
 
 Then /^I should see confirmation that it was uploaded/ do
-  sleep 15
+  #sleep 15
   page.wait_until do
     within "#workflow_status" do
       page.should satisfy {
@@ -43,10 +43,14 @@ Then /^I should see confirmation that it was uploaded/ do
 end
 
 # This is a very brittle test that really needs some refactoring 
-Then /^I should see confirmation that it is (audio|video) content$/ do |format|
+Then /^I should see confirmation that it is (audio|video|invalid) content$/ do |format|
   page.wait_until do
     within "#upload_format" do
-      page.should have_content "appears to be #{format}"
+      unless "invalid" == format
+        page.should have_content "appears to be #{format}"
+      else
+        page.should have_content "content could not be identified"
+      end
     end
   end
 end

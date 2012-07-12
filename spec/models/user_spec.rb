@@ -1,5 +1,5 @@
 require 'spec_helper'
 
 describe User do
-  pending "add some examples to (or delete) #{__FILE__}"
+  pending "add methods to validate Devise authentication"
 end

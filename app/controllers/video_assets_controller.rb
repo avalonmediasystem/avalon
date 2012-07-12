@@ -78,7 +78,7 @@ class VideoAssetsController < ApplicationController
                         end
                         puts "<< #{video.descMetadata.format} >>"
                         
-                        video.save
+                        video.save(:validate=>false)
    			video_asset.save
 			  end
   		end

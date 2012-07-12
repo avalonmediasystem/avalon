@@ -159,6 +159,11 @@ GEM
     erubis (2.7.0)
     execjs (1.4.0)
       multi_json (~> 1.0)
+    factory_girl (3.5.0)
+      activesupport (>= 3.0.0)
+    factory_girl_rails (3.5.0)
+      factory_girl (~> 3.5.0)
+      railties (>= 3.0.0)
     fastercsv (1.5.5)
     ffi (1.0.11)
     fssm (0.2.9)
@@ -183,7 +188,7 @@ GEM
       rails (~> 3.2.3)
       sanitize
     i18n (0.6.0)
-    jettywrapper (1.3.0)
+    jettywrapper (1.3.1)
       activesupport (>= 3.0.0)
       childprocess
       i18n
@@ -233,7 +238,7 @@ GEM
     om (1.6.1)
       mediashelf-loggable
       nokogiri (>= 1.4.2)
-    orm_adapter (0.3.0)
+    orm_adapter (0.4.0)
     polyglot (0.3.3)
     rack (1.4.1)
     rack-cache (1.2)
@@ -275,19 +280,22 @@ GEM
       builder (>= 2.1.2)
     rsolr-ext (1.0.3)
       rsolr (>= 1.0.2)
-    rspec (2.10.0)
-      rspec-core (~> 2.10.0)
-      rspec-expectations (~> 2.10.0)
-      rspec-mocks (~> 2.10.0)
-    rspec-core (2.10.1)
-    rspec-expectations (2.10.0)
+    rspec (2.11.0)
+      rspec-core (~> 2.11.0)
+      rspec-expectations (~> 2.11.0)
+      rspec-mocks (~> 2.11.0)
+    rspec-core (2.11.0)
+    rspec-expectations (2.11.1)
       diff-lcs (~> 1.1.3)
-    rspec-mocks (2.10.1)
-    rspec-rails (2.10.1)
+    rspec-mocks (2.11.1)
+    rspec-rails (2.11.0)
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       railties (>= 3.0)
-      rspec (~> 2.10.0)
+      rspec (~> 2.11.0)
+    rspec_junit_formatter (0.1.1)
+      builder
+      rspec (~> 2.0)
     rubydora (0.5.10)
       activemodel
       activesupport
@@ -297,7 +305,7 @@ GEM
       rest-client
       savon
     rubyzip (0.9.9)
-    rvm-capistrano (1.2.2)
+    rvm-capistrano (1.2.3)
       capistrano (>= 2.0.0)
     sanitize (2.0.3)
       nokogiri (>= 1.4.4, < 1.6)
@@ -380,6 +388,7 @@ DEPENDENCIES
   database_cleaner
   devise
   execjs
+  factory_girl_rails
   felixwrapper!
   headless
   hydra-head (~> 4.0.0)
@@ -393,6 +402,7 @@ DEPENDENCIES
   rails (~> 3.2.3)
   red5wrapper!
   rspec-rails (>= 2.9.0)
+  rspec_junit_formatter
   rubyhorn!
   rvm-capistrano
   sass-rails (~> 3.2.3)
