@@ -18,6 +18,18 @@ describe VideosController do
 	    response.should redirect_to(root_path)
 	  end
 	end
+
+    context "Default permissions should be applied" do
+      it "should inherit default permissions"
+      it "should be editable by the creator"
+    end
+  end
+  
+  describe "#show" do
+    context "Known items should be retrievable" do
+      it "should be accesible by its PID"
+      it "should return an error if the PID does not exist"
+    end
   end
   
   describe "#update" do
@@ -34,5 +46,10 @@ describe VideosController do
     # flash[:notice].should_not be_nil
     # response.should redirect_to(root_path)
 	end	
+  end
+  
+  describe "#destroy" do
+    it "should remove the Video from the system"
+    it "should not be accessible through the search interface"
   end
 end

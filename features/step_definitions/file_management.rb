@@ -31,7 +31,7 @@ When /^I upload the file "(.*?)" with MIME type "(.*)"$/ do |file, mime_type|
 end
 
 Then /^I should see confirmation that it was uploaded/ do
-  sleep 15
+  #sleep 15
   page.wait_until do
     within "#workflow_status" do
       page.should satisfy {
