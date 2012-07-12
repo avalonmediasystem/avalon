@@ -11,6 +11,7 @@ Feature: Associate bitstreams with an object and return feedback based on the co
   Scenarios: Video content
     | format | file | mimetype |
     | video  | spec/fixtures/videoshort.mp4 | application/mp4 |
+    | audio  | spec/fixtures/videoshort.mp4 | application/mp4 |
     
   Scenarios: Audio content
     | format | file | mimetype |

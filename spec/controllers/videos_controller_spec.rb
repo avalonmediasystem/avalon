@@ -18,7 +18,10 @@ describe VideosController do
   	end
 
 	  context "Default permissions should be applied" do
-      it "should inherit default permissions"
+      it "should inherit default permissions" do
+        false
+      end
+
       it "should be editable by the creator"
     end
   end
