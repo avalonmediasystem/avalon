@@ -293,6 +293,9 @@ GEM
       activesupport (>= 3.0)
       railties (>= 3.0)
       rspec (~> 2.11.0)
+    rspec_junit_formatter (0.1.1)
+      builder
+      rspec (~> 2.0)
     rubydora (0.5.10)
       activemodel
       activesupport
@@ -399,6 +402,7 @@ DEPENDENCIES
   rails (~> 3.2.3)
   red5wrapper!
   rspec-rails (>= 2.9.0)
+  rspec_junit_formatter
   rubyhorn!
   rvm-capistrano
   sass-rails (~> 3.2.3)
