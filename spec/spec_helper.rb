@@ -45,14 +45,8 @@ RSpec.configure do |config|
       puts "<< headless now running on #{headless.display} >>"
       headless.destroy
     end
-
-    # Stop any workflows that have been instatiated or started running due to these tests
-    # Make sure to only run tests against a test instance of Matterhorn and not production!!!
-    workflows_json = Rubyhorn.client.instances_json({"state" => "RUNNING"})
-    ids = []
-    workflows_json["workflows"]["workflow"].each {|w| ids << w["id"]}
-    workflows_json = Rubyhorn.client.instances_json({"state" => "INSTANTIATED"})
-    workflows_json["workflows"]["workflow"].each {|w| ids << w["id"]}
-    ids.each {|id| Rubyhorn.client.stop id}
   end
+  
+  config.include Devise::TestHelpers, :type => :controller
+  config.include ControllerMacros, :type => :controller
 end

@@ -14,7 +14,7 @@ Feature: Check authorization protects certain controller actions
   Scenario: Item creation - unauthenticated and unauthorized
     Given I am not logged in
     When I create a new video
-    Then I should be on the home page
+    Then I should be on the sign in page
 
   Scenario: Add new item - authenticated and authorized
     Given I am logged in as "archivist1@example.com"
