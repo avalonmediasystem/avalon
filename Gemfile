@@ -57,13 +57,14 @@
 		gem 'rvm-capistrano'
 		gem 'database_cleaner'
 		gem 'factory_girl_rails'
+    gem 'rspec-rails', '>=2.9.0'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do
 	gem 'cucumber-rails', '>=1.2.0', :require=>false
-    gem 'rspec-rails', '>=2.9.0'
     gem 'capybara-webkit'
     gem 'capybara-screenshot'
     gem 'mime-types', ">=1.1"
     gem "headless"
+    gem "rspec_junit_formatter"
   end

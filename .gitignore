@@ -72,3 +72,4 @@ db/schema.rb
 ## PROJECT::SPECIFIC
 
 config/initializers/rubyhorn.rb
+.rspec
