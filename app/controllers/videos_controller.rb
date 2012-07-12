@@ -3,7 +3,6 @@ class VideosController < ApplicationController
   
 #  before_filter :load_fedora_document, :only=>[:show, :edit]
 #  before_filter :load_document, :only=>[:show, :edit]
-
    before_filter :enforce_access_controls
    
   # TO DO : Need to import solr logic at some point for indexing and configuration
@@ -20,7 +19,7 @@ class VideosController < ApplicationController
   
   # TODO : Refactor this to reflect the new code base
   def create
-    puts "<< Making a new Video object with a PBCore datastream >>"
+    logger.debug "<< Making a new Video object with a PBCore datastream >>"
 
     @video = Video.new
     @video.DC.creator = user_key
@@ -34,21 +33,21 @@ class VideosController < ApplicationController
   end
 
   def edit
-    puts "<< Retrieving #{params[:id]} from Fedora >>"
+    logger.info "<< Retrieving #{params[:id]} from Fedora >>"
     @video = Video.find(params[:id])
     @video_asset = load_videoasset
-    puts "<< Calling update method >>"
+    logger.debug "<< Calling update method >>"
   end
   
   # TODO: Refactor this to reflect the new code model. This is not the ideal way to
   #       handle a multi-screen workflow I suspect
   def update
-    puts "<< Updating the video object (including a PBCore datastream) >>"
+    logger.info "<< Updating the video object (including a PBCore datastream) >>"
     @video = Video.find(params[:id])
     
     case params[:step]
       when 'basic_metadata' then
-        puts "<< Populating required metadata fields >>"
+        logger.debug "<< Populating required metadata fields >>"
         @video.descMetadata.title = params[:metadata_title]        
         @video.descMetadata.creator = params[:metadata_creator]
         @video.descMetadata.created_on = params[:metadata_createdon]
@@ -56,7 +55,7 @@ class VideosController < ApplicationController
 
         @video.save
         unless @video.errors.empty?
-          puts "<< Errors found -> #{@video.errors} >>"
+          logger.debug "<< Errors found -> #{@video.errors} >>"
 
           flash[:error] = "There are errors with your submission. Please correct them before continuing."
           render :edit
@@ -68,14 +67,14 @@ class VideosController < ApplicationController
         next_step = 'file_upload'
     end
         
-    puts "<< #{@video.pid} has been updated in Fedora >>"
+    logger.info "<< #{@video.pid} has been updated in Fedora >>"
     
     # Quick, dirty, and elegant solution to how to post back to the previous
     # screen
     unless 'preview' == next_step
       redirect_to edit_video_path(@video, step: next_step)
     else
-      puts "<< Redirecting to the preview screen >>"
+      logger.debug "<< Redirecting to the preview screen >>"
       redirect_to video_path(@video)
     end
   end

@@ -73,8 +73,8 @@ def upload_file(field, file, mime_type="application/octet-stream")
 end
 
 def debug_step(page)
-  puts '<<--->>'
-  puts page.current_url
-  puts "Saving page to #{page.save_page}"
-  puts '<<--->>'
+  logger.debug '<<--->>'
+  logger.debug page.current_url
+  logger.debug "Saving page to #{page.save_page}"
+  logger.debug '<<--->>'
 end

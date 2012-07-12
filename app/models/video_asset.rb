@@ -26,7 +26,7 @@ class VideoAsset < FileAsset
   end
 
   def description
-	puts "<< #{status} >>"
+	logger.debug "<< #{status} >>"
 	descMetadata.description
   end
   
@@ -67,7 +67,7 @@ class VideoAsset < FileAsset
     # Finally expand it to an absolute URL
     file_path = File.expand_path(file_path)
     
-    puts "<< Retrieving file size for #{file_path} >>"
+    logger.debug "<< Retrieving file size for #{file_path} >>"
     File.size?(file_path)
   end
   

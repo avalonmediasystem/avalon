@@ -148,7 +148,7 @@ end
 
 def test_for_search_result(pid)
   within ".search-result" do
-    puts "<< Testing for presence of #{video_path(pid)} >>"
+    logger.debug "<< Testing for presence of #{video_path(pid)} >>"
     
     #assert page.should have_content("a[href='#{link_to video_path(pid)}']")
   end

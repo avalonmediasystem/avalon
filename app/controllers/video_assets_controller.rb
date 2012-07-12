@@ -12,7 +12,7 @@ class VideoAssetsController < ApplicationController
     # 250 MB is the file limit for now
     MAXIMUM_UPLOAD_SIZE = 2**20 * 250
 
-#  before_filter :enforce_access_controls
+ #  before_filter :enforce_access_controls
   
   skip_before_filter :verify_authenticity_token, :only => [:update]
   before_filter :authenticate_user!, :only => [:update]
@@ -38,7 +38,7 @@ class VideoAssetsController < ApplicationController
     if params.has_key?(:Filedata) and params.has_key?(:original)
       @video_assets = []
       params[:Filedata].each do |file|
-        puts "<< MIME type is #{file.content_type} >>"
+        logger.debug "<< MIME type is #{file.content_type} >>"
         
         if (file.size > MAXIMUM_UPLOAD_SIZE)
           # Use the errors key to signal that it should be a red notice box rather
@@ -55,7 +55,7 @@ class VideoAssetsController < ApplicationController
   	# list of unknown types. This is different than a generic fallback because it
   	# is skipped for known invalid extensions like application/pdf
   	@upload_format = determine_format_by_extension(file) if unknown_types.include?(file.content_type)
-  	puts "<< Uploaded file appears to be #{@upload_format} >>"
+  	logger.info "<< Uploaded file appears to be #{@upload_format} >>"
   		  
   	if 'unknown' == @upload_format
   	  wrong_format = true
@@ -67,7 +67,7 @@ class VideoAssetsController < ApplicationController
     			video_asset = sendOriginalToMatterhorn(video_asset, file, @upload_format)
                         video = Video.find(video_asset.container.pid)
                         
-                        puts "<< #{video.pid} >>"
+                        logger.debug "<< #{video.pid} >>"
                         video.descMetadata.format = case @upload_format
                           when 'audio'
                             'Sound'
@@ -76,7 +76,7 @@ class VideoAssetsController < ApplicationController
                           else
                             'Unknown'
                         end
-                        puts "<< #{video.descMetadata.format} >>"
+                        logger.debug "<< #{video.descMetadata.format} >>"
                         
                         video.save(:validate=>false)
    			video_asset.save
@@ -140,7 +140,7 @@ class VideoAssetsController < ApplicationController
     elsif upload_format == 'video'
       args['workflow'] = "hydrant"
     end
-    puts "<< Callling Matterhorn with arguments: #{args} >>"
+    logger.debug "<< Calling Matterhorn with arguments: #{args} >>"
     workflow_doc = Rubyhorn.client.addMediaPackage(file, args)
     flash[:notice] = "The uploaded file has been sent for processing."
     video_asset.description = "File is being processed"
@@ -203,7 +203,7 @@ class VideoAssetsController < ApplicationController
 
     parent = video_asset.container
     
-    puts "<< Stopping #{video_asset.source[0]} >>"
+    logger.info "<< Stopping #{video_asset.source[0]} >>"
     Rubyhorn.client.stop(video_asset.source[0])
     
     filename = video_asset.label
@@ -218,10 +218,10 @@ class VideoAssetsController < ApplicationController
     audio_extensions = ["mp3", "wav", "aac", "flac"]
     video_extensions = ["mpeg4", "mp4", "avi", "mov"]
 
-    puts "<< Using fallback method to guess the format >>"
+    logger.debug "<< Using fallback method to guess the format >>"
 
     extension = file.original_filename.split(".").last.downcase
-    puts "<< File extension is #{extension} >>"
+    logger.debug "<< File extension is #{extension} >>"
     
     # Default to unknown
     format = 'unknown'

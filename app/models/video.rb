@@ -11,7 +11,7 @@ class Video < ActiveFedora::Base
   validate :presence_of_required_metadata
 
    def presence_of_required_metadata
-    puts "<< Validating required metadata fields >>"
+    logger.debug "<< Validating required metadata fields >>"
     unless has_valid_metadata_value(:creator, true)
       errors.add(:creator, "This field is required")
     end
@@ -34,7 +34,7 @@ class Video < ActiveFedora::Base
     # This really should live in a Validation helper, the OM model, or somewhere
     # else that is not a quick and dirty hack
     def has_valid_metadata_value(field, required=false)
-      puts "<< Validating #{field} >>"
+      logger.debug "<< Validating #{field} >>"
       
       # True cases to fail validation should live here
       unless descMetadata.term_values(field).nil?

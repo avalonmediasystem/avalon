@@ -48,28 +48,11 @@ at_exit do
       headless.destroy
     end
 
-    # Stop any workflows that have been instatiated or started running due to these tests
-    # Make sure to only run tests against a test instance of Matterhorn and not production!!!
-    ids = []
-    workflows_json = Rubyhorn.client.instances_json({"state" => "RUNNING"})
-    begin
-      workflows_json["workflows"]["workflow"].each {|w| ids << w["id"]}
-    rescue Exception
-      puts "<< Exception caught when getting running workflows from Matterhorn >>"
-    end
-    workflows_json = Rubyhorn.client.instances_json({"state" => "INSTANTIATED"})
-    begin
-      workflows_json["workflows"]["workflow"].each {|w| ids << w["id"]}
-    rescue Exception
-      puts "<< Exception caught when getting instantiated workflows from Matterhorn >>"
-    end
-    ids.each {|id| Rubyhorn.client.stop id}
-    
     # Also be sure to delete all objects so the repository is pristine. Only those
     # fixtures that are not numeric will be retained
     Video.find(:all).each do |video|
       if video.pid =~ /^hydrant:\d+$/
-        puts "<< Deleting #{video.pid} from the Fedora repository >>"
+        logger.info "<< Deleting #{video.pid} from the Fedora repository test instance >>"
         video.delete
       end
     end
