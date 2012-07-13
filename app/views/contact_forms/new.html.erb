@@ -2,24 +2,37 @@
     <div class="alert"><%= flash[:notice] %></div>
 <% end %>
 
-<h2 class="whitespace">Contact Us</h2>
+<h2>Contact Us</h2>
 
-<p class="whitespace">Please use this form to send your comments, questions, and feedback to the Variations on Video development team.</p>
+<fieldset>
+  <p>Interested in learning more about the Variations on Video project? Request a temporary account to explore the features that it provides.</p>
+  <p><strong>All fields are required.</strong></p>
 
 <%= form_for @mail, :url => { :action => "create" } do |f| %>
-  <p>
-		<%= f.label :fullname %>
-		<%= f.text_field :fullname, class: "span5" %>
-	</p>
-	<p>
-		<%= f.label :email %>
-		<%= f.text_field :email, class: "span5" %>
-	</p>
-  <p>
-		<%= f.label :comment %>
-		<%= f.text_area :comment, :size => "70x12", class: "span5" %>
-	</p>
-  <p><%= f.submit "Send", class: "btn" %></p>
-	<%= f.text_field :nickname, class: "hidden" %>
+<%= f.text_field :nickname, class: "hidden" %>
+<div class="control-group">
+  <div class="control-label"><%= f.label :fullname, 'Full name' %></div>
+  <div class="controls"><%= f.text_field :fullname, class: 'span4' %></div>
+</div>	      	    
+
+<div class="control-group">
+  <div class="control-label"><%= f.label :email, 'Email address' %></div>
+  <div class="controls"><%= f.text_field :email, class: 'span4' %></div>
+</div>	 
+     
+<div class="control-group">
+  <div class="control-label"><%= f.label :email_confirmation, 'Confirm email' %></div>
+  <div class="controls"><%= f.text_field :email_confirmation, class: 'span4' %></div>
+</div>	 
+  
+<div class="control-group">
+  <div class="control-label"><%= f.label :comment, 'Comments' %></div>
+  <div class="controls"><%= f.text_area :comment, rows: 10, class: 'span4' %></div>
+</div>	 
+
+<div class="control-group">
+  <div class="controls"><%= f.submit "Send", class: "btn" %></div>
+</div>	 
+
 <% end %>
 
