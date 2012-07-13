@@ -7,8 +7,7 @@ describe VideosController do
   	it "should redirect to sign in page with a notice when unauthenticated" do
   	  lambda { get 'new' }.should_not change { Video.count }
   	  flash[:notice].should_not be_nil
-#  	  response.should redirect_to(new_user_session_path)
-  	  response.should redirect_to(root_path)	  
+  	  response.should redirect_to(new_user_session_path)
   	end
 	
   	it "should redirect to home page with a notice when authenticated but unauthorized" do
