@@ -22,3 +22,10 @@
   </div>
 </section>
 
+<% content_for :title do %>
+  <% unless params[:q] %>
+    Browse collection 
+  <% else %>
+    Search results for "<%= params[:q] %>"
+  <% end %>
+<% end %>

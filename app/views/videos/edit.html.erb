@@ -34,3 +34,12 @@
   <% links = [{label: 'Home', link: root_path}, {label: params[:id], link: ''}] %>
   <%= render "modules/breadcrumbs" %>
 <% end %>
+
+<% content_for :title do %>
+  Edit -
+  <% unless @video.descMetadata.title.empty? %>
+    <%= @video.descMetadata.title.first %> (<%= @video.pid %>)
+  <% else %>
+    <%= @video.pid %>
+  <% end %>
+<% end %>

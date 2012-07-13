@@ -32,3 +32,12 @@
     </div>
   </div>
 </div>
+
+<% content_for :title do %>
+  Preview -
+  <% unless @video.descMetadata.title.empty? %>
+    <%= @video.descMetadata.title.first %> (<%= @video.pid %>)
+  <% else %>
+    <%= @video.pid %>
+  <% end %>
+<% end %>
