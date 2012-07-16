@@ -60,7 +60,7 @@ module Hydrant
   config.action_mailer.perform_deliveries = true
   # This means we should catch the error and return a friendly error message instead
   # of it stopping cold in production
-  config.action_mailer.raise_delivery.errors = true
+  config.action_mailer.raise_delivery_errors = true
   config.action_mailer.smtp_settings = {
     address: "smtp.mail-relay.indiana.edu",
     port: 25 }
