@@ -36,6 +36,7 @@
   gem 'red5wrapper', :git => "git://github.com/cjcolvar/red5wrapper.git"
 
     gem 'validates_email_format_of'
+    gem 'loofah'
     
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"

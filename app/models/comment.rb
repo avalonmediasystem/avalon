@@ -7,7 +7,7 @@ class Comment
   # as more thought is put into the process of providing a comment
   SUBJECTS = ["General feedback", "Request for access", "Technical support", "Other"]
   
-  attr_accessor :name, :subject, :email, :comment, :nickname
+  attr_accessor :name, :subject, :email, :nickname
 
   validates :name, 
     presence: {message: "Name is a required field"}
@@ -22,14 +22,28 @@ class Comment
     presence: {message: "Email address is a required field"}
   validates :comment, 
     presence: { message: "Provide a comment before submitting the form"}
+    
   # The nickname should be empty since it is a captcha designed to prevent spam
   # Thus there is no error message because there is no way for a person to submit
   # the form with a value
   validates :nickname, 
-    length: {maximum: 0, message: nil} unless @nickname.nil? 
+    length: {is: 0, message: nil}
+  
+  def comment
+    @comment
+  end
+  
+  def comment=(new_comment)
+    # By default prune out all tags. It might be worth thinking about other approaches
+    # supported by Loofah (see https://github.com/flavorjones/loofah)
+    @comment = Loofah.scrub_fragment(new_comment, :prune).to_s
+    puts "<< After : #{@comment} >>"
+  end
   
   def initialize(attributes = {})
-    @attributes = attributes
+    attributes.each do |k, v|
+      send("#{k}=", v)
+    end
   end
   
   # Stub this method out so that form_for functions as expected even though there is
