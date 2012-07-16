@@ -35,8 +35,8 @@
   gem 'felixwrapper', :git => "git://github.com/cjcolvar/felixwrapper.git"
   gem 'red5wrapper', :git => "git://github.com/cjcolvar/red5wrapper.git"
 
-	gem 'mail_form'
-
+    gem 'validates_email_format_of'
+    
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
     gem 'uglifier', '>= 1.0.3'
@@ -47,7 +47,6 @@
     # For overriding the default interface with Twitter Bootstrap
     gem 'sass-rails', '~> 3.2.3'
     gem 'twitter-bootstrap-rails', "~> 2.0"
-    gem 'twitter_bootstrap_form_for', "~> 1.0"
     gem 'bootstrap-will_paginate'
   end
 

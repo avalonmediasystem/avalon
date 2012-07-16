@@ -7,6 +7,9 @@ module ApplicationHelper
       # Overwrite this to return the preview from Matterhorn. Be sure to include the
       # image_tag call so it renders properly
       video = Video.find(item[:id])
+      
+      # TODO : I have an idea how to refactor this to make it more neat but it needs to
+      #        wait until the email form is finished.
       if video.descMetadata.format.first == "Moving image"
         imageurl = "reel-to-reel.jpg"
       elsif video.descMetadata.format.first == "Sound"
