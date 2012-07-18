@@ -1,0 +1,15 @@
+Hydrant feedback
+
+A @comment has been recieved from Hydrant
+========================================
+FROM
+<%= @comment.name %> (<<%= @comment.email %>>)
+
+SUBJECT
+<%= @comment.subject %>
+
+COMMENT
+<%= @comment.comment %>
+
+TIME SENT
+<%= DateTime.now %>

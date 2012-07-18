@@ -1,0 +1,67 @@
+<% if flash[:notice] %>
+    <div class="alert"><%= flash[:notice] %></div>
+<% end %>
+
+<% if flash[:error] %>
+  <div class="alert alert-error"><%= flash[:error] %></div> 
+<% end %>
+
+<h2>Contact Us</h2>
+
+<fieldset>
+  <p>Interested in learning more about the Variations on Video project? Request a temporary account to explore the features that it provides.</p>
+  <p><strong>* All fields are required.</strong></p>
+  <hr />
+  
+<%= form_for @comment, :url => { :action => "create" } do |f| %>
+<div class="control-group <% if @comment.errors.include?(:name) %>error<% end %>">
+  <div class="control-label">
+    <%= f.label :name, 'Full name' %>
+    <% if @comment.errors.include?(:name) %>
+      <p class="help-block error">* <%= @comment.errors.messages[:name].first %></p>
+    <% end %>
+  </div>
+  <div class="controls"><%= f.text_field :name, class: 'span4' %></div>
+</div>    	    
+
+<div class="control-group <% if @comment.errors.include?(:email) %>error<% end %>">
+  <div class="control-label">
+    <%= f.label :email, 'Email address' %>
+    <% if @comment.errors.include?(:email) %>
+      <p class="help-block error">* <%= @comment.errors.messages[:email].first %></p>
+    <% end %>
+  </div>
+  <div class="controls">
+    <%= f.text_field :email, class: 'span4' %>
+    <%= f.text_field :email_confirmation, class: 'span4' %>
+  </div>
+</div>	 
+  
+<div class="control-group <% if @comment.errors.include?(:subject) %>error<% end %>">
+  <div class="control-label">
+    <%= f.label :subject, 'Subject' %>
+    <% if @comment.errors.include?(:subject) %>
+      <p class="help-block error">* <%= @comment.errors.messages[:subject].first %></p>
+    <% end %>
+  </div>
+  <div class="controls"><%= f.select :subject, @subjects,
+    prompt: "Select one",
+    class: "span4" %></div>
+</div>
+  
+<div class="control-group <% if @comment.errors.include?(:comment) %>error<% end %>">
+  <div class="control-label">
+    <%= f.label :comment, 'Comment' %>
+    <% if @comment.errors.include?(:comment) %>
+      <p class="help-block error">* <%= @comment.errors.messages[:comment].first %></p>
+    <% end %>
+  </div>
+  <div class="controls"><%= f.text_area :comment, rows: 10, class: 'span4' %></div>
+</div>	 
+
+<div class="control-group">
+  <div class="controls"><%= f.submit "Submit comments", class: "btn" %></div>
+</div>	 
+
+<% end %>
+

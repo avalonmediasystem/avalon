@@ -1,0 +1,16 @@
+<h2>Hydrant feedback</h2>
+<p>A @comment has been submitted through Hydrant</p>
+<hr />
+<dl>
+  <dt>From</dt>
+  <dd><%= @comment.name %> (<<%= @comment.email %>>)</dd>
+
+  <dt>Subject</dt>
+  <dd><%= @comment.subject %></dd>
+
+  <dt>Comment</dt>
+  <dd><%= @comment.comment %></dd>
+  
+  <dt>Recieved</dt>
+  <dd><%= DateTime.now %>
+</dl>
