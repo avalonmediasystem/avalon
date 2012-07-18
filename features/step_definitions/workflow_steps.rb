@@ -57,11 +57,11 @@ When /^provide basic metadata for it$/ do
   # above
   visit edit_video_path(@resource.pid, step: 'basic_metadata')
   
-  within ('#basic_metadata_form') do  
-    fill_in 'metadata_creator', with: 'Cucumber'
-    fill_in 'metadata_title', with: 'New test record'
-    fill_in 'metadata_createdon', with: '2012.04.21'
-    fill_in 'metadata_abstract', with: 'A test record generated as part of Cucumber automated testing'
+  within ('form.edit_video') do  
+    fill_in 'video[creator]', with: 'Cucumber'
+    fill_in 'video[title]', with: 'New test record'
+    fill_in 'video[created_on]', with: '2012.04.21'
+    fill_in 'video[abstract]', with: 'A test record generated as part of Cucumber automated testing'
     click_on 'Save and finish'
   end
 end
@@ -108,10 +108,10 @@ end
 # properly at the moment. It should check for the absence of any fields without the
 # required property
 Then /^I should see only required fields$/ do 
-  within "#basic_metadata_form" do
-    page.should have_selector("input[name='metadata_title']")
-    page.should have_selector("input[name='metadata_creator']")
-    page.should have_selector("input[name='metadata_createdon']")
+  within "form.edit_video" do
+    page.should have_selector("input[name='video\[title\]']")
+    page.should have_selector("input[name='video\[creator\]']")
+    page.should have_selector("input[name='video\[created_on\]']")
   end
 end
 

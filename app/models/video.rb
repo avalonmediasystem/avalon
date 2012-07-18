@@ -10,7 +10,41 @@ class Video < ActiveFedora::Base
   after_create :after_create
   validate :presence_of_required_metadata
 
-   def presence_of_required_metadata
+  # Going quick and dirty to get the form to work. A more sustainable long term
+  # solution is the next step
+  def title
+    descMetadata.title.first
+  end
+  
+  def title=(title)
+    descMetadata.title = title
+  end
+  
+  def creator
+    descMetadata.creator.first
+  end
+  
+  def creator=(creator)
+    descMetadata.creator = creator
+  end
+  
+  def created_on
+    descMetadata.created_on.first
+  end
+  
+  def created_on=(creation_date)
+    descMetadata.created_on = creation_date
+  end
+  
+  def abstract
+    descMetadata.abstract.first
+  end
+  
+  def abstract=(abstract)
+    descMetadata.abstract = abstract
+  end
+  
+  def presence_of_required_metadata
     logger.debug "<< Validating required metadata fields >>"
     unless has_valid_metadata_value(:creator, true)
       errors.add(:creator, "This field is required")

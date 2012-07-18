@@ -48,6 +48,11 @@
     # For overriding the default interface with Twitter Bootstrap
     gem 'sass-rails', '~> 3.2.3'
     gem 'twitter-bootstrap-rails', "~> 2.0"
+    # This may need to change so we aren't on edge development once the
+    # 2.0 branch is stable
+    gem 'twitter_bootstrap_form_for', 
+      git: "git://github.com/variations-on-video/twitter_bootstrap_form_for.git",
+      branch: "bootstrap-2.0"
     gem 'bootstrap-will_paginate'
   end
 
