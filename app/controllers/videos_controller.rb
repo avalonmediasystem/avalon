@@ -34,8 +34,10 @@ class VideosController < ApplicationController
 
   def edit
     logger.info "<< Retrieving #{params[:id]} from Fedora >>"
+    
     @video = Video.find(params[:id])
     @video_asset = load_videoasset
+    
     logger.debug "<< Calling update method >>"
   end
   

@@ -1,5 +1,4 @@
 class PbcoreDocument < ActiveFedora::NokogiriDatastream
-  
   # First iteration includes a bare bones PBCore record with just identifier, title,
   # and other required fields
   set_terminology do |t|

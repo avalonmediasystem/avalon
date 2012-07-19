@@ -6,10 +6,13 @@
     <%= vid.hidden_field :pid %>
     <%= hidden_field_tag 'step', 'basic_metadata' %>
   
-    <%= vid.text_field :title, "Title", class: 'span12' %>
-    <%= vid.text_field :creator, "Creator", class: 'span12' %>
-    <%= vid.text_field :created_on, "Created on", class: 'span12' %>
-    <%= vid.text_area :abstract, "Summary (optional)", class: 'span12', rows: 6 %>
+    <%= vid.text_field :title, "Title", class: 'span12', value: @video.title.first %>
+    <%= vid.text_field :creator, "Creator", class: 'span12',
+      value: @video.creator.first %>
+    <%= vid.text_field :created_on, "Created on", class: 'span12',
+      value: @video.created_on.first %>
+    <%= vid.text_area :abstract, "Summary (optional)", class: 'span12', rows: 6,
+      value: @video.abstract.first %>
 
     <%= vid.actions do |actions| %>
       <%= link_to "Back to file upload",
