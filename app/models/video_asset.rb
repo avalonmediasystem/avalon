@@ -75,6 +75,11 @@ class VideoAsset < FileAsset
     w = Rubyhorn.client.instance_xml source[0]
     w.searchpreview.first
   end   
+  
+  def mediapackage_id
+    matterhorn_response = Rubyhorn.client.instance_xml(source[0])
+    matterhorn_response.workflow.mediapackage.id.first
+  end
 
   protected
   def refresh_status
