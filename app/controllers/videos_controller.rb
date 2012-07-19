@@ -34,8 +34,10 @@ class VideosController < ApplicationController
 
   def edit
     logger.info "<< Retrieving #{params[:id]} from Fedora >>"
+    
     @video = Video.find(params[:id])
     @video_asset = load_videoasset
+    
     logger.debug "<< Calling update method >>"
   end
   
@@ -48,10 +50,10 @@ class VideosController < ApplicationController
     case params[:step]
       when 'basic_metadata' then
         logger.debug "<< Populating required metadata fields >>"
-        @video.descMetadata.title = params[:metadata_title]        
-        @video.descMetadata.creator = params[:metadata_creator]
-        @video.descMetadata.created_on = params[:metadata_createdon]
-        @video.descMetadata.abstract = params[:metadata_abstract]
+        @video.descMetadata.title = params[:video][:title]        
+        @video.descMetadata.creator = params[:video][:creator]
+        @video.descMetadata.created_on = params[:video][:created_on]
+        @video.descMetadata.abstract = params[:video][:abstract]
 
         @video.save
         unless @video.errors.empty?

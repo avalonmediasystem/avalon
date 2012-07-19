@@ -1,63 +1,26 @@
-<fieldset id='basic_metadata'>
-  <legend>Basic Metadata</legend>
+<% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
 
-  <% if flash[:error] %>
-    <div class="alert alert-error"><%= flash[:error] %>
-    </div>
-  <% end %>
-  <p><strong>(*)</strong> marked fields are required.</p>
+<%= twitter_bootstrap_form_for @video, class: "form-horizontal",
+    id: 'basic_metadata_form' do |vid| %>
+  <%= vid.fieldset "Basic metadata", id: 'basic_metadata' do %>    
+    <%= vid.hidden_field :pid %>
+    <%= hidden_field_tag 'step', 'basic_metadata' %>
   
-<%= form_tag video_path(params[:id]), 
-  :method => "put", 
-  :class => "form-horizontal", 
-  id: 'basic_metadata_form' do -%>
-  <%= hidden_field_tag 'pid', @video.pid %>
-  <%= hidden_field_tag 'step', 'basic_metadata' %>
-  
-  <div id="title-field" class="control-group <% if @video.errors.has_key?(:title) %>error<% end %>">
-    <div class="control-label">
-      <%= label_tag 'metadata_title', "Title <strong>(*)</strong>".html_safe %>
-    </div>
-    <div class="controls">
-      <%= text_field_tag 'metadata_title', @video.descMetadata.title, class: 'span12' %>
-    </div>
-  </div>
+    <%= vid.text_field :title, "Title", class: 'span12', value: @video.title.first %>
+    <%= vid.text_field :creator, "Creator", class: 'span12',
+      value: @video.creator.first %>
+    <%= vid.text_field :created_on, "Created on", class: 'span12',
+      value: @video.created_on.first %>
+    <%= vid.text_area :abstract, "Summary (optional)", class: 'span12', rows: 6,
+      value: @video.abstract.first %>
 
-  <div id="creator-field" class="control-group <% if @video.errors.has_key?(:creator) %>error<% end %>">
-    <div class="control-label">
-      <%= label_tag 'metadata_creator', "Creator <strong>(*)</strong>".html_safe %>
-    </div>
-    <div class="controls">
-      <%= text_field_tag 'metadata_creator', @video.descMetadata.creator, class: 'span12' %>
-    </div>
-  </div>
-
-  <div id="createdon-field" class="control-group <% if @video.errors.has_key?(:created_on) %>error<% end %>">
-    <div class="control-label">
-      <%= label_tag 'metadata_createdon', "Date <strong>(*)</strong>".html_safe %>
-    </div>
-    <div class="controls">
-      <%= text_field_tag 'metadata_createdon', @video.descMetadata.created_on, class: 'span12' %>
-    </div>
-  </div>
-  
-  <div id="abstract-field" class="control-group">
-    <div class="control-label">
-      <%= label_tag 'metadata_abstract', "Summary" %>
-    </div>
-    <div class="controls">
-      <%= text_area_tag 'metadata_abstract', @video.descMetadata.abstract[0], 
-        rows: 10, class: 'span12' %>
-    </div>
-  </div>
-
-  <div class="control-group">
-    <div class="controls">
-      <%= link_to "Back to file upload", 
-          edit_video_path(@video, step: 'file_upload'), 
-          id: "previous_screen", class: "btn", name: "previous_screen" %>
-      <%= submit_tag "Save and finish", class: 'btn', id: 'next_screen' %>
-    </div>
-  </div>
-<%- end -%>
-</fieldset>
+    <%= vid.actions do |actions| %>
+      <%= link_to "Back to file upload",
+            edit_video_path(@video, step: 'file_upload'),
+            id: 'previous_screen',
+            class: 'btn',
+            name: 'previous_screen' %>
+      <%= vid.submit "Save and finish" %>
+    <% end %>
+  <%- end -%>
+<% end %>
