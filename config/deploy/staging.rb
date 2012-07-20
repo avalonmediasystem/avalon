@@ -20,6 +20,13 @@ set :git_enable_submodules, true
 # end
 
 namespace :deploy do
+  task :update_code, :roles => :app do
+    run "cd #{current_release}; git pull origin master"
+    run "cd #{current_release}/felix; git pull origin trunk"
+    run "cd #{current_release}/red5; git pull origin master"
+    run "cd #{current_release}/jetty; git pull origin master"
+  end
+
   task :start, :roles => :app do
     run "cd #{current_release}; rake hydrant:services:start"
     run "cd #{current_release}; rails s -d"
@@ -57,4 +64,4 @@ namespace :deploy do
   end
 end
 
-
+after("deploy:update_code", "deploy:bundle:install")
