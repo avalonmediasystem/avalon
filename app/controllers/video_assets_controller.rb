@@ -103,7 +103,7 @@ class VideoAssetsController < ApplicationController
   
   
 	def saveOriginalToHydrant file
-		public_dir_path = "public/"
+		public_dir_path = "#{Rails.root}/public/"
 		new_dir_path = public_dir_path + 'videos/' + params[:container_id].gsub(":", "_") + "/"
 		new_file_path = new_dir_path + file.original_filename
 		FileUtils.mkdir_p new_dir_path unless File.exists?(new_dir_path)
