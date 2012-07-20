@@ -65,3 +65,5 @@ namespace :deploy do
 end
 
 after("deploy:update_code", "deploy:bundle:install")
+after("deploy:update_code", "deploy:jetty:config")
+after("deploy:update_code", "deploy:db:setup")

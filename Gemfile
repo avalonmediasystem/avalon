@@ -72,4 +72,5 @@
     gem 'mime-types', ">=1.1"
     gem "headless"
     gem "rspec_junit_formatter"
+    gem 'simplecov'
   end
