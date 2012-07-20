@@ -59,7 +59,7 @@ class VideoAsset < FileAsset
   # Release Zero hack
   def size
     # Start with the root relative to Rails root
-    file_path = "public/videos"
+    file_path = "#{Rails.root}/public/videos"
     # Add the parent container ID with colons (:) replaced by underscores (_)
     file_path << "/#{container.pid.gsub(":", "_")}"
     # Now tack on the original file name
