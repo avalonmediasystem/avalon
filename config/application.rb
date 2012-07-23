@@ -62,7 +62,9 @@ module Hydrant
   # of it stopping cold in production
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.smtp_settings = {
-    address: "smtp.mail-relay.indiana.edu",
-    port: 25 }
+    address: "mail-relay.iu.edu",
+    port: 587,
+    enable_starttls_auto: false
+  }
   end
 end
