@@ -22,9 +22,12 @@ set :git_enable_submodules, true
 namespace :deploy do
   task :update_code, :roles => :app do
     run "cd #{current_release}; git pull origin master"
-    run "cd #{current_release}/felix; git pull origin trunk"
-    run "cd #{current_release}/red5; git pull origin master"
-    run "cd #{current_release}/jetty; git pull origin master"
+  end
+
+  task :update_submodules, :roles => :app do
+    run "cd #{current_release}/felix; git clean -df; git checkout HEAD .; git pull origin trunk"
+    run "cd #{current_release}/red5; git clean -df; git checkout HEAD .; git pull origin master"
+    run "cd #{current_release}/jetty; git clean -df; git checkout HEAD .; git pull origin master"
   end
 
   task :start, :roles => :app do

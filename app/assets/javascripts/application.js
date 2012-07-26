@@ -16,15 +16,12 @@
 //= require jquery_ujs
 //= require jquery-fileupload
 //= require twitter/bootstrap
-// require jquery.remotipart
 //
 // Required by Hydra
 //= require 'jquery.ui.datepicker.js'      
 //
-//
 // Required by Blacklight
 //= require jquery-ui
-// require blacklight/blacklight
 //= require_directory .
 //
 //= require_self
