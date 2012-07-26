@@ -45,7 +45,7 @@
     gem 'jquery-rails'
     gem 'compass-rails', '~> 1.0.0'
     gem 'compass-susy-plugin', '~> 0.9.0', :require => 'susy'
-    gem "hydrant-engage", :path => "~/Documents/hydrant-engage"
+    gem "hydrant-engage", :git => "git://github.com/variations-on-video/hydrant-engage.git"
 
     # For overriding the default interface with Twitter Bootstrap
     gem 'sass-rails', '~> 3.2.3'
