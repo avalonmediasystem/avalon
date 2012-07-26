@@ -81,6 +81,11 @@ class VideoAsset < FileAsset
     matterhorn_response.workflow.mediapackage.id.first
   end
 
+  def streamingmimetype
+    matterhorn_response = Rubyhorn.client.instance_xml(source[0])
+    matterhorn_response.streamingmimetype.second
+  end
+
   protected
   def refresh_status
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
