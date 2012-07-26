@@ -1,6 +1,10 @@
 <li class="span3">
   <div class="thumbnail search-result">
-    <%= image_for_result(item) %>
+    <% if can? :read, item %>
+      <%= link_to image_for_result(item), video_path(item[:id]), class: "preview" %> 
+    <% else %>
+      <%= image_for_result(item) %>
+    <% end %>
      
     <div class="caption">
         <h4 class="title">
