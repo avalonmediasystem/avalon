@@ -206,25 +206,4 @@ Devise.setup do |config|
   #   manager.intercept_401 = false
   #   manager.default_strategies(:scope => :user).unshift :some_external_strategy
   # end
-
-  config.cas_base_url = "https://cas.iu.edu/cas/"
-
-  # you can override these if you need to, but cas_base_url is usually enough
-  config.cas_login_url = "https://cas.iu.edu/cas/login"
-  config.cas_logout_url = "https://cas.iu.edu/cas/logout"
-  config.cas_validate_url = "https://cas.iu.edu/cas/validate"
-
-  # The CAS specification allows for the passing of a follow URL to be displayed when
-  # a user logs out on the CAS server. RubyCAS-Server also supports redirecting to a
-  # URL via the destination param. Set either of these urls and specify either nil,
-  # 'destination' or 'follow' as the logout_url_param. If the urls are blank but
-  # logout_url_param is set, a default will be detected for the service.
-  # config.cas_destination_url = 'https://cas.iu.edu/cas/'
-  # config.cas_follow_url = 'https://cas.iu.edu/cas.'
-  # config.cas_logout_url_param = nil
-
-  # By default, devise_cas_authenticatable will create users.  If you would rather
-  # require user records to already exist locally before they can authenticate via
-  # CAS, uncomment the following line.
-  # config.cas_create_user = false  
 end
