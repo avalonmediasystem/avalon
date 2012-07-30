@@ -74,3 +74,4 @@ db/schema.rb
 config/initializers/rubyhorn.rb
 .rspec
 lib/tasks/cucumber.rake
+cucumber-results/

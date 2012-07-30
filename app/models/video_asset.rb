@@ -12,7 +12,13 @@ class VideoAsset < FileAsset
 
   has_datastream :name => "content", :type => ActiveFedora::Datastream, 
     :controlGroup => 'R'
-
+  delegate :source, to: :descMetadata
+  delegate :description, to: 'descMetadata'
+  
+  def stream
+    descMetadata.identifier.first
+  end
+  
   # Set the url on the current object
   #
   # @param [String] new_url
@@ -20,25 +26,7 @@ class VideoAsset < FileAsset
     descMetadata.identifier = url
   end
 
-  # Sets the description on the current object
-  def description=(description)
-	descMetadata.description = description
-  end
-
-  def description
-	logger.debug "<< #{status} >>"
-	descMetadata.description
-  end
   
-  def source=(source)
-    puts "<< SOURCE : #{source} >>"
-    descMetadata.source = source
-  end
-  
-  def source
-    descMetadata.source
-  end
-
   # A hacky way to handle the description for now. This should probably be refactored
   # to stop pulling if the status is stopped or completed
   def status
@@ -47,7 +35,7 @@ class VideoAsset < FileAsset
     end
   end
 
-  def statusPercent
+  def status_complete
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
     totalOperations = matterhorn_response.workflow.operations.operation.length
     finishedOperations = 0

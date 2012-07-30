@@ -4,7 +4,7 @@
 
   gem 'blacklight', '~> 3.4.1'
   gem 'hydra-head', '~> 4.0.0'
-  #gem 'hydra-head', :git=>"git://github.com/projecthydra/hydra-head.git"
+  gem 'hydrant-engage', :git=>"git://github.com/variations-on-video/hydra-engage.git"
   gem 'active-fedora', '~> 4.2'
 
 	platforms :jruby do

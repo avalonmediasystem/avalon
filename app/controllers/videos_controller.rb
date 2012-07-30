@@ -1,8 +1,6 @@
 class VideosController < ApplicationController
   include Hydra::FileAssets
-  
-#  before_filter :load_fedora_document, :only=>[:show, :edit]
-#  before_filter :load_document, :only=>[:show, :edit]
+    
    before_filter :enforce_access_controls
    
   # TO DO : Need to import solr logic at some point for indexing and configuration
