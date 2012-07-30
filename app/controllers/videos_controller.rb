@@ -82,6 +82,11 @@ class VideosController < ApplicationController
   def show
     @video = Video.find(params[:id])
     @video_asset = load_videoasset
+    unless @video_asset.nil? 
+      @stream_link = @video_asset.descMetadata.identifier.first
+      @mediapackage_id = @video_asset.mediapackage_id
+			@mimetype = @video_asset.streamingmimetype
+    end
   end
 
   def destroy

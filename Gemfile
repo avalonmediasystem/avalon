@@ -37,6 +37,7 @@
 
     gem 'validates_email_format_of'
     gem 'loofah'
+    gem 'devise_cas_authenticatable'
     
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
@@ -44,7 +45,8 @@
     gem 'jquery-rails'
     gem 'compass-rails', '~> 1.0.0'
     gem 'compass-susy-plugin', '~> 0.9.0', :require => 'susy'
-    
+    gem "hydrant-engage", :git => "git://github.com/variations-on-video/hydrant-engage.git"
+
     # For overriding the default interface with Twitter Bootstrap
     gem 'sass-rails', '~> 3.2.3'
     gem 'twitter-bootstrap-rails', "~> 2.0"
