@@ -37,7 +37,7 @@
 
     gem 'validates_email_format_of'
     gem 'loofah'
-
+    gem 'devise_cas_authenticatable'
     
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
