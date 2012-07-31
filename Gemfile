@@ -38,7 +38,8 @@
     gem 'validates_email_format_of'
     gem 'loofah'
     gem 'devise_cas_authenticatable'
-    
+    gem 'rubycas-client', :git => "git://github.com/cjcolvar/rubycas-client.git"    
+
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
     gem 'uglifier', '>= 1.0.3'

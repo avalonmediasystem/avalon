@@ -3,7 +3,7 @@
     <ul>
     <% if user_signed_in? %>
       <!-- Eventually this shoud link to a profile edit page -->
-      <%= current_user.email %> |</li>
+      <%= user_key %> |</li>
       <li><%= link_to "Sign out", destroy_user_session_path %></li>
     <% else %>
       <%= link_to "Sign in", new_user_session_path %>
