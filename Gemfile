@@ -4,7 +4,7 @@
 
   gem 'blacklight', '~> 3.4.1'
   gem 'hydra-head', '~> 4.0.0'
-  gem 'hydrant-engage', :git=>"git://github.com/variations-on-video/hydra-engage.git"
+  gem 'hydrant-engage', :git=>"git://github.com/variations-on-video/hydrant-engage.git"
   gem 'active-fedora', '~> 4.2'
 
 	platforms :jruby do
@@ -46,7 +46,6 @@
     gem 'jquery-rails'
     gem 'compass-rails', '~> 1.0.0'
     gem 'compass-susy-plugin', '~> 0.9.0', :require => 'susy'
-    gem "hydrant-engage", :git => "git://github.com/variations-on-video/hydrant-engage.git"
 
     # For overriding the default interface with Twitter Bootstrap
     gem 'sass-rails', '~> 3.2.3'
