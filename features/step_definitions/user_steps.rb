@@ -1,21 +1,11 @@
-# @example
-#   I log in as "archivist1@example.com"
-# @example
-#   I am logged in as "archivist1@example.com"
 Given /^I (?:am )?log(?:ged)? in as "([^\"]*)"$/ do |username|
-  # Given %{a User exists with a Login of "#{login}"}
-  user = User.create(:username => username)
-  User.find_by_username(username).should_not be_nil
-
-  CASClient::Frameworks::Rails::Filter.fake("username")
-
-  visit destroy_user_session_path
-  visit new_user_session_path
-
-#  fill_in "Email", :with => email 
-#  fill_in "Password", :with => "password"
-#  click_button "Sign in"
-
+  @user = FactoryGirl.create(:cataloger)
+  CASClient::Frameworks::Rails::Filter.fake(@user)
+  
+  visit root_path
+  page.save_page
+  
+  # Verify the fact that you are logged in by checking for a logout link
   step %{I should see a link to "logout"} 
 end
 

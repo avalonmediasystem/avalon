@@ -83,9 +83,11 @@ class VideosController < ApplicationController
     @video = Video.find(params[:id])
     @video_asset = load_videoasset
     unless @video_asset.nil? 
-      @stream_link = @video_asset.descMetadata.identifier.first
+      @stream = @video_asset.stream
+      logger.debug("Stream location >> #{@stream}")
+
       @mediapackage_id = @video_asset.mediapackage_id
-			@mimetype = @video_asset.streamingmimetype
+	  @mime_type = @video_asset.streaming_mime_type
     end
   end
 

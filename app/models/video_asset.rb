@@ -69,9 +69,13 @@ class VideoAsset < FileAsset
     matterhorn_response.workflow.mediapackage.id.first
   end
 
-  def streamingmimetype
+  def streaming_mime_type
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
-    matterhorn_response.streamingmimetype.second
+    
+    logger.debug("<< Response from Matterhorn >>")
+    
+    #matterhorn_response.workflow.streamingmimetype.second
+    'video/x-flv'
   end
 
   protected
