@@ -103,7 +103,9 @@ class VideosController < ApplicationController
           "public" => "read", 
           "archivist" => "discover",
           "archivist" => "edit"},
-        "person" => {"archivist1@example.com" => "edit"}}
+        "person" => {
+          "archivist1@example.com" => "edit",
+          user_key => "edit"}}
       @video.rightsMetadata.update_permissions(permission)
     end
   end

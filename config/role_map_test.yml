@@ -14,5 +14,6 @@ researcher:
   - archivist1@example.com
   - researcher1@example.com
 patron:
+  - ann.e.student
   - patron1@example.com
   - leland_himself@example.com

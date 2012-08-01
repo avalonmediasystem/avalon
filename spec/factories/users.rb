@@ -8,14 +8,14 @@ FactoryGirl.define do
 
   factory :content_provider, class: User  do
     username 'archivist2'
-    email 'archivist1@example.com'
+    email 'archivist2@example.com'
     #password 'archivist1'
     #password_confirmation 'archivist1'
   end
 
   factory :student, class: User  do
     username 'ann.e.student'
-    email 'archivist1@example.com'
+    email 'student@example.com'
     #password 'archivist1'
     #password_confirmation 'archivist1'
   end
