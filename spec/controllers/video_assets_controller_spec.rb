@@ -9,6 +9,7 @@ describe VideoAssetsController do
 	    it "should provide a warning about the file size" do
 	     login_as_archivist
 
+         request.env["HTTP_REFERER"] = "/"
          @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
          @file.stub(:size).and_return(VideoAssetsController::MAXIMUM_UPLOAD_SIZE + 2^21)  
 	  

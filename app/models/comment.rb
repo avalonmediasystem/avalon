@@ -37,7 +37,9 @@ class Comment
     # By default prune out all tags. It might be worth thinking about other approaches
     # supported by Loofah (see https://github.com/flavorjones/loofah)
     @comment = Loofah.scrub_fragment(new_comment, :prune).to_s
-    puts "<< After : #{@comment} >>"
+    
+    logger.debug("Comment has been cleaned and now is")
+    logger.debug(@comment)
   end
   
   def initialize(attributes = {})
