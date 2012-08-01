@@ -3,18 +3,11 @@
 # @example
 #   I am logged in as "archivist1@example.com"
 Given /^I (?:am )?log(?:ged)? in as "([^\"]*)"$/ do |username|
-  # Given %{a User exists with a Login of "#{login}"}
-  user = User.create(:username => username)
-  User.find_by_username(username).should_not be_nil
 
-  CASClient::Frameworks::Rails::Filter.fake("username")
+  @current_user = User.create!(:username => username)
+  login_as(@current_user, :scope => :user)
 
-  visit destroy_user_session_path
-  visit new_user_session_path
-
-#  fill_in "Email", :with => email 
-#  fill_in "Password", :with => "password"
-#  click_button "Sign in"
+  visit root_path
 
   step %{I should see a link to "logout"} 
 end
@@ -42,5 +35,6 @@ Given /^I am not logged in$/ do
 end
 
 Given /^I log out$/ do
-  visit destroy_user_session_path
+  logout(:scope => :user)
+#  visit destroy_user_session_path
 end

@@ -20,6 +20,7 @@
 #
 
 require 'cucumber/rails'
+require 'capybara-webkit'
 require 'headless'
 
 # Capybara defaults to XPath selectors rather than Webrat's default of CSS3. In
@@ -83,3 +84,11 @@ ActionController::Base.allow_rescue = false
 # ~/.rvm/gems/ruby-1.9.2-p0@global/gems/rack-1.2.1/lib/rack/utils.rb:16: 
 # warning: regexp match /.../n against to UTF-8 string
 $VERBOSE = nil
+
+# in features/support/env.rb
+#class ApplicationController < ActionController::Base
+#  prepend_before_filter :stub_current_user
+#  def stub_current_user
+#    session[:user_id] = cookies[:stub_user_id] if cookies[:stub_user_id]
+#  end
+#end
