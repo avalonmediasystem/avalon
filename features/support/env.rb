@@ -20,8 +20,8 @@
 #
 
 require 'cucumber/rails'
-require 'headless'
 require 'capybara-webkit'
+require 'headless'
 
 # Capybara defaults to XPath selectors rather than Webrat's default of CSS3. In
 # order to ease the transition to Capybara we set the default here. If you'd
@@ -30,7 +30,6 @@ require 'capybara-webkit'
 Capybara.default_selector = :css
 Capybara.default_wait_time = 30
 Capybara.javascript_driver = :webkit
-#Capybara.save_and_open_page_path = File.join(Rails.root, '../screenshots')
 
 # Set up headless once instead of for every single feature
 AfterConfiguration do
@@ -85,3 +84,4 @@ DatabaseCleaner.strategy = :transaction
 # ~/.rvm/gems/ruby-1.9.2-p0@global/gems/rack-1.2.1/lib/rack/utils.rb:16: 
 # warning: regexp match /.../n against to UTF-8 string
 $VERBOSE = nil
+

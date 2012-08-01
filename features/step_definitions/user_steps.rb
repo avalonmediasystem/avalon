@@ -1,6 +1,6 @@
 Given /^I (?:am )?log(?:ged)? in as "([^\"]*)"$/ do |username|
   @user = FactoryGirl.create(:cataloger)
-  CASClient::Frameworks::Rails::Filter.fake(@user)
+  login_as(@user, :scope => :user)
   
   visit root_path
   page.save_page
@@ -32,5 +32,6 @@ Given /^I am not logged in$/ do
 end
 
 Given /^I log out$/ do
-  visit destroy_user_session_path
+  logout(:scope => :user)
+#  visit destroy_user_session_path
 end
