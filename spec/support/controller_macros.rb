@@ -1,12 +1,12 @@
 module ControllerMacros
-  def login_archivist
+  def login_as_archivist
     @request.env["devise.mapping"] = Devise.mappings[:admin]
-    sign_in FactoryGirl.create(:archivist) # Using factory girl as an example
+    sign_in FactoryGirl.create(:cataloger) # Using factory girl as an example
   end
 
-	def login_user
+	def login_as_user
     @request.env["devise.mapping"] = Devise.mappings[:user]
-    sign_in FactoryGirl.create(:user)
+    sign_in FactoryGirl.create(:student)
   end
 end
 

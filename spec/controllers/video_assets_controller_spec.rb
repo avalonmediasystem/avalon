@@ -7,7 +7,7 @@ describe VideoAssetsController do
 
       context "cannot upload a file over the defined limit" do
 	    it "should redirect to home page with a warning about the file size" do
-	     login_archivist
+	     login_as_archivist
 
          @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
          @file.stub(:size).and_return(VideoAssetsController::MAXIMUM_UPLOAD_SIZE + 1)  

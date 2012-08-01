@@ -5,6 +5,8 @@ When /^I create a new ([^"]*)$/ do |asset_type|
 
   @resource = Video.find(:all).last
   puts "<< Storing #{@resource.pid} for later use >>"
+  puts "<< #{page.current_url} >>"
+  puts "<< #{new_video_path} >>"
 end
 
 # Shortcut for the more verbose step so that the PID does not have to be constantly
