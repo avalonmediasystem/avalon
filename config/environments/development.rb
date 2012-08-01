@@ -34,4 +34,9 @@ Hydrant::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
+
+  # Keep only five logs and rotate them every 5 MB
+  config.logger = Logger.new(Rails.root.join("log", 
+    Rails.env + ".log"), 
+    5, 5*(2**20))
 end

@@ -3,9 +3,6 @@ class VideosController < ApplicationController
     
    before_filter :enforce_access_controls
    
-  # TO DO : Need to import solr logic at some point for indexing and configuration
-  #         of facets
-
   def new
     @video = Video.new
     @video.DC.creator = user_key
@@ -118,6 +115,4 @@ class VideosController < ApplicationController
       nil
     end
   end
-
-
 end
