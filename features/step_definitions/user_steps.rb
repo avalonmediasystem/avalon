@@ -1,9 +1,7 @@
 Given /^I (?:am )?log(?:ged)? in as "([^\"]*)"$/ do |username|
   @user = FactoryGirl.create(:cataloger)
   login_as(@user, :scope => :user)
-  
   visit root_path
-  page.save_page
   
   # Verify the fact that you are logged in by checking for a logout link
   step %{I should see a link to "logout"} 
