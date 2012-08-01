@@ -11,8 +11,8 @@ Given /^that "([^"]*)" has been loaded into fedora$/ do |pid|
   puts "Refreshed #{pid}"
 end
 
-Given /^that "([^"]*)" can edit "([^"]*)"$/ do |email, pid|
-	user = User.find_by_email(email)
+Given /^that "([^"]*)" can edit "([^"]*)"$/ do |username, pid|
+	user = User.find_by_username(username)
 	ability = Ability.new(user)
 	assert ability.can? :edit, pid
 end
