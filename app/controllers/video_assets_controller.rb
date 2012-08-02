@@ -146,7 +146,7 @@ class VideoAssetsController < ApplicationController
     logger.debug "<< Calling Matterhorn with arguments: #{args} >>"
     workflow_doc = Rubyhorn.client.addMediaPackage(file, args)
     flash[:notice] = "The uploaded file has been sent for processing."
-    video_asset.description = "File is being processed"
+    #video_asset.description = "File is being processed"
     
     # I don't know why this has to be double escaped with two arrays
     video_asset.source = workflow_doc.workflow.id[0]
@@ -172,7 +172,7 @@ class VideoAssetsController < ApplicationController
   def process_files
     video_asset = VideoAsset.find(params[:id]) 
 		video_asset.url = params[:video_url]
-		video_asset.description = "File processed and ready for streaming"
+		#video_asset.description = "File processed and ready for streaming"
 		
 		if video_asset.save
 			notice = []
@@ -190,7 +190,7 @@ class VideoAssetsController < ApplicationController
     filename = path.split(/\//).last
 		video_asset.label = filename
 		video_asset.url = path
-		video_asset.description = "Original file uploaded"
+		#video_asset.description = "Original file uploaded"
 		
 		return video_asset		
 	end

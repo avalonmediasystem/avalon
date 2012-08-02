@@ -11,7 +11,7 @@
           <%= link_to file_download_label(video_asset),
               edit_video_path(id: video_asset.container.pid, 
                 step: 'file-upload') %></dt>
-        <dd><%= video_asset.description[0] %></dd>
+        <dd><%= video_asset.status %></dd>
         <!--
         <div class="progress progress-striped active">
           <div class="bar" style="width: 45%;"></div>

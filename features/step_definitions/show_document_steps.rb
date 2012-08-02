@@ -3,8 +3,6 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "support", "pat
 # Keep these two for now until they can be refactored in a more useful
 # location along with other helper methods
 Then /^I should see a link to "([^\"]*)"$/ do |link_path|
-  puts "<< Page contents >>"
-  page.save_page
   page.should have_xpath(".//a[@href=\"#{path_to(link_path)}\"]")
 end
 

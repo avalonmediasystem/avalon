@@ -3,6 +3,12 @@ require "file_asset"
 
 class VideoAsset < FileAsset
   include ActiveFedora::DatastreamCollections
+
+  has_datastream :name => "content", 
+    :type => ActiveFedora::Datastream, 
+    :controlGroup => 'R'
+  delegate :source, to: :descMetadata
+  delegate :description, to: :descMetadata
   
   def initialize(attrs = {})
     super(attrs)
@@ -10,11 +16,6 @@ class VideoAsset < FileAsset
     refresh_status
   end
 
-  has_datastream :name => "content", :type => ActiveFedora::Datastream, 
-    :controlGroup => 'R'
-  delegate :source, to: :descMetadata
-  delegate :description, to: 'descMetadata'
-  
   def stream
     descMetadata.identifier.first
   end
@@ -26,13 +27,15 @@ class VideoAsset < FileAsset
     descMetadata.identifier = url
   end
 
-  
   # A hacky way to handle the description for now. This should probably be refactored
   # to stop pulling if the status is stopped or completed
   def status
     unless source.nil? or source.empty?
       refresh_status
+    else
+      descMetadata.description = "Status is currently unavailable"
     end
+    descMetadata.description.first
   end
 
   def status_complete
@@ -73,9 +76,7 @@ class VideoAsset < FileAsset
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
     
     logger.debug("<< Response from Matterhorn >>")
-    
-    #matterhorn_response.workflow.streamingmimetype.second
-    'video/x-flv'
+    matterhorn_response.workflow.streamingmimetype.second
   end
 
   protected

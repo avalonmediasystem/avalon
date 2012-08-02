@@ -17,23 +17,13 @@ When /^I upload the file "(.*?)" with MIME type "(.*)"$/ do |file, mime_type|
   #
   # This may be an unintended side effect that is better refactored into another
   # location. That will have to wait for a future sprint.
-  
-  # Whoops - no wonder it was failing after this step if the entire asset was being
-  # deleted from the repository. This step definitely needs some refinement.
-  #
-  #if page.has_selector? "#delete_asset"
-  #  within '#delete_asset' do
-  #    click_on('Delete file')
-  #  end
-  
-  #end
   upload_file("Filedata[]", file, mime_type)  
 end
 
 Then /^I should see confirmation that it was uploaded/ do
-  #sleep 15
   page.wait_until do
     within "#workflow_status" do
+      page.save_page
       page.should satisfy {
         |page| page.has_content? "Preparing file for conversion" or 
           page.has_content? "Creating derivatives"
