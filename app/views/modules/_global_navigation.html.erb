@@ -6,11 +6,7 @@
         <li class="span1"><%= link_to 'Home', root_url %></li>
         <li class="divider-vertical"></li>
         <li class="span2">
-          <% unless current_user.nil? %>
-              <%= link_to 'Add new item', new_video_path %>
-          <% else %>
-            <%= link_to 'Add new item', new_user_session_path %>
-          <% end %>
+          <%= link_to 'Add new item', new_video_path %>
         </li>
         <li class="divider-vertical"></li>
         <li class="span2"><%= link_to 'Browse items', search_index_path %></li>
