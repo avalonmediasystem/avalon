@@ -1,8 +1,9 @@
 <div class="row-fluid">
   <div class="span3" id="left_column">
     <% if can? :edit, @video %>
-    <%= render "conversion_status", video_assets: @video_assets %>
-    <%= render "withdraw_object", video: @video %>
+      <%= render "toggle_edit_mode" %>
+      <%= render "conversion_status", video_assets: @video_assets %>
+      <%= render "withdraw_object", video: @video %>
     <% end %>
   </div>
 

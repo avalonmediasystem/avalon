@@ -1,8 +1,9 @@
 <div class="row-fluid">
   <div class="span3" id="left_column">
+    <%= render "toggle_preview_mode" %>
+    
     <% if can? :edit, @video %>
-    <%= render "conversion_status", files: @video_assets %>
-    <%= render "withdraw_object", video: @video %>
+      <%= render "workflow_steps", files: @video_assets %>
     <% end %>
   </div>
   

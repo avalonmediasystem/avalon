@@ -31,6 +31,13 @@ class Video < ActiveFedora::Base
     end
   end
   
+  # Stub method to determine if the record is done or not. This should be based on
+  # whether the descMetadata, rightsMetadata, and techMetadata datastreams are all
+  # valid.
+  def is_complete?
+    false
+  end
+    
   private
     def after_create
       self.DC.identifier = pid

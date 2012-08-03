@@ -1,0 +1,20 @@
+<ul class="nav nav-pills nav-stacked">
+  <li class=""> 
+    <%= link_to edit_video_path(@video, step: 'file-upload') do %>
+      <i class="icon-ok-circle"></i>
+      Manage file(s) 
+    <% end %>
+  </li>
+  <li class="">
+    <%= link_to edit_video_path(@video, step: 'basic-metadata') do %>
+      <i class="icon-ok-circle"></i>
+      Resource description
+    <% end %>
+  </li>
+  <li class="active">
+    <a href="#">Access controls</a>
+  </li>
+  <li class="disabled">
+    <a href="#">Preview</a>
+  </li>
+</ul>
