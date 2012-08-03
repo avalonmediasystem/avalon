@@ -3,7 +3,7 @@ require 'net/http/post/multipart'
 require 'rubyhorn'
 
 class VideoAssetsController < ApplicationController
-  include Hydra::FileAssets
+  include Hydra::Controller::FileAssetsBehavior
 
     # First and simplest test - make sure that the uploaded file does not exceed the
     # limits of the system. For now this is hard coded but should probably eventually
