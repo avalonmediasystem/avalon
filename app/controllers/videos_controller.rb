@@ -1,5 +1,5 @@
 class VideosController < ApplicationController
-  include Hydra::FileAssets
+   include Hydra::Controller::FileAssetsBehavior
     
    before_filter :enforce_access_controls
    

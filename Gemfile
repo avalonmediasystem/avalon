@@ -2,8 +2,8 @@
 
   gem 'rails', '~>3.2.3'
 
-  gem 'blacklight', '~> 3.4.1'
-  gem 'hydra-head', '~> 4.0.0'
+  gem 'blacklight', '~> 3.4'
+  gem 'hydra-head', '~> 4.1.0'
   gem 'hydrant-engage', :git=>"git://github.com/variations-on-video/hydrant-engage.git"
   gem 'active-fedora', '~> 4.2'
 
