@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :cataloger, class: User  do
-    username 'archivist1'
+    username 'archivist1@example.com'
     #email 'archivist1@example.com'
     #password 'archivist1'
     #password_confirmation 'archivist1'
