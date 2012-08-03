@@ -19,8 +19,12 @@ describe VideosController do
   	end
 
 	  context "Default permissions should be applied" do
+      it "should be editable by the creator" do
+	login_as('content_provider')
+  	  lambda { get 'new' }.should change { Video.count }
+#	  response.should redirect_to(video_path)
+       end
       it "should inherit default permissions" 
-      it "should be editable by the creator"
     end
   end
 
