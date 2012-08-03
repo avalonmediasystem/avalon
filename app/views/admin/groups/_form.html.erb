@@ -1,0 +1,68 @@
+<%= hidden_field_tag 'users-count', @group.users.nil? ? 0 : @group.users.count %>
+<%= twitter_bootstrap_form_for @group,class: 'form-vertical' do |f| %>
+  <%= f.fieldset do %>
+    <%= f.label :name, "Name" do |controls| %>
+      <%= controls.text_field :name, class: 'span4' %>
+    <% end %>
+
+    <%= f.label :users, "Users" do |controls| %> 
+      <div style="line-height: 22px">
+        <% @group.users.each_with_index do |user, index| %>
+          <%= text_field_tag "#{f.object_name}[users][]", user, class: "noshow", id: "#{f.object_name}_user_#{index}" %>
+          <span class="badge">
+            <%= user %>
+            <button class="close remove">&times;</button>
+          </span>
+        <% end %>
+
+        <input name="admin_group[users][]" id="new-user" >
+        <i class="icon-remove-sign"></i>
+        <i class="icon-ok-sign"></i>
+        <i class="icon-plus-sign"></i>
+      </div>
+    <% end %>
+    
+    <%= f.submit "Save" %>
+  <% end %>
+<% end %>
+
+<script>
+  $('.close.remove').click(function(){
+    $(this).parent().prev().remove();
+    $(this).parent().remove();
+  })
+
+  // Adds new user
+  $('.icon-plus-sign').click(function(){
+    toggleIcons();
+    $('#new-user').focus();
+  })
+
+  // Saves new user
+  // TODO: cleaner cloning
+  $('.icon-ok-sign').click(function(){
+    var usr = $('#new-user').val();
+    if (usr.length > 0) {
+      var numUsrs = $('#users-count').val();
+      $('#new-user').before($('#new-user').clone(false).attr('id', 'admin_group_user_' + numUsrs).hide());
+      $('#users-count').val(numUsrs + 1);
+      $('#new-user').before('<span class="badge"><span>' + usr + '</span><button class="close remove">&times;</button></span>');
+      $('#new-user').val('');
+    }
+    toggleIcons();
+  })
+
+  // Cancels adding user
+  $('.icon-remove-sign').click(function(){
+    $('#new-user').val('');
+    toggleIcons();
+  })
+  
+  // Toggles the controls set with each action
+  function toggleIcons(){
+    $('.icon-ok-sign').toggle(); 
+    $('.icon-remove-sign').toggle();
+    $('.icon-plus-sign').toggle();
+    $('#new-user').toggle();   
+  }
+</script>

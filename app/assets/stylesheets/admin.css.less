@@ -1,0 +1,44 @@
+/*
+ *= require bootstrap_and_overrides
+ */
+ 
+/**
+ * Tweak the modules so that there is some space between items in the
+ * definition lists
+ * 
+ * A little quick and dirty but it can be cleaned up later. Use 18px or the defined
+ * line height to keep things flowing nicely in the grid instead of arbitrary gaps
+ */
+.admin .badge, .admin .label {
+  font-size: 13px;
+  font-weight: normal;
+  margin-right: 4px;
+}
+
+.icon-remove-sign, .icon-ok-sign, .icon-plus-sign {
+  font-size: 20px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.icon-remove-sign, .icon-ok-sign, .new-user, input[name="admin_group[users][]"] {
+  display: none;
+}
+
+.admin .label {
+
+}
+
+.admin .badge .close {
+  float: none;
+  opacity: 0.6;
+  margin-top: -8px;
+}
+
+.float-left {
+  float: left;
+}
+
+.btn-group:last-of-type {
+  margin-right: 4px;
+}

@@ -8,14 +8,16 @@ Hydrant::Application.routes.draw do
 
   # My routes go here
   # Routes for subjects and pbcore controller
-#  resources :assets do
-    resources :video_assets
-    resources :videos, except: [:index]
-#  end
+  resources :video_assets
+  resources :videos, except: [:index]
+  resources :comments, only: [:index, :create]
   match 'search/index' => 'search#index'
   match 'search/facet/:id' => 'search#facet'
-  
-  resources :comments, only: [:index, :create]
+
+  resources :admin, only: [:index]
+  namespace "admin" do
+    resources :groups, except: [:show]
+  end  
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
