@@ -16,7 +16,11 @@ Hydrant::Application.routes.draw do
 
   resources :admin, only: [:index]
   namespace "admin" do
-    resources :groups, except: [:show]
+    resources :groups, except: [:show] do 
+      collection do 
+        put 'update_multiple'
+      end
+    end
   end  
 
   # The priority is based upon order of creation:

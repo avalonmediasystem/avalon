@@ -1,82 +1,98 @@
 <h2><i class="icon-group"></i> All Groups</h2>
 <p>Listed below are groups you can manage</p>
 
-<div class="btn-group float-left">
-  <a id="add-ability" class="btn dropdown-toggle disabled" data-toggle="dropdown" href="#">
-    Add Ability
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu">
-    <li>
-      <a href="#">View</a>
-    </li>
-    <li>
-      <a href="#">Edit</a>
-    </li>
-    <li>
-      <a href="#">Destroy</a>
-    </li>
-  </ul>
-</div>
+<%= form_tag update_multiple_admin_groups_path, method: :put do %>
 
-<div class="btn-group float-left">
-  <a id="remove-ability" class="btn dropdown-toggle disabled" data-toggle="dropdown" href="#">
-    Remove Ability
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu">
-    <li>
-      <a href="#">View</a>
-    </li>
-    <li>
-      <a href="#">Edit</a>
-    </li>
-    <li>
-      <a href="#">Destroy</a>
-    </li>
-  </ul>
-</div>
+  <div class="btn-group float-left">
+    <a id="add-ability" class="btn dropdown-toggle disabled" data-toggle="dropdown" href="#">
+      Add Ability
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+      <li>
+        <a href="#">View</a>
+      </li>
+      <li>
+        <a href="#">Edit</a>
+      </li>
+      <li>
+        <a href="#">Destroy</a>
+      </li>
+      <li>
+        <a href="#">Manage</a>
+      </li>
+    </ul>
+  </div>
 
-<%= button_to "Delete", {controller: :groups, action: 'destroy', id: '12' }, :method => :delete, class: "btn btn-danger delete", disabled: true %>
+  <div class="btn-group float-left">
+    <a id="remove-ability" class="btn dropdown-toggle disabled" data-toggle="dropdown" href="#">
+      Remove Ability
+      <span class="caret"></span>
+    </a>
+    <ul class="dropdown-menu">
+      <li>
+        <a href="#">View</a>
+      </li>
+      <li>
+        <a href="#">Edit</a>
+      </li>
+      <li>
+        <a href="#">Destroy</a>
+      </li>
+      <li>
+        <a href="#">Manage</a>
+      </li>
+    </ul>
+  </div>
 
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th><input type="checkbox" class="select-groups"></th>
-      <th>Name</th>
-      <th>Ability</th>
-      <th>Members#</th>
-      <th>Resources#</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @groups.each do |group|%>
+  <%= submit_tag "Delete",  :method => :delete, class: "btn btn-danger delete", disabled: true %>
+
+  <table class="table table-striped">
+    <thead>
       <tr>
-        <td><input type="checkbox" class="select-group"></td>
-        <td><%= link_to group.name, edit_admin_group_path(group) %></td>
-        <td>
-          <span class="badge badge-success">
-            <span>View</span>
-            <button class="close">&times;</button>
-          </span>
-          <!-- TODO: replace this with actual group access logic-->
-          <% if group.name == "archivist" %>
-            <span class="badge badge-warning">
-              <span>Edit</span>
-              <button class="close">&times;</button>
-            </span>
-            <span class="badge badge-important">
-              <span>Destroy</span>
-              <button class="close">&times;</button>
-            </span>
-          <% end %>
-        </td>
-        <td><%= group.users.count %></td>
-        <td></td>
+        <th><input type="checkbox" class="select-groups"></th>
+        <th>Name</th>
+        <th>Ability</th>
+        <th>Members#</th>
+        <th>Resources#</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @groups.each do |group|%>
+        <tr>
+          <td><%= check_box_tag "group_ids[]", group.name %></td>
+          <td><%= link_to group.name, edit_admin_group_path(group) %></td>
+          <td>
+            <span class="badge badge-success">
+              <span>View</span>
+              <button class="close">&times;</button>
+            </span>
+            <!-- TODO: replace this with actual group access logic-->
+            <% if group.name == "archivist" %>
+              <span class="badge badge-warning">
+                <span>Edit</span>
+                <button class="close">&times;</button>
+              </span>
+              <span class="badge badge-important">
+                <span>Destroy</span>
+                <button class="close">&times;</button>
+              </span>
+            <% end %>
+          
+            <% if group.name == "admin_policy_object_editor" %>
+              <span class="badge badge-info">
+                <span>Manage</span>
+                <button class="close">&times;</button>
+              </span>
+            <% end %>
+          </td>
+          <td><%= group.users.count %></td>
+          <td></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
 
 <%= link_to "Add Group", new_admin_group_path, class: "btn btn-primary" %>
 
@@ -86,10 +102,10 @@
   })
   
   $('.select-groups').change(function(){
-    $('.select-group').prop('checked', $(this).is(':checked')).trigger('change');
+    $('input[id^=group_ids_]').prop('checked', $(this).is(':checked')).trigger('change');
   })
   
-  $('.select-group').change(function(){
+  $('input[id^=group_ids_]').change(function(){
     if ($(this).is(':checked')) {
       enableButtons();
     } else if ($(':checked').length == 0) {

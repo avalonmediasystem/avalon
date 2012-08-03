@@ -1,6 +1,13 @@
 # -*- encoding : utf-8 -*-
 require "role_controls"
 class Admin::GroupsController < ApplicationController  
+  before_filter :auth
+  
+  # Currently assumes that to do anything you have to be able to manage Group
+  # TODO: finer controls
+  def auth
+    authorize! :manage, Admin::Group
+  end
   
   def index
     @groups = []
@@ -50,4 +57,14 @@ class Admin::GroupsController < ApplicationController
     redirect_to admin_groups_path
   end
 
+  # Only deletes multiple groups for now
+  # TODO: able to add/remove an ability to multple groups
+  def update_multiple
+    params[:group_ids].each do |group|
+      RoleControls.remove_role(group)
+    end
+    RoleControls.save_changes
+    
+    redirect_to admin_groups_path
+  end
 end 

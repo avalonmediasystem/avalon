@@ -2,7 +2,14 @@
 class AdminController < ApplicationController  
 
   def index
-    render layout: 'admin'
+    if current_user.nil?
+      flash[:notice] = "You need to be signed in to access admin panel"
+      redirect_to new_user_session_path
+    elsif cannot? :manage, Admin::Group 
+      flash[:notice] = "You do not have sufficient privileges to access admin panel"
+      redirect_to root_path
+    else    
+      render layout: 'admin'
+    end
   end
-
 end 

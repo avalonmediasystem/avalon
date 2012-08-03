@@ -3,9 +3,9 @@
   <div class="navbar-inner">
     <div class="container">
       <ul class="nav nav-pills">
-        <li class="span1"><%= link_to 'Home', root_url %></li>
+        <li><%= link_to 'Home', root_url %></li>
         <li class="divider-vertical"></li>
-        <li class="span2">
+        <li>
           <% unless current_user.nil? %>
               <%= link_to 'Add new item', new_video_path %>
           <% else %>
@@ -13,8 +13,13 @@
           <% end %>
         </li>
         <li class="divider-vertical"></li>
-        <li class="span2"><%= link_to 'Browse items', search_index_path %></li>
-        <li class="span2"><%= link_to 'Contact us', comments_path %></li>
+        <li><%= link_to 'Browse items', search_index_path %></li>
+        <li class="divider-vertical"></li>
+        <li><%= link_to 'Contact us', comments_path %></li>
+        <% if can? :manage, Admin::Group %>
+          <li class="divider-vertical"></li>
+          <li><%= link_to 'Manage Policy', admin_index_path %>
+        <% end %>
       </ul>
       <%= form_tag search_index_path, 
          method: 'post',  
