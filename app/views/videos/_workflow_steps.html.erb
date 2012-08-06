@@ -1,20 +1,27 @@
-<ul class="nav nav-pills nav-stacked">
-  <li class=""> 
+<ul class="nav nav-wizard">
+  <li class="nav-complete"> 
+    <span class="step">1</span>
     <%= link_to edit_video_path(@video, step: 'file-upload') do %>
-      <i class="icon-ok-circle"></i>
-      Manage file(s) 
+      <h4>Manage file(s)</h4>
     <% end %>
+    <p><%= conversion_status_for(@video) %></p>
   </li>
-  <li class="">
-    <%= link_to edit_video_path(@video, step: 'basic-metadata') do %>
-      <i class="icon-ok-circle"></i>
-      Resource description
-    <% end %>
+  
+  <li class="nav-current">
+    <span class="step">2</span>
+    <h4>Resource description</h4> 
+    <p>Description of key fields</p>
   </li>
-  <li class="active">
-    <a href="#">Access controls</a>
+  
+  <li>
+    <span class="step">3</span>
+    <h4>Access control</h4>
+    <p>Who can playback the content</p>
   </li>
-  <li class="disabled">
-    <a href="#">Preview</a>
+
+  <li>
+    <span class="step">4</span>
+    <h4>Preview and publish</h4>
+    <p>Release the content to production</p>
   </li>
 </ul>

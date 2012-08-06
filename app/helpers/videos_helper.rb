@@ -22,7 +22,6 @@ module VideosHelper
 	    end
 	  end
 
-
 	  def search_result_label(item)
 	     label = ''
 	     unless item["title_t"].nil? or item["title_t"].empty?
@@ -33,7 +32,17 @@ module VideosHelper
 	     
 	     label
 	  end
-	  
+
+      # Retrieve the current status of processing and display a concise version
+      # for use in the interface
+      def conversion_status_for(video)
+        unless video.parts.empty?
+          video_asset = video.parts.first.pid
+          video_asset.status
+        else
+          "No files have been selected"
+        end
+      end	  
 end
 
 
