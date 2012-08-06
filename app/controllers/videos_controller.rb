@@ -21,7 +21,7 @@ class VideosController < ApplicationController
     @video.descMetadata.title = params[:title]
     @video.descMetadata.creator = params[:creator]
     @video.descMetadata.created_on = params[:created_on]
-    set_item_permissions
+    set_default_item_permissions
     @video.save
     
     redirect_to edit_video_path(id: params[:pid], step: 'file_upload')
@@ -60,6 +60,15 @@ class VideosController < ApplicationController
         else
           next_step = 'preview'
         end
+      when 'authorization' then
+        #implement me
+        if params[:access] == 'public'
+	  @video.read_groups = ['public']
+        elsif params[:access] == 'restricted'
+	  @video.read_groups = ['restricted']
+        else #private
+	  @video.read_groups = []
+        end
       else
         next_step = 'file_upload'
     end
@@ -97,16 +106,8 @@ class VideosController < ApplicationController
   protected
   def set_default_item_permissions
     unless @video.rightsMetadata.nil?
-      permission = {
-        "group" => { 
-          "public" => "discover",
-          "public" => "read", 
-          "archivist" => "discover",
-          "archivist" => "edit"},
-        "person" => {
-          "archivist1@example.com" => "edit",
-          user_key => "edit"}}
-      @video.rightsMetadata.update_permissions(permission)
+      @video.edit_groups = ['archivist']
+      @video.edit_users = [user_key]
     end
   end
   

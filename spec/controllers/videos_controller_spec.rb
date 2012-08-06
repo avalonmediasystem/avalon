@@ -24,7 +24,12 @@ describe VideosController do
   	  lambda { get 'new' }.should change { Video.count }
 #	  response.should redirect_to(video_path)
        end
-      it "should inherit default permissions" 
+      it "should inherit default permissions" do
+        login_as('content_provider')
+	get 'new'
+	assigns(:video).edit_groups.should eq ["archivist"]
+	assigns(:video).edit_users.should eq ['archivist2'] #FIXME make this lookup the username from factory girl
+      end
     end
   end
 
