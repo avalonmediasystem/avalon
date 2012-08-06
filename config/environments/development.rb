@@ -4,7 +4,7 @@ Hydrant::Application.configure do
   # In the development environment your application's code is reloaded on
   # every request.  This slows down response time but is perfect for development
   # since you don't have to restart the webserver when you make code changes.
-  config.cache_classes = false
+  config.cache_classes = true
 
   # Log error messages when you accidentally call methods on nil.
   config.whiny_nils = true
@@ -34,4 +34,9 @@ Hydrant::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
+
+  # Keep only five logs and rotate them every 5 MB
+  config.logger = Logger.new(Rails.root.join("log", 
+    Rails.env + ".log"), 
+    5, 5*(2**20))
 end

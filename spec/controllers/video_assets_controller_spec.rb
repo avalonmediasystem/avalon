@@ -6,16 +6,18 @@ describe VideoAssetsController do
 	  end
 
       context "cannot upload a file over the defined limit" do
-	    it "should redirect to home page with a warning about the file size" do
-	     login_archivist
+	    it "should provide a warning about the file size" do
+	     login_as_archivist
 
+         request.env["HTTP_REFERER"] = "/"
          @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-         @file.stub(:size).and_return(VideoAssetsController::MAXIMUM_UPLOAD_SIZE + 1)  
+         @file.stub(:size).and_return(VideoAssetsController::MAXIMUM_UPLOAD_SIZE + 2^21)  
 	  
-         request.env["HTTP_REFERER"] = '/'
-         lambda { post :create, Filedata: [@file], original: 'any'}.should_not change { VideoAsset.count }
+         lambda { 
+           post :create, Filedata: [@file], original: 'any'}.should_not change { VideoAsset.count }
+        puts "<< Flash message is present? #{flash[:notice]} >>"
+
          flash[:errors].should_not be_nil
-         response.should redirect_to('/')
 	    end
 	  end
 	  

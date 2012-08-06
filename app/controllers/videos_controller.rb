@@ -1,13 +1,8 @@
 class VideosController < ApplicationController
-  include Hydra::FileAssets
-  
-#  before_filter :load_fedora_document, :only=>[:show, :edit]
-#  before_filter :load_document, :only=>[:show, :edit]
+   include Hydra::Controller::FileAssetsBehavior
+    
    before_filter :enforce_access_controls
    
-  # TO DO : Need to import solr logic at some point for indexing and configuration
-  #         of facets
-
   def new
     @video = Video.new
     @video.DC.creator = user_key
@@ -85,9 +80,11 @@ class VideosController < ApplicationController
     @video = Video.find(params[:id])
     @video_asset = load_videoasset
     unless @video_asset.nil? 
-      @stream_link = @video_asset.descMetadata.identifier.first
+      @stream = @video_asset.stream
+      logger.debug("Stream location >> #{@stream}")
+
       @mediapackage_id = @video_asset.mediapackage_id
-			@mimetype = @video_asset.streamingmimetype
+	  @mime_type = @video_asset.streaming_mime_type
     end
   end
 
@@ -106,7 +103,9 @@ class VideosController < ApplicationController
           "public" => "read", 
           "archivist" => "discover",
           "archivist" => "edit"},
-        "person" => {"archivist1@example.com" => "edit"}}
+        "person" => {
+          "archivist1@example.com" => "edit",
+          user_key => "edit"}}
       @video.rightsMetadata.update_permissions(permission)
     end
   end
@@ -118,6 +117,4 @@ class VideosController < ApplicationController
       nil
     end
   end
-
-
 end

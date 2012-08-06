@@ -1,0 +1,31 @@
+<h2>_<%= @video_asset.stream %>_</h2>
+
+<% if (defined? @video_asset.stream) && 
+  (!@video_asset.stream.start_with?("rtmp")) %>
+	<div class="well">	   
+	   <h3><i class="icon-time"></i> Upload status</h3>
+	   <p>The file is still being processed by the system. Please check back later for a preview.</p>
+	</div>
+<% else %>
+  <%# render 'engage_player' %>
+<% end %>
+
+<%= content_for :page_styles do %>
+  <%= stylesheet_link_tag 'engage' %>
+<% end %>
+
+<%= content_for :page_scripts do %>
+  <%= javascript_include_tag 'engage' %>
+  <!-- Hide certain elements. Better yet keep them from loading in the first place.
+       A better long term approach may be to pass the things to show/hide to the
+       video gem (like definining routes) -->
+  <script type="text/javascript">
+      $('#oc_btn-description').parent().hide();
+      $('#oc_btn-slidetext').parent().hide();
+      $('#oc_btn-slides').parent().hide();
+      
+      $('#oc_btn-description').detach();
+      $('#oc_btn-slidetext').detach();
+      $('#oc_btn-slides').detach();
+  </script>
+<% end %>

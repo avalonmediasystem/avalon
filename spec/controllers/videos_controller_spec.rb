@@ -1,7 +1,8 @@
 require 'spec_helper'
 
+
 describe VideosController do
-	render_views
+  render_views
 
   describe "creating a new video" do
   	it "should redirect to sign in page with a notice when unauthenticated" do
@@ -11,15 +12,19 @@ describe VideosController do
   	end
 	
   	it "should redirect to home page with a notice when authenticated but unauthorized" do
-      login_user
+      login_as('student')
   	  lambda { get 'new' }.should_not change { Video.count }
   	  flash[:notice].should_not be_nil
   	  response.should redirect_to(root_path)
   	end
 
 	  context "Default permissions should be applied" do
+      it "should be editable by the creator" do
+	login_as('content_provider')
+  	  lambda { get 'new' }.should change { Video.count }
+#	  response.should redirect_to(video_path)
+       end
       it "should inherit default permissions" 
-      it "should be editable by the creator"
     end
   end
 
@@ -30,13 +35,14 @@ describe VideosController do
 
       get 'edit', id: pid
       flash[:notice].should_not be_nil
+
       response.should redirect_to(new_user_session_path)
   	end
 	
   	it "should redirect to show page with a notice when authenticated but unauthorized" do
       pid = 'hydrant:318'
       load_fixture pid
-      login_user
+      login_as('student')
       
       get 'edit', id: pid
       flash[:notice].should_not be_nil

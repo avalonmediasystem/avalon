@@ -2,9 +2,9 @@
 
   gem 'rails', '~>3.2.3'
 
-  gem 'blacklight', '~> 3.4.1'
-  gem 'hydra-head', '~> 4.0.0'
-  #gem 'hydra-head', :git=>"git://github.com/projecthydra/hydra-head.git"
+  gem 'blacklight', '~> 3.4'
+  gem 'hydra-head', '~> 4.1.0'
+  gem 'hydrant-engage', :git=>"git://github.com/variations-on-video/hydrant-engage.git"
   gem 'active-fedora', '~> 4.2'
 
 	platforms :jruby do
@@ -37,15 +37,15 @@
 
     gem 'validates_email_format_of'
     gem 'loofah'
+    gem 'devise_cas_authenticatable'
+    gem 'rubycas-client', :git => "git://github.com/cjcolvar/rubycas-client.git"    
 
-    
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
     gem 'uglifier', '>= 1.0.3'
     gem 'jquery-rails'
     gem 'compass-rails', '~> 1.0.0'
     gem 'compass-susy-plugin', '~> 0.9.0', :require => 'susy'
-    gem "hydrant-engage", :git => "git://github.com/variations-on-video/hydrant-engage.git"
 
     # For overriding the default interface with Twitter Bootstrap
     gem 'sass-rails', '~> 3.2.3'

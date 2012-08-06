@@ -3,6 +3,12 @@ require "file_asset"
 
 class VideoAsset < FileAsset
   include ActiveFedora::DatastreamCollections
+
+  has_datastream :name => "content", 
+    :type => ActiveFedora::Datastream, 
+    :controlGroup => 'R'
+  delegate :source, to: :descMetadata
+  delegate :description, to: :descMetadata
   
   def initialize(attrs = {})
     super(attrs)
@@ -10,9 +16,10 @@ class VideoAsset < FileAsset
     refresh_status
   end
 
-  has_datastream :name => "content", :type => ActiveFedora::Datastream, 
-    :controlGroup => 'R'
-
+  def stream
+    descMetadata.identifier.first
+  end
+  
   # Set the url on the current object
   #
   # @param [String] new_url
@@ -20,34 +27,18 @@ class VideoAsset < FileAsset
     descMetadata.identifier = url
   end
 
-  # Sets the description on the current object
-  def description=(description)
-	descMetadata.description = description
-  end
-
-  def description
-	logger.debug "<< #{status} >>"
-	descMetadata.description
-  end
-  
-  def source=(source)
-    puts "<< SOURCE : #{source} >>"
-    descMetadata.source = source
-  end
-  
-  def source
-    descMetadata.source
-  end
-
   # A hacky way to handle the description for now. This should probably be refactored
   # to stop pulling if the status is stopped or completed
   def status
     unless source.nil? or source.empty?
       refresh_status
+    else
+      descMetadata.description = "Status is currently unavailable"
     end
+    descMetadata.description.first
   end
 
-  def statusPercent
+  def status_complete
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
     totalOperations = matterhorn_response.workflow.operations.operation.length
     finishedOperations = 0
@@ -81,9 +72,11 @@ class VideoAsset < FileAsset
     matterhorn_response.workflow.mediapackage.id.first
   end
 
-  def streamingmimetype
+  def streaming_mime_type
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
-    matterhorn_response.streamingmimetype.second
+    
+    logger.debug("<< Response from Matterhorn >>")
+    matterhorn_response.workflow.streamingmimetype.second
   end
 
   protected

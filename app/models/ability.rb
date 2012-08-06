@@ -2,7 +2,7 @@ class Ability
 	include CanCan::Ability
 	include Hydra::Ability
 
-	def custom_permissions(user, session)
+	def create_permissions(user, session)
 		if @user_groups.include? "archivist"
 			can :create, Video
 			can :create, VideoAsset
@@ -11,4 +11,5 @@ class Ability
 		  can :manage, Admin::Group
 		end
 	end
+
 end

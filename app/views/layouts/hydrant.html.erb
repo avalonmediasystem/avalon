@@ -3,15 +3,11 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title><%= yield :title %> - Hydrant Release 0 prototype</title>
+    <title><%= yield :title %>
+      <% if content_for? :title %>- <% end %>Hydrant Release 0 prototype
+    </title>
     <%= stylesheet_link_tag "application", media: "all" %>
-    <!-- With this many Javascript files performance will be much better
-         if they are included here. That means the important content will
-         load first; the page will not gag on trying to pull down files
-         from a CDN -->
-    <%= javascript_include_tag "application" %>
-    <%= yield :page_scripts %>
-
+    <%= yield :page_styles %>
     <%= csrf_meta_tags %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
@@ -52,5 +48,12 @@
 	      </footer>
       </div>
     </div>
+    
+    <!-- With this many Javascript files performance will be much better
+         if they are included here. That means the important content will
+         load first; the page will not gag on trying to pull down files
+         from a CDN -->
+    <%= javascript_include_tag "application" %>
+    <%= yield :page_scripts %>
   </body>
 </html>

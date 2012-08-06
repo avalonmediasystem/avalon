@@ -34,4 +34,9 @@ Hydrant::Application.configure do
 
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :stderr
+
+  # Rotate the logs so they don't grow indefinitely
+  config.logger = Logger.new(Rails.root.join(
+    "log", 
+    Rails.env + ".log"), 5, 5* (2**20)) 
 end
