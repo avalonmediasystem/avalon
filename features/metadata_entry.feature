@@ -22,10 +22,12 @@ Feature: Check basic metadata fields (form)
     Given I am logged in as "archivist1@example.com"
     When I create a new video
     And provide basic metadata for it
-    Then I should see the changes to the metadata
+    Then go to the preview screen
+    And I should see the changes to the metadata
 
   Scenario: Deleting an item
     Given I am logged in as "archivist1@example.com"
     When I create a new video
+    Then go to the preview screen
     And I delete it
     Then I should see confirmation it has been deleted

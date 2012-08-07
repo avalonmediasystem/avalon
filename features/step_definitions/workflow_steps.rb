@@ -64,7 +64,7 @@ When /^provide basic metadata for it$/ do
     fill_in 'video[title]', with: 'New test record'
     fill_in 'video[created_on]', with: '2012.04.21'
     fill_in 'video[abstract]', with: 'A test record generated as part of Cucumber automated testing'
-    click_on 'Save and finish'
+    click_on 'Continue to access control'
   end
 end
 
@@ -127,6 +127,19 @@ Then /^I should see the changes to the metadata$/ do
   end
 end
 
+Then /^I should see confirmation that it was uploaded/ do
+  visit video_path(@resource.pid)
+  page.wait_until do
+    within "#workflow_status" do
+      page.save_page
+      page.should satisfy {
+        |page| page.has_content? "Preparing file for conversion" or 
+          page.has_content? "Creating derivatives"
+      }
+    end
+  end
+end
+
 Then /^I should see confirmation it has been deleted$/ do
   within "#marquee" do
     assert page.should have_content("#{@resource.pid} has been deleted from the system")
@@ -137,6 +150,18 @@ Then /^I should see confirmation the file has been deleted$/ do
   within "#marquee" do
     assert page.should have_content("#{@resource.parts.first.label} has been deleted from the system")
   end
+end
+
+Then /^(I )?go to the preview screen/ do |nothing|
+  visit video_path(@resource.pid)
+end
+
+When /^set the access level to (public|restricted|private)/ do |level|
+  target = "access_" + level
+  within '#access_control_form' do
+    click target
+  end
+  click_on 'Preview and publish'
 end
 
 def test_for_field(field)

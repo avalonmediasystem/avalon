@@ -5,4 +5,5 @@ Feature: Create a new object in the system, upload a file, enter basic metadata,
     Given I am logged in as "archivist1@example.com"
     When I create a new video 
     And provide basic metadata for it
+    And set the access level to public
     Then I should be able to find the record in the browse view
