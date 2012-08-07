@@ -64,15 +64,14 @@ class VideosController < ApplicationController
         logger.debug "<< Access flag = #{params[:access]} >>"
         
         if params[:access] == 'public'
-	      @video.read_groups = ['public']
+	      @video.read_groups = ['public', 'registered']
         elsif params[:access] == 'restricted'
-	      @video.read_groups = ['restricted']
+	      @video.read_groups = ['registered']
         else #private
 	      @video.read_groups = []
         end
-        
+        @video.save             
         logger.debug "<< Groups : #{@video.read_groups} >>"
-        @video.save     
         next_step = 'preview'
 
       # When looking at the preview page redirect to show
