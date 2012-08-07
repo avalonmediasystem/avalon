@@ -3,8 +3,9 @@ class VideosController < ApplicationController
     
    # Look into other options in the future. For now just make it work
    before_filter :initialize_workflow, only: [:edit]
+   after_filter :alert_on_errors, only: [:edit]
    before_filter :enforce_access_controls
- 
+
   def new
     @video = Video.new
     @video.DC.creator = user_key
@@ -53,15 +54,8 @@ class VideosController < ApplicationController
         @video.descMetadata.created_on = params[:video][:created_on]
         @video.descMetadata.abstract = params[:video][:abstract]
 
-        @video.save
-        
-        unless @video.errors.empty?
-          logger.debug "<< Errors found -> #{@video.errors} >>"
-
-          flash[:error] = "There are errors with your submission. Please correct them before continuing."
-        else
-          next_step = 'access_control'
-        end
+        @video.save        
+        next_step = 'access_control'
         
       # When on the access control page
       when 'access_control' 
@@ -87,7 +81,7 @@ class VideosController < ApplicationController
     end
         
     logger.info "<< #{@video.pid} has been updated in Fedora >>"
-    render :edit
+    redirect_to edit_video_path(@video, step: next_step)
   end
   
   def show
@@ -140,4 +134,10 @@ class VideosController < ApplicationController
     @workflow_steps ||= [step_one, step_two, step_three, step_four]
   end
   
+  def alert_on_errors
+    logger.debug "<< Errors found -> #{@video.errors} >>"
+
+    flash[:error] = "There are errors with your submission. Please correct them before continuing."
+    next_step = params[:step]
+  end
 end
