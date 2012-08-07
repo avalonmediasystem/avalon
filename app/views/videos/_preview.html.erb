@@ -1,0 +1,35 @@
+    <div class="row-fluid whitespace">
+      <div class="span12">
+      <% unless @video.descMetadata.title.empty? %>
+        <h2><%= @video.descMetadata.title[0] %></h2>
+      <% else %>
+        <h2><%= @video.pid %></h2>
+      <% end %>
+     </div>
+    </div>
+    
+    <div class="row-fluid whitespace">
+      <section id="player">
+        <% unless @video_asset.nil? %>
+          <%= render "modules/video_player",
+            locals: {stream: @video_asset.stream,
+                     mimetype: 'video/x-flv',
+                     mediapackaged_id: @video_asset.mediapackage_id} %>
+        <% else %>
+          <div class="well">
+            <p>No media is associated with this item</p>
+          </div>
+        <% end %>
+      </section>  
+    </div>
+    <div class="row-fluid whitespace">
+      <section id="metadata"><%= render "modules/metadata_display" %></section>
+    </div>
+    
+    <div class="row-fluid">
+      <div id="permalink" class="alert alert-success">
+      <h4 class="alert-heading">Permalink</h4>
+      <p>To share this item with others use the following canonical link</p>
+      <address><%= link_to video_url(@video.pid) %></address>
+    </div>
+  </div>
