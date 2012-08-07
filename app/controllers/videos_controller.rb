@@ -46,7 +46,7 @@ class VideosController < ApplicationController
     
     case params[:step]
       # When adding resource description
-      when 'basic_metadata' then
+      when 'basic_metadata' 
         logger.debug "<< Populating required metadata fields >>"
         @video.descMetadata.title = params[:video][:title]        
         @video.descMetadata.creator = params[:video][:creator]
@@ -54,6 +54,7 @@ class VideosController < ApplicationController
         @video.descMetadata.abstract = params[:video][:abstract]
 
         @video.save
+        
         unless @video.errors.empty?
           logger.debug "<< Errors found -> #{@video.errors} >>"
 
@@ -61,11 +62,10 @@ class VideosController < ApplicationController
         else
           next_step = 'access_control'
         end
-      end
         
       # When on the access control page
-      when 'access_control' then
-        #implement me
+      when 'access_control' 
+        # TO DO: Implement me
         if params[:access] == 'public'
 	      @video.read_groups = ['public']
         elsif params[:access] == 'restricted'
@@ -74,17 +74,16 @@ class VideosController < ApplicationController
 	      @video.read_groups = []
         end
         next_step = 'preview'
-      else
-        next_step = 'file_upload'
-      end
-      
+
       # When looking at the preview page redirect to show
       #
       # Do nothing for now
-      when 'preview' then
+      when 'preview' 
         redirect_to video_path(@video)
         return
-      end
+        
+      else
+        next_step = 'file_upload'
     end
         
     logger.info "<< #{@video.pid} has been updated in Fedora >>"
