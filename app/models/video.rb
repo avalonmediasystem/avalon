@@ -37,6 +37,16 @@ class Video < ActiveFedora::Base
   def is_complete?
     false
   end
+
+  def access
+    if self.read_groups.empty?
+      "private"
+    elsif self.read_groups.include? "public"
+      "public"
+    elsif self.read_groups.include? "registered"
+      "restricted" 
+    end
+  end
     
   private
     def after_create

@@ -60,6 +60,7 @@ class VideosController < ApplicationController
       # When on the access control page
       when 'access_control' 
         # TO DO: Implement me
+	puts "HERE with #{params[:access]}"
         if params[:access] == 'public'
 	      @video.read_groups = ['public']
         elsif params[:access] == 'restricted'
@@ -67,6 +68,7 @@ class VideosController < ApplicationController
         else #private
 	      @video.read_groups = []
         end
+	@video.save
         next_step = 'preview'
 
       # When looking at the preview page redirect to show
