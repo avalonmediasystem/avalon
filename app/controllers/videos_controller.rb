@@ -45,6 +45,7 @@ class VideosController < ApplicationController
     @video = Video.find(params[:id])
     
     case params[:step]
+      # When adding resource description
       when 'basic_metadata' then
         logger.debug "<< Populating required metadata fields >>"
         @video.descMetadata.title = params[:video][:title]        
@@ -57,34 +58,37 @@ class VideosController < ApplicationController
           logger.debug "<< Errors found -> #{@video.errors} >>"
 
           flash[:error] = "There are errors with your submission. Please correct them before continuing."
-          render :edit
-          return
         else
-          next_step = 'preview'
+          next_step = 'access_control'
         end
-      when 'authorization' then
+      end
+        
+      # When on the access control page
+      when 'access_control' then
         #implement me
         if params[:access] == 'public'
-	  @video.read_groups = ['public']
+	      @video.read_groups = ['public']
         elsif params[:access] == 'restricted'
-	  @video.read_groups = ['restricted']
+	      @video.read_groups = ['restricted']
         else #private
-	  @video.read_groups = []
+	      @video.read_groups = []
         end
+        next_step = 'preview'
       else
         next_step = 'file_upload'
+      end
+      
+      # When looking at the preview page redirect to show
+      #
+      # Do nothing for now
+      when 'preview' then
+        redirect_to video_path(@video)
+        return
+      end
     end
         
     logger.info "<< #{@video.pid} has been updated in Fedora >>"
-    
-    # Quick, dirty, and elegant solution to how to post back to the previous
-    # screen
-    unless 'preview' == next_step
-      redirect_to edit_video_path(@video, step: next_step)
-    else
-      logger.debug "<< Redirecting to the preview screen >>"
-      redirect_to video_path(@video)
-    end
+    render :edit
   end
   
   def show

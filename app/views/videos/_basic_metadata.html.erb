@@ -15,12 +15,12 @@
       value: @video.abstract.first %>
 
     <%= vid.actions do |actions| %>
-      <%= link_to "Back to file upload",
+      <%= link_to "Back to manage file(s)",
             edit_video_path(@video, step: 'file_upload'),
             id: 'previous_screen',
             class: 'btn',
             name: 'previous_screen' %>
-      <%= vid.submit "Save and finish" %>
+      <%= vid.submit "Continue to access control" %>
     <% end %>
   <%- end -%>
 <% end %>

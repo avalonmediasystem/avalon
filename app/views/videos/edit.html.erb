@@ -24,17 +24,14 @@
        <%= render 'file_upload' %>
    <% when 'basic_metadata' %>
        <%= render 'basic_metadata' %>
-   <% when 'optional_metadata' %>
-       <%= render 'optional_metadata' %>
+   <% when 'access_control' %>
+       <%= render 'access_control' %>
+   <% when 'preview' %>
+       <%= render 'preview' %>
    <% else %>
        <%= render 'file_upload' %>
    <% end %>
 </div>
-
-<% content_for :breadcrumbs do %>
-  <% links = [{label: 'Home', link: root_path}, {label: params[:id], link: ''}] %>
-  <%= render "modules/breadcrumbs" %>
-<% end %>
 
 <% content_for :title do %>
   Edit -
