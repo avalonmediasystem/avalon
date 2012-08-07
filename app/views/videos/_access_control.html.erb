@@ -5,13 +5,21 @@
   <%= vid.fieldset "Access control", id: 'access_control' do %>    
     <%= vid.hidden_field :pid %>
     <%= hidden_field_tag 'step', 'access_control' %>
-<!--<%= @video.access %>-->
-    <%= radio_button_tag :access, 'public', checked: (@video.access == "public") %>
-    <%= label_tag :access_public, 'Public' %>
-    <%= radio_button_tag :access, 'restricted', checked: (@video.access == "restricted") %>
-    <%= label_tag :access_restricted, 'Restricted' %>
-    <%= radio_button_tag :access, 'private', checked: (@video.access == "private") %>
-    <%= label_tag :access_private, 'Private' %>
+
+    <%= label_tag :access do %>
+      <%= radio_button_tag :access, 'public', (@video.access == 'public') %>
+      This resource should be accessible to the general public without having to register
+    <% end %>
+
+    <%= label_tag :access do %>
+      <%= radio_button_tag :access, 'restricted', (@video.access == 'restricted') %>
+      Only registered users should have access to this resource
+    <% end %>
+
+    <%= label_tag :access do %>
+      <%= radio_button_tag :access, 'private', (@video.access == 'private') %>
+      Only I should be able to see this resource
+    <% end %>
   
     <%= vid.actions do |actions| %>
       <%= link_to "Back to resource description",

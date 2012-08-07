@@ -40,9 +40,4 @@
   <% else %>
     <dd><em>No summary available</em></dd>
   <% end %>
-  
 </dl>
-
-<% if can? :edit, @video %>
-  <%= link_to "Edit metadata", edit_video_path(@video, step: 'basic_metadata'), class: "btn" %>
-<% end %>

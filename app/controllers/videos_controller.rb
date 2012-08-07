@@ -2,8 +2,7 @@ class VideosController < ApplicationController
    include Hydra::Controller::FileAssetsBehavior
     
    # Look into other options in the future. For now just make it work
-   before_filter :initialize_workflow, only: [:edit]
-   after_filter :alert_on_errors, only: [:edit]
+   before_filter :initialize_workflow, only: [:edit, :update]   
    before_filter :enforce_access_controls
 
   def new
@@ -54,13 +53,16 @@ class VideosController < ApplicationController
         @video.descMetadata.created_on = params[:video][:created_on]
         @video.descMetadata.abstract = params[:video][:abstract]
 
-        @video.save        
+        @video.save
         next_step = 'access_control'
-        
+                
+        logger.debug "<< #{@video.errors} >>"
+        logger.debug "<< #{@video.errors.size} problems found in the data >>"        
       # When on the access control page
       when 'access_control' 
         # TO DO: Implement me
-	puts "HERE with #{params[:access]}"
+        logger.debug "<< Access flag = #{params[:access]} >>"
+        
         if params[:access] == 'public'
 	      @video.read_groups = ['public']
         elsif params[:access] == 'restricted'
@@ -68,22 +70,23 @@ class VideosController < ApplicationController
         else #private
 	      @video.read_groups = []
         end
-	@video.save
+        
+        logger.debug "<< Groups : #{@video.read_groups} >>"
+        @video.save     
         next_step = 'preview'
 
       # When looking at the preview page redirect to show
       #
-      # Do nothing for now
       when 'preview' 
-        redirect_to video_path(@video)
-        return
-        
+        # Do nothing for now      
       else
         next_step = 'file_upload'
+    end     
+    unless @video.errors.empty?
+      report_errors
+    else
+      redirect_to get_redirect_path(next_step)
     end
-        
-    logger.info "<< #{@video.pid} has been updated in Fedora >>"
-    redirect_to edit_video_path(@video, step: next_step)
   end
   
   def show
@@ -136,10 +139,24 @@ class VideosController < ApplicationController
     @workflow_steps ||= [step_one, step_two, step_three, step_four]
   end
   
-  def alert_on_errors
+  def report_errors
     logger.debug "<< Errors found -> #{@video.errors} >>"
-
+    logger.debug "<< #{@video.errors.size} >>" 
+    
     flash[:error] = "There are errors with your submission. Please correct them before continuing."
-    next_step = params[:step]
+    step = params[:step] || @workflow_steps.step.first.template
+    render :edit and return
+  end
+  
+  def get_redirect_path(target)
+    logger.info "<< #{@video.pid} has been updated in Fedora >>"
+    unless @workflow_steps.last.template == params[:step]
+      redirect_path = edit_video_path(@video, step: target)
+    else
+      flash[:notice] = "This resource is now available for use in the system"
+      redirect_path = video_path(@video)
+      return
+    end
+    redirect_path
   end
 end

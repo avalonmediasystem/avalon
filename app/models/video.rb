@@ -39,6 +39,9 @@ class Video < ActiveFedora::Base
   end
 
   def access
+    logger.debug "<< Access level >>"
+    logger.debug "<< #{self.read_groups} >>"
+    
     if self.read_groups.empty?
       "private"
     elsif self.read_groups.include? "public"

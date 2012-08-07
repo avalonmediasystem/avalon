@@ -25,11 +25,12 @@
     <div class="row-fluid whitespace">
       <section id="metadata"><%= render "modules/metadata_display" %></section>
     </div>
-    
-    <div class="row-fluid">
-      <div id="permalink" class="alert alert-success">
-      <h4 class="alert-heading">Permalink</h4>
-      <p>To share this item with others use the following canonical link</p>
-      <address><%= link_to video_url(@video.pid) %></address>
+
+  <div class="row-fluid">
+    <div class="span8">
+      <%= link_to "Back to access control", edit_video_path(@video, step: 'access_control'), class: "btn" %>
+      <%= link_to "Publish this item", video_path(@video), class: "btn" %>
     </div>
   </div>
+</div>
+  
