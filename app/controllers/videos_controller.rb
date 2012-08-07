@@ -1,8 +1,10 @@
 class VideosController < ApplicationController
    include Hydra::Controller::FileAssetsBehavior
     
+   # Look into other options in the future. For now just make it work
+   before_filter :initialize_workflow, only: [:edit]
    before_filter :enforce_access_controls
-   
+ 
   def new
     @video = Video.new
     @video.DC.creator = user_key
@@ -102,7 +104,7 @@ class VideosController < ApplicationController
     flash[:notice] = "#{params[:id]} has been deleted from the system"
     redirect_to root_path
   end
-    
+  
   protected
   def set_default_item_permissions
     unless @video.rightsMetadata.nil?
@@ -118,4 +120,33 @@ class VideosController < ApplicationController
       nil
     end
   end
+  
+  def initialize_workflow
+    step_one = WorkflowStep.new(
+      step: 1,
+      title: 'Manage files',
+      description: 'Associated bitstreams',
+      template: 'file_upload')
+
+    step_two = WorkflowStep.new(
+      step: 2,
+      title: 'Resource description',
+      description: 'Metadata about the item',
+      template: 'basic_metadata')
+
+    step_three = WorkflowStep.new(
+      step: 3,
+      title: 'Access control',
+      description: 'Who can access the item',
+      template: 'access_control')
+
+    step_four = WorkflowStep.new(
+      step: 4,
+      title: 'Preview and publish',
+      description: 'Release the item for use',
+      template: 'preview')
+      
+    @workflow_steps ||= [step_one, step_two, step_three, step_four]
+  end
+  
 end

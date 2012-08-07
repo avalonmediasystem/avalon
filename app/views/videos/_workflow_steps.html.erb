@@ -1,27 +1,3 @@
 <ul class="nav nav-wizard">
-  <li class="nav-complete"> 
-    <span class="step">1</span>
-    <%= link_to edit_video_path(@video, step: 'file-upload') do %>
-      <h4>Manage file(s)</h4>
-    <% end %>
-    <p><%= conversion_status_for(@video) %></p>
-  </li>
-  
-  <li class="nav-current">
-    <span class="step">2</span>
-    <h4>Resource description</h4> 
-    <p>Description of key fields</p>
-  </li>
-  
-  <li>
-    <span class="step">3</span>
-    <h4>Access control</h4>
-    <p>Who can playback the content</p>
-  </li>
-
-  <li>
-    <span class="step">4</span>
-    <h4>Preview and publish</h4>
-    <p>Release the content to production</p>
-  </li>
+  <%= render "workflow_step", collection: @workflow_steps, as: step %>
 </ul>
