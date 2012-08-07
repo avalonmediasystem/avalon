@@ -1,3 +1,5 @@
 <ul class="nav nav-wizard">
-  <%= render "workflow_step", collection: @workflow_steps, as: step %>
+  <% @workflow_steps.each do |step| %>
+    <%= render "workflow_step", step: step %>
+  <% end %>
 </ul>

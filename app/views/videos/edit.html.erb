@@ -3,7 +3,7 @@
     <%= render "toggle_preview_mode" %>
     
     <% if can? :edit, @video %>
-      <%= render "workflow_steps", files: @video_assets %>
+      <%= render "workflow_steps" %>
     <% end %>
   </div>
   

@@ -122,29 +122,17 @@ class VideosController < ApplicationController
   end
   
   def initialize_workflow
-    step_one = WorkflowStep.new(
-      step: 1,
-      title: 'Manage files',
-      description: 'Associated bitstreams',
-      template: 'file_upload')
+    step_one = WorkflowStep.new(1, 'Manage files',
+      'Associated bitstreams', 'file_upload')
 
-    step_two = WorkflowStep.new(
-      step: 2,
-      title: 'Resource description',
-      description: 'Metadata about the item',
-      template: 'basic_metadata')
+    step_two = WorkflowStep.new(2, 'Resource description',
+      'Metadata about the item', 'basic_metadata')
 
-    step_three = WorkflowStep.new(
-      step: 3,
-      title: 'Access control',
-      description: 'Who can access the item',
-      template: 'access_control')
+    step_three = WorkflowStep.new(3, 'Access control',
+      'Who can access the item', 'access_control')
 
-    step_four = WorkflowStep.new(
-      step: 4,
-      title: 'Preview and publish',
-      description: 'Release the item for use',
-      template: 'preview')
+    step_four = WorkflowStep.new(4, 'Preview and publish',
+      'Release the item for use', 'preview')
       
     @workflow_steps ||= [step_one, step_two, step_three, step_four]
   end
