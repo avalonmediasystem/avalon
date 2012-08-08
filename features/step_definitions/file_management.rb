@@ -3,7 +3,9 @@ Given /^I want to edit "(.*?)" as "(.*?)"$/ do |identifier, user|
    step "I am logged in as \"#{user}\""
    step "that \"#{identifier}\" has been loaded into fedora"
    step "that \"#{user}\" can edit \"#{identifier}\""
-   step "I go to the \"file_upload\" step for \"#{identifier}\""
+   step "I edit the \"file upload\" for \"#{identifier}\""
+   
+   @resource = Video.find(identifier)
 end
 
 Then /show me the page/ do

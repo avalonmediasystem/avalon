@@ -14,14 +14,14 @@ end
 #
 # TO DO : A future enhancement might be to detect the lack of an ID parameters and
 #         throw a warning intead of letting it fail fatally.
-When /^I go to the "([^"]*)" step$/ do |step|
+When /^I edit the "([^"]*)"$/ do |step|
   id = params[:id]
   step.gsub!(' ', '_')
   
   step "I go to the \"#{step}\" step for \"#{id}\""
 end
 
-When /^I go to the "([^"]*)" step for "([^"]*)"$/ do |step, id|
+When /^I edit the "([^"]*)" for "([^"]*)"$/ do |step, id|
   step.gsub!(' ', '_')
   visit edit_video_path(id, step: step)
 end
@@ -58,8 +58,9 @@ When /^provide basic metadata for it$/ do
   # Refactor this for be more DRY since it is very similar to the edit methods
   # above
   visit edit_video_path(@resource.pid, step: 'basic_metadata')
+  page.save_page
   
-  within ('form.edit_video') do  
+  within ('#basic_metadata_form') do  
     fill_in 'video[creator]', with: 'Cucumber'
     fill_in 'video[title]', with: 'New test record'
     fill_in 'video[created_on]', with: '2012.04.21'
@@ -69,7 +70,8 @@ When /^provide basic metadata for it$/ do
 end
 
 When /^I delete it$/ do
-  visit edit_video_path(@resource.pid)
+  visit video_path(@resource.pid)
+  page.driver.render Rails.root.join("tmp/capybara/#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}.png")
   click_on 'Delete item'
 end
 
@@ -110,7 +112,7 @@ end
 # properly at the moment. It should check for the absence of any fields without the
 # required property
 Then /^I should see only required fields$/ do 
-  within "form.edit_video" do
+  within "#basic_metadata_form" do
     page.should have_selector("input[name='video\[title\]']")
     page.should have_selector("input[name='video\[creator\]']")
     page.should have_selector("input[name='video\[created_on\]']")
@@ -131,7 +133,6 @@ Then /^I should see confirmation that it was uploaded/ do
   visit video_path(@resource.pid)
   page.wait_until do
     within "#workflow_status" do
-      page.save_page
       page.should satisfy {
         |page| page.has_content? "Preparing file for conversion" or 
           page.has_content? "Creating derivatives"
@@ -157,6 +158,8 @@ Then /^(I )?go to the preview screen/ do |nothing|
 end
 
 When /^set the access level to (public|restricted|private)/ do |level|
+  visit edit_video_path(@resource, step: 'access_control')
+  
   target = "access_" + level
   within '#access_control_form' do
     click target

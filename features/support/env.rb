@@ -29,6 +29,7 @@ require 'headless'
 # steps to use the XPath syntax.
 Capybara.default_selector = :css
 Capybara.default_wait_time = 30
+Capybara.default_driver = :webkit
 Capybara.javascript_driver = :webkit
 
 # Set up headless once instead of for every single feature
