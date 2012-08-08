@@ -62,14 +62,7 @@ class VideosController < ApplicationController
       when 'access_control' 
         # TO DO: Implement me
         logger.debug "<< Access flag = #{params[:access]} >>"
-        
-        if params[:access] == 'public'
-	      @video.read_groups = ['public', 'registered']
-        elsif params[:access] == 'restricted'
-	      @video.read_groups = ['registered']
-        else #private
-	      @video.read_groups = []
-        end
+	@video.access = params[:access]        
         @video.save             
         logger.debug "<< Groups : #{@video.read_groups} >>"
         next_step = 'preview'

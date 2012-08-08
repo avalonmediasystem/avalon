@@ -2,8 +2,12 @@
    # in other places %>
 <% unless item.nil? %>
 <dt>
-  <%= link_to(item) do %> 
-    <% unless not item.descMetadata.title[0].nil? and item.descMetadata.title[0].empty? %><%= item.descMetadata.title[0] %><% else %>No title provided<% end%> (<%= item.pid %>)
+  <% if can? :read item %>
+    <%= link_to(item) do %> 
+      <% unless not item.descMetadata.title[0].nil? and item.descMetadata.title[0].empty? %><%= item.descMetadata.title[0] %><% else %>No title provided<% end%> (<%= item.pid %>)
+    <% end %>
+  <% else %>
+      <% unless not item.descMetadata.title[0].nil? and item.descMetadata.title[0].empty? %><%= item.descMetadata.title[0] %><% else %>No title provided<% end%> (<%= item.pid %>)
   <% end %>
 </dt>
 <dd class="whitespace">
