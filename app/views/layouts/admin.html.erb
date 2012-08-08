@@ -20,10 +20,6 @@
     <div class="container">
       <div class="row-fluid whitespace-half">
         <header class="jumbotron">
-          <!-- <div class="logo span2">
-            <%= image_tag "temporary_logo.jpg", alt: "Hydrant - Release Zero" %>
-          </div>    -->
-        
           <div class="span7">
             <h1>
               Hydrant Admin
@@ -44,34 +40,31 @@
               Groups
               <i class="icon-group"></i>
             </li>
-            <li class="active">
+            <li class="<%= "active" if current_page?(admin_groups_path) %>">
               <%= link_to "All Groups", admin_groups_path %>
             </li>
-            <li>
+            <li class="<%= "active" if current_page?(new_admin_group_path) %>">
               <%= link_to "Add Group", new_admin_group_path %>
-            </li>
-            <li>
-              <a href="#">Another Action</a>
             </li>
             <li class="nav-header">
               Users
               <i class="icon-user"></i>
             </li>
             <li class="">
-              <a href="#">All Users</a>
+              <a class="tobeimplemented" href="#">All Users</a>
             </li>
             <li>
-              <a href="#">Add New</a>
+              <a class="tobeimplemented" href="#">Add New</a>
             </li>
             <li class="nav-header">
               Resources
               <i class="icon-hdd"></i>
             </li>
             <li class="">
-              <a href="#">All resources</a>
+              <a class="tobeimplemented" href="#">All Resources</a>
             </li>
             <li>
-              <a href="#">Batch Edit</a>
+              <a class="tobeimplemented" href="#">Batch Edit</a>
             </li>
           </ul>
         </div>

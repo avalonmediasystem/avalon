@@ -14,5 +14,13 @@ module FixtureMacros
         end
     end
   end
+  
+  def clean_groups(groups)
+    groups.each do |group|
+      if !RoleControls.users(group).nil?
+        RoleControls.remove_role(group)
+      end
+    end
+  end
 end
 

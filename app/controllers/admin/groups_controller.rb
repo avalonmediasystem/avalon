@@ -6,7 +6,13 @@ class Admin::GroupsController < ApplicationController
   # Currently assumes that to do anything you have to be able to manage Group
   # TODO: finer controls
   def auth
-    authorize! :manage, Admin::Group
+    if current_user.nil? 
+      flash[:notice] = "You need to login to manage groups"
+      redirect_to new_user_session_path
+    elsif cannot? :manage, Admin::Group
+      flash[:notice] = "You do not have permission to manage groups"
+      redirect_to root_path
+    end
   end
   
   def index
@@ -53,7 +59,18 @@ class Admin::GroupsController < ApplicationController
   end
   
   def update
-    RoleControls.assign_users(params["admin_group"]["users"], params["id"])
+    group_name = params["id"]
+    new_group_name = params["admin_group"]["name"]
+    
+    if group_name != new_group_name
+      RoleControls.remove_role group_name
+      RoleControls.add_role new_group_name
+    end
+    
+    RoleControls.assign_users(params["admin_group"]["users"], new_group_name)
+    RoleControls.save_changes
+    
+    flash[:notice] = "Successfully updated group \"#{new_group_name}\""
     redirect_to admin_groups_path
   end
 
@@ -65,6 +82,7 @@ class Admin::GroupsController < ApplicationController
     end
     RoleControls.save_changes
     
+    flash[:notice] = "Successfully deleted groups: #{params[:group_ids].join(", ")}"
     redirect_to admin_groups_path
   end
 end 
