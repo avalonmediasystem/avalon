@@ -50,6 +50,16 @@ class Video < ActiveFedora::Base
       "restricted" 
     end
   end
+
+  def access= access_level
+    if access_level == "public"
+      self.read_groups = ['public', 'registered']      
+    elsif access_level == "restricted"
+      self.read_groups = ['registered']
+    else #private
+      self.read_groups = []
+    end
+  end
     
   private
     def after_create
