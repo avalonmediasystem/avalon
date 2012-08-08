@@ -1,10 +1,10 @@
 
-          <h2>Recent uploads</h2>
+          <h2>Recent activity</h2>
           <hr />
           <% unless @recent_items.empty? %>
             <dl class="activity-stream">
               <%= render partial: "modules/activity_stream_entry", collection: @recent_items, as: :item %>
             </dl>
           <% else %>
-          <p>There has been no recent activity.</p>
+          <p>There has been no recent uploads.</p>
           <% end %>
