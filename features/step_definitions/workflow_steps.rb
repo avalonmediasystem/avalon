@@ -58,7 +58,8 @@ When /^provide basic metadata for it$/ do
   # Refactor this for be more DRY since it is very similar to the edit methods
   # above
   visit edit_video_path(@resource.pid, step: 'basic_metadata')
-  page.save_page
+  
+  page.driver.render Rails.root.join("tmp/capybara/#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}.png")
   
   within ('#basic_metadata_form') do  
     fill_in 'video[creator]', with: 'Cucumber'
