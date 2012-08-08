@@ -6,15 +6,17 @@ class SearchController < ApplicationController
   before_filter :enforce_viewing_context_for_show_requests, :only=>:show
 
   # This applies appropriate access controls to all solr queries
-  CatalogController.solr_search_params_logic << :add_access_controls_to_solr_params
+  SearchController.solr_search_params_logic << :add_access_controls_to_solr_params
   # This filters out objects that you want to exclude from search results, like FileAssets
-  CatalogController.solr_search_params_logic << :exclude_unwanted_models
+  SearchController.solr_search_params_logic << :exclude_unwanted_models
+  SearchController.solr_search_params_logic << :only_wanted_models
+
 
   configure_blacklight do |config|
     config.default_solr_params = { 
       :qt => 'search',
       :rows => 16,
-      :fq => 'active_fedora_model_s:Video' 
+#      :fq => 'active_fedora_model_s:Video' 
     }
 
     # solr field configuration for search results/index views
@@ -138,4 +140,8 @@ class SearchController < ApplicationController
     config.spell_max = 3
   end
 
+  def only_wanted_models(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << "has_model_s:\"info:fedora/afmodel:Video\""
+  end
 end
