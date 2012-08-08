@@ -52,19 +52,16 @@ puts "<< #{pid_list.inspect} >>"
 at_exit do
     # Also be sure to delete all objects so the repository is pristine. Only those
     # fixtures that are not numeric will be retained
-    Video.find(:all).each do |video|
-      if not pid_list.include?(video.pid)
+    Video.find(:all).each do |v|
+      if not pid_list.include?(v.pid)
         logger.info "<< Deleting #{video.pid} from the Fedora repository test instance >>"
-        video.delete
+        v.delete
       end
     end
-
-    logger.info "<< Tearing down the headless instance >>"
-    logger.debug "<< Is it present? #{headless.present?} >>"
     
     if ENV["USE_HEADLESS"] == "true" and headless.present?
-      puts "<< Destroying headless X server >>"
-      headless.destroy
+      logger.info "<< Tearing down the headless instance >>"
+      #headless.destroy
     end
 end
 

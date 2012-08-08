@@ -1,8 +1,9 @@
 # Condense some repeated steps into a single repeatable step
-Given /^I want to edit "(.*?)" as "(.*?)"$/ do |identifier, user|
-   step "I am logged in as \"#{user}\""
+Given /^I want to edit "(.*?)" as a(?:n)? "(.*?)"$/ do |identifier, user_type|
+   step "I am logged in as a \"#{user_type}\""
    step "that \"#{identifier}\" has been loaded into fedora"
-   step "that \"#{user}\" can edit \"#{identifier}\""
+   # User is spawned when you log in and is available here
+   step "that \"#{@user.username}\" can edit \"#{identifier}\""
    step "I edit the \"file upload\" for \"#{identifier}\""
    
    @resource = Video.find(identifier)

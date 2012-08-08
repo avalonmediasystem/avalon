@@ -1,12 +1,9 @@
 # This is kludgy but it works - after you spawn a new ID immediately pull it back so
 # you can use it in later steps to avoid constantly repeating the identifier
 When /^I create a new ([^"]*)$/ do |asset_type|
-  visit new_video_path
-
-  @resource = Video.find(:all).last
-  puts "<< Storing #{@resource.pid} for later use >>"
-  puts "<< #{page.current_url} >>"
-  puts "<< #{new_video_path} >>"
+    visit new_video_path  
+    @resource = Video.find(:all).last
+    puts "<< Storing #{@resource.pid} for later use >>"
 end
 
 # Shortcut for the more verbose step so that the PID does not have to be constantly
@@ -59,8 +56,6 @@ When /^provide basic metadata for it$/ do
   # above
   visit edit_video_path(@resource.pid, step: 'basic_metadata')
   
-  page.driver.render Rails.root.join("tmp/capybara/#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}.png")
-  
   within ('#basic_metadata_form') do  
     fill_in 'video[creator]', with: 'Cucumber'
     fill_in 'video[title]', with: 'New test record'
@@ -72,7 +67,6 @@ end
 
 When /^I delete it$/ do
   visit video_path(@resource.pid)
-  page.driver.render Rails.root.join("tmp/capybara/#{Time.now.strftime('%Y-%m-%d-%H-%M-%S')}.png")
   click_on 'Delete item'
 end
 

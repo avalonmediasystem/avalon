@@ -6,12 +6,16 @@ class VideosController < ApplicationController
    before_filter :enforce_access_controls
 
   def new
+    logger.debug "<< BEFORE : #{Video.count} >>"
+    
     @video = Video.new
     @video.DC.creator = user_key
     set_default_item_permissions
-    @video.save(:validate=>false)
+    @video.save(:validate => false)
 
+    logger.debug "<< AFTER : #{Video.count} >>"
     redirect_to edit_video_path(@video, step: 'file_upload')
+    logger.debug "<< Redirecting to edit view >>"
   end
   
   # TODO : Refactor this to reflect the new code base
@@ -62,7 +66,7 @@ class VideosController < ApplicationController
       when 'access_control' 
         # TO DO: Implement me
         logger.debug "<< Access flag = #{params[:access]} >>"
-	@video.access = params[:access]        
+	    @video.access = params[:access]        
         @video.save             
         logger.debug "<< Groups : #{@video.read_groups} >>"
         next_step = 'preview'

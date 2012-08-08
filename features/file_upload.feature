@@ -3,7 +3,7 @@ Feature: Associate bitstreams with an object and return feedback based on the co
   
   @javascript
   Scenario Outline: The system acknowledges the format of a file
-    Given I am logged in as "archivist1@example.com"
+    Given I am logged in as a "cataloger"
     When I create a new video
     And I upload the file "<file>" with MIME type "<mimetype>"
     Then I should see confirmation that it is <format> content

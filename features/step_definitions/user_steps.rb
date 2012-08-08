@@ -1,4 +1,7 @@
-Given /^I (?:am )?log(?:ged)? in as "([^\"]*)"$/ do |username|
+Given /^I (?:am)? log(?:ged)? in as a(?:n)? "([^\"]*)"$/ do |category|
+  category.gsub!(" ", "_")
+  puts "<< WARNING: Ignoring parameter and using default account >>"
+  
   @user = FactoryGirl.create(:cataloger)
   login_as(@user, :scope => :user)
   visit root_path
