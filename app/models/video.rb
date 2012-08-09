@@ -53,11 +53,20 @@ class Video < ActiveFedora::Base
 
   def access= access_level
     if access_level == "public"
-      self.read_groups = ['public', 'registered']      
+      groups = self.read_groups
+      groups << 'public'
+      groups << 'registered'
+      self.read_groups = groups
     elsif access_level == "restricted"
-      self.read_groups = ['registered']
+      groups = self.read_groups
+      groups.delete 'public'
+      groups << 'registered'
+      self.read_groups = groups
     else #private
-      self.read_groups = []
+      groups = self.read_groups
+      groups.delete 'public'
+      groups.delete 'registered'
+      self.read_groups = groups
     end
   end
     

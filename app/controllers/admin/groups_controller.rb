@@ -62,13 +62,21 @@ class Admin::GroupsController < ApplicationController
     group_name = params["id"]
     new_group_name = params["admin_group"]["name"]
     
-    if group_name != new_group_name
-      RoleControls.remove_role group_name
-      RoleControls.add_role new_group_name
-    end
-    
+    RoleControls.remove_role group_name
+    RoleControls.add_role new_group_name
     RoleControls.assign_users(params["admin_group"]["users"], new_group_name)
     RoleControls.save_changes
+
+    if !params["admin_group"]["resources"].nil?
+      params["admin_group"]["resources"].each do |resource|
+        resource_obj = ActiveFedora::Base.find(resource)
+        read_groups = resource_obj.read_groups
+        read_groups.delete(group_name) 
+        read_groups << new_group_name
+        resouce_obj.read_groups = read_groups
+        resource_obj.save
+      end
+    end
     
     flash[:notice] = "Successfully updated group \"#{new_group_name}\""
     redirect_to admin_groups_path
