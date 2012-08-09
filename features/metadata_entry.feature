@@ -6,12 +6,6 @@ Feature: Check basic metadata fields (form)
     When I create a new video
     Then I should be prompted to upload a file
 
-  @javascript
-  Scenario: Upload files on catalog edit page
-    Given I want to edit "hydrant:short-form-video" as a "cataloger"
-    When I upload the file "spec/fixtures/videoshort.mp4" with MIME type "application/MP4"
-    Then I should see confirmation that it was uploaded
-
   Scenario: Basic metadata fields are present in the workflow
     Given I am logged in as a "cataloger"
     And that "hydrant:basic-metadata" has been loaded into fedora

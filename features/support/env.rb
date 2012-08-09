@@ -19,9 +19,13 @@
 # * http://elabs.se/blog/15-you-re-cuking-it-wrong 
 #
 
+ENV["RAILS_ENV"] = 'test'
+
 require 'cucumber/rails'
 require 'capybara-webkit'
 require 'headless'
+
+puts "Rail environment: #{Rails.env}"
 
 # Capybara defaults to XPath selectors rather than Webrat's default of CSS3. In
 # order to ease the transition to Capybara we set the default here. If you'd
@@ -29,7 +33,7 @@ require 'headless'
 # steps to use the XPath syntax.
 Capybara.default_selector = :css
 Capybara.default_wait_time = 30
-Capybara.default_driver = :webkit
+#Capybara.default_driver = :webkit
 Capybara.javascript_driver = :webkit
 
 # Set up headless once instead of for every single feature
@@ -54,14 +58,17 @@ at_exit do
     # fixtures that are not numeric will be retained
     Video.find(:all).each do |v|
       if not pid_list.include?(v.pid)
-        logger.info "<< Deleting #{video.pid} from the Fedora repository test instance >>"
+        logger.info "<< Deleting #{v.pid} from the Fedora repository test instance >>"
+	v.parts.each do |va|
+	  va.delete
+        end
         v.delete
       end
     end
     
     if ENV["USE_HEADLESS"] == "true" and headless.present?
       logger.info "<< Tearing down the headless instance >>"
-      #headless.destroy
+      headless.destroy
     end
 end
 

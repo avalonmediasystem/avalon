@@ -1,7 +1,8 @@
 <% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
-<!-- <%= @video.nil? %> -->
-<%= twitter_bootstrap_form_for @video, class: "form-horizontal",
-    id: 'access_control_form' do |vid| %>
+<%= twitter_bootstrap_form_for @video, 
+      html: { 
+	class: "form-horizontal",
+    	id: 'access_control_form' } do |vid| %>
   <%= vid.fieldset "Access control", id: 'access_control' do %>    
     <%= vid.hidden_field :pid %>
     <%= hidden_field_tag 'step', 'access_control' %>

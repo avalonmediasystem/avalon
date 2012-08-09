@@ -157,7 +157,7 @@ When /^set the access level to (public|restricted|private)/ do |level|
   
   target = "access_" + level
   within '#access_control_form' do
-    click target
+    choose target
   end
   click_on 'Preview and publish'
 end
