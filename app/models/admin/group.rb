@@ -17,6 +17,18 @@ class Admin::Group
     end
   end
   
+  def resources
+    res = []
+    # TODO: this is very costly
+    Video.find(:all).each do |video|
+      if video.read_groups.include? @name
+        res << video.pid
+      end
+    end
+    
+    res
+  end
+  
   def id 
     @name
   end

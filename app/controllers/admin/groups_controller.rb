@@ -66,14 +66,28 @@ class Admin::GroupsController < ApplicationController
     RoleControls.add_role new_group_name
     RoleControls.assign_users(params["admin_group"]["users"], new_group_name)
     RoleControls.save_changes
-
-    if !params["admin_group"]["resources"].nil?
-      params["admin_group"]["resources"].each do |resource|
-        resource_obj = ActiveFedora::Base.find(resource)
+    
+    new_resources = params["admin_group"]["resources"]
+    
+    # Removes group from resources that are no longer present
+    @group = Admin::Group.new
+    @group.name = params[:id]
+    cur_resources = @group.resources.reject { |r| new_resources.include? r }
+    cur_resources.each do |resource|
+        resource_obj = Video.find(resource)
+        read_groups = resource_obj.read_groups
+        read_groups.delete(group_name) 
+        resource_obj.read_groups = read_groups
+        resource_obj.save
+    end    
+    
+    params["admin_group"]["resources"].each do |resource|
+      if !resource.empty?
+        resource_obj = Video.find(resource)
         read_groups = resource_obj.read_groups
         read_groups.delete(group_name) 
         read_groups << new_group_name
-        resouce_obj.read_groups = read_groups
+        resource_obj.read_groups = read_groups
         resource_obj.save
       end
     end
