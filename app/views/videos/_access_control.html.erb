@@ -1,0 +1,34 @@
+<% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
+<%= twitter_bootstrap_form_for @video, 
+      html: { 
+	class: "form-horizontal",
+    	id: 'access_control_form' } do |vid| %>
+  <%= vid.fieldset "Access control", id: 'access_control' do %>    
+    <%= vid.hidden_field :pid %>
+    <%= hidden_field_tag 'step', 'access_control' %>
+
+    <%= label_tag :access do %>
+      <%= radio_button_tag :access, 'public', (@video.access == 'public') %>
+      This resource should be accessible to the general public without having to register
+    <% end %>
+
+    <%= label_tag :access do %>
+      <%= radio_button_tag :access, 'restricted', (@video.access == 'restricted') %>
+      Only registered users should have access to this resource
+    <% end %>
+
+    <%= label_tag :access do %>
+      <%= radio_button_tag :access, 'private', (@video.access == 'private') %>
+      Only I should be able to see this resource
+    <% end %>
+  
+    <%= vid.actions do |actions| %>
+      <%= link_to "Back to resource description",
+            edit_video_path(@video, step: 'basic_metadata'),
+            id: 'previous_screen',
+            class: 'btn',
+            name: 'previous_screen' %>
+      <%= vid.submit "Preview and publish" %>
+    <% end %>
+  <%- end -%>
+<% end %>

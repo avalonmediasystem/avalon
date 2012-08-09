@@ -1,9 +1,12 @@
 # Condense some repeated steps into a single repeatable step
-Given /^I want to edit "(.*?)" as "(.*?)"$/ do |identifier, user|
-   step "I am logged in as \"#{user}\""
+Given /^I want to edit "(.*?)" as a(?:n)? "(.*?)"$/ do |identifier, user_type|
+   step "I am logged in as a \"#{user_type}\""
    step "that \"#{identifier}\" has been loaded into fedora"
-   step "that \"#{user}\" can edit \"#{identifier}\""
-   step "I go to the \"file_upload\" step for \"#{identifier}\""
+   # User is spawned when you log in and is available here
+   step "that \"#{@user.username}\" can edit \"#{identifier}\""
+   step "I edit the \"file upload\" for \"#{identifier}\""
+   
+   @resource = Video.find(identifier)
 end
 
 Then /show me the page/ do
@@ -18,18 +21,6 @@ When /^I upload the file "(.*?)" with MIME type "(.*)"$/ do |file, mime_type|
   # This may be an unintended side effect that is better refactored into another
   # location. That will have to wait for a future sprint.
   upload_file("Filedata[]", file, mime_type)  
-end
-
-Then /^I should see confirmation that it was uploaded/ do
-  page.wait_until do
-    within "#workflow_status" do
-      page.save_page
-      page.should satisfy {
-        |page| page.has_content? "Preparing file for conversion" or 
-          page.has_content? "Creating derivatives"
-      }
-    end
-  end
 end
 
 # This is a very brittle test that really needs some refactoring 

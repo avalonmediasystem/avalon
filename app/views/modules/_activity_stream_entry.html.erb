@@ -2,14 +2,18 @@
    # in other places %>
 <% unless item.nil? %>
 <dt>
-  <%= link_to(item) do %> 
-    <% unless not item.descMetadata.title[0].nil? and item.descMetadata.title[0].empty? %><%= item.descMetadata.title[0] %><% else %>No title provided<% end%> (<%= item.pid %>)
+  <% if can? :read, item %>
+    <%= link_to(item) do %> 
+      <% unless not item.title.first.nil? and item.title.first.empty? %><%= item.title.first %><% else %>No title provided<% end%> (<%= item.pid %>)
+    <% end %>
+  <% else %>
+      <% unless not item.title.first.nil? and item.title.first.empty? %><%= item.title.first %><% else %>No title provided<% end%> (<%= item.pid %>)
   <% end %>
 </dt>
 <dd class="whitespace">
   <!-- Need to shorten the asbtract if it is too long -->
-  <% unless not item.descMetadata.abstract[0].nil? and item.descMetadata.abstract[0].empty? %>
-    <%= truncate(item.descMetadata.abstract[0], length: 120) %>
+  <% unless not item.abstract.first.nil? and item.descMetadata.abstract[0].empty? %>
+    <%= truncate(item.abstract.first, length: 120) %>
   <% else %>
     <em>No summary available</em>
   <% end %>

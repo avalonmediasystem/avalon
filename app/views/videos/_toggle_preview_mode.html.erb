@@ -1,0 +1,13 @@
+<% if @video.is_complete? %>
+<div class="alert">
+  <h4 class="alert-heading">Return to preview mode</h4>
+  <%= link_to "Return to preview", video_path(@video), 
+    class: "btn" %>	
+</div>
+<% else %>
+<div class="alert alert-error">
+  <h4 class="alert-heading">Cancel ingest</h4>
+  <%= link_to "Return to home page", root_path, 
+    class: "btn" %>	
+</div>
+<% end %>

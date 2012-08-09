@@ -1,15 +1,21 @@
 class VideosController < ApplicationController
    include Hydra::Controller::FileAssetsBehavior
     
+   # Look into other options in the future. For now just make it work
+   before_filter :initialize_workflow, only: [:edit, :update]   
    before_filter :enforce_access_controls
-   
+
   def new
+    logger.debug "<< BEFORE : #{Video.count} >>"
+    
     @video = Video.new
     @video.DC.creator = user_key
     set_default_item_permissions
-    @video.save(:validate=>false)
+    @video.save(:validate => false)
 
+    logger.debug "<< AFTER : #{Video.count} >>"
     redirect_to edit_video_path(@video, step: 'file_upload')
+    logger.debug "<< Redirecting to edit view >>"
   end
   
   # TODO : Refactor this to reflect the new code base
@@ -21,7 +27,7 @@ class VideosController < ApplicationController
     @video.descMetadata.title = params[:title]
     @video.descMetadata.creator = params[:creator]
     @video.descMetadata.created_on = params[:created_on]
-    set_item_permissions
+    set_default_item_permissions
     @video.save
     
     redirect_to edit_video_path(id: params[:pid], step: 'file_upload')
@@ -43,7 +49,8 @@ class VideosController < ApplicationController
     @video = Video.find(params[:id])
     
     case params[:step]
-      when 'basic_metadata' then
+      # When adding resource description
+      when 'basic_metadata' 
         logger.debug "<< Populating required metadata fields >>"
         @video.descMetadata.title = params[:video][:title]        
         @video.descMetadata.creator = params[:video][:creator]
@@ -51,28 +58,30 @@ class VideosController < ApplicationController
         @video.descMetadata.abstract = params[:video][:abstract]
 
         @video.save
-        unless @video.errors.empty?
-          logger.debug "<< Errors found -> #{@video.errors} >>"
+        next_step = 'access_control'
+                
+        logger.debug "<< #{@video.errors} >>"
+        logger.debug "<< #{@video.errors.size} problems found in the data >>"        
+      # When on the access control page
+      when 'access_control' 
+        # TO DO: Implement me
+        logger.debug "<< Access flag = #{params[:access]} >>"
+	    @video.access = params[:access]        
+        @video.save             
+        logger.debug "<< Groups : #{@video.read_groups} >>"
+        next_step = 'preview'
 
-          flash[:error] = "There are errors with your submission. Please correct them before continuing."
-          render :edit
-          return
-        else
-          next_step = 'preview'
-        end
+      # When looking at the preview page redirect to show
+      #
+      when 'preview' 
+        # Do nothing for now      
       else
         next_step = 'file_upload'
-    end
-        
-    logger.info "<< #{@video.pid} has been updated in Fedora >>"
-    
-    # Quick, dirty, and elegant solution to how to post back to the previous
-    # screen
-    unless 'preview' == next_step
-      redirect_to edit_video_path(@video, step: next_step)
+    end     
+    unless @video.errors.empty?
+      report_errors
     else
-      logger.debug "<< Redirecting to the preview screen >>"
-      redirect_to video_path(@video)
+      redirect_to get_redirect_path(next_step)
     end
   end
   
@@ -93,20 +102,12 @@ class VideosController < ApplicationController
     flash[:notice] = "#{params[:id]} has been deleted from the system"
     redirect_to root_path
   end
-    
+  
   protected
   def set_default_item_permissions
     unless @video.rightsMetadata.nil?
-      permission = {
-        "group" => { 
-          "public" => "discover",
-          "public" => "read", 
-          "archivist" => "discover",
-          "archivist" => "edit"},
-        "person" => {
-          "archivist1@example.com" => "edit",
-          user_key => "edit"}}
-      @video.rightsMetadata.update_permissions(permission)
+      @video.edit_groups = ['archivist']
+      @video.edit_users = [user_key]
     end
   end
   
@@ -116,5 +117,42 @@ class VideosController < ApplicationController
     else
       nil
     end
+  end
+  
+  def initialize_workflow
+    step_one = WorkflowStep.new(1, 'Manage files',
+      'Associated bitstreams', 'file_upload')
+
+    step_two = WorkflowStep.new(2, 'Resource description',
+      'Metadata about the item', 'basic_metadata')
+
+    step_three = WorkflowStep.new(3, 'Access control',
+      'Who can access the item', 'access_control')
+
+    step_four = WorkflowStep.new(4, 'Preview and publish',
+      'Release the item for use', 'preview')
+      
+    @workflow_steps ||= [step_one, step_two, step_three, step_four]
+  end
+  
+  def report_errors
+    logger.debug "<< Errors found -> #{@video.errors} >>"
+    logger.debug "<< #{@video.errors.size} >>" 
+    
+    flash[:error] = "There are errors with your submission. Please correct them before continuing."
+    step = params[:step] || @workflow_steps.step.first.template
+    render :edit and return
+  end
+  
+  def get_redirect_path(target)
+    logger.info "<< #{@video.pid} has been updated in Fedora >>"
+    unless @workflow_steps.last.template == params[:step]
+      redirect_path = edit_video_path(@video, step: target)
+    else
+      flash[:notice] = "This resource is now available for use in the system"
+      redirect_path = video_path(@video)
+      return
+    end
+    redirect_path
   end
 end

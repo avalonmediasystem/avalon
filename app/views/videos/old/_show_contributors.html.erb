@@ -1,9 +1,0 @@
-<div id="contributors_list">
-<% unless @document_fedora.descMetadata.creator.first.empty? %>
-<fieldset><legend>Contributors</legend>
-<div id="contributors_list" class="browse_value">
-        <%= @document_fedora.descMetadata.creator.join(', ') %>
-</div>
-</fieldset>
-<% end %>
-</div>

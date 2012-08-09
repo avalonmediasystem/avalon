@@ -1,0 +1,11 @@
+<li class="<% if active %>nav-success<% else %>nav-disabled<% end %>"> 
+  <span class="step"><%= step.step %></span>
+    <% if active %>
+      <%= link_to edit_video_path(@video, step: step.template) do %>
+        <h4><%= step.title %></h4>
+      <% end %>
+    <% else %>
+      <h4><%= step.title %></h4>
+    <% end %>
+    <p><%= step.summary %></p>
+</li>

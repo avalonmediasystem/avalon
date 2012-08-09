@@ -31,6 +31,36 @@ class Video < ActiveFedora::Base
     end
   end
   
+  # Stub method to determine if the record is done or not. This should be based on
+  # whether the descMetadata, rightsMetadata, and techMetadata datastreams are all
+  # valid.
+  def is_complete?
+    false
+  end
+
+  def access
+    logger.debug "<< Access level >>"
+    logger.debug "<< #{self.read_groups} >>"
+    
+    if self.read_groups.empty?
+      "private"
+    elsif self.read_groups.include? "public"
+      "public"
+    elsif self.read_groups.include? "registered"
+      "restricted" 
+    end
+  end
+
+  def access= access_level
+    if access_level == "public"
+      self.read_groups = ['public', 'registered']      
+    elsif access_level == "restricted"
+      self.read_groups = ['registered']
+    else #private
+      self.read_groups = []
+    end
+  end
+    
   private
     def after_create
       self.DC.identifier = pid

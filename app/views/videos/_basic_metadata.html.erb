@@ -1,7 +1,9 @@
 <% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
 
-<%= twitter_bootstrap_form_for @video, class: "form-horizontal",
-    id: 'basic_metadata_form' do |vid| %>
+<%= twitter_bootstrap_form_for @video, 
+    html: { 
+      class: "form-horizontal",
+      id: 'basic_metadata_form' } do |vid| %>
   <%= vid.fieldset "Basic metadata", id: 'basic_metadata' do %>    
     <%= vid.hidden_field :pid %>
     <%= hidden_field_tag 'step', 'basic_metadata' %>
@@ -15,12 +17,12 @@
       value: @video.abstract.first %>
 
     <%= vid.actions do |actions| %>
-      <%= link_to "Back to file upload",
+      <%= link_to "Back to manage file(s)",
             edit_video_path(@video, step: 'file_upload'),
             id: 'previous_screen',
             class: 'btn',
             name: 'previous_screen' %>
-      <%= vid.submit "Save and finish" %>
+      <%= vid.submit "Continue to access control" %>
     <% end %>
   <%- end -%>
 <% end %>

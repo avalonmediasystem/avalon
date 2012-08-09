@@ -31,3 +31,40 @@ body {
 //
 // Example:
 // @linkColor: #ff0000;
+.nav-wizard {
+}
+
+.nav-wizard > li > a:hover {
+  background: transparent;
+}
+
+.nav-wizard > li {  
+  padding: @baseLineHeight/2;
+  margin-bottom: @baseLineHeight;
+  text-align: left;
+  .border-radius(4px);
+
+  background-color: @grayLighter;
+  border: @gray;
+  color: @grayDarker;
+}
+
+.nav-wizard > li.nav-success {
+  background-color: @successBackground;
+  border-color: @successBorder;
+  color: @successText;
+}
+
+.nav-wizard > li.nav-info {
+  background-color: @infoBackground;
+  border-color: @infoBorder;
+  color: @infoText;
+}
+
+.nav-wizard .step {
+  font-size: 250%;
+  width: 1em;
+  float: left;
+  margin-right: 0.4em;
+  margin-bottom: @baseLineHeight/2;
+}
