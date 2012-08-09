@@ -68,7 +68,7 @@ at_exit do
     
     if ENV["USE_HEADLESS"] == "true" and headless.present?
       logger.info "<< Tearing down the headless instance >>"
-      headless.destroy
+      #headless.destroy
     end
 end
 

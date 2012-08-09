@@ -22,7 +22,7 @@ GIT
 
 GIT
   remote: git://github.com/cjcolvar/rubycas-client.git
-  revision: 6ae51c48da54c2db8a8c63d6637f2b86a7b8432f
+  revision: 0b3128578a61b08abf2d8feffb52672568634046
   specs:
     rubycas-client (2.3.9)
       activesupport
@@ -105,7 +105,7 @@ GEM
     arel (3.0.2)
     backports (2.6.2)
     bcrypt-ruby (3.0.1)
-    blacklight (3.4.2)
+    blacklight (3.5.0)
       compass-rails (~> 1.0.0)
       compass-susy-plugin (>= 0.9.0)
       kaminari
@@ -135,14 +135,14 @@ GEM
       rack-test (>= 0.5.4)
       selenium-webdriver (~> 2.0)
       xpath (~> 0.1.4)
-    capybara-screenshot (0.2.1)
+    capybara-screenshot (0.2.2)
       capybara (>= 1.0)
     capybara-webkit (0.12.1)
       capybara (>= 1.0.0, < 1.2)
       json
-    childprocess (0.3.4)
+    childprocess (0.3.5)
       ffi (~> 1.0, >= 1.0.6)
-    chunky_png (1.2.5)
+    chunky_png (1.2.6)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
       railties (~> 3.2.0)
@@ -186,13 +186,13 @@ GEM
     erubis (2.7.0)
     execjs (1.4.0)
       multi_json (~> 1.0)
-    factory_girl (3.6.0)
+    factory_girl (4.0.0)
       activesupport (>= 3.0.0)
-    factory_girl_rails (3.6.0)
-      factory_girl (~> 3.6.0)
+    factory_girl_rails (4.0.0)
+      factory_girl (~> 4.0.0)
       railties (>= 3.0.0)
     fastercsv (1.5.5)
-    ffi (1.1.3)
+    ffi (1.1.5)
     fssm (0.2.9)
     gherkin (2.11.1)
       json (>= 1.4.6)
@@ -201,7 +201,7 @@ GEM
     headless (0.3.1)
     highline (1.6.13)
     hike (1.2.1)
-    hooks (0.2.0)
+    hooks (0.2.1)
     httpi (1.1.1)
       rack
     hydra-access-controls (0.0.5)
@@ -383,7 +383,7 @@ GEM
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
     sqlite3 (1.3.6)
-    stomp (1.2.4)
+    stomp (1.2.5)
     therubyracer (0.10.1)
       libv8 (~> 3.3.10)
     thor (0.15.4)
@@ -397,10 +397,10 @@ GEM
       railties (>= 3.1)
       therubyracer (= 0.10.1)
     tzinfo (0.3.33)
-    uglifier (1.2.6)
+    uglifier (1.2.7)
       execjs (>= 0.3.0)
       multi_json (~> 1.3)
-    unicode (0.4.2)
+    unicode (0.4.3)
     validates_email_format_of (1.5.3)
     warden (1.2.1)
       rack (>= 1.0)
