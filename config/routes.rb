@@ -4,7 +4,9 @@ Hydrant::Application.routes.draw do
 
   root :to => "catalog#index"
 
-  devise_for :users
+  devise_for :users do 
+    match '/users/sign_out', :to => "devise/sessions#destroy", :as => :destroy_user_session
+  end
 
   # My routes go here
   # Routes for subjects and pbcore controller
