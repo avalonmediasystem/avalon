@@ -33,7 +33,7 @@ describe Admin::GroupsController do
     end
   end
 
-  describe "modifying a group" do
+  describe "Modifying a group: " do
     before(:each) do
       clean_groups [test_group, test_group_new]
            
@@ -63,7 +63,7 @@ describe Admin::GroupsController do
       it "should be able to change group users when authenticated and authorized" do
         login_as('policy_editor')
       
-        lambda { post 'update', admin_group: { name: test_group, users: ["test_change_user"] }, id: test_group }.should change { RoleControls.users(test_group) }
+        lambda { post 'update', admin_group: { name: test_group, users: ["test_change_user"], resources: [] }, id: test_group }.should change { RoleControls.users(test_group) }
         flash[:notice].should_not be_nil
         response.should redirect_to(admin_groups_path)
       end
@@ -71,13 +71,30 @@ describe Admin::GroupsController do
       it "should be able to change group name when authenticated and authorized" do
         login_as('policy_editor')
       
-        post 'update', admin_group: { name: test_group_new, users: [] }, id: test_group
+        post 'update', admin_group: { name: test_group_new, users: [], resources: [] }, id: test_group
       
         RoleControls.users(test_group).should be_nil
         RoleControls.users(test_group_new).should_not be_nil
         flash[:notice].should_not be_nil
         response.should redirect_to(admin_groups_path)
       end
+
+      # it "should be able to add resources to group when authenticated and authorized" do
+      #   login_as('policy_editor')
+      #   pid = 'hydrant:318'
+      #   load_fixture pid        
+      #   
+      #   group = Admin::Group.new
+      #   group.name = test_group
+      #   
+      #   lambda { 
+      #     post 'update', admin_group: { name: test_group, users: [], resources: [pid] }, id: test_group
+      #     puts Video.find(pid).read_groups.inspect
+      #   }.should change { group.resources }
+      # 
+      #   flash[:notice].should_not be_nil
+      #   response.should redirect_to(admin_groups_path)
+      # end
     end
     
     context "Deleting a group" do
