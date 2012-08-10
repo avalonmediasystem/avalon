@@ -37,7 +37,7 @@
 
     gem 'validates_email_format_of'
     gem 'loofah'
-    gem 'devise_cas_authenticatable'
+    gem 'devise_cas_authenticatable', :git => "git://github.com/cjcolvar/devise_cas_authenticatable.git"
     gem 'rubycas-client', :git => "git://github.com/cjcolvar/rubycas-client.git"    
 
   group :assets, :production do

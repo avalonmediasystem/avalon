@@ -210,9 +210,9 @@ Devise.setup do |config|
   config.cas_base_url = "https://cas.iu.edu/cas/"
 
   # you can override these if you need to, but cas_base_url is usually enough
-  config.cas_login_url = "https://cas.iu.edu/cas/login"
+  config.cas_login_url = "https://cas.iu.edu/cas/login?cassvc=ANY"
   config.cas_logout_url = "https://cas.iu.edu/cas/logout"
-  config.cas_validate_url = "https://cas.iu.edu/cas/validate"
+  config.cas_validate_url = "https://cas.iu.edu/cas/validate?cassvc=ANY"
 
   # The CAS specification allows for the passing of a follow URL to be displayed when
   # a user logs out on the CAS server. RubyCAS-Server also supports redirecting to a
