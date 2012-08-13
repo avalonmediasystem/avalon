@@ -325,39 +325,39 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     return solr_doc
   end
 
-    def publisher_template(opts={})
-      builder = Nokogiri::XML::Builder.new do |xml|
-        xml.pbcorePublisher {
-          xml.publisher
-          xml.publisherRole(:source=>"PBCore publisherRole")
-        }
-      end
-      return builder.doc.root
+  def publisher_template(opts={})
+    builder = Nokogiri::XML::Builder.new do |xml|
+      xml.pbcorePublisher {
+        xml.publisher
+        xml.publisherRole(:source=>"PBCore publisherRole")
+      }
     end
+    return builder.doc.root
+  end
 
-    def contributor_template(opts={})
-      builder = Nokogiri::XML::Builder.new do |xml|
-        xml.pbcoreContributor {
-          xml.contributor
-          xml.contributorRole(:source=>"MARC relator terms")
-        }
-      end
-      return builder.doc.root
+  def contributor_template(opts={})
+    builder = Nokogiri::XML::Builder.new do |xml|
+      xml.pbcoreContributor {
+        xml.contributor
+        xml.contributorRole(:source=>"MARC relator terms")
+      }
     end
+    return builder.doc.root
+  end
 
-    def previous_template(opts={})
-      builder = Nokogiri::XML::Builder.new do |xml|
-        xml.instantiationRelation {
-          xml.instantiationRelationType(:annotation=>"One of a multi-part instantiation") {
-            xml.text "Follows in Sequence"
-          }
-          xml.instantiationRelationIdentifier(:source=>"Rock and Roll Hall of Fame and Museum")
+  def previous_template(opts={})
+    builder = Nokogiri::XML::Builder.new do |xml|
+      xml.instantiationRelation {
+        xml.instantiationRelationType(:annotation=>"One of a multi-part instantiation") {
+          xml.text "Follows in Sequence"
         }
-      end
-      return builder.doc.root
+        xml.instantiationRelationIdentifier(:source=>"Rock and Roll Hall of Fame and Museum")
+      }
     end
+    return builder.doc.root
+  end
 
-    def next_template(opts={})
+  def next_template(opts={})
       builder = Nokogiri::XML::Builder.new do |xml|
         xml.instantiationRelation {
           xml.instantiationRelationType(:annotation=>"One of a multi-part instantiation") {
@@ -369,7 +369,6 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
       return builder.doc.root
     end
 
- end
 
   def self.included(klass)
     klass.extend(ClassMethods)
@@ -419,5 +418,5 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     terms.each { |r| results << r.text }
     return results.compact.uniq
   end
-
+  
 end
