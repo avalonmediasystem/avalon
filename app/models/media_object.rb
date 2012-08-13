@@ -1,20 +1,19 @@
-class Video < ActiveFedora::Base
+class MediaObject < ActiveFedora::Base
+
+  include Hydra::ModelMixins::CommonMetadata
   include Hydra::ModelMethods
-  # This is the new and apparently preferred way of handling mixins
-  include Hydra::ModelMixins::RightsMetadata
-    
-  has_metadata name: "DC", type: DublinCoreDocument
-  has_metadata name: "descMetadata", type: PbcoreDocument
-  has_metadata name: "rightsMetadata", type: Hydra::Datastream::RightsMetadata
+
+  has_metadata name: "descMetadata", type: PbcoreDocument	
 
   after_create :after_create
   validate :presence_of_required_metadata
 
   # Delegate variables to expose them for the forms
-  delegate :title, to: :descMetadata
-  delegate :creator, to: :descMetadata
-  delegate :created_on, to: :descMetadata
-  delegate :abstract, to: :descMetadata
+  delegate :title, to: :descMetadata, at: [:main_title]
+  delegate :creator, to: :descMetadata, at: [:creator_name]
+  delegate :created_on, to: :descMetadata, at: [:creation_date]
+  delegate :abstract, to: :descMetadata, at: [:summary]
+  delegate :uploader, to: :descMetadata, at: [:publisher_name]
     
   def presence_of_required_metadata
     logger.debug "<< Validating required metadata fields >>"
@@ -30,7 +29,8 @@ class Video < ActiveFedora::Base
       errors.add(:title, "This field is required")
     end
   end
-  
+
+
   # Stub method to determine if the record is done or not. This should be based on
   # whether the descMetadata, rightsMetadata, and techMetadata datastreams are all
   # valid.
@@ -69,13 +69,10 @@ class Video < ActiveFedora::Base
       self.read_groups = groups
     end
   end
-    
+
   private
-    def after_create
-      self.DC.identifier = pid
-      save
-    end
-    
+
+
     # This really should live in a Validation helper, the OM model, or somewhere
     # else that is not a quick and dirty hack
     def has_valid_metadata_value(field, required=false)
@@ -95,4 +92,6 @@ class Video < ActiveFedora::Base
         return false
       end     
     end
+
 end
+

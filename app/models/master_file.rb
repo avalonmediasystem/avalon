@@ -1,0 +1,3 @@
+class MasterFile < FileAsset
+
+end
