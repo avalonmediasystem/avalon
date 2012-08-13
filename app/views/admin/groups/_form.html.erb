@@ -1,8 +1,8 @@
+<% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
+  
 <%= twitter_bootstrap_form_for @group,class: 'form-vertical' do |f| %>
   <%= f.fieldset do %>
-    <%= f.label :name, "Name" do |controls| %>
-      <%= controls.text_field :name, class: 'span4' %>
-    <% end %>
+    <%= f.text_field :name, "Name", class: 'span4', value: @group.name %>
 
     <%= f.label :users, "Users" do |controls| %> 
       <div style="line-height: 22px">

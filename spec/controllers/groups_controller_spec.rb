@@ -23,7 +23,7 @@ describe Admin::GroupsController do
     context "Default permissions should be applied" do
       it "should be create-able by the policy_editor" do
         login_as('policy_editor')
-        lambda { post 'create', admin_group: { name: test_group, users: [] } }.should change { RoleControls.roles.count }
+        lambda { post 'create', admin_group: { name: test_group, users: [], resources: [] } }.should change { RoleControls.roles.count }
         response.should redirect_to(admin_groups_path)
         
         # Cleans up

@@ -20,6 +20,10 @@ class RoleControls
       RoleMapper.role_names
     end
     
+    def role_exists? role
+      roles.include? role
+    end 
+    
     def assign_users(new_users, role)
       RoleMapper.map[role] = new_users.reject { |u| u.empty? }
     end

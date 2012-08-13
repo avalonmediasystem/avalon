@@ -2,6 +2,7 @@
 require "role_controls"
 class Admin::GroupsController < ApplicationController  
   before_filter :auth
+  layout "admin"
   
   # Currently assumes that to do anything you have to be able to manage Group
   # TODO: finer controls
@@ -26,23 +27,45 @@ class Admin::GroupsController < ApplicationController
       @groups << group
     end
     
-    render layout: 'admin'
   end
   
   def new
     @group = Admin::Group.new
-    puts "PERSISTED?" unless @group.persisted?
-    render layout: "admin"
   end
   
   def create
+    @group = Admin::Group.new
     role = params["admin_group"]["name"]
     users = params["admin_group"]["users"]
-
+    
+    @group.name = role
+    @group.save
+    
+    puts @group.errors.inspect 
+    
     if !role.empty?
+      if RoleControls.role_exists? role
+        flash[:error] = "Role already exists"
+        render :new and return
+      end
+        
       RoleControls.add_role(role)
       RoleControls.assign_users(users, role)
       RoleControls.save_changes
+    else
+      flash[:error] = "Role name cannot be empty"
+      render :new and return
+      return
+    end
+    
+    params["admin_group"]["resources"].each do |resource|
+      if !resource.empty?
+        resource_obj = Video.find(resource)
+        read_groups = resource_obj.read_groups
+        read_groups << new_group_name
+        resource_obj.read_groups = read_groups
+        resource_obj.save
+      end
     end
     
     redirect_to admin_groups_path
@@ -54,8 +77,6 @@ class Admin::GroupsController < ApplicationController
     @group.users = RoleControls.users(@group.name)
     @group.save
     RoleControls.save_changes
-    
-    render layout: "admin"
   end
   
   def update
