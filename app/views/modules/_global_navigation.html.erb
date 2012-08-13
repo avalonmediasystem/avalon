@@ -4,18 +4,18 @@
     <div class="container">
       <ul class="nav nav-pills">
         <li><%= link_to 'Home', root_url %></li>
-        <li class="divider-vertical"></li>
         <li>
           <%= link_to 'Add new item', new_video_path %>
         </li>
-        <li class="divider-vertical"></li>
         <li><%= link_to 'Browse items', search_index_path %></li>
         <li class="divider-vertical"></li>
+
+        <li>
+          <%= link_to_if (can? :manage, Admin::Group), 
+              'Manage Policy', admin_index_path,
+              target: "_admin" %></li>
+
         <li><%= link_to 'Contact us', comments_path %></li>
-        <% if can? :manage, Admin::Group %>
-          <li class="divider-vertical"></li>
-          <li><%= link_to 'Manage Policy', admin_index_path %>
-        <% end %>
       </ul>
       <%= form_tag search_index_path, 
          method: 'post',  
