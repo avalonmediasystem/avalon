@@ -18,8 +18,8 @@
         <% end %>
 
         <input name="admin_group[users][]" class="new-input" id="admin_group_user_">
-        <i class="icon-remove-sign"></i>
         <i class="icon-ok-sign"></i>
+        <i class="icon-remove-sign"></i>
         <i class="icon-plus-sign"></i>
       </div>
     <% end %>
@@ -36,8 +36,8 @@
         <% end %>
 
         <input name="admin_group[resources][]" class="new-input" id="admin_group_resource_">
-        <i class="icon-remove-sign"></i>
         <i class="icon-ok-sign"></i>
+        <i class="icon-remove-sign"></i>
         <i class="icon-plus-sign"></i>
       </div>
     <% end %>
@@ -46,49 +46,58 @@
   <% end %>
 <% end %>
 
-<script>
-  $('.close.remove').live('click', function(){
-    $(this).parent().prev().remove();
-    $(this).parent().remove();
-    return false;
-  })
-
-  // Adds new user
-  $('.icon-plus-sign').click(function(){
-    toggleIcons($(this));
-    $(this).parent().find('.new-input').focus();
-  })
-
-  // Saves new user
-  // TODO: cleaner cloning
-  $('.icon-ok-sign').click(function(){
-    var newInput = $(this).parent().find('.new-input');
-    var counter = $(this).parent().find('.counter');
-    var input = newInput.val();
-    
-    if (input.length > 0) {
-      var numUsrs = parseInt(counter.val());
-      var usrHiddenInput = newInput.clone(false).attr('id', newInput.attr('id') + numUsrs).removeClass('new-input');
-
-      newInput.before(usrHiddenInput.hide());
-      newInput.before('<span class="badge"><span>' + input + '</span><button class="close remove">&times;</button></span>');
-      newInput.val('');
-      counter.val(numUsrs + 1);
-    }
-    toggleIcons($(this));
-  })
-
-  // Cancels adding user
-  $('.icon-remove-sign').click(function(){
-    $(this).parent().find('.new-input').val('');
-    toggleIcons($(this));
-  })
+<% content_for :page_scripts do %>
+  <script>
+    $('.close.remove').live('click', function(){
+      $(this).parent().prev().remove();
+      $(this).parent().remove();
+      return false;
+    })
   
-  // Toggles the controls set with each action
-  function toggleIcons(caller){
-    caller.parent().find('.icon-ok-sign').toggle(); 
-    caller.parent().find('.icon-remove-sign').toggle();
-    caller.parent().find('.icon-plus-sign').toggle();
-    caller.parent().find('.new-input').toggle();   
-  }
-</script>
+    $('.new-input').keypress(function(e) {
+      if (e.which == 13) {
+        $(this).parent().find('.icon-ok-sign').trigger('click');
+        e.preventDefault();
+      }
+    })
+
+    // Adds new user
+    $('.icon-plus-sign').click(function(){
+      toggleIcons($(this));
+      $(this).parent().find('.new-input').focus();
+    })
+
+    // Saves new user
+    // TODO: cleaner cloning
+    $('.icon-ok-sign').click(function(){
+      var newInput = $(this).parent().find('.new-input');
+      var counter = $(this).parent().find('.counter');
+      var input = newInput.val();
+    
+      if (input.length > 0) {
+        var numUsrs = parseInt(counter.val());
+        var usrHiddenInput = newInput.clone(false).attr('id', newInput.attr('id') + numUsrs).removeClass('new-input');
+
+        newInput.before(usrHiddenInput.hide());
+        newInput.before('<span class="badge"><span>' + input + '</span><button class="close remove">&times;</button></span>');
+        newInput.val('');
+        counter.val(numUsrs + 1);
+      }
+      toggleIcons($(this));
+    })
+
+    // Cancels adding user
+    $('.icon-remove-sign').click(function(){
+      $(this).parent().find('.new-input').val('');
+      toggleIcons($(this));
+    })
+  
+    // Toggles the controls set with each action
+    function toggleIcons(caller){
+      caller.parent().find('.icon-ok-sign').toggle(); 
+      caller.parent().find('.icon-remove-sign').toggle();
+      caller.parent().find('.icon-plus-sign').toggle();
+      caller.parent().find('.new-input').toggle();   
+    }
+  </script>
+<% end %>

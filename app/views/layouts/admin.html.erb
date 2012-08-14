@@ -9,8 +9,6 @@
          if they are included here. That means the important content will
          load first; the page will not gag on trying to pull down files
          from a CDN -->
-    <%= javascript_include_tag "application" %>
-    <%= yield :page_scripts %>
 
     <%= csrf_meta_tags %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -83,5 +81,9 @@
         </footer>
       </div>
     </div>
+    
+    <%= javascript_include_tag "application" %>
+    <%= yield :page_scripts %>
+    
   </body>
 </html>
