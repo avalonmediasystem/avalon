@@ -6,7 +6,6 @@ class MediaObject < ActiveFedora::Base
 
   has_metadata name: "descMetadata", type: PbcoreDocument	
 
-  after_create :after_create
   validate :presence_of_required_metadata
 
   # Delegate variables to expose them for the forms
@@ -71,6 +70,19 @@ class MediaObject < ActiveFedora::Base
     end
   end
 
+  def parts_append obj
+      #Copied from ActiveFedora::FileManagement
+      unless obj.kind_of? ActiveFedora::Base
+        begin
+          obj = ActiveFedora::Base.find(obj)
+        rescue ActiveFedora::ObjectNotFoundError
+          "You must provide either an ActiveFedora object or a valid pid to add it as a file object. You submitted #{obj.inspect}"
+        end
+      end
+      obj.add_relationship(:is_part_of, self)
+      obj.save
+  end
+
   private
 
 
@@ -80,10 +92,10 @@ class MediaObject < ActiveFedora::Base
       logger.debug "<< Validating #{field} >>"
       
       # True cases to fail validation should live here
-      unless descMetadata.term_values(field).nil?
+      unless self.send(field).nil?
         if required 
-          return ((not descMetadata.term_values(field).empty?) and 
-            (not "" == descMetadata.term_values(field).first))
+          return ((not self.send(field).empty?) and 
+            (not "" == self.send(field).first))
         else 
           # If it isn't required then return true even if it is empty
           return true

@@ -419,4 +419,18 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     return results.compact.uniq
   end
   
+  # Returns the 4-digit year from a string
+  def get_year(s)
+    begin
+      return DateTime.parse(s).year.to_s
+    rescue
+      if s.match(/^\d\d\d\d$/)
+        return s.to_s
+      elsif s.match(/^(\d\d\d\d)-\d\d$/)
+        return $1.to_s
+      else
+        return nil
+      end
+    end
+  end
 end
