@@ -10,11 +10,13 @@
         <li><%= link_to 'Browse items', search_index_path %></li>
         <li class="divider-vertical"></li>
 
+        <% if can? :manage, Admin::Group %>
         <li>
-          <%= link_to_if (can? :manage, Admin::Group), 
+          <%= link_to
               'Manage Policy', admin_index_path,
               target: "_admin" %></li>
-
+        <% end %>
+        
         <li><%= link_to 'Contact us', comments_path %></li>
       </ul>
       <%= form_tag search_index_path, 
