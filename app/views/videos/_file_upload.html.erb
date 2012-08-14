@@ -1,6 +1,6 @@
 	<% if not @video.nil? and can? :edit, @video %> 
   	  <fieldset id='uploader'>
-   		<legend>File Upload</legend>
+   		<legend>Manage file(s)</legend>
    		<p>Uploaded files must not exceed <%= number_to_human_size(2**20 * 250) %></p>
    		
 		<% unless @video_asset.nil? %>
