@@ -2,7 +2,7 @@
   <div class="span3" id="left_column">
     <%= render "toggle_preview_mode" %>
     
-    <% if can? :edit, @video %>
+    <% if can? :edit, @mediaobject %>
       <%= render "workflow_steps" %>
     <% end %>
   </div>
@@ -11,7 +11,7 @@
     <div id="permalink" class="alert alert-success">
       <h4 class="alert-heading">Permalink</h4>
       <p>To share this item with others use the following canonical link</p>
-      <address><%= link_to video_url(params[:id]), video_url(params[:id]) %></address>
+      <address><%= link_to media_object_url(params[:id]), media_object_url(params[:id]) %></address>
     </div>
 
   <% if flash[:upload] %>
@@ -47,9 +47,9 @@
 
 <% content_for :title do %>
   Edit -
-  <% unless @video.descMetadata.title.empty? %>
-    <%= @video.descMetadata.title.first %> (<%= @video.pid %>)
+  <% unless @mediaobject.title.empty? %>
+    <%= @mediaobject.title.first %> (<%= @mediaobject.pid %>)
   <% else %>
-    <%= @video.pid %>
+    <%= @mediaobject.pid %>
   <% end %>
 <% end %>

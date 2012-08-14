@@ -20,9 +20,9 @@ class Admin::Group
   def resources
     res = []
     # TODO: this is very costly
-    Video.find(:all).each do |video|
-      if video.read_groups.include? @name
-        res << video.pid
+    MediaObject.find(:all).each do |mediaobject|
+      if mediaobject.read_groups.include? @name
+        res << mediaobject.pid
       end
     end
     

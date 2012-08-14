@@ -1,7 +1,7 @@
 <li class="span3">
   <div class="thumbnail search-result">
     <% if can? :read, item %>
-      <%= link_to image_for_result(item), video_path(item[:id]), class: "preview" %> 
+      <%= link_to image_for_result(item), media_object_path(item[:id]), class: "preview" %> 
     <% else %>
       <%= image_for_result(item) %>
     <% end %>
@@ -9,7 +9,7 @@
     <div class="caption">
         <h4 class="title">
           <% if can? :read, item %>
-            <%= link_to search_result_label(item), video_path(item[:id]) %> 
+            <%= link_to search_result_label(item), media_object_path(item[:id]) %> 
           <% else %>
             <%= search_result_label(item) %>)
           <% end %>

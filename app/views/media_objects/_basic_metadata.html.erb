@@ -1,6 +1,6 @@
 <% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
 
-<%= twitter_bootstrap_form_for @video, 
+<%= twitter_bootstrap_form_for @mediaobject, 
     html: { 
       class: "form-horizontal",
       id: 'basic_metadata_form' } do |vid| %>
@@ -8,17 +8,17 @@
     <%= vid.hidden_field :pid %>
     <%= hidden_field_tag 'step', 'basic_metadata' %>
   
-    <%= vid.text_field :title, "Title", class: 'span12', value: @video.title.first %>
+    <%= vid.text_field :title, "Title", class: 'span12', value: @mediaobject.title.first %>
     <%= vid.text_field :creator, "Creator", class: 'span12',
-      value: @video.creator.first %>
+      value: @mediaobject.creator.first %>
     <%= vid.text_field :created_on, "Created on", class: 'span12',
-      value: @video.created_on.first %>
+      value: @mediaobject.created_on.first %>
     <%= vid.text_area :abstract, "Summary (optional)", class: 'span12', rows: 6,
-      value: @video.abstract.first %>
+      value: @mediaobject.abstract.first %>
 
     <%= vid.actions do |actions| %>
       <%= link_to "Back to manage file(s)",
-            edit_video_path(@video, step: 'file_upload'),
+            edit_media_object_path(@mediaobject, step: 'file_upload'),
             id: 'previous_screen',
             class: 'btn',
             name: 'previous_screen' %>

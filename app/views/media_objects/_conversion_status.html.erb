@@ -2,16 +2,16 @@
 <div id="workflow_status" class="alert">
   <h4 class="alert-heading">Conversion status</h4>
   <p id="file_status">
-    <% unless @video.parts.empty? %>
+    <% unless @mediaobject.parts.empty? %>
       <dl class="nobullet status">
-        <% @video.parts.each do |file_asset| %>
+        <% @mediaobject.parts.each do |file_asset| %>
         <% # Refactor this in the future?
-           video_asset = VideoAsset.find(file_asset.pid) %>
+           masterfile = MasterFile.find(file_asset.pid) %>
         <dt>
-          <%= link_to file_download_label(video_asset),
-              edit_video_path(id: video_asset.container.pid, 
+          <%= link_to file_download_label(masterfile),
+              edit_media_object_path(id: masterfile.container.pid, 
                 step: 'file-upload') %></dt>
-        <dd><%= video_asset.status %></dd>
+        <dd><%= masterfile.status %></dd>
         <!--
         <div class="progress progress-striped active">
           <div class="bar" style="width: 45%;"></div>

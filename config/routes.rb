@@ -10,8 +10,8 @@ Hydrant::Application.routes.draw do
 
   # My routes go here
   # Routes for subjects and pbcore controller
-  resources :video_assets
-  resources :videos, except: [:index]
+  resources :master_files
+  resources :media_objects, except: [:index]
   resources :comments, only: [:index, :create]
   match 'search/index' => 'search#index'
   match 'search/facet/:id' => 'search#facet'

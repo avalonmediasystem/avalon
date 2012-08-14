@@ -47,7 +47,7 @@ if "true" == ENV["USE_HEADLESS"]
 end
   
 pid_list = []
-Video.find(:all).each do |v|
+MediaObject.find(:all).each do |v|
   pid_list.push(v.pid)
 end
 puts "<< #{pid_list.inspect} >>"
@@ -56,7 +56,7 @@ puts "<< #{pid_list.inspect} >>"
 at_exit do
     # Also be sure to delete all objects so the repository is pristine. Only those
     # fixtures that are not numeric will be retained
-    Video.find(:all).each do |v|
+    MediaObject.find(:all).each do |v|
       if not pid_list.include?(v.pid)
         logger.info "<< Deleting #{v.pid} from the Fedora repository test instance >>"
 	v.parts.each do |va|
@@ -68,7 +68,7 @@ at_exit do
     
     if ENV["USE_HEADLESS"] == "true" and headless.present?
       logger.info "<< Tearing down the headless instance >>"
-      #headless.destroy
+      headless.destroy
     end
 end
 

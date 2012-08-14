@@ -1,4 +1,4 @@
-class VideosController < ApplicationController
+class MediaObjectsController < ApplicationController
    include Hydra::Controller::FileAssetsBehavior
     
    # Look into other options in the future. For now just make it work
@@ -6,38 +6,38 @@ class VideosController < ApplicationController
    before_filter :enforce_access_controls
 
   def new
-    logger.debug "<< BEFORE : #{Video.count} >>"
+    logger.debug "<< BEFORE : #{MediaObject.count} >>"
     
-    @video = Video.new
-    @video.DC.creator = user_key
+    @mediaobject = MediaObject.new
+    @mediaobject.uploader = user_key
     set_default_item_permissions
-    @video.save(:validate => false)
+    @mediaobject.save(:validate => false)
 
-    logger.debug "<< AFTER : #{Video.count} >>"
-    redirect_to edit_video_path(@video, step: 'file_upload')
+    logger.debug "<< AFTER : #{MediaObject.count} >>"
+    redirect_to edit_media_object_path(@mediaobject, step: 'file_upload')
     logger.debug "<< Redirecting to edit view >>"
   end
   
   # TODO : Refactor this to reflect the new code base
   def create
-    logger.debug "<< Making a new Video object with a PBCore datastream >>"
+    logger.debug "<< Making a new MediaObject object with a PBCore datastream >>"
 
-    @video = Video.new
-    @video.DC.creator = user_key
-    @video.descMetadata.title = params[:title]
-    @video.descMetadata.creator = params[:creator]
-    @video.descMetadata.created_on = params[:created_on]
+    @mediaobject = MediaObject.new
+    @mediaobject.uploader = user_key
+    @mediaobject.descMetadata.title = params[:title]
+    @mediaobject.descMetadata.creator = params[:creator]
+    @mediaobject.descMetadata.created_on = params[:created_on]
     set_default_item_permissions
-    @video.save
+    @mediaobject.save
     
-    redirect_to edit_video_path(id: params[:pid], step: 'file_upload')
+    redirect_to edit_mediaobject_path(id: params[:pid], step: 'file_upload')
   end
 
   def edit
     logger.info "<< Retrieving #{params[:id]} from Fedora >>"
     
-    @video = Video.find(params[:id])
-    @video_asset = load_videoasset
+    @mediaobject = MediaObject.find(params[:id])
+    @mediaobject_asset = load_mediaobjectasset
     
     logger.debug "<< Calling update method >>"
   end
@@ -45,30 +45,30 @@ class VideosController < ApplicationController
   # TODO: Refactor this to reflect the new code model. This is not the ideal way to
   #       handle a multi-screen workflow I suspect
   def update
-    logger.info "<< Updating the video object (including a PBCore datastream) >>"
-    @video = Video.find(params[:id])
+    logger.info "<< Updating the mediaobject object (including a PBCore datastream) >>"
+    @mediaobject = MediaObject.find(params[:id])
     
     case params[:step]
       # When adding resource description
       when 'basic_metadata' 
         logger.debug "<< Populating required metadata fields >>"
-        @video.descMetadata.title = params[:video][:title]        
-        @video.descMetadata.creator = params[:video][:creator]
-        @video.descMetadata.created_on = params[:video][:created_on]
-        @video.descMetadata.abstract = params[:video][:abstract]
+        @mediaobject.descMetadata.title = params[:mediaobject][:title]        
+        @mediaobject.descMetadata.creator = params[:mediaobject][:creator]
+        @mediaobject.descMetadata.created_on = params[:mediaobject][:created_on]
+        @mediaobject.descMetadata.abstract = params[:mediaobject][:abstract]
 
-        @video.save
+        @mediaobject.save
         next_step = 'access_control'
                 
-        logger.debug "<< #{@video.errors} >>"
-        logger.debug "<< #{@video.errors.size} problems found in the data >>"        
+        logger.debug "<< #{@mediaobject.errors} >>"
+        logger.debug "<< #{@mediaobject.errors.size} problems found in the data >>"        
       # When on the access control page
       when 'access_control' 
         # TO DO: Implement me
         logger.debug "<< Access flag = #{params[:access]} >>"
-	    @video.access = params[:access]        
-        @video.save             
-        logger.debug "<< Groups : #{@video.read_groups} >>"
+	    @mediaobject.access = params[:access]        
+        @mediaobject.save             
+        logger.debug "<< Groups : #{@mediaobject.read_groups} >>"
         next_step = 'preview'
 
       # When looking at the preview page redirect to show
@@ -78,7 +78,7 @@ class VideosController < ApplicationController
       else
         next_step = 'file_upload'
     end     
-    unless @video.errors.empty?
+    unless @mediaobject.errors.empty?
       report_errors
     else
       redirect_to get_redirect_path(next_step)
@@ -86,34 +86,34 @@ class VideosController < ApplicationController
   end
   
   def show
-    @video = Video.find(params[:id])
-    @video_asset = load_videoasset
-    unless @video_asset.nil? 
-      @stream = @video_asset.stream
+    @mediaobject = MediaObject.find(params[:id])
+    @mediaobject_asset = load_mediaobjectasset
+    unless @mediaobject_asset.nil? 
+      @stream = @mediaobject_asset.stream
       logger.debug("Stream location >> #{@stream}")
 
-      @mediapackage_id = @video_asset.mediapackage_id
-	  @mime_type = @video_asset.streaming_mime_type
+      @mediapackage_id = @mediaobject_asset.mediapackage_id
+	  @mime_type = @mediaobject_asset.streaming_mime_type
     end
   end
 
   def destroy
-    @video = Video.find(params[:id]).delete
+    @mediaobject = MediaObject.find(params[:id]).delete
     flash[:notice] = "#{params[:id]} has been deleted from the system"
     redirect_to root_path
   end
   
   protected
   def set_default_item_permissions
-    unless @video.rightsMetadata.nil?
-      @video.edit_groups = ['archivist']
-      @video.edit_users = [user_key]
+    unless @mediaobject.rightsMetadata.nil?
+      @mediaobject.edit_groups = ['archivist']
+      @mediaobject.edit_users = [user_key]
     end
   end
   
-  def load_videoasset
-    unless @video.parts.nil? or @video.parts.empty?
-      VideoAsset.find(@video.parts.first.pid)
+  def load_mediaobjectasset
+    unless @mediaobject.parts.nil? or @mediaobject.parts.empty?
+      MediaObjectAsset.find(@mediaobject.parts.first.pid)
     else
       nil
     end
@@ -136,8 +136,8 @@ class VideosController < ApplicationController
   end
   
   def report_errors
-    logger.debug "<< Errors found -> #{@video.errors} >>"
-    logger.debug "<< #{@video.errors.size} >>" 
+    logger.debug "<< Errors found -> #{@mediaobject.errors} >>"
+    logger.debug "<< #{@mediaobject.errors.size} >>" 
     
     flash[:error] = "There are errors with your submission. Please correct them before continuing."
     step = params[:step] || @workflow_steps.step.first.template
@@ -145,12 +145,12 @@ class VideosController < ApplicationController
   end
   
   def get_redirect_path(target)
-    logger.info "<< #{@video.pid} has been updated in Fedora >>"
+    logger.info "<< #{@mediaobject.pid} has been updated in Fedora >>"
     unless @workflow_steps.last.template == params[:step]
-      redirect_path = edit_video_path(@video, step: target)
+      redirect_path = edit_mediaobject_path(@mediaobject, step: target)
     else
       flash[:notice] = "This resource is now available for use in the system"
-      redirect_path = video_path(@video)
+      redirect_path = mediaobject_path(@mediaobject)
       return
     end
     redirect_path

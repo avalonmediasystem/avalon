@@ -6,9 +6,9 @@ module FixtureMacros
   end
 
 	def remove_fixture(pid)
-    if Video.exists?(pid)
-        video = Video.find(pid)
-        video.parts.each do |part|
+    if MediaObject.exists?(pid)
+        mediaobject = MediaObject.find(pid)
+        mediaobject.parts.each do |part|
         ActiveFedora::FixtureLoader.delete(part.pid)
         puts "Deleted #{part.pid}"
         end
