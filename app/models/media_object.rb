@@ -2,6 +2,7 @@ class MediaObject < ActiveFedora::Base
 
   include Hydra::ModelMixins::CommonMetadata
   include Hydra::ModelMethods
+  include ActiveFedora::FileManagement
 
   has_metadata name: "descMetadata", type: PbcoreDocument	
 
