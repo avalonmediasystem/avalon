@@ -107,6 +107,8 @@ end
 # properly at the moment. It should check for the absence of any fields without the
 # required property
 Then /^I should see only required fields$/ do 
+  pending "Rewrite once the new workflow is in place"
+  
   within "#basic_metadata_form" do
     page.should have_selector("input[name='media_object\[title\]']")
     page.should have_selector("input[name='media_object\[creator\]']")

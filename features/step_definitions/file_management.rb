@@ -56,6 +56,32 @@ end
 def debug_step(page)
   logger.debug '<<--->>'
   logger.debug page.current_url
-  logger.debug "Saving page to #{page.save_page}"
-  logger.debug '<<--->>'
+  
+  if 'webkit' == Capybara.current_driver 
+    logger.debug "<< Cookies in current session >>"
+    logger.debug "--"
+    logger.debug Capybara.current_session.driver.browser.get_cookies
+    logger.debug "--"
+   
+    target = filename_for_page
+    logger.debug "Saving page to #{target}"
+    page.driver.render target
+    logger.debug '<<--->>'
+  end
 end
+
+def filename_for_page
+  time = Time.now
+  
+  params = [
+    time.year,
+    time.month,
+    time.day,
+    time.hour,
+    time.min,
+    time.sec
+  ]
+  
+  "hydrant-%04d%02d%02d-%02d%02d%02d.png" % params
+end
+
