@@ -1,0 +1,35 @@
+require 'net/http/digest_auth'
+
+class DerivativesController < ApplicationController
+
+ #  before_filter :enforce_access_controls
+  
+  skip_before_filter :verify_authenticity_token, :only => [:create]
+  before_filter :authenticate_user!, :only => [:create]
+
+  # Creates and Saves a File Asset to contain the the Uploaded file 
+  # If container_id is provided:
+  # * the File Asset will use RELS-EXT to assert that it's a part of the specified container
+  # * the method will redirect to the container object's edit view after saving
+  def create
+    if cannot? :create, Derivative
+      flash[:notice] = "You do not have sufficient privileges to add derivative files"
+      redirect_to root_path 
+      return
+    end
+
+   masterfile = MasterFile.find(params[:id])
+   if cannot? :edit, masterfile.container.pid
+     flash[:notice] = "You do not have sufficient privileges to add derivative files"
+     redirect_to root_path
+     return
+   end
+
+      derivative = Derivative.new
+      derivative.url = params[:video_url]
+      derivative.masterfile = masterfile
+      derivative.save
+		
+  end
+
+end

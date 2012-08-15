@@ -153,38 +153,6 @@ class MasterFilesController < ApplicationController
     master_file
   end
 
-	def update
-   va = MasterFile.find(params[:id])
-   if cannot? :edit, va.container.pid
-      flash[:notice] = "You do not have sufficient privileges to edit files"
-     redirect_to root_path
-     return
-   end
-
-   if params.has_key?(:video_url)
-      notice = process_files
-      flash[:notice] = notice.join("<br/>".html_safe) unless notice.blank?
-	render :nothing => true
-		end
-	end
-
-  # Does this code do anything with the changes to the model?
-  def process_files
-    master_file = MasterFile.find(params[:id]) 
-		master_file.url = params[:video_url]
-		#master_file.description = "File processed and ready for streaming"
-		
-		if master_file.save
-			notice = []
-			notice << render_to_string(:partial=>'hydra/file_assets/asset_saved_flash', :locals => { :file_asset => master_file })
-        
-      # If redirect_params has not been set, use {:action=>:index}
-    	notice
-		else 
-			notice = "File updating failed"
-		end
-  end
-
 	def create_master_file_from_temp_path(path)
 		master_file = MasterFile.new
     filename = path.split(/\//).last

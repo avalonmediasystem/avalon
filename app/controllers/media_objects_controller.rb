@@ -30,14 +30,14 @@ class MediaObjectsController < ApplicationController
     set_default_item_permissions
     @mediaobject.save
     
-    redirect_to edit_mediaobject_path(id: params[:pid], step: 'file_upload')
+    redirect_to edit_media_object_path(id: params[:pid], step: 'file_upload')
   end
 
   def edit
     logger.info "<< Retrieving #{params[:id]} from Fedora >>"
     
     @mediaobject = MediaObject.find(params[:id])
-    @mediaobject_asset = load_mediaobjectasset
+    @masterfile = load_master_file
     
     logger.debug "<< Calling update method >>"
   end
@@ -45,7 +45,7 @@ class MediaObjectsController < ApplicationController
   # TODO: Refactor this to reflect the new code model. This is not the ideal way to
   #       handle a multi-screen workflow I suspect
   def update
-    logger.info "<< Updating the mediaobject object (including a PBCore datastream) >>"
+    logger.info "<< Updating the media object object (including a PBCore datastream) >>"
     @mediaobject = MediaObject.find(params[:id])
     
     case params[:step]
@@ -87,13 +87,13 @@ class MediaObjectsController < ApplicationController
   
   def show
     @mediaobject = MediaObject.find(params[:id])
-    @mediaobject_asset = load_mediaobjectasset
-    unless @mediaobject_asset.nil? 
-      @stream = @mediaobject_asset.stream
+    @masterfile = load_master_file
+    unless @masterfile.nil? 
+      @stream = @masterfile.url
       logger.debug("Stream location >> #{@stream}")
 
-      @mediapackage_id = @mediaobject_asset.mediapackage_id
-	  @mime_type = @mediaobject_asset.streaming_mime_type
+      @mediapackage_id = @masterfile.mediapackage_id
+      #@mime_type = @masterfile.streaming_mime_type
     end
   end
 
@@ -111,9 +111,9 @@ class MediaObjectsController < ApplicationController
     end
   end
   
-  def load_mediaobjectasset
+  def load_master_file
     unless @mediaobject.parts.nil? or @mediaobject.parts.empty?
-      MediaObjectAsset.find(@mediaobject.parts.first.pid)
+      MasterFile.find(@mediaobject.parts.first.pid)
     else
       nil
     end
