@@ -71,7 +71,7 @@ class MasterFilesController < ApplicationController
                         media_object = MediaObject.find(master_file.container.pid)
                         
                         logger.debug "<< #{media_object.pid} >>"
-                        media_object.descMetadata.format = case @upload_format
+                        media_object.format = case @upload_format
                           when 'audio'
                             'Sound'
                           when 'video'
@@ -79,7 +79,7 @@ class MasterFilesController < ApplicationController
                           else
                             'Unknown'
                         end
-                        logger.debug "<< #{media_object.descMetadata.format} >>"
+                        logger.debug "<< #{media_object.format} >>"
                         
                         media_object.save(:validate=>false)
    			master_file.save

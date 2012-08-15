@@ -15,6 +15,7 @@ class MediaObject < ActiveFedora::Base
   delegate :created_on, to: :descMetadata, at: [:creation_date]
   delegate :abstract, to: :descMetadata, at: [:summary]
   delegate :uploader, to: :descMetadata, at: [:publisher_name]
+  delegate :format, to: :descMetadata, at: [:media_type]
     
   def presence_of_required_metadata
     logger.debug "<< Validating required metadata fields >>"

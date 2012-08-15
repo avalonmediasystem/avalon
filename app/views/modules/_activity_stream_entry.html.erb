@@ -12,7 +12,7 @@
 </dt>
 <dd class="whitespace">
   <!-- Need to shorten the asbtract if it is too long -->
-  <% unless not item.abstract.first.nil? and item.descMetadata.abstract[0].empty? %>
+  <% unless not item.abstract.first.nil? and item.abstract.first.empty? %>
     <%= truncate(item.abstract.first, length: 120) %>
   <% else %>
     <em>No summary available</em>

@@ -24,9 +24,9 @@ class MediaObjectsController < ApplicationController
 
     @mediaobject = MediaObject.new
     @mediaobject.uploader = user_key
-    @mediaobject.descMetadata.title = params[:title]
-    @mediaobject.descMetadata.creator = params[:creator]
-    @mediaobject.descMetadata.created_on = params[:created_on]
+    @mediaobject.title = params[:title]
+    @mediaobject.creator = params[:creator]
+    @mediaobject.created_on = params[:created_on]
     set_default_item_permissions
     @mediaobject.save
     
@@ -52,10 +52,10 @@ class MediaObjectsController < ApplicationController
       # When adding resource description
       when 'basic_metadata' 
         logger.debug "<< Populating required metadata fields >>"
-        @mediaobject.descMetadata.title = params[:mediaobject][:title]        
-        @mediaobject.descMetadata.creator = params[:mediaobject][:creator]
-        @mediaobject.descMetadata.created_on = params[:mediaobject][:created_on]
-        @mediaobject.descMetadata.abstract = params[:mediaobject][:abstract]
+        @mediaobject.title = params[:media_object][:title]        
+        @mediaobject.creator = params[:media_object][:creator]
+        @mediaobject.created_on = params[:media_object][:created_on]
+        @mediaobject.abstract = params[:media_object][:abstract]
 
         @mediaobject.save
         next_step = 'access_control'
@@ -147,10 +147,10 @@ class MediaObjectsController < ApplicationController
   def get_redirect_path(target)
     logger.info "<< #{@mediaobject.pid} has been updated in Fedora >>"
     unless @workflow_steps.last.template == params[:step]
-      redirect_path = edit_mediaobject_path(@mediaobject, step: target)
+      redirect_path = edit_media_object_path(@mediaobject, step: target)
     else
       flash[:notice] = "This resource is now available for use in the system"
-      redirect_path = mediaobject_path(@mediaobject)
+      redirect_path = media_object_path(@mediaobject)
       return
     end
     redirect_path
