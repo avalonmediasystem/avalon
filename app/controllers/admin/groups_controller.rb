@@ -61,28 +61,12 @@ class Admin::GroupsController < ApplicationController
   def update
     group_name = params["id"]
     new_group_name = params["admin_group"]["name"]
+    group = Admin::Group.find(group_name)
     
-    RoleControls.remove_role group_name
-    RoleControls.add_role new_group_name
-    RoleControls.assign_users(params["admin_group"]["users"], new_group_name)
-    RoleControls.save_changes
-    
-    new_resources = params["admin_group"]["resources"]
-    
-    # Removes group from resources that are no longer present
-    @group = Admin::Group.new
-    @group.name = params[:id]
-    cur_resources = @group.resources.reject { |r| new_resources.include? r }
-    cur_resources.each do |resource|
-        resource_obj = MediaObject.find(resource)
-        read_groups = resource_obj.read_groups
-        read_groups.delete(group_name) 
-        resource_obj.read_groups = read_groups
-        resource_obj.save
-    end    
-    
-    params["admin_group"]["resources"].each do |resource|
-      if !resource.empty?
+    # If group name has been changed
+    if group_name != new_group_name
+      # Changes group name inside each resource's read_groups
+      group.resources.each do |resource|
         resource_obj = MediaObject.find(resource)
         read_groups = resource_obj.read_groups
         read_groups.delete(group_name) 
@@ -90,7 +74,40 @@ class Admin::GroupsController < ApplicationController
         resource_obj.read_groups = read_groups
         resource_obj.save
       end
+      
+      RoleControls.remove_role group_name
+      RoleControls.add_role new_group_name
+      RoleControls.assign_users(params["admin_group"]["users"], new_group_name)
+      RoleControls.save_changes
     end
+    
+    group = Admin::Group.find(new_group_name)
+    new_resources = params["admin_group"]["resources"].reject { |r| r.empty? }
+    rm_resources = group.resources.reject { |r| new_resources.include? r }
+
+    puts rm_resources.inspect
+
+    # Removes old group from resources that are no longer present in the params
+    rm_resources.each do |resource|
+        resource_obj = MediaObject.find(resource)
+        read_groups = resource_obj.read_groups
+        read_groups.delete(new_group_name) 
+        resource_obj.read_groups = read_groups
+        resource_obj.save
+    end    
+    
+    # Add new groupname to resources 
+    new_resources.each do |resource|
+        resource_obj = MediaObject.find(resource)
+        read_groups = resource_obj.read_groups
+
+        if !read_groups.include? new_group_name
+          read_groups << new_group_name 
+          resource_obj.read_groups = read_groups
+          resource_obj.save
+          puts resource_obj.read_groups.inspect
+        end
+    end    
     
     flash[:notice] = "Successfully updated group \"#{new_group_name}\""
     redirect_to admin_groups_path
@@ -99,8 +116,18 @@ class Admin::GroupsController < ApplicationController
   # Only deletes multiple groups for now
   # TODO: able to add/remove an ability to multple groups
   def update_multiple
-    params[:group_ids].each do |group|
-      RoleControls.remove_role(group)
+    params[:group_ids].each do |group_name|
+      group = Admin::Group.new
+      group.name = group_name      
+      group.resources.each do |resource|
+        resource_obj = MediaObject.find(resource)
+        read_groups = resource_obj.read_groups
+        read_groups.delete(group_name) 
+        resource_obj.read_groups = read_groups
+        resource_obj.save
+      end
+      
+      RoleControls.remove_role(group_name)
     end
     RoleControls.save_changes
     
