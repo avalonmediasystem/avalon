@@ -3,7 +3,7 @@ Feature: Check basic metadata fields (form)
   
   Scenario: File upload is the first step
     Given I am logged in as a "cataloger"
-    When I create a new video
+    When I create a new media object
     Then I should be prompted to upload a file
 
   Scenario: Basic metadata fields are present in the workflow
@@ -14,14 +14,14 @@ Feature: Check basic metadata fields (form)
     
   Scenario: Values persist in the system
     Given I am logged in as a "cataloger"
-    When I create a new video
+    When I create a new media object
     And provide basic metadata for it
     Then go to the preview screen
     And I should see the changes to the metadata
 
   Scenario: Deleting an item
     Given I am logged in as a "cataloger"
-    When I create a new video
+    When I create a new media object
     Then go to the preview screen
     And I delete it
     Then I should see confirmation it has been deleted

@@ -20,11 +20,11 @@ module NavigationHelpers
     when /my account info/
       edit_user_registration_path
     when /the document page for id (.+)/ 
-      video_path(CGI.escape($1))
+      media_object_path(CGI.escape($1))
     when /the edit page for id (.+)/ 
-      edit_video_path(CGI.escape($1))
+      edit_media_object_path(CGI.escape($1))
     when /an edit page/ 
-      '/videos/*/edit'
+      '/media_objects/*/edit'
 
     when /the base search page/
       '/catalog?q=&search_field=search&action=index&controller=catalog&commit=search'

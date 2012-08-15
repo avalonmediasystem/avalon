@@ -1,8 +1,8 @@
 # This is kludgy but it works - after you spawn a new ID immediately pull it back so
 # you can use it in later steps to avoid constantly repeating the identifier
 When /^I create a new ([^"]*)$/ do |asset_type|
-    visit new_video_path  
-    @resource = Video.find(:all).last
+    visit new_media_object_path  
+    @resource = MediaObject.find(:all).last
     puts "<< Storing #{@resource.pid} for later use >>"
 end
 
@@ -20,7 +20,7 @@ end
 
 When /^I edit the "([^"]*)" for "([^"]*)"$/ do |step, id|
   step.gsub!(' ', '_')
-  visit edit_video_path(id, step: step)
+  visit edit_media_object_path(id, step: step)
 end
 
 Then /I should see a simple metadata form/ do 
@@ -33,7 +33,7 @@ end
 When /^I edit "([^"]*)"$/ do |id|
   # Refactor this for be more DRY since it is very similar to the edit methods
   # above
-  visit edit_video_path(id, step: 'basic_metadata')
+  visit edit_media_object_path(id, step: 'basic_metadata')
   
   within ('#basic_metadata_form') do  
     fill_in 'metadata_creator', with: 'Cucumber'
@@ -54,30 +54,30 @@ end
 When /^provide basic metadata for it$/ do 
   # Refactor this for be more DRY since it is very similar to the edit methods
   # above
-  visit edit_video_path(@resource.pid, step: 'basic_metadata')
+  visit edit_media_object_path(@resource.pid, step: 'basic_metadata')
   
   within ('#basic_metadata_form') do  
-    fill_in 'video[creator]', with: 'Cucumber'
-    fill_in 'video[title]', with: 'New test record'
-    fill_in 'video[created_on]', with: '2012.04.21'
-    fill_in 'video[abstract]', with: 'A test record generated as part of Cucumber automated testing'
+    fill_in 'media_object[creator]', with: 'Cucumber'
+    fill_in 'media_object[title]', with: 'New test record'
+    fill_in 'media_object[created_on]', with: '2012.04.21'
+    fill_in 'media_object[abstract]', with: 'A test record generated as part of Cucumber automated testing'
     click_on 'Continue to access control'
   end
 end
 
 When /^I delete it$/ do
-  visit video_path(@resource.pid)
+  visit media_object_path(@resource.pid)
   click_on 'Delete item'
 end
 
 When /^I delete the file$/ do
-  visit edit_video_path(@resource.pid, step: 'file-upload')
+  visit edit_media_object_path(@resource.pid, step: 'file-upload')
   click_on 'Delete file'
 end
 
 # Refactor this at some point to be more generic instead of quick and dirty
 # This also assumes the @resource variable has been set earlier in the session and is
-# available for the current test (such as in 'create a new video')
+# available for the current test (such as in 'create a new media object')
 Then /^I should be able to find the record in the browse view$/ do
   visit search_index_path
   
@@ -108,15 +108,15 @@ end
 # required property
 Then /^I should see only required fields$/ do 
   within "#basic_metadata_form" do
-    page.should have_selector("input[name='video\[title\]']")
-    page.should have_selector("input[name='video\[creator\]']")
-    page.should have_selector("input[name='video\[created_on\]']")
+    page.should have_selector("input[name='media_object\[title\]']")
+    page.should have_selector("input[name='media_object\[creator\]']")
+    page.should have_selector("input[name='media_object\[created_on\]']")
   end
 end
 
 # Paths for matching actions that occur when updating an existing record
 Then /^I should see the changes to the metadata$/ do
-  visit video_path(@resource.pid) 
+  visit media_object_path(@resource.pid) 
   within "#metadata" do
     assert page.should have_content('Cucumber')
     assert page.should have_content('2012.04.21')
@@ -125,7 +125,7 @@ Then /^I should see the changes to the metadata$/ do
 end
 
 Then /^I should see confirmation that it was uploaded/ do
-  visit video_path(@resource.pid)
+  visit media_object_path(@resource.pid)
   page.wait_until do
     within "#workflow_status" do
       page.should satisfy {
@@ -149,11 +149,11 @@ Then /^I should see confirmation the file has been deleted$/ do
 end
 
 Then /^(I )?go to the preview screen/ do |nothing|
-  visit video_path(@resource.pid)
+  visit media_object_path(@resource.pid)
 end
 
 When /^set the access level to (public|restricted|private)/ do |level|
-  visit edit_video_path(@resource, step: 'access_control')
+  visit edit_media_object_path(@resource, step: 'access_control')
   
   target = "access_" + level
   within '#access_control_form' do
@@ -173,8 +173,8 @@ end
 
 def test_for_search_result(pid)
   within ".search-result" do
-    logger.debug "<< Testing for presence of #{video_path(pid)} >>"
+    logger.debug "<< Testing for presence of #{media_object_path(pid)} >>"
     
-    #assert page.should have_content("a[href='#{link_to video_path(pid)}']")
+    #assert page.should have_content("a[href='#{link_to media_object_path(pid)}']")
   end
 end

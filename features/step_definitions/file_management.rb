@@ -6,7 +6,7 @@ Given /^I want to edit "(.*?)" as a(?:n)? "(.*?)"$/ do |identifier, user_type|
    step "that \"#{@user.username}\" can edit \"#{identifier}\""
    step "I edit the \"file upload\" for \"#{identifier}\""
    
-   @resource = Video.find(identifier)
+   @resource = MediaObject.find(identifier)
 end
 
 Then /show me the page/ do
