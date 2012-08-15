@@ -1,5 +1,5 @@
 Given /^that "([^"]*)" has been loaded into fedora$/ do |pid|
-	if media_object.exists?(pid)
+	if MediaObject.exists?(pid)
   	  media_object = MediaObject.find(pid)
   	  media_object.parts.each do |part|
     	ActiveFedora::FixtureLoader.delete(part.pid)
