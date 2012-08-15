@@ -14,5 +14,5 @@ end
 Given /^that "([^"]*)" can edit "([^"]*)"$/ do |username, pid|
 	user = User.find_by_username(username)
 	ability = Ability.new(user)
-	assert ability.can? :edit, pid
+	assert ability.can? :edit, MediaObject.find(pid)
 end
