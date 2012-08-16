@@ -7,8 +7,8 @@ class MasterFile < FileAsset
   delegate :description, to: :descMetadata
   delegate :url, to: :descMetadata, at: [:identifier]
   delegate :size, to: :descMetadata, at: [:extent]
-  delegate :type, to: :descMetadata, at: [:dc_type]
-  delegate :format, to: :descMetadata, at: [:dc_format]
+  delegate :media_type, to: :descMetadata, at: [:dc_type]
+  delegate :media_format, to: :descMetadata, at: [:dc_format]
 
   def derivatives_append(der)
     der.add_relationship(:is_derivation_of, self)
