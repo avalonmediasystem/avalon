@@ -3,7 +3,7 @@ Feature: Create a new object in the system, upload a file, enter basic metadata,
   
   Scenario: I can create a new record then browse to it
     Given I am logged in as a "cataloger"
-    When I create a new video 
+    When I create a new media object 
     And provide basic metadata for it
     And set the access level to public
     Then I should be able to find the record in the browse view

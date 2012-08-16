@@ -16,7 +16,7 @@ class SearchController < ApplicationController
     config.default_solr_params = { 
       :qt => 'search',
       :rows => 16,
-#      :fq => 'active_fedora_model_s:Video' 
+#      :fq => 'active_fedora_model_s:MediaObject' 
     }
 
     # solr field configuration for search results/index views
@@ -142,6 +142,6 @@ class SearchController < ApplicationController
 
   def only_wanted_models(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << "has_model_s:\"info:fedora/afmodel:Video\""
+    solr_parameters[:fq] << "has_model_s:\"info:fedora/afmodel:MediaObject\""
   end
 end

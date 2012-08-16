@@ -1,7 +1,7 @@
 <div class="row-fluid">
   <div class="span8">
   <% unless current_user.nil? %>
-    <p><%= link_to "Get started", new_video_path %> by uploading some content into the system.</p>
+    <p><%= link_to "Get started", new_media_object_path %> by uploading some content into the system.</p>
   <% else %>
    <p><%= link_to "Sign in", new_user_session_path %> to get started and upload content.</p>
   <% end %>

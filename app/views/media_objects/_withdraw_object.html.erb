@@ -2,5 +2,5 @@
   <h4 class="alert-heading">Delete asset</h4>
     <hr />
       <p>If you are certain that this item is no longer needed it can be removed from the system. Deletion cannot be undone without uploading and describing the content again.</p>
-      <%= button_to("Delete item", {:action => :destroy, :controller => :"videos", :id => @video.pid}, :data => { :confirm => 'Are you sure?' }, :method => :delete, class: "btn" )%>
+      <%= button_to("Delete item", {:action => :destroy, :controller => :"media_objects", :id => @mediaobject.pid}, :data => { :confirm => 'Are you sure?' }, :method => :delete, class: "btn" )%>
 </div>

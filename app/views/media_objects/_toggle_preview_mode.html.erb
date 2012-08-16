@@ -1,7 +1,7 @@
-<% if @video.is_complete? %>
+<% if @mediaobject.is_complete? %>
 <div class="alert">
   <h4 class="alert-heading">Return to preview mode</h4>
-  <%= link_to "Return to preview", video_path(@video), 
+  <%= link_to "Return to preview", mediaobject_path(@mediaobject), 
     class: "btn" %>	
 </div>
 <% else %>

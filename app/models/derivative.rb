@@ -1,30 +1,25 @@
-require 'hydra'
-require "file_asset"
+class Derivative < ActiveFedora::Base
 
-class VideoAsset < FileAsset
-  include ActiveFedora::DatastreamCollections
+  has_metadata :name => "descMetadata", :type => ActiveFedora::QualifiedDublinCoreDatastream
+  belongs_to :masterfile, :class_name=>'MasterFile', :property=>:is_derivation_of
 
-  has_datastream :name => "content", 
-    :type => ActiveFedora::Datastream, 
-    :controlGroup => 'R'
   delegate :source, to: :descMetadata
   delegate :description, to: :descMetadata
   
   def initialize(attrs = {})
     super(attrs)
-    add_relationship(:has_model, "info:fedora/afmodel:FileAsset")
     refresh_status
   end
 
   def stream
-    descMetadata.identifier.first
+    self.identifier.first
   end
   
   # Set the url on the current object
   #
   # @param [String] new_url
   def url=(url)
-    descMetadata.identifier = url
+    self.identifier = url
   end
 
   # A hacky way to handle the description for now. This should probably be refactored
@@ -33,9 +28,9 @@ class VideoAsset < FileAsset
     unless source.nil? or source.empty?
       refresh_status
     else
-      descMetadata.description = "Status is currently unavailable"
+      self.description = "Status is currently unavailable"
     end
-    descMetadata.description.first
+    self.description.first
   end
 
   def status_complete
@@ -48,19 +43,19 @@ class VideoAsset < FileAsset
   
   # Eventually this should be baked into the technical metadata instead of a one-off
   # Release Zero hack
-  def size
-    # Start with the root relative to Rails root
-    file_path = "#{Rails.root}/public/videos"
-    # Add the parent container ID with colons (:) replaced by underscores (_)
-    file_path << "/#{container.pid.gsub(":", "_")}"
-    # Now tack on the original file name
-    file_path << "/#{descMetadata.title[0]}"
-    # Finally expand it to an absolute URL
-    file_path = File.expand_path(file_path)
-    
-    logger.debug "<< Retrieving file size for #{file_path} >>"
-    File.size?(file_path)
-  end
+#  def size
+#    # Start with the root relative to Rails root
+#    file_path = "#{Rails.root}/public/videos"
+#    # Add the parent container ID with colons (:) replaced by underscores (_)
+#    file_path << "/#{container.pid.gsub(":", "_")}"
+#    # Now tack on the original file name
+#    file_path << "/#{self.title[0]}"
+#    # Finally expand it to an absolute URL
+#    file_path = File.expand_path(file_path)
+#    
+#    logger.debug "<< Retrieving file size for #{file_path} >>"
+#    File.size?(file_path)
+#  end
   
   def thumbnail
     w = Rubyhorn.client.instance_xml source[0]
@@ -84,7 +79,7 @@ class VideoAsset < FileAsset
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
     status = matterhorn_response.workflow.state[0]
  
-    descMetadata.description = case status
+    self.description = case status
       when "INSTANTIATED"
         "Preparing file for conversion"
       when "RUNNING"

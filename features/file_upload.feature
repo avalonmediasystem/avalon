@@ -1,10 +1,10 @@
 Feature: Associate bitstreams with an object and return feedback based on the content
   type
   
-  @javascript
+  @javascript @wip
   Scenario Outline: The system acknowledges the format of a file
     Given I am logged in as a "cataloger"
-    When I create a new video
+    When I create a new media object
     And I upload the file "<file>" with MIME type "<mimetype>"
     Then I should see confirmation that it is <format> content
 
@@ -21,7 +21,7 @@ Feature: Associate bitstreams with an object and return feedback based on the co
     | invalid | spec/fixtures/public-domain-book.pdf | application/PDF |
     | invalid | spec/fixtures/fire-hydrant.jpg | image/jpeg |
 
-  @javascript
+  @javascript @wip
   Scenario: Upload files on catalog edit page
     Given I want to edit "hydrant:short-form-video" as a "cataloger"
     When I upload the file "spec/fixtures/videoshort.mp4" with MIME type "application/MP4"

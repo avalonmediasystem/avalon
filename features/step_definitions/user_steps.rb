@@ -2,12 +2,16 @@ Given /^I (?:am)? log(?:ged)? in as a(?:n)? "([^\"]*)"$/ do |category|
   category.gsub!(" ", "_")
   puts "<< WARNING: Ignoring parameter and using default account >>"
   
-  @user = FactoryGirl.create(:cataloger)
+  @user = FactoryGirl.create(category.to_sym)
   login_as(@user, :scope => :user)
+  
   visit root_path
+  debug_step(page)
   
   # Verify the fact that you are logged in by checking for a logout link
   step %{I should see a link to "logout"} 
+  debug_step(page)
+  logger.debug(page.html)
 end
 
 Given /^I am logged in as "([^\"]*)" with "([^\"]*)" permissions$/ do |login,permission_group|

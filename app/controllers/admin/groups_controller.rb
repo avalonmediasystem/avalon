@@ -95,7 +95,7 @@ class Admin::GroupsController < ApplicationController
     @group.name = params[:id]
     cur_resources = @group.resources.reject { |r| new_resources.include? r }
     cur_resources.each do |resource|
-        resource_obj = Video.find(resource)
+        resource_obj = MediaObject.find(resource)
         read_groups = resource_obj.read_groups
         read_groups.delete(group_name) 
         resource_obj.read_groups = read_groups
@@ -104,7 +104,7 @@ class Admin::GroupsController < ApplicationController
     
     params["admin_group"]["resources"].each do |resource|
       if !resource.empty?
-        resource_obj = Video.find(resource)
+        resource_obj = MediaObject.find(resource)
         read_groups = resource_obj.read_groups
         read_groups.delete(group_name) 
         read_groups << new_group_name

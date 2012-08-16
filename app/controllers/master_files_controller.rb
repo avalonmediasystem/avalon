@@ -2,7 +2,7 @@ require 'net/http/digest_auth'
 require 'net/http/post/multipart'
 require 'rubyhorn'
 
-class VideoAssetsController < ApplicationController
+class MasterFilesController < ApplicationController
   include Hydra::Controller::FileAssetsBehavior
 
     # First and simplest test - make sure that the uploaded file does not exceed the
@@ -22,7 +22,7 @@ class VideoAssetsController < ApplicationController
   # * the File Asset will use RELS-EXT to assert that it's a part of the specified container
   # * the method will redirect to the container object's edit view after saving
   def create
-    if cannot? :create, VideoAsset
+    if cannot? :create, MasterFile
       flash[:notice] = "You do not have sufficient privileges to add files"
       redirect_to root_path 
       return
@@ -36,7 +36,7 @@ class VideoAssetsController < ApplicationController
     @upload_format = 'unknown'
     
     if params.has_key?(:Filedata) and params.has_key?(:original)
-      @video_assets = []
+      @master_files = []
       params[:Filedata].each do |file|
         logger.debug "<< MIME type is #{file.content_type} >>"
         
@@ -65,13 +65,13 @@ class VideoAssetsController < ApplicationController
   	  break
   	end
   		  
-  			@video_assets << video_asset = saveOriginalToHydrant(file)
-  			if video_asset.save
-    			video_asset = sendOriginalToMatterhorn(video_asset, file, @upload_format)
-                        video = Video.find(video_asset.container.pid)
+  			@master_files << master_file = saveOriginalToHydrant(file)
+  			if master_file.save
+    			master_file = sendOriginalToMatterhorn(master_file, file, @upload_format)
+                        media_object = MediaObject.find(master_file.container.pid)
                         
-                        logger.debug "<< #{video.pid} >>"
-                        video.descMetadata.format = case @upload_format
+                        logger.debug "<< #{media_object.pid} >>"
+                        media_object.format = case @upload_format
                           when 'audio'
                             'Sound'
                           when 'video'
@@ -79,10 +79,10 @@ class VideoAssetsController < ApplicationController
                           else
                             'Unknown'
                         end
-                        logger.debug "<< #{video.descMetadata.format} >>"
+                        logger.debug "<< #{media_object.format} >>"
                         
-                        video.save(:validate=>false)
-   			video_asset.save
+                        media_object.save(:validate=>false)
+   			master_file.save
 			  end
   		end
     else
@@ -94,11 +94,11 @@ class VideoAssetsController < ApplicationController
       
       unless params[:container_id].nil?
       	format.html { 
-          redirect_to edit_video_path(params[:container_id], step: 'file_upload') }
+          redirect_to edit_media_object_path(params[:container_id], step: 'file_upload') }
       	format.js { }
       else 
         format.html { 
-	  redirect_to edit_video_path(params[:container_id], step: 'file_upload') }
+	  redirect_to edit_media_object_path(params[:container_id], step: 'file_upload') }
         format.js { }
       end
     end
@@ -107,21 +107,21 @@ class VideoAssetsController < ApplicationController
   
 	def saveOriginalToHydrant file
 		public_dir_path = "#{Rails.root}/public/"
-		new_dir_path = public_dir_path + 'videos/' + params[:container_id].gsub(":", "_") + "/"
+		new_dir_path = public_dir_path + 'media_objects/' + params[:container_id].gsub(":", "_") + "/"
 		new_file_path = new_dir_path + file.original_filename
 		FileUtils.mkdir_p new_dir_path unless File.exists?(new_dir_path)
 		FileUtils.rm new_file_path if File.exists?(new_file_path)
 		FileUtils.cp file.tempfile, new_file_path
 
-		video_asset = create_video_asset_from_temp_path(new_file_path[public_dir_path.length - 1, new_file_path.length - 1])		
+		master_file = create_master_file_from_temp_path(new_file_path[public_dir_path.length - 1, new_file_path.length - 1])		
 
  		notice = []
-    apply_depositor_metadata(video_asset)
+    apply_depositor_metadata(master_file)
 
-    #notice << render_to_string(:partial=>'file_assets/asset_saved_flash', :locals => { :file_asset => video_asset })
+    #notice << render_to_string(:partial=>'file_assets/asset_saved_flash', :locals => { :file_asset => master_file })
     @container_id = params[:container_id]
     if !@container_id.nil?
-      associate_file_asset_with_container(video_asset,'info:fedora/' + @container_id)
+      associate_file_asset_with_container(master_file,'info:fedora/' + @container_id)
 
       ## Apply any posted file metadata
       unless params[:asset].nil?
@@ -130,14 +130,14 @@ class VideoAssetsController < ApplicationController
       end
 
       # If redirect_params has not been set, use {:action=>:index}
-      logger.debug "Created #{video_asset.pid}."
+      logger.debug "Created #{master_file.pid}."
     	notice	
 		end
-  	video_asset
+  	master_file
 	end
 
-  def sendOriginalToMatterhorn(video_asset, file, upload_format)
-    args = {"title" => video_asset.pid , "flavor" => "presenter/source", "filename" => video_asset.label}
+  def sendOriginalToMatterhorn(master_file, file, upload_format)
+    args = {"title" => master_file.pid , "flavor" => "presenter/source", "filename" => master_file.label}
     if upload_format == 'audio'
       args['workflow'] = "fullaudio"
     elsif upload_format == 'video'
@@ -146,74 +146,42 @@ class VideoAssetsController < ApplicationController
     logger.debug "<< Calling Matterhorn with arguments: #{args} >>"
     workflow_doc = Rubyhorn.client.addMediaPackage(file, args)
     flash[:notice] = "The uploaded file has been sent for processing."
-    #video_asset.description = "File is being processed"
+    #master_file.description = "File is being processed"
     
     # I don't know why this has to be double escaped with two arrays
-    video_asset.source = workflow_doc.workflow.id[0]
-    video_asset
+    master_file.source = workflow_doc.workflow.id[0]
+    master_file
   end
 
-	def update
-   va = VideoAsset.find(params[:id])
-   if cannot? :edit, va.container.pid
-      flash[:notice] = "You do not have sufficient privileges to edit files"
-     redirect_to root_path
-     return
-   end
-
-   if params.has_key?(:video_url)
-      notice = process_files
-      flash[:notice] = notice.join("<br/>".html_safe) unless notice.blank?
-	render :nothing => true
-		end
-	end
-
-  # Does this code do anything with the changes to the model?
-  def process_files
-    video_asset = VideoAsset.find(params[:id]) 
-		video_asset.url = params[:video_url]
-		#video_asset.description = "File processed and ready for streaming"
-		
-		if video_asset.save
-			notice = []
-			notice << render_to_string(:partial=>'hydra/file_assets/asset_saved_flash', :locals => { :file_asset => video_asset })
-        
-      # If redirect_params has not been set, use {:action=>:index}
-    	notice
-		else 
-			notice = "File updating failed"
-		end
-  end
-
-	def create_video_asset_from_temp_path(path)
-		video_asset = VideoAsset.new
+	def create_master_file_from_temp_path(path)
+		master_file = MasterFile.new
     filename = path.split(/\//).last
-		video_asset.label = filename
-		video_asset.url = path
-		#video_asset.description = "Original file uploaded"
+		master_file.label = filename
+		master_file.url = path
+		#master_file.description = "Original file uploaded"
 		
-		return video_asset		
+		return master_file		
 	end
 	
   # When destroying a file asset be sure to stop it first
   def destroy
-    video_asset = VideoAsset.find(params[:id])
-    if cannot? :edit, video_asset.container.pid
+    master_file = MasterFile.find(params[:id])
+    if cannot? :edit, master_file.container.pid
       flash[:notice] = "You do not have sufficient privileges to delete files"
       redirect_to root_path
       return
     end
 
-    parent = video_asset.container
+    parent = master_file.container
     
-    logger.info "<< Stopping #{video_asset.source[0]} >>"
-    Rubyhorn.client.stop(video_asset.source[0])
+    logger.info "<< Stopping #{master_file.source[0]} >>"
+    Rubyhorn.client.stop(master_file.source[0])
     
-    filename = video_asset.label
+    filename = master_file.label
 
-    video_asset.delete
+    master_file.delete
     flash[:upload] = "#{filename} has been deleted from the system"
-    redirect_to edit_video_path(parent.pid, step: "file-upload")
+    redirect_to edit_media_object_path(parent.pid, step: "file-upload")
   end
   
   protected

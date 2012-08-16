@@ -32,7 +32,7 @@ puts "Rail environment: #{Rails.env}"
 # prefer to use XPath just remove this line and adjust any selectors in your
 # steps to use the XPath syntax.
 Capybara.default_selector = :css
-Capybara.default_wait_time = 30
+Capybara.default_wait_time = 20
 #Capybara.default_driver = :webkit
 Capybara.javascript_driver = :webkit
 
@@ -47,28 +47,29 @@ if "true" == ENV["USE_HEADLESS"]
 end
   
 pid_list = []
-Video.find(:all).each do |v|
+MediaObject.find(:all).each do |v|
   pid_list.push(v.pid)
 end
 puts "<< #{pid_list.inspect} >>"
 
 # Shut down headless when you are done
 at_exit do
-    # Also be sure to delete all objects so the repository is pristine. Only those
-    # fixtures that are not numeric will be retained
-    Video.find(:all).each do |v|
-      if not pid_list.include?(v.pid)
-        logger.info "<< Deleting #{v.pid} from the Fedora repository test instance >>"
-	v.parts.each do |va|
-	  va.delete
+  puts "<< #{pid_list.inspect} >>"
+  
+  # Disabled until it is possible to figure out why this segfaults Rails
+  MediaObject.find(:all).each do |media|
+      if not pid_list.include?(media.pid)
+        logger.info "<< Deleting #{media.pid} from the Fedora repository test instance >>"
+    	media.parts.each do |assets|
+    	  assets.delete
         end
-        v.delete
+        media.delete
       end
     end
     
     if ENV["USE_HEADLESS"] == "true" and headless.present?
       logger.info "<< Tearing down the headless instance >>"
-      #headless.destroy
+      headless.destroy
     end
 end
 

@@ -1,9 +1,9 @@
 <dl id="creation_metadata">
   <dt>Title</dt>
   <dd>
-    <% unless @video.descMetadata.title.empty? or
-      "" == @video.descMetadata.title.first %>
-      <%= @video.descMetadata.title.first %>
+    <% unless @mediaobject.title.empty? or
+      "" == @mediaobject.title.first %>
+      <%= @mediaobject.title.first %>
     <% else %>
       <em>Not provided</em>
     <% end %>
@@ -11,32 +11,32 @@
 
   <dt>Creator</dt>
   <dd>
-    <% unless @video.descMetadata.creator.empty? or
-      "" == @video.descMetadata.creator.first %>
-      <%= @video.descMetadata.creator.first %>
+    <% unless @mediaobject.creator.empty? or
+      "" == @mediaobject.creator.first %>
+      <%= @mediaobject.creator.first %>
     <% else %>
       <em>Not provided</em>
     <% end %>
   </dd>
 
-  <% unless @video.descMetadata.format.nil? %>
+  <% unless @mediaobject.format.nil? %>
   <dt>Format</dt>
-  <dd><%= @video.descMetadata.format.first %></dd>
+  <dd><%= @mediaobject.format.first %></dd>
   <% end %>
 
   <dt>Date</dt>
   <dd>
-    <% unless @video.descMetadata.created_on.empty? %>
-      <%= @video.descMetadata.created_on.first %>
+    <% unless @mediaobject.created_on.empty? %>
+      <%= @mediaobject.created_on.first %>
     <% else %>
       <em>Not provided</em>
     <% end %>
   </dd>
 
   <dt>Summary</dt>
-  <% unless @video.descMetadata.abstract.nil? or
-       @video.descMetadata.abstract.empty? %>
-    <dd><%= wrap_text(@video.descMetadata.abstract.first) %></dd>
+  <% unless @mediaobject.abstract.nil? or
+       @mediaobject.abstract.empty? %>
+    <dd><%= wrap_text(@mediaobject.abstract.first) %></dd>
   <% else %>
     <dd><em>No summary available</em></dd>
   <% end %>

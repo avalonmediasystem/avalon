@@ -1,20 +1,21 @@
-class Video < ActiveFedora::Base
-  include Hydra::ModelMethods
-  # This is the new and apparently preferred way of handling mixins
-  include Hydra::ModelMixins::RightsMetadata
-    
-  has_metadata name: "DC", type: DublinCoreDocument
-  has_metadata name: "descMetadata", type: PbcoreDocument
-  has_metadata name: "rightsMetadata", type: Hydra::Datastream::RightsMetadata
+class MediaObject < ActiveFedora::Base
 
-  after_create :after_create
+  include Hydra::ModelMixins::CommonMetadata
+  include Hydra::ModelMethods
+  include ActiveFedora::FileManagement
+  include Hydra::ModelMixins::RightsMetadata
+
+  has_metadata name: "descMetadata", type: PbcoreDocument	
+
   validate :presence_of_required_metadata
 
   # Delegate variables to expose them for the forms
-  delegate :title, to: :descMetadata
-  delegate :creator, to: :descMetadata
-  delegate :created_on, to: :descMetadata
-  delegate :abstract, to: :descMetadata
+  delegate :title, to: :descMetadata, at: [:main_title]
+  delegate :creator, to: :descMetadata, at: [:creator_name]
+  delegate :created_on, to: :descMetadata, at: [:creation_date]
+  delegate :abstract, to: :descMetadata, at: [:summary]
+  delegate :uploader, to: :descMetadata, at: [:publisher_name]
+  delegate :format, to: :descMetadata, at: [:media_type]
     
   def presence_of_required_metadata
     logger.debug "<< Validating required metadata fields >>"
@@ -30,7 +31,8 @@ class Video < ActiveFedora::Base
       errors.add(:title, "This field is required")
     end
   end
-  
+
+
   # Stub method to determine if the record is done or not. This should be based on
   # whether the descMetadata, rightsMetadata, and techMetadata datastreams are all
   # valid.
@@ -69,23 +71,33 @@ class Video < ActiveFedora::Base
       self.read_groups = groups
     end
   end
-    
+
+  def parts_append obj
+      #Copied from ActiveFedora::FileManagement
+      unless obj.kind_of? ActiveFedora::Base
+        begin
+          obj = ActiveFedora::Base.find(obj)
+        rescue ActiveFedora::ObjectNotFoundError
+          "You must provide either an ActiveFedora object or a valid pid to add it as a file object. You submitted #{obj.inspect}"
+        end
+      end
+      obj.add_relationship(:is_part_of, self)
+      obj.save
+  end
+
   private
-    def after_create
-      self.DC.identifier = pid
-      save
-    end
-    
+
+
     # This really should live in a Validation helper, the OM model, or somewhere
     # else that is not a quick and dirty hack
     def has_valid_metadata_value(field, required=false)
       logger.debug "<< Validating #{field} >>"
       
       # True cases to fail validation should live here
-      unless descMetadata.term_values(field).nil?
+      unless self.send(field).nil?
         if required 
-          return ((not descMetadata.term_values(field).empty?) and 
-            (not "" == descMetadata.term_values(field).first))
+          return ((not self.send(field).empty?) and 
+            (not "" == self.send(field).first))
         else 
           # If it isn't required then return true even if it is empty
           return true
@@ -95,4 +107,6 @@ class Video < ActiveFedora::Base
         return false
       end     
     end
+
 end
+

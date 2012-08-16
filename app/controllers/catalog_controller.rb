@@ -144,11 +144,11 @@ class CatalogController < ApplicationController
 
   def index
     @recent_items = []
-    (response, document_list) = get_search_results({:q => "has_model_s:\"info\:fedora/afmodel\:Video\"", :rows => 5, :sort => 'timestamp desc', :qt => "standard", :fl => "id"})
+    (response, document_list) = get_search_results({:q => "has_model_s:\"info\:fedora/afmodel\:MediaObject\"", :rows => 5, :sort => 'timestamp desc', :qt => "standard", :fl => "id"})
     document_list.each { |doc|
-      @recent_items << Video.find(doc["id"])
+      @recent_items << MediaObject.find(doc["id"])
     }
-    @my_items = Video.find({'dc_creator_t' => user_key}, {
+    @my_items = MediaObject.find({'dc_creator_t' => user_key}, {
       :sort => 'system_create_dt desc', 
       :rows => 5}) unless current_user.nil?
   end

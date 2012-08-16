@@ -1,26 +1,26 @@
-	<% if not @video.nil? and can? :edit, @video %> 
+	<% if not @mediaobject.nil? and can? :edit, @mediaobject %> 
   	  <fieldset id='uploader'>
    		<legend>Manage file(s)</legend>
    		<p>Uploaded files must not exceed <%= number_to_human_size(2**20 * 250) %></p>
    		
-		<% unless @video_asset.nil? %>
-	  	   <a href="<%= @video_asset.descMetadata.identifier[0]%>"><%= @video_asset.descMetadata.title[0] %> 
-                   <strong>(<%= number_to_human_size(@video_asset.size) %>)</strong>
+		<% unless @masterfile.nil? %>
+	  	   <a href="<%= @masterfile.descMetadata.identifier[0]%>"><%= @masterfile.descMetadata.title[0] %> 
+                   <strong>(<%= number_to_human_size(@masterfile.size) %>)</strong>
                    </a>
-	  	   <% if can? :edit, @video %>
+	  	   <% if can? :edit, @mediaobject %>
 	 	     <!-- This should be refactored to act more in line with the typical
 	 			Twitter bootstrap code at some point -->
-	 		 <% # On a Rails level this needs to be folded into the video_assets
+	 		 <% # On a Rails level this needs to be folded into the masterfiles
 	 		    # controller's destroy method to help remove more vestiges of the
 	 		    # catalog controller %>
 	         <%= button_to("Delete file", 
-	           video_asset_path(@video_asset.id), 
+	           master_file_path(@masterfile.id), 
 	           :data => { :confirm => "Are you sure you want to delete this file?" }, 
 	           :method => :delete, 
 	           :class => "delete-button btn") %>
 	 	   <% end %>
 		<% else %>
-	      <%= form_tag(video_assets_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
+	      <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
 	      <input type="hidden" name="container_id" value="<%=h container_id %>"/>
 	      <input type="hidden" name="step" value="file_upload"/>
 	      
@@ -46,7 +46,7 @@
 
 <div class="row-fluid">
   <div class="span8">
-    <%= link_to "Continue to basic metadata", edit_video_path(@video, step: 'basic_metadata'), class: "btn" %>
+    <%= link_to "Continue to basic metadata", edit_media_object_path(@mediaobject, step: 'basic_metadata'), class: "btn" %>
   </div>
 </div>
 

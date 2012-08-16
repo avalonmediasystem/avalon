@@ -1,15 +1,15 @@
-module VideosHelper
+module MediaObjectsHelper
 	  # Creates a hot link to the downloadable file if it is available. File names longer
 	  # than 25 characters are truncated although this can be overridden by passing in a
 	  # different value
-	  def file_download_label(video_asset)
+	  def file_download_label(masterfile)
 		# Check to see if the file name is longer than 25 characters
-		if 20 > video_asset.descMetadata.title[0].length 
-		  label_display = video_asset.descMetadata.title[0]
+		if 20 > masterfile.descMetadata.title[0].length 
+		  label_display = masterfile.descMetadata.title[0]
 		else
-		  label_display = truncate(video_asset.descMetadata.title[0], length: 15)
+		  label_display = truncate(masterfile.descMetadata.title[0], length: 15)
                   label_display << "."
-		  label_display << video_asset.descMetadata.title[0].split('.').last
+		  label_display << masterfile.descMetadata.title[0].split('.').last
 		end
 	  end
 	  
@@ -35,10 +35,10 @@ module VideosHelper
 
       # Retrieve the current status of processing and display a concise version
       # for use in the interface
-      def conversion_status_for(video)
-        unless video.parts.empty?
-          video_asset = video.parts.first.pid
-          video_asset.status
+      def conversion_status_for(mediaobject)
+        unless mediaobject.parts.empty?
+          masterfile = mediaobject.parts.first.pid
+          masterfile.status
         else
           "No files have been selected"
         end
