@@ -8,15 +8,12 @@
           <%= link_to 'Add new item', new_media_object_path %>
         </li>
         <li><%= link_to 'Browse items', search_index_path %></li>
-        <li class="divider-vertical"></li>
-
         <% if can? :manage, Admin::Group %>
-        <li>
-          <%= link_to
-              'Manage Policy', admin_index_path,
-              target: "_admin" %></li>
+          <li class="divider-vertical"></li>
+          <li><%= link_to 'Manage Policy', 
+             admin_index_path,
+             html: {target: '_admin'} %>
         <% end %>
-        
         <li><%= link_to 'Contact us', comments_path %></li>
       </ul>
       <%= form_tag search_index_path, 

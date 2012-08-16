@@ -36,40 +36,29 @@ Capybara.default_wait_time = 20
 #Capybara.default_driver = :webkit
 Capybara.javascript_driver = :webkit
 
-# Set up headless once instead of for every single feature
-pid_list = []
 headless = nil
-
 if "true" == ENV["USE_HEADLESS"]
   headless = Headless.new
   headless.start
   logger.info "<< Headless X server now running on #{headless.display} >>"
 end
-  
-pid_list = []
-MediaObject.find(:all).each do |v|
-  pid_list.push(v.pid)
-end
-puts "<< #{pid_list.inspect} >>"
 
 # Shut down headless when you are done
 at_exit do
-  puts "<< #{pid_list.inspect} >>"
-  
-  # Disabled until it is possible to figure out why this segfaults Rails
-  MediaObject.find(:all).each do |media|
-      if not pid_list.include?(media.pid)
-        logger.info "<< Deleting #{media.pid} from the Fedora repository test instance >>"
-    	media.parts.each do |assets|
-    	  assets.delete
-        end
-        media.delete
-      end
-    end
-    
     if ENV["USE_HEADLESS"] == "true" and headless.present?
       logger.info "<< Tearing down the headless instance >>"
       headless.destroy
+    end
+end
+
+Around do |scenario, block|
+  pid_list = get_active_pids
+  # Do stuff here
+  block.call
+
+  # Clean up your mess after each step
+  MediaObject.find(:all).each do |media|
+      remove_pid(media) if not pid_list.include?(media.pid)
     end
 end
 
@@ -98,4 +87,24 @@ DatabaseCleaner.strategy = :transaction
 # ~/.rvm/gems/ruby-1.9.2-p0@global/gems/rack-1.2.1/lib/rack/utils.rb:16: 
 # warning: regexp match /.../n against to UTF-8 string
 $VERBOSE = nil
+
+# Refactor these into a helper somewhere after it works (or change the model so deletes
+# cascade properly)
+def get_active_pids
+  pid_list = []
+  MediaObject.find(:all).each do |v|
+    pid_list.push(v.pid)
+  end
+  pid_list
+end
+
+def remove_pid(media)
+  logger.info "<< Deleting #{media.pid} from the Fedora repository test instance >>"
+  media.parts.each do |assets|
+    assets.delete
+  end
+  media.delete
+end
+
+
 
