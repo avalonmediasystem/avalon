@@ -1,12 +1,14 @@
 class MasterFile < FileAsset
   include ActiveFedora::Relationships
   has_bidirectional_relationship "derivatives", :has_derivation, :is_derivation_of
-
+  has_metadata name: 'descMetadata', type: HydrantDublinCore
+  
   delegate :source, to: :descMetadata
   delegate :description, to: :descMetadata
   delegate :url, to: :descMetadata, at: [:identifier]
   delegate :size, to: :descMetadata, at: [:extent]
-  delegate :type, to: :descMetadata
+  delegate :type, to: :descMetadata, at: [:dc_type]
+  delegate :format, to: :descMetadata, at: [:dc_format]
 
   def derivatives_append(der)
     der.add_relationship(:is_derivation_of, self)
