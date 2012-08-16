@@ -66,6 +66,8 @@ class MasterFilesController < ApplicationController
   	    end
   		  
   			@master_files << master_file = saveOriginalToHydrant(file)
+  			master_file.type = @upload_format
+  			
   			if master_file.save
     			master_file = sendOriginalToMatterhorn(master_file, file, @upload_format)
           media_object = MediaObject.find(master_file.container.pid)
@@ -113,7 +115,7 @@ class MasterFilesController < ApplicationController
 		FileUtils.cp file.tempfile, new_file_path
 
 		master_file = create_master_file_from_temp_path(new_file_path[public_dir_path.length - 1, new_file_path.length - 1])		
-
+    
  		notice = []
     apply_depositor_metadata(master_file)
 
@@ -155,8 +157,8 @@ class MasterFilesController < ApplicationController
 	def create_master_file_from_temp_path(path)
 		master_file = MasterFile.new
     filename = path.split(/\//).last
-		master_file.label = filename
 		master_file.url = path
+		master_file.label = File.basename(filename, File.extname(filename)) 
 		#master_file.description = "Original file uploaded"
 		
 		return master_file		
