@@ -51,38 +51,38 @@ class MasterFilesController < ApplicationController
           return
         end
         
-  	@upload_format = 'video' if video_types.include?(file.content_type)
-  	@upload_format = 'audio' if audio_types.include?(file.content_type)
+  	    @upload_format = 'video' if video_types.include?(file.content_type)
+  	    @upload_format = 'audio' if audio_types.include?(file.content_type)
   		  
-  	# If the content type cannot be inferred from the MIME type fall back on the
-  	# list of unknown types. This is different than a generic fallback because it
-  	# is skipped for known invalid extensions like application/pdf
-  	@upload_format = determine_format_by_extension(file) if unknown_types.include?(file.content_type)
-  	logger.info "<< Uploaded file appears to be #{@upload_format} >>"
+  	    # If the content type cannot be inferred from the MIME type fall back on the
+  	    # list of unknown types. This is different than a generic fallback because it
+  	    # is skipped for known invalid extensions like application/pdf
+  	    @upload_format = determine_format_by_extension(file) if unknown_types.include?(file.content_type)
+  	    logger.info "<< Uploaded file appears to be #{@upload_format} >>"
   		  
-  	if 'unknown' == @upload_format
-  	  wrong_format = true
-  	  break
-  	end
+  	    if 'unknown' == @upload_format
+  	      wrong_format = true
+  	      break
+  	    end
   		  
   			@master_files << master_file = saveOriginalToHydrant(file)
   			if master_file.save
     			master_file = sendOriginalToMatterhorn(master_file, file, @upload_format)
-                        media_object = MediaObject.find(master_file.container.pid)
+          media_object = MediaObject.find(master_file.container.pid)
                         
-                        logger.debug "<< #{media_object.pid} >>"
-                        media_object.format = case @upload_format
-                          when 'audio'
-                            'Sound'
-                          when 'video'
-                            'Moving image'
-                          else
-                            'Unknown'
-                        end
-                        logger.debug "<< #{media_object.format} >>"
-                        
-                        media_object.save(:validate=>false)
-   			master_file.save
+          logger.debug "<< #{media_object.pid} >>"
+          media_object.format = case @upload_format
+                                  when 'audio'
+                                    'Sound'
+                                  when 'video'
+                                    'Moving image'
+                                  else
+                                    'Unknown'
+                                end
+          logger.debug "<< #{media_object.format} >>"
+        
+          media_object.save(:validate=>false)
+   			  master_file.save
 			  end
   		end
     else
@@ -97,8 +97,7 @@ class MasterFilesController < ApplicationController
           redirect_to edit_media_object_path(params[:container_id], step: 'file_upload') }
       	format.js { }
       else 
-        format.html { 
-	  redirect_to edit_media_object_path(params[:container_id], step: 'file_upload') }
+        format.html { redirect_to edit_media_object_path(params[:container_id], step: 'file_upload') }
         format.js { }
       end
     end
