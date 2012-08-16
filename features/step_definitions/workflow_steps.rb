@@ -98,7 +98,7 @@ end
 
 Then /^I should be prompted to upload a file$/ do
   within "fieldset#uploader" do
-    assert page.should have_content('File Upload')
+    assert page.should have_content('Manage file')
     assert page.should have_selector('input[type="file"]')
   end
 end
