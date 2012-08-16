@@ -57,15 +57,15 @@ at_exit do
   puts "<< #{pid_list.inspect} >>"
   
   # Disabled until it is possible to figure out why this segfaults Rails
-  #MediaObject.find(:all).each do |media|
-  #    if not pid_list.include?(media.pid)
-  #      logger.info "<< Deleting #{media.pid} from the Fedora repository test instance >>"
-  #  	media.parts.each do |assets|
-  #  	  assets.delete
-  #      end
-  #      media.delete
-  #    end
-  #  end
+  MediaObject.find(:all).each do |media|
+      if not pid_list.include?(media.pid)
+        logger.info "<< Deleting #{media.pid} from the Fedora repository test instance >>"
+    	media.parts.each do |assets|
+    	  assets.delete
+        end
+        media.delete
+      end
+    end
     
     if ENV["USE_HEADLESS"] == "true" and headless.present?
       logger.info "<< Tearing down the headless instance >>"
