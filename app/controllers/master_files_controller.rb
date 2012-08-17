@@ -71,24 +71,11 @@ class MasterFilesController < ApplicationController
   	      break
   	    end
   		  
-  			@master_files << master_file = saveOriginalToHydrant(file)
-  			master_file.media_type = @upload_format
+        @master_files << master_file = saveOriginalToHydrant(file)
+        master_file.media_type = @upload_format
         master_file.container = media_object
   			
-  			if master_file.save
-          logger.debug "<< #{media_object.pid} >>"
-          media_object.format ||= case @upload_format
-            when 'audio'
-              'Sound'
-            when 'video'
-              'Moving image'
-            else
-              'Unknown'
-          end
-          logger.debug "<< #{media_object.format} >>"
-
-          media_object.save(:validate=>false)
-
+        if master_file.save
           sendOriginalToMatterhorn(master_file, file, @upload_format)
 			  end
   		end
@@ -111,7 +98,7 @@ class MasterFilesController < ApplicationController
 		FileUtils.rm new_file_path if File.exists?(new_file_path)
 		FileUtils.cp file.tempfile, new_file_path
 
-		master_file = create_master_file_from_temp_path(new_file_path[public_dir_path.length - 1, new_file_path.length - 1])		
+		master_file = create_master_file_from_hydrant_path(new_file_path[public_dir_path.length - 1, new_file_path.length - 1])		
     
  		notice = []
     apply_depositor_metadata(master_file)
@@ -149,7 +136,7 @@ class MasterFilesController < ApplicationController
     master_file.save
   end
 
-	def create_master_file_from_temp_path(path)
+	def create_master_file_from_hydrant_path(path)
 		master_file = MasterFile.new
 		master_file.url = path
 		filename = path.split(/\//).last
