@@ -3,45 +3,79 @@
    		<legend>Manage file(s)</legend>
    		<p>Uploaded files must not exceed <%= number_to_human_size(2**20 * 250) %></p>
    		
-		<% unless @masterfile.nil? %>
-	  	   <a href="<%= @masterfile.descMetadata.identifier[0]%>"><%= @masterfile.descMetadata.title[0] %> 
-                   <strong>(<%= number_to_human_size(@masterfile.size) %>)</strong>
-                   </a>
-	  	   <% if can? :edit, @mediaobject %>
-	 	     <!-- This should be refactored to act more in line with the typical
-	 			Twitter bootstrap code at some point -->
-	 		 <% # On a Rails level this needs to be folded into the masterfiles
-	 		    # controller's destroy method to help remove more vestiges of the
-	 		    # catalog controller %>
-	         <%= button_to("Delete file", 
-	           master_file_path(@masterfile.id), 
-	           :data => { :confirm => "Are you sure you want to delete this file?" }, 
-	           :method => :delete, 
-	           :class => "delete-button btn") %>
-	 	   <% end %>
-		<% else %>
-	      <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
-	      <input type="hidden" name="container_id" value="<%=h container_id %>"/>
-	      <input type="hidden" name="step" value="file_upload"/>
-	      
-	      <%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>
+		<% unless @masterfiles.nil? %>
+      <% if @masterfiles.count > 1 %>
+        <p>You have multiple files for this item. Are they sequential, versional or hierarchical?</p>
+        <div class="btn-group">
+          <button class="btn btn-success">Sequence</button>
+          <button class="btn">Versions</button>
+          <button class="btn">Hierarchy</button>
+        </div>
+        <p>
+      <% end %>
+      
+		  <table class="table table-striped">
+        <thead>
+          <th></th>
+          <th>Title</th>
+          <th>Filename</th>
+          <th>Filesize</th>
+          <th>Action</th>
+        </thead>
+		    <tbody class="sortable">
+      		<% @masterfiles.each do |masterfile| %>
+  		      <tr>
+  		        <td>
+  		          <i class="icon-volume-up"></i>
+  		          <%= masterfile.type %>
+  		        </td>
+  		        <td>
+  		          <%= text_field_tag "title", masterfile.label %>
+  		        </td>
+  		        <td>
+      	  	   <a href="<%= masterfile.descMetadata.identifier[0] %>"><%= File.basename(masterfile.url.first)  %></a>
+      	  	  </td>
+      	  	  <td>
+      	  	    <strong>(<%= number_to_human_size(masterfile.size) %>)</strong>
+      	  	  </td>
+      	  	  <td>
+      	  	   <% if can? :edit, @mediaobject %>
+      	 	     <!-- This should be refactored to act more in line with the typical Twitter bootstrap code at some point -->
+          	 		 <% # On a Rails level this needs to be folded into the masterfiles
+          	 		    # controller's destroy method to help remove more vestiges of the
+          	 		    # catalog controller %>
+          	         <%= button_to("Delete", 
+          	           master_file_path(masterfile.id), 
+          	           :data => { :confirm => "Are you sure you want to delete this file?" }, 
+          	           :method => :delete, 
+          	           :class => "delete-button btn btn-mini btn-danger") %>
+        	 	    <% end %>
+      	 	    </td>
+    	 	    </tr>
+    	 	  <% end %>
+  	 	  </tbody>
+  	 	</table>
 
-          <%- field_tag_options = defined?(uploader_options) ? uploader_options : {:id => nil} %>
-          <div class="uploader-contents">
-            <div class="control-label">File</div>
-            <div class="controls"><%= file_field_tag "Filedata[]", field_tag_options %></div>
-            </div>	      	    
-                
-            <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
-	      	<%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
-	      	<%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
-	      	
-	      	<div class="control-group">
-	      	  <div class="controls"><%= submit_tag("Upload file", :name=>"upload_file", class: "btn") %></div>
-	      	</div>
-	     <% end %>
-	     <% end %>
-  	  </fieldset>
+	  <% end %>
+	     
+  	<p>Uploaded files must not exceed <%= number_to_human_size(2**20 * 250) %></p>
+    <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
+      <input type="hidden" name="container_id" value="<%=h container_id %>"/>
+      <input type="hidden" name="step" value="file_upload"/>
+
+      <%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>
+
+      <%- field_tag_options = defined?(uploader_options) ? uploader_options : {id: nil, multiple: true} %>
+
+      <%= file_field_tag "Filedata[]", field_tag_options %>
+      <%= submit_tag("Upload file", :name=>"upload_file", class: "btn") %>
+
+      <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
+      <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
+      <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
+    <% end %>
+       
+  </fieldset>
 <% end %>
 
 <div class="row-fluid">
@@ -54,5 +88,21 @@
 <script>
   /* Hide the alert dialog on the page loading if Javascript is enabled */
   <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
+  $('.sortable').sortable();
+  $('.sortable').disableSelection();
+  
+  // $(".sortable").nestedSortable({
+  //         placeholder: 'dropPlaceHolder',
+  //         forcePlaceholderSize:true,
+  //         handle: 'div',
+  //         helper: 'clone',
+  //         listType: 'tbody',
+  //         items: 'tr',
+  //         opacity: .6,
+  //         revert: 250,
+  //         tabSize: 25,
+  //         tolerance: 'pointer',
+  //         toleranceElement: '> div'
+  //     }).disableSelection();
 </script>
 <% end %>

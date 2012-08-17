@@ -1,11 +1,19 @@
 uva-only:
   - uva-only
+archivist:
+  - archivist1@example.com
+  - pdinh
+  - mnotess
+  - rogersna
+  - cjcolvar
 donor:
   - donor1@example.com
 researcher:
   - researcher1@example.com
 registered:
   - pdinh
+  - rogersna
+  - cjcolvar
 admin_policy_object_editor:
   - archivist1@example.com
   - pdinh
@@ -14,8 +22,3 @@ admin_policy_object_editor:
   - mnotess
 patron:
   - 
-archivist:
-  - archivist1@example.com
-  - pdinh
-  - mnotess
-  - rogersna

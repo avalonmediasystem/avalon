@@ -37,7 +37,7 @@ class MediaObjectsController < ApplicationController
     logger.info "<< Retrieving #{params[:id]} from Fedora >>"
     
     @mediaobject = MediaObject.find(params[:id])
-    @masterfile = load_master_file
+    @masterfiles = load_master_files
     
     logger.debug "<< Calling update method >>"
   end
@@ -87,7 +87,7 @@ class MediaObjectsController < ApplicationController
   
   def show
     @mediaobject = MediaObject.find(params[:id])
-    @masterfile = load_master_file
+    @masterfiles = load_master_files
     unless @masterfile.nil? 
       @stream = @masterfile.url
       logger.debug("Stream location >> #{@stream}")
@@ -111,9 +111,11 @@ class MediaObjectsController < ApplicationController
     end
   end
   
-  def load_master_file
+  def load_master_files
     unless @mediaobject.parts.nil? or @mediaobject.parts.empty?
-      MasterFile.find(@mediaobject.parts.first.pid)
+      master_files = []
+      @mediaobject.parts.each { |part| master_files << MasterFile.find(part.pid) }
+      master_files
     else
       nil
     end

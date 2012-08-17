@@ -9,6 +9,17 @@ class Admin::Group
 
   validates :name, presence: {message: "Name is a required field"}
   
+  def self.find(name)
+    if RoleControls.roles.include? name
+      group = self.new
+      group.name = name
+      group.save
+      group
+    else
+      nil
+    end
+  end
+  
   def initialize(attributes = {})
     @saved = false
     @users = []
