@@ -3,7 +3,7 @@ require 'net/http/digest_auth'
 class DerivativesController < ApplicationController
 
  #  before_filter :enforce_access_controls
-  load_and_authorize_resource
+ # load_and_authorize_resource
   
   skip_before_filter :verify_authenticity_token, :only => [:create]
 #  before_filter :authenticate_user!, :only => [:create]
