@@ -22,11 +22,13 @@ class MasterFilesController < ApplicationController
   # * the File Asset will use RELS-EXT to assert that it's a part of the specified container
   # * the method will redirect to the container object's edit view after saving
   def create
-    if cannot? :create, MasterFile
+    if cannot? :create, MasterFile || cannot? :edit, MediaObject
       flash[:notice] = "You do not have sufficient privileges to add files"
       redirect_to root_path 
       return
     end
+    
+    media_object = MediaObject.find(params[:container_id])
     
     audio_types = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav"]
     video_types = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime"]
@@ -66,11 +68,10 @@ class MasterFilesController < ApplicationController
   	    end
   		  
   			@master_files << master_file = saveOriginalToHydrant(file)
-  			master_file.type = @upload_format
+  			master_file.media_type = @upload_format
   			
   			if master_file.save
     			master_file = sendOriginalToMatterhorn(master_file, file, @upload_format)
-          media_object = MediaObject.find(master_file.container.pid)
                         
           logger.debug "<< #{media_object.pid} >>"
           media_object.format = case @upload_format
@@ -93,18 +94,10 @@ class MasterFilesController < ApplicationController
     
     respond_to do |format|
       flash[:upload] = create_upload_notice(@upload_format)
-      
-      unless params[:container_id].nil?
-      	format.html { 
-          redirect_to edit_media_object_path(params[:container_id], step: 'file_upload') }
-      	format.js { }
-      else 
-        format.html { redirect_to edit_media_object_path(params[:container_id], step: 'file_upload') }
-        format.js { }
-      end
+    	format.html { redirect_to edit_media_object_path(params[:container_id], step: 'file_upload') }
+    	format.js { }
     end
   end
-  
   
 	def saveOriginalToHydrant file
 		public_dir_path = "#{Rails.root}/public/"
@@ -121,19 +114,18 @@ class MasterFilesController < ApplicationController
 
     #notice << render_to_string(:partial=>'file_assets/asset_saved_flash', :locals => { :file_asset => master_file })
     @container_id = params[:container_id]
-    if !@container_id.nil?
-      associate_file_asset_with_container(master_file,'info:fedora/' + @container_id)
+    associate_file_asset_with_container(master_file,'info:fedora/' + @container_id)
 
-      ## Apply any posted file metadata
-      unless params[:asset].nil?
-        logger.debug("applying submitted file metadata: #{@sanitized_params.inspect}")
-        apply_file_metadata
-      end
+    ## Apply any posted file metadata
+    unless params[:asset].nil?
+      logger.debug("applying submitted file metadata: #{@sanitized_params.inspect}")
+      apply_file_metadata
+    end
 
-      # If redirect_params has not been set, use {:action=>:index}
-      logger.debug "Created #{master_file.pid}."
-    	notice	
-		end
+    # If redirect_params has not been set, use {:action=>:index}
+    logger.debug "Created #{master_file.pid}."
+  	notice
+
   	master_file
 	end
 
@@ -185,7 +177,7 @@ class MasterFilesController < ApplicationController
     redirect_to edit_media_object_path(parent.pid, step: "file-upload")
   end
   
-  protected
+protected
   def determine_format_by_extension(file) 
     audio_extensions = ["mp3", "wav", "aac", "flac"]
     video_extensions = ["mpeg4", "mp4", "avi", "mov"]
@@ -205,13 +197,13 @@ class MasterFilesController < ApplicationController
   
   def create_upload_notice(format) 
     case format
-	   when /^audio$/
-	     text = 'The uploaded content appears to be audio';
-	   when /^video$/ 
-	     text = 'The uploaded content appears to be video';
-	   else
-	     text = 'The uploaded content could not be identified';
-	end 
-	return text
+      when /^audio$/
+       text = 'The uploaded content appears to be audio';
+      when /^video$/ 
+       text = 'The uploaded content appears to be video';
+      else
+       text = 'The uploaded content could not be identified';
+	  end 
+	  return text
   end
 end
