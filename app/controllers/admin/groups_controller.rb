@@ -77,9 +77,10 @@ class Admin::GroupsController < ApplicationController
       
       RoleControls.remove_role group_name
       RoleControls.add_role new_group_name
-      RoleControls.assign_users(params["admin_group"]["users"], new_group_name)
-      RoleControls.save_changes
     end
+
+    RoleControls.assign_users(params["admin_group"]["users"], new_group_name)
+    RoleControls.save_changes
     
     group = Admin::Group.find(new_group_name)
     new_resources = params["admin_group"]["resources"].reject { |r| r.empty? }
