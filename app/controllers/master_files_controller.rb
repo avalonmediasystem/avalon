@@ -138,7 +138,7 @@ class MasterFilesController < ApplicationController
   end
 
   def sendOriginalToMatterhorn(master_file, file, upload_format)
-    args = {"title" => master_file.pid , "flavor" => "presenter/source", "filename" => master_file.label}
+    args = {"title" => master_file.pid , "flavor" => "presenter/source", "filename" => file.original_filename}
     if upload_format == 'audio'
       args['workflow'] = "fullaudio"
     elsif upload_format == 'video'
@@ -156,11 +156,9 @@ class MasterFilesController < ApplicationController
 
 	def create_master_file_from_temp_path(path)
 		master_file = MasterFile.new
-                filename = path.split(/\//).last
-		master_file.label = filename
 		master_file.url = path
+		filename = path.split(/\//).last
 		master_file.label = File.basename(filename, File.extname(filename)) 
-		#master_file.description = "Original file uploaded"
 
 		return master_file		
 	end
@@ -182,7 +180,7 @@ class MasterFilesController < ApplicationController
     filename = master_file.label
 
     master_file.delete
-    parent.delete_relationship(:has_part, master_file)
+    parent.remove_relationship(:has_part, master_file)
     parent.save
 
     flash[:upload] = "#{filename} has been deleted from the system"
