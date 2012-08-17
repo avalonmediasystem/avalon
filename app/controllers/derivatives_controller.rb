@@ -20,11 +20,11 @@ class DerivativesController < ApplicationController
     # end
 
    masterfile = MasterFile.find(params[:master])
-   if cannot? :edit, masterfile.container.pid
-     flash[:notice] = "You do not have sufficient privileges to add derivative files"
-     redirect_to root_path
-     return
-   end
+#   if cannot? :edit, masterfile.container.pid
+#     flash[:notice] = "You do not have sufficient privileges to add derivative files"
+#     redirect_to root_path
+#     return
+#   end
 
       derivative = Derivative.new
       derivative.url = params[:stream_url]
