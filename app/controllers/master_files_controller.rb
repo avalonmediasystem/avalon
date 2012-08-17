@@ -32,6 +32,8 @@ class MasterFilesController < ApplicationController
 
     media_object = MediaObject.find(params[:container_id])
     
+    media_object = MediaObject.find(params[:container_id])
+    
     audio_types = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav"]
     video_types = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime"]
     unknown_types = ["application/octet-stream", "application/x-upload-data"]
@@ -74,7 +76,6 @@ class MasterFilesController < ApplicationController
         master_file.container = media_object
   			
   			if master_file.save
-
           logger.debug "<< #{media_object.pid} >>"
           media_object.format ||= case @upload_format
             when 'audio'
@@ -97,18 +98,10 @@ class MasterFilesController < ApplicationController
     
     respond_to do |format|
       flash[:upload] = create_upload_notice(@upload_format)
-      
-      unless params[:container_id].nil?
-      	format.html { 
-          redirect_to edit_media_object_path(params[:container_id], step: 'file_upload') }
-      	format.js { }
-      else 
-        format.html { redirect_to edit_media_object_path(params[:container_id], step: 'file_upload') }
-        format.js { }
-      end
+    	format.html { redirect_to edit_media_object_path(params[:container_id], step: 'file_upload') }
+    	format.js { }
     end
   end
-  
   
 	def saveOriginalToHydrant file
 		public_dir_path = "#{Rails.root}/public/"
@@ -189,7 +182,7 @@ class MasterFilesController < ApplicationController
     redirect_to edit_media_object_path(parent.pid, step: "file-upload")
   end
   
-  protected
+protected
   def determine_format_by_extension(file) 
     audio_extensions = ["mp3", "wav", "aac", "flac"]
     video_extensions = ["mpeg4", "mp4", "avi", "mov"]
@@ -209,13 +202,13 @@ class MasterFilesController < ApplicationController
   
   def create_upload_notice(format) 
     case format
-	   when /^audio$/
-	     text = 'The uploaded content appears to be audio';
-	   when /^video$/ 
-	     text = 'The uploaded content appears to be video';
-	   else
-	     text = 'The uploaded content could not be identified';
-	end 
-	return text
+      when /^audio$/
+       text = 'The uploaded content appears to be audio';
+      when /^video$/ 
+       text = 'The uploaded content appears to be video';
+      else
+       text = 'The uploaded content could not be identified';
+	  end 
+	  return text
   end
 end
