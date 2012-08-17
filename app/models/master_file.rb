@@ -15,7 +15,7 @@ class MasterFile < FileAsset
     # be set up in a configuration file somewhere
     #
     # 250 MB is the file limit for now
-    MAXIMUM_UPLOAD_SIZE = 2**20 * 250
+    MAXIMUM_UPLOAD_SIZE = (2**20) * 250
 
   def derivatives_append(der)
     der.add_relationship(:is_derivation_of, self)
@@ -46,6 +46,10 @@ class MasterFile < FileAsset
     (finishedOperations / totalOperations) * 100
   end
 
+  def exceeds_upload_limit?(size)
+    size > MAXIMUM_UPLOAD_SIZE
+  end
+  
   protected
   def refresh_status
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])

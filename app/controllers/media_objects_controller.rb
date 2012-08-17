@@ -3,6 +3,10 @@ class MediaObjectsController < ApplicationController
     
    # Look into other options in the future. For now just make it work
    before_filter :initialize_workflow, only: [:edit, :update]   
+   
+   # Quick and dirty kludge to strip access controls when running tests so that CAS
+   # does not block Cucumber tests. Needs to be revisited down the road for a more
+   # elegant solution.
    before_filter :enforce_access_controls
 
   def new

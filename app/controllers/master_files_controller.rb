@@ -5,8 +5,6 @@ require 'rubyhorn'
 class MasterFilesController < ApplicationController
   include Hydra::Controller::FileAssetsBehavior
 
- #  before_filter :enforce_access_controls
-  
   skip_before_filter :verify_authenticity_token, :only => [:update]
   before_filter :authenticate_user!, :only => [:update]
 

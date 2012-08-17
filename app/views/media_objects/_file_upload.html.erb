@@ -1,7 +1,7 @@
 	<% if not @mediaobject.nil? and can? :edit, @mediaobject %> 
   	  <fieldset id='uploader'>
    		<legend>Manage file(s)</legend>
-   		<p>Uploaded files must not exceed <%= number_to_human(MasterFile.MAXIMUM_UPLOAD_SIZE) %></p>
+   		<p>Uploaded files must not exceed <%= number_to_human(MasterFile::MAXIMUM_UPLOAD_SIZE) %></p>
    		
 		<% unless @masterfiles.nil? %>
       <% if @masterfiles.count > 1 %>
