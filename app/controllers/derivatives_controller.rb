@@ -6,7 +6,7 @@ class DerivativesController < ApplicationController
   load_and_authorize_resource
   
   skip_before_filter :verify_authenticity_token, :only => [:create]
-  before_filter :authenticate_user!, :only => [:create]
+#  before_filter :authenticate_user!, :only => [:create]
 
   # Creates and Saves a File Asset to contain the the Uploaded file 
   # If container_id is provided:
@@ -28,9 +28,10 @@ class DerivativesController < ApplicationController
 
       derivative = Derivative.new
       derivative.url = params[:stream_url]
-      derivative.masterfile = masterfile
       derivative.save
-		
+      derivative.masterfile = masterfile
+      masterfile.save
+      derivative.save		
   end
 
 end

@@ -1,25 +1,22 @@
 class Derivative < ActiveFedora::Base
+  include ActiveFedora::Relationships
 
   has_metadata :name => "descMetadata", :type => ActiveFedora::QualifiedDublinCoreDatastream
+  has_relationship "derivative_of", :is_derivation_of
   belongs_to :masterfile, :class_name=>'MasterFile', :property=>:is_derivation_of
 
   delegate :source, to: :descMetadata
   delegate :description, to: :descMetadata
+  delegate :url, to: :descMetadata, at: [:identifier]
   
   def initialize(attrs = {})
     super(attrs)
     refresh_status
   end
 
-  def stream
-    self.identifier.first
-  end
-  
-  # Set the url on the current object
-  #
-  # @param [String] new_url
-  def url=(url)
-    self.identifier = url
+  def masterfile= masterfile
+    masterfile.add_relationship :has_derivation, self
+    self.add_relationship :is_derivation_of, masterfile
   end
 
   # A hacky way to handle the description for now. This should probably be refactored

@@ -7,7 +7,9 @@ class MediaObject < ActiveFedora::Base
 
   has_metadata name: "descMetadata", type: PbcoreDocument	
 
-  validate :presence_of_required_metadata
+  validates_each :creator, :created_on, :title do |record, attr, value|
+    record.errors.add(attr, "This field is required") if value.blank? or value.first == ""
+  end
 
   # Delegate variables to expose them for the forms
   delegate :title, to: :descMetadata, at: [:main_title]
@@ -17,22 +19,6 @@ class MediaObject < ActiveFedora::Base
   delegate :uploader, to: :descMetadata, at: [:publisher_name]
   delegate :format, to: :descMetadata, at: [:media_type]
     
-  def presence_of_required_metadata
-    logger.debug "<< Validating required metadata fields >>"
-    unless has_valid_metadata_value(:creator, true)
-      errors.add(:creator, "This field is required")
-    end
-    
-    unless has_valid_metadata_value(:created_on, true)
-      errors.add(:created_on, "This field is required")
-    end
-    
-    unless has_valid_metadata_value(:title, true)
-      errors.add(:title, "This field is required")
-    end
-  end
-
-
   # Stub method to determine if the record is done or not. This should be based on
   # whether the descMetadata, rightsMetadata, and techMetadata datastreams are all
   # valid.
@@ -71,42 +57,6 @@ class MediaObject < ActiveFedora::Base
       self.read_groups = groups
     end
   end
-
-  def parts_append obj
-      #Copied from ActiveFedora::FileManagement
-      unless obj.kind_of? ActiveFedora::Base
-        begin
-          obj = ActiveFedora::Base.find(obj)
-        rescue ActiveFedora::ObjectNotFoundError
-          "You must provide either an ActiveFedora object or a valid pid to add it as a file object. You submitted #{obj.inspect}"
-        end
-      end
-      obj.add_relationship(:is_part_of, self)
-      obj.save
-  end
-
-  private
-
-
-    # This really should live in a Validation helper, the OM model, or somewhere
-    # else that is not a quick and dirty hack
-    def has_valid_metadata_value(field, required=false)
-      logger.debug "<< Validating #{field} >>"
-      
-      # True cases to fail validation should live here
-      unless self.send(field).nil?
-        if required 
-          return ((not self.send(field).empty?) and 
-            (not "" == self.send(field).first))
-        else 
-          # If it isn't required then return true even if it is empty
-          return true
-        end
-      else
-        # Always return false when nil
-        return false
-      end     
-    end
 
 end
 

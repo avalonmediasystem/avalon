@@ -1,5 +1,7 @@
 class MasterFile < FileAsset
   include ActiveFedora::Relationships
+
+  has_relationship "part_of", :is_part_of
   has_bidirectional_relationship "derivatives", :has_derivation, :is_derivation_of
   has_metadata name: 'descMetadata', type: HydrantDublinCore
   
@@ -10,9 +12,9 @@ class MasterFile < FileAsset
   delegate :media_type, to: :descMetadata, at: [:dc_type]
   delegate :media_format, to: :descMetadata, at: [:dc_format]
 
-  def derivatives_append(der)
-    der.add_relationship(:is_derivation_of, self)
-    der.save
+  def container= obj
+    super obj
+    self.container.add_relationship(:has_part, self)
   end
 
   def mediapackage_id

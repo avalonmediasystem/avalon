@@ -69,22 +69,24 @@ class MasterFilesController < ApplicationController
   			master_file.type = @upload_format
   			
   			if master_file.save
-    			master_file = sendOriginalToMatterhorn(master_file, file, @upload_format)
-          media_object = MediaObject.find(master_file.container.pid)
+                        media_object = MediaObject.find(master_file.container.pid)
+			master_file.container = media_object
+
+                        logger.debug "<< #{media_object.pid} >>"
+                        media_object.format ||= case @upload_format
+                          when 'audio'
+                            'Sound'
+                          when 'video'
+                            'Moving image'
+                          else
+                            'Unknown'
+                        end
+                        logger.debug "<< #{media_object.format} >>"
                         
-          logger.debug "<< #{media_object.pid} >>"
-          media_object.format = case @upload_format
-                                  when 'audio'
-                                    'Sound'
-                                  when 'video'
-                                    'Moving image'
-                                  else
-                                    'Unknown'
-                                end
-          logger.debug "<< #{media_object.format} >>"
-        
-          media_object.save(:validate=>false)
-   			  master_file.save
+                        media_object.save(:validate=>false)
+   			master_file.save
+
+    			sendOriginalToMatterhorn(master_file, file, @upload_format)
 			  end
   		end
     else
@@ -120,9 +122,8 @@ class MasterFilesController < ApplicationController
     apply_depositor_metadata(master_file)
 
     #notice << render_to_string(:partial=>'file_assets/asset_saved_flash', :locals => { :file_asset => master_file })
-    @container_id = params[:container_id]
-    if !@container_id.nil?
-      associate_file_asset_with_container(master_file,'info:fedora/' + @container_id)
+    master_file.container = MediaObject.find(params[:container_id])
+    master_file.container.save
 
       ## Apply any posted file metadata
       unless params[:asset].nil?
@@ -132,10 +133,9 @@ class MasterFilesController < ApplicationController
 
       # If redirect_params has not been set, use {:action=>:index}
       logger.debug "Created #{master_file.pid}."
-    	notice	
-		end
-  	master_file
-	end
+      notice	
+    master_file
+  end
 
   def sendOriginalToMatterhorn(master_file, file, upload_format)
     args = {"title" => master_file.pid , "flavor" => "presenter/source", "filename" => master_file.label}
@@ -151,16 +151,17 @@ class MasterFilesController < ApplicationController
     
     # I don't know why this has to be double escaped with two arrays
     master_file.source = workflow_doc.workflow.id[0]
-    master_file
+    master_file.save
   end
 
 	def create_master_file_from_temp_path(path)
 		master_file = MasterFile.new
-    filename = path.split(/\//).last
+                filename = path.split(/\//).last
+		master_file.label = filename
 		master_file.url = path
 		master_file.label = File.basename(filename, File.extname(filename)) 
 		#master_file.description = "Original file uploaded"
-		
+
 		return master_file		
 	end
 	
@@ -181,6 +182,9 @@ class MasterFilesController < ApplicationController
     filename = master_file.label
 
     master_file.delete
+    parent.delete_relationship(:has_part, master_file)
+    parent.save
+
     flash[:upload] = "#{filename} has been deleted from the system"
     redirect_to edit_media_object_path(parent.pid, step: "file-upload")
   end
