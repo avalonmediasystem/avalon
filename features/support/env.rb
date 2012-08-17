@@ -53,6 +53,7 @@ end
 
 Around do |scenario, block|
   pid_list = get_active_pids
+    
   # Do stuff here
   block.call
 

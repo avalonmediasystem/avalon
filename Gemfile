@@ -75,4 +75,6 @@
     gem "headless"
     gem "rspec_junit_formatter"
     gem 'simplecov'
+    
+    gem 'viewcumber'
   end
