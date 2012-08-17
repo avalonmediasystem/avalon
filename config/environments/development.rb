@@ -39,4 +39,6 @@ Hydrant::Application.configure do
   config.logger = Logger.new(Rails.root.join("log", 
     Rails.env + ".log"), 
     10, 2.5*(2**20))
+    
+  #config.middleware.insert_before Rails::Rack::Logger, DisableAssetsLogger
 end

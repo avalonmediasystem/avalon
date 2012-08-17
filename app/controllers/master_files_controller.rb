@@ -13,7 +13,7 @@ class MasterFilesController < ApplicationController
     MAXIMUM_UPLOAD_SIZE = 2**20 * 250
 
  #  before_filter :enforce_access_controls
-  
+  load_and_authorize_resource
   skip_before_filter :verify_authenticity_token, :only => [:update]
   before_filter :authenticate_user!, :only => [:update]
 
@@ -22,18 +22,22 @@ class MasterFilesController < ApplicationController
   # * the File Asset will use RELS-EXT to assert that it's a part of the specified container
   # * the method will redirect to the container object's edit view after saving
   def create
-    if cannot? :create, MasterFile
-      flash[:notice] = "You do not have sufficient privileges to add files"
-      redirect_to root_path 
+    authorize! :edit, MediaObject, message: "You do not have sufficient privileges to add files"
+
+    if params[:container_id].nil? || MediaObject.find(params[:container_id]).nil?
+      flash[:notice] = "MediaObject #{params[:container_id]} does not exist"
+      redirect_to :back 
       return
     end
+
+    media_object = MediaObject.find(params[:container_id])
     
     audio_types = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav"]
     video_types = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime"]
     unknown_types = ["application/octet-stream", "application/x-upload-data"]
     
-    wrong_format = false    
     @upload_format = 'unknown'
+    format_errors = "The following files were not video/audio: "
     
     if params.has_key?(:Filedata) and params.has_key?(:original)
       @master_files = []
@@ -61,32 +65,30 @@ class MasterFilesController < ApplicationController
   	    logger.info "<< Uploaded file appears to be #{@upload_format} >>"
   		  
   	    if 'unknown' == @upload_format
-  	      wrong_format = true
+          flash[:errors] = format_errors + file.original_filename + " "
   	      break
   	    end
   		  
   			@master_files << master_file = saveOriginalToHydrant(file)
   			master_file.media_type = @upload_format
+        master_file.container = media_object
   			
   			if master_file.save
-                        media_object = MediaObject.find(master_file.container.pid)
-			master_file.container = media_object
 
-                        logger.debug "<< #{media_object.pid} >>"
-                        media_object.format ||= case @upload_format
-                          when 'audio'
-                            'Sound'
-                          when 'video'
-                            'Moving image'
-                          else
-                            'Unknown'
-                        end
-                        logger.debug "<< #{media_object.format} >>"
-                        
-                        media_object.save(:validate=>false)
-   			master_file.save
+          logger.debug "<< #{media_object.pid} >>"
+          media_object.format ||= case @upload_format
+            when 'audio'
+              'Sound'
+            when 'video'
+              'Moving image'
+            else
+              'Unknown'
+          end
+          logger.debug "<< #{media_object.format} >>"
 
-    			sendOriginalToMatterhorn(master_file, file, @upload_format)
+          media_object.save(:validate=>false)
+
+          sendOriginalToMatterhorn(master_file, file, @upload_format)
 			  end
   		end
     else

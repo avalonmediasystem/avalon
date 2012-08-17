@@ -70,7 +70,7 @@ db/schema.rb
 /.yardoc
 /doc
 ## PROJECT::SPECIFIC
-
+config/role_map_development.yml
 config/initializers/rubyhorn.rb
 .rspec
 lib/tasks/cucumber.rake
