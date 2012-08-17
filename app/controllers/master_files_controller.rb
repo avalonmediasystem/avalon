@@ -5,13 +5,6 @@ require 'rubyhorn'
 class MasterFilesController < ApplicationController
   include Hydra::Controller::FileAssetsBehavior
 
-    # First and simplest test - make sure that the uploaded file does not exceed the
-    # limits of the system. For now this is hard coded but should probably eventually
-    # be set up in a configuration file somewhere
-    #
-    # 250 MB is the file limit for now
-    MAXIMUM_UPLOAD_SIZE = 2**20 * 250
-
  #  before_filter :enforce_access_controls
   
   skip_before_filter :verify_authenticity_token, :only => [:update]
@@ -40,7 +33,7 @@ class MasterFilesController < ApplicationController
       params[:Filedata].each do |file|
         logger.debug "<< MIME type is #{file.content_type} >>"
         
-        if (file.size > MAXIMUM_UPLOAD_SIZE)
+        if (file.size > MasterFile::MAXIMUM_UPLOAD_SIZE)
           # Use the errors key to signal that it should be a red notice box rather
           # than the default
           flash[:errors] = "The file you have uploaded is too large"

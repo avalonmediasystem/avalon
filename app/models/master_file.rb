@@ -10,6 +10,13 @@ class MasterFile < FileAsset
   delegate :media_type, to: :descMetadata, at: [:dc_type]
   delegate :media_format, to: :descMetadata, at: [:dc_format]
 
+    # First and simplest test - make sure that the uploaded file does not exceed the
+    # limits of the system. For now this is hard coded but should probably eventually
+    # be set up in a configuration file somewhere
+    #
+    # 250 MB is the file limit for now
+    MAXIMUM_UPLOAD_SIZE = 2**20 * 250
+
   def derivatives_append(der)
     der.add_relationship(:is_derivation_of, self)
     der.save
