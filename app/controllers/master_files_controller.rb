@@ -66,7 +66,7 @@ class MasterFilesController < ApplicationController
   	    end
   		  
   			@master_files << master_file = saveOriginalToHydrant(file)
-  			master_file.type = @upload_format
+  			master_file.media_type = @upload_format
   			
   			if master_file.save
                         media_object = MediaObject.find(master_file.container.pid)
