@@ -1,10 +1,8 @@
 class MediaObjectsController < ApplicationController
    include Hydra::Controller::FileAssetsBehavior
        
-   # Quick and dirty kludge to strip access controls when running tests so that CAS
-   # does not block Cucumber tests. Needs to be revisited down the road for a more
-   # elegant solution.
    before_filter :enforce_access_controls
+   before_filter :inject_workflow_steps, only: [:edit, :update]
 
   def new
     @mediaobject = MediaObject.new
@@ -31,6 +29,7 @@ class MediaObjectsController < ApplicationController
     
     logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
     logger.debug "<< Calling update method >>"
+    logger.debug "<< #{@workflow_steps} >>"
   end
   
   # TODO: Refactor this to reflect the new code model. This is not the ideal way to
@@ -131,5 +130,10 @@ class MediaObjectsController < ApplicationController
       return
     end
     redirect_path
+  end
+  
+  def inject_workflow_steps
+    puts "<< Injecting the workflow into the view >>"
+    @workflow_steps = HYDRANT_STEPS
   end
 end

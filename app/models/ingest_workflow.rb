@@ -70,8 +70,14 @@
         end
       end
       
-      def each
-        @_states.each
+      # Override so it returns a array of just the steps
+      def to_a
+        @_states.values
+      end
+      
+      def template(step_name)
+        target_step = @_states[step_name]
+        target_step.template
       end
       
       protected
