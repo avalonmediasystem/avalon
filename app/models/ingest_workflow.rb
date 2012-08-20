@@ -79,7 +79,7 @@
         target_step = @_states[step_name]
         target_step.template
       end
-      
+            
       protected
       def get_key_index(step_name)
         @_states_order.index(step_name)

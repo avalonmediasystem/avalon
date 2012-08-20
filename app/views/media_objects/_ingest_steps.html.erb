@@ -1,5 +1,5 @@
 <ul class="nav nav-wizard">
   <% @workflow_steps.to_a.each do |step| %>
-    <%= render "ingest_step", step: step, active: true %>
+    <%= render "ingest_step", step: step, active: @ingest_status.completed?(step.step) %>
   <% end %>
 </ul>
