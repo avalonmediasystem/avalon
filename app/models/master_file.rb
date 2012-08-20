@@ -4,6 +4,7 @@ class MasterFile < FileAsset
   has_relationship "part_of", :is_part_of
   has_bidirectional_relationship "derivatives", :has_derivation, :is_derivation_of
   has_metadata name: 'descMetadata', type: HydrantDublinCore
+  belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
   
   delegate :source, to: :descMetadata
   delegate :description, to: :descMetadata

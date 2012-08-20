@@ -38,12 +38,12 @@ class MasterFilesController < ApplicationController
     video_types = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime"]
     unknown_types = ["application/octet-stream", "application/x-upload-data"]
     
-    @upload_format = 'unknown'
     format_errors = "The following files were not video/audio: "
     
     if params.has_key?(:Filedata) and params.has_key?(:original)
       @master_files = []
       params[:Filedata].each do |file|
+        @upload_format = 'unknown'
         logger.debug "<< MIME type is #{file.content_type} >>"
         
         if (file.size > MAXIMUM_UPLOAD_SIZE)
@@ -77,6 +77,8 @@ class MasterFilesController < ApplicationController
   			
         if master_file.save
           sendOriginalToMatterhorn(master_file, file, @upload_format)
+        else 
+          flash[:errors] = "Error storing file"
 			  end
   		end
     else
@@ -148,23 +150,25 @@ class MasterFilesController < ApplicationController
   # When destroying a file asset be sure to stop it first
   def destroy
     master_file = MasterFile.find(params[:id])
-    if cannot? :edit, master_file.container.pid
-      flash[:notice] = "You do not have sufficient privileges to delete files"
-      redirect_to root_path
-      return
-    end
-
     parent = master_file.container
+    
+    if !parent.nil?
+      if cannot? :edit, parent.pid
+        flash[:notice] = "You do not have sufficient privileges to delete files"
+        redirect_to root_path
+        return
+      end
+
+      parent.remove_relationship(:has_part, master_file)
+      parent.save
+    end
     
     logger.info "<< Stopping #{master_file.source[0]} >>"
     Rubyhorn.client.stop(master_file.source[0])
-    
+  
     filename = master_file.label
-
     master_file.delete
-    parent.remove_relationship(:has_part, master_file)
-    parent.save
-
+    
     flash[:upload] = "#{filename} has been deleted from the system"
     redirect_to edit_media_object_path(parent.pid, step: "file-upload")
   end

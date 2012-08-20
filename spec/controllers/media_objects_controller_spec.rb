@@ -5,31 +5,32 @@ describe MediaObjectsController do
   render_views
 
   describe "creating a new media object" do
-  	it "should redirect to sign in page with a notice when unauthenticated" do
-  	  lambda { get 'new' }.should_not change { MediaObject.count }
-  	  flash[:notice].should_not be_nil
-  	  response.should redirect_to(new_user_session_path)
-  	end
-	
-  	it "should redirect to home page with a notice when authenticated but unauthorized" do
+    it "should redirect to sign in page with a notice when unauthenticated" do
+      lambda { get 'new' }.should_not change { MediaObject.count }
+      flash[:notice].should_not be_nil
+      response.should redirect_to(new_user_session_path)
+    end
+  
+    it "should redirect to home page with a notice when authenticated but unauthorized" do
       login_as('student')
-  	  lambda { get 'new' }.should_not change { MediaObject.count }
-  	  flash[:notice].should_not be_nil
-  	  response.should redirect_to(root_path)
-  	end
+      lambda { get 'new' }.should_not change { MediaObject.count }
+      flash[:notice].should_not be_nil
+      response.should redirect_to(root_path)
+    end
 
-	  context "Default permissions should be applied" do
+    context "Default permissions should be applied" do
       it "should be editable by the creator" do
-	login_as('content_provider')
-  	  lambda { get 'new' }.should change { MediaObject.count }
-	  pid = MediaObject.find(:all).last.pid
-	  response.should redirect_to(edit_media_object_path(id: pid, step: 'file_upload'))
-       end
+        login_as('content_provider')
+        lambda { get 'new' }.should change { MediaObject.count }
+        pid = MediaObject.find(:all).last.pid
+        response.should redirect_to(edit_media_object_path(id: pid, step: 'file_upload'))
+      end
+
       it "should inherit default permissions" do
         login_as('content_provider')
-	get 'new'
-	assigns(:mediaobject).edit_groups.should eq ["archivist"]
-	assigns(:mediaobject).edit_users.should eq ['archivist2'] #FIXME make this lookup the username from factory girl
+        get 'new'
+        assigns(:mediaobject).edit_groups.should eq ["archivist"]
+        assigns(:mediaobject).edit_users.should eq ['archivist2'] #FIXME make this lookup the username from factory girl
       end
     end
   end
@@ -44,7 +45,7 @@ describe MediaObjectsController do
 
       response.should redirect_to(new_user_session_path)
     end
-	
+  
     it "should redirect to show page with a notice when authenticated but unauthorized" do
       pid = 'hydrant:318'
       load_fixture pid
