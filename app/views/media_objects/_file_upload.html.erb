@@ -7,14 +7,14 @@
       <% if @masterfiles.count > 1 %>
         <p>You have multiple files for this item. Are they sequential, versional or hierarchical?</p>
         <div class="btn-group">
-          <button class="btn btn-success">Sequence</button>
-          <button class="btn">Versions</button>
-          <button class="btn">Hierarchy</button>
+          <button class="btn btn-success version-btn">Versions</button>
+          <button class="btn sequence-btn">Sequence</button>
+          <button class="btn hierarchy-btn">Hierarchy</button>
         </div>
         <p>
       <% end %>
       
-		  <table class="table table-striped">
+	  <table class="table table-striped">
         <thead>
           <th></th>
           <th>Title</th>
@@ -26,8 +26,14 @@
       		<% @masterfiles.each do |masterfile| %>
   		      <tr>
   		        <td>
-  		          <i class="icon-volume-up"></i>
-  		          <%= masterfile.media_type %>
+  		          <% if masterfile.media_type.first == 'audio' %>
+    		      	<i class="icon-volume-up"></i>  		            
+  		          <% elsif masterfile.media_type.first == 'video' %>
+    		        <i class="icon-film"></i>
+				  <% else %>
+				  	<%= masterfile.media_type %>
+				  	<i class="icon-question-sign"></i>
+  		          <% end %>
   		        </td>
   		        <td>
   		          <%= text_field_tag "title", masterfile.label %>
@@ -88,8 +94,22 @@
 <script>
   /* Hide the alert dialog on the page loading if Javascript is enabled */
   <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
-  $('.sortable').sortable();
-  $('.sortable').disableSelection();
+  $('.sequence-btn').click(function(){
+    $('.sortable').sortable({ disabled: false });
+    $('.sortable').disableSelection();
+    toggleBtns($(this));
+  })
+  
+  $('.version-btn').click(function(){
+    $('.sortable').sortable({ disabled: true });
+    $('.sortable').disableSelection();
+    toggleBtns($(this));
+  })
+  
+  function toggleBtns(btn) {
+    $('.btn-group .btn').removeClass('btn-success');
+    btn.addClass('btn-success');
+  }
   
   // $(".sortable").nestedSortable({
   //         placeholder: 'dropPlaceHolder',
