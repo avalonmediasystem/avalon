@@ -11,10 +11,7 @@ class MediaObjectsController < ApplicationController
     @mediaobject.save(:validate => false)
 
     logger.debug "<< Creating a new Ingest Status >>"
-    @ingest_status = IngestStatus.create(
-      pid: @mediaobject.pid, 
-      current_step: HYDRANT_STEPS.first.step,
-    )
+    update_ingest_status(@mediaobject.pid)
     logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
     
     redirect_to edit_media_object_path(@mediaobject)
@@ -28,8 +25,6 @@ class MediaObjectsController < ApplicationController
     @ingest_status = IngestStatus.find_by_pid(params[:id])    
     
     logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
-    logger.debug "<< Calling update method >>"
-    logger.debug "<< #{@workflow_steps} >>"
   end
   
   # TODO: Refactor this to reflect the new code model. This is not the ideal way to
@@ -38,9 +33,14 @@ class MediaObjectsController < ApplicationController
     logger.info "<< Updating the media object object (including a PBCore datastream) >>"
     @mediaobject = MediaObject.find(params[:id])
     
-    case params[:step]
+    active_step = params[:step] || @ingest_status.current_step
+    
+    puts "<< #{@mediaobject.inspect} >>"
+    puts "<< #{active_step} >>"
+    
+    case active_step
       # When adding resource description
-      when 'basic_metadata' 
+      when 'resource-description' 
         logger.debug "<< Populating required metadata fields >>"
         @mediaobject.title = params[:media_object][:title]        
         @mediaobject.creator = params[:media_object][:creator]
@@ -48,30 +48,31 @@ class MediaObjectsController < ApplicationController
         @mediaobject.abstract = params[:media_object][:abstract]
 
         @mediaobject.save
-        next_step = 'access_control'
                 
         logger.debug "<< #{@mediaobject.errors} >>"
         logger.debug "<< #{@mediaobject.errors.size} problems found in the data >>"        
       # When on the access control page
-      when 'access_control' 
+      when 'access-control' 
         # TO DO: Implement me
         logger.debug "<< Access flag = #{params[:access]} >>"
 	    @mediaobject.access = params[:access]        
         @mediaobject.save             
         logger.debug "<< Groups : #{@mediaobject.read_groups} >>"
-        next_step = 'preview'
 
       # When looking at the preview page redirect to show
       #
       when 'preview' 
-        # Do nothing for now      
-      else
-        next_step = 'file_upload'
+        # Do nothing for now 
     end     
+      
     unless @mediaobject.errors.empty?
       report_errors
     else
-      redirect_to get_redirect_path(next_step)
+      update_ingest_status(params[:pid], params[:step])
+      active_step = HYDRANT_STEPS.next(active_step)
+      
+      puts "<< #{active_step} >>"
+      redirect_to get_redirect_path('file-upload')
     end
   end
   
@@ -135,5 +136,20 @@ class MediaObjectsController < ApplicationController
   def inject_workflow_steps
     puts "<< Injecting the workflow into the view >>"
     @workflow_steps = HYDRANT_STEPS
+  end
+  
+  def update_ingest_status(pid, active_step=nil)
+    @ingest_status = IngestStatus.find_by_pid(pid)
+    
+    if status.nil?
+      @ingest_status = IngestStatus.create(
+      pid: @mediaobject.pid, 
+      current_step: active_step)
+    else
+      
+      unless (@ingest_status.published or @ingest_status.completed?(active_step))
+        @ingest_status.current_step = active_step
+      end
+    end
   end
 end

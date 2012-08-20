@@ -52,7 +52,7 @@ module MediaObjectsHelper
         end
         
         # Fun fact - Q&D also stands for 'Quick and Deadly' or 'Quiche and Dandelions'
-        HYDRANT_STEPS.template(status.current_step)
+        HYDRANT_STEPS.template(status)
       end
 end
 

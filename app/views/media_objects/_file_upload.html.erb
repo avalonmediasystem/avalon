@@ -78,7 +78,10 @@
 
 <div class="row-fluid">
   <div class="span8">
-    <%= link_to "Continue to basic metadata", edit_media_object_path(@mediaobject, step: 'basic_metadata'), class: "btn" %>
+    <%= link_to "Continue to basic metadata", 
+      edit_media_object_path(@mediaobject, 
+        step: @workflow_steps.next('file-upload')), 
+        class: "btn" %>
   </div>
 </div>
 

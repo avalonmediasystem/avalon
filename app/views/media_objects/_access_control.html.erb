@@ -24,10 +24,11 @@
   
     <%= vid.actions do |actions| %>
       <%= link_to "Back to resource description",
-            edit_media_object_path(@mediaobject, step: 'basic_metadata'),
-            id: 'previous_screen',
-            class: 'btn',
-            name: 'previous_screen' %>
+            edit_media_object_path(@mediaobject, 
+              step: @workflow_steps.previous('access-control')),
+              id: 'previous_screen',
+              class: 'btn',
+              name: 'previous_screen' %>
       <%= vid.submit "Preview and publish" %>
     <% end %>
   <%- end -%>

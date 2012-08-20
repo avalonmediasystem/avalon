@@ -45,7 +45,7 @@
         end
         
         # Return the next step
-        next_step
+        next_step.step
       end
       
       def previous(step_name)
@@ -58,7 +58,7 @@
         end
         
         # Return the next step
-        previous_step
+        previous_step.step
       end
       
       def index(step_name)
@@ -68,6 +68,10 @@
         else
           nil
         end
+      end
+      
+      def exists?(step_name)
+        @_states.key?(step_name)
       end
       
       # Override so it returns a array of just the steps
