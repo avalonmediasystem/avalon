@@ -27,10 +27,8 @@
   <% end %>
   
   <% if @workflow_steps.exists? params[:step] %>
-    USING PARAMETER
     <%= render current_step_for params[:step] %>
   <% else %>
-    USING DATABASE
     <%= render current_step_for @ingest_status.current_step %>
   <% end %>
 </div>
