@@ -2,6 +2,7 @@ uva-only:
   - uva-only
 archivist:
   - archivist1@example.com
+  - archivist2
   - pdinh
   - mnotess
   - rogersna
@@ -21,4 +22,4 @@ admin_policy_object_editor:
   - rogersna
   - mnotess
 patron:
-  - 
+  - patron1
