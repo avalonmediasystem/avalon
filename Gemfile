@@ -60,7 +60,7 @@
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do 
-		gem 'capistrano'
+		gem 'capistrano', '~>2.12.0'
 		gem 'rvm-capistrano'
 		gem 'database_cleaner'
 		gem 'factory_girl_rails'
