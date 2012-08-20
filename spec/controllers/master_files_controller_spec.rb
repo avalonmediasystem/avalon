@@ -132,17 +132,17 @@ describe MasterFilesController do
 	
 	describe "#destroy" do
 	  context "should be deleted" do
-	    it "should be no longer exist" do
-        login_as_archivist
-        pid = 'hydrant:short-form-video'
-        load_fixture pid
-        
+	    it "should no longer exist" do
+              login_as_archivist
+
+	media_object = MediaObject.new
+	media_object.save(validate: false)
         master_file = MasterFile.new
         master_file.save
-        master_file.container = MediaObject.find(pid)
-        master_file.container.save
+        master_file.container = media_object
+        master_file.container.save(validate:false)
         master_file.save
-        
+
 	      lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }
 	    end
 	  end
@@ -152,7 +152,20 @@ describe MasterFilesController do
 	  end
 	  
 	  context "should no longer be associated with its parent object" do
-	    pending "Create then remove a file from a video object"
+	    it "should create then remove a file from a video object" do
+        login_as_archivist
+        
+	media_object = MediaObject.new
+	media_object.save(validate: false)
+        master_file = MasterFile.new
+        master_file.save
+        master_file.container = media_object
+        master_file.container.save(validate:false)
+        master_file.save
+        
+	      lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }
+	      media_object.parts.should_not include master_file 	      
+	    end
 	  end
 	end
 	

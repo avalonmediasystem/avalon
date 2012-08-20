@@ -32,8 +32,6 @@ class MasterFilesController < ApplicationController
 
     media_object = MediaObject.find(params[:container_id])
     
-    media_object = MediaObject.find(params[:container_id])
-    
     audio_types = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav"]
     video_types = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime"]
     unknown_types = ["application/octet-stream", "application/x-upload-data"]
@@ -151,25 +149,25 @@ class MasterFilesController < ApplicationController
   def destroy
     master_file = MasterFile.find(params[:id])
     parent = master_file.container
-    
-    if !parent.nil?
-      if cannot? :edit, parent.pid
-        flash[:notice] = "You do not have sufficient privileges to delete files"
-        redirect_to root_path
-        return
-      end
 
-      parent.remove_relationship(:has_part, master_file)
-      parent.save
+    if parent.nil?
+      flash[:notice] = "MasterFile missing parent MediaObject"
+      redirect_to root_path
+      return
     end
+
+    authorize! :edit, parent, message: "You do not have sufficient privileges to delete files"
+
+    parent.remove_relationship(:has_part, master_file)
+    parent.save(validate: false)
     
-    logger.info "<< Stopping #{master_file.source[0]} >>"
-    Rubyhorn.client.stop(master_file.source[0])
-  
+    Rubyhorn.client.stop(master_file.source.first)
+
     filename = master_file.label
     master_file.delete
     
     flash[:upload] = "#{filename} has been deleted from the system"
+
     redirect_to edit_media_object_path(parent.pid, step: "file-upload")
   end
   
