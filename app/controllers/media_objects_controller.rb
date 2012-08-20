@@ -1,9 +1,6 @@
 class MediaObjectsController < ApplicationController
    include Hydra::Controller::FileAssetsBehavior
-    
-   # Look into other options in the future. For now just make it work
-   before_filter :initialize_workflow, only: [:edit, :update]   
-   
+       
    # Quick and dirty kludge to strip access controls when running tests so that CAS
    # does not block Cucumber tests. Needs to be revisited down the road for a more
    # elegant solution.
@@ -15,11 +12,12 @@ class MediaObjectsController < ApplicationController
     set_default_item_permissions
     @mediaobject.save(:validate => false)
 
-    @step = WorkflowStatus.new(
+    logger.debug "<< Creating a new Ingest Status >>"
+    @ingest_status = IngestStatus.create(
       pid: @mediaobject.pid, 
       current_step: HYDRANT_STEPS.first.step,
     )
-    @step.save
+    logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
     
     redirect_to edit_media_object_path(@mediaobject)
   end
@@ -29,7 +27,9 @@ class MediaObjectsController < ApplicationController
     
     @mediaobject = MediaObject.find(params[:id])
     @masterfiles = load_master_files
+    @ingest_status = IngestStatus.find_by_pid(params[:id])    
     
+    logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
     logger.debug "<< Calling update method >>"
   end
   

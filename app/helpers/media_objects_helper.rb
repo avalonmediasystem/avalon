@@ -46,13 +46,13 @@ module MediaObjectsHelper
       
       # Quick and dirty solution to the problem of displaying the right template.
       # Quick and dirty also gets it done faster.
-      def current_step_for(media, step=nil)
-        if step.blank?
-          step = WorkflowStatus.find_by_pid(media.pid).current_step
+      def current_step_for(status=nil)
+        if status.nil?
+          HYDRANT_STEPS.first
         end
         
-        # Fun fact - Q&D also stands for 'Quick and Deadly'
-        step
+        # Fun fact - Q&D also stands for 'Quick and Deadly' or 'Quiche and Dandelions'
+        status.current_step
       end
 end
 

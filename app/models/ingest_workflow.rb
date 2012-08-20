@@ -70,6 +70,10 @@
         end
       end
       
+      def each
+        @_states.each
+      end
+      
       protected
       def get_key_index(step_name)
         @_states_order.index(step_name)

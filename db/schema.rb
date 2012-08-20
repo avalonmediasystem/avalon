@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120817152739) do
+ActiveRecord::Schema.define(:version => 20120820182711) do
 
   create_table "bookmarks", :force => true do |t|
     t.integer  "user_id",     :null => false
@@ -20,6 +20,12 @@ ActiveRecord::Schema.define(:version => 20120817152739) do
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
     t.string   "user_type"
+  end
+
+  create_table "ingest_statuses", :force => true do |t|
+    t.string  "pid"
+    t.string  "current_step"
+    t.boolean "completed"
   end
 
   create_table "searches", :force => true do |t|
@@ -43,11 +49,5 @@ ActiveRecord::Schema.define(:version => 20120817152739) do
   end
 
   add_index "users", ["username"], :name => "index_users_on_username", :unique => true
-
-  create_table "workflow_statuses", :force => true do |t|
-    t.string  "pid"
-    t.string  "current_step"
-    t.boolean "completed"
-  end
 
 end
