@@ -72,8 +72,11 @@ class MasterFilesController < ApplicationController
         @master_files << master_file = saveOriginalToHydrant(file)
         master_file.media_type = @upload_format
         master_file.container = media_object
-  			
+        _, index = media_object.descMetadata.insert_node :relation
+        media_object.descMetadata.update_values({[:relation_type]=>{index=>"Has Version"},[:relation_identifier]=>{index=>master_file.pid}})  	
+	
         if master_file.save
+	  media_object.save(validate: false)
           sendOriginalToMatterhorn(master_file, file, @upload_format)
         else 
           flash[:errors] = "Error storing file"
