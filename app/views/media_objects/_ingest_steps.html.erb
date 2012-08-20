@@ -1,0 +1,5 @@
+<ul class="nav nav-wizard">
+  <% HYDRANT_STEPS.each do |step| %>
+    <%= render "ingest_step", step: step, active: true %>
+  <% end %>
+</ul>

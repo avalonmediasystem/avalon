@@ -12,7 +12,7 @@ Hydrant::Application.routes.draw do
   # Routes for subjects and pbcore controller
   #resources :media_objects, except: [:index], as: :media
   #resources :master_files, as: :resources
-  resources :media_objects
+  resources :media_objects, except: [:create]
   resources :master_files
   resources :derivatives
   

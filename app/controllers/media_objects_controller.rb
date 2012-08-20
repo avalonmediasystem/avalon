@@ -10,33 +10,20 @@ class MediaObjectsController < ApplicationController
    before_filter :enforce_access_controls
 
   def new
-    logger.debug "<< BEFORE : #{MediaObject.count} >>"
-    
     @mediaobject = MediaObject.new
     @mediaobject.uploader = user_key
     set_default_item_permissions
     @mediaobject.save(:validate => false)
 
-    logger.debug "<< AFTER : #{MediaObject.count} >>"
-    redirect_to edit_media_object_path(@mediaobject, step: 'file_upload')
-    logger.debug "<< Redirecting to edit view >>"
+    @step = WorkflowStatus.new(
+      pid: @mediaobject.pid, 
+      current_step: HYDRANT_STEPS.first.step,
+    )
+    @step.save
+    
+    redirect_to edit_media_object_path(@mediaobject)
   end
   
-  # TODO : Refactor this to reflect the new code base
-  def create
-    logger.debug "<< Making a new MediaObject object with a PBCore datastream >>"
-
-    @mediaobject = MediaObject.new
-    @mediaobject.uploader = user_key
-    @mediaobject.title = params[:title]
-    @mediaobject.creator = params[:creator]
-    @mediaobject.created_on = params[:created_on]
-    set_default_item_permissions
-    @mediaobject.save
-    
-    redirect_to edit_media_object_path(id: params[:pid], step: 'file_upload')
-  end
-
   def edit
     logger.info "<< Retrieving #{params[:id]} from Fedora >>"
     
@@ -125,34 +112,18 @@ class MediaObjectsController < ApplicationController
     end
   end
   
-  def initialize_workflow
-    step_one = WorkflowStep.new(1, 'Manage files',
-      'Associated bitstreams', 'file_upload')
-
-    step_two = WorkflowStep.new(2, 'Resource description',
-      'Metadata about the item', 'basic_metadata')
-
-    step_three = WorkflowStep.new(3, 'Access control',
-      'Who can access the item', 'access_control')
-
-    step_four = WorkflowStep.new(4, 'Preview and publish',
-      'Release the item for use', 'preview')
-      
-    @workflow_steps ||= [step_one, step_two, step_three, step_four]
-  end
-  
   def report_errors
     logger.debug "<< Errors found -> #{@mediaobject.errors} >>"
     logger.debug "<< #{@mediaobject.errors.size} >>" 
     
     flash[:error] = "There are errors with your submission. Please correct them before continuing."
-    step = params[:step] || @workflow_steps.step.first.template
+    step = params[:step] || HYDRANT_STEPS.first.template
     render :edit and return
   end
   
   def get_redirect_path(target)
     logger.info "<< #{@mediaobject.pid} has been updated in Fedora >>"
-    unless @workflow_steps.last.template == params[:step]
+    unless HYDRANT_STEPS.last?(params[:step])
       redirect_path = edit_media_object_path(@mediaobject, step: target)
     else
       flash[:notice] = "This resource is now available for use in the system"

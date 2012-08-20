@@ -1,9 +1,0 @@
-<ul class="nav nav-wizard">
-  <% is_disabled_step = false %>
-  <% @workflow_steps.each do |step| %>
-    <%= render "workflow_step", step: step, active: !is_disabled_step %>
-    <% if step.template == params[:step] or params[:step].nil? 
-      is_disabled_step = true
-      end %>
-  <% end %>
-</ul>
