@@ -6,17 +6,26 @@
 		<% unless @masterfiles.nil? %>
       <% if @masterfiles.count > 1 %>
         <p>You have multiple files for this item. Are they sequential, versional or hierarchical?</p>
-        <div class="btn-group">
-          <button class="btn btn-success version-btn">Versions</button>
-          <button class="btn sequence-btn">Sequence</button>
-          <button class="btn hierarchy-btn">Hierarchy</button>
-        </div>
+					<%= form_for @mediaobject do |f| %>
+		        <div class="btn-group">
+							<% if @relType.eql? 'Has Version' %>
+								<%= f.submit 'Versions', class: 'btn btn-success version-btn'%>
+								<%= f.submit 'Sequence', class: 'btn sequence-btn'%>
+						  <% else %>
+								<%= f.submit 'Versions', class: 'btn version-btn'%>
+								<%= f.submit 'Sequence', class: 'btn btn-success sequence-btn'%>
+							<% end %>
+							<%= f.submit 'Hierarchy', class: 'btn hierarchy-btn', disabled: 'true' %>
+		        </div>
+						<%= hidden_field_tag 'step', 'file_upload' %>
+					<% end %>
         <p>
       <% end %>
       
 	  <table class="table table-striped">
         <thead>
           <th></th>
+          <th>Type</th>
           <th>Title</th>
           <th>Filename</th>
           <th>Filesize</th>
@@ -25,18 +34,23 @@
 		    <tbody class="sortable">
       		<% @masterfiles.each do |masterfile| %>
   		      <tr>
+							<td>
+								<div class="noshow">
+									<i class="icon-arrow-up"></i>
+									<i class="icon-arrow-down"></i> 
+								</div>
+							</td>
   		        <td>
   		          <% if masterfile.media_type.first == 'audio' %>
-    		      	<i class="icon-volume-up"></i>  		            
+	    		      	<i class="icon-volume-up"></i>  		            
   		          <% elsif masterfile.media_type.first == 'video' %>
-    		        <i class="icon-film"></i>
-				  <% else %>
-				  	<%= masterfile.media_type %>
-				  	<i class="icon-question-sign"></i>
+	    		        <i class="icon-film"></i>
+							  <% else %>
+							  	<i class="icon-question-sign"></i>
   		          <% end %>
   		        </td>
   		        <td>
-  		          <%= text_field_tag "title", masterfile.label %>
+  		          <%= text_field_tag masterfile.pid, masterfile.label, class: 'mf-label' %>
   		        </td>
   		        <td>
       	  	   <a href="<%= masterfile.descMetadata.identifier[0] %>"><%= File.basename(masterfile.url.first)  %></a>
@@ -63,7 +77,7 @@
   	 	</table>
 
 	  <% end %>
-	     
+	  
   	<p>Uploaded files must not exceed <%= number_to_human_size(2**20 * 250) %></p>
     <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
       <input type="hidden" name="container_id" value="<%=h container_id %>"/>
@@ -94,22 +108,43 @@
 <script>
   /* Hide the alert dialog on the page loading if Javascript is enabled */
   <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
-  $('.sequence-btn').click(function(){
-    $('.sortable').sortable({ disabled: false });
-    $('.sortable').disableSelection();
-    toggleBtns($(this));
-  })
-  
-  $('.version-btn').click(function(){
-    $('.sortable').sortable({ disabled: true });
-    $('.sortable').disableSelection();
-    toggleBtns($(this));
-  })
-  
-  function toggleBtns(btn) {
-    $('.btn-group .btn').removeClass('btn-success');
-    btn.addClass('btn-success');
-  }
+
+	<% if @relType.eql? 'Has Part' %>
+	  $('.sortable').sortable({ 
+			disabled: false,
+			update: function(e, ui) {
+				var mfs = [];
+				$(this).find('.mf-label').each(function(){
+					mfs.push($(this).attr('id'));
+				})
+				$.ajax({
+					type: 'PUT',
+					url: '<%= media_object_path(@mediaobject) %>',
+					data: { _method: 'update', masterfile_ids: mfs, step: 'file_upload' }
+				})
+			}
+		});
+	  $('.sortable').disableSelection();
+		$('.sortable').css('cursor', 'move');
+	<% end %>
+
+	//   $('.sequence-btn').click(function(){
+	//     $('.sortable').sortable({ disabled: false });
+	//     $('.sortable').disableSelection();
+	// 
+	//     toggleBtns($(this));
+	//   })
+	//   
+	//   $('.version-btn').click(function(){
+	//     $('.sortable').sortable({ disabled: true });
+	// $('.sortable').css('cursor', 'auto');
+	//     toggleBtns($(this));
+	//   })
+	//   
+	//   function toggleBtns(btn) {
+	//     $('.btn-group .btn').removeClass('btn-success');
+	//     btn.addClass('btn-success');
+	//   }
   
   // $(".sortable").nestedSortable({
   //         placeholder: 'dropPlaceHolder',

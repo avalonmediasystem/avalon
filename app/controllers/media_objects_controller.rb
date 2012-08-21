@@ -38,7 +38,9 @@ class MediaObjectsController < ApplicationController
     
     @mediaobject = MediaObject.find(params[:id])
     @masterfiles = load_master_files
-    
+    if @masterfiles.count > 1 
+      @relType = @mediaobject.descMetadata.relation_type[0]
+    end
     logger.debug "<< Calling update method >>"
   end
   
@@ -49,6 +51,37 @@ class MediaObjectsController < ApplicationController
     @mediaobject = MediaObject.find(params[:id])
     
     case params[:step]
+      when 'file_upload'
+        if !params[:commit].nil?
+          rel = "Has Version"
+          case params[:commit]
+            when 'Sequence'
+              rel = "Has Part"
+            when 'Hierarchy'
+              rel = "Has Part"
+          end
+
+          @mediaobject.parts.each_with_index do |master_file, index|
+            @mediaobject.descMetadata.update_values({[:relation_type]=>{index=>rel}})  	
+          end
+        elsif !params[:masterfile_ids].nil?
+          @mediaobject.parts.each_with_index do |master_file, index|
+            mf_id = params[:masterfile_ids][index]
+            @mediaobject.descMetadata.update_values({[:relation_identifier]=>{index=>mf_id}})  	
+          end
+          
+          masterfiles = []
+          params[:masterfile_ids].each do |mf_id|
+            mf = MasterFile.find(mf_id)
+            masterfiles << mf
+          end
+          # Inserts logic to rearrange mediaobject.parts
+          #@mediaobject.parts = masterfiles
+          @mediaobject.save
+        end
+        
+        @mediaobject.save(validate: false)
+        next_step = 'file_upload'
       # When adding resource description
       when 'basic_metadata' 
         logger.debug "<< Populating required metadata fields >>"

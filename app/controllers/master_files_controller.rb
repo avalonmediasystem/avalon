@@ -71,7 +71,6 @@ class MasterFilesController < ApplicationController
   		  
         @master_files << master_file = saveOriginalToHydrant(file)
         master_file.media_type = @upload_format
-        master_file.container = media_object
 	
         if master_file.save
           _, index = media_object.descMetadata.insert_node :relation
