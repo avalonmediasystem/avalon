@@ -4,8 +4,8 @@
     html: { 
       class: "form-horizontal",
       id: 'basic_metadata_form' } do |vid| %>
-  <%= vid.fieldset "Resource descripton", id: 'basic_metadata' do %>    
-    <%= vid.hidden_field :pid %>
+  <%= vid.hidden_field :pid %>
+  <%= vid.fieldset "Required fields", id: 'basic_metadata' do %>    
   
     <%= vid.text_field :title, "Title", class: 'span12', value: @mediaobject.title.first %>
     <%= vid.text_field :creator, "Creator", class: 'span12',
@@ -14,15 +14,40 @@
       value: @mediaobject.created_on.first %>
     <%= vid.text_area :abstract, "Summary (optional)", class: 'span12', rows: 6,
       value: @mediaobject.abstract.first %>
+  <% end %>
+  
+  <%= vid.fieldset "Related people", id: 'related_people' do %>    
+    <%= vid.text_field :creator, "Contributor(s)", class: 'span12',
+      value: @mediaobject.creator.first %>
+    <%= vid.text_field :creator, "Publisher(s)", class: 'span12',
+      value: @mediaobject.creator.first %>
+  <% end %>
 
-    <%= vid.actions do |actions| %>
-      <%= link_to "Back to Manage file(s)",
-            edit_media_object_path(@mediaobject, 
-              step: @workflow_steps.previous(@active_step)),
-            id: 'previous_screen',
-            class: 'btn',
-            name: 'previous_screen' %>
-      <%= vid.submit "Continue to Structure" %>
-    <% end %>
-  <%- end -%>
+  <%= vid.fieldset "Related items", id: 'related_items' do %>    
+    <%= vid.text_field :creator, "Identifier", class: 'span12',
+      value: @mediaobject.created_on.first %>
+  <% end %>
+  
+  <%= vid.fieldset "Keywords", id: 'keywords' do %>    
+    <%= vid.text_field :creator, "Genre", class: 'span12',
+      value: @mediaobject.creator.first %>
+    <%= vid.text_field :creator, "Format", class: 'span12',
+      value: @mediaobject.creator.first %>
+    <%= vid.text_field :creator, "Key time periods", class: 'span12',
+      value: @mediaobject.creator.first %>
+    <%= vid.text_field :creator, "Key places", class: 'span12',
+      value: @mediaobject.creator.first %>
+    <%= vid.text_field :creator, "Subjects", class: 'span12',
+      value: @mediaobject.creator.first %>
+  <% end %>
+
+ <%= vid.actions do |actions| %>
+   <%= link_to "Back to Manage file(s)",
+        edit_media_object_path(@mediaobject, 
+          step: @workflow_steps.previous(@active_step)),
+          id: 'previous_screen',
+          class: 'btn',
+          name: 'previous_screen' %>
+    <%= vid.submit "Continue to Structure" %>
+  <% end %>
 <% end %>
