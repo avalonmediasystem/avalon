@@ -38,7 +38,7 @@ class MediaObjectsController < ApplicationController
     
     @mediaobject = MediaObject.find(params[:id])
     @masterfiles = load_master_files
-    if @masterfiles.count > 1 
+    if !@masterfiles.nil? && @masterfiles.count > 1 
       @relType = @mediaobject.descMetadata.relation_type[0]
     end
     logger.debug "<< Calling update method >>"

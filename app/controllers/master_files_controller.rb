@@ -160,6 +160,14 @@ class MasterFilesController < ApplicationController
 
     authorize! :edit, parent, message: "You do not have sufficient privileges to delete files"
 
+    parent.parts.each_with_index do |masterfile, index| 
+      puts parent.descMetadata.relation_identifier[index].inspect
+      if masterfile.pid.eql? parent.descMetadata.relation_identifier[index]
+        parent.descMetadata.remove_node(:relation, index)  
+        break	
+      end
+    end
+    
     parent.remove_relationship(:has_part, master_file)
     parent.save(validate: false)
     
