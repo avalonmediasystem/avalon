@@ -5,6 +5,7 @@ class MediaObjectsController < ApplicationController
    before_filter :inject_workflow_steps, only: [:edit, :update]
 
   def new
+    logger.debug "<< NEW >>"
     @mediaobject = MediaObject.new
     @mediaobject.uploader = user_key
     set_default_item_permissions
@@ -14,29 +15,34 @@ class MediaObjectsController < ApplicationController
     update_ingest_status(@mediaobject.pid)
     logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
     
-    redirect_to edit_media_object_path(@mediaobject)
+    redirect_to edit_media_object_path(@mediaobject, step: HYDRANT_STEPS.first.step)
   end
   
   def edit
+    logger.debug "<< EDIT >>"
     logger.info "<< Retrieving #{params[:id]} from Fedora >>"
     
     @mediaobject = MediaObject.find(params[:id])
     @masterfiles = load_master_files
-    @ingest_status = IngestStatus.find_by_pid(params[:id])    
+
+    @ingest_status = update_ingest_status(params[:id], params[:step])    
     
+    logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
     logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
   end
   
   # TODO: Refactor this to reflect the new code model. This is not the ideal way to
-  #       handle a multi-screen workflow I suspect
+  #       handle a multi-screen workflow 
   def update
-    logger.info "<< Updating the media object object (including a PBCore datastream) >>"
+    logger.debug "<< UPDATE >>"
+    logger.info "<< Updating the media object (including a PBCore datastream) >>"
     @mediaobject = MediaObject.find(params[:id])
+    @ingest_status = IngestStatus.find_by_pid(params[:id])
     
     active_step = params[:step] || @ingest_status.current_step
-    
-    puts "<< #{@mediaobject.inspect} >>"
-    puts "<< #{active_step} >>"
+    logger.info "<< #{@mediaobject.pid} - #{active_step} >>"
+    logger.debug "<< STEP PARAMETER => #{params[:step]} >>"
+    logger.debug "<< ACTIVE STEP => #{active_step} >>"
     
     case active_step
       # When adding resource description
@@ -56,11 +62,11 @@ class MediaObjectsController < ApplicationController
         # TO DO: Implement me
         logger.debug "<< Access flag = #{params[:access]} >>"
 	    @mediaobject.access = params[:access]        
+        
         @mediaobject.save             
         logger.debug "<< Groups : #{@mediaobject.read_groups} >>"
 
-      # When looking at the preview page redirect to show
-      #
+      # When looking at the preview page use a version of the show page
       when 'preview' 
         # Do nothing for now 
     end     
@@ -68,11 +74,13 @@ class MediaObjectsController < ApplicationController
     unless @mediaobject.errors.empty?
       report_errors
     else
-      update_ingest_status(params[:pid], params[:step])
       active_step = HYDRANT_STEPS.next(active_step)
+      update_ingest_status(params[:pid], active_step)
       
-      puts "<< #{active_step} >>"
-      redirect_to get_redirect_path('file-upload')
+      logger.debug "<< ACTIVE STEP => #{active_step} >>"
+      logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
+      
+      redirect_to get_redirect_path(active_step)
     end
   end
   
@@ -134,22 +142,27 @@ class MediaObjectsController < ApplicationController
   end
   
   def inject_workflow_steps
-    puts "<< Injecting the workflow into the view >>"
+    logger.debug "<< Injecting the workflow into the view >>"
     @workflow_steps = HYDRANT_STEPS
   end
   
   def update_ingest_status(pid, active_step=nil)
+    logger.debug "<< UPDATE_INGEST_STATUS >>"
+    logger.debug "<< Updating current ingest step >>"
+    
     @ingest_status = IngestStatus.find_by_pid(pid)
     
-    if status.nil?
-      @ingest_status = IngestStatus.create(
-      pid: @mediaobject.pid, 
-      current_step: active_step)
+    if @ingest_status.nil?
+      @ingest_status = IngestStatus.create(pid: @mediaobject.pid)
     else
-      
       unless (@ingest_status.published or @ingest_status.completed?(active_step))
+        logger.debug "<< Advancing to the next step in the workflow >>"
+        logger.debug "<< #{active_step} >>"
         @ingest_status.current_step = active_step
       end
     end
+
+    @ingest_status.save
+    @ingest_status
   end
 end

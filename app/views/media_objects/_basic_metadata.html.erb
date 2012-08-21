@@ -6,7 +6,6 @@
       id: 'basic_metadata_form' } do |vid| %>
   <%= vid.fieldset "Resource descripton", id: 'basic_metadata' do %>    
     <%= vid.hidden_field :pid %>
-    <%= hidden_field_tag 'step', 'basic_metadata' %>
   
     <%= vid.text_field :title, "Title", class: 'span12', value: @mediaobject.title.first %>
     <%= vid.text_field :creator, "Creator", class: 'span12',
