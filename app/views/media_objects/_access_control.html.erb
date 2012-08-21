@@ -22,9 +22,9 @@
     <% end %>
   
     <%= vid.actions do |actions| %>
-      <%= link_to "Back to resource description",
+      <%= link_to "Back to Structure",
             edit_media_object_path(@mediaobject, 
-              step: @workflow_steps.previous('access-control')),
+              step: @workflow_steps.previous(@active_step)),
               id: 'previous_screen',
               class: 'btn',
               name: 'previous_screen' %>

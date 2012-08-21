@@ -16,13 +16,13 @@
       value: @mediaobject.abstract.first %>
 
     <%= vid.actions do |actions| %>
-      <%= link_to "Back to manage file(s)",
+      <%= link_to "Back to Manage file(s)",
             edit_media_object_path(@mediaobject, 
-              step: @workflow_steps.previous('resource-description')),
+              step: @workflow_steps.previous(@active_step)),
             id: 'previous_screen',
             class: 'btn',
             name: 'previous_screen' %>
-      <%= vid.submit "Continue to access control" %>
+      <%= vid.submit "Continue to Structure" %>
     <% end %>
   <%- end -%>
 <% end %>

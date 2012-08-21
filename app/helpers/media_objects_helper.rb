@@ -54,6 +54,20 @@ module MediaObjectsHelper
         # Fun fact - Q&D also stands for 'Quick and Deadly' or 'Quiche and Dandelions'
         HYDRANT_STEPS.template(status)
       end
+      
+      def next_step_for(status)
+        unless HYDRANT_STEPS.exists?(status)
+          status = HYDRANT_STEPS.first.step
+        end
+        HYDRANT_STEPS.next(status)
+      end
+
+      def previous_step_for(status)
+        unless HYDRANT_STEPS.exists?(status)
+          status = HYDRANT_STEPS.first.step
+        end
+        HYDRANT_STEPS.previous(status)
+      end  
 end
 
 

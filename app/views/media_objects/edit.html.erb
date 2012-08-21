@@ -26,11 +26,7 @@
   </div>
   <% end %>
   
-  <% if @workflow_steps.exists? params[:step] %>
-    <%= render current_step_for params[:step] %>
-  <% else %>
-    <%= render current_step_for @ingest_status.current_step %>
-  <% end %>
+  <%= render current_step_for @active_step %>
 </div>
 
 <% content_for :title do %>

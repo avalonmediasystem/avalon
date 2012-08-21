@@ -12,7 +12,9 @@ class MediaObjectsController < ApplicationController
     @mediaobject.save(:validate => false)
 
     logger.debug "<< Creating a new Ingest Status >>"
-    update_ingest_status(@mediaobject.pid)
+    logger.debug "<< #{@mediaobject.inspect} >>"
+    @ingest_status = IngestStatus.create(pid: @mediaobject.pid, 
+      current_step: HYDRANT_STEPS.first.step)
     logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
     
     redirect_to edit_media_object_path(@mediaobject, step: HYDRANT_STEPS.first.step)
@@ -25,9 +27,15 @@ class MediaObjectsController < ApplicationController
     @mediaobject = MediaObject.find(params[:id])
     @masterfiles = load_master_files
 
-    @ingest_status = update_ingest_status(params[:id], params[:step])    
+    @ingest_status = IngestStatus.find_by_pid(@mediaobject.pid)
+    @active_step = params[:step] || @ingest_status.current_step
+    unless @ingest_status.completed?(@active_step)
+      @ingest_status.current_step = @active_step
+      @ingest_status.save
+    end
     
     logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
+    logger.debug "<< ACTIVE STEP => #{@active_step} >>"
     logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
   end
   
@@ -37,14 +45,15 @@ class MediaObjectsController < ApplicationController
     logger.debug "<< UPDATE >>"
     logger.info "<< Updating the media object (including a PBCore datastream) >>"
     @mediaobject = MediaObject.find(params[:id])
+ 
     @ingest_status = IngestStatus.find_by_pid(params[:id])
+    @active_step = params[:step] || @ingest_status.current_step
     
-    active_step = params[:step] || @ingest_status.current_step
-    logger.info "<< #{@mediaobject.pid} - #{active_step} >>"
+    logger.info "<< #{@mediaobject.pid} - #{@active_step} >>"
     logger.debug "<< STEP PARAMETER => #{params[:step]} >>"
-    logger.debug "<< ACTIVE STEP => #{active_step} >>"
+    logger.debug "<< ACTIVE STEP => #{@active_step} >>"
     
-    case active_step
+    case @active_step
       # When adding resource description
       when 'resource-description' 
         logger.debug "<< Populating required metadata fields >>"
@@ -66,6 +75,9 @@ class MediaObjectsController < ApplicationController
         @mediaobject.save             
         logger.debug "<< Groups : #{@mediaobject.read_groups} >>"
 
+      when 'structure'
+        # Phuong - Put your logic for organizing the hierarchy here 
+        
       # When looking at the preview page use a version of the show page
       when 'preview' 
         # Do nothing for now 
@@ -74,13 +86,13 @@ class MediaObjectsController < ApplicationController
     unless @mediaobject.errors.empty?
       report_errors
     else
-      active_step = HYDRANT_STEPS.next(active_step)
-      update_ingest_status(params[:pid], active_step)
+      @ingest_status = update_ingest_status(params[:pid], @active_step)
+      @active_step = @ingest_status.current_step
       
-      logger.debug "<< ACTIVE STEP => #{active_step} >>"
+      logger.debug "<< ACTIVE STEP => #{@active_step} >>"
       logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
       
-      redirect_to get_redirect_path(active_step)
+      redirect_to get_redirect_path(@active_step)
     end
   end
   
@@ -150,15 +162,17 @@ class MediaObjectsController < ApplicationController
     logger.debug "<< UPDATE_INGEST_STATUS >>"
     logger.debug "<< Updating current ingest step >>"
     
-    @ingest_status = IngestStatus.find_by_pid(pid)
-    
     if @ingest_status.nil?
-      @ingest_status = IngestStatus.create(pid: @mediaobject.pid)
+      @ingest_status = IngestStatus.find_or_create(pid: @mediaobject.pid)
     else
+      active_step = active_step || @ingest_status.current_step
+      logger.debug "<< COMPLETED : #{@ingest_status.completed?(active_step)} >>"
+      logger.debug "<< PUBLISHED : #{@ingest_status.published} >>"
+      
       unless (@ingest_status.published or @ingest_status.completed?(active_step))
         logger.debug "<< Advancing to the next step in the workflow >>"
         logger.debug "<< #{active_step} >>"
-        @ingest_status.current_step = active_step
+        @ingest_status.current_step = HYDRANT_STEPS.next(active_step)
       end
     end
 
