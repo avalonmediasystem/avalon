@@ -3,7 +3,7 @@
     <%= render "toggle_preview_mode" %>
     
     <% if can? :edit, @mediaobject %>
-      <%= render "workflow_steps" %>
+      <%= render "ingest_steps" %>
     <% end %>
   </div>
   
@@ -26,23 +26,11 @@
   </div>
   <% end %>
   
-  <%
-   # Switch based on the current step to display the appropriate content. A
-   # richer version down the road might show all at once and use some clever
-   # Javascript to do accordion style on the fly switching. For now keep it 
-   # simple and without any extra functionality %>
-   <% case params[:step]
-     when 'file_upload' -%>
-       <%= render 'file_upload' %>
-   <% when 'basic_metadata' %>
-       <%= render 'basic_metadata' %>
-   <% when 'access_control' %>
-       <%= render 'access_control' %>
-   <% when 'preview' %>
-       <%= render 'preview' %>
-   <% else %>
-       <%= render 'file_upload' %>
-   <% end %>
+  <% if @workflow_steps.exists? params[:step] %>
+    <%= render current_step_for params[:step] %>
+  <% else %>
+    <%= render current_step_for @ingest_status.current_step %>
+  <% end %>
 </div>
 
 <% content_for :title do %>

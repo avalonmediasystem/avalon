@@ -5,7 +5,6 @@
     	id: 'access_control_form' } do |vid| %>
   <%= vid.fieldset "Access control", id: 'access_control' do %>    
     <%= vid.hidden_field :pid %>
-    <%= hidden_field_tag 'step', 'access_control' %>
 
     <%= label_tag :access do %>
       <%= radio_button_tag :access, 'public', (@mediaobject.access == 'public') %>
@@ -24,10 +23,11 @@
   
     <%= vid.actions do |actions| %>
       <%= link_to "Back to resource description",
-            edit_media_object_path(@mediaobject, step: 'basic_metadata'),
-            id: 'previous_screen',
-            class: 'btn',
-            name: 'previous_screen' %>
+            edit_media_object_path(@mediaobject, 
+              step: @workflow_steps.previous('access-control')),
+              id: 'previous_screen',
+              class: 'btn',
+              name: 'previous_screen' %>
       <%= vid.submit "Preview and publish" %>
     <% end %>
   <%- end -%>

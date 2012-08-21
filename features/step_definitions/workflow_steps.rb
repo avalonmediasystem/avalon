@@ -33,7 +33,7 @@ end
 When /^I edit "([^"]*)"$/ do |id|
   # Refactor this for be more DRY since it is very similar to the edit methods
   # above
-  visit edit_media_object_path(id, step: 'basic_metadata')
+  visit edit_media_object_path(id, step: 'resource-description')
   
   within ('#basic_metadata_form') do  
     fill_in 'metadata_creator', with: 'Cucumber'
@@ -52,9 +52,11 @@ When /^I edit it$/ do
 end
 
 When /^provide basic metadata for it$/ do 
+  pending "Rewrite once the new workflow is in place"
+
   # Refactor this for be more DRY since it is very similar to the edit methods
   # above
-  visit edit_media_object_path(@resource.pid, step: 'basic_metadata')
+  visit edit_media_object_path(@resource.pid, step: 'resource-description')
   
   within ('#basic_metadata_form') do  
     fill_in 'media_object[creator]', with: 'Cucumber'
@@ -66,6 +68,8 @@ When /^provide basic metadata for it$/ do
 end
 
 When /^I delete it$/ do
+  pending "Rewrite once the new workflow is in place"
+
   visit media_object_path(@resource.pid)
   click_on 'Delete item'
 end
@@ -97,6 +101,8 @@ Then /^I should be able to search for it$/ do
 end
 
 Then /^I should be prompted to upload a file$/ do
+  pending "Rewrite once the new workflow is in place"
+
   within "fieldset#uploader" do
     assert page.should have_content('Manage file')
     assert page.should have_selector('input[type="file"]')
@@ -155,7 +161,7 @@ Then /^(I )?go to the preview screen/ do |nothing|
 end
 
 When /^set the access level to (public|restricted|private)/ do |level|
-  visit edit_media_object_path(@resource, step: 'access_control')
+  visit edit_media_object_path(@resource, step: 'access-control')
   
   target = "access_" + level
   within '#access_control_form' do

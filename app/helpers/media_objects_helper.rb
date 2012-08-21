@@ -43,6 +43,17 @@ module MediaObjectsHelper
           "No files have been selected"
         end
       end	  
+      
+      # Quick and dirty solution to the problem of displaying the right template.
+      # Quick and dirty also gets it done faster.
+      def current_step_for(status=nil)
+        if status.nil?
+          status = HYDRANT_STEPS.first
+        end
+        
+        # Fun fact - Q&D also stands for 'Quick and Deadly' or 'Quiche and Dandelions'
+        HYDRANT_STEPS.template(status)
+      end
 end
 
 

@@ -1,15 +1,14 @@
 	<% if not @mediaobject.nil? and can? :edit, @mediaobject %> 
   	  <fieldset id='uploader'>
    		<legend>Manage file(s)</legend>
-   		<p>Uploaded files must not exceed <%= number_to_human_size(2**20 * 250) %></p>
+   		<p>Uploaded files must not exceed <%= number_to_human_size(MasterFile::MAXIMUM_UPLOAD_SIZE) %></p>
    		
 		<% unless @masterfiles.nil? %>
       <% if @masterfiles.count > 1 %>
-        <p>You have multiple files for this item. Are they sequential, versional or hierarchical?</p>
         <div class="btn-group">
-          <button class="btn btn-success">Sequence</button>
+          <button class="btn">Hierarchical</button>
+          <button class="btn btn-success">Sequential</button>
           <button class="btn">Versions</button>
-          <button class="btn">Hierarchy</button>
         </div>
         <p>
       <% end %>
@@ -58,7 +57,6 @@
 
 	  <% end %>
 	     
-  	<p>Uploaded files must not exceed <%= number_to_human_size(2**20 * 250) %></p>
     <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
       <input type="hidden" name="container_id" value="<%=h container_id %>"/>
       <input type="hidden" name="step" value="file_upload"/>
@@ -80,7 +78,10 @@
 
 <div class="row-fluid">
   <div class="span8">
-    <%= link_to "Continue to basic metadata", edit_media_object_path(@mediaobject, step: 'basic_metadata'), class: "btn" %>
+    <%= link_to "Continue to basic metadata", 
+      edit_media_object_path(@mediaobject, 
+        step: @workflow_steps.next('file-upload')), 
+        class: "btn" %>
   </div>
 </div>
 
