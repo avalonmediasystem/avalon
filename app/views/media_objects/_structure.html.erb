@@ -4,7 +4,55 @@
 <legend>Structure</legend>
 
 <div class="row-fluid">
-  <div class="span8">
+  <div class="span12">
+  	<% if @masterfiles.count > 1 %>
+  			<%= form_for @mediaobject do |f| %>
+  				<%= hidden_field_tag 'step', 'file_upload' %>
+  			<% end %>
+      <p>
+    <% end %>
+
+    
+    
+    <!-- <div class="span4">
+      <ol class="nav nav-tabs nav-stacked sortable connectedSortable">
+        <% @masterfiles.each do |masterfile| %>
+          <li style="width: 100%"><a href="#"><%= File.basename(masterfile.url.first)  %></a></span></li>
+        <% end %>
+      </ol>
+    </div>
+
+    <div class="span4">
+      <ol class="nav nav-tabs nav-stacked sortable connectedSortable">
+        <% @masterfiles.each do |masterfile| %>
+          <li style="width: 100%"><a href="#"><%= File.basename(masterfile.url.first)  %></a></span></li>
+        <% end %>
+      </ol>
+    </div> -->
+
+    <div class="well span4">
+      <ol class="nav nav-pills filelist sortable connectedSortable">
+        <% @masterfiles.each do |masterfile| %>
+          <li><span><%= File.basename(masterfile.url.first)  %></span></li>
+        <% end %>
+      </ol>
+    </div>
+    
+    <div class="span1">
+      <a id="add-chain" href="#"><code><i class=" icon-plus"></i></code></a>
+    </div>
+
+    <div id="tobecloned" class="well span4">
+      <ol class="nav nav-pills filelist connectedSortable">
+        <% @masterfiles.each do |masterfile| %>
+          <li><span><%= File.basename(masterfile.url.first)  %></span></li>
+        <% end %>
+
+      </ol>
+    </div>
+    
+    <p style="clear:both"></p>
+
     <%= link_to "Back to Resource Description", 
       edit_media_object_path(@mediaobject, 
         step: @workflow_steps.previous('structure')), 
@@ -15,3 +63,34 @@
         class: "btn" %>
   </div>
 </div>
+<% content_for :page_scripts do %>
+  <script>
+    var sortOpts = { 
+    	disabled: false,
+      connectWith: ".connectedSortable",
+      placeholder: "label",
+      dropOnEmpty: true
+      // update: function(e, ui) {
+      //   var mfs = [];
+      //   $(this).find('.mf-label').each(function(){
+      //     mfs.push($(this).attr('id'));
+      //   })
+      //   $.ajax({
+      //     type: 'PUT',
+      //     url: '<%= media_object_path(@mediaobject) %>',
+      //     data: { _method: 'update', masterfile_ids: mfs, step: 'file_upload' }
+      //   })
+      // }
+    };
+    $('.sortable').sortable(sortOpts);
+    $('.sortable').disableSelection();
+    
+    $('#add-chain').click(function(){
+      var newChain = $('#tobecloned').clone(true, true).removeAttr('id').removeClass('noshow');
+      newChain.children(":first").sortable(sortOpts);
+      $(this).parent().before(newChain);
+      
+      return false;
+    })
+  </script>
+<% end %>
