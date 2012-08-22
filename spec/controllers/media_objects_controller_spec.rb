@@ -63,7 +63,7 @@ describe MediaObjectsController do
 #      get 'edit', id: pid
 #      response.should be_success
 #      response.should render_template('file_upload')
-    end
+#    end
 
   end
 
