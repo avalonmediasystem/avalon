@@ -14,10 +14,17 @@ class ApplicationController < ActionController::Base
   # these methods in order to perform user specific actions. 
   protect_from_forgery
   
+  before_filter :trap_session_information if 
+    (Rails.env.development? or Rails.env.test?)
   after_filter :set_access_control_headers
   
   def set_access_control_headers
     headers['Access-Control-Allow-Origin'] = '*'
     headers['Access-Control-Request-Method'] = '*'
+  end
+  
+  def trap_session_information
+    logger.debug "<< CURRENT SESSION INFORMATION >>"
+    logger.debug session.inspect
   end
 end

@@ -1,0 +1,17 @@
+<% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
+
+<!-- PUT CODE HERE -->
+<legend>Structure</legend>
+
+<div class="row-fluid">
+  <div class="span8">
+    <%= link_to "Back to Resource Description", 
+      edit_media_object_path(@mediaobject, 
+        step: @workflow_steps.previous('structure')), 
+        class: "btn" %>
+    <%= link_to "Continue to Access Control", 
+      edit_media_object_path(@mediaobject, 
+        step: @workflow_steps.next('structure')), 
+        class: "btn" %>
+  </div>
+</div>

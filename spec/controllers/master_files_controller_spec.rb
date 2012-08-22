@@ -22,7 +22,7 @@ describe MasterFilesController do
             load_fixture pid
             
             @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-            @file.stub(:size).and_return(MasterFilesController::MAXIMUM_UPLOAD_SIZE + 2^21)  
+            @file.stub(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2^21)  
      
             lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should_not change { MasterFile.count }
             puts "<< Flash message is present? #{flash[:notice]} >>"

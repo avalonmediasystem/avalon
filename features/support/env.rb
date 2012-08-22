@@ -33,7 +33,7 @@ puts "Rail environment: #{Rails.env}"
 # steps to use the XPath syntax.
 Capybara.default_selector = :css
 Capybara.default_wait_time = 20
-#Capybara.default_driver = :webkit
+Capybara.default_driver = :webkit
 Capybara.javascript_driver = :webkit
 
 headless = nil
@@ -53,6 +53,7 @@ end
 
 Around do |scenario, block|
   pid_list = get_active_pids
+    
   # Do stuff here
   block.call
 

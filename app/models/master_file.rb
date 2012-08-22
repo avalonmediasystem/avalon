@@ -13,6 +13,13 @@ class MasterFile < FileAsset
   delegate :media_type, to: :descMetadata, at: [:dc_type]
   delegate :media_format, to: :descMetadata, at: [:dc_format]
 
+    # First and simplest test - make sure that the uploaded file does not exceed the
+    # limits of the system. For now this is hard coded but should probably eventually
+    # be set up in a configuration file somewhere
+    #
+    # 250 MB is the file limit for now
+    MAXIMUM_UPLOAD_SIZE = (2**20) * 250
+
   def container= obj
     super obj
     self.container.add_relationship(:has_part, self)
@@ -42,6 +49,10 @@ class MasterFile < FileAsset
     (finishedOperations / totalOperations) * 100
   end
 
+  def exceeds_upload_limit?(size)
+    size > MAXIMUM_UPLOAD_SIZE
+  end
+  
   protected
   def refresh_status
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
