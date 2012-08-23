@@ -57,6 +57,14 @@ class MediaObject < ActiveFedora::Base
       self.read_groups = groups
     end
   end
+  
+  def parts_with_order
+    masterfiles = []
+    descMetadata.relation_identifier.each do |pid|
+      masterfiles << MasterFile.find(pid)
+    end
+    masterfiles
+  end
 
 end
 

@@ -26,6 +26,7 @@ class MediaObjectsController < ApplicationController
     
     @mediaobject = MediaObject.find(params[:id])
     @masterfiles = load_master_files
+    @masterfiles_with_order = @mediaobject.parts_with_order
     if !@masterfiles.nil? && @masterfiles.count > 1 
       @relType = @mediaobject.descMetadata.relation_type[0]
     end
@@ -66,7 +67,7 @@ class MediaObjectsController < ApplicationController
         @mediaobject.abstract = params[:media_object][:abstract]
 
         @mediaobject.save
-                
+
         logger.debug "<< #{@mediaobject.errors} >>"
         logger.debug "<< #{@mediaobject.errors.size} problems found in the data >>"        
       # When on the access control page
