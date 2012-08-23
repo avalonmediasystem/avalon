@@ -1,9 +1,10 @@
 <fieldset id='uploader'>
     <legend>Manage file(s)</legend>
 
-    <% unless @masterfiles.nil? %>
 
-	    <table class="table table-striped">
+		<% unless @masterfiles.nil? %>
+
+	  <table class="table table-striped">
         <thead>
           <th></th>
           <th>Type</th>
@@ -92,56 +93,5 @@
   <script>
     /* Hide the alert dialog on the page loading if Javascript is enabled */
     <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
-
-  	<% if @relType.eql? 'Has Part' %>
-  	  $('.sortable').sortable({ 
-  			disabled: false,
-  			update: function(e, ui) {
-  				var mfs = [];
-  				$(this).find('.mf-label').each(function(){
-  					mfs.push($(this).attr('id'));
-  				})
-  				$.ajax({
-  					type: 'PUT',
-  					url: '<%= media_object_path(@mediaobject) %>',
-  					data: { _method: 'update', masterfile_ids: mfs, step: 'file_upload' }
-  				})
-  			}
-  		});
-  	  $('.sortable').disableSelection();
-  		$('.sortable').css('cursor', 'move');
-  	<% end %>
-
-  	//   $('.sequence-btn').click(function(){
-  	//     $('.sortable').sortable({ disabled: false });
-  	//     $('.sortable').disableSelection();
-  	// 
-  	//     toggleBtns($(this));
-  	//   })
-  	//   
-  	//   $('.version-btn').click(function(){
-  	//     $('.sortable').sortable({ disabled: true });
-  	// $('.sortable').css('cursor', 'auto');
-  	//     toggleBtns($(this));
-  	//   })
-  	//   
-  	//   function toggleBtns(btn) {
-  	//     $('.btn-group .btn').removeClass('btn-success');
-  	//     btn.addClass('btn-success');
-  	//   }
-  
-    // $(".sortable").nestedSortable({
-    //         placeholder: 'dropPlaceHolder',
-    //         forcePlaceholderSize:true,
-    //         handle: 'div',
-    //         helper: 'clone',
-    //         listType: 'tbody',
-    //         items: 'tr',
-    //         opacity: .6,
-    //         revert: 250,
-    //         tabSize: 25,
-    //         tolerance: 'pointer',
-    //         toleranceElement: '> div'
-    //     }).disableSelection();
   </script>
 <% end %>

@@ -34,12 +34,12 @@
 	<tbody class="sortable">
 		<% @masterfiles_with_order.each do |masterfile| %>
       <tr>
-				<td>
-					<div class="noshow">
-						<i class="icon-arrow-up"></i>
-						<i class="icon-arrow-down"></i> 
-					</div>
-				</td>
+		<td>
+			<div class="noshow">
+				<i class="icon-arrow-up"></i>
+				<i class="icon-arrow-down"></i> 
+			</div>
+		</td>
         <td>
           <% if masterfile.media_type.first == 'audio' %>
 		      	<i class="icon-volume-up"></i>  		            
@@ -66,7 +66,7 @@
 <% end %>
 
 <div class="row-fluid">
-  <div class="span8">
+  <div class="span12">
     <%= link_to "Back to Resource Description", 
       edit_media_object_path(@mediaobject, 
         step: @workflow_steps.previous('structure')), 
