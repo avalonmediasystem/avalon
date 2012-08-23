@@ -5,40 +5,40 @@
       class: "form-horizontal",
       id: 'basic_metadata_form' } do |vid| %>
   <%= vid.hidden_field :pid %>
-  <%= vid.fieldset "Required fields", id: 'basic_metadata' do %>    
+  <%= vid.fieldset "Required fields", id: 'required_fields' do %>    
   
     <%= vid.text_field :title, "Title", class: 'span12', value: @mediaobject.title.first %>
     <%= vid.text_field :creator, "Creator", class: 'span12',
       value: @mediaobject.creator.first %>
     <%= vid.text_field :created_on, "Created on", class: 'span12',
       value: @mediaobject.created_on.first %>
-    <%= vid.text_area :abstract, "Summary (optional)", class: 'span12', rows: 6,
+    <%= vid.text_area :abstract, "Summary", class: 'span12', rows: 6,
       value: @mediaobject.abstract.first %>
   <% end %>
   
-  <%= vid.fieldset "Related people", id: 'related_people' do %>    
-    <%= vid.text_field :creator, "Contributor(s)", class: 'span12',
-      value: @mediaobject.creator.first %>
-    <%= vid.text_field :creator, "Publisher(s)", class: 'span12',
-      value: @mediaobject.creator.first %>
+  <%= vid.fieldset "Related people", id: 'related_people' do %> 
+    <%= vid.text_field :contributor, 
+        "Contributor(s)", 
+        class: 'span12 form-controls',
+        values: @mediaobject.contributor.first %>
+    <%= vid.text_field :publisher, "Publisher(s)", class: 'span12 form-controls',
+      value: @mediaobject.publisher.first %>
   <% end %>
 
   <%= vid.fieldset "Related items", id: 'related_items' do %>    
-    <%= vid.text_field :creator, "Identifier", class: 'span12',
-      value: @mediaobject.created_on.first %>
+    <%= vid.text_field :relatedItem, "Related items", class: 'span12 form-controls',
+      value: @mediaobject.relatedItem.first %>
   <% end %>
   
   <%= vid.fieldset "Keywords", id: 'keywords' do %>    
-    <%= vid.text_field :creator, "Genre", class: 'span12',
-      value: @mediaobject.creator.first %>
-    <%= vid.text_field :creator, "Format", class: 'span12',
-      value: @mediaobject.creator.first %>
-    <%= vid.text_field :creator, "Key time periods", class: 'span12',
-      value: @mediaobject.creator.first %>
-    <%= vid.text_field :creator, "Key places", class: 'span12',
-      value: @mediaobject.creator.first %>
-    <%= vid.text_field :creator, "Subjects", class: 'span12',
-      value: @mediaobject.creator.first %>
+    <%= vid.text_field :genre, "Genre", class: 'span12',
+      value: @mediaobject.genre.first %>
+    <%= vid.text_field :temporal, "Key time periods", class: 'span12 form-controls',
+      value: @mediaobject.temporal.first %>
+    <%= vid.text_field :spatial, "Key places", class: 'span12 form-controls',
+      value: @mediaobject.spatial.first %>
+    <%= vid.text_field :subject, "Subjects", class: 'span12 form-controls',
+      value: @mediaobject.subject.first %>
   <% end %>
 
  <%= vid.actions do |actions| %>

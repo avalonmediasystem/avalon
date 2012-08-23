@@ -1,5 +1,4 @@
 class MediaObject < ActiveFedora::Base
-
   include Hydra::ModelMixins::CommonMetadata
   include Hydra::ModelMethods
   include ActiveFedora::FileManagement
@@ -10,7 +9,7 @@ class MediaObject < ActiveFedora::Base
   validates_each :creator, :created_on, :title do |record, attr, value|
     record.errors.add(attr, "This field is required") if value.blank? or value.first == ""
   end
-
+  
   # Delegate variables to expose them for the forms
   delegate :title, to: :descMetadata, at: [:main_title]
   delegate :creator, to: :descMetadata, at: [:creator_name]
@@ -18,7 +17,15 @@ class MediaObject < ActiveFedora::Base
   delegate :abstract, to: :descMetadata, at: [:summary]
   delegate :uploader, to: :descMetadata, at: [:publisher_name]
   delegate :format, to: :descMetadata, at: [:media_type]
-    
+  # Additional descriptive metadata
+  delegate :contributor, to: :descMetadata, at: [:contributor_name]
+  delegate :publisher, to: :descMetadata, at: [:publisher_name]
+  delegate :genre, to: :descMetadata, at: [:genre]
+  delegate :spatial, to: :descMetadata, at: [:spatial]
+  delegate :temporal, to: :descMetadata, at: [:temporal]
+  delegate :subject, to: :descMetadata, at: [:lc_subject]
+  delegate :relatedItem, to: :descMetadata, at: [:pbcoreRelation]
+  
   # Stub method to determine if the record is done or not. This should be based on
   # whether the descMetadata, rightsMetadata, and techMetadata datastreams are all
   # valid.
@@ -57,6 +64,5 @@ class MediaObject < ActiveFedora::Base
       self.read_groups = groups
     end
   end
-
 end
 

@@ -6,8 +6,6 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     #
     #  pbcoreDescription fields
     #
-    t.pbc_id(:path=>"pbcoreIdentifier", :namespace_prefix=>nil, :namespace_prefix=>nil, :attributes=>{ :source=>"Rock and Roll Hall of Fame and Museum", :annotation=>"PID" })
-
     t.main_title(:path=>"pbcoreTitle", :namespace_prefix=>nil, :namespace_prefix=>nil, :attributes=>{ :titleType=>"Main" })
     t.alternative_title(:path=>"pbcoreTitle", :namespace_prefix=>nil, :namespace_prefix=>nil, :attributes=>{ :titleType=>"Alternative" })
     t.chapter(:path=>"pbcoreTitle", :namespace_prefix=>nil, :namespace_prefix=>nil, :attributes=>{ :titleType=>"Chapter" })
@@ -24,7 +22,6 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     # Individual subject types defined for entry
     t.lc_subject(:path=>"pbcoreSubject", :namespace_prefix=>nil, :attributes=>{ :source=>"Library of Congress Subject Headings", :ref=>"http://id.loc.gov/authorities/subjects.html" })
     t.lc_name(:path=>"pbcoreSubject", :namespace_prefix=>nil, :attributes=>{ :source=>"Library of Congress Name Authority File", :ref=>"http://id.loc.gov/authorities/names" })
-    t.rh_subject(:path=>"pbcoreSubject", :namespace_prefix=>nil, :attributes=>{ :source=>"Rock and Roll Hall of Fame and Museum" })
 
     t.summary(:path=>"pbcoreDescription", :namespace_prefix=>nil, :attributes=>{ :descriptionType=>"Description",
       :descriptionTypeSource=>"pbcoreDescription/descriptionType",
@@ -42,6 +39,8 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     t.genres(:path=>"pbcoreGenre", :namespace_prefix=>nil)
 
     # Individual genre types defined for entry
+    t.genre(:path=>"pbcoreGenre", :namespace_prefix=>nil)
+
     t.getty_genre(:path=>"pbcoreGenre", :namespace_prefix=>nil, :attributes=>{ :source=>"The Getty Research Institute Art and Architecture Thesaurus", :ref=>"http://www.getty.edu/research/tools/vocabularies/aat/index.html" })
     t.lc_genre(:path=>"pbcoreGenre", :namespace_prefix=>nil, :attributes=>{ :source=>"Library of Congress Genre/Form Terms", :ref=>"http://id.loc.gov/authorities/genreForms.html" })
     t.lc_subject_genre(:path=>"pbcoreGenre", :namespace_prefix=>nil, :attributes=>{ :source=>"Library of Congress Subject Headings", :ref=>"http://id.loc.gov/authorities/subjects.html" })
@@ -58,15 +57,13 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
       t.coverage(:path=>"coverage", :namespace_prefix=>nil)
     }
     t.spatial(:ref => :pbcore_coverage,
-      :path=>'pbcoreCoverage[coverageType="Spatial"]',
+      :path=>'pbcoreCoverage[coverageType="spatial"]',
       :namespace_prefix=>nil
     )
     t.temporal(:ref => :pbcore_coverage,
-      :path=>'pbcoreDescriptionDocument/pbcoreCoverage[coverageType="Temporal"]',
+      :path=>'pbcoreDescriptionDocument/pbcoreCoverage[coverageType="temporal"]',
       :namespace_prefix=>nil
     )
-    t.event_place(:proxy=>[:spatial, :coverage])
-    t.event_date(:proxy=>[:temporal, :coverage])
 
     # Contributor names and roles
     t.creator(:path=>"pbcoreCreator", :namespace_prefix=>nil) {
@@ -210,44 +207,16 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
           xml.instantiationPhysical(:source=>"PBCore instantiationPhysical")
           xml.instantiationStandard
           xml.instantiationLocation {
-            xml.text "Rock and Roll Hall of Fame and Museum,\n2809 Woodland Ave.,\nCleveland, OH, 44115\n216-515-1956\nlibrary@rockhall.org"
-          }
           xml.instantiationMediaType(:source=>"PBCore instantiationMediaType") {
             xml.text "Moving image"
           }
           xml.instantiationGenerations(:source=>"PBCore instantiationGenerations") {
             xml.text "Original"
           }
-          xml.instantiationColors {
-            xml.text "Color"
-          }
           xml.instantiationLanguage(:source=>"ISO 639.2", :ref=>"http://www.loc.gov/standards/iso639-2/php/code_list.php") {
             xml.text "eng"
           }
-          xml.instantiationRelation {
-            xml.instantiationRelationType(:source=>"PBCore relationType", :ref=>"http://pbcore.org/vocabularies/relationType#is-part-of") {
-              xml.text "Is Part Of"
-            }
-            xml.instantiationRelationIdentifier(:annotation=>"Archival Collection")
-          }
-          xml.instantiationRelation {
-            xml.instantiationRelationType(:source=>"PBCore relationType", :ref=>"http://pbcore.org/vocabularies/relationType#is-part-of") {
-              xml.text "Is Part Of"
-            }
-            xml.instantiationRelationIdentifier(:annotation=>"Archival Series")
-          }
-          xml.instantiationRelation {
-            xml.instantiationRelationType(:source=>"PBCore relationType", :ref=>"http://pbcore.org/vocabularies/relationType#is-part-of") {
-              xml.text "Is Part Of"
-            }
-            xml.instantiationRelationIdentifier(:annotation=>"Collection Number")
-          }
-          xml.instantiationRelation {
-            xml.instantiationRelationType(:source=>"PBCore relationType", :ref=>"http://pbcore.org/vocabularies/relationType#is-part-of") {
-              xml.text "Is Part Of"
-            }
-            xml.instantiationRelationIdentifier(:annotation=>"Accession Number")
-          }
+
           xml.instantiationRights {
             xml.rightsSummary
           }
@@ -255,7 +224,7 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
         }
 
       }
-
+    }
     end
     return builder.doc
   end
@@ -278,15 +247,12 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
 
     # Individual fields
     solr_doc.merge!(:summary_display => self.find_by_terms(:summary).text)
-    solr_doc.merge!(:pub_date_display => self.find_by_terms(:event_date).text)
     solr_doc.merge!(:publisher_display => gather_terms(self.find_by_terms(:publisher_name)))
     solr_doc.merge!(:contributors_display => gather_terms(self.find_by_terms(:contributor_name)))
     solr_doc.merge!(:subject_display => gather_terms(self.find_by_terms(:subjects)))
     solr_doc.merge!(:genre_display => gather_terms(self.find_by_terms(:genres)))
     solr_doc.merge!(:series_display => gather_terms(self.find_by_terms(:event_series)))
     solr_doc.merge!(:physical_dtl_display => gather_terms(self.find_by_terms(:format)))
-    solr_doc.merge!(:recinfo_display => gather_terms(self.find_by_terms(:event_place)))
-    solr_doc.merge!(:recinfo_display => gather_terms(self.find_by_terms(:event_date)))
     solr_doc.merge!(:contents_display => gather_terms(self.find_by_terms(:parts_list)))
     solr_doc.merge!(:notes_display => gather_terms(self.find_by_terms(:note)))
     solr_doc.merge!(:access_display => gather_terms(self.find_by_terms(:usage)))

@@ -57,13 +57,16 @@ class MediaObjectsController < ApplicationController
       # When adding resource description
       when 'resource-description' 
         logger.debug "<< Populating required metadata fields >>"
-        @mediaobject.title = params[:media_object][:title]        
-        @mediaobject.creator = params[:media_object][:creator]
-        @mediaobject.created_on = params[:media_object][:created_on]
-        @mediaobject.abstract = params[:media_object][:abstract]
-
+        # Quick, dirty, and hacky but it works right?
+        params[:media_object].each do |key, value|
+          @mediaobject.update_attributes({key.to_s => value},
+            datastream: :descMetadata) unless 'pid' == key
+          logger.debug "<< Updating #{key} => #{value} >>"
+          logger.debug "<< #{@mediaobject.descMetadata.to_xml} >>"
+        end
+        # End ugly hack   
         @mediaobject.save
-                
+    
         logger.debug "<< #{@mediaobject.errors} >>"
         logger.debug "<< #{@mediaobject.errors.size} problems found in the data >>"        
       # When on the access control page
@@ -86,7 +89,8 @@ class MediaObjectsController < ApplicationController
     unless @mediaobject.errors.empty?
       report_errors
     else
-      @ingest_status = update_ingest_status(params[:pid], @active_step)
+      @ingest_status = update_ingest_status(params[:pid], @active_step) 
+        unless 'structure' == @active_step
       @active_step = @ingest_status.current_step
       
       logger.debug "<< ACTIVE STEP => #{@active_step} >>"
@@ -170,7 +174,7 @@ class MediaObjectsController < ApplicationController
       logger.debug "<< PUBLISHED : #{@ingest_status.published} >>"
       
       unless (@ingest_status.published or @ingest_status.completed?(active_step))
-        logger.debug "<< Advancing to the next step in the workflow >>"
+        logger.debug "<< ADVANCING to the next step in the workflow >>"
         logger.debug "<< #{active_step} >>"
         @ingest_status.current_step = HYDRANT_STEPS.next(active_step)
       end
