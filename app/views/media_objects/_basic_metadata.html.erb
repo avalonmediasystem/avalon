@@ -4,6 +4,7 @@
     html: { 
       class: "form-horizontal",
       id: 'basic_metadata_form' } do |vid| %>
+  <%= hidden_field_tag :step, @active_step %>
   <%= vid.hidden_field :pid %>
   <%= vid.fieldset "Required fields", id: 'required_fields' do %>    
   
@@ -42,12 +43,12 @@
   <% end %>
 
  <%= vid.actions do |actions| %>
-   <%= link_to "Back to Manage file(s)",
+   <%= link_to "Back to #{HYDRANT_STEPS.previous(@active_step).title}",
         edit_media_object_path(@mediaobject, 
-          step: @workflow_steps.previous(@active_step)),
+          step: HYDRANT_STEPS.previous(@active_step).step),
           id: 'previous_screen',
           class: 'btn',
           name: 'previous_screen' %>
-    <%= vid.submit "Continue to Structure" %>
+    <%= vid.submit "Continue to #{HYDRANT_STEPS.next(@active_step).title}" %>
   <% end %>
 <% end %>

@@ -13,10 +13,6 @@
   margin-bottom: 18px;
 }
 
-.sortable {
-  cursor: move;
-}
-
 /** Use half of a line height for a more subtle offset */
 .whitespace-half {
   margin-bottom: 9px;
@@ -30,6 +26,49 @@ dd {
 header .logo {
   padding-right: 30px;
 }
+
+.filelist.nav-stacked > li > a {
+  max-width: 173px;
+}
+
+.filelist.nav-pills > li {
+  width: 100%;
+}
+
+.filelist.nav-pills {
+  min-height: 30px;
+}
+
+.filelist.nav-pills > li > span {
+  display: block;
+  max-width: 130px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-right: 12px;
+  padding-left: 12px;
+  margin-right: 2px;
+  line-height: 14px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+}
+
+.filelist.nav-pills > li > span:hover {
+  background-color: silver;
+}
+.filelist.sortable > li {
+  cursor: move;
+}
+
+#tobecloned {
+  display: none;
+}
+
+.label { height: 2.5em; line-height: 1.2em; }
 
 #global_tools {
   margin-bottom: 18px;

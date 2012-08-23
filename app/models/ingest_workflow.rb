@@ -45,7 +45,7 @@
         end
         
         # Return the next step
-        next_step.step
+        next_step
       end
       
       def previous(step_name)
@@ -58,7 +58,7 @@
         end
         
         # Return the next step
-        previous_step.step
+        previous_step
       end
       
       def index(step_name)
@@ -81,6 +81,10 @@
       
       def template(step_name)
         target_step = @_states[step_name]
+        puts "<< AAAAAAAAAAAA >>"
+        puts @_states.inspect
+        puts step_name.inspect
+        puts @_states[step_name].inspect
         target_step.template
       end
             
