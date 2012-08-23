@@ -61,15 +61,7 @@ class MediaObjectsController < ApplicationController
       # When adding resource description
       when 'resource-description' 
         logger.debug "<< Populating required metadata fields >>"
-        # Quick, dirty, and hacky but it works right?
-        params[:media_object].each do |key, value|
-          @mediaobject.update_attributes({key.to_s => value},
-            datastream: :descMetadata) unless 'pid' == key
-          logger.debug "<< Updating #{key} => #{value} >>"
-          logger.debug "<< #{@mediaobject.descMetadata.to_xml} >>"
-        end
-        # End ugly hack   
-        @mediaobject.save
+        @mediaobject.update_attributes(params[:media_object])
 
         logger.debug "<< #{@mediaobject.errors} >>"
         logger.debug "<< #{@mediaobject.errors.size} problems found in the data >>"        
@@ -214,4 +206,5 @@ class MediaObjectsController < ApplicationController
     @ingest_status.save
     @ingest_status
   end
+
 end

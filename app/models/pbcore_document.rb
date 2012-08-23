@@ -64,9 +64,11 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
       :namespace_prefix=>nil
     )
     t.temporal(:ref => :pbcore_coverage,
-      :path=>'pbcoreDescriptionDocument/pbcoreCoverage[coverageType="temporal"]',
+      :path=>'pbcoreCoverage[coverageType="temporal"]',
       :namespace_prefix=>nil
     )
+    t.place(:proxy => [:spatial, :coverage])
+    t.time(:proxy => [:temporal, :coverage])
 
     # Contributor names and roles
     t.creator(:path=>"pbcoreCreator", :namespace_prefix=>nil) {
@@ -179,6 +181,18 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
           :descriptionTypeRef=>"http://pbcore.org/vocabularies/pbcoreDescription/descriptionType#table-of-contents",
           :annotation=>"Parts List"
         )
+        xml.pbcoreCoverage {
+          xml.coverage
+          xml.coverageType {
+            xml.text "spatial"
+          }
+        }
+        xml.pbcoreCoverage {
+          xml.coverage
+          xml.coverageType {
+            xml.text "temporal"
+          }
+        }
         xml.pbcoreAnnotation(:annotationType=>"Notes")
 
         #

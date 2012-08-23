@@ -5,7 +5,6 @@
       class: "form-horizontal",
       id: 'basic_metadata_form' } do |vid| %>
   <%= hidden_field_tag :step, @active_step %>
-  <%= vid.hidden_field :pid %>
   <%= vid.fieldset "Required fields", id: 'required_fields' do %>    
   
     <%= vid.text_field :title, "Title", class: 'span12', value: @mediaobject.title.first %>
@@ -34,10 +33,10 @@
   <%= vid.fieldset "Keywords", id: 'keywords' do %>    
     <%= vid.text_field :genre, "Genre", class: 'span12',
       value: @mediaobject.genre.first %>
-    <%= vid.text_field :temporal, "Key time periods", class: 'span12 form-controls',
-      value: @mediaobject.temporal.first %>
-    <%= vid.text_field :spatial, "Key places", class: 'span12 form-controls',
-      value: @mediaobject.spatial.first %>
+    <%= vid.text_field :time, "Key time periods", class: 'span12 form-controls',
+      value: @mediaobject.time.first %>
+    <%= vid.text_field :place, "Key places", class: 'span12 form-controls',
+      value: @mediaobject.place.first %>
     <%= vid.text_field :subject, "Subjects", class: 'span12 form-controls',
       value: @mediaobject.subject.first %>
   <% end %>
