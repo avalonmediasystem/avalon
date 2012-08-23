@@ -92,7 +92,7 @@ class MasterFilesController < ApplicationController
 		FileUtils.cp file.tempfile, new_file_path
 
 		master_file = create_master_file_from_hydrant_path(new_file_path[public_dir_path.length - 1, new_file_path.length - 1])		
-    
+
  		notice = []
     apply_depositor_metadata(master_file)
 
