@@ -82,10 +82,10 @@
 
 <div class="row-fluid">
   <div class="span8">
-    <%= link_to "Continue to #{HYDRANT_STEPS.next(@active_step).title}", 
-      edit_media_object_path(@mediaobject, 
-        step: HYDRANT_STEPS.next(@active_step).step), 
-        class: "btn" %>
+    <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |vid| %>
+      <%= hidden_field_tag :step, @active_step %>
+      <%= vid.submit "Continue to #{HYDRANT_STEPS.next(@active_step).title}" %>
+    <% end %>
   </div>
 </div>
 

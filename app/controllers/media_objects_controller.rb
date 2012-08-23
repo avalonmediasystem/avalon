@@ -33,6 +33,14 @@ class MediaObjectsController < ApplicationController
 
     @ingest_status = IngestStatus.find_by_pid(@mediaobject.pid)
     @active_step = params[:step] || @ingest_status.current_step
+    prev_step = HYDRANT_STEPS.previous(@active_step)
+    
+    
+    unless prev_step.nil? || @ingest_status.completed?(prev_step.step) 
+      redirect_to edit_media_object_path(@mediaobject)
+      return
+    end
+    
     unless @ingest_status.completed?(@active_step)
       @ingest_status.current_step = @active_step
       @ingest_status.save
@@ -58,6 +66,8 @@ class MediaObjectsController < ApplicationController
     logger.debug "<< ACTIVE STEP => #{@active_step} >>"
     
     case @active_step
+      when 'file-upload'
+        
       # When adding resource description
       when 'resource-description' 
         logger.debug "<< Populating required metadata fields >>"
