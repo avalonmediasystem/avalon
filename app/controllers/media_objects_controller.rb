@@ -61,10 +61,19 @@ class MediaObjectsController < ApplicationController
       # When adding resource description
       when 'resource-description' 
         logger.debug "<< Populating required metadata fields >>"
-        @mediaobject.update_attributes(params[:media_object])
+        # Quick, dirty, and hacky but it works right?
+        params[:media_object].each do |key, value|
+          @mediaobject.update_attributes({key.to_s => value},
+            datastream: :descMetadata) unless 'pid' == key
+          logger.debug "<< Updating #{key} => #{value} >>"
+          logger.debug "<< #{@mediaobject.descMetadata.to_xml} >>"
+        end
+        # End ugly hack   
+        @mediaobject.save
 
         logger.debug "<< #{@mediaobject.errors} >>"
         logger.debug "<< #{@mediaobject.errors.size} problems found in the data >>"        
+      
       # When on the access control page
       when 'access-control' 
         # TO DO: Implement me
@@ -115,7 +124,7 @@ class MediaObjectsController < ApplicationController
       report_errors
     else
       @ingest_status = update_ingest_status(params[:pid], @active_step)  unless 'structure' == @active_step
-      @active_step = HYDRANT_STEPS.next(@active_step).step
+      @active_step = HYDRANT_STEP.next(@active_step)
       
       logger.debug "<< ACTIVE STEP => #{@active_step} >>"
       logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
@@ -208,5 +217,4 @@ class MediaObjectsController < ApplicationController
     @ingest_status.save
     @ingest_status
   end
-
 end
