@@ -26,6 +26,10 @@ class MediaObjectsController < ApplicationController
     
     @mediaobject = MediaObject.find(params[:id])
     @masterfiles = load_master_files
+    @masterfiles_with_order = @mediaobject.parts_with_order
+    if !@masterfiles.nil? && @masterfiles.count > 1 
+      @relType = @mediaobject.descMetadata.relation_type[0]
+    end
 
     @ingest_status = IngestStatus.find_by_pid(@mediaobject.pid)
     @active_step = params[:step] || @ingest_status.current_step
@@ -66,23 +70,53 @@ class MediaObjectsController < ApplicationController
         end
         # End ugly hack   
         @mediaobject.save
-    
+
         logger.debug "<< #{@mediaobject.errors} >>"
         logger.debug "<< #{@mediaobject.errors.size} problems found in the data >>"        
       # When on the access control page
       when 'access-control' 
         # TO DO: Implement me
         logger.debug "<< Access flag = #{params[:access]} >>"
-	    @mediaobject.access = params[:access]        
+	      @mediaobject.access = params[:access]        
         
         @mediaobject.save             
         logger.debug "<< Groups : #{@mediaobject.read_groups} >>"
 
       when 'structure'
-        # Phuong - Put your logic for organizing the hierarchy here 
+        if !params[:commit].nil?
+          rel = "Has Version"
+          case params[:commit]
+            when 'Sequence'
+              rel = "Has Part"
+            when 'Hierarchy'
+              rel = "Has Part"
+          end
+
+          @mediaobject.parts.each_with_index do |master_file, index|
+            @mediaobject.descMetadata.update_values({[:relation_type]=>{index=>rel}})  	
+          end
+        elsif !params[:masterfile_ids].nil?
+          @mediaobject.parts.each_with_index do |master_file, index|
+            mf_id = params[:masterfile_ids][index]
+            @mediaobject.descMetadata.update_values({[:relation_identifier]=>{index=>mf_id}})  	
+          end
+          
+          masterfiles = []
+          params[:masterfile_ids].each do |mf_id|
+            mf = MasterFile.find(mf_id)
+            masterfiles << mf
+          end
+          # Inserts logic to rearrange mediaobject.parts
+          #@mediaobject.parts = masterfiles
+          @mediaobject.save
+        end
+        
+        @mediaobject.save(validate: false)
         
       # When looking at the preview page use a version of the show page
       when 'preview' 
+        redirect_to media_object_path(@mediaobject)
+        return
     end     
       
     unless @mediaobject.errors.empty?
@@ -174,7 +208,8 @@ class MediaObjectsController < ApplicationController
       unless (@ingest_status.published or @ingest_status.completed?(active_step))
         logger.debug "<< ADVANCING to the next step in the workflow >>"
         logger.debug "<< #{active_step} >>"
-        @ingest_status.current_step = HYDRANT_STEPS.next(active_step)
+        @ingest_status.current_step = HYDRANT_STEPS.next(active_step).step
+        @ingest_status.published = true if HYDRANT_STEPS.last? active_step
       end
     end
 

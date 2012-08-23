@@ -24,7 +24,7 @@ class MediaObject < ActiveFedora::Base
   delegate :spatial, to: :descMetadata, at: [:spatial]
   delegate :temporal, to: :descMetadata, at: [:temporal]
   delegate :subject, to: :descMetadata, at: [:lc_subject]
-  delegate :relatedItem, to: :descMetadata, at: [:pbcoreRelation]
+  delegate :relatedItem, to: :descMetadata, at: [:relation]
   
   # Stub method to determine if the record is done or not. This should be based on
   # whether the descMetadata, rightsMetadata, and techMetadata datastreams are all
@@ -64,5 +64,14 @@ class MediaObject < ActiveFedora::Base
       self.read_groups = groups
     end
   end
+  
+  def parts_with_order
+    masterfiles = []
+    descMetadata.relation_identifier.each do |pid|
+      masterfiles << MasterFile.find(pid)
+    end
+    masterfiles
+  end
+
 end
 

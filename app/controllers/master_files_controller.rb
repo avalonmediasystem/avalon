@@ -43,7 +43,6 @@ class MasterFilesController < ApplicationController
           redirect_to :back
   
           puts "<< Redirecting - file size is too large >>"
-
           return
         end
         
@@ -63,9 +62,11 @@ class MasterFilesController < ApplicationController
   		  
         @master_files << master_file = saveOriginalToHydrant(file)
         master_file.media_type = @upload_format
-        master_file.container = media_object
-  			
+	
         if master_file.save
+          _, index = media_object.descMetadata.insert_node :relation
+          media_object.descMetadata.update_values({[:relation_type]=>{index=>"Has Version"},[:relation_identifier]=>{index=>master_file.pid}})  	
+          media_object.save(validate: false)
           sendOriginalToMatterhorn(master_file, file, @upload_format)
         else 
           flash[:errors] = "Error storing file"
@@ -77,7 +78,7 @@ class MasterFilesController < ApplicationController
     
     respond_to do |format|
       flash[:upload] = create_upload_notice(@upload_format)
-    	format.html { redirect_to edit_media_object_path(params[:container_id], step: 'file_upload') }
+    	format.html { redirect_to edit_media_object_path(params[:container_id], step: 'file-upload') }
     	format.js { }
     end
   end
@@ -150,6 +151,14 @@ class MasterFilesController < ApplicationController
 
     authorize! :edit, parent, message: "You do not have sufficient privileges to delete files"
 
+    parent.parts.each_with_index do |masterfile, index| 
+      puts parent.descMetadata.relation_identifier[index].inspect
+      if masterfile.pid.eql? parent.descMetadata.relation_identifier[index]
+        parent.descMetadata.remove_node(:relation, index)  
+        break	
+      end
+    end
+    
     parent.remove_relationship(:has_part, master_file)
     parent.save(validate: false)
     

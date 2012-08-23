@@ -3,15 +3,136 @@
 <!-- PUT CODE HERE -->
 <legend>Structure</legend>
 
+<% if @masterfiles_with_order.count > 1 %>
+  <p>You have multiple files for this item. Are they sequential, versional or hierarchical?</p>
+	<%= form_for @mediaobject do |f| %>
+      <div class="btn-group">
+				<% if @relType.eql? 'Has Version' %>
+					<%= f.submit 'Versions', class: 'btn btn-success version-btn'%>
+					<%= f.submit 'Sequence', class: 'btn sequence-btn'%>
+			  <% else %>
+					<%= f.submit 'Versions', class: 'btn version-btn'%>
+					<%= f.submit 'Sequence', class: 'btn btn-success sequence-btn'%>
+				<% end %>
+				<%= f.submit 'Hierarchy', class: 'btn hierarchy-btn', disabled: 'true' %>
+      </div>
+			<%= hidden_field_tag 'step', 'structure' %>
+		<% end %>
+  <p>
+<% end %>
+
+<% unless @masterfiles_with_order.nil? %>
+
+	<table class="table table-striped">
+	<thead>
+	  <th></th>
+	  <th>Type</th>
+	  <th>Title</th>
+	  <th>Filename</th>
+	  <th>Filesize</th>
+	</thead>
+	<tbody class="sortable">
+		<% @masterfiles_with_order.each do |masterfile| %>
+      <tr>
+		<td>
+			<div class="noshow">
+				<i class="icon-arrow-up"></i>
+				<i class="icon-arrow-down"></i> 
+			</div>
+		</td>
+        <td>
+          <% if masterfile.media_type.first == 'audio' %>
+		      	<i class="icon-volume-up"></i>  		            
+          <% elsif masterfile.media_type.first == 'video' %>
+		        <i class="icon-film"></i>
+					  <% else %>
+					  	<i class="icon-question-sign"></i>
+          <% end %>
+        </td>
+        <td>
+          <%= text_field_tag masterfile.pid, masterfile.label, class: 'mf-label' %>
+        </td>
+        <td>
+	  	    <a href="<%= masterfile.descMetadata.identifier[0] %>"><%= File.basename(masterfile.url.first)  %></a>
+	  	  </td>
+	  	  <td>
+	  	    <strong>(<%= number_to_human_size(masterfile.size) %>)</strong>
+	  	  </td>
+	 	    </tr>
+	 	  <% end %>
+	  </tbody>
+	</table>
+
+<% end %>
+
 <div class="row-fluid">
-  <div class="span8">
-    <%= link_to "Back to Resource Description", 
+  <div class="span12">
+    <%= link_to "Back to #{HYDRANT_STEPS.previous(@active_step).title}", 
       edit_media_object_path(@mediaobject, 
-        step: @workflow_steps.previous('structure')), 
+        step: HYDRANT_STEPS.previous(@active_step).step), 
         class: "btn" %>
-    <%= link_to "Continue to Access Control", 
+    <%= link_to "Continue to #{HYDRANT_STEPS.next(@active_step).title}", 
       edit_media_object_path(@mediaobject, 
-        step: @workflow_steps.next('structure')), 
+        step: HYDRANT_STEPS.next(@active_step).step), 
         class: "btn" %>
   </div>
 </div>
+
+<% content_for :page_scripts do %>
+  <script>
+    /* Hide the alert dialog on the page loading if Javascript is enabled */
+    <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
+
+  	<% if @relType.eql? 'Has Part' %>
+  	  $('.sortable').sortable({ 
+  			disabled: false,
+  			update: function(e, ui) {
+  				var mfs = [];
+  				$(this).find('.mf-label').each(function(){
+  					mfs.push($(this).attr('id'));
+  				})
+  				$.ajax({
+  					type: 'PUT',
+  					url: '<%= media_object_path(@mediaobject) %>',
+  					data: { _method: 'update', masterfile_ids: mfs, step: 'structure' }
+  				})
+  			}
+  		});
+  	  $('.sortable').disableSelection();
+  		$('.sortable').css('cursor', 'move');
+  	<% end %>
+
+    $('.sequence-btn').click(function(){
+      $('.sortable').sortable({ disabled: false });
+      $('.sortable').disableSelection();
+
+      toggleBtns($(this));
+    })
+      
+    $('.version-btn').click(function(){
+      $('.sortable').sortable({ disabled: true });
+      $('.sortable').css('cursor', 'auto');
+      toggleBtns($(this));
+    })
+      
+    function toggleBtns(btn) {
+      $('.btn-group .btn').removeClass('btn-success');
+      btn.addClass('btn-success');
+    }
+  
+    $(".sortable").nestedSortable({
+      placeholder: 'dropPlaceHolder',
+      forcePlaceholderSize:true,
+      handle: 'div',
+      helper: 'clone',
+      listType: 'tbody',
+      items: 'tr',
+      opacity: .6,
+      revert: 250,
+      tabSize: 25,
+      tolerance: 'pointer',
+      toleranceElement: '> div'
+    }).disableSelection();
+  </script>
+<% end %>
+
