@@ -17,28 +17,45 @@
   <% end %>
   
   <%= vid.fieldset "Related people", id: 'related_people' do %> 
-    <%= vid.text_field :contributor, 
-        "Contributor(s)", 
-        class: 'span12 form-controls',
-        values: @mediaobject.contributor.first %>
-    <%= vid.text_field :publisher, "Publisher(s)", class: 'span12 form-controls',
-      value: @mediaobject.publisher.first %>
+        <% (0..4).each do |i| %>
+          <% value = @mediaobject.contributor[i] || '' %>
+          <%= vid.text_field :contributor, "Contributor", class: 'span12',
+            value: value  %>
+        <% end %>
+    
+        <% (0..2).each do |i| %>
+          <% value = @mediaobject.publisher[i] || '' %>
+          <%= vid.text_field :publisher, "Publisher", class: 'span12',
+            value: value  %>
+        <% end %>
   <% end %>
 
   <%= vid.fieldset "Related items", id: 'related_items' do %>    
-    <%= vid.text_field :relatedItem, "Related items", class: 'span12 form-controls',
-      value: @mediaobject.relatedItem.first %>
+        <% (0..2).each do |i| %>
+          <% value = @mediaobject.relatedItem[i] || '' %>
+          <%= vid.text_field :relatedItem, "-", class: 'span12', 
+            disabled: 'disabled', value: value  %>
+        <% end %>
   <% end %>
   
   <%= vid.fieldset "Keywords", id: 'keywords' do %>    
     <%= vid.text_field :genre, "Genre", class: 'span12',
       value: @mediaobject.genre.first %>
-    <%= vid.text_field :time, "Key time periods", class: 'span12 form-controls',
-      value: @mediaobject.time.first %>
-    <%= vid.text_field :place, "Key places", class: 'span12 form-controls',
-      value: @mediaobject.place.first %>
-    <%= vid.text_field :subject, "Subjects", class: 'span12 form-controls',
-      value: @mediaobject.subject.first %>
+        <% (0..2).each do |i| %>
+          <% value = @mediaobject.time[i] || '' %>
+          <%= vid.text_field :time, "Key time periods", class: 'span12', 
+            value: value  %>
+        <% end %>
+        <% (0..2).each do |i| %>
+          <% value = @mediaobject.place[i] || '' %>
+          <%= vid.text_field :place, "Important locations", class: 'span12', 
+            value: value  %>
+        <% end %>
+        <% (0..2).each do |i| %>
+          <% value = @mediaobject.subject[i] || '' %>
+          <%= vid.text_field :subject, "Subject(s)", class: 'span12', 
+            value: value  %>
+        <% end %>
   <% end %>
 
  <%= vid.actions do |actions| %>

@@ -107,13 +107,14 @@ class MediaObjectsController < ApplicationController
         
       # When looking at the preview page use a version of the show page
       when 'preview' 
-        # Do nothing for now 
+        redirect_to media_object_path(@mediaobject)
+        return
     end     
       
     unless @mediaobject.errors.empty?
       report_errors
     else
-      @ingest_status = update_ingest_status(params[:pid], @active_step)
+      @ingest_status = update_ingest_status(params[:pid], @active_step)  unless 'structure' == @active_step
       @active_step = HYDRANT_STEPS.next(@active_step).step
       
       logger.debug "<< ACTIVE STEP => #{@active_step} >>"
@@ -200,6 +201,7 @@ class MediaObjectsController < ApplicationController
         logger.debug "<< ADVANCING to the next step in the workflow >>"
         logger.debug "<< #{active_step} >>"
         @ingest_status.current_step = HYDRANT_STEPS.next(active_step).step
+        @ingest_status.published = true if HYDRANT_STEPS.last? active_step
       end
     end
 
