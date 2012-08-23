@@ -16,8 +16,8 @@
       value: @mediaobject.abstract.first %>
   <% end %>
   
-  <%= vid.fieldset "Related people", id: 'related_people' do %> 
-        <% (0..4).each do |i| %>
+  <%= vid.fieldset "Related people", id: 'related_people' do %>
+        <% (0..3).each do |i| %>
           <% value = @mediaobject.contributor[i] || '' %>
           <%= vid.text_field :contributor, "Contributor", class: 'span12',
             value: value  %>

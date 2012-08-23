@@ -35,6 +35,7 @@ class MediaObjectsController < ApplicationController
     @active_step = params[:step] || @ingest_status.current_step
     prev_step = HYDRANT_STEPS.previous(@active_step)
     
+    
     unless prev_step.nil? || @ingest_status.completed?(prev_step.step) 
       redirect_to edit_media_object_path(@mediaobject)
       return
@@ -66,7 +67,7 @@ class MediaObjectsController < ApplicationController
     
     case @active_step
       when 'file-upload'
-
+        
       # When adding resource description
       when 'resource-description' 
         logger.debug "<< Populating required metadata fields >>"
@@ -133,13 +134,13 @@ class MediaObjectsController < ApplicationController
     unless @mediaobject.errors.empty?
       report_errors
     else
-      @ingest_status = update_ingest_status(params[:pid], @active_step) 
-      @active_step = HYDRANT_STEPS.next(@active_step).step unless !params[:donot_advance].nil?
+      @ingest_status = update_ingest_status(params[:pid], @active_step)  unless 'structure' == @active_step
+      @active_step = HYDRANT_STEPS.next(@active_step)
       
       logger.debug "<< ACTIVE STEP => #{@active_step} >>"
       logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
       
-      redirect_to get_redirect_path(@active_step)
+      redirect_to get_redirect_path(@active_step.step)
     end
   end
   
@@ -191,7 +192,7 @@ class MediaObjectsController < ApplicationController
   def get_redirect_path(target)
     logger.info "<< #{@mediaobject.pid} has been updated in Fedora >>"
     unless HYDRANT_STEPS.last?(params[:step])
-      redirect_path = edit_media_object_path(@mediaobject, step: target.step)
+      redirect_path = edit_media_object_path(@mediaobject, step: target)
     else
       flash[:notice] = "This resource is now available for use in the system"
       redirect_path = media_object_path(@mediaobject)

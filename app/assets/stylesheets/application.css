@@ -16,7 +16,7 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  *= require bootstrap_and_overrides
- *= require jquery.fileupload-ui
+ * require jquery.fileupload-ui
  *= require hydrant
  *= require admin
  
