@@ -80,11 +80,11 @@
       end
       
       def template(step_name)
+        logger.debug "<< TEMPLATE >>"
+        logger.debug "<< @_states[#{step_name}] >>"
+        logger.debug "<< #{@_states[step_name]} >>"
+        
         target_step = @_states[step_name]
-        puts "<< AAAAAAAAAAAA >>"
-        puts @_states.inspect
-        puts step_name.inspect
-        puts @_states[step_name].inspect
         target_step.template
       end
             
