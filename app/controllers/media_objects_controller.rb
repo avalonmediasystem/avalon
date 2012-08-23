@@ -71,10 +71,11 @@ class MediaObjectsController < ApplicationController
       # When adding resource description
       when 'resource-description' 
         logger.debug "<< Populating required metadata fields >>"
+        logger.debug "<< #{params[:media_object]} >>"
+        
         # Quick, dirty, and hacky but it works right?
         params[:media_object].each do |key, value|
-          @mediaobject.update_attributes({key.to_s => value},
-            datastream: :descMetadata) unless 'pid' == key
+          @mediaobject.update_attributes({key.to_s => value}) unless 'pid' == key
           logger.debug "<< Updating #{key} => #{value} >>"
           logger.debug "<< #{@mediaobject.descMetadata.to_xml} >>"
         end
@@ -134,7 +135,7 @@ class MediaObjectsController < ApplicationController
       report_errors
     else
       @ingest_status = update_ingest_status(params[:pid], @active_step)  unless 'structure' == @active_step
-      @active_step = HYDRANT_STEP.next(@active_step)
+      @active_step = HYDRANT_STEPS.next(@active_step)
       
       logger.debug "<< ACTIVE STEP => #{@active_step} >>"
       logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
@@ -191,7 +192,7 @@ class MediaObjectsController < ApplicationController
   def get_redirect_path(target)
     logger.info "<< #{@mediaobject.pid} has been updated in Fedora >>"
     unless HYDRANT_STEPS.last?(params[:step])
-      redirect_path = edit_media_object_path(@mediaobject, step: target)
+      redirect_path = edit_media_object_path(@mediaobject, step: target.step)
     else
       flash[:notice] = "This resource is now available for use in the system"
       redirect_path = media_object_path(@mediaobject)
