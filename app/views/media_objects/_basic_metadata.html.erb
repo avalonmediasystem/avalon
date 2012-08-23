@@ -4,6 +4,7 @@
     html: { 
       class: "form-horizontal",
       id: 'basic_metadata_form' } do |vid| %>
+  <%= hidden_field_tag :step, @active_step %>
   <%= vid.hidden_field :pid %>
   <%= vid.fieldset "Required fields", id: 'basic_metadata' do %>    
   
@@ -48,6 +49,6 @@
           id: 'previous_screen',
           class: 'btn',
           name: 'previous_screen' %>
-    <%= vid.submit "Continue to Structure" %>
+    <%= vid.submit "Continue to #{@workflow_steps.next(@active_step).capitalize}" %>
   <% end %>
 <% end %>

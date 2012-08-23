@@ -28,7 +28,7 @@
 
   <div class="row-fluid">
     <div class="span8">
-      <%= link_to "Back to access control", edit_media_object_path(@mediaobject, step: @workflow_steps.previous(@active_step)), class: "btn" %>
+      <%= link_to "Back to #{@workflow_steps.previous(@active_step).capitalize}", edit_media_object_path(@mediaobject, step: @workflow_steps.previous(@active_step)), class: "btn" %>
       <%= link_to "Publish this item", media_object_path(@mediaobject), class: "btn" %>
     </div>
   </div>

@@ -67,13 +67,13 @@
 
 <div class="row-fluid">
   <div class="span12">
-    <%= link_to "Back to Resource Description", 
+    <%= link_to "Back to #{HYDRANT_STEPS.previous(@active_step)}", 
       edit_media_object_path(@mediaobject, 
-        step: @workflow_steps.previous('structure')), 
+        step: @workflow_steps.previous(@active_step)), 
         class: "btn" %>
-    <%= link_to "Continue to Access Control", 
+    <%= link_to "Continue to #{HYDRANT_STEPS.next(@active_step)}", 
       edit_media_object_path(@mediaobject, 
-        step: @workflow_steps.next('structure')), 
+        step: @workflow_steps.next(@active_step)), 
         class: "btn" %>
   </div>
 </div>

@@ -119,7 +119,7 @@ class MediaObjectsController < ApplicationController
       report_errors
     else
       @ingest_status = update_ingest_status(params[:pid], @active_step)
-      @active_step = @ingest_status.current_step
+      @active_step = @workflow_steps.next(@active_step)
       
       logger.debug "<< ACTIVE STEP => #{@active_step} >>"
       logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"

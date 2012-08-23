@@ -3,7 +3,8 @@
       html: { 
 	class: "form-horizontal",
     	id: 'access_control_form' } do |vid| %>
-  <%= vid.fieldset "Access control", id: 'access_control' do %>    
+    <%= hidden_field_tag :step, @active_step %>
+    <%= vid.fieldset "Access control", id: 'access_control' do %>    
     <%= vid.hidden_field :pid %>
 
     <%= label_tag :access do %>
@@ -28,7 +29,7 @@
               id: 'previous_screen',
               class: 'btn',
               name: 'previous_screen' %>
-      <%= vid.submit "Preview and publish" %>
+      <%= vid.submit "Continue to #{@workflow_steps.next(@active_step).capitalize}" %>
     <% end %>
   <%- end -%>
 <% end %>
