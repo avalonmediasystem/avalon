@@ -143,10 +143,8 @@ class MediaObjectsController < ApplicationController
       logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
       respond_to do |format|
         format.html { redirect_to get_redirect_path(@active_step) }
-        format.js { }
-        format.json { }
+        format.json { render :json => nil }
       end      
-      
     end
   end
   
