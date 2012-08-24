@@ -95,7 +95,7 @@
   				$.ajax({
   					type: 'PUT',
   					url: '<%= media_object_path(@mediaobject) %>',
-  					data: { _method: 'update', masterfile_ids: mfs, step: @active_step, donot_advance: 'true' }
+  					data: { _method: 'update', masterfile_ids: mfs, step: '<%= @active_step %>', donot_advance: 'true' }
   				})
   			}
   		});
