@@ -141,8 +141,12 @@ class MediaObjectsController < ApplicationController
 
       logger.debug "<< ACTIVE STEP => #{@active_step} >>"
       logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
+      respond_to do |format|
+        format.html { redirect_to get_redirect_path(@active_step) }
+        format.js { }
+        format.json { }
+      end      
       
-      redirect_to get_redirect_path(@active_step)
     end
   end
   
