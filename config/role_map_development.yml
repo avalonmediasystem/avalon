@@ -9,6 +9,7 @@ archivist:
   - cjcolvar
   - 80000493756
   - 80000493749
+  - jlhardes
 donor:
   - donor1@example.com
 researcher:
@@ -25,5 +26,6 @@ admin_policy_object_editor:
   - mnotess
   - 80000493756
   - 80000493749
+  - jlhardes
 patron:
   - patron1

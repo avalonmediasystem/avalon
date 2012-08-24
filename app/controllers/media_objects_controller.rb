@@ -134,13 +134,17 @@ class MediaObjectsController < ApplicationController
     unless @mediaobject.errors.empty?
       report_errors
     else
-      @ingest_status = update_ingest_status(params[:pid], @active_step)  unless 'structure' == @active_step
-      @active_step = HYDRANT_STEPS.next(@active_step)
-      
+      unless params[:donot_advance] == "true"
+        @ingest_status = update_ingest_status(params[:pid], @active_step)
+        @active_step = HYDRANT_STEPS.next(@active_step).step
+      end
+
       logger.debug "<< ACTIVE STEP => #{@active_step} >>"
       logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
-      
-      redirect_to get_redirect_path(@active_step.step)
+      respond_to do |format|
+        format.html { redirect_to get_redirect_path(@active_step) }
+        format.json { render :json => nil }
+      end      
     end
   end
   

@@ -57,7 +57,7 @@
 	  	    <a href="<%= masterfile.descMetadata.identifier[0] %>"><%= File.basename(masterfile.url.first)  %></a>
 	  	  </td>
 	  	  <td>
-	  	    <strong>(<%= number_to_human_size(masterfile.size) %>)</strong>
+	  	    <strong>(<%= number_to_human_size(masterfile.size.first) %>)</strong>
 	  	  </td>
 	 	    </tr>
 	 	  <% end %>
@@ -95,7 +95,10 @@
   				$.ajax({
   					type: 'PUT',
   					url: '<%= media_object_path(@mediaobject) %>',
-  					data: { _method: 'update', masterfile_ids: mfs, step: 'structure' }
+  					data: { _method: 'update', masterfile_ids: mfs, step: '<%= @active_step %>', donot_advance: 'true', format: 'json' },
+					success: function(data) {
+						// Do nothing for now
+					}
   				})
   			}
   		});
