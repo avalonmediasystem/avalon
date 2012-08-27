@@ -17,45 +17,28 @@
   <% end %>
   
   <%= vid.fieldset "Related people", id: 'related_people' do %>
-        <% (0..3).each do |i| %>
-          <% value = @mediaobject.contributor[i] || '' %>
-          <%= vid.text_field :contributor, "Contributor", class: 'span12',
-            value: value  %>
-        <% end %>
+    <%= vid.text_fields :contributor, "Contributor", class: 'span12',
+      value: @mediaobject.contributor  %>
     
-        <% (0..2).each do |i| %>
-          <% value = @mediaobject.publisher[i] || '' %>
-          <%= vid.text_field :publisher, "Publisher", class: 'span12',
-            value: value  %>
-        <% end %>
+    <%= vid.text_fields :publisher, "Publisher", class: 'span12',
+        value: @mediaobject.publisher, minimum_fields: 3  %>
   <% end %>
 
   <%= vid.fieldset "Related items", id: 'related_items' do %>    
-        <% (0..2).each do |i| %>
-          <% value = @mediaobject.relatedItem[i] || '' %>
-          <%= vid.text_field :relatedItem, "-", class: 'span12', 
-            disabled: 'disabled', value: value  %>
-        <% end %>
+    <%= vid.text_fields :relatedItem, "--", class: 'span12', 
+      disabled: 'disabled', value: @mediaobject.relatedItem,
+      miminum_fields: 3 %>
   <% end %>
   
   <%= vid.fieldset "Keywords", id: 'keywords' do %>    
     <%= vid.text_field :genre, "Genre", class: 'span12',
       value: @mediaobject.genre.first %>
-        <% (0..2).each do |i| %>
-          <% value = @mediaobject.time[i] || '' %>
-          <%= vid.text_field :time, "Key time periods", class: 'span12', 
-            value: value  %>
-        <% end %>
-        <% (0..2).each do |i| %>
-          <% value = @mediaobject.place[i] || '' %>
-          <%= vid.text_field :place, "Important locations", class: 'span12', 
-            value: value  %>
-        <% end %>
-        <% (0..2).each do |i| %>
-          <% value = @mediaobject.subject[i] || '' %>
-          <%= vid.text_field :subject, "Subject(s)", class: 'span12', 
-            value: value  %>
-        <% end %>
+    <%= vid.text_fields :time, "Key time periods", class: 'span12', 
+       mininum_fields: 2 %>
+    <%= vid.text_fields :place, "Important locations", class: 'span12', 
+       minimum_fields: 2 %>
+
+    <%= vid.text_fields :subject, "Subject(s)", class: 'span12' %>
   <% end %>
 
  <%= vid.actions do |actions| %>
