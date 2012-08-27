@@ -14,7 +14,6 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require jquery-fileupload
 //= require twitter/bootstrap
 //
 // Required by Hydra
