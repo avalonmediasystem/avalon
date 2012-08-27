@@ -83,6 +83,11 @@ class MasterFilesController < ApplicationController
     end
   end
   
+  def show 
+    @masterfile = MasterFile.find(params[:id])
+    @mediaobject = @masterfile.container
+  end
+  
 	def saveOriginalToHydrant file
 		public_dir_path = "#{Rails.root}/public/"
 		new_dir_path = public_dir_path + 'media_objects/' + params[:container_id].gsub(":", "_") + "/"
