@@ -10,4 +10,4 @@
     content_preview = IngestStep.new('preview', 'Preview and publish',
       'Release the item for use', 'preview')
     
-    HYDRANT_STEPS = IngestWorkflow.new(file_upload, metadata, structure, access_control, content_preview)
+    HYDRANT_STEPS = IngestWorkflow.new(metadata, file_upload, structure, access_control, content_preview)

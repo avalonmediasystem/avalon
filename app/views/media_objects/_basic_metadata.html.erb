@@ -42,12 +42,6 @@
   <% end %>
 
  <%= vid.actions do |actions| %>
-   <%= link_to "Back to #{HYDRANT_STEPS.previous(@active_step).title}",
-        edit_media_object_path(@mediaobject, 
-          step: HYDRANT_STEPS.previous(@active_step).step),
-          id: 'previous_screen',
-          class: 'btn',
-          name: 'previous_screen' %>
-    <%= vid.submit "Continue to #{HYDRANT_STEPS.next(@active_step).title}" %>
+      <%= render "workflow_buttons", form: vid %>
   <% end %>
 <% end %>

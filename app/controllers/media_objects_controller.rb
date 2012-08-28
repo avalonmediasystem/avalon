@@ -127,8 +127,8 @@ class MediaObjectsController < ApplicationController
         
       # When looking at the preview page use a version of the show page
       when 'preview' 
-        redirect_to media_object_path(@mediaobject)
-        return
+#        redirect_to media_object_path(@mediaobject)
+#        return
     end     
       
     unless @mediaobject.errors.empty?
@@ -136,13 +136,15 @@ class MediaObjectsController < ApplicationController
     else
       unless params[:donot_advance] == "true"
         @ingest_status = update_ingest_status(params[:pid], @active_step)
-        @active_step = HYDRANT_STEPS.next(@active_step).step
+        unless @ingest_status.published
+          @active_step = @ingest_status.current_step
+        end
       end
 
       logger.debug "<< ACTIVE STEP => #{@active_step} >>"
       logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
       respond_to do |format|
-        format.html { redirect_to get_redirect_path(@active_step) }
+        format.html { @ingest_status.published ? redirect_to(media_object_path(@mediaobject)) : redirect_to(get_redirect_path(@active_step)) }
         format.json { render :json => nil }
       end      
     end
@@ -219,13 +221,13 @@ class MediaObjectsController < ApplicationController
     else
       active_step = active_step || @ingest_status.current_step
       logger.debug "<< COMPLETED : #{@ingest_status.completed?(active_step)} >>"
+      @ingest_status.published = true if HYDRANT_STEPS.last? active_step and @ingest_status.completed?(active_step)
       logger.debug "<< PUBLISHED : #{@ingest_status.published} >>"
       
-      unless (@ingest_status.published or @ingest_status.completed?(active_step))
+      unless (@ingest_status.published or not @ingest_status.completed?(active_step))
         logger.debug "<< ADVANCING to the next step in the workflow >>"
         logger.debug "<< #{active_step} >>"
         @ingest_status.current_step = HYDRANT_STEPS.next(active_step).step
-        @ingest_status.published = true if HYDRANT_STEPS.last? active_step
       end
     end
 

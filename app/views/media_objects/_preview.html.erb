@@ -33,10 +33,7 @@
   <div class="row-fluid">
     <div class="span8">
       <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |vid| %>
-        <%= link_to "Back to #{HYDRANT_STEPS.previous(@active_step).title}", 
-                    edit_media_object_path(@mediaobject, step: HYDRANT_STEPS.previous(@active_step).step), class: "btn" %>
-        <%= hidden_field_tag :step, @active_step %>
-        <%= vid.submit "Publish this item" %>
+        <%= render "workflow_buttons", form: vid %>
       <% end %>
     </div>
   </div>
