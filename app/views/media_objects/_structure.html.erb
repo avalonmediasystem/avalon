@@ -3,24 +3,6 @@
 <!-- PUT CODE HERE -->
 <legend>Structure</legend>
 
-<% if @masterfiles_with_order.count > 1 %>
-  <p>You have multiple files for this item. Are they sequential, versional or hierarchical?</p>
-	<%= form_for @mediaobject do |f| %>
-      <div class="btn-group">
-				<% if @relType.eql? 'Has Version' %>
-					<%= f.submit 'Versions', class: 'btn btn-success version-btn'%>
-					<%= f.submit 'Sequence', class: 'btn sequence-btn'%>
-			  <% else %>
-					<%= f.submit 'Versions', class: 'btn version-btn'%>
-					<%= f.submit 'Sequence', class: 'btn btn-success sequence-btn'%>
-				<% end %>
-				<%= f.submit 'Hierarchy', class: 'btn hierarchy-btn', disabled: 'true' %>
-      </div>
-			<%= hidden_field_tag 'step', 'structure' %>
-			<%= hidden_field_tag 'donot_advance', 'true' %>
-		<% end %>
-  <p>
-<% end %>
 
 <% unless @masterfiles_with_order.nil? %>
 
