@@ -11,18 +11,31 @@ describe MediaObject do
     it "should have no errors on created_on if created_on present" do
       MediaObject.new(created_on: "2012-01-01").should have(0).errors_on(:created_on)
     end
-    it "should have errors if fields not present" do
-      MediaObject.new().should have(1).errors_on(:creator)
-      MediaObject.new().should have(1).errors_on(:title)
-      MediaObject.new().should have(1).errors_on(:created_on)
+    it "should have errors if requied fields are missing" do
+      mo = MediaObject.new
+      mo.should have(1).errors_on(:creator)
+      mo.should have(1).errors_on(:title)
+      mo.should have(1).errors_on(:created_on)
     end
-    it "should have errors if fields empty" do
-      MediaObject.new(creator: "").should have(1).errors_on(:creator)
-      MediaObject.new(title: "").should have(1).errors_on(:title)
-      MediaObject.new(created_on: "").should have(1).errors_on(:created_on)
+    it "should have errors if required fields are empty" do
+      mo = MediaObject.new(creator: "", title: "", created_on: "")
+      mo.should have(1).errors_on(:creator)
+      mo.should have(1).errors_on(:title)
+      mo.should have(1).errors_on(:created_on)
     end
   end
 
+  describe "Field persistance" do
+    it "should reject unknown fields"
+    it "should update the contributors field"
+    it "should support multiple contributors"
+    it "should support multiple publishers"
+  end
+  
+  describe "Valid formats" do
+    
+  end
+  
   describe "access" do
     it "should set access level to public" do
       @mediaobject = MediaObject.new
