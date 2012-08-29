@@ -4,18 +4,21 @@ class MediaObject < ActiveFedora::Base
   include ActiveFedora::FileManagement
   include Hydra::ModelMixins::RightsMetadata
 
+  has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: PbcoreDocument	
+
+  after_create :after_create
 
   validates_each :creator, :created_on, :title do |record, attr, value|
     record.errors.add(attr, "This field is required") if value.blank? or value.first == ""
   end
   
+  delegate :uploader, to: :DC, at: [:creator]
   # Delegate variables to expose them for the forms
   delegate :title, to: :descMetadata, at: [:main_title]
   delegate :creator, to: :descMetadata, at: [:creator_name]
   delegate :created_on, to: :descMetadata, at: [:creation_date]
   delegate :abstract, to: :descMetadata, at: [:summary]
-  delegate :uploader, to: :descMetadata, at: [:publisher_name]
   delegate :format, to: :descMetadata, at: [:media_type]
   # Additional descriptive metadata
   delegate :contributor, to: :descMetadata, at: [:contributor_name]
@@ -73,5 +76,10 @@ class MediaObject < ActiveFedora::Base
     masterfiles
   end
 
+  private
+    def after_create
+      self.DC.identifier = pid
+      save
+    end
 end
 

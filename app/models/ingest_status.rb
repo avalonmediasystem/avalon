@@ -12,7 +12,7 @@ class IngestStatus < ActiveRecord::Base
           last_index = HYDRANT_STEPS.index(current_step)
         
           unless (current_index.nil? or last_index.nil?)
-            status_flag = (last_index > current_index)
+            status_flag = (last_index >= current_index)
           end
         end
         
@@ -34,12 +34,12 @@ class IngestStatus < ActiveRecord::Base
         
         if published.nil?
           logger.debug "<< Default published flag = false >>"
-          published = false
+          self.published = false
         end
         
         if current_step.nil?
           logger.debug "<< Default step = #{HYDRANT_STEPS.first.step} >>"
-          current_step = HYDRANT_STEPS.first.step
+          self.current_step = HYDRANT_STEPS.first.step
         end
       end
 end

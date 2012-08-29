@@ -21,7 +21,7 @@ set :git_enable_submodules, true
 
 namespace :deploy do
   task :update_code, :roles => :app do
-    run "cd #{current_release}; git pull origin master"
+    run "cd #{current_release}; git checkout Gemfile.lock; git checkout config/role_map_development.yml; git pull origin master"
   end
 
   task :update_submodules, :roles => :app do
