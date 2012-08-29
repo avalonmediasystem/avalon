@@ -72,7 +72,7 @@ describe MediaObjectsController do
     end
     
     context "Metadata retrieved from Fedora should contain all fields" do
-      it "should remember the values for the Contributors"
+      it "should remember the values for the contributors"  
     end
   end
 
