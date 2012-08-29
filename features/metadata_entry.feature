@@ -1,17 +1,8 @@
 Feature: Check basic metadata fields (form)
   I want to see only certain fields for the simple view
-  
-  Scenario: File upload is the first step
-    Given I am logged in as a "cataloger"
-    When I create a new media object
-    Then I should be prompted to upload a file
-
-  Scenario: Basic metadata fields are present in the workflow
-    Given I am logged in as a "cataloger"
-    And that "hydrant:basic-metadata" has been loaded into fedora
-    When I edit the "basic metadata" for "hydrant:basic-metadata"
-    Then I should see only required fields
     
+  # Rewrite this as an RSpec test that creates a new item, injects the
+  # metadata, and then looks at the OM to see if the values persist
   Scenario: Values persist in the system
     Given I am logged in as a "cataloger"
     When I create a new media object
