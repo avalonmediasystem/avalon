@@ -17,18 +17,18 @@
   <% end %>
   
   <%= vid.fieldset "Related people", id: 'related_people' do %>
-    <%= vid.text_fields :contributor, "Contributor", class: 'span12',
+    <%= vid.text_fields :contributor, "Contributor(s)", class: 'span12',
       value: @mediaobject.contributor  %>
     
-    <%= vid.text_fields :publisher, "Publisher", class: 'span12',
+    <%= vid.text_fields :publisher, "Publisher(s)", class: 'span12',
         value: @mediaobject.publisher, minimum_fields: 3  %>
   <% end %>
 
-  <%= vid.fieldset "Related items", id: 'related_items' do %>    
-    <%= vid.text_fields :relatedItem, "--", class: 'span12', 
+  <%# vid.fieldset "Related items", id: 'related_items' do %>    
+    <%# vid.text_fields :relatedItem, "--", class: 'span12', 
       disabled: 'disabled', value: @mediaobject.relatedItem,
       miminum_fields: 3 %>
-  <% end %>
+  <%# end %>
   
   <%= vid.fieldset "Keywords", id: 'keywords' do %>    
     <%= vid.text_field :genre, "Genre", class: 'span12',

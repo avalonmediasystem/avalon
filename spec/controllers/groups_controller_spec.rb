@@ -44,7 +44,7 @@ describe Admin::GroupsController do
       clean_groups [test_group, test_group_new]
     end 
     
-    context "editting a group" do
+    context "editing a group" do
       it "should redirect to sign in page with a notice on when unauthenticated" do    
   
         get 'edit', id: test_group

@@ -11,18 +11,47 @@ describe MediaObject do
     it "should have no errors on created_on if created_on present" do
       MediaObject.new(created_on: "2012-01-01").should have(0).errors_on(:created_on)
     end
-    it "should have errors if fields not present" do
-      MediaObject.new().should have(1).errors_on(:creator)
-      MediaObject.new().should have(1).errors_on(:title)
-      MediaObject.new().should have(1).errors_on(:created_on)
+    it "should have errors if requied fields are missing" do
+      mo = MediaObject.new
+      mo.should have(1).errors_on(:creator)
+      mo.should have(1).errors_on(:title)
+      mo.should have(1).errors_on(:created_on)
     end
-    it "should have errors if fields empty" do
-      MediaObject.new(creator: "").should have(1).errors_on(:creator)
-      MediaObject.new(title: "").should have(1).errors_on(:title)
-      MediaObject.new(created_on: "").should have(1).errors_on(:created_on)
+    it "should have errors if required fields are empty" do
+      mo = MediaObject.new(creator: "", title: "", created_on: "")
+      mo.should have(1).errors_on(:creator)
+      mo.should have(1).errors_on(:title)
+      mo.should have(1).errors_on(:created_on)
     end
   end
 
+  describe "Field persistance" do
+    it "should reject unknown fields"
+    it "should update the contributors field"
+      mo = FactoryGirl.create(:single_entry)
+      mo.contributor = 'Updated contributor'
+      mo.save
+
+      mo = MediaObject.find(mo.pid)
+      mo.contributor.length.should == 1
+      mo.contributor.should == ['Updated contributor']
+    it "should support multiple contributors"
+      mo = FactoryGirl.create(:multiple_entries)
+      mo.contributor.length.should > 1
+    it "should support multiple publishers"
+      mo = FactoryGirl.create(:single_entry)
+      mo.publisher.length.should == 1
+      new_value = [mo.publisher.first, 'Secondary publisher']
+      mo.publisher = new_value
+      
+      puts "<< #{mo.publisher} >>"
+      mo.publisher.length.should > 1
+  end
+  
+  describe "Valid formats" do
+    it "should only accept ISO formatted dates"
+  end
+  
   describe "access" do
     it "should set access level to public" do
       @mediaobject = MediaObject.new

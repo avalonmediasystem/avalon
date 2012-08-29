@@ -4,7 +4,7 @@ require 'spec_helper'
 describe MediaObjectsController do
   render_views
 
-  describe "creating a new media object" do
+  describe "#new" do
     it "should redirect to sign in page with a notice when unauthenticated" do
       lambda { get 'new' }.should_not change { MediaObject.count }
       flash[:notice].should_not be_nil
@@ -35,7 +35,7 @@ describe MediaObjectsController do
     end
   end
 
-  describe "editing a media object" do
+  describe "#edit" do
     it "should redirect to sign in page with a notice on when unauthenticated" do    
       pid = 'hydrant:318'
       load_fixture pid
@@ -64,7 +64,16 @@ describe MediaObjectsController do
 #      response.should be_success
 #      response.should render_template('file_upload')
 #    end
-
+    
+    context "Updating the metadata should result in valid input" do
+      it "should ignore the PID if provided as a parameter"
+      it "should ignore invalid attributes"
+      it "should be able to retrieve an existing record from Fedora"
+    end
+    
+    context "Metadata retrieved from Fedora should contain all fields" do
+      it "should remember the values for the contributors"  
+    end
   end
 
   describe "#show" do
