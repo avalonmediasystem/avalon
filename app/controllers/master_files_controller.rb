@@ -65,7 +65,7 @@ class MasterFilesController < ApplicationController
 	
         if master_file.save
           _, index = media_object.descMetadata.insert_node :relation
-          media_object.descMetadata.update_values({[:relation_type]=>{index=>"Has Version"},[:relation_identifier]=>{index=>master_file.pid}})  	
+          media_object.descMetadata.update_values({[:relation_type]=>{index=>"Has Part"},[:relation_identifier]=>{index=>master_file.pid}})  	
           media_object.save(validate: false)
           sendOriginalToMatterhorn(master_file, file, @upload_format)
         else 
