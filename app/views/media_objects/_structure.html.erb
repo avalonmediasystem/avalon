@@ -59,7 +59,7 @@
 	  	    <a href="<%= masterfile.descMetadata.identifier[0] %>"><%= File.basename(masterfile.url.first)  %></a>
 	  	  </td>
 	  	  <td>
-	  	    <strong>(<%= number_to_human_size(masterfile.size.first) %>)</strong>
+	  	    <strong><%= number_to_human_size(masterfile.size.first) %></strong>
 	  	  </td>
 	 	    </tr>
 	 	  <% end %>
