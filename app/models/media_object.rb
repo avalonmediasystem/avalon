@@ -1,8 +1,10 @@
 class MediaObject < ActiveFedora::Base
   include Hydra::ModelMixins::CommonMetadata
   include Hydra::ModelMethods
-  include ActiveFedora::FileManagement
+  include ActiveFedora::Relationships
   include Hydra::ModelMixins::RightsMetadata
+
+  has_relationship "parts", :has_part
 
   has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: PbcoreDocument	
