@@ -19,20 +19,25 @@
     </div>
     
     <div class="row-fluid whitespace">
-      <section id="player">
-        <% unless @master_file.nil? %>
-          <%= render "modules/video_player",
-            locals: {stream: @master_file.stream,
-                     mimetype: 'video/x-flv',
-                     mediapackaged_id: @master_file.mediapackage_id} %>
-        <% else %>
+      <section id="player">        
+        <% if @masterfiles.nil? || @masterfiles.count == 0 %>
           <div class="well">
             <p>No media is associated with this item</p>
           </div>
+        <% else %>
+          <dl>
+            <dt>Media files</dt>
+            <dd>
+              <ul>
+                <% @masterfiles.each do |masterfile| %>
+                <li><a href="<%= master_file_path(masterfile) %>"><%= masterfile.label %></a></li>
+                <% end %>
+              </ul>
+            </dd>
+          </dl>
         <% end %>
       </section>  
-    </div>
-    <div class="row-fluid whitespace">
+
       <section id="metadata"><%= render "modules/metadata_display" %></section>
     </div>
     

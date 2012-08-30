@@ -153,13 +153,13 @@ class MediaObjectsController < ApplicationController
   def show
     @mediaobject = MediaObject.find(params[:id])
     @masterfiles = load_master_files
-    unless @masterfile.nil? 
-      @stream = @masterfile.url
-      logger.debug("Stream location >> #{@stream}")
-
-      @mediapackage_id = @masterfile.mediapackage_id
-      #@mime_type = @masterfile.streaming_mime_type
-    end
+    # unless @masterfile.nil? 
+    #   @stream = @masterfile.url
+    #   logger.debug("Stream location >> #{@stream}")
+    # 
+    #   @mediapackage_id = @masterfile.mediapackage_id
+    #   #@mime_type = @masterfile.streaming_mime_type
+    # end
   end
 
   def destroy
