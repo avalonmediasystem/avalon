@@ -1,14 +1,15 @@
 <% unless HYDRANT_STEPS.first?(@active_step) %>
-      <%= link_to "Back to #{HYDRANT_STEPS.previous(@active_step).title}",
-            edit_media_object_path(@mediaobject, 
-              step: HYDRANT_STEPS.previous(@active_step).step),
-              id: 'previous_screen',
-              class: 'btn',
-              name: 'previous_screen' %>
+  <%= link_to "Back to #{HYDRANT_STEPS.previous(@active_step).title}",
+        edit_media_object_path(@mediaobject, 
+          step: HYDRANT_STEPS.previous(@active_step).step),
+          id: 'previous_screen',
+          class: 'btn',
+          name: 'previous_screen' %>
 <% end %>
-    <%= hidden_field_tag :step, @active_step %>
+
+<%= hidden_field_tag :step, @active_step %>
 <% if HYDRANT_STEPS.last?(@active_step) %>
-    <%= form.submit "Publish this item" %>
+  <%= form.submit "Publish this item" %>
 <% else %>
-    <%= form.submit "Continue to #{HYDRANT_STEPS.next(@active_step).title}" %>
+  <%= form.submit "Continue to #{HYDRANT_STEPS.next(@active_step).title}" %>
 <% end %>

@@ -10,24 +10,24 @@
     
     <div class="row-fluid whitespace">
       <section id="player">
-        <dl>
-          <dt>Media files</dt>
-          <dd>
-            <% unless @masterfiles.nil? %>
-              <ul>
-                <% @masterfiles.each do |masterfile| %>
-                <li><a href="<%= master_file_path(masterfile) %>"><%= masterfile.label %></a></li>
-                <% end %>
-              </ul>
+        <h3>Associated file(s)</h3>
+          <% unless @masterfiles.nil? %>
+            <ul class="unstyled">
+              <% @masterfiles.each do |masterfile| %>
+                <li><a href="<%= master_file_path(masterfile) %>"><%= masterfile.label %></a> (<%= number_to_human_size(masterfile.size.first) %>)</li>
+              <% end %>
+            </ul>
             <% else %>
               <div class="well">
-                <p>Media is still being processed</p>
+                <p>No files are associated with this resource yet.</p>
               </div>
             <% end %>
-          </dd>
-        </dl>
       </section>  
-      <section id="metadata"><%= render "modules/metadata_display" %></section>
+
+      <section id="metadata" class="whitespace">
+        <h3>Metadata</h3>
+         <%= render "modules/metadata_display" %>
+      </section>
     </div>
 
   <div class="row-fluid">
