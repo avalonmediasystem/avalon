@@ -4,26 +4,6 @@
 
 <legend>Structure</legend>
 
-<% if @masterfiles_with_order.count > 1 %>
-  <p><strong>Versioned</strong> resources are different instances of the same content.</p>
-  <p><strong>Sequential</strong> resources represent an item with a logical order.</p>
-	<%= form_for @mediaobject do |f| %>
-      <div class="btn-group">
-				<%= f.submit 'Hierarchy', class: 'btn hierarchy-btn', disabled: 'true' %>
-				<% if @relType.eql? 'Has Version' %>
-					<%= f.submit 'Sequential', class: 'btn sequence-btn'%>
-					<%= f.submit 'Versioned', class: 'btn btn-success version-btn'%>
-			  <% else %>
-					<%= f.submit 'Sequential', class: 'btn sequence-btn'%>
-					<%= f.submit 'Versioned', class: 'btn version-btn'%>
-				<% end %>
-      </div>
-			<%= hidden_field_tag 'step', 'structure' %>
-			<%= hidden_field_tag 'donot_advance', 'true' %>
-		<% end %>
-  <p>
-<% end %>
-
 <% unless @masterfiles_with_order.nil? %>
 
 	<table class="table table-striped">

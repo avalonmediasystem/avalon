@@ -12,6 +12,8 @@ archivist:
   - 80000496023
   - 80000496644
   - jlhardes
+  - 80000497619
+  - 80000478586
 donor:
   - donor1@example.com
 researcher:
@@ -31,5 +33,7 @@ admin_policy_object_editor:
   - 80000496023
   - 80000496644
   - jlhardes
+  - 80000497619
+  - 80000478586
 patron:
   - patron1
