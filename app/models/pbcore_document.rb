@@ -59,16 +59,16 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     t.pbcore_coverage(:path=>"pbcoreCoverage", :namespace_prefix=>nil) {
       t.coverage(:path=>"coverage", :namespace_prefix=>nil)
     }
-    t.spatial(:ref => :pbcore_coverage,
+    t.pbcore_spatial(:ref => :pbcore_coverage,
       :path=>'pbcoreCoverage[coverageType="spatial"]',
       :namespace_prefix=>nil
     )
-    t.temporal(:ref => :pbcore_coverage,
+    t.pbcore_temporal(:ref => :pbcore_coverage,
       :path=>'pbcoreCoverage[coverageType="temporal"]',
       :namespace_prefix=>nil
     )
-    t.place(:proxy => [:spatial, :coverage])
-    t.time(:proxy => [:temporal, :coverage])
+    t.spatial(:proxy => [:pbcore_spatial, :coverage])
+    t.temporal(:proxy => [:pbcore_temporal, :coverage])
 
     # Contributor names and roles
     t.creator(:path=>"pbcoreCreator", :namespace_prefix=>nil) {

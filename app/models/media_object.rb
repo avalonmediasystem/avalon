@@ -26,8 +26,8 @@ class MediaObject < ActiveFedora::Base
   delegate :contributor, to: :descMetadata, at: [:contributor_name]
   delegate :publisher, to: :descMetadata, at: [:publisher_name]
   delegate :genre, to: :descMetadata, at: [:genre]
-  delegate :place, to: :descMetadata, at: [:place]
-  delegate :time, to: :descMetadata, at: [:time]
+  delegate :spatial, to: :descMetadata, at: [:spatial]
+  delegate :temporal, to: :descMetadata, at: [:temporal]
   delegate :subject, to: :descMetadata, at: [:lc_subject]
   delegate :relatedItem, to: :descMetadata, at: [:relation]
   

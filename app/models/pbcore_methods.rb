@@ -102,5 +102,31 @@ module PbcoreMethods
     self.dirty = true
   end
 
-
+  def scrub_hash(input = {}, datastream = :descMetadata)
+    logger.debug "<< SCRUB HASH >>"
+    logger.debug "<< Before => #{input.inspect} >>"
+    
+    input.each do |k, v|
+     input.remove(k) unless self.datastream.class.terminology.has_term?(k)
+    end
+    
+    logger.debug "<< After => #{input.inspect} >>"
+    input
+  end
+   
+  def update_document(values = {})
+    values.each do |element, value|  
+      # See if the node exists. If not inject a new one then set the new value
+      #
+      # node.exists?(element.to_sym)
+      
+    end
+    
+    # Next iterate over each remaining element. If there are more elements than in the
+    # array then remove the extra values from the document
+    
+    # Commit the new value to the document
+    
+    # Save the document
+  end
 end

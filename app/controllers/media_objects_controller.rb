@@ -35,7 +35,6 @@ class MediaObjectsController < ApplicationController
     @active_step = params[:step] || @ingest_status.current_step
     prev_step = HYDRANT_STEPS.previous(@active_step)
     
-    
     unless prev_step.nil? || @ingest_status.completed?(prev_step.step) 
       redirect_to edit_media_object_path(@mediaobject)
       return
@@ -74,11 +73,19 @@ class MediaObjectsController < ApplicationController
         logger.debug "<< #{params[:media_object]} >>"
         
         # Quick, dirty, and hacky but it works right?
-        params[:media_object].each do |key, value|
-          @mediaobject.update_attributes({key.to_s => value}) unless 'pid' == key
-          logger.debug "<< Updating #{key} => #{value} >>"
-          logger.debug "<< #{@mediaobject.descMetadata.to_xml} >>"
-        end
+        metadata = params[:media_object]
+        
+        # Not needed after all (!)
+        #logger.debug "<< Before => #{metadata.inspect} >>"
+        #metadata.each do |k, v|
+        #  logger.debug "<< #{k} exists? #{@mediaobject.descMetadata.class.terminology.has_term?(k.to_sym)} >>"
+        #  metadata.delete(k) unless @mediaobject.descMetadata.class.terminology.has_term?(k.to_sym)
+        #end
+        #logger.debug "<< After => #{metadata.inspect} >>"
+        
+        @mediaobject.descMetadata.update_indexed_attributes(metadata) 
+        
+        logger.debug "<< Updating descriptive metadata >>"
         # End ugly hack   
         @mediaobject.save
 
