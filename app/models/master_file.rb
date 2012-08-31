@@ -41,7 +41,7 @@ class MasterFile < FileAsset
     descMetadata.description.first
   end
 
-  def status_complete
+  def percent_complete
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
     totalOperations = matterhorn_response.workflow.operations.operation.length
     finishedOperations = 0
