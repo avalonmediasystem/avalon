@@ -34,9 +34,9 @@
   </dd>
 
   <dt>Summary</dt>
-  <% unless @mediaobject.abstract.nil? or
-       @mediaobject.abstract.empty? %>
-    <dd><%= wrap_text(@mediaobject.abstract.first) %></dd>
+  <% unless @mediaobject.summary.nil? or
+       @mediaobject.summary.empty? %>
+    <dd><%= wrap_text(@mediaobject.summary.first) %></dd>
   <% else %>
     <dd><em>No summary available</em></dd>
   <% end %>

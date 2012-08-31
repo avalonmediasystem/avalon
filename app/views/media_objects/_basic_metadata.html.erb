@@ -7,12 +7,12 @@
   <%= hidden_field_tag :step, @active_step %>
   <%= vid.fieldset "Required fields", id: 'required_fields' do %>    
   
-    <%= vid.text_field :main_title, "Title", class: 'span12', value: @mediaobject.title.first %>
-    <%= vid.text_field :creator_name, "Creator", class: 'span12',
+    <%= vid.text_field :title, "Title", class: 'span12', value: @mediaobject.title.first %>
+    <%= vid.text_field :creator, "Creator", class: 'span12',
       value: @mediaobject.creator.first %>
-    <%= vid.text_field :creation_date, "Created on", class: 'span12',
+    <%= vid.text_field :created_on, "Created on", class: 'span12',
       value: @mediaobject.created_on.first %>
-    <%= vid.text_area :summary, "Summary", class: 'span12', rows: 6,
+    <%= vid.text_area :abstract, "Summary", class: 'span12', rows: 6,
       value: @mediaobject.abstract.first %>
   <% end %>
   
@@ -38,7 +38,7 @@
     <%= vid.text_fields :spatial, "Important locations", class: 'span12', 
        minimum_fields: 2 %>
 
-    <%= vid.text_fields :lc_subject, "Subject(s)", class: 'span12' %>
+    <%= vid.text_fields :subject, "Subject(s)", class: 'span12' %>
   <% end %>
 
  <%= vid.actions do |actions| %>

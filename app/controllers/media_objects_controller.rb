@@ -70,22 +70,22 @@ class MediaObjectsController < ApplicationController
       # When adding resource description
       when 'resource-description' 
         logger.debug "<< Populating required metadata fields >>"
-        logger.debug "<< #{params[:media_object]} >>"
         
         # Quick, dirty, and hacky but it works right?
         metadata = params[:media_object]
+        logger.debug "<< #{metadata} >>"
         
-        # Not needed after all (!)
-        #logger.debug "<< Before => #{metadata.inspect} >>"
-        #metadata.each do |k, v|
-        #  logger.debug "<< #{k} exists? #{@mediaobject.descMetadata.class.terminology.has_term?(k.to_sym)} >>"
-        #  metadata.delete(k) unless @mediaobject.descMetadata.class.terminology.has_term?(k.to_sym)
-        #end
-        #logger.debug "<< After => #{metadata.inspect} >>"
-        
+        # This shouldn't be needed if there is a way to follow the delegate method
+        # and set the values accordingly. Maybe iterate and test for a respond_to?
+        # If so set the field. There might be some issues down the road but it works
+        # for now
+        metadata.each do |k, v|
+          @mediaobject.send("#{k}=", v) if @mediaobject.respond_to?("#{k}=")
+        end
         @mediaobject.descMetadata.update_indexed_attributes(metadata) 
         
         logger.debug "<< Updating descriptive metadata >>"
+        logger.debug "<< #{@mediaobject.inspect} >>"
         # End ugly hack   
         @mediaobject.save
 

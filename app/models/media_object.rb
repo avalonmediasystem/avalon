@@ -12,6 +12,7 @@ class MediaObject < ActiveFedora::Base
   after_create :after_create
 
   validates_each :creator, :created_on, :title do |record, attr, value|
+    logger.debug "<< #{attr} => #{value} >>"
     record.errors.add(attr, "This field is required") if value.blank? or value.first == ""
   end
   
