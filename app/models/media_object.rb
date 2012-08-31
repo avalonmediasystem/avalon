@@ -79,6 +79,31 @@ class MediaObject < ActiveFedora::Base
     masterfiles
   end
 
+  def update_datastream(datastream = :descMetadata, values = {})
+    values.each do |k, v|
+      update_attribute(k, v)
+    end
+  end
+  
+  def update_attribute(attribute, value = [])
+    active_nodes = descMetadata.find_by_terms(attribute)
+    active_nodes.length.times do |i|
+      descMetadata.remove_node(attribute, i)
+    end
+    
+    if descMetadata.respond_to?("#{attribute}_template".to_sym)
+      value.length.times do |i|
+        descMetadata.insert_node(attribute, value[i])
+      end
+    else
+      if self.respond_to?("#{attribute}=", value)
+        self.send("#{attribute}=", value)
+      else
+        descMetadata.send("#{attribute}=", value)
+      end
+    end
+  end
+  
   private
     def after_create
       self.DC.identifier = pid

@@ -82,7 +82,7 @@ class MediaObjectsController < ApplicationController
         metadata.each do |k, v|
           @mediaobject.send("#{k}=", v) if @mediaobject.respond_to?("#{k}=")
         end
-        @mediaobject.descMetadata.update_indexed_attributes(metadata) 
+        @mediaobject.update_datastream(:descMetadata, metadata)
         
         logger.debug "<< Updating descriptive metadata >>"
         logger.debug "<< #{@mediaobject.inspect} >>"
