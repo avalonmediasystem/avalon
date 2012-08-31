@@ -8,12 +8,12 @@ describe MasterFile do
       mo.save(validate: false)
       mf.save
       mf.relationships_by_name[:self]["part_of"].size.should == 0
-      mo.relationships_by_name[:self]["parts_outbound"].size.should == 0
+      mo.relationships_by_name[:self]["parts"].size.should == 0
       mf.container = mo
       mf.relationships_by_name[:self]["part_of"].size.should == 1
       mf.relationships_by_name[:self]["part_of"].first.should eq "info:fedora/#{mo.pid}"
-      mo.relationships_by_name[:self]["parts_outbound"].size.should == 1
-      mo.relationships_by_name[:self]["parts_outbound"].first.should eq "info:fedora/#{mf.pid}"
+      mo.relationships_by_name[:self]["parts"].size.should == 1
+      mo.relationships_by_name[:self]["parts"].first.should eq "info:fedora/#{mf.pid}"
       mf.relationships_are_dirty.should be true
       mo.relationships_are_dirty.should be true
     end
