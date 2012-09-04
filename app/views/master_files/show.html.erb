@@ -34,7 +34,7 @@
     <div class="row-fluid">
       <div class="alert alert-info">
       <h4 class="alert-heading">Parent item</h4>
-      <p><%= link_to @mediaobject.title.first, @mediaobject %></p>
+      <p><%= link_to @mediaobject.title.first, media_object_path(@mediaobject.pid) %></p>
       <address></address>
       </div>
       

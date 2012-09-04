@@ -1,8 +1,10 @@
 class MediaObject < ActiveFedora::Base
   include Hydra::ModelMixins::CommonMetadata
   include Hydra::ModelMethods
-  include ActiveFedora::FileManagement
+  include ActiveFedora::Relationships
   include Hydra::ModelMixins::RightsMetadata
+
+  has_relationship "parts", :has_part
 
   has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: PbcoreDocument	
@@ -10,6 +12,7 @@ class MediaObject < ActiveFedora::Base
   after_create :after_create
 
   validates_each :creator, :created_on, :title do |record, attr, value|
+    logger.debug "<< #{attr} => #{value} >>"
     record.errors.add(attr, "This field is required") if value.blank? or value.first == ""
   end
   
@@ -24,8 +27,8 @@ class MediaObject < ActiveFedora::Base
   delegate :contributor, to: :descMetadata, at: [:contributor_name]
   delegate :publisher, to: :descMetadata, at: [:publisher_name]
   delegate :genre, to: :descMetadata, at: [:genre]
-  delegate :place, to: :descMetadata, at: [:place]
-  delegate :time, to: :descMetadata, at: [:time]
+  delegate :spatial, to: :descMetadata, at: [:spatial]
+  delegate :temporal, to: :descMetadata, at: [:temporal]
   delegate :subject, to: :descMetadata, at: [:lc_subject]
   delegate :relatedItem, to: :descMetadata, at: [:relation]
   
@@ -76,6 +79,31 @@ class MediaObject < ActiveFedora::Base
     masterfiles
   end
 
+  def update_datastream(datastream = :descMetadata, values = {})
+    values.each do |k, v|
+      update_attribute(k, v)
+    end
+  end
+  
+  def update_attribute(attribute, value = [])
+    active_nodes = descMetadata.find_by_terms(attribute)
+    active_nodes.length.times do |i|
+      descMetadata.remove_node(attribute, i)
+    end
+    
+    if descMetadata.respond_to?("#{attribute}_template".to_sym)
+      value.length.times do |i|
+        descMetadata.insert_node(attribute, value[i])
+      end
+    else
+      if self.respond_to?("#{attribute}=", value)
+        self.send("#{attribute}=", value)
+      else
+        descMetadata.send("#{attribute}=", value)
+      end
+    end
+  end
+  
   private
     def after_create
       self.DC.identifier = pid

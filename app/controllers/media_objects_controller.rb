@@ -35,7 +35,6 @@ class MediaObjectsController < ApplicationController
     @active_step = params[:step] || @ingest_status.current_step
     prev_step = HYDRANT_STEPS.previous(@active_step)
     
-    
     unless prev_step.nil? || @ingest_status.completed?(prev_step.step) 
       redirect_to edit_media_object_path(@mediaobject)
       return
@@ -71,14 +70,22 @@ class MediaObjectsController < ApplicationController
       # When adding resource description
       when 'resource-description' 
         logger.debug "<< Populating required metadata fields >>"
-        logger.debug "<< #{params[:media_object]} >>"
         
         # Quick, dirty, and hacky but it works right?
-        params[:media_object].each do |key, value|
-          @mediaobject.update_attributes({key.to_s => value}) unless 'pid' == key
-          logger.debug "<< Updating #{key} => #{value} >>"
-          logger.debug "<< #{@mediaobject.descMetadata.to_xml} >>"
+        metadata = params[:media_object]
+        logger.debug "<< #{metadata} >>"
+        
+        # This shouldn't be needed if there is a way to follow the delegate method
+        # and set the values accordingly. Maybe iterate and test for a respond_to?
+        # If so set the field. There might be some issues down the road but it works
+        # for now
+        metadata.each do |k, v|
+          @mediaobject.send("#{k}=", v) if @mediaobject.respond_to?("#{k}=")
         end
+        @mediaobject.update_datastream(:descMetadata, metadata)
+        
+        logger.debug "<< Updating descriptive metadata >>"
+        logger.debug "<< #{@mediaobject.inspect} >>"
         # End ugly hack   
         @mediaobject.save
 
@@ -136,17 +143,19 @@ class MediaObjectsController < ApplicationController
     else
       unless params[:donot_advance] == "true"
         @ingest_status = update_ingest_status(params[:pid], @active_step)
-        unless @ingest_status.published
-          @active_step = @ingest_status.current_step
+        if HYDRANT_STEPS.has_next?(@active_step)
+          @active_step = HYDRANT_STEPS.next(@active_step).step
+        elsif @ingest_status.published
+          @active_step = "published"
         end
       end
 
       logger.debug "<< ACTIVE STEP => #{@active_step} >>"
       logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
       respond_to do |format|
-        format.html { @ingest_status.published ? redirect_to(media_object_path(@mediaobject)) : redirect_to(get_redirect_path(@active_step)) }
+        format.html { (@ingest_status.published and @ingest_status.current?(@active_step)) ? redirect_to(media_object_path(@mediaobject)) : redirect_to(get_redirect_path(@active_step)) }
         format.json { render :json => nil }
-      end      
+      end
     end
   end
   
@@ -221,13 +230,16 @@ class MediaObjectsController < ApplicationController
     else
       active_step = active_step || @ingest_status.current_step
       logger.debug "<< COMPLETED : #{@ingest_status.completed?(active_step)} >>"
-      @ingest_status.published = true if HYDRANT_STEPS.last? active_step and @ingest_status.completed?(active_step)
-      logger.debug "<< PUBLISHED : #{@ingest_status.published} >>"
       
-      unless (@ingest_status.published or not @ingest_status.completed?(active_step))
+      if HYDRANT_STEPS.last? active_step and @ingest_status.completed? active_step
+        @ingest_status.publish
+      end
+      logger.debug "<< PUBLISHED : #{@ingest_status.published} >>"
+
+      if @ingest_status.current?(active_step) and not @ingest_status.published
         logger.debug "<< ADVANCING to the next step in the workflow >>"
         logger.debug "<< #{active_step} >>"
-        @ingest_status.current_step = HYDRANT_STEPS.next(active_step).step
+        @ingest_status.current_step = @ingest_status.advance
       end
     end
 

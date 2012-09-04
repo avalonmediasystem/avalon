@@ -2,7 +2,7 @@ class MasterFile < FileAsset
   include ActiveFedora::Relationships
 
   has_relationship "part_of", :is_part_of
-  has_bidirectional_relationship "derivatives", :has_derivation, :is_derivation_of
+  has_relationship "derivatives", :has_derivation
   has_metadata name: 'descMetadata', type: HydrantDublinCore
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
   
@@ -41,7 +41,7 @@ class MasterFile < FileAsset
     descMetadata.description.first
   end
 
-  def status_complete
+  def percent_complete
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
     totalOperations = matterhorn_response.workflow.operations.operation.length
     finishedOperations = 0

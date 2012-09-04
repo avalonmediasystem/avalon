@@ -26,6 +26,15 @@ class IngestStatus < ActiveRecord::Base
       def active?(step_name)
         completed?(step_name) or current?(step_name)
       end
+
+      def advance
+        self.current_step = HYDRANT_STEPS.next(self.current_step).step
+      end
+
+      def publish
+        self.current_step = "published"
+        self.published = true
+      end
       
       protected
       def reset_values
