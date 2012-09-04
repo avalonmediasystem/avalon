@@ -17,8 +17,8 @@
         @_states_order.freeze
       end
       
-      def first?(step_name)
-        step_name == @_states_order.first
+      def first?(step)
+        step == @_states_order.first
       end
       
       def first
@@ -29,17 +29,21 @@
         @_states[@_states_order.last]
       end
       
-      def last?(step_name)
-        step_name == @_states_order.last
+      def last?(step)
+        step == @_states_order.last
+      end
+
+      def has_next?(step)
+        not self.next(step).nil?
       end
       
-      def next(step_name)
-        offset = get_key_index(step_name)
+      def next(step)
+        offset = get_key_index(step)
         next_step = nil
         
         puts "<< #{offset} (#{next_step}) >>"
         
-        unless last?(step_name) or offset.nil?
+        unless last?(step) or offset.nil?
           offset = offset + 1
           next_step = @_states[@_states_order[offset]]
         end
@@ -48,11 +52,11 @@
         next_step
       end
       
-      def previous(step_name)
-        offset = get_key_index(step_name)
+      def previous(step)
+        offset = get_key_index(step)
         previous_step = nil
         
-        unless first?(step_name) or offset.nil?
+        unless first?(step) or offset.nil?
           offset = offset - 1
           previous_step = @_states[@_states_order[offset]]
         end
@@ -61,8 +65,8 @@
         previous_step
       end
       
-      def index(step_name)
-        index = get_key_index(step_name)
+      def index(step)
+        index = get_key_index(step)
         unless index.nil?
           index + 1
         else
@@ -70,8 +74,8 @@
         end
       end
       
-      def exists?(step_name)
-        @_states.key?(step_name)
+      def exists?(step)
+        @_states.key?(step)
       end
       
       # Override so it returns a array of just the steps
@@ -79,17 +83,17 @@
         @_states.values
       end
       
-      def template(step_name)
+      def template(step)
         logger.debug "<< TEMPLATE >>"
-        logger.debug "<< @_states[#{step_name}] >>"
-        logger.debug "<< #{@_states[step_name]} >>"
+        logger.debug "<< @_states[#{step}] >>"
+        logger.debug "<< #{@_states[step]} >>"
         
-        target_step = @_states[step_name]
+        target_step = @_states[step]
         target_step.template
       end
             
       protected
-      def get_key_index(step_name)
-        @_states_order.index(step_name)
+      def get_key_index(step)
+        @_states_order.index(step)
       end
     end

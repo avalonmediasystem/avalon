@@ -143,17 +143,19 @@ class MediaObjectsController < ApplicationController
     else
       unless params[:donot_advance] == "true"
         @ingest_status = update_ingest_status(params[:pid], @active_step)
-        unless @ingest_status.published
-          @active_step = @ingest_status.current_step
+        if HYDRANT_STEPS.has_next?(@active_step)
+          @active_step = HYDRANT_STEPS.next(@active_step).step
+        elsif @ingest_status.published
+          @active_step = "published"
         end
       end
 
       logger.debug "<< ACTIVE STEP => #{@active_step} >>"
       logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
       respond_to do |format|
-        format.html { @ingest_status.published ? redirect_to(media_object_path(@mediaobject)) : redirect_to(get_redirect_path(@active_step)) }
+        format.html { (@ingest_status.published and @ingest_status.current?(@active_step)) ? redirect_to(media_object_path(@mediaobject)) : redirect_to(get_redirect_path(@active_step)) }
         format.json { render :json => nil }
-      end      
+      end
     end
   end
   
@@ -228,13 +230,16 @@ class MediaObjectsController < ApplicationController
     else
       active_step = active_step || @ingest_status.current_step
       logger.debug "<< COMPLETED : #{@ingest_status.completed?(active_step)} >>"
-      @ingest_status.published = true if HYDRANT_STEPS.last? active_step and @ingest_status.completed?(active_step)
-      logger.debug "<< PUBLISHED : #{@ingest_status.published} >>"
       
-      unless (@ingest_status.published or not @ingest_status.completed?(active_step))
+      if HYDRANT_STEPS.last? active_step and @ingest_status.completed? active_step
+        @ingest_status.publish
+      end
+      logger.debug "<< PUBLISHED : #{@ingest_status.published} >>"
+
+      if @ingest_status.current?(active_step) and not @ingest_status.published
         logger.debug "<< ADVANCING to the next step in the workflow >>"
         logger.debug "<< #{active_step} >>"
-        @ingest_status.current_step = HYDRANT_STEPS.next(active_step).step
+        @ingest_status.current_step = @ingest_status.advance
       end
     end
 
