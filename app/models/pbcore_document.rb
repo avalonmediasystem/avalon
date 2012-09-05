@@ -1,6 +1,6 @@
 class PbcoreDocument < ActiveFedora::NokogiriDatastream
   include PbcoreMethods
-
+  
   set_terminology do |t|
     t.root(:path=>"pbcoreDescriptionDocument", :xmlns => '', :namespace_prefix=>nil)
 
@@ -162,7 +162,20 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
 
   end
 
+  define_template :contributor do |xml, name, role="contributor"|
+    xml.pbcoreContributor {
+      xml.contributor { xml.text name }
+      xml.contributorRole { xml.text role }
+    }
+  end
 
+  define_template :publisher do |xml, name, role="contributor"|
+    xml.pbcorePublisher {
+      xml.publisher { xml.text name }
+      xml.publisherRole { xml.text role }
+    }
+  end
+    
   def self.xml_template
     builder = Nokogiri::XML::Builder.new do |xml|
 
