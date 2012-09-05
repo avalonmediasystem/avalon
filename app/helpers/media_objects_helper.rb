@@ -22,6 +22,10 @@ module MediaObjectsHelper
 	    end
 	  end
 
+    def display_multiple(value, delim='; ')
+      value.select { |v| not (v.nil? or v.strip.empty?) }.join(delim)
+    end
+
 	  def search_result_label(item)
 	     label = ''
 	     unless item["title_t"].nil? or item["title_t"].empty?
