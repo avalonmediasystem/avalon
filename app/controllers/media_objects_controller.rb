@@ -102,35 +102,27 @@ class MediaObjectsController < ApplicationController
         logger.debug "<< Groups : #{@mediaobject.read_groups} >>"
 
       when 'structure'
-        if !params[:commit].nil?
-          rel = "Has Version"
-          case params[:commit]
-            when 'Sequence'
-              rel = "Has Part"
-            when 'Hierarchy'
-              rel = "Has Part"
-          end
-
-          @mediaobject.parts.each_with_index do |master_file, index|
-            @mediaobject.descMetadata.update_values({[:relation_type]=>{index=>rel}})  	
-          end
-        elsif !params[:masterfile_ids].nil?
-          @mediaobject.parts.each_with_index do |master_file, index|
-            mf_id = params[:masterfile_ids][index]
-            @mediaobject.descMetadata.update_values({[:relation_identifier]=>{index=>mf_id}})  	
-          end
-          
+        if !params[:masterfile_ids].nil?
           masterfiles = []
           params[:masterfile_ids].each do |mf_id|
             mf = MasterFile.find(mf_id)
             masterfiles << mf
           end
-          # Inserts logic to rearrange mediaobject.parts
-          #@mediaobject.parts = masterfiles
-          @mediaobject.save
+
+          # Clean out the parts
+          masterfiles.each do |mf|
+            @mediaobject.parts_remove mf
+          end
+          @mediaobject.save(validate: false)
+          
+          # Puts parts back in order
+          masterfiles.each do |mf|
+            mf.container = @mediaobject
+            mf.save
+          end
+          @mediaobject.save(validate: false)
+
         end
-        
-        @mediaobject.save(validate: false)
         
       # When looking at the preview page use a version of the show page
       when 'preview' 
@@ -143,30 +135,25 @@ class MediaObjectsController < ApplicationController
     else
       unless params[:donot_advance] == "true"
         @ingest_status = update_ingest_status(params[:pid], @active_step)
-        unless @ingest_status.published
-          @active_step = @ingest_status.current_step
+        if HYDRANT_STEPS.has_next?(@active_step)
+          @active_step = HYDRANT_STEPS.next(@active_step).step
+        elsif @ingest_status.published
+          @active_step = "published"
         end
       end
 
       logger.debug "<< ACTIVE STEP => #{@active_step} >>"
       logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
       respond_to do |format|
-        format.html { @ingest_status.published ? redirect_to(media_object_path(@mediaobject)) : redirect_to(get_redirect_path(@active_step)) }
+        format.html { (@ingest_status.published and @ingest_status.current?(@active_step)) ? redirect_to(media_object_path(@mediaobject)) : redirect_to(get_redirect_path(@active_step)) }
         format.json { render :json => nil }
-      end      
+      end
     end
   end
   
   def show
     @mediaobject = MediaObject.find(params[:id])
     @masterfiles = load_master_files
-    # unless @masterfile.nil? 
-    #   @stream = @masterfile.url
-    #   logger.debug("Stream location >> #{@stream}")
-    # 
-    #   @mediapackage_id = @masterfile.mediapackage_id
-    #   #@mime_type = @masterfile.streaming_mime_type
-    # end
   end
 
   def destroy
@@ -184,13 +171,14 @@ class MediaObjectsController < ApplicationController
   end
   
   def load_master_files
-    unless @mediaobject.parts.nil? or @mediaobject.parts.empty?
-      master_files = []
-      @mediaobject.parts.each { |part| master_files << MasterFile.find(part.pid) }
-      master_files
-    else
-      nil
-    end
+    @mediaobject.parts
+    # unless @mediaobject.parts.nil? or @mediaobject.parts.empty?
+    #   master_files = []
+    #   @mediaobject.parts.each { |part| master_files << MasterFile.find(part.pid) }
+    #   master_files
+    # else
+    #   nil
+    # end
   end
   
   def report_errors
@@ -228,13 +216,16 @@ class MediaObjectsController < ApplicationController
     else
       active_step = active_step || @ingest_status.current_step
       logger.debug "<< COMPLETED : #{@ingest_status.completed?(active_step)} >>"
-      @ingest_status.published = true if HYDRANT_STEPS.last? active_step and @ingest_status.completed?(active_step)
-      logger.debug "<< PUBLISHED : #{@ingest_status.published} >>"
       
-      unless (@ingest_status.published or not @ingest_status.completed?(active_step))
+      if HYDRANT_STEPS.last? active_step and @ingest_status.completed? active_step
+        @ingest_status.publish
+      end
+      logger.debug "<< PUBLISHED : #{@ingest_status.published} >>"
+
+      if @ingest_status.current?(active_step) and not @ingest_status.published
         logger.debug "<< ADVANCING to the next step in the workflow >>"
         logger.debug "<< #{active_step} >>"
-        @ingest_status.current_step = HYDRANT_STEPS.next(active_step).step
+        @ingest_status.current_step = @ingest_status.advance
       end
     end
 
