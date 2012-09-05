@@ -1,8 +1,7 @@
 <fieldset id='uploader'>
     <legend>Manage file(s)</legend>
 
-
-		<% unless @masterfiles.nil? %>
+		<% unless @masterfiles.nil? || @masterfiles.empty? %>
 
 	  <table class="table table-striped">
         <thead>

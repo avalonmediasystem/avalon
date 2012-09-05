@@ -64,9 +64,9 @@ class MasterFilesController < ApplicationController
         master_file.media_type = @upload_format
 	
         if master_file.save
-          _, index = media_object.descMetadata.insert_node :relation
-          media_object.descMetadata.update_values({[:relation_type]=>{index=>"Has Part"},[:relation_identifier]=>{index=>master_file.pid}})  	
-          media_object.save(validate: false)
+          # _, index = media_object.descMetadata.insert_node :relation
+          # media_object.descMetadata.update_values({[:relation_type]=>{index=>"Has Part"},[:relation_identifier]=>{index=>master_file.pid}})    
+          # media_object.save(validate: false)
           sendOriginalToMatterhorn(master_file, file, @upload_format)
         else 
           flash[:errors] = "Error storing file"
@@ -100,22 +100,20 @@ class MasterFilesController < ApplicationController
     logger.debug "<< Filesize #{ file.size.to_s } >>"
     master_file.size = file.size.to_s
     
- 		notice = []
     apply_depositor_metadata(master_file)
 
-    #notice << render_to_string(:partial=>'file_assets/asset_saved_flash', :locals => { :file_asset => master_file })
     master_file.container = MediaObject.find(params[:container_id])
-    master_file.container.save
+    master_file.save
+    master_file.container.save(validate: false)
 
-      ## Apply any posted file metadata
-      unless params[:asset].nil?
-        logger.debug("applying submitted file metadata: #{@sanitized_params.inspect}")
-        apply_file_metadata
-      end
+    ## Apply any posted file metadata
+    unless params[:asset].nil?
+      logger.debug("applying submitted file metadata: #{@sanitized_params.inspect}")
+      apply_file_metadata
+    end
 
-      # If redirect_params has not been set, use {:action=>:index}
-      logger.debug "Created #{master_file.pid}."
-      notice	
+    # If redirect_params has not been set, use {:action=>:index}
+    logger.debug "Created #{master_file.pid}."
     master_file
   end
 
@@ -156,17 +154,20 @@ class MasterFilesController < ApplicationController
       return
     end
 
-    authorize! :edit, parent, message: "You do not have sufficient privileges to delete files"
+    # Is this necessary with load_and_authorize_resource?
+    #authorize! :edit, parent, message: "You do not have sufficient privileges to delete files"
 
-    parent.parts.each_with_index do |masterfile, index| 
-      puts parent.descMetadata.relation_identifier[index].inspect
-      if masterfile.pid.eql? parent.descMetadata.relation_identifier[index]
-        parent.descMetadata.remove_node(:relation, index)  
-        break	
-      end
-    end
+    # parent.parts.each_with_index do |masterfile, index| 
+    #   puts parent.descMetadata.relation_identifier[index].inspect
+    #   if masterfile.pid.eql? parent.descMetadata.relation_identifier[index]
+    #     parent.descMetadata.remove_node(:relation, index)  
+    #     break  
+    #   end
+    # end
+    # 
+    # parent.remove_relationship(:has_part, master_file)
     
-    parent.remove_relationship(:has_part, master_file)
+    parent.parts_remove master_file
     parent.save(validate: false)
     
     Rubyhorn.client.stop(master_file.source.first)
