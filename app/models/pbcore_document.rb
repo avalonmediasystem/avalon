@@ -175,6 +175,20 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
       xml.publisherRole { xml.text role }
     }
   end
+
+  define_template :spatial do |xml, space|
+    xml.pbcoreCoverage {
+      xml.coverage { xml.text space }
+      xml.coverageType { xml.text "spatial" }
+    }
+  end
+
+  define_template :temporal do |xml, time|
+    xml.pbcoreCoverage {
+      xml.coverage { xml.text time }
+      xml.coverageType { xml.text "temporal" }
+    }
+  end
     
   def self.xml_template
     builder = Nokogiri::XML::Builder.new do |xml|
@@ -189,53 +203,7 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
           :descriptionTypeRef=>"http://pbcore.org/vocabularies/pbcoreDescription/descriptionType#description",
           :annotation=>"Summary"
         )
-        xml.pbcoreDescription(:descriptionType=>"Table of Contents",
-          :descriptionTypeSource=>"pbcoreDescription/descriptionType",
-          :descriptionTypeRef=>"http://pbcore.org/vocabularies/pbcoreDescription/descriptionType#table-of-contents",
-          :annotation=>"Parts List"
-        )
-        xml.pbcoreCoverage {
-          xml.coverage
-          xml.coverageType {
-            xml.text "spatial"
-          }
-        }
-        xml.pbcoreCoverage {
-          xml.coverage
-          xml.coverageType {
-            xml.text "temporal"
-          }
-        }
-        xml.pbcoreAnnotation(:annotationType=>"Notes")
-
-        #
-        # Default physical item
-        #
-        xml.pbcoreInstantiation {
-
-          # Item details
-          xml.instantiationIdentifier()
-          xml.instantiationDate(:dateType=>"created")
-          xml.instantiationPhysical(:source=>"PBCore instantiationPhysical")
-          xml.instantiationStandard
-          xml.instantiationLocation {
-          xml.instantiationMediaType(:source=>"PBCore instantiationMediaType") {
-            xml.text "Moving image"
-          }
-          xml.instantiationGenerations(:source=>"PBCore instantiationGenerations") {
-            xml.text "Original"
-          }
-          xml.instantiationLanguage(:source=>"ISO 639.2", :ref=>"http://www.loc.gov/standards/iso639-2/php/code_list.php") {
-            xml.text "eng"
-          }
-          xml.instantiationRights {
-            xml.rightsSummary
-          }
-
-        }
-
       }
-    }
     end
     return builder.doc
   end
