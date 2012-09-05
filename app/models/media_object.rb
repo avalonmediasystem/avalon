@@ -86,19 +86,24 @@ class MediaObject < ActiveFedora::Base
   end
   
   def update_attribute(attribute, value = [])
+    logger.debug "<< UPDATE ATTRIBUTE >>"
     active_nodes = descMetadata.find_by_terms(attribute)
     active_nodes.length.times do |i|
+      logger.debug "<< Removing node #{attribute}[#{i}] >>"
       descMetadata.remove_node(attribute, i)
     end
     
-    if descMetadata.respond_to?("#{attribute}_template".to_sym)
+    if descMetadata.template_registry.has_node_type?(attribute.to_sym)
       value.length.times do |i|
-        descMetadata.insert_node(attribute, value[i])
+      logger.debug "<< Adding node #{attribute}[#{i}] >>"
+        descMetadata.after_node(["#{attribute.to_sym}" => 0], attribute.to_sym, value[i], 'default')
       end
     else
       if self.respond_to?("#{attribute}=", value)
+        logger.debug "<< Calling delegated method #{attribute} >>"
         self.send("#{attribute}=", value)
       else
+        logger.debug "<< Calling descMetadata method #{attribute} >>"
         descMetadata.send("#{attribute}=", value)
       end
     end
