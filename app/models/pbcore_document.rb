@@ -46,7 +46,6 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     t.lc_genre(:path=>"pbcoreGenre", :namespace_prefix=>nil, :attributes=>{ :source=>"Library of Congress Genre/Form Terms", :ref=>"http://id.loc.gov/authorities/genreForms.html" })
     t.lc_subject_genre(:path=>"pbcoreGenre", :namespace_prefix=>nil, :attributes=>{ :source=>"Library of Congress Subject Headings", :ref=>"http://id.loc.gov/authorities/subjects.html" })
 
-
     # Series field
     t.relation(:path=>"pbcoreRelation", :namespace_prefix=>nil) {
       t.pbcoreRelationType(:namespace_prefix=>nil)
@@ -58,22 +57,17 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     # Terms for time and place
     t.pbcore_coverage(:path=>"pbcoreCoverage", :namespace_prefix=>nil) {
       t.coverage(:path=>"coverage", :namespace_prefix=>nil)
+      t.coverage_type(:path => "coverageType", :namespace_prefix => nil)
     }
-    t.pbcore_spatial(:ref => :pbcore_coverage,
-      :path=>'pbcoreCoverage[coverageType="spatial"]',
-      :namespace_prefix=>nil
-    )
-    t.pbcore_temporal(:ref => :pbcore_coverage,
-      :path=>'pbcoreCoverage[coverageType="temporal"]',
-      :namespace_prefix=>nil
-    )
-    t.spatial(:proxy => [:pbcore_spatial, :coverage])
-    t.temporal(:proxy => [:pbcore_temporal, :coverage])
+
+    t.spatial(:proxy => [:pbcore_coverage, :coverage])
+    t.temporal(:proxy => [:pbcore_coverage, :coverage])
 
     # Contributor names and roles
     t.creator(:path=>"pbcoreCreator", :namespace_prefix=>nil) {
       t.name_(:path=>"creator", :namespace_prefix=>nil)
-      t.role_(:path=>"creatorRole", :namespace_prefix=>nil, :attributes=>{ :source=>"MARC relator terms" })
+      t.role_(:path=>"creatorRole", :namespace_prefix=>nil, 
+        :attributes=>{ :source=>"MARC relator terms" })
     }
     t.creator_name(:proxy=>[:creator, :name])
     t.creator_role(:proxy=>[:creator, :role])
@@ -81,7 +75,8 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     # Contributor names and roles
     t.contributor(:path=>"pbcoreContributor", :namespace_prefix=>nil) {
       t.name_(:path=>"contributor", :namespace_prefix=>nil)
-      t.role_(:path=>"contributorRole", :namespace_prefix=>nil, :attributes=>{ :source=>"MARC relator terms" })
+      t.role_(:path=>"contributorRole", :namespace_prefix=>nil, 
+        :attributes=>{ :source=>"MARC relator terms" })
     }
     t.contributor_name(:proxy=>[:contributor, :name])
     t.contributor_role(:proxy=>[:contributor, :role])
@@ -159,7 +154,6 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     t.part_description(:ref=>[:pbcorePart, :pbcoreDescription])
     t.part_contributor(:ref=>[:pbcorePart, :pbcoreContributor, :contributor])
     t.part_role(:ref=>[:pbcorePart, :pbcoreContributor, :contributorRole])
-
   end
 
   define_template :contributor do |xml, name, role="contributor"|
@@ -176,24 +170,23 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     }
   end
 
-  define_template :spatial do |xml, space|
-    xml.pbcoreCoverage {
-      xml.coverage { xml.text space }
-      xml.coverageType { xml.text "spatial" }
-    }
-  end
+  #define_template :spatial do |xml, location|
+  #  xml.pbcoreCoverage {
+  #    xml.coverage { xml.text location }
+  #    xml.coverageType { xml.text "spatial" }
+  #  }
+  #end
 
-  define_template :temporal do |xml, time|
-    xml.pbcoreCoverage {
-      xml.coverage { xml.text time }
-      xml.coverageType { xml.text "temporal" }
-    }
-  end
-    
+  #define_template :temporal do |xml, time|
+  #  xml.pbcoreCoverage {
+  #    xml.coverage { xml.text time }
+  #    xml.coverageType { xml.text "temporal" }
+  #  }
+  #end
+
   def self.xml_template
     builder = Nokogiri::XML::Builder.new do |xml|
-
-      xml.pbcoreDescriptionDocument("xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
+    xml.pbcoreDescriptionDocument("xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
         "xsi:schemaLocation"=>"http://www.pbcore.org/PBCore/PBCoreNamespace.html") {
 
         xml.pbcoreIdentifier(:source=>"Avalon Media System", :annotation=>"PID")
@@ -203,13 +196,13 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
           :descriptionTypeRef=>"http://pbcore.org/vocabularies/pbcoreDescription/descriptionType#description",
           :annotation=>"Summary"
         )
-      }
+    }
     end
     return builder.doc
   end
 
 
-  def to_solr(solr_doc=SolrDocument.new)
+  def to_solr(solr_doc=Solr::Document.new)
     super(solr_doc)
 
     solr_doc.merge!(:format => "Video")
@@ -240,12 +233,10 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     # for consistency and so they'll show up when we export records from Hydra into BL:
     solr_doc.merge!(:material_facet => "Digital")
     solr_doc.merge!(:genre_facet => gather_terms(self.find_by_terms(:genres)))
-    solr_doc.merge!(:contributor_facet => gather_terms(self.find_by_terms(:contributor_name)))
-    solr_doc.merge!(:publisher_facet => gather_terms(self.find_by_terms(:publisher_name)))
+    solr_doc.merge!(:name_facet => gather_terms(self.find_by_terms(:contributor_name)))
     solr_doc.merge!(:subject_topic_facet => gather_terms(self.find_by_terms(:subjects)))
     solr_doc.merge!(:format_facet => gather_terms(self.find_by_terms(:format)))
-    solr_doc.merge!(:location_facet => gather_terms(self.find_by_terms(:spatial)))
-    solr_doc.merge!(:time_facet => gather_terms(self.find_by_terms(:temporal)))
+    solr_doc.merge!(:collection_facet => gather_terms(self.find_by_terms(:archival_collection)))
 
     # TODO: map PBcore's three-letter language codes to full language names
     # Right now, everything's English.

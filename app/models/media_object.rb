@@ -22,13 +22,11 @@ class MediaObject < ActiveFedora::Base
   delegate :creator, to: :descMetadata, at: [:creator_name]
   delegate :created_on, to: :descMetadata, at: [:creation_date]
   delegate :abstract, to: :descMetadata, at: [:summary]
-  delegate :format, to: :descMetadata, at: [:media_type]
+  delegate :format, to: :descMetadata, at: [:media_type], unique: true
   # Additional descriptive metadata
   delegate :contributor, to: :descMetadata, at: [:contributor_name]
   delegate :publisher, to: :descMetadata, at: [:publisher_name]
-  delegate :genre, to: :descMetadata, at: [:genre]
-  delegate :spatial, to: :descMetadata, at: [:spatial]
-  delegate :temporal, to: :descMetadata, at: [:temporal]
+  delegate :genre, to: :descMetadata, at: [:genre], unique: true
   delegate :subject, to: :descMetadata, at: [:lc_subject]
   delegate :relatedItem, to: :descMetadata, at: [:relation]
   
@@ -40,7 +38,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def access
-    logger.debug "<< Access level >>"
+    logger.debug "<< ACCESS >>"
     logger.debug "<< #{self.read_groups} >>"
     
     if self.read_groups.empty?
@@ -79,6 +77,23 @@ class MediaObject < ActiveFedora::Base
     masterfiles
   end
 
+  # Because of the complexity and time limitations spatial and temporal are going to
+  # be dealt with by hand instead of relying on the delegate method. This means there
+  # might still be some kinks to work out for the generic pbcoreCoverage but it gets
+  # us moving forwards
+  def spatial
+      
+  end
+  
+  def spatial=(values)
+  end
+  
+  def temporal
+  end
+  
+  def temporal=(values)
+  end
+  
   def update_datastream(datastream = :descMetadata, values = {})
     values.each do |k, v|
       update_attribute(k, v)
@@ -89,8 +104,19 @@ class MediaObject < ActiveFedora::Base
     logger.debug "<< UPDATE ATTRIBUTE >>"
     active_nodes = descMetadata.find_by_terms(attribute)
     active_nodes.length.times do |i|
-      logger.debug "<< Removing node #{attribute}[#{i}] >>"
+      logger.debug "<< Deleting old node #{attribute}[#{i}] >>"
       descMetadata.remove_node(attribute, i)
+    end
+
+    # Put in a placeholder so that the inserted nodes go into the right part of the
+    # document. Afterwards take it out again - unless it does not have a template
+    # in which case this is all that needs to be done
+    if self.respond_to?("#{attribute}=", value)
+      logger.debug "<< Calling delegated method #{attribute} >>"
+      self.send("#{attribute}=", value)
+    else
+      logger.debug "<< Calling descMetadata method #{attribute} >>"
+      descMetadata.send("#{attribute}=", value)
     end
     
     if descMetadata.template_registry.has_node_type?(attribute.to_sym)
@@ -98,14 +124,9 @@ class MediaObject < ActiveFedora::Base
       logger.debug "<< Adding node #{attribute}[#{i}] >>"
         descMetadata.after_node(["#{attribute.to_sym}" => 0], attribute.to_sym, value[i], 'default')
       end
+      logger.debug "<< Removing placeholder node >>"
+      descMetadata.remove_node(attribute.to_sym, 0)
     else
-      if self.respond_to?("#{attribute}=", value)
-        logger.debug "<< Calling delegated method #{attribute} >>"
-        self.send("#{attribute}=", value)
-      else
-        logger.debug "<< Calling descMetadata method #{attribute} >>"
-        descMetadata.send("#{attribute}=", value)
-      end
     end
   end
   
