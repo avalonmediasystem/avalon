@@ -4,7 +4,7 @@
 
 <legend>Structure</legend>
 
-<% unless @masterfiles_with_order.nil? %>
+<% unless @masterfiles.nil? %>
 
 	<table class="table table-striped">
 	<thead>
@@ -15,7 +15,7 @@
 	  <th>Size</th>
 	</thead>
 	<tbody class="sortable">
-		<% @masterfiles_with_order.each do |masterfile| %>
+		<% @masterfiles.each do |masterfile| %>
       <tr>
 		<td>
 			<div class="noshow">
@@ -59,27 +59,25 @@
     /* Hide the alert dialog on the page loading if Javascript is enabled */
     <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
 
-  	<% if @relType.eql? 'Has Part' %>
-  	  $('.sortable').sortable({ 
-  			disabled: false,
-  			update: function(e, ui) {
-  				var mfs = [];
-  				$(this).find('.mf-label').each(function(){
-  					mfs.push($(this).attr('id'));
-  				})
-  				$.ajax({
-  					type: 'PUT',
-  					url: '<%= media_object_path(@mediaobject) %>',
-  					data: { _method: 'update', masterfile_ids: mfs, step: '<%= @active_step %>', donot_advance: 'true', format: 'json' },
-					success: function(data) {
-						// Do nothing for now
-					}
-  				})
-  			}
-  		});
-  	  $('.sortable').disableSelection();
-  		$('.sortable').css('cursor', 'move');
-  	<% end %>
+	  $('.sortable').sortable({ 
+			disabled: false,
+			update: function(e, ui) {
+				var mfs = [];
+				$(this).find('.mf-label').each(function(){
+					mfs.push($(this).attr('id'));
+				})
+				$.ajax({
+					type: 'PUT',
+					url: '<%= media_object_path(@mediaobject) %>',
+					data: { _method: 'update', masterfile_ids: mfs, step: '<%= @active_step %>', donot_advance: 'true', format: 'json' },
+				success: function(data) {
+					// Do nothing for now
+				}
+				})
+			}
+		});
+	  $('.sortable').disableSelection();
+		$('.sortable').css('cursor', 'move');
 
     $('.sequence-btn').click(function(){
       $('.sortable').sortable({ disabled: false });
