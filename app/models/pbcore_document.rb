@@ -206,7 +206,7 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
   end
 
 
-  def to_solr(solr_doc=Solr::Document.new)
+  def to_solr(solr_doc=SolrDocument.new)
     super(solr_doc)
 
     solr_doc.merge!(:format => "Video")
@@ -237,10 +237,12 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     # for consistency and so they'll show up when we export records from Hydra into BL:
     solr_doc.merge!(:material_facet => "Digital")
     solr_doc.merge!(:genre_facet => gather_terms(self.find_by_terms(:genres)))
-    solr_doc.merge!(:name_facet => gather_terms(self.find_by_terms(:contributor_name)))
+    solr_doc.merge!(:contributor_facet => gather_terms(self.find_by_terms(:contributor_name)))
+    solr_doc.merge!(:publisher_facet => gather_terms(self.find_by_terms(:publisher_name)))
     solr_doc.merge!(:subject_topic_facet => gather_terms(self.find_by_terms(:subjects)))
     solr_doc.merge!(:format_facet => gather_terms(self.find_by_terms(:format)))
-    solr_doc.merge!(:collection_facet => gather_terms(self.find_by_terms(:archival_collection)))
+    solr_doc.merge!(:location_facet => gather_terms(self.find_by_terms(:spatial)))
+    solr_doc.merge!(:time_facet => gather_terms(self.find_by_terms(:temporal)))
 
     # TODO: map PBcore's three-letter language codes to full language names
     # Right now, everything's English.
