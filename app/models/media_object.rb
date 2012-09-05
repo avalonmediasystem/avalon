@@ -29,7 +29,7 @@ class MediaObject < ActiveFedora::Base
   delegate :genre, to: :descMetadata, at: [:genre], unique: true
   delegate :subject, to: :descMetadata, at: [:lc_subject]
   delegate :relatedItem, to: :descMetadata, at: [:relation]
-  
+    
   # Stub method to determine if the record is done or not. This should be based on
   # whether the descMetadata, rightsMetadata, and techMetadata datastreams are all
   # valid.
@@ -96,18 +96,18 @@ class MediaObject < ActiveFedora::Base
   
   def update_datastream(datastream = :descMetadata, values = {})
     values.each do |k, v|
+      # First remove all blank attributes in arrays
+      logger.debug "<< #{v.instance_of?(Array)} >>"
+      v.keep_if { |item| not item.blank? } if v.instance_of?(Array)
+      logger.debug "<< Updating #{k} >>"
+      logger.debug "<< #{v} >>"
       update_attribute(k, v)
     end
   end
   
   def update_attribute(attribute, value = [])
     logger.debug "<< UPDATE ATTRIBUTE >>"
-    active_nodes = descMetadata.find_by_terms(attribute)
-    active_nodes.length.times do |i|
-      logger.debug "<< Deleting old node #{attribute}[#{i}] >>"
-      descMetadata.remove_node(attribute, i)
-    end
-
+    
     # Put in a placeholder so that the inserted nodes go into the right part of the
     # document. Afterwards take it out again - unless it does not have a template
     # in which case this is all that needs to be done
@@ -120,11 +120,20 @@ class MediaObject < ActiveFedora::Base
     end
     
     if descMetadata.template_registry.has_node_type?(attribute.to_sym)
-      value.length.times do |i|
-      logger.debug "<< Adding node #{attribute}[#{i}] >>"
-        descMetadata.after_node(["#{attribute.to_sym}" => 0], attribute.to_sym, value[i], 'default')
+      active_nodes = descMetadata.find_by_terms(attribute.to_sym).length - 1
+      logger.debug "<< Need to remove #{active_nodes} old terms >>"
+    
+      active_nodes.times do |i|
+        logger.debug "<< Deleting old node #{attribute}[#{i}] >>"
+        descMetadata.remove_node(attribute.to_sym, 0)
       end
-      logger.debug "<< Removing placeholder node >>"
+
+      value.length.times do |i|
+        logger.debug "<< Adding node #{attribute}[#{i}] >>"
+          descMetadata.after_node(["#{attribute.to_sym}" => 0], attribute.to_sym, value[i], 'default')
+      end
+      # Only remove the last placeholder after the other content is in place
+      logger.debug "<< Removing placeholder node #{attribute} >>"
       descMetadata.remove_node(attribute.to_sym, 0)
     else
     end
