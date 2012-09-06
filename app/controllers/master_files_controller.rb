@@ -103,8 +103,6 @@ class MasterFilesController < ApplicationController
     apply_depositor_metadata(master_file)
 
     master_file.container = MediaObject.find(params[:container_id])
-    master_file.save
-    master_file.container.save(validate: false)
 
     ## Apply any posted file metadata
     unless params[:asset].nil?

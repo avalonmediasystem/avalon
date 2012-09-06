@@ -22,8 +22,13 @@ class MasterFile < FileAsset
 
   def container= obj
     super obj
-    self.container.add_relationship(:has_part, self)
   end
+
+  def save
+    super
+    self.container.add_relationship(:has_part, self) unless self.container.nil?
+    self.container.save(validate: false)
+  end  
 
   def mediapackage_id
     matterhorn_response = Rubyhorn.client.instance_xml(source.first)
