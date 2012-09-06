@@ -26,8 +26,10 @@ class MasterFile < FileAsset
 
   def save
     super
-    self.container.add_relationship(:has_part, self) unless self.container.nil?
-    self.container.save(validate: false)
+    unless self.container.nil?
+      self.container.add_relationship(:has_part, self)
+      self.container.save(validate: false)
+    end
   end  
 
   def mediapackage_id

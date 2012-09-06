@@ -38,12 +38,14 @@ describe MasterFilesController do
              pid = 'hydrant:short-form-video'
              load_fixture pid
              @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+             master_file = MasterFile.new
+             master_file.container = MediaObject.find(pid)
      
-             controller.stub!(:saveOriginalToHydrant).and_return(MasterFile.new)
+             controller.stub!(:saveOriginalToHydrant).and_return(master_file)
              controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
      
              lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should change { MasterFile.count }.by(1)
-             MasterFile.find(:all, order: "created_on ASC").last.media_type.should eq(["video"])
+             master_file.media_type.should eq(["video"])
              
              flash[:errors].should be_nil
            end
@@ -64,17 +66,19 @@ describe MasterFilesController do
      
              flash[:errors].should_not be_nil
        end
- 
+    
        it "should recognize audio/video based on extension when MIMETYPE is of unknown format" do
          login_as_archivist
- 
+    
          pid = 'hydrant:short-form-video'
          load_fixture pid
          @file = fixture_file_upload('/videoshort.mp4', 'application/octet-stream')
- 
-         controller.stub!(:saveOriginalToHydrant).and_return(MasterFile.new)
+         master_file = MasterFile.new
+         master_file.container = MediaObject.find(pid)
+    
+         controller.stub!(:saveOriginalToHydrant).and_return(master_file)
          controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
- 
+    
          lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should change { MasterFile.count }.by(1)
          MasterFile.find(:all, order: "created_on ASC").last.media_type.should eq(["video"])
          
@@ -84,6 +88,28 @@ describe MasterFilesController do
      
    context "should process file successfully" do
      it "should save a copy in Hydrant" do
+         login_as_archivist
+      
+         pid = 'hydrant:short-form-video'
+         load_fixture pid
+         @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+         #Work-around for a Rails bug
+         class << @file
+           attr_reader :tempfile
+         end
+         
+         controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
+      
+         post :create, Filedata: [@file], original: 'any', container_id: pid
+         
+         master_file = MasterFile.find(:all, order: "created_on ASC").last
+         path =  File.join(Rails.public_path, master_file.url.first)
+         File.should exist path
+         
+         flash[:errors].should be_nil        
+     end
+     
+     it "should associate with a MediaObjekt" do
          login_as_archivist
  
          pid = 'hydrant:short-form-video'
@@ -99,15 +125,16 @@ describe MasterFilesController do
          post :create, Filedata: [@file], original: 'any', container_id: pid
          
          master_file = MasterFile.find(:all, order: "created_on ASC").last
-         path =  File.join(Rails.public_path, master_file.url.first)
-         File.should exist path
+         mediaobject = MediaObject.find(pid)
+         mediaobject.parts.should include master_file
+         master_file.container.pid.should eq(pid)
          
          flash[:errors].should be_nil        
      end
-     
+          
      it "should send a copy to Matterhorn and get the workflow id back" do
          login_as_archivist
- 
+      
          pid = 'hydrant:short-form-video'
          load_fixture pid
          @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
@@ -127,47 +154,46 @@ describe MasterFilesController do
    end
  end
 	
-	describe "#update" do
-	end
-	
-	describe "#destroy" do
-	  context "should be deleted" do
-	    it "should no longer exist" do
-              login_as_archivist
-
-	media_object = MediaObject.new
-	media_object.save(validate: false)
-        master_file = MasterFile.new
-        master_file.save
-        master_file.container = media_object
-        master_file.container.save(validate:false)
-        master_file.save
-
-	      lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }
-	    end
-	  end
-	  
-	  context "should stop processing in Matterhorn" do
-	    it "should no longer be in the Matterhorn pipeline"
-	  end
-	  
-	  context "should no longer be associated with its parent object" do
-	    it "should create then remove a file from a video object" do
-        login_as_archivist
-        
-	media_object = MediaObject.new
-	media_object.save(validate: false)
-        master_file = MasterFile.new
-        master_file.save
-        master_file.container = media_object
-        master_file.container.save(validate:false)
-        master_file.save
-        
-	      lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }
-	      media_object.parts.should_not include master_file 	      
-	    end
-	  end
-	end
-	
-	describe 
+  describe "#update" do
+  end
+  
+  describe "#destroy" do
+    context "should be deleted" do
+      it "should no longer exist" do
+          login_as_archivist
+  
+          media_object = MediaObject.new
+          media_object.save(validate: false)
+          master_file = MasterFile.new
+          master_file.save
+          master_file.container = media_object
+          master_file.container.save(validate:false)
+          master_file.save
+  
+        lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }
+      end
+    end
+    
+    context "should stop processing in Matterhorn" do
+      it "should no longer be in the Matterhorn pipeline"
+    end
+    
+    context "should no longer be associated with its parent object" do
+      it "should create then remove a file from a video object" do
+          login_as_archivist
+          
+  media_object = MediaObject.new
+  media_object.save(validate: false)
+          master_file = MasterFile.new
+          master_file.save
+          master_file.container = media_object
+          master_file.container.save(validate:false)
+          master_file.save
+          
+        lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }
+        media_object.parts.should_not include master_file         
+      end
+    end
+  end
+  
 end
