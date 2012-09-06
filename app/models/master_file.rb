@@ -11,7 +11,7 @@ class MasterFile < FileAsset
   delegate :url, to: :descMetadata, at: [:identifier]
   delegate :size, to: :descMetadata, at: [:extent]
   delegate :media_type, to: :descMetadata, at: [:dc_type]
-  delegate :media_format, to: :descMetadata, at: [:dc_format]
+  delegate :media_format, to: :descMetadata, at: [:medium]
 
     # First and simplest test - make sure that the uploaded file does not exceed the
     # limits of the system. For now this is hard coded but should probably eventually
