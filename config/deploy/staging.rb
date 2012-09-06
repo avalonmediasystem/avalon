@@ -48,6 +48,11 @@ namespace :deploy do
     run "cd #{current_release}; rails s -d"
   end
 
+  desc ""
+  task :quick_update, :roles => :app do
+    run "cd #{current_release}; git checkout Gemfile.lock; git checkout config/role_map_development.yml; git pull origin master"    
+  end
+
   namespace :jetty do
     task :config, :roles => :app do
       run "cd #{current_release}; rake jetty:config"
