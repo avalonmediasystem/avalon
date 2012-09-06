@@ -6,7 +6,6 @@ describe MasterFile do
       mf = MasterFile.new
       mo = MediaObject.new
       mo.save(validate: false)
-      mf.save
       mf.relationships_by_name[:self]["part_of"].size.should == 0
       mo.relationships_by_name[:self]["parts"].size.should == 0
       mf.container = mo
