@@ -10,6 +10,7 @@ class SearchController < ApplicationController
   # This filters out objects that you want to exclude from search results, like FileAssets
   SearchController.solr_search_params_logic << :exclude_unwanted_models
   SearchController.solr_search_params_logic << :only_wanted_models
+  SearchController.solr_search_params_logic << :only_published_items
 
 
   configure_blacklight do |config|
@@ -148,5 +149,10 @@ class SearchController < ApplicationController
   def only_wanted_models(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << "has_model_s:\"info:fedora/afmodel:MediaObject\""
+  end
+
+  def only_published_items(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << "dc_publisher_t: [* TO *]"
   end
 end

@@ -144,7 +144,7 @@ class CatalogController < ApplicationController
 
   def index
     @recent_items = []
-    (response, document_list) = get_search_results({:q => "has_model_s:\"info\:fedora/afmodel\:MediaObject\"", :rows => 5, :sort => 'timestamp desc', :qt => "standard", :fl => "id"})
+    (response, document_list) = get_search_results({:q => "has_model_s:\"info\:fedora/afmodel\:MediaObject\" dc_publisher_t:[* TO *]", :rows => 5, :sort => 'timestamp desc', :qt => "standard", :fl => "id"})
     document_list.each { |doc|
       @recent_items << MediaObject.find(doc["id"])
     }

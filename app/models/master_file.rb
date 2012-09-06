@@ -3,7 +3,7 @@ class MasterFile < FileAsset
 
   has_relationship "part_of", :is_part_of
   has_relationship "derivatives", :has_derivation
-  has_metadata name: 'descMetadata', type: HydrantDublinCore
+  has_metadata name: 'descMetadata', type: DublinCoreDocument
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
   
   delegate :source, to: :descMetadata
