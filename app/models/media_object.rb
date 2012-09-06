@@ -30,7 +30,10 @@ class MediaObject < ActiveFedora::Base
   delegate :genre, to: :descMetadata, at: [:genre], unique: true
   delegate :subject, to: :descMetadata, at: [:lc_subject]
   delegate :relatedItem, to: :descMetadata, at: [:relation]
-    
+  # Temporal and spatial coverage are a bit tricky but this should work
+  delegate :spatial, to: :descMetadata, at: [:spatial]
+  #delegate :temporal, to: :descMetadata, at: [:temporal_coverage]
+  
   # Stub method to determine if the record is done or not. This should be based on
   # whether the descMetadata, rightsMetadata, and techMetadata datastreams are all
   # valid.
@@ -135,7 +138,12 @@ class MediaObject < ActiveFedora::Base
 
       value.length.times do |i|
         logger.debug "<< Adding node #{attribute}[#{i}] >>"
-          descMetadata.after_node(["#{attribute.to_sym}" => 0], attribute.to_sym, value[i], 'default')
+          unless (-1 == active_nodes)
+            descMetadata.after_node(["#{attribute.to_sym}" => i], attribute.to_sym, value[i], 'default')
+          else
+            # if there is no sibling then just append to the end
+            descMetadata.add_child_node(descMetadata.ng_xml.root, attribute.to_sym, value[i])
+          end
       end
       # Only remove the last placeholder after the other content is in place
       logger.debug "<< Removing placeholder node #{attribute} >>"

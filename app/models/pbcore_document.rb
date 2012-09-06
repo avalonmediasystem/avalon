@@ -59,9 +59,13 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
       t.coverage(:path=>"coverage", :namespace_prefix=>nil)
       t.coverage_type(:path => "coverageType", :namespace_prefix => nil)
     }
-
-    t.spatial(:proxy => [:pbcore_coverage, :coverage])
-    t.temporal(:proxy => [:pbcore_coverage, :coverage])
+    #t.temporal(:ref => :pbcore_coverage, :path => "pbcoreCoverage[./coverageType='temporal']")
+    t.spatial(:ref => :pbcore_coverage, :path => "pbcoreCoverage")
+    
+    t.spatial_coverage(:proxy => [:spatial, :coverage])
+    t.spatial_role(:proxy => [:spatial, :coverage_type])
+    #t.temporal_coverage(:proxy => [:spatial_node, :coverage])
+    #t.temporal_role(:proxy => [:spatial, :coverage_type])
 
     # Contributor names and roles
     t.creator(:path=>"pbcoreCreator", :namespace_prefix=>nil) {
@@ -170,12 +174,12 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     }
   end
 
-  #define_template :spatial do |xml, location|
-  #  xml.pbcoreCoverage {
-  #    xml.coverage { xml.text location }
-  #    xml.coverageType { xml.text "spatial" }
-  #  }
-  #end
+  define_template :spatial do |xml, location|
+    xml.pbcoreCoverage {
+      xml.coverage { xml.text location }
+      xml.coverageType { xml.text "spatial" }
+    }
+  end
 
   #define_template :temporal do |xml, time|
   #  xml.pbcoreCoverage {
