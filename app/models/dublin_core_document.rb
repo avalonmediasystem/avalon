@@ -15,6 +15,9 @@ class DublinCoreDocument < ActiveFedora::NokogiriDatastream
     t.relation(:namespace_prefix=>"dc")
     t.coverage(:namespace_prefix=>"dc")
     t.rights(:namespace_prefix=>"dc")
+    t.format(:namespace_prefix=>"dc")
+    t.extent(:ref=>:format, :namespace_prefix=>"dc", :attributes => {:type=>"extent"})
+    t.medium(:ref=>:format, :namespace_prefix=>"dc", :attributes => {:type=>"medium"})
   end
   
     # Generates an empty Video(used when you call Video.new without passing in existing xml)
