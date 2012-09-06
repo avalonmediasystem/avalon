@@ -7,7 +7,7 @@ class MediaObjectsController < ApplicationController
   def new
     logger.debug "<< NEW >>"
     @mediaobject = MediaObject.new
-    @mediaobject.uploader = user_key
+    @mediaobject.avalon_uploader = user_key
     set_default_item_permissions
     @mediaobject.save(:validate => false)
 
@@ -119,8 +119,9 @@ class MediaObjectsController < ApplicationController
         
       # When looking at the preview page use a version of the show page
       when 'preview' 
-#        redirect_to media_object_path(@mediaobject)
-#        return
+        #publish the media object
+        @mediaobject.avalon_publisher = user_key
+        @mediaobject.save
     end     
       
     unless @mediaobject.errors.empty?
