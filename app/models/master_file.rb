@@ -22,12 +22,12 @@ class MasterFile < FileAsset
 
   def container= obj
     super obj
+    self.container.add_relationship(:has_part, self)
   end
 
   def save
     super
     unless self.container.nil?
-      self.container.add_relationship(:has_part, self)
       self.container.save(validate: false)
     end
   end  
