@@ -4,8 +4,9 @@
 
 <legend>Structure</legend>
 
-<% unless @masterfiles.nil? %>
-
+<% if @masterfiles.nil? || @masterfiles.empty? %>
+  <div class="well">There are no media files</div>
+<% else %>
 	<table class="table table-striped">
 	<thead>
 	  <th></th>
