@@ -10,6 +10,7 @@ class SearchController < ApplicationController
   # This filters out objects that you want to exclude from search results, like FileAssets
   SearchController.solr_search_params_logic << :exclude_unwanted_models
   SearchController.solr_search_params_logic << :only_wanted_models
+  SearchController.solr_search_params_logic << :only_published_items
 
 
   configure_blacklight do |config|
@@ -47,9 +48,14 @@ class SearchController < ApplicationController
     #
     # :show may be set to false if you don't want the facet to be drawn in the 
     # facet bar
-    config.add_facet_field 'subject_facet', :label => 'Subject', :limit => 5
-    config.add_facet_field 'creator_facet', :label => 'Creator', :limit => 5
     config.add_facet_field 'format_facet', :label => 'Format', :limit => 5
+    config.add_facet_field 'contributor_facet', :label => 'Contributor', :limit => 5
+    config.add_facet_field 'publisher_facet', :label => 'Publisher', :limit => 5
+    config.add_facet_field 'subject_topic_facet', :label => 'Subject', :limit => 5
+    config.add_facet_field 'genre_facet', :label => 'Genre', :limit => 5
+    #config.add_facet_field 'language_facet', :label => 'Language', :limit => 5
+    config.add_facet_field 'location_facet', :label => 'Location', :limit => 5
+    config.add_facet_field 'time_facet', :label => 'Time', :limit => 5
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
@@ -143,5 +149,10 @@ class SearchController < ApplicationController
   def only_wanted_models(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << "has_model_s:\"info:fedora/afmodel:MediaObject\""
+  end
+
+  def only_published_items(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << "dc_publisher_t: [* TO *]"
   end
 end

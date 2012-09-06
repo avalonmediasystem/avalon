@@ -3,7 +3,7 @@ class MasterFile < FileAsset
 
   has_relationship "part_of", :is_part_of
   has_relationship "derivatives", :has_derivation
-  has_metadata name: 'descMetadata', type: HydrantDublinCore
+  has_metadata name: 'descMetadata', type: DublinCoreDocument
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
   
   delegate :source, to: :descMetadata
@@ -11,7 +11,7 @@ class MasterFile < FileAsset
   delegate :url, to: :descMetadata, at: [:identifier]
   delegate :size, to: :descMetadata, at: [:extent]
   delegate :media_type, to: :descMetadata, at: [:dc_type]
-  delegate :media_format, to: :descMetadata, at: [:dc_format]
+  delegate :media_format, to: :descMetadata, at: [:medium]
 
     # First and simplest test - make sure that the uploaded file does not exceed the
     # limits of the system. For now this is hard coded but should probably eventually

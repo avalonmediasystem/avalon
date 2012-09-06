@@ -1,6 +1,6 @@
 class PbcoreDocument < ActiveFedora::NokogiriDatastream
   include PbcoreMethods
-
+  
   set_terminology do |t|
     t.root(:path=>"pbcoreDescriptionDocument", :xmlns => '', :namespace_prefix=>nil)
 
@@ -46,7 +46,6 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     t.lc_genre(:path=>"pbcoreGenre", :namespace_prefix=>nil, :attributes=>{ :source=>"Library of Congress Genre/Form Terms", :ref=>"http://id.loc.gov/authorities/genreForms.html" })
     t.lc_subject_genre(:path=>"pbcoreGenre", :namespace_prefix=>nil, :attributes=>{ :source=>"Library of Congress Subject Headings", :ref=>"http://id.loc.gov/authorities/subjects.html" })
 
-
     # Series field
     t.relation(:path=>"pbcoreRelation", :namespace_prefix=>nil) {
       t.pbcoreRelationType(:namespace_prefix=>nil)
@@ -58,22 +57,17 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     # Terms for time and place
     t.pbcore_coverage(:path=>"pbcoreCoverage", :namespace_prefix=>nil) {
       t.coverage(:path=>"coverage", :namespace_prefix=>nil)
+      t.coverage_type(:path => "coverageType", :namespace_prefix => nil)
     }
-    t.pbcore_spatial(:ref => :pbcore_coverage,
-      :path=>'pbcoreCoverage[coverageType="spatial"]',
-      :namespace_prefix=>nil
-    )
-    t.pbcore_temporal(:ref => :pbcore_coverage,
-      :path=>'pbcoreCoverage[coverageType="temporal"]',
-      :namespace_prefix=>nil
-    )
-    t.spatial(:proxy => [:pbcore_spatial, :coverage])
-    t.temporal(:proxy => [:pbcore_temporal, :coverage])
+
+    t.spatial(:proxy => [:pbcore_coverage, :coverage])
+    t.temporal(:proxy => [:pbcore_coverage, :coverage])
 
     # Contributor names and roles
     t.creator(:path=>"pbcoreCreator", :namespace_prefix=>nil) {
       t.name_(:path=>"creator", :namespace_prefix=>nil)
-      t.role_(:path=>"creatorRole", :namespace_prefix=>nil, :attributes=>{ :source=>"MARC relator terms" })
+      t.role_(:path=>"creatorRole", :namespace_prefix=>nil, 
+        :attributes=>{ :source=>"MARC relator terms" })
     }
     t.creator_name(:proxy=>[:creator, :name])
     t.creator_role(:proxy=>[:creator, :role])
@@ -81,7 +75,8 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     # Contributor names and roles
     t.contributor(:path=>"pbcoreContributor", :namespace_prefix=>nil) {
       t.name_(:path=>"contributor", :namespace_prefix=>nil)
-      t.role_(:path=>"contributorRole", :namespace_prefix=>nil, :attributes=>{ :source=>"MARC relator terms" })
+      t.role_(:path=>"contributorRole", :namespace_prefix=>nil, 
+        :attributes=>{ :source=>"MARC relator terms" })
     }
     t.contributor_name(:proxy=>[:contributor, :name])
     t.contributor_role(:proxy=>[:contributor, :role])
@@ -159,14 +154,39 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     t.part_description(:ref=>[:pbcorePart, :pbcoreDescription])
     t.part_contributor(:ref=>[:pbcorePart, :pbcoreContributor, :contributor])
     t.part_role(:ref=>[:pbcorePart, :pbcoreContributor, :contributorRole])
-
   end
 
+  define_template :contributor do |xml, name, role="contributor"|
+    xml.pbcoreContributor {
+      xml.contributor { xml.text name }
+      xml.contributorRole { xml.text role }
+    }
+  end
+
+  define_template :publisher do |xml, name, role="contributor"|
+    xml.pbcorePublisher {
+      xml.publisher { xml.text name }
+      xml.publisherRole { xml.text role }
+    }
+  end
+
+  #define_template :spatial do |xml, location|
+  #  xml.pbcoreCoverage {
+  #    xml.coverage { xml.text location }
+  #    xml.coverageType { xml.text "spatial" }
+  #  }
+  #end
+
+  #define_template :temporal do |xml, time|
+  #  xml.pbcoreCoverage {
+  #    xml.coverage { xml.text time }
+  #    xml.coverageType { xml.text "temporal" }
+  #  }
+  #end
 
   def self.xml_template
     builder = Nokogiri::XML::Builder.new do |xml|
-
-      xml.pbcoreDescriptionDocument("xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
+    xml.pbcoreDescriptionDocument("xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
         "xsi:schemaLocation"=>"http://www.pbcore.org/PBCore/PBCoreNamespace.html") {
 
         xml.pbcoreIdentifier(:source=>"Avalon Media System", :annotation=>"PID")
@@ -176,52 +196,6 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
           :descriptionTypeRef=>"http://pbcore.org/vocabularies/pbcoreDescription/descriptionType#description",
           :annotation=>"Summary"
         )
-        xml.pbcoreDescription(:descriptionType=>"Table of Contents",
-          :descriptionTypeSource=>"pbcoreDescription/descriptionType",
-          :descriptionTypeRef=>"http://pbcore.org/vocabularies/pbcoreDescription/descriptionType#table-of-contents",
-          :annotation=>"Parts List"
-        )
-        xml.pbcoreCoverage {
-          xml.coverage
-          xml.coverageType {
-            xml.text "spatial"
-          }
-        }
-        xml.pbcoreCoverage {
-          xml.coverage
-          xml.coverageType {
-            xml.text "temporal"
-          }
-        }
-        xml.pbcoreAnnotation(:annotationType=>"Notes")
-
-        #
-        # Default physical item
-        #
-        xml.pbcoreInstantiation {
-
-          # Item details
-          xml.instantiationIdentifier()
-          xml.instantiationDate(:dateType=>"created")
-          xml.instantiationPhysical(:source=>"PBCore instantiationPhysical")
-          xml.instantiationStandard
-          xml.instantiationLocation {
-          xml.instantiationMediaType(:source=>"PBCore instantiationMediaType") {
-            xml.text "Moving image"
-          }
-          xml.instantiationGenerations(:source=>"PBCore instantiationGenerations") {
-            xml.text "Original"
-          }
-          xml.instantiationLanguage(:source=>"ISO 639.2", :ref=>"http://www.loc.gov/standards/iso639-2/php/code_list.php") {
-            xml.text "eng"
-          }
-          xml.instantiationRights {
-            xml.rightsSummary
-          }
-
-        }
-
-      }
     }
     end
     return builder.doc

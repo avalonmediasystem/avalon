@@ -1,6 +1,7 @@
   source 'http://rubygems.org'
 
   gem 'rails', '~>3.2.3'
+  gem 'builder', '~>3.0.0'
 
   gem 'blacklight', '~> 3.4'
   gem 'hydra-head', '~> 4.1.0'

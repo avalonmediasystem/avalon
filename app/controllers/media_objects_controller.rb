@@ -7,7 +7,7 @@ class MediaObjectsController < ApplicationController
   def new
     logger.debug "<< NEW >>"
     @mediaobject = MediaObject.new
-    @mediaobject.uploader = user_key
+    @mediaobject.avalon_uploader = user_key
     set_default_item_permissions
     @mediaobject.save(:validate => false)
 
@@ -75,13 +75,6 @@ class MediaObjectsController < ApplicationController
         metadata = params[:media_object]
         logger.debug "<< #{metadata} >>"
         
-        # This shouldn't be needed if there is a way to follow the delegate method
-        # and set the values accordingly. Maybe iterate and test for a respond_to?
-        # If so set the field. There might be some issues down the road but it works
-        # for now
-        metadata.each do |k, v|
-          @mediaobject.send("#{k}=", v) if @mediaobject.respond_to?("#{k}=")
-        end
         @mediaobject.update_datastream(:descMetadata, metadata)
         
         logger.debug "<< Updating descriptive metadata >>"
@@ -126,8 +119,9 @@ class MediaObjectsController < ApplicationController
         
       # When looking at the preview page use a version of the show page
       when 'preview' 
-#        redirect_to media_object_path(@mediaobject)
-#        return
+        #publish the media object
+        @mediaobject.avalon_publisher = user_key
+        @mediaobject.save
     end     
       
     unless @mediaobject.errors.empty?

@@ -5,7 +5,7 @@ class DublinCoreDocument < ActiveFedora::NokogiriDatastream
     t.creator(:index_as=>[:not_searchable], :namespace_prefix=>"dc")
     t.subject(:namespace_prefix=>"dc")
     t.description(:namespace_prefix=>"dc")
-    t.publisher(:namespace_prefix=>"dc")
+    t.publisher(:index_as=>[:not_searchable], :namespace_prefix=>"dc")
     t.contributor(:namespace_prefix=>"dc")
     t.date(:namespace_prefix=>"dc")
     t.dc_type(:namespace_prefix=>"dc")
@@ -15,6 +15,9 @@ class DublinCoreDocument < ActiveFedora::NokogiriDatastream
     t.relation(:namespace_prefix=>"dc")
     t.coverage(:namespace_prefix=>"dc")
     t.rights(:namespace_prefix=>"dc")
+    t.format(:namespace_prefix=>"dc")
+    t.extent(:ref=>:format, :namespace_prefix=>"dc", :attributes => {:type=>"extent"})
+    t.medium(:ref=>:format, :namespace_prefix=>"dc", :attributes => {:type=>"medium"})
   end
   
     # Generates an empty Video(used when you call Video.new without passing in existing xml)
@@ -38,6 +41,7 @@ class DublinCoreDocument < ActiveFedora::NokogiriDatastream
     def to_solr(solr_doc = {})
       super(solr_doc)
       solr_doc["dc_creator_t"] = self.creator
+      solr_doc["dc_publisher_t"] = self.publisher
       return solr_doc
     end
 
