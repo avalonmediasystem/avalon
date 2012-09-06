@@ -19,9 +19,9 @@
     <% end %>
   </dd>
 
-  <!-- <% unless @mediaobject.format.nil? %>
+  <!-- <% unless @mediaobject.format.blank? %>
   <dt>Format</dt>
-  <dd><%= @mediaobject.format.first %></dd>
+  <dd><%= @mediaobject.format %></dd>
   <% end %> -->
 
   <dt>Date</dt>
@@ -53,10 +53,9 @@
     <dd><%= display_multiple(@mediaobject.publisher) %></dd>
   <% end %>
 
-  <% unless @mediaobject.genre.nil? or
-       @mediaobject.genre.empty? or @mediaobject.genre.first.empty? %>
+  <% unless @mediaobject.genre.blank? %>
     <dt>Genre</dt>
-    <dd><%= @mediaobject.genre.first %></dd>
+    <dd><%= @mediaobject.genre %></dd>
   <% end %>
 
   <% unless @mediaobject.temporal.nil? or

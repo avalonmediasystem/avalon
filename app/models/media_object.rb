@@ -16,7 +16,8 @@ class MediaObject < ActiveFedora::Base
     record.errors.add(attr, "This field is required") if value.blank? or value.first == ""
   end
   
-  delegate :uploader, to: :DC, at: [:creator]
+  delegate :avalon_uploader, to: :DC, at: [:creator], unique: true
+  delegate :avalon_publisher, to: :DC, at: [:publisher], unique: true
   # Delegate variables to expose them for the forms
   delegate :title, to: :descMetadata, at: [:main_title]
   delegate :creator, to: :descMetadata, at: [:creator_name]
@@ -38,6 +39,10 @@ class MediaObject < ActiveFedora::Base
   # valid.
   def is_complete?
     false
+  end
+
+  def is_published?
+    not self.avalon_uploader.blank?
   end
 
   def access
@@ -146,7 +151,7 @@ class MediaObject < ActiveFedora::Base
     else
     end
   end
-  
+
   private
     def after_create
       self.DC.identifier = pid

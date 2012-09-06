@@ -10,9 +10,9 @@ module ApplicationHelper
       
       # TODO : I have an idea how to refactor this to make it more neat but it needs to
       #        wait until the email form is finished.
-      if media_object.format.first == "Moving image"
+      if media_object.format == "Moving image"
         imageurl = "reel-to-reel.jpg"
-      elsif media_object.format.first == "Sound"
+      elsif media_object.format == "Sound"
         imageurl = "audio-icon.png"
       else
         imageurl = "Question_mark.png"
