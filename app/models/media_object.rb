@@ -115,20 +115,9 @@ class MediaObject < ActiveFedora::Base
   
   def update_attribute(attribute, value = [])
     logger.debug "<< UPDATE ATTRIBUTE >>"
-    
-    # Put in a placeholder so that the inserted nodes go into the right part of the
-    # document. Afterwards take it out again - unless it does not have a template
-    # in which case this is all that needs to be done
-    if self.respond_to?("#{attribute}=", value)
-      logger.debug "<< Calling delegated method #{attribute} >>"
-      self.send("#{attribute}=", value)
-    else
-      logger.debug "<< Calling descMetadata method #{attribute} >>"
-      descMetadata.send("#{attribute}=", value)
-    end
-    
+        
     if descMetadata.template_registry.has_node_type?(attribute.to_sym)
-      active_nodes = descMetadata.find_by_terms(attribute.to_sym).length - 1
+      active_nodes = descMetadata.find_by_terms(attribute.to_sym).length
       logger.debug "<< Need to remove #{active_nodes} old terms >>"
     
       active_nodes.times do |i|
@@ -138,17 +127,24 @@ class MediaObject < ActiveFedora::Base
 
       value.length.times do |i|
         logger.debug "<< Adding node #{attribute}[#{i}] >>"
-          unless (-1 == active_nodes)
-            descMetadata.after_node(["#{attribute.to_sym}" => i], attribute.to_sym, value[i], 'default')
-          else
+        #  unless (-1 == active_nodes)
+        #    descMetadata.after_node(["#{attribute.to_sym}" => i], attribute.to_sym, value[i], 'default')
+        #  else
             # if there is no sibling then just append to the end
-            descMetadata.add_child_node(descMetadata.ng_xml.root, attribute.to_sym, value[i])
-          end
+        descMetadata.add_child_node(descMetadata.ng_xml.root, attribute.to_sym, value[i])
       end
-      # Only remove the last placeholder after the other content is in place
-      logger.debug "<< Removing placeholder node #{attribute} >>"
-      descMetadata.remove_node(attribute.to_sym, 0)
+      #end
     else
+      # Put in a placeholder so that the inserted nodes go into the right part of the
+      # document. Afterwards take it out again - unless it does not have a template
+      # in which case this is all that needs to be done
+      if self.respond_to?("#{attribute}=", value)
+        logger.debug "<< Calling delegated method #{attribute} >>"
+        self.send("#{attribute}=", value)
+      else
+        logger.debug "<< Calling descMetadata method #{attribute} >>"
+        descMetadata.send("#{attribute}=", value)
+      end
     end
   end
 
