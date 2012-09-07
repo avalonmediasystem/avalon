@@ -90,7 +90,7 @@ class MediaObject < ActiveFedora::Base
   # might still be some kinks to work out for the generic pbcoreCoverage but it gets
   # us moving forwards
   def spatial
-      
+    self.descMetadata.spatial_coverage  
   end
   
   def spatial=(values)
