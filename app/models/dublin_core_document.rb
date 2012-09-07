@@ -8,7 +8,7 @@ class DublinCoreDocument < ActiveFedora::NokogiriDatastream
     t.publisher(:index_as=>[:not_searchable], :namespace_prefix=>"dc")
     t.contributor(:namespace_prefix=>"dc")
     t.date(:namespace_prefix=>"dc")
-    t.dc_type(:namespace_prefix=>"dc")
+    t.dc_type(:path=>"type", :namespace_prefix=>"dc")
     t.identifier(:namespace_prefix=>"dc")
     t.source(:namespace_prefix=>"dc")
     t.language(:namespace_prefix=>"dc")
