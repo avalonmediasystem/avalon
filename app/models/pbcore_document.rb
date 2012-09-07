@@ -241,8 +241,8 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     solr_doc.merge!(:publisher_facet => gather_terms(self.find_by_terms(:publisher_name)))
     solr_doc.merge!(:subject_topic_facet => gather_terms(self.find_by_terms(:subjects)))
     solr_doc.merge!(:format_facet => gather_terms(self.find_by_terms(:format)))
-    solr_doc.merge!(:location_facet => gather_terms(self.find_by_terms(:spatial)))
-    solr_doc.merge!(:time_facet => gather_terms(self.find_by_terms(:temporal)))
+    solr_doc.merge!(:location_facet => gather_terms(self.find_by_terms(:spatial_coverage)))
+#    solr_doc.merge!(:time_facet => gather_terms(self.find_by_terms(:temporal)))
 
     # TODO: map PBcore's three-letter language codes to full language names
     # Right now, everything's English.
