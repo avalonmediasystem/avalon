@@ -5,7 +5,6 @@ require 'rubyhorn'
 class MasterFilesController < ApplicationController
   include Hydra::Controller::FileAssetsBehavior
 
-  load_and_authorize_resource
   skip_before_filter :verify_authenticity_token, :only => [:update]
   before_filter :authenticate_user!, :only => [:update]
 
@@ -14,8 +13,6 @@ class MasterFilesController < ApplicationController
   # * the File Asset will use RELS-EXT to assert that it's a part of the specified container
   # * the method will redirect to the container object's edit view after saving
   def create
-    authorize! :edit, MediaObject, message: "You do not have sufficient privileges to add files"
-
     if params[:container_id].nil? || MediaObject.find(params[:container_id]).nil?
       flash[:notice] = "MediaObject #{params[:container_id]} does not exist"
       redirect_to :back 
@@ -23,6 +20,7 @@ class MasterFilesController < ApplicationController
     end
 
     media_object = MediaObject.find(params[:container_id])
+    authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
     
     audio_types = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav"]
     video_types = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime"]
@@ -86,6 +84,8 @@ class MasterFilesController < ApplicationController
   def show 
     @masterfile = MasterFile.find(params[:id])
     @mediaobject = @masterfile.container
+    
+    authorize! :read, @mediaobject
   end
   
 	def saveOriginalToHydrant file
@@ -145,6 +145,8 @@ class MasterFilesController < ApplicationController
   def destroy
     master_file = MasterFile.find(params[:id])
     parent = master_file.container
+    
+    authorize! :edit, parent, message: "You do not have sufficient privileges to delete files"
 
     if parent.nil?
       flash[:notice] = "MasterFile missing parent MediaObject"
