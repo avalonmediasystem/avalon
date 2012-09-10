@@ -65,10 +65,11 @@ class Derivative < ActiveFedora::Base
   end
 
   def streaming_mime_type
-    matterhorn_response = Rubyhorn.client.instance_xml(source[0])
-    
-    logger.debug("<< Response from Matterhorn >>")
-    matterhorn_response.workflow.streamingmimetype.second
+    matterhorn_response = Rubyhorn.client.instance_xml(source[0])    
+    logger.debug("<< streaming_mime_type from Matterhorn >>")
+    # TODO temporary fix, xpath for streamingmimetype is not working
+    # matterhorn_response.workflow.streamingmimetype.second
+    matterhorn_response.workflow.mediapackage.media.track.mimetype.last
   end
 
   protected

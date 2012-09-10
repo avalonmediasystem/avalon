@@ -27,6 +27,7 @@ class DerivativesController < ApplicationController
 #   end
 
       derivative = Derivative.new
+      derivative.source = masterfile.source
       derivative.url = params[:stream_url]
       derivative.save
       derivative.masterfile = masterfile
