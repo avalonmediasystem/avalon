@@ -1,198 +1,279 @@
 require 'spec_helper'
 
 describe MasterFilesController do
-   describe "#create" do
-     context "must provide a container id" do
-           it "should fail if no container id provided" do
-             login_as_archivist
-             request.env["HTTP_REFERER"] = "/"
-               
-             @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-             
-             lambda { post :create, Filedata: [@file], original: 'any'}.should_not change { MasterFile.count }
-           end
-     end
-     
-         context "cannot upload a file over the defined limit" do
-           it "should provide a warning about the file size" do
-            login_as_archivist
-            request.env["HTTP_REFERER"] = "/"
-     
-            pid = 'hydrant:318'
-            load_fixture pid
-            
-            @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-            @file.stub(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2^21)  
-     
-            lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should_not change { MasterFile.count }
-            puts "<< Flash message is present? #{flash[:notice]} >>"
-     
-            flash[:errors].should_not be_nil
-           end
-         end
-     
-     context "must be a valid MIME type" do
-       it "should recognize a video format" do
-             login_as_archivist
-     
-             pid = 'hydrant:short-form-video'
-             load_fixture pid
-             @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-             master_file = MasterFile.new
-             master_file.container = MediaObject.find(pid)
-     
-             controller.stub!(:saveOriginalToHydrant).and_return(master_file)
-             controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
-     
-             lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should change { MasterFile.count }.by(1)
-             master_file.media_type.should eq(["video"])
-             
-             flash[:errors].should be_nil
-           end
-           
-       it "should recognize an audio format" 
-       
-       it "should reject non audio/video format" do
-             login_as_archivist
-             request.env["HTTP_REFERER"] = "/"
-     
-             pid = 'hydrant:318'
-             load_fixture pid
-     
-             @file = fixture_file_upload('/public-domain-book.txt', 'application/json')
-     
-             lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should_not change { MasterFile.count }
-             puts "<< Flash errors is present? #{flash[:errors]} >>"
-     
-             flash[:errors].should_not be_nil
-       end
-    
-       it "should recognize audio/video based on extension when MIMETYPE is of unknown format" do
-         login_as_archivist
-    
-         pid = 'hydrant:short-form-video'
-         load_fixture pid
-         @file = fixture_file_upload('/videoshort.mp4', 'application/octet-stream')
-         master_file = MasterFile.new
-         master_file.container = MediaObject.find(pid)
-    
-         controller.stub!(:saveOriginalToHydrant).and_return(master_file)
-         controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
-    
-         lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should change { MasterFile.count }.by(1)
-         MasterFile.find(:all, order: "created_on ASC").last.media_type.should eq(["video"])
-         
-         flash[:errors].should be_nil
-       end
-     end
-     
-   context "should process file successfully" do
-     it "should save a copy in Hydrant" do
-         login_as_archivist
-      
-         pid = 'hydrant:short-form-video'
-         load_fixture pid
-         @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-         #Work-around for a Rails bug
-         class << @file
-           attr_reader :tempfile
-         end
-         
-         controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
-      
-         post :create, Filedata: [@file], original: 'any', container_id: pid
-         
-         master_file = MasterFile.find(:all, order: "created_on ASC").last
-         path =  File.join(Rails.public_path, master_file.url.first)
-         File.should exist path
-         
-         flash[:errors].should be_nil        
-     end
-     
-     it "should associate with a MediaObjekt" do
-         login_as_archivist
- 
-         pid = 'hydrant:short-form-video'
-         load_fixture pid
-         @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-         #Work-around for a Rails bug
-         class << @file
-           attr_reader :tempfile
-         end
-         
-         controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
- 
-         post :create, Filedata: [@file], original: 'any', container_id: pid
-         
-         master_file = MasterFile.find(:all, order: "created_on ASC").last
-         mediaobject = MediaObject.find(pid)
-         mediaobject.parts.should include master_file
-         master_file.container.pid.should eq(pid)
-         
-         flash[:errors].should be_nil        
-     end
-          
-     it "should send a copy to Matterhorn and get the workflow id back" do
-         login_as_archivist
-      
-         pid = 'hydrant:short-form-video'
-         load_fixture pid
-         @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-         # Work-around for a Rails bug
-         class << @file
-           attr_reader :tempfile
-         end
-         
-         post :create, Filedata: [@file], original: 'any', container_id: pid
-         
-         master_file = MasterFile.find(:all, order: "created_on ASC").last
-         master_file.source.should_not be_empty
-         puts master_file.source
-         
-         flash[:errors].should be_nil        
-     end
-   end
- end
-	
-  describe "#update" do
-  end
+  # describe "#create" do
+  #   context "must provide a container id" do
+  #        it "should fail if no container id provided" do
+  #          login_as_archivist
+  #          request.env["HTTP_REFERER"] = "/"
+  #              
+  #          @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+  #            
+  #          lambda { post :create, Filedata: [@file], original: 'any'}.should_not change { MasterFile.count }
+  #        end
+  #   end
+  #    
+  #   context "cannot upload a file over the defined limit" do
+  #    it "should provide a warning about the file size" do
+  #     login_as_archivist
+  #     request.env["HTTP_REFERER"] = "/"
+  #    
+  #     pid = 'hydrant:318'
+  #     load_fixture pid
+  #           
+  #     @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+  #     @file.stub(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2^21)  
+  #    
+  #     lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should_not change { MasterFile.count }
+  #     puts "<< Flash message is present? #{flash[:notice]} >>"
+  #    
+  #     flash[:errors].should_not be_nil
+  #    end
+  #   end
+  #    
+  #   context "must be a valid MIME type" do
+  #     it "should recognize a video format" do
+  #       login_as_archivist
+  #    
+  #       pid = 'hydrant:short-form-video'
+  #       load_fixture pid
+  #       @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+  #       master_file = MasterFile.new
+  #       master_file.container = MediaObject.find(pid)
+  #    
+  #       controller.stub!(:saveOriginalToHydrant).and_return(master_file)
+  #       controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
+  #    
+  #       lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should change { MasterFile.count }.by(1)
+  #       master_file.media_type.should eq(["video"])
+  #            
+  #       flash[:errors].should be_nil
+  #     end
+  #          
+  #    it "should recognize an audio format" 
+  #      
+  #    it "should reject non audio/video format" do
+  #          login_as_archivist
+  #          request.env["HTTP_REFERER"] = "/"
+  #    
+  #          pid = 'hydrant:318'
+  #          load_fixture pid
+  #    
+  #          @file = fixture_file_upload('/public-domain-book.txt', 'application/json')
+  #    
+  #          lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should_not change { MasterFile.count }
+  #          puts "<< Flash errors is present? #{flash[:errors]} >>"
+  #    
+  #          flash[:errors].should_not be_nil
+  #    end
+  #   
+  #    it "should recognize audio/video based on extension when MIMETYPE is of unknown format" do
+  #      login_as_archivist
+  #   
+  #      pid = 'hydrant:short-form-video'
+  #      load_fixture pid
+  #      @file = fixture_file_upload('/videoshort.mp4', 'application/octet-stream')
+  #      master_file = MasterFile.new
+  #      master_file.container = MediaObject.find(pid)
+  #   
+  #      controller.stub!(:saveOriginalToHydrant).and_return(master_file)
+  #      controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
+  #   
+  #      lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should change { MasterFile.count }.by(1)
+  #      MasterFile.find(:all, order: "created_on ASC").last.media_type.should eq(["video"])
+  #        
+  #      flash[:errors].should be_nil
+  #    end
+  #   end
+  #    
+  #  context "should process file successfully" do
+  #    it "should save a copy in Hydrant" do
+  #        login_as_archivist
+  #     
+  #        pid = 'hydrant:short-form-video'
+  #        load_fixture pid
+  #        @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+  #        #Work-around for a Rails bug
+  #        class << @file
+  #          attr_reader :tempfile
+  #        end
+  #        
+  #        controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
+  #     
+  #        post :create, Filedata: [@file], original: 'any', container_id: pid
+  #        
+  #        master_file = MasterFile.find(:all, order: "created_on ASC").last
+  #        path =  File.join(Rails.public_path, master_file.url.first)
+  #        File.should exist path
+  #        
+  #        flash[:errors].should be_nil        
+  #    end
+  #    
+  #    it "should associate with a MediaObjekt" do
+  #        login_as_archivist
+  #  
+  #        pid = 'hydrant:short-form-video'
+  #        load_fixture pid
+  #        @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+  #        #Work-around for a Rails bug
+  #        class << @file
+  #          attr_reader :tempfile
+  #        end
+  #        
+  #        controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
+  #  
+  #        post :create, Filedata: [@file], original: 'any', container_id: pid
+  #        
+  #        master_file = MasterFile.find(:all, order: "created_on ASC").last
+  #        mediaobject = MediaObject.find(pid)
+  #        mediaobject.parts.should include master_file
+  #        master_file.container.pid.should eq(pid)
+  #        
+  #        flash[:errors].should be_nil        
+  #    end
+  #         
+  #    it "should send a copy to Matterhorn and get the workflow id back" do
+  #        login_as_archivist
+  #     
+  #        pid = 'hydrant:short-form-video'
+  #        load_fixture pid
+  #        @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+  #        # Work-around for a Rails bug
+  #        class << @file
+  #          attr_reader :tempfile
+  #        end
+  #        
+  #        post :create, Filedata: [@file], original: 'any', container_id: pid
+  #        
+  #        master_file = MasterFile.find(:all, order: "created_on ASC").last
+  #        master_file.source.should_not be_empty
+  #        puts master_file.source
+  #        
+  #        flash[:errors].should be_nil        
+  #     end
+  #   end
+  # end
+  #   
+  # describe "#update" do
+  # end
+  # 
+  # describe "#destroy" do
+  #   context "should be deleted" do
+  #     it "should no longer exist" do
+  #         login_as_archivist
+  # 
+  #         media_object = MediaObject.new
+  #         media_object.save(validate: false)
+  #         master_file = MasterFile.new
+  #         master_file.save
+  #         master_file.container = media_object
+  #         master_file.container.save(validate:false)
+  #         master_file.save
+  # 
+  #       lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }
+  #     end
+  #   end
+  #   
+  #   context "should stop processing in Matterhorn" do
+  #     it "should no longer be in the Matterhorn pipeline"
+  #   end
+  #   
+  #   context "should no longer be associated with its parent object" do
+  #     it "should create then remove a file from a video object" do
+  #       login_as_archivist
+  #         
+  #       media_object = MediaObject.new
+  #       media_object.save(validate: false)
+  #       master_file = MasterFile.new
+  #       master_file.save
+  #       master_file.container = media_object
+  #       master_file.container.save(validate:false)
+  #       master_file.save
+  #         
+  #       lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }
+  #       media_object.parts.should_not include master_file         
+  #     end
+  #   end
+  # end
   
-  describe "#destroy" do
-    context "should be deleted" do
-      it "should no longer exist" do
-          login_as_archivist
-  
-          media_object = MediaObject.new
-          media_object.save(validate: false)
-          master_file = MasterFile.new
-          master_file.save
-          master_file.container = media_object
-          master_file.container.save(validate:false)
-          master_file.save
-  
-        lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }
+  describe "#show" do
+    
+    context "unauthorized"
+      it "should not be viewable by unauthenticated users when restricted" do
+        media_object = MediaObject.new
+        media_object.access = "restricted"
+        media_object.save(validate: false)
+        master_file = MasterFile.new
+        master_file.container = media_object
+        master_file.save
+      
+        lambda { get 'show', id: master_file.pid }.should raise_error
+      end
+
+      it "should not be viewable by authenticated, non-archivist users when private" do
+        login_as('student')
+      
+        media_object = MediaObject.new
+        media_object.access = "private"
+        media_object.save(validate: false)
+        master_file = MasterFile.new
+        master_file.container = media_object
+        master_file.save
+      
+        lambda { get 'show', id: master_file.pid }.should raise_error
+      end
+
+      it "should not be viewable by authenticated, non-archivist users when private" do
+        login_as('student')
+      
+        media_object = MediaObject.new
+        media_object.access = "private"
+        media_object.save(validate: false)
+        master_file = MasterFile.new
+        master_file.container = media_object
+        master_file.save
+      
+        lambda { get 'show', id: master_file.pid }.should raise_error
       end
     end
     
-    context "should stop processing in Matterhorn" do
-      it "should no longer be in the Matterhorn pipeline"
-    end
-    
-    context "should no longer be associated with its parent object" do
-      it "should create then remove a file from a video object" do
-          login_as_archivist
-          
-  media_object = MediaObject.new
-  media_object.save(validate: false)
-          master_file = MasterFile.new
-          master_file.save
-          master_file.container = media_object
-          master_file.container.save(validate:false)
-          master_file.save
-          
-        lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }
-        media_object.parts.should_not include master_file         
+    context "authorized"
+      it "should be viewable by unauthenticated users when public" do
+        media_object = MediaObject.new
+        media_object.access = "public"
+        media_object.save(validate: false)
+        master_file = MasterFile.new
+        master_file.container = media_object
+        master_file.save
+      
+        lambda { get 'show', id: master_file.pid }.should_not raise_error
       end
+
+      it "should be viewable by authenticated users when restricted" do
+        login_as('student')
+      
+        media_object = MediaObject.new
+        media_object.access = "restricted"
+        media_object.save(validate: false)
+        master_file = MasterFile.new
+        master_file.container = media_object
+        master_file.save
+      
+        lambda { get 'show', id: master_file.pid }.should_not raise_error
+      end
+
+      it "should be viewable by authenticated, archivist users when private" do
+        login_as_archivist
+      
+        media_object = MediaObject.new
+        media_object.access = "private"
+        media_object.save(validate: false)
+        master_file = MasterFile.new
+        master_file.container = media_object
+        master_file.save
+      
+        lambda { get 'show', id: master_file.pid }.should_not raise_error
+      end    
     end
   end
   
