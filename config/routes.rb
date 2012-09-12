@@ -4,7 +4,8 @@ Hydrant::Application.routes.draw do
 
   root :to => "catalog#index"
 
-  devise_for :users do 
+  devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" } do 
+    match '/users/sign_in', :to => "devise/sessions#new", :as => :new_user_session
     match '/users/sign_out', :to => "devise/sessions#destroy", :as => :destroy_user_session
   end
 

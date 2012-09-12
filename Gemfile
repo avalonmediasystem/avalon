@@ -33,6 +33,9 @@
   gem 'loofah'
   gem 'devise_cas_authenticatable', :git => "git://github.com/cjcolvar/devise_cas_authenticatable.git"
   gem 'rubycas-client', :git => "git://github.com/cjcolvar/rubycas-client.git"    
+  gem 'omniauth-cas', :path => "/home/cjcolvar/Code/avalon/omniauth-cas"
+
+  gem 'hydra-ldap'
 
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"

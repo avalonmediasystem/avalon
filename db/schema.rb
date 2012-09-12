@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120820201159) do
+ActiveRecord::Schema.define(:version => 20120912183443) do
 
   create_table "bookmarks", :force => true do |t|
     t.integer  "user_id",     :null => false
@@ -46,6 +46,8 @@ ActiveRecord::Schema.define(:version => 20120820201159) do
     t.string   "username",   :default => "", :null => false
     t.datetime "created_at",                 :null => false
     t.datetime "updated_at",                 :null => false
+    t.string   "provider"
+    t.string   "uid"
   end
 
   add_index "users", ["username"], :name => "index_users_on_username", :unique => true

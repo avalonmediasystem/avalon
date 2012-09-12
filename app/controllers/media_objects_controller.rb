@@ -66,7 +66,12 @@ class MediaObjectsController < ApplicationController
     
     case @active_step
       when 'file-upload'
-        
+        logger.debug "<< Processing file-upload step >>"
+        unless @mediaobject.parts.empty?
+          @mediaobject.format = @mediaobject.parts.first.media_type
+          @mediaobject.save(validate: false)
+        end
+
       # When adding resource description
       when 'resource-description' 
         logger.debug "<< Populating required metadata fields >>"

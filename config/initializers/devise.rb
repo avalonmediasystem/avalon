@@ -198,6 +198,8 @@ Devise.setup do |config|
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', :scope => 'user,public_repo'
 
+  config.omniauth :cas, :host => "cas.iu.edu", :login_url => "cas/login", :service_validate_url => "cas/validate", :logout_url => "cas/logout", :ssl => TRUE
+
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.
@@ -207,12 +209,12 @@ Devise.setup do |config|
   #   manager.default_strategies(:scope => :user).unshift :some_external_strategy
   # end
 
-  config.cas_base_url = "https://cas.iu.edu/cas/"
+#  config.cas_base_url = "https://cas.iu.edu/cas/"
 
   # you can override these if you need to, but cas_base_url is usually enough
-  config.cas_login_url = "https://cas.iu.edu/cas/login?cassvc=ANY"
-  config.cas_logout_url = "https://cas.iu.edu/cas/logout"
-  config.cas_validate_url = "https://cas.iu.edu/cas/validate?cassvc=ANY"
+#  config.cas_login_url = "https://cas.iu.edu/cas/login?cassvc=ANY"
+#  config.cas_logout_url = "https://cas.iu.edu/cas/logout"
+#  config.cas_validate_url = "https://cas.iu.edu/cas/validate?cassvc=ANY"
 
   # The CAS specification allows for the passing of a follow URL to be displayed when
   # a user logs out on the CAS server. RubyCAS-Server also supports redirecting to a
