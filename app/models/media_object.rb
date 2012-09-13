@@ -10,18 +10,17 @@ class MediaObject < ActiveFedora::Base
   has_metadata name: "descMetadata", type: PbcoreDocument	
 
   after_create :after_create
-
-  validates_each :creator, :created_on, :title do |record, attr, value|
-    logger.debug "<< #{attr} => #{value} >>"
-    record.errors.add(attr, "This field is required") if value.blank? or value.first == ""
-  end
+  
+  # Call custom validation methods to ensure that required fields are present and
+  # that preferred controlled vocabulary standards are used
+  validate :minimally_complete_record
   
   delegate :avalon_uploader, to: :DC, at: [:creator], unique: true
   delegate :avalon_publisher, to: :DC, at: [:publisher], unique: true
   # Delegate variables to expose them for the forms
-  delegate :title, to: :descMetadata, at: [:main_title]
-  delegate :creator, to: :descMetadata, at: [:creator_name]
-  delegate :created_on, to: :descMetadata, at: [:creation_date]
+  delegate :title, to: :descMetadata, at: [:main_title], unique: true
+  delegate :creator, to: :descMetadata, at: [:creator_name], unique: true
+  delegate :created_on, to: :descMetadata, at: [:creation_date], unique: true
   delegate :abstract, to: :descMetadata, at: [:summary]
   delegate :format, to: :descMetadata, at: [:media_type], unique: true
   # Additional descriptive metadata
@@ -31,8 +30,8 @@ class MediaObject < ActiveFedora::Base
   delegate :subject, to: :descMetadata, at: [:lc_subject]
   delegate :relatedItem, to: :descMetadata, at: [:relation]
   # Temporal and spatial coverage are a bit tricky but this should work
-  delegate :spatial, to: :descMetadata, at: [:spatial]
-  #delegate :temporal, to: :descMetadata, at: [:temporal_coverage]
+  delegate :spatial, to: :descMetadata, at: [:spatial_coverage]
+  delegate :temporal, to: :descMetadata, at: [:temporal_coverage]
   
   # Stub method to determine if the record is done or not. This should be based on
   # whether the descMetadata, rightsMetadata, and techMetadata datastreams are all
@@ -84,25 +83,43 @@ class MediaObject < ActiveFedora::Base
     end
     masterfiles
   end
-
-  # Because of the complexity and time limitations spatial and temporal are going to
-  # be dealt with by hand instead of relying on the delegate method. This means there
-  # might still be some kinks to work out for the generic pbcoreCoverage but it gets
-  # us moving forwards
-  def spatial
-    self.descMetadata.spatial_coverage  
-  end
   
-  def spatial=(values)
-  end
-  
-  def temporal
-  end
-  
-  def temporal=(values)
-  end
-  
+  # Spatial and temporal are special cases that need to be handled a bit differently
+  # than the rest. As a result we handle them first, take them out of the values
+  # hash, and then pass the rest to be managed traditionally.
+  #
+  # This approach can also be used for other fields but be sure to keep good documentation
+  # on the reasons why instead of just hacking something together in case it needs to be
+  # referred to later.
   def update_datastream(datastream = :descMetadata, values = {})
+    # Start with the coverage fields - since spatial and temporal both use
+    # pbcoreCoverage we need to take care not to accidentally remove nodes which
+    # were just inserted. One solution is create a new virtual attribute, coverage,
+    # that includes the values to be updated. This can be synthesized before the
+    # handoff to update_attribute
+    #
+    # WARNING - If there is already an entry in the hash for coverage it will be
+    #           destroyed as a side effect. Note this when naming field variables or
+    #           retool this code
+    values[:coverage] = []
+    if values.has_key?(:spatial)
+       logger.debug "<< Handling special case for attribute :spatial >>"
+       values[:spatial].each do |spatial_value|
+         node = {value: spatial_value, type: 'spatial'}
+         values[:coverage] << node
+       end
+       values.delete(:spatial)
+    end
+    
+    if values.has_key?(:temporal)
+       logger.debug "<< Handling special case for attribute :temporal >>"
+       values[:temporal].each do |temporal_value|
+         node = {value: temporal_value, type: 'temporal'}
+         values[:coverage] << node
+       end
+       values.delete(:temporal)
+    end
+    
     values.each do |k, v|
       # First remove all blank attributes in arrays
       logger.debug "<< #{v.instance_of?(Array)} >>"
@@ -113,7 +130,7 @@ class MediaObject < ActiveFedora::Base
     end
   end
   
-  def update_attribute(attribute, value = [])
+  def update_attribute(attribute, value = [], attributes = [])
     logger.debug "<< UPDATE ATTRIBUTE >>"
         
     if descMetadata.template_registry.has_node_type?(attribute.to_sym)
@@ -127,11 +144,7 @@ class MediaObject < ActiveFedora::Base
 
       value.length.times do |i|
         logger.debug "<< Adding node #{attribute}[#{i}] >>"
-        #  unless (-1 == active_nodes)
-        #    descMetadata.after_node(["#{attribute.to_sym}" => i], attribute.to_sym, value[i], 'default')
-        #  else
-            # if there is no sibling then just append to the end
-        descMetadata.add_child_node(descMetadata.ng_xml.root, attribute.to_sym, value[i])
+        descMetadata.add_child_node(descMetadata.ng_xml.root, attribute.to_sym, value[i], attributes[i])
       end
       #end
     else
@@ -148,6 +161,30 @@ class MediaObject < ActiveFedora::Base
     end
   end
 
+  # Guarantees that the record is minimally complete - ie that within the descriptive
+  # metadata the title, creator, date of creation, and identifier fields are not 
+  # blank. Since identifier is set automatically we only need to worry about creator,
+  # title, and date of creation.
+  def minimally_complete_record
+    logger.debug "<< MINIMALLY COMPLETE RECORD >>"
+    
+    [:creator, :title, :created_on].each do |element|
+      logger.debug "<< Validating the :#{element} property >>"
+      # Use send as a kludge for now. This does create some potential security issues
+      # but these can be addressed since the loop's symbols are defined very locally
+      # anyways
+      if send(element).blank?
+        errors.add element.to_sym, "The #{element.to_s} field is required"
+      end
+    end
+    logger.debug "<< #{errors.count} errors have been added to the session >>"
+  end
+  
+  # Other validation to consider adding into future iterations is the ability to
+  # validate against a known controlled vocabulary. This one will take some thought
+  # and research as opposed to being able to just throw something together in an ad hoc
+  # manner
+  
   private
     def after_create
       self.DC.identifier = pid

@@ -1,15 +1,55 @@
 class PbcoreDocument < ActiveFedora::NokogiriDatastream
   include PbcoreMethods
   
+  # Define the proper order of the elements so that once you are ready to save you can
+  # reorder them to create a semantically valid XML document that validates against the
+  # PBCore 2.0 schema. Use the element name as it appears in the document rather than
+  # the alias created in the terminology
+  #
+  # The reorganization is done by invoking the reorder_elements within an object that
+  # contains this datastream
+  #
+  # IE : Within a media_object
+  #     
+  #      before_save descMetadata.reorder_elements
+  ELEMENT_ORDER = [
+    "pbcoreAssetType",
+    "pbcoreAssetDate",
+    "pbcoreIdentifier",
+    "pbcoreTitle",
+    "pbcoreSubject",
+    "pbcoreDescription",
+    "pbcoreGenre",
+    "pbcoreRelation",
+    "pbcoreCoverage",
+    "pbcoreAnnotation",
+    "pbcoreCreator",
+    "pbcoreContributor",
+    "pbcorePublisher",
+    "pbcoreRightsSummary",
+    "pbcoreExtension",
+    "pbcorePart"
+  ]
+  
   set_terminology do |t|
-    t.root(:path=>"pbcoreDescriptionDocument", :xmlns => '', :namespace_prefix=>nil)
+    t.root(:path=>"pbcoreDescriptionDocument", :xmlns => '', :namespace_prefix=>nil,
+      :schema => 'http://pbcore.org/xsd/pbcore-2.0.xsd')
 
     #
     #  pbcoreDescription fields
     #
-    t.main_title(:path=>"pbcoreTitle", :namespace_prefix=>nil, :namespace_prefix=>nil, :attributes=>{ :titleType=>"Main" })
-    t.alternative_title(:path=>"pbcoreTitle", :namespace_prefix=>nil, :namespace_prefix=>nil, :attributes=>{ :titleType=>"Alternative" })
-    t.chapter(:path=>"pbcoreTitle", :namespace_prefix=>nil, :namespace_prefix=>nil, :attributes=>{ :titleType=>"Chapter" })
+    t.asset_date(:path => "pbcoreAssetDate", :namespace_prefix => nil)
+    t.creation_date(:path => 'pbcoreAssetDate', 
+      :attributes => { :dateType => 'created' },
+      :namespace_prefix => nil )
+
+    t.asset_type(:path => "pbcoreAssetType", :namespace_prefix => nil)
+    t.identifier(:path=>"pbcoreIdentifier", :namespace_prefix => nil)
+    
+    # Various types of titles
+    t.main_title(:path=>"pbcoreTitle", :namespace_prefix=>nil, :attributes=>{ :titleType=>"main" })
+    t.alternative_title(:path=>"pbcoreTitle", :namespace_prefix=>nil, :attributes=>{ :titleType=>"alternative" })
+    t.chapter(:path=>"pbcoreTitle", :namespace_prefix=>nil, :attributes=>{ :titleType=>"Chapter" })
     t.episode(:path=>"pbcoreTitle", :namespace_prefix=>nil, :attributes=>{ :titleType=>"Episode" })
     t.label(:path=>"pbcoreTitle", :namespace_prefix=>nil, :attributes=>{ :titleType=>"Label" })
     t.segment(:path=>"pbcoreTitle", :namespace_prefix=>nil, :attributes=>{ :titleType=>"Segment" })
@@ -21,7 +61,7 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     t.subjects(:path=>"pbcoreSubject", :namespace_prefix=>nil)
 
     # Individual subject types defined for entry
-    t.lc_subject(:path=>"pbcoreSubject", :namespace_prefix=>nil, :attributes=>{ :source=>"Library of Congress Subject Headings", :ref=>"http://id.loc.gov/authorities/subjects.html" })
+    t.lc_subject(:path=>"pbcoreSubject", :namespace_prefix=>nil, :attributes=>{ :source=>"lcsh", :ref=>"http://id.loc.gov/authorities/subjects.html" })
     t.lc_name(:path=>"pbcoreSubject", :namespace_prefix=>nil, :attributes=>{ :source=>"Library of Congress Name Authority File", :ref=>"http://id.loc.gov/authorities/names" })
 
     t.summary(:path=>"pbcoreDescription", :namespace_prefix=>nil, :attributes=>{ :descriptionType=>"Description",
@@ -42,9 +82,9 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     # Individual genre types defined for entry
     t.genre(:path=>"pbcoreGenre", :namespace_prefix=>nil)
 
-    t.getty_genre(:path=>"pbcoreGenre", :namespace_prefix=>nil, :attributes=>{ :source=>"The Getty Research Institute Art and Architecture Thesaurus", :ref=>"http://www.getty.edu/research/tools/vocabularies/aat/index.html" })
+    t.getty_genre(:path=>"pbcoreGenre", :namespace_prefix=>nil, :attributes=>{ :source=>"getty", :ref=>"http://www.getty.edu/research/tools/vocabularies/aat/index.html" })
     t.lc_genre(:path=>"pbcoreGenre", :namespace_prefix=>nil, :attributes=>{ :source=>"Library of Congress Genre/Form Terms", :ref=>"http://id.loc.gov/authorities/genreForms.html" })
-    t.lc_subject_genre(:path=>"pbcoreGenre", :namespace_prefix=>nil, :attributes=>{ :source=>"Library of Congress Subject Headings", :ref=>"http://id.loc.gov/authorities/subjects.html" })
+    t.lc_subject_genre(:path=>"pbcoreGenre", :namespace_prefix=>nil, :attributes=>{ :source=>"lcsh", :ref=>"http://id.loc.gov/authorities/subjects.html" })
 
     # Series field
     t.relation(:path=>"pbcoreRelation", :namespace_prefix=>nil) {
@@ -56,16 +96,18 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
 
     # Terms for time and place
     t.pbcore_coverage(:path=>"pbcoreCoverage", :namespace_prefix=>nil) {
-      t.coverage(:path=>"coverage", :namespace_prefix=>nil)
+      t.coverage_(:path=>"coverage", :namespace_prefix=>nil)
       t.coverage_type(:path => "coverageType", :namespace_prefix => nil)
     }
-    #t.temporal(:ref => :pbcore_coverage, :path => "pbcoreCoverage[./coverageType='temporal']")
-    t.spatial(:ref => :pbcore_coverage, :path => "pbcoreCoverage")
+    t.temporal(:ref => :pbcore_coverage, :path => "pbcoreCoverage[./coverageType='temporal']")
+    t.spatial(:ref => :pbcore_coverage, :path => "pbcoreCoverage[./coverageType='spatial']")
+    # Display all coverage values regardless of type
+    t.coverages(:ref => :pbcore_coverage, :path => "pbcoreCoverage")
     
-    t.spatial_coverage(:proxy => [:spatial, :coverage])
+    t.spatial_coverage(:proxy => [:spatial])
     t.spatial_role(:proxy => [:spatial, :coverage_type])
-    #t.temporal_coverage(:proxy => [:spatial_node, :coverage])
-    #t.temporal_role(:proxy => [:spatial, :coverage_type])
+    t.temporal_coverage(:proxy => [:temporal])
+    t.temporal_role(:proxy => [:temporal, :coverage_type])
 
     # Contributor names and roles
     t.creator(:path=>"pbcoreCreator", :namespace_prefix=>nil) {
@@ -121,7 +163,7 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
       t.inst_clean_note(:path=>"instantiationAnnotation", :namespace_prefix=>nil, :attributes=>{ :annotationType=>"Cleaning Notes" })
     }
     # Individual field names:
-    t.creation_date(:proxy=>[:pbcoreInstantiation, :instantiationDate])
+    t.instantiation_date(:proxy=>[:pbcoreInstantiation, :instantiationDate])
     t.barcode(:proxy=>[:pbcoreInstantiation, :instantiationIdentifier])
     t.repository(:proxy=>[:pbcoreInstantiation, :instantiationLocation])
     t.format(:proxy=>[:pbcoreInstantiation, :instantiationPhysical])
@@ -174,26 +216,19 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     }
   end
 
-  define_template :spatial do |xml, location|
+  define_template :coverage do |xml, value, type=nil|
     xml.pbcoreCoverage {
-      xml.coverage { xml.text location }
-      xml.coverageType { xml.text "spatial" }
+      xml.coverage { xml.text value }
+      xml.coverageType { xml.text type } unless type.blank?
     }
   end
-
-  #define_template :temporal do |xml, time|
-  #  xml.pbcoreCoverage {
-  #    xml.coverage { xml.text time }
-  #    xml.coverageType { xml.text "temporal" }
-  #  }
-  #end
 
   def self.xml_template
     builder = Nokogiri::XML::Builder.new do |xml|
     xml.pbcoreDescriptionDocument("xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
-        "xsi:schemaLocation"=>"http://www.pbcore.org/PBCore/PBCoreNamespace.html") {
+        "xsi:schemaLocation"=>"http://www.pbcore.org/PBCore/PBCoreNamespace.html http://pbcore.org/xsd/pbcore-2.0.xsd") {
 
-        xml.pbcoreIdentifier(:source=>"Avalon Media System", :annotation=>"PID")
+        xml.pbcoreIdentifier(:source=>"Avalon Media System", :annotation=>"pid")
         xml.pbcoreTitle(:titleType=>"Main")
         xml.pbcoreDescription(:descriptionType=>"Description",
           :descriptionTypeSource=>"pbcoreDescription/descriptionType",
@@ -205,6 +240,13 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     return builder.doc
   end
 
+  def self.blank_template
+    builder = Nokogiri::XML::Builder.new do |xml|
+    xml.pbcoreDescriptionDocument("xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
+        "xsi:schemaLocation"=>"http://www.pbcore.org/PBCore/PBCoreNamespace.html http://pbcore.org/xsd/pbcore-2.0.xsd") {}
+    end
+    return builder.doc
+  end
 
   def to_solr(solr_doc=SolrDocument.new)
     super(solr_doc)
@@ -267,6 +309,21 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     return solr_doc
   end
 
+  # Method based on example from Rock and Roll Hall of Fame's PBCore implementation at
+  # https://github.com/awead/Hydra-Rock/blob/master/lib/rockhall/pbcore.rb
+  def reorder_elements
+    logger.debug "<< REORDER ELEMENTS >>"
+    new_document = self.blank_template
+    
+    nodes.each do |node|
+      search(node).each do |element|
+        logger.debug "<< Inserting #{element} into document >>"
+        new_document.root.add_child(element)
+      end
+    end
+    self.content = new_document
+  end
+  
   private
 
   def gather_terms(terms)
@@ -276,6 +333,9 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
   end
   
   # Returns the 4-digit year from a string
+  #
+  # Chris - What is the purpose of this block of code? Can we refactor it into something
+  #         a little more elegant?
   def get_year(s)
     begin
       return DateTime.parse(s).year.to_s
