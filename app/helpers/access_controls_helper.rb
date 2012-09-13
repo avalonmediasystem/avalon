@@ -1,3 +1,5 @@
+require "role_controls"
+
 module AccessControlsHelper
   def enforce_create_permissions(opts={})
     if current_user.nil? 
@@ -31,4 +33,30 @@ module AccessControlsHelper
       session[:viewing_context] = "edit"
     end
   end  
+  
+  # Controller "before" filter for enforcing access controls on show actions
+  # @param [Hash] opts (optional, not currently used)
+  def enforce_show_permissions(opts={})
+    # load_permissions_from_solr
+    mediaobject = MediaObject.find(params[:id])
+    
+    unless mediaobject.access == "public" && mediaobject.is_published?
+      # TODO: uncomment when we use embargo
+      # if @permissions_solr_document["embargo_release_date_dt"] 
+      #   embargo_date = Date.parse(@permissions_solr_document["embargo_release_date_dt"].split(/T/)[0])
+      #   if embargo_date > Date.parse(Time.now.to_s)
+      #     unless current_user && can?(:edit, params[:id])
+      #       raise Hydra::AccessDenied.new("This item is under embargo.  You do not have sufficient access privileges to read this document.", :edit, params[:id])
+      #     end
+      #   end
+      # end
+      if !mediaobject.is_published? && !can_read_unpublished(mediaobject) || cannot?(:read, mediaobject)
+        raise Hydra::AccessDenied.new("You do not have sufficient access privileges to read this document, which has been marked private.", :read, params[:id])
+      end
+    end
+  end
+  
+  def can_read_unpublished mediaobject
+     current_user.username == mediaobject.avalon_uploader || RoleControls.user_roles(current_user).include?("archivist")
+  end
 end
