@@ -315,7 +315,7 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     new_doc = self.class.blank_template
     
     logger.debug "<< {BEFORE} >>"
-    logger.debug "<< #{new_document.to_xml} >>"
+    logger.debug "<< #{new_doc.to_xml} >>"
     logger.debug "<< #{self.to_xml} >>"
 
     ELEMENT_ORDER.each do |node|
@@ -327,8 +327,9 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     end
     
     logger.debug "<< {AFTER} >>"
-    logger.debug "<< #{new_document.to_xml} >>"
-    logger.debug "<< #{self.to_xml} >>"
+    logger.debug "<< #{new_doc.class} >>"
+    logger.debug "<< #{ng_xml.class} >>"
+    self.ng_xml = new_doc
   end
   
   private
@@ -337,23 +338,5 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     results = Array.new
     terms.each { |r| results << r.text }
     return results.compact.uniq
-  end
-  
-  # Returns the 4-digit year from a string
-  #
-  # Chris - What is the purpose of this block of code? Can we refactor it into something
-  #         a little more elegant?
-  def get_year(s)
-    begin
-      return DateTime.parse(s).year.to_s
-    rescue
-      if s.match(/^\d\d\d\d$/)
-        return s.to_s
-      elsif s.match(/^(\d\d\d\d)-\d\d$/)
-        return $1.to_s
-      else
-        return nil
-      end
-    end
   end
 end
