@@ -50,13 +50,10 @@ module AccessControlsHelper
       #     end
       #   end
       # end
-      if !mediaobject.is_published? && !can_read_unpublished(mediaobject) || cannot?(:read, mediaobject)
+      if cannot?(:read, mediaobject)
         raise Hydra::AccessDenied.new("You do not have sufficient access privileges to read this document, which has been marked private.", :read, params[:id])
       end
     end
   end
-  
-  def can_read_unpublished mediaobject
-     current_user.username == mediaobject.avalon_uploader || RoleControls.user_roles(current_user).include?("archivist")
-  end
+
 end

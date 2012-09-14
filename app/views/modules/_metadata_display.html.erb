@@ -1,7 +1,7 @@
 <dl id="creation_metadata">
   <dt>Title</dt>
   <dd>
-    <% unless @mediaobject.title.empty? or
+    <% unless @mediaobject.title.blank? or
       "" == @mediaobject.title.first %>
       <%= @mediaobject.title.first %>
     <% else %>
@@ -11,7 +11,7 @@
 
   <dt>Creator</dt>
   <dd>
-    <% unless @mediaobject.creator.empty? or
+    <% unless @mediaobject.creator.blank? or
       "" == @mediaobject.creator.first %>
       <%= @mediaobject.creator.first %>
     <% else %>
@@ -26,7 +26,7 @@
 
   <dt>Date</dt>
   <dd>
-    <% unless @mediaobject.created_on.empty? %>
+    <% unless @mediaobject.created_on.blank? %>
       <%= @mediaobject.created_on.first %>
     <% else %>
       <em>Not provided</em>

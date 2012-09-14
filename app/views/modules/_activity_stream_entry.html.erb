@@ -4,10 +4,10 @@
 <dt>
   <% if can? :read, item %>
     <%= link_to(item) do %> 
-      <% unless not item.title.first.nil? and item.title.first.empty? %><%= item.title.first %><% else %>No title provided<% end%> (<%= item.pid %>)
+    <% unless item.title.blank? %><%= item.title %><% else %>No title provided<% end%> (<%= item.pid %>)
     <% end %>
   <% else %>
-      <% unless not item.title.first.nil? and item.title.first.empty? %><%= item.title.first %><% else %>No title provided<% end%> (<%= item.pid %>)
+      <% unless item.title.blank? %><%= item.title.first %><% else %>No title provided<% end%> (<%= item.pid %>)
   <% end %>
 </dt>
 <dd class="whitespace">
