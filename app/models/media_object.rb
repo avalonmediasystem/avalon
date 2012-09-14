@@ -47,7 +47,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def is_published?
-    not self.avalon_uploader.blank?
+    not self.avalon_publisher.blank?
   end
 
   def access

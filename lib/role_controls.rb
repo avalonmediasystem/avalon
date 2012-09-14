@@ -16,6 +16,10 @@ class RoleControls
       RoleMapper.whois(role)
     end
     
+    def user_roles(user)
+      RoleMapper.byname[user]
+    end
+
     def roles
       RoleMapper.role_names
     end
