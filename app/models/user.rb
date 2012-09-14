@@ -13,15 +13,17 @@ class User < ActiveRecord::Base
   # user class to get a user-displayable login/identifier for
   # the account. 
   def to_s
-    username.blank? ? uid : username
+    username
   end
 
   def self.find_for_cas(access_token, signed_in_resource=nil)
-    data = access_token.info
-    user = User.where(:username => data["user"]).first
+    logger.debug "#{access_token.inspect}"
+    #data = access_token.info
+    uid = access_token.uid
+    user = User.where(:username => uid).first
 
     unless user
-        user = User.create(username: data["user"])
+        user = User.create(username: uid)
     end
     user
   end
