@@ -81,6 +81,21 @@ describe MediaObjectsController do
       it "should be accesible by its PID"
       it "should return an error if the PID does not exist"
     end
+    
+    context "Items should not be available to unauthorized users" do
+      it "should not be available when unpublished" do
+        login_as('cataloger')
+        get 'new'
+        mo = MediaObject.find(:all, order: "created_on DESC").last
+        mo.access = "public"
+        mo.save
+        
+        login_as('student')
+        
+        # No idea why when not authorized it redirects to edit path
+        lambda { get 'show', id: mo.pid }.should redirect_to edit_media_object_path(mo, step: "file-upload")
+      end
+    end
   end
     
   describe "#destroy" do

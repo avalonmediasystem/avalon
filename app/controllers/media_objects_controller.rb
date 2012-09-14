@@ -1,9 +1,9 @@
 class MediaObjectsController < ApplicationController
-   include Hydra::Controller::FileAssetsBehavior
+  include Hydra::Controller::FileAssetsBehavior
        
-   before_filter :enforce_access_controls
-   before_filter :inject_workflow_steps, only: [:edit, :update]
-
+  before_filter :enforce_access_controls
+  before_filter :inject_workflow_steps, only: [:edit, :update]
+   
   def new
     logger.debug "<< NEW >>"
     @mediaobject = MediaObject.new

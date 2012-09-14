@@ -10,8 +10,8 @@
   <div id="main_body" class="offset1 span8">
     <div class="row-fluid whitespace">
       <div class="span12">
-      <% unless @mediaobject.title.empty? %>
-        <h2><%= @mediaobject.title.first %></h2>
+        <% unless @mediaobject.title.blank? %>
+      <h2><%= @mediaobject.title %></h2>
       <% else %>
         <h2><%= @mediaobject.pid %></h2>
       <% end %>
@@ -52,8 +52,8 @@
 
 <% content_for :title do %>
   Preview -
-  <% unless @mediaobject.title.empty? %>
-    <%= @mediaobject.title.first %> (<%= @mediaobject.pid %>)
+  <% unless @mediaobject.title.blank? %>
+  <%= @mediaobject.title %> (<%= @mediaobject.pid %>)
   <% else %>
     <%= @mediaobject.pid %>
   <% end %>
