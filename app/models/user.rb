@@ -1,3 +1,5 @@
+require 'net/ldap'
+
 class User < ActiveRecord::Base
 # Connects this user object to Hydra behaviors. 
  include Hydra::User
@@ -19,11 +21,19 @@ class User < ActiveRecord::Base
   def self.find_for_cas(access_token, signed_in_resource=nil)
     logger.debug "#{access_token.inspect}"
     #data = access_token.info
-    uid = access_token.uid
-    user = User.where(:username => uid).first
+    username = access_token.uid
+
+    #If IU CAS guest account
+    if username =~ /\d{11}/
+      tree = "dc=eads,dc=iu,dc=edu"
+      filter = Net::LDAP::Filter.construct("(&(objectCategory=CN=Person,CN=Schema,CN=Configuration,DC=eads,DC=iu,DC=edu)(cn=80000478586))")
+      username = HYDRANT_LDAP.search(:base => tree, :filter => filter, :attributes=> ["mail"]).first.mail.first
+    end
+
+    user = User.where(:username => username).first
 
     unless user
-        user = User.create(username: uid)
+        user = User.create(username: username)
     end
     user
   end
