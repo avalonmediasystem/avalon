@@ -25,16 +25,12 @@
             <p>No media is associated with this item</p>
           </div>
         <% else %>
-          <dl>
-            <dt>Media files</dt>
-            <dd>
-              <ul>
+          <h3>Media files</h3>
+              <ul class="unstyled">
                 <% @masterfiles.each do |masterfile| %>
-                <li><a href="<%= master_file_path(masterfile) %>"><%= masterfile.label %></a></li>
+                <li><a href="<%= master_file_path(masterfile) %>"><%= masterfile.label %></a> (<%= number_to_human_size(masterfile.size.first) %>)</li>
                 <% end %>
               </ul>
-            </dd>
-          </dl>
         <% end %>
       </section>  
 

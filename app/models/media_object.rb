@@ -107,12 +107,12 @@ class MediaObject < ActiveFedora::Base
     # WARNING - If there is already an entry in the hash for coverage it will be
     #           destroyed as a side effect. Note this when naming field variables or
     #           retool this code
-    values[:coverage] = []
+    values[:pbcore_coverage] = []
     if values.has_key?(:spatial)
        logger.debug "<< Handling special case for attribute :spatial >>"
        values[:spatial].each do |spatial_value|
-         node = {value: spatial_value, type: 'spatial'}
-         values[:coverage] << node
+         node = {value: spatial_value, attributes: 'spatial'}
+         values[:pbcore_coverage] << node
        end
        values.delete(:spatial)
     end
@@ -120,25 +120,50 @@ class MediaObject < ActiveFedora::Base
     if values.has_key?(:temporal)
        logger.debug "<< Handling special case for attribute :temporal >>"
        values[:temporal].each do |temporal_value|
-         node = {value: temporal_value, type: 'temporal'}
-         values[:coverage] << node
+         node = {value: temporal_value, attributes: 'temporal'}
+         values[:pbcore_coverage] << node
        end
        values.delete(:temporal)
     end
     
     values.each do |k, v|
       # First remove all blank attributes in arrays
-      logger.debug "<< #{v.instance_of?(Array)} >>"
       v.keep_if { |item| not item.blank? } if v.instance_of?(Array)
       logger.debug "<< Updating #{k} >>"
       logger.debug "<< #{v} >>"
-      update_attribute(k, v)
+
+      # Peek at the first value in the array. If it is a Hash then unpack it into two
+      # arrays before you pass everything off to the update_attributes method so that
+      # the markup is composed properly
+      #
+      # This does not feel right but is just a first pass. Maybe the use of NOM rather
+      # than OM will mitigate the need for such tricks
+      if v.first.is_a?(Hash)
+        vals = []
+        attrs = []
+        
+        v.each do |entry|
+          logger.debug "<< Entry : #{entry} >>"
+          vals << entry[:value]
+          attrs << entry[:attributes]
+        end
+        update_attribute(k, vals, attrs)
+      else
+        update_attribute(k, v)
+      end
     end
   end
   
   def update_attribute(attribute, value = [], attributes = [])
     logger.debug "<< UPDATE ATTRIBUTE >>"
-        
+    logger.debug "<< Attribute : #{attribute} >>"
+    logger.debug "<< Value : #{value} >>"
+    logger.debug "<< Attributes : #{attributes} >>"
+    
+    # Add a special case for coverage. Eventually a more general approach should be
+    # devised that can handle other elements with the same problem but this is just a
+    # short term bandaid. If this is still here in December 2012 then the Agile process
+    # is not working as it should
     if descMetadata.template_registry.has_node_type?(attribute.to_sym)
       active_nodes = descMetadata.find_by_terms(attribute.to_sym).length
       logger.debug "<< Need to remove #{active_nodes} old terms >>"

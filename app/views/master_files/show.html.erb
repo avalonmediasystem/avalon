@@ -5,10 +5,13 @@
   <div id="main_body" class="offset1 span8">
     <div class="row-fluid whitespace">
       <div class="span12">
-		  <% unless @masterfile.label.empty? %>
-      <h2><%= @masterfile.label %></h2>
-      <% else %>
-        <h2><%= @masterfile.url %></h2>
+        <h2>
+		  <% unless @masterfile.label.blank? %>
+            <%= @masterfile.label %>
+          <% else %>
+            <%= @masterfile.url %>
+          <% end %>
+        </h2>
       <% end %>
      </div>
     </div>
@@ -34,7 +37,7 @@
     <div class="row-fluid">
       <div class="alert alert-info">
       <h4 class="alert-heading">Parent item</h4>
-      <p><%= link_to @mediaobject.title.first, media_object_path(@mediaobject.pid) %></p>
+      <p><%= link_to @mediaobject.title, media_object_path(@mediaobject.pid) %></p>
       <address></address>
       </div>
       
@@ -49,8 +52,8 @@
 
 <% content_for :title do %>
   Preview -
-  <% unless @mediaobject.title.empty? %>
-    <%= @mediaobject.title.first %> (<%= @mediaobject.pid %>)
+  <% unless @mediaobject.title.blank? %>
+    <%= @mediaobject.title %> (<%= @mediaobject.pid %>)
   <% else %>
     <%= @mediaobject.pid %>
   <% end %>

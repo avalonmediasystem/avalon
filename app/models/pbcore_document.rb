@@ -216,7 +216,7 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     }
   end
 
-  define_template :coverage do |xml, value, type=nil|
+  define_template :pbcore_coverage do |xml, value, type=nil|
     xml.pbcoreCoverage {
       xml.coverage { xml.text value }
       xml.coverageType { xml.text type } unless type.blank?

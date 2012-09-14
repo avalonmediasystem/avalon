@@ -7,11 +7,11 @@
   <%= hidden_field_tag :step, @active_step %>
   <%= vid.fieldset "Required fields", id: 'required_fields' do %>    
   
-    <%= vid.text_field :title, "Title", class: 'span12', value: @mediaobject.title.first %>
+    <%= vid.text_field :title, "Title", class: 'span12', value: @mediaobject.title %>
     <%= vid.text_field :creator, "Creator", class: 'span12',
-      value: @mediaobject.creator.first %>
+      value: @mediaobject.creator %>
     <%= vid.text_field :created_on, "Created on", class: 'span12',
-      value: @mediaobject.created_on.first %>
+      value: @mediaobject.created_on %>
     <%= vid.text_area :abstract, "Summary", class: 'span12', rows: 6,
       value: @mediaobject.abstract.first %>
   <% end %>

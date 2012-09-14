@@ -2,8 +2,8 @@
   <dt>Title</dt>
   <dd>
     <% unless @mediaobject.title.blank? or
-      "" == @mediaobject.title.first %>
-      <%= @mediaobject.title.first %>
+      "" == @mediaobject.title %>
+      <%= @mediaobject.title %>
     <% else %>
       <em>Not provided</em>
     <% end %>
@@ -11,9 +11,8 @@
 
   <dt>Creator</dt>
   <dd>
-    <% unless @mediaobject.creator.blank? or
-      "" == @mediaobject.creator.first %>
-      <%= @mediaobject.creator.first %>
+    <% unless @mediaobject.creator.blank? %>
+      <%= @mediaobject.creator %>
     <% else %>
       <em>Not provided</em>
     <% end %>
@@ -27,7 +26,7 @@
   <dt>Date</dt>
   <dd>
     <% unless @mediaobject.created_on.blank? %>
-      <%= @mediaobject.created_on.first %>
+      <%= @mediaobject.created_on %>
     <% else %>
       <em>Not provided</em>
     <% end %>

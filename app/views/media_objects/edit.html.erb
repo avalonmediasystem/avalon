@@ -32,7 +32,7 @@
 <% content_for :title do %>
   Edit -
   <% unless @mediaobject.title.blank? %>
-    <%= @mediaobject.title.first %> (<%= @mediaobject.pid %>)
+    <%= @mediaobject.title %> (<%= @mediaobject.pid %>)
   <% else %>
     <%= @mediaobject.pid %>
   <% end %>
