@@ -229,12 +229,8 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
         "xsi:schemaLocation"=>"http://www.pbcore.org/PBCore/PBCoreNamespace.html http://pbcore.org/xsd/pbcore-2.0.xsd") {
 
         xml.pbcoreIdentifier(:source=>"Avalon Media System", :annotation=>"pid")
-        xml.pbcoreTitle(:titleType=>"Main")
-        xml.pbcoreDescription(:descriptionType=>"Description",
-          :descriptionTypeSource=>"pbcoreDescription/descriptionType",
-          :descriptionTypeRef=>"http://pbcore.org/vocabularies/pbcoreDescription/descriptionType#description",
-          :annotation=>"Summary"
-        )
+        xml.pbcoreTitle(:titleType=>"uniform")
+        xml.pbcoreDescription(:annotation=>"summary")
     }
     end
     return builder.doc
@@ -242,8 +238,10 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
 
   def self.blank_template
     builder = Nokogiri::XML::Builder.new do |xml|
-    xml.pbcoreDescriptionDocument("xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
-        "xsi:schemaLocation"=>"http://www.pbcore.org/PBCore/PBCoreNamespace.html http://pbcore.org/xsd/pbcore-2.0.xsd") {}
+    xml.pbcoreDescriptionDocument(
+      "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
+      "xsi:schemaLocation"=>"http://www.pbcore.org/PBCore/PBCoreNamespace.html http://pbcore.org/xsd/pbcore-2.0.xsd") {
+        }
     end
     return builder.doc
   end
@@ -313,15 +311,24 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
   # https://github.com/awead/Hydra-Rock/blob/master/lib/rockhall/pbcore.rb
   def reorder_elements
     logger.debug "<< REORDER ELEMENTS >>"
-    new_document = self.blank_template
     
-    nodes.each do |node|
-      search(node).each do |element|
+    new_doc = self.class.blank_template
+    
+    logger.debug "<< {BEFORE} >>"
+    logger.debug "<< #{new_document.to_xml} >>"
+    logger.debug "<< #{self.to_xml} >>"
+
+    ELEMENT_ORDER.each do |node|
+      self.ng_xml.search(node).each do |element|
+        logger.debug "<< Element is a #{element.class} >>"
         logger.debug "<< Inserting #{element} into document >>"
-        new_document.root.add_child(element)
+        new_doc.root.add_child(element.clone)        
       end
     end
-    self.content = new_document
+    
+    logger.debug "<< {AFTER} >>"
+    logger.debug "<< #{new_document.to_xml} >>"
+    logger.debug "<< #{self.to_xml} >>"
   end
   
   private

@@ -57,6 +57,11 @@
 	gem 'database_cleaner'
 	gem 'factory_girl_rails'
     gem 'rspec-rails', '>=2.9.0'
+    # For debugging as a richer replacement for irb
+    #
+    # To use enter
+    # pry -r ./config/environment.rb at the command line
+    gem 'pry'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do
