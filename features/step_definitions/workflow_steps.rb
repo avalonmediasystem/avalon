@@ -170,6 +170,11 @@ When /^set the access level to (public|restricted|private)/ do |level|
   click_on 'Preview and publish'
 end
 
+# Mark things as pending so that they can be fixed later
+When /^I will write this test later/ do |nothing|
+  pending "This space reserved"
+end
+
 def test_for_field(field)
   within ('body') do
     field.gsub!(' ', '_')

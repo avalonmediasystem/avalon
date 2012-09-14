@@ -339,4 +339,18 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     terms.each { |r| results << r.text }
     return results.compact.uniq
   end
+
+  def get_year(s)
+    begin
+      DateTime.parse(s).year.to_s
+    rescue
+      if s.match(/^\d{4}$/)
+        return s.to_s
+      elsif s.match(/^(\d{4})-\d{2}$/)
+        return $1.to_s
+      else
+        return nil
+      end
+    end
+  end
 end
