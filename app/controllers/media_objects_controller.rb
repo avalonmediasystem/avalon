@@ -75,21 +75,10 @@ class MediaObjectsController < ApplicationController
       # When adding resource description
       when 'resource-description' 
         logger.debug "<< Populating required metadata fields >>"
-        
-        # Quick, dirty, and hacky but it works right?
-        metadata = params[:media_object]
-        logger.debug "<< #{metadata} >>"
-        
-        @mediaobject.update_datastream(:descMetadata, metadata)
-        
+        @mediaobject.update_datastream(:descMetadata, params[:media_object])
         logger.debug "<< Updating descriptive metadata >>"
-        logger.debug "<< #{@mediaobject.inspect} >>"
-        # End ugly hack   
         @mediaobject.save
 
-        logger.debug "<< #{@mediaobject.errors} >>"
-        logger.debug "<< #{@mediaobject.errors.size} problems found in the data >>"        
-      
       # When on the access control page
       when 'access-control' 
         # TO DO: Implement me
