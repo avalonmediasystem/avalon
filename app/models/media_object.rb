@@ -90,6 +90,17 @@ class MediaObject < ActiveFedora::Base
     masterfiles
   end
   
+  # For spatial and temporal ignore the coverageType element when returning the list
+  # of values since they are implicit in the type. This means having to override the
+  # delegate method with custom getters.
+  def spatial
+    descMetadata.spatial_coverage
+  end
+  
+  def temporal
+    descMetadata.temporal_coverage
+  end
+  
   # Spatial and temporal are special cases that need to be handled a bit differently
   # than the rest. As a result we handle them first, take them out of the values
   # hash, and then pass the rest to be managed traditionally.

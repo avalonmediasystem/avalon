@@ -104,9 +104,9 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     # Display all coverage values regardless of type
     t.coverages(:ref => :pbcore_coverage, :path => "pbcoreCoverage")
     
-    t.spatial_coverage(:proxy => [:spatial])
+    t.spatial_coverage(:proxy => [:spatial, :coverage])
     t.spatial_role(:proxy => [:spatial, :coverage_type])
-    t.temporal_coverage(:proxy => [:temporal])
+    t.temporal_coverage(:proxy => [:temporal, :coverage])
     t.temporal_role(:proxy => [:temporal, :coverage_type])
 
     # Contributor names and roles
