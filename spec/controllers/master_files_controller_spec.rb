@@ -197,12 +197,38 @@ describe MasterFilesController do
   end
   
   describe "#show" do
-    
     context "unauthorized" do
-      it "should not be viewable by unauthenticated users when restricted" do
+      it "should NOT be viewable by unauthenticated users when public and unpublished" do
+        media_object = MediaObject.new
+        media_object.access = "public"
+        media_object.save(validate: false)
+                
+        master_file = MasterFile.new
+        master_file.container = media_object
+        master_file.save
+      
+        lambda { get 'show', id: master_file.pid }.should raise_error
+      end
+      
+      it "should NOT be viewable by authenticated users when restricted and unpublished" do
         media_object = MediaObject.new
         media_object.access = "restricted"
         media_object.save(validate: false)
+                
+        master_file = MasterFile.new
+        master_file.container = media_object
+        master_file.save
+      
+        login_as('student')
+        lambda { get 'show', id: master_file.pid }.should raise_error
+      end
+      
+      it "should not be viewable by unauthenticated users when restricted" do
+        media_object = MediaObject.new
+        media_object.access = "restricted"
+        media_object.avalon_publisher = "pdinh"
+        media_object.save(validate: false)
+
         master_file = MasterFile.new
         master_file.container = media_object
         master_file.save
@@ -215,20 +241,9 @@ describe MasterFilesController do
       
         media_object = MediaObject.new
         media_object.access = "private"
+        media_object.avalon_publisher = "pdinh"
         media_object.save(validate: false)
-        master_file = MasterFile.new
-        master_file.container = media_object
-        master_file.save
-      
-        lambda { get 'show', id: master_file.pid }.should raise_error
-      end
 
-      it "should not be viewable by authenticated, non-archivist users when private" do
-        login_as('student')
-      
-        media_object = MediaObject.new
-        media_object.access = "private"
-        media_object.save(validate: false)
         master_file = MasterFile.new
         master_file.container = media_object
         master_file.save
@@ -238,10 +253,12 @@ describe MasterFilesController do
     end
     
     context "authorized" do
-      it "should be viewable by unauthenticated users when public" do
+      it "should be viewable by unauthenticated users when public and published" do
         media_object = MediaObject.new
         media_object.access = "public"
+        media_object.avalon_publisher = "pdinh"
         media_object.save(validate: false)
+                
         master_file = MasterFile.new
         master_file.container = media_object
         master_file.save
@@ -254,7 +271,9 @@ describe MasterFilesController do
       
         media_object = MediaObject.new
         media_object.access = "restricted"
+        media_object.avalon_publisher = "pdinh"
         media_object.save(validate: false)
+        
         master_file = MasterFile.new
         master_file.container = media_object
         master_file.save

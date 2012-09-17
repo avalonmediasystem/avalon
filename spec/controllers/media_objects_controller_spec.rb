@@ -80,20 +80,29 @@ describe MediaObjectsController do
     context "Known items should be retrievable" do
       it "should be accesible by its PID"
       it "should return an error if the PID does not exist"
+      it "should be available to an archivist when unpublished" do
+        pid = 'hydrant:short-form-video'
+        load_fixture pid
+        mo = MediaObject.find(pid)
+        mo.access = "public"
+        mo.save
+        
+        login_as('cataloger')
+        get 'show', id: pid
+        response.should_not redirect_to new_user_session_path
+      end
     end
     
     context "Items should not be available to unauthorized users" do
       it "should not be available when unpublished" do
-        login_as('cataloger')
-        get 'new'
-        mo = MediaObject.find(:all, order: "created_on DESC").last
+        pid = 'hydrant:short-form-video'
+        load_fixture pid
+        mo = MediaObject.find(pid)
         mo.access = "public"
         mo.save
         
-        login_as('student')
-        
-        # No idea why when not authorized it redirects to edit path
-        lambda { get 'show', id: mo.pid }.should redirect_to edit_media_object_path(mo, step: "file-upload")
+        get 'show', id: pid
+        response.should redirect_to new_user_session_path
       end
     end
   end
