@@ -120,7 +120,7 @@ class MediaObject < ActiveFedora::Base
     if values.has_key?(:spatial)
        logger.debug "<< Handling special case for attribute :spatial >>"
        values[:spatial].each do |spatial_value|
-         node = {value: spatial_value, attributes: 'spatial'}
+         node = {value: spatial_value, attributes: 'Spatial'}
          values[:pbcore_coverage] << node
        end
        values.delete(:spatial)
@@ -129,7 +129,7 @@ class MediaObject < ActiveFedora::Base
     if values.has_key?(:temporal)
        logger.debug "<< Handling special case for attribute :temporal >>"
        values[:temporal].each do |temporal_value|
-         node = {value: temporal_value, attributes: 'temporal'}
+         node = {value: temporal_value, attributes: 'Temporal'}
          values[:pbcore_coverage] << node
        end
        values.delete(:temporal)
