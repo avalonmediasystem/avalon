@@ -32,7 +32,9 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
   ]
   
   set_terminology do |t|
-    t.root(:path=>"pbcoreDescriptionDocument", :xmlns => '', :namespace_prefix=>nil,
+    t.root(:path=>"pbcoreDescriptionDocument", 
+      :xmlns => 'http://www.pbcore.org/PBCore/PBCoreNamespace.html', 
+      :namespace_prefix=>nil,
       :schema => 'http://pbcore.org/xsd/pbcore-2.0.xsd')
 
     #
@@ -99,8 +101,8 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
       t.coverage_(:path=>"coverage", :namespace_prefix=>nil)
       t.coverage_type(:path => "coverageType", :namespace_prefix => nil)
     }
-    t.temporal(:ref => :pbcore_coverage, :path => "pbcoreCoverage[./coverageType='temporal']")
-    t.spatial(:ref => :pbcore_coverage, :path => "pbcoreCoverage[./coverageType='spatial']")
+    t.temporal(:ref => :pbcore_coverage, :path => "pbcoreCoverage[./coverageType='Temporal']")
+    t.spatial(:ref => :pbcore_coverage, :path => "pbcoreCoverage[./coverageType='Spatial']")
     # Display all coverage values regardless of type
     t.coverages(:ref => :pbcore_coverage, :path => "pbcoreCoverage")
     

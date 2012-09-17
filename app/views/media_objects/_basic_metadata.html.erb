@@ -33,9 +33,9 @@
   <%= vid.fieldset "Keywords", id: 'keywords' do %>    
     <%= vid.text_field :genre, "Genre", class: 'span12',
       value: @mediaobject.genre %>
-    <%# vid.text_fields :temporal, "Key time periods", class: 'span12', 
+    <%= vid.text_fields :temporal, "Time periods", class: 'span12', 
        mininum_fields: 2, value: @mediaobject.temporal %>
-    <%= vid.text_fields :spatial, "Important locations", class: 'span12', 
+    <%= vid.text_fields :spatial, "Locations", class: 'span12', 
        minimum_fields: 2, value: @mediaobject.spatial %>
 
     <%= vid.text_fields :subject, "Subject(s)", class: 'span12', 
