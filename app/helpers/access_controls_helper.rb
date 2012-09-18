@@ -1,5 +1,3 @@
-require "role_controls"
-
 module AccessControlsHelper
   def enforce_create_permissions(opts={})
     if current_user.nil? 
@@ -51,7 +49,7 @@ module AccessControlsHelper
       #   end
       # end
       if cannot?(:read, mediaobject)
-        raise Hydra::AccessDenied.new("You do not have sufficient access privileges to read this document, which has been marked private.", :read, params[:id])
+        raise Hydra::AccessDenied.new("You do not have sufficient access privileges to read this document.", :read, mediaobject.pid)
       end
     end
   end

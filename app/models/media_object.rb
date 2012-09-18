@@ -91,13 +91,13 @@ class MediaObject < ActiveFedora::Base
   # For spatial and temporal ignore the coverageType element when returning the list
   # of values since they are implicit in the type. This means having to override the
   # delegate method with custom getters.
-  def spatial
-    descMetadata.spatial_coverage
-  end
+  #def spatial
+  #  descMetadata.spatial_coverage
+  #end
   
-  def temporal
-    descMetadata.temporal_coverage
-  end
+  #def temporal
+  #  descMetadata.temporal_coverage
+  #end
   
   # Spatial and temporal are special cases that need to be handled a bit differently
   # than the rest. As a result we handle them first, take them out of the values
@@ -120,7 +120,7 @@ class MediaObject < ActiveFedora::Base
     if values.has_key?(:spatial)
        logger.debug "<< Handling special case for attribute :spatial >>"
        values[:spatial].each do |spatial_value|
-         node = {value: spatial_value, attributes: 'spatial'}
+         node = {value: spatial_value, attributes: 'Spatial'}
          values[:pbcore_coverage] << node
        end
        values.delete(:spatial)
@@ -129,7 +129,7 @@ class MediaObject < ActiveFedora::Base
     if values.has_key?(:temporal)
        logger.debug "<< Handling special case for attribute :temporal >>"
        values[:temporal].each do |temporal_value|
-         node = {value: temporal_value, attributes: 'temporal'}
+         node = {value: temporal_value, attributes: 'Temporal'}
          values[:pbcore_coverage] << node
        end
        values.delete(:temporal)
