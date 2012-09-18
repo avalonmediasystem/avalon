@@ -11,4 +11,16 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 	      redirect_to root_url #Have this redirect someplace better like IU CAS guest account creation page
 	    end
   end
+
+  def identity
+  	@user = User.find_for_identity(request.env["omniauth.auth"], current_user)
+
+    if @user.persisted?
+      flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => "Identity"
+      sign_in_and_redirect @user, :event => :authentication
+    else
+      session["devise.identity_data"] = request.env["omniauth.auth"]
+      redirect_to root_url #Have this redirect someplace better like IU CAS guest account creation page
+    end
+  end
 end

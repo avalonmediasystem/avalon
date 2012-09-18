@@ -13,8 +13,7 @@ class MediaObjectsController < ApplicationController
 
     logger.debug "<< Creating a new Ingest Status >>"
     logger.debug "<< #{@mediaobject.inspect} >>"
-    @ingest_status = IngestStatus.create(pid: @mediaobject.pid, 
-      current_step: HYDRANT_STEPS.first.step)
+    @ingest_status = IngestStatus.create(pid: @mediaobject.pid, current_step: HYDRANT_STEPS.first.step)
     logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
     
     redirect_to edit_media_object_path(@mediaobject, step: HYDRANT_STEPS.first.step)
