@@ -34,6 +34,7 @@
   gem 'devise_cas_authenticatable', :git => "git://github.com/cjcolvar/devise_cas_authenticatable.git"
   gem 'rubycas-client', :git => "git://github.com/cjcolvar/rubycas-client.git"    
   gem 'omniauth-cas', :git => "git://github.com/cjcolvar/omniauth-cas.git"
+  gem 'omniauth-identity'
 
   gem 'hydra-ldap'
 
