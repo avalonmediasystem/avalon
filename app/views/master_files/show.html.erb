@@ -24,20 +24,18 @@
                      mediapackage_id: @masterfile.mediapackage_id} %>
         <% else %>
           <div class="well">
-            <p>The media is still being processed</p>
+            <p>This media is still being processed</p>
+            <div class="progress progress-success progress-striped active">
+              <div class="bar" style="width: <%# @masterfile.percent_complete %>50%"></div>
+            </div>
           </div>
         <% end %>
       </section>  
     </div>
-    <div class="row-fluid whitespace">
-      <section id="metadata"><%= render "modules/metadata_display" %></section>
-    </div>
     
     <div class="row-fluid">
-      <div class="alert alert-info">
-      <h4 class="alert-heading">Parent item</h4>
-      <p><%= link_to @mediaobject.title, media_object_path(@mediaobject.pid) %></p>
-      <address></address>
+      <div class="alert">
+        <p>Return to <%= link_to @mediaobject.title, media_object_path(@mediaobject.pid) %></p>
       </div>
       
       <div id="permalink" class="alert alert-success">
