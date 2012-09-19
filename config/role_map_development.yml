@@ -14,6 +14,7 @@ archivist:
   - jlhardes
   - 80000497619
   - 80000478586
+  - chris.colvard@gmail.com
 donor:
   - donor1@example.com
 researcher:
@@ -35,5 +36,6 @@ admin_policy_object_editor:
   - jlhardes
   - 80000497619
   - 80000478586
+  - chris.colvard@gmail.com
 patron:
   - patron1
