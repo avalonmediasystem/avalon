@@ -17,8 +17,8 @@
 
   platforms :ruby do
   	gem 'sqlite3'
-	gem 'execjs'
-    gem 'therubyracer', '= 0.11.0beta8'
+	  gem 'execjs'
+    gem 'therubyracer', '0.11.0beta8', :require => 'v8'
   end
 
   # You are free to implement your own User/Authentication solution in its place.
@@ -33,8 +33,7 @@
   gem 'loofah'
   gem 'omniauth-cas', :git => "git://github.com/cjcolvar/omniauth-cas.git"
   gem 'omniauth-identity'
-
-  gem 'hydra-ldap'
+  gem 'omniauth-ldap'
 
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
