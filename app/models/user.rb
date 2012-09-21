@@ -26,7 +26,7 @@ class User < ActiveRecord::Base
     #If IU CAS guest account
     if username =~ /\d{11}/
       tree = "dc=eads,dc=iu,dc=edu"
-      filter = Net::LDAP::Filter.construct("(&(objectCategory=CN=Person,CN=Schema,CN=Configuration,DC=eads,DC=iu,DC=edu)(cn=80000478586))")
+      filter = Net::LDAP::Filter.construct("(&(objectCategory=CN=Person,CN=Schema,CN=Configuration,DC=eads,DC=iu,DC=edu)(cn=#{username}))")
       username = HYDRANT_LDAP.search(:base => tree, :filter => filter, :attributes=> ["mail"]).first.mail.first
     end
 
