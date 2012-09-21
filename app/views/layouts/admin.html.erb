@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title><%= yield :title %> - Hydrant Release 0 prototype</title>
+    <title><%= yield :title %> - Avalon Release 0 prototype</title>
     <%= stylesheet_link_tag "application", media: "all" %>
     <!-- With this many Javascript files performance will be much better
          if they are included here. That means the important content will
@@ -20,7 +20,7 @@
         <header class="jumbotron">
           <div class="span7">
             <h1>
-              Hydrant Admin
+              Avalon Media System Policy Manager
               <i class="icon-user-md"></i>
             </h1>
           </div>
@@ -44,6 +44,7 @@
             <li class="<%= "active" if current_page?(new_admin_group_path) %>">
               <%= link_to "Add Group", new_admin_group_path %>
             </li>
+            <!--
             <li class="nav-header">
               Users
               <i class="icon-user"></i>
@@ -64,6 +65,7 @@
             <li>
               <a class="tobeimplemented" href="#">Batch Edit</a>
             </li>
+            -->
           </ul>
         </div>
 
@@ -75,7 +77,7 @@
       <div class="row-fluid">
         <footer class="span12">
           <ul>
-            <li><a href="http://variationsonvideo.org">Variations on Video Project Website</a> </li>
+            <li><a href="http://variationsonvideo.org">Avalon Media System Project Website</a> </li>
             <li><%= link_to "Contact Us", comments_path %></li>
           </ul>
         </footer>
