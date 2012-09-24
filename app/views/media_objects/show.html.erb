@@ -19,19 +19,19 @@
     
     <div class="row-fluid whitespace">
       <section id="player">        
-        <% if @masterfiles.nil? || @masterfiles.count == 0 %>
+        <% if @masterFiles.blank? %>
           <div class="well">
             <p>No media is associated with this item</p>
           </div>
         <% else %>
-          <%= render partial: "modules/video_player",
-            locals: {stream: @masterfiles.first.derivatives.first.url.first,
-                     mimetype: @masterfiles.first.derivatives.first.streaming_mime_type,
-                     mediapackage_id: @masterfiles.first.mediapackage_id} %>
+            <%= render partial: "modules/video_player",
+              locals: {stream: @currentStream.derivatives.first.url.first,
+                     mimetype: @currentStream.derivatives.first.streaming_mime_type,
+                     mediapackage_id: @currentStream.mediapackage_id} %>
           <h3>Sections</h3>
               <ul class="unstyled">
-                <% @masterfiles.each do |masterfile| %>
-                <li><%= masterfile.label %> (<%= number_to_human_size(masterfile.size.first) %>)</li>
+                <% @masterFiles.each do |master| %>
+                <li><%= master.label %> (<%= number_to_human_size(master.size.first) %>)</li>
                 <% end %>
               </ul>
         <% end %>

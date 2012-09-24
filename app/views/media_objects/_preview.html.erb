@@ -10,20 +10,20 @@
     
     <div class="row-fluid whitespace">
       <section id="player">
-          <% unless @masterfiles.nil? %>
+          <% unless @masterFiles.nil? %>
             <%= render partial: "modules/video_player",
-              locals: {stream: @masterfiles.first.derivatives.first.url.first,
-                     mimetype: @masterfiles.first.derivatives.first.streaming_mime_type,
-                     mediapackage_id: @masterfiles.first.mediapackage_id} %>
+              locals: {stream: @currentStream.derivatives.first.url.first,
+                     mimetype: @currentStream.derivatives.first.streaming_mime_type,
+                     mediapackage_id: @currentStream.mediapackage_id} %>
         <h3>Section(s)</h3>
             <ul class="unstyled">
-              <% @masterfiles.each do |masterfile| %>
-                <li><a href="<%= master_file_path(masterfile) %>"><%= masterfile.label %></a> (<%= number_to_human_size(masterfile.size.first) %>)</li>
+              <% @masterFiles.each do |master| %>
+                <li><%= master.label %> (<%= number_to_human_size(master.size.first) %>)</li>
               <% end %>
             </ul>
             <% else %>
               <div class="well">
-                <p>No files are associated with this resource yet.</p>
+                <p>No sections have been defined for this resource</p>
               </div>
             <% end %>
       </section>  
