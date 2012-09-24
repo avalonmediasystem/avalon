@@ -144,7 +144,6 @@ class MediaObjectsController < ApplicationController
     
     @currentStream = set_active_file(params[:content])
     if (not @masterFiles.empty? and 
-        not params[:content].blank? and 
         @currentStream.blank?)
       @currentStream = @masterFiles.first
       flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
