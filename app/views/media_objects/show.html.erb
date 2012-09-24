@@ -25,10 +25,14 @@
             <p>No media is associated with this item</p>
           </div>
         <% else %>
+          <%= render partial: "modules/video_player",
+            locals: {stream: @masterfiles.first.derivatives.first.url.first,
+                     mimetype: @masterfiles.first.derivatives.first.streaming_mime_type,
+                     mediapackage_id: @masterfiles.first.mediapackage_id} %>
           <h3>Media files</h3>
               <ul class="unstyled">
                 <% @masterfiles.each do |masterfile| %>
-                <li><a href="<%= master_file_path(masterfile) %>"><%= masterfile.label %></a> (<%= number_to_human_size(masterfile.size.first) %>)</li>
+                <li><%= masterfile.label %> (<%= number_to_human_size(masterfile.size.first) %>)</li>
                 <% end %>
               </ul>
         <% end %>
