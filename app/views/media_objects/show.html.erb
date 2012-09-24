@@ -2,7 +2,6 @@
   <div class="span3" id="left_column">
     <% if can? :edit, @mediaobject %>
       <%= render "toggle_edit_mode" %>
-      <%= render "conversion_status", master_files: @master_files %>
       <%= render "withdraw_object", mediaobject: @mediaobject %>
     <% end %>
   </div>
@@ -37,10 +36,13 @@
               </ul>
         <% end %>
       </section>  
+    </div>
 
+    <div class="row-fluid whitespace">
+      <h3>Resource description</h3>
       <section id="metadata"><%= render "modules/metadata_display" %></section>
     </div>
-    
+        
     <div class="row-fluid">
       <div id="permalink" class="alert alert-success">
       <h4 class="alert-heading">Permalink</h4>
