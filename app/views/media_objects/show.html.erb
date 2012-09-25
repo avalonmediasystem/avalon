@@ -2,7 +2,6 @@
   <div class="span3" id="left_column">
     <% if can? :edit, @mediaobject %>
       <%= render "toggle_edit_mode" %>
-      <%= render "conversion_status", master_files: @master_files %>
       <%= render "withdraw_object", mediaobject: @mediaobject %>
     <% end %>
   </div>
@@ -20,23 +19,45 @@
     
     <div class="row-fluid whitespace">
       <section id="player">        
-        <% if @masterfiles.nil? || @masterfiles.count == 0 %>
+        <% if @masterFiles.blank? %>
           <div class="well">
             <p>No media is associated with this item</p>
           </div>
-        <% else %>
-          <h3>Media files</h3>
-              <ul class="unstyled">
-                <% @masterfiles.each do |masterfile| %>
-                <li><a href="<%= master_file_path(masterfile) %>"><%= masterfile.label %></a> (<%= number_to_human_size(masterfile.size.first) %>)</li>
-                <% end %>
-              </ul>
+        <% elsif @currentStream.derivatives.blank? %>
+          <div class="well">
+            <p>Media files are being processed</p>
+          </div>
+          <h3>Sections</h3>
+          <ul class="unstyled">
+            <% @masterFiles.each do |master| %>
+            <li><%= master.label %> (<%= number_to_human_size(master.size.first) %>)</li>
+            <% end %>
+          </ul>
+        <% elsif !@currentStream.derivatives.first.url.nil? %>
+          <%= render partial: "modules/video_player",
+            locals: {stream: @currentStream.derivatives.first.url.first,
+                   mimetype: @currentStream.derivatives.first.streaming_mime_type,
+                   mediapackage_id: @currentStream.mediapackage_id} %>
+          <h3>Sections</h3>
+          <ul class="unstyled">
+            <% @masterFiles.each do |master| %>
+              <li>
+                <%= link_to media_object_path @mediaobject, {step: 'preview', content: master.pid} do %>
+                  <%= master.label %>
+                <% end %> 
+                (<%= number_to_human_size(master.size.first) %>)
+              </li>
+              <% end %>
+          </ul>
         <% end %>
       </section>  
+    </div>
 
+    <div class="row-fluid whitespace">
+      <h3>Resource description</h3>
       <section id="metadata"><%= render "modules/metadata_display" %></section>
     </div>
-    
+        
     <div class="row-fluid">
       <div id="permalink" class="alert alert-success">
       <h4 class="alert-heading">Permalink</h4>

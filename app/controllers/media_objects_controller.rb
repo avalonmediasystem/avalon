@@ -112,7 +112,7 @@ class MediaObjectsController < ApplicationController
         
       # When looking at the preview page use a version of the show page
       when 'preview' 
-        #publish the media object
+        # Publish the media object
         @mediaobject.avalon_publisher = user_key
         @mediaobject.save
     end     
@@ -140,7 +140,14 @@ class MediaObjectsController < ApplicationController
   
   def show
     @mediaobject = MediaObject.find(params[:id])
-    @masterfiles = load_master_files
+    @masterFiles = load_master_files
+    
+    @currentStream = set_active_file(params[:content])
+    if (not @masterFiles.empty? and 
+        @currentStream.blank?)
+      @currentStream = @masterFiles.first
+      flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
+    end
   end
 
   def destroy
@@ -159,13 +166,24 @@ class MediaObjectsController < ApplicationController
   
   def load_master_files
     @mediaobject.parts
-    # unless @mediaobject.parts.nil? or @mediaobject.parts.empty?
-    #   master_files = []
-    #   @mediaobject.parts.each { |part| master_files << MasterFile.find(part.pid) }
-    #   master_files
-    # else
-    #   nil
-    # end
+  end
+  
+  # The goal of this method is to determine which stream to provide to the interface
+  # for immediate playback. Eventually this might be replaced by an AJAX call but for
+  # now to update the stream you must do a full page refresh.
+  #
+  # If the stream is not a member of that media object or does not exist at all then
+  # return a nil value that needs to be handled appropriately by the calling code
+  # block
+  def set_active_file(file_pid = nil)
+    unless (@mediaobject.parts.blank? or file_pid.blank?)
+      @mediaobject.parts.each do |part|
+        return part if part.pid == file_pid
+      end
+    end
+      
+    # If you haven't dropped out by this point return an empty item
+    nil 
   end
   
   def report_errors
