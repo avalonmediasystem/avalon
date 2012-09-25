@@ -87,6 +87,15 @@ class MasterFilesController < ApplicationController
     
     authorize! :read, @mediaobject
   end
+
+  def update
+    @masterfile = MasterFile.find(params[:id])
+    @mediaobject = @masterfile.container
+    authorize! :edit, @mediaobject
+
+    @masterfile.label = params[@masterfile.pid]
+    @masterfile.save
+  end
   
 	def saveOriginalToHydrant file
 		public_dir_path = "#{Rails.root}/public/"

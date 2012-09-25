@@ -31,7 +31,10 @@
   		          <% end %>
   		        </td>
   		        <td>
-  		          <%= text_field_tag masterfile.pid, masterfile.label, class: 'mf-label' %>
+                          <%= form_for masterfile, :remote => true do |mf| %>
+  		            <%= text_field_tag masterfile.pid, masterfile.label, class: 'mf-label' %>
+                            <%= submit_tag("Update", :name=>"update", class: "btn") %>
+                          <% end %>
   		        </td>
   		        <td>
       	  	   <a href="<%= masterfile.descMetadata.identifier[0] %>"><%= File.basename(masterfile.url.first)  %></a>
