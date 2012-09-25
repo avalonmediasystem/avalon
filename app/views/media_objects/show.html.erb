@@ -23,17 +23,27 @@
           <div class="well">
             <p>No media is associated with this item</p>
           </div>
-        <% else %>
-            <%= render partial: "modules/video_player",
-              locals: {stream: @currentStream.derivatives.first.url.first,
-                     mimetype: @currentStream.derivatives.first.streaming_mime_type,
-                     mediapackage_id: @currentStream.mediapackage_id} %>
+        <% elsif @currentStream.derivatives.blank? %>
+          <div class="well">
+            <p>Media files are being processed</p>
+          </div>
           <h3>Sections</h3>
-              <ul class="unstyled">
-                <% @masterFiles.each do |master| %>
-                <li><%= master.label %> (<%= number_to_human_size(master.size.first) %>)</li>
-                <% end %>
-              </ul>
+          <ul class="unstyled">
+            <% @masterFiles.each do |master| %>
+            <li><%= master.label %> (<%= number_to_human_size(master.size.first) %>)</li>
+            <% end %>
+          </ul>
+        <% elsif @currentStream.derivatives.first.url.nil? %>
+          <%= render partial: "modules/video_player",
+            locals: {stream: @currentStream.derivatives.first.url.first,
+                   mimetype: @currentStream.derivatives.first.streaming_mime_type,
+                   mediapackage_id: @currentStream.mediapackage_id} %>
+          <h3>Sections</h3>
+          <ul class="unstyled">
+            <% @masterFiles.each do |master| %>
+            <li><%= master.label %> (<%= number_to_human_size(master.size.first) %>)</li>
+            <% end %>
+          </ul>
         <% end %>
       </section>  
     </div>
