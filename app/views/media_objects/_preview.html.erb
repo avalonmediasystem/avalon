@@ -9,12 +9,22 @@
     </div>
     
     <div class="row-fluid whitespace">
-      <section id="player">
-          <% unless @masterFiles.blank? %>
-            <%= render partial: "modules/video_player",
-              locals: {stream: @currentStream.derivatives.first.url.first,
-                     mimetype: @currentStream.derivatives.first.streaming_mime_type,
-                     mediapackage_id: @currentStream.mediapackage_id} %>
+      <section id="player">        
+        <% if @masterFiles.blank? %>
+          <div class="well">
+            <p>No sections are associated with this item</p>
+          </div>
+        <% else if @currentStream.derivatives.blank? %>
+            <div class="well">
+              <p>Media files are being processed</p>
+          </div>
+        <% else %>
+          <%= render partial: "modules/video_player",
+            locals: {stream: @currentStream.derivatives.first.url.first,
+                   mimetype: @currentStream.derivatives.first.streaming_mime_type,
+                   mediapackage_id: @currentStream.mediapackage_id} %>
+        <%# End of the block if media does exist %>
+        <% end %>
         <h3>Section(s)</h3>
             <ul class="unstyled">
               <% @masterFiles.each do |master| %>
@@ -23,11 +33,7 @@
                 </li>
               <% end %>
             </ul>
-            <% else %>
-              <div class="well">
-                <p>No sections have been defined for this resource</p>
-              </div>
-            <% end %>
+        <% end %>
       </section>  
 
       <section id="metadata" class="whitespace">
