@@ -10,10 +10,11 @@
           <th>Title</th>
           <th>File name</th>
           <th>Size</th>
-          <th>Action</th>
+          <th>&nbsp;</th>
         </thead>
 		    <tbody class="sortable">
       		<% @masterfiles.each do |masterfile| %>
+              <%= form_for masterfile, :remote => true do |mf| %>
   		      <tr>
 							<td>
 								<div class="noshow">
@@ -31,9 +32,7 @@
   		          <% end %>
   		        </td>
   		        <td>
-                          <%= form_for masterfile, :remote => true do |mf| %>
   		            <%= text_field_tag masterfile.pid, masterfile.label, class: 'mf-label' %>
-                          <% end %>
   		        </td>
   		        <td>
       	  	   <a href="<%= masterfile.descMetadata.identifier[0] %>"><%= File.basename(masterfile.url.first)  %></a>
@@ -56,6 +55,7 @@
         	 	    <% end %>
       	 	    </td>
     	 	    </tr>
+    	 	    <% end %>
     	 	  <% end %>
   	 	  </tbody>
   	 	</table>
