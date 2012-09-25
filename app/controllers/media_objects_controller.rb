@@ -115,6 +115,14 @@ class MediaObjectsController < ApplicationController
         # Publish the media object
         @mediaobject.avalon_publisher = user_key
         @mediaobject.save
+
+        @masterFiles = load_master_files    
+        @currentStream = set_active_file(params[:content])
+        if (not @masterFiles.empty? and 
+          @currentStream.blank?)
+          @currentStream = @masterFiles.first
+        flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
+      end  
     end     
       
     unless @mediaobject.errors.empty?
@@ -140,8 +148,8 @@ class MediaObjectsController < ApplicationController
   
   def show
     @mediaobject = MediaObject.find(params[:id])
-    @masterFiles = load_master_files
-    
+
+    @masterFiles = load_master_files    
     @currentStream = set_active_file(params[:content])
     if (not @masterFiles.empty? and 
         @currentStream.blank?)
