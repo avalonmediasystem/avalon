@@ -178,7 +178,7 @@ class MediaObjectsController < ApplicationController
   def set_active_file(file_pid = nil)
     unless (@mediaobject.parts.blank? or file_pid.blank?)
       @mediaobject.parts.each do |part|
-        return part if part.pid = file_pid
+        return part if part.pid == file_pid
       end
     end
       

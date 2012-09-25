@@ -41,8 +41,13 @@
           <h3>Sections</h3>
           <ul class="unstyled">
             <% @masterFiles.each do |master| %>
-            <li><%= master.label %> (<%= number_to_human_size(master.size.first) %>)</li>
-            <% end %>
+              <li>
+                <%= link_to media_object_path @mediaobject, {step: 'preview', content: master.pid} do %>
+                  <%= master.label %>
+                <% end %> 
+                (<%= number_to_human_size(master.size.first) %>)
+              </li>
+              <% end %>
           </ul>
         <% end %>
       </section>  
