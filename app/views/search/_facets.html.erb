@@ -1,15 +1,10 @@
-<!--
-  <%= facet_field_names %>
- -->
-<% # main container for facets/limits menu -%>
-<div id="facets" class="row-fluid">
+<%# main container for facets/limits menu -%>
   <% facet_field_names.each do |solr_fname| %>
     
     <% next if solr_fname == 'person_full_name_cid_facet' %>
       <% display_facet = @response.facets.detect {|f| f.name == solr_fname} -%>
       <% if display_facet && display_facet.items.length > 0 %>
-        <div class="span2">
-        <h3 id="facet_<%= facet_field_labels[solr_fname].downcase.gsub(/ /, '_') -%>"><%= facet_field_labels[solr_fname] -%></h3>
+        <h4 id="facet_<%= facet_field_labels[solr_fname].downcase.gsub(/ /, '_') -%>"><%= facet_field_labels[solr_fname] -%></h4>
         <ul class="unstyled">
           <% paginator =    
               Blacklight::Solr::FacetPaginator.new(display_facet.items,        
@@ -28,7 +23,6 @@
             <% end -%>
             </li>
           <% end %>
-      </div>
 
 <!--          
           <% if(paginator.has_next?)  %>
@@ -38,5 +32,4 @@
         </ul>
       <% end %>
   <% end %>
-</div>
 

@@ -10,7 +10,12 @@
     <div class="row-fluid whitespace">
       <div class="span12">
         <% unless @mediaobject.title.blank? %>
-      <h2><%= @mediaobject.title %></h2>
+      <h2>
+        <%= @mediaobject.title %>
+        <% if not @currentStream.blank? %>
+         -- <%= @currentStream.label %>
+        <% end %>
+      </h2>
       <% else %>
         <h2><%= @mediaobject.pid %></h2>
       <% end %>
@@ -38,9 +43,10 @@
           <ul class="unstyled">
             <% @masterFiles.each do |master| %>
               <li>
-                <%= link_to media_object_path @mediaobject, {step: 'preview', content: master.pid} do %>
-                  <%= master.label %>
-                <% end %> 
+                <%= link_to_unless (master.pid == @currentStream.pid),
+                  master.label,
+                  media_object_path(@mediaobject, 
+                    {step: 'preview', content: master.pid}) %>
                 (<%= number_to_human_size(master.size.first) %>)
               </li>
               <% end %>
