@@ -30,13 +30,6 @@ GIT
       mediashelf-loggable
 
 GIT
-  remote: git://github.com/cjcolvar/rubycas-client.git
-  revision: 4cc9d3a55167a34c1924d1f0490f1741d47383d4
-  specs:
-    rubycas-client (2.3.9)
-      activesupport
-
-GIT
   remote: git://github.com/variations-on-video/hydrant-engage.git
   revision: 37a9999b04132101857082528d581d128da5d4f6
   specs:
@@ -479,7 +472,6 @@ DEPENDENCIES
   red5wrapper!
   rspec-rails (>= 2.9.0)
   rspec_junit_formatter
-  rubycas-client!
   rubyhorn!
   rvm-capistrano
   sass-rails (~> 3.2.3)
