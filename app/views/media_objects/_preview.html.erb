@@ -1,10 +1,15 @@
     <div class="row-fluid whitespace">
       <div class="span12">
+        <h2>
       <% unless @mediaobject.title.blank? %>
-        <h2><%= @mediaobject.title %></h2>
+        <%= @mediaobject.title %>
+        <% if not @currentStream.blank? %>
+         -- <%= @currentStream.label %>
+        <% end %>
       <% else %>
-        <h2><%= @mediaobject.pid %></h2>
+        <%= @mediaobject.pid %>
       <% end %>
+      </h2>
      </div>
     </div>
     
@@ -28,8 +33,12 @@
         <h3>Section(s)</h3>
             <ul class="unstyled">
               <% @masterFiles.each do |master| %>
-                <li><%= link_to edit_media_object_path @mediaobject, {step: 'preview', content: master.pid} do %><%= master.label %><% end %>
-                   (<%= number_to_human_size(master.size.first) %>)
+                <li>
+                <%= link_to_unless (master.pid == @currentStream.pid),
+                  master.label,
+                  edit_media_object_path(@mediaobject, 
+                    {step: 'preview', content: master.pid}) %>
+                  (<%= number_to_human_size(master.size.first) %>)
                 </li>
               <% end %>
             </ul>
