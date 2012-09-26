@@ -15,10 +15,10 @@
         <% if not @currentStream.blank? %>
          -- <%= @currentStream.label %>
         <% end %>
-      </h2>
       <% else %>
-        <h2><%= @mediaobject.pid %></h2>
+        <%= @mediaobject.pid %>
       <% end %>
+      </h2>
      </div>
     </div>
     
