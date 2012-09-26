@@ -6,7 +6,7 @@
       <%= user_key %> |</li>
       <li><%= link_to "Sign out", destroy_user_session_path %></li>
     <% else %>
-      <%= link_to "Sign in", user_omniauth_authorize_path(:identity) %>
+      <%= link_to "Sign in", user_omniauth_authorize_path(:cas) %>
     <% end %>
 		</ul>
   </nav>
