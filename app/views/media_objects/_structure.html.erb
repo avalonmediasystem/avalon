@@ -5,7 +5,7 @@
 <legend>Structure</legend>
 <p>Drag files to reorder them differently. Changes will immediately be saved to the database.</p>
 
-<% if @masterfiles.nil? || @masterfiles.empty? %>
+<% if @masterFiles.nil? || @masterFiles.empty? %>
   <div class="well">There are no media files</div>
 <% else %>
 	<table class="table table-striped">
@@ -17,7 +17,7 @@
 	  <th>Size</th>
 	</thead>
 	<tbody class="sortable">
-		<% @masterfiles.each do |masterfile| %>
+		<% @masterFiles.each do |masterfile| %>
       <tr>
 		<td>
 			<div class="noshow">
