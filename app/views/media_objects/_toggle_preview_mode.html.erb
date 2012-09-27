@@ -7,7 +7,12 @@
 <% else %>
 <div class="alert alert-error">
   <h4 class="alert-heading">Cancel ingest</h4>
-  <%= link_to "Return to home page", root_path, 
-    class: "btn" %>	
+  <p>Stop the ingest process and remove the resource from the system</p>
+  <%= button_to("Delete item", {:action => :destroy, 
+      :controller => :"media_objects", 
+      :id => @mediaobject.pid}, 
+    :data => { :confirm => 'Are you sure?' },
+    :method => :delete, 
+    class: "btn" )%>
 </div>
 <% end %>
