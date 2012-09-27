@@ -45,7 +45,7 @@ describe MasterFilesController do
         controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
      
         lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should change { MasterFile.count }.by(1)
-        master_file.media_type.should eq(["video"])
+        master_file.media_type.should eq(["Moving image"])
              
         flash[:errors].should be_nil
       end
@@ -80,7 +80,7 @@ describe MasterFilesController do
        controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
     
        lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should change { MasterFile.count }.by(1)
-       MasterFile.find(:all, order: "created_on ASC").last.media_type.should eq(["video"])
+       MasterFile.find(:all, order: "created_on ASC").last.media_type.should eq(["Moving image"])
          
        flash[:errors].should be_nil
      end
