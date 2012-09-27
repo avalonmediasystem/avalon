@@ -33,8 +33,7 @@
   gem 'loofah'
   gem 'omniauth-cas', :git => "git://github.com/cjcolvar/omniauth-cas.git"
   gem 'omniauth-identity'
-
-  gem 'hydra-ldap'
+  gem 'omniauth-ldap'
 
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"

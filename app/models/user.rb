@@ -38,9 +38,12 @@ class User < ActiveRecord::Base
     user
   end
 
+  def self.find_for_ldap(access_token, signed_in_resource=nil)
+    username = access_token.info['email']
+    User.where(:username => username).first || User.create(:username => username)
+  end
+
   def self.find_for_identity(access_token, signed_in_resource=nil)
-    logger.debug "#{access_token.inspect}"
-    #data = access_token.info
     username = access_token.info['email']
     user = User.where(:username => username).first
 

@@ -1,26 +1,27 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def cas
-	    # You need to implement the method below in your model (e.g. app/models/user.rb)
-	    @user = User.find_for_cas(request.env["omniauth.auth"], current_user)
-
-	    if @user.persisted?
-	      flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => "CAS"
-	      sign_in_and_redirect @user, :event => :authentication
-	    else
-	      session["devise.cas_data"] = request.env["omniauth.auth"]
-	      redirect_to root_url #Have this redirect someplace better like IU CAS guest account creation page
-	    end
+    find_user('CAS')
   end
 
   def identity
-  	@user = User.find_for_identity(request.env["omniauth.auth"], current_user)
+    find_user('Identity')
+  end
 
+  def ldap
+    find_user('LDAP')
+  end
+
+  def find_user(auth_type)
+    find_method = "find_for_#{auth_type.downcase}".to_sym
+    $stderr.puts "#{auth_type} :: #{current_user.inspect}"
+  	@user = User.send(find_method,request.env["omniauth.auth"], current_user)
     if @user.persisted?
-      flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => "Identity"
+      flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => auth_type
       sign_in_and_redirect @user, :event => :authentication
     else
-      session["devise.identity_data"] = request.env["omniauth.auth"]
+      session["devise.#{auth_type.downcase}_data"] = request.env["omniauth.auth"]
       redirect_to root_url #Have this redirect someplace better like IU CAS guest account creation page
     end
   end
+  protected :find_user
 end
