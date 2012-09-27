@@ -11,6 +11,6 @@
     <%= item["creator_t"].first unless item["creator_t"].nil? %>
   </td>
   <td>
-    <%# format_date(item["createdon_t"]) %>August 30, 2009
+    <%= item["pub_date"].first unless item["pub_date"].nil? %>
   </td>
 </tr>

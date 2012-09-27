@@ -31,7 +31,7 @@ GIT
 
 GIT
   remote: git://github.com/variations-on-video/hydrant-engage.git
-  revision: 6bb9e5dd2399887bc86bd98d9b7043f61eb84de8
+  revision: a355c6f6dbaf78149154c1dda68854e1b785270f
   specs:
     hydrant-engage (0.0.1)
       less-rails (~> 2.2.3)
@@ -251,6 +251,7 @@ GEM
     less-rails (2.2.3)
       actionpack (>= 3.1)
       less (~> 2.2.0)
+    libv8 (3.3.10.4)
     libwebsocket (0.1.5)
       addressable
     logger (1.2.8)
@@ -304,7 +305,7 @@ GEM
       rack (>= 0.4)
     rack-ssl (1.3.2)
       rack
-    rack-test (0.6.1)
+    rack-test (0.6.2)
       rack (>= 1.0)
     rails (3.2.8)
       actionmailer (= 3.2.8)
@@ -331,7 +332,6 @@ GEM
       rdf (>= 0.3.4)
     rdoc (3.12)
       json (~> 1.4)
-    ref (1.0.0)
     rest-client (1.6.7)
       mime-types (>= 1.16)
     rsolr (1.0.8)
@@ -406,17 +406,18 @@ GEM
       tilt (~> 1.1, != 1.3.0)
     sqlite3 (1.3.6)
     stomp (1.2.5)
-    therubyracer (0.11.0beta8)
-      ref
+    therubyracer (0.10.2)
+      libv8 (~> 3.3.10)
     thor (0.16.0)
     tilt (1.3.3)
     treetop (1.4.10)
       polyglot
       polyglot (>= 0.3.1)
-    twitter-bootstrap-rails (2.1.2)
+    twitter-bootstrap-rails (2.1.3)
       actionpack (>= 3.1)
       less-rails (~> 2.2.3)
       railties (>= 3.1)
+      therubyracer (~> 0.10.2)
     tzinfo (0.3.33)
     uglifier (1.3.0)
       execjs (>= 0.3.0)
@@ -481,7 +482,7 @@ DEPENDENCIES
   sass-rails (~> 3.2.3)
   simplecov
   sqlite3
-  therubyracer (= 0.11.0beta8)
+  therubyracer (= 0.10.2)
   therubyrhino
   twitter-bootstrap-rails (~> 2.0)
   twitter_bootstrap_form_for!
