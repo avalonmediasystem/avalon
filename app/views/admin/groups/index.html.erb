@@ -96,32 +96,34 @@
 
 <%= link_to "Add Group", new_admin_group_path, class: "btn btn-primary" %>
 
-<script>
-  $('.close').click(function(){
-    $(this).parent().remove();
-  })
+<% content_for :page_scripts do %>
+  <script>
+    $('.close').click(function(){
+      $(this).parent().remove();
+    })
   
-  $('.select-groups').change(function(){
-    $('input[id^=group_ids_]').prop('checked', $(this).is(':checked')).trigger('change');
-  })
+    $('.select-groups').change(function(){
+      $('input[id^=group_ids_]').prop('checked', $(this).is(':checked')).trigger('change');
+    })
   
-  $('input[id^=group_ids_]').change(function(){
-    if ($(this).is(':checked')) {
-      enableButtons();
-    } else if ($(':checked').length == 0) {
-      disableButtons();
+    $('input[id^=group_ids_]').change(function(){
+      if ($(this).is(':checked')) {
+        enableButtons();
+      } else if ($(':checked').length == 0) {
+        disableButtons();
+      }
+    })
+  
+    function enableButtons() {
+      $('#add-ability').removeClass('disabled');
+      $('#remove-ability').removeClass('disabled');    
+      $('.delete').removeAttr('disabled');
     }
-  })
-  
-  function enableButtons() {
-    $('#add-ability').removeClass('disabled');
-    $('#remove-ability').removeClass('disabled');    
-    $('.delete').removeAttr('disabled');
-  }
 
-  function disableButtons() {
-    $('#add-ability').addClass('disabled');
-    $('#remove-ability').addClass('disabled');    
-    $('.delete').attr('disabled', 'disabled');
-  }
-</script>
+    function disableButtons() {
+      $('#add-ability').addClass('disabled');
+      $('#remove-ability').addClass('disabled');    
+      $('.delete').attr('disabled', 'disabled');
+    }
+  </script>
+<% end %>

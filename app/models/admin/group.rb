@@ -30,14 +30,14 @@ class Admin::Group
   
   def resources
     res = []
-    # TODO: this is very costly
-    MediaObject.find(:all).each do |mediaobject|
-      if mediaobject.read_groups.include? @name
-        res << mediaobject.pid
-      end
-    end
-    
-    res
+    # # TODO: this is very costly
+    # MediaObject.find(:all).each do |mediaobject|
+    #   if mediaobject.read_groups.include? @name
+    #     res << mediaobject.pid
+    #   end
+    # end
+    # 
+    # res
   end
   
   def id 
