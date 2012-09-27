@@ -13,7 +13,7 @@
     <%= vid.text_field :created_on, "Created on", class: 'span12',
       value: @mediaobject.created_on %>
     <%= vid.text_area :abstract, "Summary", class: 'span12', rows: 6,
-      value: @mediaobject.abstract.first %>
+      value: @mediaobject.abstract %>
   <% end %>
   
   <%= vid.fieldset "Related people", id: 'related_people' do %>

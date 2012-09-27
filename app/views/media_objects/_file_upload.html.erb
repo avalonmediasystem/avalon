@@ -1,67 +1,7 @@
 <fieldset id='uploader'>
     <legend>Manage file(s)</legend>
+    <p>Choose the bitstreams that are part of this resource. Once files are uploaed you can edit the labels before continuing to the next step.</p>
 
-		<% unless @masterFiles.nil? || @masterFiles.empty? %>
-
-	  <table class="table table-striped">
-        <thead>
-          <th></th>
-          <th>Type</th>
-          <th>Title</th>
-          <th>File name</th>
-          <th>Size</th>
-          <th>&nbsp;</th>
-        </thead>
-		    <tbody class="sortable">
-      		<% @masterFiles.each do |masterfile| %>
-              <%= form_for masterfile, :remote => true do |mf| %>
-  		      <tr>
-							<td>
-								<div class="noshow">
-									<i class="icon-arrow-up"></i>
-									<i class="icon-arrow-down"></i> 
-								</div>
-							</td>
-  		        <td>
-  		          <% if masterfile.media_type.first == 'Sound' %>
-	    		      	<i class="icon-volume-up"></i>  		            
-  		          <% elsif masterfile.media_type.first == 'Moving image' %>
-	    		        <i class="icon-film"></i>
-							  <% else %>
-							  	<i class="icon-question-sign"></i>
-  		          <% end %>
-  		        </td>
-  		        <td>
-  		            <%= text_field_tag masterfile.pid, masterfile.label, class: 'mf-label' %>
-  		        </td>
-  		        <td>
-      	  	   <a href="<%= masterfile.descMetadata.identifier[0] %>"><%= File.basename(masterfile.url.first)  %></a>
-      	  	  </td>
-      	  	  <td>
-      	  	    <strong><%= number_to_human_size(masterfile.size.first) %></strong>
-      	  	  </td>
-      	  	  <td>
-      	  	   <% if can? :edit, @mediaobject %>
-      	 	     <!-- This should be refactored to act more in line with the typical Twitter bootstrap code at some point -->
-          	 		 <% # On a Rails level this needs to be folded into the masterfiles
-          	 		    # controller's destroy method to help remove more vestiges of the
-          	 		    # catalog controller %>
-                     <%= submit_tag("Update", :name=>"update", class: "btn btn-info btn-mini") %>
-         	         <%= button_to("Delete", 
-          	           master_file_path(masterfile.id), 
-          	           :data => { :confirm => "Are you sure you want to delete this file?" }, 
-          	           :method => :delete, 
-          	           :class => "delete-button btn btn-mini btn-danger") %>
-        	 	    <% end %>
-      	 	    </td>
-    	 	    </tr>
-    	 	    <% end %>
-    	 	  <% end %>
-  	 	  </tbody>
-  	 	</table>
-
-	  <% end %>
-    
   	<p>Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
 
     <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
@@ -79,16 +19,82 @@
       <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
       <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
     <% end %>
-       
+    
+	  <% unless @masterFiles.blank? %>
+
+      <%= twitter_bootstrap_form_for @mediaobject do |upload_form| %>
+	  <table class="table table-striped">
+	    <colgroup>
+	      <col class="span1">
+	      <col class="span4">
+	      <col class="span4">
+	      <col class="span1">
+	      <col class="span1">
+	    </colgroup>
+	    
+        <thead>
+          <th></th>
+          <th>Type</th>
+          <th>Title</th>
+          <th>File namez</th>
+          <th>Size</th>
+          <th>Remove file</th>
+        </thead>
+		    <tbody>
+		    <% @masterFiles.each do |part, i| %>
+      		  <%= hidden_field_tag "part[#{i}].pid", part.pid  %>
+  		      <tr>
+							<td>
+								<div class="noshow">
+									<i class="icon-arrow-up"></i>
+									<i class="icon-arrow-down"></i> 
+								</div>
+							</td>
+  		        <td>
+  		          <% case part.media_type.first
+  		             when 'audio' %>
+	    		       <i class="icon-volume-up"></i>  		            
+  		          <% when 'video' %>
+	    		       <i class="icon-film"></i>
+	    		  <% else %>
+					   <i class="icon-question-sign"></i>
+  		          <% end %>
+  		        </td>
+  		        <td>
+      		      <%= text_field_tag "part[#{i}].label", part.label, size: 30 %>
+  		        </td>
+  		        <td>
+  		          <%= link_to part.descMetadata.identifier[0],
+  		            File.basename(part.url.first) %>
+      	  	  </td>
+      	  	  <td>
+      	  	    <strong><%= number_to_human_size(part.size.first) %></strong>
+      	  	  </td>
+      	  	  <td>
+      	  	   <% if can? :edit, @mediaobject %>
+      	 	     <!-- This should be refactored to act more in line with the typical Twitter bootstrap code at some point -->
+          	 		 <%# On a Rails level this needs to be folded into the masterfiles
+          	 		   # controller's destroy method to help remove more vestiges of the
+          	 		   # catalog controller %>
+         	         <%= check_box_tag "part[#{i}].remove", true %>
+        	 	    <% end %>
+      	 	    </td>
+    	 	    </tr>
+    	 	    <% end %>
+  	 	  </tbody>
+  	 	</table>
+  <%= upload_form.submit "Update", donot_advance: true %>
 </fieldset>
+<% end %>
 
 <div class="row-fluid">
-  <div class="span8">
+  <div class="span12">
     <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |vid| %>
       <%= render "workflow_buttons", form: vid %>
-    <% end %>
+    <% end %>		
   </div>
 </div>
+<% end %>
 
 <% content_for :page_scripts do %>
   <script>
