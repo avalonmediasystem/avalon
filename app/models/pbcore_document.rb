@@ -27,6 +27,7 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     "pbcoreContributor",
     "pbcorePublisher",
     "pbcoreRightsSummary",
+    "pbcoreInstantiation",
     "pbcoreExtension",
     "pbcorePart"
   ]
@@ -251,7 +252,6 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
   def to_solr(solr_doc=SolrDocument.new)
     super(solr_doc)
 
-    solr_doc.merge!(:format => "Video")
     solr_doc.merge!(:title_t => self.find_by_terms(:main_title).text)
 
     # Specific fields for Blacklight export
@@ -269,11 +269,12 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     solr_doc.merge!(:contributors_display => gather_terms(self.find_by_terms(:contributor_name)))
     solr_doc.merge!(:subject_display => gather_terms(self.find_by_terms(:subjects)))
     solr_doc.merge!(:genre_display => gather_terms(self.find_by_terms(:genres)))
-    solr_doc.merge!(:physical_dtl_display => gather_terms(self.find_by_terms(:format)))
+#    solr_doc.merge!(:physical_dtl_display => gather_terms(self.find_by_terms(:format)))
     solr_doc.merge!(:contents_display => gather_terms(self.find_by_terms(:parts_list)))
     solr_doc.merge!(:notes_display => gather_terms(self.find_by_terms(:note)))
     solr_doc.merge!(:access_display => gather_terms(self.find_by_terms(:usage)))
     solr_doc.merge!(:collection_display => gather_terms(self.find_by_terms(:archival_collection)))
+    solr_doc.merge!(:format_display => gather_terms(self.find_by_terms(:media_type)))
 
     # Blacklight facets - these are the same facet fields used in our Blacklight app
     # for consistency and so they'll show up when we export records from Hydra into BL:
@@ -282,7 +283,7 @@ class PbcoreDocument < ActiveFedora::NokogiriDatastream
     solr_doc.merge!(:contributor_facet => gather_terms(self.find_by_terms(:contributor_name)))
     solr_doc.merge!(:publisher_facet => gather_terms(self.find_by_terms(:publisher_name)))
     solr_doc.merge!(:subject_topic_facet => gather_terms(self.find_by_terms(:subjects)))
-    solr_doc.merge!(:format_facet => gather_terms(self.find_by_terms(:format)))
+    solr_doc.merge!(:format_facet => gather_terms(self.find_by_terms(:media_type)))
     solr_doc.merge!(:location_facet => gather_terms(self.find_by_terms(:spatial_coverage)))
 #    solr_doc.merge!(:time_facet => gather_terms(self.find_by_terms(:temporal)))
 
