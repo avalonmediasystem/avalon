@@ -1,7 +1,7 @@
 <fieldset id='uploader'>
     <legend>Manage file(s)</legend>
 
-		<% unless @masterfiles.nil? || @masterfiles.empty? %>
+		<% unless @masterFiles.nil? || @masterFiles.empty? %>
 
 	  <table class="table table-striped">
         <thead>
@@ -13,7 +13,7 @@
           <th>&nbsp;</th>
         </thead>
 		    <tbody class="sortable">
-      		<% @masterfiles.each do |masterfile| %>
+      		<% @masterFiles.each do |masterfile| %>
               <%= form_for masterfile, :remote => true do |mf| %>
   		      <tr>
 							<td>

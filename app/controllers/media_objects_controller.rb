@@ -24,9 +24,15 @@ class MediaObjectsController < ApplicationController
     logger.info "<< Retrieving #{params[:id]} from Fedora >>"
     
     @mediaobject = MediaObject.find(params[:id])
-    @masterfiles = load_master_files
-    @masterfiles_with_order = @mediaobject.parts_with_order
-    if !@masterfiles.nil? && @masterfiles.count > 1 
+    @masterFiles = load_master_files
+    @currentStream = set_active_file(params[:content])
+    if (not @masterFiles.blank? and @currentStream.blank?) then
+      @currentStream = @masterFiles.first
+      flash[:notice] = "The stream was not recognized. Defaulting to the first available stream for the resource"
+    end
+
+    #@masterfiles_with_order = @mediaobject.parts_with_order
+    if !@masterFiles.nil? && @masterFiles.count > 1 
       @relType = @mediaobject.descMetadata.relation_type[0]
     end
 
@@ -89,42 +95,35 @@ class MediaObjectsController < ApplicationController
 
       when 'structure'
         if !params[:masterfile_ids].nil?
-          masterfiles = []
+          masterFiles = []
           params[:masterfile_ids].each do |mf_id|
             mf = MasterFile.find(mf_id)
-            masterfiles << mf
+            masterFiles << mf
           end
 
           # Clean out the parts
-          masterfiles.each do |mf|
+          masterFiles.each do |mf|
             @mediaobject.parts_remove mf
           end
           @mediaobject.save(validate: false)
           
           # Puts parts back in order
-          masterfiles.each do |mf|
+          masterFiles.each do |mf|
             mf.container = @mediaobject
             mf.save
           end
           @mediaobject.save(validate: false)
-
         end
-        
+       
       # When looking at the preview page use a version of the show page
       when 'preview' 
+        logger.debug "<< Preview >>"
+        
         # Publish the media object
         @mediaobject.avalon_publisher = user_key
         @mediaobject.save
-
-        @masterFiles = load_master_files    
-        @currentStream = set_active_file(params[:content])
-        if (not @masterFiles.empty? and 
-          @currentStream.blank?)
-          @currentStream = @masterFiles.first
-        flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
-      end  
-    end     
-      
+    end    
+    
     unless @mediaobject.errors.empty?
       report_errors
     else
@@ -173,6 +172,9 @@ class MediaObjectsController < ApplicationController
   end
   
   def load_master_files
+    logger.debug "<< LOAD MASTER FILES >>"
+    logger.debug "<< #{@mediaobject.parts} >>"
+    
     @mediaobject.parts
   end
   

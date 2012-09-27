@@ -1,29 +1,16 @@
-<li class="span3">
-  <div class="thumbnail search-result">
-    <% if can? :read, item %>
-      <%= link_to image_for_result(item), media_object_path(item[:id]), class: "preview" %> 
-    <% else %>
-      <%= image_for_result(item) %>
-    <% end %>
-     
-    <div class="caption">
-        <h4 class="title">
-          <% if can? :read, item %>
-            <%= link_to search_result_label(item), media_object_path(item[:id]) %> 
-          <% else %>
-            <%= search_result_label(item) %>)
-          <% end %>
-        </h4>
-      <% unless item["creator_t"].nil? or item["creator_t"].empty? %>
-        <p class="creator"><%= item["creator_t"].first %></p></h4>
-      <% end %>
-
-      <% unless item["abstract_t"].nil? or 
-         item["abstract_t"].empty? %>
-        <p class="summary"><%= truncate(item["abstract_t"].first, 
-          length: 75) %></p>
-      <% else %>
-        <p class="summary">No summary available</p>
-      <% end %>
-  </div>
-</li>
+<tr>
+  <td class="thumbnail"><%= image_for_result(item) %></td>
+  <td>
+    <strong class="item-label"><%= link_to_if can?(:read, item),
+      search_result_label(item), 
+      media_object_path(item[:id]) %>
+    <br />
+    <% truncate(item["abstract_t"].first, length: 100) unless item["abstract_t"].blank? %>
+  </td>
+  <td>
+    <%= item["creator_t"].first unless item["creator_t"].nil? %>
+  </td>
+  <td>
+    <%# format_date(item["createdon_t"]) %>August 30, 2009
+  </td>
+</tr>

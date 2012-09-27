@@ -10,10 +10,15 @@
     <div class="row-fluid whitespace">
       <div class="span12">
         <% unless @mediaobject.title.blank? %>
-      <h2><%= @mediaobject.title %></h2>
+      <h2>
+        <%= @mediaobject.title %>
+        <% if not @currentStream.blank? %>
+         -- <%= @currentStream.label %>
+        <% end %>
       <% else %>
-        <h2><%= @mediaobject.pid %></h2>
+        <%= @mediaobject.pid %>
       <% end %>
+      </h2>
      </div>
     </div>
     
@@ -23,28 +28,25 @@
           <div class="well">
             <p>No media is associated with this item</p>
           </div>
-        <% elsif @currentStream.derivatives.blank? %>
-          <div class="well">
-            <p>Media files are being processed</p>
+        <% else if @currentStream.derivatives.blank? %>
+            <div class="well">
+              <p>Media files are being processed</p>
           </div>
-          <h3>Sections</h3>
-          <ul class="unstyled">
-            <% @masterFiles.each do |master| %>
-            <li><%= master.label %> (<%= number_to_human_size(master.size.first) %>)</li>
-            <% end %>
-          </ul>
-        <% elsif !@currentStream.derivatives.first.url.nil? %>
+        <% else %>
           <%= render partial: "modules/video_player",
             locals: {stream: @currentStream.derivatives.first.url.first,
                    mimetype: @currentStream.derivatives.first.streaming_mime_type,
                    mediapackage_id: @currentStream.mediapackage_id} %>
+        <%# End of the block if media does exist %>
+        <% end %>
           <h3>Sections</h3>
           <ul class="unstyled">
             <% @masterFiles.each do |master| %>
               <li>
-                <%= link_to media_object_path @mediaobject, {step: 'preview', content: master.pid} do %>
-                  <%= master.label %>
-                <% end %> 
+                <%= link_to_unless (master.pid == @currentStream.pid),
+                  master.label,
+                  media_object_path(@mediaobject, 
+                    {step: 'preview', content: master.pid}) %>
                 (<%= number_to_human_size(master.size.first) %>)
               </li>
               <% end %>
