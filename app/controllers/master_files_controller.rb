@@ -22,11 +22,12 @@ class MasterFilesController < ApplicationController
     media_object = MediaObject.find(params[:container_id])
     authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
     
-    audio_types = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav"]
+    audio_types = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav",
+      "audio/x-wav"]
     video_types = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime"]
     unknown_types = ["application/octet-stream", "application/x-upload-data"]
     
-    format_errors = "The following files were not video/audio: "
+    format_errors = "The file was not recognized as audio or video - "
     
     if params.has_key?(:Filedata) and params.has_key?(:original)
       @master_files = []
@@ -54,8 +55,12 @@ class MasterFilesController < ApplicationController
   	    logger.info "<< Uploaded file appears to be #{@upload_format} >>"
   		  
   	    if 'Unknown' == @upload_format
-          flash[:errors] = format_errors + file.original_filename + " "
-  	      break
+  	      flash[:errors] = [] if flash[:errors].nil?
+          error = format_errors
+          error << file.original_filename
+          error << " (" << file.content_type << ")"
+          flash[:errors].push error
+  	      next
   	    end
   		  
         @master_files << master_file = saveOriginalToHydrant(file)
@@ -67,7 +72,7 @@ class MasterFilesController < ApplicationController
           # media_object.save(validate: false)
           sendOriginalToMatterhorn(master_file, file, @upload_format)
         else 
-          flash[:errors] = "Error storing file"
+          flash[:errors] = "There was a problem storing the file"
 			  end
   		end
     else
