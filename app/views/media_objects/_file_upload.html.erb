@@ -55,9 +55,13 @@
 							</td>
   		        <td>
   		          <% case part.media_type.first
-  		             when 'Sound' %>
+  		             when 'audio' %>
+	    		       <i class="icon-volume-up"></i>
+	    		  <% when 'Sound' %>
 	    		       <i class="icon-volume-up"></i>  		            
-  		          <% when 'Moving Image' %>
+  		          <% when 'video' %>
+	    		       <i class="icon-film"></i>
+  		          <% when 'Moving Images' %>
 	    		       <i class="icon-film"></i>
 	    		  <% else %>
 					   <i class="icon-question-sign"></i>
@@ -67,7 +71,7 @@
       		      <%= text_field_tag "parts[#{i}][label]", part.label, size: 30 %>
   		        </td>
   		        <td>
-  		          <%= link_to truncate(File.basename(part.url.first), length: 25), part.descMetadata.identifier[0] %>
+  		          <%= link_to truncate(File.basename(part.url.first), length: 25), part.descMetadata.identifier[0], target: '_download' %>
       	  	  </td>
       	  	  <td>
       	  	    <strong><%= number_to_human_size(part.size.first) %></strong>
