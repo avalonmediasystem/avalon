@@ -1,5 +1,9 @@
+<style>
+  #admin_group_resources_control_group  { display : none }
+</style>
+
 <% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
-  
+
 <%= twitter_bootstrap_form_for @group,class: 'form-vertical' do |f| %>
   <%= f.fieldset do %>
     <%= f.text_field :name, "Name", class: 'span4', value: @group.name %>

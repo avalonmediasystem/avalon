@@ -31,7 +31,7 @@ class MasterFilesController < ApplicationController
     if params.has_key?(:Filedata) and params.has_key?(:original)
       @master_files = []
       params[:Filedata].each do |file|
-        @upload_format = 'unknown'
+        @upload_format = 'Unknown'
         logger.debug "<< MIME type is #{file.content_type} >>"
         
         if (file.size > MasterFile::MAXIMUM_UPLOAD_SIZE)
@@ -44,8 +44,8 @@ class MasterFilesController < ApplicationController
           return
         end
         
-  	    @upload_format = 'video' if video_types.include?(file.content_type)
-  	    @upload_format = 'audio' if audio_types.include?(file.content_type)
+  	    @upload_format = 'Moving image' if video_types.include?(file.content_type)
+  	    @upload_format = 'Sound' if audio_types.include?(file.content_type)
   		  
   	    # If the content type cannot be inferred from the MIME type fall back on the
   	    # list of unknown types. This is different than a generic fallback because it
@@ -53,7 +53,7 @@ class MasterFilesController < ApplicationController
   	    @upload_format = determine_format_by_extension(file) if unknown_types.include?(file.content_type)
   	    logger.info "<< Uploaded file appears to be #{@upload_format} >>"
   		  
-  	    if 'unknown' == @upload_format
+  	    if 'Unknown' == @upload_format
           flash[:errors] = format_errors + file.original_filename + " "
   	      break
   	    end
@@ -200,9 +200,9 @@ protected
     logger.debug "<< File extension is #{extension} >>"
     
     # Default to unknown
-    format = 'unknown'
-    format = 'video' if video_extensions.include?(extension)
-    format = 'audio' if audio_extensions.include?(extension)
+    format = 'Unknown'
+    format = 'Moving image' if video_extensions.include?(extension)
+    format = 'Sound' if audio_extensions.include?(extension)
 
     return format
   end

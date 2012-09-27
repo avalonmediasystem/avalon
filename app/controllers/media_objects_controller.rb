@@ -119,6 +119,9 @@ class MediaObjectsController < ApplicationController
             mf.container = @mediaobject
             mf.save
           end
+          unless @mediaobject.parts.empty?
+            @mediaobject.format = @mediaobject.parts.first.media_type
+          end
           @mediaobject.save(validate: false)
         end
        
