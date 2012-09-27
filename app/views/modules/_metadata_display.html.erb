@@ -18,11 +18,6 @@
     <% end %>
   </dd>
 
-  <!-- <% unless @mediaobject.format.blank? %>
-  <dt>Format</dt>
-  <dd><%= @mediaobject.format %></dd>
-  <% end %> -->
-
   <dt>Date</dt>
   <dd>
     <% unless @mediaobject.created_on.blank? %>
@@ -33,20 +28,18 @@
   </dd>
 
   <dt>Summary</dt>
-  <% unless @mediaobject.abstract.nil? or
-       @mediaobject.abstract.empty? %>
+  <% unless @mediaobject.abstract.blank? %>
     <dd><%= wrap_text(@mediaobject.abstract.first) %></dd>
   <% else %>
     <dd><em>No summary available</em></dd>
   <% end %>
 
-  <% unless @mediaobject.contributor.nil? or
-       @mediaobject.contributor.empty? %>
+  <% unless @mediaobject.contributor.blank? %>
     <dt>Contributor(s)</dt>
     <dd><%= display_multiple(@mediaobject.contributor) %></dd>
   <% end %>
 
-  <% unless @mediaobject.publisher.nil? or
+  <% unless @mediaobject.publisher.blank? or
        @mediaobject.publisher.empty? %>
     <dt>Publisher(s)</dt>
     <dd><%= display_multiple(@mediaobject.publisher) %></dd>
@@ -57,20 +50,17 @@
     <dd><%= @mediaobject.genre %></dd>
   <% end %>
 
-  <% unless @mediaobject.temporal.nil? or
-       @mediaobject.temporal.empty? %>
+  <% unless @mediaobject.temporal.blank? %>
     <dt>Key time periods</dt>
     <dd><%= display_multiple(@mediaobject.temporal) %></dd>
   <% end %>
 
-  <% unless @mediaobject.spatial.nil? or
-       @mediaobject.spatial.empty? %>
+  <% unless @mediaobject.spatial.blank? %>
     <dt>Important locations</dt>
     <dd><%= display_multiple(@mediaobject.spatial) %></dd>
   <% end %>
 
-  <% unless @mediaobject.subject.nil? or
-       @mediaobject.subject.empty? %>
+  <% unless @mediaobject.subject.blank? %>
     <dt>Subject(s)</dt>
     <dd><%= display_multiple(@mediaobject.subject) %></dd>
   <% end %>

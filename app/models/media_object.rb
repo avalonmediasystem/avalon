@@ -25,7 +25,7 @@ class MediaObject < ActiveFedora::Base
   delegate :title, to: :descMetadata, at: [:main_title], unique: true
   delegate :creator, to: :descMetadata, at: [:creator_name], unique: true
   delegate :created_on, to: :descMetadata, at: [:creation_date], unique: true
-  delegate :abstract, to: :descMetadata, at: [:summary]
+  delegate :abstract, to: :descMetadata, at: [:summary], unique: true
   delegate :format, to: :descMetadata, at: [:media_type], unique: true
   # Additional descriptive metadata
   delegate :contributor, to: :descMetadata, at: [:contributor_name]
@@ -36,6 +36,8 @@ class MediaObject < ActiveFedora::Base
   # Temporal and spatial coverage are a bit tricky but this should work
   delegate :spatial, to: :descMetadata, at: [:spatial_coverage]
   delegate :temporal, to: :descMetadata, at: [:temporal_coverage]
+  
+  accepts_nested_attributes_for :parts, :allow_destroy => true
   
   # Stub method to determine if the record is done or not. This should be based on
   # whether the descMetadata, rightsMetadata, and techMetadata datastreams are all
@@ -120,6 +122,7 @@ class MediaObject < ActiveFedora::Base
     if values.has_key?(:spatial)
        logger.debug "<< Handling special case for attribute :spatial >>"
        values[:spatial].each do |spatial_value|
+         next if spatial_value.blank?
          node = {value: spatial_value, attributes: 'Spatial'}
          values[:pbcore_coverage] << node
        end
@@ -129,6 +132,7 @@ class MediaObject < ActiveFedora::Base
     if values.has_key?(:temporal)
        logger.debug "<< Handling special case for attribute :temporal >>"
        values[:temporal].each do |temporal_value|
+         next if temporal_value.blank?
          node = {value: temporal_value, attributes: 'Temporal'}
          values[:pbcore_coverage] << node
        end

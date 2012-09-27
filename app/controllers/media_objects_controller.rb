@@ -72,6 +72,13 @@ class MediaObjectsController < ApplicationController
     case @active_step
       when 'file-upload'
         logger.debug "<< Processing file-upload step >>"
+        if params[:parts]
+          logger.debug "<< Parts hash includes #{params[:parts]} >>"
+          params[:parts].each do |part|
+            logger.debug "<< #{inspect part} >>" 
+          end
+        end
+        
         unless @mediaobject.parts.empty?
           @mediaobject.format = @mediaobject.parts.first.media_type
           @mediaobject.save(validate: false)
@@ -117,8 +124,6 @@ class MediaObjectsController < ApplicationController
        
       # When looking at the preview page use a version of the show page
       when 'preview' 
-        logger.debug "<< Preview >>"
-        
         # Publish the media object
         @mediaobject.avalon_publisher = user_key
         @mediaobject.save
