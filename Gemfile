@@ -18,7 +18,7 @@
   platforms :ruby do
   	gem 'sqlite3'
 	gem 'execjs'
-    gem 'therubyracer', '= 0.11.0beta8'
+    gem 'therubyracer', '= 0.10.2'
   end
 
   # You are free to implement your own User/Authentication solution in its place.
