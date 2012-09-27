@@ -23,6 +23,9 @@
 	  <% unless @masterFiles.blank? %>
 
       <%= twitter_bootstrap_form_for @mediaobject do |upload_form| %>
+      <%= hidden_field_tag :donot_advance, true %>
+      <%= hidden_field_tag :step, 'file-upload' %>
+      
 	  <table class="table table-striped">
 	    <colgroup>
 	      <col class="span1">
@@ -36,13 +39,13 @@
           <th></th>
           <th>Type</th>
           <th>Title</th>
-          <th>File namez</th>
+          <th>File name</th>
           <th>Size</th>
-          <th>Remove file</th>
+          <th>Delete</th>
         </thead>
 		    <tbody>
 		    <% @masterFiles.each do |part, i| %>
-      		  <%= hidden_field_tag "part[#{i}].pid", part.pid  %>
+      		  <%= hidden_field_tag "parts[#{i}][pid]", part.pid  %>
   		      <tr>
 							<td>
 								<div class="noshow">
@@ -52,16 +55,16 @@
 							</td>
   		        <td>
   		          <% case part.media_type.first
-  		             when 'audio' %>
+  		             when 'Sound' %>
 	    		       <i class="icon-volume-up"></i>  		            
-  		          <% when 'video' %>
+  		          <% when 'Moving Image' %>
 	    		       <i class="icon-film"></i>
 	    		  <% else %>
 					   <i class="icon-question-sign"></i>
   		          <% end %>
   		        </td>
   		        <td>
-      		      <%= text_field_tag "part[#{i}].label", part.label, size: 30 %>
+      		      <%= text_field_tag "parts[#{i}][label]", part.label, size: 30 %>
   		        </td>
   		        <td>
   		          <%= link_to part.descMetadata.identifier[0],
@@ -76,7 +79,7 @@
           	 		 <%# On a Rails level this needs to be folded into the masterfiles
           	 		   # controller's destroy method to help remove more vestiges of the
           	 		   # catalog controller %>
-         	         <%= check_box_tag "part[#{i}].remove", true %>
+         	         <%= check_box_tag "parts[#{i}][remove]", true %>
         	 	    <% end %>
       	 	    </td>
     	 	    </tr>

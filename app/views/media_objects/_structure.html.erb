@@ -3,9 +3,9 @@
 <% end %>
 
 <legend>Structure</legend>
-<p>Drag files to reorder them differently. Changes will immediately be saved to the database.</p>
+<p>Drag files to reorder them. Changes will be saved to the database immediately if Javascript is enabled.</p>
 
-<% if @masterFiles.nil? || @masterFiles.empty? %>
+<% if @masterFiles.blank? %>
   <div class="well">There are no media files</div>
 <% else %>
 	<table class="table table-striped">
@@ -26,9 +26,9 @@
 			</div>
 		</td>
         <td>
-          <% if masterfile.media_type.first == 'Sound' %>
+          <% if masterfile.media_type.first == 'audio' %>
 		      	<i class="icon-volume-up"></i>  		            
-          <% elsif masterfile.media_type.first == 'Moving image' %>
+          <% elsif masterfile.media_type.first == 'video' %>
 		        <i class="icon-film"></i>
 					  <% else %>
 					  	<i class="icon-question-sign"></i>
