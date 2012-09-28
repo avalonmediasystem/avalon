@@ -163,6 +163,12 @@ class MediaObjectsController < ApplicationController
     redirect_to root_path
   end
   
+  def matterhorn_service_config
+    respond_to do |format|
+      format.any(:xml, :json) { render request.format.to_sym => MATTERHORN_CONFIG }
+    end
+  end
+
   protected
   def set_default_item_permissions
     unless @mediaobject.rightsMetadata.nil?
@@ -275,4 +281,5 @@ class MediaObjectsController < ApplicationController
           end
         end
   end
+
 end

@@ -14,6 +14,7 @@ Hydrant::Application.routes.draw do
   #resources :media_objects, except: [:index], as: :media
   #resources :master_files, as: :resources
   resources :media_objects, except: [:create]
+  match '/engage/ui/json/servicedata.:format' => 'media_objects#matterhorn_service_config'
   resources :master_files
   resources :derivatives
   
