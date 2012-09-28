@@ -26,13 +26,14 @@
 			</div>
 		</td>
         <td>
-          <% if masterfile.media_type.first == 'audio' %>
-		      	<i class="icon-volume-up"></i>  		            
-          <% elsif masterfile.media_type.first == 'video' %>
-		        <i class="icon-film"></i>
-					  <% else %>
-					  	<i class="icon-question-sign"></i>
-          <% end %>
+                          <% case masterfile.media_type.first
+                             when 'Sound' %>
+                               <i class="icon-volume-up"></i>
+                          <% when 'Moving image' %>
+                               <i class="icon-film"></i>
+                          <% else %>
+                               <i class="icon-question-sign"></i>
+                          <% end %>
         </td>
         <td>
           <%= text_field_tag masterfile.pid, masterfile.label, class: 'mf-label' %>
