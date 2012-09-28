@@ -1,22 +1,20 @@
 uva-only:
   - uva-only
+  - test
 archivist:
   - archivist1@example.com
   - archivist2
   - pdinh
   - mnotess
+  - jwd
   - rogersna
   - cjcolvar
-  - 80000493756
-  - 80000493749
-  - 80000496023
-  - 80000496644
   - jlhardes
-  - 80000497619
-  - 80000478586
   - chris.colvard@gmail.com
   - azielke@northwestern.edu
   - michael.klein@northwestern.edu
+  - j-rudder@northwestern.edu
+  - stefanelnabli@northwestern.edu
 donor:
   - donor1@example.com
 researcher:
@@ -31,15 +29,10 @@ admin_policy_object_editor:
   - cjcolvar
   - rogersna
   - mnotess
-  - 80000493756
-  - 80000493749
-  - 80000496023
-  - 80000496644
+  - jwd
   - jlhardes
-  - 80000497619
-  - 80000478586
   - chris.colvard@gmail.com
   - azielke@northwestern.edu
   - michael.klein@northwestern.edu
-patron:
-  - patron1
+  - j-rudder@northwestern.edu
+  - stefanelnabli@northwestern.edu
