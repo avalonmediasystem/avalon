@@ -1,16 +1,16 @@
-<tr>
-  <td class="thumbnail"><%= image_for_result(item) %></td>
-  <td>
+<tr class="result">
+  <td class="thumb"><%= image_for_result(item) %></td>
+  <td class="label span5">
     <strong class="item-label"><%= link_to_if can?(:read, item),
       search_result_label(item), 
       media_object_path(item[:id]) %>
     <br />
     <% truncate(item["abstract_t"].first, length: 100) unless item["abstract_t"].blank? %>
   </td>
-  <td>
+  <td class="creator span3">
     <%= item["creator_t"].first unless item["creator_t"].nil? %>
   </td>
-  <td>
+  <td class="date">
     <%= item["pub_date"].first unless item["pub_date"].nil? %>
   </td>
 </tr>
