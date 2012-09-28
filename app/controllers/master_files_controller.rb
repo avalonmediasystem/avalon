@@ -214,9 +214,9 @@ protected
   
   def create_upload_notice(format) 
     case format
-      when /^audio$/
+      when /^Sound$/
        text = 'The uploaded content appears to be audio';
-      when /^video$/ 
+      when /^Moving image$/ 
        text = 'The uploaded content appears to be video';
       else
        text = 'The uploaded content could not be identified';
