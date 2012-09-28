@@ -11,14 +11,18 @@ module ApplicationHelper
       # TODO : I have an idea how to refactor this to make it more neat but it needs to
       #        wait until the email form is finished.
       if media_object.format == "Moving image"
-        imageurl = "reel-to-reel.jpg"
+        imageurl = "video_icon.jpg"
       elsif media_object.format == "Sound"
-        imageurl = "audio-icon.png"
+        imageurl = "audio_icon.png"
+      elsif (media_object.parts.length >= 2)
+        imageurl = "hybrid_icon.png"
       else
-        imageurl = "Question_mark.png"
+        imageurl = "no_icon.png"
       end
 
-      unless (media_object.parts.nil? or media_object.parts.empty?)
+      # Retrieve the icon from Matterhorn if it is present and replace it with an
+      # actual thumbnail
+      unless (media_object.parts.blank?)
         master_file = MasterFile.find(media_object.parts.first.pid)
         workflow_doc = Rubyhorn.client.instance_xml master_file.descMetadata.source.first
         imageurl = workflow_doc.searchpreview.first unless (workflow_doc.searchpreview.nil? or workflow_doc.searchpreview.empty?)
