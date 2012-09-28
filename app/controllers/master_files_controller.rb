@@ -131,9 +131,9 @@ class MasterFilesController < ApplicationController
 
   def sendOriginalToMatterhorn(master_file, file, upload_format)
     args = {"title" => master_file.pid , "flavor" => "presenter/source", "filename" => file.original_filename}
-    if upload_format == 'audio'
+    if upload_format == 'Sound'
       args['workflow'] = "fullaudio"
-    elsif upload_format == 'video'
+    elsif upload_format == 'Moving image'
       args['workflow'] = "hydrant"
     end
     logger.debug "<< Calling Matterhorn with arguments: #{args} >>"
