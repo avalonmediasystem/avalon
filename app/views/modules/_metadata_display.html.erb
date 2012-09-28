@@ -29,7 +29,7 @@
 
   <dt>Summary</dt>
   <% unless @mediaobject.abstract.blank? %>
-    <dd><%= wrap_text(@mediaobject.abstract.first) %></dd>
+    <dd><%= wrap_text(@mediaobject.abstract) %></dd>
   <% else %>
     <dd><em>No summary available</em></dd>
   <% end %>
