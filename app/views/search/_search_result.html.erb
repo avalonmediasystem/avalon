@@ -1,5 +1,8 @@
 <tr class="result">
-  <td class="result-thumb"><%= image_for_result(item) %></td>
+  <td class="result-thumb">
+    <%= link_to_if can?(:read, item), image_for_result(item),
+      media_object_path(item[:id]) %>
+  </td>
   <td class="result-label span5">
     <strong class="item-label"><%= link_to_if can?(:read, item),
       search_result_label(item), 

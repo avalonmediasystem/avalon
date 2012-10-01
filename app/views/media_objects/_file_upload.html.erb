@@ -1,7 +1,5 @@
 <fieldset id='uploader'>
     <legend>Manage file(s)</legend>
-    <p>Choose the bitstreams that are part of this resource. Once files are uploaed you can edit the labels before continuing to the next step.</p>
-
   	<p>Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
 
     <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
@@ -20,8 +18,12 @@
       <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
     <% end %>
     
+    
 	  <% unless @masterFiles.blank? %>
-
+	  <hr />
+      <h4>Associated file(s)</h4>
+      <p>Update the display labels to change the information that end users will see. Changes persist once you select Update.</p>
+      
       <%= twitter_bootstrap_form_for @mediaobject do |upload_form| %>
       <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
@@ -38,7 +40,7 @@
         <thead>
           <th></th>
           <th>Type</th>
-          <th>Title</th>
+          <th>Display label</th>
           <th>File name</th>
           <th>Size</th>
           <th>Delete</th>
