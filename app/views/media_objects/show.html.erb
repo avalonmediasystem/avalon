@@ -44,7 +44,9 @@
             <% @masterFiles.each do |master| %>
               <li>
                 <%= link_to_unless (master.pid == @currentStream.pid),
-                  master.label,
+                  master.label.blank? ? 
+                    File.basename(master.descMetadata.identifier[0]) : 
+                    master.label,
                   media_object_path(@mediaobject, 
                     {step: 'preview', content: master.pid}) %>
                 (<%= number_to_human_size(master.size.first) %>)

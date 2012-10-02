@@ -36,7 +36,7 @@
                           <% end %>
         </td>
         <td>
-          <%= masterfile.label.blank? : '&#8212'.html_safe ? masterfile.label %>
+          <%= masterfile.label.blank? ? '&#8212'.html_safe : masterfile.label %>
         </td>
         <td>
 	  	    <a href="<%= masterfile.descMetadata.identifier[0] %>"><%= File.basename(masterfile.url.first)  %></a>
