@@ -11,9 +11,9 @@
     <% truncate(item["abstract_t"].first, length: 100) unless item["abstract_t"].blank? %>
   </td>
   <td class="result-creator span3">
-    <%= item["creator_t"].first unless item["creator_t"].nil? %>
+    <%= item["creator_t"].nil? ? '&#8212'.html_safe : item["creator_t"]  %>
   </td>
   <td class="result-date">
-    <%= item["pub_date"].first unless item["pub_date"].nil? %>
+    <%= item["pub_date"].nil? ? '&#8212'.html_safe : item["pub_date"] %>
   </td>
 </tr>

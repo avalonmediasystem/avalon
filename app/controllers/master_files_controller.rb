@@ -147,7 +147,9 @@ class MasterFilesController < ApplicationController
 		master_file = MasterFile.new
 		master_file.url = path
 		filename = path.split(/\//).last
-		master_file.label = File.basename(filename, File.extname(filename)) 
+		# Do not automatically provide the label. Instead offer it as an optional
+		# field set during the file upload process.
+		#master_file.label = File.basename(filename, File.extname(filename)) 
 
 		return master_file		
 	end
