@@ -12,6 +12,7 @@
 //
 //= stub hydra/hydra-head
 //
+//= require fix_console
 //= require jquery
 //= require jquery_ujs
 //= require twitter/bootstrap
