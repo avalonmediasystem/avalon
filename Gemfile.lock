@@ -31,7 +31,7 @@ GIT
 
 GIT
   remote: git://github.com/variations-on-video/hydrant-engage.git
-  revision: 7d5d31c4524d3ef5c66b82c8d1b223322179b031
+  revision: d7b202b3a2ef8f71b7583ba5f456d0fcf7a7c373
   specs:
     hydrant-engage (0.0.1)
       less-rails (~> 2.2.3)
