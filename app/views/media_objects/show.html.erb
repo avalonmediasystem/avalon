@@ -6,19 +6,22 @@
     <% end %>
   </div>
 
-  <div id="main_body" class="offset1 span8">
+  <div id="main_body" class="span8">
     <div class="row-fluid whitespace">
       <div class="span12">
         <% unless @mediaobject.title.blank? %>
       <h2>
         <%= @mediaobject.title %>
-        <% if not @currentStream.blank? %>
-         -- <%= @currentStream.label %>
-        <% end %>
       <% else %>
         <%= @mediaobject.pid %>
       <% end %>
       </h2>
+      <h3>
+        <% if not @currentStream.blank? and 
+          @masterfiles.length >= 2 %>
+         <%= @currentStream.label %>
+        <% end %>
+      </h3>
      </div>
     </div>
     
