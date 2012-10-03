@@ -51,7 +51,7 @@
                     File.basename(master.descMetadata.identifier[0]) : 
                     master.label,
                   media_object_path(@mediaobject, 
-                    {step: 'preview', content: master.pid}) %>
+                    {content: master.pid}) %>
                 (<%= number_to_human_size(master.size.first) %>)
               </li>
               <% end %>
