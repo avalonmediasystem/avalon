@@ -31,7 +31,7 @@ GIT
 
 GIT
   remote: git://github.com/variations-on-video/hydrant-engage.git
-  revision: 18b290dc60244ca701c6f2f61c44a649229ed6f8
+  revision: 7d5d31c4524d3ef5c66b82c8d1b223322179b031
   specs:
     hydrant-engage (0.0.1)
       less-rails (~> 2.2.3)
@@ -351,7 +351,7 @@ GEM
       activesupport (>= 3.0)
       railties (>= 3.0)
       rspec (~> 2.11.0)
-    rspec_junit_formatter (0.1.1)
+    rspec_junit_formatter (0.1.2)
       builder
       rspec (~> 2.0)
     rubydora (0.5.13)
