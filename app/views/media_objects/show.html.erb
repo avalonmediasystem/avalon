@@ -16,7 +16,7 @@
         <%= @mediaobject.pid %>
       <% end %>
       </h2>
-      <h3>
+      <h3 id="stream_label">
         <% if not @currentStream.blank? and 
           @masterFiles.length >= 2 %>
          <%= @currentStream.label %>
@@ -36,10 +36,7 @@
               <p>Media files are being processed</p>
           </div>
         <% else %>
-          <%= render partial: "modules/video_player",
-            locals: {stream: @currentStream.derivatives.first.url.first,
-                   mimetype: @currentStream.derivatives.first.streaming_mime_type,
-                   mediapackage_id: @currentStream.mediapackage_id} %>
+          <%= render partial: 'player' %>
         <%# End of the block if media does exist %>
         <% end %>
         <% end %>
@@ -52,13 +49,11 @@
             <% @masterFiles.each do |master| %>
               <li>
                 <%# If the label has not been set use the file name as a default %>
-                <%= link_to_unless (master.pid == @currentStream.pid),
-                  master.label.blank? ? 
-                    File.basename(master.descMetadata.identifier[0]) : 
-                    master.label,
-                  media_object_path(@mediaobject, 
-                    {content: master.pid}),
-                  {data: {segment: master.pid}} %>
+                <%=
+                  stream_label = master.label.blank? ? File.basename(master.descMetadata.identifier[0]) : master.label
+                  link_to stream_label,
+                  media_object_path(@mediaobject,{content: master.pid}),
+                  {data: {segment_id: master.pid}, class: (master.pid == @currentStream.pid) ? 'stream current' : 'stream' } %>
                 (<%= number_to_human_size(master.size.first) %>)
               </li>
               <% end %>
@@ -91,23 +86,5 @@
 
 <% content_for :page_scripts do %>
   <script type="text/javascript">
-  $(document).ready(function() {
-    $('a[data-segment]').click(function() {
-      segment = this.getAttribute('data-segment');
-      player_url = "<%= player_media_object_path(@mediaobject) %>?stream=" + segment;      
-      
-      player_src = $.get(player_url,
-        function(data) {
-          $('#player').html(data);
-        });
-      //$('#player').fadeOut(2000).delay(1000).html('<p>Retrieving ' + segment + ' from ' + player_url + '</p>').fadeIn(1000) ;
-      // Make a JS call to media_object/player that retrieves a segment. Do this
-      // in a clever way and you can actually make it load when the page loads so that
-      // the default gray box shows up if you don't have Javascript support
-      //
-      // Sweet!    
-      return false;
-    })
-  });
   </script>
 <% end %>
