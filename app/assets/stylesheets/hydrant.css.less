@@ -147,3 +147,16 @@ footer li:before {
 footer li:first-child:before {
 	content: none;
 }
+
+.hidden-disabled-link  {
+  text-decoration: none !important;
+  color: black !important;
+  cursor: default !important;
+  pointer-events: none !important;
+}
+
+
+a.stream.current {
+  .hidden-disabled-link
+  &:link, &:hover, &:active, &:visited { .hidden-disabled-link }
+}
