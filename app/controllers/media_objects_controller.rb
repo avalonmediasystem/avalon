@@ -169,6 +169,26 @@ class MediaObjectsController < ApplicationController
     end
   end
 
+  # UGLY METHOD WARNING
+  # Javascript response that streams the markup for the player to the show and preview
+  # pages. This is far from efficient but should serve as a first cut of whether this
+  # approach is even feasible. An ideal solution would keep the same player but just
+  # pass it a new stream.
+  #
+  # This method expects that you pass a valid ID that belongs to that media object.
+  # If for some reason it can't be find then it will spit out a gray box with an error
+  # message.
+  def player
+    @mediaobject = MediaObject.find(params[:id])
+    @currentStream = set_active_file(params[:stream])
+    
+    respond_to do |format|
+      format.js { render 'player' }
+      format.html { render 'player', layout: false }
+    end
+
+  end
+  
   protected
   def set_default_item_permissions
     unless @mediaobject.rightsMetadata.nil?
