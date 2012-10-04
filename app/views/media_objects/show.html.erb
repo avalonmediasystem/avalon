@@ -42,24 +42,30 @@
                    mediapackage_id: @currentStream.mediapackage_id} %>
         <%# End of the block if media does exist %>
         <% end %>
+        <% end %>
+      </section>  
+    </div>
+
+    <div class="row-fluid whitespace">
           <h3>Sections</h3>
           <ul class="unstyled">
             <% @masterFiles.each do |master| %>
               <li>
+                <%# If the label has not been set use the file name as a default %>
                 <%= link_to_unless (master.pid == @currentStream.pid),
                   master.label.blank? ? 
                     File.basename(master.descMetadata.identifier[0]) : 
                     master.label,
                   media_object_path(@mediaobject, 
-                    {content: master.pid}) %>
+                    {content: master.pid}),
+                  {data: {segment: master.pid}} %>
                 (<%= number_to_human_size(master.size.first) %>)
               </li>
               <% end %>
           </ul>
-        <% end %>
-      </section>  
-    </div>
 
+    </div>
+    
     <div class="row-fluid whitespace">
       <h3>Resource description</h3>
       <section id="metadata"><%= render "modules/metadata_display" %></section>
@@ -81,4 +87,27 @@
   <% else %>
     <%= @mediaobject.pid %>
   <% end %>
+<% end %>
+
+<% content_for :page_scripts do %>
+  <script type="text/javascript">
+  $(document).ready(function() {
+    $('a[data-segment]').click(function() {
+      segment = this.getAttribute('data-segment');
+      player_url = "<%= player_media_object_path(@mediaobject) %>?stream=" + segment;      
+      
+      player_src = $.get(player_url,
+        function(data) {
+          $('#player').html(data);
+        });
+      //$('#player').fadeOut(2000).delay(1000).html('<p>Retrieving ' + segment + ' from ' + player_url + '</p>').fadeIn(1000) ;
+      // Make a JS call to media_object/player that retrieves a segment. Do this
+      // in a clever way and you can actually make it load when the page loads so that
+      // the default gray box shows up if you don't have Javascript support
+      //
+      // Sweet!    
+      return false;
+    })
+  });
+  </script>
 <% end %>
