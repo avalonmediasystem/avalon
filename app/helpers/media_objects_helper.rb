@@ -74,6 +74,18 @@ module MediaObjectsHelper
         end
         HYDRANT_STEPS.previous(status)
       end  
+      
+      def stream_label_for(resource)
+        label = ''
+        unless resource.nil?
+          if resource.label.blank?
+            label = File.basename(resource.descMetadata.identifier[0])
+          else
+            label = resource.label
+          end
+        end
+        return label
+      end
 end
 
 
