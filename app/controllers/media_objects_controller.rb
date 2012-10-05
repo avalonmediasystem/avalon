@@ -156,21 +156,28 @@ class MediaObjectsController < ApplicationController
   def show
     @mediaobject = MediaObject.find(params[:id])
 
-    @masterFiles = load_master_files    
-    @currentStream = set_active_file(params[:content])
+    @masterFiles = load_master_files
+    @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
 
     respond_to do |format| 
       # The flash notice is only set if you are returning HTML since it makes no
       # sense in an AJAX context (yet)
-      format.html { 
+      format.html do
         if (not @masterFiles.empty? and 
           @currentStream.blank?)
           @currentStream = @masterFiles.first
           flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
         end
         render
-      }
-      format.js
+      end
+      format.json do
+        render :json => {
+          label: @currentStream.label,
+          stream: @currentStream.derivatives.first.url.first,
+          mimetype: @currentStream.derivatives.first.streaming_mime_type,
+          mediapackage_id: @currentStream.mediapackage_id
+        }
+      end
     end
   end
 

@@ -18,7 +18,7 @@
       </h2>
         <% if not @currentStream.blank? and 
           @masterFiles.length >= 2 %>
-         <h3><%= @currentStream.label %></h3>
+         <h3 id="stream_label"><%= @currentStream.label %></h3>
         <% end %>
      </div>
     </div>
@@ -53,8 +53,8 @@
                 <%=
                   link_to stream_label_for(master),
                   media_object_path(@mediaobject,{content: master.pid}),
-                  {data: {segment: master.pid}, 
-                     class: (master.pid == @currentStream.pid) ? 'stream current' : 'stream' } %>
+                  id: "link_#{master.mediapackage_id}",
+                  class: (master.pid == @currentStream.pid) ? 'stream current' : 'stream' %>
                 (<%= number_to_human_size(master.size.first) %>)
               </li>
               <% end %>
