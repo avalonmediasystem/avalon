@@ -50,10 +50,10 @@
               <li>
                 <%# If the label has not been set use the file name as a default %>
                 <%=
-                  stream_label = master.label.blank? ? File.basename(master.descMetadata.identifier[0]) : master.label
-                  link_to stream_label,
+                  link_to stream_label_for(master),
                   media_object_path(@mediaobject,{content: master.pid}),
-                  {data: {segment_id: master.pid}, class: (master.pid == @currentStream.pid) ? 'stream current' : 'stream' } %>
+                  {data: {segment: master.pid}, 
+                     class: (master.pid == @currentStream.pid) ? 'stream current' : 'stream' } %>
                 (<%= number_to_human_size(master.size.first) %>)
               </li>
               <% end %>
@@ -85,6 +85,5 @@
 <% end %>
 
 <% content_for :page_scripts do %>
-  <script type="text/javascript">
-  </script>
+  <%= javascript_include_tag 'switch_player' %>
 <% end %>
