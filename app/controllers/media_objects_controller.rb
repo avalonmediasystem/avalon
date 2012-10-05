@@ -145,21 +145,32 @@ class MediaObjectsController < ApplicationController
     end
   end
   
+  # Show acts a little bit differently than the other methods depending on the context
+  # in which you call it. After setting some global context so you can discover 
+  # values it returns different information.
+  #
+  # If the request comes across as HTML the global variables are sent to the template
+  # to be rendered as before. If the request comes across as JSON then send back a
+  # hash containing the current stream's title, stream location, and package ID.
+  # These are handled within the player.js.erb
   def show
     @mediaobject = MediaObject.find(params[:id])
 
     @masterFiles = load_master_files    
     @currentStream = set_active_file(params[:content])
-    if (not @masterFiles.empty? and 
-        @currentStream.blank?)
-      @currentStream = @masterFiles.first
-      flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
-    end
 
-    if request.xhr?
-      render :partial => 'player'
-    else
-      render
+    respond_to do |format| 
+      # The flash notice is only set if you are returning HTML since it makes no
+      # sense in an AJAX context (yet)
+      format.html { 
+        if (not @masterFiles.empty? and 
+          @currentStream.blank?)
+          @currentStream = @masterFiles.first
+          flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
+        end
+        render
+      }
+      format.js
     end
   end
 
