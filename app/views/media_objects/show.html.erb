@@ -52,9 +52,10 @@
                 <%# If the label has not been set use the file name as a default %>
                 <%=
                   link_to stream_label_for(master),
-                  media_object_path(@mediaobject,{content: master.pid}),
-                  id: "link_#{master.mediapackage_id}",
-                  class: (master.pid == @currentStream.pid) ? 'stream current' : 'stream' %>
+                  media_object_path(@mediaobject, {content: master.pid}),
+                  {
+                     class: (master.pid == @currentStream.pid) ? 'current-stream' : '',
+                     data: {segment: master.pid}} %>
                 (<%= number_to_human_size(master.size.first) %>)
               </li>
               <% end %>
