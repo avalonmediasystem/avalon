@@ -2,12 +2,14 @@
     function setActiveSection(activeSegment) {
       $('a.stream').removeClass('current');
       $('#link_'+activeSegment).addClass('current');
+      // KLUDGE ALERT: Force links to redraw
+      $('#section_links').toggle().toggle();
     }
 
     function setActiveLabel(title) {
       target = $('#stream_label');
       if (target) {
-        target.html(title);
+        target.fadeToggle(50, function() { target.html(title); target.fadeToggle(50) });
       }
     }
 
@@ -16,6 +18,7 @@
      * to the player
      */
     function refreshStream(stream, package_id) {
+      $.logX("This is where I'd be telling the player to switch to the stream at:\n"+stream+"\nusing Media Package ID:\n"+package_id);
     }
 
     $(document).ready(function() {
