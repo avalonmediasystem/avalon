@@ -91,6 +91,21 @@ describe MediaObjectsController do
         get 'show', id: pid
         response.should_not redirect_to new_user_session_path
       end
+
+      it "should provide a JSON stream description to the client" do
+        (12..16).collect { |i| load_fixture "hydrant:#{i}" }
+        pid = 'hydrant:12'
+        mo = MediaObject.find(pid)
+        mo.access = "public"
+        mo.save
+
+        mo.parts.collect { |part| 
+          package_id = part.mediapackage_id 
+          get 'show', id: pid, format: 'json', content: part.pid
+          json_obj = JSON.parse(response.body)
+          json_obj['mediapackage_id'].should == part.mediapackage_id
+        }
+      end
     end
     
     context "Items should not be available to unauthorized users" do

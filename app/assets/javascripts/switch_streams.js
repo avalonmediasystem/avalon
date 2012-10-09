@@ -17,8 +17,19 @@
      * This method should take care of the heavy lifting involved in passing a message
      * to the player
      */
-    function refreshStream(stream, package_id) {
-      $.logX("This is where I'd be telling the player to switch to the stream at:\n"+stream+"\nusing Media Package ID:\n"+package_id);
+    function refreshStream(stream_info) {
+      $.getURLParameter = function (name) { 
+        if (name == "id") {
+          return stream_info.mediapackage_id;
+        } else if (name == "mediaUrl1") {
+          return stream_info.stream;
+        } else if (name == "mimetype1") {
+          return stream_info.mimetype;
+        } else { 
+          return origGetURLParameterFn(name);
+        } 
+      }
+      Opencast.Initialize.initme();
     }
 
     $(document).ready(function() {
@@ -36,7 +47,7 @@
             $.getJSON(uri[0], uri[1], function(data) {
                 setActiveLabel(data.label);
                 setActiveSection(data.mediapackage_id);
-                refreshStream(data.stream, data.mediapackage_id);
+                refreshStream(data);
             });
         });
     });
