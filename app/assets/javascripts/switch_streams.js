@@ -2,8 +2,6 @@
     function setActiveSection(activeSegment) {
       $('a.stream').removeClass('current');
       $('#link_'+activeSegment).addClass('current');
-      // KLUDGE ALERT: Force links to redraw
-      $('#section_links').toggle().toggle();
     }
 
     function setActiveLabel(title) {
