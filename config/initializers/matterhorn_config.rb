@@ -1,4 +1,4 @@
-mh_server = "http://avalon.dev:8080"
+mh_server = "http://localhost:8080"
 
 MATTERHORN_CONFIG = {
 	"plugin_urls"=>{
