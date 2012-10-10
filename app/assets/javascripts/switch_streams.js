@@ -16,6 +16,9 @@
      * to the player
      */
     function refreshStream(stream_info) {
+      Opencast.Player.doPause();
+      Opencast.Player.setCurrentTime('00:00:00');
+      Opencast.Player.setPlayhead(0);
       $.getURLParameter = function (name) { 
         if (name == "id") {
           return stream_info.mediapackage_id;
