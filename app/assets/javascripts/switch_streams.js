@@ -1,3 +1,7 @@
+/**
+ * Use an anonymous inner function to scope it from the global namespace.
+ * Bad Javascript!
+ */
 (function() {
     function setActiveSection(activeSegment) {
       $('a.stream').removeClass('current');
