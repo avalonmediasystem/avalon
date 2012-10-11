@@ -4,10 +4,8 @@
  */
 (function() {
     function setActiveSection(activeSegment) {
-      $('a.stream').removeClass('current');
-      $("a[data-segment='" + activeSegment + "'").addClass('current');
-      // KLUDGE ALERT: Force links to redraw
-      $('#section_links').toggle().toggle();
+      $('a[data-segment]').removeClass('current-stream');
+      $("a[data-segment='" + activeSegment + "']").addClass('current-stream');
     }
 
     function setActiveLabel(title) {
@@ -53,7 +51,7 @@
             var uri = target.attr('href').split('?')
             $.getJSON(uri[0], uri[1], function(data) {
                 setActiveLabel(data.label);
-                setActiveSection(target.getAttr('data-segment'));
+                setActiveSection(target.attr('data-segment'));
                 refreshStream(data.stream, data.mediapackage_id);
                 refreshStream(data);
             });
