@@ -12,7 +12,7 @@
 </dt>
 <dd class="whitespace">
   <!-- Need to shorten the asbtract if it is too long -->
-  <% unless not item.abstract.blank? %>
+  <% if item.abstract.present? %>
     <%= truncate(item.abstract, length: 120) %>
   <% else %>
     <em>No summary available</em>
