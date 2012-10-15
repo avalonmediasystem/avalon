@@ -22,6 +22,5 @@
 //
 // Required by Blacklight
 //= require jquery-ui
-//= require_directory .
 //= require jquery.ui.nestedSortable
 //= require_self

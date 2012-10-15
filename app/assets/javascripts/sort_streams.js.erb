@@ -1,0 +1,74 @@
+/*
+ * Since the mediaobject is not available in this context we have to assume the target
+ * has been set by an earlier call to define post_path. This is sort of an ugly kludge
+ * since it is leaky but works for a first cut.
+ *
+ * Another important note is that right now it assumes you want to go back to the
+ * structural view. This is sort of brittle if you change up the workflow or want to
+ * reorder directly from the file upload page.
+ */
+	  $('.sortable').sortable({ 
+			disabled: false,
+			update: function(e, ui) {
+				var mfs = [];
+				/*
+				 * To provide the right order look at each row in the table and cherry
+				 * pick the segments. This is a bit faster than going through the 
+				 * entire DOM seeking for a class and retains some structure in the
+				 * markup as well.
+				 *
+				 * For more information on using HTML5 data attributes check out
+				 * http://html5doctor.com/html5-custom-data-attributes/
+				 */
+				$(this).find('tr[data-segment]').each(function(){
+					mfs.push($(this).attr('data-segment'));
+				})
+				$.ajax({
+					type: 'PUT',
+					url: post_path,
+					data: { _method: 'update', 
+					  masterfile_ids: mfs, 
+					  step: 'structure', 
+					  donot_advance: 'true', 
+					  format: 'json' },
+				success: function(data) {
+				  $('#ajax_messages').text('Saving to the database').fadeIn(1000).delay(1500).fadeOut(1000);
+				}
+				})
+			}
+		});
+	  $('.sortable').disableSelection();
+		$('.sortable').css('cursor', 'move');
+
+    $('.sequence-btn').click(function(){
+      $('.sortable').sortable({ disabled: false });
+      $('.sortable').disableSelection();
+
+      toggleBtns($(this));
+    })
+      
+    $('.version-btn').click(function(){
+      $('.sortable').sortable({ disabled: true });
+      $('.sortable').css('cursor', 'auto');
+      toggleBtns($(this));
+    })
+      
+    function toggleBtns(btn) {
+      $('.btn-group .btn').removeClass('btn-success');
+      btn.addClass('btn-success');
+    }
+  
+    $(".sortable").nestedSortable({
+      placeholder: 'dropPlaceHolder',
+      forcePlaceholderSize:true,
+      handle: 'div',
+      helper: 'clone',
+      listType: 'tbody',
+      items: 'tr',
+      opacity: .6,
+      revert: 250,
+      tabSize: 25,
+      tolerance: 'pointer',
+      toleranceElement: '> div'
+    }).disableSelection();
+        

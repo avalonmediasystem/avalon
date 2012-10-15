@@ -1,6 +1,7 @@
 <% if flash[:error] %>
   <div class="alert alert-error"><%= flash[:error] %></div>
 <% end %>
+<div id="ajax_messages" class="noshow alert"></div>
 
 <legend>Structure</legend>
 <p>Drag files to reorder them. Changes will be saved to the database immediately.</p>
@@ -8,7 +9,7 @@
 <% if @masterFiles.blank? %>
   <div class="well">There are no media files</div>
 <% else %>
-	<table class="table table-striped">
+	<table class="table table-striped" id="streams">
 	<thead>
 	  <th></th>
 	  <th>Type</th>
@@ -18,7 +19,7 @@
 	</thead>
 	<tbody class="sortable">
 		<% @masterFiles.each do |masterfile| %>
-      <tr>
+      <tr data-segment="<%= masterfile.pid %>">
 		<td>
 			<div class="noshow">
 				<i class="icon-arrow-up"></i>
@@ -39,14 +40,13 @@
           <%= masterfile.label.blank? ? '&#8212'.html_safe : masterfile.label %>
         </td>
         <td>
-	  	    <%= url_for File.basename(masterfile.descMetadata.identifier[0]), "/video/#{masterfile.url.first}" %>
+	  	    <%= link_to File.basename(masterfile.descMetadata.identifier[0]), "/video/#{masterfile.url.first}" %>
 	  	  </td>
 	  	  <td><%= number_to_human_size(masterfile.size.first) %></td>
-	 	    </tr>
-	 	  <% end %>
+        </tr>
+	 	<% end %>
 	  </tbody>
 	</table>
-
 <% end %>
 
 <div class="row-fluid">
@@ -58,7 +58,13 @@
 </div>
 
 <% content_for :page_scripts do %>
-  <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
+  <script>
+     /**
+      * When using sortable we need to tell it which path to post the file list back to
+      * until that is known by wrapping everything in a form
+      */
+     var post_path = "<%= media_object_path(@mediaobject) %>";
+   </script>
   <%= javascript_include_tag 'sort_streams' %>
 <% end %>
 

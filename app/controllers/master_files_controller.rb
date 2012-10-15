@@ -24,7 +24,7 @@ class MasterFilesController < ApplicationController
     
     audio_types = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav",
       "audio/x-wav"]
-    video_types = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime"]
+    video_types = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
     unknown_types = ["application/octet-stream", "application/x-upload-data"]
     
     format_errors = "The file was not recognized as audio or video - "
