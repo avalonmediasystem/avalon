@@ -48,7 +48,6 @@
     gem 'twitter_bootstrap_form_for',
       git: "git://github.com/variations-on-video/twitter_bootstrap_form_for.git",
       branch: "bootstrap-2.0"
-    gem 'bootstrap-will_paginate'
   end
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
@@ -63,7 +62,7 @@
     # To use enter
     # pry -r ./config/environment.rb at the command line
     gem 'pry'
-    gem 'unicorn'
+    gem 'unicorn-rails'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do
