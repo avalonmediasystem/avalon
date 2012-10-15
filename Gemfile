@@ -63,6 +63,7 @@
     # To use enter
     # pry -r ./config/environment.rb at the command line
     gem 'pry'
+    gem 'unicorn'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do

@@ -3,7 +3,7 @@
 <% end %>
 
 <legend>Structure</legend>
-<p>Drag files to reorder them. Changes will be saved to the database immediately if Javascript is enabled.</p>
+<p>Drag files to reorder them. Changes will be saved to the database immediately.</p>
 
 <% if @masterFiles.blank? %>
   <div class="well">There are no media files</div>
@@ -39,7 +39,7 @@
           <%= masterfile.label.blank? ? '&#8212'.html_safe : masterfile.label %>
         </td>
         <td>
-	  	    <a href="<%= masterfile.descMetadata.identifier[0] %>"><%= File.basename(masterfile.url.first)  %></a>
+	  	    <%= url_for File.basename(masterfile.descMetadata.identifier[0]), "/video/#{masterfile.url.first}" %>
 	  	  </td>
 	  	  <td><%= number_to_human_size(masterfile.size.first) %></td>
 	 	    </tr>
@@ -58,61 +58,7 @@
 </div>
 
 <% content_for :page_scripts do %>
-  <script>
-    /* Hide the alert dialog on the page loading if Javascript is enabled */
-    <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
-
-	  $('.sortable').sortable({ 
-			disabled: false,
-			update: function(e, ui) {
-				var mfs = [];
-				$(this).find('.mf-label').each(function(){
-					mfs.push($(this).attr('id'));
-				})
-				$.ajax({
-					type: 'PUT',
-					url: '<%= media_object_path(@mediaobject) %>',
-					data: { _method: 'update', masterfile_ids: mfs, step: '<%= @active_step %>', donot_advance: 'true', format: 'json' },
-				success: function(data) {
-					// Do nothing for now
-				}
-				})
-			}
-		});
-	  $('.sortable').disableSelection();
-		$('.sortable').css('cursor', 'move');
-
-    $('.sequence-btn').click(function(){
-      $('.sortable').sortable({ disabled: false });
-      $('.sortable').disableSelection();
-
-      toggleBtns($(this));
-    })
-      
-    $('.version-btn').click(function(){
-      $('.sortable').sortable({ disabled: true });
-      $('.sortable').css('cursor', 'auto');
-      toggleBtns($(this));
-    })
-      
-    function toggleBtns(btn) {
-      $('.btn-group .btn').removeClass('btn-success');
-      btn.addClass('btn-success');
-    }
-  
-    $(".sortable").nestedSortable({
-      placeholder: 'dropPlaceHolder',
-      forcePlaceholderSize:true,
-      handle: 'div',
-      helper: 'clone',
-      listType: 'tbody',
-      items: 'tr',
-      opacity: .6,
-      revert: 250,
-      tabSize: 25,
-      tolerance: 'pointer',
-      toleranceElement: '> div'
-    }).disableSelection();
-  </script>
+  <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
+  <%= javascript_include_tag 'sort_streams' %>
 <% end %>
 
