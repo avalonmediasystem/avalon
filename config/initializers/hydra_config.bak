@@ -9,7 +9,7 @@ require "hydra"
 # As long as your module includes methods for full_name, affiliation, and photo the personalization_helper should function correctly
 #
 # NOTE: For your development environment, also specify the module in lib/user_attributes_loader.rb
-User.send(:include, Hydra::GenericUserAttributes)
+#User.send(:include, Hydra::GenericUserAttributes)
 
 if Hydra.respond_to?(:configure)
   Hydra.configure(:shared) do |config|
