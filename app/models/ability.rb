@@ -16,7 +16,9 @@ class Ability
   def custom_permissions(user, session)
     if @user_groups.exclude? "archivist"
       cannot :read, MediaObject do |mediaobject|
-        (cannot :read, mediaobject.pid) || (not mediaobject.is_published? && not can_read_unpublished(mediaobject, user))
+        (cannot? :read, mediaobject.pid) || 
+          ((not mediaobject.is_published?) && 
+           (not can_read_unpublished mediaobject, user))
       end
     end
   end
