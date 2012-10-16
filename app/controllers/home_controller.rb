@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
 require 'blacklight/catalog'
 
-class CatalogController < ApplicationController  
+class HomeController < ApplicationController  
 
   include Blacklight::Catalog
   # Extend Blacklight::Catalog with Hydra behaviors (primarily editing).
@@ -140,6 +140,17 @@ class CatalogController < ApplicationController
     # If there are more than this many search results, no spelling ("did you 
     # mean") suggestion is offered.
     config.spell_max = 3
+  end
+
+  def index
+    @recent_items = []
+    (response, document_list) = get_search_results({:q => "has_model_s:\"info\:fedora/afmodel\:MediaObject\" dc_publisher_t:[* TO *]", :rows => 5, :sort => 'timestamp desc', :qt => "standard", :fl => "id"})
+    document_list.each { |doc|
+      @recent_items << MediaObject.find(doc["id"])
+    }
+    @my_items = MediaObject.find({'dc_creator_t' => user_key}, {
+      :sort => 'system_create_dt desc', 
+      :rows => 5}) unless current_user.nil?
   end
 
 end 
