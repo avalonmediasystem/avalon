@@ -16,7 +16,7 @@ if Hydra.respond_to?(:configure)
  
     # Empty since we aren't actually using this piece. Maybe it can fit in later if the
     # user interface can be retooled
-    config[:submission_workflow] = {}
+    #config[:submission_workflow] = {}
         
     # This specifies the solr field names of permissions-related fields.
     # You only need to change these values if you've indexed permissions by some means other than the Hydra's built-in tooling.
