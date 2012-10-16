@@ -33,6 +33,8 @@ class DerivativesController < ApplicationController
       derivative.masterfile = masterfile
       masterfile.save
       derivative.save		
+
+      render :nothing => true
   end
 
 end
