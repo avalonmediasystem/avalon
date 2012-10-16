@@ -49,10 +49,6 @@ class MediaObjectsController < ApplicationController
       @ingest_status.current_step = @active_step
       @ingest_status.save
     end
-    
-    logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
-    logger.debug "<< ACTIVE STEP => #{@active_step} >>"
-    logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
   end
   
   # TODO: Refactor this to reflect the new code model. This is not the ideal way to

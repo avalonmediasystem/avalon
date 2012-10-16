@@ -6,9 +6,8 @@
   gem 'blacklight', 
     git: "git://github.com/projectblacklight/blacklight.git",
     branch: 'bootstrap'
-  gem 'hydra-head', 
-    git: "git://github.com/projecthydra/hydra-head.git",
-    branch: "5.x"
+  gem 'hydra-head', '5.0.0.pre9'
+
   gem 'hydrant-engage', :git=>"git://github.com/variations-on-video/hydrant-engage.git"
   gem 'active-fedora', '~> 4.2'
 
