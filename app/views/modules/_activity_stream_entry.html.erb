@@ -3,7 +3,7 @@
 <% unless item.nil? %>
 <dt>
   <% if can? :read, item %>
-    <%= link_to(item) do %> 
+    <%= link_to catalog_path(item) do %> 
     <% unless item.title.blank? %><%= item.title %><% else %>No title provided<% end%> (<%= item.pid %>)
     <% end %>
   <% else %>
@@ -11,9 +11,9 @@
   <% end %>
 </dt>
 <dd class="whitespace">
-  <!-- Need to shorten the asbtract if it is too long -->
+  <!-- Need to shorten the abstract if it is too long -->
   <% if item.abstract.present? %>
-    <%= truncate(item.abstract, length: 120) %>
+    <%= truncate(item.abstract, length: 140) %>
   <% else %>
     <em>No summary available</em>
   <% end %>
