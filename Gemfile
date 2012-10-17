@@ -65,10 +65,7 @@
 	gem 'factory_girl_rails'
     gem 'rspec-rails', '>=2.9.0'
     
-    # For debugging as a richer replacement for irb
-    #
-    # To use enter
-    # pry -r ./config/environment.rb at the command line
+    gem 'pry'
     gem 'pry-rails'
     gem 'unicorn-rails'
 		gem 'capistrano-unicorn', :require => false
