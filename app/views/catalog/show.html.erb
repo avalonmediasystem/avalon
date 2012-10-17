@@ -1,8 +1,8 @@
 <div class="row-fluid">
   <div class="span3" id="left_column">
     <% if can? :edit, @mediaobject %>
-      <%= render "toggle_edit_mode" %>
-      <%= render "withdraw_object", mediaobject: @mediaobject %>
+      <%= render "media_objects/toggle_edit_mode" %>
+      <%= render "media_objects/withdraw_object", mediaobject: @mediaobject %>
     <% end %>
   </div>
 
