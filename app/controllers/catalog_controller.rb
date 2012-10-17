@@ -5,10 +5,17 @@ class CatalogController < ApplicationController
 
   include Blacklight::Catalog
 
+  # Extend Blacklight::Catalog with Hydra behaviors (primarily editing).
+  include Hydra::Controller::ControllerBehavior
+
+  # These before_filters apply the hydra access controls
+  before_filter :enforce_access_controls
+  before_filter :enforce_viewing_context_for_show_requests, :only=>:show
   # This applies appropriate access controls to all solr queries
   CatalogController.solr_search_params_logic << :add_access_controls_to_solr_params
   # This filters out objects that you want to exclude from search results, like FileAssets
   CatalogController.solr_search_params_logic << :exclude_unwanted_models
+
   CatalogController.solr_search_params_logic << :only_wanted_models
   CatalogController.solr_search_params_logic << :only_published_items
 
@@ -167,6 +174,23 @@ class CatalogController < ApplicationController
   def only_published_items(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << "dc_publisher_t: [* TO *]"
+  end
+
+  def index
+    super
+    @recent_items = []
+    (response, document_list) = get_search_results(
+      {:q => 'has_model_s:"info:fedora/afmodel:MediaObject"',
+       :rows => 5,
+       :sort => 'timestamp desc',
+       :qt => "standard",
+       :fl => "id"})
+    document_list.each { |doc|
+      @recent_items << MediaObject.find(doc["id"])
+    }
+    @my_items = MediaObject.find({'dc_creator_t' => user_key}, {
+      :sort => 'system_create_dt desc',
+      :rows => 5}) unless current_user.nil?
   end
 
 end 
