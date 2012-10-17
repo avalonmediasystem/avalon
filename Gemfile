@@ -63,6 +63,7 @@
     # pry -r ./config/environment.rb at the command line
     gem 'pry'
     gem 'unicorn-rails'
+		gem 'capistrano-unicorn', :require => false
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do
