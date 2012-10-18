@@ -15,31 +15,6 @@
              html: {target: '_admin'} %>
         <% end %>
       </ul>
-      <ul class="pull-right">
-      <!--
-      <%= form_tag catalog_index_path, 
-         method: 'post',  
-         id: "search_form",
-         class: "navbar-search pull-right" do %>
-         <%= text_field_tag :q, params[:q], placeholder: 'Search' %>
-         <button type="submit" class="btn btn-primary search-btn" id="search">
-            <span class="submit-search-text"><%=t('blacklight.search.form.submit')%></span>
-            <i class="icon-search icon-white"></i>
-        </button>
-       <% end %>
-       -->
-       <%= form_tag media_objects_path,
-           method: 'get',
-           id: 'navbar-search-form',
-           class: 'navbar-search pull-right' do %>
-	 <input type="hidden" name="search_field" value="all_fields"/>
-         <%= text_field_tag :q, params[:q], :placeholder => t('blacklight.search.form.q'), :class => "search_q q", :id => "q"%>
-        <button type="submit" class="btn btn-primary search-btn" id="search">
-          <span class="submit-search-text">Search</span>
-          <i class="icon-search icon-white"></i>
-        </button>       
-      <% end %>
-      </ul>
     </div>
   </div>
 </div>
