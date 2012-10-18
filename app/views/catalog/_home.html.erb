@@ -1,0 +1,16 @@
+    <section id="main_body">
+      <div id="row span12">
+        <div class="row3">
+          <%= render partial: "modules/activity_stream" %>
+          <%= render partial: "modules/my_items" %>
+        </div>
+        
+        <div id="right_column" class="span8">
+         <%= render partial: 'flash_msg' %>
+         <%= render partial: 'search_form' %>
+         <p>MAIN CONTENT!</p>
+        </div>
+      </div>
+   </section>
+   
+<% content_for :title do %>Home<% end %>

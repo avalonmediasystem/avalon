@@ -1,0 +1,5 @@
+<% [:notice, :error, :alert].each do |message_type| %>
+  <% if flash[message_type] %>
+    <div class="alert alert-<%= message_type.to_s %>"><%= flash[message_type] %></div>
+  <% end %>
+<% end %>

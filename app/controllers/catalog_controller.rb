@@ -226,6 +226,10 @@ class CatalogController < ApplicationController
       end
     end
   end
+  
+  def layout
+    'catalog'
+  end
 
   protected
   def load_master_files
