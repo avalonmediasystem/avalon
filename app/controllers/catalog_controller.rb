@@ -228,7 +228,7 @@ class CatalogController < ApplicationController
   end
   
   def layout
-    'catalog'
+    'hydrant'
   end
 
   protected
