@@ -1,0 +1,14 @@
+  <span class="result-thumb">
+    <%= link_to_if can?(:read, document), image_for_result(document),
+      media_object_path(document[:id]) %>
+  </span>
+  <div class="item-label"><%= link_to_if can?(:read, document),
+      search_result_label(document), 
+      media_object_path(document[:id]) %></div>
+  <span class="item-summary"><% document["abstract_t"].blank? ? truncate(document["abstract_t"], length: 100) : 'No summary available' %></span>
+  <span class="result-creator">
+    <%= document["creator_t"].nil? ? '&#8212'.html_safe : document["creator_t"].first  %>
+  </span>
+  <span class="result-date">
+    <%= document["pub_date"].nil? ? '&#8212'.html_safe : document["pub_date"].first %>
+  </span>
