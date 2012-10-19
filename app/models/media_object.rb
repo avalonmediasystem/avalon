@@ -7,7 +7,7 @@ class MediaObject < ActiveFedora::Base
   has_relationship "parts", :has_part
 
   has_metadata name: "DC", type: DublinCoreDocument
-  has_metadata name: "descMetadata", type: PbcoreDocument	
+  has_metadata name: "descMetadata", type: ModsDocument	
 
   after_create :after_create
   
