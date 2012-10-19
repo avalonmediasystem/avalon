@@ -14,7 +14,7 @@ Hydrant::Application.routes.draw do
   #resources :media_objects, except: [:index], as: :media
   #resources :master_files, as: :resources
   resources :media_objects, except: [:create]
-  resources :master_files
+  resources :master_files, except: [:show]
   resources :derivatives
   
   resources :comments, only: [:index, :create]
@@ -24,7 +24,8 @@ Hydrant::Application.routes.draw do
   #match 'search/index' => 'search#index'
   #match 'search/facet/:id' => 'search#facet'
 
-  resources :admin, only: [:index] do
+  resources :admin, only: [:index]
+  namespace :admin do
     resources :groups, except: [:show] do 
       collection do 
         put 'update_multiple'
