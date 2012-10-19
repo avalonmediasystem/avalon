@@ -31,11 +31,11 @@ class MediaObject < ActiveFedora::Base
   delegate :contributor, to: :descMetadata, at: [:contributor_name]
   delegate :publisher, to: :descMetadata, at: [:publisher_name]
   delegate :genre, to: :descMetadata, at: [:genre], unique: true
-  delegate :subject, to: :descMetadata, at: [:lc_subject]
-  delegate :relatedItem, to: :descMetadata, at: [:relation]
+  delegate :subject, to: :descMetadata, at: [:topical_subject]
+  delegate :relatedItem, to: :descMetadata, at: [:related_item_id]
   # Temporal and spatial coverage are a bit tricky but this should work
-  delegate :spatial, to: :descMetadata, at: [:spatial_coverage]
-  delegate :temporal, to: :descMetadata, at: [:temporal_coverage]
+  delegate :spatial, to: :descMetadata, at: [:geographic_subject]
+  delegate :temporal, to: :descMetadata, at: [:temporal_subject]
   
   accepts_nested_attributes_for :parts, :allow_destroy => true
   
