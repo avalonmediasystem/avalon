@@ -35,6 +35,8 @@ class ModsDocument < ActiveFedora::NokogiriDatastream
     t._family_name(:ref => :name, :path => 'name[@type="family"]')
     t.family_name(:proxy => [:_corporate_name, :name_part])
     t.contributor_name(:proxy => [:name, :name_part])
+    t._creator_name(:ref => [:name], :path => 'name[oxns:role/oxns:roleTerm[@type="text"] = "Creator" or oxns:role/oxns:roleTerm[@type="code"] = "cre"]')
+    t.creator_name(:proxy => [:_creator_name, :name_part])
 
     # Type and Genre
     t.resource_type(:path => 'typeOfResource')
@@ -148,7 +150,7 @@ class ModsDocument < ActiveFedora::NokogiriDatastream
   define_template(:uniform_title)     { |xml, *args| delegate_to_template(xml, :title_info, *args, :uniform)     }
 
   # Name Templates
-  define_template :name do |xml, type, name, role_code=nil, role_text=nil|
+  define_template :name do |xml, type, name, role_code='cre', role_text='Creator'|
     xml.name(:type => type) {
       xml.namePart(name)
       if (role_code.present? or role_text.present?)
