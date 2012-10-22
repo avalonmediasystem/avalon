@@ -6,13 +6,10 @@ class MediaObjectsController < CatalogController
    
   def new
     logger.debug "<< NEW >>"
-    @mediaobject = MediaObject.new
-    @mediaobject.avalon_uploader = user_key
+    @mediaobject = MediaObject.new(avalon_uploader: user_key)
     set_default_item_permissions
     @mediaobject.save(:validate => false)
 
-    logger.debug "<< Creating a new Ingest Status >>"
-    logger.debug "<< #{@mediaobject.inspect} >>"
     @ingest_status = IngestStatus.create(pid: @mediaobject.pid, current_step: HYDRANT_STEPS.first.step)
     logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
     
@@ -60,10 +57,6 @@ class MediaObjectsController < CatalogController
  
     @ingest_status = IngestStatus.find_by_pid(params[:id])
     @active_step = params[:step] || @ingest_status.current_step
-    
-    logger.info "<< #{@mediaobject.pid} - #{@active_step} >>"
-    logger.debug "<< STEP PARAMETER => #{params[:step]} >>"
-    logger.debug "<< ACTIVE STEP => #{@active_step} >>"
     
     case @active_step
       when 'file-upload'
