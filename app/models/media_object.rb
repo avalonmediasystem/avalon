@@ -90,17 +90,6 @@ class MediaObject < ActiveFedora::Base
     masterfiles
   end
   
-  # For spatial and temporal ignore the coverageType element when returning the list
-  # of values since they are implicit in the type. This means having to override the
-  # delegate method with custom getters.
-  #def spatial
-  #  descMetadata.spatial_coverage
-  #end
-  
-  #def temporal
-  #  descMetadata.temporal_coverage
-  #end
-  
   # Spatial and temporal are special cases that need to be handled a bit differently
   # than the rest. As a result we handle them first, take them out of the values
   # hash, and then pass the rest to be managed traditionally.
@@ -213,12 +202,12 @@ class MediaObject < ActiveFedora::Base
     logger.debug "<< MINIMALLY COMPLETE RECORD >>"
     
     [:creator, :title, :created_on].each do |element|
-      logger.debug "<< Validating the :#{element} property >>"
+      logger.debug "<< Validating the #{element.to_sym} property >>"
       # Use send as a kludge for now. This does create some potential security issues
       # but these can be addressed since the loop's symbols are defined very locally
       # anyways
       if send(element).blank?
-        errors.add element.to_sym, "The #{element.to_s} field is required"
+        errors.add element.to_sym, "The #{element.to_sym} field is required"
       end
     end
     logger.debug "<< #{errors.count} errors have been added to the session >>"

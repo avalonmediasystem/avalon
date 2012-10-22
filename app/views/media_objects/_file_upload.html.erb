@@ -3,7 +3,7 @@
   	<p>Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
 
     <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
-      <input type="hidden" name="container_id" value="<%=h container_id %>"/>
+      <input type="hidden" name="container_id" value="<%=h @mediaobject.pid %>"/>
       <input type="hidden" name="step" value="file_upload"/>
 
       <%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>

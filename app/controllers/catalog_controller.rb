@@ -4,21 +4,25 @@ require 'blacklight/catalog'
 class CatalogController < ApplicationController  
 
   include Blacklight::Catalog
+
   # Extend Blacklight::Catalog with Hydra behaviors (primarily editing).
-  include Hydra::Controller::CatalogControllerBehavior
+  include Hydra::Controller::ControllerBehavior
 
   # These before_filters apply the hydra access controls
   before_filter :enforce_access_controls
-  before_filter :enforce_viewing_context_for_show_requests, :only=>:show
+#  before_filter :enforce_viewing_context_for_show_requests, :only=>:show
   # This applies appropriate access controls to all solr queries
-  CatalogController.solr_search_params_logic << :add_access_controls_to_solr_params
+  solr_search_params_logic << :add_access_controls_to_solr_params
   # This filters out objects that you want to exclude from search results, like FileAssets
-  CatalogController.solr_search_params_logic << :exclude_unwanted_models
+  solr_search_params_logic << :exclude_unwanted_models
+
+  solr_search_params_logic << :only_wanted_models
+  solr_search_params_logic << :only_published_items
 
   configure_blacklight do |config|
     config.default_solr_params = { 
       :qt => 'search',
-      :rows => 5 
+      :rows => 10 
     }
 
     # solr field configuration for search results/index views
@@ -49,9 +53,15 @@ class CatalogController < ApplicationController
     #
     # :show may be set to false if you don't want the facet to be drawn in the 
     # facet bar
-    config.add_facet_field 'subject_facet', :label => 'Subject', :limit => 20
-    config.add_facet_field 'creator_facet', :label => 'Creator', :limit => 20
-    config.add_facet_field 'created_on_facet', :label => 'Created On', :limit => 20
+    config.add_facet_field 'format_facet', :label => 'Format', :limit => 5
+    # Eventually these need to be merged into a single facet
+    config.add_facet_field 'contributor_facet', :label => 'Contributor', :limit => 5
+    config.add_facet_field 'publisher_facet', :label => 'Publisher', :limit => 5
+    config.add_facet_field 'subject_facet', :label => 'Subjects', :limit => 5
+    config.add_facet_field 'genre_facet', :label => 'Genres', :limit => 5
+    config.add_facet_field 'language_facet', :label => 'Languages', :limit => 5
+    config.add_facet_field 'location_facet', :label => 'Locations', :limit => 5
+    config.add_facet_field 'time_period_facet', :label => 'Time Periods', :limit => 5
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
@@ -63,11 +73,28 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
-    config.add_index_field 'title_display', :label => 'Title:' 
-    config.add_index_field 'title_vern_display', :label => 'Title:' 
-    config.add_index_field 'author_display', :label => 'Author:' 
-    config.add_index_field 'author_vern_display', :label => 'Author:' 
-    config.add_index_field 'format', :label => 'Format:' 
+    config.add_index_field 'title_display', :label => 'Title' 
+    config.add_index_field 'format_display', :label => 'Format' 
+    config.add_index_field 'creator_display', :label => 'Creator' 
+    config.add_index_field 'created_on_display', :label => 'Creation date' 
+    config.add_index_field 'language_display', :label => 'Language'
+    config.add_index_field 'abstract_display', label: 'Summary'
+    
+    # solr fields to be displayed in the show (single result) view
+    #   The ordering of the field names is the order of the display 
+    config.add_show_field 'title_display', :label => 'Title' 
+    config.add_show_field 'format_display', :label => 'Format' 
+    config.add_show_field 'creator_display', :label => 'Creator' 
+    config.add_show_field 'language_display', :label => 'Language'
+    config.add_show_field 'created_on_display', label: 'Creation date'
+    config.add_show_field 'abstract_display', label: 'Abstract'
+    config.add_show_field 'location_display', label: 'Locations'
+    config.add_show_field 'time_period_display', label: 'Time periods'
+    config.add_show_field 'contributor_display', label: 'Contributors'
+    config.add_show_field 'publisher_display', label: 'Publisher'
+    config.add_show_field 'genre_display', label: 'Genre'
+    config.add_show_field 'publication_location_display', label: 'Place of publication'
+    config.add_show_field 'terms_display', label: 'Terms'
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -86,14 +113,11 @@ class CatalogController < ApplicationController
     # This one uses all the defaults set by the solr request handler. Which
     # solr request handler? The one set in config[:default_solr_parameters][:qt],
     # since we aren't specifying it otherwise. 
-    
     config.add_search_field 'all_fields', :label => 'All Fields'
-    
 
     # Now we see how to over-ride Solr request handler defaults, in this
     # case for a BL "search field", which is really a dismax aggregate
     # of Solr search fields. 
-    
     config.add_search_field('title') do |field|
       # solr_parameters hash are sent to Solr as ordinary url query params. 
       field.solr_parameters = { :'spellcheck.dictionary' => 'title' }
@@ -108,11 +132,11 @@ class CatalogController < ApplicationController
       }
     end
     
-    config.add_search_field('author') do |field|
-      field.solr_parameters = { :'spellcheck.dictionary' => 'author' }
+    config.add_search_field('creator') do |field|
+      field.solr_parameters = { :'spellcheck.dictionary' => 'creator' }
       field.solr_local_parameters = { 
-        :qf => '$author_qf',
-        :pf => '$author_pf'
+        :qf => '$creator_qf',
+        :pf => '$creator_pf'
       }
     end
     
@@ -132,25 +156,105 @@ class CatalogController < ApplicationController
     # label in pulldown is followed by the name of the SOLR field to sort by and
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
-    config.add_sort_field 'score desc, pub_date_sort desc, title_sort asc', :label => 'relevance'
-    config.add_sort_field 'pub_date_sort desc, title_sort asc', :label => 'year'
-    config.add_sort_field 'author_sort asc, title_sort asc', :label => 'author'
-    config.add_sort_field 'title_sort asc, pub_date_sort desc', :label => 'title'
+    config.add_sort_field 'score desc, title_sort asc, created_on_sort desc', :label => 'Relevance'
+    config.add_sort_field 'created_on_sort desc, title_sort asc', :label => 'Year'
+    config.add_sort_field 'creator_sort asc, title_sort asc', :label => 'Creator'
+    config.add_sort_field 'title_sort asc, created_on_sort desc', :label => 'Title'
 
     # If there are more than this many search results, no spelling ("did you 
     # mean") suggestion is offered.
-    config.spell_max = 3
+    config.spell_max = 5
+  end
+
+  def only_wanted_models(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << 'has_model_s:"info:fedora/afmodel:MediaObject"'
+  end
+
+  def only_published_items(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << "dc_publisher_t: [* TO *]"
   end
 
   def index
+    super
     @recent_items = []
-    (response, document_list) = get_search_results({:q => "has_model_s:\"info\:fedora/afmodel\:MediaObject\" dc_publisher_t:[* TO *]", :rows => 5, :sort => 'timestamp desc', :qt => "standard", :fl => "id"})
+    (response, document_list) = get_search_results(
+      {:q => 'has_model_s:"info:fedora/afmodel:MediaObject"',
+       :rows => 5,
+       :sort => 'timestamp desc',
+       :qt => "standard",
+       :fl => "id"})
     document_list.each { |doc|
       @recent_items << MediaObject.find(doc["id"])
     }
     @my_items = MediaObject.find({'dc_creator_t' => user_key}, {
-      :sort => 'system_create_dt desc', 
+      :sort => 'system_create_dt desc',
       :rows => 5}) unless current_user.nil?
   end
 
+  def matterhorn_service_config
+    respond_to do |format|
+      format.any(:xml, :json) { render request.format.to_sym => MATTERHORN_CONFIG }
+    end
+  end
+
+  def show
+    @mediaobject = MediaObject.find(params[:id])
+
+    @masterFiles = load_master_files
+    @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
+
+    respond_to do |format| 
+      # The flash notice is only set if you are returning HTML since it makes no
+      # sense in an AJAX context (yet)
+      format.html do
+        if (not @masterFiles.empty? and 
+          @currentStream.blank?)
+          @currentStream = @masterFiles.first
+          flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
+        end
+        render
+      end
+      format.json do
+        render :json => {
+          label: @currentStream.label,
+          stream: @currentStream.derivatives.first.url.first,
+          mimetype: @currentStream.derivatives.first.streaming_mime_type,
+          mediapackage_id: @currentStream.mediapackage_id
+        }
+      end
+    end
+  end
+  
+  def layout
+    'hydrant'
+  end
+
+  protected
+  def load_master_files
+    logger.debug "<< LOAD MASTER FILES >>"
+    logger.debug "<< #{@mediaobject.parts} >>"
+    
+    @mediaobject.parts
+  end
+  
+  # The goal of this method is to determine which stream to provide to the interface
+  # for immediate playback. Eventually this might be replaced by an AJAX call but for
+  # now to update the stream you must do a full page refresh.
+  #
+  # If the stream is not a member of that media object or does not exist at all then
+  # return a nil value that needs to be handled appropriately by the calling code
+  # block
+  def set_active_file(file_pid = nil)
+    unless (@mediaobject.parts.blank? or file_pid.blank?)
+      @mediaobject.parts.each do |part|
+        return part if part.pid == file_pid
+      end
+    end
+      
+    # If you haven't dropped out by this point return an empty item
+    nil 
+  end
+  
 end 
