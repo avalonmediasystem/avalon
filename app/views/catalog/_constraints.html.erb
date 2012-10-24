@@ -1,0 +1,11 @@
+<% if query_has_constraints? %>
+      <div class="whitespace">
+        <h3>Limits</h3>
+        <div class="constraints"><%= render_constraints(params) %></div> 
+        <div id="startOverLink">
+          <%= link_to root_path, class: 'btn btn-danger' do %>
+            <%= t('blacklight.search.start_over') %>&nbsp;<i class="icon-remove-sign"></i>
+        <% end %>
+        </div>
+      </div>
+<% end %>
