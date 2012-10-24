@@ -2,7 +2,7 @@ Hydrant::Application.routes.draw do
   Blacklight.add_routes(self)
   HydraHead.add_routes(self)
 
-  root :to => "mediaObjects#index"
+  root :to => "catalog#index"
 
   devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" } do 
     match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session

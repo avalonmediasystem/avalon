@@ -33,17 +33,16 @@
         <h3>Section(s)</h3>
             <ul class="unstyled">
               <% @masterFiles.each do |master| %>
-                <li>
+              <li>
+                <%# If the label has not been set use the file name as a default %>
                 <%=
                   link_to stream_label_for(master),
-                  edit_media_object_path(@mediaobject, {
-                    content: master.pid,
-                    step: 'preview'}),
-                  {
-                     class: (master.pid == @currentStream.pid) ? 'current-stream' : '',
-                     data: {segment: master.pid}} %>
+                    media_object_path(@mediaobject, {content: master.pid}),
+                    data: {segment: master.pid},
+                    class: (master.pid == @currentStream.pid ? 'current-stream' : nil)
+                %>
                 (<%= number_to_human_size(master.size.first) %>)
-                </li>
+              </li>
               <% end %>
             </ul> 
         <% end %>

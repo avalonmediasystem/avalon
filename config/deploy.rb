@@ -20,3 +20,5 @@ set :rvm_ruby_string, 'ruby-1.9.3@hydrant'                     # Or:
 task :uname do
   run "uname -a"
 end
+
+require 'capistrano-unicorn'
