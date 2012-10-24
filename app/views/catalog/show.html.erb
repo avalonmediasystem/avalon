@@ -27,12 +27,17 @@
     <div class="row whitespace">
       <section id="player">        
         <% if @masterFiles.blank? %>
-          <div class="well">
+          <div class="alert">
             <p>No media is associated with this item</p>
           </div>
         <% else if @currentStream.derivatives.blank? %>
-            <div class="well">
-              <p>Media files are being processed</p>
+          <div class="alert <%= @currentStream.status_code == 'FAILED' ? 'alert-error' : 'alert-info' %>">
+            <h4>Conversion Process</h4>
+            <br/>
+            <p><%= @currentStream.status_description %></p>
+            <div class="progress">
+              <div class="bar" style="width: <%= @currentStream.percent_complete.first %>%;"></div>
+            </div>
           </div>
         <% else %>
           <%= render partial: "modules/video_player",
@@ -87,5 +92,5 @@
 <% end %>
 
 <% content_for :page_scripts do %>
-  <%= javascript_include_tag 'switch_player' %>
+  <%= javascript_include_tag 'switch_streams' %>
 <% end %>
