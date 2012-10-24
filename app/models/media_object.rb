@@ -23,9 +23,16 @@ class MediaObject < ActiveFedora::Base
   delegate :avalon_publisher, to: :DC, at: [:publisher], unique: true
   # Delegate variables to expose them for the forms
   delegate :title, to: :descMetadata, at: [:main_title], unique: true
+  delegate :alternative_title, to: :descMetadata, at: [:alternative_title]
+  delegate :translated_title, to: :descMetadata, at: [:translated_title]
+  delegate :uniform_title, to: :descMetadata, at: [:uniform_title]
+  delegate :statement_of_responsibility, to: :descMetadata, at: [:statement_of_responsibility], unique: true
   delegate :creator, to: :descMetadata, at: [:creator_name], unique: true
   delegate :created_on, to: :descMetadata, at: [:creation_date], unique: true
+  delegate :issued_on, to: :descMetadata, at: [:issue_date], unique: true
+  delegate :copyright_date, to: :descMetadata, at: [:copyright_date], unique: true
   delegate :abstract, to: :descMetadata, at: [:summary], unique: true
+  delegate :note, to: :descMetadata, at: [:note]
   delegate :format, to: :descMetadata, at: [:media_type], unique: true
   # Additional descriptive metadata
   delegate :contributor, to: :descMetadata, at: [:contributor_name]
@@ -33,9 +40,10 @@ class MediaObject < ActiveFedora::Base
   delegate :genre, to: :descMetadata, at: [:genre], unique: true
   delegate :subject, to: :descMetadata, at: [:topical_subject]
   delegate :relatedItem, to: :descMetadata, at: [:related_item_id]
-  # Temporal and spatial coverage are a bit tricky but this should work
+
   delegate :spatial, to: :descMetadata, at: [:geographic_subject]
   delegate :temporal, to: :descMetadata, at: [:temporal_subject]
+
   
   accepts_nested_attributes_for :parts, :allow_destroy => true
   
