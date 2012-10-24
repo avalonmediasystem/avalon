@@ -5,7 +5,9 @@
   <div class="item-label"><%= link_to_if can?(:read, document),
       search_result_label(document), 
       media_object_path(document[:id]) %></div>
-  <span class="item-summary"><% document["abstract_t"].blank? ? truncate(document["abstract_t"], length: 100) : 'No summary available' %></span>
+  <span class="item-summary">
+      <%= document["summary_t"].first.blank? ? truncate(document["summary_t"].first, length: 100) : 'No summary available' %>
+  </span>
   <span class="result-creator">
     <%= document["creator_t"].nil? ? '&#8212'.html_safe : document["creator_t"].first  %>
   </span>

@@ -19,6 +19,8 @@ class CatalogController < ApplicationController
   solr_search_params_logic << :only_wanted_models
   solr_search_params_logic << :only_published_items
 
+  solr_search_params_logic << :limit_to_current_user
+
   configure_blacklight do |config|
     config.default_solr_params = { 
       :qt => 'search',
@@ -176,21 +178,32 @@ class CatalogController < ApplicationController
     solr_parameters[:fq] << "dc_publisher_t: [* TO *]"
   end
 
+  def limit_to_current_user(solr_parameters, user_parameters)
+    logger.debug("limit_to_current_user #{params.inspect}")
+#    if params[:v].contains?("mi")
+#      solr_parameters[:fq] ||= []
+#      solr_parameters[:fq] << "dc_creator_t: #{user_key}"
+#    end
+  end
+
   def index
     super
     @recent_items = []
-    (response, document_list) = get_search_results(
+    (response, @recent_items) = get_search_results(
       {:q => 'has_model_s:"info:fedora/afmodel:MediaObject"',
        :rows => 5,
        :sort => 'timestamp desc',
        :qt => "standard",
        :fl => "id"})
-    document_list.each { |doc|
-      @recent_items << MediaObject.find(doc["id"])
-    }
-    @my_items = MediaObject.find({'dc_creator_t' => user_key}, {
-      :sort => 'system_create_dt desc',
-      :rows => 5}) unless current_user.nil?
+    unless current_user.nil?
+      @my_items = []
+      (response, @my_items) = get_search_results(
+        {:q => "dc_creator_t:#{user_key}",
+         :rows => 5,
+         :sort => 'system_create_dt desc',
+         :qt => "standard",
+         :fl => "id"})
+    end
   end
 
   def matterhorn_service_config
