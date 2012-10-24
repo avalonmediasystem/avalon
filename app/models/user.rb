@@ -10,6 +10,7 @@ class User < ActiveRecord::Base
   devise :omniauthable
 
   attr_accessible :username, :uid, :provider
+  attr_accessible :email, :guest
   
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for

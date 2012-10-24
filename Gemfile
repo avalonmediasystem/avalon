@@ -3,11 +3,17 @@
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
 
-  gem 'blacklight', '~> 3.4'
-  gem 'hydra-head', '~> 4.1.0'
+  gem 'blacklight', 
+    git: "git://github.com/projectblacklight/blacklight.git",
+    branch: 'bootstrap'
+#  gem 'hydra-head', 
+#    git: "git://github.com/projecthydra/hydra-head.git",
+#    branch: "5.x"
+  gem 'hydra-head', '~>5.0.0.pre9' 
   gem 'hydrant-engage', :git=>"git://github.com/variations-on-video/hydrant-engage.git"
-  gem 'active-fedora', '~> 4.2'
-
+#  gem 'active-fedora', '~> 4.2'
+  gem 'om', :git=>"git://github.com/projecthydra/om.git"
+ 
   platforms :jruby do
   	gem 'jruby-openssl'
 	gem 'activerecord-jdbcsqlite3-adapter'
@@ -23,6 +29,7 @@
 
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise'
+  #gem 'devise-guests'
 
   gem "jettywrapper"
   gem 'rubyhorn', :git => "git://github.com/variations-on-video/rubyhorn.git"
@@ -57,11 +64,9 @@
 	gem 'database_cleaner'
 	gem 'factory_girl_rails'
     gem 'rspec-rails', '>=2.9.0'
-    # For debugging as a richer replacement for irb
-    #
-    # To use enter
-    # pry -r ./config/environment.rb at the command line
+    
     gem 'pry'
+    gem 'pry-rails'
     gem 'unicorn-rails'
 		gem 'capistrano-unicorn', :require => false
   end # (leave this comment here to catch a stray line inserted by blacklight!)
@@ -73,7 +78,6 @@
     gem 'mime-types', ">=1.1"
     gem "headless"
     gem "rspec_junit_formatter"
-    gem 'simplecov'
-    
+    gem 'simplecov'   
     gem 'viewcumber'
   end

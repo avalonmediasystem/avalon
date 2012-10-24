@@ -4,25 +4,18 @@
     <div class="container">
       <ul class="nav nav-pills">
         <li><%= link_to 'Home', root_url %></li>
-        <li><%= link_to 'Browse items', search_index_path %></li>
+        <li class="divider-vertical"></li>
+        <li><%= link_to 'Browse', catalog_index_path(search_field: 'all_fields', utf8: '✓', q: '') %></li>
         <% if can? :create, MediaObject %>
-          <li class="divider-vertical"></li>
-          <li><%= link_to 'Add new item', new_media_object_path %></li>
+          <li><%= link_to 'Create', new_media_object_path %></li>
         <% end %>
+
         <% if can? :manage, Admin::Group %>
           <li><%= link_to 'Manage Policy', 
              admin_index_path,
              html: {target: '_admin'} %>
-          <li class="divider-vertical"></li>
         <% end %>
-        <li><%= link_to 'Contact us', comments_path %></li>
       </ul>
-      <%= form_tag search_index_path, 
-         method: 'post',  
-         id: "search_form",
-         class: "navbar-search pull-right" do %>
-         <%= text_field_tag :q, params[:q], placeholder: 'Search' %>
-       <% end %>
     </div>
   </div>
 </div>

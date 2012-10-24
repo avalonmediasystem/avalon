@@ -1,18 +1,15 @@
-class MediaObjectsController < ApplicationController
-  include Hydra::Controller::FileAssetsBehavior
+class MediaObjectsController < CatalogController
+#  include Hydra::Controller::FileAssetsBehavior
        
   before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
    
   def new
     logger.debug "<< NEW >>"
-    @mediaobject = MediaObject.new
-    @mediaobject.avalon_uploader = user_key
+    @mediaobject = MediaObject.new(avalon_uploader: user_key)
     set_default_item_permissions
     @mediaobject.save(:validate => false)
 
-    logger.debug "<< Creating a new Ingest Status >>"
-    logger.debug "<< #{@mediaobject.inspect} >>"
     @ingest_status = IngestStatus.create(pid: @mediaobject.pid, current_step: HYDRANT_STEPS.first.step)
     logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
     
@@ -49,10 +46,6 @@ class MediaObjectsController < ApplicationController
       @ingest_status.current_step = @active_step
       @ingest_status.save
     end
-    
-    logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
-    logger.debug "<< ACTIVE STEP => #{@active_step} >>"
-    logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
   end
   
   # TODO: Refactor this to reflect the new code model. This is not the ideal way to
@@ -64,10 +57,6 @@ class MediaObjectsController < ApplicationController
  
     @ingest_status = IngestStatus.find_by_pid(params[:id])
     @active_step = params[:step] || @ingest_status.current_step
-    
-    logger.info "<< #{@mediaobject.pid} - #{@active_step} >>"
-    logger.debug "<< STEP PARAMETER => #{params[:step]} >>"
-    logger.debug "<< ACTIVE STEP => #{@active_step} >>"
     
     case @active_step
       when 'file-upload'
@@ -145,85 +134,18 @@ class MediaObjectsController < ApplicationController
     end
   end
   
-  # Show acts a little bit differently than the other methods depending on the context
-  # in which you call it. After setting some global context so you can discover 
-  # values it returns different information.
-  #
-  # If the request comes across as HTML the global variables are sent to the template
-  # to be rendered as before. If the request comes across as JSON then send back a
-  # hash containing the current stream's title, stream location, and package ID.
-  # These are handled within the player.js.erb
-  def show
-    @mediaobject = MediaObject.find(params[:id])
-
-    @masterFiles = load_master_files
-    @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
-
-    respond_to do |format| 
-      # The flash notice is only set if you are returning HTML since it makes no
-      # sense in an AJAX context (yet)
-      format.html do
-        if (not @masterFiles.empty? and 
-          @currentStream.blank?)
-          @currentStream = @masterFiles.first
-          flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
-        end
-        render
-      end
-      format.json do
-        render :json => {
-          label: @currentStream.label,
-          stream: @currentStream.derivatives.first.url.first,
-          mimetype: @currentStream.derivatives.first.streaming_mime_type,
-          mediapackage_id: @currentStream.mediapackage_id
-        }
-      end
-    end
-  end
-
   def destroy
     @mediaobject = MediaObject.find(params[:id]).delete
     flash[:notice] = "#{params[:id]} has been deleted from the system"
     redirect_to root_path
   end
   
-  def matterhorn_service_config
-    respond_to do |format|
-      format.any(:xml, :json) { render request.format.to_sym => MATTERHORN_CONFIG }
-    end
-  end
-
   protected
   def set_default_item_permissions
     unless @mediaobject.rightsMetadata.nil?
       @mediaobject.edit_groups = ['archivist']
       @mediaobject.edit_users = [user_key]
     end
-  end
-  
-  def load_master_files
-    logger.debug "<< LOAD MASTER FILES >>"
-    logger.debug "<< #{@mediaobject.parts} >>"
-    
-    @mediaobject.parts
-  end
-  
-  # The goal of this method is to determine which stream to provide to the interface
-  # for immediate playback. Eventually this might be replaced by an AJAX call but for
-  # now to update the stream you must do a full page refresh.
-  #
-  # If the stream is not a member of that media object or does not exist at all then
-  # return a nil value that needs to be handled appropriately by the calling code
-  # block
-  def set_active_file(file_pid = nil)
-    unless (@mediaobject.parts.blank? or file_pid.blank?)
-      @mediaobject.parts.each do |part|
-        return part if part.pid == file_pid
-      end
-    end
-      
-    # If you haven't dropped out by this point return an empty item
-    nil 
   end
   
   def report_errors

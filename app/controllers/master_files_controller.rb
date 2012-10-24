@@ -3,7 +3,7 @@ require 'net/http/post/multipart'
 require 'rubyhorn'
 
 class MasterFilesController < ApplicationController
-  include Hydra::Controller::FileAssetsBehavior
+#  include Hydra::Controller::FileAssetsBehavior
 
   skip_before_filter :verify_authenticity_token, :only => [:update]
   before_filter :authenticate_user!, :only => [:update]
@@ -111,7 +111,8 @@ class MasterFilesController < ApplicationController
     logger.debug "<< Filesize #{ file.size.to_s } >>"
     master_file.size = file.size.to_s
     
-    apply_depositor_metadata(master_file)
+    #FIXME next line
+    #apply_depositor_metadata(master_file)
 
     master_file.container = MediaObject.find(params[:container_id])
 

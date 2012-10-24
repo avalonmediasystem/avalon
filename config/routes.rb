@@ -1,6 +1,6 @@
 Hydrant::Application.routes.draw do
-#  Blacklight.add_routes(self)
-#  HydraHead.add_routes(self)
+  Blacklight.add_routes(self)
+  HydraHead.add_routes(self)
 
   root :to => "catalog#index"
 
@@ -21,11 +21,10 @@ Hydrant::Application.routes.draw do
 
   match '/engage/ui/json/servicedata.:format' => 'media_objects#matterhorn_service_config'
 
-  match 'search/index' => 'search#index'
-  match 'search/facet/:id' => 'search#facet'
+  #match 'search/index' => 'search#index'
+  #match 'search/facet/:id' => 'search#facet'
 
-  resources :admin, only: [:index]
-  namespace "admin" do
+  resources :admin, only: [:index] do
     resources :groups, except: [:show] do 
       collection do 
         put 'update_multiple'
