@@ -179,11 +179,10 @@ class CatalogController < ApplicationController
   end
 
   def limit_to_current_user(solr_parameters, user_parameters)
-    logger.debug("limit_to_current_user #{params.inspect}")
-#    if params[:v].contains?("mi")
-#      solr_parameters[:fq] ||= []
-#      solr_parameters[:fq] << "dc_creator_t: #{user_key}"
-#    end
+    if params[:v] == "mi"
+      solr_parameters[:fq] ||= []
+      solr_parameters[:fq] << "dc_creator_t: #{user_key}"
+    end
   end
 
   def index
