@@ -2,7 +2,7 @@
     <%= link_to_if can?(:read, document), image_for_result(document),
       media_object_path(document[:id]) %>
   </div>
-  <div class="span6"> 
+  <div class="span5"> 
     <div class="item-label"><%= link_to_if can?(:read, document),
       search_result_label(document), 
       media_object_path(document[:id]) %></div>
