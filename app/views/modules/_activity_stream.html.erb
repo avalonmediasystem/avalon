@@ -1,11 +1,12 @@
-
           <h2>Recent activity</h2>
           <hr />
           <% unless @recent_items.empty? %>
             <dl class="activity-stream">
               <%= render partial: "modules/activity_stream_entry", collection: @recent_items, as: :item %>
             </dl>
-	    <%= link_to 'More', catalog_index_path(search_field: 'all_fields', utf8: '✓', q: '', sort: 'timestamp desc', v: 'ri') %>
+            <div class="pull-right">  
+            <%= link_to 'More', catalog_index_path(search_field: 'all_fields', utf8: '✓', q: '', sort: 'timestamp desc', v: 'ri') %>
+          </div>
           <% else %>
           <p>There have been no recent uploads.</p>
           <% end %>
