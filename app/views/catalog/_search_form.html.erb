@@ -2,6 +2,7 @@
     <%= search_as_hidden_fields(:omit_keys => [:q, :search_field, :qt, :page]).html_safe %> 
 
     <div>
+	<%= hidden_field_tag "search_field", "all_fields" %>
          <%= text_field_tag :q, params[:q], :class => "search_q q span5", :id => "q"%>
         <button type="submit" class="btn btn-primary search-btn" id="search">
           <span class="submit-search-text"><%=t('blacklight.search.form.submit')%></span>

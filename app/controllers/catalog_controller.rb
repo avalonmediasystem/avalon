@@ -24,7 +24,7 @@ class CatalogController < ApplicationController
   configure_blacklight do |config|
     config.default_solr_params = { 
       :qt => 'search',
-      :rows => 10 
+      :rows => 10
     }
 
     # solr field configuration for search results/index views
@@ -174,8 +174,10 @@ class CatalogController < ApplicationController
   end
 
   def only_published_items(solr_parameters, user_parameters)
-    solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << "dc_publisher_t: [* TO *]"
+    unless params[:v] == "mi"
+      solr_parameters[:fq] ||= []
+      solr_parameters[:fq] << "dc_publisher_t: [* TO *]"
+    end
   end
 
   def limit_to_current_user(solr_parameters, user_parameters)
@@ -187,22 +189,25 @@ class CatalogController < ApplicationController
 
   def index
     super
+    params[:v] = "ri"
     @recent_items = []
     (response, @recent_items) = get_search_results(
       {:q => 'has_model_s:"info:fedora/afmodel:MediaObject"',
-       :rows => 5,
+       :per_page => 5,
        :sort => 'timestamp desc',
        :qt => "standard",
        :fl => "id"})
     unless current_user.nil?
+      params[:v] = "mi"
       @my_items = []
       (response, @my_items) = get_search_results(
         {:q => "dc_creator_t:#{user_key}",
-         :rows => 5,
+         :per_page => 5,
          :sort => 'system_create_dt desc',
          :qt => "standard",
          :fl => "id"})
     end
+    params[:v] = ""
   end
 
   def matterhorn_service_config
