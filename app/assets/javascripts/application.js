@@ -16,6 +16,13 @@
 //= require jquery
 //= require jquery_ujs
 //= require twitter/bootstrap
+//= require bootstrap-ajaxmodal
+//= require blacklight/core
+//= require blacklight/facet_expand_contract
+//= require blacklight/more_facets
+//= require blacklight/search_context
+//= require blacklight/select_submit
+//= require blacklight/zebra_stripe
 //
 // Required by Hydra
 //= require 'jquery.ui.datepicker.js'      

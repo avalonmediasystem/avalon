@@ -11,7 +11,7 @@
 
     <div id="content" class="row">   
       <% @page_title = t('blacklight.search.title', :application_name => application_name) %>
-      <% extra_head_content << render_opensearch_response_metadata.html_safe %>
+      <#% extra_head_content << render_opensearch_response_metadata.html_safe %>
       <div class="span7"><%= render :partial => 'search_form' %></div> 
       <div class="span7"><%= render 'sort_and_per_page' %></div> 
       

@@ -1,4 +1,4 @@
-module Blacklight::BlacklightHelperBehavior
+module Blacklight::LocalBlacklightHelper 
 
   def render_index_doc_actions(document, options={})   
     wrapping_class = options.delete(:wrapping_class) || "documentFunctions" 
