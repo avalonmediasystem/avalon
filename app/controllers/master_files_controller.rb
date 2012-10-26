@@ -82,13 +82,6 @@ class MasterFilesController < ApplicationController
     	format.js { }
     end
   end
-  
-  def show 
-    @masterfile = MasterFile.find(params[:id])
-    @mediaobject = @masterfile.container
-    
-    authorize! :read, @mediaobject
-  end
 
   def update
     @masterfile = MasterFile.find(params[:id])
