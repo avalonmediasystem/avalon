@@ -8,20 +8,20 @@ describe MediaObject do
     it "should have no errors on title if title present" do
       MediaObject.new(title: "Title").should have(0).errors_on(:title)
     end
-    it "should have no errors on created_on if created_on present" do
-      MediaObject.new(created_on: "2012-01-01").should have(0).errors_on(:created_on)
+    it "should have no errors on date_created if date_created present" do
+      MediaObject.new(date_created: "2012-01-01").should have(0).errors_on(:date_created)
     end
     it "should have errors if requied fields are missing" do
       mo = MediaObject.new
       mo.should have(1).errors_on(:creator)
       mo.should have(1).errors_on(:title)
-      mo.should have(1).errors_on(:created_on)
+      mo.should have(1).errors_on(:date_created)
     end
     it "should have errors if required fields are empty" do
-      mo = MediaObject.new(creator: "", title: "", created_on: "")
+      mo = MediaObject.new(creator: "", title: "", date_created: "")
       mo.should have(1).errors_on(:creator)
       mo.should have(1).errors_on(:title)
-      mo.should have(1).errors_on(:created_on)
+      mo.should have(1).errors_on(:date_created)
     end
   end
 

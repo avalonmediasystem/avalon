@@ -61,7 +61,7 @@ When /^provide basic metadata for it$/ do
   within ('#basic_metadata_form') do  
     fill_in 'media_object[creator]', with: 'Cucumber'
     fill_in 'media_object[title]', with: 'New test record'
-    fill_in 'media_object[created_on]', with: '2012.04.21'
+    fill_in 'media_object[date_created]', with: '2012.04.21'
     fill_in 'media_object[abstract]', with: 'A test record generated as part of Cucumber automated testing'
     click_on 'Continue to access control'
   end
@@ -118,7 +118,7 @@ Then /^I should see only required fields$/ do
   within "#basic_metadata_form" do
     page.should have_selector("input[name='media_object\[title\]']")
     page.should have_selector("input[name='media_object\[creator\]']")
-    page.should have_selector("input[name='media_object\[created_on\]']")
+    page.should have_selector("input[name='media_object\[date_created\]']")
   end
 end
 

@@ -78,7 +78,7 @@ class CatalogController < ApplicationController
     config.add_index_field 'title_display', :label => 'Title' 
     config.add_index_field 'format_display', :label => 'Format' 
     config.add_index_field 'creator_display', :label => 'Creator' 
-    config.add_index_field 'created_on_display', :label => 'Creation date' 
+    config.add_index_field 'date_created_display', :label => 'Creation date' 
     config.add_index_field 'language_display', :label => 'Language'
     config.add_index_field 'abstract_display', label: 'Summary'
     
@@ -88,7 +88,7 @@ class CatalogController < ApplicationController
     config.add_show_field 'format_display', :label => 'Format' 
     config.add_show_field 'creator_display', :label => 'Creator' 
     config.add_show_field 'language_display', :label => 'Language'
-    config.add_show_field 'created_on_display', label: 'Creation date'
+    config.add_show_field 'date_created_display', label: 'Creation date'
     config.add_show_field 'abstract_display', label: 'Abstract'
     config.add_show_field 'location_display', label: 'Locations'
     config.add_show_field 'time_period_display', label: 'Time periods'
@@ -158,10 +158,10 @@ class CatalogController < ApplicationController
     # label in pulldown is followed by the name of the SOLR field to sort by and
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
-    config.add_sort_field 'score desc, title_sort asc, created_on_sort desc', :label => 'Relevance'
-    config.add_sort_field 'created_on_sort desc, title_sort asc', :label => 'Year'
+    config.add_sort_field 'score desc, title_sort asc, date_created_sort desc', :label => 'Relevance'
+    config.add_sort_field 'date_created_sort desc, title_sort asc', :label => 'Year'
     config.add_sort_field 'creator_sort asc, title_sort asc', :label => 'Creator'
-    config.add_sort_field 'title_sort asc, created_on_sort desc', :label => 'Title'
+    config.add_sort_field 'title_sort asc, date_created_sort desc', :label => 'Title'
 
     # If there are more than this many search results, no spelling ("did you 
     # mean") suggestion is offered.

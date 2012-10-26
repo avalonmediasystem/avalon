@@ -32,6 +32,7 @@ module ModsBehaviors
     solr_doc[:access_display] = gather_terms(self.find_by_terms(:usage))
 #    solr_doc[:collection_display] = gather_terms(self.find_by_terms(:archival_collection))
     solr_doc[:format_display] = gather_terms(self.find_by_terms(:media_type))
+    solr_doc[:location_display] = gather_terms(self.find_by_terms(:geographic_subject))
 
     # Blacklight facets - these are the same facet fields used in our Blacklight app
     # for consistency and so they'll show up when we export records from Hydra into BL:
@@ -50,7 +51,7 @@ module ModsBehaviors
     solr_doc[:subject_title_facet] = gather_terms(self.find_by_terms(:title_subject))
     solr_doc[:format_facet] = gather_terms(self.find_by_terms(:media_type))
     solr_doc[:location_facet] = gather_terms(self.find_by_terms(:geographic_subject))
-#    solr_doc[:time_facet] = gather_terms(self.find_by_terms(:temporal))
+    solr_doc[:time_facet] = gather_terms(self.find_by_terms(:temporal_subject))
 
     # TODO: map PBcore's three-letter language codes to full language names
     # Right now, everything's English.
