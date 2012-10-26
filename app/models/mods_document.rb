@@ -142,6 +142,7 @@ class ModsDocument < ActiveFedora::NokogiriDatastream
         "xsi:schemaLocation"=>"http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd") {
       xml.typeOfResource('moving image')
       xml.originInfo
+      xml.physicalDescription
       xml.recordInfo {
         xml.recordOrigin('Avalon Media System')
         xml.recordContentSource('IEN')
