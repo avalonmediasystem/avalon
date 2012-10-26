@@ -40,6 +40,9 @@ module ModsTemplates
 		  def add_creator(name, attrs={})
 		  	add_child_node(ng_xml.root, :name, name, (attrs).merge(primary: true))
 		  end
+		  def add_contributor(name, attrs={})
+		  	add_child_node(ng_xml.root, :name, name, attrs)
+		  end
 
 		  # Simple Subject Templates
 		  define_template(:simple_subject) do |xml, text, type| 
@@ -48,7 +51,7 @@ module ModsTemplates
 	  	def add_subject(text, type)
 	  		add_child_node(ng_xml.root, :simple_subject, text, type)
 	  	end
-	  	def add_topical_subject(text, *args);    add_subject(text, :topical);    end
+	  	def add_topical_subject(text, *args);    add_subject(text, :topic);    end
 	  	def add_geographic_subject(text, *args); add_subject(text, :geographic); end
 	  	def add_temporal_subject(text, *args);   add_subject(text, :temporal);   end
 	  	def add_occupation_subject(text, *args); add_subject(text, :occupation); end
