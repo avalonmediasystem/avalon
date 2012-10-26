@@ -3,59 +3,63 @@ module ModsTemplates
 
 	included do
 		class_eval do
-		  def self.delegate_to_template(xml, template, *args)
-		    if xml.is_a?(Nokogiri::XML::Builder)
-		      xml = xml.doc.root
-		    elsif xml.is_a?(Nokogiri::XML::Document)
-		      xml = xml.root
-		    end
-		    xml.add_child(template_registry.instantiate(template, *args))
-		  end
-
 		  # Title Templates
-		  define_template :title_info do |xml, title, opts|
+		  define_template :title_info do |xml, title, opts={}|
 		    attrs = opts[:type].present? ? { :type => opts[:type].to_s } : {}
 		    xml.titleInfo(attrs) {
 		      xml.title(title)
 		      xml.subTitle(opts[:subtitle]) if opts[:subtitle].present?
 		    }
 		  end
-		  define_template(:title)             { |xml, title, attrs| delegate_to_template(xml, :title_info, attrs.merge({ type: :primary })     }
-		  define_template(:alternative_title) { |xml, title, attrs| delegate_to_template(xml, :title_info, attrs.merge({ type: :alternative }) }
-		  define_template(:translated_title)  { |xml, title, attrs| delegate_to_template(xml, :title_info, attrs.merge({ type: :translated })  }
-		  define_template(:uniform_title)     { |xml, title, attrs| delegate_to_template(xml, :title_info, attrs.merge({ type: :uniform })     }
+
+		  def add_title(title, attrs={}, defaults={})
+		  	add_child_node(ng_xml.root, :title_info, title, defaults.merge(attrs))
+		  end
+		  def add_main_title(title, attrs={}); 				add_title(title, attrs, type: :primary);     end
+		  def add_alternative_title(title, attrs={}); add_title(title, attrs, type: :alternative); end
+		  def add_translated_title(title, attrs={});  add_title(title, attrs, type: :translated);  end
+		  def add_uniform_title(title, attrs={});     add_title(title, attrs, type: :uniform);     end
 
 		  # Name Templates
 		  define_template :name do |xml, name, attributes|
 		  	opts = { type: 'personal', role_code: 'cre', role_text: 'Creator', primary: false }.merge(attributes)
-		  	attrs = { :type => type }
+		  	logger.debug([name, opts].inspect)
+		  	attrs = { :type => opts[:type] }
 		  	attrs['primary']="true" if opts[:primary]
 		    xml.name(attrs) {
-		      xml.namePart(name)
+		      xml.namePart { xml.text(name) }
 		      if (opts[:role_code].present? or opts[:role_text].present?)
 		        xml.role {
-		          xml.roleTerm(:authority => 'marcrelator', :type => 'code') { xml.text(role_code) } if opts[:role_code].present?
-		          xml.roleTerm(:authority => 'marcrelator', :type => 'text') { xml.text(role_text) } if opts[:role_text].present?
+		          xml.roleTerm(:authority => 'marcrelator', :type => 'code') { xml.text(opts[:role_code]) } if opts[:role_code].present?
+		          xml.roleTerm(:authority => 'marcrelator', :type => 'text') { xml.text(opts[:role_text]) } if opts[:role_text].present?
 		        }
 		      end
 		    }
+		    logger.debug(xml.parent.to_xml)
 		  end
-		  define_template(:personal_name)  { |xml, name, attrs| delegate_to_template(xml, :name, name, attrs.merge({ type: :personal }) }
-		  define_template(:corporate_name) { |xml, name, attrs| delegate_to_template(xml, :name, name, attrs.merge({ type: :corporate }) }
-		  define_template(:family_name)    { |xml, name, attrs| delegate_to_template(xml, :name, name, attrs.merge({ type: :family }) }
+		  def add_creator(name, attrs={})
+		  	add_child_node(ng_xml.root, :name, name, (attrs).merge(primary: true))
+		  end
 
 		  # Simple Subject Templates
-		  define_template(:simple_subject)     { |xml, text, type| xml.subject { xml.send(type.to_sym, text) } }
-		  define_template(:topical_subject)    { |xml, text| delegate_to_template(xml, :simple_subject, text, :topic) 		 }
-		  define_template(:geographic_subject) { |xml, text| delegate_to_template(xml, :simple_subject, text, :geographic) }
-		  define_template(:temporal_subject)   { |xml, text| delegate_to_template(xml, :simple_subject, text, :temporal)   }
-		  define_template(:occupation_subject) { |xml, text| delegate_to_template(xml, :simple_subject, text, :occupation) }
+		  define_template(:simple_subject) do |xml, text, type| 
+		  	xml.subject { xml.send(type.to_sym, text) }
+	  	end
+	  	def add_subject(text, type)
+	  		add_child_node(ng_xml.root, :simple_subject, text, type)
+	  	end
+	  	def add_topical_subject(text, *args);    add_subject(text, :topical);    end
+	  	def add_geographic_subject(text, *args); add_subject(text, :geographic); end
+	  	def add_temporal_subject(text, *args);   add_subject(text, :temporal);   end
+	  	def add_occupation_subject(text, *args); add_subject(text, :occupation); end
 
 		  # Complex Subject Templates
-		  define_template(:name_subject)      { |xml, name, type| xml.subject; delegate_to_template(xml.doc.root.children.first, :name, type, name) }
-		  define_template(:person_subject)    { |xml, name| delegate_to_template(xml, :name_subject, name, :personal)  }
-		  define_template(:corporate_subject) { |xml, name| delegate_to_template(xml, :name_subject, name, :corporate) }
-		  define_template(:family_subject)    { |xml, name| delegate_to_template(xml, :name_subject, name, :family)    }
+	  	def add_name_subject(name, type)
+	  		add_child_node(ng_xml.root.add_child('<subject/>'), :name, name, type: type)
+	  	end
+	  	def add_person_subject(name, *args);     add_name_subject(name, :personal);   end
+	  	def add_corporate_subject(nam, *argse);  add_name_subject(name, :corporate);  end
+	  	def add_occupation_subject(name, *args); add_name_subject(name, :occupation); end
 
 		  define_template :language do |xml, code, text|
 		    xml.language {

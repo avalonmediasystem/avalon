@@ -13,7 +13,7 @@ class MediaObject < ActiveFedora::Base
   
   # Before saving put the pieces into the right order and validate to make sure that
   # there are no syntactic errors
-  before_save 'descMetadata.reorder_elements', prepend: true
+  before_save 'descMetadata.reorder_elements!', prepend: true
   
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
@@ -27,23 +27,22 @@ class MediaObject < ActiveFedora::Base
   delegate :translated_title, to: :descMetadata, at: [:translated_title]
   delegate :uniform_title, to: :descMetadata, at: [:uniform_title]
   delegate :statement_of_responsibility, to: :descMetadata, at: [:statement_of_responsibility], unique: true
-  delegate :creator, to: :descMetadata, at: [:creator_name], unique: true
-  delegate :created_on, to: :descMetadata, at: [:creation_date], unique: true
-  delegate :issued_on, to: :descMetadata, at: [:issue_date], unique: true
+  delegate :creator, to: :descMetadata, at: [:creator], unique: true
+  delegate :date_created, to: :descMetadata, at: [:date_created], unique: true
+  delegate :date_issued, to: :descMetadata, at: [:date_issued], unique: true
   delegate :copyright_date, to: :descMetadata, at: [:copyright_date], unique: true
-  delegate :abstract, to: :descMetadata, at: [:summary], unique: true
+  delegate :abstract, to: :descMetadata, at: [:abstract], unique: true
   delegate :note, to: :descMetadata, at: [:note]
   delegate :format, to: :descMetadata, at: [:media_type], unique: true
   # Additional descriptive metadata
-  delegate :contributor, to: :descMetadata, at: [:contributor_name]
-  delegate :publisher, to: :descMetadata, at: [:publisher_name]
+  delegate :contributor, to: :descMetadata, at: [:contributor]
+  delegate :publisher, to: :descMetadata, at: [:publisher]
   delegate :genre, to: :descMetadata, at: [:genre], unique: true
   delegate :subject, to: :descMetadata, at: [:topical_subject]
   delegate :relatedItem, to: :descMetadata, at: [:related_item_id]
 
-  delegate :spatial, to: :descMetadata, at: [:geographic_subject]
-  delegate :temporal, to: :descMetadata, at: [:temporal_subject]
-
+  delegate :geographic_subject, to: :descMetadata, at: [:geographic_subject]
+  delegate :temporal_subject, to: :descMetadata, at: [:temporal_subject]
   
   accepts_nested_attributes_for :parts, :allow_destroy => true
   
@@ -98,44 +97,7 @@ class MediaObject < ActiveFedora::Base
     masterfiles
   end
   
-  # Spatial and temporal are special cases that need to be handled a bit differently
-  # than the rest. As a result we handle them first, take them out of the values
-  # hash, and then pass the rest to be managed traditionally.
-  #
-  # This approach can also be used for other fields but be sure to keep good documentation
-  # on the reasons why instead of just hacking something together in case it needs to be
-  # referred to later.
   def update_datastream(datastream = :descMetadata, values = {})
-    # Start with the coverage fields - since spatial and temporal both use
-    # pbcoreCoverage we need to take care not to accidentally remove nodes which
-    # were just inserted. One solution is create a new virtual attribute, coverage,
-    # that includes the values to be updated. This can be synthesized before the
-    # handoff to update_attribute
-    #
-    # WARNING - If there is already an entry in the hash for coverage it will be
-    #           destroyed as a side effect. Note this when naming field variables or
-    #           retool this code
-    values[:pbcore_coverage] = []
-    if values.has_key?(:spatial)
-       logger.debug "<< Handling special case for attribute :spatial >>"
-       values[:spatial].each do |spatial_value|
-         next if spatial_value.blank?
-         node = {value: spatial_value, attributes: 'Spatial'}
-         values[:pbcore_coverage] << node
-       end
-       values.delete(:spatial)
-    end
-    
-    if values.has_key?(:temporal)
-       logger.debug "<< Handling special case for attribute :temporal >>"
-       values[:temporal].each do |temporal_value|
-         next if temporal_value.blank?
-         node = {value: temporal_value, attributes: 'Temporal'}
-         values[:pbcore_coverage] << node
-       end
-       values.delete(:temporal)
-    end
-    
     values.each do |k, v|
       # First remove all blank attributes in arrays
       v.keep_if { |item| not item.blank? } if v.instance_of?(Array)
@@ -159,35 +121,31 @@ class MediaObject < ActiveFedora::Base
         end
         update_attribute(k, vals, attrs)
       else
-        update_attribute(k, v)
+        update_attribute(k, Array(v))
       end
     end
+    logger.debug(datastreams[datastream.to_s].to_xml)
   end
   
   def update_attribute(attribute, value = [], attributes = [])
     logger.debug "<< UPDATE ATTRIBUTE >>"
-    logger.debug "<< Attribute : #{attribute} >>"
-    logger.debug "<< Value : #{value} >>"
-    logger.debug "<< Attributes : #{attributes} >>"
+    logger.debug "<< Attribute : #{attribute.inspect} >>"
+    logger.debug "<< Value : #{value.inspect} >>"
+    logger.debug "<< Attributes : #{attributes.inspect} >>"
     
-    # Add a special case for coverage. Eventually a more general approach should be
-    # devised that can handle other elements with the same problem but this is just a
-    # short term bandaid. If this is still here in December 2012 then the Agile process
-    # is not working as it should
+    descMetadata.find_by_terms(attribute.to_sym).each &:remove
     if descMetadata.template_registry.has_node_type?(attribute.to_sym)
-      active_nodes = descMetadata.find_by_terms(attribute.to_sym).length
-      logger.debug "<< Need to remove #{active_nodes} old terms >>"
-    
-      active_nodes.times do |i|
-        logger.debug "<< Deleting old node #{attribute}[#{i}] >>"
-        descMetadata.remove_node(attribute.to_sym, 0)
-      end
-
       value.length.times do |i|
         logger.debug "<< Adding node #{attribute}[#{i}] >>"
-        descMetadata.add_child_node(descMetadata.ng_xml.root, attribute.to_sym, value[i], attributes[i])
+        logger.debug("descMetadata.add_child_node(descMetadata.ng_xml.root, #{attribute.to_sym.inspect}, #{value[i].inspect}, #{(attributes[i]||{}).inspect})")
+        descMetadata.add_child_node(descMetadata.ng_xml.root, attribute.to_sym, value[i], (attributes[i]||{}))
       end
       #end
+    elsif descMetadata.respond_to?("add_#{attribute}")
+      value.length.times do |i|
+        logger.debug("descMetadata.add_#{attribute}(#{value[i].inspect}, #{attributes[i].inspect})")
+        descMetadata.send("add_#{attribute}", value[i], (attributes[i] || {}))
+      end;
     else
       # Put in a placeholder so that the inserted nodes go into the right part of the
       # document. Afterwards take it out again - unless it does not have a template
@@ -209,13 +167,14 @@ class MediaObject < ActiveFedora::Base
   def minimally_complete_record
     logger.debug "<< MINIMALLY COMPLETE RECORD >>"
     
-    [:creator, :title, :created_on].each do |element|
+    [:creator, :title, :date_created].each do |element|
       logger.debug "<< Validating the #{element.to_sym} property >>"
       # Use send as a kludge for now. This does create some potential security issues
       # but these can be addressed since the loop's symbols are defined very locally
       # anyways
       if send(element).blank?
         errors.add element.to_sym, "The #{element.to_sym} field is required"
+        logger.info "<< ERROR: #{element} is required"
       end
     end
     logger.debug "<< #{errors.count} errors have been added to the session >>"

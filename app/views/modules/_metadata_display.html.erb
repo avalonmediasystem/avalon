@@ -20,8 +20,8 @@
 
   <dt>Date</dt>
   <dd>
-    <% unless @mediaobject.created_on.blank? %>
-      <%= @mediaobject.created_on %>
+    <% unless @mediaobject.date_created.blank? %>
+      <%= @mediaobject.date_created %>
     <% else %>
       <em>Not provided</em>
     <% end %>
@@ -50,14 +50,14 @@
     <dd><%= @mediaobject.genre %></dd>
   <% end %>
 
-  <% unless @mediaobject.temporal.blank? %>
+  <% unless @mediaobject.temporal_subject.blank? %>
     <dt>Key time periods</dt>
-    <dd><%= display_multiple(@mediaobject.temporal) %></dd>
+    <dd><%= display_multiple(@mediaobject.temporal_subject) %></dd>
   <% end %>
 
-  <% unless @mediaobject.spatial.blank? %>
+  <% unless @mediaobject.geographic_subject.blank? %>
     <dt>Important locations</dt>
-    <dd><%= display_multiple(@mediaobject.spatial) %></dd>
+    <dd><%= display_multiple(@mediaobject.geographic_subject) %></dd>
   <% end %>
 
   <% unless @mediaobject.subject.blank? %>

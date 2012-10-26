@@ -29,9 +29,9 @@ class MediaObjectsController < CatalogController
     end
 
     #@masterfiles_with_order = @mediaobject.parts_with_order
-    if !@masterFiles.nil? && @masterFiles.count > 1 
-      @relType = @mediaobject.descMetadata.relation_type[0]
-    end
+#    if !@masterFiles.nil? && @masterFiles.count > 1 
+#      @relType = @mediaobject.descMetadata.relation_type[0]
+#    end
 
     @ingest_status = IngestStatus.find_by_pid(@mediaobject.pid)
     @active_step = params[:step] || @ingest_status.current_step
@@ -124,7 +124,6 @@ class MediaObjectsController < CatalogController
           @active_step = "published"
         end
       end
-
       logger.debug "<< ACTIVE STEP => #{@active_step} >>"
       logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
       respond_to do |format|

@@ -9,16 +9,21 @@ module ModsBehaviors
 
     # Title fields
     solr_doc[:title_display] = self.find_by_terms(:main_title).text
-    addl_titles = [[:main_title_info, :subtitle], :alternative_title, :translated_title, :uniform_title].collect do |addl_title| 
+    addl_titles = [[:main_title_info, :subtitle], 
+    		:alternative_title, [:alternative_title_info, :subtitle], 
+	    	:translated_title, [:translated_title_info, :subtitle], 
+	    	:uniform_title, [:uniform_title_info, :subtitle]].collect do |addl_title| 
       self.find_by_terms(*addl_title)
     end
     solr_doc[:title_addl_display] = gather_terms(addl_titles)
     solr_doc[:heading_display] = self.find_by_terms(:main_title).text
 
+
+    solr_doc[:creator_display] = self.find_by_terms(:creator).text
     # Individual fields
-    solr_doc[:summary_display] = self.find_by_terms(:summary).text
-    solr_doc[:publisher_display] = gather_terms(self.find_by_terms(:publisher_name))
-    solr_doc[:contributors_display] = gather_terms(self.find_by_terms(:contributor_name))
+    solr_doc[:summary_display] = self.find_by_terms(:abstract).text
+    solr_doc[:publisher_display] = gather_terms(self.find_by_terms(:publisher))
+    solr_doc[:contributors_display] = gather_terms(self.find_by_terms(:contributor))
     solr_doc[:subject_display] = gather_terms(self.find_by_terms(:subject))
     solr_doc[:genre_display] = gather_terms(self.find_by_terms(:genre))
 #    solr_doc[:physical_dtl_display] = gather_terms(self.find_by_terms(:format))
@@ -32,8 +37,9 @@ module ModsBehaviors
     # for consistency and so they'll show up when we export records from Hydra into BL:
     solr_doc[:material_facet] = "Digital"
     solr_doc[:genre_facet] = gather_terms(self.find_by_terms(:genre))
-    solr_doc[:contributor_facet] = gather_terms(self.find_by_terms(:contributor_name))
-    solr_doc[:publisher_facet] = gather_terms(self.find_by_terms(:publisher_name))
+    solr_doc[:contributor_facet] = gather_terms(self.find_by_terms(:contributor))
+    solr_doc[:creator_facet] = gather_terms(self.find_by_terms(:creator))
+    solr_doc[:publisher_facet] = gather_terms(self.find_by_terms(:publisher))
     solr_doc[:subject_topic_facet] = gather_terms(self.find_by_terms(:topical_subject))
     solr_doc[:subject_geographic_facet] = gather_terms(self.find_by_terms(:geographic_subject))
     solr_doc[:subject_temporal_facet] = gather_terms(self.find_by_terms(:temporal_subject))
@@ -52,7 +58,7 @@ module ModsBehaviors
     solr_doc[:language_display] = self.find_by_terms(:language_text).text
 
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
-    create = self.find_by_terms(:creation_date).text.strip
+    create = self.find_by_terms(:date_created).text.strip
     unless create.nil? or create.empty?
       solr_doc[:create_date_facet] = get_year(create)
       solr_doc[:pub_date] = get_year(create)
@@ -64,8 +70,24 @@ module ModsBehaviors
     return solr_doc
   end
 
-  def reorder_elements
-    ns = { 'mods' => 'http://www.loc.gov/mods/v3' }
+  def ns
+  	{ 'mods' => 'http://www.loc.gov/mods/v3' }
+	end
+
+  def remove_empty_nodes!
+  	patterns = [
+  		'//mods:titleInfo[count(mods:title)=0]',
+  		'//mods:name[count(mods:namePart)=0]',
+  		'//mods:subject[count(*)=0]',
+  		'//mods:language[count(mods:languageTerm)=0]'
+  	]
+
+  	patterns.each do |path|
+  		self.ng_xml.xpath(path, ns).each { |node| node.remove }
+  	end
+  end
+
+  def reorder_elements!
     order = [
       'mods:mods/mods:titleInfo[@type="primary"]',
       'mods:mods/mods:titleInfo[@type="alternative"]',
@@ -89,6 +111,7 @@ module ModsBehaviors
       'mods:mods/*'
     ]
 
+    remove_empty_nodes!
     new_doc = self.class.blank_template
     order.each do |node|
       puts node

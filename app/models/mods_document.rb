@@ -16,12 +16,12 @@ class ModsDocument < ActiveFedora::NokogiriDatastream
       t.subtitle(:path => 'subTitle')
     end
     t.main_title_info(:ref => :title_info, :path => 'titleInfo[@type="primary"]')
-    t.alternative_title_info(:ref => :title_info, :path => 'titleInfo[@type="alternative"]')
-    t.translated_title_info(:ref => :title_info, :path => 'titleInfo[@type="translated"]')
-    t.uniform_title_info(:ref => :title_info, :path => 'titleInfo[@type="uniform"]')
     t.main_title(:proxy => [:main_title_info, :title])
+    t.alternative_title_info(:ref => :title_info, :path => 'titleInfo[@type="alternative"]')
     t.alternative_title(:proxy => [:alternative_title_info, :title])
+    t.translated_title_info(:ref => :title_info, :path => 'titleInfo[@type="translated"]')
     t.translated_title(:proxy => [:translated_title_info, :title])
+    t.uniform_title_info(:ref => :title_info, :path => 'titleInfo[@type="uniform"]')
     t.uniform_title(:proxy => [:uniform_title_info, :title])
 
     # Creators and Contributors
@@ -33,11 +33,12 @@ class ModsDocument < ActiveFedora::NokogiriDatastream
         t.text(:path => 'roleTerm', :attributes => { :type => 'text' })
       end
     end
-    t.contributor_name(:proxy => [:name, :name_part])
+    t._contributor_name(:ref => [:name], :path => 'name[@primary!="true"]')
+    t.contributor(:proxy => [:_contributor_name, :name_part])
     t._creator_name(:ref => [:name], :path => 'name[oxns:role/oxns:roleTerm[@type="text"] = "Creator" or oxns:role/oxns:roleTerm[@type="code"] = "cre"]')
-    t.creator_name(:proxy => [:_creator_name, :name_part])
+    t.creator(:proxy => [:_creator_name, :name_part])
     t._primary_creator_name(:ref => [:name], :path => 'name[@type="primary"]')
-    t.primary_creator_name(:proxy => [:_creator_name, :name_part])
+    t.primary_creator(:proxy => [:_creator_name, :name_part])
 
     t.statement_of_responsibility(:path => 'note', :attributes => { :type => 'statement of responsbility' })
 
@@ -55,10 +56,10 @@ class ModsDocument < ActiveFedora::NokogiriDatastream
       t.date_issued(:path => 'dateIssued', :attributes => { :encoding => 'edtf' })
       t.copyright_date(:path => 'copyrightDate', :attributes => { :encoding => 'iso8601' })
     end
-    t.publisher_name(:proxy => [:origin_info, :publisher])
+    t.publisher(:proxy => [:origin_info, :publisher])
     t.place_of_origin(:proxy => [:origin_info, :place_info, :place_term])
-    t.creation_date(:proxy => [:origin_info, :date_created])
-    t.issue_date(:proxy => [:origin_info, :date_issued])
+    t.date_created(:proxy => [:origin_info, :date_created])
+    t.date_issued(:proxy => [:origin_info, :date_issued])
     t.copyright_date(:proxy => [:origin_info, :copyright_date])
 
     # Language
@@ -76,7 +77,7 @@ class ModsDocument < ActiveFedora::NokogiriDatastream
     t.media_type(:proxy => [:physical_description, :internet_media_type])
 
     # Summary and Notes
-    t.summary(:path => 'abstract')
+    t.abstract(:path => 'abstract')
     t.note {
       t.type_(:path => '@type', :namespace_prefix => nil)
     }
@@ -140,6 +141,7 @@ class ModsDocument < ActiveFedora::NokogiriDatastream
     xml.mods("xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "xmlns"=>"http://www.loc.gov/mods/v3",
         "xsi:schemaLocation"=>"http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd") {
       xml.typeOfResource('moving image')
+      xml.originInfo
       xml.recordInfo {
         xml.recordOrigin('Avalon Media System')
         xml.recordContentSource('IEN')

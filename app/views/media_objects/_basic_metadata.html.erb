@@ -7,11 +7,15 @@
   <%= hidden_field_tag :step, @active_step %>
   <%= vid.fieldset "Required fields", id: 'required_fields' do %>    
   
-    <%= vid.text_field :title, "Title", class: 'span12', value: @mediaobject.title %>
+    <%= vid.text_field :main_title, "Title", class: 'span12', value: @mediaobject.title %>
     <%= vid.text_field :creator, "Creator", class: 'span12',
       value: @mediaobject.creator %>
-    <%= vid.text_field :created_on, "Created on", class: 'span12',
-      value: @mediaobject.created_on %>
+    <%= vid.text_field :date_created, "Created on", class: 'span12',
+      value: @mediaobject.date_created %>
+    <%= vid.text_field :date_issued, "Issued on", class: 'span12',
+      value: @mediaobject.date_issued %>
+    <%= vid.text_field :copyright_date, "Copyright date", class: 'span12',
+      value: @mediaobject.copyright_date %>
     <%= vid.text_area :abstract, "Summary", class: 'span12', rows: 6,
       value: @mediaobject.abstract %>
   <% end %>
@@ -33,12 +37,12 @@
   <%= vid.fieldset "Keywords", id: 'keywords' do %>    
     <%= vid.text_field :genre, "Genre", class: 'span12',
       value: @mediaobject.genre %>
-    <%= vid.text_fields :temporal, "Time periods", class: 'span12', 
-       mininum_fields: 2, value: @mediaobject.temporal %>
-    <%= vid.text_fields :spatial, "Locations", class: 'span12', 
-       minimum_fields: 2, value: @mediaobject.spatial %>
+    <%= vid.text_fields :temporal_subject, "Time periods", class: 'span12', 
+       mininum_fields: 2, value: @mediaobject.temporal_subject %>
+    <%= vid.text_fields :geographic_subject, "Locations", class: 'span12', 
+       minimum_fields: 2, value: @mediaobject.geographic_subject %>
 
-    <%= vid.text_fields :subject, "Subject(s)", class: 'span12', 
+    <%= vid.text_fields :topical_subject, "Subject(s)", class: 'span12', 
        value: @mediaobject.subject %>
   <% end %>
 
