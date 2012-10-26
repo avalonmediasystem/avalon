@@ -189,6 +189,7 @@ class CatalogController < ApplicationController
 
   def index
     super
+    viewstate = params[:v]
     params[:v] = "ri"
     @recent_items = []
     (response, @recent_items) = get_search_results(
@@ -207,7 +208,7 @@ class CatalogController < ApplicationController
          :qt => "standard",
          :fl => "id"})
     end
-    params[:v] = ""
+    params[:v] = viewstate
   end
 
   def matterhorn_service_config
