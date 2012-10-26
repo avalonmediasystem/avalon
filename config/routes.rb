@@ -1,6 +1,10 @@
 Hydrant::Application.routes.draw do
-  Blacklight.add_routes(self)
-  HydraHead.add_routes(self)
+  Blacklight.add_routes(self, except: [:bookmarks, :feedback, :catalog])
+#  HydraHead.add_routes(self)
+
+  #Blacklight catalog routes
+  match "catalog/facet/:id", :to => 'catalog#facet', :as => 'catalog_facet'
+  match "catalog", :to => 'catalog#index', :as => 'catalog_index'
 
   root :to => "mediaObjects#index"
 
@@ -14,8 +18,8 @@ Hydrant::Application.routes.draw do
   #resources :media_objects, except: [:index], as: :media
   #resources :master_files, as: :resources
   resources :media_objects, except: [:create]
-  resources :master_files
-  resources :derivatives
+  resources :master_files, except: [:show, :new, :index]
+  resources :derivatives, only: [:create]
   
   resources :comments, only: [:index, :create]
 
@@ -24,7 +28,8 @@ Hydrant::Application.routes.draw do
   #match 'search/index' => 'search#index'
   #match 'search/facet/:id' => 'search#facet'
 
-  resources :admin, only: [:index] do
+  resources :admin, only: [:index]
+  namespace :admin do
     resources :groups, except: [:show] do 
       collection do 
         put 'update_multiple'

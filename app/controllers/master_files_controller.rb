@@ -6,7 +6,7 @@ class MasterFilesController < ApplicationController
 #  include Hydra::Controller::FileAssetsBehavior
 
   skip_before_filter :verify_authenticity_token, :only => [:update]
-  before_filter :authenticate_user!, :only => [:update]
+  before_filter :authenticate_user!, :only => [:create]
 
   # Creates and Saves a File Asset to contain the the Uploaded file 
   # If container_id is provided:
@@ -82,23 +82,34 @@ class MasterFilesController < ApplicationController
     	format.js { }
     end
   end
-  
-  def show 
-    @masterfile = MasterFile.find(params[:id])
-    @mediaobject = @masterfile.container
-    
-    authorize! :read, @mediaobject
-  end
 
   def update
     @masterfile = MasterFile.find(params[:id])
-    @mediaobject = @masterfile.container
-    authorize! :edit, @mediaobject
+    if params[:workflow_id].present?
+      puts "Matterhorn called!"    
+      matterhorn_response = Rubyhorn.client.instance_xml(params[:workflow_id])
 
-    @masterfile.label = params[@masterfile.pid]
+      @masterfile.percent_complete = percent_complete(matterhorn_response)
+      @masterfile.status_code = matterhorn_response.workflow.state[0]
+      puts "status_code #{matterhorn_response.workflow.state[0]}"
+    else
+      @mediaobject = @masterfile.container
+      authorize! :edit, @mediaobject
+      @masterfile.label = params[@masterfile.pid]
+    end
     @masterfile.save
+    render :nothing => true
   end
-  
+
+  def percent_complete matterhorn_response
+    totalOperations = matterhorn_response.workflow.operations.operation.length    
+    finishedOperations = 0
+    matterhorn_response.workflow.operations.operation.operationState.each {|state| finishedOperations += 1 if state == "SUCCEEDED" || state == "SKIPPED"}
+    percent = finishedOperations * 100 / totalOperations 
+    puts "percent_complete #{percent}"
+    percent.to_s
+  end
+
 	def saveOriginalToHydrant file
 		public_dir_path = "#{Rails.root}/public/"
 		new_dir_path = public_dir_path + 'media_objects/' + params[:container_id].gsub(":", "_") + "/"

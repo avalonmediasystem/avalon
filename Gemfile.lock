@@ -31,7 +31,7 @@ GIT
 
 GIT
   remote: git://github.com/projectblacklight/blacklight.git
-  revision: a8a3dd55a10a5298b01d3cbbf1b921cdfe354017
+  revision: e7cf598b5178b3064e26b20148275338a4e6beb8
   branch: bootstrap
   specs:
     blacklight (3.7.2)
@@ -57,7 +57,7 @@ GIT
 
 GIT
   remote: git://github.com/variations-on-video/hydrant-engage.git
-  revision: b0fde70250c7046b422f60e308e97e9655746ee6
+  revision: 808e302da402f08664be2d8170ea6ecae2e6e5e5
   specs:
     hydrant-engage (0.0.1)
       less-rails (~> 2.2.3)
@@ -100,7 +100,7 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.1.3)
-    active-fedora (4.6.0.rc3)
+    active-fedora (4.6.0.rc4)
       activeresource (>= 3.0.0)
       activesupport (>= 3.0.0)
       builder (~> 3.0.0)
@@ -112,7 +112,7 @@ GEM
       rdf-rdfxml (~> 0.3.8)
       rsolr
       rubydora (~> 0.5.13)
-      solrizer (~> 1.2.0)
+      solrizer (~> 2.0.0.rc1)
     activemodel (3.2.8)
       activesupport (= 3.2.8)
       builder (~> 3.0.0)
@@ -144,6 +144,8 @@ GEM
       net-sftp (>= 2.0.0)
       net-ssh (>= 2.0.14)
       net-ssh-gateway (>= 1.1.0)
+    capistrano-unicorn (0.1.6)
+      capistrano
     capybara (1.1.2)
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
@@ -166,7 +168,7 @@ GEM
     coffee-script (2.2.0)
       coffee-script-source
       execjs
-    coffee-script-source (1.3.3)
+    coffee-script-source (1.4.0)
     commonjs (0.2.6)
     compass (0.12.2)
       chunky_png (~> 1.2)
@@ -254,8 +256,8 @@ GEM
       hydra-core (= 5.0.0.pre9)
       hydra-file-access (= 5.0.0.pre9)
       rails (>= 3.2.6)
-    hydra-mods (0.0.5)
-      active-fedora (~> 4.1)
+    hydra-mods (0.0.6)
+      active-fedora (> 4.1)
     i18n (0.6.1)
     jettywrapper (1.3.2)
       activesupport (>= 3.0.0)
@@ -279,7 +281,7 @@ GEM
     kgio (2.7.4)
     less (2.2.2)
       commonjs (~> 0.2.6)
-    less-rails (2.2.3)
+    less-rails (2.2.4)
       actionpack (>= 3.1)
       less (~> 2.2.0)
     libv8 (3.3.10.4)
@@ -423,7 +425,7 @@ GEM
       simplecov-html (~> 0.7.1)
     simplecov-html (0.7.1)
     slop (3.3.3)
-    solrizer (1.2.2)
+    solrizer (2.0.0.rc3)
       daemons
       mediashelf-loggable (~> 0.4.7)
       nokogiri
@@ -481,8 +483,10 @@ PLATFORMS
 DEPENDENCIES
   activerecord-jdbcsqlite3-adapter
   blacklight!
+  bootstrap-sass
   builder (~> 3.0.0)
   capistrano (~> 2.12.0)
+  capistrano-unicorn
   capybara-screenshot
   capybara-webkit
   coffee-rails (~> 3.2.1)

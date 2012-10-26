@@ -8,8 +8,8 @@ en:
       already_confirmed: "was already confirmed, please try signing in"
       not_locked: "was not locked"
       not_saved:
-        one: "1 error prohibited this %{resource} from being saved:"
-        other: "%{count} errors prohibited this %{resource} from being saved:"
+        one: "An error prohibited this %{resource} from being saved"
+        other: "%{count} errors prohibited this %{resource} from being saved"
 
   devise:
     failure:
@@ -45,8 +45,8 @@ en:
       unlocked: 'Your account was successfully unlocked. You are now signed in.'
       send_paranoid_instructions: 'If your account exists, you will receive an email with instructions about how to unlock it in a few minutes.'
     omniauth_callbacks:
-      success: 'Successfully authorized from %{kind} account.'
-      failure: 'Could not authorize you from %{kind} because "%{reason}".'
+      success: 'Successfully logged into the system'
+      failure: 'Unable to authorize because "%{reason}"'
     mailer:
       confirmation_instructions:
         subject: 'Confirmation instructions'

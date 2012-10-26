@@ -7,6 +7,9 @@
               <dl class="activity-stream">
                 <%= render partial: "modules/activity_stream_entry", collection: @my_items, as: :item %>
               </dl>
+              <div class="pull-right">
+              <%= link_to 'More', catalog_index_path(search_field: 'all_fields', utf8: '✓', q: '', sort: 'system_create_dt desc', v: 'mi') %>
+            </div>
             <% else %>
               <p>You have not yet added anything to the system.</p>
             <% end %>
