@@ -33,7 +33,7 @@ class ModsDocument < ActiveFedora::NokogiriDatastream
         t.text(:path => 'roleTerm', :attributes => { :type => 'text' })
       end
     end
-    t._contributor_name(:ref => [:name], :path => 'name[@primary!="true"]')
+    t._contributor_name(:ref => [:name], :path => 'name[not(@primary) or @primary!="true"]')
     t.contributor(:proxy => [:_contributor_name, :name_part])
     t._creator_name(:ref => [:name], :path => 'name[oxns:role/oxns:roleTerm[@type="text"] = "Creator" or oxns:role/oxns:roleTerm[@type="code"] = "cre"]')
     t.creator(:proxy => [:_creator_name, :name_part])
