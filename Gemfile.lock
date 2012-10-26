@@ -100,7 +100,7 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.1.3)
-    active-fedora (4.6.0.rc3)
+    active-fedora (4.6.0.rc4)
       activeresource (>= 3.0.0)
       activesupport (>= 3.0.0)
       builder (~> 3.0.0)
@@ -112,7 +112,7 @@ GEM
       rdf-rdfxml (~> 0.3.8)
       rsolr
       rubydora (~> 0.5.13)
-      solrizer (~> 1.2.0)
+      solrizer (~> 2.0.0.rc1)
     activemodel (3.2.8)
       activesupport (= 3.2.8)
       builder (~> 3.0.0)
@@ -168,7 +168,7 @@ GEM
     coffee-script (2.2.0)
       coffee-script-source
       execjs
-    coffee-script-source (1.3.3)
+    coffee-script-source (1.4.0)
     commonjs (0.2.6)
     compass (0.12.2)
       chunky_png (~> 1.2)
@@ -281,7 +281,7 @@ GEM
     kgio (2.7.4)
     less (2.2.2)
       commonjs (~> 0.2.6)
-    less-rails (2.2.3)
+    less-rails (2.2.4)
       actionpack (>= 3.1)
       less (~> 2.2.0)
     libv8 (3.3.10.4)
@@ -425,7 +425,7 @@ GEM
       simplecov-html (~> 0.7.1)
     simplecov-html (0.7.1)
     slop (3.3.3)
-    solrizer (1.2.2)
+    solrizer (2.0.0.rc1)
       daemons
       mediashelf-loggable (~> 0.4.7)
       nokogiri

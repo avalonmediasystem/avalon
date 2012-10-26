@@ -1,6 +1,4 @@
-/*
- *= require bootstrap_and_overrides
- */
+@import 'bootstrap';
  
 /**
  * Tweak the modules so that there is some space between items in the
@@ -148,7 +146,7 @@ footer li:first-child:before {
 	content: none;
 }
 
-.hidden-disabled-link  {
+@mixin hidden-disabled-link  {
   text-decoration: none !important;
   color: black !important;
   cursor: default !important;
@@ -157,5 +155,13 @@ footer li:first-child:before {
 
 
 a.current-stream {
-  &, &:link, &:hover, &:active, &:visited { .hidden-disabled-link }
+  &:link { @hidden-disabled-link }
+  &:hover { @hidden-disabled-link }
+  &:active { @hidden-disabled-link }
+  &:visited { @hidden-disabled-link }
+}
+
+/* Shift the metadata shown for search results by half a column */
+.item-preview-container {
+  padding-left: $gridColumnWidth/2;
 }

@@ -17,6 +17,7 @@ module ApplicationHelper
       elsif (media_object.parts.length >= 2)
         imageurl = "hybrid_icon.png"
       else
+        puts "FORMAT: #{media_object.format}"
         imageurl = "no_icon.png"
       end
 

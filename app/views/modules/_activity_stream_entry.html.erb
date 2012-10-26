@@ -3,17 +3,17 @@
 <% unless item.nil? %>
 <dt>
   <% if can? :read, item %>
-    <%= link_to catalog_path(item) do %> 
-    <% unless item.title.blank? %><%= item.title %><% else %>No title provided<% end%> (<%= item.pid %>)
+    <%= link_to catalog_path(item[:id]) do %> 
+    <% unless item["title_t"].blank? or item["title_t"].first.blank? %><%= item["title_t"].first %><% else %>No title provided<% end%> (<%= item[:id] %>)
     <% end %>
   <% else %>
-      <% unless item.title.blank? %><%= item.title %><% else %>No title provided<% end%> (<%= item.pid %>)
+      <% unless item["title_t"].blank? or item["title_t"].first.blank? %><%= item["title_t"].first %><% else %>No title provided<% end%> (<%= item[:id] %>)
   <% end %>
 </dt>
 <dd class="whitespace">
-  <!-- Need to shorten the abstract if it is too long -->
-  <% if item.abstract.present? %>
-    <%= truncate(item.abstract, length: 140) %>
+  <!-- Need to shorten the summary if it is too long -->
+  <% unless item["summary_t"].blank? or item["summary_t"].first.blank? %>
+    <%= truncate(item["summary_t"].first, length: 140) %>
   <% else %>
     <em>No summary available</em>
   <% end %>

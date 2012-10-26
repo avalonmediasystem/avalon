@@ -1,0 +1,9 @@
+  <div class="result-thumb span1">
+    <%= link_to_if can?(:read, document), image_for_result(document),
+      media_object_path(document[:id]) %>
+  </div>
+  <div class="span5 item-preview-container"> 
+    <div class="result-creator"><%= document["creator_t"].nil? ? '&#8212'.html_safe : document["creator_t"].first  %></div>
+    <div class="result-date whitespace"><%= document["pub_date"].nil? ? '&#8212'.html_safe : document["pub_date"].first %></div>
+    <div class="item-summary"><%= (document["summary_t"].blank? or document["summary_t"].first.blank?) ? 'No summary available' : truncate(document["summary_t"].first, length: 100) %></div>
+  </div>
