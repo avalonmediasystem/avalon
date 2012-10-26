@@ -12,8 +12,8 @@
 </dt>
 <dd class="whitespace">
   <!-- Need to shorten the summary if it is too long -->
-  <% unless item["summary_t"].blank? or item["summary_t"].first.blank? %>
-    <%= truncate(item["summary_t"].first, length: 140) %>
+  <% unless item["summary_display"].blank? or item["summary_display"].first.blank? %>
+    <%= truncate(item["summary_display"].first, length: 140) %>
   <% else %>
     <em>No summary available</em>
   <% end %>
