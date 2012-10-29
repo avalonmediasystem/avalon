@@ -90,7 +90,12 @@ describe MediaObjectsController do
       end
 
       it "should provide a JSON stream description to the client" do
-        (12..16).collect { |i| load_fixture "hydrant:#{i}" }
+        fixtures = ['hydrant:video-segment',
+          'hydrant:electronic-resource',
+          'hydrant:print-publication',
+          'hydrant:musical-performance']
+        fixtures.collect { |f| load_fixture f }
+        
         mo = MediaObject.find 'hydrant:print-publication' 
         mo.access = "public"
         mo.save
@@ -109,7 +114,7 @@ describe MediaObjectsController do
         load_fixture 'hydrant:electronic-resource'
 
         mo = MediaObject.find 'hydrant:electronic-resource' 
-        mo.access = "public"
+        mo.access = "private"
         mo.save
         
         get 'show', id: 'hydrant:electronic-resource'
