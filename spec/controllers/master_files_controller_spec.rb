@@ -18,13 +18,12 @@ describe MasterFilesController do
       login_as_archivist
       request.env["HTTP_REFERER"] = "/"
      
-      pid = 'hydrant:318'
-      load_fixture pid
+      load_fixture 'hydrant:video-segment'
             
       @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
       @file.stub(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2^21)  
      
-      lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should_not change { MasterFile.count }
+      lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment'}.should_not change { MasterFile.count }
       puts "<< Flash message is present? #{flash[:notice]} >>"
      
       flash[:errors].should_not be_nil
@@ -35,16 +34,15 @@ describe MasterFilesController do
       it "should recognize a video format" do
         login_as_archivist
      
-        pid = 'hydrant:short-form-video'
-        load_fixture pid
+        load_fixture 'hydrant:video-segment'
         @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
         master_file = MasterFile.new
-        master_file.container = MediaObject.find(pid)
+        master_file.container = MediaObject.find('hydrant:video-segment')
      
         controller.stub!(:saveOriginalToHydrant).and_return(master_file)
         controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
      
-        lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should change { MasterFile.count }.by(1)
+        lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment' }.should change { MasterFile.count }.by(1)
         master_file.media_type.should eq(["Moving image"])
              
         flash[:errors].should be_nil
@@ -56,12 +54,11 @@ describe MasterFilesController do
            login_as_archivist
            request.env["HTTP_REFERER"] = "/"
      
-           pid = 'hydrant:318'
-           load_fixture pid
+           load_fixture 'hydrant:electronic-resource'
      
            @file = fixture_file_upload('/public-domain-book.txt', 'application/json')
      
-           lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should_not change { MasterFile.count }
+           lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:electronic-resource' }.should_not change { MasterFile.count }
            puts "<< Flash errors is present? #{flash[:errors]} >>"
      
            flash[:errors].should_not be_nil
@@ -70,16 +67,15 @@ describe MasterFilesController do
      it "should recognize audio/video based on extension when MIMETYPE is of unknown format" do
        login_as_archivist
     
-       pid = 'hydrant:short-form-video'
-       load_fixture pid
+       load_fixture 'hydrant:video-segment'
        @file = fixture_file_upload('/videoshort.mp4', 'application/octet-stream')
        master_file = MasterFile.new
-       master_file.container = MediaObject.find(pid)
+       master_file.container = MediaObject.find('hydrant:video-segment')
     
        controller.stub!(:saveOriginalToHydrant).and_return(master_file)
        controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
     
-       lambda { post :create, Filedata: [@file], original: 'any', container_id: pid }.should change { MasterFile.count }.by(1)
+       lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment' }.should change { MasterFile.count }.by(1)
        MasterFile.find(:all, order: "created_on ASC").last.media_type.should eq(["Moving image"])
          
        flash[:errors].should be_nil
@@ -90,8 +86,7 @@ describe MasterFilesController do
      it "should save a copy in Hydrant" do
          login_as_archivist
       
-         pid = 'hydrant:short-form-video'
-         load_fixture pid
+         load_fixture 'hydrant:video-segment'
          @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
          #Work-around for a Rails bug
          class << @file
@@ -100,7 +95,7 @@ describe MasterFilesController do
          
          controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
       
-         post :create, Filedata: [@file], original: 'any', container_id: pid
+         post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment' 
          
          master_file = MasterFile.find(:all, order: "created_on ASC").last
          path =  File.join(Rails.public_path, master_file.url.first)
@@ -109,11 +104,10 @@ describe MasterFilesController do
          flash[:errors].should be_nil        
      end
      
-     it "should associate with a MediaObjekt" do
+     it "should associate with a MediaObject" do
          login_as_archivist
    
-         pid = 'hydrant:short-form-video'
-         load_fixture pid
+         load_fixture 'hydrant:video-segment'
          @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
          #Work-around for a Rails bug
          class << @file
@@ -122,12 +116,12 @@ describe MasterFilesController do
          
          controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
    
-         post :create, Filedata: [@file], original: 'any', container_id: pid
+         post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment'
          
          master_file = MasterFile.find(:all, order: "created_on ASC").last
-         mediaobject = MediaObject.find(pid)
+         mediaobject = MediaObject.find('hydrant:video-segment')
          mediaobject.parts.should include master_file
-         master_file.container.pid.should eq(pid)
+         master_file.container.pid.should eq('hydrant:video-segment')
          
          flash[:errors].should be_nil        
      end
@@ -135,15 +129,14 @@ describe MasterFilesController do
      it "should send a copy to Matterhorn and get the workflow id back" do
          login_as_archivist
       
-         pid = 'hydrant:short-form-video'
-         load_fixture pid
+         load_fixture 'hydrant:video-segment'
          @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
          # Work-around for a Rails bug
          class << @file
            attr_reader :tempfile
          end
          
-         post :create, Filedata: [@file], original: 'any', container_id: pid
+         post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment'
          
          master_file = MasterFile.find(:all, order: "created_on ASC").last
          master_file.source.should_not be_empty
