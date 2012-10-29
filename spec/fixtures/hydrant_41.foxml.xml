@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foxml:digitalObject VERSION="1.1" PID="hydrant:41"
+xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
+<foxml:objectProperties>
+<foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE=""/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="fedoraAdmin"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2012-10-29T14:34:29.791Z"/>
+<foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2012-10-29T14:54:50.772Z"/>
+</foxml:objectProperties>
+<foxml:datastream ID="AUDIT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">
+<foxml:datastreamVersion ID="AUDIT.0" LABEL="Audit Trail for this object" CREATED="2012-10-29T14:34:29.791Z" MIMETYPE="text/xml" FORMAT_URI="info:fedora/fedora-system:format/xml.fedora.audit">
+<foxml:xmlContent>
+<audit:auditTrail xmlns:audit="info:fedora/fedora-system:def/audit#">
+<audit:record ID="AUDREC1">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>RELS-EXT</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2012-10-29T14:34:29.853Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC2">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>rightsMetadata</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2012-10-29T14:34:29.906Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC3">
+<audit:process type="Fedora API-M"/>
+<audit:action>modifyDatastreamByValue</audit:action>
+<audit:componentID>DC</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2012-10-29T14:34:29.939Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC4">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>descMetadata</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2012-10-29T14:34:29.973Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC5">
+<audit:process type="Fedora API-M"/>
+<audit:action>modifyDatastreamByValue</audit:action>
+<audit:componentID>descMetadata</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2012-10-29T14:54:19.278Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC6">
+<audit:process type="Fedora API-M"/>
+<audit:action>modifyDatastreamByValue</audit:action>
+<audit:componentID>rightsMetadata</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2012-10-29T14:54:28.485Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC7">
+<audit:process type="Fedora API-M"/>
+<audit:action>modifyDatastreamByValue</audit:action>
+<audit:componentID>descMetadata</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2012-10-29T14:54:28.537Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC8">
+<audit:process type="Fedora API-M"/>
+<audit:action>modifyDatastreamByValue</audit:action>
+<audit:componentID>DC</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2012-10-29T14:54:50.709Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC9">
+<audit:process type="Fedora API-M"/>
+<audit:action>modifyDatastreamByValue</audit:action>
+<audit:componentID>descMetadata</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2012-10-29T14:54:50.772Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+</audit:auditTrail>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="DC" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+<foxml:datastreamVersion ID="DC1.0" LABEL="Dublin Core Record for this object" CREATED="2012-10-29T14:34:29.791Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="339">
+<foxml:xmlContent>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+  <dc:identifier>hydrant:41</dc:identifier>
+</oai_dc:dc>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+<foxml:datastreamVersion ID="DC.1" LABEL="Dublin Core Record for this object" CREATED="2012-10-29T14:34:29.939Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="375">
+<foxml:xmlContent>
+<oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+  <dc:creator>jlhardes</dc:creator>
+  <dc:identifier>hydrant:41</dc:identifier>
+</oai_dc:dc>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+<foxml:datastreamVersion ID="DC.2" LABEL="Dublin Core Record for this object" CREATED="2012-10-29T14:54:50.709Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="415">
+<foxml:xmlContent>
+<oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+  <dc:creator>jlhardes</dc:creator>
+  <dc:publisher>jlhardes</dc:publisher>
+  <dc:identifier>hydrant:41</dc:identifier>
+</oai_dc:dc>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="RELS-EXT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+<foxml:datastreamVersion ID="RELS-EXT.0" LABEL="Fedora Object-to-Object Relationship Metadata" CREATED="2012-10-29T14:34:29.853Z" MIMETYPE="application/rdf+xml" SIZE="284">
+<foxml:xmlContent>
+<rdf:RDF xmlns:ns0="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="info:fedora/hydrant:41">
+    <ns0:hasModel rdf:resource="info:fedora/afmodel:MediaObject"></ns0:hasModel>
+  </rdf:Description>
+</rdf:RDF>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="rightsMetadata" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+<foxml:datastreamVersion ID="rightsMetadata.0" LABEL="" CREATED="2012-10-29T14:34:29.906Z" MIMETYPE="text/xml" SIZE="631">
+<foxml:xmlContent>
+<rightsMetadata xmlns="http://hydra-collab.stanford.edu/schemas/rightsMetadata/v1" version="0.1">
+  <copyright>
+    <human type="title"></human>
+    <human type="description"></human>
+    <machine type="uri"></machine>
+  </copyright>
+  <access type="discover">
+    <human></human>
+    <machine></machine>
+  </access>
+  <access type="read">
+    <human></human>
+    <machine></machine>
+  </access>
+  <access type="edit">
+    <human></human>
+    <machine>
+      <group>archivist</group>
+      <person>jlhardes</person>
+    </machine>
+  </access>
+  <embargo>
+    <human></human>
+    <machine></machine>
+  </embargo>
+</rightsMetadata>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+<foxml:datastreamVersion ID="rightsMetadata.1" LABEL="" CREATED="2012-10-29T14:54:28.485Z" MIMETYPE="text/xml" SIZE="696">
+<foxml:xmlContent>
+<rightsMetadata xmlns="http://hydra-collab.stanford.edu/schemas/rightsMetadata/v1" version="0.1">
+  <copyright>
+    <human type="title"></human>
+    <human type="description"></human>
+    <machine type="uri"></machine>
+  </copyright>
+  <access type="discover">
+    <human></human>
+    <machine></machine>
+  </access>
+  <access type="read">
+    <human></human>
+    <machine>
+      <group>public</group>
+      <group>registered</group>
+    </machine>
+  </access>
+  <access type="edit">
+    <human></human>
+    <machine>
+      <person>jlhardes</person>
+      <group>archivist</group>
+    </machine>
+  </access>
+  <embargo>
+    <human></human>
+    <machine></machine>
+  </embargo>
+</rightsMetadata>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="descMetadata" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+<foxml:datastreamVersion ID="descMetadata.0" LABEL="" CREATED="2012-10-29T14:34:29.973Z" MIMETYPE="text/xml" SIZE="767">
+<foxml:xmlContent>
+<mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+  <typeOfResource>moving image</typeOfResource>
+  <originInfo></originInfo>
+  <physicalDescription></physicalDescription>
+  <recordInfo>
+    <recordOrigin>Avalon Media System</recordOrigin>
+    <recordContentSource>IEN</recordContentSource>
+    <recordCreationDate>20121029</recordCreationDate>
+    <recordChangeDate>2012-10-29T10:34:29-04:00</recordChangeDate>
+    <recordIdentifier source="Fedora"></recordIdentifier>
+    <languageOfCataloging>
+      <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+    </languageOfCataloging>
+  </recordInfo>
+</mods>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+<foxml:datastreamVersion ID="descMetadata.1" LABEL="" CREATED="2012-10-29T14:54:19.278Z" MIMETYPE="text/xml" SIZE="1715">
+<foxml:xmlContent>
+<mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+  <titleInfo type="primary">
+    <title>Kittens learn physics.</title>
+  </titleInfo>
+  <name primary="true" type="personal">
+    <namePart>Funnycatsandnicefish</namePart>
+    <role>
+      <roleTerm authority="marcrelator" type="code">cre</roleTerm>
+      <roleTerm authority="marcrelator" type="text">Creator</roleTerm>
+    </role>
+  </name>
+  <typeOfResource>moving image</typeOfResource>
+  <genre>Pets &amp; Animals</genre>
+  <originInfo>
+    <dateCreated encoding="edtf">October 15, 2012</dateCreated>
+    <dateIssued encoding="edtf">October 15, 2012</dateIssued>
+    <copyrightDate encoding="iso8601"></copyrightDate>
+    <publisher>YouTube</publisher>
+  </originInfo>
+  <physicalDescription></physicalDescription>
+  <abstract>Ninja Kittens (aka &quot;Crouching Tiger&quot;) studied martial arts, learned how to run, climb, stalk, attack, and now began preparations for the flight to Mars!
+In between workouts kittens playing, studying in a ridiculous dance choir and learn to dive. And then again to study science. In this video, kittens learn physics.</abstract>
+  <recordInfo>
+    <recordOrigin>Avalon Media System</recordOrigin>
+    <recordContentSource>IEN</recordContentSource>
+    <recordCreationDate>20121029</recordCreationDate>
+    <recordChangeDate>2012-10-29T10:34:29-04:00</recordChangeDate>
+    <recordIdentifier source="Fedora"></recordIdentifier>
+    <languageOfCataloging>
+      <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+    </languageOfCataloging>
+  </recordInfo>
+</mods>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+<foxml:datastreamVersion ID="descMetadata.2" LABEL="" CREATED="2012-10-29T14:54:28.537Z" MIMETYPE="text/xml" SIZE="1715">
+<foxml:xmlContent>
+<mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+  <titleInfo type="primary">
+    <title>Kittens learn physics.</title>
+  </titleInfo>
+  <name primary="true" type="personal">
+    <namePart>Funnycatsandnicefish</namePart>
+    <role>
+      <roleTerm authority="marcrelator" type="code">cre</roleTerm>
+      <roleTerm authority="marcrelator" type="text">Creator</roleTerm>
+    </role>
+  </name>
+  <typeOfResource>moving image</typeOfResource>
+  <genre>Pets &amp; Animals</genre>
+  <originInfo>
+    <dateCreated encoding="edtf">October 15, 2012</dateCreated>
+    <dateIssued encoding="edtf">October 15, 2012</dateIssued>
+    <copyrightDate encoding="iso8601"></copyrightDate>
+    <publisher>YouTube</publisher>
+  </originInfo>
+  <physicalDescription></physicalDescription>
+  <abstract>Ninja Kittens (aka &quot;Crouching Tiger&quot;) studied martial arts, learned how to run, climb, stalk, attack, and now began preparations for the flight to Mars!
+In between workouts kittens playing, studying in a ridiculous dance choir and learn to dive. And then again to study science. In this video, kittens learn physics.</abstract>
+  <recordInfo>
+    <recordOrigin>Avalon Media System</recordOrigin>
+    <recordContentSource>IEN</recordContentSource>
+    <recordCreationDate>20121029</recordCreationDate>
+    <recordChangeDate>2012-10-29T10:34:29-04:00</recordChangeDate>
+    <recordIdentifier source="Fedora"></recordIdentifier>
+    <languageOfCataloging>
+      <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+    </languageOfCataloging>
+  </recordInfo>
+</mods>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+<foxml:datastreamVersion ID="descMetadata.3" LABEL="" CREATED="2012-10-29T14:54:50.772Z" MIMETYPE="text/xml" SIZE="1715">
+<foxml:xmlContent>
+<mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+  <titleInfo type="primary">
+    <title>Kittens learn physics.</title>
+  </titleInfo>
+  <name primary="true" type="personal">
+    <namePart>Funnycatsandnicefish</namePart>
+    <role>
+      <roleTerm authority="marcrelator" type="code">cre</roleTerm>
+      <roleTerm authority="marcrelator" type="text">Creator</roleTerm>
+    </role>
+  </name>
+  <typeOfResource>moving image</typeOfResource>
+  <genre>Pets &amp; Animals</genre>
+  <originInfo>
+    <dateCreated encoding="edtf">October 15, 2012</dateCreated>
+    <dateIssued encoding="edtf">October 15, 2012</dateIssued>
+    <copyrightDate encoding="iso8601"></copyrightDate>
+    <publisher>YouTube</publisher>
+  </originInfo>
+  <physicalDescription></physicalDescription>
+  <abstract>Ninja Kittens (aka &quot;Crouching Tiger&quot;) studied martial arts, learned how to run, climb, stalk, attack, and now began preparations for the flight to Mars!
+In between workouts kittens playing, studying in a ridiculous dance choir and learn to dive. And then again to study science. In this video, kittens learn physics.</abstract>
+  <recordInfo>
+    <recordOrigin>Avalon Media System</recordOrigin>
+    <recordContentSource>IEN</recordContentSource>
+    <recordCreationDate>20121029</recordCreationDate>
+    <recordChangeDate>2012-10-29T10:34:29-04:00</recordChangeDate>
+    <recordIdentifier source="Fedora"></recordIdentifier>
+    <languageOfCataloging>
+      <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+    </languageOfCataloging>
+  </recordInfo>
+</mods>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+</foxml:digitalObject>
