@@ -55,7 +55,7 @@ class MasterFile < FileAsset
   end
 
   def content= file
-    media_type = determine_format file
+    self.media_type = determine_format file
     saveOriginal file
   end
 
