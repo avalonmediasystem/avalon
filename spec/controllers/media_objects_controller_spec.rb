@@ -60,7 +60,7 @@ describe MediaObjectsController do
        login_as 'cataloger'
        get 'edit', id: 'hydrant:electronic-resource'
        response.should be_success
-       response.should render_template IngestSteps.first.template
+       response.should render_template HYDRANT_STEPS.first.template
      end
     
     context "Updating the metadata should result in valid input" do
