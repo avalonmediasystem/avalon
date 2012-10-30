@@ -1,29 +1,9 @@
-<fieldset id='uploader'>
-    <legend>Manage file(s)</legend>
-  	<p>Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
-
-    <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
-      <input type="hidden" name="container_id" value="<%=h @mediaobject.pid %>"/>
-      <input type="hidden" name="step" value="file_upload"/>
-
-      <%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>
-
-      <%- field_tag_options = defined?(uploader_options) ? uploader_options : {id: nil, multiple: true} %>
-
-      <%= file_field_tag "Filedata[]", field_tag_options %>
-      <%= submit_tag("Upload file", :name=>"upload_file", class: "btn") %>
-
-      <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
-      <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
-      <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
-    <% end %>
-    
-    
-	  <% unless @masterFiles.blank? %>
-	  <hr />
-      <h4>Associated file(s)</h4>
+<h2>Manage file(s)</h2>
+<section id="associated_files">
+      <h4>Associated files</h4>
       <p>Update the display labels to change the information that end users will see. Changes persist once you select Update.</p>
       
+	  <hr />
       <%= twitter_bootstrap_form_for @mediaobject do |upload_form| %>
       <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
@@ -49,12 +29,7 @@
 		    <% @masterFiles.each do |part, i| %>
       		  <%= hidden_field_tag "parts[#{i}][pid]", part.pid  %>
   		      <tr>
-							<td>
-								<div class="noshow">
-									<i class="icon-arrow-up"></i>
-									<i class="icon-arrow-down"></i> 
-								</div>
-							</td>
+                        <td>&nbsp;</td>
   		        <td>
   		          <% case part.media_type.first
   		             when 'Sound' %>
@@ -88,9 +63,45 @@
   	 	  </tbody>
   	 	</table>
   <%= upload_form.submit "Update", donot_advance: true %>
+<% end %>
+  </section>
+
+<section id="web_upload">
+<fieldset id='uploader'>
+  <h3>Upload through the web</h3>
+  <p>Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
+
+    <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
+      <input type="hidden" name="container_id" value="<%=h @mediaobject.pid %>"/>
+      <input type="hidden" name="step" value="file_upload"/>
+
+      <%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>
+
+      <%- field_tag_options = defined?(uploader_options) ? uploader_options : {id: nil, multiple: true} %>
+
+      <%= file_field_tag "Filedata[]", field_tag_options %>
+      <%= submit_tag("Upload file", :name=>"upload_file", class: "btn") %>
+
+      <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
+      <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
+      <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
+    <% end %>
 </fieldset>
-<% end %>
-<% end %>
+</section>   
+    
+<section id="dropbox_upload">
+<h4>Import from a dropbox</h4>
+<p>For large files use the dropbox location to import files. Files 
+associated with the resource should be uploaded into the following 
+directory. They will appear as soon as the system detects that the upload process is complete.</p>
+<p>For files over [!-- notification limit --] you will be informed by email when they are ready to be reviewed.</p>
+<div class="well well-info">
+  <address>[!-- Dropbox location --]</address>
+  <h5>One time authentication details</h5>
+  <p>Username : [!-- username --]</p>
+  <p>Password : [!-- password --]</p>
+</div>
+</section>
 
 <div class="row-fluid">
   <div class="span12">
