@@ -6,15 +6,13 @@
   gem 'blacklight', 
     git: "git://github.com/projectblacklight/blacklight.git",
     branch: 'bootstrap'
-#  gem 'hydra-head', 
-#    git: "git://github.com/projecthydra/hydra-head.git",
-#    branch: "5.x"
+  gem 'hydra-head', 
+    git: "git://github.com/projecthydra/hydra-head.git",
+    branch: "master"
+  gem 'hydra-file-access',
+    git: "git://github.com/projecthydra/hydra-head.git",
+    branch: "master"
 
-  #  Use cjcolvar's patch until hydra-head itself is fixed (see bug about
-  #  way access controls are managed)
-  #  gem 'hydra-head', '~>5.0.0.pre9'
-  gem 'hydra-head',
-     git: 'git://github.com/cjcolvar/hydra-head'
   gem 'hydrant-engage', :git=>"git://github.com/variations-on-video/hydrant-engage.git"
 #  gem 'active-fedora', '~> 4.2'
   gem 'om', :git=>"git://github.com/projecthydra/om.git"

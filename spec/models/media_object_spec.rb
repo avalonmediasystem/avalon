@@ -1,15 +1,21 @@
 require 'spec_helper'
 
 describe MediaObject do
-  describe "presence_of_required_metadata" do
+  describe "Required metadata is present" do
     it "should have no errors on creator if creator present" do
-      MediaObject.new(creator: "John Doe").should have(0).errors_on(:creator)
+      mo = MediaObject.new
+      mo.update_attribute(:creator, 'John Doe')
+      mo.should have(0).errors_on(:creator)
     end
     it "should have no errors on title if title present" do
-      MediaObject.new(title: "Title").should have(0).errors_on(:title)
+      mo = MediaObject.new
+      mo.update_attribute(:main_title, 'Title')
+      mo.should have(0).errors_on(:title)
     end
     it "should have no errors on date_created if date_created present" do
-      MediaObject.new(date_created: "2012-01-01").should have(0).errors_on(:date_created)
+      mo = MediaObject.new
+      mo.update_attribute(:date_created, '2012-12-12')
+      mo.should have(0).errors_on :date_created
     end
     it "should have errors if requied fields are missing" do
       mo = MediaObject.new
@@ -18,7 +24,11 @@ describe MediaObject do
       mo.should have(1).errors_on(:date_created)
     end
     it "should have errors if required fields are empty" do
-      mo = MediaObject.new(creator: "", title: "", date_created: "")
+      mo = MediaObject.new
+      mo.update_attribute :creator, ''
+      mo.update_attribute :main_title, ''
+      mo.update_attribute :date_created, ''
+
       mo.should have(1).errors_on(:creator)
       mo.should have(1).errors_on(:title)
       mo.should have(1).errors_on(:date_created)
@@ -27,25 +37,35 @@ describe MediaObject do
 
   describe "Field persistance" do
     it "should reject unknown fields"
-    it "should update the contributors field"
-      mo = FactoryGirl.create(:single_entry)
-      mo.contributor = 'Updated contributor'
+    it "should update the contributors field" do
+      load_fixture 'hydrant:electronic-resource'
+      mo = MediaObject.find 'hydrant:electronic-resource'
+      mo.update_attribute :contributor, 'Updated contributor'
       mo.save
 
-      mo = MediaObject.find(mo.pid)
       mo.contributor.length.should == 1
       mo.contributor.should == ['Updated contributor']
-    it "should support multiple contributors"
-      mo = FactoryGirl.create(:multiple_entries)
+    end
+
+    it "should support multiple contributors" do
+      load_fixture 'hydrant:print-publication'
+      mo = MediaObject.find 'hydrant:print-publication'
+      mo.contributor = ['Chris Colvard', 'Phuong Dinh', 'Michael Klein', 
+        'Nathan Rogers']
+      mo.save
       mo.contributor.length.should > 1
-    it "should support multiple publishers"
-      mo = FactoryGirl.create(:single_entry)
+    end
+
+    it "should support multiple publishers" do
+      load_fixture 'hydrant:video-segment'
+      mo = MediaObject.find 'hydrant:video-segment'
       mo.publisher.length.should == 1
-      new_value = [mo.publisher.first, 'Secondary publisher']
-      mo.publisher = new_value
       
-      puts "<< #{mo.publisher} >>"
+      mo.publisher = ['Indiana University', 'Northwestern University',
+        'Ohio State University', 'Notre Dame']
+      mo.save
       mo.publisher.length.should > 1
+    end
   end
   
   describe "Valid formats" do

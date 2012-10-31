@@ -1,8 +1,11 @@
 module FixtureMacros
-  def load_fixture(pid)
+  def load_fixture(pid, status='published')
     remove_fixture(pid)
     ActiveFedora::FixtureLoader.new(File.dirname(__FILE__) + '/../fixtures').reload(pid)
-    puts "Refreshed #{pid}"
+#    @ingest_status = FactoryGirl.build(:new_status, pid: pid, current_step: status, published: (status == 'published' ? true : false))
+    @ingest_status = FactoryGirl.build(:new_status, pid: pid)
+    @ingest_status.save
+    puts "Refreshed #{pid} with status #{@ingest_status.inspect}"
   end
 
 	def remove_fixture(pid)

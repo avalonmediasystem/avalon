@@ -11,12 +11,12 @@ class MasterFile < FileAsset
 
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
   
-  delegate :source, to: :descMetadata
+  delegate :workflow_id, to: :descMetadata, at: [:source], unique: true
   #delegate :description, to: :descMetadata
-  delegate :url, to: :descMetadata, at: [:identifier]
-  delegate :size, to: :descMetadata, at: [:extent]
-  delegate :media_type, to: :descMetadata, at: [:dc_type]
-  delegate :media_format, to: :descMetadata, at: [:medium]
+  delegate :url, to: :descMetadata, at: [:identifier], unique: true
+  delegate :size, to: :descMetadata, at: [:extent], unique: true
+  delegate :media_type, to: :descMetadata, at: [:dc_type], unique: true
+#  delegate :media_format, to: :descMetadata, at: [:medium], unique: true
 
   delegate_to 'statusMetadata', [:percent_complete, :status_code]
 
@@ -26,6 +26,11 @@ class MasterFile < FileAsset
     #
     # 250 MB is the file limit for now
     MAXIMUM_UPLOAD_SIZE = (2**20) * 250
+
+  AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav",
+      "audio/x-wav"]
+  VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
+  UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
 
   def container= obj
     super obj
@@ -39,8 +44,31 @@ class MasterFile < FileAsset
     end
   end  
 
+  def destroy
+    parent = self.container
+    parent.parts_remove self
+
+    unless self.new_object?
+      parent.save(validate: false)
+
+      Rubyhorn.client.stop(self.workflow_id)
+
+      self.delete
+    end
+  end
+
+  def setContent file
+    self.media_type = determine_format file
+    saveOriginal file
+  end
+
+  def process
+    sendToMatterhorn
+    self.save
+  end
+
   def mediapackage_id
-    matterhorn_response = Rubyhorn.client.instance_xml(source.first)
+    matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
     matterhorn_response.workflow.mediapackage.id.first
   end
 
@@ -76,6 +104,13 @@ class MasterFile < FileAsset
       end
   end  
 
+  def updateProgress
+    matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
+
+    @masterfile.percent_complete = percent_complete(matterhorn_response)
+    @masterfile.status_code = matterhorn_response.workflow.state[0]
+  end
+
   protected
   def refresh_status
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
@@ -97,4 +132,77 @@ class MasterFile < FileAsset
       end
     save
   end
+
+  def percent_complete matterhorn_response
+    totalOperations = matterhorn_response.workflow.operations.operation.length
+    finishedOperations = 0
+    matterhorn_response.workflow.operations.operation.operationState.each {|state| finishedOperations += 1 if state == "SUCCEEDED" || state == "SKIPPED"}
+    percent = finishedOperations * 100 / totalOperations
+    puts "percent_complete #{percent}"
+    percent.to_s
+  end
+
+  def determine_format(file)
+    upload_format = 'Unknown'
+    upload_format = 'Moving image' if MasterFile::VIDEO_TYPES.include?(file.content_type)
+    upload_format = 'Sound' if MasterFile::AUDIO_TYPES.include?(file.content_type)
+
+    # If the content type cannot be inferred from the MIME type fall back on the
+    # list of unknown types. This is different than a generic fallback because it
+    # is skipped for known invalid extensions like application/pdf
+    upload_format = determine_format_by_extension(file) if MasterFile::UNKNOWN_TYPES.include?(file.content_type)
+    logger.info "<< Uploaded file appears to be #{@upload_format} >>"
+    return upload_format
+  end
+
+  def determine_format_by_extension(file)
+    audio_extensions = ["mp3", "wav", "aac", "flac"]
+    video_extensions = ["mpeg4", "mp4", "avi", "mov"]
+
+    logger.debug "<< Using fallback method to guess the format >>"
+
+    extension = file.original_filename.split(".").last.downcase
+    logger.debug "<< File extension is #{extension} >>"
+
+    # Default to unknown
+    format = 'Unknown'
+    format = 'Moving image' if video_extensions.include?(extension)
+    format = 'Sound' if audio_extensions.include?(extension)
+
+    return format
+  end
+
+  def sendToMatterhorn
+    file = File.new "#{Rails.root}/public/#{self.url}"
+    args = {"title" => self.pid , "flavor" => "presenter/source", "filename" => File.basename(file)}
+    if self.media_type == 'Sound'
+      args['workflow'] = "fullaudio"
+    elsif self.media_type == 'Moving image'
+      args['workflow'] = "hydrant"
+    end
+    logger.debug "<< Calling Matterhorn with arguments: #{args} >>"
+    workflow_doc = Rubyhorn.client.addMediaPackage(file, args)
+    #master_file.description = "File is being processed"
+
+    # I don't know why this has to be double escaped with two arrays
+    self.workflow_id = workflow_doc.workflow.id[0]
+  end
+
+  def saveOriginal file
+    public_dir_path = "#{Rails.root}/public/"
+    new_dir_path = public_dir_path + 'media_objects/' + self.container.pid.gsub(":", "_") + "/"
+    new_file_path = new_dir_path + file.original_filename
+    FileUtils.mkdir_p new_dir_path unless File.exists?(new_dir_path)
+    FileUtils.rm new_file_path if File.exists?(new_file_path)
+    FileUtils.cp file, new_file_path
+
+    self.url = new_file_path[public_dir_path.length - 1, new_file_path.length - 1]
+
+    logger.debug "<< Filesize #{ file.size.to_s } >>"
+    self.size = file.size.to_s
+
+    #FIXME next line
+    #apply_depositor_metadata(master_file)
+  end
+
 end
