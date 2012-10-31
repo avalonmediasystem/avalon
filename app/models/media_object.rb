@@ -132,19 +132,19 @@ class MediaObject < ActiveFedora::Base
     logger.debug "<< Attribute : #{attribute.inspect} >>"
     logger.debug "<< Value : #{value.inspect} >>"
     logger.debug "<< Attributes : #{attributes.inspect} >>"
-    
+
     descMetadata.find_by_terms(attribute.to_sym).each &:remove
     if descMetadata.template_registry.has_node_type?(attribute.to_sym)
-      value.length.times do |i|
+      Array(value).each_with_index do |val, i|
         logger.debug "<< Adding node #{attribute}[#{i}] >>"
-        logger.debug("descMetadata.add_child_node(descMetadata.ng_xml.root, #{attribute.to_sym.inspect}, #{value[i].inspect}, #{(attributes[i]||{}).inspect})")
-        descMetadata.add_child_node(descMetadata.ng_xml.root, attribute.to_sym, value[i], (attributes[i]||{}))
+        logger.debug("descMetadata.add_child_node(descMetadata.ng_xml.root, #{attribute.to_sym.inspect}, #{val.inspect}, #{(attributes[i]||{}).inspect})")
+        descMetadata.add_child_node(descMetadata.ng_xml.root, attribute.to_sym, val, (attributes[i]||{}))
       end
       #end
     elsif descMetadata.respond_to?("add_#{attribute}")
-      value.length.times do |i|
-        logger.debug("descMetadata.add_#{attribute}(#{value[i].inspect}, #{attributes[i].inspect})")
-        descMetadata.send("add_#{attribute}", value[i], (attributes[i] || {}))
+      Array(value).each_with_index do |val, i|
+        logger.debug("descMetadata.add_#{attribute}(#{val.inspect}, #{attributes[i].inspect})")
+        descMetadata.send("add_#{attribute}", val, (attributes[i] || {}))
       end;
     else
       # Put in a placeholder so that the inserted nodes go into the right part of the
