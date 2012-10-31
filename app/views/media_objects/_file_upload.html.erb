@@ -4,7 +4,7 @@
       <p>Update the display labels to change the information that end users will see. Changes persist once you select Update.</p>
       
 	  <hr />
-      <%= twitter_bootstrap_form_for @mediaobject do |upload_form| %>
+      <%= twitter_bootstrap_form_for @mediaobject do |file_list| %>
       <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
       
@@ -62,7 +62,7 @@
     	 	    <% end %>
   	 	  </tbody>
   	 	</table>
-  <%= upload_form.submit "Update", donot_advance: true %>
+  <%= submit_tag "Update", donot_advance: true %>
 <% end %>
   </section>
 
@@ -91,16 +91,11 @@
     
 <section id="dropbox_upload">
 <h4>Import from a dropbox</h4>
-<p>For large files use the dropbox location to import files. Files 
-associated with the resource should be uploaded into the following 
-directory. They will appear as soon as the system detects that the upload process is complete.</p>
-<p>For files over [!-- notification limit --] you will be informed by email when they are ready to be reviewed.</p>
-<div class="well well-info">
-  <address>[!-- Dropbox location --]</address>
-  <h5>One time authentication details</h5>
-  <p>Username : [!-- username --]</p>
-  <p>Password : [!-- password --]</p>
-</div>
+<p>For large files use the dropbox location to import files. Once they have 
+been uploaded you can select them from the list below. Associated files will 
+be processed as soon as you continue to the next step.</p>
+<%= render "dropbox_details" %>
+<%= render "dropbox_file_navigator", locals: {file_set: []} %>
 </section>
 
 <div class="row-fluid">

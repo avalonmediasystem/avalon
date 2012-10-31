@@ -70,4 +70,10 @@ module Hydrant
     enable_starttls_auto: false
   }
   end
+  
+  # Map config to the local namespace so we can use shorter references in 
+  # our YAML file
+  def self.config
+    Application.config
+  end
 end

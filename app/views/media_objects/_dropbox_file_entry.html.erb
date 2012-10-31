@@ -1,0 +1,18 @@
+ 		      <tr>
+                        <td><%= check_box_tag "dropbox[#{i}][id]" %></td>
+                        <td><%= file.name %></td>
+                        <td><%= file.size %></td>
+  		        <td>
+  		          <% case file.mime_type
+  		             when 'Sound' %>
+	    		       <i class="icon-volume-up"></i>
+  		          <% when 'Moving image' %>
+	    		       <i class="icon-film"></i>
+	    		  <% else %>
+			       <i class="icon-question-sign"></i>
+  		          <% end %>
+  		        </td>
+                        <td><%= file.mime_type %></td>
+      	  	  </td>
+         	 	    </tr>
+  
