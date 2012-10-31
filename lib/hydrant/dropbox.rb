@@ -1,3 +1,5 @@
+require 'digest/md5'
+
 class Dropbox
 
   # Returns a list of files that have MD5 hashes
@@ -24,6 +26,7 @@ class Dropbox
             end
 
           file = Hash.new
+          file["id"] = Digest::MD5.hexdigest media_path
           file["md5"] = md5_content 
           file["full_path"] = media_path
           file["file_size"] = File.size media_path
@@ -35,5 +38,18 @@ class Dropbox
     end
 
     return files
+  end
+
+  # Compares id against hash of each file's full path and return the path that matches
+  # Pretty horrible, should destroy 
+  def find_by_id(dir, id)
+    Dir.entries(dir).each do |path|
+      full_path = dir + path
+      if File.file?( full_path ) && File.extname( path ) != ".md5" && id == Digest::MD5.hexdigest(full_path)
+        return full_path 
+      end
+    end
+
+    return nil
   end
 end
