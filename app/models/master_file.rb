@@ -13,10 +13,10 @@ class MasterFile < FileAsset
   
   delegate :workflow_id, to: :descMetadata, at: [:source], unique: true
   #delegate :description, to: :descMetadata
-  delegate :url, to: :descMetadata, at: [:identifier]
-  delegate :size, to: :descMetadata, at: [:extent]
-  delegate :media_type, to: :descMetadata, at: [:dc_type]
-  delegate :media_format, to: :descMetadata, at: [:medium]
+  delegate :url, to: :descMetadata, at: [:identifier], unique: true
+  delegate :size, to: :descMetadata, at: [:extent], unique: true
+  delegate :media_type, to: :descMetadata, at: [:dc_type], unique: true
+#  delegate :media_format, to: :descMetadata, at: [:medium], unique: true
 
   delegate_to 'statusMetadata', [:percent_complete, :status_code]
 
@@ -46,25 +46,29 @@ class MasterFile < FileAsset
 
   def destroy
     parent = self.container
-    parent.parts_remove master_file
-    parent.save(validate: false)
+    parent.parts_remove self
 
-    Rubyhorn.client.stop(master_file.source.first)
+    unless self.new_object?
+      parent.save(validate: false)
 
-    master_file.delete
+      Rubyhorn.client.stop(self.workflow_id)
+
+      self.delete
+    end
   end
 
-  def content= file
+  def setContent file
     self.media_type = determine_format file
     saveOriginal file
   end
 
-  def workflow_id
-    source.first
+  def process
+    sendToMatterhorn
+    self.save
   end
 
   def mediapackage_id
-    matterhorn_response = Rubyhorn.client.instance_xml(source.first)
+    matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
     matterhorn_response.workflow.mediapackage.id.first
   end
 
@@ -139,6 +143,7 @@ class MasterFile < FileAsset
   end
 
   def determine_format(file)
+    upload_format = 'Unknown'
     upload_format = 'Moving image' if MasterFile::VIDEO_TYPES.include?(file.content_type)
     upload_format = 'Sound' if MasterFile::AUDIO_TYPES.include?(file.content_type)
 
@@ -168,28 +173,28 @@ class MasterFile < FileAsset
   end
 
   def sendToMatterhorn
-    args = {"title" => self.pid , "flavor" => "presenter/source", "filename" => self.content.basename}
-    if self.media_format == 'Sound'
+    file = File.new "#{Rails.root}/public/#{self.url}"
+    args = {"title" => self.pid , "flavor" => "presenter/source", "filename" => File.basename(file)}
+    if self.media_type == 'Sound'
       args['workflow'] = "fullaudio"
-    elsif self.media_format == 'Moving image'
+    elsif self.media_type == 'Moving image'
       args['workflow'] = "hydrant"
     end
     logger.debug "<< Calling Matterhorn with arguments: #{args} >>"
-    workflow_doc = Rubyhorn.client.addMediaPackage(self.content, args)
+    workflow_doc = Rubyhorn.client.addMediaPackage(file, args)
     #master_file.description = "File is being processed"
 
     # I don't know why this has to be double escaped with two arrays
-    master_file.source = workflow_doc.workflow.id[0]
-    master_file.save
+    self.workflow_id = workflow_doc.workflow.id[0]
   end
 
   def saveOriginal file
     public_dir_path = "#{Rails.root}/public/"
-    new_dir_path = public_dir_path + 'media_objects/' + params[:container_id].gsub(":", "_") + "/"
+    new_dir_path = public_dir_path + 'media_objects/' + self.container.pid.gsub(":", "_") + "/"
     new_file_path = new_dir_path + file.original_filename
     FileUtils.mkdir_p new_dir_path unless File.exists?(new_dir_path)
     FileUtils.rm new_file_path if File.exists?(new_file_path)
-    FileUtils.cp file.tempfile, new_file_path
+    FileUtils.cp file, new_file_path
 
     self.url = new_file_path[public_dir_path.length - 1, new_file_path.length - 1]
 
@@ -198,11 +203,6 @@ class MasterFile < FileAsset
 
     #FIXME next line
     #apply_depositor_metadata(master_file)
-
-    self.container = MediaObject.find(params[:container_id])
-
-    # If redirect_params has not been set, use {:action=>:index}
-    logger.debug "Created #{master_file.pid}."
   end
 
 end

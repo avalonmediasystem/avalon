@@ -40,7 +40,8 @@ class MasterFilesController < ApplicationController
         end
 
         master_file = MasterFile.new
-        master_file.content = file
+        master_file.container = media_object
+        master_file.setContent(file)
         
         if 'Unknown' == master_file.media_type
           flash[:errors] = [] if flash[:errors].nil?
@@ -48,13 +49,14 @@ class MasterFilesController < ApplicationController
           error << file.original_filename
           error << " (" << file.content_type << ")"
           flash[:errors].push error
+	  master_file.destroy
           next
         end
 
         @master_files << master_file
 	
         if master_file.save
-          master_file.sendToMatterhorn
+          master_file.process
         else 
           flash[:errors] = "There was a problem storing the file"
 			  end
@@ -87,6 +89,7 @@ class MasterFilesController < ApplicationController
   # When destroying a file asset be sure to stop it first
   def destroy
     master_file = MasterFile.find(params[:id])
+    parent = master_file.container
     
     authorize! :edit, parent, message: "You do not have sufficient privileges to delete files"
 
