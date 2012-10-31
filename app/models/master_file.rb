@@ -57,9 +57,14 @@ class MasterFile < FileAsset
     end
   end
 
-  def setContent file
-    self.media_type = determine_format file
-    saveOriginal file
+  def setContent(file, content_type = nil)
+    if file.is_a? ActionDispatch::Http::UploadedFile
+      self.media_type = determine_format(file.original_filename, file.content_type)
+      saveOriginal file.tempfile
+    else
+      self.media_type = determine_format(File.basename(file), content_type)
+      saveOriginal file
+    end
   end
 
   def process
@@ -142,26 +147,26 @@ class MasterFile < FileAsset
     percent.to_s
   end
 
-  def determine_format(file)
+  def determine_format(filename, content_type = nil)
     upload_format = 'Unknown'
-    upload_format = 'Moving image' if MasterFile::VIDEO_TYPES.include?(file.content_type)
-    upload_format = 'Sound' if MasterFile::AUDIO_TYPES.include?(file.content_type)
+    upload_format = 'Moving image' if MasterFile::VIDEO_TYPES.include?(content_type)
+    upload_format = 'Sound' if MasterFile::AUDIO_TYPES.include?(content_type)
 
     # If the content type cannot be inferred from the MIME type fall back on the
     # list of unknown types. This is different than a generic fallback because it
     # is skipped for known invalid extensions like application/pdf
-    upload_format = determine_format_by_extension(file) if MasterFile::UNKNOWN_TYPES.include?(file.content_type)
+    upload_format = determine_format_by_extension(file) if MasterFile::UNKNOWN_TYPES.include?(content_type)
     logger.info "<< Uploaded file appears to be #{@upload_format} >>"
     return upload_format
   end
 
-  def determine_format_by_extension(file)
+  def determine_format_by_extension(filename)
     audio_extensions = ["mp3", "wav", "aac", "flac"]
     video_extensions = ["mpeg4", "mp4", "avi", "mov"]
 
     logger.debug "<< Using fallback method to guess the format >>"
 
-    extension = file.original_filename.split(".").last.downcase
+    extension = filename.split(".").last.downcase
     logger.debug "<< File extension is #{extension} >>"
 
     # Default to unknown
@@ -173,7 +178,7 @@ class MasterFile < FileAsset
   end
 
   def sendToMatterhorn
-    file = File.new "#{Rails.root}/public/#{self.url}"
+    file = File.new self.url
     args = {"title" => self.pid , "flavor" => "presenter/source", "filename" => File.basename(file)}
     if self.media_type == 'Sound'
       args['workflow'] = "fullaudio"
@@ -188,15 +193,9 @@ class MasterFile < FileAsset
     self.workflow_id = workflow_doc.workflow.id[0]
   end
 
-  def saveOriginal file
-    public_dir_path = "#{Rails.root}/public/"
-    new_dir_path = public_dir_path + 'media_objects/' + self.container.pid.gsub(":", "_") + "/"
-    new_file_path = new_dir_path + file.original_filename
-    FileUtils.mkdir_p new_dir_path unless File.exists?(new_dir_path)
-    FileUtils.rm new_file_path if File.exists?(new_file_path)
-    FileUtils.cp file, new_file_path
-
-    self.url = new_file_path[public_dir_path.length - 1, new_file_path.length - 1]
+  def saveOriginal(file)
+    self.url = File.realpath(file.path)
+    logger.debug "<< File location #{ self.url } >>"
 
     logger.debug "<< Filesize #{ file.size.to_s } >>"
     self.size = file.size.to_s
