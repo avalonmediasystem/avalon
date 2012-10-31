@@ -15,6 +15,14 @@ class MediaObjectsController < CatalogController
     
     redirect_to edit_media_object_path(@mediaobject, step: HYDRANT_STEPS.first.step)
   end
+
+  # returns a list of files in the directory 
+  def dropbox_files dir
+    # if directory is empty returns empty array
+
+    # if dir isnt empty return array of files
+
+  end
   
   def edit
     logger.debug "<< EDIT >>"
@@ -27,11 +35,6 @@ class MediaObjectsController < CatalogController
       @currentStream = @masterFiles.first
       flash[:notice] = "The stream was not recognized. Defaulting to the first available stream for the resource"
     end
-
-    #@masterfiles_with_order = @mediaobject.parts_with_order
-#    if !@masterFiles.nil? && @masterFiles.count > 1 
-#      @relType = @mediaobject.descMetadata.relation_type[0]
-#    end
 
     @ingest_status = IngestStatus.find_by_pid(@mediaobject.pid)
     @active_step = params[:step] || @ingest_status.current_step

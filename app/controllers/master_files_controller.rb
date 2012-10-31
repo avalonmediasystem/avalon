@@ -51,22 +51,21 @@ class MasterFilesController < ApplicationController
           flash[:errors].push error
 	  master_file.destroy
           next
+        else
+          flash[:upload] = create_upload_notice(master_file.media_type)
         end
 
         @master_files << master_file
 	
-        if master_file.save
-          master_file.process
-        else 
+        unless master_file.save
           flash[:errors] = "There was a problem storing the file"
-			  end
-  		end
+        end
+      end
     else
       flash[:notice] = "You must specify a file to upload"
     end
     
     respond_to do |format|
-      flash[:upload] = create_upload_notice(@upload_format)
     	format.html { redirect_to edit_media_object_path(params[:container_id], step: 'file-upload') }
     	format.js { }
     end

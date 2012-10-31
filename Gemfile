@@ -45,6 +45,8 @@
   gem 'omniauth-identity'
   gem 'omniauth-ldap'
 
+  gem 'mediainfo'
+
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
     gem 'uglifier', '>= 1.0.3'
@@ -72,7 +74,10 @@
     gem 'pry'
     gem 'pry-rails'
     gem 'unicorn-rails'
-		gem 'capistrano-unicorn', :require => false
+    gem 'capistrano-unicorn', :require => false
+    gem 'rb-fsevent', '~> 0.9.1'
+    gem 'guard'
+    gem 'guard-hydrant', path: '/Users/phuongdh/Documents/guard-hydrant'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do
