@@ -54,11 +54,12 @@ class MasterFilesController < ApplicationController
         else
           flash[:upload] = create_upload_notice(master_file.media_type)
         end
-
-        @master_files << master_file
 	
         unless master_file.save
           flash[:errors] = "There was a problem storing the file"
+        else
+          master_file.process
+          @master_files << master_file
         end
       end
     else
