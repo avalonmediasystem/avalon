@@ -30,7 +30,7 @@ class MediaObjectsController < CatalogController
       # When uploading files be sure to get a list of all master files as
       # well as the list of dropbox accessible files
       when 'file-upload'
-        @dropbox_files = Dropbox.all
+        @dropbox_files = Hydrant::DropboxService.all
       when 'preview'
         @currentStream = set_active_file(params[:content])
        if (not @masterFiles.blank? and @currentStream.blank?) then
