@@ -3,7 +3,7 @@
 <% if file_set.nil? or file_set.empty? %>
   <%= render "dropbox_empty_container" %>
 <% else %>
-<%= form_tag edit_media_object_path(@mediaobject) do %>
+  <%= form_tag(master_files_path) do -%>
       <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
       
@@ -24,9 +24,10 @@
           <th>MIME type</th>
         </thead>
 		    <tbody>
-		    <%# file_set.each do |file, i| %>
-                      <%# render "dropbox_file_entry", locals: {file: file} %>
-   	 	    <%# end %>
+		    <% file_set.each do |file, i| %>
+                      <%= render partial: "dropbox_file_entry", 
+                        locals: {file: file, index: i} %>
+   	 	    <% end %>
   	 	  </tbody>
   	 	</table>
   <%= submit_tag "Associate selected files", donot_advance: true %>
