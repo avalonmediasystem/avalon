@@ -24,9 +24,10 @@
           <th>MIME type</th>
         </thead>
 		    <tbody>
-		    <%# file_set.each do |file, i| %>
-                      <%# render "dropbox_file_entry", locals: {file: file} %>
-   	 	    <%# end %>
+		    <% file_set.each do |file, i| %>
+                      <%= render partial: "dropbox_file_entry", 
+                        locals: {file: file, index: i} %>
+   	 	    <% end %>
   	 	  </tbody>
   	 	</table>
   <%= submit_tag "Associate selected files", donot_advance: true %>

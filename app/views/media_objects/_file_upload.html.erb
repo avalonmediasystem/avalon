@@ -95,7 +95,7 @@
 been uploaded you can select them from the list below. Associated files will 
 be processed as soon as you continue to the next step.</p>
 <%= render "dropbox_details" %>
-<%= render "dropbox_file_navigator", locals: {file_set: []} %>
+<%= render partial: "dropbox_file_navigator", locals: {file_set: @dropbox_files} %>
 </section>
 
 <div class="row-fluid">

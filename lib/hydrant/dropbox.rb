@@ -18,10 +18,9 @@ class Dropbox
       if File.file?( full_path ) && File.extname( path ) == ".md5"
         media_path = @base_directory + File.basename(path, ".md5")
         if File.file?( media_path )
-          md5_file = File.open(full_path, "r")
-          md5_content = md5_file.read
-          md5_file.close
-          
+          md5_content = File.open(full_path, 'r') { |f| f.read } 
+          md5_content = md5_content[1..5]
+
           info = Mediainfo.new media_path
           media_type = case 
             when info.video?
@@ -32,11 +31,11 @@ class Dropbox
               "unknown"
             end
 
-          file = [id: Digest::MD5.hexdigest(media_path),
+          file = {id: Digest::MD5.hexdigest(media_path)[1..5],
                   md5: md5_content,
                   qualified_path: media_path,
                   size: File.size(media_path),
-                  media_type: media_type]
+                  media_type: media_type}
           files << file
         end
       end
@@ -51,8 +50,10 @@ class Dropbox
     return nil if @base_directory.blank? or not Dir.exists?(@base_directory)
 
     Dir.entries(@base_directory).each do |path|
-      full_path = dir + path
-      if File.file?( full_path ) && File.extname( path ) != ".md5" && id == Digest::MD5.hexdigest(full_path)
+      full_path = @base_directory + path
+      if File.file?( full_path ) && 
+        File.extname( path ) != ".md5" && 
+        id == Digest::MD5.hexdigest(full_path).to_s[1..5]
         return full_path 
       end
     end

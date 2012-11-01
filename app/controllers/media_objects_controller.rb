@@ -22,23 +22,22 @@ class MediaObjectsController < CatalogController
     
     @mediaobject = MediaObject.find(params[:id])
     @masterFiles = load_master_files
-     @ingest_status = IngestStatus.find_by_pid(@mediaobject.pid)
+    @ingest_status = IngestStatus.find_by_pid(@mediaobject.pid)
     @active_step = params[:step] || @ingest_status.current_step
     prev_step = HYDRANT_STEPS.previous(@active_step)
     
-    case @active_step
+    case @active_step 
       # When uploading files be sure to get a list of all master files as
       # well as the list of dropbox accessible files
       when 'file-upload'
         @dropbox_files = Hydrant::DropboxService.all
       when 'preview'
         @currentStream = set_active_file(params[:content])
-       if (not @masterFiles.blank? and @currentStream.blank?) then
-         @currentStream = @masterFiles.first
-         flash[:notice] = "The stream was not recognized. Defaulting to the first available stream for the resource"
-       end
+        if (not @masterFiles.blank? and @currentStream.blank?) then
+          @currentStream = @masterFiles.first
+          flash[:notice] = "The stream was not recognized. Defaulting to the first available stream for the resource"
+        end
       end
-    end
 
     unless prev_step.nil? || @ingest_status.completed?(prev_step.step) 
       redirect_to edit_media_object_path(@mediaobject)
