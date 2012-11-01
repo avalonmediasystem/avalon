@@ -1,7 +1,8 @@
 development: &PROTOTYPE
   dropbox:
-    location : 'sftp://localhost/srv/avalon/dropbox'
-    username : 'avalon'
-    password : 'avalon'
+    path       : '/srv/avalon/dropbox'
+    upload_url : 'sftp://localhost/srv/avalon/dropbox'
+    username   : 'avalon'
+    password   : 'avalon'
 test: *PROTOTYPE
 production: *PROTOTYPE
