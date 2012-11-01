@@ -4,8 +4,10 @@ module ModsTemplates
 	included do
 		class_eval do
 		  # Title Templates
-		  define_template :title_info do |xml, title, opts={}|
+		  define_template :title_info do |xml, title, attributes={}|
+		  	opts = { primary: false }.merge(attributes)
 		    attrs = opts[:type].present? ? { :type => opts[:type].to_s } : {}
+		  	attrs['usage']="primary" if opts[:primary]
 		    xml.titleInfo(attrs) {
 		      xml.title(title)
 		      xml.subTitle(opts[:subtitle]) if opts[:subtitle].present?
@@ -15,7 +17,7 @@ module ModsTemplates
 		  def add_title(title, attrs={}, defaults={})
 		  	add_child_node(ng_xml.root, :title_info, title, defaults.merge(attrs))
 		  end
-		  def add_main_title(title, attrs={}); 				add_title(title, attrs, type: :primary);     end
+		  def add_main_title(title, attrs={}); 				add_title(title, attrs, primary: true);     end
 		  def add_alternative_title(title, attrs={}); add_title(title, attrs, type: :alternative); end
 		  def add_translated_title(title, attrs={});  add_title(title, attrs, type: :translated);  end
 		  def add_uniform_title(title, attrs={});     add_title(title, attrs, type: :uniform);     end
@@ -25,7 +27,7 @@ module ModsTemplates
 		  	opts = { type: 'personal', role_code: 'cre', role_text: 'Creator', primary: false }.merge(attributes)
 		  	logger.debug([name, opts].inspect)
 		  	attrs = { :type => opts[:type] }
-		  	attrs['primary']="true" if opts[:primary]
+		  	attrs['usage']="primary" if opts[:primary]
 		    xml.name(attrs) {
 		      xml.namePart { xml.text(name) }
 		      if (opts[:role_code].present? or opts[:role_text].present?)

@@ -15,7 +15,7 @@ class ModsDocument < ActiveFedora::NokogiriDatastream
       t.title
       t.subtitle(:path => 'subTitle')
     end
-    t.main_title_info(:ref => :title_info, :path => 'titleInfo[@type="primary"]')
+    t.main_title_info(:ref => :title_info, :path => 'titleInfo[@usage="primary"]')
     t.main_title(:proxy => [:main_title_info, :title])
     t.alternative_title_info(:ref => :title_info, :path => 'titleInfo[@type="alternative"]')
     t.alternative_title(:proxy => [:alternative_title_info, :title])
@@ -33,17 +33,18 @@ class ModsDocument < ActiveFedora::NokogiriDatastream
         t.text(:path => 'roleTerm', :attributes => { :type => 'text' })
       end
     end
-    t._contributor_name(:ref => [:name], :path => 'name[not(@primary) or @primary!="true"]')
+    t._contributor_name(:ref => [:name], :path => 'name[not(@usage) or @usage!="primary"]')
     t.contributor(:proxy => [:_contributor_name, :name_part])
     t._creator_name(:ref => [:name], :path => 'name[oxns:role/oxns:roleTerm[@type="text"] = "Creator" or oxns:role/oxns:roleTerm[@type="code"] = "cre"]')
     t.creator(:proxy => [:_creator_name, :name_part])
-    t._primary_creator_name(:ref => [:name], :path => 'name[@type="primary"]')
+    t._primary_creator_name(:ref => [:name], :path => 'name[@usage="primary"]')
     t.primary_creator(:proxy => [:_creator_name, :name_part])
 
     t.statement_of_responsibility(:path => 'note', :attributes => { :type => 'statement of responsbility' })
 
     # Type and Genre
     t.resource_type(:path => 'typeOfResource')
+    # TODO: Add authority info to genre
     t.genre
 
     # Publishing Info

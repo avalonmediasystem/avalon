@@ -13,6 +13,8 @@ class MediaObject < ActiveFedora::Base
   
   # Before saving put the pieces into the right order and validate to make sure that
   # there are no syntactic errors
+  before_save 'descMetadata.ensure_identifier_exists!', prepend: true
+  before_save 'descMetadata.update_change_date!', prepend: true
   before_save 'descMetadata.reorder_elements!', prepend: true
   
   # Call custom validation methods to ensure that required fields are present and

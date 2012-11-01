@@ -75,6 +75,14 @@ module ModsBehaviors
   	{ 'mods' => 'http://www.loc.gov/mods/v3' }
 	end
 
+  def ensure_identifier_exists!
+    self.identifier = self.pid if self.identifier.empty?
+  end
+
+  def update_change_date!(t=Time.now.iso8601)
+    self.record_change_date = t
+  end
+
   def remove_empty_nodes!
   	patterns = [
   		'//mods:titleInfo[count(mods:title)=0]',
@@ -90,11 +98,12 @@ module ModsBehaviors
 
   def reorder_elements!
     order = [
-      'mods:mods/mods:titleInfo[@type="primary"]',
+      'mods:mods/mods:titleInfo[@usage="primary"]',
       'mods:mods/mods:titleInfo[@type="alternative"]',
       'mods:mods/mods:titleInfo[@type="translated"]',
       'mods:mods/mods:titleInfo[@type="uniform"]',
-      'mods:mods/mods:name[@primary="true"]',
+      'mods:mods/mods:titleInfo',
+      'mods:mods/mods:name[@usage="primary"]',
       'mods:mods/mods:name',
       'mods:mods/mods:typeOfResource',
       'mods:mods/mods:genre',
