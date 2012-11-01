@@ -3,7 +3,7 @@
 <% if file_set.nil? or file_set.empty? %>
   <%= render "dropbox_empty_container" %>
 <% else %>
-<%= form_tag edit_media_object_path(@mediaobject) do %>
+  <%= form_tag(master_files_path) do -%>
       <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
       
