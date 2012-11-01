@@ -15,7 +15,7 @@
 
   gem 'hydrant-engage', :git=>"git://github.com/variations-on-video/hydrant-engage.git"
 #  gem 'active-fedora', '~> 4.2'
-  gem 'om', :git=>"git://github.com/projecthydra/om.git"
+  #gem 'om', :git=>"git://github.com/projecthydra/om.git"
  
   platforms :jruby do
   	gem 'jruby-openssl'
@@ -76,8 +76,8 @@
     gem 'unicorn-rails'
     gem 'capistrano-unicorn', :require => false
     gem 'rb-fsevent', '~> 0.9.1'
-    gem 'guard'
-    gem 'guard-hydrant', path: '/Users/phuongdh/Documents/guard-hydrant'
+    #gem 'guard'
+    #gem 'guard-hydrant', path: '/Users/phuongdh/Documents/guard-hydrant'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do

@@ -1,6 +1,5 @@
 <div class="well well-info">
-  <address>[!-- Dropbox location --]</address>
-  <h5>One time authentication details</h5>
-  <p>Username : [!-- username --]</p>
-  <p>Password : [!-- password --]</p>
+  <address><%= Hydrant::Configuration['dropbox']['upload_uri'] %></address>
+  <p><strong>Username</strong> <%= Hydrant::Configuration['dropbox']['username'] %> / 
+  <strong>Password</strong> <%= Hydrant::Configuration['dropbox']['password'] %></p>
 </div>
