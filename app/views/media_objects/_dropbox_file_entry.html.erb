@@ -1,10 +1,9 @@
-<%= file.inspect %>
  		      <tr>
                         <td><%= check_box_tag "dropbox[#{index}][id]", file[:id] %></td>
-                        <td><%= file['name'] %></td>
-                        <td><%= number_to_human_size(file['size']) %></td>
+                        <td><%= file[:name] %></td>
+                        <td><%= number_to_human_size(file[:size]) %></td>
   		        <td>
-  		          <% case file['media_type']
+  		          <% case file[:media_type]
   		             when 'audio' %>
 	    		       <i class="icon-volume-up"></i>
   		          <% when 'video' %>
@@ -13,7 +12,7 @@
 			       <i class="icon-question-sign"></i>
   		          <% end %>
   		        </td>
-                        <td><%= file['media_type'] %></td>
+                        <td><%= file[:media_type] %></td>
       	  	  </td>
          	 	    </tr>
   

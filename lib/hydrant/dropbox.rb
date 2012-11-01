@@ -34,6 +34,7 @@ class Dropbox
           file = {id: Digest::MD5.hexdigest(media_path)[1..5],
                   md5: md5_content,
                   qualified_path: media_path,
+                  name: File.basename(media_path),
                   size: File.size(media_path),
                   media_type: media_type}
           files << file
