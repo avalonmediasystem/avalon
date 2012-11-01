@@ -110,10 +110,11 @@ class MasterFile < FileAsset
   end  
 
   def updateProgress
-    matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
+    matterhorn_response = Rubyhorn.client.instance_xml(self.workflow_id)
 
-    @masterfile.percent_complete = percent_complete(matterhorn_response)
-    @masterfile.status_code = matterhorn_response.workflow.state[0]
+    self.percent_complete = calculate_percent_complete(matterhorn_response)
+    self.status_code = matterhorn_response.workflow.state[0]
+    self.save
   end
 
   protected
@@ -138,7 +139,7 @@ class MasterFile < FileAsset
     save
   end
 
-  def percent_complete matterhorn_response
+  def calculate_percent_complete matterhorn_response
     totalOperations = matterhorn_response.workflow.operations.operation.length
     finishedOperations = 0
     matterhorn_response.workflow.operations.operation.operationState.each {|state| finishedOperations += 1 if state == "SUCCEEDED" || state == "SKIPPED"}
