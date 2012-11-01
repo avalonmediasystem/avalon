@@ -15,7 +15,8 @@
 
   gem 'hydrant-engage', :git=>"git://github.com/variations-on-video/hydrant-engage.git"
 #  gem 'active-fedora', '~> 4.2'
-  gem 'om', :git=>"git://github.com/projecthydra/om.git"
+#  gem 'om', :git=>"git://github.com/projecthydra/om.git"
+  gem 'om', '~>1.7.0'
  
   platforms :jruby do
   	gem 'jruby-openssl'
