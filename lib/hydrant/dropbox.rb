@@ -1,10 +1,16 @@
 require 'digest/md5'
 
 class Dropbox
+  attr_reader :base_directory 
+  
+  def self.configure(root)
+    self.base_directory = root
+  end
 
   # Returns a list of files that have MD5 hashes
-  def self.files_with_hash dir
-    dir_contents = Dir.entries(dir)
+  def self.all 
+    return nil if base_directory.blank? or not Dir.exists?(base_directory)
+    dir_contents = Dir.entries base_directory
     files = Array.new 
     dir_contents.each do |path| 
       full_path = dir + path
@@ -42,8 +48,10 @@ class Dropbox
 
   # Compares id against hash of each file's full path and return the path that matches
   # Pretty horrible, should destroy 
-  def find_by_id(dir, id)
-    Dir.entries(dir).each do |path|
+  def find_by_id(id)
+    return nil if base_directory.blank? or not Dir.exists?(base_directory)
+
+    Dir.entries(base_directory).each do |path|
       full_path = dir + path
       if File.file?( full_path ) && File.extname( path ) != ".md5" && id == Digest::MD5.hexdigest(full_path)
         return full_path 
@@ -51,5 +59,10 @@ class Dropbox
     end
 
     return nil
+  end
+  
+  protected
+  def self.base_directory= root
+    self.base_directory = root
   end
 end
