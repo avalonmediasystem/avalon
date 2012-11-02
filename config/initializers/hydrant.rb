@@ -6,6 +6,7 @@
 require 'hydrant/dropbox'
 
 module Hydrant
-  Configuration = YAML::load(File.read(Rails.root.join('config', 'hydrant.yml')))
+  env = ENV['RAILS_ENV'] || 'development'
+  Configuration = YAML::load(File.read(Rails.root.join('config', 'hydrant.yml')))[env]
   DropboxService = Dropbox.new Hydrant::Configuration['dropbox']['path']
 end
