@@ -215,10 +215,10 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <foxml:datastreamVersion ID="descMetadata.1" LABEL="" CREATED="2012-10-29T14:33:56.406Z" MIMETYPE="text/xml" SIZE="1784">
 <foxml:xmlContent>
 <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
-  <titleInfo type="primary">
+  <titleInfo usage="primary">
     <title>Dino: The Essential Dean Martin</title>
   </titleInfo>
-  <name primary="true" type="personal">
+  <name usage="primary" type="personal">
     <namePart>Dean Martin</namePart>
     <role>
       <roleTerm authority="marcrelator" type="code">cre</roleTerm>
@@ -264,10 +264,10 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <foxml:datastreamVersion ID="descMetadata.2" LABEL="" CREATED="2012-10-29T14:34:02.725Z" MIMETYPE="text/xml" SIZE="1784">
 <foxml:xmlContent>
 <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
-  <titleInfo type="primary">
+  <titleInfo usage="primary">
     <title>Dino: The Essential Dean Martin</title>
   </titleInfo>
-  <name primary="true" type="personal">
+  <name usage="primary" type="personal">
     <namePart>Dean Martin</namePart>
     <role>
       <roleTerm authority="marcrelator" type="code">cre</roleTerm>
@@ -313,10 +313,10 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <foxml:datastreamVersion ID="descMetadata.3" LABEL="" CREATED="2012-10-29T14:34:23.256Z" MIMETYPE="text/xml" SIZE="1784">
 <foxml:xmlContent>
 <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
-  <titleInfo type="primary">
+  <titleInfo usage="primary">
     <title>Dino: The Essential Dean Martin</title>
   </titleInfo>
-  <name primary="true" type="personal">
+  <name usage="primary" type="personal">
     <namePart>Dean Martin</namePart>
     <role>
       <roleTerm authority="marcrelator" type="code">cre</roleTerm>
