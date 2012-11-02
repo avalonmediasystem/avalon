@@ -48,6 +48,7 @@
   gem 'mediainfo'
   gem 'rb-fsevent', '~> 0.9.1', :require => false
   gem 'rb-inotify', :require => false
+  gem 'daemons'
   gem 'guard'
   gem 'guard-hydrant', :git => 'git://github.com/variations-on-video/guard-hydrant'
 

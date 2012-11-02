@@ -60,10 +60,10 @@ class MasterFile < FileAsset
   def setContent(file, content_type = nil)
     if file.is_a? ActionDispatch::Http::UploadedFile
       self.media_type = determine_format(file.original_filename, file.content_type)
-      saveOriginal file.tempfile
+      saveOriginal(file, file.original_filename)
     else
       self.media_type = determine_format(File.basename(file), content_type)
-      saveOriginal file
+      saveOriginal(file, nil)
     end
   end
 
@@ -110,10 +110,11 @@ class MasterFile < FileAsset
   end  
 
   def updateProgress
-    matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
+    matterhorn_response = Rubyhorn.client.instance_xml(self.workflow_id)
 
-    @masterfile.percent_complete = percent_complete(matterhorn_response)
-    @masterfile.status_code = matterhorn_response.workflow.state[0]
+    self.percent_complete = calculate_percent_complete(matterhorn_response)
+    self.status_code = matterhorn_response.workflow.state[0]
+    self.save
   end
 
   protected
@@ -138,7 +139,7 @@ class MasterFile < FileAsset
     save
   end
 
-  def percent_complete matterhorn_response
+  def calculate_percent_complete matterhorn_response
     totalOperations = matterhorn_response.workflow.operations.operation.length
     finishedOperations = 0
     matterhorn_response.workflow.operations.operation.operationState.each {|state| finishedOperations += 1 if state == "SUCCEEDED" || state == "SKIPPED"}
@@ -193,12 +194,19 @@ class MasterFile < FileAsset
     self.workflow_id = workflow_doc.workflow.id[0]
   end
 
-  def saveOriginal(file)
-    self.url = File.realpath(file.path)
-    logger.debug "<< File location #{ self.url } >>"
-
-    logger.debug "<< Filesize #{ file.size.to_s } >>"
+  def saveOriginal(file, original_name)
+    realpath = File.realpath(file.path)
+    if !original_name.nil?
+      newpath = File.dirname(realpath) + "/" + original_name
+      File.rename(realpath, newpath)
+      self.url = newpath
+    else 
+      self.url = realpath
+    end
     self.size = file.size.to_s
+
+    logger.debug "<< File location #{ self.url } >>"
+    logger.debug "<< Filesize #{ self.size } >>"
 
     #FIXME next line
     #apply_depositor_metadata(master_file)
