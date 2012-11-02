@@ -4,8 +4,9 @@
   <%= render "dropbox_empty_container" %>
 <% else %>
   <%= form_tag(master_files_path) do -%>
-      <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
+      <%= hidden_field_tag :container_id, @mediaobject.pid %>
+
       
 	  <table class="table table-striped">
 	    <colgroup>

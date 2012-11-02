@@ -25,7 +25,7 @@ class MediaObjectsController < CatalogController
     @ingest_status = IngestStatus.find_by_pid(@mediaobject.pid)
     @active_step = params[:step] || @ingest_status.current_step
     prev_step = HYDRANT_STEPS.previous(@active_step)
-    
+
     case @active_step 
       # When uploading files be sure to get a list of all master files as
       # well as the list of dropbox accessible files

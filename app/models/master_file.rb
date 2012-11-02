@@ -27,8 +27,7 @@ class MasterFile < FileAsset
     # 250 MB is the file limit for now
     MAXIMUM_UPLOAD_SIZE = (2**20) * 250
 
-  AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav",
-      "audio/x-wav"]
+  AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav", "audio/x-wav"]
   VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
   UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
 
@@ -75,21 +74,6 @@ class MasterFile < FileAsset
     matterhorn_response.workflow.mediapackage.id.first
   end
 
-  # A hacky way to handle the description for now. This should probably be refactored
-  # to stop pulling if the status is stopped or completed
-  #def status_description
-    #unless source.nil? or source.empty?
-      #refresh_status
-    #else
-      #descMetadata.description = "Status is currently unavailable"
-    #end
-    #descMetadata.description.first
-  #end
-
-  #def exceeds_upload_limit?(size)
-    #size > MAXIMUM_UPLOAD_SIZE
-  #end
-
   def status_description
     case self.status_code.first 
       when "INSTANTIATED"
@@ -116,26 +100,6 @@ class MasterFile < FileAsset
   end
 
   protected
-  def refresh_status
-    matterhorn_response = Rubyhorn.client.instance_xml(source[0])
-    status = matterhorn_response.workflow.state[0]
- 
-    descMetadata.description = case status
-      when "INSTANTIATED"
-        "Preparing file for conversion"
-      when "RUNNING"
-        "Creating derivatives"
-      when "SUCCEEDED"
-        "Processing is complete"
-      when "FAILED"
-        "File(s) could not be processed"
-      when "STOPPED"
-        "Processing has been stopped"
-      else
-        "No file(s) uploaded"
-      end
-    save
-  end
 
   def calculate_percent_complete matterhorn_response
     totalOperations = matterhorn_response.workflow.operations.operation.length

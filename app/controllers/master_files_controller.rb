@@ -49,7 +49,7 @@ class MasterFilesController < ApplicationController
           error << file.original_filename
           error << " (" << file.content_type << ")"
           flash[:errors].push error
-	  master_file.destroy
+          master_file.destroy
           next
         else
           flash[:upload] = create_upload_notice(master_file.media_type)
@@ -62,6 +62,21 @@ class MasterFilesController < ApplicationController
           @master_files << master_file
         end
         
+      end
+    elsif params.has_key?(:dropbox)
+      @master_files = []
+      params[:dropbox].each do |file|
+        file_path = Hydrant::DropboxService.find(file[:id])
+        master_file = MasterFile.new
+        master_file.container = media_object
+        master_file.setContent(File.open(file_path, 'rb'))
+        
+        unless master_file.save
+          flash[:errors] = "There was a problem storing the file"
+        else
+          master_file.process
+          @master_files << master_file
+        end
       end
     else
       flash[:notice] = "You must specify a file to upload"
