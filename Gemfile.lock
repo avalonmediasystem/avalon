@@ -31,7 +31,7 @@ GIT
 
 GIT
   remote: git://github.com/projectblacklight/blacklight.git
-  revision: 057981a606c660b6dde6e879b19a2062345ef23e
+  revision: f20f9832bd3b9c8d1fde13fb2f1fdc4c00570eaf
   branch: bootstrap
   specs:
     blacklight (3.7.2)
@@ -47,41 +47,41 @@ GIT
 
 GIT
   remote: git://github.com/projecthydra/hydra-head.git
-  revision: 9fb64100d94f38b85d524c7fd47ca89766069b57
+  revision: 0a1688a23cac16a8ab90bb069dbe9d4549e25a10
   branch: master
   specs:
-    hydra-access-controls (5.0.0.pre10)
+    hydra-access-controls (5.0.0.pre11)
       active-fedora
       activesupport
       blacklight
       cancan
       deprecation
-    hydra-core (5.0.0.pre10)
+    hydra-core (5.0.0.pre11)
       RedCloth (= 4.2.9)
       active-fedora (~> 5.0.0.rc1)
       blacklight (~> 3.4)
       block_helpers
       deprecation (>= 0.0.5)
       devise
-      hydra-access-controls (= 5.0.0.pre10)
+      hydra-access-controls (= 5.0.0.pre11)
       hydra-mods (>= 0.0.6)
       jquery-rails
       rails (~> 3.2.3)
       sanitize
-    hydra-file-access (5.0.0.pre10)
+    hydra-file-access (5.0.0.pre11)
       RedCloth (= 4.2.9)
       active-fedora
       blacklight (~> 3.4)
       block_helpers
       deprecation (>= 0.0.5)
       devise
-      hydra-core (= 5.0.0.pre10)
+      hydra-core (= 5.0.0.pre11)
       hydra-mods (>= 0.0.5)
       rails (~> 3.2.3)
       sanitize
-    hydra-head (5.0.0.pre10)
-      hydra-access-controls (= 5.0.0.pre10)
-      hydra-core (= 5.0.0.pre10)
+    hydra-head (5.0.0.pre11)
+      hydra-access-controls (= 5.0.0.pre11)
+      hydra-core (= 5.0.0.pre11)
       rails (>= 3.2.6)
 
 GIT
@@ -170,7 +170,7 @@ GEM
     bcrypt-ruby (3.0.1)
     block_helpers (0.3.3)
       activesupport (>= 2.0)
-    bootstrap-sass (2.1.0.1)
+    bootstrap-sass (2.1.1.0)
     builder (3.0.4)
     cancan (1.6.8)
     capistrano (2.12.0)
@@ -287,7 +287,7 @@ GEM
     kgio (2.7.4)
     less (2.2.2)
       commonjs (~> 0.2.6)
-    less-rails (2.2.5)
+    less-rails (2.2.6)
       actionpack (>= 3.1)
       less (~> 2.2.0)
     libv8 (3.3.10.4)
@@ -320,7 +320,7 @@ GEM
       net-ssh (>= 1.99.1)
     nokogiri (1.5.5)
     nori (1.1.3)
-    om (1.7.0.rc2)
+    om (1.7.0)
       activemodel
       activesupport
       mediashelf-loggable
@@ -462,7 +462,7 @@ GEM
     treetop (1.4.12)
       polyglot
       polyglot (>= 0.3.1)
-    twitter-bootstrap-rails (2.1.4)
+    twitter-bootstrap-rails (2.1.5)
       actionpack (>= 3.1)
       less-rails (~> 2.2.3)
       railties (>= 3.1)
