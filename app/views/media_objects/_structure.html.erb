@@ -40,7 +40,7 @@
           <%= masterfile.label.blank? ? '&#8212'.html_safe : masterfile.label %>
         </td>
         <td>
-	  	    <%= link_to File.basename(masterfile.descMetadata.identifier[0]), "/video/#{masterfile.url.first}" %>
+	  	    <%= File.basename(masterfile.descMetadata.identifier[0]) %>
 	  	  </td>
 	  	  <td><%= number_to_human_size(masterfile.size.first) %></td>
         </tr>
