@@ -1,0 +1,2 @@
+class HydrantRemoteFileResource < HydrantFileResource
+end

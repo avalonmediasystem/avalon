@@ -1,0 +1,2 @@
+class HydrantLocalFileResource < HydrantFileResource
+end

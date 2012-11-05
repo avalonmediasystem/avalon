@@ -38,30 +38,33 @@ describe MediaObject do
   describe "Field persistance" do
     it "should reject unknown fields"
     it "should update the contributors field" do
-      pending "Test is horribly broken and needs to be fixed" 
-      
-      #mo = FactoryGirl.create(:single_entry)
-      #mo.contributor = 'Updated contributor'
-      #mo.save
+      load_fixture 'hydrant:electronic-resource'
+      mo = MediaObject.find 'hydrant:electronic-resource'
+      mo.update_attribute :contributor, 'Updated contributor'
+      mo.save
 
-      #mo = MediaObject.find(mo.pid)
-      #mo.contributor.length.should == 1
-      #mo.contributor.should == ['Updated contributor']
+      mo.contributor.length.should == 1
+      mo.contributor.should == ['Updated contributor']
     end
+
     it "should support multiple contributors" do
-      pending "Test is broken and needs to be fixed"
-      
-      #mo = FactoryGirl.create(:multiple_entries)
-      #mo.contributor.length.should > 1
+      load_fixture 'hydrant:print-publication'
+      mo = MediaObject.find 'hydrant:print-publication'
+      mo.contributor = ['Chris Colvard', 'Phuong Dinh', 'Michael Klein', 
+        'Nathan Rogers']
+      mo.save
+      mo.contributor.length.should > 1
     end
+
     it "should support multiple publishers" do
-      pending "Test is broken and needs to be fixed"
-      #mo = FactoryGirl.create(:single_entry)
+      load_fixture 'hydrant:video-segment'
+      mo = MediaObject.find 'hydrant:video-segment'
+      mo.publisher.length.should == 1
       
-      #mo.publisher.length.should == 1
-      #new_value = [mo.publisher.first, 'Secondary publisher']
-      #mo.publisher = new_value
-      #mo.publisher.length.should > 1
+      mo.publisher = ['Indiana University', 'Northwestern University',
+        'Ohio State University', 'Notre Dame']
+      mo.save
+      mo.publisher.length.should > 1
     end
   end
   

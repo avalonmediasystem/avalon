@@ -1,30 +1,10 @@
-<fieldset id='uploader'>
-    <legend>Manage file(s)</legend>
-  	<p>Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
-
-    <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
-      <input type="hidden" name="container_id" value="<%=h @mediaobject.pid %>"/>
-      <input type="hidden" name="step" value="file_upload"/>
-
-      <%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>
-
-      <%- field_tag_options = defined?(uploader_options) ? uploader_options : {id: nil, multiple: true} %>
-
-      <%= file_field_tag "Filedata[]", field_tag_options %>
-      <%= submit_tag("Upload file", :name=>"upload_file", class: "btn") %>
-
-      <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
-      <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
-      <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
-    <% end %>
-    
-    
-	  <% unless @masterFiles.blank? %>
-	  <hr />
-      <h4>Associated file(s)</h4>
+<h2>Manage file(s)</h2>
+<section id="associated_files">
+      <h4>Associated files</h4>
       <p>Update the display labels to change the information that end users will see. Changes persist once you select Update.</p>
       
-      <%= twitter_bootstrap_form_for @mediaobject do |upload_form| %>
+	  <hr />
+      <%= twitter_bootstrap_form_for @mediaobject do |file_list| %>
       <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
       
@@ -49,14 +29,9 @@
 		    <% @masterFiles.each do |part, i| %>
       		  <%= hidden_field_tag "parts[#{i}][pid]", part.pid  %>
   		      <tr>
-							<td>
-								<div class="noshow">
-									<i class="icon-arrow-up"></i>
-									<i class="icon-arrow-down"></i> 
-								</div>
-							</td>
+                        <td>&nbsp;</td>
   		        <td>
-  		          <% case part.media_type.first
+  		          <% case part.media_type
   		             when 'Sound' %>
 	    		       <i class="icon-volume-up"></i>
   		          <% when 'Moving image' %>
@@ -69,10 +44,10 @@
       		      <%= text_field_tag "parts[#{i}][label]", part.label, size: 30 %>
   		        </td>
   		        <td>
-  		          <%= link_to truncate(File.basename(part.url.first), length: 25), part.descMetadata.identifier[0], target: '_download' %>
+  		          <%= truncate(File.basename(part.url), length: 25) %>
       	  	  </td>
       	  	  <td>
-      	  	    <strong><%= number_to_human_size(part.size.first) %></strong>
+      	  	    <strong><%= number_to_human_size(part.size) %></strong>
       	  	  </td>
       	  	  <td>
       	  	   <% if can? :edit, @mediaobject %>
@@ -87,10 +62,41 @@
     	 	    <% end %>
   	 	  </tbody>
   	 	</table>
-  <%= upload_form.submit "Update", donot_advance: true %>
+  <%= submit_tag "Update", donot_advance: true %>
+<% end %>
+  </section>
+
+<section id="web_upload">
+<fieldset id='uploader'>
+  <h3>Upload through the web</h3>
+  <p>Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
+
+    <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
+      <input type="hidden" name="container_id" value="<%=h @mediaobject.pid %>"/>
+      <input type="hidden" name="step" value="file_upload"/>
+
+      <%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>
+
+      <%- field_tag_options = defined?(uploader_options) ? uploader_options : {id: nil, multiple: true} %>
+
+      <%= file_field_tag "Filedata[]", field_tag_options %>
+      <%= submit_tag("Upload file", :name=>"upload_file", class: "btn") %>
+
+      <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
+      <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
+      <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
+    <% end %>
 </fieldset>
-<% end %>
-<% end %>
+</section>   
+    
+<section id="dropbox_upload">
+<h4>Import from a dropbox</h4>
+<p>For large files use the dropbox location to import files. Once they have 
+been uploaded you can select them from the list below. Associated files will 
+be processed as soon as you continue to the next step.</p>
+<%= render "dropbox_details" %>
+<%= render partial: "dropbox_file_navigator", locals: {file_set: @dropbox_files} %>
+</section>
 
 <div class="row-fluid">
   <div class="span12">

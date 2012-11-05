@@ -15,28 +15,30 @@ class MediaObjectsController < CatalogController
     
     redirect_to edit_media_object_path(@mediaobject, step: HYDRANT_STEPS.first.step)
   end
-  
+
   def edit
     logger.debug "<< EDIT >>"
     logger.info "<< Retrieving #{params[:id]} from Fedora >>"
     
     @mediaobject = MediaObject.find(params[:id])
     @masterFiles = load_master_files
-    @currentStream = set_active_file(params[:content])
-    if (not @masterFiles.blank? and @currentStream.blank?) then
-      @currentStream = @masterFiles.first
-      flash[:notice] = "The stream was not recognized. Defaulting to the first available stream for the resource"
-    end
-
-    #@masterfiles_with_order = @mediaobject.parts_with_order
-#    if !@masterFiles.nil? && @masterFiles.count > 1 
-#      @relType = @mediaobject.descMetadata.relation_type[0]
-#    end
-
     @ingest_status = IngestStatus.find_by_pid(@mediaobject.pid)
     @active_step = params[:step] || @ingest_status.current_step
     prev_step = HYDRANT_STEPS.previous(@active_step)
     
+    case @active_step 
+      # When uploading files be sure to get a list of all master files as
+      # well as the list of dropbox accessible files
+      when 'file-upload'
+        @dropbox_files = Hydrant::DropboxService.all
+      when 'preview'
+        @currentStream = set_active_file(params[:content])
+        if (not @masterFiles.blank? and @currentStream.blank?) then
+          @currentStream = @masterFiles.first
+          flash[:notice] = "The stream was not recognized. Defaulting to the first available stream for the resource"
+        end
+      end
+
     unless prev_step.nil? || @ingest_status.completed?(prev_step.step) 
       redirect_to edit_media_object_path(@mediaobject)
       return

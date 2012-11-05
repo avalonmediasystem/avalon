@@ -30,24 +30,8 @@ GIT
       mediashelf-loggable
 
 GIT
-  remote: git://github.com/projectblacklight/blacklight.git
-  revision: 0a6c74138c06de629b4981ab4d9c6d8cc06ff279
-  branch: bootstrap
-  specs:
-    blacklight (3.7.2)
-      bootstrap-sass (~> 2.1.0)
-      kaminari (~> 0.13)
-      marc (>= 0.4.3, < 1.1)
-      nokogiri (~> 1.5)
-      rails (~> 3.1)
-      rsolr (~> 1.0.6)
-      rsolr-ext (~> 1.0.3)
-      sass-rails
-      unicode
-
-GIT
   remote: git://github.com/projecthydra/hydra-head.git
-  revision: 0a1688a23cac16a8ab90bb069dbe9d4549e25a10
+  revision: efea97158ef8d072ac475b266e1249ad5c1bb4ac
   branch: master
   specs:
     hydra-access-controls (5.0.0.pre11)
@@ -59,7 +43,7 @@ GIT
     hydra-core (5.0.0.pre11)
       RedCloth (= 4.2.9)
       active-fedora (~> 5.0.0.rc1)
-      blacklight (~> 3.4)
+      blacklight (~> 4.0.0.pre1)
       block_helpers
       deprecation (>= 0.0.5)
       devise
@@ -71,7 +55,7 @@ GIT
     hydra-file-access (5.0.0.pre11)
       RedCloth (= 4.2.9)
       active-fedora
-      blacklight (~> 3.4)
+      blacklight (~> 4.0.0.pre1)
       block_helpers
       deprecation (>= 0.0.5)
       devise
@@ -83,6 +67,12 @@ GIT
       hydra-access-controls (= 5.0.0.pre11)
       hydra-core (= 5.0.0.pre11)
       rails (>= 3.2.6)
+
+GIT
+  remote: git://github.com/variations-on-video/guard-hydrant
+  revision: c23994795b0b986add6ec3a198e3f9fa33e402f8
+  specs:
+    guard-hydrant (1.2.2)
 
 GIT
   remote: git://github.com/variations-on-video/hydrant-engage.git
@@ -162,6 +152,15 @@ GEM
       nokogiri (>= 1.4.0)
     arel (3.0.2)
     bcrypt-ruby (3.0.1)
+    blacklight (4.0.0.pre2)
+      bootstrap-sass (~> 2.1.0)
+      kaminari (~> 0.13)
+      marc (>= 0.4.3, < 1.1)
+      nokogiri (~> 1.5)
+      rails (~> 3.1)
+      rsolr (~> 1.0.6)
+      sass-rails
+      unicode
     block_helpers (0.3.3)
       activesupport (>= 2.0)
     bootstrap-sass (2.1.1.0)
@@ -242,6 +241,11 @@ GEM
     gherkin (2.11.5)
       json (>= 1.4.6)
     git (1.2.5)
+    guard (1.5.3)
+      listen (>= 0.4.2)
+      lumberjack (>= 1.0.2)
+      pry (>= 0.9.10)
+      thor (>= 0.14.6)
     gyoku (0.4.6)
       builder (>= 2.1.2)
     hashie (1.2.0)
@@ -282,18 +286,21 @@ GEM
     libv8 (3.3.10.4)
     libwebsocket (0.1.5)
       addressable
+    listen (0.5.3)
     logger (1.2.8)
     loofah (1.2.1)
       nokogiri (>= 1.4.4)
+    lumberjack (1.0.2)
     mail (2.4.4)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     marc (0.5.0)
+    mediainfo (0.7.2)
     mediashelf-loggable (0.4.9)
     method_source (0.8.1)
     mime-types (1.19)
-    multi_json (1.3.6)
+    multi_json (1.3.7)
     multipart-post (1.1.5)
     net-http-digest_auth (1.2.1)
     net-ldap (0.2.2)
@@ -355,6 +362,9 @@ GEM
       thor (>= 0.14.6, < 2.0)
     raindrops (0.10.0)
     rake (0.9.2.2)
+    rb-fsevent (0.9.2)
+    rb-inotify (0.8.8)
+      ffi (>= 0.5.0)
     rdf (0.3.8)
       addressable (>= 2.2.6)
     rdf-rdfxml (0.3.8)
@@ -368,8 +378,6 @@ GEM
       mime-types (>= 1.16)
     rsolr (1.0.8)
       builder (>= 2.1.2)
-    rsolr-ext (1.0.3)
-      rsolr (>= 1.0.2)
     rspec (2.11.0)
       rspec-core (~> 2.11.0)
       rspec-expectations (~> 2.11.0)
@@ -402,7 +410,7 @@ GEM
       capistrano (>= 2.0.0)
     sanitize (2.0.3)
       nokogiri (>= 1.4.4, < 1.6)
-    sass (3.2.1)
+    sass (3.2.2)
     sass-rails (3.2.5)
       railties (~> 3.2.0)
       sass (>= 3.1.10)
@@ -415,7 +423,7 @@ GEM
       nokogiri (>= 1.4.0)
       nori (~> 1.1.0)
       wasabi (~> 2.5.0)
-    selenium-webdriver (2.25.0)
+    selenium-webdriver (2.26.0)
       childprocess (>= 0.2.5)
       libwebsocket (~> 0.1.3)
       multi_json (~> 1.0)
@@ -425,7 +433,7 @@ GEM
       simplecov-html (~> 0.7.1)
     simplecov-html (0.7.1)
     slop (3.3.3)
-    solrizer (2.0.0.rc3)
+    solrizer (2.0.0.rc4)
       daemons
       mediashelf-loggable (~> 0.4.7)
       nokogiri
@@ -437,7 +445,7 @@ GEM
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
     sqlite3 (1.3.6)
-    stomp (1.2.6)
+    stomp (1.2.7)
     therubyracer (0.10.2)
       libv8 (~> 3.3.10)
     thor (0.16.0)
@@ -445,12 +453,11 @@ GEM
     treetop (1.4.12)
       polyglot
       polyglot (>= 0.3.1)
-    twitter-bootstrap-rails (2.1.5)
+    twitter-bootstrap-rails (2.1.6)
       actionpack (>= 3.1)
-      less-rails (~> 2.2.3)
+      execjs
       railties (>= 3.1)
-      therubyracer (>= 0.10.2)
-    tzinfo (0.3.34)
+    tzinfo (0.3.35)
     uglifier (1.3.0)
       execjs (>= 0.3.0)
       multi_json (~> 1.0, >= 1.0.2)
@@ -482,7 +489,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord-jdbcsqlite3-adapter
-  blacklight!
+  blacklight (~> 4.0.0.pre2)
   bootstrap-sass
   builder (~> 3.0.0)
   capistrano (~> 2.12.0)
@@ -493,11 +500,14 @@ DEPENDENCIES
   compass-rails (~> 1.0.0)
   compass-susy-plugin (~> 0.9.0)
   cucumber-rails (>= 1.2.0)
+  daemons
   database_cleaner
   devise
   execjs
   factory_girl_rails
   felixwrapper!
+  guard
+  guard-hydrant!
   headless
   hydra-file-access!
   hydra-head!
@@ -507,6 +517,7 @@ DEPENDENCIES
   jquery-rails
   jruby-openssl
   loofah
+  mediainfo
   mime-types (>= 1.1)
   om (~> 1.7.0)
   omniauth-cas!
@@ -515,6 +526,8 @@ DEPENDENCIES
   pry
   pry-rails
   rails (~> 3.2.3)
+  rb-fsevent (~> 0.9.1)
+  rb-inotify
   red5wrapper!
   rspec-rails (>= 2.9.0)
   rspec_junit_formatter

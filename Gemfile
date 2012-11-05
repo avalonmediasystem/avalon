@@ -3,9 +3,7 @@
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
 
-  gem 'blacklight', 
-    git: "git://github.com/projectblacklight/blacklight.git",
-    branch: 'bootstrap'
+  gem 'blacklight', '~> 4.0.0.pre2' 
   gem 'hydra-head', 
     git: "git://github.com/projecthydra/hydra-head.git",
     branch: "master"
@@ -46,6 +44,13 @@
   gem 'omniauth-identity'
   gem 'omniauth-ldap'
 
+  gem 'mediainfo'
+  gem 'rb-fsevent', '~> 0.9.1', :require => false
+  gem 'rb-inotify', :require => false
+  gem 'daemons'
+  gem 'guard'
+  gem 'guard-hydrant', :git => 'git://github.com/variations-on-video/guard-hydrant'
+
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
     gem 'uglifier', '>= 1.0.3'
@@ -64,16 +69,16 @@
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do 
-	gem 'capistrano', '~>2.12.0'
-	gem 'rvm-capistrano'
-	gem 'database_cleaner'
-	gem 'factory_girl_rails'
+    gem 'capistrano', '~>2.12.0'
+    gem 'rvm-capistrano'
+    gem 'database_cleaner'
+    gem 'factory_girl_rails'
     gem 'rspec-rails', '>=2.9.0'
-    
     gem 'pry'
     gem 'pry-rails'
     gem 'unicorn-rails'
-		gem 'capistrano-unicorn', :require => false
+    gem 'capistrano-unicorn', :require => false
+    gem 'rb-fsevent', '~> 0.9.1'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do

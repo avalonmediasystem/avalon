@@ -1,0 +1,35 @@
+<% file_set ||= nil %>
+
+<% if file_set.nil? or file_set.empty? %>
+  <%= render "dropbox_empty_container" %>
+<% else %>
+  <%= form_tag(master_files_path) do -%>
+      <%= hidden_field_tag :donot_advance, true %>
+      <%= hidden_field_tag :step, 'file-upload' %>
+      
+	  <table class="table table-striped">
+	    <colgroup>
+	      <col class="span1">
+	      <col class="span4">
+	      <col class="span4">
+	      <col class="span1">
+	      <col class="span1">
+	    </colgroup>
+	    
+        <thead>
+          <th>&nbsp;</th>
+          <th>File name</th>
+          <th>Size</th>
+          <th>Format</th>
+          <th>MIME type</th>
+        </thead>
+		    <tbody>
+		    <% file_set.each do |file, i| %>
+                      <%= render partial: "dropbox_file_entry", 
+                        locals: {file: file, index: i} %>
+   	 	    <% end %>
+  	 	  </tbody>
+  	 	</table>
+  <%= submit_tag "Associate selected files", donot_advance: true %>
+<% end %>
+ <% end %>

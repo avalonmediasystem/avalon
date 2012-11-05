@@ -36,14 +36,11 @@ describe MasterFilesController do
      
         load_fixture 'hydrant:video-segment'
         @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-        master_file = MasterFile.new
-        master_file.container = MediaObject.find('hydrant:video-segment')
      
-        controller.stub!(:saveOriginalToHydrant).and_return(master_file)
-        controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
-     
-        lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment' }.should change { MasterFile.count }.by(1)
-        master_file.media_type.should eq(["Moving image"])
+        lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment' }.should change { MasterFile.count }
+
+	master_file = MediaObject.find('hydrant:video-segment').parts.first
+        master_file.media_type.should eq("Moving image")
              
         flash[:errors].should be_nil
       end
@@ -76,7 +73,7 @@ describe MasterFilesController do
        controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
     
        lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment' }.should change { MasterFile.count }.by(1)
-       MasterFile.find(:all, order: "created_on ASC").last.media_type.should eq(["Moving image"])
+       MasterFile.find(:all, order: "created_on ASC").last.media_type.should eq("Moving image")
          
        flash[:errors].should be_nil
      end
@@ -139,8 +136,8 @@ describe MasterFilesController do
          post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment'
          
          master_file = MasterFile.find(:all, order: "created_on ASC").last
-         master_file.source.should_not be_empty
-         puts master_file.source
+         master_file.workflow_id.should_not be_empty
+         puts master_file.workflow_id
          
          flash[:errors].should be_nil        
       end
