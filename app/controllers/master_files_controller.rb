@@ -61,6 +61,7 @@ class MasterFilesController < ApplicationController
           master_file.process
           @master_files << master_file
         end
+        
       end
     else
       flash[:notice] = "You must specify a file to upload"

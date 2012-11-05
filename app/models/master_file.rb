@@ -50,19 +50,17 @@ class MasterFile < FileAsset
 
     unless self.new_object?
       parent.save(validate: false)
-
       Rubyhorn.client.stop(self.workflow_id)
-
       self.delete
     end
   end
 
   def setContent(file, content_type = nil)
     if file.is_a? ActionDispatch::Http::UploadedFile
-      self.media_type = determine_format(file.original_filename, file.content_type)
+      self.media_type = determine_format(file.tempfile, file.content_type)
       saveOriginal(file, file.original_filename)
     else
-      self.media_type = determine_format(File.basename(file), content_type)
+      self.media_type = determine_format(file, content_type)
       saveOriginal(file, nil)
     end
   end
@@ -148,34 +146,22 @@ class MasterFile < FileAsset
     percent.to_s
   end
 
-  def determine_format(filename, content_type = nil)
-    upload_format = 'Unknown'
-    upload_format = 'Moving image' if MasterFile::VIDEO_TYPES.include?(content_type)
-    upload_format = 'Sound' if MasterFile::AUDIO_TYPES.include?(content_type)
+  def determine_format(file, content_type = nil)
+    media_format = Mediainfo.new file
+    puts "Format => #{media_format.inspect}"
 
-    # If the content type cannot be inferred from the MIME type fall back on the
-    # list of unknown types. This is different than a generic fallback because it
-    # is skipped for known invalid extensions like application/pdf
-    upload_format = determine_format_by_extension(file) if MasterFile::UNKNOWN_TYPES.include?(content_type)
-    logger.info "<< Uploaded file appears to be #{@upload_format} >>"
+    # It appears that formats like MP4 can be caught as both audio and video
+    # so a case statement should flow in the preferred order
+    upload_format = case
+                    when media_format.video?
+                      'Moving image'
+                    when media_format.audio?
+                       'Sound'
+                    else
+                       'Unknown'
+                    end 
+  
     return upload_format
-  end
-
-  def determine_format_by_extension(filename)
-    audio_extensions = ["mp3", "wav", "aac", "flac"]
-    video_extensions = ["mpeg4", "mp4", "avi", "mov"]
-
-    logger.debug "<< Using fallback method to guess the format >>"
-
-    extension = filename.split(".").last.downcase
-    logger.debug "<< File extension is #{extension} >>"
-
-    # Default to unknown
-    format = 'Unknown'
-    format = 'Moving image' if video_extensions.include?(extension)
-    format = 'Sound' if audio_extensions.include?(extension)
-
-    return format
   end
 
   def sendToMatterhorn

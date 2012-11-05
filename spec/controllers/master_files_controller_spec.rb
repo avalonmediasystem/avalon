@@ -36,11 +36,14 @@ describe MasterFilesController do
      
         load_fixture 'hydrant:video-segment'
         @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-     
-        lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment' }.should change { MasterFile.count }
+        post :create, 
+          Filedata: [@file], 
+          original: 'any', 
+          container_id: 'hydrant:video-segment' 
 
-	master_file = MediaObject.find('hydrant:video-segment').parts.first
-        master_file.media_type.should eq("Moving image")
+	master_file = MediaObject.find('hydrant:video-segment')
+        master_file = master_file.parts.first
+        master_file.media_type.should eq "Moving image" 
              
         flash[:errors].should be_nil
       end
@@ -72,35 +75,17 @@ describe MasterFilesController do
        controller.stub!(:saveOriginalToHydrant).and_return(master_file)
        controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
     
-       lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment' }.should change { MasterFile.count }.by(1)
-       MasterFile.find(:all, order: "created_on ASC").last.media_type.should eq("Moving image")
-         
+       post :create, 
+         Filedata: [@file], 
+         original: 'any', 
+         container_id: 'hydrant:video-segment' 
+       master_file.media_type.should eq "Moving image" 
+             
        flash[:errors].should be_nil
      end
     end
      
    context "should process file successfully" do
-     it "should save a copy in Hydrant" do
-         login_as_archivist
-      
-         load_fixture 'hydrant:video-segment'
-         @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-         #Work-around for a Rails bug
-         class << @file
-           attr_reader :tempfile
-         end
-         
-         controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
-      
-         post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment' 
-         
-         master_file = MasterFile.find(:all, order: "created_on ASC").last
-         path =  File.join(Rails.public_path, master_file.url.first)
-         File.should exist path
-         
-         flash[:errors].should be_nil        
-     end
-     
      it "should associate with a MediaObject" do
          login_as_archivist
    

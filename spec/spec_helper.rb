@@ -49,16 +49,16 @@ RSpec.configure do |config|
       headless.destroy
     end
     
-    # Time to try reintroducing the steps that clean up Fedora after tests are
-    # complete. Right now this is a kludge that simply looks for items without a
-    # title (which all valid objects should have). If this is found then the item
-    # is deleted without remorse.
-    #
-    # THIS IS NOT SAFE TO RUN AGAINST A PRODUCTION INSTANCE
-    mos = MediaObject.find(:all)
-    mos.each do |mo|
+    # Put named fixtures from the fixtures directory here so they are cleaned
+    # up if they exist
+    test_fixtures = ['hydrant:video-segment', 
+      'hydrant:electronic-resource',
+      'hydrant:musical-performance',
+      'hydrant:print-publication']
+    test_fixtures.each do |fixture|
+      mo = MediaObject.find(fixture)
       puts "Removing test object #{mo.pid}" 
-      mo.delete if mo.title.blank?
+      mo.delete 
     end
   end
   
