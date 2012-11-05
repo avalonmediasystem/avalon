@@ -26,7 +26,7 @@
   platforms :ruby do
   	gem 'sqlite3'
 	gem 'execjs'
-    gem 'therubyracer', '= 0.10.2'
+     gem 'therubyracer', '= 0.10.2'
   end
 
   # You are free to implement your own User/Authentication solution in its place.
@@ -61,6 +61,7 @@
     # For overriding the default interface with Twitter Bootstrap
     gem 'bootstrap-sass'    
     gem 'sass-rails', '~> 3.2.3'
+    gem 'less-rails'
     gem 'twitter-bootstrap-rails', "~> 2.0"
     gem 'twitter_bootstrap_form_for',
       git: "git://github.com/variations-on-video/twitter_bootstrap_form_for.git",

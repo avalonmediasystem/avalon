@@ -516,6 +516,7 @@ DEPENDENCIES
   jettywrapper
   jquery-rails
   jruby-openssl
+  less-rails
   loofah
   mediainfo
   mime-types (>= 1.1)
