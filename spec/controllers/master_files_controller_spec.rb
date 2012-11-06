@@ -69,16 +69,12 @@ describe MasterFilesController do
     
        load_fixture 'hydrant:video-segment'
        @file = fixture_file_upload('/videoshort.mp4', 'application/octet-stream')
-       master_file = MasterFile.new
-       master_file.container = MediaObject.find('hydrant:video-segment')
-    
-       controller.stub!(:saveOriginalToHydrant).and_return(master_file)
-       controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
     
        post :create, 
          Filedata: [@file], 
          original: 'any', 
          container_id: 'hydrant:video-segment' 
+       master_file = MasterFile.find(:all, order: "created_on ASC").last
        master_file.media_type.should eq "Moving image" 
              
        flash[:errors].should be_nil
@@ -96,7 +92,7 @@ describe MasterFilesController do
            attr_reader :tempfile
          end
          
-         controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
+#         controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
    
          post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment'
          
