@@ -77,3 +77,4 @@ lib/tasks/cucumber.rake
 cucumber-results/
 .idea
 public/media_objects
+config/hydrant.yml
