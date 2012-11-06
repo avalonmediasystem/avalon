@@ -2,5 +2,3 @@ development:
   dropbox:
     path: '/srv/avalon/dropbox/'
     upload_uri: 'sftp://localhost/srv/avalon/dropbox'
-    username: 'avalon'
-    password: 'avalon'
