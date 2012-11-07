@@ -1,6 +1,7 @@
 class MediaObjectsController < CatalogController
 #  include Hydra::Controller::FileAssetsBehavior
-       
+  include Hydrant::Workflow
+
   before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
    
@@ -30,7 +31,15 @@ class MediaObjectsController < CatalogController
       # When uploading files be sure to get a list of all master files as
       # well as the list of dropbox accessible files
       when 'file-upload'
-        @dropbox_files = Hydrant::DropboxService.all
+        # This is a first cut at using an external workflow step. If it works
+        # we can expand it in a more reasonable way
+        #@dropbox_files = Hydrant::DropboxService.all
+        context = {mediaobject: @mediaobject,
+          parts: params[:parts]}
+        fus = Hydrant::Workflow::FileUploadStep.new
+        fus.before_step context
+
+        @dropbox_files = context[:dropbox_files]
       when 'preview'
         @currentStream = set_active_file(params[:content])
         if (not @masterFiles.blank? and @currentStream.blank?) then
