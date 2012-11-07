@@ -4,6 +4,7 @@
   gem 'builder', '~>3.0.0'
 
   gem 'blacklight', '~> 4.0.0.pre2' 
+  gem 'om', '~>1.7.0'
   gem 'hydra-head', 
     git: "git://github.com/projecthydra/hydra-head.git",
     branch: "master"
@@ -11,10 +12,10 @@
     git: "git://github.com/projecthydra/hydra-head.git",
     branch: "master"
 
-  gem 'hydrant-engage', :git=>"git://github.com/variations-on-video/hydrant-engage.git"
-#  gem 'active-fedora', '~> 4.2'
-#  gem 'om', :git=>"git://github.com/projecthydra/om.git"
-  gem 'om', '~>1.7.0'
+  gem 'hydrant-workflow',
+    git: 'git://github.com/variations-on-video/hydrant-workflow.git'
+  gem 'hydrant-engage', 
+    git: "git://github.com/variations-on-video/hydrant-engage.git"
  
   platforms :jruby do
   	gem 'jruby-openssl'
@@ -47,6 +48,7 @@
   gem 'mediainfo'
   gem 'rb-fsevent', '~> 0.9.1', :require => false
   gem 'rb-inotify', :require => false
+  gem 'rb-fchange', require: false
   gem 'daemons'
   gem 'guard'
   gem 'guard-hydrant', :git => 'git://github.com/variations-on-video/guard-hydrant'
