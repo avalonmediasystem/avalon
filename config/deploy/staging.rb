@@ -31,20 +31,20 @@ namespace :deploy do
   end
 
   task :start, :roles => :app do
-    run "cd #{current_release}; rake hydrant:services:start"
+    run "cd #{current_release}; rake hydrant:dropbox:start; rake hydrant:services:start"
     #run "cd #{current_release}; rails s -d"
   end
 
   task :stop, :roles => :app do
-    run "cd #{current_release}; rake hydrant:services:stop"
+    run "cd #{current_release}; rake hydrant:dropbox:stop; rake hydrant:services:stop"
     #run "kill -9 `pgrep ruby`"
   end
 
   desc "Restart Application"
   task :restart, :roles => :app do
-    run "cd #{current_release}; rake hydrant:services:stop"
+    run "cd #{current_release}; rake hydrant:dropbox:stop; rake hydrant:services:stop"
     #run "kill -9 `pgrep ruby`"
-    run "cd #{current_release}; rake hydrant:services:start"
+    run "cd #{current_release}; rake hydrant:dropbox:start; rake hydrant:services:start"
     #run "cd #{current_release}; rails s -d"
   end
 
