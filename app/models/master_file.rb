@@ -129,16 +129,18 @@ class MasterFile < FileAsset
   end
 
   def sendToMatterhorn
-    file = File.new self.url
-    args = {"title" => self.pid , "flavor" => "presenter/source", "filename" => File.basename(file)}
+    args = {"url" => "file://" + self.url, 
+            "title" => self.pid , 
+            "flavor" => "presenter/source", 
+            "filename" => File.basename(self.url)}
+            
     if self.media_type == 'Sound'
       args['workflow'] = "fullaudio"
     elsif self.media_type == 'Moving image'
       args['workflow'] = "hydrant"
     end
     logger.debug "<< Calling Matterhorn with arguments: #{args} >>"
-    workflow_doc = Rubyhorn.client.addMediaPackage(file, args)
-    #master_file.description = "File is being processed"
+    workflow_doc = Rubyhorn.client.addMediaPackageWithUrl(args)
 
     # I don't know why this has to be double escaped with two arrays
     self.workflow_id = workflow_doc.workflow.id[0]
