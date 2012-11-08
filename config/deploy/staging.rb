@@ -83,7 +83,7 @@ namespace :deploy do
 
     desc "Restart Dropbox"
     task :restart, :roles => :app do
-      run "cd #{current_release}; rake hydrant:dropbox:stop; rake hydrant:dropbox:start"
+      run "cd #{current_release}; rake hydrant:dropbox:restart"
     end
   end
 end
