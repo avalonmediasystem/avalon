@@ -165,3 +165,7 @@ a.current-stream {
 .item-preview-container {
   padding-left: $gridColumnWidth/2;
 }
+
+tr.active-false td {
+  color: grey;
+}

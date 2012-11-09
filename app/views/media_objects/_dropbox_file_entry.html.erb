@@ -1,12 +1,12 @@
- 		      <tr>
-                        <td><%= check_box_tag "dropbox[#{index}][id]", file[:id] %></td>
+ 		      <tr class="active-<%=file[:available]%>">
+                        <td><%= check_box_tag "dropbox[#{index}][id]", file[:id], false, :disabled => !file[:available] %></td>
                         <td><%= file[:name] %></td>
-                        <td><%= number_to_human_size(file[:size]) %></td>
+                        <td><%= file[:size].is_a?(String) ? file[:size] : number_to_human_size(file[:size]) %></td>
   		        <td>
   		          <% case file[:media_type]
-  		             when 'audio' %>
+  		             when /^audio/ %>
 	    		       <i class="icon-volume-up"></i>
-  		          <% when 'video' %>
+  		          <% when /^video/ %>
 	    		       <i class="icon-film"></i>
 	    		  <% else %>
 			       <i class="icon-question-sign"></i>
