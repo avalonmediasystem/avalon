@@ -91,8 +91,8 @@ class MasterFilesController < ApplicationController
   def update
     @masterfile = MasterFile.find(params[:id])
     if params[:workflow_id].present?
-      puts "Matterhorn called!"
-      @masterfile.updateProgress    
+      logger.debug "Matterhorn called!"
+      @masterfile.updateProgress params[:workflow_id]
     else
       @mediaobject = @masterfile.container
       authorize! :edit, @mediaobject

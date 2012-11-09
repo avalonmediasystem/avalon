@@ -52,6 +52,7 @@
   gem 'daemons'
   gem 'guard'
   gem 'guard-hydrant', :git => 'git://github.com/variations-on-video/guard-hydrant'
+  gem 'delayed_job_active_record'
 
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"

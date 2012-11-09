@@ -91,8 +91,8 @@ class MasterFile < FileAsset
       end
   end  
 
-  def updateProgress
-    matterhorn_response = Rubyhorn.client.instance_xml(self.workflow_id)
+  def updateProgress workflow_id
+    matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
 
     self.percent_complete = calculate_percent_complete(matterhorn_response)
     self.status_code = matterhorn_response.workflow.state[0]
@@ -145,6 +145,8 @@ class MasterFile < FileAsset
     # I don't know why this has to be double escaped with two arrays
     self.workflow_id = workflow_doc.workflow.id[0]
   end
+
+  handle_asynchronously :sendToMatterhorn
 
   def saveOriginal(file, original_name)
     realpath = File.realpath(file.path)
