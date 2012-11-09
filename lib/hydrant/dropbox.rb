@@ -53,14 +53,15 @@ class Dropbox
   def find_open_files(files)
     args = files.collect { |p| %{"#{p}"} }.join(' ')
     Dir.chdir(@base_directory) {
-      status = `/usr/sbin/lsof -Fpan0 #{args}`
+      status = `/usr/sbin/lsof -Fcpan0 #{args}`
       statuses = status.split(/[\u0000\n]+.?/)
       result = []
       while statuses.length > 0
+        c = statuses.shift
         p = statuses.shift
         a = statuses.shift
         n = statuses.shift
-        result << n if a =~ /w/
+        result << n if (a =~ /w/ or c =~ /^scp$/)
       end
       result
     }
