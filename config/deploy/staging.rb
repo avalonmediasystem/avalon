@@ -31,24 +31,23 @@ namespace :deploy do
   end
 
   task :start, :roles => :app do
-    run "cd #{current_release}; rake hydrant:dropbox:start; rake hydrant:services:start"
+    run "cd #{current_release}; rake hydrant:services:start"
     #run "cd #{current_release}; rails s -d"
   end
 
   task :stop, :roles => :app do
-    run "cd #{current_release}; rake hydrant:dropbox:stop; rake hydrant:services:stop"
+    run "cd #{current_release}; rake hydrant:services:stop"
     #run "kill -9 `pgrep ruby`"
   end
 
   desc "Restart Application"
   task :restart, :roles => :app do
-    run "cd #{current_release}; rake hydrant:dropbox:stop; rake hydrant:services:stop"
+    run "cd #{current_release}; rake hydrant:services:stop"
     #run "kill -9 `pgrep ruby`"
-    run "cd #{current_release}; rake hydrant:dropbox:start; rake hydrant:services:start"
+    run "cd #{current_release}; rake hydrant:services:start"
     #run "cd #{current_release}; rails s -d"
   end
 
-  desc ""
   task :quick_update, :roles => :app do
     run "cd #{current_release}; git checkout Gemfile.lock; git checkout config/role_map_development.yml; git pull origin master"    
   end
@@ -70,8 +69,26 @@ namespace :deploy do
       run "cd #{current_release}; rake RAILS_ENV=development db:migrate"
     end
   end
+
+  namespace :dropbox do
+    desc "Start Dropbox"
+    task :start, :roles => :app do
+      run "cd #{current_release}; rake hydrant:dropbox:start"
+    end
+
+    desc "Stop Dropbox"
+    task :stop, :roles => :app do
+      run "cd #{current_release}; rake hydrant:dropbox:stop"
+    end
+
+    desc "Restart Dropbox"
+    task :restart, :roles => :app do
+      run "cd #{current_release}; rake hydrant:dropbox:restart"
+    end
+  end
 end
 
 after("deploy:update_code", "deploy:bundle:install")
 after("deploy:update_code", "deploy:jetty:config")
 after("deploy:update_code", "deploy:db:setup")
+after("deploy:update_code", "deploy:dropbox:restart")

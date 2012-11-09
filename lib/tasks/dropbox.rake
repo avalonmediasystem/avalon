@@ -34,6 +34,7 @@ namespace :hydrant do
       app.start
     end
 
+    desc "Check the dropbox status"
     task :status => :environment do
       opts = application_opts
       group = Daemons::ApplicationGroup.new(opts[:app_name],opts)
@@ -51,11 +52,22 @@ namespace :hydrant do
       end
     end
 
+    task "Stop the dropbox"
     task :stop => :environment do
       opts = application_opts
       group = Daemons::ApplicationGroup.new(opts[:app_name],opts)
       apps = group.find_applications_by_pidfiles(opts[:dir])
       apps.each &:stop
+    end
+
+    task "Restart the dropbox"
+    task :restart => :environment do
+      opts = application_opts
+      group = Daemons::ApplicationGroup.new(opts[:app_name],opts)
+      apps = group.find_applications_by_pidfiles(opts[:dir])
+      apps.each &:stop
+      app = group.new_application(opts)
+      app.start
     end
   end
 end
