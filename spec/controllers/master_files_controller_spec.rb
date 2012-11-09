@@ -104,24 +104,6 @@ describe MasterFilesController do
          flash[:errors].should be_nil        
      end
           
-     it "should send a copy to Matterhorn and get the workflow id back" do
-         login_as_archivist
-      
-         load_fixture 'hydrant:video-segment'
-         @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-         # Work-around for a Rails bug
-         class << @file
-           attr_reader :tempfile
-         end
-         
-         post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment'
-         
-         master_file = MasterFile.find(:all, order: "created_on ASC").last
-         master_file.workflow_id.should_not be_empty
-         puts master_file.workflow_id
-         
-         flash[:errors].should be_nil        
-      end
     end
   end
     
