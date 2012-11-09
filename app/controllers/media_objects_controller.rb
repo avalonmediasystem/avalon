@@ -1,6 +1,5 @@
 class MediaObjectsController < CatalogController
 #  include Hydra::Controller::FileAssetsBehavior
-  include Hydrant::Workflow
 
   before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
@@ -36,8 +35,8 @@ class MediaObjectsController < CatalogController
         #@dropbox_files = Hydrant::DropboxService.all
         context = {mediaobject: @mediaobject,
           parts: params[:parts]}
-        fus = Hydrant::Workflow::FileUploadStep.new
-        fus.before_step context
+        fus = Hydrant::Workflow.create_step('file_upload')
+        context = fus.before_step context
 
         @dropbox_files = context[:dropbox_files]
       when 'preview'
