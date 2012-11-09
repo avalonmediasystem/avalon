@@ -85,7 +85,7 @@
 
   group :test do
     gem 'cucumber-rails', '>=1.2.0', :require=>false
-    gem 'capybara-webkit'
+    gem 'capybara-webkit', '0.12.1'
     gem 'capybara-screenshot'
     gem 'mime-types', ">=1.1"
     gem "headless"

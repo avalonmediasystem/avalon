@@ -495,7 +495,7 @@ DEPENDENCIES
   capistrano (~> 2.12.0)
   capistrano-unicorn
   capybara-screenshot
-  capybara-webkit
+  capybara-webkit (= 0.12.1)
   coffee-rails (~> 3.2.1)
   compass-rails (~> 1.0.0)
   compass-susy-plugin (~> 0.9.0)
