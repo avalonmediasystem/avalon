@@ -1,4 +1,6 @@
+require 'hydrant/workflow/workflow_controller_behavior'
 class MediaObjectsController < CatalogController
+  include Hydrant::Workflow::WorkflowControllerBehavior
 #  include Hydra::Controller::FileAssetsBehavior
 
   before_filter :enforce_access_controls
@@ -35,7 +37,7 @@ class MediaObjectsController < CatalogController
         #@dropbox_files = Hydrant::DropboxService.all
         context = {mediaobject: @mediaobject,
           parts: params[:parts]}
-        fus = Hydrant::Workflow.create_step('file_upload')
+        fus = create_workflow_step('file_upload')
         context = fus.before_step context
 
         @dropbox_files = context[:dropbox_files]
@@ -71,12 +73,10 @@ class MediaObjectsController < CatalogController
     case @active_step
       when 'file-upload'
         logger.debug "<< PROCESSING file-upload STEP >>"
-        update_master_files(@mediaobject, params[:parts]) unless params[:parts].nil?
-        
-        unless @mediaobject.parts.empty?
-          @mediaobject.format = @mediaobject.parts.first.media_type
-          @mediaobject.save(validate: false)
-        end
+        context = {mediaobject: @mediaobject,
+          parts: params[:parts]}
+        fus = create_workflow_step('file_upload')
+        context = fus.execute context
 
       # When adding resource description
       when 'resource-description' 
@@ -178,63 +178,4 @@ class MediaObjectsController < CatalogController
     redirect_path
   end
   
-  def inject_workflow_steps
-    logger.debug "<< Injecting the workflow into the view >>"
-    @workflow_steps = HYDRANT_STEPS
-  end
-  
-  def update_ingest_status(pid, active_step=nil)
-    logger.debug "<< UPDATE_INGEST_STATUS >>"
-    logger.debug "<< Updating current ingest step >>"
-    
-    if @ingest_status.nil?
-      @ingest_status = IngestStatus.find_or_create(pid: @mediaobject.pid)
-    else
-      active_step = active_step || @ingest_status.current_step
-      logger.debug "<< COMPLETED : #{@ingest_status.completed?(active_step)} >>"
-      
-      if HYDRANT_STEPS.last? active_step and @ingest_status.completed? active_step
-        @ingest_status.publish
-      end
-      logger.debug "<< PUBLISHED : #{@ingest_status.published} >>"
-
-      if @ingest_status.current?(active_step) and not @ingest_status.published
-        logger.debug "<< ADVANCING to the next step in the workflow >>"
-        logger.debug "<< #{active_step} >>"
-        @ingest_status.current_step = @ingest_status.advance
-      end
-    end
-
-    @ingest_status.save
-    @ingest_status
-  end
-  
-  # Passing in an ordered array of values update the master files below a
-  # MediaObject. Accepted hash keys are
-  #
-  # remove - Set to true to delete this item
-  # label - Display label in the interface
-  # pid - Identifier for the masterFile to help with mapping
-  def update_master_files(mediaobject, files = [])
-        logger.debug "<< files => #{files} >>"
-        if not files.blank?
-          files.each do |part|
-            logger.debug "<< #{part} >>"
-            selected_part = nil
-            mediaobject.parts.each do |current_part|
-              selected_part = current_part if current_part.pid == part[:pid]
-            end
-            next unless not selected_part.blank?
-            
-            if part[:remove]
-              logger.info "<< Deleting master file #{part[:pid]} from the system >>"
-              selected_part.delete
-            else
-              selected_part.label = part[:label]
-              selected_part.save
-            end            
-          end
-        end
-  end
-
 end
