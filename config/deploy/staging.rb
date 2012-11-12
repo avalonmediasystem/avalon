@@ -69,7 +69,7 @@ namespace :deploy do
       run "cd #{current_release}; rake RAILS_ENV=development db:migrate"
     end
   end
-  
+
   namespace :delayed_job do
     desc "Start delayed_job workers"
     task :start, :roles => :app do
@@ -86,26 +86,8 @@ namespace :deploy do
       run "cd #{current_release}; script/delayed_job stop; script/delayed_job -n 2 start"
     end
   end
-
-  namespace :dropbox do
-    desc "Start Dropbox"
-    task :start, :roles => :app do
-      run "cd #{current_release}; rake hydrant:dropbox:start"
-    end
-
-    desc "Stop Dropbox"
-    task :stop, :roles => :app do
-      run "cd #{current_release}; rake hydrant:dropbox:stop"
-    end
-
-    desc "Restart Dropbox"
-    task :restart, :roles => :app do
-      run "cd #{current_release}; rake hydrant:dropbox:restart"
-    end
-  end
 end
 
 after("deploy:update_code", "deploy:bundle:install")
 after("deploy:update_code", "deploy:jetty:config")
 after("deploy:update_code", "deploy:db:setup")
-after("deploy:update_code", "deploy:dropbox:restart")

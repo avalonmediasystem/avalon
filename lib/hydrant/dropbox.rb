@@ -7,34 +7,25 @@ class Dropbox
     @base_directory = root
   end
 
-  # Returns a list of files that have MD5 hashes
+  # Returns available files in the dropbox
   def all 
     return nil if @base_directory.blank? or not Dir.exists?(@base_directory)
     contents = Dir.entries @base_directory
-    files = Array.new 
+    open_files = find_open_files(contents)
+    files = []
     contents.each do |path| 
-      full_path = @base_directory + path
-
-      if File.file?( full_path ) && File.extname( path ) == ".complete"
-        media_path = File.join(@base_directory, File.basename(path, ".complete"))
-        if File.file?( media_path )
-          info = Mediainfo.new media_path
-          media_type = case 
-            when info.video?
-              "video"
-            when info.audio? 
-              "audio"
-            else
-              "unknown"
-            end
-
-          file = {id: Digest::MD5.hexdigest(media_path)[1..5],
-                  qualified_path: media_path,
-                  name: File.basename(media_path),
-                  size: File.size(media_path),
-                  media_type: media_type}
-          files << file
-        end
+      media_type = Rack::Mime.mime_type(File.extname(path))
+      if media_type =~ %r{^(audio|video)/}
+        media_path = File.join(@base_directory, path)
+        available = !open_files.include?(path)
+        files << {
+          id: Digest::MD5.hexdigest(media_path)[1..5],
+          qualified_path: media_path,
+          name: File.basename(media_path),
+          size: (available ? File.size(media_path) : 'Loading...'),
+          media_type: media_type,
+          available: available
+        }
       end
     end
 
@@ -56,5 +47,20 @@ class Dropbox
     end
 
     return nil
+  end
+
+#  protected
+  def find_open_files(files)
+    args = files.collect { |p| %{"#{p}"} }.join(' ')
+    Dir.chdir(@base_directory) {
+      status = `/usr/sbin/lsof -Fcpan0 #{args}`
+      statuses = status.split(/[\u0000\n]+/)
+      result = []
+      statuses.in_groups_of(4) do |group|
+        file_status = Hash[group.collect { |s| [s[0].to_sym,s[1..-1]] }]
+        result << file_status[:n] if (file_status[:a] =~ /w/ or file_status[:c] == 'scp')
+      end
+      result
+    }
   end
 end

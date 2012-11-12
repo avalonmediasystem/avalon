@@ -124,7 +124,6 @@ module ModsBehaviors
     remove_empty_nodes!
     new_doc = self.class.blank_template
     order.each do |node|
-      puts node
       self.ng_xml.xpath(node, ns).each do |element|
         new_doc.root.add_child(element.clone)
         element.remove
