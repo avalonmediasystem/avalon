@@ -104,4 +104,23 @@ describe MediaObject do
       @mediaobject.access.should eq "private"
     end
   end
+
+  describe "Ingest status" do
+    it "should default to unpublished" do
+      @mediaobject = MediaObject.new
+      @mediaobject.workflow.status.should eq "unpublished"
+    end
+
+    it "should be published when the item is visible" do
+      pending "Load a fixture and publish it"
+    end
+
+    it "should recognize the current step" do
+      pending "Load a fixture, set the current step to access control, and verify"
+    end
+
+    it "should verify that the current step is last when the item is published"
+
+    it "should default to the first workflow step"
+  end
 end
