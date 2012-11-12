@@ -3,8 +3,8 @@
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
 
-  gem 'blacklight', '~> 4.0.0.pre2' 
-  gem 'om', '~>1.7.0'
+  gem 'blacklight', '~> 4.0.0.pre3' 
+  gem 'om', '~>1.8.0.rc1'
   gem 'hydra-head', 
     git: "git://github.com/projecthydra/hydra-head.git",
     branch: "master"

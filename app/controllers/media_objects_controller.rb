@@ -1,6 +1,8 @@
+require 'hydrant/workflow/workflow_controller_behavior'
 class MediaObjectsController < CatalogController
+  include Hydrant::Workflow::WorkflowControllerBehavior
 #  include Hydra::Controller::FileAssetsBehavior
-       
+
   before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
    
@@ -30,7 +32,15 @@ class MediaObjectsController < CatalogController
       # When uploading files be sure to get a list of all master files as
       # well as the list of dropbox accessible files
       when 'file-upload'
-        @dropbox_files = Hydrant::DropboxService.all
+        # This is a first cut at using an external workflow step. If it works
+        # we can expand it in a more reasonable way
+        #@dropbox_files = Hydrant::DropboxService.all
+        context = {mediaobject: @mediaobject,
+          parts: params[:parts]}
+        fus = create_workflow_step('file_upload')
+        context = fus.before_step context
+
+        @dropbox_files = context[:dropbox_files]
       when 'preview'
         @currentStream = set_active_file(params[:content])
         if (not @masterFiles.blank? and @currentStream.blank?) then
@@ -60,59 +70,46 @@ class MediaObjectsController < CatalogController
     @ingest_status = IngestStatus.find_by_pid(params[:id])
     @active_step = params[:step] || @ingest_status.current_step
     
+    # This is a first pass towards abstracting the handling of workflow
+    # processing into a processs that can be used either through the web
+    # interface or through a batch process.
+    #
+    # Expect more changes as the right approach becomes obvious in future
+    # sprints.
     case @active_step
       when 'file-upload'
         logger.debug "<< PROCESSING file-upload STEP >>"
-        update_master_files(@mediaobject, params[:parts]) unless params[:parts].nil?
-        
-        unless @mediaobject.parts.empty?
-          @mediaobject.format = @mediaobject.parts.first.media_type
-          @mediaobject.save(validate: false)
-        end
+        context = {mediaobject: @mediaobject,
+          parts: params[:parts]}
+        fus = create_workflow_step('file_upload')
+        context = fus.execute context
 
       # When adding resource description
       when 'resource-description' 
-        logger.debug "<< Populating required metadata fields >>"
-        @mediaobject.update_datastream(:descMetadata, params[:media_object])
-        logger.debug "<< Updating descriptive metadata >>"
-        @mediaobject.save
-
+        context = {mediaobject: @mediaobject,
+          datastream: params[:media_object]}
+        rds = create_workflow_step('resource-description')
+        context = rds.execute context
       # When on the access control page
       when 'access-control' 
-        # TO DO: Implement me
-        logger.debug "<< Access flag = #{params[:access]} >>"
-	      @mediaobject.access = params[:access]        
-        
-        @mediaobject.save             
-        logger.debug "<< Groups : #{@mediaobject.read_groups} >>"
+        context = {mediaobject: @mediaobject,
+          access: params[:access]}
+        acs = create_workflow_step('access-control')
+        context = acs.execute context
 
       when 'structure'
-        if !params[:masterfile_ids].nil?
-          masterFiles = []
-          params[:masterfile_ids].each do |mf_id|
-            mf = MasterFile.find(mf_id)
-            masterFiles << mf
-          end
-
-          # Clean out the parts
-          masterFiles.each do |mf|
-            @mediaobject.parts_remove mf
-          end
-          @mediaobject.save(validate: false)
-          
-          # Puts parts back in order
-          masterFiles.each do |mf|
-            mf.container = @mediaobject
-            mf.save
-          end
-          @mediaobject.save(validate: false)
-        end
+        context = {mediaobject: @mediaobject,
+          masterfiles: params[:masterfile_ids]}
+        struct_step = create_workflow_step('structure')
+        context = struct_step.execute context
        
       # When looking at the preview page use a version of the show page
       when 'preview' 
         # Publish the media object
-        @mediaobject.avalon_publisher = user_key
-        @mediaobject.save
+        context = {mediaobject: @mediaobject,
+          publisher: user_key}
+        preview_step = create_workflow_step('preview')
+        context = preview_step.execute context
     end    
     
     unless @mediaobject.errors.empty?
@@ -170,63 +167,4 @@ class MediaObjectsController < CatalogController
     redirect_path
   end
   
-  def inject_workflow_steps
-    logger.debug "<< Injecting the workflow into the view >>"
-    @workflow_steps = HYDRANT_STEPS
-  end
-  
-  def update_ingest_status(pid, active_step=nil)
-    logger.debug "<< UPDATE_INGEST_STATUS >>"
-    logger.debug "<< Updating current ingest step >>"
-    
-    if @ingest_status.nil?
-      @ingest_status = IngestStatus.find_or_create(pid: @mediaobject.pid)
-    else
-      active_step = active_step || @ingest_status.current_step
-      logger.debug "<< COMPLETED : #{@ingest_status.completed?(active_step)} >>"
-      
-      if HYDRANT_STEPS.last? active_step and @ingest_status.completed? active_step
-        @ingest_status.publish
-      end
-      logger.debug "<< PUBLISHED : #{@ingest_status.published} >>"
-
-      if @ingest_status.current?(active_step) and not @ingest_status.published
-        logger.debug "<< ADVANCING to the next step in the workflow >>"
-        logger.debug "<< #{active_step} >>"
-        @ingest_status.current_step = @ingest_status.advance
-      end
-    end
-
-    @ingest_status.save
-    @ingest_status
-  end
-  
-  # Passing in an ordered array of values update the master files below a
-  # MediaObject. Accepted hash keys are
-  #
-  # remove - Set to true to delete this item
-  # label - Display label in the interface
-  # pid - Identifier for the masterFile to help with mapping
-  def update_master_files(mediaobject, files = [])
-        logger.debug "<< files => #{files} >>"
-        if not files.blank?
-          files.each do |part|
-            logger.debug "<< #{part} >>"
-            selected_part = nil
-            mediaobject.parts.each do |current_part|
-              selected_part = current_part if current_part.pid == part[:pid]
-            end
-            next unless not selected_part.blank?
-            
-            if part[:remove]
-              logger.info "<< Deleting master file #{part[:pid]} from the system >>"
-              selected_part.delete
-            else
-              selected_part.label = part[:label]
-              selected_part.save
-            end            
-          end
-        end
-  end
-
 end
