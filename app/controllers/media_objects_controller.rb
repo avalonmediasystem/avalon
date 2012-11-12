@@ -98,7 +98,7 @@ class MediaObjectsController < CatalogController
         context = acs.execute context
 
       when 'structure'
-        context = {mediaobject: @mediaobject}
+        context = {mediaobject: @mediaobject,
           masterfiles: params[:masterfile_ids]}
         struct_step = create_workflow_step('structure')
         context = struct_step.execute context
