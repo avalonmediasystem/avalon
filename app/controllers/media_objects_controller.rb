@@ -70,6 +70,12 @@ class MediaObjectsController < CatalogController
     @ingest_status = IngestStatus.find_by_pid(params[:id])
     @active_step = params[:step] || @ingest_status.current_step
     
+    # This is a first pass towards abstracting the handling of workflow
+    # processing into a processs that can be used either through the web
+    # interface or through a batch process.
+    #
+    # Expect more changes as the right approach becomes obvious in future
+    # sprints.
     case @active_step
       when 'file-upload'
         logger.debug "<< PROCESSING file-upload STEP >>"
@@ -80,47 +86,30 @@ class MediaObjectsController < CatalogController
 
       # When adding resource description
       when 'resource-description' 
-        logger.debug "<< Populating required metadata fields >>"
-        @mediaobject.update_datastream(:descMetadata, params[:media_object])
-        logger.debug "<< Updating descriptive metadata >>"
-        @mediaobject.save
-
+        context = {mediaobject: @mediaobject,
+          datastream: params[:media_object]}
+        rds = create_workflow_step('resource-description')
+        context = rds.execute context
       # When on the access control page
       when 'access-control' 
-        # TO DO: Implement me
-        logger.debug "<< Access flag = #{params[:access]} >>"
-	      @mediaobject.access = params[:access]        
-        
-        @mediaobject.save             
-        logger.debug "<< Groups : #{@mediaobject.read_groups} >>"
+        context = {mediaobject: @mediaobject,
+          access: params[:access]}
+        acs = create_workflow_step('access-control')
+        context = acs.execute context
 
       when 'structure'
-        if !params[:masterfile_ids].nil?
-          masterFiles = []
-          params[:masterfile_ids].each do |mf_id|
-            mf = MasterFile.find(mf_id)
-            masterFiles << mf
-          end
-
-          # Clean out the parts
-          masterFiles.each do |mf|
-            @mediaobject.parts_remove mf
-          end
-          @mediaobject.save(validate: false)
-          
-          # Puts parts back in order
-          masterFiles.each do |mf|
-            mf.container = @mediaobject
-            mf.save
-          end
-          @mediaobject.save(validate: false)
-        end
+        context = {mediaobject: @mediaobject}
+          masterfiles: params[:masterfile_ids]}
+        struct_step = create_workflow_step('structure')
+        context = struct_step.execute context
        
       # When looking at the preview page use a version of the show page
       when 'preview' 
         # Publish the media object
-        @mediaobject.avalon_publisher = user_key
-        @mediaobject.save
+        context = {mediaobject: @mediaobject,
+          publisher: user_key}
+        preview_step = create_workflow_step('preview')
+        context = preview_step.execute context
     end    
     
     unless @mediaobject.errors.empty?
