@@ -69,6 +69,23 @@ namespace :deploy do
       run "cd #{current_release}; rake RAILS_ENV=development db:migrate"
     end
   end
+  
+  namespace :delayed_job do
+    desc "Start delayed_job workers"
+    task :start, :roles => :app do
+      run "cd #{current_release}; script/delayed_job -n 2 start "
+    end
+
+    desc "Stop delayed_job workers"
+    task :stop, :roles => :app do
+      run "cd #{current_release}; script/delayed_job stop"
+    end
+
+    desc "Stop delayed_job workers"
+    task :restart, :roles => :app do
+      run "cd #{current_release}; script/delayed_job stop; script/delayed_job -n 2 start"
+    end
+  end
 
   namespace :dropbox do
     desc "Start Dropbox"

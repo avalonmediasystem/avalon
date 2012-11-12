@@ -1,3 +1,5 @@
+require 'hydrant/matterhorn_jobs'
+
 class MasterFile < FileAsset
   include ActiveFedora::Relationships
 
@@ -65,8 +67,19 @@ class MasterFile < FileAsset
   end
 
   def process
-    sendToMatterhorn
-    self.save
+    args = {"url" => "file://" + self.url,
+                "title" => self.pid,
+                "flavor" => "presenter/source",
+                "filename" => File.basename(self.url)}
+
+    if self.media_type == 'Sound'
+      args['workflow'] = "fullaudio"
+    elsif self.media_type == 'Moving image'
+      args['workflow'] = "hydrant"
+    end
+    
+    m = MatterhornJobs.new
+    m.send_request args
   end
 
   def mediapackage_id
@@ -127,26 +140,6 @@ class MasterFile < FileAsset
   
     return upload_format
   end
-
-  def sendToMatterhorn
-    args = {"url" => "file://" + self.url, 
-            "title" => self.pid , 
-            "flavor" => "presenter/source", 
-            "filename" => File.basename(self.url)}
-            
-    if self.media_type == 'Sound'
-      args['workflow'] = "fullaudio"
-    elsif self.media_type == 'Moving image'
-      args['workflow'] = "hydrant"
-    end
-    logger.debug "<< Calling Matterhorn with arguments: #{args} >>"
-    workflow_doc = Rubyhorn.client.addMediaPackageWithUrl(args)
-
-    # I don't know why this has to be double escaped with two arrays
-    self.workflow_id = workflow_doc.workflow.id[0]
-  end
-
-  handle_asynchronously :sendToMatterhorn
 
   def saveOriginal(file, original_name)
     realpath = File.realpath(file.path)
