@@ -1,7 +1,7 @@
 class WorkflowDatastream < ActiveFedora::SimpleDatastream
-  self.field :status, :string
-  self.field :last_completed_step, :string
-  self.field :origin, :string
+  field :status
+  #field :last_completed_step, :string
+  #field :origin, :string
 
   def status= new_status
     self.status = case new_status

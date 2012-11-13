@@ -8,7 +8,11 @@ class MediaObject < ActiveFedora::Base
 
   has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: ModsDocument	
-  has_metadata name: 'workflow', type:  WorkflowDatastream
+  has_metadata name: 'workflow', type:  ActiveFedora::SimpleDatastream do |sds|
+    sds.field :origin, :string
+    sds.field :published, :string
+    sds.field :last_completed_step, :string
+  end
 
   after_create :after_create
   
