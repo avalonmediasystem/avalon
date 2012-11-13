@@ -8,11 +8,7 @@ class MediaObject < ActiveFedora::Base
 
   has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: ModsDocument	
-  has_metadata name: 'workflow', type:  ActiveFedora::SimpleDatastream do |sds|
-    sds.field :origin, :string
-    sds.field :published, :string
-    sds.field :last_completed_step, :string
-  end
+  has_metadata name: 'workflow', type: WorkflowDatastream  
 
   after_create :after_create
   
@@ -26,7 +22,7 @@ class MediaObject < ActiveFedora::Base
   # that preferred controlled vocabulary standards are used
   validate :minimally_complete_record
   
-  delegate_to 'workflow', [:status, :current_step]
+  delegate_to 'workflow', [:status, :last_completed_step]
   delegate :avalon_uploader, to: :DC, at: [:creator], unique: true
   delegate :avalon_publisher, to: :DC, at: [:publisher], unique: true
   # Delegate variables to expose them for the forms

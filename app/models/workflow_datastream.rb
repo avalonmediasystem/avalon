@@ -1,10 +1,15 @@
-class WorkflowDatastream < ActiveFedora::SimpleDatastream
-  field :status
-  #field :last_completed_step, :string
-  #field :origin, :string
+class WorkflowDatastream < ActiveFedora::NokogiriDatastream
+  set_terminology do |t|
+    t.root(path: 'workflow')
+    
+    t.status
+    t.last_completed_step
+    t.published
+    t.origin
+  end
 
   def status= new_status
-    self.status = case new_status
+    status = case new_status
                   when 'published'
                     'published'
                   when 'unpublished'
@@ -15,7 +20,7 @@ class WorkflowDatastream < ActiveFedora::SimpleDatastream
   end
 
   def last_completed_step= active_step
-    unless IngestWorkflow.exists? active_step
+    unless HYDRANT_STEPS.exists? active_step
       logger.warn "Unrecognized step : #{active_step}"
     end
     
@@ -32,4 +37,16 @@ class WorkflowDatastream < ActiveFedora::SimpleDatastream
       origin = source
     end
   end
+
+  def self.xml_template
+    builder = Nokogiri::XML::Builder.new do |xml|
+      xml.workflow do
+        xml.status 'new'
+        xml.last_completed_step 
+        xml.published false.to_s
+        xml.origin 
+      end
+    end
+  end
+
 end
