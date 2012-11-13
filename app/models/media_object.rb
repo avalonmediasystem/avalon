@@ -8,6 +8,11 @@ class MediaObject < ActiveFedora::Base
 
   has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: ModsDocument	
+  has_metadata name: 'workflow', type: SimpleMetadataStream |sms| do
+    # Status is either 'published' or 'unpublished'
+    sms.field :status, :string
+    sms.field :current_step, :string
+  end
 
   after_create :after_create
   
