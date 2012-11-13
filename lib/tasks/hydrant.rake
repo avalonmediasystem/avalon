@@ -25,4 +25,11 @@ namespace :hydrant do
      FileUtils.rm(Dir['public/stylesheets/cache/[^.]*'])
    end
   end
+  
+  namespace :batch do 
+    desc "Hydrant cron jobs"
+    task :ingest do
+      # Starts the ingest process
+    end
+  end
 end

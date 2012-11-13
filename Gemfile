@@ -51,6 +51,7 @@
   gem 'rb-fchange', require: false
   gem 'daemons'
   gem 'delayed_job_active_record'
+  gem 'whenever', :require => false
 
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
