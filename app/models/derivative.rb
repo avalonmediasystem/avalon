@@ -1,8 +1,8 @@
 class Derivative < ActiveFedora::Base
-  include ActiveFedora::Relationships
+  include ActiveFedora::Associations
 
   has_metadata :name => "descMetadata", :type => ActiveFedora::QualifiedDublinCoreDatastream
-  has_relationship "derivative_of", :is_derivation_of
+#  has_relationship "derivative_of", :is_derivation_of
   belongs_to :masterfile, :class_name=>'MasterFile', :property=>:is_derivation_of
 
   delegate :source, to: :descMetadata
@@ -14,9 +14,11 @@ class Derivative < ActiveFedora::Base
     refresh_status
   end
 
-  def masterfile= masterfile
-    masterfile.add_relationship :has_derivation, self
-    self.add_relationship :is_derivation_of, masterfile
+  def masterfile= parent
+    super parent
+    self.masterfile.derivatives << self
+#    masterfile.add_relationship :has_derivation, self
+#    self.add_relationship :is_derivation_of, masterfile
   end
 
   # A hacky way to handle the description for now. This should probably be refactored
