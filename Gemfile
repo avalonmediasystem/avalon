@@ -46,12 +46,10 @@
   gem 'omniauth-ldap'
 
   gem 'mediainfo'
-  gem 'rb-fsevent', '~> 0.9.1', :require => false
-  gem 'rb-inotify', :require => false
-  gem 'rb-fchange', require: false
-  gem 'daemons'
   gem 'delayed_job_active_record'
   gem 'whenever', :require => false
+
+  gem 'hydrant-batch', :git => "git://github.com/variations-on-video/hydrant-batch.git"
 
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
