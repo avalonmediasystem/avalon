@@ -2,10 +2,10 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
   set_terminology do |t|
     t.root(path: 'workflow')
     
-    t.status
-    t.last_completed_step
-    t.published
-    t.origin
+    t.status(path: 'status')
+    t.last_completed_step(path: 'last_completed_step')
+    t.published(path: 'published')
+    t.origin(path: 'origin')
   end
 
   def status= new_status
@@ -30,7 +30,7 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
   end 
   
   def origin= source
-    unless ['batch', 'web', 'console'].contains? source
+    unless ['batch', 'web', 'console'].include? source
       logger.warn "Unrecognized origin : #{source}"
       origin = 'unknown'
     else
