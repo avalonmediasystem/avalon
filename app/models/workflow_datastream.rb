@@ -2,14 +2,9 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
   set_terminology do |t|
     t.root(path: 'workflow')
     
-    t.status(path: 'status')
     t.last_completed_step(path: 'last_completed_step')
     t.published(path: 'published')
     t.origin(path: 'origin')
-  end
-
-  def status= new_status
-    status = new_status
   end
 
   def published?
@@ -39,10 +34,25 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
     end
   end
 
+ 	
+
+      # Return true if the step is current or prior to the parameter passed in
+      # Defaults to false if the step is not recognized
+      def completed?(step_name)
+        status_flag = self.published || false
+        unless self.published
+          current_index = HYDRANT_STEPS.index(step_name)
+          last_index = HYDRANT_STEPS.index(current_step)
+          unless (current_index.nil? or last_index.nil?)
+            status_flag = (last_index >= current_index)
+          end
+        end
+        status_flag
+      end
+
   def self.xml_template
     builder = Nokogiri::XML::Builder.new do |xml|
       xml.workflow do
-        xml.status 'new'
         xml.last_completed_step 
         xml.published 'unpublished'
         xml.origin 'unknown' 
@@ -50,6 +60,21 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
     end
     
     builder.doc
+  end
+
+  def to_solr(solr_doc=SolrDocument.new)
+    super(solr_doc)
+
+    case self.last_completed_step.first
+    when ''
+      solr_doc.merge!(:workflow_status_facet => "New")
+    when 'preview'
+      solr_doc.merge!(:workflow_status_facet => "Completed")
+    default
+      solr_doc.merge!(:workflow_status_facet => "In progress")
+    end
+    solr_doc.merge!(:workflow_published_facet => self.published.first.capitalize)
+    solr_doc.merge!(:workflow_source_facet => self.origin.first.capitalize)
   end
 
 end

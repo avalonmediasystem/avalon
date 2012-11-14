@@ -47,12 +47,12 @@ class MediaObjectsController < CatalogController
         end
       end
 
-    unless prev_step.nil? || @ingest_status.completed?(prev_step.step) 
+    unless prev_step.nil? || @mediaobject.workflow.completed?(prev_step.step) 
       redirect_to edit_media_object_path(@mediaobject)
       return
     end
     
-    unless @ingest_status.completed?(@active_step)
+    unless @mediaobject.workflow.completed?(@active_step)
       @ingest_status.current_step = @active_step
       @ingest_status.save
     end

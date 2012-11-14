@@ -22,7 +22,6 @@ class MediaObject < ActiveFedora::Base
   # that preferred controlled vocabulary standards are used
   validate :minimally_complete_record
   
-  delegate_to 'workflow', [:status, :last_completed_step]
   delegate :avalon_uploader, to: :DC, at: [:creator], unique: true
   delegate :avalon_publisher, to: :DC, at: [:publisher], unique: true
   # Delegate variables to expose them for the forms

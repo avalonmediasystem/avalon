@@ -65,6 +65,11 @@ class CatalogController < ApplicationController
     config.add_facet_field 'location_facet', :label => 'Locations', :limit => 5
     config.add_facet_field 'time_period_facet', :label => 'Time Periods', :limit => 5
 
+    #FIXME hide these facets if not an "archivist"
+    config.add_facet_field 'workflow_status_facet', :label => 'Status', :limit => 5
+    config.add_facet_field 'workflow_published_facet', :label => 'Published', :limit => 5
+    config.add_facet_field 'workflow_source_facet', :label => 'Source', :limit => 5
+
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
     # handler defaults, or have no facets.
@@ -176,7 +181,7 @@ class CatalogController < ApplicationController
   def only_published_items(solr_parameters, user_parameters)
     if cannot? :create, MediaObject
       solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << "dc_publisher_t: [* TO *]"
+      solr_parameters[:fq] << 'workflow_published_facet:"Published"'
     end
   end
 
@@ -202,7 +207,7 @@ class CatalogController < ApplicationController
       params[:v] = "mi"
       @my_items = []
       (response, @my_items) = get_search_results(
-        {:q => "dc_creator_t:#{user_key}",
+        {:q => 'workflow_published_facet:"Published"',
          :per_page => 5,
          :sort => 'system_create_dt desc',
          :qt => "standard",
