@@ -174,7 +174,7 @@ class CatalogController < ApplicationController
   end
 
   def only_published_items(solr_parameters, user_parameters)
-    unless params[:v] == "mi"
+    if cannot? :create, MediaObject
       solr_parameters[:fq] ||= []
       solr_parameters[:fq] << "dc_publisher_t: [* TO *]"
     end
