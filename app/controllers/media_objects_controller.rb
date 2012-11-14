@@ -53,8 +53,8 @@ class MediaObjectsController < CatalogController
     end
     
     unless @ingest_status.completed?(@active_step)
-      @ingest_status.current_step = @active_step
-      @ingest_status.save
+      @mediaobject.workflow.last_completed_step = @active_step
+      @mediaobject.save
     end
   end
   
