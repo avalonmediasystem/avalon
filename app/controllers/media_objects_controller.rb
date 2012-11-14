@@ -153,14 +153,14 @@ class MediaObjectsController < CatalogController
   end
   
   def get_redirect_path(target)
-    logger.info "<< #{@mediaobject.pid} has been updated in Fedora >>"
     unless HYDRANT_STEPS.last?(params[:step])
       redirect_path = edit_media_object_path(@mediaobject, step: target)
     else
       flash[:notice] = "This resource is now available for use in the system"
       redirect_path = media_object_path(@mediaobject)
-      return
     end
+
+    logger.info "<HYDRANT> Redirect path set to #{redirect_path} for #{@mediaobject}"
     redirect_path
   end
   
