@@ -1,4 +1,6 @@
 class WorkflowDatastream < ActiveFedora::NokogiriDatastream
+  before_save :reset_values
+
   set_terminology do |t|
     t.root(path: 'workflow')
     
@@ -42,7 +44,7 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
         status_flag = self.published || false
         unless self.published
           current_index = HYDRANT_STEPS.index(step_name)
-          last_index = HYDRANT_STEPS.index(current_step)
+          last_index = HYDRANT_STEPS.index(last_completed_step)
           unless (current_index.nil? or last_index.nil?)
             status_flag = (last_index >= current_index)
           end
@@ -50,6 +52,23 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
         status_flag
       end
 
+      def current?(step_name)
+        (step_name == self.last_completed_step)
+      end
+      
+      def active?(step_name)
+        completed?(step_name) or current?(step_name)
+      end
+
+      def advance
+        self.last_completed_step = HYDRANT_STEPS.next(self.last_completed_step).step
+      end
+
+      def publish
+        self.last_completed_step = "published"
+        self.published = true
+      end
+      
   def self.xml_template
     builder = Nokogiri::XML::Builder.new do |xml|
       xml.workflow do
@@ -76,5 +95,23 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
     solr_doc.merge!(:workflow_published_facet => self.published.first.capitalize)
     solr_doc.merge!(:workflow_source_facet => self.origin.first.capitalize)
   end
+
+      protected
+      def reset_values
+        logger.debug "<< BEFORE_SAVE (IngestStatus) >>"
+        logger.debug "<< last_completed_step => #{self.last_completed_step} >>"
+        
+        if published.nil?
+          logger.debug "<< Default published flag = false >>"
+          self.published = false
+        end
+        
+        if last_completed_step.nil?
+          logger.debug "<< Default step = #{HYDRANT_STEPS.first.step} >>"
+          self.last_completed_step = HYDRANT_STEPS.first.step
+        end
+      end
+
+
 
 end

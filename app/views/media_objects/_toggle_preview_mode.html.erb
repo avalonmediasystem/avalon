@@ -1,4 +1,4 @@
-<% if @ingest_status.published %>
+<% if @mediaobject.workflow.published? %>
 <div class="alert">
   <%= link_to "Return to preview", media_object_path(@mediaobject), 
     class: "btn" %>	

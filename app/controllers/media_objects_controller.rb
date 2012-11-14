@@ -113,17 +113,17 @@ class MediaObjectsController < CatalogController
       report_errors
     else
       unless params[:donot_advance] == "true"
-        @ingest_status = update_ingest_status(params[:pid], @active_step)
+        update_ingest_status(params[:pid], @active_step)
         if HYDRANT_STEPS.has_next?(@active_step)
           @active_step = HYDRANT_STEPS.next(@active_step).step
-        elsif @ingest_status.published
+        elsif @mediaobject.workflow.published?
           @active_step = "published"
         end
       end
       logger.debug "<< ACTIVE STEP => #{@active_step} >>"
-      logger.debug "<< INGEST STATUS => #{@ingest_status.inspect} >>"
+      logger.debug "<< INGEST STATUS => #{@mediaobject.workflow.inspect} >>"
       respond_to do |format|
-        format.html { (@ingest_status.published and @ingest_status.current?(@active_step)) ? redirect_to(media_object_path(@mediaobject)) : redirect_to(get_redirect_path(@active_step)) }
+        format.html { (@mediaobject.workflow.published? and @mediaobject.workflow.current?(@active_step)) ? redirect_to(media_object_path(@mediaobject)) : redirect_to(get_redirect_path(@active_step)) }
         format.json { render :json => nil }
       end
     end
