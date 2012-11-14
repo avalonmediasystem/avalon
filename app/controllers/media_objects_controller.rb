@@ -10,11 +10,10 @@ class MediaObjectsController < CatalogController
     logger.debug "<< NEW >>"
     @mediaobject = MediaObject.new(avalon_uploader: user_key)
     set_default_item_permissions
+    # Touch the workflow object to create it by setting the origin
+    @mediaobject.workflow.origin = 'web'
     @mediaobject.save(:validate => false)
 
-    @ingest_status = IngestStatus.create(pid: @mediaobject.pid, current_step: HYDRANT_STEPS.first.step)
-    logger.debug "<< There are now #{IngestStatus.count} status in the database >>"
-    
     redirect_to edit_media_object_path(@mediaobject, step: HYDRANT_STEPS.first.step)
   end
 
@@ -24,8 +23,7 @@ class MediaObjectsController < CatalogController
     
     @mediaobject = MediaObject.find(params[:id])
     @masterFiles = load_master_files
-    @ingest_status = IngestStatus.find_by_pid(@mediaobject.pid)
-    @active_step = params[:step] || @ingest_status.current_step
+    @active_step = params[:step] || @mediaobject.workflow.last_completed_step
     prev_step = HYDRANT_STEPS.previous(@active_step)
 
     case @active_step 
@@ -67,8 +65,7 @@ class MediaObjectsController < CatalogController
     logger.info "<< Updating the media object (including a PBCore datastream) >>"
     @mediaobject = MediaObject.find(params[:id])
  
-    @ingest_status = IngestStatus.find_by_pid(params[:id])
-    @active_step = params[:step] || @ingest_status.current_step
+    @active_step = params[:step] || @mediaobject.workflow.last_completed_step
     
     # This is a first pass towards abstracting the handling of workflow
     # processing into a processs that can be used either through the web
