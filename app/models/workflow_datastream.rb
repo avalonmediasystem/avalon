@@ -10,41 +10,41 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
   end
 
   def published?
-    published.eql? 'published'
+    @published.eql? 'published'
   end
 
   def published= publication_status
-     published = publication_status ? 'published' : 'unpublished'
+     @published = publication_status ? 'published' : 'unpublished'
   end
 
   def last_completed_step= active_step
+    active_step = active_step.first if active_step.is_a? Array
     unless HYDRANT_STEPS.exists? active_step
       logger.warn "Unrecognized step : #{active_step}"
     end
     
     # Set it anyways for now. Need to come up with a more robust warning
     # system down the road
-    last_completed_step = active_step
+    @last_completed_step = [active_step]
   end 
   
   def origin= source
     unless ['batch', 'web', 'console'].include? source
       logger.warn "Unrecognized origin : #{source}"
-      origin = 'unknown'
+      @origin = 'unknown'
     else
-      origin = source
+      @origin = source
     end
   end
-
- 	
 
       # Return true if the step is current or prior to the parameter passed in
       # Defaults to false if the step is not recognized
       def completed?(step_name)
-        status_flag = self.published || false
-        unless self.published
-          current_index = HYDRANT_STEPS.index(step_name)
-          last_index = HYDRANT_STEPS.index(last_completed_step)
+        status_flag = self.published? || false
+
+        unless self.published?
+          step_index = HYDRANT_STEPS.index(step_name)
+          current_index = HYDRANT_STEPS.index(last_completed_step)
           unless (current_index.nil? or last_index.nil?)
             status_flag = (last_index >= current_index)
           end
@@ -52,8 +52,24 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
         status_flag
       end
 
+      # Current can be true if the last_completed_step is defined as the
+      # step prior to the current one. If the step given is the first and
+      # the value of last_completed_step is blank then it is also true
+      #
+      # Otherwise assume the result should be false because you are on a
+      # different step
       def current?(step_name)
-        (step_name == self.last_completed_step)
+        current = case
+                  when HYDRANT_STEPS.first?(step_name)
+                    last_completed_step.first.empty?
+                  when HYDRANT_STEPS.exists?(step_name)
+                    previous_step = HYDRANT_STEPS.previous(step_name)
+                    (last_completed_step == previous_step.step)
+                  else
+                    false
+                  end
+
+        current
       end
       
       def active?(step_name)
@@ -72,8 +88,8 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
   def self.xml_template
     builder = Nokogiri::XML::Builder.new do |xml|
       xml.workflow do
-        xml.last_completed_step 
-        xml.published 'unpublished'
+        xml.last_completed_step '' 
+        xml.published 'false'
         xml.origin 'unknown' 
       end
     end
