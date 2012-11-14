@@ -1,4 +1,4 @@
-mh_server = "http://129.79.32.147:8080"
+mh_server = "http://129.79.34.79:8080"
 
 MATTERHORN_CONFIG = {
 	"plugin_urls"=>{
