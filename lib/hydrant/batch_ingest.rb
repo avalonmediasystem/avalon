@@ -3,6 +3,7 @@ class BatchIngest
   
   def self.ingest
     # Scans dropbox for new batch packages
+    puts "Batch job"
     new_packages = []
     
     # Extracts package and process

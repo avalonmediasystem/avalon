@@ -27,9 +27,11 @@ namespace :hydrant do
   end
   
   namespace :batch do 
-    desc "Hydrant cron jobs"
+    desc "Starts Hydrant batch ingest"
     task :ingest do
       # Starts the ingest process
+      require 'hydrant/batch_ingest'
+      BatchIngest.ingest
     end
   end
 end
