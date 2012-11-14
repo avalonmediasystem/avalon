@@ -9,14 +9,15 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
   end
 
   def status= new_status
-    status = case new_status
-                  when 'published'
-                    'published'
-                  when 'unpublished'
-                    'unpublished'
-                  else
-                    nil
-                  end
+    status = new_status
+  end
+
+  def published?
+    published.eql? 'published'
+  end
+
+  def published= publication_status
+     published = publication_status ? 'published' : 'unpublished'
   end
 
   def last_completed_step= active_step
@@ -43,10 +44,12 @@ class WorkflowDatastream < ActiveFedora::NokogiriDatastream
       xml.workflow do
         xml.status 'new'
         xml.last_completed_step 
-        xml.published false.to_s
-        xml.origin 
+        xml.published 'unpublished'
+        xml.origin 'unknown' 
       end
     end
+    
+    builder.doc
   end
 
 end

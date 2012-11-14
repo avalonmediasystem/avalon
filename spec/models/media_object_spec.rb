@@ -108,7 +108,8 @@ describe MediaObject do
   describe "Ingest status" do
     it "should default to unpublished" do
       @mediaobject = MediaObject.new
-      @mediaobject.workflow.status.should eq "unpublished"
+      @mediaobject.workflow.published.first.should eq "unpublished"
+      @mediaobject.workflow.published?.should eq false
     end
 
     it "should be published when the item is visible" do
