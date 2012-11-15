@@ -46,11 +46,6 @@ class MediaObjectsController < CatalogController
       redirect_to edit_media_object_path(@mediaobject)
       return
     end
-    
-    unless @mediaobject.workflow.completed?(@active_step)
-      @mediaobject.workflow.last_completed_step = @active_step
-      @mediaobject.save
-    end
   end
   
   # TODO: Refactor this to reflect the new code model. This is not the ideal way to
@@ -71,6 +66,7 @@ class MediaObjectsController < CatalogController
       unless params[:donot_advance] == "true"
         @mediaobject.workflow.update_status(@active_step)
 	@mediaobject.save(validate: false)
+
         if HYDRANT_STEPS.has_next?(@active_step)
           @active_step = HYDRANT_STEPS.next(@active_step).step
         elsif @mediaobject.workflow.published?
