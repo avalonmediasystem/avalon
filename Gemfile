@@ -3,7 +3,7 @@
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
 
-  gem 'blacklight', '~> 4.0.0.pre3' 
+  gem 'blacklight', '~> 4.0.0.pre4' 
   gem 'om', '~>1.8.0.rc1'
   gem 'hydra-head', 
     git: "git://github.com/projecthydra/hydra-head.git",
@@ -85,6 +85,7 @@
 
   group :test do
     gem 'cucumber-rails', '>=1.2.0', :require=>false
+    gem 'capybara', '~>1.1.2'
     gem 'capybara-webkit', '0.12.1'
     gem 'capybara-screenshot'
     gem 'mime-types', ">=1.1"

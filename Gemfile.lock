@@ -152,12 +152,12 @@ GEM
       nokogiri (>= 1.4.0)
     arel (3.0.2)
     bcrypt-ruby (3.0.1)
-    blacklight (4.0.0.pre3)
+    blacklight (4.0.0.pre4)
       bootstrap-sass (~> 2.1.0)
       kaminari (~> 0.13)
       marc (>= 0.4.3, < 1.1)
       nokogiri (~> 1.5)
-      rails (~> 3.1)
+      rails (~> 3.2)
       rsolr (~> 1.0.6)
       sass-rails
       unicode
@@ -493,11 +493,12 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord-jdbcsqlite3-adapter
-  blacklight (~> 4.0.0.pre3)
+  blacklight (~> 4.0.0.pre4)
   bootstrap-sass
   builder (~> 3.0.0)
   capistrano (~> 2.12.0)
   capistrano-unicorn
+  capybara (~> 1.1.2)
   capybara-screenshot
   capybara-webkit (= 0.12.1)
   coffee-rails (~> 3.2.1)
