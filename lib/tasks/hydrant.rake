@@ -28,8 +28,7 @@ namespace :hydrant do
   
   namespace :batch do 
     desc "Starts Hydrant batch ingest"
-    task :ingest do
-      # Starts the ingest process
+    task :ingest => :environment do
       require 'hydrant/batch_ingest'
       Hydrant::Batch.ingest
     end
