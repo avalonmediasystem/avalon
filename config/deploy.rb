@@ -2,6 +2,7 @@ set :stages, %w(production staging)
 set :default_stage, "staging"
 require 'capistrano/ext/multistage'
 require 'rvm/capistrano'
+require 'whenever/capistrano'
 
 set :application, "hydrant"
 set :repository,  "git://github.com/variations-on-video/hydrant.git"

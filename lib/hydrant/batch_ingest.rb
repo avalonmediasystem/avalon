@@ -1,19 +1,22 @@
-require 'hydrant/workflow/workflow_controller_behavior'
-
 module Hydrant
   module Batch
-    include Hydrant::Workflow::WorkflowControllerBehavior
 
     def self.ingest
       # Scans dropbox for new batch packages
-      puts "New Batch job"
+      logger.info "============================================"
+      logger.info "<< Starts scanning for new batch packages >>"
+      
       new_packages = Hydrant::DropboxService.find_new_packages
-    
+      logger.info "<< Found #{new_packages.count} new packages >>"
+      
       # Extracts package and process
-      new_packages.each do |package|
+      new_packages.each_with_index do |package, index|
+        logger.info "<< Processing package #{index} >>"
         package.process do |fields, files|
           mediaobject = MediaObject.new
           mediaobject.workflow.origin = "batch"
+          mediaobject.save(:validate => false)
+          logger.info "<< Created MediaObject #{mediaobject.pid} >>"
 
           # Creates and processes MasterFiles
           package.file_list.each do |file_path|
@@ -21,15 +24,17 @@ module Hydrant
             mf.container = mediaobject
             mf.setContent(File.open(file_path, 'rb'))
             if mf.save
+              logger.info "<< Created & associated MasterFile #{mf.pid} >>"
               mf.process
             end
           end
                 
-          context = {mediaobject: mediaobject, parts: []}
-          fus = create_workflow_step('file_upload')
-          context = fus.execute context
+          context = {mediaobject: mediaobject}
+          context = HYDRANT_STEPS.get_step('file-upload').execute context
+          logger.info "Done processing package #{index}"
         end
       end
     end
+
   end
 end
