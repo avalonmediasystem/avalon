@@ -31,7 +31,7 @@ namespace :hydrant do
     task :ingest do
       # Starts the ingest process
       require 'hydrant/batch_ingest'
-      BatchIngest.ingest
+      Hydrant::Batch.ingest
     end
   end
 end

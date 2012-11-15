@@ -48,6 +48,15 @@ class Dropbox
 
     return nil
   end
+  
+  # Gets completed, uningested batch packages
+  def find_new_packages()
+    packages = []
+    Hydrant::Batch::Manifest.locate(@base_directory).each do |manifest_file|  
+      packages << Hydrant::Batch::Package.new(manifest_file)
+    end
+    packages
+  end
 
 #  protected
   def find_open_files(files)
