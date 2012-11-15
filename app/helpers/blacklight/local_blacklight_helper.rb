@@ -1,4 +1,10 @@
 module Blacklight::LocalBlacklightHelper 
+  def facet_field_names
+    blacklight_config.facet_fields.select { |facet,opts|
+      ability = opts[:if_user_can]
+      ability.nil? || can?(*ability)
+    }.keys
+  end
 
   def render_index_doc_actions(document, options={})   
     wrapping_class = options.delete(:wrapping_class) || "documentFunctions" 
