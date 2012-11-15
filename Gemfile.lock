@@ -31,41 +31,41 @@ GIT
 
 GIT
   remote: git://github.com/projecthydra/hydra-head.git
-  revision: dde1336a011885167b4247b1208a7f884d1e0783
+  revision: 56de708ca64f936ce06d5adff945cae42670ae23
   branch: master
   specs:
-    hydra-access-controls (5.0.0.pre11)
+    hydra-access-controls (5.0.0.pre12)
       active-fedora
       activesupport
       blacklight
       cancan
       deprecation
-    hydra-core (5.0.0.pre11)
+    hydra-core (5.0.0.pre12)
       RedCloth (= 4.2.9)
-      active-fedora (~> 5.0.0.rc2)
-      blacklight (~> 4.0.0.pre3)
+      active-fedora (~> 5.0.0.rc3)
+      blacklight (~> 4.0.0.pre4)
       block_helpers
       deprecation (>= 0.0.5)
       devise
-      hydra-access-controls (= 5.0.0.pre11)
+      hydra-access-controls (= 5.0.0.pre12)
       hydra-mods (>= 0.0.6)
       jquery-rails
       rails (~> 3.2.3)
       sanitize
-    hydra-file-access (5.0.0.pre11)
+    hydra-file-access (5.0.0.pre12)
       RedCloth (= 4.2.9)
       active-fedora
       blacklight
       block_helpers
       deprecation (>= 0.0.5)
       devise
-      hydra-core (= 5.0.0.pre11)
+      hydra-core (= 5.0.0.pre12)
       hydra-mods (>= 0.0.5)
       rails (~> 3.2.3)
       sanitize
-    hydra-head (5.0.0.pre11)
-      hydra-access-controls (= 5.0.0.pre11)
-      hydra-core (= 5.0.0.pre11)
+    hydra-head (5.0.0.pre12)
+      hydra-access-controls (= 5.0.0.pre12)
+      hydra-core (= 5.0.0.pre12)
       rails (>= 3.2.6)
 
 GIT
@@ -119,12 +119,11 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.2.1)
-    active-fedora (5.0.0.rc2)
+    active-fedora (5.0.0.rc3)
       activeresource (>= 3.0.0)
       activesupport (>= 3.0.0)
       builder (~> 3.0.0)
       deprecation
-      equivalent-xml
       mediashelf-loggable
       om (~> 1.8.0.rc1)
       rdf
@@ -230,8 +229,6 @@ GEM
       railties (~> 3.1)
       warden (~> 1.2.1)
     diff-lcs (1.1.3)
-    equivalent-xml (0.3.0)
-      nokogiri (>= 1.4.3)
     erubis (2.7.0)
     execjs (1.4.0)
       multi_json (~> 1.0)

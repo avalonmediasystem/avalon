@@ -8,7 +8,6 @@
 //= require blacklight/bookmark_toggle
 //= require blacklight/facet_expand_contract
 //= require blacklight/lightbox_dialog
-//= require blacklight/more_facets
 //= require blacklight/search_context
 //= require blacklight/select_submit
 //= require blacklight/zebra_stripe
