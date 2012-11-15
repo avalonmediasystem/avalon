@@ -3,12 +3,12 @@ class MediaObject < ActiveFedora::Base
   include Hydra::ModelMethods
   include ActiveFedora::Relationships
   include Hydra::ModelMixins::RightsMetadata
+  include Hydrant::Workflow::WorkflowModelMixin
 
   has_relationship "parts", :has_part
 
   has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: ModsDocument	
-  has_metadata name: 'workflow', type: WorkflowDatastream  
 
   after_create :after_create
   

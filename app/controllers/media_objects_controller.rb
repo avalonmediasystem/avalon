@@ -1,4 +1,3 @@
-require 'hydrant/workflow/workflow_controller_behavior'
 class MediaObjectsController < CatalogController
   include Hydrant::Workflow::WorkflowControllerBehavior
 #  include Hydra::Controller::FileAssetsBehavior
@@ -23,21 +22,16 @@ class MediaObjectsController < CatalogController
     
     @mediaobject = MediaObject.find(params[:id])
     @masterFiles = load_master_files
+
     @active_step = params[:step] || @mediaobject.workflow.last_completed_step
     prev_step = HYDRANT_STEPS.previous(@active_step)
-
+    context = params.merge!({mediaobject: @mediaobject})
+    context = HYDRANT_STEPS.get_step(@active_step).before_step context
+    
     case @active_step 
       # When uploading files be sure to get a list of all master files as
       # well as the list of dropbox accessible files
       when 'file-upload'
-        # This is a first cut at using an external workflow step. If it works
-        # we can expand it in a more reasonable way
-        #@dropbox_files = Hydrant::DropboxService.all
-        context = {mediaobject: @mediaobject,
-          parts: params[:parts]}
-        fus = create_workflow_step('file_upload')
-        context = fus.before_step context
-
         @dropbox_files = context[:dropbox_files]
       when 'preview'
         @currentStream = set_active_file(params[:content])
@@ -66,54 +60,14 @@ class MediaObjectsController < CatalogController
     @mediaobject = MediaObject.find(params[:id])
  
     @active_step = params[:step] || @mediaobject.workflow.last_completed_step
-    
-    # This is a first pass towards abstracting the handling of workflow
-    # processing into a processs that can be used either through the web
-    # interface or through a batch process.
-    #
-    # Expect more changes as the right approach becomes obvious in future
-    # sprints.
-    case @active_step
-      when 'file-upload'
-        logger.debug "<< PROCESSING file-upload STEP >>"
-        context = {mediaobject: @mediaobject,
-          parts: params[:parts]}
-        fus = create_workflow_step('file_upload')
-        context = fus.execute context
+    context = params.merge!({mediaobject: @mediaobject, user: user_key})
+    context = HYDRANT_STEPS.get_step(@active_step).execute context
 
-      # When adding resource description
-      when 'resource-description' 
-        context = {mediaobject: @mediaobject,
-          datastream: params[:media_object]}
-        rds = create_workflow_step('resource-description')
-        context = rds.execute context
-      # When on the access control page
-      when 'access-control' 
-        context = {mediaobject: @mediaobject,
-          access: params[:access]}
-        acs = create_workflow_step('access-control')
-        context = acs.execute context
-
-      when 'structure'
-        context = {mediaobject: @mediaobject,
-          masterfiles: params[:masterfile_ids]}
-        struct_step = create_workflow_step('structure')
-        context = struct_step.execute context
-       
-      # When looking at the preview page use a version of the show page
-      when 'preview' 
-        # Publish the media object
-        context = {mediaobject: @mediaobject,
-          publisher: user_key}
-        preview_step = create_workflow_step('preview')
-        context = preview_step.execute context
-    end    
-    
     unless @mediaobject.errors.empty?
       report_errors
     else
       unless params[:donot_advance] == "true"
-        update_ingest_status(params[:pid], @active_step)
+        @mediaobject.workflow.update_status(@active_step)
         if HYDRANT_STEPS.has_next?(@active_step)
           @active_step = HYDRANT_STEPS.next(@active_step).step
         elsif @mediaobject.workflow.published?
