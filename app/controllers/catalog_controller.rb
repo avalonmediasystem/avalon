@@ -68,7 +68,6 @@ class CatalogController < ApplicationController
     #FIXME hide these facets if not an "archivist"
     config.add_facet_field 'workflow_status_facet', :label => 'Status', :limit => 5
     config.add_facet_field 'workflow_published_facet', :label => 'Published', :limit => 5
-    config.add_facet_field 'workflow_source_facet', :label => 'Source', :limit => 5
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
