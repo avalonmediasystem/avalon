@@ -8,7 +8,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE=""/>
 <foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="fedoraAdmin"/>
 <foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2012-10-29T14:30:50.265Z"/>
-<foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2012-10-29T14:34:23.256Z"/>
+<foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2012-11-15T21:24:31.228Z"/>
 </foxml:objectProperties>
 <foxml:datastream ID="AUDIT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">
 <foxml:datastreamVersion ID="AUDIT.0" LABEL="Audit Trail for this object" CREATED="2012-10-29T14:30:50.265Z" MIMETYPE="text/xml" FORMAT_URI="info:fedora/fedora-system:format/xml.fedora.audit">
@@ -86,19 +86,43 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 <audit:date>2012-10-29T14:34:23.256Z</audit:date>
 <audit:justification></audit:justification>
 </audit:record>
+<audit:record ID="AUDREC10">
+<audit:process type="Fedora API-M"/>
+<audit:action>modifyDatastreamByValue</audit:action>
+<audit:componentID>descMetadata</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2012-11-15T21:16:14.507Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC11">
+<audit:process type="Fedora API-M"/>
+<audit:action>modifyDatastreamByValue</audit:action>
+<audit:componentID>descMetadata</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2012-11-15T21:24:31.074Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC12">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>workflow</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2012-11-15T21:24:31.228Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
 </audit:auditTrail>
 </foxml:xmlContent>
 </foxml:datastreamVersion>
 </foxml:datastream>
 <foxml:datastream ID="DC" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
-<foxml:datastreamVersion ID="DC1.0" LABEL="Dublin Core Record for this object" CREATED="2012-10-29T14:30:50.265Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="339">
+<foxml:datastreamVersion ID="DC1.0" LABEL="Dublin Core Record for this object" CREATED="2012-10-29T14:30:50.265Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="354">
 <foxml:xmlContent>
 <oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
   <dc:identifier>hydrant:print-publication</dc:identifier>
 </oai_dc:dc>
 </foxml:xmlContent>
 </foxml:datastreamVersion>
-<foxml:datastreamVersion ID="DC.1" LABEL="Dublin Core Record for this object" CREATED="2012-10-29T14:30:50.437Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="375">
+<foxml:datastreamVersion ID="DC.1" LABEL="Dublin Core Record for this object" CREATED="2012-10-29T14:30:50.437Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="390">
 <foxml:xmlContent>
 <oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
   <dc:creator>jlhardes</dc:creator>
@@ -106,9 +130,9 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 </oai_dc:dc>
 </foxml:xmlContent>
 </foxml:datastreamVersion>
-<foxml:datastreamVersion ID="DC.2" LABEL="Dublin Core Record for this object" CREATED="2012-10-29T14:34:23.210Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="415">
+<foxml:datastreamVersion ID="DC.2" LABEL="Dublin Core Record for this object" CREATED="2012-10-29T14:34:23.210Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="430">
 <foxml:xmlContent>
-<oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
   <dc:creator>jlhardes</dc:creator>
   <dc:publisher>jlhardes</dc:publisher>
   <dc:identifier>hydrant:print-publication</dc:identifier>
@@ -117,7 +141,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 </foxml:datastreamVersion>
 </foxml:datastream>
 <foxml:datastream ID="RELS-EXT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
-<foxml:datastreamVersion ID="RELS-EXT.0" LABEL="Fedora Object-to-Object Relationship Metadata" CREATED="2012-10-29T14:30:50.335Z" MIMETYPE="application/rdf+xml" SIZE="284">
+<foxml:datastreamVersion ID="RELS-EXT.0" LABEL="Fedora Object-to-Object Relationship Metadata" CREATED="2012-10-29T14:30:50.335Z" MIMETYPE="application/rdf+xml" SIZE="299">
 <foxml:xmlContent>
 <rdf:RDF xmlns:ns0="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <rdf:Description rdf:about="info:fedora/hydrant:print-publication">
@@ -212,7 +236,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 </mods>
 </foxml:xmlContent>
 </foxml:datastreamVersion>
-<foxml:datastreamVersion ID="descMetadata.1" LABEL="" CREATED="2012-10-29T14:33:56.406Z" MIMETYPE="text/xml" SIZE="1784">
+<foxml:datastreamVersion ID="descMetadata.1" LABEL="" CREATED="2012-10-29T14:33:56.406Z" MIMETYPE="text/xml" SIZE="1786">
 <foxml:xmlContent>
 <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
   <titleInfo usage="primary">
@@ -261,7 +285,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 </mods>
 </foxml:xmlContent>
 </foxml:datastreamVersion>
-<foxml:datastreamVersion ID="descMetadata.2" LABEL="" CREATED="2012-10-29T14:34:02.725Z" MIMETYPE="text/xml" SIZE="1784">
+<foxml:datastreamVersion ID="descMetadata.2" LABEL="" CREATED="2012-10-29T14:34:02.725Z" MIMETYPE="text/xml" SIZE="1786">
 <foxml:xmlContent>
 <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
   <titleInfo usage="primary">
@@ -310,7 +334,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
 </mods>
 </foxml:xmlContent>
 </foxml:datastreamVersion>
-<foxml:datastreamVersion ID="descMetadata.3" LABEL="" CREATED="2012-10-29T14:34:23.256Z" MIMETYPE="text/xml" SIZE="1784">
+<foxml:datastreamVersion ID="descMetadata.3" LABEL="" CREATED="2012-10-29T14:34:23.256Z" MIMETYPE="text/xml" SIZE="1786">
 <foxml:xmlContent>
 <mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
   <titleInfo usage="primary">
@@ -357,6 +381,117 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
     </languageOfCataloging>
   </recordInfo>
 </mods>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+<foxml:datastreamVersion ID="descMetadata.4" LABEL="" CREATED="2012-11-15T21:16:14.507Z" MIMETYPE="text/xml" SIZE="1839">
+<foxml:xmlContent>
+<mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+  <titleInfo usage="primary">
+    <title>Dino: The Essential Dean Martin</title>
+  </titleInfo>
+  <name type="personal" usage="primary">
+    <namePart>Dean Martin</namePart>
+    <role>
+      <roleTerm authority="marcrelator" type="code">cre</roleTerm>
+      <roleTerm authority="marcrelator" type="text">Creator</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Van Heusen</namePart>
+    <role>
+      <roleTerm authority="marcrelator" type="code">cre</roleTerm>
+      <roleTerm authority="marcrelator" type="text">Creator</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Cahn</namePart>
+    <role>
+      <roleTerm authority="marcrelator" type="code">cre</roleTerm>
+      <roleTerm authority="marcrelator" type="text">Creator</roleTerm>
+    </role>
+  </name>
+  <typeOfResource>moving image</typeOfResource>
+  <genre>Easy Listening</genre>
+  <originInfo>
+    <dateCreated encoding="edtf">2004</dateCreated>
+    <dateIssued encoding="edtf">2004</dateIssued>
+    <copyrightDate encoding="iso8601"></copyrightDate>
+  </originInfo>
+  <physicalDescription></physicalDescription>
+  <abstract></abstract>
+  <recordInfo>
+    <recordOrigin>Avalon Media System</recordOrigin>
+    <recordContentSource>IEN</recordContentSource>
+    <recordCreationDate>20121029</recordCreationDate>
+    <recordChangeDate>2012-11-15T16:16:14-05:00</recordChangeDate>
+    <recordIdentifier source="Fedora"></recordIdentifier>
+    <languageOfCataloging>
+      <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+    </languageOfCataloging>
+  </recordInfo>
+  <identifier>hydrant:print-publication</identifier>
+</mods>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+<foxml:datastreamVersion ID="descMetadata.5" LABEL="" CREATED="2012-11-15T21:24:31.074Z" MIMETYPE="text/xml" SIZE="1839">
+<foxml:xmlContent>
+<mods xmlns="http://www.loc.gov/mods/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+  <titleInfo usage="primary">
+    <title>Dino: The Essential Dean Martin</title>
+  </titleInfo>
+  <name type="personal" usage="primary">
+    <namePart>Dean Martin</namePart>
+    <role>
+      <roleTerm authority="marcrelator" type="code">cre</roleTerm>
+      <roleTerm authority="marcrelator" type="text">Creator</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Van Heusen</namePart>
+    <role>
+      <roleTerm authority="marcrelator" type="code">cre</roleTerm>
+      <roleTerm authority="marcrelator" type="text">Creator</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Cahn</namePart>
+    <role>
+      <roleTerm authority="marcrelator" type="code">cre</roleTerm>
+      <roleTerm authority="marcrelator" type="text">Creator</roleTerm>
+    </role>
+  </name>
+  <typeOfResource>moving image</typeOfResource>
+  <genre>Easy Listening</genre>
+  <originInfo>
+    <dateCreated encoding="edtf">2004</dateCreated>
+    <dateIssued encoding="edtf">2004</dateIssued>
+    <copyrightDate encoding="iso8601"></copyrightDate>
+  </originInfo>
+  <physicalDescription></physicalDescription>
+  <abstract></abstract>
+  <identifier>hydrant:print-publication</identifier>
+  <recordInfo>
+    <recordOrigin>Avalon Media System</recordOrigin>
+    <recordContentSource>IEN</recordContentSource>
+    <recordCreationDate>20121029</recordCreationDate>
+    <recordChangeDate>2012-11-15T16:24:31-05:00</recordChangeDate>
+    <recordIdentifier source="Fedora"></recordIdentifier>
+    <languageOfCataloging>
+      <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+    </languageOfCataloging>
+  </recordInfo>
+</mods>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="workflow" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+<foxml:datastreamVersion ID="workflow.0" LABEL="" CREATED="2012-11-15T21:24:31.228Z" MIMETYPE="text/xml" SIZE="139">
+<foxml:xmlContent>
+<workflow>
+  <last_completed_step>file-upload</last_completed_step>
+  <published>false</published>
+  <origin>unknown</origin>
+</workflow>
 </foxml:xmlContent>
 </foxml:datastreamVersion>
 </foxml:datastream>

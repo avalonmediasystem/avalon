@@ -31,7 +31,7 @@ GIT
 
 GIT
   remote: git://github.com/projecthydra/hydra-head.git
-  revision: 20ace77a688cdd2cb19da5ba60dfc4bab88c84cf
+  revision: dde1336a011885167b4247b1208a7f884d1e0783
   branch: master
   specs:
     hydra-access-controls (5.0.0.pre11)
@@ -77,7 +77,7 @@ GIT
 
 GIT
   remote: git://github.com/variations-on-video/hydrant-workflow.git
-  revision: 6f8568433fb97a3a116ea46ee5939df66473dcc4
+  revision: 64af03183053f1f8935f6be4133f9640d72fcdd8
   specs:
     hydrant-workflow (0.0.2a)
 
@@ -360,7 +360,7 @@ GEM
       rdoc (~> 3.4)
       thor (>= 0.14.6, < 2.0)
     raindrops (0.10.0)
-    rake (10.0.0)
+    rake (10.0.1)
     rb-fchange (0.0.6)
       ffi
     rb-fsevent (0.9.2)
