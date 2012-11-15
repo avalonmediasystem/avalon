@@ -23,7 +23,8 @@ class MediaObjectsController < CatalogController
     @mediaobject = MediaObject.find(params[:id])
     @masterFiles = load_master_files
 
-    @active_step = params[:step] || @mediaobject.workflow.last_completed_step
+    @active_step = params[:step] || @mediaobject.workflow.last_completed_step.first
+    logger.debug "<< active_step: #{@active_step} >>"
     prev_step = HYDRANT_STEPS.previous(@active_step)
     context = params.merge!({mediaobject: @mediaobject})
     context = HYDRANT_STEPS.get_step(@active_step).before_step context
@@ -59,7 +60,8 @@ class MediaObjectsController < CatalogController
     logger.info "<< Updating the media object (including a PBCore datastream) >>"
     @mediaobject = MediaObject.find(params[:id])
  
-    @active_step = params[:step] || @mediaobject.workflow.last_completed_step
+    @active_step = params[:step] || @mediaobject.workflow.last_completed_step.first
+    logger.debug "<< active_step: #{@active_step} >>"
     context = params.merge!({mediaobject: @mediaobject, user: user_key})
     context = HYDRANT_STEPS.get_step(@active_step).execute context
 
@@ -68,6 +70,7 @@ class MediaObjectsController < CatalogController
     else
       unless params[:donot_advance] == "true"
         @mediaobject.workflow.update_status(@active_step)
+	@mediaobject.save(validate: false)
         if HYDRANT_STEPS.has_next?(@active_step)
           @active_step = HYDRANT_STEPS.next(@active_step).step
         elsif @mediaobject.workflow.published?
