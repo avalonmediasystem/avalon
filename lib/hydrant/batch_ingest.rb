@@ -13,7 +13,7 @@ module Hydrant
       new_packages.each_with_index do |package, index|
         logger.info "<< Processing package #{index} >>"
         package.process do |fields, files|
-          mediaobject = MediaObject.new
+          mediaobject = MediaObject.new(avalon_uploader: 'batch')
           mediaobject.workflow.origin = "batch"
           mediaobject.save(:validate => false)
           logger.info "<< Created MediaObject #{mediaobject.pid} >>"
@@ -28,7 +28,7 @@ module Hydrant
               mf.process
             end
           end
-                
+
           context = {mediaobject: mediaobject}
           context = HYDRANT_STEPS.get_step('file-upload').execute context
           logger.info "Done processing package #{index}"
