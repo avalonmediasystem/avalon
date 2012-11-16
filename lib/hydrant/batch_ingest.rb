@@ -31,7 +31,15 @@ module Hydrant
 
           context = {mediaobject: mediaobject}
           context = HYDRANT_STEPS.get_step('file-upload').execute context
-          logger.info "Done processing package #{index}"
+
+          context = {mediaobject: mediaobject, media_object: fields}
+          context = HYDRANT_STEPS.get_step('resource-description').execute context
+
+          if mediaobject.save
+            logger.info "Done processing package #{index}"
+          else 
+            logger.warn "Problem saving MediaObject"
+          end
         end
       end
     end
