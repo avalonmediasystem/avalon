@@ -113,15 +113,28 @@ describe MediaObject do
     end
 
     it "should be published when the item is visible" do
-      pending "Load a fixture and publish it"
+      mediaobject = MediaObject.new
+      mediaobject.workflow.publish
+
+      mediaobject.workflow.published.first.should == 'published'
+      mediaobject.workflow.last_completed_step.first.should == HYDRANT_STEPS.last.step
     end
 
     it "should recognize the current step" do
-      pending "Load a fixture, set the current step to access control, and verify"
+      mediaObject = MediaObject.new
+      mediaObject.workflow.last_completed_step = 'structure'
+      mediaObject.workflow.current?('access-control').should == true
     end
 
-    it "should verify that the current step is last when the item is published"
+    it "should verify that the current step is last when the item is published" do
+      mediaObject = MediaObject.new
+      mediaObject.workflow.publish
+      mediaObject.workflow.last_completed_step.should == ['preview']
+    end
 
-    it "should default to the first workflow step"
+    it "should default to the first workflow step" do
+      mediaObject = MediaObject.new
+      mediaObject.workflow.last_completed_step.should == ['']
+    end
   end
 end

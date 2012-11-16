@@ -55,10 +55,10 @@ describe MediaObjectsController do
     end
 
     it "should redirect to first workflow step if authorized to edit" do
-       load_fixture "hydrant:electronic-resource"
+       load_fixture "hydrant:print-publication"
 
        login_as 'cataloger'
-       get 'edit', id: 'hydrant:electronic-resource'
+       get 'edit', id: 'hydrant:print-publication'
        response.should be_success
        response.should render_template HYDRANT_STEPS.first.template
      end
@@ -124,7 +124,14 @@ describe MediaObjectsController do
   end
     
   describe "#destroy" do
-    it "should remove the MediaObject from the system"
+    it "should remove the MediaObject from the system" do
+      load_fixture 'hydrant:electronic-resource'
+      mo = MediaObject.find 'hydrant:electronic-resource'
+      
+      mo.destroy
+      lambda { MediaObject.find 'hydrant:electronic-resource' }.should raise_error /Unable to find 'hydrant\:electronic-resource' in fedora/
+    end
+
     it "should not be accessible through the search interface"
   end
 end
