@@ -3,28 +3,32 @@ module Hydrant
 
     def self.ingest
       # Scans dropbox for new batch packages
-      logger.info "============================================"
-      logger.info "<< Starts scanning for new batch packages >>"
+      puts "============================================"
+      puts "<< Starts scanning for new batch packages >>"
       
       new_packages = Hydrant::DropboxService.find_new_packages
-      logger.info "<< Found #{new_packages.count} new packages >>"
+      puts "<< Found #{new_packages.count} new packages >>"
       
       # Extracts package and process
       new_packages.each_with_index do |package, index|
-        logger.info "<< Processing package #{index} >>"
+        puts "<< Processing package #{index} >>"
+
         package.process do |fields, files|
+          # Creates and processes MasterFiles
           mediaobject = MediaObject.new(avalon_uploader: 'batch')
           mediaobject.workflow.origin = "batch"
+          mediaobject.access = "restricted"
+          mediaobject.edit_groups = ["archivist"]
           mediaobject.save(:validate => false)
-          logger.info "<< Created MediaObject #{mediaobject.pid} >>"
+          puts "<< Created MediaObject #{mediaobject.pid} >>"
 
-          # Creates and processes MasterFiles
-          package.file_list.each do |file_path|
+          files.each do |file_path|
+            puts file_path.inspect
             mf = MasterFile.new
             mf.container = mediaobject
             mf.setContent(File.open(file_path, 'rb'))
             if mf.save
-              logger.info "<< Created & associated MasterFile #{mf.pid} >>"
+              puts "<< Created & associated MasterFile #{mf.pid} >>"
               mf.process
             end
           end
@@ -36,13 +40,13 @@ module Hydrant
           context = HYDRANT_STEPS.get_step('resource-description').execute context
 
           if mediaobject.save
-            logger.info "Done processing package #{index}"
+            puts "Done processing package #{index}"
           else 
-            logger.warn "Problem saving MediaObject"
+            puts "Problem saving MediaObject"
           end
         end
       end
     end
-
+    
   end
 end

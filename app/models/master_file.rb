@@ -125,7 +125,6 @@ class MasterFile < FileAsset
 
   def determine_format(file, content_type = nil)
     media_format = Mediainfo.new file
-    puts "Format => #{media_format.inspect}"
 
     # It appears that formats like MP4 can be caught as both audio and video
     # so a case statement should flow in the preferred order
