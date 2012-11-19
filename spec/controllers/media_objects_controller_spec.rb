@@ -129,7 +129,7 @@ describe MediaObjectsController do
       mo = MediaObject.find 'hydrant:electronic-resource'
       
       mo.destroy
-      lambda { MediaObject.find 'hydrant:electronic-resource' }.should raise_error /Unable to find 'hydrant\:electronic-resource' in fedora/
+      MediaObject.exists?('hydrant:electronic-resource').should == false
     end
 
     it "should not be accessible through the search interface"

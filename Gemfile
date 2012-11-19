@@ -5,9 +5,8 @@
 
   gem 'blacklight', '~> 4.0.0.pre4' 
   gem 'om', '~>1.8.0.rc1'
-  gem 'hydra-head', 
-    git: "git://github.com/projecthydra/hydra-head.git",
-    branch: "master"
+  gem 'hydra-head', "~>5.0.0.pre12"
+  gem 'hydra-access-controls', '~>5.0.0.pre12'
   gem 'hydra-file-access',
     git: "git://github.com/projecthydra/hydra-head.git",
     branch: "master"

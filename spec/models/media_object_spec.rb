@@ -116,7 +116,7 @@ describe MediaObject do
       mediaobject = MediaObject.new
       mediaobject.workflow.publish
 
-      mediaobject.workflow.published.first.should == 'published'
+      mediaobject.workflow.published.should == ['true'] 
       mediaobject.workflow.last_completed_step.first.should == HYDRANT_STEPS.last.step
     end
 
