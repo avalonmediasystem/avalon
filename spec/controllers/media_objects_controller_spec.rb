@@ -65,7 +65,16 @@ describe MediaObjectsController do
     context "Updating the metadata should result in valid input" do
       it "should ignore the PID if provided as a parameter"
       it "should ignore invalid attributes"
-      it "should be able to retrieve an existing record from Fedora"
+      it "should be able to retrieve an existing record from Fedora" do
+        load_fixture 'hydrant:video-segment'
+        mo = MediaObject.find 'hydrant:video-segment'
+        mo.workflow.last_completed_step = 'resource-description'
+         
+        # Set the task so that it can get to the resource-description step
+        login_as 'cataloger'
+        get :edit, {id: 'hydrant:video-segment', step: 'resource-description'}
+        response.response_code.should == 200
+      end
     end
   end
 
@@ -136,6 +145,12 @@ describe MediaObjectsController do
       MediaObject.exists?('hydrant:electronic-resource').should == false
     end
 
-    it "should not be accessible through the search interface"
+    it "should not be accessible through the search interface" do
+      load_fixture 'hydrant:electronic-resource'
+      mo = MediaObject.find 'hydrant:electronic-resource'
+      mo.destroy
+
+      pending "Figure out how to make the right query against Solr"
+    end
   end
 end
