@@ -36,8 +36,11 @@ module AccessControlsHelper
   # @param [Hash] opts (optional, not currently used)
   def enforce_show_permissions(opts={})
     # load_permissions_from_solr
+    # Add some robust handling in case the ID does not exist so that an
+    # exception is not thrown immediately
+    return if not MediaObject.exists?(params[:id])
+
     mediaobject = MediaObject.find(params[:id])
-    
     unless mediaobject.access == "public" && mediaobject.is_published?
       # TODO: uncomment when we use embargo
       # if @permissions_solr_document["embargo_release_date_dt"] 

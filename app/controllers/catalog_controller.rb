@@ -222,6 +222,14 @@ class CatalogController < ApplicationController
   end
 
   def show
+    # Add robust error handling in case the ID does not exist. There may be
+    # a better way of tying into Rails' default error handling but that will
+    # first require digging into the ActiveFedora::ObjectNotFoundError class
+    # to see its inheritance tree
+    if not MediaObject.exists? params[:id]
+      raise ActionController::RoutingError.new 'Object could not be located'
+    end
+
     @mediaobject = MediaObject.find(params[:id])
 
     @masterFiles = load_master_files

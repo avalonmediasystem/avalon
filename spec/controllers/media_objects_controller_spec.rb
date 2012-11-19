@@ -1,6 +1,5 @@
 require 'spec_helper'
 
-
 describe MediaObjectsController do
   render_views
 
@@ -68,16 +67,21 @@ describe MediaObjectsController do
       it "should ignore invalid attributes"
       it "should be able to retrieve an existing record from Fedora"
     end
-    
-    context "Metadata retrieved from Fedora should contain all fields" do
-      it "should remember the values for the contributors"  
-    end
   end
 
   describe "#show" do
     context "Known items should be retrievable" do
-      it "should be accesible by its PID"
-      it "should return an error if the PID does not exist"
+      it "should be accesible by its PID" do
+        load_fixture 'hydrant:video-segment'
+        get :show, id: 'hydrant:video-segment'
+
+        response.response_code.should == 200
+      end
+
+      it "should return an error if the PID does not exist" do
+        lambda { get :show, id: 'no-such-object' }.should raise_error ActionController::RoutingError
+      end
+
       it "should be available to an archivist when unpublished" do
         load_fixture 'hydrant:video-segment'
         mo = MediaObject.find('hydrant:video-segment')
