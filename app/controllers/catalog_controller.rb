@@ -217,7 +217,7 @@ class CatalogController < ApplicationController
 
   def matterhorn_service_config
     respond_to do |format|
-      format.any(:xml, :json) { render request.format.to_sym => MATTERHORN_CONFIG }
+      format.any(:xml, :json) { render request.format.to_sym => Hydrant.matterhorn_config }
     end
   end
 
