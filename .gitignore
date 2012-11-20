@@ -52,7 +52,6 @@ tmp/test_app/
 
 vendor/plugins/haml/init.rb
 vendor/plugins/blacklight/.git
-log/*
 
 public/plugin_assets
 public/plugin_assets/
