@@ -82,13 +82,8 @@
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do
-    gem 'cucumber-rails', '>=1.2.0', :require=>false
-    gem 'capybara', '~>1.1.2'
-    gem 'capybara-webkit', '0.12.1'
-    gem 'capybara-screenshot'
     gem 'mime-types', ">=1.1"
     gem "headless"
     gem "rspec_junit_formatter"
     gem 'simplecov'   
-    gem 'viewcumber'
   end
