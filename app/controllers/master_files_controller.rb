@@ -13,7 +13,7 @@ class MasterFilesController < ApplicationController
   # * the File Asset will use RELS-EXT to assert that it's a part of the specified container
   # * the method will redirect to the container object's edit view after saving
   def create
-    if params[:container_id].nil? || MediaObject.find(params[:container_id]).nil?
+    if params[:container_id].blank? || (not MediaObject.exists?(params[:container_id]))
       flash[:notice] = "MediaObject #{params[:container_id]} does not exist"
       redirect_to :back 
       return
@@ -91,7 +91,6 @@ class MasterFilesController < ApplicationController
   def update
     @masterfile = MasterFile.find(params[:id])
     if params[:workflow_id].present?
-      logger.debug "Matterhorn called!"
       @masterfile.updateProgress params[:workflow_id]
     else
       @mediaobject = @masterfile.container

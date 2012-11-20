@@ -1,5 +1,8 @@
 	class AccessControlStep < Hydrant::Workflow::BasicStep
-		def initialize(step = 'access-control', title = "Access Control", summary = "Who can access the item", template = 'access_control')
+		def initialize(step = 'access-control', 
+                               title = "Access Control", 
+                               summary = "Who can access the item", 
+                               template = 'access_control')
 		  super
 		end
 

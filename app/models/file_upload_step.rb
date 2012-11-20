@@ -1,7 +1,10 @@
 require 'hydrant/dropbox'
 
   class FileUploadStep < Hydrant::Workflow::BasicStep
-    def initialize(step = 'file-upload', title = "Manage file(s)", summary = "Associated bitstreams", template = 'file_upload')
+    def initialize(step = 'file-upload', 
+                   title = "Manage file(s)", 
+                   summary = "Associated bitstreams",
+                   template = 'file_upload')
       super
     end
 
@@ -38,7 +41,6 @@ require 'hydrant/dropbox'
   # label - Display label in the interface
   # pid - Identifier for the masterFile to help with mapping
   def update_master_files(mediaobject, files = [])
-        logger.debug "<< files => #{files} >>"
         if not files.blank?
           files.each do |part|
             logger.debug "<< #{part} >>"
