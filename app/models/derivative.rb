@@ -38,22 +38,6 @@ class Derivative < ActiveFedora::Base
     (finishedOperations / totalOperations) * 100
   end
   
-  # Eventually this should be baked into the technical metadata instead of a one-off
-  # Release Zero hack
-#  def size
-#    # Start with the root relative to Rails root
-#    file_path = "#{Rails.root}/public/videos"
-#    # Add the parent container ID with colons (:) replaced by underscores (_)
-#    file_path << "/#{container.pid.gsub(":", "_")}"
-#    # Now tack on the original file name
-#    file_path << "/#{self.title[0]}"
-#    # Finally expand it to an absolute URL
-#    file_path = File.expand_path(file_path)
-#    
-#    logger.debug "<< Retrieving file size for #{file_path} >>"
-#    File.size?(file_path)
-#  end
-  
   def thumbnail
     w = Rubyhorn.client.instance_xml source[0]
     w.searchpreview.first
@@ -93,6 +77,5 @@ class Derivative < ActiveFedora::Base
       end
     save
   end
-
 end
 

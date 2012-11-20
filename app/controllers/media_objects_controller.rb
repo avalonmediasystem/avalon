@@ -1,6 +1,5 @@
 class MediaObjectsController < CatalogController
   include Hydrant::Workflow::WorkflowControllerBehavior
-#  include Hydra::Controller::FileAssetsBehavior
 
   before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
@@ -113,7 +112,6 @@ class MediaObjectsController < CatalogController
       redirect_path = media_object_path(@mediaobject)
     end
 
-    logger.info "<HYDRANT> Redirect path set to #{redirect_path} for #{@mediaobject}"
     redirect_path
   end
   
