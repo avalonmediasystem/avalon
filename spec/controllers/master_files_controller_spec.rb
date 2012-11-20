@@ -48,7 +48,20 @@ describe MasterFilesController do
         flash[:errors].should be_nil
       end
            
-     it "should recognize an audio format" 
+     it "should recognize an audio format" do
+       login_as_archivist
+
+       load_fixture 'hydrant:video-segment'
+       @file = fixture_file_upload('/jazz-performance.mp3', 'audio/mp3')
+       post :create, 
+         Filedata: [@file], 
+         original: 'any', 
+         container_id: 'hydrant:video-segment' 
+
+       master_file = MediaObject.find('hydrant:video-segment')
+       master_file = master_file.parts.first
+       master_file.media_type.should eq "Sound" 
+     end
        
      it "should reject non audio/video format" do
            login_as_archivist
