@@ -1,5 +1,8 @@
 	class PreviewStep < Hydrant::Workflow::BasicStep
-                def initialize(step = 'preview', title = "Preview and publish", summary = "Release the item for use", template = 'preview')
+                def initialize(step = 'preview', 
+                               title = "Preview and publish", 
+                               summary = "Release the item for use", 
+                               template = 'preview')
                   super
                 end
 
