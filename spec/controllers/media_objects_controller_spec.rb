@@ -88,7 +88,8 @@ describe MediaObjectsController do
       end
 
       it "should return an error if the PID does not exist" do
-        lambda { get :show, id: 'no-such-object' }.should raise_error ActionController::RoutingError
+        get :show, id: 'no-such-object'
+        response.response_code.should == 404
       end
 
       it "should be available to an archivist when unpublished" do

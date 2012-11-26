@@ -2,17 +2,24 @@
 require 'blacklight/catalog'
 
 class CatalogController < ApplicationController  
-
   include Blacklight::Catalog
-
   # Extend Blacklight::Catalog with Hydra behaviors (primarily editing).
   include Hydra::Controller::ControllerBehavior
 
   # These before_filters apply the hydra access controls
   before_filter :enforce_access_controls
-#  before_filter :enforce_viewing_context_for_show_requests, :only=>:show
+  # before_filter :enforce_viewing_context_for_show_requests, :only=>:show
+  
+  # Catch exceptions when you try to reference an object that doesn't exist.
+  # Attempt to resolve it to a close match if one exists and offer a link to
+  # the show page for that item. Otherwise ... nothing!
+  rescue_from ActiveFedora::ObjectNotFoundError do |exception|
+    render '/errors/unknown_pid', status: 404 
+  end
+
   # This applies appropriate access controls to all solr queries
   solr_search_params_logic << :add_access_controls_to_solr_params
+  
   # This filters out objects that you want to exclude from search results, like FileAssets
   solr_search_params_logic << :exclude_unwanted_models
 
@@ -222,14 +229,6 @@ class CatalogController < ApplicationController
   end
 
   def show
-    # Add robust error handling in case the ID does not exist. There may be
-    # a better way of tying into Rails' default error handling but that will
-    # first require digging into the ActiveFedora::ObjectNotFoundError class
-    # to see its inheritance tree
-    if not MediaObject.exists? params[:id]
-      raise ActionController::RoutingError.new 'Object could not be located'
-    end
-
     @mediaobject = MediaObject.find(params[:id])
 
     @masterFiles = load_master_files
