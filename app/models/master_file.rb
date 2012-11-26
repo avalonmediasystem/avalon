@@ -100,7 +100,7 @@ class MasterFile < FileAsset
       when "STOPPED"
         "Processing has been stopped"
       else
-        "No file(s) uploaded"
+        "Waiting for conversion to begin"
       end
   end  
 
