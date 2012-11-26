@@ -91,6 +91,7 @@ class MasterFilesController < ApplicationController
   def update
     @masterfile = MasterFile.find(params[:id])
     if params[:workflow_id].present?
+      @masterfile.workflow_id ||= params[:workflow_id]
       @masterfile.updateProgress params[:workflow_id]
     else
       @mediaobject = @masterfile.container
