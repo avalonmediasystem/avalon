@@ -31,23 +31,19 @@ namespace :deploy do
   end
 
   task :start, :roles => :app do
-    run "cd #{current_release}; rake hydrant:services:start"
+    run "cd #{current_release}; rake felix:start jetty:start"
     #run "cd #{current_release}; rails s -d"
   end
 
   task :stop, :roles => :app do
-    run "cd #{current_release}; rake felix:stop"
-    run "cd #{current_release}; rake jetty:stop"
+    run "cd #{current_release}; rake felix:stop jetty:stop"
     #run "kill -9 `pgrep ruby`"
   end
 
   desc "Restart Application"
   task :restart, :roles => :app do
-    run "cd #{current_release}; rake felix:stop"
-    run "cd #{current_release}; rake jetty:stop"
+    run "cd #{current_release}; rake felix:stop jetty:stop felix:start jetty:start"
     #run "kill -9 `pgrep ruby`"
-    run "cd #{current_release}; rake felix:start"
-    run "cd #{current_release}; rake jetty:start"
     #run "cd #{current_release}; rails s -d"
   end
 
