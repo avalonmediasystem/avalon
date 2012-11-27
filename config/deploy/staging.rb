@@ -42,7 +42,8 @@ namespace :deploy do
 
   desc "Restart Application"
   task :restart, :roles => :app do
-    run "cd #{current_release}; rake felix:stop jetty:stop felix:start jetty:start"
+    run "cd #{current_release}; rake felix:stop jetty:stop"
+    run "cd #{current_release}; rake felix:start jetty:start"
     #run "kill -9 `pgrep ruby`"
     #run "cd #{current_release}; rails s -d"
   end
