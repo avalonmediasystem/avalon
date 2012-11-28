@@ -7,7 +7,7 @@ class MatterhornJobs
       logger.debug "<< Call to Matterhorn has timed out, but it's ok >>"
       logger.debug e
     end
-
-    handle_asynchronously :send_request
   end
+
+  handle_asynchronously :send_request
 end
