@@ -11,7 +11,7 @@
     <% stream_location = @currentStream.derivatives.first.url.first
        stream_location.gsub!('rtmp', 'http')
        stream_location.gsub!('mp4:', '')
-       stream_location.gsub!('vod', 'hls-vod')
+       stream_location.gsub!('vod', 'hds-vod')
        stream_location << '.m3u8'
          
        mp4_version = stream_location 
