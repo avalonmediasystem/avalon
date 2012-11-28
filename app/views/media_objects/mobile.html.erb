@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title><%= @mediaobject.title %> (<%= @mediaobject.pid %>)</title>
+  </head>
+
+  <body>
+    <h1><%= @mediaobject.title %></h1>
+
+    <%# Here comes the hack to HTTP live stream. This naively assumes that
+        you are using a MP4 live stream instead of FLV %>
+    <% @currentStream.gsub!('rtmp', 'http') 
+       
+       mp4_version = @currentStream
+       ogg_version = mp4_version.gsub!('\.mp4', '.ogg')
+     %>
+    <video>
+      <source src="<%= mp4_version %>" type="video/mp4" %>
+      <source src="<%= ogg_version %>" type="video/ogg" %>
+    </video>
+  </body>
+</html>
+

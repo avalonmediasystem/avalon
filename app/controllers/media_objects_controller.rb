@@ -86,7 +86,15 @@ class MediaObjectsController < CatalogController
     flash[:notice] = "#{params[:id]} has been deleted from the system"
     redirect_to root_path
   end
-  
+ 
+  def mobile
+    @mediaobject = MediaObject.find(params[:id])
+    @masterFiles = @mediaobject.parts
+    @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
+
+    render 'mobile', layout: false
+  end
+
   protected
   def set_default_item_permissions
     unless @mediaobject.rightsMetadata.nil?
