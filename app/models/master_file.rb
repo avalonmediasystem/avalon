@@ -105,6 +105,7 @@ class MasterFile < FileAsset
   end  
 
   def updateProgress workflow_id
+    raise "Workflow id does not match existing MasterFile workflow_id" unless self.workflow_id == workflow_id
     matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
 
     self.percent_complete = calculate_percent_complete(matterhorn_response)
