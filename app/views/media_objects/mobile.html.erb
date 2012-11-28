@@ -10,7 +10,7 @@
         you are using a MP4 live stream instead of FLV %>
     <% @currentStream.gsub!('rtmp', 'http') 
        
-       mp4_version = @currentStream
+       mp4_version = @currentStream.derivatives.first.url.first
        ogg_version = mp4_version.gsub!('\.mp4', '.ogg')
      %>
     <video>
