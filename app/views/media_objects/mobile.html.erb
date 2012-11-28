@@ -14,7 +14,7 @@
        mp4_version = stream_location 
        ogg_version = mp4_version.gsub!('\.mp4', '.ogg')
      %>
-    <video>
+    <video width="640" height="480" controls="controls">
       <source src="<%= mp4_version %>" type="video/mp4" %>
       <source src="<%= ogg_version %>" type="video/ogg" %>
     </video>
