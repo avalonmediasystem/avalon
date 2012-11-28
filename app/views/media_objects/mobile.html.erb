@@ -8,9 +8,10 @@
 
     <%# Here comes the hack to HTTP live stream. This naively assumes that
         you are using a MP4 live stream instead of FLV %>
-    <% @currentStream.gsub!('rtmp', 'http') 
-       
-       mp4_version = @currentStream.derivatives.first.url.first
+    <% stream_location = @currentStream.derivatives.first.url.first 
+       stream_location.gsub!('rtmp', 'http')
+
+       mp4_version = stream_location 
        ogg_version = mp4_version.gsub!('\.mp4', '.ogg')
      %>
     <video>
