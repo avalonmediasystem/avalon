@@ -5,7 +5,7 @@ class DerivativesController < ApplicationController
  #  before_filter :enforce_access_controls
  # load_and_authorize_resource
   
-  skip_before_filter :verify_authenticity_token, :only => [:create]
+  skip_before_filter :verify_authenticity_token, :only => [:create, :authorize]
 #  before_filter :authenticate_user!, :only => [:create]
 
   # Creates and Saves a File Asset to contain the the Uploaded file 
@@ -44,6 +44,7 @@ class DerivativesController < ApplicationController
   # The values should be put into a POST. The method will reject a GET
   # request for security reasons
   def authorize
+    puts params[:session_id]
     return head :forbidden 
   end
 end
