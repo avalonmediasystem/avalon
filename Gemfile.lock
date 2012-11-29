@@ -31,7 +31,7 @@ GIT
 
 GIT
   remote: git://github.com/projecthydra/hydra-head.git
-  revision: 3642ec1a783d83d5f6d1460c614cb6ef64be13e3
+  revision: bfae021baf19d6db9afa0234307593254f9a2248
   branch: master
   specs:
     hydra-access-controls (5.0.0.pre15)

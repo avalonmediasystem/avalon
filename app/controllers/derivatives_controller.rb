@@ -37,4 +37,13 @@ class DerivativesController < ApplicationController
       render :nothing => true
   end
 
+  # Validate if the session is active, the user is correct, and that they
+  # have permission to stream the derivative based on the session_id and
+  # the path to the stream.
+  #
+  # The values should be put into a POST. The method will reject a GET
+  # request for security reasons
+  def authorize
+    return head :forbidden 
+  end
 end
