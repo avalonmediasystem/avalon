@@ -3,7 +3,7 @@
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
 
-  gem 'blacklight', '~> 4.0.0.pre4' 
+  gem 'blacklight', '~> 4.0.0.rc1' 
   gem 'om', '~>1.8.0.rc1'
   gem 'hydra-head', "~>5.0.0.pre12"
   gem 'hydra-access-controls', '~>5.0.0.pre12'
