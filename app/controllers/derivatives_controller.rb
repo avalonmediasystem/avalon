@@ -44,7 +44,14 @@ class DerivativesController < ApplicationController
   # The values should be put into a POST. The method will reject a GET
   # request for security reasons
   def authorize
-    puts params[:session_id]
-    return head :forbidden 
+    user = User.find_by_id(params[:token])
+    logger.debug user.inspect
+    derivative = Derivative.find(params[:pid])
+    logger.debug derivative.inspect
+    if derivative.blank? or !derivative.url.first.eql?(params[:stream_url]) or Ability.new(user).cannot?(:read, derivative)
+      return head :forbidden 
+    end
+
+    return head :accepted
   end
 end

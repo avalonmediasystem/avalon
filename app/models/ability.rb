@@ -21,6 +21,10 @@ class Ability
            (not can_read_unpublished mediaobject, user))
       end
     end
+   
+    can :read, Derivative do |derivative|
+      can? :read, derivative.masterfile.mediaobject
+    end
   end
 
   def can_read_unpublished(mediaobject, current_user)
