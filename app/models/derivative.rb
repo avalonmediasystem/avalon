@@ -56,6 +56,17 @@ class Derivative < ActiveFedora::Base
     matterhorn_response.workflow.mediapackage.media.track.mimetype.last
   end
 
+  def url_hash
+    h = Digest::MD5.new
+    h << url.first
+    h.hexdigest
+  end
+
+  def tokenized_url(token)
+    uri = URI.parse(url.first)
+    "#{uri.to_s}?token=#{token}&pid=#{pid}&hash=#{url_hash}"
+  end      
+
   protected
   def refresh_status
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])

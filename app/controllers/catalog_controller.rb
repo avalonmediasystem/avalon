@@ -248,7 +248,7 @@ class CatalogController < ApplicationController
       format.json do
         render :json => {
           label: @currentStream.label,
-          stream: @currentStream.derivatives.first.url.first,
+          stream: @currentStream.derivatives.first.tokenized_url(current_user.id),
           mimetype: @currentStream.derivatives.first.streaming_mime_type,
           mediapackage_id: @currentStream.mediapackage_id
         }
