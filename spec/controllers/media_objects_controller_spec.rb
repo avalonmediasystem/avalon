@@ -22,7 +22,7 @@ describe MediaObjectsController do
         login_as('content_provider')
         lambda { get 'new' }.should change { MediaObject.count }
         pid = MediaObject.find(:all).last.pid
-        response.should redirect_to(edit_media_object_path(id: pid, step: 'file-upload'))
+        response.should redirect_to(edit_media_object_path(id: pid))
       end
 
       it "should inherit default permissions" do
