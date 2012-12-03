@@ -66,7 +66,7 @@ class Derivative < ActiveFedora::Base
 
   def tokenized_url(token)
     uri = URI.parse(url.first)
-    "#{uri.to_s}?token=#{token}&pid=#{pid}&hash=#{url_hash}".html_safe
+    "#{uri.to_s}?token=#{mediapackage_id}-#{token}".html_safe
   end      
 
   def streaming_url(is_mobile=false, format='other')
