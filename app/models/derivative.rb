@@ -64,9 +64,9 @@ class Derivative < ActiveFedora::Base
     h.hexdigest
   end
 
-  def tokenized_url(token, is_mobile=false)
-    uri = streaming_url(is_mobile)
-    "#{uri.to_s}?token=#{token}&pid=#{pid}&hash=#{url_hash}"
+  def tokenized_url(token)
+    uri = URI.parse(url.first)
+    "#{uri.to_s}?token=#{token}&pid=#{pid}&hash=#{url_hash}".html_safe
   end      
 
   def streaming_url(is_mobile=false, format='other')

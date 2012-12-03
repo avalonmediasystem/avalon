@@ -52,6 +52,11 @@ class DerivativesController < ApplicationController
       return head :forbidden 
     end
 
-    return head :accepted
+    resp = { :authorized => derivative.mediapackage_id }
+    respond_to do |format|
+      format.urlencoded { render :text => resp.to_query, :content_type => :urlencoded, :status => :accepted }
+      format.xml        { render :xml =>  resp, :skip_types => true, :root => :response, :status => :accepted }
+      format.json       { render :json => { :response => resp }, :status => :accepted }
+    end
   end
 end
