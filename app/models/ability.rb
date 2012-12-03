@@ -2,7 +2,7 @@ class Ability
 	include CanCan::Ability
 	include Hydra::Ability
 
-	def create_permissions(user, session)
+	def create_permissions(user=nil, session=nil)
 		if @user_groups.include? "archivist"
 			can :manage, MediaObject
 			can :manage, MasterFile
@@ -13,7 +13,7 @@ class Ability
 		end
 	end
 
-  def custom_permissions(user, session)
+  def custom_permissions(user=nil, session=nil)
     if @user_groups.exclude? "archivist"
       cannot :read, MediaObject do |mediaobject|
         (cannot? :read, mediaobject.pid) || 
