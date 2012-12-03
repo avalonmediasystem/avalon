@@ -30,7 +30,46 @@ GIT
       mediashelf-loggable
 
 GIT
-  remote: https://github.com/variations-on-video/hydrant-batch.git
+  remote: git://github.com/projecthydra/hydra-head.git
+  revision: c902b932b95de9bb061648f80d3800fe853210e3
+  branch: master
+  specs:
+    hydra-access-controls (5.0.0.pre15)
+      active-fedora
+      activesupport
+      blacklight
+      cancan
+      deprecation
+    hydra-core (5.0.0.pre15)
+      RedCloth (= 4.2.9)
+      active-fedora (~> 5.0.0)
+      blacklight (~> 4.0.0)
+      block_helpers
+      deprecation (>= 0.0.5)
+      devise
+      hydra-access-controls (= 5.0.0.pre15)
+      hydra-mods (>= 0.0.6)
+      jquery-rails
+      rails (~> 3.2.3)
+      sanitize
+    hydra-file-access (5.0.0.pre15)
+      RedCloth (= 4.2.9)
+      active-fedora
+      blacklight
+      block_helpers
+      deprecation (>= 0.0.5)
+      devise
+      hydra-core (= 5.0.0.pre15)
+      hydra-mods (>= 0.0.5)
+      rails (~> 3.2.3)
+      sanitize
+    hydra-head (5.0.0.pre15)
+      hydra-access-controls (= 5.0.0.pre15)
+      hydra-core (= 5.0.0.pre15)
+      rails (>= 3.2.6)
+
+GIT
+  remote: git://github.com/variations-on-video/hydrant-batch.git
   revision: 634a6188541f01e15bc2ba2db00cbcd41bf27d92
   specs:
     hydrant-batch (0.0.1)
@@ -45,7 +84,7 @@ GIT
       less-rails (~> 2.2.3)
 
 GIT
-  remote: https://github.com/variations-on-video/hydrant-workflow.git
+  remote: git://github.com/variations-on-video/hydrant-workflow.git
   revision: fb7be0965f7d6205b53cc568af8013454590b0d3
   specs:
     hydrant-workflow (0.0.2a)
@@ -393,6 +432,7 @@ GEM
     rvm-capistrano (1.2.7)
       capistrano (>= 2.0.0)
     sanitize (2.0.3)
+      nokogiri (>= 1.4.4, < 1.6)
       nokogiri (>= 1.4.4, < 1.6)
     sass (3.2.3)
     sass-rails (3.2.5)
