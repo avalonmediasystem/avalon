@@ -11,7 +11,6 @@
 //= require blacklight/search_context
 //= require blacklight/select_submit
 //= require blacklight/zebra_stripe
-//= require blacklight/bootstrap_dropdowns
 
 /* Blacklight has a Javascript setup meant to support local disabling, 
   modification, and use of Blacklight behaviors. 
