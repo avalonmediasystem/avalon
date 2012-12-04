@@ -14,12 +14,12 @@ class Derivative < ActiveFedora::Base
     refresh_status
   end
 
-  def masterfile= parent
-    super parent
-    self.masterfile.derivatives << self
+#  def masterfile= parent
+#    self.masterfile = parent
+#    self.masterfile.derivatives << self
 #    masterfile.add_relationship :has_derivation, self
 #    self.add_relationship :is_derivation_of, masterfile
-  end
+#  end
 
   # A hacky way to handle the description for now. This should probably be refactored
   # to stop pulling if the status is stopped or completed

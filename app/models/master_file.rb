@@ -12,7 +12,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
-  has_many :derivatives, :class_name=>'Derivative', :property=>:has_derivation
+  has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
 
 #  before_create :save_parent
   
@@ -57,7 +57,7 @@ class MasterFile < ActiveFedora::Base
 
   def destroy
     parent = self.mediaobject
-    parent.parts_remove self
+    parent.parts -= [self]
 
     unless self.new_object?
       parent.save(validate: false)

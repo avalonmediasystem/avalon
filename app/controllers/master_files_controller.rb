@@ -40,7 +40,7 @@ class MasterFilesController < ApplicationController
         end
 
         master_file = MasterFile.new
-        master_file.container = media_object
+        master_file.mediaobject = media_object
         master_file.setContent(file)
         
         if 'Unknown' == master_file.media_type
@@ -68,7 +68,7 @@ class MasterFilesController < ApplicationController
       params[:dropbox].each do |file|
         file_path = Hydrant::DropboxService.find(file[:id])
         master_file = MasterFile.new
-        master_file.container = media_object
+        master_file.mediaobject = media_object
         master_file.setContent(File.open(file_path, 'rb'))
         
         unless master_file.save
@@ -94,7 +94,7 @@ class MasterFilesController < ApplicationController
       @masterfile.workflow_id ||= params[:workflow_id]
       @masterfile.updateProgress params[:workflow_id]
     else
-      @mediaobject = @masterfile.container
+      @mediaobject = @masterfile.mediaobject
       authorize! :edit, @mediaobject
       @masterfile.label = params[@masterfile.pid]
     end
@@ -105,7 +105,7 @@ class MasterFilesController < ApplicationController
   # When destroying a file asset be sure to stop it first
   def destroy
     master_file = MasterFile.find(params[:id])
-    parent = master_file.container
+    parent = master_file.mediaobject
     
     authorize! :edit, parent, message: "You do not have sufficient privileges to delete files"
 

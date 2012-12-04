@@ -93,4 +93,10 @@ module ApplicationHelper
       end
       return label
     end
+
+  #Taken from Hydra::Controller::ControllerBehavior
+  def user_key
+    current_user.user_key if current_user
+  end
+
 end

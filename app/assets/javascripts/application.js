@@ -18,9 +18,6 @@
 //= require twitter/bootstrap
 //= require blacklight/blacklight
 //
-// Required by Hydra
-//= require 'jquery.ui.datepicker.js'      
-//
 // Required by Blacklight
 //= require jquery-ui
 //= require jquery.ui.nestedSortable
