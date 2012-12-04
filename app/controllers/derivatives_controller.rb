@@ -48,7 +48,7 @@ class DerivativesController < ApplicationController
     logger.debug user.inspect
     derivative = Derivative.find(params[:pid])
     logger.debug derivative.inspect
-    if derivative.blank? or !derivative.url_hash.eql?(params[:hash]) or Ability.new(user).cannot?(:read, derivative)
+    if derivative.blank? or !derivative.url_hash.eql?(params[:hash]) or user.cannot?(:read, derivative)
       return head :forbidden 
     end
 

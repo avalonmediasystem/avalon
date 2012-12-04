@@ -1,11 +1,12 @@
 class MediaObject < ActiveFedora::Base
   include Hydra::ModelMixins::CommonMetadata
   include Hydra::ModelMethods
-  include ActiveFedora::Relationships
+  include ActiveFedora::Associations
   include Hydra::ModelMixins::RightsMetadata
   include Hydrant::Workflow::WorkflowModelMixin
 
-  has_relationship "parts", :has_part
+#  has_relationship "parts", :has_part
+  has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
 
   has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: ModsDocument	

@@ -1,10 +1,10 @@
 require 'hydrant/matterhorn_jobs'
 
-class MasterFile < FileAsset
-  include ActiveFedora::Relationships
+class MasterFile < ActiveFedora::Base
+  include ActiveFedora::Associations
 
-  has_relationship "part_of", :is_part_of
-  has_relationship "derivatives", :has_derivation
+#  has_relationship "part_of", :is_part_of
+#  has_relationship "derivatives", :has_derivation
   has_metadata name: 'descMetadata', type: DublinCoreDocument
   has_metadata name: 'statusMetadata', :type => ActiveFedora::SimpleDatastream do |d|
     d.field :percent_complete, :string
@@ -12,6 +12,9 @@ class MasterFile < FileAsset
   end
 
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
+  has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
+
+#  before_create :save_parent
   
   delegate :workflow_id, to: :descMetadata, at: [:source], unique: true
   #delegate :description, to: :descMetadata
@@ -33,21 +36,28 @@ class MasterFile < FileAsset
   VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
   UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
 
-  def container= obj
-    super obj
-    self.container.add_relationship(:has_part, self)
+#  def mediaobject= parent
+#    super parent
+#    self.mediaobject.parts << self
+#    self.mediaobject.add_relationship(:has_part, self)
+#  end
+
+  def save_parent
+    unless self.mediaobject.nil?
+      self.mediaobject.save(validate: false)  
+    end
   end
 
-  def save
-    super
-    unless self.container.nil?
-      self.container.save(validate: false)
-    end
-  end  
+#  def save
+#    super
+#    unless self.mediaobject.nil?
+#      self.mediaobject.save(validate: false)
+#    end
+#  end  
 
   def destroy
-    parent = self.container
-    parent.parts_remove self
+    parent = self.mediaobject
+    parent.parts -= [self]
 
     unless self.new_object?
       parent.save(validate: false)

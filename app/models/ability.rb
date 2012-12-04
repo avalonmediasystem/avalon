@@ -18,7 +18,7 @@ class Ability
       cannot :read, MediaObject do |mediaobject|
         (cannot? :read, mediaobject.pid) || 
           ((not mediaobject.is_published?) && 
-           (not can_read_unpublished mediaobject, user))
+           (not can_read_unpublished(mediaobject)))
       end
     end
    
@@ -27,7 +27,7 @@ class Ability
     end
   end
 
-  def can_read_unpublished(mediaobject, current_user)
-    current_user.username == mediaobject.avalon_uploader || @user_groups.include?("archivist")
+  def can_read_unpublished(mediaobject)
+    @user.username == mediaobject.avalon_uploader || @user_groups.include?("archivist")
   end  
 end
