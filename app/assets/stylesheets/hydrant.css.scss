@@ -22,7 +22,6 @@ dd {
 
 // Custom markup begins here
 header .logo {
-  padding-right: 30px;
 }
 
 .filelist.nav-stacked > li > a {
@@ -83,6 +82,7 @@ header .logo {
 
 .logo img {
   border-radius: 9px;
+  max-width: 100%;
 }
 
 ul.login {
