@@ -3,18 +3,14 @@
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
 
-  gem 'blacklight', '~> 4.0.0.rc1' 
-  gem 'om', '~>1.8.0.rc1'
-  gem 'hydra-head', "~>5.0.0.pre12"
-  gem 'hydra-access-controls', '~>5.0.0.pre12'
-  gem 'hydra-file-access',
-    git: "git://github.com/projecthydra/hydra-head.git",
-    branch: "master"
+  gem 'blacklight', '~> 4.0.0' 
+  gem 'om', '~>1.8.0'
+  gem 'hydra-head', '= 5.0.0.rc1'
 
   gem 'hydrant-workflow',
-    git: 'git://github.com/variations-on-video/hydrant-workflow.git'
+    git: 'git@github.com:variations-on-video/hydrant-workflow.git'
   gem 'hydrant-engage', 
-    git: "git://github.com/variations-on-video/hydrant-engage.git"
+    git: "git@github.com:variations-on-video/hydrant-engage.git"
  
   platforms :jruby do
   	gem 'jruby-openssl'

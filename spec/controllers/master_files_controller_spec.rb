@@ -41,8 +41,8 @@ describe MasterFilesController do
           original: 'any', 
           container_id: 'hydrant:video-segment' 
 
-	master_file = MediaObject.find('hydrant:video-segment')
-        master_file = master_file.parts.first
+	mediaobject = MediaObject.find('hydrant:video-segment')
+        master_file = mediaobject.parts.first
         master_file.media_type.should eq "Moving image" 
              
         flash[:errors].should be_nil
@@ -58,8 +58,8 @@ describe MasterFilesController do
          original: 'any', 
          container_id: 'hydrant:video-segment' 
 
-       master_file = MediaObject.find('hydrant:video-segment')
-       master_file = master_file.parts.first
+       mediaobject = MediaObject.find('hydrant:video-segment')
+       master_file = mediaobject.parts.first
        master_file.media_type.should eq "Sound" 
      end
        
@@ -112,7 +112,7 @@ describe MasterFilesController do
          master_file = MasterFile.find(:all, order: "created_on ASC").last
          mediaobject = MediaObject.find('hydrant:video-segment')
          mediaobject.parts.should include master_file
-         master_file.container.pid.should eq('hydrant:video-segment')
+         master_file.mediaobject.pid.should eq('hydrant:video-segment')
          
          flash[:errors].should be_nil        
      end
@@ -132,8 +132,8 @@ describe MasterFilesController do
           media_object.save(validate: false)
           master_file = MasterFile.new
           master_file.save
-          master_file.container = media_object
-          master_file.container.save(validate:false)
+          master_file.mediaobject = media_object
+          master_file.mediaobject.save(validate:false)
           master_file.save
   
         lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }
@@ -152,8 +152,8 @@ describe MasterFilesController do
         media_object.save(validate: false)
         master_file = MasterFile.new
         master_file.save
-        master_file.container = media_object
-        master_file.container.save(validate:false)
+        master_file.mediaobject = media_object
+        master_file.mediaobject.save(validate:false)
         master_file.save
           
         lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }
