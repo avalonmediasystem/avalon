@@ -8,9 +8,9 @@
   gem 'hydra-head', '= 5.0.0.rc1'
 
   gem 'hydrant-workflow',
-    git: 'git@github.com:variations-on-video/hydrant-workflow.git'
+    git: 'https://github.com/variations-on-video/hydrant-workflow.git'
   gem 'hydrant-engage', 
-    git: "git@github.com:variations-on-video/hydrant-engage.git"
+    git: "https://github.com/variations-on-video/hydrant-engage.git"
  
   platforms :jruby do
   	gem 'jruby-openssl'
@@ -30,13 +30,13 @@
   #gem 'devise-guests'
 
   gem "jettywrapper"
-  gem 'rubyhorn', :git => "git://github.com/variations-on-video/rubyhorn.git"
-  gem 'felixwrapper', :git => "git://github.com/cjcolvar/felixwrapper.git"
-  gem 'red5wrapper', :git => "git://github.com/cjcolvar/red5wrapper.git"
+  gem 'rubyhorn', :git => "https://github.com/variations-on-video/rubyhorn.git"
+  gem 'felixwrapper', :git => "https://github.com/cjcolvar/felixwrapper.git"
+  gem 'red5wrapper', :git => "https://github.com/cjcolvar/red5wrapper.git"
 
   gem 'validates_email_format_of'
   gem 'loofah'
-  gem 'omniauth-cas', :git => "git://github.com/cjcolvar/omniauth-cas.git"
+  gem 'omniauth-cas', :git => "https://github.com/cjcolvar/omniauth-cas.git"
   gem 'omniauth-identity'
   gem 'omniauth-ldap'
 
@@ -44,7 +44,7 @@
   gem 'delayed_job_active_record'
   gem 'whenever', :require => false
 
-  gem 'hydrant-batch', :git => "git://github.com/variations-on-video/hydrant-batch.git"
+  gem 'hydrant-batch', :git => "https://github.com/variations-on-video/hydrant-batch.git"
 
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
@@ -59,7 +59,7 @@
     gem 'less-rails'
     gem 'twitter-bootstrap-rails', "~> 2.0"
     gem 'twitter_bootstrap_form_for',
-      git: "git://github.com/variations-on-video/twitter_bootstrap_form_for.git",
+      git: "https://github.com/variations-on-video/twitter_bootstrap_form_for.git",
       branch: "bootstrap-2.0"
   end
 
