@@ -2,23 +2,24 @@ require 'spec_helper'
 
 describe MasterFilesController do
   describe "#create" do
+
+    before(:each) do
+      login_as_archivist
+      load_fixture 'hydrant:video-segment'
+    end
+
     context "must provide a container id" do
-         it "should fail if no container id provided" do
-           login_as_archivist
-           request.env["HTTP_REFERER"] = "/"
-               
-           @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+      it "should fail if no container id provided" do
+        request.env["HTTP_REFERER"] = "/"
+        @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
              
-           lambda { post :create, Filedata: [@file], original: 'any'}.should_not change { MasterFile.count }
-         end
+        lambda { post :create, Filedata: [@file], original: 'any'}.should_not change { MasterFile.count }
+      end
     end
      
     context "cannot upload a file over the defined limit" do
      it "should provide a warning about the file size" do
-      login_as_archivist
       request.env["HTTP_REFERER"] = "/"
-     
-      load_fixture 'hydrant:video-segment'
             
       @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
       @file.stub(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2^21)  
@@ -32,16 +33,13 @@ describe MasterFilesController do
      
     context "must be a valid MIME type" do
       it "should recognize a video format" do
-        login_as_archivist
-     
-        load_fixture 'hydrant:video-segment'
         @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
         post :create, 
           Filedata: [@file], 
           original: 'any', 
           container_id: 'hydrant:video-segment' 
 
-	mediaobject = MediaObject.find('hydrant:video-segment')
+        mediaobject = MediaObject.find('hydrant:video-segment')
         master_file = mediaobject.parts.first
         master_file.media_type.should eq "Moving image" 
              
@@ -49,9 +47,6 @@ describe MasterFilesController do
       end
            
      it "should recognize an audio format" do
-       login_as_archivist
-
-       load_fixture 'hydrant:video-segment'
        @file = fixture_file_upload('/jazz-performance.mp3', 'audio/mp3')
        post :create, 
          Filedata: [@file], 
@@ -64,23 +59,17 @@ describe MasterFilesController do
      end
        
      it "should reject non audio/video format" do
-           login_as_archivist
-           request.env["HTTP_REFERER"] = "/"
+       request.env["HTTP_REFERER"] = "/"
+       load_fixture 'hydrant:electronic-resource'
      
-           load_fixture 'hydrant:electronic-resource'
+       @file = fixture_file_upload('/public-domain-book.txt', 'application/json')
+       lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:electronic-resource' }.should_not change { MasterFile.count }
+       puts "<< Flash errors is present? #{flash[:errors]} >>"
      
-           @file = fixture_file_upload('/public-domain-book.txt', 'application/json')
-     
-           lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:electronic-resource' }.should_not change { MasterFile.count }
-           puts "<< Flash errors is present? #{flash[:errors]} >>"
-     
-           flash[:errors].should_not be_nil
+       flash[:errors].should_not be_nil
      end
     
      it "should recognize audio/video based on extension when MIMETYPE is of unknown format" do
-       login_as_archivist
-    
-       load_fixture 'hydrant:video-segment'
        @file = fixture_file_upload('/videoshort.mp4', 'application/octet-stream')
     
        post :create, 
@@ -94,29 +83,39 @@ describe MasterFilesController do
      end
     end
      
-   context "should process file successfully" do
-     it "should associate with a MediaObject" do
-         login_as_archivist
+    context "should process file successfully" do
+      it "should associate with a MediaObject" do
+        @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+        #Work-around for a Rails bug
+        class << @file
+          attr_reader :tempfile
+        end
    
-         load_fixture 'hydrant:video-segment'
-         @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-         #Work-around for a Rails bug
-         class << @file
-           attr_reader :tempfile
-         end
+        post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment'
          
-#         controller.stub!(:sendOriginalToMatterhorn).and_return(nil)
+        master_file = MasterFile.find(:all, order: "created_on ASC").last
+        mediaobject = MediaObject.find('hydrant:video-segment')
+        mediaobject.parts.should include master_file
+        master_file.mediaobject.pid.should eq('hydrant:video-segment')
+         
+        flash[:errors].should be_nil        
+      end
+    end
+
+    context "should have default permissions" do
+      it "should set edit_user and edit_group" do
+        @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+        #Work-around for a Rails bug
+        class << @file
+          attr_reader :tempfile
+        end
    
-         post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment'
+        post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment'
          
-         master_file = MasterFile.find(:all, order: "created_on ASC").last
-         mediaobject = MediaObject.find('hydrant:video-segment')
-         mediaobject.parts.should include master_file
-         master_file.mediaobject.pid.should eq('hydrant:video-segment')
-         
-         flash[:errors].should be_nil        
-     end
-          
+        master_file = MasterFile.find(:all, order: "created_on ASC").last
+        master_file.edit_groups.should include "archivist"
+        master_file.edit_users.should include "archivist1@example.com"
+      end
     end
   end
     

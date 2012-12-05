@@ -1,6 +1,7 @@
 require 'net/http/digest_auth'
 require 'net/http/post/multipart'
 require 'rubyhorn'
+require 'hydrant/controller/controller_behavior'
 
 class MasterFilesController < ApplicationController
   include Hydrant::Controller::ControllerBehavior

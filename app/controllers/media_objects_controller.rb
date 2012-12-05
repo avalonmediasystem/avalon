@@ -1,3 +1,5 @@
+require 'hydrant/controller/controller_behavior'
+
 class MediaObjectsController < CatalogController
   include Hydrant::Workflow::WorkflowControllerBehavior
   include Hydrant::Controller::ControllerBehavior
