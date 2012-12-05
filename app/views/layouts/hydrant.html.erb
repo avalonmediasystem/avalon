@@ -4,19 +4,20 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title><%= yield :title %>
-      <% if content_for? :title %>- <% end %>Avalon Release 1 beta
+       <% if content_for? :title %>- <% end %>Avalon Release 1 beta
     </title>
+
+   <%= csrf_meta_tags %>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <%= stylesheet_link_tag "application", media: "all" %>
     <%= yield :page_styles %>
-    <%= csrf_meta_tags %>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
-  
+
   <body>
-    <div class="container">
+    <div class="container-fluid">
       <div class="row-fluid whitespace-half">
       <header class="jumbotron">
-        <div class="logo span2">
+        <div class="logo hidden-phone span2">
           <%= image_tag "temporary_logo.png", alt: "Avalon Media System - Release 1 beta " %>
         </div>
         
@@ -26,24 +27,23 @@
         </div>   
       </header>
       </div>
-      
-      <%= render "modules/global_navigation" %>
-            
-      <%= yield :breadcrumbs %>
-      
-      <!-- TO DO : Relocate the breadcrumbs to be here on every page except for the
-                   home page -->
-      <%= render "modules/user_management" %>
+    </div>
+ 
+    <%= render "modules/global_navigation" %>
 
-      <div><%= yield %></div>
-    
+    <div class="container-fluid">
+      <%= render "modules/user_management" %>
+    </div>
+    <div><%= yield %></div>
+
+    <div class="container-fluid">
       <div class="row-fluid">
-	      <footer class="span12">
-					<ul>
-						<li><a href="http://variationsonvideo.org">Avalon Media System Project Website</a> </li>
-						<li><%= link_to "Contact Us", comments_path %></li>
-					</ul>
-	      </footer>
+	<footer class="span12">
+	   <ul>
+	     <li><a href="http://variationsonvideo.org">Avalon Media System Project Website</a> </li>
+	     <li><%= link_to "Contact Us", comments_path %></li>
+	   </ul>
+        </footer>
       </div>
     </div>
     
