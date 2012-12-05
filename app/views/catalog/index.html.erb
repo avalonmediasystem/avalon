@@ -4,7 +4,7 @@
     <%# if there are no input/search related params, display the "home" partial -%>
     <%= render 'home' %>
   <% else %>
-    <div id="sidebar" class="span3">
+    <div id="sidebar" class="span3 hidden-phone">
       <%= render 'constraints' %> 
       <%= render 'facets' %>
     </div><!--/well -->
