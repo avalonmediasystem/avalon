@@ -3,7 +3,7 @@ require 'net/http/post/multipart'
 require 'rubyhorn'
 
 class MasterFilesController < ApplicationController
-#  include Hydra::Controller::FileAssetsBehavior
+  include Hydrant::Controller::ControllerBehavior
 
   skip_before_filter :verify_authenticity_token, :only => [:update]
   before_filter :authenticate_user!, :only => [:create]
@@ -42,7 +42,8 @@ class MasterFilesController < ApplicationController
         master_file = MasterFile.new
         master_file.mediaobject = media_object
         master_file.setContent(file)
-        
+        set_default_item_permissions master_file
+ 
         if 'Unknown' == master_file.media_type
           flash[:errors] = [] if flash[:errors].nil?
           error = format_errors
@@ -70,6 +71,7 @@ class MasterFilesController < ApplicationController
         master_file = MasterFile.new
         master_file.mediaobject = media_object
         master_file.setContent(File.open(file_path, 'rb'))
+        set_default_item_permissions master_file
         
         unless master_file.save
           flash[:errors] = "There was a problem storing the file"

@@ -1,5 +1,6 @@
 class MediaObjectsController < CatalogController
   include Hydrant::Workflow::WorkflowControllerBehavior
+  include Hydrant::Controller::ControllerBehavior
 
   before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
@@ -7,7 +8,7 @@ class MediaObjectsController < CatalogController
   def new
     logger.debug "<< NEW >>"
     @mediaobject = MediaObject.new(avalon_uploader: user_key)
-    set_default_item_permissions
+    set_default_item_permissions @mediaobject
     # Touch the workflow object to create it by setting the origin
     @mediaobject.workflow.origin = 'web'
     @mediaobject.save(:validate => false)
@@ -70,12 +71,6 @@ class MediaObjectsController < CatalogController
   end
 
   protected
-  def set_default_item_permissions
-    unless @mediaobject.rightsMetadata.nil?
-      @mediaobject.edit_groups = ['archivist']
-      @mediaobject.edit_users = [user_key]
-    end
-  end
 
   def load_master_files
     logger.debug "<< LOAD MASTER FILES >>"

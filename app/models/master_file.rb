@@ -2,6 +2,9 @@ require 'hydrant/matterhorn_jobs'
 
 class MasterFile < ActiveFedora::Base
   include ActiveFedora::Associations
+  include Hydra::ModelMethods
+  include Hydra::ModelMixins::CommonMetadata
+  include Hydra::ModelMixins::RightsMetadata
 
 #  has_relationship "part_of", :is_part_of
 #  has_relationship "derivatives", :has_derivation
@@ -14,8 +17,6 @@ class MasterFile < ActiveFedora::Base
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
   has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
 
-#  before_create :save_parent
-  
   delegate :workflow_id, to: :descMetadata, at: [:source], unique: true
   #delegate :description, to: :descMetadata
   delegate :url, to: :descMetadata, at: [:identifier], unique: true
@@ -25,12 +26,12 @@ class MasterFile < ActiveFedora::Base
 
   delegate_to 'statusMetadata', [:percent_complete, :status_code]
 
-    # First and simplest test - make sure that the uploaded file does not exceed the
-    # limits of the system. For now this is hard coded but should probably eventually
-    # be set up in a configuration file somewhere
-    #
-    # 250 MB is the file limit for now
-    MAXIMUM_UPLOAD_SIZE = (2**20) * 250
+  # First and simplest test - make sure that the uploaded file does not exceed the
+  # limits of the system. For now this is hard coded but should probably eventually
+  # be set up in a configuration file somewhere
+  #
+  # 250 MB is the file limit for now
+  MAXIMUM_UPLOAD_SIZE = (2**20) * 250
 
   AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav", "audio/x-wav"]
   VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
@@ -164,9 +165,6 @@ class MasterFile < ActiveFedora::Base
 
     logger.debug "<< File location #{ self.url } >>"
     logger.debug "<< Filesize #{ self.size } >>"
-
-    #FIXME next line
-    #apply_depositor_metadata(master_file)
   end
 
 end
