@@ -49,12 +49,7 @@ class MediaObjectsController < CatalogController
         render
       end
       format.json do
-        render :json => {
-          label: @currentStream.label,
-          stream: @currentStream.derivatives.first.tokenized_url(@token),
-          mimetype: @currentStream.derivatives.first.streaming_mime_type,
-          mediapackage_id: @currentStream.mediapackage_id
-        }
+        render :json => @currentStream.stream_details(@token)
       end
     end
   end
