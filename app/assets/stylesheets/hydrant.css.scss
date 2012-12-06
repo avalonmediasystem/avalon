@@ -1,5 +1,3 @@
-@import 'bootstrap';
- 
 /**
  * Tweak the modules so that there is some space between items in the
  * definition lists
@@ -118,10 +116,6 @@ ul.login img.logo {
   overflow: hidden;
 }
 
-.result-thumb { 
-  width: 164px; 
-}
-
 footer {
   margin-top: 9px;
   padding-top: 18px;
@@ -152,7 +146,6 @@ footer li:first-child:before {
   cursor: default !important;
   pointer-events: none !important;
 }
-
 
 a.current-stream {
   &:link { @hidden-disabled-link }

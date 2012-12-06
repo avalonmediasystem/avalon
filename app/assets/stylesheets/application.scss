@@ -1,3 +1,7 @@
+@import "bootstrap";
+@import "bootstrap-responsive";
+@import "blacklight/blacklight";
+
 /*
  * This is the default theme. You can modify many of the settings 
  * by editing your local app/assets/stylesheets/blacklight_themes/standard.css
@@ -23,5 +27,3 @@
  *
  *= require_self
 */
-@import "bootstrap";
-@import "blacklight/blacklight";
