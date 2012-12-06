@@ -32,20 +32,20 @@
  
     <div class="container-fluid">
       <%= render "modules/global_navigation" %>
+    </div>
+    <div class="container-fluid whitespace" %>
       <%= render "modules/user_management" %>
     </div>
     
     <div class="container-fluid"><%= yield %></div>
 
     <div class="container-fluid">
-      <div class="row-fluid">
-	<footer class="span12">
+	  <footer class="span12">
 	   <ul>
 	     <li><a href="http://variationsonvideo.org">Avalon Media System Project Website</a> </li>
 	     <li><%= link_to "Contact Us", comments_path %></li>
 	   </ul>
         </footer>
-      </div>
     </div>
     
     <!-- With this many Javascript files performance will be much better
