@@ -44,19 +44,16 @@ class DerivativesController < ApplicationController
   # The values should be put into a POST. The method will reject a GET
   # request for security reasons
   def authorize
-    user = User.find_by_id(params[:token])
-    logger.debug user.inspect
-    derivative = Derivative.find(params[:pid])
-    logger.debug derivative.inspect
-    if derivative.blank? or !derivative.url_hash.eql?(params[:hash]) or user.cannot?(:read, derivative)
+    begin
+      resp = { :authorized => StreamToken.validate_token(params[:token]) }
+      respond_to do |format|
+        format.urlencoded { render :text => resp.to_query, :content_type => :urlencoded, :status => :accepted }
+        format.text       { render :text => resp[:authorized], :status => :accepted }
+        format.xml        { render :xml  => resp, :root => :response, :status => :accepted }
+        format.json       { render :json => resp, :status => :accepted }
+      end
+    rescue StreamToken::Unauthorized
       return head :forbidden 
-    end
-
-    resp = { :authorized => derivative.mediapackage_id }
-    respond_to do |format|
-      format.urlencoded { render :text => resp.to_query, :content_type => :urlencoded, :status => :accepted }
-      format.xml        { render :xml =>  resp, :skip_types => true, :root => :response, :status => :accepted }
-      format.json       { render :json => { :response => resp }, :status => :accepted }
     end
   end
 end

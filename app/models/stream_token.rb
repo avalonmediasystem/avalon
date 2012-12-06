@@ -1,21 +1,26 @@
 class StreamToken < ActiveRecord::Base
+  class Unauthorized < Exception; end
+
 	attr_accessible :token, :target, :expires
   
   def self.find_or_create_session_token(session, target)
-  	last_refresh = session['warden.user.user.session']['last_request_at']
   	result = self.find_or_create_by_token_and_target(session[:session_id], target)
-	  result.update_attribute :expires, (last_refresh + 1.hour)
+	  result.renew!
 	  result.token
   end
 
   def self.validate_token(value)
   	(target, token_string) = value.scan(/^(.+)-(.+)$/).first
   	token = self.find_by_token_and_target(token_string, target)
-  	if token.expires > Time.now
+  	if token.present? and token.expires > Time.now
+      token.renew!
   		return target
   	else
-  		raise "Unauthorized"
+  		raise Unauthorized, "Unauthorized"
   	end
   end
 
+  def renew!
+    self.update_attribute :expires, (Time.now + 20.minutes)
+  end
 end
