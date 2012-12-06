@@ -189,7 +189,7 @@ en:
       documents:
         counter: '%{counter}. '
       facets:
-        title: ''
+        title: 'Limit your search'
         sort:
           count: 'Numerical Sort'
           index: 'A to Z Sort'
