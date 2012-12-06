@@ -169,3 +169,46 @@ a.current-stream {
 tr.active-false td {
   color: grey;
 }
+
+/**
+ * Components for navigation wizard. Copied from the LESS source so
+ * might need some tweaking to work right
+ */
+ .nav-wizard {
+}
+
+.nav-wizard > li > a:hover {
+  background: transparent;
+}
+
+.nav-wizard > li {  
+  padding: $baseLineHeight/2;
+  margin-bottom: $baseLineHeight;
+  text-align: left;
+  @include border-radius(4px);
+
+  background-color: $grayLighter;
+  border: $gray;
+  color: $grayDarker;
+}
+
+.nav-wizard > li.nav-success {
+  background-color: $successBackground;
+  border-color: $successBorder;
+  color: $successText;
+}
+
+.nav-wizard > li.nav-info {
+  background-color: $infoBackground;
+  border-color: $infoBorder;
+  color: $infoText;
+}
+
+.nav-wizard .step {
+  font-size: 250%;
+  width: 1em;
+  float: left;
+  margin-right: 0.5em;
+  margin-bottom: $baseLineHeight/2;
+}
+

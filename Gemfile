@@ -54,10 +54,10 @@
     gem 'compass-susy-plugin', '~> 0.9.0', :require => 'susy'
 
     # For overriding the default interface with Twitter Bootstrap
-    gem 'bootstrap-sass'    
+    # This is now inherited from Blacklight
+    #gem 'less-rails'
+    #gem 'bootstrap-sass'    
     gem 'sass-rails', '~> 3.2.3'
-    gem 'less-rails'
-    gem 'twitter-bootstrap-rails', "~> 2.0"
     gem 'twitter_bootstrap_form_for',
       git: "https://github.com/variations-on-video/twitter_bootstrap_form_for.git",
       branch: "bootstrap-2.0"
