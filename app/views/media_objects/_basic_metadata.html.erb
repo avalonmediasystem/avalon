@@ -1,52 +1,29 @@
-<% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
+<% if flash[:error] %><div class='alert alert-error'><%= flash[:error] %></div><% end %>
 
-<%= twitter_bootstrap_form_for @mediaobject, 
-    html: { 
-      class: "form-horizontal",
-      id: 'basic_metadata_form' } do |vid| %>
+<%= twitter_bootstrap_form_for @mediaobject, html: { class: 'form-horizontal', id: 'basic_metadata_form' } do |vid| %>
   <%= hidden_field_tag :step, @active_step %>
-  <%= vid.fieldset "Required fields", id: 'required_fields' do %>    
-  
-    <%= vid.text_field :main_title, "Title", class: 'span12', value: @mediaobject.title %>
-    <%= vid.text_field :creator, "Creator", class: 'span12',
-      value: @mediaobject.creator %>
-    <%= vid.text_field :date_created, "Created on", class: 'span12',
-      value: @mediaobject.date_created %>
-    <%= vid.text_field :date_issued, "Issued on", class: 'span12',
-      value: @mediaobject.date_issued %>
-    <%= vid.text_field :copyright_date, "Copyright date", class: 'span12',
-      value: @mediaobject.copyright_date %>
-    <%= vid.text_area :abstract, "Summary", class: 'span12', rows: 6,
-      value: @mediaobject.abstract %>
+  <%= vid.fieldset 'Required fields', id: 'required_fields' do %>
+    <%= vid.text_field :title, 'Title', class: 'span12' %>
+    <%= vid.text_field :creator, 'Creator', class: 'span12' %>
+    <%= vid.text_field :date_created, 'Created on', class: 'span12' %>
+    <%= vid.text_field :date_issued, 'Issued on', class: 'span12' %>
+    <%= vid.text_field :copyright_date, 'Copyright date', class: 'span12' %>
+    <%= vid.text_area :abstract, 'Summary', class: 'span12', rows: 6 %>
   <% end %>
   
-  <%= vid.fieldset "Related people", id: 'related_people' do %>
-    <%= vid.text_fields :contributor, "Contributor(s)", class: 'span12',
-      value: @mediaobject.contributor  %>
-    
-    <%= vid.text_fields :publisher, "Publisher(s)", class: 'span12',
-        value: @mediaobject.publisher, minimum_fields: 3  %>
+  <%= vid.fieldset 'Related people', id: 'related_people' do %>
+    <%= vid.text_fields :contributor, 'Contributor(s)', class: 'span12' %>
+    <%= vid.text_fields :publisher, 'Publisher(s)', class: 'span12', minimum_fields: 3  %>
   <% end %>
-
-  <%# vid.fieldset "Related items", id: 'related_items' do %>    
-    <%# vid.text_fields :relatedItem, "--", class: 'span12', 
-      disabled: 'disabled', value: @mediaobject.relatedItem,
-      miminum_fields: 3 %>
-  <%# end %>
   
-  <%= vid.fieldset "Keywords", id: 'keywords' do %>    
-    <%= vid.text_field :genre, "Genre", class: 'span12',
-      value: @mediaobject.genre %>
-    <%= vid.text_fields :temporal_subject, "Time periods", class: 'span12', 
-       mininum_fields: 2, value: @mediaobject.temporal_subject %>
-    <%= vid.text_fields :geographic_subject, "Locations", class: 'span12', 
-       minimum_fields: 2, value: @mediaobject.geographic_subject %>
-
-    <%= vid.text_fields :topical_subject, "Subject(s)", class: 'span12', 
-       value: @mediaobject.subject %>
+  <%= vid.fieldset 'Keywords', id: 'keywords' do %>    
+    <%= vid.text_field :genre, 'Genre', class: 'span12' %>
+    <%= vid.text_fields :temporal_subject, 'Time periods', class: 'span12', mininum_fields: 2 %>
+    <%= vid.text_fields :geographic_subject, 'Locations', class: 'span12', minimum_fields: 2 %>
+    <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span12' %>
   <% end %>
 
  <%= vid.actions do |actions| %>
-      <%= render "workflow_buttons", form: vid %>
+      <%= render 'workflow_buttons', form: vid %>
   <% end %>
 <% end %>
