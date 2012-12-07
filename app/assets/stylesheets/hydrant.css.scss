@@ -23,7 +23,7 @@ dd {
   margin-bottom: 18px;
 }
 
-// Custom markup begins here
+/* Custom markup begins here */
 header .logo {
 }
 
@@ -209,4 +209,9 @@ tr.active-false td {
   margin-right: 0.5em;
   margin-bottom: $baseLineHeight/2;
 }
+
+img.result-thumb {
+  max-width: 64px;
+}
+
 

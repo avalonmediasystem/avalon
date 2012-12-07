@@ -3,13 +3,13 @@ module ApplicationHelper
       'Hydrant'
     end
     
-    def image_for_result(item)
+    # TODO : Replace this string of else statements with a clean 'case'
+    # statement
+    def image_for_result(item_id)
       # Overwrite this to return the preview from Matterhorn. Be sure to include the
       # image_tag call so it renders properly
-      media_object = MediaObject.find(item[:id])
+      media_object = MediaObject.find(item_id)
       
-      # TODO : I have an idea how to refactor this to make it more neat but it needs to
-      #        wait until the email form is finished.
       if media_object.format == "Moving image"
         imageurl = "video_icon.png"
       elsif media_object.format == "Sound"
@@ -30,7 +30,7 @@ module ApplicationHelper
       end
       # Audio files do not currently have an icon so provide the default
       
-      image_tag imageurl
+      image_tag imageurl, class: 'media-object result-thumb'
     end
 
     # Creates a hot link to the downloadable file if it is available. File names longer
