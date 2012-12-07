@@ -1,32 +1,23 @@
-/**
- * Tweak the modules so that there is some space between items in the
- * definition lists
- * 
- * A little quick and dirty but it can be cleaned up later. Use 18px or the 
- * defined line height to keep things flowing nicely in the grid instead of 
- * arbitrary gaps
- */
+@import "bootstrap";
+
 /**
  * Override the default behaviour in Bootstrap so that the container is not 
  * pushed down the page
  */
 .whitespace {
-  margin-bottom: 18px;
+  margin-bottom: $baseLineHeight;
 }
 
 /** Use half of a line height for a more subtle offset */
 .whitespace-half {
-  margin-bottom: 9px;
+  margin-bottom: $baseLineHeight/2;
 }
 
 dd {
-  margin-bottom: 18px;
+  margin-bottom: $baseLineHeight;
 }
 
 /* Custom markup begins here */
-header .logo {
-}
-
 .filelist.nav-stacked > li > a {
   max-width: 173px;
 }
