@@ -65,9 +65,22 @@ class Derivative < ActiveFedora::Base
   end
 
   def tokenized_url(token)
-    uri = URI.parse(url.first)
+    #uri = URI.parse(url.first)
+    uri = streaming_url
     "#{uri.to_s}?token=#{token}&pid=#{pid}&hash=#{url_hash}"
   end      
+
+  def streaming_url
+      # We need to tweak the RTMP stream to reflect the right format for AMS.
+      # That means extracting the extension from the end and placing it just
+      # after the application in the URL
+      extension = File.extname(url.first)
+      stream = url.first.gsub!(/#{extension}$/, '') 
+      #stream.gsub!(/vod\//, 'vod/mp4:')
+
+      logger.debug "currentStream value - #{stream}"
+      stream
+  end
 
   protected
   def refresh_status
