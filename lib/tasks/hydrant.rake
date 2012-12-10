@@ -1,6 +1,6 @@
 namespace :hydrant do
   namespace :services do
-    services = ["jetty", "felix", "red5"]
+    services = ["jetty", "felix"]
     desc "Start Hydrant's dependent services"
     task :start do
       services.map { |service| Rake::Task["#{service}:start"].invoke }
