@@ -1,4 +1,5 @@
 server "lancelot.dlib.indiana.edu", :app, :web, :db, :primary => true
+server "mallorn.dlib.indiana.edu", :app, :web, :db, :primary => true
 
 set :deploy_env, "development"
 
