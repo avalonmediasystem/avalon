@@ -22,12 +22,13 @@ class MediaObjectsController < CatalogController
     @masterFiles = load_master_files
 
     if 'preview' == @active_step 
-      @currentStream = set_active_file(params[:content])
-      if (not @masterFiles.blank? and @currentStream.blank?) then
-        @currentStream = @masterFiles.first
-        flash[:notice] = "The stream was not recognized. Defaulting to the first available stream for the resource"
-      end
-    end 
+        @currentStream = set_active_file(params[:content])
+        if (not @masterFiles.blank? and @currentStream.blank?) then
+          @currentStream = @masterFiles.first
+          flash[:notice] = "The stream was not recognized. Defaulting to the first available stream for the resource"
+        end
+        @token = StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
+    end
   end
 
   def show
