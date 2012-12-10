@@ -21,16 +21,16 @@ module ApplicationHelper
         imageurl = "no_icon.png"
       end
 
-      # Retrieve the icon from Matterhorn if it is present and replace it with an
-      # actual thumbnail
-      unless (media_object.parts.blank?)
-        master_file = MasterFile.find(media_object.parts.first.pid)
-        workflow_doc = Rubyhorn.client.instance_xml master_file.descMetadata.source.first
-        imageurl = workflow_doc.searchpreview.first unless (workflow_doc.searchpreview.nil? or workflow_doc.searchpreview.empty?)
-      end
+      # Retrieve the icon from Matterhorn if it is present and replace it with
+      # an actual thumbnail
+      #unless (media_object.parts.blank?)
+      #  master_file = MasterFile.find(media_object.parts.first.pid)
+      #  workflow_doc = Rubyhorn.client.instance_xml master_file.descMetadata.source.first
+      #  imageurl = workflow_doc.searchpreview.first unless (workflow_doc.searchpreview.nil? or workflow_doc.searchpreview.empty?)
+      # end
       # Audio files do not currently have an icon so provide the default
       
-      image_tag imageurl, class: 'media-object result-thumb'
+      image_tag imageurl, class: 'result-thumbnail'
     end
 
     # Creates a hot link to the downloadable file if it is available. File names longer

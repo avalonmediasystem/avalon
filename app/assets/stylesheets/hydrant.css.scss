@@ -1,4 +1,5 @@
 @import "bootstrap";
+@import "bootstrap-responsive";
 
 /**
  * Override the default behaviour in Bootstrap so that the container is not 
@@ -201,8 +202,30 @@ tr.active-false td {
   margin-bottom: $baseLineHeight/2;
 }
 
-img.result-thumb {
-  max-width: 64px;
+/**
+ * Until media-object works right in bootstrap add some custom overrides
+ */
+.result {
+  width: 100%;
 }
+
+.result img.result-thumbnail {
+  max-width: $gridColumnWidth;
+  min-width: $gridColumnWidth/2;
+  padding: 0 $baseLineHeight $gridColumnWidth/2 0;
+}
+
+.result .result-heading {
+  font-weight: bold;
+}
+
+.result .result-body {
+  color: $gray;
+}
+
+
+
+
+
 
 

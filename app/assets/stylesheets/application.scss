@@ -2,9 +2,14 @@
 @import "bootstrap-responsive";
 @import "blacklight/blacklight";
 
+/**
+ * Blacklight overrides
+ */
 body {
   padding-top: 0;
 }
+
+@import "hydrant";
 
 /*
  * This is the default theme. You can modify many of the settings 
@@ -21,7 +26,6 @@ body {
  * compiled file, but it's generally better to create a new file per style scope.
  *
  * require jquery.fileupload-ui
- *= require hydrant
  *= require admin
  
  * Required by Hydra

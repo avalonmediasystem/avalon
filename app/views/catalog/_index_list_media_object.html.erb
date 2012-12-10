@@ -1,4 +1,4 @@
-  <div class="media">
+  <div class="result">
     <% if can?(:read, document) then %>
       <%= link_to image_for_result(document[:id]),
         media_object_path(document[:id]), 
@@ -6,7 +6,9 @@
       <% else %>
         <%= image_for_result(document[:id]) %>
     <% end %>
-  <div class="media-body"> 
-    <h4 class="media-heading"><%= document["creator_t"].nil? ? 'Creator unknown'.html_safe : document["creator_t"].first  %> (<%= document["pub_date"].blank? ? 'Unknown' : document["pub_date"].first %>)</h4>
+  <div class="result-summary"> 
+    <h4 class="result-heading"><%= document["creator_t"].nil? ? 'Creator unknown'.html_safe : document["creator_t"].first  %> (<%= document["pub_date"].blank? ? 'Unknown' : document["pub_date"].first %>)</h4>
+    <div class="result-body">
       <%= (document["summary_display"].blank? or document["summary_display"].first.blank?) ? 'No summary available' : truncate(document["summary_display"].first, length: 100) %>
+    </div>
   </div>
