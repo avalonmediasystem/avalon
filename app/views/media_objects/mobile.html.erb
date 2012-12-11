@@ -8,7 +8,7 @@
 
     <%# Here comes the hack to HTTP live stream. This naively assumes that
         you are using a MP4 live stream instead of FLV %>
-        <% stream = @currentStream.derivatives.streaming_url(true) %>
+        <% stream = @currentStream.derivatives.first.streaming_url(true) %>
     <video width="640" height="480" controls="controls">
       <source src="<%= stream %>" type="video/mp4" %>
       Your browser does not support HTML5 video (MPEG4)
