@@ -21,10 +21,11 @@
              'audio'
            else
              'other'
-           end %>
-          
-          stream = @currentStream.derivatives.first.streaming_url(true, format) %>
-    <p>Loading stream directly from <%= stream %></p>
+           end 
+         
+           stream = @currentStream.derivatives.first.streaming_url(true, format) %>
+    
+    <p>Loading <%= format %> stream from <%= stream %> </p>
     <video width="640" height="480" controls="controls" id="video_player">
       <source src="<%= stream %>" type="video/mp4" %>
       Your browser does not support HTML5 video (MPEG4)
