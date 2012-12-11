@@ -1,9 +1,10 @@
 require 'net/http/digest_auth'
 require 'net/http/post/multipart'
 require 'rubyhorn'
+require 'hydrant/controller/controller_behavior'
 
 class MasterFilesController < ApplicationController
-#  include Hydra::Controller::FileAssetsBehavior
+  include Hydrant::Controller::ControllerBehavior
 
   skip_before_filter :verify_authenticity_token, :only => [:update]
   before_filter :authenticate_user!, :only => [:create]
@@ -40,9 +41,10 @@ class MasterFilesController < ApplicationController
         end
 
         master_file = MasterFile.new
-        master_file.container = media_object
+        master_file.mediaobject = media_object
         master_file.setContent(file)
-        
+        set_default_item_permissions master_file
+ 
         if 'Unknown' == master_file.media_type
           flash[:errors] = [] if flash[:errors].nil?
           error = format_errors
@@ -68,8 +70,9 @@ class MasterFilesController < ApplicationController
       params[:dropbox].each do |file|
         file_path = Hydrant::DropboxService.find(file[:id])
         master_file = MasterFile.new
-        master_file.container = media_object
+        master_file.mediaobject = media_object
         master_file.setContent(File.open(file_path, 'rb'))
+        set_default_item_permissions master_file
         
         unless master_file.save
           flash[:errors] = "There was a problem storing the file"
@@ -91,9 +94,10 @@ class MasterFilesController < ApplicationController
   def update
     @masterfile = MasterFile.find(params[:id])
     if params[:workflow_id].present?
+      @masterfile.workflow_id ||= params[:workflow_id]
       @masterfile.updateProgress params[:workflow_id]
     else
-      @mediaobject = @masterfile.container
+      @mediaobject = @masterfile.mediaobject
       authorize! :edit, @mediaobject
       @masterfile.label = params[@masterfile.pid]
     end
@@ -104,7 +108,7 @@ class MasterFilesController < ApplicationController
   # When destroying a file asset be sure to stop it first
   def destroy
     master_file = MasterFile.find(params[:id])
-    parent = master_file.container
+    parent = master_file.mediaobject
     
     authorize! :edit, parent, message: "You do not have sufficient privileges to delete files"
 

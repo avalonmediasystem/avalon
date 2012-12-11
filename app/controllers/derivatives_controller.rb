@@ -5,7 +5,7 @@ class DerivativesController < ApplicationController
  #  before_filter :enforce_access_controls
  # load_and_authorize_resource
   
-  skip_before_filter :verify_authenticity_token, :only => [:create]
+  skip_before_filter :verify_authenticity_token, :only => [:create, :authorize]
 #  before_filter :authenticate_user!, :only => [:create]
 
   # Creates and Saves a File Asset to contain the the Uploaded file 
@@ -37,4 +37,21 @@ class DerivativesController < ApplicationController
       render :nothing => true
   end
 
+  # Validate if the session is active, the user is correct, and that they
+  # have permission to stream the derivative based on the session_id and
+  # the path to the stream.
+  #
+  # The values should be put into a POST. The method will reject a GET
+  # request for security reasons
+  def authorize
+    user = User.find_by_id(params[:token])
+    logger.debug user.inspect
+    derivative = Derivative.find(params[:pid])
+    logger.debug derivative.inspect
+    if derivative.blank? or !derivative.url_hash.eql?(params[:hash]) or user.cannot?(:read, derivative)
+      return head :forbidden 
+    end
+
+    return head :accepted
+  end
 end

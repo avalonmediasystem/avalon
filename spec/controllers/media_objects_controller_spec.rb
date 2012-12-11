@@ -22,7 +22,7 @@ describe MediaObjectsController do
         login_as('content_provider')
         lambda { get 'new' }.should change { MediaObject.count }
         pid = MediaObject.find(:all).last.pid
-        response.should redirect_to(edit_media_object_path(id: pid, step: 'file-upload'))
+        response.should redirect_to(edit_media_object_path(id: pid))
       end
 
       it "should inherit default permissions" do
@@ -88,7 +88,8 @@ describe MediaObjectsController do
       end
 
       it "should return an error if the PID does not exist" do
-        lambda { get :show, id: 'no-such-object' }.should raise_error ActionController::RoutingError
+        get :show, id: 'no-such-object'
+        response.response_code.should == 404
       end
 
       it "should be available to an archivist when unpublished" do

@@ -3,7 +3,7 @@
 <% unless item.nil? %>
 <dt>
   <% if can? :read, item %>
-    <%= link_to catalog_path(item[:id]) do %> 
+    <%= link_to media_object_path(item[:id]) do %> 
     <% unless item["title_t"].blank? or item["title_t"].first.blank? %><%= item["title_t"].first %><% else %>No title provided<% end%> (<%= item[:id] %>)
     <% end %>
   <% else %>

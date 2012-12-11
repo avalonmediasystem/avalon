@@ -1,7 +1,5 @@
-/*
- *= require bootstrap_and_overrides
- */
- 
+@import "bootstrap";
+
 /**
  * Tweak the modules so that there is some space between items in the
  * definition lists
@@ -10,13 +8,13 @@
  * line height to keep things flowing nicely in the grid instead of arbitrary gaps
  */
 .admin .badge, .admin .label {
-  font-size: 13px;
+  font-size: $baseFontSize;
   font-weight: normal;
   margin-right: 4px;
 }
 
 .admin .icon-remove-sign, .admin .icon-ok-sign, .admin .icon-plus-sign {
-  font-size: 20px;
+  font-size: $baseFontSize*1.5;
   vertical-align: middle;
   cursor: pointer;
 }

@@ -56,9 +56,8 @@ RSpec.configure do |config|
       'hydrant:musical-performance',
       'hydrant:print-publication']
     test_fixtures.each do |fixture|
-      mo = MediaObject.find(fixture)
-      puts "Removing test object #{mo.pid}" 
-      mo.delete 
+      puts "Removing test object #{fixture} if present" 
+      MediaObject.find(fixture).delete if MediaObject.exists?(fixture) 
     end
   end
   

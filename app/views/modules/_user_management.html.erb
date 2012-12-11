@@ -1,13 +1,10 @@
-<div class="row-fluid">
-  <nav id="authentication">
-    <ul>
+<div class="row-fluid whitespace">
+  <div class="pull-right">
     <% if user_signed_in? %>
-      <!-- Eventually this shoud link to a profile edit page -->
-      <%= user_key %> |</li>
-      <li><%= link_to "Sign out", destroy_user_session_path %></li>
+      <%= user_key %> | <%= link_to "Sign out", destroy_user_session_path %>
     <% else %>
       <%= link_to "Sign in", new_user_session_path %>
     <% end %>
-		</ul>
-  </nav>
+  </div>
 </div>
+

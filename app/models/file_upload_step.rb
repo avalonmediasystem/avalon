@@ -24,8 +24,9 @@ require 'hydrant/dropbox'
     def execute context
          logger.debug "<< Processing FILE-UPLOAD step >>"
        update_master_files context[:mediaobject], context[:parts] 
-       unless context[:mediaobject].parts.empty?
-           media = context[:mediaobject]
+       # Reloads mediaobject.parts, should use .reload when we update hydra-head 
+       media = MediaObject.find(context[:mediaobject].pid)
+       unless media.parts.empty?
          media.format = media.parts.first.media_type
          media.save(validate: false)
          context[:mediaobject] = media

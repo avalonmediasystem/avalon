@@ -1,21 +1,31 @@
-
+<!-- This should really be rewritten so that the ingest links are not even
+     delivered to mobile devices instead of just hidden but that requires
+     looking into methods for server side detection -->
 <div class="navbar">
   <div class="navbar-inner">
     <div class="container">
-      <ul class="nav nav-pills">
-        <li><%= link_to 'Home', root_url %></li>
-        <li class="divider-vertical"></li>
-        <li><%= link_to 'Browse', catalog_index_path(search_field: 'all_fields', utf8: '✓', q: '') %></li>
-        <% if can? :create, MediaObject %>
-          <li><%= link_to 'Create', new_media_object_path %></li>
-        <% end %>
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
 
-        <% if can? :manage, Admin::Group %>
-          <li><%= link_to 'Manage Policy', 
-             admin_index_path,
-             html: {target: '_admin'} %>
-        <% end %>
-      </ul>
+      <%= link_to 'Home', root_url, class: 'brand' %>
+
+      <div class="nav-collapse collapse">
+        <ul class="nav nav-tabs">
+          <li><%= link_to 'Browse', catalog_index_path(search_field: 'all_fields', utf8: '✓', q: '') %></li>
+          <% if can? :create, MediaObject %>
+            <li class="hidden-phone"><%= link_to 'Create', new_media_object_path %></li>
+          <% end %>
+
+          <% if can? :manage, Admin::Group %>
+            <li class="hidden-phone"><%= link_to 'Manage Policy', 
+              admin_index_path,
+              html: {target: '_admin'} %>
+          <% end %>
+        </ul>        
+      </div>
     </div>
   </div>
 </div>

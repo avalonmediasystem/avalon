@@ -1,11 +1,12 @@
 class MediaObject < ActiveFedora::Base
   include Hydra::ModelMixins::CommonMetadata
   include Hydra::ModelMethods
-  include ActiveFedora::Relationships
+  include ActiveFedora::Associations
   include Hydra::ModelMixins::RightsMetadata
   include Hydrant::Workflow::WorkflowModelMixin
 
-  has_relationship "parts", :has_part
+  # has_relationship "parts", :has_part
+  has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
 
   has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: ModsDocument	
@@ -20,7 +21,45 @@ class MediaObject < ActiveFedora::Base
   
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
-  validate :minimally_complete_record
+  
+  # Guarantees that the record is minimally complete - ie that within the descriptive
+  # metadata the title, creator, date of creation, and identifier fields are not 
+  # blank. Since identifier is set automatically we only need to worry about creator,
+  # title, and date of creation.
+
+  validates :title, :presence_with_full_error_message => true
+  validates :creator, :presence_with_full_error_message => true
+  validates :date_created, :presence_with_full_error_message => true
+
+  # this method returns a hash: class attribute -> metadata attribute
+  # this is useful for decoupling the metdata from the view
+  def klass_attribute_to_metadata_attribute_map
+    {
+    :avalon_uploader => :creator,
+    :avalon_publisher => :publisher,
+    :title => :main_title,
+    :alternative_title => :alternative_title,
+    :translated_title => :translated_title,
+    :uniform_title => :uniform_title,
+    :statement_of_responsibility => :statement_of_responsibility,
+    :creator => :creator,
+    :date_created => :date_created,
+    :date_issued => :date_issued,
+    :copyright_date => :copyright_date,
+    :abstract => :abstract,
+    :note => :note,
+    :format => :media_type,
+    :contributor => :contributor,
+    :publisher => :publisher,
+    :genre => :genre,
+    :subject => :topical_subject,
+    :relatedItem => :related_item_id,
+    :geographic_subject => :geographic_subject,
+    :temporal_subject => :temporal_subject,
+    :topical_subject => :topical_subject
+    }
+  end
+
   
   delegate :avalon_uploader, to: :DC, at: [:creator], unique: true
   delegate :avalon_publisher, to: :DC, at: [:publisher], unique: true
@@ -46,6 +85,7 @@ class MediaObject < ActiveFedora::Base
 
   delegate :geographic_subject, to: :descMetadata, at: [:geographic_subject]
   delegate :temporal_subject, to: :descMetadata, at: [:temporal_subject]
+  delegate :topical_subject, to: :descMetadata, at: [:topical_subject]
   
   accepts_nested_attributes_for :parts, :allow_destroy => true
   
@@ -91,15 +131,7 @@ class MediaObject < ActiveFedora::Base
       self.read_groups = groups
     end
   end
-  
-  def parts_with_order
-    masterfiles = []
-    descMetadata.relation_identifier.each do |pid|
-      masterfiles << MasterFile.find(pid)
-    end
-    masterfiles
-  end
-  
+
   def update_datastream(datastream = :descMetadata, values = {})
     values.each do |k, v|
       # First remove all blank attributes in arrays
@@ -122,65 +154,53 @@ class MediaObject < ActiveFedora::Base
           vals << entry[:value]
           attrs << entry[:attributes]
         end
-        update_attribute(k, vals, attrs)
+        update_attribute_in_metadata(k, vals, attrs)
       else
-        update_attribute(k, Array(v))
+        update_attribute_in_metadata(k, Array(v))
       end
     end
     logger.debug(datastreams[datastream.to_s].to_xml)
   end
-  
-  def update_attribute(attribute, value = [], attributes = [])
-    logger.debug "<< UPDATE ATTRIBUTE >>"
-    logger.debug "<< Attribute : #{attribute.inspect} >>"
-    logger.debug "<< Value : #{value.inspect} >>"
-    logger.debug "<< Attributes : #{attributes.inspect} >>"
 
-    descMetadata.find_by_terms(attribute.to_sym).each &:remove
-    if descMetadata.template_registry.has_node_type?(attribute.to_sym)
+  # This method is one way in that it accepts class attributes and
+  # maps them to metadata attributes.
+  def update_attribute_in_metadata(attribute, value = [], attributes = [])
+
+    # class attributes should be decoupled from metadata attributes
+    # class attributes are displayed in the view and posted to the server
+    metadata_attribute = klass_attribute_to_metadata_attribute_map[ attribute.to_sym ]
+    metadata_attribute_value = value
+
+    if metadata_attribute.nil?
+      raise "Metadata attribute not found, class attribute: #{attribute}"
+      logger.debug "Metadata attribute was nil, attribute is: #{attribute}"
+    end
+
+    descMetadata.find_by_terms( metadata_attribute ).each &:remove
+    if descMetadata.template_registry.has_node_type?( metadata_attribute )
       Array(value).each_with_index do |val, i|
-        logger.debug "<< Adding node #{attribute}[#{i}] >>"
-        logger.debug("descMetadata.add_child_node(descMetadata.ng_xml.root, #{attribute.to_sym.inspect}, #{val.inspect}, #{(attributes[i]||{}).inspect})")
-        descMetadata.add_child_node(descMetadata.ng_xml.root, attribute.to_sym, val, (attributes[i]||{}))
+        logger.debug "<< Adding node #{metadata_attribute}[#{i}] >>"
+        logger.debug("descMetadata.add_child_node(descMetadata.ng_xml.root, #{metadata_attribute.to_sym.inspect}, #{val.inspect}, #{(attributes[i]||{}).inspect})")
+        descMetadata.add_child_node(descMetadata.ng_xml.root, metadata_attribute, metadata_attribute_value, (attributes[i]||{}))
       end
       #end
-    elsif descMetadata.respond_to?("add_#{attribute}")
+    elsif descMetadata.respond_to?("add_#{metadata_attribute}")
       Array(value).each_with_index do |val, i|
-        logger.debug("descMetadata.add_#{attribute}(#{val.inspect}, #{attributes[i].inspect})")
-        descMetadata.send("add_#{attribute}", val, (attributes[i] || {}))
+        logger.debug("descMetadata.add_#{metadata_attribute}(#{val.inspect}, #{attributes[i].inspect})")
+        descMetadata.send("add_#{metadata_attribute}", val, (attributes[i] || {}))
       end;
     else
       # Put in a placeholder so that the inserted nodes go into the right part of the
       # document. Afterwards take it out again - unless it does not have a template
       # in which case this is all that needs to be done
-      if self.respond_to?("#{attribute}=", value)
-        logger.debug "<< Calling delegated method #{attribute} >>"
-        self.send("#{attribute}=", value)
+      if self.respond_to?("#{metadata_attribute}=", value)
+        logger.debug "<< Calling delegated method #{metadata_attribute} >>"
+        self.send("#{metadata_attribute}=", value)
       else
-        logger.debug "<< Calling descMetadata method #{attribute} >>"
-        descMetadata.send("#{attribute}=", value)
+        logger.debug "<< Calling descMetadata method #{metadata_attribute} >>"
+        descMetadata.send("#{metadata_attribute}=", value)
       end
     end
-  end
-
-  # Guarantees that the record is minimally complete - ie that within the descriptive
-  # metadata the title, creator, date of creation, and identifier fields are not 
-  # blank. Since identifier is set automatically we only need to worry about creator,
-  # title, and date of creation.
-  def minimally_complete_record
-    logger.debug "<< MINIMALLY COMPLETE RECORD >>"
-    
-    [:creator, :title, :date_created].each do |element|
-      logger.debug "<< Validating the #{element.to_sym} property >>"
-      # Use send as a kludge for now. This does create some potential security issues
-      # but these can be addressed since the loop's symbols are defined very locally
-      # anyways
-      if send(element).blank?
-        errors.add element.to_sym, "The #{element.to_sym} field is required"
-        logger.info "<< ERROR: #{element} is required"
-      end
-    end
-    logger.debug "<< #{errors.count} errors have been added to the session >>"
   end
   
   # Other validation to consider adding into future iterations is the ability to

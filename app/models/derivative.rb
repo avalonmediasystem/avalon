@@ -1,8 +1,8 @@
 class Derivative < ActiveFedora::Base
-  include ActiveFedora::Relationships
+  include ActiveFedora::Associations
 
   has_metadata :name => "descMetadata", :type => ActiveFedora::QualifiedDublinCoreDatastream
-  has_relationship "derivative_of", :is_derivation_of
+#  has_relationship "derivative_of", :is_derivation_of
   belongs_to :masterfile, :class_name=>'MasterFile', :property=>:is_derivation_of
 
   delegate :source, to: :descMetadata
@@ -14,10 +14,12 @@ class Derivative < ActiveFedora::Base
     refresh_status
   end
 
-  def masterfile= masterfile
-    masterfile.add_relationship :has_derivation, self
-    self.add_relationship :is_derivation_of, masterfile
-  end
+#  def masterfile= parent
+#    self.masterfile = parent
+#    self.masterfile.derivatives << self
+#    masterfile.add_relationship :has_derivation, self
+#    self.add_relationship :is_derivation_of, masterfile
+#  end
 
   # A hacky way to handle the description for now. This should probably be refactored
   # to stop pulling if the status is stopped or completed
@@ -54,6 +56,32 @@ class Derivative < ActiveFedora::Base
     # TODO temporary fix, xpath for streamingmimetype is not working
     # matterhorn_response.workflow.streamingmimetype.second
     matterhorn_response.workflow.mediapackage.media.track.mimetype.last
+  end
+
+  def url_hash
+    h = Digest::MD5.new
+    h << url.first
+    h.hexdigest
+  end
+
+  def tokenized_url(token)
+    #uri = URI.parse(url.first)
+    uri = streaming_url
+    "#{uri.to_s}?token=#{token}&pid=#{pid}&hash=#{url_hash}"
+  end      
+
+  def streaming_url
+      # We need to tweak the RTMP stream to reflect the right format for AMS.
+      # That means extracting the extension from the end and placing it just
+      # after the application in the URL
+      extension = File.extname(url.first)
+      stream = url.first.gsub!(/#{extension}$/, '') 
+    
+      extension.gsub!(/\./, '')
+      stream.gsub!(/vod\//, "vod/#{extension}:") unless stream.match('vod/mp4:')
+
+      logger.debug "currentStream value - #{stream}"
+      stream
   end
 
   protected

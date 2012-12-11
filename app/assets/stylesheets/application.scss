@@ -1,3 +1,16 @@
+@import "bootstrap";
+@import "bootstrap-responsive";
+@import "blacklight/blacklight";
+
+/**
+ * Blacklight overrides
+ */
+body {
+  padding-top: 0;
+}
+
+@import "hydrant";
+
 /*
  * This is the default theme. You can modify many of the settings 
  * by editing your local app/assets/stylesheets/blacklight_themes/standard.css
@@ -12,9 +25,7 @@
  * You're free to add application-wide styles to this file and they'll appear at the top of the
  * compiled file, but it's generally better to create a new file per style scope.
  *
- *= require bootstrap_and_overrides
  * require jquery.fileupload-ui
- *= require hydrant
  *= require admin
  
  * Required by Hydra
@@ -24,5 +35,3 @@
  *
  *= require_self
 */
-@import "bootstrap";
-@import "blacklight/blacklight";

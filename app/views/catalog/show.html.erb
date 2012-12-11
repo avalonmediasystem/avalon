@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="span3" id="left_column">
+  <div class="span3 hidden-phone" id="left_column">
     <% if can? :edit, @mediaobject %>
       <%= render "media_objects/toggle_edit_mode" %>
       <%= render "media_objects/withdraw_object", mediaobject: @mediaobject %>
@@ -8,7 +8,7 @@
   </div>
 
   <div id="main_content_container" class="offset1 span8">
-    <div class="row whitespace">
+    <div class="row-fluid whitespace">
       <div>
         <% unless @mediaobject.title.blank? %>
       <h2>
@@ -24,24 +24,24 @@
      </div>
     </div>
     
-    <div class="row whitespace">
+    <div class="row-fluid whitespace">
       <section id="player">        
         <% if @masterFiles.blank? %>
           <div class="alert">
             <p>No media is associated with this item</p>
           </div>
         <% else if @currentStream.derivatives.blank? %>
-          <div class="alert <%= @currentStream.status_code.first == 'FAILED' ? 'alert-error' : 'alert-info' %>">
+          <div class="alert <%= @currentStream.status_code.first == 'FAILED' ? 'alert-error' : 'alert-info' %> span10">
             <h4>Conversion Process</h4>
             <br/>
             <p><%= @currentStream.status_description %></p>
-            <div class="progress">
+            <div class="progress progress-striped active hidden-phone">
               <div class="bar" style="width: <%= @currentStream.percent_complete.first %>%;"></div>
             </div>
           </div>
         <% else %>
           <%= render partial: "modules/video_player",
-            locals: {stream: @currentStream.derivatives.first.url.first,
+            locals: {stream: @currentStream.derivatives.first.tokenized_url(current_user.id),
                    mimetype: @currentStream.derivatives.first.streaming_mime_type,
                    mediapackage_id: @currentStream.mediapackage_id} %>
         <%# End of the block if media does exist %>
@@ -50,7 +50,7 @@
       </section>  
     </div>
 
-    <div class="row whitespace">
+    <div class="row-fluid whitespace">
           <h3>Sections</h3>
           <ul class="unstyled" id="section_links">
             <% @masterFiles.each do |master| %>
@@ -62,22 +62,24 @@
                     data: {segment: master.pid},
                     class: (master.pid == @currentStream.pid ? 'current-stream' : nil)
                 %>
-                (<%= number_to_human_size(master.size.first) %>)
+                (<%= number_to_human_size(master.size) %>)
               </li>
               <% end %>
           </ul>
     </div>
     
-    <div class="row whitespace">
+    <div class="row-fluid whitespace">
       <h3>Resource description</h3>
       <section id="metadata"><%= render "modules/metadata_display" %></section>
     </div>
         
-    <div class="row">
-      <div id="permalink" class="alert alert-success">
-      <h4 class="alert-heading">Permalink</h4>
-      <p>To share this item with others use the following canonical link</p>
-      <address><%= link_to media_object_url(@mediaobject.pid) %></address>
+    <div class="row-fluid">
+      <div class="span8">
+        <div id="permalink" class="alert alert-success">
+        <h4 class="alert-heading">Permalink</h4>
+        <p>To share this item with others use the following canonical link</p>
+        <address><%= link_to media_object_url(@mediaobject.pid) %></address>
+      </div>
     </div>
   </div>
 </div>

@@ -2,17 +2,24 @@
 require 'blacklight/catalog'
 
 class CatalogController < ApplicationController  
-
   include Blacklight::Catalog
-
   # Extend Blacklight::Catalog with Hydra behaviors (primarily editing).
   include Hydra::Controller::ControllerBehavior
 
   # These before_filters apply the hydra access controls
   before_filter :enforce_access_controls
-#  before_filter :enforce_viewing_context_for_show_requests, :only=>:show
+  # before_filter :enforce_viewing_context_for_show_requests, :only=>:show
+  
+  # Catch exceptions when you try to reference an object that doesn't exist.
+  # Attempt to resolve it to a close match if one exists and offer a link to
+  # the show page for that item. Otherwise ... nothing!
+  rescue_from ActiveFedora::ObjectNotFoundError do |exception|
+    render '/errors/unknown_pid', status: 404 
+  end
+
   # This applies appropriate access controls to all solr queries
   solr_search_params_logic << :add_access_controls_to_solr_params
+  
   # This filters out objects that you want to exclude from search results, like FileAssets
   solr_search_params_logic << :exclude_unwanted_models
 
@@ -221,70 +228,8 @@ class CatalogController < ApplicationController
     end
   end
 
-  def show
-    # Add robust error handling in case the ID does not exist. There may be
-    # a better way of tying into Rails' default error handling but that will
-    # first require digging into the ActiveFedora::ObjectNotFoundError class
-    # to see its inheritance tree
-    if not MediaObject.exists? params[:id]
-      raise ActionController::RoutingError.new 'Object could not be located'
-    end
-
-    @mediaobject = MediaObject.find(params[:id])
-
-    @masterFiles = load_master_files
-    @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
-
-    respond_to do |format| 
-      # The flash notice is only set if you are returning HTML since it makes no
-      # sense in an AJAX context (yet)
-      format.html do
-        if (not @masterFiles.empty? and 
-          @currentStream.blank?)
-          @currentStream = @masterFiles.first
-          flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
-        end
-        render
-      end
-      format.json do
-        render :json => {
-          label: @currentStream.label,
-          stream: @currentStream.derivatives.first.url.first,
-          mimetype: @currentStream.derivatives.first.streaming_mime_type,
-          mediapackage_id: @currentStream.mediapackage_id
-        }
-      end
-    end
-  end
-  
   def layout
     'hydrant'
   end
 
-  protected
-  def load_master_files
-    logger.debug "<< LOAD MASTER FILES >>"
-    logger.debug "<< #{@mediaobject.parts} >>"
-    
-    @mediaobject.parts
-  end
-  
-  # The goal of this method is to determine which stream to provide to the interface
-  # for immediate playback. Eventually this might be replaced by an AJAX call but for
-  # now to update the stream you must do a full page refresh.
-  #
-  # If the stream is not a member of that media object or does not exist at all then
-  # return a nil value that needs to be handled appropriately by the calling code
-  # block
-  def set_active_file(file_pid = nil)
-    unless (@mediaobject.parts.blank? or file_pid.blank?)
-      @mediaobject.parts.each do |part|
-        return part if part.pid == file_pid
-      end
-    end
-      
-    # If you haven't dropped out by this point return an empty item
-    nil 
-  end
-  
 end 

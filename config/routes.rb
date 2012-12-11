@@ -13,12 +13,17 @@ Hydrant::Application.routes.draw do
     match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session
     match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session
   end
+  match "/authorize", to: 'derivatives#authorize'
 
   # My routes go here
   # Routes for subjects and pbcore controller
   #resources :media_objects, except: [:index], as: :media
   #resources :master_files, as: :resources
-  resources :media_objects, except: [:create]
+  resources :media_objects, except: [:create] do
+    member do
+      get 'mobile'
+    end
+  end
   resources :master_files, except: [:show, :new, :index]
   resources :derivatives, only: [:create]
   

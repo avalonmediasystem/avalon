@@ -1,5 +1,8 @@
+require 'hydrant/controller/controller_behavior'
+
 class MediaObjectsController < CatalogController
   include Hydrant::Workflow::WorkflowControllerBehavior
+  include Hydrant::Controller::ControllerBehavior
 
   before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
@@ -7,76 +10,50 @@ class MediaObjectsController < CatalogController
   def new
     logger.debug "<< NEW >>"
     @mediaobject = MediaObject.new(avalon_uploader: user_key)
-    set_default_item_permissions
+    set_default_item_permissions @mediaobject
     # Touch the workflow object to create it by setting the origin
     @mediaobject.workflow.origin = 'web'
     @mediaobject.save(:validate => false)
 
-    redirect_to edit_media_object_path(@mediaobject, step: HYDRANT_STEPS.first.step)
+    redirect_to edit_media_object_path(@mediaobject)
   end
 
-  def edit
-    logger.debug "<< EDIT >>"
-    logger.info "<< Retrieving #{params[:id]} from Fedora >>"
-    
-    @mediaobject = MediaObject.find(params[:id])
+  def custom_edit
     @masterFiles = load_master_files
 
-    @active_step = params[:step] || @mediaobject.workflow.last_completed_step.first
-    logger.debug "<< active_step: #{@active_step} >>"
-    prev_step = HYDRANT_STEPS.previous(@active_step)
-    context = params.merge!({mediaobject: @mediaobject})
-    context = HYDRANT_STEPS.get_step(@active_step).before_step context
-    
-    case @active_step 
-      # When uploading files be sure to get a list of all master files as
-      # well as the list of dropbox accessible files
-      when 'file-upload'
-        @dropbox_files = context[:dropbox_files]
-      when 'preview'
-        @currentStream = set_active_file(params[:content])
-        if (not @masterFiles.blank? and @currentStream.blank?) then
-          @currentStream = @masterFiles.first
-          flash[:notice] = "The stream was not recognized. Defaulting to the first available stream for the resource"
-        end
+    if 'preview' == @active_step 
+      @currentStream = set_active_file(params[:content])
+      if (not @masterFiles.blank? and @currentStream.blank?) then
+        @currentStream = @masterFiles.first
+        flash[:notice] = "The stream was not recognized. Defaulting to the first available stream for the resource"
       end
-
-    unless prev_step.nil? || @mediaobject.workflow.completed?(prev_step.step) 
-      redirect_to edit_media_object_path(@mediaobject)
-      return
-    end
+    end 
   end
-  
-  # TODO: Refactor this to reflect the new code model. This is not the ideal way to
-  #       handle a multi-screen workflow 
-  def update
-    logger.debug "<< UPDATE >>"
-    logger.info "<< Updating the media object (including a PBCore datastream) >>"
+
+  def show
     @mediaobject = MediaObject.find(params[:id])
- 
-    @active_step = params[:step] || @mediaobject.workflow.last_completed_step.first
-    logger.debug "<< active_step: #{@active_step} >>"
-    context = params.merge!({mediaobject: @mediaobject, user: user_key})
-    context = HYDRANT_STEPS.get_step(@active_step).execute context
 
-    unless @mediaobject.errors.empty?
-      report_errors
-    else
-      unless params[:donot_advance] == "true"
-        @mediaobject.workflow.update_status(@active_step)
-	@mediaobject.save(validate: false)
+    @masterFiles = load_master_files
+    @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
 
-        if HYDRANT_STEPS.has_next?(@active_step)
-          @active_step = HYDRANT_STEPS.next(@active_step).step
-        elsif @mediaobject.workflow.published?
-          @active_step = "published"
+    respond_to do |format|
+      # The flash notice is only set if you are returning HTML since it makes no
+      # sense in an AJAX context (yet)
+      format.html do
+       	if (not @masterFiles.empty? and
+          @currentStream.blank?)
+          @currentStream = @masterFiles.first
+          flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
         end
+	render
       end
-      logger.debug "<< ACTIVE STEP => #{@active_step} >>"
-      logger.debug "<< INGEST STATUS => #{@mediaobject.workflow.inspect} >>"
-      respond_to do |format|
-        format.html { (@mediaobject.workflow.published? and @mediaobject.workflow.current?(@active_step)) ? redirect_to(media_object_path(@mediaobject)) : redirect_to(get_redirect_path(@active_step)) }
-        format.json { render :json => nil }
+      format.json do
+        render :json => {
+          label: @currentStream.label,
+	  stream: @currentStream.derivatives.first.tokenized_url(current_user.id),
+          mimetype: @currentStream.derivatives.first.streaming_mime_type,
+          mediapackage_id: @currentStream.mediapackage_id
+        }
       end
     end
   end
@@ -86,33 +63,39 @@ class MediaObjectsController < CatalogController
     flash[:notice] = "#{params[:id]} has been deleted from the system"
     redirect_to root_path
   end
-  
+ 
+  def mobile
+    @mediaobject = MediaObject.find(params[:id])
+    @masterFiles = @mediaobject.parts
+    @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
+
+    render 'mobile', layout: false
+  end
+
   protected
-  def set_default_item_permissions
-    unless @mediaobject.rightsMetadata.nil?
-      @mediaobject.edit_groups = ['archivist']
-      @mediaobject.edit_users = [user_key]
-    end
+
+  def load_master_files
+    logger.debug "<< LOAD MASTER FILES >>"
+    logger.debug "<< #{@mediaobject.parts} >>"
+
+    @mediaobject.parts
   end
-  
-  def report_errors
-    logger.debug "<< Errors found -> #{@mediaobject.errors} >>"
-    logger.debug "<< #{@mediaobject.errors.size} >>" 
-    
-    flash[:error] = "There are errors with your submission. Please correct them before continuing."
-    step = params[:step] || HYDRANT_STEPS.first.template
-    render :edit and return
-  end
-  
-  def get_redirect_path(target)
-    unless HYDRANT_STEPS.last?(params[:step])
-      redirect_path = edit_media_object_path(@mediaobject, step: target)
-    else
-      flash[:notice] = "This resource is now available for use in the system"
-      redirect_path = media_object_path(@mediaobject)
+
+  # The goal of this method is to determine which stream to provide to the interface
+  # for immediate playback. Eventually this might be replaced by an AJAX call but for
+  # now to update the stream you must do a full page refresh.
+  # 
+  # If the stream is not a member of that media object or does not exist at all then
+  # return a nil value that needs to be handled appropriately by the calling code
+  # block
+  def set_active_file(file_pid = nil)
+    unless (@mediaobject.parts.blank? or file_pid.blank?)
+      @mediaobject.parts.each do |part|
+        return part if part.pid == file_pid
+      end
     end
 
-    redirect_path
-  end
-  
+    # If you haven't dropped out by this point return an empty item
+    nil
+  end  
 end

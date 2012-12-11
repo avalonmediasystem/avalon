@@ -18,4 +18,12 @@ module Blacklight::LocalBlacklightHelper
   def render_facet_count(num)
     content_tag("span", t('blacklight.search.facets.count', :number => num), :class => "badge") 
   end
+
+  def link_to_document(doc, opts={:label=>nil, :counter => nil, :results_view => true})
+    opts[:label] ||= blacklight_config.index.show_link.to_sym
+    label = render_document_index_label doc, opts
+    name = document_partial_name(doc)
+    url = name.pluralize + "/" + doc["id"]
+    link_to label, url, { :'data-counter' => opts[:counter] }.merge(opts.reject { |k,v| [:label, :counter, :results_view].include? k })
+  end
 end

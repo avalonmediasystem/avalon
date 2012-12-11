@@ -16,16 +16,21 @@
     <div class="row-fluid whitespace">
       <section id="player">        
         <% if @masterFiles.blank? %>
-          <div class="well">
-            <p>No sections are associated with this item</p>
+          <div class="alert">
+            <p>No media is associated with this item</p>
           </div>
         <% else if @currentStream.derivatives.blank? %>
-            <div class="well">
-              <p>Media files are being processed</p>
+          <div class="alert <%= @currentStream.status_code.first == 'FAILED' ? 'alert-error' : 'alert-info' %>">
+            <h4>Conversion Process</h4>
+            <br/>
+            <p><%= @currentStream.status_description %></p>
+            <div class="progress progress-striped active">
+              <div class="bar" style="width: <%= @currentStream.percent_complete.first %>%;"></div>
+            </div>
           </div>
         <% else %>
           <%= render partial: "modules/video_player",
-            locals: {stream: @currentStream.derivatives.first.url.first,
+            locals: {stream: @currentStream.derivatives.first.tokenized_url(current_user.id),
                    mimetype: @currentStream.derivatives.first.streaming_mime_type,
                    mediapackage_id: @currentStream.mediapackage_id} %>
         <%# End of the block if media does exist %>
@@ -37,7 +42,9 @@
                 <%# If the label has not been set use the file name as a default %>
                 <%=
                   link_to stream_label_for(master),
-                    media_object_path(@mediaobject, {content: master.pid}),
+                    edit_media_object_path(@mediaobject, 
+                      {content: master.pid,
+                       step: 'preview'}),
                     data: {segment: master.pid},
                     class: (master.pid == @currentStream.pid ? 'current-stream' : nil)
                 %>

@@ -2,7 +2,7 @@ class Ability
 	include CanCan::Ability
 	include Hydra::Ability
 
-	def create_permissions(user, session)
+	def create_permissions(user=nil, session=nil)
 		if @user_groups.include? "archivist"
 			can :manage, MediaObject
 			can :manage, MasterFile
@@ -13,17 +13,21 @@ class Ability
 		end
 	end
 
-  def custom_permissions(user, session)
+  def custom_permissions(user=nil, session=nil)
     if @user_groups.exclude? "archivist"
       cannot :read, MediaObject do |mediaobject|
         (cannot? :read, mediaobject.pid) || 
           ((not mediaobject.is_published?) && 
-           (not can_read_unpublished mediaobject, user))
+           (not can_read_unpublished(mediaobject)))
       end
+    end
+   
+    can :read, Derivative do |derivative|
+      can? :read, derivative.masterfile.mediaobject
     end
   end
 
-  def can_read_unpublished(mediaobject, current_user)
-    current_user.username == mediaobject.avalon_uploader || @user_groups.include?("archivist")
+  def can_read_unpublished(mediaobject)
+    @user.username == mediaobject.avalon_uploader || @user_groups.include?("archivist")
   end  
 end

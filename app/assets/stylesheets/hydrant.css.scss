@@ -1,30 +1,24 @@
-@import 'bootstrap';
- 
+@import "bootstrap";
+@import "bootstrap-responsive";
+
 /**
- * Tweak the modules so that there is some space between items in the
- * definition lists
- * 
- * A little quick and dirty but it can be cleaned up later. Use 18px or the defined
- * line height to keep things flowing nicely in the grid instead of arbitrary gaps
+ * Override the default behaviour in Bootstrap so that the container is not 
+ * pushed down the page
  */
 .whitespace {
-  margin-bottom: 18px;
+  margin-bottom: $baseLineHeight;
 }
 
 /** Use half of a line height for a more subtle offset */
 .whitespace-half {
-  margin-bottom: 9px;
+  margin-bottom: $baseLineHeight/2;
 }
 
 dd {
-  margin-bottom: 18px;
+  margin-bottom: $baseLineHeight;
 }
 
-// Custom markup begins here
-header .logo {
-  padding-right: 30px;
-}
-
+/* Custom markup begins here */
 .filelist.nav-stacked > li > a {
   max-width: 173px;
 }
@@ -83,6 +77,7 @@ header .logo {
 
 .logo img {
   border-radius: 9px;
+  max-width: 100%;
 }
 
 ul.login {
@@ -118,10 +113,6 @@ ul.login img.logo {
   overflow: hidden;
 }
 
-.result-thumb { 
-  width: 164px; 
-}
-
 footer {
   margin-top: 9px;
   padding-top: 18px;
@@ -153,7 +144,6 @@ footer li:first-child:before {
   pointer-events: none !important;
 }
 
-
 a.current-stream {
   &:link { @hidden-disabled-link }
   &:hover { @hidden-disabled-link }
@@ -169,3 +159,73 @@ a.current-stream {
 tr.active-false td {
   color: grey;
 }
+
+/**
+ * Components for navigation wizard. Copied from the LESS source so
+ * might need some tweaking to work right
+ */
+ .nav-wizard {
+}
+
+.nav-wizard > li > a:hover {
+  background: transparent;
+}
+
+.nav-wizard > li {  
+  padding: $baseLineHeight/2;
+  margin-bottom: $baseLineHeight;
+  text-align: left;
+  @include border-radius(4px);
+
+  background-color: $grayLighter;
+  border: $gray;
+  color: $grayDarker;
+}
+
+.nav-wizard > li.nav-success {
+  background-color: $successBackground;
+  border-color: $successBorder;
+  color: $successText;
+}
+
+.nav-wizard > li.nav-info {
+  background-color: $infoBackground;
+  border-color: $infoBorder;
+  color: $infoText;
+}
+
+.nav-wizard .step {
+  font-size: 250%;
+  width: 1em;
+  float: left;
+  margin-right: 0.5em;
+  margin-bottom: $baseLineHeight/2;
+}
+
+/**
+ * Until media-object works right in bootstrap add some custom overrides
+ */
+.result {
+  width: 100%;
+}
+
+.result img.result-thumbnail {
+  max-width: $gridColumnWidth;
+  min-width: $gridColumnWidth/2;
+  padding: 0 $baseLineHeight $gridColumnWidth/2 0;
+}
+
+.result .result-heading {
+  font-weight: bold;
+}
+
+.result .result-body {
+  color: $gray;
+}
+
+
+
+
+
+
+

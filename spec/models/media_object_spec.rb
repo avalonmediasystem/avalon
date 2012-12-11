@@ -4,17 +4,17 @@ describe MediaObject do
   describe "Required metadata is present" do
     it "should have no errors on creator if creator present" do
       mo = MediaObject.new
-      mo.update_attribute(:creator, 'John Doe')
+      mo.update_attribute_in_metadata(:creator, 'John Doe')
       mo.should have(0).errors_on(:creator)
     end
     it "should have no errors on title if title present" do
       mo = MediaObject.new
-      mo.update_attribute(:main_title, 'Title')
+      mo.update_attribute_in_metadata(:title, 'Title')
       mo.should have(0).errors_on(:title)
     end
     it "should have no errors on date_created if date_created present" do
       mo = MediaObject.new
-      mo.update_attribute(:date_created, '2012-12-12')
+      mo.update_attribute_in_metadata(:date_created, '2012-12-12')
       mo.should have(0).errors_on :date_created
     end
     it "should have errors if requied fields are missing" do
@@ -25,9 +25,9 @@ describe MediaObject do
     end
     it "should have errors if required fields are empty" do
       mo = MediaObject.new
-      mo.update_attribute :creator, ''
-      mo.update_attribute :main_title, ''
-      mo.update_attribute :date_created, ''
+      mo.update_attribute_in_metadata :creator, ''
+      mo.update_attribute_in_metadata :title, ''
+      mo.update_attribute_in_metadata :date_created, ''
 
       mo.should have(1).errors_on(:creator)
       mo.should have(1).errors_on(:title)
@@ -40,7 +40,7 @@ describe MediaObject do
     it "should update the contributors field" do
       load_fixture 'hydrant:electronic-resource'
       mo = MediaObject.find 'hydrant:electronic-resource'
-      mo.update_attribute :contributor, 'Updated contributor'
+      mo.update_attribute_in_metadata :contributor, 'Updated contributor'
       mo.save
 
       mo.contributor.length.should == 1

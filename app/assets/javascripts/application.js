@@ -15,11 +15,16 @@
 //= require fix_console
 //= require jquery
 //= require jquery_ujs
-//= require twitter/bootstrap
 //= require blacklight/blacklight
-//
-// Required by Hydra
-//= require 'jquery.ui.datepicker.js'      
+
+// Let's be selective on which modules we include instead of going down the 
+// kitchen sink route. Even some of these may not be needed down the road.
+//= require bootstrap-dropdown
+//= require bootstrap-transition
+//= require bootstrap-collapse
+//= require bootstrap-modal
+//= require bootstrap-typeahead
+//= require bootstrap-button
 //
 // Required by Blacklight
 //= require jquery-ui

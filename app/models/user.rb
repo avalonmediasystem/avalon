@@ -12,6 +12,8 @@ class User < ActiveRecord::Base
   attr_accessible :username, :uid, :provider
   attr_accessible :email, :guest
   
+  delegate :can?, :cannot?, :to => :ability
+
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
   # the account. 
@@ -54,4 +56,7 @@ class User < ActiveRecord::Base
     user
   end
 
+  def ability
+    @ability ||= Ability.new(self)
+  end
 end
