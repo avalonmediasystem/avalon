@@ -64,9 +64,8 @@ class Derivative < ActiveFedora::Base
     h.hexdigest
   end
 
-  def tokenized_url(token)
-    #uri = URI.parse(url.first)
-    uri = streaming_url
+  def tokenized_url(token, is_mobile=false)
+    uri = streaming_url(is_mobile)
     "#{uri.to_s}?token=#{token}&pid=#{pid}&hash=#{url_hash}"
   end      
 
@@ -79,6 +78,10 @@ class Derivative < ActiveFedora::Base
     
       extension.gsub!(/\./, '')
       stream.gsub!(/vod\//, "vod/#{extension}:") unless stream.match('vod/mp4:')
+      if (is_mobile)
+        stream.gsub!('vod', 'hls-vod')
+        stream.gsub!('rtmp://', 'http://')
+      end
 
       logger.debug "currentStream value - #{stream}"
       stream
