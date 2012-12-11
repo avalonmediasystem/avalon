@@ -8,17 +8,9 @@
 
     <%# Here comes the hack to HTTP live stream. This naively assumes that
         you are using a MP4 live stream instead of FLV %>
-    <% stream_location = @currentStream.derivatives.first.url.first
-       stream_location.gsub!('rtmp', 'http')
-       stream_location.gsub!('mp4:', '')
-       stream_location.gsub!('vod', 'hds-vod')
-       stream_location << '.m3u8'
-         
-       mp4_version = stream_location 
-       ogg_version = mp4_version.gsub!('\.mp4', '.ogg')
-     %>
+        <% stream = @currentStream.derivatives.streaming_url('mobile') %>
     <video width="640" height="480" controls="controls">
-      <source src="<%= mp4_version %>" type="video/mp4" %>
+      <source src="<%= stream %>" type="video/mp4" %>
       Your browser does not support HTML5 video (MPEG4)
     </video>
   </body>
