@@ -76,6 +76,8 @@ class Derivative < ActiveFedora::Base
       # after the application in the URL
       extension = File.extname(url.first)
       stream = url.first.gsub!(/#{extension}$/, '') 
+    
+      extension.gsub!(/\./, '')
       stream.gsub!(/vod\//, "vod/#{extension}:") unless stream.match('vod/mp4:')
 
       logger.debug "currentStream value - #{stream}"
