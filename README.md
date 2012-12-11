@@ -1,7 +1,7 @@
 # Avalon Media System
 [Something about the purpose of the project]
 
-For more information visit http://wiki.dlib.indiana.edu/VarVideo
+For more information visit http://wiki.dlib.indiana.edu/display/VarVideo
 
 # Getting started:
 
