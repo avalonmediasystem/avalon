@@ -1,3 +1,8 @@
+# Avalon Media System
+[Something about the purpose of the project]
+
+For more information visit http://wiki.dlib.indiana.edu/VarVideo
+
 # Getting started:
 
 * ```git submodule init```
