@@ -69,7 +69,7 @@ class Derivative < ActiveFedora::Base
     "#{uri.to_s}?token=#{token}&pid=#{pid}&hash=#{url_hash}"
   end      
 
-  def streaming_url
+  def streaming_url(is_mobile=false)
       # We need to tweak the RTMP stream to reflect the right format for AMS.
       # That means extracting the extension from the end and placing it just
       # after the application in the URL
