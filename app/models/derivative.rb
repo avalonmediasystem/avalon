@@ -69,15 +69,20 @@ class Derivative < ActiveFedora::Base
     "#{uri.to_s}?token=#{token}&pid=#{pid}&hash=#{url_hash}"
   end      
 
-  def streaming_url(is_mobile=false)
+  def streaming_url(is_mobile=false, format='other')
       # We need to tweak the RTMP stream to reflect the right format for AMS.
       # That means extracting the extension from the end and placing it just
       # after the application in the URL
       extension = File.extname(url.first).gsub!(/\./, '')
       stream = url.first
       
+      puts 'Format => #{format}'
+      
       if (is_mobile)
         stream.gsub!(/vod\/(mp4:)?/, 'hls-vod/')
+        if format == 'audio'
+          stream.gsub!('hls-vod/', 'hls-vod/audio-only/')
+        end
         stream.gsub!('rtmp://', 'http://')
         stream << '.m3u8'
       else
