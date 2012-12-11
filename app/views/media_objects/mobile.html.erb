@@ -8,9 +8,10 @@
 
     <%# Here comes the hack to HTTP live stream. This naively assumes that
         you are using a MP4 live stream instead of FLV %>
-        <% format = case 'Moving image'
+        <% format = case @currentStream.media_type
+            when 'Moving image'
              'video'
-            case 'Sound'
+            when 'Sound'
              'audio'
            else
              'other'
