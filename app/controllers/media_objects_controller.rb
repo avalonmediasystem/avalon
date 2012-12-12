@@ -22,12 +22,13 @@ class MediaObjectsController < CatalogController
     @masterFiles = load_master_files
 
     if 'preview' == @active_step 
-      @currentStream = set_active_file(params[:content])
-      if (not @masterFiles.blank? and @currentStream.blank?) then
-        @currentStream = @masterFiles.first
-        flash[:notice] = "The stream was not recognized. Defaulting to the first available stream for the resource"
-      end
-    end 
+        @currentStream = set_active_file(params[:content])
+        if (not @masterFiles.blank? and @currentStream.blank?) then
+          @currentStream = @masterFiles.first
+          flash[:notice] = "The stream was not recognized. Defaulting to the first available stream for the resource"
+        end
+        @token = StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
+    end
   end
 
   def show
@@ -35,6 +36,7 @@ class MediaObjectsController < CatalogController
 
     @masterFiles = load_master_files
     @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
+    @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
 
     respond_to do |format|
       # The flash notice is only set if you are returning HTML since it makes no
@@ -45,15 +47,10 @@ class MediaObjectsController < CatalogController
           @currentStream = @masterFiles.first
           flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
         end
-	render
+        render
       end
       format.json do
-        render :json => {
-          label: @currentStream.label,
-	  stream: @currentStream.derivatives.first.tokenized_url(current_user.id),
-          mimetype: @currentStream.derivatives.first.streaming_mime_type,
-          mediapackage_id: @currentStream.mediapackage_id
-        }
+        render :json => @currentStream.stream_details(@token)
       end
     end
   end

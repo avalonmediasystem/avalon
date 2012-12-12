@@ -1,0 +1,60 @@
+<Application>
+	<JSEngine>
+		<ApplicationObject>
+			<config>
+				<avalonAuthUrl>${AVALON.AUTH_URL}</avalonAuthUrl>
+			</config>
+		</ApplicationObject>
+	</JSEngine>
+	
+	<StreamManager>
+		<VirtualDirectory>
+      <!-- Specifies application specific virtual directory mapping for recorded streams.   -->
+			<Streams>/;${AVALON.STREAM_PATH}</Streams>
+      
+		</VirtualDirectory>
+	</StreamManager>
+	
+	
+	
+	<!-- Settings specific to runtime script engine memory -->
+	<ScriptEngine>
+		<!-- This specifies the max size (Kb.) the runtime can grow to before -->
+		<!-- garbage collection is performed.                                 -->
+		<RuntimeSize>20480</RuntimeSize>
+	</ScriptEngine>
+
+	
+	<Client>
+		<Bandwidth>
+			<!-- Specified in bytes/sec -->
+			<ServerToClient>2500000</ServerToClient>
+			<!-- Specified in bytes/sec -->
+			<ClientToServer>2500000</ClientToServer>
+		</Bandwidth>
+				
+		<MsgQueue>
+			<Live>
+				<!-- Drop live audio if audio q exceeds time specified. time in milliseconds -->
+				<MaxAudioLatency>2000</MaxAudioLatency>
+				<!-- Default buffer length in millisecond for live audio and video queue. -->
+				<MinBufferTime>2000</MinBufferTime>
+			</Live>
+			<Recorded>
+				<!-- Default buffer length in millisecond for live audio and video, value cannot be set below this by Flash player. -->
+				<MinBufferTime>2000</MinBufferTime>
+			</Recorded>
+			<Server>
+				<!-- Ratio of the buffer length used by server side stream -->
+				<!-- to live buffer.  The value is between 0 and 1.  To    -->
+				<!-- avoid break up of audio, the ratio should not be more -->
+				<!-- than 0.5 of the live buffer.                          -->
+				<BufferRatio>0.5</BufferRatio>
+			</Server>
+		</MsgQueue>
+	</Client>
+
+
+
+
+</Application>

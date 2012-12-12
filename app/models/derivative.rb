@@ -64,9 +64,9 @@ class Derivative < ActiveFedora::Base
     h.hexdigest
   end
 
-  def tokenized_url(token, is_mobile=false)
-    uri = streaming_url(is_mobile)
-    "#{uri.to_s}?token=#{token}&pid=#{pid}&hash=#{url_hash}"
+  def tokenized_url(token)
+    uri = URI.parse(url.first)
+    "#{uri.to_s}?token=#{mediapackage_id}-#{token}".html_safe
   end      
 
   def streaming_url(is_mobile=false)
@@ -75,9 +75,12 @@ class Derivative < ActiveFedora::Base
       # after the application in the URL
       extension = File.extname(url.first).gsub!(/\./, '')
       stream = url.first
-      
+            
       if (is_mobile)
         stream.gsub!(/vod\/(mp4:)?/, 'hls-vod/')
+        if format == 'audio'
+          stream.gsub!('hls-vod/', 'hls-vod/audio-only/')
+        end
         stream.gsub!('rtmp://', 'http://')
         stream << '.m3u8'
       else
@@ -89,6 +92,17 @@ class Derivative < ActiveFedora::Base
       stream
   end
 
+  def format
+    case masterfile.media_type
+      when 'Moving image'
+        "video"
+      when "Sound"
+        "audio"
+      else
+        "other"
+      end
+  end
+  
   protected
   def refresh_status
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
