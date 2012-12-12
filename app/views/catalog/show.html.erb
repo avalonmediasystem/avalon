@@ -101,11 +101,11 @@
     $(function(){
       if ($("#nojs").length > 0) {
         avalonPlayer("#player", 
-                   { hls: "http://mp4", 
-                     flash: "<%= @currentStream.derivatives.first.tokenized_url(current_user.id) %>",
-                     mimetype: "<%= @currentStream.derivatives.first.streaming_mime_type %>",
-                     mediaPackageId: "<%= @currentStream.mediapackage_id %>" 
-                     format: "<%= @currentStream.derivatives.first.format %>" });
+                   { hls: "<% @currentStreamInfo[:stream_hls] %>", 
+                     flash: "<%= @currentStreamInfo[:stream_flash] %>",
+                     mimetype: "<%= @currentStreamInfo[:mimetype] %>",
+                     mediaPackageId: "<%= @currentStreamInfo[:mediapackage_id] %>", 
+                     format: "<%= @currentStreamInfo[:format] %>" });
       }
     })
   </script>

@@ -124,15 +124,6 @@ class MasterFile < ActiveFedora::Base
     self.save
   end
 
-  def stream_details(token)
-    {
-      label: self.label,
-      stream: self.derivatives.first.tokenized_url(token),
-      mimetype: self.derivatives.first.streaming_mime_type,
-      mediapackage_id: self.mediapackage_id
-    }
-  end
-
   protected
 
   def calculate_percent_complete matterhorn_response

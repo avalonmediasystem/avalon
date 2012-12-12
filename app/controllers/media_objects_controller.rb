@@ -36,21 +36,21 @@ class MediaObjectsController < CatalogController
 
     @masterFiles = load_master_files
     @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
+    @currentStreamInfo = @currentStream.derivatives.first.stream_details(@token)
     @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
 
     respond_to do |format|
       # The flash notice is only set if you are returning HTML since it makes no
       # sense in an AJAX context (yet)
       format.html do
-       	if (not @masterFiles.empty? and
-          @currentStream.blank?)
+       	if (not @masterFiles.empty? and @currentStream.blank?)
           @currentStream = @masterFiles.first
           flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
         end
         render
       end
       format.json do
-        render :json => @currentStream.stream_details(@token)
+        render :json => @currentStreamInfo    
       end
     end
   end

@@ -92,6 +92,17 @@ class Derivative < ActiveFedora::Base
       stream
   end
 
+  def stream_details(token)
+    {
+      label: self.masterfile.label,
+      stream_flash: self.tokenized_url(token, false),
+      stream_hls: self.tokenized_url(token, true),
+      mimetype: self.streaming_mime_type,
+      mediapackage_id: self.masterfile.mediapackage_id,
+      format: self.format
+    }
+  end
+
   def format
     case masterfile.media_type
       when 'Moving image'

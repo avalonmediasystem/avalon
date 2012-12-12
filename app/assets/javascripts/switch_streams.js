@@ -20,8 +20,8 @@
      * to the player
      */
     function refreshStream(stream_info) {
-      var opts = { flash: stream_info.stream, 
-                   hls: stream_info.stream_mobile, 
+      var opts = { flash: stream_info.stream_flash, 
+                   hls: stream_info.stream_hls, 
                    mimetype: stream_info.mimetype,
                    format: stream_info.format };
       avalonPlayer.switchStream(opts);
