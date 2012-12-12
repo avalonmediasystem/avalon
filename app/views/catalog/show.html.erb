@@ -41,6 +41,7 @@
           </div>
         <% else %>
           <div id="nojs">
+            <%# TODO : Come up with a more user friendly error message %>
             <noscript>You don't have Javascript</noscript>
           </div>
         <%# End of the block if media does exist %>
@@ -93,9 +94,11 @@
 <% end %>
 
 <% content_for :page_scripts do %>
-  <%= javascript_include_tag 'switch_streams' %>
-  <%= javascript_include_tag 'swfobject' %>
-  <%= javascript_include_tag 'avalonplayer' %>
+  <%# Since there are no streams if @currentStream is nil then don't bother including any of the following content %>
+  <% if @currentStream.present? and @currentStream.derivatives.any? %>
+    <%= javascript_include_tag 'switch_streams' %>
+    <%= javascript_include_tag 'swfobject' %>
+    <%= javascript_include_tag 'avalonplayer' %>
 
   <script>
     $(function(){
@@ -109,4 +112,5 @@
       }
     })
   </script>
+  <% end %>
 <% end %>

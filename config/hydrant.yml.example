@@ -2,5 +2,17 @@ development:
   dropbox:
     path: '/srv/avalon/dropbox/'
     upload_uri: 'sftp://localhost/srv/avalon/dropbox'
+    username: 'avalon'
+    password: 'avalon'
   matterhorn:
     root: 'http://localhost:8080/'
+    baseApplication: 'avalon'
+test:
+  dropbox:
+    path: '/srv/avalon/dropbox/'
+    upload_uri: 'sftp://localhost/srv/avalon/dropbox'
+    username: 'test'
+    password: 'test'
+  matterhorn:
+    root: 'http://localhost:8080/'
+    baseApplication: 'avalon'
