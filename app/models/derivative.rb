@@ -76,17 +76,18 @@ class Derivative < ActiveFedora::Base
       # after the application in the URL
       extension = File.extname(url.first).gsub!(/\./, '')
       stream = url.first
-            
+      application = Hydrant::Configuration['matterhorn']['baseApplication'] || 'avalon'
+
       if (is_mobile)
-        stream.gsub!(/vod\/(mp4:)?/, 'hls-vod/')
+        stream.gsub!(/#{application}\/(mp4:)?/, 'hls-#{application}/')
         if format == 'audio'
-          stream.gsub!('hls-vod/', 'hls-vod/audio-only/')
+          stream.gsub!('hls-#{application}/', 'hls-#{application}/audio-only/')
         end
         stream.gsub!('rtmp://', 'http://')
         stream << '.m3u8'
       else
         stream.gsub!(/\.#{extension}$/, '') 
-        stream.gsub!(/vod\/(\w+:)?/, "vod/#{extension}:")
+        stream.gsub!(/#{application}\/(\w+:)?/, "#{application}/#{extension}:")
       end
 
       logger.debug "currentStream value - #{stream}"
