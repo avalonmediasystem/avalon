@@ -1,0 +1,16 @@
+#!/bin/bash
+
+while read uri; do
+  saveIFS=$IFS
+  IFS='=&'
+  parm=($uri)
+  IFS=$saveIFS
+  raw=`curl -s "http://192.168.56.1/authorize.txt?token=${parm[1]}"`
+  resp="${raw//[[:space:]]/}"
+  valid=`echo ${parm[1]} | grep ^${resp}`
+  if [ -n "${valid}" ] && [ -n "${resp}" ]; then
+    echo $uri
+  else
+    echo '/avalon/forbidden'
+  fi
+done
