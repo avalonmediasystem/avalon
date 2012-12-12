@@ -36,7 +36,7 @@ class MediaObjectsController < CatalogController
 
     @masterFiles = load_master_files
     @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
-    @token = StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
+    @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
 
     respond_to do |format|
       # The flash notice is only set if you are returning HTML since it makes no
