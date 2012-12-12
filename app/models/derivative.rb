@@ -69,15 +69,13 @@ class Derivative < ActiveFedora::Base
     "#{uri.to_s}?token=#{mediapackage_id}-#{token}".html_safe
   end      
 
-  def streaming_url(is_mobile=false, format='other')
+  def streaming_url(is_mobile=false)
       # We need to tweak the RTMP stream to reflect the right format for AMS.
       # That means extracting the extension from the end and placing it just
       # after the application in the URL
       extension = File.extname(url.first).gsub!(/\./, '')
       stream = url.first
-      
-      puts 'Format => #{format}'
-      
+            
       if (is_mobile)
         stream.gsub!(/vod\/(mp4:)?/, 'hls-vod/')
         if format == 'audio'
@@ -94,6 +92,17 @@ class Derivative < ActiveFedora::Base
       stream
   end
 
+  def format
+    case masterfile.media_type
+      when 'Moving image'
+        "video"
+      when "Sound"
+        "audio"
+      else
+        "other"
+      end
+  end
+  
   protected
   def refresh_status
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
