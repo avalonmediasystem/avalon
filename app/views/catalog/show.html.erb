@@ -100,7 +100,7 @@
   <script>
     $(function(){
       if ($("#nojs").length > 0) {
-        avalonPlayer("#player", 
+        currentPlayer = avalonPlayer("#player", 
                    { hls: "<% @currentStreamInfo[:stream_hls] %>", 
                      flash: "<%= @currentStreamInfo[:stream_flash] %>",
                      mimetype: "<%= @currentStreamInfo[:mimetype] %>",

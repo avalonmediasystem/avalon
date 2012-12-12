@@ -24,7 +24,7 @@
                    hls: stream_info.stream_hls, 
                    mimetype: stream_info.mimetype,
                    format: stream_info.format };
-      avalonPlayer.switchStream(opts);
+      currentPlayer.switchStream(opts);
     }
 
     $(document).ready(function() {
@@ -42,7 +42,7 @@
             $.getJSON(uri[0], uri[1], function(data) {
                 setActiveLabel(data.label);
                 setActiveSection(target.attr('data-segment'));
-                refreshStream(data.stream, data.mediapackage_id);
+                //refreshStream(data.stream, data.mediapackage_id);
                 refreshStream(data);
             });
         });

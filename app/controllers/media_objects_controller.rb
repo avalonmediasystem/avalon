@@ -36,7 +36,7 @@ class MediaObjectsController < CatalogController
 
     @masterFiles = load_master_files
     @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
-    @currentStreamInfo = @currentStream.derivatives.first.stream_details(@token)
+    @currentStreamInfo = @currentStream.derivatives.first.stream_details(@token) rescue nil
     @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
 
     respond_to do |format|
