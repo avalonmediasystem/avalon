@@ -3,8 +3,15 @@
   <h2>Unable to locate that stream. Please try again with a valid identifier</h2>
 </div>
 <% else %>
-<%= render partial: "modules/video_player",
-  locals: {stream: @currentStream.derivatives.first.tokenized_url(current_user.id),
-    mimetype: @currentStream.derivatives.first.streaming_mime_type,
-    mediapackage_id: @currentStream.mediapackage_id} %>
+
+  <script type="text/javascript" src="avalonplayer.js"></script>
+  <script>
+    $(function(){
+      avalonPlayer("#player", 
+                   { hls: "http://domain.com/file.mp4", 
+                     flash: "<%= @currentStream.derivatives.first.tokenized_url(current_user.id) %>",
+                     mimetype: "<%= @currentStream.derivatives.first.streaming_mime_type %>",
+                     mediaPackageId: "<%= @currentStream.mediapackage_id %>" });
+    })
+  </script>
 <% end %>

@@ -40,10 +40,9 @@
             </div>
           </div>
         <% else %>
-          <%= render partial: "modules/video_player",
-            locals: {stream: @currentStream.derivatives.first.tokenized_url(current_user.id, true),
-                   mimetype: @currentStream.derivatives.first.streaming_mime_type,
-                   mediapackage_id: @currentStream.mediapackage_id} %>
+          <div id="nojs">
+            <noscript>You don't have Javascript</noscript>
+          </div>
         <%# End of the block if media does exist %>
         <% end %>
         <% end %>
@@ -95,4 +94,19 @@
 
 <% content_for :page_scripts do %>
   <%= javascript_include_tag 'switch_streams' %>
+  <%= javascript_include_tag 'swfobject' %>
+  <%= javascript_include_tag 'avalonplayer' %>
+
+  <script>
+    $(function(){
+      if ($("#nojs").length > 0) {
+        avalonPlayer("#player", 
+                   { hls: "http://mp4", 
+                     flash: "<%= @currentStream.derivatives.first.tokenized_url(current_user.id) %>",
+                     mimetype: "<%= @currentStream.derivatives.first.streaming_mime_type %>",
+                     mediaPackageId: "<%= @currentStream.mediapackage_id %>" 
+                     format: "<%= @currentStream.derivatives.first.format %>" });
+      }
+    })
+  </script>
 <% end %>

@@ -20,21 +20,11 @@
      * to the player
      */
     function refreshStream(stream_info) {
-      Opencast.Player.doPause();
-      Opencast.Player.setCurrentTime('00:00:00');
-      Opencast.Player.setPlayhead(0);
-      $.getURLParameter = function (name) { 
-        if (name == "id") {
-          return stream_info.mediapackage_id;
-        } else if (name == "mediaUrl1") {
-          return stream_info.stream;
-        } else if (name == "mimetype1") {
-          return stream_info.mimetype;
-        } else { 
-          return origGetURLParameterFn(name);
-        } 
-      }
-      Opencast.Initialize.initme();
+      var opts = { flash: stream_info.stream, 
+                   hls: stream_info.stream_mobile, 
+                   mimetype: stream_info.mimetype,
+                   format: stream_info.format };
+      avalonPlayer.switchStream(opts);
     }
 
     $(document).ready(function() {
