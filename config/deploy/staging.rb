@@ -32,19 +32,19 @@ namespace :deploy do
   end
 
   task :start, :roles => :app do
-    run "cd #{current_release}; rake felix:start jetty:start"
+    run "cd #{current_release}; rake hydrant:services:start"
     #run "cd #{current_release}; rails s -d"
   end
 
   task :stop, :roles => :app do
-    run "cd #{current_release}; rake felix:stop jetty:stop"
+    run "cd #{current_release}; rake hydrant:services:stop"
     #run "kill -9 `pgrep ruby`"
   end
 
   desc "Restart Application"
   task :restart, :roles => :app do
-    run "cd #{current_release}; rake felix:stop jetty:stop"
-    run "cd #{current_release}; rake felix:start jetty:start"
+    run "cd #{current_release}; rake hydrant:services:stop"
+    run "cd #{current_release}; rake hydrant:services:start"
     #run "kill -9 `pgrep ruby`"
     #run "cd #{current_release}; rails s -d"
   end
@@ -74,17 +74,17 @@ namespace :deploy do
   namespace :delayed_job do
     desc "Start delayed_job workers"
     task :start, :roles => :app do
-      run "cd #{current_release}; script/delayed_job -n 2 start "
+      run "cd #{current_release}; rake delayed_job:start "
     end
 
     desc "Stop delayed_job workers"
     task :stop, :roles => :app do
-      run "cd #{current_release}; script/delayed_job stop"
+      run "cd #{current_release}; rake delayed_job:stop"
     end
 
     desc "Stop delayed_job workers"
     task :restart, :roles => :app do
-      run "cd #{current_release}; script/delayed_job stop; script/delayed_job -n 2 start"
+      run "cd #{current_release}; rake delayed_job:restart"
     end
   end
 end
