@@ -74,8 +74,19 @@ class Derivative < ActiveFedora::Base
       # We need to tweak the RTMP stream to reflect the right format for AMS.
       # That means extracting the extension from the end and placing it just
       # after the application in the URL
+
+      # Example input: /avalon/mp4:98285a5b-603a-4a14-acc0-20e37a3514bb/b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3/MVI_0057.mp4
+      regex = %r{^
+        /(.+)             # application (avalon)
+        /(.+:)?           # prefix      (mp4:)
+        ([0-9a-f-]{36})   # media_id    (98285a5b-603a-4a14-acc0-20e37a3514bb)
+        /([0-9a-f-]{36})  # stream_id   (b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3)
+        /(.+?)            # filename    (MVI_0057)
+        (?:\.(.+))?$      # extension   (mp4)
+      }x
+
       uri = URI.parse(url.first)
-      (application, prefix, media_id, stream_id, filename, extension) = uri.path.scan(%r{^/(.+)/(.+:)?([0-9a-f-]{36})/([0-9a-f-]{36})/(.+?)(?:\.(.+))?$}).flatten
+      (application, prefix, media_id, stream_id, filename, extension) = uri.path.scan(regex).flatten
       application = "avalon"
       if (is_mobile)
         application += "/audio-only" if format == 'audio'
