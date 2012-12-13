@@ -32,7 +32,7 @@
 					  donot_advance: 'true', 
 					  format: 'json' },
 				success: function(data) {
-				  $('#ajax_messages').text('Saving to the database').fadeIn(1000).delay(1500).fadeOut(1000);
+				  $('#ajax_messages').removeClass('hidden').hide().text('Saving to the database').fadeIn(500).delay(1500).fadeOut(500);
 				}
 				})
 			}
