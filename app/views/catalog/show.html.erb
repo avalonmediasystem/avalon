@@ -95,16 +95,15 @@
 
 <% content_for :page_scripts do %>
   <%# Since there are no streams if @currentStream is nil then don't bother including any of the following content %>
-  <% if @currentStream.present? and @currentStream.derivatives.any? %>
-    <%= javascript_include_tag 'switch_streams' %>
-    <%= javascript_include_tag 'swfobject' %>
-    <%= javascript_include_tag 'avalonplayer' %>
+  <%= javascript_include_tag 'switch_streams' %>
+  <%= javascript_include_tag 'swfobject' %>
+  <%= javascript_include_tag 'avalonplayer' %>
 
   <script>
     $(function(){
       if ($("#nojs").length > 0) {
         currentPlayer = avalonPlayer("#player", 
-                   { hls: "<% @currentStreamInfo[:stream_hls] %>", 
+                   { hls: "<%= @currentStreamInfo[:stream_hls] %>", 
                      flash: "<%= @currentStreamInfo[:stream_flash] %>",
                      mimetype: "<%= @currentStreamInfo[:mimetype] %>",
                      mediaPackageId: "<%= @currentStreamInfo[:mediapackage_id] %>", 
@@ -112,5 +111,4 @@
       }
     })
   </script>
-  <% end %>
 <% end %>

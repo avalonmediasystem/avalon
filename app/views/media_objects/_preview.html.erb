@@ -21,6 +21,7 @@
           </div>
         <% else if @currentStream.derivatives.blank? %>
           <div class="alert <%= @currentStream.status_code.first == 'FAILED' ? 'alert-error' : 'alert-info' %>">
+
             <h4>Conversion Process</h4>
             <br/>
             <p><%= @currentStream.status_description %></p>
@@ -29,9 +30,15 @@
             </div>
           </div>
         <% else %>
-          <%= render partial: "modules/video_player", locals: @currentStream.stream_details(@token) %>
-        <%# End of the block if media does exist %>
+          <div id="nojs">
+            <%# TODO : Come up with a more user friendly error message %>
+            <noscript>You don't have Javascript</noscript>
+          </div>
         <% end %>
+      </section>
+
+    <div class="row-fluid whitespace">
+        <section>
         <h3>Section(s)</h3>
             <ul class="unstyled">
               <% @masterFiles.each do |master| %>
@@ -67,3 +74,21 @@
   </div>
 </div>
   
+<% content_for :page_scripts do %>
+  <%# Since there are no streams if @currentStream is nil then don't bother including any of the following content %>
+  <%= javascript_include_tag 'swfobject' %>
+  <%= javascript_include_tag 'avalonplayer' %>
+
+  <script>
+    $(function(){
+      if ($("#nojs").length > 0) {
+        currentPlayer = avalonPlayer("#player", 
+                   { hls: "<%= @currentStream.derivatives.first.stream_details(@token)[:stream_hls] %>", 
+                     flash: "<%= @currentStream.derivatives.first.stream_details(@token)[:stream_flash] %>",
+                     mimetype: "<%= @currentStream.derivatives.first.stream_details(@token)[:mimetype] %>",
+                     mediaPackageId: "<%= @currentStream.derivatives.first.stream_details(@token)[:mediapackage_id] %>", 
+                     format: "<%= @currentStream.derivatives.first.stream_details(@token)[:format] %>" });
+      }
+    })
+  </script>
+<% end %>
