@@ -74,24 +74,19 @@ class Derivative < ActiveFedora::Base
       # We need to tweak the RTMP stream to reflect the right format for AMS.
       # That means extracting the extension from the end and placing it just
       # after the application in the URL
-      extension = File.extname(url.first).gsub!(/\./, '')
-      stream = url.first
-      application = Hydrant::Configuration['matterhorn']['baseApplication'] || 'avalon'
-
+      uri = URI.parse(url.first)
+      (application, prefix, media_id, stream_id, filename, extension) = uri.path.scan(%r{^/(.+)/(.+:)?([0-9a-f-]{36})/([0-9a-f-]{36})/(.+?)(?:\.(.+))?$}).flatten
+      application = "avalon"
       if (is_mobile)
-        stream.gsub!(/#{application}\/(mp4:)?/, 'hls-#{application}/')
-        if format == 'audio'
-          stream.gsub!('hls-#{application}/', 'hls-#{application}/audio-only/')
-        end
-        stream.gsub!('rtmp://', 'http://')
-        stream << '.m3u8'
+        application += "/audio-only" if format == 'audio'
+        uri.scheme = 'http'
+        uri.path = "/#{application}/#{media_id}/#{stream_id}/#{filename}.#{extension}.m3u8"
       else
-        stream.gsub!(/\.#{extension}$/, '') 
-        stream.gsub!(/#{application}\/(\w+:)?/, "#{application}/#{extension}:")
+        uri.path = "/#{application}/#{extension}:#{media_id}/#{stream_id}/#{filename}"
       end
 
-      logger.debug "currentStream value - #{stream}"
-      stream
+      logger.debug "currentStream value - #{uri.to_s}"
+      uri.to_s
   end
 
   def stream_details(token)
