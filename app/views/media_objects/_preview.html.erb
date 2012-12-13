@@ -82,12 +82,12 @@
   <script>
     $(function(){
       if ($("#nojs").length > 0) {
-        currentPlayer = avalonPlayer("#player", 
-                   { hls: "<%= @currentStream.derivatives.first.stream_details(@token)[:stream_hls] %>", 
-                     flash: "<%= @currentStream.derivatives.first.stream_details(@token)[:stream_flash] %>",
-                     mimetype: "<%= @currentStream.derivatives.first.stream_details(@token)[:mimetype] %>",
-                     mediaPackageId: "<%= @currentStream.derivatives.first.stream_details(@token)[:mediapackage_id] %>", 
-                     format: "<%= @currentStream.derivatives.first.stream_details(@token)[:format] %>" });
+        currentPlayer = avalonPlayer("#player",
+                   { hls: "<%= @currentStreamInfo[:stream_hls] %>",
+                     flash: "<%= @currentStreamInfo[:stream_flash] %>",
+                     mimetype: "<%= @currentStreamInfo[:mimetype] %>",
+                     mediaPackageId: "<%= @currentStreamInfo[:mediapackage_id] %>",
+                     format: "<%= @currentStreamInfo[:format] %>" });
       }
     })
   </script>
