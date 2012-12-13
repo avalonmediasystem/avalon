@@ -4,3 +4,7 @@ development:
     upload_uri: 'sftp://localhost/srv/avalon/dropbox'
   matterhorn:
     root: 'http://localhost:8080/'
+test:
+  dropbox:
+    path: ''
+    upload_uri: ''
