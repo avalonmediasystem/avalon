@@ -11,7 +11,7 @@
 <% else %>
 	<table class="table table-striped" id="streams">
 	<thead>
-	  <th></th>
+	  <th>&nbsp;</th>
 	  <th>Type</th>
 	  <th>Title</th>
 	  <th>File name</th>
@@ -21,10 +21,7 @@
 		<% @masterFiles.each do |masterfile| %>
       <tr data-segment="<%= masterfile.pid %>">
 		<td>
-			<div class="noshow">
-				<i class="icon-arrow-up"></i>
-				<i class="icon-arrow-down"></i> 
-			</div>
+				<i class="icon-th-list"></i>
 		</td>
         <td>
                           <% case masterfile.media_type
