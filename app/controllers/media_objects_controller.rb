@@ -19,7 +19,9 @@ class MediaObjectsController < CatalogController
   end
 
   def custom_edit
-    @masterFiles = load_master_files
+    if ['preview', 'structure', 'file-upload'].include? @active_step
+      @masterFiles = load_master_files
+    end
 
     if 'preview' == @active_step 
       @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first

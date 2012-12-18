@@ -18,40 +18,6 @@ dd {
   margin-bottom: $baseLineHeight;
 }
 
-/* Custom markup begins here */
-.filelist {
-  .nav-stacked { 
-    > li > a{
-      max-width: 173px;
-    }
-  }
-
-  .nav-pills {
-    min-height: 30px;
-  }
-
-  li {
-    width: 100%;
-    cursor: move;
-    
-    span {
-     display: block;
-     max-width: 130px;
-     padding: 8px 12px;
-     margin: 0 2px;
-     @include border-radius(5px);
-   }
-
-    span:hover {
-      background-color: silver;
-    }
-  }
-}
-
-#tobecloned {
-  display: none;
-}
-
 .label { 
   height: 2.5em; 
   line-height: 1.2em; 
