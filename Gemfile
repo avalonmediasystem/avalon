@@ -30,6 +30,7 @@
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise'
   #gem 'devise-guests'
+  gem 'haml'
 
   gem "jettywrapper"
   gem 'rubyhorn', :git => "https://github.com/variations-on-video/rubyhorn.git"
@@ -78,6 +79,7 @@
     gem 'capistrano-unicorn', :require => false
     gem 'rb-fsevent', '~> 0.9.1'
     gem 'debugger'
+    gem 'hpricot' # for html2haml
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do
@@ -85,4 +87,7 @@
     gem "headless"
     gem "rspec_junit_formatter"
     gem 'simplecov'   
+    gem 'simplecov'
+    gem 'email_spec'
+    gem 'capybara'   
   end
