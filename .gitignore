@@ -32,7 +32,6 @@ spec/dummy/db/*.sqlite3
 spec/dummy/log/*.log
 spec/dummy/tmp/
 
-
 ## PROJECT::GENERAL
 coverage
 rdoc
@@ -40,13 +39,12 @@ pkg
 /.bundle
 /.rvmrc
 db/*.sqlite3
-log/*.log
-tmp/*.log
+**/*.log
+**/*.log.*
 tmp/pids/
 tmp/test_app/
 
 *.sqlite3
-*.log
 *~
 *.swp
 
