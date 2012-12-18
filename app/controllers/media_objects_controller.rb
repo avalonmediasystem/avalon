@@ -9,9 +9,7 @@ class MediaObjectsController < CatalogController
    
   def new
     logger.debug "<< NEW >>"
-    @mediaobject = MediaObject.new(avalon_uploader: user_key)
-    set_default_item_permissions @mediaobject
-    # Touch the workflow object to create it by setting the origin
+    @mediaobject = initialize_media_object(user_key)
     @mediaobject.workflow.origin = 'web'
     @mediaobject.save(:validate => false)
 
@@ -71,6 +69,13 @@ class MediaObjectsController < CatalogController
     @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
 
     render 'mobile', layout: false
+  end
+
+  def initialize_media_object(uploader)
+    mediaobject = MediaObject.new(avalon_uploader: uploader)
+    set_default_item_permissions mediaobject
+
+    mediaobject
   end
 
   protected
