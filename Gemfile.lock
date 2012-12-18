@@ -31,7 +31,7 @@ GIT
 
 GIT
   remote: https://github.com/variations-on-video/hydrant-batch.git
-  revision: 634a6188541f01e15bc2ba2db00cbcd41bf27d92
+  revision: a10be3a013ab721884d7c5b878e3f66235c50466
   specs:
     hydrant-batch (0.0.1)
       activesupport
@@ -88,17 +88,17 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.2.1)
-    active-fedora (5.2.1)
+    active-fedora (5.1.0)
       activeresource (>= 3.0.0)
       activesupport (>= 3.0.0)
       builder (~> 3.0.0)
       deprecation
       mediashelf-loggable
-      om (~> 1.8.0)
+      om (~> 1.8.0.rc1)
       rdf
       rdf-rdfxml (~> 0.3.8)
       rsolr
-      rubydora (~> 1.0)
+      rubydora (~> 0.8.0)
       solrizer (~> 2.0.0)
     activemodel (3.2.9)
       activesupport (= 3.2.9)
@@ -209,27 +209,27 @@ GEM
     hike (1.2.1)
     hooks (0.2.2)
     httpauth (0.2.0)
-    hydra-access-controls (5.0.0)
+    hydra-access-controls (5.0.1)
       active-fedora
       activesupport
       blacklight
       cancan
       deprecation
-    hydra-core (5.0.0)
+    hydra-core (5.0.1)
       RedCloth (= 4.2.9)
       active-fedora (~> 5.0)
       blacklight (~> 4.0)
       block_helpers
       deprecation (>= 0.0.5)
       devise
-      hydra-access-controls (= 5.0.0)
+      hydra-access-controls (= 5.0.1)
       hydra-mods (>= 0.0.6)
       jquery-rails
       rails (~> 3.2.3)
       sanitize
-    hydra-head (5.0.0)
-      hydra-access-controls (= 5.0.0)
-      hydra-core (= 5.0.0)
+    hydra-head (5.0.1)
+      hydra-access-controls (= 5.0.1)
+      hydra-core (= 5.0.1)
       rails (>= 3.2.6)
     hydra-mods (0.0.6)
       active-fedora (> 4.1)
@@ -364,8 +364,8 @@ GEM
       rspec-core (~> 2.12.0)
       rspec-expectations (~> 2.12.0)
       rspec-mocks (~> 2.12.0)
-    rspec-core (2.12.1)
-    rspec-expectations (2.12.0)
+    rspec-core (2.12.2)
+    rspec-expectations (2.12.1)
       diff-lcs (~> 1.1.3)
     rspec-mocks (2.12.0)
     rspec-rails (2.12.0)
@@ -380,7 +380,7 @@ GEM
       rspec (~> 2.0)
       rspec-core (!= 2.12.0)
     ruby-ole (1.2.11.6)
-    rubydora (1.0.0)
+    rubydora (0.8.0)
       activemodel
       activesupport
       deprecation
@@ -491,6 +491,7 @@ DEPENDENCIES
   red5wrapper!
   rspec-rails (>= 2.9.0)
   rspec_junit_formatter
+  rubydora (< 1.0.0)
   rubyhorn!
   rvm-capistrano
   sass-rails (~> 3.2.3)

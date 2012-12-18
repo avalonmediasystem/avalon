@@ -6,6 +6,7 @@
   gem 'blacklight', '~> 4.0.0' 
   gem 'om', '~>1.8.0'
   gem 'hydra-head', '~> 5.0.0'
+  gem 'rubydora', '< 1.0.0'
 
   gem 'hydrant-workflow',
     git: 'https://github.com/variations-on-video/hydrant-workflow.git'

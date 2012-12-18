@@ -1,6 +1,6 @@
 namespace :hydrant do
   namespace :services do
-    services = ["jetty", "felix"]
+    services = ["jetty", "felix", "delayed_job"]
     desc "Start Hydrant's dependent services"
     task :start do
       services.map { |service| Rake::Task["#{service}:start"].invoke }
@@ -24,13 +24,5 @@ namespace :hydrant do
      FileUtils.rm(Dir['public/javascripts/cache/[^.]*'])
      FileUtils.rm(Dir['public/stylesheets/cache/[^.]*'])
    end
-  end
-  
-  namespace :batch do 
-    desc "Starts Hydrant batch ingest"
-    task :ingest => :environment do
-      require 'hydrant/batch_ingest'
-      Hydrant::Batch.ingest
-    end
-  end
+  end  
 end
