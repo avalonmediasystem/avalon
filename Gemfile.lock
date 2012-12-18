@@ -88,7 +88,7 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.2.1)
-    active-fedora (5.0.0)
+    active-fedora (5.1.0)
       activeresource (>= 3.0.0)
       activesupport (>= 3.0.0)
       builder (~> 3.0.0)
@@ -98,7 +98,7 @@ GEM
       rdf
       rdf-rdfxml (~> 0.3.8)
       rsolr
-      rubydora (~> 0.5.13)
+      rubydora (~> 0.8.0)
       solrizer (~> 2.0.0)
     activemodel (3.2.9)
       activesupport (= 3.2.9)
@@ -214,8 +214,6 @@ GEM
     hike (1.2.1)
     hooks (0.2.2)
     httpauth (0.2.0)
-    httpi (2.0.0)
-      rack
     hydra-access-controls (5.0.1)
       active-fedora
       activesupport
@@ -388,7 +386,7 @@ GEM
       rspec (~> 2.0)
       rspec-core (!= 2.12.0)
     ruby-ole (1.2.11.6)
-    rubydora (0.5.13)
+    rubydora (0.8.0)
       activemodel
       activesupport
       deprecation
