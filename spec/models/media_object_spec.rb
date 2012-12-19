@@ -137,4 +137,19 @@ describe MediaObject do
       mediaObject.workflow.last_completed_step.should == ['']
     end
   end
+
+  describe '#finished_processing?' do
+    it 'returns true if the statuses indicate processing is finished' do
+      media_object = MediaObject.new
+      media_object.parts << MasterFile.new(status_code: ['STOPPED'])
+      media_object.parts << MasterFile.new(status_code: ['SUCCEEDED'])
+      media_object.finished_processing?.should be_true
+    end
+    it 'returns true if the statuses indicate processing is not finished' do
+      media_object = MediaObject.new
+      media_object.parts << MasterFile.new(status_code: ['STOPPED'])
+      media_object.parts << MasterFile.new(status_code: ['RUNNING'])
+      media_object.finished_processing?.should be_false
+    end
+  end
 end

@@ -5,20 +5,23 @@ describe 'Batch Ingest Email' do
   include EmailSpec::Helpers
   include EmailSpec::Matchers
 
-  it 'has an error if media object is nil' do
-    @email = BatchIngestMailer.status_email( nil )
+  it 'has an error if media object has not been set' do
+    ingest_batch = IngestBatch.create
+    @email = BatchIngestMailer.status_email( ingest_batch.id  )
     @email.should have_body_text('There was an error.  It appears no files have been submitted')
   end
 
-  it 'has an error if media object is an empty array' do
-    @email = BatchIngestMailer.status_email( [] )
+  it 'has an error if there are no media objects present' do
+    @ingest_batch = IngestBatch.create( media_object_ids: [])
+    @email = BatchIngestMailer.status_email( @ingest_batch.id )
     @email.should have_body_text('There was an error.  It appears no files have been submitted')
   end
 
   it 'shows the title of one media object' do
     load_fixture 'hydrant:video-segment'
     media_object = MediaObject.all.first
-    @email = BatchIngestMailer.status_email([media_object])
+    ingest_batch = IngestBatch.create(media_object_ids: [media_object.id])
+    @email = BatchIngestMailer.status_email(ingest_batch.id)
     @email.should have_body_text(media_object.title)
   end
 
@@ -36,7 +39,11 @@ describe 'Batch Ingest Email' do
 
     media_object.parts << master_file
     
-    email = BatchIngestMailer.status_email([media_object])
+    media_object.save(validate: false)
+
+    ingest_batch = IngestBatch.create( media_object_ids: [media_object.id])
+
+    email = BatchIngestMailer.status_email( ingest_batch.id )
     page = Capybara::Node::Simple.new(email.body.to_s)
     base_selector = 'table > tbody > tr:nth-child(1) > '
 

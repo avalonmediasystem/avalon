@@ -100,6 +100,10 @@ class MediaObject < ActiveFedora::Base
     not self.avalon_publisher.blank?
   end
 
+  def finished_processing?
+    self.parts.all?{ |master_file| master_file.finished_processing? }
+  end
+
   def access
     logger.debug "<< ACCESS >>"
     logger.debug "<< #{self.read_groups} >>"
