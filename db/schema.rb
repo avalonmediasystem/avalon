@@ -46,9 +46,10 @@ ActiveRecord::Schema.define(:version => 20121219173255) do
   end
 
   create_table "ingest_batches", :force => true do |t|
-    t.text     "media_object_ids"
     t.string   "email"
+    t.text     "media_object_ids"
     t.boolean  "finished",         :default => false
+    t.boolean  "email_sent",       :default => false
     t.datetime "created_at",                          :null => false
     t.datetime "updated_at",                          :null => false
   end
