@@ -130,15 +130,6 @@ module ModsBehaviors
       end
     end
 
-    # DEBUG this!
-    puts "="*40
-    new_doc_as_string = new_doc.to_xml { |config| config.no_declaration }
-    puts "AS STRING :: #{new_doc_as_string.to_s}"
-    puts "STRIPPED :: #{new_doc_as_string.to_s.strip}"
-    puts "DATASTREAM CONTENT :: #{self.content}"
-    puts "STRIPPED :: #{self.datastream_content.strip}"
-    puts "="*40
-    # END DEBUGGING
     self.ng_xml = new_doc
   end
 
