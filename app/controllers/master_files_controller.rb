@@ -96,6 +96,11 @@ class MasterFilesController < ApplicationController
     if params[:workflow_id].present?
       @masterfile.workflow_id ||= params[:workflow_id]
       @masterfile.updateProgress params[:workflow_id]
+      if @masterfile.status_code.first.eql? "SUCCEEDED"
+        Rubyhorn.client.instance_xml(@masterfile.workflow_id).streamingurl.each do |streamingurl|
+          Derivative.create_from_master_file(@masterfile, streamingurl)
+        end
+      end
     else
       @mediaobject = @masterfile.mediaobject
       authorize! :edit, @mediaobject

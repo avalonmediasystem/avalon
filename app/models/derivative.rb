@@ -14,6 +14,16 @@ class Derivative < ActiveFedora::Base
     refresh_status
   end
 
+  def self.create_from_master_file(masterfile, streamingurl)
+    derivative = Derivative.create
+    derivative.source = masterfile.workflow_id
+    derivative.url = streamingurl
+    derivative.masterfile = masterfile
+    masterfile.save
+    derivative.save
+    derivative
+  end
+
 #  def masterfile= parent
 #    self.masterfile = parent
 #    self.masterfile.derivatives << self
