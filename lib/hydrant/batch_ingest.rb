@@ -48,6 +48,10 @@ module Hydrant
           # Afterwards, if the auto-publish flag is true then publish the
           # media objects. In either case here is where the notifications
           # should take place
+          publish_by_default = false
+          context = {mediaobject: mediaobject, user: 'batch'}
+          context = HYDRANT_STEPS.get_step('preview').execute context
+
           if mediaobject.save
             logger.debug "Done processing package #{index}"
           else 
