@@ -55,6 +55,11 @@ class Derivative < ActiveFedora::Base
     w.searchpreview.first
   end   
   
+  def poster_image
+    w = Rubyhorn.client.instance_xml source[0]
+    w.playerpreview.first
+  end   
+
   def mediapackage_id
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
     matterhorn_response.mediapackage.id.first
@@ -115,6 +120,7 @@ class Derivative < ActiveFedora::Base
       label: self.masterfile.label,
       stream_flash: self.tokenized_url(token, false),
       stream_hls: self.tokenized_url(token, true),
+      poster_image: self.poster_image,
       mimetype: self.streaming_mime_type,
       mediapackage_id: self.masterfile.mediapackage_id,
       format: self.format
