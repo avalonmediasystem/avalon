@@ -124,6 +124,11 @@ class MasterFile < ActiveFedora::Base
     self.save
   end
 
+  def finished_processing?
+    status_code = self.status_code.first
+    ['STOPPED', 'SUCCEEDED', 'FAILED'].include?(status_code)
+  end
+
   protected
 
   def calculate_percent_complete matterhorn_response
