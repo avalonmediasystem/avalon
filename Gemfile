@@ -86,7 +86,6 @@
     gem 'mime-types', ">=1.1"
     gem "headless"
     gem "rspec_junit_formatter"
-    gem 'simplecov'   
     gem 'simplecov'
     gem 'email_spec'
     gem 'capybara'   
