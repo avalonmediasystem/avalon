@@ -44,9 +44,9 @@ class Derivative < ActiveFedora::Base
 
   def status_complete
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
-    totalOperations = matterhorn_response.workflow.operations.operation.length
+    totalOperations = matterhorn_response.operations.operation.length
     finishedOperations = 0
-    matterhorn_response.workflow.operations.operation.operationState.each {|state| finishedOperations = finishedOperations + 1 if state == "FINISHED" || state == "SKIPPED"}
+    matterhorn_response.operations.operation.operationState.each {|state| finishedOperations = finishedOperations + 1 if state == "FINISHED" || state == "SKIPPED"}
     (finishedOperations / totalOperations) * 100
   end
   
@@ -57,15 +57,15 @@ class Derivative < ActiveFedora::Base
   
   def mediapackage_id
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
-    matterhorn_response.workflow.mediapackage.id.first
+    matterhorn_response.mediapackage.id.first
   end
 
   def streaming_mime_type
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])    
     logger.debug("<< streaming_mime_type from Matterhorn >>")
     # TODO temporary fix, xpath for streamingmimetype is not working
-    # matterhorn_response.workflow.streamingmimetype.second
-    matterhorn_response.workflow.mediapackage.media.track.mimetype.last
+    # matterhorn_response.streamingmimetype.second
+    matterhorn_response.mediapackage.media.track.mimetype.last
   end
 
   def url_hash
@@ -135,7 +135,7 @@ class Derivative < ActiveFedora::Base
   protected
   def refresh_status
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
-    status = matterhorn_response.workflow.state[0]
+    status = matterhorn_response.state[0]
  
     self.description = case status
       when "INSTANTIATED"

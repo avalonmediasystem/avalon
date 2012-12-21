@@ -95,7 +95,7 @@ class MasterFile < ActiveFedora::Base
 
   def mediapackage_id
     matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
-    matterhorn_response.workflow.mediapackage.id.first
+    matterhorn_response.mediapackage.id.first
   end
 
   def status_description
@@ -120,16 +120,16 @@ class MasterFile < ActiveFedora::Base
     matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
 
     self.percent_complete = calculate_percent_complete(matterhorn_response)
-    self.status_code = matterhorn_response.workflow.state[0]
+    self.status_code = matterhorn_response.state[0]
     self.save
   end
 
   protected
 
   def calculate_percent_complete matterhorn_response
-    totalOperations = matterhorn_response.workflow.operations.operation.length
+    totalOperations = matterhorn_response.operations.operation.length
     finishedOperations = 0
-    matterhorn_response.workflow.operations.operation.operationState.each {|state| finishedOperations += 1 if state == "SUCCEEDED" || state == "SKIPPED"}
+    matterhorn_response.operations.operation.operationState.each {|state| finishedOperations += 1 if state == "SUCCEEDED" || state == "SKIPPED"}
     percent = finishedOperations * 100 / totalOperations
     puts "percent_complete #{percent}"
     percent.to_s
