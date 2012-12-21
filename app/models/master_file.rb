@@ -62,7 +62,7 @@ class MasterFile < ActiveFedora::Base
 
     unless self.new_object?
       parent.save(validate: false)
-      Rubyhorn.client.stop(self.workflow_id)
+      Rubyhorn.client.stop(self.workflow_id) if self.workflow_id
       self.delete
     end
   end

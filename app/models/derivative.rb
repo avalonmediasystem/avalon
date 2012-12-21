@@ -134,6 +134,12 @@ class Derivative < ActiveFedora::Base
   
   protected
   def refresh_status
+    if source.blank?
+      self.description = "No file(s) uploaded"
+      save
+      return
+    end
+
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
     status = matterhorn_response.state[0]
  
