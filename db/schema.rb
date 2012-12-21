@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121114175231) do
+ActiveRecord::Schema.define(:version => 20121219173255) do
 
   create_table "bookmarks", :force => true do |t|
     t.integer  "user_id",     :null => false
@@ -45,6 +45,15 @@ ActiveRecord::Schema.define(:version => 20121114175231) do
     t.datetime "updated_at",      :null => false
   end
 
+  create_table "ingest_batches", :force => true do |t|
+    t.string   "email"
+    t.text     "media_object_ids"
+    t.boolean  "finished",         :default => false
+    t.boolean  "email_sent",       :default => false
+    t.datetime "created_at",                          :null => false
+    t.datetime "updated_at",                          :null => false
+  end
+
   create_table "searches", :force => true do |t|
     t.text     "query_params"
     t.integer  "user_id"
@@ -54,6 +63,12 @@ ActiveRecord::Schema.define(:version => 20121114175231) do
   end
 
   add_index "searches", ["user_id"], :name => "index_searches_on_user_id"
+
+  create_table "stream_tokens", :force => true do |t|
+    t.string   "token"
+    t.string   "target"
+    t.datetime "expires"
+  end
 
   create_table "superusers", :force => true do |t|
     t.integer "user_id", :null => false
