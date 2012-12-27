@@ -60,6 +60,11 @@ class Derivative < ActiveFedora::Base
     w.playerpreview.first
   end   
 
+  def resolution
+    w = Rubyhorn.client.instance_xml source[0]
+    w.streamingresolution.first
+  end
+
   def mediapackage_id
     matterhorn_response = Rubyhorn.client.instance_xml(source[0])
     matterhorn_response.mediapackage.id.first
