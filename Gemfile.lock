@@ -39,7 +39,7 @@ GIT
 
 GIT
   remote: https://github.com/variations-on-video/hydrant-engage.git
-  revision: d10caf6163722f9c936737167ee8f880e37b1209
+  revision: eb3cad8528690fe508ce9b39ad94403e6fffa71c
   specs:
     hydrant-engage (0.0.1)
       less-rails (~> 2.2.3)
@@ -52,7 +52,7 @@ GIT
 
 GIT
   remote: https://github.com/variations-on-video/rubyhorn.git
-  revision: 03affc7ab6bb744edcf6c02a60387ad43d67dc33
+  revision: 99169b2b878c6c84b31987800ec4bad8f3fe4a88
   specs:
     rubyhorn (0.0.4)
       activesupport
