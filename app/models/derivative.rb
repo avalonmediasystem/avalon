@@ -128,7 +128,8 @@ class Derivative < ActiveFedora::Base
       poster_image: self.poster_image,
       mimetype: self.streaming_mime_type,
       mediapackage_id: self.masterfile.mediapackage_id,
-      format: self.format
+      format: self.format,
+      resolution: self.resolution
     }
   end
 
