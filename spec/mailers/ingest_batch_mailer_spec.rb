@@ -1,4 +1,5 @@
 require 'spec_helper'
+#require 'capybara/rspec'
 
 describe 'Batch Ingest Email' do
 
@@ -25,30 +26,30 @@ describe 'Batch Ingest Email' do
     @email.should have_body_text(media_object.title)
   end
 
-  it 'has the status of a master file in a table row' do
+  it 'has the status of the master file in a first row' do
     media_object = MediaObject.new
-    media_object.update_datastream(:descMetadata, :title => 'Hiking')
-    media_object.update_datastream(:descMetadata, :creator => 'Adam')
-    media_object.update_datastream(:descMetadata, :date_created => 'January 2007')
+    media_object.update_datastream(:descMetadata, title: 'Hiking')
+    media_object.update_datastream(:descMetadata, creator: 'Adam')
+    media_object.update_datastream(:descMetadata, date_created: 'January 2007')
     media_object.save
 
-    master_file = MasterFile.new(pid:'changeme:20')
+    master_file = MasterFile.new(pid:'hydrant:hiking-movie')
     master_file.status_code =  ['STOPPED']
     master_file.url = 'something/granite-mountain-hike.mov'
     master_file.percent_complete = ['100']
 
     media_object.parts << master_file
-    
     media_object.save(validate: false)
 
     ingest_batch = IngestBatch.create( media_object_ids: [media_object.id])
 
     email = IngestBatchMailer.status_email( ingest_batch.id )
-    page = Capybara::Node::Simple.new(email.body.to_s)
-    base_selector = 'table > tbody > tr:nth-child(1) > '
+    email_message = Capybara.string(email.body.to_s)
 
-    page.find(base_selector + 'td.master-file').should have_content(File.basename(master_file.url))
-    page.find(base_selector + 'td.percent-complete').should have_content(master_file.percent_complete.first)
-    page.find(base_selector + 'td.status-code').should have_content(master_file.status_code.first.downcase.titleize)
+    # Ideally a within block would be nice here
+    fragment = email_message.find("table > tbody > tr:nth-child(1)")
+    fragment.find('.master-file').should have_content(File.basename(master_file.url))
+    fragment.find('.percent-complete').should have_content(master_file.percent_complete.first)
+    fragment.find('.status-code').should have_content(master_file.status_code.first.downcase.titleize)
   end
 end
