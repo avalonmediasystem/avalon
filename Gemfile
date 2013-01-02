@@ -47,7 +47,8 @@
   gem 'delayed_job_active_record'
   gem 'whenever', :require => false
 
-  gem 'hydrant-batch', :git => "https://github.com/variations-on-video/hydrant-batch.git"
+  gem 'hydrant-batch',
+    :git => "https://github.com/variations-on-video/hydrant-batch.git"
 
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
@@ -79,7 +80,6 @@
     gem 'capistrano-unicorn', :require => false
     gem 'rb-fsevent', '~> 0.9.1'
     gem 'debugger'
-    gem 'hpricot' # for html2haml
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do

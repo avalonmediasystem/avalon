@@ -31,7 +31,7 @@ GIT
 
 GIT
   remote: https://github.com/variations-on-video/hydrant-batch.git
-  revision: 160c6cac02219828dfc52ce69629dae88fc0a1e1
+  revision: a66423a9715cc7ef4f4251de30afad8037a05cc9
   specs:
     hydrant-batch (0.0.1)
       activesupport
@@ -224,7 +224,6 @@ GEM
     highline (1.6.15)
     hike (1.2.1)
     hooks (0.2.2)
-    hpricot (0.8.6)
     httpauth (0.2.0)
     httpi (2.0.0)
       rack
@@ -518,7 +517,6 @@ DEPENDENCIES
   felixwrapper!
   haml
   headless
-  hpricot
   hydra-head (~> 5.0.0)
   hydrant-batch!
   hydrant-engage!
