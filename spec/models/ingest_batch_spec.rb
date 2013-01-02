@@ -14,7 +14,7 @@ describe IngestBatch do
       media_object.parts << MasterFile.new(status_code: ['SUCCEEDED'])
       media_object.save(validate: false)
 
-      ingest_batch = IngestBatch.new(media_object_ids: ['changeme:1'], email: 'email@something.com')
+      ingest_batch = IngestBatch.new(media_object_ids: [media_object.id], email: 'email@something.com')
       ingest_batch.finished?.should be_true
     end
     # fix: adding master_files to media object parts is broken
