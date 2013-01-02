@@ -43,7 +43,7 @@ class MasterFilesController < ApplicationController
         master_file = MasterFile.new
         master_file.mediaobject = media_object
         master_file.setContent(file)
-        set_default_item_permissions master_file
+        MasterFilesController.set_default_item_permissions(master_file, user_key)
  
         if 'Unknown' == master_file.media_type
           flash[:errors] = [] if flash[:errors].nil?
