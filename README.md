@@ -16,3 +16,5 @@ Instructions on how to get a local installation of Avalon Media System installed
 * ```rake felix:start```
 * ```rake spec```
 
+# For batch ingest:
+* rake hydrant:batch:ingest

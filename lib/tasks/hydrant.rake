@@ -24,5 +24,13 @@ namespace :hydrant do
      FileUtils.rm(Dir['public/javascripts/cache/[^.]*'])
      FileUtils.rm(Dir['public/stylesheets/cache/[^.]*'])
    end
+  end
+  namespace :batch do 
+    desc "Starts Hydrant batch ingest"
+    task :ingest => :environment do
+      # Starts the ingest process
+      require 'hydrant/batch_ingest'
+      Hydrant::Batch.ingest
+    end
   end  
 end
