@@ -77,8 +77,10 @@ module Hydrant
 
         end
       end
-    
-      IngestBatch.create( media_object_ids: media_objects.map(&:id), email: 'adam.t.hallett@gmail.com' )
+      default_email = Hydrant::Configuration['dropbox']['notification_email_address']
+
+      IngestBatch.create( media_object_ids: media_objects.map(&:id), email: default_email)
+
     end
     
   end

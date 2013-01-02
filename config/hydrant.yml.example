@@ -4,6 +4,7 @@ development:
     upload_uri: 'sftp://localhost/srv/avalon/dropbox'
     username: 'avalon'
     password: 'avalon'
+    notification_email_address:''
   matterhorn:
     root: 'http://localhost:8080/'
     baseApplication: 'avalon'
@@ -13,6 +14,7 @@ test:
     upload_uri: 'sftp://localhost/srv/avalon/dropbox'
     username: 'test'
     password: 'test'
+    notification_email_address:''
   matterhorn:
     root: 'http://localhost:8080/'
     baseApplication: 'avalon'
