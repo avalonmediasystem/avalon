@@ -146,6 +146,14 @@ tr.active-false td {
 }
 
 /**
+ *  Overridding Blacklight's brand logo
+ */
+.navbar .brand {
+  height: $navbarHeight;
+  padding: 0 $gridGutterWidth;
+}
+
+/**
  * Until media-object works right in bootstrap add some custom overrides
  */
 .result {
