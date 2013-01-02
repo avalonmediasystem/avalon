@@ -1,3 +1,8 @@
+require 'iconv'
+require 'hydrant/workflow/workflow_controller_behavior'
+require 'hydrant/controller/controller_behavior'
+require 'hydrant/dropbox'
+
 module Hydrant
   module Batch
 
@@ -8,6 +13,8 @@ module Hydrant
       logger.debug "============================================"
       logger.debug "<< Starts scanning for new batch packages >>"
       
+      #dropbox = Hydrant::Dropbox.new( Hydrant::Configuration['dropbox']['path'] )
+
       new_packages = Hydrant::DropboxService.find_new_packages
       logger.debug "<< Found #{new_packages.count} new packages >>"
       
@@ -17,7 +24,7 @@ module Hydrant
 
         package.process do |fields, files|
           # Creates and processes MasterFiles
-          mediaobject = initialize_media_object('batch')
+          mediaobject = MediaObjectsController.initialize_media_object('batch')
           mediaobject.workflow.origin = "batch"
           mediaobject.save(:validate => false)
           logger.debug "<< Created MediaObject #{mediaobject.pid} >>"
@@ -27,7 +34,7 @@ module Hydrant
           # refactoring of the master_file_controller class eventually.
           files.each do |file_path|
             mf = MasterFile.new
-            mf.container = mediaobject
+            mf.mediaobject = mediaobject
             mf.setContent(File.open(file_path, 'rb'))
             if mf.save
               logger.debug "<< Created and associated MasterFile #{mf.pid} >>"
@@ -37,6 +44,10 @@ module Hydrant
 
           context = {mediaobject: mediaobject}
           context = HYDRANT_STEPS.get_step('file-upload').execute context
+
+          # temporary change, method in media object for updating datastream
+          # currently takes class attributes instead of meta data attributes
+          fields[:title] = fields.delete(:main_title)
 
           context = {mediaobject: mediaobject, media_object: fields}
           context = HYDRANT_STEPS.get_step('resource-description').execute context

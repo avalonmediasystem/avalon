@@ -100,6 +100,10 @@ class MediaObject < ActiveFedora::Base
     not self.avalon_publisher.blank?
   end
 
+  def finished_processing?
+    self.parts.all?{ |master_file| master_file.finished_processing? }
+  end
+
   def access
     logger.debug "<< ACCESS >>"
     logger.debug "<< #{self.read_groups} >>"
@@ -165,7 +169,6 @@ class MediaObject < ActiveFedora::Base
   # This method is one way in that it accepts class attributes and
   # maps them to metadata attributes.
   def update_attribute_in_metadata(attribute, value = [], attributes = [])
-
     # class attributes should be decoupled from metadata attributes
     # class attributes are displayed in the view and posted to the server
     metadata_attribute = klass_attribute_to_metadata_attribute_map[ attribute.to_sym ]
