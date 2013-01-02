@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe IngestBatch do
   it 'persists media object ids' do
-    media_object_ids = [1,2,3]
+    media_object_ids = ['first-item', 'second-item', 'third-item']
     ingest_batch = IngestBatch.create(media_object_ids: media_object_ids)
     ingest_batch.reload
     ingest_batch.media_object_ids.should == media_object_ids
@@ -14,18 +14,21 @@ describe IngestBatch do
       media_object.parts << MasterFile.new(status_code: ['SUCCEEDED'])
       media_object.save(validate: false)
 
-      ingest_batch = IngestBatch.new(media_object_ids: ['hydrant:ingest-batch-test'], email: 'email@something.com')
+      ingest_batch = IngestBatch.new(media_object_ids: [media_object.id], email: 'email@something.com')
       ingest_batch.finished?.should be_true
     end
+    
     # fix: adding master_files to media object parts is broken
-    # it 'returns false when one or more master files are not finished' do
-    #   media_object = MediaObject.new(pid:'hydrant:ingest-batch-test')
-    #   media_object.add_relationship(:has_part, MasterFile.new(status_code: ['STOPPED']))
-    #   media_object.parts << MasterFile.create(status_code: ['RUNNING'])
-    #   media_object.save(validate: false)
-    #   ingest_batch = IngestBatch.new(media_object_ids: ['hydrant:ingest-batch-test'], email: 'email@something.com')
-    #   ingest_batch.finished?.should be_false
-    # end
+    it 'returns false when one or more master files are not finished' do
+       pending "Fix problems with this test"
+
+       media_object = MediaObject.new(pid:'hydrant:ingest-batch-test')
+       media_object.add_relationship(:has_part, MasterFile.new(status_code: ['STOPPED']))
+       media_object.parts << MasterFile.create(status_code: ['RUNNING'])
+       media_object.save(validate: false)
+       ingest_batch = IngestBatch.new(media_object_ids: ['hydrant:ingest-batch-test'], email: 'email@something.com')
+       ingest_batch.finished?.should be_false
+    end
   end
 
   describe '#media_objects' do
