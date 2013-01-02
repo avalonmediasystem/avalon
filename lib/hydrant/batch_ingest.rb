@@ -18,6 +18,8 @@ module Hydrant
       new_packages = Hydrant::DropboxService.find_new_packages
       logger.debug "<< Found #{new_packages.count} new packages >>"
       
+      media_objects = []
+
       # Extracts package and process
       new_packages.each_with_index do |package, index|
         logger.debug "<< Processing package #{index} >>"
@@ -25,7 +27,7 @@ module Hydrant
         package.process do |fields, files|
           # Creates and processes MasterFiles
           mediaobject = MediaObjectsController.initialize_media_object('batch')
-          mediaobject.workflow.origin = "batch"
+          mediaobject.workflow.origin = 'batch'
           mediaobject.save(:validate => false)
           logger.debug "<< Created MediaObject #{mediaobject.pid} >>"
 
@@ -49,6 +51,9 @@ module Hydrant
           # currently takes class attributes instead of meta data attributes
           fields[:title] = fields.delete(:main_title)
 
+          # currently not used
+          publish_by_default = fields.delete(:publish)
+
           context = {mediaobject: mediaobject, media_object: fields}
           context = HYDRANT_STEPS.get_step('resource-description').execute context
 
@@ -59,7 +64,6 @@ module Hydrant
           # Afterwards, if the auto-publish flag is true then publish the
           # media objects. In either case here is where the notifications
           # should take place
-          publish_by_default = false
           context = {mediaobject: mediaobject, user: 'batch'}
           context = HYDRANT_STEPS.get_step('preview').execute context
 
@@ -68,8 +72,13 @@ module Hydrant
           else 
             logger.debug "Problem saving MediaObject"
           end
+          
+          media_objects << mediaobject
+
         end
       end
+    
+      IngestBatch.create( media_object_ids: media_objects.map(&:id), email: 'adam.t.hallett@gmail.com' )
     end
     
   end
