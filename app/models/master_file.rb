@@ -6,25 +6,29 @@ class MasterFile < ActiveFedora::Base
   include Hydra::ModelMixins::CommonMetadata
   include Hydra::ModelMixins::RightsMetadata
 
-#  has_relationship "part_of", :is_part_of
-#  has_relationship "derivatives", :has_derivation
-  has_metadata name: 'descMetadata', type: DublinCoreDocument
-  has_metadata name: 'statusMetadata', :type => ActiveFedora::SimpleDatastream do |d|
+  belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
+  has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
+
+  has_metadata name: 'descMetadata', :type => ActiveFedora::SimpleDatastream do |d|
+    d.field :url, :string
+    d.field :checksum, :string
+    d.field :size, :string
+    d.field :duration, :string
+    d.field :file_format, :string
+  end
+
+  has_metadata name: 'mhMetadata', :type => ActiveFedora::SimpleDatastream do |d|
+    d.field :workflow_id, :string
+    d.field :mediapackage_id, :string
     d.field :percent_complete, :string
     d.field :status_code, :string
   end
 
-  belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
-  has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
+  delegate_to 'descMetadata', [:url, :checksum, :size, :duration, :media_type]
+  delegate_to 'mhMetadata', [:workflow_id, :mediapackage_id, :percent_complete, :status_code]
 
-  delegate :workflow_id, to: :descMetadata, at: [:source], unique: true
-  #delegate :description, to: :descMetadata
-  delegate :url, to: :descMetadata, at: [:identifier], unique: true
-  delegate :size, to: :descMetadata, at: [:extent], unique: true
-  delegate :media_type, to: :descMetadata, at: [:dc_type], unique: true
-#  delegate :media_format, to: :descMetadata, at: [:medium], unique: true
-
-  delegate_to 'statusMetadata', [:percent_complete, :status_code]
+  has_file_datastream name: 'thumbnail'
+  has_file_datastream name: 'poster'
 
   # First and simplest test - make sure that the uploaded file does not exceed the
   # limits of the system. For now this is hard coded but should probably eventually
@@ -69,10 +73,10 @@ class MasterFile < ActiveFedora::Base
 
   def setContent(file, content_type = nil)
     if file.is_a? ActionDispatch::Http::UploadedFile
-      self.media_type = determine_format(file.tempfile, file.content_type)
+      self.file_format = determine_format(file.tempfile, file.content_type)
       saveOriginal(file, file.original_filename)
     else
-      self.media_type = determine_format(file, content_type)
+      self.file_format = determine_format(file, content_type)
       saveOriginal(file, nil)
     end
   end
@@ -83,19 +87,14 @@ class MasterFile < ActiveFedora::Base
                 "flavor" => "presenter/source",
                 "filename" => File.basename(self.url)}
 
-    if self.media_type == 'Sound'
+    if self.file_format == 'Sound'
       args['workflow'] = "fullaudio"
-    elsif self.media_type == 'Moving image'
+    elsif self.file_format == 'Moving image'
       args['workflow'] = "hydrant"
     end
     
     m = MatterhornJobs.new
     m.send_request args
-  end
-
-  def mediapackage_id
-    matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
-    matterhorn_response.mediapackage.id.first
   end
 
   def status_description
@@ -118,6 +117,8 @@ class MasterFile < ActiveFedora::Base
   def updateProgress workflow_id
     raise "Workflow id does not match existing MasterFile workflow_id" unless self.workflow_id == workflow_id
     matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
+
+    #TODO set duration, mediapackage_id, checksum, etc if not already set
 
     self.percent_complete = calculate_percent_complete(matterhorn_response)
     self.status_code = matterhorn_response.state[0]
