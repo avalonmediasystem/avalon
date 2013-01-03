@@ -3,6 +3,13 @@ class Derivative < ActiveFedora::Base
 
   belongs_to :masterfile, :class_name=>'MasterFile', :property=>:is_derivation_of
 
+  # These fields do not fit neatly into the Dublin Core so until a long
+  # term solution is found they are stored in a simple datastream in a
+  # relatively flat structure.
+  #
+  # The only meaningful value at the moment is the url, which points to
+  # the stream location. The other two are just stored until a migration
+  # strategy is required.
   has_metadata name: "descMetadata", :type => ActiveFedora::SimpleDatastream do |d|
     d.field 'url', :string
     d.field 'duration', :string
@@ -28,13 +35,6 @@ class Derivative < ActiveFedora::Base
     derivative.save
     derivative
   end
-
-#  def masterfile= parent
-#    self.masterfile = parent
-#    self.masterfile.derivatives << self
-#    masterfile.add_relationship :has_derivation, self
-#    self.add_relationship :is_derivation_of, masterfile
-#  end
 
   def streaming_mime_type
     matterhorn_response = Rubyhorn.client.instance_xml(masterfile.workflow_id)    
@@ -82,7 +82,7 @@ class Derivative < ActiveFedora::Base
         uri.path = "/#{application}/#{extension}:#{media_id}/#{stream_id}/#{filename}"
       end
 
-      logger.debug "currentStream value - #{uri.to_s}"
+      logger.info "Serving stream #{uri.to_s}"
       uri.to_s
   end
 
