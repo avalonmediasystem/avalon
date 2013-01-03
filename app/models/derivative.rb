@@ -19,7 +19,8 @@ class Derivative < ActiveFedora::Base
   delegate_to 'descMetadata', [:url, :duration, :track_id]
 
   #TODO add encoding datastream and delegations
-  
+  has_metadata name: 'encoding', type: EncodingProfileDocument
+
   def initialize(attrs = {})
     super(attrs)
     refresh_status
