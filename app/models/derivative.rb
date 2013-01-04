@@ -11,50 +11,48 @@ class Derivative < ActiveFedora::Base
   # the stream location. The other two are just stored until a migration
   # strategy is required.
   has_metadata name: "descMetadata", :type => ActiveFedora::SimpleDatastream do |d|
-    d.field 'url', :string
-    d.field 'duration', :string
-    d.field 'track_id', :string
+    d.field :location_url, :string
+    d.field :duration, :string
+    d.field :track_id, :string
   end
 
-  delegate_to 'descMetadata', [:url, :duration, :track_id]
+  delegate_to 'descMetadata', [:location_url, :duration, :track_id], unique: true
 
-  #TODO add encoding datastream and delegations
   has_metadata name: 'encoding', type: EncodingProfileDocument
-
-  def initialize(attrs = {})
-    super(attrs)
-    refresh_status
-  end
 
   def self.create_from_master_file(masterfile, track_id)
     derivative = Derivative.create
     derivative.track_id = track_id
-    #TODO lookup track info from mediapackage and store
-    derivative.url = streamingurl
-    derivative.masterfile = masterfile
-    masterfile.save
+    
+    matterhorn_response = Rubyhorn.client.instance_xml(masterfile.workflow_id)
+    track_xml = matterhorn_response.ng_xml.xpath("//xmlns:workflow/ns3:mediapackage/ns3:media/ns3:track[@id=$track_id]", matterhorn_response.ng_xml.root.namespaces, {track_id: track_id})
+    derivative.duration = track_xml.at("./ns3:duration").content
+    derivative.location_url = track_xml.at("./ns3:url").content
+    derivative.encoding.mime_type = track_xml.at("./ns3:mimetype").content
+    derivative.encoding.audio.audio_bitrate = track_xml.at("./ns3:audio/ns3:bitrate").content
+    derivative.encoding.audio.audio_codec = track_xml.at("./ns3:audio/ns3:encoder/@type").content
+    derivative.encoding.video.video_bitrate = track_xml.at("./ns3:video/ns3:bitrate").content
+    derivative.encoding.video.video_codec = track_xml.at("./ns3:video/ns3:encoder/@type").content
+    derivative.encoding.video.frame_rate = track_xml.at("./ns3:video/ns3:framerate").content
+    width, height = track_xml.at("./ns3:video/ns3:resolution").content.split("x")
+    derivative.encoding.video.resolution.video_width = width
+    derivative.encoding.video.resolution.video_height = height
+
+#    masterfile.save
     derivative.save
     derivative
   end
 
-  def streaming_mime_type
-    matterhorn_response = Rubyhorn.client.instance_xml(masterfile.workflow_id)    
-    logger.debug("<< streaming_mime_type from Matterhorn >>")
-    # TODO temporary fix, xpath for streamingmimetype is not working
-    # matterhorn_response.streamingmimetype.second
-    matterhorn_response.mediapackage.media.track.mimetype.last
-  end
-
   def url_hash
     h = Digest::MD5.new
-    h << url.first
+    h << location_url
     h.hexdigest
   end
 
   def tokenized_url(token, mobile=false)
     #uri = URI.parse(url.first)
     uri = streaming_url(mobile)
-    "#{uri.to_s}?token=#{mediapackage_id}-#{token}".html_safe
+    "#{uri.to_s}?token=#{masterfile.mediapackage_id}-#{token}".html_safe
   end      
 
   def streaming_url(is_mobile=false)
@@ -72,7 +70,7 @@ class Derivative < ActiveFedora::Base
         (?:\.(.+))?$      # extension   (mp4)
       }x
 
-      uri = URI.parse(url.first)
+      uri = URI.parse(location_url)
       (application, prefix, media_id, stream_id, filename, extension) = uri.path.scan(regex).flatten
       application = "avalon"
       if (is_mobile)
@@ -89,22 +87,22 @@ class Derivative < ActiveFedora::Base
 
   def stream_details(token)
     {
-      label: self.masterfile.label,
-      stream_flash: self.tokenized_url(token, false),
-      stream_hls: self.tokenized_url(token, true),
-      poster_image: self.masterfile.poster_image,
-      mimetype: self.masterfile.streaming_mime_type,
-      mediapackage_id: self.masterfile.mediapackage_id,
-      format: self.format,
-      resolution: self.resolution
+      label: masterfile.label,
+      stream_flash: tokenized_url(token, false),
+      stream_hls: tokenized_url(token, true),
+      poster_image: masterfile.poster_image,
+      mimetype: encoding.mime_type,
+      mediapackage_id: masterfile.mediapackage_id,
+      format: format,
+      resolution: resolution 
     }
   end
 
   def format
-    case masterfile.media_type
-      when 'Moving image'
+    case
+      when (not encoding.video.empty?)
         "video"
-      when "Sound"
+      when (not encoding.audio.empty?)
         "audio"
       else
         "other"
@@ -112,8 +110,7 @@ class Derivative < ActiveFedora::Base
   end
 
   def resolution
-    w = Rubyhorn.client.instance_xml masterfile.workflow_id
-    w.streamingresolution.first
+    "#{encoding.resolution.video_width.first}x#{encoding.resolution.video_height.first}"
   end
 
 end 
