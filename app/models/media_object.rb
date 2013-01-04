@@ -53,7 +53,8 @@ class MediaObject < ActiveFedora::Base
     :publisher => :publisher,
     :genre => :genre,
     :subject => :topical_subject,
-    :relatedItem => :related_item_id,
+    :related_item => :related_item_id,
+    :collection => :collection,
     :geographic_subject => :geographic_subject,
     :temporal_subject => :temporal_subject,
     :topical_subject => :topical_subject
@@ -81,12 +82,13 @@ class MediaObject < ActiveFedora::Base
   delegate :publisher, to: :descMetadata, at: [:publisher]
   delegate :genre, to: :descMetadata, at: [:genre], unique: true
   delegate :subject, to: :descMetadata, at: [:topical_subject]
-  delegate :relatedItem, to: :descMetadata, at: [:related_item_id]
+  delegate :related_item, to: :descMetadata, at: [:related_item_id]
+  delegate :collection, to: :descMetadata, at: [:collection], unique: true
 
   delegate :geographic_subject, to: :descMetadata, at: [:geographic_subject]
   delegate :temporal_subject, to: :descMetadata, at: [:temporal_subject]
   delegate :topical_subject, to: :descMetadata, at: [:topical_subject]
-  
+
   accepts_nested_attributes_for :parts, :allow_destroy => true
   
   # Stub method to determine if the record is done or not. This should be based on

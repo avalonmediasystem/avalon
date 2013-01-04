@@ -23,7 +23,11 @@
     <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span12' %>
   <% end %>
 
- <%= vid.actions do |actions| %>
+  <%= vid.fieldset 'Collection info', id: 'collection_info' do %>    
+    <%= vid.text_field :collection, 'Collection Name', class: 'span12' %>
+  <% end %>
+
+  <%= vid.actions do |actions| %>
       <%= render 'workflow_buttons', form: vid %>
   <% end %>
 <% end %>
