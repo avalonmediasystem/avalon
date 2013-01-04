@@ -32,7 +32,7 @@
   		      <tr>
                         <td>&nbsp;</td>
   		        <td>
-  		          <% case part.media_type
+  		          <% case part.file_format
   		             when 'Sound' %>
 	    		       <i class="icon-volume-up"></i>
   		          <% when 'Moving image' %>
@@ -45,10 +45,10 @@
       		      <%= text_field_tag "parts[#{i}][label]", part.label, size: 30 %>
   		        </td>
   		        <td>
-  		          <%= truncate(File.basename(part.url), length: 25) %>
+  		          <%= truncate(File.basename(part.file_location), length: 25) %>
       	  	  </td>
       	  	  <td>
-      	  	    <strong><%= number_to_human_size(part.size) %></strong>
+      	  	    <strong><%= number_to_human_size(part.file_size) %></strong>
       	  	  </td>
       	  	  <td>
       	  	   <% if can? :edit, @mediaobject %>

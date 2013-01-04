@@ -24,7 +24,7 @@
 				<i class="icon-th-list"></i>
 		</td>
         <td>
-                          <% case masterfile.media_type
+                          <% case masterfile.file_format
                              when 'Sound' %>
                                <i class="icon-volume-up"></i>
                           <% when 'Moving image' %>
@@ -37,9 +37,9 @@
           <%= masterfile.label.blank? ? '&#8212'.html_safe : masterfile.label %>
         </td>
         <td>
-	  	    <%= truncate(File.basename(masterfile.url), length: 25) %>
+	  	    <%= truncate(File.basename(masterfile.file_location), length: 25) %>
 	  	  </td>
-	  	  <td><%= number_to_human_size(masterfile.size) %></td>
+	  	  <td><%= number_to_human_size(masterfile.file_size) %></td>
         </tr>
 	 	<% end %>
 	  </tbody>

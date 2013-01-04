@@ -45,7 +45,7 @@ class MasterFilesController < ApplicationController
         master_file.setContent(file)
         MasterFilesController.set_default_item_permissions(master_file, user_key)
  
-        if 'Unknown' == master_file.media_type
+        if 'Unknown' == master_file.file_format
           flash[:errors] = [] if flash[:errors].nil?
           error = format_errors
           error << file.original_filename
@@ -54,7 +54,7 @@ class MasterFilesController < ApplicationController
           master_file.destroy
           next
         else
-          flash[:upload] = create_upload_notice(master_file.media_type)
+          flash[:upload] = create_upload_notice(master_file.file_format)
         end
 	
         unless master_file.save

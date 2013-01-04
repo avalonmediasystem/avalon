@@ -3,33 +3,23 @@ module ApplicationHelper
       'Hydrant'
     end
     
-    # TODO : Replace this string of else statements with a clean 'case'
-    # statement
     def image_for_result(item_id)
-      # Overwrite this to return the preview from Matterhorn. Be sure to include the
-      # image_tag call so it renders properly
+      #TODO index the thumbnail url to avoid having to hit fedora to get it
       media_object = MediaObject.find(item_id)
-      
-      if media_object.format == "Moving image"
-        imageurl = "video_icon.png"
-      elsif media_object.format == "Sound"
-        imageurl = "audio_icon.png"
-      elsif (media_object.parts.length >= 2)
-        imageurl = "hybrid_icon.png"
-      else
-        puts "FORMAT: #{media_object.format}"
-        imageurl = "no_icon.png"
-      end
+   
+      imageurl = ActiveFedora.fedora.config[:url] + media_object.thumbnail.url unless media_object.thumbnail.new?
+      imageurl ||= case
+                   when media_object.format == "Moving image"
+                     "video_icon.png"
+                   when media_object.format == "Sound"
+                     "audio_icon.png"
+                   when (media_object.parts.length >= 2) #FIXME we need to test if both audio and video are present instead of assuming when there is more than one part
+                     "hybrid_icon.png" 
+                   else
+                     puts "FORMAT: #{media_object.format}"
+                     "no_icon.png"
+                   end
 
-      # Retrieve the icon from Matterhorn if it is present and replace it with
-      # an actual thumbnail
-      #unless (media_object.parts.blank?)
-      #  master_file = MasterFile.find(media_object.parts.first.pid)
-      #  workflow_doc = Rubyhorn.client.instance_xml master_file.descMetadata.source.first
-      #  imageurl = workflow_doc.searchpreview.first unless (workflow_doc.searchpreview.nil? or workflow_doc.searchpreview.empty?)
-      # end
-      # Audio files do not currently have an icon so provide the default
-      
       image_tag imageurl, class: 'result-thumbnail'
     end
 

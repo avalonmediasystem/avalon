@@ -41,7 +41,7 @@ describe MasterFilesController do
 
         mediaobject = MediaObject.find('hydrant:video-segment')
         master_file = mediaobject.parts.first
-        master_file.media_type.should eq "Moving image" 
+        master_file.file_format.should eq "Moving image" 
              
         flash[:errors].should be_nil
       end
@@ -55,7 +55,7 @@ describe MasterFilesController do
 
        mediaobject = MediaObject.find('hydrant:video-segment')
        master_file = mediaobject.parts.first
-       master_file.media_type.should eq "Sound" 
+       master_file.file_format.should eq "Sound" 
      end
        
      it "should reject non audio/video format" do
@@ -77,7 +77,7 @@ describe MasterFilesController do
          original: 'any', 
          container_id: 'hydrant:video-segment' 
        master_file = MasterFile.find(:all, order: "created_on ASC").last
-       master_file.media_type.should eq "Moving image" 
+       master_file.file_format.should eq "Moving image" 
              
        flash[:errors].should be_nil
      end

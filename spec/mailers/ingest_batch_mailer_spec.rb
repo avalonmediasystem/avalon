@@ -35,7 +35,7 @@ describe 'Batch Ingest Email' do
 
     master_file = MasterFile.new(pid:'hydrant:hiking-movie')
     master_file.status_code =  ['STOPPED']
-    master_file.url = 'something/granite-mountain-hike.mov'
+    master_file.file_location = 'something/granite-mountain-hike.mov'
     master_file.percent_complete = ['100']
 
     media_object.parts << master_file
@@ -48,7 +48,7 @@ describe 'Batch Ingest Email' do
 
     # Ideally a within block would be nice here
     fragment = email_message.find("table > tbody > tr:nth-child(1)")
-    fragment.find('.master-file').should have_content(File.basename(master_file.url))
+    fragment.find('.master-file').should have_content(File.basename(master_file.file_location))
     fragment.find('.percent-complete').should have_content(master_file.percent_complete.first)
     fragment.find('.status-code').should have_content(master_file.status_code.first.downcase.titleize)
   end

@@ -1,7 +1,7 @@
 class EncodingProfileDocument < ActiveFedora::NokogiriDatastream
   set_terminology do |t|
     t.root(:path=>"encodingProfile", 
-           :xmlns => 'avalon/encoding', 
+           #:xmlns => 'avalon/encoding', 
            :namespace_prefix=>nil)
 
     # The quality is a quick way to determine which stream to provide
@@ -30,15 +30,19 @@ class EncodingProfileDocument < ActiveFedora::NokogiriDatastream
     }
    end
    
-   def blank_template
-     t.encodingProfile {
-       t.quality
-       t.mime_type
+   def self.xml_template
+     builder = Nokogiri::XML::Builder.new do |xml|
+       xml.encodingProfile {
+         xml.quality
+         xml.mime_type
 
-       t.audio {
-         t.audio_bitrate
-         t.audio_codec
+         xml.audio {
+           xml.bitrate
+           xml.codec
+         }
        }
-     }
+     end
+     return builder.doc
    end
+
 end

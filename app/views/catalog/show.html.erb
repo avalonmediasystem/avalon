@@ -64,7 +64,7 @@
                     data: {segment: master.pid},
                     class: (master.pid == @currentStream.pid ? 'current-stream' : nil)
                 %>
-                (<%= number_to_human_size(master.size) %>)
+                (<%= number_to_human_size(master.file_size) %>)
               </li>
               <% end %>
           </ul>
