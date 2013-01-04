@@ -5,10 +5,15 @@
   <%= vid.fieldset 'Required fields', id: 'required_fields' do %>
     <%= vid.text_field :title, 'Title', class: 'span12' %>
     <%= vid.text_field :creator, 'Creator', class: 'span12' %>
-    <%= vid.text_field :date_created, 'Created on', class: 'span12' %>
-    <%= vid.text_field :date_issued, 'Issued on', class: 'span12' %>
-    <%= vid.text_field :copyright_date, 'Copyright date', class: 'span12' %>
+    <%= vid.text_field :date_created, 'Creation date', class: 'span12' %>
     <%= vid.text_area :abstract, 'Summary', class: 'span12', rows: 6 %>
+  <% end %>
+
+  <%= vid.fieldset 'Dates and places', id: 'dates_and_places' do %>
+    <%= vid.text_field :date_issued, 'Issue date', class: 'span12' %>
+    <%= vid.text_field :copyright_date, 'Copyright date', class: 'span12' %>
+    <%= vid.text_fields :temporal_subject, 'Time periods', class: 'span12', mininum_fields: 2 %>
+    <%= vid.text_fields :geographic_subject, 'Locations', class: 'span12', minimum_fields: 2 %>
   <% end %>
   
   <%= vid.fieldset 'Related people', id: 'related_people' do %>
@@ -18,13 +23,12 @@
   
   <%= vid.fieldset 'Keywords', id: 'keywords' do %>    
     <%= vid.text_field :genre, 'Genre', class: 'span12' %>
-    <%= vid.text_fields :temporal_subject, 'Time periods', class: 'span12', mininum_fields: 2 %>
-    <%= vid.text_fields :geographic_subject, 'Locations', class: 'span12', minimum_fields: 2 %>
-    <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span12' %>
+   <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span12' %>
   <% end %>
 
-  <%= vid.fieldset 'Collection info', id: 'collection_info' do %>    
-    <%= vid.text_field :collection, 'Collection Name', class: 'span12' %>
+  <%= vid.fieldset 'Collections', id: 'collection_info' do %>    
+    <%= vid.text_field :collection, 'Collection Name', class: 'span12',
+        minimum_fields: 3 %>
   <% end %>
 
   <%= vid.actions do |actions| %>
