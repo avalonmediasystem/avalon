@@ -21,13 +21,13 @@
     <%= vid.text_fields :publisher, 'Publisher(s)', class: 'span12', minimum_fields: 3  %>
   <% end %>
   
-  <%= vid.fieldset 'Keywords', id: 'keywords' do %>    
+  <%= vid.fieldset 'Keyword(s)', id: 'keywords' do %>    
     <%= vid.text_field :genre, 'Genre', class: 'span12' %>
    <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span12' %>
   <% end %>
 
   <%= vid.fieldset 'Collections', id: 'collection_info' do %>    
-    <%= vid.text_field :collection, 'Collection Name', class: 'span12',
+    <%= vid.text_fields :collection, 'Collection', class: 'span12',
         minimum_fields: 3 %>
   <% end %>
 
