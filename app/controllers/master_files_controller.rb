@@ -72,7 +72,7 @@ class MasterFilesController < ApplicationController
         master_file = MasterFile.new
         master_file.mediaobject = media_object
         master_file.setContent(File.open(file_path, 'rb'))
-        set_default_item_permissions master_file
+        MasterFilesController.set_default_item_permissions(master_file, user_key)
         
         unless master_file.save
           flash[:errors] = "There was a problem storing the file"
