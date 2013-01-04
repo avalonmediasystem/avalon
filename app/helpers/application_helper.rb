@@ -76,7 +76,7 @@ module ApplicationHelper
       label = ''
       unless resource.nil?
         if resource.label.blank?
-          label = File.basename(resource.descMetadata.identifier[0])
+          label = File.basename(resource.file_location)
         else
           label = resource.label
         end
