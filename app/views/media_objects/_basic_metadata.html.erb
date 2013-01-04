@@ -23,12 +23,11 @@
   
   <%= vid.fieldset 'Keyword(s)', id: 'keywords' do %>    
     <%= vid.text_field :genre, 'Genre', class: 'span12' %>
-   <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span12', value: @mediaobject.topical_subject %>
+    <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span12', value: @mediaobject.topical_subject %>
   <% end %>
 
   <%= vid.fieldset 'Collections', id: 'collection_info' do %>    
-    <%= vid.text_fields :collection, 'Collection', class: 'span12',
-        minimum_fields: 3, value: @mediaobject.collection %>
+    <%= vid.text_field :collection, 'Collection', class: 'span12' %>
   <% end %>
 
   <%= vid.actions do |actions| %>
