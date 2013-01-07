@@ -104,7 +104,7 @@ class MasterFilesController < ApplicationController
 
         @masterfile.mediapackage_id = workflow.mediapackage.id.first
         sourceelement = workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:media/ns3:track[@type="presenter/source"]').first
-        @masterfile.checksum = sourceelement.at('./ns3:checksum').content
+        @masterfile.file_checksum = sourceelement.at('./ns3:checksum').content
         @masterfile.duration = sourceelement.at('./ns3:duration').content
         thumbnailelement = workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:attachments/ns3:attachment[@type="presenter/search+preview"]').first
 	unless thumbnailelement.nil?
