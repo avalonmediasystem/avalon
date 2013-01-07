@@ -101,6 +101,24 @@ class MasterFilesController < ApplicationController
         workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:media/ns3:track[@type="presenter/delivery" and ns3:tags/ns3:tag = "streaming"]/@id', workflow.ng_xml.root.namespaces).each do |trackid|
           Derivative.create_from_master_file(@masterfile, trackid.content)
         end
+
+        @masterfile.mediapackage_id = workflow.mediapackage.id.first
+        sourceelement = workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:media/ns3:track[@type="presenter/source"]').first
+        @masterfile.checksum = sourceelement.at('./ns3:checksum').content
+        @masterfile.duration = sourceelement.at('./ns3:duration').content
+        thumbnailelement = workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:attachments/ns3:attachment[@type="presenter/search+preview"]').first
+	unless thumbnailelement.nil?
+          thumbnailuri = URI.parse(thumbnailelement.at('./ns3:url').content)
+          @masterfile.thumbnail.content = Rubyhorn.client.get(thumbnailuri.path[1..-1]) #need to string leading slash for rubyhorn to be happy
+          @masterfile.thumbnail.mimeType = thumbnailelement.at('./ns3:mimetype').content
+        end
+        posterelement = workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:attachments/ns3:attachment[@type="presenter/player+preview"]').first
+	unless posterelement.nil?
+          posteruri = URI.parse(posterelement.at('./ns3:url').content)
+          @masterfile.poster.content = Rubyhorn.client.get(posteruri.path[1..-1])
+          @masterfile.poster.mimeType = posterelement.at('./ns3:mimetype').content
+        end
+        @masterfile.save
       end
 
       ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( @masterfile.mediaobject.id )
