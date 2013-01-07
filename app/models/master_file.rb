@@ -101,9 +101,9 @@ class MasterFile < ActiveFedora::Base
       end
   end
 
-  def updateProgress workflow_id
-    raise "Workflow id does not match existing MasterFile workflow_id" unless self.workflow_id == workflow_id
-    matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
+  def updateProgress matterhorn_response
+    #raise "Workflow id does not match existing MasterFile workflow_id" unless self.workflow_id == workflow_id
+    #matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
 
     #TODO set duration, mediapackage_id, checksum, etc if not already set
 

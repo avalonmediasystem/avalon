@@ -118,12 +118,26 @@ describe MasterFilesController do
       end
     end
   end
-    
+  
   describe "#update" do
-    context "should handle Matterhorn pingbacks"
-      it "should create Derivatives when processing succeeded"
+    context "should handle Matterhorn pingbacks" do
+      it "should create Derivatives when processing succeeded" do
         #stub Rubyhorn call and return a workflow fixture and check that Derivative.create_from_master_file is called
-        
+        xml = File.new("spec/fixtures/matterhorn_workflow_doc.xml")
+        doc = Rubyhorn::Workflow.from_xml(xml)
+        Rubyhorn.client.stub(:instance_xml).and_return(doc)     
+      
+        mf = MasterFile.create!
+        mo = MediaObject.new
+        mo.save(validate: false)
+        mf.mediaobject = mo
+        mf.save
+        mo.save
+        put :update, id: mf.pid, workflow_id: 1103
+ 
+        mf = MasterFile.find(mf.pid)
+        puts mf.derivatives.count
+        mf.derivatives.count.should eq 3
       end
     end
   end

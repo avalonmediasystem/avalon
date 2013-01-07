@@ -95,9 +95,9 @@ class MasterFilesController < ApplicationController
     @masterfile = MasterFile.find(params[:id])
     if params[:workflow_id].present?
       @masterfile.workflow_id ||= params[:workflow_id]
-      @masterfile.updateProgress params[:workflow_id]
+      workflow = Rubyhorn.client.instance_xml(params[:workflow_id])
+      @masterfile.updateProgress workflow 
       if @masterfile.status_code.eql? "SUCCEEDED"
-        workflow = Rubyhorn.client.instance_xml(@masterfile.workflow_id)
         workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:media/ns3:track[@type="presenter/delivery" and ns3:tags/ns3:tag = "streaming"]/@id', workflow.ng_xml.root.namespaces).each do |trackid|
           Derivative.create_from_master_file(@masterfile, trackid.content)
         end
