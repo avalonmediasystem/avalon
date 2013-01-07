@@ -120,6 +120,12 @@ describe MasterFilesController do
   end
     
   describe "#update" do
+    context "should handle Matterhorn pingbacks"
+      it "should create Derivatives when processing succeeded"
+        #stub Rubyhorn call and return a workflow fixture and check that Derivative.create_from_master_file is called
+        
+      end
+    end
   end
   
   describe "#destroy" do
