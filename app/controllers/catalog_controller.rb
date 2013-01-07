@@ -18,15 +18,15 @@ class CatalogController < ApplicationController
   end
 
   # This applies appropriate access controls to all solr queries
-  solr_search_params_logic << :add_access_controls_to_solr_params
+  solr_search_params_logic = [:add_access_controls_to_solr_params]
   
   # This filters out objects that you want to exclude from search results, like FileAssets
-  solr_search_params_logic << :exclude_unwanted_models
+solr_search_params_logic += [:exclude_unwanted_models]
 
-  solr_search_params_logic << :only_wanted_models
-  solr_search_params_logic << :only_published_items
+solr_search_params_logic += [:only_wanted_models]
+solr_search_params_logic += [:only_published_items]
 
-  solr_search_params_logic << :limit_to_current_user
+solr_search_params_logic += [:limit_to_current_user]
 
   configure_blacklight do |config|
     config.default_solr_params = { 
