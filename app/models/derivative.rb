@@ -40,7 +40,7 @@ class Derivative < ActiveFedora::Base
     derivative.encoding.video.resolution.video_width = width
     derivative.encoding.video.resolution.video_height = height
 
-#    masterfile.save
+    derivative.masterfile = masterfile
     derivative.save
     derivative
   end
