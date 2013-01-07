@@ -3,7 +3,7 @@
   <dd>
     <% unless @mediaobject.title.blank? or
       "" == @mediaobject.title %>
-      <%= @mediaobject.title %>
+      <%= sanitize @mediaobject.title %>
     <% else %>
       <em>Not provided</em>
     <% end %>
@@ -12,7 +12,7 @@
   <dt>Creator</dt>
   <dd>
     <% unless @mediaobject.creator.blank? %>
-      <%= @mediaobject.creator %>
+      <%= sanitize @mediaobject.creator %>
     <% else %>
       <em>Not provided</em>
     <% end %>
@@ -21,7 +21,7 @@
   <dt>Date</dt>
   <dd>
     <% unless @mediaobject.date_created.blank? %>
-      <%= @mediaobject.date_created %>
+      <%= sanitize @mediaobject.date_created %>
     <% else %>
       <em>Not provided</em>
     <% end %>
@@ -29,7 +29,7 @@
 
   <dt>Summary</dt>
   <% unless @mediaobject.abstract.blank? %>
-    <dd><%= wrap_text(@mediaobject.abstract) %></dd>
+    <dd><%= sanitize @mediaobject.abstract %></dd>
   <% else %>
     <dd><em>No summary available</em></dd>
   <% end %>
@@ -47,7 +47,7 @@
 
   <% unless @mediaobject.genre.blank? %>
     <dt>Genre</dt>
-    <dd><%= @mediaobject.genre %></dd>
+    <dd><%= sanitize @mediaobject.genre %></dd>
   <% end %>
 
   <% unless @mediaobject.temporal_subject.blank? %>
