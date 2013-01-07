@@ -38,6 +38,7 @@
       </section>
 
     <div class="row-fluid whitespace">
+      <% unless @masterFiles.empty? %>
         <section>
         <h3>Section(s)</h3>
             <ul class="unstyled">
@@ -58,6 +59,7 @@
             </ul> 
         <% end %>
       </section>  
+    <% end %>
 
       <section id="metadata" class="whitespace">
         <h3>Metadata</h3>
