@@ -29,8 +29,8 @@ class Derivative < ActiveFedora::Base
     derivative.duration = track_xml.at("./ns3:duration").content
     derivative.location_url = track_xml.at("./ns3:url").content
     derivative.encoding.mime_type = track_xml.at("./ns3:mimetype").content
-    tags = track_xml.xpath("./ns3:tags/ns3:tag").select{|t| t.content =~ /quality-(.*)/ } 
-    derivative.encoding.quality = tags.first.content unless tags.empty?
+    qualitytags = track_xml.xpath("./ns3:tags/ns3:tag").select{|t| t.content =~ /quality-(.*)/ }
+    derivative.encoding.quality = $1 if not qualitytags.empty? and qualitytags.first.content =~ /quality-(.*)/
     derivative.encoding.audio.audio_bitrate = track_xml.at("./ns3:audio/ns3:bitrate").content
     derivative.encoding.audio.audio_codec = track_xml.at("./ns3:audio/ns3:encoder/@type").content
     derivative.encoding.video.video_bitrate = track_xml.at("./ns3:video/ns3:bitrate").content
