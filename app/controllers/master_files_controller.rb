@@ -97,23 +97,45 @@ class MasterFilesController < ApplicationController
       @masterfile.workflow_id ||= params[:workflow_id]
       workflow = Rubyhorn.client.instance_xml(params[:workflow_id])
       @masterfile.updateProgress workflow 
+
+      # If Matterhorn reports that the processing is complete then we need
+      # to prepare Fedora by pulling several important values closer to the
+      # interface. This will sped up searching, allow for on-the-fly quality
+      # switching, and avois hitting Matterhorn repeatedly when loading up
+      # a list of search results
       if @masterfile.status_code.eql? "SUCCEEDED"
-        workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:media/ns3:track[@type="presenter/delivery" and ns3:tags/ns3:tag = "streaming"]/@id', workflow.ng_xml.root.namespaces).each do |trackid|
+        # First step is to create derivative objects within Fedora for each
+        # derived item. For this we need to pick only those which 
+        # have a 'streaming' tag attached
+    workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:media/ns3:track[@type="presenter/delivery" and ns3:tags/ns3:tag = "streaming"]/@id', workflow.ng_xml.root.namespaces).each do |trackid|
           Derivative.create_from_master_file(@masterfile, trackid.content)
         end
 
+        # Some elements of the original file need to be stored as well even 
+        # though they are not being used right now. This includes a checksum 
+        # which can be used to validate the file has not changed and the 
+        # thumbnail.
+        #
+        # The thumbnail is tricky because Fedora cannot ingest from a URI. That 
+        # means if one exists we should copy it over to a temporary location and
+        # then hand the bits off to Fedora
         @masterfile.mediapackage_id = workflow.mediapackage.id.first
         sourceelement = workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:media/ns3:track[@type="presenter/source"]').first
         @masterfile.file_checksum = sourceelement.at('./ns3:checksum').content
         @masterfile.duration = sourceelement.at('./ns3:duration').content
         thumbnailelement = workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:attachments/ns3:attachment[@type="presenter/search+preview"]').first
-	unless thumbnailelement.nil?
+	    
+	    unless thumbnailelement.nil?
           thumbnailuri = URI.parse(thumbnailelement.at('./ns3:url').content)
-          @masterfile.thumbnail.content = Rubyhorn.client.get(thumbnailuri.path[1..-1]) #need to string leading slash for rubyhorn to be happy
+          # Rubyhorn fails if you don't provide a leading / in the provided path
+          @masterfile.thumbnail.content = Rubyhorn.client.get(thumbnailuri.path[1..-1]) 
           @masterfile.thumbnail.mimeType = thumbnailelement.at('./ns3:mimetype').content
         end
+        
+        # The poster element needs the same treatment as the thumbnail except 
+        # for being located at player+preview and not search+preview
         posterelement = workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:attachments/ns3:attachment[@type="presenter/player+preview"]').first
-	unless posterelement.nil?
+	    unless posterelement.nil?
           posteruri = URI.parse(posterelement.at('./ns3:url').content)
           @masterfile.poster.content = Rubyhorn.client.get(posteruri.path[1..-1])
           @masterfile.poster.mimeType = posterelement.at('./ns3:mimetype').content
@@ -121,6 +143,9 @@ class MasterFilesController < ApplicationController
         @masterfile.save
       end
 
+      # Finally we handle the case where the item was batch ingested. If so the
+      # update method needs to kick off an email letting the uploader know it is
+      # ready to be previewed
       ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( @masterfile.mediaobject.id )
       if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
         IngestBatchMailer.status_email(ingest_batch.id).deliver
@@ -128,13 +153,16 @@ class MasterFilesController < ApplicationController
         ingest_batch.save!
       end
 
+    # If the process is still running then we simply need to update the status 
+    # and wait for the next pingback from Matterhorn
     else
       @mediaobject = @masterfile.mediaobject
       authorize! :edit, @mediaobject
       @masterfile.label = params[@masterfile.pid]
     end
+    
     @masterfile.save
-    render :nothing => true
+    render nothing: true
   end
 
   # When destroying a file asset be sure to stop it first
