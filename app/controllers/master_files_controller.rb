@@ -107,6 +107,7 @@ class MasterFilesController < ApplicationController
         # First step is to create derivative objects within Fedora for each
         # derived item. For this we need to pick only those which 
         # have a 'streaming' tag attached
+
     workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:media/ns3:track[@type="presenter/delivery" and ns3:tags/ns3:tag = "streaming"]/@id', workflow.ng_xml.root.namespaces).each do |trackid|
           Derivative.create_from_master_file(@masterfile, trackid.content)
         end
