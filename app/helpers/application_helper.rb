@@ -6,8 +6,9 @@ module ApplicationHelper
     def image_for_result(item_id)
       #TODO index the thumbnail url to avoid having to hit fedora to get it
       media_object = MediaObject.find(item_id)
-   
-      imageurl = ActiveFedora.fedora.config[:url] + media_object.thumbnail.url unless media_object.thumbnail.new?
+      masterfile = media_object.parts.first 
+ 
+      imageurl = ActiveFedora.fedora.config[:url] + "/" + masterfile.thumbnail.url unless masterfile.nil? or masterfile.thumbnail.new?
       imageurl ||= case
                    when media_object.format == "Moving image"
                      "video_icon.png"
