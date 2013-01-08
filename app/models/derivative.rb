@@ -92,8 +92,8 @@ class Derivative < ActiveFedora::Base
       label: masterfile.label,
       stream_flash: tokenized_url(token, false),
       stream_hls: tokenized_url(token, true),
-      poster_image: masterfile.poster_image,
-      mimetype: encoding.mime_type,
+      poster_image: masterfile.poster.url, #FIXME this yeilds something like "objects/changeme%3A314/datastreams/poster/content" which needs fedora's base added on to it
+      mimetype: encoding.mime_type.first,
       mediapackage_id: masterfile.mediapackage_id,
       format: format,
       resolution: resolution 
@@ -112,7 +112,7 @@ class Derivative < ActiveFedora::Base
   end
 
   def resolution
-    "#{encoding.resolution.video_width.first}x#{encoding.resolution.video_height.first}"
+    "#{encoding.video.resolution.video_width.first}x#{encoding.video.resolution.video_height.first}"
   end
 
 end 
