@@ -1,5 +1,0 @@
-<a href="/<%= file.descMetadata.identifier[0]%>"><%= file.descMetadata.title[0]%></a>
-<span id="file_status"> (<%= file.descMetadata.description[0] %>)</span>
-<% if can? :edit, @document %>
-	<%= button_to("Delete", "/hydra/assets/#{file.pid}/file_assets/#{file.pid}?container_id=#{@document[:id]}", :data => { :confirm => "Are you sure you want to delete this file?" }, :method => :delete, :class => "delete-button") %>
-<% end %>
