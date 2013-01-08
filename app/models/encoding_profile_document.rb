@@ -13,6 +13,12 @@ class EncodingProfileDocument < ActiveFedora::NokogiriDatastream
     # to the user
     t.mime_type(path: 'mime_type')
     
+    # Both audio and video have a bitrate and codec but video also adds
+    # additional information about resolution and framerate since it is
+    # visual.
+    #
+    # An audio profile should always be present but video depends if the
+    # content is visual as well.
     t.audio(path: 'audio') {
       t.audio_bitrate(path: 'bitrate')
       t.audio_codec(path: 'codec')
