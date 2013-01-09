@@ -9,21 +9,19 @@
   gem 'rubydora', '< 1.0.0'
   gem 'active-fedora', '~> 5.0.0'
 
-  gem 'hydrant-workflow',
-    git: 'https://github.com/variations-on-video/hydrant-workflow.git'
-  gem 'hydrant-engage', 
-    git: "https://github.com/variations-on-video/hydrant-engage.git"
+  gem 'hydrant-workflow', git: 'https://github.com/variations-on-video/hydrant-workflow.git'
+  gem 'hydrant-engage', git: "https://github.com/variations-on-video/hydrant-engage.git"
  
   platforms :jruby do
-  	gem 'jruby-openssl'
-	gem 'activerecord-jdbcsqlite3-adapter'
-	gem 'jdbc-sqlite3'
-	gem 'therubyrhino'
+    gem 'jruby-openssl'
+    gem 'activerecord-jdbcsqlite3-adapter'
+    gem 'jdbc-sqlite3'
+    gem 'therubyrhino'
   end
 
   platforms :ruby do
-  	gem 'sqlite3'
-	gem 'execjs'
+    gem 'sqlite3'
+  gem 'execjs'
      gem 'therubyracer', '= 0.10.2'
   end
 

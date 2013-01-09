@@ -38,12 +38,14 @@ class Derivative < ActiveFedora::Base
     derivative.encoding.quality = $1 if not qualitytags.empty? and qualitytags.first.content =~ /quality-(.*)/
     derivative.encoding.audio.audio_bitrate = track_xml.at("./ns3:audio/ns3:bitrate").content
     derivative.encoding.audio.audio_codec = track_xml.at("./ns3:audio/ns3:encoder/@type").content
-    derivative.encoding.video.video_bitrate = track_xml.at("./ns3:video/ns3:bitrate").content
-    derivative.encoding.video.video_codec = track_xml.at("./ns3:video/ns3:encoder/@type").content 
-    derivative.encoding.video.frame_rate = track_xml.at("./ns3:video/ns3:framerate").content
-    width, height = track_xml.at("./ns3:video/ns3:resolution").content.split("x")
-    derivative.encoding.video.resolution.video_width = width
-    derivative.encoding.video.resolution.video_height = height
+    unless track_xml.at("./ns3:video").nil?
+      derivative.encoding.video.video_bitrate = track_xml.at("./ns3:video/ns3:bitrate").content
+      derivative.encoding.video.video_codec = track_xml.at("./ns3:video/ns3:encoder/@type").content 
+      derivative.encoding.video.frame_rate = track_xml.at("./ns3:video/ns3:framerate").content
+      width, height = track_xml.at("./ns3:video/ns3:resolution").content.split("x")
+      derivative.encoding.video.resolution.video_width = width
+      derivative.encoding.video.resolution.video_height = height
+    end
 
     derivative.masterfile = masterfile
     derivative.save
