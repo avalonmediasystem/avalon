@@ -107,9 +107,11 @@ class MasterFilesController < ApplicationController
         # First step is to create derivative objects within Fedora for each
         # derived item. For this we need to pick only those which 
         # have a 'streaming' tag attached
-
-    workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:media/ns3:track[@type="presenter/delivery" and ns3:tags/ns3:tag = "streaming"]/@id', workflow.ng_xml.root.namespaces).each do |trackid|
-          Derivative.create_from_master_file(@masterfile, trackid.content)
+        #
+        # Why do it this way? It will create a dynamic node that can be
+        # passed to the helper without any extra work
+        workflow.streaming_tracks.size.times do |i|
+          Derivative.create_from_master_file(@masterfile, workflow.streaming_tracks(i))
         end
 
         # Some elements of the original file need to be stored as well even 
@@ -121,25 +123,30 @@ class MasterFilesController < ApplicationController
         # means if one exists we should copy it over to a temporary location and
         # then hand the bits off to Fedora
         @masterfile.mediapackage_id = workflow.mediapackage.id.first
-        sourceelement = workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:media/ns3:track[@type="presenter/source"]').first
-        @masterfile.file_checksum = sourceelement.at('./ns3:checksum').content
-        @masterfile.duration = sourceelement.at('./ns3:duration').content
-        thumbnailelement = workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:attachments/ns3:attachment[@type="presenter/search+preview"]').first
-	    
-	    unless thumbnailelement.nil?
-          thumbnailuri = URI.parse(thumbnailelement.at('./ns3:url').content)
+        
+        unless workflow.source_tracks(0).nil?
+          @masterfile.file_checksum = workflow.source_tracks(0).checksum
+          @masterfile.duration = workflow.source_tracks(0).duration
+        end
+        thumbnail = workflow.thumbnail_images(0)	    
+	
+        # TODO : Since these are the same write a method to DRY up updating an
+        #        image datastream
+        unless thumbnail.nil?
+          thumbnailURI = URI.parse(thumbnail.url.first)
           # Rubyhorn fails if you don't provide a leading / in the provided path
-          @masterfile.thumbnail.content = Rubyhorn.client.get(thumbnailuri.path[1..-1]) 
-          @masterfile.thumbnail.mimeType = thumbnailelement.at('./ns3:mimetype').content
+          @masterfile.thumbnail.content = Rubyhorn.client.get(thumbnailURI.path[1..-1]) 
+          @masterfile.thumbnail.mimeType = thumbnail.mimetype.first
         end
         
         # The poster element needs the same treatment as the thumbnail except 
         # for being located at player+preview and not search+preview
-        posterelement = workflow.ng_xml.xpath('//xmlns:workflow/ns3:mediapackage/ns3:attachments/ns3:attachment[@type="presenter/player+preview"]').first
-	    unless posterelement.nil?
-          posteruri = URI.parse(posterelement.at('./ns3:url').content)
-          @masterfile.poster.content = Rubyhorn.client.get(posteruri.path[1..-1])
-          @masterfile.poster.mimeType = posterelement.at('./ns3:mimetype').content
+        poster = workflow.poster_images(0)
+
+        unless posterelement.nil?
+          poster_uri = URI.parse(poster.url.first)
+          @masterfile.poster.content = Rubyhorn.client.get(poster_uri.path[1..-1])
+          @masterfile.poster.mimeType = poster.mimetype.first
         end
         @masterfile.save
       end

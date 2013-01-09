@@ -20,15 +20,20 @@ class Derivative < ActiveFedora::Base
 
   has_metadata name: 'encoding', type: EncodingProfileDocument
 
-  def self.create_from_master_file(masterfile, track_id)
+  # Gettting the track ID from the fragment is not great but it does reduce the number
+  # of calls to Matterhorn 
+  def self.create_from_master_file(masterfile, markup)
     derivative = Derivative.create
-    derivative.track_id = track_id
+    derivative.track_id = markup.track_id
     
     matterhorn_response = Rubyhorn.client.instance_xml(masterfile.workflow_id)
-    track_xml = matterhorn_response.ng_xml.xpath("//xmlns:workflow/ns3:mediapackage/ns3:media/ns3:track[@id=$track_id]", matterhorn_response.ng_xml.root.namespaces, {track_id: track_id})
-    derivative.duration = track_xml.at("./ns3:duration").content
-    derivative.location_url = track_xml.at("./ns3:url").content
-    derivative.encoding.mime_type = track_xml.at("./ns3:mimetype").content
+    derivative.duration = markup.duration.first
+    derivative.location_url = markup.url.first
+    derivative.encoding.mime_type = markup.mimetype.first
+
+    # TODO ASAP BEFORE END OF SPRINT
+    # Clean up the rest of this XPathy stuff! That means cjcolvar and
+    # rogersna
     qualitytags = track_xml.xpath("./ns3:tags/ns3:tag").select{|t| t.content =~ /quality-(.*)/ }
     derivative.encoding.quality = $1 if not qualitytags.empty? and qualitytags.first.content =~ /quality-(.*)/
     derivative.encoding.audio.audio_bitrate = track_xml.at("./ns3:audio/ns3:bitrate").content
