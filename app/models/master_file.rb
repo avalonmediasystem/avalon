@@ -116,6 +116,16 @@ class MasterFile < ActiveFedora::Base
     ['STOPPED', 'SUCCEEDED', 'FAILED'].include?(status_code)
   end
 
+  def poster_url
+    #poster.url yeilds something like "objects/changeme%3A314/datastreams/poster/content" which needs fedora's base added on to it
+    poster.new? ? nil : ActiveFedora.fedora.config[:url] + "/" + poster.url
+  end
+
+  def thumbnail_url
+    #thumbnail.url yeilds something like "objects/changeme%3A314/datastreams/thumbnail/content" which needs fedora's base added on to it
+    thumbnail.new? ? nil : ActiveFedora.fedora.config[:url] + "/" + thumbnail.url
+  end
+
   protected
 
   def calculate_percent_complete matterhorn_response
