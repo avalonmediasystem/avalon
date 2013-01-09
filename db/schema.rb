@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20121219173255) do
+ActiveRecord::Schema.define(:version => 20130108163856) do
 
   create_table "bookmarks", :force => true do |t|
     t.integer  "user_id",     :null => false
@@ -48,10 +48,11 @@ ActiveRecord::Schema.define(:version => 20121219173255) do
   create_table "ingest_batches", :force => true do |t|
     t.string   "email"
     t.text     "media_object_ids"
-    t.boolean  "finished",         :default => false
-    t.boolean  "email_sent",       :default => false
-    t.datetime "created_at",                          :null => false
-    t.datetime "updated_at",                          :null => false
+    t.boolean  "finished",                       :default => false
+    t.boolean  "email_sent",                     :default => false
+    t.datetime "created_at",                                        :null => false
+    t.datetime "updated_at",                                        :null => false
+    t.string   "name",             :limit => 50
   end
 
   create_table "searches", :force => true do |t|

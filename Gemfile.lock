@@ -31,7 +31,7 @@ GIT
 
 GIT
   remote: https://github.com/variations-on-video/hydrant-batch.git
-  revision: a66423a9715cc7ef4f4251de30afad8037a05cc9
+  revision: d8280a16f63c8e1b1b6b457fe9ca134b95e355d5
   specs:
     hydrant-batch (0.0.1)
       activesupport
@@ -51,16 +51,8 @@ GIT
     hydrant-workflow (0.0.2a)
 
 GIT
-  remote: https://github.com/variations-on-video/twitter_bootstrap_form_for.git
-  revision: 4268432d4da912004551dad5d56e05e0a7d88af6
-  branch: bootstrap-2.0
-  specs:
-    twitter_bootstrap_form_for (2.0.1.0.rc2)
-      actionpack (~> 3)
-      railties (~> 3)
-
-PATH
-  remote: ~/rubyhorn
+  remote: https://github.com/variations-on-video/rubyhorn.git
+  revision: 6d4ea0a2943a3185a8f1932fb319362e3ede2072
   specs:
     rubyhorn (0.0.4)
       activesupport
@@ -70,16 +62,25 @@ PATH
       net-http-digest_auth
       om
 
+GIT
+  remote: https://github.com/variations-on-video/twitter_bootstrap_form_for.git
+  revision: 4268432d4da912004551dad5d56e05e0a7d88af6
+  branch: bootstrap-2.0
+  specs:
+    twitter_bootstrap_form_for (2.0.1.0.rc2)
+      actionpack (~> 3)
+      railties (~> 3)
+
 GEM
   remote: http://rubygems.org/
   specs:
     RedCloth (4.2.9)
-    actionmailer (3.2.10)
-      actionpack (= 3.2.10)
+    actionmailer (3.2.11)
+      actionpack (= 3.2.11)
       mail (~> 2.4.4)
-    actionpack (3.2.10)
-      activemodel (= 3.2.10)
-      activesupport (= 3.2.10)
+    actionpack (3.2.11)
+      activemodel (= 3.2.11)
+      activesupport (= 3.2.11)
       builder (~> 3.0.0)
       erubis (~> 2.7.0)
       journey (~> 1.0.4)
@@ -99,18 +100,18 @@ GEM
       rsolr
       rubydora (~> 0.5.13)
       solrizer (~> 2.0.0)
-    activemodel (3.2.10)
-      activesupport (= 3.2.10)
+    activemodel (3.2.11)
+      activesupport (= 3.2.11)
       builder (~> 3.0.0)
-    activerecord (3.2.10)
-      activemodel (= 3.2.10)
-      activesupport (= 3.2.10)
+    activerecord (3.2.11)
+      activemodel (= 3.2.11)
+      activesupport (= 3.2.11)
       arel (~> 3.0.2)
       tzinfo (~> 0.3.29)
-    activeresource (3.2.10)
-      activemodel (= 3.2.10)
-      activesupport (= 3.2.10)
-    activesupport (3.2.10)
+    activeresource (3.2.11)
+      activemodel (= 3.2.11)
+      activesupport (= 3.2.11)
+    activesupport (3.2.11)
       i18n (~> 0.6)
       multi_json (~> 1.0)
     addressable (2.3.2)
@@ -152,7 +153,7 @@ GEM
       ffi (~> 1.0, >= 1.0.6)
     choice (0.1.6)
     chronic (0.9.0)
-    chunky_png (1.2.6)
+    chunky_png (1.2.7)
     coderay (1.0.8)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
@@ -187,7 +188,7 @@ GEM
       delayed_job (~> 3.0)
     deprecation (0.0.5)
       activesupport
-    devise (2.1.2)
+    devise (2.2.0)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
       railties (~> 3.1)
@@ -207,7 +208,7 @@ GEM
     faraday (0.8.4)
       multipart-post (~> 1.1)
     fastercsv (1.5.5)
-    ffi (1.2.0)
+    ffi (1.3.0)
     fssm (0.2.9)
     google-spreadsheet-ruby (0.3.0)
       google_drive (>= 0.3.0)
@@ -338,24 +339,24 @@ GEM
     pry-rails (0.2.2)
       pry (>= 0.9.10)
     pyu-ruby-sasl (0.0.3.3)
-    rack (1.4.1)
+    rack (1.4.3)
     rack-cache (1.2)
       rack (>= 0.4)
     rack-ssl (1.3.2)
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
-    rails (3.2.10)
-      actionmailer (= 3.2.10)
-      actionpack (= 3.2.10)
-      activerecord (= 3.2.10)
-      activeresource (= 3.2.10)
-      activesupport (= 3.2.10)
+    rails (3.2.11)
+      actionmailer (= 3.2.11)
+      actionpack (= 3.2.11)
+      activerecord (= 3.2.11)
+      activeresource (= 3.2.11)
+      activesupport (= 3.2.11)
       bundler (~> 1.0)
-      railties (= 3.2.10)
-    railties (3.2.10)
-      actionpack (= 3.2.10)
-      activesupport (= 3.2.10)
+      railties (= 3.2.11)
+    railties (3.2.11)
+      actionpack (= 3.2.11)
+      activesupport (= 3.2.11)
       rack-ssl (~> 1.3.2)
       rake (>= 0.8.7)
       rdoc (~> 3.4)
@@ -391,7 +392,7 @@ GEM
     rspec-expectations (2.12.1)
       diff-lcs (~> 1.1.3)
     rspec-mocks (2.12.1)
-    rspec-rails (2.12.0)
+    rspec-rails (2.12.1)
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       railties (>= 3.0)
@@ -419,7 +420,7 @@ GEM
       capistrano (>= 2.0.0)
     sanitize (2.0.3)
       nokogiri (>= 1.4.4, < 1.6)
-    sass (3.2.4)
+    sass (3.2.5)
     sass-rails (3.2.5)
       railties (~> 3.2.0)
       sass (>= 3.1.10)
