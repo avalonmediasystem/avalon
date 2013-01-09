@@ -131,7 +131,7 @@ class MasterFile < ActiveFedora::Base
   def calculate_percent_complete matterhorn_response
     totalOperations = matterhorn_response.operations.operation.length
     finishedOperations = 0
-    matterhorn_response.operations.operation.operationState.each {|state| finishedOperations += 1 if state == "SUCCEEDED" || state == "SKIPPED"}
+    matterhorn_response.operations.operation.operation_state.each {|state| finishedOperations += 1 if state == "SUCCEEDED" || state == "SKIPPED"}
     percent = finishedOperations * 100 / totalOperations
     puts "percent_complete #{percent}"
     percent.to_s

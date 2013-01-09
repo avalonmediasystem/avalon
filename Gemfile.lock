@@ -51,8 +51,16 @@ GIT
     hydrant-workflow (0.0.2a)
 
 GIT
-  remote: https://github.com/variations-on-video/rubyhorn.git
-  revision: 99169b2b878c6c84b31987800ec4bad8f3fe4a88
+  remote: https://github.com/variations-on-video/twitter_bootstrap_form_for.git
+  revision: 4268432d4da912004551dad5d56e05e0a7d88af6
+  branch: bootstrap-2.0
+  specs:
+    twitter_bootstrap_form_for (2.0.1.0.rc2)
+      actionpack (~> 3)
+      railties (~> 3)
+
+PATH
+  remote: ~/rubyhorn
   specs:
     rubyhorn (0.0.4)
       activesupport
@@ -61,15 +69,6 @@ GIT
       multipart-post
       net-http-digest_auth
       om
-
-GIT
-  remote: https://github.com/variations-on-video/twitter_bootstrap_form_for.git
-  revision: 4268432d4da912004551dad5d56e05e0a7d88af6
-  branch: bootstrap-2.0
-  specs:
-    twitter_bootstrap_form_for (2.0.1.0.rc2)
-      actionpack (~> 3)
-      railties (~> 3)
 
 GEM
   remote: http://rubygems.org/
