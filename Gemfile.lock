@@ -30,6 +30,14 @@ GIT
       mediashelf-loggable
 
 GIT
+  remote: https://github.com/variations-on-video/hydrant-batch.git
+  revision: d8280a16f63c8e1b1b6b457fe9ca134b95e355d5
+  specs:
+    hydrant-batch (0.0.1)
+      activesupport
+      roo
+
+GIT
   remote: https://github.com/variations-on-video/hydrant-engage.git
   revision: 59e4640a8de7fc808e8bbe1b4ab83d7a49e21254
   specs:
@@ -62,13 +70,6 @@ GIT
     twitter_bootstrap_form_for (2.0.1.0.rc2)
       actionpack (~> 3)
       railties (~> 3)
-
-PATH
-  remote: /Users/mbk836/Workspace/gems/hydrant-batch
-  specs:
-    hydrant-batch (0.0.1)
-      activesupport
-      roo
 
 GEM
   remote: http://rubygems.org/
