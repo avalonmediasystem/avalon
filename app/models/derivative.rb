@@ -92,17 +92,12 @@ class Derivative < ActiveFedora::Base
       label: masterfile.label,
       stream_flash: tokenized_url(token, false),
       stream_hls: tokenized_url(token, true),
-      poster_image: poster_url,
+      poster_image: masterfile.poster_url,
       mimetype: encoding.mime_type.first,
       mediapackage_id: masterfile.mediapackage_id,
       format: format,
       resolution: resolution 
     }
-  end
-
-  def poster_url
-    #poster.url yeilds something like "objects/changeme%3A314/datastreams/poster/content" which needs fedora's base added on to it
-    ActiveFedora.fedora.config[:url] + "/" + masterfile.poster.url
   end
 
   def format

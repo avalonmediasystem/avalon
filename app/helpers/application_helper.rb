@@ -8,7 +8,7 @@ module ApplicationHelper
       media_object = MediaObject.find(item_id)
       masterfile = media_object.parts.first 
  
-      imageurl = ActiveFedora.fedora.config[:url] + "/" + masterfile.thumbnail.url unless masterfile.nil? or masterfile.thumbnail.new?
+      imageurl = masterfile.thumbnail_url unless masterfile.nil?
       imageurl ||= case
                    when media_object.format == "Moving image"
                      "video_icon.png"
