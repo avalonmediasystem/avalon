@@ -22,8 +22,8 @@
     function refreshStream(stream_info) {
       var opts = { flash: stream_info.stream_flash, 
                    hls: stream_info.stream_hls, 
-                   mimetype: stream_info.mimetype,
-                   format: stream_info.format };
+                   poster: stream_info.poster_image,
+                   mediaPackageId: stream_info.mediapackage_id };
       currentPlayer.switchStream(opts);
     }
 

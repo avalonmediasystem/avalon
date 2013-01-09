@@ -101,6 +101,28 @@ class MasterFile < ActiveFedora::Base
       end
   end
 
+  def stream_details(token)
+    flash, hls = [], []
+    derivatives.each do |d|
+      flash << { url: d.tokenized_url(token, false), 
+                 mimetype: d.encoding.mime_type.first,
+                 format: d.format,
+                 resolution: d.resolution }
+      hls << { url: d.tokenized_url(token, true), 
+               mimetype: d.encoding.mime_type.first,
+               format: d.format,
+               resolution: d.resolution }
+    end
+
+    {
+      label: label,
+      poster_image: poster_url,
+      mediapackage_id: mediapackage_id,
+      stream_flash: flash, 
+      stream_hls: hls 
+    }
+  end
+
   def updateProgress matterhorn_response
     #raise "Workflow id does not match existing MasterFile workflow_id" unless self.workflow_id == workflow_id
     #matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
