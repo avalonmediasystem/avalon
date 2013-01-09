@@ -84,6 +84,17 @@ module ModsTemplates
 		  		xml.text(text)
 		  	}
 		  end
+
+		  define_template :collection do |xml,text|
+		  	xml.relatedItem(:type => 'host') {
+		  		xml.titleInfo {
+		  			xml.title {
+		  				xml.text(Array(text).first)
+		  			}
+		  		}
+		  	}
+		  end
+
 		end
 	end
 

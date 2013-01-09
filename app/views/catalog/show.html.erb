@@ -51,7 +51,9 @@
     </div>
 
     <div class="row-fluid whitespace">
-          <h3>Sections</h3>
+      <% unless @masterFiles.empty? %>
+      <section>
+        <h3>Sections</h3>
           <ul class="unstyled" id="section_links">
             <% @masterFiles.each do |master| %>
               <li>
@@ -66,6 +68,8 @@
               </li>
               <% end %>
           </ul>
+       </section>
+     <% end %>
     </div>
     
     <div class="row-fluid whitespace">

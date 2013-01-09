@@ -101,12 +101,14 @@ class ModsDocument < ActiveFedora::NokogiriDatastream
     t.person_subject(:proxy => [:subject, :name, :name_part], :path => 'subject/oxns:name[@type="personal"]/oxns:namePart')
     t.corporate_subject(:proxy => [:subject, :name, :name_part], :path => 'subject/oxns:name[@type="corporate"]/oxns:namePart')
     t.family_subject(:proxy => [:subject, :name, :name_part], :path => 'subject/oxns:name[@type="family"]/oxns:namePart')
-    t.title_subject(:proxy => [:subject, :title_info])
+    t.title_subject(:proxy => [:subject, :title_info, :title])
 
     t.related_item(:path => 'relatedItem') do
       t.identifier
+      t.title_info(:ref => :title_info)
     end
     t.related_item_id(:proxy => [:related_item, :identifier])
+    t.collection(:proxy => [:related_item, :title_info, :title], :path => 'relatedItem[@type="host"]/oxns:titleInfo/oxns:title')
 
     t.identifier
 

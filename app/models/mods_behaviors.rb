@@ -58,6 +58,9 @@ module ModsBehaviors
     solr_doc[:language_facet] = self.find_by_terms(:language_text).text
     solr_doc[:language_display] = self.find_by_terms(:language_text).text
 
+    solr_doc[:collection_facet] = self.find_by_terms(:collection).text
+    solr_doc[:collection_display] = self.find_by_terms(:collection).text
+
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
     create = self.find_by_terms(:date_created).text.strip
     unless create.nil? or create.empty?
@@ -85,10 +88,13 @@ module ModsBehaviors
 
   def remove_empty_nodes!
   	patterns = [
-  		'//mods:titleInfo[count(mods:title)=0]',
-  		'//mods:name[count(mods:namePart)=0]',
-  		'//mods:subject[count(*)=0]',
-  		'//mods:language[count(mods:languageTerm)=0]'
+      '//mods:title[text()=""]',
+      '//mods:titleInfo[count(mods:title)=0]',
+      '//mods:name[count(mods:namePart)=0]',
+      '//mods:subject[count(*)=0]',
+      '//mods:language[count(mods:languageTerm)=0]',
+      '//mods:relatedItem[count(*)=0]',
+      '//*[namespace-uri()="http://www.loc.gov/mods/v3"][count(*|@*)=0 and text()=""]'
   	]
 
   	patterns.each do |path|
