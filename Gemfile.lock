@@ -52,7 +52,7 @@ GIT
 
 GIT
   remote: https://github.com/variations-on-video/rubyhorn.git
-  revision: 5276839450ab9beb7d8c983d716aedff82c80892
+  revision: feb652da4645ef6d7ab72d3d34fac98c7717ab14
   specs:
     rubyhorn (0.0.4)
       activesupport
