@@ -1,7 +1,7 @@
   <div class="result">
     <% if can?(:read, document) then %>
       <%# Not very DRY but a more predictable experience %>
-      <% unless image_for(document[:id].nil? %>
+      <% unless image_for(document[:id].nil?) %>
         <%= link_to(media_object_path(document[:id]),
             {class: 'pull-left'}) do
               image_tag image_for(document[:id]),
