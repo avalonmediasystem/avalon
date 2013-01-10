@@ -8,6 +8,8 @@ development:
   matterhorn:
     root: 'http://localhost:8080/'
     baseApplication: 'avalon'
+  mediainfo:
+    path: '/usr/local/bin/mediainfo'
 test:
   dropbox:
     path: '/srv/avalon/dropbox/'
@@ -18,3 +20,5 @@ test:
   matterhorn:
     root: 'http://localhost:8080/'
     baseApplication: 'avalon'
+  mediainfo:
+    path: '/usr/local/bin/mediainfo'
