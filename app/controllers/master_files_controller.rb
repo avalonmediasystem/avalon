@@ -187,7 +187,21 @@ class MasterFilesController < ApplicationController
 
     redirect_to edit_media_object_path(parent.pid, step: "file-upload")
   end
-  
+ 
+  def thumbnail
+    master_file = MasterFile.find(params[:id])
+    parent = master_file.mediaobject
+    authorize! :read, parent, message: "You do not have sufficient privileges to view this file"
+    send_data master_file.thumbnail.content, :filename => "thumbnail-#{master_file.pid.split(':')[1]}", :type => master_file.thumbnail.mimeType
+  end
+ 
+  def poster
+    master_file = MasterFile.find(params[:id])
+    parent = master_file.mediaobject
+    authorize! :read, parent, message: "You do not have sufficient privileges to view this file"
+    send_data master_file.poster.content, :filename => "poster-#{master_file.pid.split(':')[1]}", :type => master_file.poster.mimeType
+  end
+
 protected
   def create_upload_notice(format) 
     case format

@@ -8,7 +8,7 @@ module ApplicationHelper
       media_object = MediaObject.find(item_id)
       masterfile = media_object.parts.first 
  
-      imageurl = masterfile.thumbnail_url unless masterfile.nil?
+      imageurl = thumbnail_master_file_path(masterfile) unless masterfile.nil?
       imageurl ||= case
                    when media_object.format == "Moving image"
                      "video_icon.png"

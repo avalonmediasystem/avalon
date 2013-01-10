@@ -24,7 +24,12 @@ Hydrant::Application.routes.draw do
       get 'mobile'
     end
   end
-  resources :master_files, except: [:show, :new, :index]
+  resources :master_files, except: [:show, :new, :index] do
+    member do
+      get 'thumbnail'
+      get 'poster'
+    end
+  end
   resources :derivatives, only: [:create]
   
   resources :comments, only: [:index, :create]
