@@ -30,11 +30,8 @@ class Derivative < ActiveFedora::Base
     derivative.duration = markup.duration.first
     derivative.location_url = markup.url.first
     derivative.encoding.mime_type = markup.mimetype.first
-    derivative.encoding.quality = markup.tags.quality
+    derivative.encoding.quality = markup.tags.quality.first.split('-')[1]
 
-    # TODO ASAP BEFORE END OF SPRINT
-    # Clean up the rest of this XPathy stuff! That means cjcolvar and
-    # rogersna        
     derivative.encoding.audio.audio_bitrate = markup.audio.a_bitrate.first
     derivative.encoding.audio.audio_codec = markup.audio.a_codec.first
 

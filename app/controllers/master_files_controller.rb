@@ -136,7 +136,7 @@ class MasterFilesController < ApplicationController
           thumbnailURI = URI.parse(thumbnail.url.first)
           # Rubyhorn fails if you don't provide a leading / in the provided path
           @masterfile.thumbnail.content = Rubyhorn.client.get(thumbnailURI.path[1..-1]) 
-          @masterfile.thumbnail.mimeType = thumbnail.type.first
+          @masterfile.thumbnail.mimeType = thumbnail.mimetype.first
         end
         
         # The poster element needs the same treatment as the thumbnail except 
@@ -146,7 +146,7 @@ class MasterFilesController < ApplicationController
         unless poster.nil?
           poster_uri = URI.parse(poster.url.first)
           @masterfile.poster.content = Rubyhorn.client.get(poster_uri.path[1..-1])
-          @masterfile.poster.mimeType = poster.type.first
+          @masterfile.poster.mimeType = poster.mimetype.first
         end
         @masterfile.save
       end
@@ -156,7 +156,11 @@ class MasterFilesController < ApplicationController
       # ready to be previewed
       ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( @masterfile.mediaobject.id )
       if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
-        IngestBatchMailer.status_email(ingest_batch.id).deliver
+        begin
+          IngestBatchMailer.status_email(ingest_batch.id).deliver!
+        rescue Exception => e
+          logger.warn "Ingest Batch Mailer failed because #{e}"
+        end
         ingest_batch.email_sent = true
         ingest_batch.save!
       end
