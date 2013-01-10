@@ -146,7 +146,7 @@ class MasterFilesController < ApplicationController
         unless poster.nil?
           poster_uri = URI.parse(poster.url.first)
           @masterfile.poster.content = Rubyhorn.client.get(poster_uri.path[1..-1])
-          @masterfile.poster.mimeType = poster.first.mimetype.first
+          @masterfile.poster.mimeType = poster.type.first
         end
         @masterfile.save
       end
