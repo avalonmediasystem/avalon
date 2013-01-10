@@ -3,7 +3,7 @@ module ApplicationHelper
       'Hydrant'
     end
     
-    def image_for_result(item_id)
+    def image_for(item_id)
       #TODO index the thumbnail url to avoid having to hit fedora to get it
       media_object = MediaObject.find(item_id)
       masterfile = media_object.parts.first 
@@ -14,14 +14,14 @@ module ApplicationHelper
                      "video_icon.png"
                    when media_object.format == "Sound"
                      "audio_icon.png"
-                   when (media_object.parts.length >= 2) #FIXME we need to test if both audio and video are present instead of assuming when there is more than one part
+                   when (media_object.parts.length >= 2) 
+                     # TODO
+                     # We need to test if both audio and video are present
+                     # instead of assuming when there is more than one part
                      "hybrid_icon.png" 
                    else
-                     puts "FORMAT: #{media_object.format}"
-                     "no_icon.png"
+                     nil
                    end
-
-      image_tag imageurl, class: 'result-thumbnail'
     end
 
     # Creates a hot link to the downloadable file if it is available. File names longer

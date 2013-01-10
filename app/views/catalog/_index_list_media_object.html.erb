@@ -1,10 +1,16 @@
   <div class="result">
     <% if can?(:read, document) then %>
-      <%= link_to image_for_result(document[:id]),
-        media_object_path(document[:id]), 
-        {class: 'pull-left'} %>
+      <%# Not very DRY but a more predictable experience %>
+      <% unless image_for(document[:id].nil? %>
+        <%= link_to(media_object_path(document[:id]),
+            {class: 'pull-left'}) do
+              image_tag image_for(document[:id]),
+            end %>
       <% else %>
-        <%= image_for_result(document[:id]) %>
+        <%= image_tag 'no_icon.png' %>
+      <% end %> 
+      <% else %>
+        <%= image_tag image_for(document[:id]), class: 'result-thumbnail pull-left' %>
     <% end %>
   <div class="result-summary"> 
     <h4 class="result-heading"><%= document["creator_display"].nil? ? 'Creator unknown'.html_safe : document["creator_display"].first  %> (<%= document["pub_date"].blank? ? 'Unknown' : document["pub_date"].first %>)</h4>
