@@ -156,7 +156,11 @@ class MasterFilesController < ApplicationController
       # ready to be previewed
       ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( @masterfile.mediaobject.id )
       if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
-        IngestBatchMailer.status_email(ingest_batch.id).deliver
+        begin
+          IngestBatchMailer.status_email(ingest_batch.id).deliver!
+        rescue Exception => e
+          logger.warn "Ingest Batch Mailer failed because #{e}"
+        end
         ingest_batch.email_sent = true
         ingest_batch.save!
       end
