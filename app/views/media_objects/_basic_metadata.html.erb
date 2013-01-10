@@ -27,7 +27,8 @@
   <% end %>
 
   <%= vid.fieldset 'Collections', id: 'collection_info' do %>    
-    <%= vid.text_field :collection, 'Collection', class: 'span12' %>
+    <%= vid.text_fields :collection, 'Collection', class: 'span12',
+      minimum_fields: 3, value: @mediaobject.collection %>
   <% end %>
 
   <%= vid.actions do |actions| %>

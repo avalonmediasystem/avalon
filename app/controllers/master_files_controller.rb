@@ -156,7 +156,11 @@ class MasterFilesController < ApplicationController
       # ready to be previewed
       ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( @masterfile.mediaobject.id )
       if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
-        IngestBatchMailer.status_email(ingest_batch.id).deliver
+        begin
+          IngestBatchMailer.status_email(ingest_batch.id).deliver!
+        rescue Exception => e
+          logger.warn "Ingest Batch Mailer failed because #{e}"
+        end
         ingest_batch.email_sent = true
         ingest_batch.save!
       end
@@ -187,7 +191,21 @@ class MasterFilesController < ApplicationController
 
     redirect_to edit_media_object_path(parent.pid, step: "file-upload")
   end
-  
+ 
+  def thumbnail
+    master_file = MasterFile.find(params[:id])
+    parent = master_file.mediaobject
+    authorize! :read, parent, message: "You do not have sufficient privileges to view this file"
+    send_data master_file.thumbnail.content, :filename => "thumbnail-#{master_file.pid.split(':')[1]}", :type => master_file.thumbnail.mimeType
+  end
+ 
+  def poster
+    master_file = MasterFile.find(params[:id])
+    parent = master_file.mediaobject
+    authorize! :read, parent, message: "You do not have sufficient privileges to view this file"
+    send_data master_file.poster.content, :filename => "poster-#{master_file.pid.split(':')[1]}", :type => master_file.poster.mimeType
+  end
+
 protected
   def create_upload_notice(format) 
     case format
