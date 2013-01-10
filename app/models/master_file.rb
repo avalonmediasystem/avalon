@@ -41,6 +41,8 @@ class MasterFile < ActiveFedora::Base
   VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
   UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
 
+  QUALITY_ORDER = { "low" => 1, "medium" => 2, "high" => 3 }
+
   def save_parent
     unless mediaobject.nil?
       mediaobject.save(validate: false)  
@@ -104,16 +106,19 @@ class MasterFile < ActiveFedora::Base
   def stream_details(token)
     flash, hls = [], []
     derivatives.each do |d|
-      flash << { url: d.tokenized_url(token, false), 
+      common = { quality: d.encoding.quality.first,
                  mimetype: d.encoding.mime_type.first,
                  format: d.format,
-                 resolution: d.resolution }
-      hls << { url: d.tokenized_url(token, true), 
-               mimetype: d.encoding.mime_type.first,
-               format: d.format,
-               resolution: d.resolution }
+                 resolution: d.resolution } 
+      flash << common.merge(url: d.tokenized_url(token, false))
+      hls << common.merge(url: d.tokenized_url(token, true)) 
     end
 
+    # Sorts the streams in order of quality, note: Hash order only works in Ruby 1.9 or later
+    flash = sort_streams flash
+    hls = sort_streams hls
+
+    # Returns the hash
     {
       label: label,
       poster_image: poster_url,
@@ -121,6 +126,10 @@ class MasterFile < ActiveFedora::Base
       stream_flash: flash, 
       stream_hls: hls 
     }
+  end
+
+  def sort_streams array
+    array.sort { |x, y| QUALITY_ORDER[x[:quality]] <=> QUALITY_ORDER[y[:quality]] }
   end
 
   def updateProgress matterhorn_response

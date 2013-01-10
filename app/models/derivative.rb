@@ -92,19 +92,6 @@ class Derivative < ActiveFedora::Base
       uri.to_s
   end
 
-  def stream_details(token)
-    {
-      label: masterfile.label,
-      stream_flash: tokenized_url(token, false),
-      stream_hls: tokenized_url(token, true),
-      poster_image: masterfile.poster_url,
-      mimetype: encoding.mime_type.first,
-      mediapackage_id: masterfile.mediapackage_id,
-      format: format,
-      resolution: resolution 
-    }
-  end
-
   def format
     case
       when (not encoding.video.empty?)

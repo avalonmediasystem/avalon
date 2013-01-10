@@ -85,13 +85,10 @@
     $(function(){
       if ($("#nojs").length > 0) {
         currentPlayer = avalonPlayer("#player",
-                   { hls: "<%= @currentStreamInfo[:stream_hls] %>",
+                   { hls: <%= @currentStreamInfo[:stream_hls].to_json.html_safe %>,
                      poster: "<%= @currentStreamInfo[:poster_image] %>", 
-                     flash: "<%= @currentStreamInfo[:stream_flash] %>",
-                     mimetype: "<%= @currentStreamInfo[:mimetype] %>",
-                     mediaPackageId: "<%= @currentStreamInfo[:mediapackage_id] %>",
-                     format: "<%= @currentStreamInfo[:format] %>", 
-                     resolution: "<%= @currentStreamInfo[:resolution] %>" });
+                     flash: <%= @currentStreamInfo[:stream_flash].to_json.html_safe %>,
+                     mediaPackageId: "<%= @currentStreamInfo[:mediapackage_id] %>" });
       }
     })
   </script>

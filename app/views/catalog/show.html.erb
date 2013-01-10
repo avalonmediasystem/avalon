@@ -107,7 +107,7 @@
     $(function(){
       if ($("#nojs").length > 0) {
         currentPlayer = avalonPlayer("#player", 
-                   { hls: "<%#= @currentStreamInfo[:stream_hls] %>",
+                   { hls: <%= @currentStreamInfo[:stream_hls].to_json.html_safe %>,
                      poster: "<%= @currentStreamInfo[:poster_image] %>", 
                      mediaPackageId: "<%= @currentStreamInfo[:mediapackage_id] %>", 
                      flash: <%= @currentStreamInfo[:stream_flash].to_json.html_safe %> });

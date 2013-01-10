@@ -24,7 +24,7 @@ class MediaObjectsController < CatalogController
     if 'preview' == @active_step 
       @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
       @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
-      @currentStreamInfo = @currentStream.derivatives.first.stream_details(@token) rescue {}
+      @currentStreamInfo = @currentStream.stream_details(@token) rescue {}
 
       if (not @masterFiles.empty? and @currentStream.blank?)
         @currentStream = @masterFiles.first
