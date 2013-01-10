@@ -136,17 +136,17 @@ class MasterFilesController < ApplicationController
           thumbnailURI = URI.parse(thumbnail.url.first)
           # Rubyhorn fails if you don't provide a leading / in the provided path
           @masterfile.thumbnail.content = Rubyhorn.client.get(thumbnailURI.path[1..-1]) 
-          @masterfile.thumbnail.mimeType = thumbnail.mimetype.first
+          @masterfile.thumbnail.mimeType = thumbnail.type.first
         end
         
         # The poster element needs the same treatment as the thumbnail except 
         # for being located at player+preview and not search+preview
         poster = workflow.poster_images(0)
 
-        unless posterelement.nil?
+        unless poster.nil?
           poster_uri = URI.parse(poster.url.first)
           @masterfile.poster.content = Rubyhorn.client.get(poster_uri.path[1..-1])
-          @masterfile.poster.mimeType = poster.mimetype.first
+          @masterfile.poster.mimeType = poster.type.first
         end
         @masterfile.save
       end
