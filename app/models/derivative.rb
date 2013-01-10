@@ -20,7 +20,7 @@ class Derivative < ActiveFedora::Base
 
   has_metadata name: 'encoding', type: EncodingProfileDocument
 
-  # Gettting the track ID from the fragment is not great but it does reduce the number
+  # Getting the track ID from the fragment is not great but it does reduce the number
   # of calls to Matterhorn 
   def self.create_from_master_file(masterfile, markup)
     derivative = Derivative.create
@@ -30,25 +30,23 @@ class Derivative < ActiveFedora::Base
     derivative.duration = markup.duration.first
     derivative.location_url = markup.url.first
     derivative.encoding.mime_type = markup.mimetype.first
+    derivative.encoding.quality = markup.tags.quality
 
     # TODO ASAP BEFORE END OF SPRINT
     # Clean up the rest of this XPathy stuff! That means cjcolvar and
-    # rogersna
-    qualitytags = track_xml.xpath("./ns3:tags/ns3:tag").select{|t| t.content =~ /quality-(.*)/ }
-    derivative.encoding.quality = $1 if not qualitytags.empty? and qualitytags.first.content =~ /quality-(.*)/
-    derivative.encoding.audio.audio_bitrate = track_xml.at("./ns3:audio/ns3:bitrate").content
-    derivative.encoding.audio.audio_codec = track_xml.at("./ns3:audio/ns3:encoder/@type").content
-    unless track_xml.at("./ns3:video").nil?
-      derivative.encoding.video.video_bitrate = track_xml.at("./ns3:video/ns3:bitrate").content
-      derivative.encoding.video.video_codec = track_xml.at("./ns3:video/ns3:encoder/@type").content 
-      derivative.encoding.video.frame_rate = track_xml.at("./ns3:video/ns3:framerate").content
-      width, height = track_xml.at("./ns3:video/ns3:resolution").content.split("x")
-      derivative.encoding.video.resolution.video_width = width
-      derivative.encoding.video.resolution.video_height = height
-    end
+    # rogersna        
+    derivative.encoding.audio.audio_bitrate = markup.audio.a_bitrate.first
+    derivative.encoding.audio.audio_codec = markup.audio.a_codec.first
 
+    unless markup.video.empty?
+      derivative.encoding.video.video_bitrate = markup.video.v_bitrate.first
+      derivative.encoding.video.video_codec = markup.video.v_codec.first
+      derivative.encoding.video.resolution = markup.video.resolution.first
+    end
+    
     derivative.masterfile = masterfile
     derivative.save
+    
     derivative
   end
 
@@ -117,9 +115,4 @@ class Derivative < ActiveFedora::Base
         "other"
       end
   end
-
-  def resolution
-    "#{encoding.video.resolution.video_width.first}x#{encoding.video.resolution.video_height.first}"
-  end
-
 end 
