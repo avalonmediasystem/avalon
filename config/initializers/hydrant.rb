@@ -9,6 +9,10 @@ module Hydrant
   env = ENV['RAILS_ENV'] || 'development'
   Configuration = YAML::load(File.read(Rails.root.join('config', 'hydrant.yml')))[env]
   DropboxService = Dropbox.new Hydrant::Configuration['dropbox']['path']
+  begin
+  	Mediainfo.path = Hydrant::Configuration['mediainfo']['path'] 
+	rescue
+	end
 
   def self.matterhorn_config
   	mh_server = Configuration['matterhorn']['root'].sub(%r{/+$},'')
