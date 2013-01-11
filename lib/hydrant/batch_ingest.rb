@@ -25,6 +25,7 @@ module Hydrant
         new_packages.each_with_index do |package, index|
           logger.debug "<< Processing package #{index} >>"
 
+          media_objects = []
           package.process do |fields, files|
 
             # Creates and processes MasterFiles
@@ -77,18 +78,16 @@ module Hydrant
             
             media_objects << mediaobject
           end
+
+          first_manifest = new_packages.first.manifest
+          email_address = first_manifest.email || Hydrant::Configuration['dropbox']['notification_email_address']
+
+          IngestBatch.create( 
+            media_object_ids: media_objects.map(&:id), 
+            name:  first_manifest.name,
+            email: email_address,
+          )
         end
-
-        first_manifest = new_packages.first.manifest
-        email_address = first_manifest.email || Hydrant::Configuration['dropbox']['notification_email_address']
-
-        IngestBatch.create( 
-          media_object_ids: media_objects.map(&:id), 
-          name:  first_manifest.name,
-          email: email_address,
-        )
-
-      # end if new packages length greater than zero
       end
     
     end
