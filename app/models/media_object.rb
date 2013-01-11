@@ -175,6 +175,9 @@ class MediaObject < ActiveFedora::Base
     # class attributes are displayed in the view and posted to the server
     metadata_attribute = klass_attribute_to_metadata_attribute_map[ attribute.to_sym ]
     metadata_attribute_value = value
+    if metadata_attribute.nil? and descMetadata.class.terminology.terms.has_key?(attribute.to_sym)
+      metadata_attribute = attribute.to_sym
+    end
 
     if metadata_attribute.nil?
       raise "Metadata attribute not found, class attribute: #{attribute}"
