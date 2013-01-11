@@ -57,7 +57,8 @@ class MediaObject < ActiveFedora::Base
     :collection => :collection,
     :geographic_subject => :geographic_subject,
     :temporal_subject => :temporal_subject,
-    :topical_subject => :topical_subject
+    :topical_subject => :topical_subject,
+    :collection => :collection
     }
   end
 
@@ -83,7 +84,7 @@ class MediaObject < ActiveFedora::Base
   delegate :genre, to: :descMetadata, at: [:genre], unique: true
   delegate :subject, to: :descMetadata, at: [:topical_subject]
   delegate :related_item, to: :descMetadata, at: [:related_item_id]
-  delegate :collection, to: :descMetadata, at: [:collection], unique: true
+  delegate :collection, to: :descMetadata, at: [:collection]
 
   delegate :geographic_subject, to: :descMetadata, at: [:geographic_subject]
   delegate :temporal_subject, to: :descMetadata, at: [:temporal_subject]
