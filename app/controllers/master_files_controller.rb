@@ -132,7 +132,7 @@ class MasterFilesController < ApplicationController
 	
         # TODO : Since these are the same write a method to DRY up updating an
         #        image datastream
-        unless thumbnail.nil?
+        unless thumbnail.empty?
           thumbnailURI = URI.parse(thumbnail.url.first)
           # Rubyhorn fails if you don't provide a leading / in the provided path
           @masterfile.thumbnail.content = Rubyhorn.client.get(thumbnailURI.path[1..-1]) 
@@ -143,7 +143,7 @@ class MasterFilesController < ApplicationController
         # for being located at player+preview and not search+preview
         poster = workflow.poster_images(0)
 
-        unless poster.nil?
+        unless poster.empty?
           poster_uri = URI.parse(poster.url.first)
           @masterfile.poster.content = Rubyhorn.client.get(poster_uri.path[1..-1])
           @masterfile.poster.mimeType = poster.mimetype.first

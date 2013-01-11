@@ -30,7 +30,7 @@ class Derivative < ActiveFedora::Base
     derivative.duration = markup.duration.first
     derivative.location_url = markup.url.first
     derivative.encoding.mime_type = markup.mimetype.first
-    derivative.encoding.quality = markup.tags.quality.first.split('-')[1]
+    derivative.encoding.quality = markup.tags.quality.first.split('-')[1] unless markup.tags.quality.empty?
 
     derivative.encoding.audio.audio_bitrate = markup.audio.a_bitrate.first
     derivative.encoding.audio.audio_codec = markup.audio.a_codec.first
