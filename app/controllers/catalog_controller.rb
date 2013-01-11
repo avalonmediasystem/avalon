@@ -76,6 +76,7 @@ solr_search_params_logic += [:limit_to_current_user]
     config.add_facet_field 'workflow_status_facet', :label => 'Status', :limit => 5, :if_user_can => [:manage, MediaObject]
     config.add_facet_field 'workflow_published_facet', :label => 'Published', :limit => 5, :if_user_can => [:manage, MediaObject]
 
+    config.add_facet_field 'collection_facet', :label => 'Collection', :limit => 5
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
     # handler defaults, or have no facets.
