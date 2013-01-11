@@ -78,6 +78,7 @@
     gem 'capistrano-unicorn', :require => false
     gem 'rb-fsevent', '~> 0.9.1'
     gem 'debugger'
+    gem 'letter_opener'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do
