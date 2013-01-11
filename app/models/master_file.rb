@@ -108,8 +108,7 @@ class MasterFile < ActiveFedora::Base
     derivatives.each do |d|
       common = { quality: d.encoding.quality.first,
                  mimetype: d.encoding.mime_type.first,
-                 format: d.format,
-                 resolution: d.resolution } 
+                 format: d.format } 
       flash << common.merge(url: d.tokenized_url(token, false))
       hls << common.merge(url: d.tokenized_url(token, true)) 
     end
