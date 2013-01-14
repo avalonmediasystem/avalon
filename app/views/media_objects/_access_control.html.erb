@@ -18,7 +18,7 @@
 
     <%= label_tag :access do %>
       <%= radio_button_tag :access, 'restricted', (@mediaobject.access == 'restricted') %>
-      Only registered @mediaobject.user_exceptions should have access to this resource
+      Only registered users should have access to this resource
     <% end %>
 
     <%= label_tag :access do %>

@@ -136,7 +136,7 @@ describe MediaObject do
       default_groups = mediaobject.read_groups
 
       test_groups = ["group1", "group2"]
-      mediaobject.groups = test_groups
+      mediaobject.group_exceptions = test_groups
 
       # new read_groups should preserve default_groups and contain test_groups
       (default_groups - mediaobject.read_groups).should be_empty 
@@ -146,7 +146,7 @@ describe MediaObject do
     it "should not add duplicated group" do
       mediaobject.access = "public"
       test_groups = ["group1", "group1", mediaobject.read_groups.first]
-      mediaobject.groups = test_groups
+      mediaobject.group_exceptions = test_groups
       
       mediaobject.read_groups.should eql mediaobject.read_groups.uniq
     end
