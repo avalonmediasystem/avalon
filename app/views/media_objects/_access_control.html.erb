@@ -42,8 +42,8 @@
         <tbody>
           <% @mediaobject.group_exceptions.each do |group| %>
         <tr>
-          <td><%= check_box_tag 'groups[remove]', group %></td>
-          <td><%= group %></td>
+          <td><%= check_box_tag 'groups[remove]', group %>
+          <%= group %></td>
         </tr>
       <% end %>
       </tbody>
@@ -58,8 +58,8 @@
         <tbody>
           <% @mediaobject.user_exceptions.each do |user| %>
         <tr>
-          <td><%= check_box_tag 'users[remove]', user %></td>
-          <td><%= user %></td>
+          <td><%= check_box_tag 'users[remove]', user %>
+          <%= user %></td>
         </tr>
       <% end %>
       </tbody>
@@ -68,7 +68,8 @@
 
         <%= text_field_tag :value %>
         <%= select_tag :scope, options_for_select(['Group', 'User']) %>
-        <%= submit_tag 'Add' %>
+        <br />
+        <%= submit_tag 'Update' %>
     <% end %>
  
 </div>
