@@ -64,6 +64,8 @@
 
     <%= form_tag 'access_control', 
       html: { class: "form-vertical"} do %>
+        <%= hidden_field_tag :donot_advance, true %>
+        <%= hidden_field_tag :step, @active_step %>
         <%= text_field_tag :value %>
         <%= select_tag :scope, options_for_select(['Group', 'User']) %>
         <%= submit_tag 'Add' %>
