@@ -142,22 +142,22 @@ class MediaObject < ActiveFedora::Base
     end
   end
 
-  alias :users :read_users
-  alias :users= :read_users=
+  alias :user_exceptions :read_users
+  alias :user_exceptions= :read_users=
 
-  def groups
+  def group_exceptions
     groups = self.read_groups
     groups.delete 'public'
     groups.delete 'registered'
     groups
   end
 
-  def groups= group_list
+  def group_exceptions= group_list
     access_level = access
     self.read_groups = []
-    access = access_level
+    self.access = access_level
     groups = self.read_groups
-    groups << group_list
+    groups += group_list
     self.read_groups = groups
   end
 
