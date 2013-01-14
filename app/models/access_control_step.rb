@@ -13,7 +13,18 @@
         	  logger.debug "<< Access flag = #{context[:access]} >>"
               	  mediaobject.access = context[:access] unless context[:access].blank? 
 
-                  if context[:commit] == "Add"
+                  unless context[:groups].blank?
+                    groups = mediaobject.group_exceptions
+                    context[:groups].each {|g| groups.delete g }
+                    mediaobject.group_exceptions = groups
+                  end                
+                  unless context[:users].blank?
+                    users = mediaobject.user_exceptions
+                    context[:users].each {|u| users.delete u }
+                    mediaobject.user_exceptions = users
+                  end                
+
+                  if context[:commit] == "Update"
                     if context[:scope] == "Group"
                       groups = mediaobject.group_exceptions
                       groups << context[:value] unless context[:value].blank?
