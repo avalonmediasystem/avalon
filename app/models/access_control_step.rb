@@ -11,6 +11,7 @@
 		  mediaobject = context[:mediaobject]
 	          # TO DO: Implement me
         	  logger.debug "<< Access flag = #{context[:access]} >>"
+
               	  mediaobject.access = context[:access] unless context[:access].blank? 
 
                   unless context[:groups].blank?
@@ -45,6 +46,8 @@
                       mediaobject.user_exceptions = users
                     end
                   end
+
+                  mediaobject.hidden = context[:hidden] unless context[:hidden].blank?
         
 	          mediaobject.save
         	  logger.debug "<< Groups : #{mediaobject.read_groups} >>"
