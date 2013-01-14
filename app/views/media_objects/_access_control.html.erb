@@ -1,10 +1,13 @@
 <% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
+<h3>Access control</h3>
+<p class="whitespace">Some short blurb explaining what the point of access controls are]</p>
+
+<h4>Default access</h4>
 <%= twitter_bootstrap_form_for @mediaobject, 
       html: { 
 	class: "form-horizontal",
     	id: 'access_control_form' } do |vid| %>
     <%= hidden_field_tag :step, @active_step %>
-    <%= vid.fieldset "Access control", id: 'access_control' do %>    
     <%= vid.hidden_field :pid %>
 
     <%= label_tag :access do %>
@@ -20,8 +23,13 @@
     <%= label_tag :access do %>
       <%= radio_button_tag :access, 'private', (@mediaobject.access == 'private') %>
       Only I should be able to see this resource
-    <% end %>
-  
+
+    <h4>Additional groups</h4>
+    <p>Members of these groups will have read access to the item regardless of the default above.</p>
+
+<h4>Additional users</h4>
+<p>Users below will have read access to the item regardless of the default.</p>
+
     <%= vid.actions do |actions| %>
       <%= render "workflow_buttons", form: vid %>
     <% end %>
