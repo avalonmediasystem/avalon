@@ -24,6 +24,7 @@ class CatalogController < ApplicationController
   self.solr_search_params_logic += [:exclude_unwanted_models]
   self.solr_search_params_logic += [:only_wanted_models]
   self.solr_search_params_logic += [:only_published_items]
+  self.solr_search_params_logic += [:limit_to_non_hidden_items]
   self.solr_search_params_logic += [:limit_to_current_user]
 
   configure_blacklight do |config|
@@ -195,6 +196,11 @@ class CatalogController < ApplicationController
       solr_parameters[:fq] ||= []
       solr_parameters[:fq] << "dc_creator_t: #{user_key}"
     end
+  end
+
+  def limit_to_non_hidden_items(solr_parameters, user_parameters)
+    solr_parameters[:fq] ||= []
+    solr_parameters[:fq] << '!hidden_b:true'
   end
 
   def index
