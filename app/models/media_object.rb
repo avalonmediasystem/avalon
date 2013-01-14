@@ -159,6 +159,19 @@ class MediaObject < ActiveFedora::Base
     groups = self.read_groups
     groups += group_list
     self.read_groups = groups
+
+  def hidden= value
+    groups = self.discover_groups
+    if value
+      groups << "nobody"
+    else
+      groups.delete "nobody"
+    end
+    self.discover_groups = groups.uniq
+  end
+
+  def hidden?
+    self.discover_groups.include? "nobody"
   end
 
   def update_datastream(datastream = :descMetadata, values = {})
@@ -234,6 +247,12 @@ class MediaObject < ActiveFedora::Base
     end
   end
   
+  def to_solr(solr_doc = Hash.new, opts = {})
+    super(solr_doc, opts)
+    solr_doc[:hidden_b] = hidden?
+    return solr_doc
+  end
+
   # Other validation to consider adding into future iterations is the ability to
   # validate against a known controlled vocabulary. This one will take some thought
   # and research as opposed to being able to just throw something together in an ad hoc

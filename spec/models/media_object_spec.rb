@@ -102,6 +102,21 @@ describe MediaObject do
     end
   end
 
+  describe "discovery" do
+    it "should default to discoverable" do
+      @mediaobject = MediaObject.new
+      @mediaobject.hidden?.should be_false
+      @mediaobject.to_solr[:hidden_b].should be_false
+    end
+
+    it "should set hidden?" do
+      @mediaobject = MediaObject.new
+      @mediaobject.hidden = true
+      @mediaobject.hidden?.should be_true
+      @mediaobject.to_solr[:hidden_b].should be_true
+    end
+  end
+
   describe "Ingest status" do
     it "should default to unpublished" do
       mediaobject.workflow.published.first.should eq "false"
