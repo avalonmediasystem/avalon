@@ -11,9 +11,13 @@
 	          # TO DO: Implement me
         	  logger.debug "<< Access flag = #{context[:access]} >>"
               	  mediaobject.access = context[:access]        
+
+		  mediaobject.groups = context[:groups]
+		  mediaobject.users = context[:users]
         
 	          mediaobject.save
         	  logger.debug "<< Groups : #{mediaobject.read_groups} >>"
+        	  logger.debug "<< Users : #{mediaobject.read_users} >>"
 		  context
 		end
 	end

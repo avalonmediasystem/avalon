@@ -142,6 +142,25 @@ class MediaObject < ActiveFedora::Base
     end
   end
 
+  alias :users :read_users
+  alias :users= :read_users=
+
+  def groups
+    groups = self.read_groups
+    groups.delete 'public'
+    groups.delete 'registered'
+    groups
+  end
+
+  def groups= group_list
+    access_level = access
+    self.read_groups = []
+    access = access_level
+    groups = self.read_groups
+    groups << group_list
+    self.read_groups = groups
+  end
+
   def update_datastream(datastream = :descMetadata, values = {})
     values.each do |k, v|
       # First remove all blank attributes in arrays
