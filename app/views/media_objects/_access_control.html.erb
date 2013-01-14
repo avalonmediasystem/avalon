@@ -18,7 +18,7 @@
 
     <%= label_tag :access do %>
       <%= radio_button_tag :access, 'restricted', (@mediaobject.access == 'restricted') %>
-      Only registered users should have access to this resource
+      Only registered @mediaobject.users should have access to this resource
     <% end %>
 
     <%= label_tag :access do %>
@@ -29,14 +29,14 @@
     <div class="whitespace" id="exceptions">
     <h4>Exceptions</h4>
     <table class="table table-striped table-hover">
+      <% unless @mediaobject.groups.empty? %>
       <thead>
         <tr>
           <td rowspan="2">Groups</td>
         </tr>
       </thead>
-      <% unless groups.empty? %>
         <tbody>
-          <% groups.each do |group| %>
+          <% @mediaobject.groups.each do |group| %>
         <tr>
           <td><%= group %></td>
           <td class="controls">[delete]</td>  
@@ -45,14 +45,14 @@
       </tbody>
     <% end %>
     
+      <% unless @mediaobject.users.empty? %>
       <thead>
         <tr>
-          <td rowspan="2">Groups</td>
+          <td rowspan="2">Users</td>
         </tr>
       </thead>
-      <% unless users.empty? %>
         <tbody>
-          <% users.each do |user| %>
+          <% @mediaobject.users.each do |user| %>
         <tr>
           <td><%= user %></td>
           <td class="controls">[delete]</td>  
@@ -61,6 +61,14 @@
       </tbody>
     <% end %>
     </table>
+
+    <%= form_tag 'access_control', 
+      html: { class: "form-vertical"} do %>
+        <%= text_field_tag :value %>
+        <%= select_tag :scope, options_for_select(['Group', 'User']) %>
+        <%= submit_tag 'Add' %>
+    <% end %>
+ 
 </div>
 
     <%= vid.actions do |actions| %>
