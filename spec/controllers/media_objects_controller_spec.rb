@@ -154,4 +154,23 @@ describe MediaObjectsController do
       pending "Figure out how to make the right query against Solr"
     end
   end
+
+  describe "#update_status" do
+    before(:each) do
+      login_as('content_provider')
+      @media_object = MediaObject.new(pid: 'hydrant:1')
+      request.env["HTTP_REFERER"] = '/'
+    end
+    it 'publishes media object' do
+      @media_object.save(validate: false)
+      get 'update_status', :id => 'hydrant:1', :publish => 'true'
+      MediaObject.find('hydrant:1').is_published?.should be_true
+    end
+    it 'unpublishes media object' do
+      @media_object.avalon_publisher = 'archivist'
+      @media_object.save( validate: false)
+      get 'update_status', :id => 'hydrant:1', :publish => 'false'
+      MediaObject.find('hydrant:1').is_published?.should be_false
+    end
+  end
 end

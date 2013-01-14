@@ -22,6 +22,7 @@ Hydrant::Application.routes.draw do
   resources :media_objects, except: [:create] do
     member do
       get 'mobile'
+      get :update_status
     end
   end
   resources :master_files, except: [:show, :new, :index] do
