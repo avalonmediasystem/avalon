@@ -2,6 +2,7 @@
 <h3>Access control</h3>
 <p class="whitespace">Some short blurb explaining what the point of access controls are]</p>
 
+<div class="whitespace" id="default_level">
 <h4>Default access</h4>
 <%= twitter_bootstrap_form_for @mediaobject, 
       html: { 
@@ -23,12 +24,44 @@
     <%= label_tag :access do %>
       <%= radio_button_tag :access, 'private', (@mediaobject.access == 'private') %>
       Only I should be able to see this resource
+    </div>
 
-    <h4>Additional groups</h4>
-    <p>Members of these groups will have read access to the item regardless of the default above.</p>
-
-<h4>Additional users</h4>
-<p>Users below will have read access to the item regardless of the default.</p>
+    <div class="whitespace" id="exceptions">
+    <h4>Exceptions</h4>
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <td rowspan="2">Groups</td>
+        </tr>
+      </thead>
+      <% unless groups.empty? %>
+        <tbody>
+          <% groups.each do |group| %>
+        <tr>
+          <td><%= group %></td>
+          <td class="controls">[delete]</td>  
+        </tr>
+      <% end %>
+      </tbody>
+    <% end %>
+    
+      <thead>
+        <tr>
+          <td rowspan="2">Groups</td>
+        </tr>
+      </thead>
+      <% unless users.empty? %>
+        <tbody>
+          <% users.each do |user| %>
+        <tr>
+          <td><%= user %></td>
+          <td class="controls">[delete]</td>  
+        </tr>
+      <% end %>
+      </tbody>
+    <% end %>
+    </table>
+</div>
 
     <%= vid.actions do |actions| %>
       <%= render "workflow_buttons", form: vid %>
