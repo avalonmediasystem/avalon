@@ -18,7 +18,7 @@
 
     <%= label_tag :access do %>
       <%= radio_button_tag :access, 'restricted', (@mediaobject.access == 'restricted') %>
-      Only registered @mediaobject.users should have access to this resource
+      Only registered @mediaobject.user_exceptions should have access to this resource
     <% end %>
 
     <%= label_tag :access do %>
@@ -29,14 +29,14 @@
     <div class="whitespace" id="exceptions">
     <h4>Exceptions</h4>
     <table class="table table-striped table-hover">
-      <% unless @mediaobject.groups.empty? %>
+      <% unless @mediaobject.group_exceptions.empty? %>
       <thead>
         <tr>
           <td rowspan="2">Groups</td>
         </tr>
       </thead>
         <tbody>
-          <% @mediaobject.groups.each do |group| %>
+          <% @mediaobject.group_exceptions.each do |group| %>
         <tr>
           <td><%= group %></td>
           <td class="controls">[delete]</td>  
@@ -45,14 +45,14 @@
       </tbody>
     <% end %>
     
-      <% unless @mediaobject.users.empty? %>
+      <% unless @mediaobject.user_exceptions.empty? %>
       <thead>
         <tr>
           <td rowspan="2">Users</td>
         </tr>
       </thead>
         <tbody>
-          <% @mediaobject.users.each do |user| %>
+          <% @mediaobject.user_exceptions.each do |user| %>
         <tr>
           <td><%= user %></td>
           <td class="controls">[delete]</td>  
