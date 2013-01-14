@@ -28,6 +28,10 @@
 
     <div class="whitespace" id="exceptions">
     <h4>Exceptions</h4>
+    <%= form_tag 'access_control', 
+      html: { class: "form-vertical"} do %>
+        <%= hidden_field_tag :donot_advance, true %>
+        <%= hidden_field_tag :step, @active_step %>
     <table class="table table-striped table-hover">
       <% unless @mediaobject.group_exceptions.empty? %>
       <thead>
@@ -38,8 +42,8 @@
         <tbody>
           <% @mediaobject.group_exceptions.each do |group| %>
         <tr>
+          <td><%= check_box_tag 'groups[remove]', group %></td>
           <td><%= group %></td>
-          <td class="controls">[delete]</td>  
         </tr>
       <% end %>
       </tbody>
@@ -54,18 +58,14 @@
         <tbody>
           <% @mediaobject.user_exceptions.each do |user| %>
         <tr>
+          <td><%= check_box_tag 'users[remove]', user %></td>
           <td><%= user %></td>
-          <td class="controls">[delete]</td>  
         </tr>
       <% end %>
       </tbody>
     <% end %>
     </table>
 
-    <%= form_tag 'access_control', 
-      html: { class: "form-vertical"} do %>
-        <%= hidden_field_tag :donot_advance, true %>
-        <%= hidden_field_tag :step, @active_step %>
         <%= text_field_tag :value %>
         <%= select_tag :scope, options_for_select(['Group', 'User']) %>
         <%= submit_tag 'Add' %>
