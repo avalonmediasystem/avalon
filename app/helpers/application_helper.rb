@@ -51,7 +51,11 @@ module ApplicationHelper
       value.select { |v| not (v.nil? or v.strip.empty?) }.join(delim)
     end
 
-    def search_result_label(item)
+    #FIXME
+    #This helper is used by blacklight to display the "Title" field in search results
+    def search_result_label args
+       item = args[:document]
+       logger.debug "in search_result_label"
        label = ''
        unless item["title_t"].nil? or item["title_t"].empty?
          label << truncate(item["title_t"].first, length: 35)

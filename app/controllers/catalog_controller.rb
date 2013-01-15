@@ -25,7 +25,6 @@ class CatalogController < ApplicationController
   self.solr_search_params_logic += [:only_wanted_models]
   self.solr_search_params_logic += [:only_published_items]
   self.solr_search_params_logic += [:limit_to_non_hidden_items]
-  self.solr_search_params_logic += [:limit_to_current_user]
 
   configure_blacklight do |config|
     config.default_solr_params = { 
@@ -70,24 +69,25 @@ class CatalogController < ApplicationController
     config.add_facet_field 'language_facet', :label => 'Languages', :limit => 5
     config.add_facet_field 'location_facet', :label => 'Locations', :limit => 5
     config.add_facet_field 'time_period_facet', :label => 'Time Periods', :limit => 5
-
-    #FIXME hide these facets if not an "archivist"
-    config.add_facet_field 'workflow_status_facet', :label => 'Status', :limit => 5, :if_user_can => [:manage, MediaObject]
-    config.add_facet_field 'workflow_published_facet', :label => 'Published', :limit => 5, :if_user_can => [:manage, MediaObject]
-    config.add_facet_field 'created_by_facet', :label => 'Created by', :limit => 5, :if_user_can => [:manage, MediaObject]
-
     config.add_facet_field 'collection_facet', :label => 'Collection', :limit => 5
+
+    #hide these facets if not an "archivist"
+    #TODO put these facets into a seperate block in the interface...should we use :show => false and then pull them back in in the search results
+    config.add_facet_field 'workflow_status_facet', :label => 'Status', :limit => 5, :if_user_can => [:manage, MediaObject], :group=>"workflow"
+    config.add_facet_field 'workflow_published_facet', :label => 'Published', :limit => 5, :if_user_can => [:manage, MediaObject], :group=>"workflow"
+    config.add_facet_field 'created_by_facet', :label => 'Created by', :limit => 5, :if_user_can => [:manage, MediaObject], :group=>"workflow"
+
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
     # handler defaults, or have no facets.
     config.default_solr_params[:'facet.field'] = config.facet_fields.keys
     #use this instead if you don't want to query facets marked :show=>false
-    #config.default_solr_params[:'facet.field'] = config.facet_fields.select{ |k, v| v[:show] != false}.keys
+    #config.default_solr_params[:'facet.field'] = config.facet_fields.select{ |k, v| v[:show] != false}.keys    
 
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
-    config.add_index_field 'title_display', :label => 'Title' 
+    config.add_index_field 'title_display', :label => 'Title', :helper_method=>:search_result_label
     config.add_index_field 'format_display', :label => 'Format' 
     config.add_index_field 'creator_display', :label => 'Creator' 
     config.add_index_field 'date_created_display', :label => 'Creation date' 
@@ -192,13 +192,6 @@ class CatalogController < ApplicationController
     end
   end
 
-  def limit_to_current_user(solr_parameters, user_parameters)
-    if params[:v] == "mi"
-      solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << "dc_creator_t: #{user_key}"
-    end
-  end
-
   def limit_to_non_hidden_items(solr_parameters, user_parameters)
     if cannot? :create, MediaObject
       solr_parameters[:fq] ||= []
@@ -217,16 +210,6 @@ class CatalogController < ApplicationController
        :sort => 'timestamp desc',
        :qt => "standard",
        :fl => "id"})
-    unless current_user.nil?
-      params[:v] = "mi"
-      @my_items = []
-      (response, @my_items) = get_search_results(
-        {:q => 'workflow_published_facet:"Published"',
-         :per_page => 5,
-         :sort => 'system_create_dt desc',
-         :qt => "standard",
-         :fl => "id"})
-    end
     params[:v] = viewstate
   end
 
