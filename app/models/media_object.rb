@@ -91,16 +91,19 @@ class MediaObject < ActiveFedora::Base
   delegate :topical_subject, to: :descMetadata, at: [:topical_subject]
 
   accepts_nested_attributes_for :parts, :allow_destroy => true
-  
-  # Stub method to determine if the record is done or not. This should be based on
-  # whether the descMetadata, rightsMetadata, and techMetadata datastreams are all
-  # valid.
-  def is_complete?
-    false
-  end
 
   def is_published?
     not self.avalon_publisher.blank?
+  end
+
+  def publish!( user_key )
+    self.avalon_publisher = user_key
+    self.save(validate: false)
+  end
+
+  def unpublish!
+    self.avalon_publisher = nil
+    self.save( validate: false)
   end
 
   def finished_processing?

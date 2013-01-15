@@ -56,6 +56,19 @@ class MediaObjectsController < CatalogController
       end
     end
   end
+
+  def update_status
+    media_object = MediaObject.find(params[:id])
+    authorize! :manage, media_object
+    
+    if params[:a] == 'publish'
+      media_object.publish!( user_key )
+    elsif params[:a] == 'unpublish'
+      media_object.unpublish!
+    end
+
+    redirect_to :back
+  end
   
   def destroy
     @mediaobject = MediaObject.find(params[:id]).delete
