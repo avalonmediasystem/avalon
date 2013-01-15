@@ -9,6 +9,7 @@ module ModsBehaviors
 
     # Title fields
     solr_doc[:title_display] = self.find_by_terms(:main_title).text
+    solr_doc[:title_sort] = self.find_by_terms(:main_title).text
     addl_titles = [[:main_title_info, :subtitle], 
     		:alternative_title, [:alternative_title_info, :subtitle], 
 	    	:translated_title, [:translated_title_info, :subtitle], 
@@ -20,6 +21,7 @@ module ModsBehaviors
 
 
     solr_doc[:creator_display] = self.find_by_terms(:creator).text
+    solr_doc[:creator_sort] = self.find_by_terms(:creator).text
     # Individual fields
     solr_doc[:summary_display] = self.find_by_terms(:abstract).text
     solr_doc[:publisher_display] = gather_terms(self.find_by_terms(:publisher))
@@ -66,6 +68,7 @@ module ModsBehaviors
     unless issue_date.nil? or issue_date.empty?
       solr_doc[:date_display] = get_year(issue_date)
       solr_doc[:date_facet] = get_year(issue_date)
+      solr_doc[:date_sort] = get_year(issue_date)
     end
 
     # For full text, we stuff it into the mods_t field which is already configured for Mods doucments
