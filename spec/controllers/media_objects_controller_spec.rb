@@ -163,13 +163,13 @@ describe MediaObjectsController do
     end
     it 'publishes media object' do
       @media_object.save(validate: false)
-      get 'update_status', :id => 'hydrant:1', :publish => 'true'
+      get 'update_status', :id => 'hydrant:1', :a => 'publish'
       MediaObject.find('hydrant:1').is_published?.should be_true
     end
     it 'unpublishes media object' do
       @media_object.avalon_publisher = 'archivist'
       @media_object.save( validate: false)
-      get 'update_status', :id => 'hydrant:1', :publish => 'false'
+      get 'update_status', :id => 'hydrant:1', :a => 'unpublish'
       MediaObject.find('hydrant:1').is_published?.should be_false
     end
   end
