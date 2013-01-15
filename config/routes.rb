@@ -6,7 +6,7 @@ Hydrant::Application.routes.draw do
   match "catalog/facet/:id", :to => 'catalog#facet', :as => 'catalog_facet'
   match "catalog", :to => 'catalog#index', :as => 'catalog_index'
 
-  root :to => "mediaObjects#index"
+  root :to => "catalog#index"
 
   devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
   devise_scope :user do 
