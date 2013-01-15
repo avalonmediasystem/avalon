@@ -14,7 +14,7 @@
   <div class="result-summary"> 
     <h4 class="result-heading"><%= document["creator_display"].nil? ? 'Creator unknown'.html_safe : document["creator_display"].first  %> (<%= document["pub_date"].blank? ? 'Unknown' : document["pub_date"].first %>)</h4>
     <div class="result-body">
-      <%= (document["summary_display"].blank? or document["summary_display"].first.blank?) ? 'No summary available' : truncate(document["summary_display"].first, length: 100) %>
+      <%= truncate(document["summary_display"].first, length: 100) unless (document["summary_display"].blank? or document["summary_display"].first.blank?) %>
     </div>
   </div>
 </div>
