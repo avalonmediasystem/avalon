@@ -250,6 +250,7 @@ class MediaObject < ActiveFedora::Base
   
   def to_solr(solr_doc = Hash.new, opts = {})
     super(solr_doc, opts)
+    solr_doc[:created_by_facet] = self.DC.creator
     solr_doc[:hidden_b] = hidden?
     return solr_doc
   end
