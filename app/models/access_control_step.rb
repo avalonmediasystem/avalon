@@ -14,6 +14,7 @@
 
               	  mediaobject.access = context[:access] unless context[:access].blank? 
 
+		  #context[:groups] and context[:users] is only for deletion and should be renamed in the access_control form and here
                   unless context[:groups].blank?
                     groups = mediaobject.group_exceptions
                     context[:groups].each {|g| groups.delete g }
@@ -25,31 +26,21 @@
                     mediaobject.user_exceptions = users
                   end                
 
-                  if context[:commit] == "Update"
-                    if context[:scope] == "Group"
-                      groups = mediaobject.group_exceptions
-                      groups << context[:value] unless context[:value].blank?
-                      mediaobject.group_exceptions = groups
-                    elsif context[:scope] == "User"
-                      users = mediaobject.user_exceptions
-                      users << context[:value] unless context[:value].blank?
-                      mediaobject.user_exceptions = users
-                    end
-                  elsif context[:commit] == "Delete"
-                    if context[:scope] == "Group"
-                      groups = mediaobject.group_exceptions
-                      groups.delete context[:value] unless context[:value].blank?
-                      mediaobject.group_exceptions = groups
-                    elsif context[:scope] == "User"
-                      users = mediaobject.user_exceptions
-                      users.delete context[:value] unless context[:value].blank?
-                      mediaobject.user_exceptions = users
-                    end
+                  if context[:scope] == "Group"
+                    groups = mediaobject.group_exceptions
+                    groups << context[:value] unless context[:value].blank?
+                    mediaobject.group_exceptions = groups
+                  elsif context[:scope] == "User"
+                    users = mediaobject.user_exceptions
+                    users << context[:value] unless context[:value].blank?
+                    mediaobject.user_exceptions = users
                   end
 
-                  logger.debug "<< Hidden = #{context[:hidden].blank?} >>"
-                  mediaobject.hidden = !context[:hidden].blank?
-        
+                  unless context[:media_object].blank? or context[:media_object][:hidden].blank?
+                    logger.debug "<< Hidden = #{context[:media_object][:hidden]} >>"
+                    mediaobject.hidden = context[:media_object][:hidden] == "1"
+                  end
+
 	          mediaobject.save
         	  logger.debug "<< Groups : #{mediaobject.read_groups} >>"
         	  logger.debug "<< Users : #{mediaobject.read_users} >>"

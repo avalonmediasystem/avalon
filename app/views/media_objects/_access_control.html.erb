@@ -28,7 +28,7 @@
     
     <!-- Need to put in some whitespace here -->
     <%= label_tag :hidden do %>
-      <%= check_box_tag :hidden, 'hidden', @mediaobject.hidden? %>
+      <%= vid.check_box :hidden? %>
       Do not display this resource in search results 
     <% end %>
     <%= submit_tag 'Update default' %>
@@ -39,7 +39,7 @@
     <h4>Exceptions</h4>
     <%= twitter_bootstrap_form_for @mediaobject, 
       html: { class: "form-vertical",
-    id: 'exceptions'} do %>
+      id: 'exceptions'} do %>
         <%= hidden_field_tag :donot_advance, true %>
         <%= hidden_field_tag :step, @active_step %>
     <table class="table table-striped table-hover">
