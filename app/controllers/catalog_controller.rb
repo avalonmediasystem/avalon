@@ -194,20 +194,6 @@ class CatalogController < ApplicationController
     end
   end
 
-  def index
-    super
-    viewstate = params[:v]
-    params[:v] = "ri"
-    @recent_items = []
-    (response, @recent_items) = get_search_results(
-      {:q => 'has_model_s:"info:fedora/afmodel:MediaObject"',
-       :per_page => 5,
-       :sort => 'timestamp desc',
-       :qt => "standard",
-       :fl => "id"})
-    params[:v] = viewstate
-  end
-
   def matterhorn_service_config
     respond_to do |format|
       format.any(:xml, :json) { render request.format.to_sym => Hydrant.matterhorn_config }
