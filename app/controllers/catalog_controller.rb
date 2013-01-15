@@ -199,8 +199,10 @@ class CatalogController < ApplicationController
   end
 
   def limit_to_non_hidden_items(solr_parameters, user_parameters)
-    solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << '!hidden_b:true'
+    if cannot? :create, MediaObject
+      solr_parameters[:fq] ||= []
+      solr_parameters[:fq] << '!hidden_b:true'
+    end
   end
 
   def index

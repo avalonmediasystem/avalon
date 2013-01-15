@@ -26,6 +26,9 @@
       <%= radio_button_tag :access, 'private', (@mediaobject.access == 'private') %>
       Only I should be able to see this resource
     <% end %>
+
+    <%= check_box_tag :hidden %>
+    <%= label_tag :hidden, 'Do not display this resource in search results' %>
     
     <%= submit_tag 'Update default' %>
   <% end %>
