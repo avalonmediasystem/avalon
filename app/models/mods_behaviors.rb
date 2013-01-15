@@ -62,10 +62,10 @@ module ModsBehaviors
     solr_doc[:collection_display] = self.find_by_terms(:collection).text
 
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
-    create = self.find_by_terms(:date_created).text.strip
-    unless create.nil? or create.empty?
-      solr_doc[:create_date_facet] = get_year(create)
-      solr_doc[:pub_date] = get_year(create)
+    issue_date = self.find_by_terms(:date_issued).text.strip
+    unless issue_date.nil? or issue_date.empty?
+      solr_doc[:date_display] = get_year(issue_date)
+      solr_doc[:date_facet] = get_year(issue_date)
     end
 
     # For full text, we stuff it into the mods_t field which is already configured for Mods doucments
