@@ -52,9 +52,8 @@ module ApplicationHelper
     end
 
     #FIXME
-    #This helper is used by blacklight to display the "Title" field in search results
-    def search_result_label args
-       item = args[:document]
+    #This helper should be used by blacklight to display the "Title" field in search results
+    def search_result_label item
        logger.debug "in search_result_label"
        label = ''
        unless item["title_t"].nil? or item["title_t"].empty?

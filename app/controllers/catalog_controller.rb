@@ -63,17 +63,12 @@ class CatalogController < ApplicationController
     config.add_facet_field 'format_facet', :label => 'Format', :limit => 5
     # Eventually these need to be merged into a single facet
     config.add_facet_field 'contributor_facet', :label => 'Contributor', :limit => 5
-    config.add_facet_field 'publisher_facet', :label => 'Publisher', :limit => 5
-    config.add_facet_field 'subject_facet', :label => 'Subjects', :limit => 5
+    #TODO add "Date" facet that points to issue date in mediaobject
     config.add_facet_field 'genre_facet', :label => 'Genres', :limit => 5
-    config.add_facet_field 'language_facet', :label => 'Languages', :limit => 5
-    config.add_facet_field 'location_facet', :label => 'Locations', :limit => 5
-    config.add_facet_field 'time_period_facet', :label => 'Time Periods', :limit => 5
     config.add_facet_field 'collection_facet', :label => 'Collection', :limit => 5
 
     #hide these facets if not an "archivist"
     #TODO put these facets into a seperate block in the interface...should we use :show => false and then pull them back in in the search results
-    config.add_facet_field 'workflow_status_facet', :label => 'Status', :limit => 5, :if_user_can => [:manage, MediaObject], :group=>"workflow"
     config.add_facet_field 'workflow_published_facet', :label => 'Published', :limit => 5, :if_user_can => [:manage, MediaObject], :group=>"workflow"
     config.add_facet_field 'created_by_facet', :label => 'Created by', :limit => 5, :if_user_can => [:manage, MediaObject], :group=>"workflow"
 
@@ -87,7 +82,7 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
-    config.add_index_field 'title_display', :label => 'Title', :helper_method=>:search_result_label
+    config.add_index_field 'title_display', :label => 'Title'#, :helper_method=>:search_result_label
     config.add_index_field 'format_display', :label => 'Format' 
     config.add_index_field 'creator_display', :label => 'Creator' 
     config.add_index_field 'date_created_display', :label => 'Creation date' 
