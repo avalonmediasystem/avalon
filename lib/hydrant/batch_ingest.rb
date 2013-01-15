@@ -18,7 +18,6 @@ module Hydrant
       new_packages = Hydrant::DropboxService.find_new_packages
       logger.debug "<< Found #{new_packages.count} new packages >>"
 
-      media_objects = []
 
       if new_packages.length > 0
         # Extracts package and process
@@ -26,10 +25,9 @@ module Hydrant
           logger.debug "<< Processing package #{index} >>"
 
           media_objects = []
-          package.process do |fields, files|
-
+          package.process do |fields, files, opts|
             # Creates and processes MasterFiles
-            mediaobject = MediaObjectsController.initialize_media_object('batch')
+            mediaobject = MediaObjectsController.initialize_media_object(package.manifest.email || 'batch')
             mediaobject.workflow.origin = 'batch'
             mediaobject.save(:validate => false)
             logger.debug "<< Created MediaObject #{mediaobject.pid} >>"
@@ -54,9 +52,6 @@ module Hydrant
             # currently takes class attributes instead of meta data attributes
             fields[:title] = fields.delete(:main_title)
 
-            # currently not used
-            publish_by_default = fields.delete(:publish)
-
             context = {mediaobject: mediaobject, media_object: fields}
             context = HYDRANT_STEPS.get_step('resource-description').execute context
 
@@ -67,8 +62,19 @@ module Hydrant
             # Afterwards, if the auto-publish flag is true then publish the
             # media objects. In either case here is where the notifications
             # should take place
-            context = {mediaobject: mediaobject, user: 'batch'}
+            context = {media_object: { pid: mediaobject.pid, hidden: opts[:hidden] ? '1' : nil, access: 'private' }, mediaobject: mediaobject, user: 'batch'}
+            context = HYDRANT_STEPS.get_step('access-control').execute context
+
+            email_address = package.manifest.email || Hydrant::Configuration['dropbox']['notification_email_address']
+
+            context = {mediaobject: mediaobject, user: email_address}
             context = HYDRANT_STEPS.get_step('preview').execute context
+
+            mediaobject.workflow.last_completed_step = 'access-control'
+            if opts[:publish]
+              mediaobject.publish!(email_address)
+              mediaobject.workflow.publish
+            end
 
             if mediaobject.save
               logger.debug "Done processing package #{index}"
@@ -77,16 +83,13 @@ module Hydrant
             end
             
             media_objects << mediaobject
+
+            IngestBatch.create( 
+              media_object_ids: media_objects.map(&:id), 
+              name:  package.manifest.name,
+              email: email_address,
+            )
           end
-
-          first_manifest = new_packages.first.manifest
-          email_address = first_manifest.email || Hydrant::Configuration['dropbox']['notification_email_address']
-
-          IngestBatch.create( 
-            media_object_ids: media_objects.map(&:id), 
-            name:  first_manifest.name,
-            email: email_address,
-          )
         end
       end
     
