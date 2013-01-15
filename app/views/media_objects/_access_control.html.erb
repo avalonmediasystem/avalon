@@ -5,9 +5,8 @@
 <div class="whitespace" id="default_level">
 <h4>Default access</h4>
 <%= twitter_bootstrap_form_for @mediaobject, 
-      html: { 
-	class: "form-horizontal",
-    	id: 'access_control_form' } do |vid| %>
+  html: { class: "form-horizontal",
+  id: 'access_control_form'}  do |vid| %>
     <%= hidden_field_tag :donot_advance, true %>
     <%= hidden_field_tag :step, @active_step %>
     <%= vid.hidden_field :pid %>
@@ -38,26 +37,26 @@
 
     <div class="whitespace" id="exceptions">
     <h4>Exceptions</h4>
-    <%= form_tag @mediaobject, 
-      html: { class: "form-vertical"} do %>
+    <%= twitter_bootstrap_form_for @mediaobject, 
+      html: { class: "form-vertical",
+    id: 'exceptions'} do %>
         <%= hidden_field_tag :donot_advance, true %>
         <%= hidden_field_tag :step, @active_step %>
     <table class="table table-striped table-hover">
       <% unless @mediaobject.group_exceptions.empty? %>
        <thead>
         <tr>
-           <td rowspan="2" class="info">Groups</td>
+           <td class="info">Groups</td>
         </tr>
      </thead>
         <tbody>
+        <% @mediaobject.group_exceptions.each do |group| %>
         <tr>
-          <td class="span1">Remove</td>
-          <td>&nbsp;</td>
-        </tr>
-          <% @mediaobject.group_exceptions.each do |group| %>
-        <tr>
-          <td class="span1"><%= check_box_tag 'groups[]', group %></td>
-          <td><%= group %></td>
+          <td>
+            <%= label_tag do %>
+              <%= check_box_tag 'groups[]', group %>
+              <%= group %>
+            <% end %>
         </tr>
       <% end %>
       </tbody>
@@ -66,18 +65,17 @@
       <% unless @mediaobject.user_exceptions.empty? %>
       <thead>
         <tr>
-           <td rowspan="2" class="info">Users</td>
+           <td class="info">Users</td>
         </tr>
      </thead>
         <tbody>
-           <tr>
-          <td class="span1">Remove</td>
-          <td>&nbsp;</td>
-        </tr>
-          <% @mediaobject.user_exceptions.each do |user| %>
-       <tr>
-          <td class="span1"><%= check_box_tag 'users[]', user %></td>
-          <td><%= user %></td>
+        <% @mediaobject.user_exceptions.each do |user| %>
+        <tr>
+          <td>
+            <%= label_tag do %>
+              <%= check_box_tag 'users[]', user %>
+              <%= user %>
+            <% end %>
         </tr>
       <% end %>
       </tbody>
