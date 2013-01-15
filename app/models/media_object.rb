@@ -202,7 +202,6 @@ class MediaObject < ActiveFedora::Base
         update_attribute_in_metadata(k, Array(v))
       end
     end
-    logger.debug(datastreams[datastream.to_s].to_xml)
   end
 
   # This method is one way in that it accepts class attributes and
