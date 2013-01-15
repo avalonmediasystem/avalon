@@ -47,7 +47,8 @@
                     end
                   end
 
-                  mediaobject.hidden = context[:hidden] unless context[:hidden].blank?
+                  logger.debug "<< Hidden = #{context[:hidden].blank?} >>"
+                  mediaobject.hidden = !context[:hidden].blank?
         
 	          mediaobject.save
         	  logger.debug "<< Groups : #{mediaobject.read_groups} >>"
