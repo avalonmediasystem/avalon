@@ -1,6 +1,3 @@
-<% unless has_search_parameters? %>
-  <%= render 'home' %>
-<% else %>
   <div id="sidebar" class="span3">
     <%= render :partial=>'facets' %>
   </div><!--/well -->
@@ -19,4 +16,3 @@
 	    <%= render_document_index %>
 	    <%= render 'results_pagination' %>
   </div>
-<% end %>
