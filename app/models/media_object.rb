@@ -159,6 +159,7 @@ class MediaObject < ActiveFedora::Base
     groups = self.read_groups
     groups += group_list
     self.read_groups = groups
+  end
 
   def hidden= value
     groups = self.discover_groups
