@@ -20,7 +20,7 @@
           <% end %>
 
           <% if can? :manage, Admin::Group %>
-            <li class="hidden-phone"><%= link_to 'Manage Policy', 
+            <li class="hidden-phone"><%= link_to 'Manage Groups', 
               admin_index_path,
               html: {target: '_admin'} %>
           <% end %>
