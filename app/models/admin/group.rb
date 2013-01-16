@@ -130,7 +130,7 @@ class Admin::Group
       RoleControls.save_changes
       @saved = true
     elsif !new_record? && valid?
-      if name_changed? && @previous_name != name
+      if name_changed? && !@previous_name.eql?(name)
         RoleControls.remove_role @previous_name
         RoleControls.add_role name
       end
