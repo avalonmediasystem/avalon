@@ -1,11 +1,13 @@
 require 'hydrant/controller/controller_behavior'
 
-class MediaObjectsController < CatalogController
+class MediaObjectsController < ApplicationController #< CatalogController
   include Hydrant::Workflow::WorkflowControllerBehavior
   include Hydrant::Controller::ControllerBehavior
 
   before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
+
+  layout 'hydrant'
    
   def new
     logger.debug "<< NEW >>"
