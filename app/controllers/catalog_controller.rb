@@ -69,7 +69,7 @@ class CatalogController < ApplicationController
     config.add_facet_field 'collection_facet', :label => 'Collection', :limit => 5
 
     #hide these facets if not an "archivist"
-    #TODO put these facets into a seperate block in the interface...should we use :show => false and then pull them back in in the search results
+    #put these facets into a seperate block in the interface
     config.add_facet_field 'workflow_published_facet', :label => 'Published', :limit => 5, :if_user_can => [:manage, MediaObject], :group=>"workflow"
     config.add_facet_field 'created_by_facet', :label => 'Created by', :limit => 5, :if_user_can => [:manage, MediaObject], :group=>"workflow"
 
@@ -83,12 +83,9 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
-    config.add_index_field 'title_display', :label => 'Title'#, :helper_method=>:search_result_label
-    config.add_index_field 'format_display', :label => 'Format' 
-    config.add_index_field 'creator_display', :label => 'Creator' 
-    config.add_index_field 'date_display', :label => 'Date' 
-    config.add_index_field 'language_display', :label => 'Language'
-    config.add_index_field 'abstract_display', label: 'Summary'
+    config.add_index_field 'contributors_display', :label => 'Contributors:', :helper_method => :contributor_index_display 
+    config.add_index_field 'date_display', :label => 'Date:' 
+    config.add_index_field 'summary_display', label: 'Description:', :helper_method => :description_index_display
     
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display 

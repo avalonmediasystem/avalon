@@ -25,11 +25,21 @@ module Blacklight::LocalBlacklightHelper
     content_tag("span", t('blacklight.search.facets.count', :number => num), :class => "badge") 
   end
 
+  #Why are we overriding link_to_document?
   def link_to_document(doc, opts={:label=>nil, :counter => nil, :results_view => true})
     opts[:label] ||= blacklight_config.index.show_link.to_sym
     label = render_document_index_label doc, opts
     name = document_partial_name(doc)
     url = name.pluralize + "/" + doc["id"]
     link_to label, url, { :'data-counter' => opts[:counter] }.merge(opts.reject { |k,v| [:label, :counter, :results_view].include? k })
+  end
+
+  def contributor_index_display args
+    args[:document][args[:field]].first(3).join("; ")
+  end
+
+  def description_index_display args
+    field = args[:document][args[:field]]
+    truncate(field.first, length: 100) unless (field.blank? or field.first.blank?)
   end
 end

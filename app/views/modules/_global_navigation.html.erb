@@ -10,11 +10,11 @@
         <span class="icon-bar"></span>
       </a>
 
-      <%= link_to '', root_url, class: 'brand' %>
 
       <div class="nav-collapse collapse">
         <ul class="nav nav-tabs">
           <li><%= link_to 'Browse', catalog_index_path(search_field: 'all_fields', utf8: '✓', q: '') %></li>
+          <li><%= render_search_bar %></li>
           <% if can? :create, MediaObject %>
             <li class="hidden-phone"><%= link_to 'Create', new_media_object_path %></li>
           <% end %>

@@ -54,12 +54,15 @@ module ApplicationHelper
     #FIXME
     #This helper should be used by blacklight to display the "Title" field in search results
     def search_result_label item
-       logger.debug "in search_result_label"
        label = item.id
        unless item["title_display"].blank?
-         label = truncate(item["title_display"], length: 35) + " / " + truncate(item["creator_display"].first, length: 35)
+         label = truncate(item["title_display"], length: 35)
        end
-       
+      
+       unless item["duration_t"].blank?
+         label += "(#{item['duration_t']})"
+       end
+ 
        label
     end
 

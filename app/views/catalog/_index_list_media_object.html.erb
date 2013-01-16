@@ -1,4 +1,4 @@
-  <div class="result">
+<dl class="result dl-horizontal dl-invert">
     <% if can?(:read, document) then %>
       <%# Not very DRY but a more predictable experience %>
       <% unless image_for(document[:id]).nil? %>
@@ -11,10 +11,11 @@
       <% else %>
         <%= image_tag image_for(document[:id]), class: 'result-thumbnail pull-left' %>
     <% end %>
-  <div class="result-summary"> 
-    <p hclass="result-heading"><%= document["creator_display"].nil? ? 'Creator unknown'.html_safe : document["creator_display"].first  %> (<%= document["pub_date"].blank? ? 'Unknown' : document["pub_date"].first %>)</p>
-    <div class="result-body">
-      <%= truncate(document["summary_display"].first, length: 100) unless (document["summary_display"].blank? or document["summary_display"].first.blank?) %>
-    </div>
-  </div>
-</div>
+
+  <% index_fields.each do |solr_fname, field| -%>
+    <% if should_render_index_field? document, field %>
+            <dt class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_label :field => solr_fname %></dt>
+            <dd class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_value :document => document, :field => solr_fname %></dd>
+    <% end -%>
+  <% end -%>
+</dl>
