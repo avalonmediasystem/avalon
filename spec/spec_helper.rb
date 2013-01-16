@@ -35,18 +35,19 @@ RSpec.configure do |config|
   config.infer_base_class_for_anonymous_controllers = false
 
   config.before(:suite) do
+    Deprecation.default_deprecation_behavior = :silence
     require 'headless'
 
     headless = Headless.new
     headless.start
-    
-    puts "<< headless now running on #{headless.display} >>"
+
+    logger.debug "<< headless now running on #{headless.display} >>"
   end
 
 
   config.after(:suite) do
     if ENV["USE_HEADLESS"] == "true" and headless.present?
-      puts "<< headless now running on #{headless.display} >>"
+      logger.debug "<< headless now running on #{headless.display} >>"
       headless.destroy
     end
     
@@ -57,7 +58,7 @@ RSpec.configure do |config|
       'hydrant:musical-performance',
       'hydrant:print-publication']
     test_fixtures.each do |fixture|
-      puts "Removing test object #{fixture} if present" 
+      logger.debug "Removing test object #{fixture} if present" 
       MediaObject.find(fixture).delete if MediaObject.exists?(fixture) 
     end
   end
