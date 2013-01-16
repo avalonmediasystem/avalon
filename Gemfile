@@ -48,6 +48,8 @@
   gem 'hydrant-batch',
     :git => "https://github.com/variations-on-video/hydrant-batch.git"
 
+  gem 'equivalent-xml'
+  
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
     gem 'uglifier', '>= 1.0.3'

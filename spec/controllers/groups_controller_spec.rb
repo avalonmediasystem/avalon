@@ -89,7 +89,7 @@ describe Admin::GroupsController do
       #   
       #   lambda { 
       #     post 'update', admin_group: { name: test_group, users: [], resources: [pid] }, id: test_group
-      #     puts Video.find(pid).read_groups.inspect
+      #     logger.debug Video.find(pid).read_groups.inspect
       #   }.should change { group.resources }
       # 
       #   flash[:notice].should_not be_nil

@@ -25,7 +25,7 @@ describe MasterFilesController do
       @file.stub(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2^21)  
      
       lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment'}.should_not change { MasterFile.count }
-      puts "<< Flash message is present? #{flash[:notice]} >>"
+      logger.debug "<< Flash message is present? #{flash[:notice]} >>"
      
       flash[:errors].should_not be_nil
      end
@@ -64,7 +64,7 @@ describe MasterFilesController do
      
        @file = fixture_file_upload('/public-domain-book.txt', 'application/json')
        lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:electronic-resource' }.should_not change { MasterFile.count }
-       puts "<< Flash errors is present? #{flash[:errors]} >>"
+       logger.debug "<< Flash errors is present? #{flash[:errors]} >>"
      
        flash[:errors].should_not be_nil
      end
@@ -136,7 +136,7 @@ describe MasterFilesController do
         put :update, id: mf.pid, workflow_id: 1103
  
         mf = MasterFile.find(mf.pid)
-        puts mf.derivatives.count
+        logger.debug mf.derivatives.count
         mf.derivatives.count.should eq 3
       end
     end

@@ -168,7 +168,7 @@ class MasterFile < ActiveFedora::Base
     # END DEBUG
     matterhorn_response.operations.operation.operation_state.each {|state| finishedOperations += 1 if state == "SUCCEEDED" || state == "SKIPPED"}
     percent = finishedOperations * 100 / totalOperations
-    puts "percent_complete #{percent}"
+    logger.debug "percent_complete #{percent}"
     percent.to_s
   end
 

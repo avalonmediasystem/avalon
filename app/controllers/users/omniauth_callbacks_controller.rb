@@ -13,7 +13,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def find_user(auth_type)
     find_method = "find_for_#{auth_type.downcase}".to_sym
-    $stderr.puts "#{auth_type} :: #{current_user.inspect}"
+    logger.debug "#{auth_type} :: #{current_user.inspect}"
   	@user = User.send(find_method,request.env["omniauth.auth"], current_user)
     if @user.persisted?
       flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => auth_type

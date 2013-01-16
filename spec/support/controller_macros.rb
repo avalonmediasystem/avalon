@@ -8,8 +8,8 @@ module ControllerMacros
     @request.env["devise.mapping"] = Devise.mappings[role]
     user = FactoryGirl.create(role)
     
-    puts "<< USER INFORMATION >>"
-    puts user
+    logger.debug "<< USER INFORMATION >>"
+    logger.debug user
     
     sign_in user
   end

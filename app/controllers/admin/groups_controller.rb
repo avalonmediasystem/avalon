@@ -41,7 +41,7 @@ class Admin::GroupsController < ApplicationController
     @group.name = role
     @group.save
     
-    puts @group.errors.inspect 
+    logger.debug @group.errors.inspect 
     
     if !role.empty?
       if RoleControls.role_exists? role
@@ -107,7 +107,7 @@ class Admin::GroupsController < ApplicationController
     new_resources = params["admin_group"]["resources"].reject { |r| r.empty? }
     rm_resources = group.resources.reject { |r| new_resources.include? r }
 
-    puts rm_resources.inspect
+    logger.debug rm_resources.inspect
 
     # Removes old group from resources that are no longer present in the params
     rm_resources.each do |resource|
@@ -127,7 +127,7 @@ class Admin::GroupsController < ApplicationController
           read_groups << new_group_name 
           resource_obj.read_groups = read_groups
           resource_obj.save
-          puts resource_obj.read_groups.inspect
+          logger.debug resource_obj.read_groups.inspect
         end
     end    
     

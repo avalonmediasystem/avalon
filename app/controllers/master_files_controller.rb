@@ -36,7 +36,7 @@ class MasterFilesController < ApplicationController
           flash[:errors] = "The file you have uploaded is too large"
           redirect_to :back
   
-          puts "<< Redirecting - file size is too large >>"
+          logger.debug "<< Redirecting - file size is too large >>"
           return
         end
 
