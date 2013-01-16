@@ -8,8 +8,8 @@ class AdminController < ApplicationController
     elsif cannot? :manage, Admin::Group 
       flash[:notice] = "You do not have sufficient privileges to access group policies"
       redirect_to root_path
-    else    
-      render layout: 'admin'
+    else
+      redirect_to admin_groups_path 
     end
   end
 end 

@@ -29,7 +29,7 @@ class RoleControls
     end 
     
     def assign_users(new_users, role)
-      RoleMapper.map[role] = new_users.reject { |u| u.empty? }
+      RoleMapper.map[role] = new_users.reject { |u| u.blank? }
     end
     
     def add_role(role)

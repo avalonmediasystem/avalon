@@ -1,100 +1,59 @@
-<h2><i class="icon-group"></i> All Groups</h2>
-<p>Listed below are groups you can manage</p>
-
-<%= form_tag update_multiple_admin_groups_path, method: :put do %>
-
-  <div class="btn-group float-left">
-    <a id="add-ability" class="btn dropdown-toggle disabled" data-toggle="dropdown" href="#">
-      Add Permission
-      <span class="caret"></span>
-    </a>
-    <ul class="dropdown-menu">
-      <li>
-        <a class="tobeimplemented" href="#">View</a>
-      </li>
-      <li>
-        <a class="tobeimplemented" href="#">Edit</a>
-      </li>
-      <li>
-        <a class="tobeimplemented" href="#">Destroy</a>
-      </li>
-      <li>
-        <a class="tobeimplemented" href="#">Manage</a>
-      </li>
-    </ul>
-  </div>
-
-  <div class="btn-group float-left">
-    <a id="remove-ability" class="btn dropdown-toggle disabled" data-toggle="dropdown" href="#">
-      Remove Permission
-      <span class="caret"></span>
-    </a>
-    <ul class="dropdown-menu">
-      <li>
-        <a class="tobeimplemented" href="#">View</a>
-      </li>
-      <li>
-        <a class="tobeimplemented" href="#">Edit</a>
-      </li>
-      <li>
-        <a class="tobeimplemented" href="#">Destroy</a>
-      </li>
-      <li>
-        <a class="tobeimplemented" href="#">Manage</a>
-      </li>
-    </ul>
-  </div>
-
-  <%= submit_tag "Delete",  :method => :delete, class: "btn btn-danger delete", disabled: true %>
-
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th><input type="checkbox" class="select-groups"></th>
-        <th>Name</th>
-        <th>Ability</th>
-        <th>Members#</th>
-        <th>Resources#</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @groups.each do |group|%>
+<div class="row span7">
+  <h3>System Groups</h3>
+    <table class="table table-striped ">
+      <thead>
         <tr>
-          <td><%= check_box_tag "group_ids[]", group.name %></td>
-          <td><%= link_to group.name, edit_admin_group_path(group) %></td>
-          <td>
-            <span class="badge badge-success">
-              <span>View</span>
-              <button class="close">&times;</button>
-            </span>
-            <!-- TODO: replace this with actual group access logic-->
-            <% if group.name == "archivist" %>
-              <span class="badge badge-warning">
-                <span>Edit</span>
-                <button class="close">&times;</button>
-              </span>
-              <span class="badge badge-important">
-                <span>Destroy</span>
-                <button class="close">&times;</button>
-              </span>
-            <% end %>
-          
-            <% if group.name == "admin_policy_object_editor" %>
-              <span class="badge badge-info">
-                <span>Manage</span>
-                <button class="close">&times;</button>
-              </span>
-            <% end %>
-          </td>
-          <td><%= group.users.count %></td>
-          <td><%= group.resources.count %></td>
+          <th>Group Name</th>
+          <th>Members#</th>
+          <!--<th>Ability</th>
+          <th>Resources#</th>-->
         </tr>
-      <% end %>
-    </tbody>
-  </table>
-<% end %>
+      </thead>
+      <tbody>
+        <% @default_groups.each do |group|%>
+          <tr>
+            <td><%= link_to group.name, edit_admin_group_path(group) %></td>
+            <td><%= group.users.count %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
 
-<%= link_to "Add Group", new_admin_group_path, class: "btn btn-primary" %>
+  <h3> Additional Groups</h3>
+
+  <%= form_tag(admin_groups_path) do -%>
+    <%= text_field_tag 'admin_group', nil, :placeholder => 'Enter group name here...' %> 
+    <%= submit_tag 'Create Group', class: "btn btn-primary" %>
+  <% end -%>
+
+  <%= form_tag update_multiple_admin_groups_path, method: :put do %>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th><input type="checkbox" class="select-groups"></th>
+          <th>Group Name</th>
+          <th>Members#</th>
+          <!--<th>Ability</th>
+          <th>Resources#</th>-->
+        </tr>
+      </thead>
+      <tbody>
+        <% @groups.each do |group|%>
+          <tr>
+            <td><%= check_box_tag "group_ids[]", group.name %></td>
+            <td><%= link_to group.name, edit_admin_group_path(group) %></td>
+            <td><%= group.users.count %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <%= submit_tag "Delete Groups", method: :delete, confirm: "Deleted groups cannot be recovered. Are you sure?", 
+        class: "btn btn-danger delete", disabled: true %>
+  <% end %>
+
+</div>
 
 <% content_for :page_scripts do %>
   <script>

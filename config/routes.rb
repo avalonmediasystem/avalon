@@ -46,6 +46,9 @@ Hydrant::Application.routes.draw do
       collection do 
         put 'update_multiple'
       end
+      member do
+        put 'update_users'
+      end
     end
   end  
 

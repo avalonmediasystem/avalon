@@ -1,107 +1,66 @@
 <style>
-  #admin_group_resources_control_group  { display : none }
+  .inline-children > div { display: inline }
 </style>
 
 <% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
 
-<%= twitter_bootstrap_form_for @group,class: 'form-vertical' do |f| %>
-  <%= f.fieldset do %>
-    <%= f.text_field :name, "Name", class: 'span4', value: @group.name %>
+<%= twitter_bootstrap_form_for @group, html: { :class => 'form-inline'}  do |f| %>
+    <h3>Group</h3>
+    <%= text_field_tag :group_name, "Group name", value: @group.name %>
+    <%= submit_tag "Save", class: "btn btn-primary" %>
+    <%= link_to "Delete Group", admin_group_path(@group.name), 
+        :method => :delete, confirm: "Deleted group cannot be recovered. Are you sure?", class: "btn btn-danger inline" %>
 
-    <%= f.label :users, "Users" do |controls| %> 
-      <div style="line-height: 22px">
-        <span class="noshow counter"><%= @group.users.nil? ? 0 : @group.users.count %></span>
-        <% @group.users.each_with_index do |user, index| %>
-          <%= text_field_tag "#{f.object_name}[users][]", user, class: "noshow", id: "#{f.object_name}_user_#{index}" %>
-          <span class="badge">
-            <span>
-              <%= user %>
-            </span>
-            <button class="close remove">&times;</button>
-          </span>
-        <% end %>
+    <h3 style="margin-top: 35px">Group Members</h3>
+    <%= text_field_tag :new_user, nil, placeholder: 'Enter an username here' %>
+    <%= f.submit "Add user" %>
+<% end %>
 
-        <input name="admin_group[users][]" class="new-input" id="admin_group_user_">
-        <i class="icon-ok-sign"></i>
-        <i class="icon-remove-sign"></i>
-        <i class="icon-plus-sign"></i>
-      </div>
-    <% end %>
-    
-    <%= f.label :resources, "Resources" do |controls| %> 
-      <div style="line-height: 22px">
-        <span class="noshow counter"><%= @group.resources.nil? ? 0 : @group.resources.count %></span>
-        <% @group.resources.each_with_index do |resource, index| %>
-          <%= text_field_tag "#{f.object_name}[resources][]", resource, class: "noshow", id: "#{f.object_name}_resource_#{index}" %>
-          <span class="badge">
-            <%= resource %>
-            <button class="close remove">&times;</button>
-          </span>
-        <% end %>
-
-        <input name="admin_group[resources][]" class="new-input" id="admin_group_resource_">
-        <i class="icon-ok-sign"></i>
-        <i class="icon-remove-sign"></i>
-        <i class="icon-plus-sign"></i>
-      </div>
-    <% end %>
-    
-    <%= f.submit "Save" %>
-  <% end %>
+<%= form_tag update_users_admin_group_path, method: :put do %>
+    <div style="line-height: 22px">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th><input type="checkbox" class="select-groups"></th>
+            <th>Username</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @group.users.each do |user| %>
+            <tr>
+              <td><%= check_box_tag "user_ids[]", user %></td>
+              <td><%= user %></td>
+              <td></td>
+            </tr>
+           <% end %>
+         </tbody>
+      </table>
+    </div>
+    <%= hidden_field_tag 'id', @group.name %>
+    <%= submit_tag "Remove members", :method => :delete, class: "btn btn-danger delete", disabled: true  %>    
 <% end %>
 
 <% content_for :page_scripts do %>
   <script>
-    $('.close.remove').live('click', function(){
-      $(this).parent().prev().remove();
-      $(this).parent().remove();
-      return false;
+    $('.select-groups').change(function(){
+      $('input[id^=user_ids_]').prop('checked', $(this).is(':checked')).trigger('change');
     })
   
-    $('.new-input').keypress(function(e) {
-      if (e.which == 13) {
-        $(this).parent().find('.icon-ok-sign').trigger('click');
-        e.preventDefault();
+    $('input[id^=user_ids_]').change(function(){
+      if ($(this).is(':checked')) {
+        enableButtons();
+      } else if ($(':checked').length == 0) {
+        disableButtons();
       }
-    })
-
-    // Adds new user
-    $('.icon-plus-sign').click(function(){
-      toggleIcons($(this));
-      $(this).parent().find('.new-input').focus();
-    })
-
-    // Saves new user
-    // TODO: cleaner cloning
-    $('.icon-ok-sign').click(function(){
-      var newInput = $(this).parent().find('.new-input');
-      var counter = $(this).parent().find('.counter');
-      var input = newInput.val();
-    
-      if (input.length > 0) {
-        var numUsrs = parseInt(counter.val());
-        var usrHiddenInput = newInput.clone(false).attr('id', newInput.attr('id') + numUsrs).removeClass('new-input');
-
-        newInput.before(usrHiddenInput.hide());
-        newInput.before('<span class="badge"><span>' + input + '</span><button class="close remove">&times;</button></span>');
-        newInput.val('');
-        counter.val(numUsrs + 1);
-      }
-      toggleIcons($(this));
-    })
-
-    // Cancels adding user
-    $('.icon-remove-sign').click(function(){
-      $(this).parent().find('.new-input').val('');
-      toggleIcons($(this));
     })
   
-    // Toggles the controls set with each action
-    function toggleIcons(caller){
-      caller.parent().find('.icon-ok-sign').toggle(); 
-      caller.parent().find('.icon-remove-sign').toggle();
-      caller.parent().find('.icon-plus-sign').toggle();
-      caller.parent().find('.new-input').toggle();   
+    function enableButtons() {
+      $('.delete').removeAttr('disabled');
+    }
+
+    function disableButtons() {
+      $('.delete').attr('disabled', 'disabled');
     }
   </script>
 <% end %>
