@@ -1,4 +1,5 @@
 <% # container for a facet/limit group %>
+<% if has_facet_values? facet_field_names(groupname) %>
 <div id="facets<%= "-#{groupname}" unless groupname.nil?%>" class="facets sidenav">
  
   <h4 data-toggle="collapse" data-target=".facets-collapse">
@@ -14,3 +15,4 @@
     <%= render_facet_partials facet_field_names(groupname)%>
   </div>
 </div>
+<% end %>

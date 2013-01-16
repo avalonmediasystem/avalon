@@ -165,7 +165,8 @@ class CatalogController < ApplicationController
     # except in the relevancy case).
     config.add_sort_field 'score desc, title_sort asc, date_sort desc', :label => 'Relevance'
     config.add_sort_field 'date_sort desc, title_sort asc', :label => 'Year'
-    config.add_sort_field 'creator_sort asc, title_sort asc', :label => 'Creator'
+    #FIXME creator needs to become contributor and probably needs reindexing
+    #config.add_sort_field 'creator_sort asc, title_sort asc', :label => 'Creator'
     config.add_sort_field 'title_sort asc, date_sort desc', :label => 'Title'
 
     # If there are more than this many search results, no spelling ("did you 
