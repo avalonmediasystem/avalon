@@ -199,6 +199,8 @@ en:
         more: 'more »'
         selected:
           remove: '[remove]'
+      facets-workflow:
+        title: 'Workflow'
       filters:
         title: 'You searched for'
         label: '%{label}'

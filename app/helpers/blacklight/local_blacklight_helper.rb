@@ -6,6 +6,12 @@ module Blacklight::LocalBlacklightHelper
     }.keys
   end
 
+  def facet_group_names
+    groupnames = []
+    blacklight_config.facet_fields.map {|facet,opts| groupnames << opts[:group]}
+    groupnames.uniq!
+  end
+
   def render_index_doc_actions(document, options={})   
     wrapping_class = options.delete(:wrapping_class) || "documentFunctions" 
 
