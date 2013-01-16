@@ -5,8 +5,6 @@
 </div>
 <% else %>
 <div class="alert alert-error">
-  <h4 class="alert-heading">Cancel ingest</h4>
-  <p>Stop the ingest process and remove the resource from the system</p>
   <%= button_to("Delete item", {:action => :destroy, 
       :controller => :"media_objects", 
       :id => @mediaobject.pid}, 

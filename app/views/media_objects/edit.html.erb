@@ -1,5 +1,5 @@
 <div class="row-fluid">
-  <div class="span3" id="left_column">
+  <div class="span2" id="left_column">
     <%= render "toggle_preview_mode" %>
     
     <% if can? :edit, @mediaobject %>
@@ -7,7 +7,7 @@
     <% end %>
   </div>
   
-  <div id="main_body" class="span9">
+  <div id="main_body" class="span10">
 
   <% if flash[:errors] %>
     <div id="errors_information" class="alert alert-error active">
