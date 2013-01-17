@@ -25,6 +25,8 @@ module Hydrant
           logger.debug "<< Processing package #{index} >>"
 
           media_objects = []
+          email_address = package.manifest.email || Hydrant::Configuration['dropbox']['notification_email_address']
+          
           package.process do |fields, files, opts|
             # Creates and processes MasterFiles
             mediaobject = MediaObjectsController.initialize_media_object(package.manifest.email || 'batch')
@@ -65,12 +67,11 @@ module Hydrant
             context = {media_object: { pid: mediaobject.pid, hidden: opts[:hidden] ? '1' : nil, access: 'private' }, mediaobject: mediaobject, user: 'batch'}
             context = HYDRANT_STEPS.get_step('access-control').execute context
 
-            email_address = package.manifest.email || Hydrant::Configuration['dropbox']['notification_email_address']
-
             context = {mediaobject: mediaobject, user: email_address}
             context = HYDRANT_STEPS.get_step('preview').execute context
 
             mediaobject.workflow.last_completed_step = 'access-control'
+
             if opts[:publish]
               mediaobject.publish!(email_address)
               mediaobject.workflow.publish
@@ -83,16 +84,19 @@ module Hydrant
             end
             
             media_objects << mediaobject
-
-            IngestBatch.create( 
-              media_object_ids: media_objects.map(&:id), 
-              name:  package.manifest.name,
-              email: email_address,
-            )
           end
+
+          # Create an ingest batch object for 
+          # all of the media objects associated with this 
+          # particular package
+          IngestBatch.create( 
+            media_object_ids: media_objects.map(&:id), 
+            name:  package.manifest.name,
+            email: email_address,
+          ) if media_objects.length > 0
+
         end
       end
-    
     end
   end
 end
