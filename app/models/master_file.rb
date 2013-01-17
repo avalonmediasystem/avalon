@@ -131,17 +131,6 @@ class MasterFile < ActiveFedora::Base
     array.sort { |x, y| QUALITY_ORDER[x[:quality]] <=> QUALITY_ORDER[y[:quality]] }
   end
 
-  def updateProgress matterhorn_response
-    #raise "Workflow id does not match existing MasterFile workflow_id" unless self.workflow_id == workflow_id
-    #matterhorn_response = Rubyhorn.client.instance_xml(workflow_id)
-
-    #TODO set duration, mediapackage_id, checksum, etc if not already set
-
-    self.percent_complete = calculate_percent_complete(matterhorn_response)
-    self.status_code = matterhorn_response.state[0]
-    save
-  end
-
   def finished_processing?
     ['STOPPED', 'SUCCEEDED', 'FAILED'].include?(status_code)
   end
@@ -154,6 +143,79 @@ class MasterFile < ActiveFedora::Base
   def thumbnail_url
     #thumbnail.url yeilds something like "objects/changeme%3A314/datastreams/thumbnail/content" which needs fedora's base added on to it
     thumbnail.new? ? nil : ActiveFedora.fedora.config[:url] + "/" + thumbnail.url
+  end
+
+  def update_progress!( params, matterhorn_response )
+
+    response_duration = matterhorn_response.source_tracks(0).duration.try(:first)
+
+    self.percent_complete = calculate_percent_complete(matterhorn_response)
+    self.status_code = matterhorn_response.state[0]
+
+    # Because there is no attribute_changed? in AF
+    # we want to find out if the duration has changed
+    # so we can update it along with the media object.
+    if response_duration && response_duration !=  self.duration
+      self.duration = response_duration
+      save
+      
+      # The media object has a duration that is the sum of all master files.
+      media_object = self.mediaobject
+      media_object.populate_duration!
+      media_object.save
+    end
+
+    save
+  end
+
+  def update_progress_on_success!( matterhorn_response )
+    # First step is to create derivative objects within Fedora for each
+    # derived item. For this we need to pick only those which 
+    # have a 'streaming' tag attached
+    
+    # Why do it this way? It will create a dynamic node that can be
+    # passed to the helper without any extra work
+    matterhorn_response.streaming_tracks.size.times do |i|
+      Derivative.create_from_master_file( self, matterhorn_response.streaming_tracks(i) )
+    end
+
+    # Some elements of the original file need to be stored as well even 
+    # though they are not being used right now. This includes a checksum 
+    # which can be used to validate the file has not changed and the 
+    # thumbnail.
+    #
+    # The thumbnail is tricky because Fedora cannot ingest from a URI. That 
+    # means if one exists we should copy it over to a temporary location and
+    # then hand the bits off to Fedora
+    self.mediapackage_id = matterhorn_response.mediapackage.id.first
+    
+    unless matterhorn_response.source_tracks(0).nil?
+      self.file_checksum = matterhorn_response.source_tracks(0).checksum
+    end
+
+    thumbnail = matterhorn_response.thumbnail_images(0)      
+
+    # TODO : Since these are the same write a method to DRY up updating an
+    #        image datastream
+    unless thumbnail.empty?
+      thumbnailURI = URI.parse(thumbnail.url.first)
+      # Rubyhorn fails if you don't provide a leading / in the provided path
+      self.thumbnail.content = Rubyhorn.client.get(thumbnailURI.path[1..-1]) 
+      self.thumbnail.mimeType = thumbnail.mimetype.first
+    end
+    
+    # The poster element needs the same treatment as the thumbnail except 
+    # for being located at player+preview and not search+preview
+    poster = matterhorn_response.poster_images(0)
+
+    unless poster.empty?
+      poster_uri = URI.parse(poster.url.first)
+      self.poster.content = Rubyhorn.client.get(poster_uri.path[1..-1])
+      self.poster.mimeType = poster.mimetype.first
+    end
+
+    save
+
   end
 
   protected
@@ -203,5 +265,6 @@ class MasterFile < ActiveFedora::Base
     logger.debug "<< File location #{ file_location } >>"
     logger.debug "<< Filesize #{ file_size } >>"
   end
+
 
 end
