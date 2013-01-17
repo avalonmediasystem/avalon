@@ -8,14 +8,14 @@ describe Admin::GroupsController do
 
   describe "creating a new group" do
   	it "should redirect to sign in page with a notice when unauthenticated" do
-  	  lambda { get 'new' }.should_not change { RoleControls.roles.count }
+  	  lambda { get 'new' }.should_not change { Admin::Group.all.count }
   	  flash[:notice].should_not be_nil
   	  response.should redirect_to(new_user_session_path)
   	end
 	
     it "should redirect to home page with a notice when authenticated but unauthorized" do
       login_as('student')
-      lambda { get 'new' }.should_not change { RoleControls.roles.count }
+      lambda { get 'new' }.should_not change {Admin::Group.all.count }
       flash[:notice].should_not be_nil
       response.should redirect_to(root_path)
     end
@@ -23,21 +23,28 @@ describe Admin::GroupsController do
     context "Default permissions should be applied" do
       it "should be create-able by the policy_editor" do
         login_as('policy_editor')
-        lambda { post 'create', admin_group: { name: test_group, users: [], resources: [] } }.should change { RoleControls.roles.count }
-        response.should redirect_to(admin_groups_path)
-        
-        # Cleans up
-        RoleControls.remove_role test_group
-        RoleControls.save_changes
+        lambda { post 'create', admin_group: test_group }.should change { Admin::Group.all.count }
+        g = Admin::Group.find(test_group)
+        g.should_not be_nil
+        response.should redirect_to(edit_admin_group_path(g))
       end
+    end
+    
+    # Cleans up
+    after(:each) do
+      clean_groups [test_group, test_group_new]
+
+
     end
   end
 
   describe "Modifying a group: " do
     before(:each) do
       clean_groups [test_group, test_group_new]
-           
-      RoleControls.add_role test_group
+      
+      g = Admin::Group.new
+      g.name = test_group       
+      g.save
     end 
     
     after(:each) do
@@ -62,21 +69,22 @@ describe Admin::GroupsController do
     
       it "should be able to change group users when authenticated and authorized" do
         login_as('policy_editor')
-      
-        lambda { post 'update', admin_group: { name: test_group, users: ["test_change_user"], resources: [] }, id: test_group }.should change { RoleControls.users(test_group) }
+
+        lambda { put 'update', :id => test_group, admin_group: { group_name: test_group }, new_user: "test_change_user"}.should change { Admin::Group.find(test_group).users }
         flash[:notice].should_not be_nil
-        response.should redirect_to(admin_groups_path)
+        response.should redirect_to(edit_admin_group_path Admin::Group.find(test_group))
       end
     
       it "should be able to change group name when authenticated and authorized" do
         login_as('policy_editor')
       
-        post 'update', admin_group: { name: test_group_new, users: [], resources: [] }, id: test_group
+        post 'update', admin_group: { group_name: test_group_new }, new_user: "", id: test_group
       
-        RoleControls.users(test_group).should be_nil
-        RoleControls.users(test_group_new).should_not be_nil
+        Admin::Group.find(test_group).should be_nil
+        Admin::Group.find(test_group_new).should_not be_nil
         flash[:notice].should_not be_nil
-        response.should redirect_to(admin_groups_path)
+
+        response.should redirect_to(edit_admin_group_path Admin::Group.find(test_group_new))
       end
 
       # it "should be able to add resources to group when authenticated and authorized" do

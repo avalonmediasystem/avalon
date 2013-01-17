@@ -19,11 +19,10 @@ module FixtureMacros
     end
   end
   
-  def clean_groups(groups)
-    groups.each do |group|
-      if !RoleControls.users(group).nil?
-        RoleControls.remove_role(group)
-      end
+  def clean_groups(group_names)
+    group_names.each do |group_name|
+      g = Admin::Group.find(group_name)
+      g.delete unless g.blank?
     end
   end
 end

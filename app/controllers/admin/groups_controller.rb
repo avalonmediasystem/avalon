@@ -36,10 +36,9 @@ class Admin::GroupsController < ApplicationController
   end
   
   def create
-    group_name = params["admin_group"]
-    
     @group = Admin::Group.new
     @group.name = params["admin_group"]
+    puts @group.inspect
     if @group.save
       redirect_to edit_admin_group_path(@group)
     else
@@ -53,18 +52,17 @@ class Admin::GroupsController < ApplicationController
   
   def update
     #TODO: move RoleControls to Group model
-    new_group_name = params["admin_group"]["group_name"]
-    puts new_group_name
+    new_group_name = params["group_name"]
     new_user = params["new_user"]
 
-    group = Admin::Group.find(params["id"])
-    group.name = new_group_name unless new_group_name.blank?
-    group.users << new_user unless new_user.blank?
+    @group = Admin::Group.find(params["id"])
+    @group.name = new_group_name unless new_group_name.blank?
+    @group.users << new_user unless new_user.blank?
     
-    if group.save
-      flash[:notice] = "Successfully updated group \"#{new_group_name}\""
+    if @group.save
+      flash[:notice] = "Successfully updated group \"#{@group.name}\""
     end
-    redirect_to edit_admin_group_path(Admin::Group.find(new_group_name)) 
+    redirect_to edit_admin_group_path(@group) 
   end
 
   def destroy 
