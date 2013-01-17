@@ -160,9 +160,8 @@ tr.active-false td {
   width: 100%;
  
   img.result-thumbnail {
-    max-width: $gridColumnWidth;
-    min-width: $gridColumnWidth/2;
-    padding: 0 $baseLineHeight $gridColumnWidth/2 0;
+    width: $gridColumnWidth;
+    overflow: hidden;
   }
 
   .result-heading {
