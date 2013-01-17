@@ -60,7 +60,8 @@ module ApplicationHelper
        end
       
        unless item["duration_t"].blank?
-         label += "(#{item['duration_t']})"
+         formatted_duration = milliseconds_to_formatted_time(item["duration_t"].first.try :to_i)
+         label += "(#{formatted_duration})"
        end
  
        label
@@ -94,4 +95,10 @@ module ApplicationHelper
     current_user.user_key if current_user
   end
 
+  # the mediainfo gem returns duration as milliseconds
+  # see attr_reader.rb line 48 in the mediainfo source
+  def milliseconds_to_formatted_time(milliseconds, format = :short)
+    seconds = milliseconds / 1000
+    ChronicDuration.output(seconds, :format => format)
+  end
 end

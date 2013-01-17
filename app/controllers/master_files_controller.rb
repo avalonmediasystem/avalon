@@ -92,88 +92,33 @@ class MasterFilesController < ApplicationController
   end
 
   def update
-    @masterfile = MasterFile.find(params[:id])
+    master_file = MasterFile.find(params[:id])
+
     if params[:workflow_id].present?
-      @masterfile.workflow_id ||= params[:workflow_id]
+      master_file.workflow_id ||= params[:workflow_id]
       workflow = Rubyhorn.client.instance_xml(params[:workflow_id])
-      @masterfile.updateProgress workflow 
+      master_file.update_progress!( params, workflow ) 
 
       # If Matterhorn reports that the processing is complete then we need
       # to prepare Fedora by pulling several important values closer to the
       # interface. This will sped up searching, allow for on-the-fly quality
       # switching, and avois hitting Matterhorn repeatedly when loading up
       # a list of search results
-      if @masterfile.status_code.eql? "SUCCEEDED"
-        # First step is to create derivative objects within Fedora for each
-        # derived item. For this we need to pick only those which 
-        # have a 'streaming' tag attached
-        #
-        # Why do it this way? It will create a dynamic node that can be
-        # passed to the helper without any extra work
-        workflow.streaming_tracks.size.times do |i|
-          Derivative.create_from_master_file(@masterfile, workflow.streaming_tracks(i))
-        end
+      if master_file.status_code.eql? 'SUCCEEDED'
+        master_file.update_progress_on_success!( workflow )
 
-        # Some elements of the original file need to be stored as well even 
-        # though they are not being used right now. This includes a checksum 
-        # which can be used to validate the file has not changed and the 
-        # thumbnail.
-        #
-        # The thumbnail is tricky because Fedora cannot ingest from a URI. That 
-        # means if one exists we should copy it over to a temporary location and
-        # then hand the bits off to Fedora
-        @masterfile.mediapackage_id = workflow.mediapackage.id.first
-        
-        unless workflow.source_tracks(0).nil?
-          @masterfile.file_checksum = workflow.source_tracks(0).checksum
-          @masterfile.duration = workflow.source_tracks(0).duration
+        # We handle the case where the item was batch ingested. If so the
+        # update method needs to kick off an email letting the uploader know it is
+        # ready to be previewed
+        ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( master_file.mediaobject.id )
+        if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
+          IngestBatchMailer.status_email(ingest_batch.id).deliver
+          ingest_batch.email_sent = true
+          ingest_batch.save!
         end
-        thumbnail = workflow.thumbnail_images(0)	    
-	
-        # TODO : Since these are the same write a method to DRY up updating an
-        #        image datastream
-        unless thumbnail.empty?
-          thumbnailURI = URI.parse(thumbnail.url.first)
-          # Rubyhorn fails if you don't provide a leading / in the provided path
-          @masterfile.thumbnail.content = Rubyhorn.client.get(thumbnailURI.path[1..-1]) 
-          @masterfile.thumbnail.mimeType = thumbnail.mimetype.first
-        end
-        
-        # The poster element needs the same treatment as the thumbnail except 
-        # for being located at player+preview and not search+preview
-        poster = workflow.poster_images(0)
-
-        unless poster.empty?
-          poster_uri = URI.parse(poster.url.first)
-          @masterfile.poster.content = Rubyhorn.client.get(poster_uri.path[1..-1])
-          @masterfile.poster.mimeType = poster.mimetype.first
-        end
-        @masterfile.save
       end
-
-      # Finally we handle the case where the item was batch ingested. If so the
-      # update method needs to kick off an email letting the uploader know it is
-      # ready to be previewed
-      ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( @masterfile.mediaobject.id )
-      if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
-        begin
-          IngestBatchMailer.status_email(ingest_batch.id).deliver!
-        rescue Exception => e
-          logger.warn "Ingest Batch Mailer failed because #{e}"
-        end
-        ingest_batch.email_sent = true
-        ingest_batch.save!
-      end
-
-    # If the process is still running then we simply need to update the status 
-    # and wait for the next pingback from Matterhorn
-    else
-      @mediaobject = @masterfile.mediaobject
-      authorize! :edit, @mediaobject
-      @masterfile.label = params[@masterfile.pid]
     end
-    
-    @masterfile.save
+
     render nothing: true
   end
 
