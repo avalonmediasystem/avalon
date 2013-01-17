@@ -89,6 +89,12 @@ class MediaObject < ActiveFedora::Base
   delegate :geographic_subject, to: :descMetadata, at: [:geographic_subject]
   delegate :temporal_subject, to: :descMetadata, at: [:temporal_subject]
   delegate :topical_subject, to: :descMetadata, at: [:topical_subject]
+  
+  has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
+    sds.field :duration, :string
+  end
+
+  delegate_to 'displayMetadata', [:duration], unique: true
 
   accepts_nested_attributes_for :parts, :allow_destroy => true
 
@@ -108,6 +114,10 @@ class MediaObject < ActiveFedora::Base
 
   def finished_processing?
     self.parts.all?{ |master_file| master_file.finished_processing? }
+  end
+
+  def populate_duration!
+    self.duration = calculate_duration.to_s
   end
 
   def access
@@ -251,6 +261,7 @@ class MediaObject < ActiveFedora::Base
     super(solr_doc, opts)
     solr_doc[:created_by_facet] = self.DC.creator
     solr_doc[:hidden_b] = hidden?
+    solr_doc[:duration_display] = self.duration
     return solr_doc
   end
 
@@ -263,6 +274,10 @@ class MediaObject < ActiveFedora::Base
     def after_create
       self.DC.identifier = pid
       save
+    end
+    
+    def calculate_duration
+      self.parts.map{|mf| mf.duration.to_i }.compact.sum
     end
 end
 
