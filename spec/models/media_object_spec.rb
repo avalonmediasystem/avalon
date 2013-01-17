@@ -181,4 +181,34 @@ describe MediaObject do
       mediaobject.finished_processing?.should be_false
     end
   end
+
+  describe '#calculate_duration' do
+    let(:media_object) { MediaObject.new }
+    it 'returns zero if there are zero master files' do
+      media_object.send(:calculate_duration).should == 0      
+    end
+    it 'returns the correct duration with two master files' do
+      media_object.parts << MasterFile.new(duration: '40')
+      media_object.parts << MasterFile.new(duration: '40')
+      media_object.send(:calculate_duration).should == 80      
+    end
+    it 'returns the correct duration with two master files one nil' do
+      media_object.parts << MasterFile.new(duration: '40')
+      media_object.parts << MasterFile.new(duration: nil)
+      media_object.send(:calculate_duration).should == 40    
+    end
+    it 'returns the correct duration with one master file that is nil' do
+      media_object.parts << MasterFile.new(duration:nil)
+      media_object.send(:calculate_duration).should == 0   
+    end
+
+  end
+
+  describe '#populate_duration!' do
+    it 'sets duration on the model' do
+      media_object = MediaObject.new
+      media_object.populate_duration!
+      media_object.duration.should == '0'
+    end
+  end
 end

@@ -44,6 +44,7 @@
   gem 'mediainfo'
   gem 'delayed_job_active_record'
   gem 'whenever', :require => false
+  gem 'chronic_duration'
 
   gem 'hydrant-batch',
     :git => "https://github.com/variations-on-video/hydrant-batch.git"
