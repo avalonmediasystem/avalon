@@ -60,7 +60,7 @@ module ApplicationHelper
       label = truncate(item["title_display"], length: 35)
     end
     
-    if ! item['duration_t'].nil? && item['duration_t'].empty? 
+    if ! item['duration_t'].nil? && ! item['duration_t'].empty? 
       item_duration = item['duration_t'].first
       if item_duration.respond_to?(:to_i)
         formatted_duration = milliseconds_to_formatted_time(item_duration.to_i)
