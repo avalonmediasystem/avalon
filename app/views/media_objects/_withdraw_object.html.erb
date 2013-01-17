@@ -1,6 +1,3 @@
 <div class="alert alert-info" id="delete-asset">
-  <h4 class="alert-heading hidden-phone">Delete asset</h4>
-      <p class="visible-desktop">If you are certain that this item is no longer needed it can be removed from the system. Deletion cannot be undone without uploading and describing the content again.</p>
-    <hr class="visible-desktop">
       <%= button_to("Delete item", {:action => :destroy, :controller => :"media_objects", :id => @mediaobject.pid}, :data => { :confirm => 'Are you sure?' }, :method => :delete, class: "btn" )%>
 </div>
