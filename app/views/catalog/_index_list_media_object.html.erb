@@ -1,14 +1,14 @@
 <dl class="result dl-horizontal">
     <% if can?(:read, document) then %>
       <% unless image_for(document[:id]).nil? %>
-        <%= link_to(media_object_path(document[:id]), {class: 'result-thumbnail span1'}) do
+        <%= link_to(media_object_path(document[:id]), {class: 'result-thumbnail span2'}) do
               image_tag image_for(document[:id])
             end %>
       <% else %>
-        <%= image_tag 'no_icon.png', class: 'result-thumbnail span1' %>
+        <%= image_tag 'no_icon.png', class: 'result-thumbnail span2' %>
       <% end %> 
       <% else %>
-        <%= image_tag image_for(document[:id]), class: 'result-thumbnail span1' %>
+        <%= image_tag image_for(document[:id]), class: 'result-thumbnail span2' %>
     <% end %>
 
   <dl class="dl-horizontal span6">

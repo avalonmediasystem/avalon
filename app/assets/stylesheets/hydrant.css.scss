@@ -159,8 +159,12 @@ tr.active-false td {
 .result {
   width: 100%;
  
+/**
+ * Result thumbnails should be no larger than the two columns allocated in
+ * the user interface
+ */
   img.result-thumbnail {
-    width: $gridColumnWidth;
+    max-width: $gridColumnWidth*2;
     overflow: hidden;
   }
 
