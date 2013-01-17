@@ -1,45 +1,13 @@
 <div class="row">
-  <div class="span3 hidden-phone" id="left_column">
-    <% if can? :edit, @mediaobject %>
-      <%= render "media_objects/toggle_edit_mode" %>
-      <%= render "media_objects/withdraw_object", mediaobject: @mediaobject %>
-    <% else %>&nbsp;    
-    <% end %>
-  </div>
-
-  <% if can? :manage, @mediaobject %>
-    <% if @mediaobject.is_published? %>
-      <%= link_to 'Unpublish', update_status_media_object_path(@mediaobject, a: 'unpublish'), class: 'btn pull-right' %>
-    <% else %>
-      <%= link_to 'Publish', update_status_media_object_path(@mediaobject, a: 'publish'), class: 'btn pull-right' %>
-    <% end %>
-  <% end %>
-
-  <div id="main_content_container" class="offset1 span8">
-    <div class="row-fluid whitespace">
-      <div>
-        <% unless @mediaobject.title.blank? %>
-      <h2>
-        <%= @mediaobject.title %>
-      <% else %>
-        <%= @mediaobject.pid %>
-      <% end %>
-      </h2>
-        <% if not @currentStream.blank? and 
-          @masterFiles.length >= 2 %>
-         <h3 id="stream_label"><%= @currentStream.label %></h3>
-        <% end %>
-     </div>
-    </div>
-    
-    <div class="row-fluid whitespace">
-      <section id="player">        
+  <div class="span6" id="left_column">
+    <%# Refactor into its own partial once the layout is clear %>
+       <section id="player">        
         <% if @masterFiles.blank? %>
           <div class="alert">
             <p>No media is associated with this item</p>
           </div>
         <% else if @currentStream.derivatives.blank? %>
-          <div class="alert <%= @currentStream.status_code == 'FAILED' ? 'alert-error' : 'alert-info' %> span10">
+          <div class="alert <%= @currentStream.status_code == 'FAILED' ? 'alert-error' : 'alert-info' %>">
             <h4>Conversion Process</h4>
             <br/>
             <p><%= @currentStream.status_description %></p>
@@ -56,10 +24,9 @@
         <% end %>
         <% end %>
       </section>  
-    </div>
 
-    <div class="row-fluid whitespace">
-      <% unless @masterFiles.empty? %>
+      <%# Partial once the layout makes sense %>
+      <% unless @masterFiles.empty? and @masterfiles.length > 0 %>
       <section>
         <h3>Sections</h3>
           <ul class="unstyled" id="section_links">
@@ -72,21 +39,44 @@
                     data: {segment: master.pid},
                     class: (master.pid == @currentStream.pid ? 'current-stream' : nil)
                 %>
-                (<%= number_to_human_size(master.file_size) %>)
+                ( Duration )
               </li>
               <% end %>
           </ul>
        </section>
      <% end %>
+  </div>
+
+  <div class="span6" id="right-column">
+  <% if can? :manage, @mediaobject %>
+    <div id="administrative_options">
+    <% if @mediaobject.is_published? %>
+      <%= link_to 'Unpublish', update_status_media_object_path(@mediaobject, a: 'unpublish'), class: 'btn' %>
+    <% else %>
+      <%= link_to 'Publish', update_status_media_object_path(@mediaobject, a: 'publish'), class: 'btn' %>
+    <% end %>
+  <% end %>
+  </div>
+
+  <div id="metadata_container" class="">
+      <div>
+        <% unless @mediaobject.title.blank? %>
+      <h2>
+        <%= @mediaobject.title %>
+      <% else %>
+        <%= @mediaobject.pid %>
+      <% end %>
+      </h2>
+        <% if not @currentStream.blank? and 
+          @masterFiles.length >= 2 %>
+         <h3 id="stream_label"><%= @currentStream.label %></h3>
+        <% end %>
+     </div>
     </div>
     
-    <div class="row-fluid whitespace">
-      <h3>Resource description</h3>
       <section id="metadata"><%= render "modules/metadata_display" %></section>
-    </div>
         
     <div class="row-fluid">
-      <div class="span8">
         <div id="permalink" class="alert alert-success">
         <h4 class="alert-heading">Permalink</h4>
         <p>To share this item with others use the following canonical link</p>
