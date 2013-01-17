@@ -1,21 +1,22 @@
-<dl class="result dl-horizontal dl-invert">
+<dl class="result dl-horizontal">
     <% if can?(:read, document) then %>
-      <%# Not very DRY but a more predictable experience %>
       <% unless image_for(document[:id]).nil? %>
-        <%= link_to(media_object_path(document[:id]), {class: 'pull-left'}) do
+        <%= link_to(media_object_path(document[:id]), {class: 'result-thumbnail span1'}) do
               image_tag image_for(document[:id])
             end %>
       <% else %>
-        <%= image_tag 'no_icon.png' %>
+        <%= image_tag 'no_icon.png', class: 'result-thumbnail span1' %>
       <% end %> 
       <% else %>
-        <%= image_tag image_for(document[:id]), class: 'result-thumbnail pull-left' %>
+        <%= image_tag image_for(document[:id]), class: 'result-thumbnail span1' %>
     <% end %>
 
+  <dl class="dl-horizontal span8">
   <% index_fields.each do |solr_fname, field| -%>
     <% if should_render_index_field? document, field %>
             <dt class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_label :field => solr_fname %></dt>
             <dd class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_value :document => document, :field => solr_fname %></dd>
     <% end -%>
   <% end -%>
+  </dl>
 </dl>
