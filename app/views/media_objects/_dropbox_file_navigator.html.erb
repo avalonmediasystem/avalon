@@ -1,14 +1,20 @@
+<% content_for(:page_styles)  { stylesheet_link_tag "datatables_bootstrap", media: "all" } %>
+<% content_for(:page_scripts) do %>
+  <%= javascript_include_tag "jquery.dataTables.min.js" %>
+  <%= javascript_include_tag "jquery.dataTables.bootstrap.js" %>
+  <%= javascript_include_tag "file_table", :defer => 'defer' %>
+<% end %>
+
 <% file_set ||= nil %>
 
 <% if file_set.nil? or file_set.empty? %>
   <%= render "dropbox_empty_container" %>
 <% else %>
   <%= form_tag(master_files_path) do -%>
-      <%= hidden_field_tag :step, 'file-upload' %>
-      <%= hidden_field_tag :container_id, @mediaobject.pid %>
-
+    <%= hidden_field_tag :step, 'file-upload' %>
+    <%= hidden_field_tag :container_id, @mediaobject.pid %>
       
-	  <table class="table table-striped">
+	  <table id="file-list" class="table table-striped">
 	    <colgroup>
 	      <col class="span1">
 	      <col class="span4">
@@ -16,21 +22,21 @@
 	      <col class="span1">
 	      <col class="span1">
 	    </colgroup>
-	    
-        <thead>
-          <th>&nbsp;</th>
-          <th>File name</th>
-          <th>Size</th>
-          <th>Format</th>
-          <th>MIME type</th>
-        </thead>
-		    <tbody>
+    
+      <thead>
+        <th>&nbsp;</th>
+        <th>File name</th>
+        <th>Size</th>
+        <th>Modified</th>
+        <th>Format</th>
+        <th>MIME type</th>
+      </thead>
+	    <tbody>
 		    <% file_set.each do |file, i| %>
-                      <%= render partial: "dropbox_file_entry", 
-                        locals: {file: file, index: i} %>
-   	 	    <% end %>
-  	 	  </tbody>
-  	 	</table>
-  <%= submit_tag "Associate selected files", donot_advance: true %>
+          <%= render partial: "dropbox_file_entry", locals: {file: file, index: i} %>
+   	 	  <% end %>
+	 	  </tbody>
+	 	</table>
+    <p style="clear:both"><%= submit_tag "Associate selected files", donot_advance: true %></p>
+  <% end %>
 <% end %>
- <% end %>

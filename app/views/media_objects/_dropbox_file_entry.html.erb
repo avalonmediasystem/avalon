@@ -2,6 +2,7 @@
                         <td><%= check_box_tag "dropbox[#{index}][id]", file[:id], false, :disabled => !file[:available] %></td>
                         <td><%= file[:name] %></td>
                         <td><%= file[:size].is_a?(String) ? file[:size] : number_to_human_size(file[:size]) %></td>
+                        <td><%= file[:modified].strftime('%Y-%m-%d %H:%M:%S') %></td>
   		        <td>
   		          <% case file[:media_type]
   		             when /^audio/ %>
