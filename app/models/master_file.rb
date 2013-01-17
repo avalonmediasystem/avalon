@@ -146,7 +146,6 @@ class MasterFile < ActiveFedora::Base
   end
 
   def update_progress!( params, matterhorn_response )
-    #TODO set mediapackage_id, checksum, etc if not already set
 
     response_duration = matterhorn_response.source_tracks(0).duration.try(:first)
 
@@ -157,7 +156,7 @@ class MasterFile < ActiveFedora::Base
     # we want to find out if the duration has changed
     # so we can update it along with the media object.
     if response_duration && response_duration !=  self.duration
-      self.duration = response_duration if response_duration
+      self.duration = response_duration
       save
       
       # The media object has a duration that is the sum of all master files.
@@ -165,10 +164,6 @@ class MasterFile < ActiveFedora::Base
       media_object.populate_duration!
       media_object.save
     end
-
-    # If the process is still running then we simply need to update the status 
-    # and wait for the next pingback from Matterhorn
-    self.label = params[self.pid]
 
     save
   end
