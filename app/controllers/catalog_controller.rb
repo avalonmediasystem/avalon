@@ -6,17 +6,6 @@ class CatalogController < ApplicationController
   # Extend Blacklight::Catalog with Hydra behaviors (primarily editing).
   include Hydra::Controller::ControllerBehavior
 
-  # These before_filters apply the hydra access controls
-  before_filter :enforce_access_controls
-  # before_filter :enforce_viewing_context_for_show_requests, :only=>:show
-  
-  # Catch exceptions when you try to reference an object that doesn't exist.
-  # Attempt to resolve it to a close match if one exists and offer a link to
-  # the show page for that item. Otherwise ... nothing!
-  rescue_from ActiveFedora::ObjectNotFoundError do |exception|
-    render '/errors/unknown_pid', status: 404 
-  end
-
   # This applies appropriate access controls to all solr queries
   self.solr_search_params_logic += [:add_access_controls_to_solr_params]
   
@@ -190,12 +179,6 @@ class CatalogController < ApplicationController
     if cannot? :create, MediaObject
       solr_parameters[:fq] ||= []
       solr_parameters[:fq] << '!hidden_b:true'
-    end
-  end
-
-  def matterhorn_service_config
-    respond_to do |format|
-      format.any(:xml, :json) { render request.format.to_sym => Hydrant.matterhorn_config }
     end
   end
 

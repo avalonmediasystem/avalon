@@ -1,6 +1,6 @@
 require 'hydrant/controller/controller_behavior'
 
-class MediaObjectsController < ApplicationController #< CatalogController
+class MediaObjectsController < ApplicationController 
   include Hydrant::Workflow::WorkflowControllerBehavior
   include Hydrant::Controller::ControllerBehavior
 
@@ -8,7 +8,14 @@ class MediaObjectsController < ApplicationController #< CatalogController
   before_filter :inject_workflow_steps, only: [:edit, :update]
 
   layout 'hydrant'
-   
+
+  # Catch exceptions when you try to reference an object that doesn't exist.
+  # Attempt to resolve it to a close match if one exists and offer a link to
+  # the show page for that item. Otherwise ... nothing!
+  rescue_from ActiveFedora::ObjectNotFoundError do |exception|
+    render '/errors/unknown_pid', status: 404
+  end
+  
   def new
     logger.debug "<< NEW >>"
     @mediaobject = MediaObjectsController.initialize_media_object(user_key)
@@ -91,6 +98,12 @@ class MediaObjectsController < ApplicationController #< CatalogController
     set_default_item_permissions( mediaobject, user_key )
 
     mediaobject
+  end
+
+  def matterhorn_service_config
+    respond_to do |format|
+      format.any(:xml, :json) { render request.format.to_sym => Hydrant.matterhorn_config }
+    end
   end
 
   protected
