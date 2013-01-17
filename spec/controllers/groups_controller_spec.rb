@@ -70,7 +70,7 @@ describe Admin::GroupsController do
       it "should be able to change group users when authenticated and authorized" do
         login_as('policy_editor')
 
-        lambda { put 'update', :id => test_group, admin_group: { group_name: test_group }, new_user: "test_change_user"}.should change { Admin::Group.find(test_group).users }
+        lambda { put 'update', :id => test_group, group_name: test_group, new_user: "test_change_user"}.should change { Admin::Group.find(test_group).users }
         flash[:notice].should_not be_nil
         response.should redirect_to(edit_admin_group_path Admin::Group.find(test_group))
       end
@@ -78,7 +78,7 @@ describe Admin::GroupsController do
       it "should be able to change group name when authenticated and authorized" do
         login_as('policy_editor')
       
-        post 'update', admin_group: { group_name: test_group_new }, new_user: "", id: test_group
+        post 'update', group_name: test_group_new, new_user: "", id: test_group
       
         Admin::Group.find(test_group).should be_nil
         Admin::Group.find(test_group_new).should_not be_nil
