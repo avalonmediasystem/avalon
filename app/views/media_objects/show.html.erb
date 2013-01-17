@@ -26,7 +26,7 @@
       </section>  
 
       <%# Partial once the layout makes sense %>
-      <% unless @masterFiles.empty? and @masterfiles.length > 0 %>
+      <% unless @masterFiles.empty? or 0 == @masterfiles.length %>
       <section>
         <h3>Sections</h3>
           <ul class="unstyled" id="section_links">
