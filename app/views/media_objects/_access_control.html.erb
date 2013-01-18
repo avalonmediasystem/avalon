@@ -3,98 +3,98 @@
 <p class="whitespace">Some short blurb explaining what the point of access controls are]</p>
 
 <div class="whitespace" id="default_level">
-<h4>Default access</h4>
-<%= twitter_bootstrap_form_for @mediaobject, 
+  <h4>Default access</h4>
+  <%= twitter_bootstrap_form_for @mediaobject, 
   html: { class: "form-horizontal",
   id: 'access_control_form'}  do |vid| %>
-    <%= hidden_field_tag :donot_advance, true %>
-    <%= hidden_field_tag :step, @active_step %>
-    <%= vid.hidden_field :pid %>
+  <%= hidden_field_tag :donot_advance, true %>
+  <%= hidden_field_tag :step, @active_step %>
+  <%= vid.hidden_field :pid %>
 
-    <%= label_tag :access do %>
-      <%= radio_button_tag :access, 'public', (@mediaobject.access == 'public') %>
-      This resource should be accessible to the general public without having to register
-    <% end %>
-
-    <%= label_tag :access do %>
-      <%= radio_button_tag :access, 'restricted', (@mediaobject.access == 'restricted') %>
-      Only registered users should have access to this resource
-    <% end %>
-
-    <%= label_tag :access do %>
-      <%= radio_button_tag :access, 'private', (@mediaobject.access == 'private') %>
-      Only I should be able to see this resource
-    <% end %>
-    
-    <!-- Need to put in some whitespace here -->
-    <%= label_tag :hidden do %>
-      <%= vid.check_box :hidden? %>
-      Do not display this resource in search results 
-    <% end %>
-    <%= submit_tag 'Update default' %>
+  <%= label_tag :access do %>
+  <%= radio_button_tag :access, 'public', (@mediaobject.access == 'public') %>
+  This resource should be accessible to the general public without having to register
   <% end %>
-  </div>
 
-    <div class="whitespace" id="exceptions">
-    <h4>Exceptions</h4>
-    <%= twitter_bootstrap_form_for @mediaobject, 
-      html: { class: "form-vertical",
-      id: 'exceptions'} do %>
-        <%= hidden_field_tag :donot_advance, true %>
-        <%= hidden_field_tag :step, @active_step %>
-    <table class="table table-striped table-hover">
-      <% unless @mediaobject.group_exceptions.empty? %>
-       <thead>
-        <tr>
-           <td class="info">Groups</td>
+  <%= label_tag :access do %>
+  <%= radio_button_tag :access, 'restricted', (@mediaobject.access == 'restricted') %>
+  Only registered users should have access to this resource
+  <% end %>
+
+  <%= label_tag :access do %>
+  <%= radio_button_tag :access, 'private', (@mediaobject.access == 'private') %>
+  Only I should be able to see this resource
+  <% end %>
+
+  <!-- Need to put in some whitespace here -->
+  <%= label_tag :hidden do %>
+    <%= vid.check_box :hidden? %>
+    Do not display this resource in search results 
+  <% end %>
+  <%= submit_tag 'Update default' %>
+  <% end %>
+</div>
+
+<div class="whitespace" id="exceptions">
+  <h4>Exceptions</h4>
+  <%= twitter_bootstrap_form_for @mediaobject, 
+  html: { class: "form-vertical",
+  id: 'exceptions'} do %>
+  <%= hidden_field_tag :donot_advance, true %>
+  <%= hidden_field_tag :step, @active_step %>
+  <table class="table table-striped table-hover">
+    <% unless @mediaobject.group_exceptions.empty? %>
+    <thead>
+      <tr>
+        <td class="info">Groups</td>
+      </tr>
+    </thead>
+    <tbody>
+      <% @mediaobject.group_exceptions.each do |group| %>
+      <tr>
+        <td>
+          <%= label_tag do %>
+          <%= check_box_tag 'groups[]', group %>
+          <%= group %>
+          <% end %>
         </tr>
-     </thead>
-        <tbody>
-        <% @mediaobject.group_exceptions.each do |group| %>
-        <tr>
-          <td>
-            <%= label_tag do %>
-              <%= check_box_tag 'groups[]', group %>
-              <%= group %>
-            <% end %>
-        </tr>
-      <% end %>
+        <% end %>
       </tbody>
-    <% end %>
-    
+      <% end %>
+
       <% unless @mediaobject.user_exceptions.empty? %>
       <thead>
         <tr>
-           <td class="info">Users</td>
+          <td class="info">Users</td>
         </tr>
-     </thead>
-        <tbody>
+      </thead>
+      <tbody>
         <% @mediaobject.user_exceptions.each do |user| %>
         <tr>
           <td>
             <%= label_tag do %>
-              <%= check_box_tag 'users[]', user %>
-              <%= user %>
+            <%= check_box_tag 'users[]', user %>
+            <%= user %>
             <% end %>
-        </tr>
-      <% end %>
-      </tbody>
-    <% end %>
-    </table>
+          </tr>
+          <% end %>
+        </tbody>
+        <% end %>
+      </table>
 
-    <div id="add_field" class="span12 clearfix">
+      <div id="add_field" class="span12 clearfix">
         <%= text_field_tag :value %>
         <%= select_tag :scope, options_for_select(['Group', 'User']) %>
       </div>
       <div id="submit_exception" class="clearfix">
         <%= submit_tag 'Update exceptions' %>
       </div>
-    <% end %>
+      <% end %>
     </div>
 
-  <div class="span12">
-    <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |vid| %>
+    <div class="span12">
+      <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |vid| %>
       <%= render "workflow_buttons", form: vid %>
-    <% end %>		
+      <% end %>		
+    </div>
   </div>
-</div>
