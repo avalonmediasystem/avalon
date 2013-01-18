@@ -15,7 +15,10 @@
         var incremented_rails_id = DynamicFields.copy_and_increment_rails_collection_id( $(last_input).attr('id') );
 
         $(fields).append( 
-          $(last_input).clone().attr('id', incremented_rails_id ).attr('value','').after(DynamicFields.remove_button_html)
+          $(last_input).clone().
+            attr('id', incremented_rails_id ).
+            attr('value','').
+            after(DynamicFields.remove_button_html)
         );
 
       });
