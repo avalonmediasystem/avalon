@@ -1,0 +1,26 @@
+    <%# Refactor into its own partial once the layout is clear %>
+       <section id="player">        
+        <% if @masterFiles.blank? %>
+          <div class="alert">
+            <p>No media is associated with this item</p>
+          </div>
+        <% else if @currentStream.derivatives.blank? %>
+          <div class="alert <%= @currentStream.status_code == 'FAILED' ? 'alert-error' : 'alert-info' %>">
+            <h4>Conversion Process</h4>
+            <br/>
+            <p><%= @currentStream.status_description %></p>
+            <div class="progress progress-striped active hidden-phone">
+              <div class="bar" style="width: <%= @currentStream.percent_complete %>%;"></div>
+            </div>
+          </div>
+        <% else %>
+          <div id="nojs">
+            <%# TODO : Come up with a more user friendly error message %>
+            <noscript>You don't have Javascript</noscript>
+          </div>
+        <%# End of the block if media does exist %>
+        <% end %>
+        <% end %>
+      </section>  
+
+

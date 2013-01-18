@@ -1,80 +1,17 @@
 <div class="row">
   <div class="span6" id="left_column">
-    <%# Refactor into its own partial once the layout is clear %>
-       <section id="player">        
-        <% if @masterFiles.blank? %>
-          <div class="alert">
-            <p>No media is associated with this item</p>
-          </div>
-        <% else if @currentStream.derivatives.blank? %>
-          <div class="alert <%= @currentStream.status_code == 'FAILED' ? 'alert-error' : 'alert-info' %>">
-            <h4>Conversion Process</h4>
-            <br/>
-            <p><%= @currentStream.status_description %></p>
-            <div class="progress progress-striped active hidden-phone">
-              <div class="bar" style="width: <%= @currentStream.percent_complete %>%;"></div>
-            </div>
-          </div>
-        <% else %>
-          <div id="nojs">
-            <%# TODO : Come up with a more user friendly error message %>
-            <noscript>You don't have Javascript</noscript>
-          </div>
-        <%# End of the block if media does exist %>
-        <% end %>
-        <% end %>
-      </section>  
-
-      <%# Partial once the layout makes sense %>
-      <% unless @masterFiles.empty? or 0 == @masterfiles.length %>
-      <section>
-        <h3>Sections</h3>
-          <ul class="unstyled" id="section_links">
-            <% @masterFiles.each do |master| %>
-              <li>
-                <%# If the label has not been set use the file name as a default %>
-                <%=
-                  link_to stream_label_for(master),
-                    media_object_path(@mediaobject, {content: master.pid}),
-                    data: {segment: master.pid},
-                    class: (master.pid == @currentStream.pid ? 'current-stream' : nil)
-                %>
-                ( Duration )
-              </li>
-              <% end %>
-          </ul>
-       </section>
-     <% end %>
+      <%= render 'video_player' %>
+      <%= render 'sections', 
+        locals: {mediaobject: @mediaobject,
+                 sections: @masterFiles,
+                 activeStream: @currrentStream} %>
   </div>
 
   <div class="span6" id="right-column">
-  <% if can? :manage, @mediaobject %>
-    <div id="administrative_options">
-    <% if @mediaobject.is_published? %>
-      <%= link_to 'Unpublish', update_status_media_object_path(@mediaobject, a: 'unpublish'), class: 'btn' %>
-    <% else %>
-      <%= link_to 'Publish', update_status_media_object_path(@mediaobject, a: 'publish'), class: 'btn' %>
-    <% end %>
-  <% end %>
-  </div>
+    <%= render 'administrative_links' %>
 
   <div id="metadata_container" class="">
-      <div>
-        <% unless @mediaobject.title.blank? %>
-      <h2>
-        <%= @mediaobject.title %>
-      <% else %>
-        <%= @mediaobject.pid %>
-      <% end %>
-      </h2>
-        <% if not @currentStream.blank? and 
-          @masterFiles.length >= 2 %>
-         <h3 id="stream_label"><%= @currentStream.label %></h3>
-        <% end %>
-     </div>
-    </div>
-    
-      <section id="metadata"><%= render "modules/metadata_display" %></section>
+            <section id="metadata"><%= render "metadata_display" %></section>
         
     <div class="row-fluid">
         <div id="permalink" class="alert alert-success">

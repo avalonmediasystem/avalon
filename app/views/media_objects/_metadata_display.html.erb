@@ -1,14 +1,18 @@
+<div id="metadata_header">
+        <% unless @mediaobject.title.blank? %>
+      <h2>
+        <%= @mediaobject.title %>
+      <% else %>
+        <%= @mediaobject.pid %>
+      <% end %>
+      </h2>
+        <% if not @currentStream.blank? and 
+          @masterFiles.length >= 2 %>
+         <h3 id="stream_label"><%= @currentStream.label %></h3>
+        <% end %>
+     </div>
+    
 <dl id="creation_metadata">
-  <dt>Title</dt>
-  <dd>
-    <% unless @mediaobject.title.blank? or
-      "" == @mediaobject.title %>
-      <%= sanitize @mediaobject.title %>
-    <% else %>
-      <em>Not provided</em>
-    <% end %>
-  </dd>
-
   <dt>Creator</dt>
   <dd>
     <% unless @mediaobject.creator.blank? %>

@@ -1,0 +1,21 @@
+<%# Partial once the layout makes sense %>
+      <% unless sections.blank? or 0 == sections.length %>
+      <section>
+        <h3>Sections</h3>
+          <ul class="unstyled" id="section_links">
+            <% sections.each do |section| %>
+              <li>
+                <%# If the label has not been set use the file name as a default %>
+                <%=
+                  link_to stream_label_for(section),
+                    media_object_path(media, {content: section.pid}),
+                    data: {segment: section.pid},
+                    class: (section.pid == activeStream.pid ? 'current-stream' : nil)
+                %>
+                ( Duration )
+              </li>
+              <% end %>
+          </ul>
+       </section>
+
+           <% end %>
