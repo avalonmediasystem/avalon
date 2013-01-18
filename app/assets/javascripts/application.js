@@ -14,6 +14,7 @@
 //
 //= require fix_console
 //= require jquery
+//= require dynamic_fields
 //= require jquery_ujs
 //= require blacklight/blacklight
 
