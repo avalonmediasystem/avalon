@@ -1,4 +1,18 @@
 $(document).ready ->
+  $('.fileupload').fileupload
+    name: 'Filedata[]'
+
+  $('.fileupload input:file').change (e) ->
+    files = $(e.target.files).map (i,f) -> f.name
+    preview = $(e.target).closest('.fileupload').data('fileupload').$preview
+    preview.html(files.toArray().join())
+
+  $('.dropbox-trigger').click ->
+    $('#dropbox_modal').modal
+      backdrop: true,
+      keyboard: true
+    .addClass('big-modal')
+
   $.extend $.fn.dataTableExt.oSort,
     "file-size-pre": (a) ->
       mags =
@@ -17,9 +31,13 @@ $(document).ready ->
   $.fn.dataTableExt.oStdClasses.sSortColumn = 'sorting_ignore_'
 
   $('#file-list').dataTable
-    sDom: "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>"
+    sDom: "<'row'<'span6'p><'span6'f>r>t>"
     sWrapper: "dataTables_wrapper form-inline"
+    aaSorting: [[3, 'desc']]
     aoColumnDefs: [
-      { aTargets: [0], bSortable: false, bSearchable: false }
+      { aTargets: [0,4,5], bSortable: false }
+      { aTargets: [0,2,4], bSearchable: false }
       { aTargets: [2], sType: 'file-size' }
     ]
+    iDisplayLength: 8
+

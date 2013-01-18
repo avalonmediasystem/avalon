@@ -10,33 +10,30 @@
 <% if file_set.nil? or file_set.empty? %>
   <%= render "dropbox_empty_container" %>
 <% else %>
-  <%= form_tag(master_files_path) do -%>
-    <%= hidden_field_tag :step, 'file-upload' %>
-    <%= hidden_field_tag :container_id, @mediaobject.pid %>
-      
-	  <table id="file-list" class="table table-striped">
-	    <colgroup>
-	      <col class="span1">
-	      <col class="span4">
-	      <col class="span4">
-	      <col class="span1">
-	      <col class="span1">
-	    </colgroup>
+  <%= hidden_field_tag :step, 'file-upload' %>
+  <%= hidden_field_tag :container_id, @mediaobject.pid %>
     
-      <thead>
-        <th>&nbsp;</th>
-        <th>File name</th>
-        <th>Size</th>
-        <th>Modified</th>
-        <th>Format</th>
-        <th>MIME type</th>
-      </thead>
-	    <tbody>
-		    <% file_set.each do |file, i| %>
-          <%= render partial: "dropbox_file_entry", locals: {file: file, index: i} %>
-   	 	  <% end %>
-	 	  </tbody>
-	 	</table>
-    <p style="clear:both"><%= submit_tag "Associate selected files", donot_advance: true %></p>
-  <% end %>
+  <table id="file-list" class="table table-striped">
+    <colgroup>
+      <col class="span1">
+      <col class="span4">
+      <col class="span4">
+      <col class="span1">
+      <col class="span1">
+    </colgroup>
+  
+    <thead>
+      <th>&nbsp;</th>
+      <th>File name</th>
+      <th>Size</th>
+      <th>Modified</th>
+      <th>Format</th>
+      <th>MIME type</th>
+    </thead>
+    <tbody>
+	    <% file_set.each do |file, i| %>
+        <%= render partial: "dropbox_file_entry", locals: {file: file, index: i} %>
+ 	 	  <% end %>
+ 	  </tbody>
+ 	</table>
 <% end %>

@@ -1,3 +1,6 @@
+<% content_for(:page_styles) { stylesheet_link_tag "jasny-bootstrap.min", media: "all" } %>
+<% content_for(:page_scripts) { javascript_include_tag "bootstrap-fileupload" } %>
+
 <h2>Manage file(s)</h2>
 <% unless @masterFiles.empty? %>
 <section id="associated_files">
@@ -63,42 +66,57 @@
     	 	    <% end %>
   	 	  </tbody>
   	 	</table>
-  <%= submit_tag "Update", donot_advance: true %>
+  <%= submit_tag "Update", class: "btn", donot_advance: true %>
 <% end %>
   </section>
 <% end %>
 
 <section id="web_upload">
-<fieldset id='uploader'>
-  <h3>Upload through the web</h3>
-  <p>Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
+  <fieldset id='uploader'>
+    <h3>Upload through the web</h3>
+    <p>Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
 
-    <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
-      <input type="hidden" name="container_id" value="<%=h @mediaobject.pid %>"/>
-      <input type="hidden" name="step" value="file_upload"/>
+      <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
+        <input type="hidden" name="container_id" value="<%=h @mediaobject.pid %>"/>
+        <input type="hidden" name="step" value="file_upload"/>
 
-      <%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>
+        <%= hidden_field_tag("container_content_type", container_content_type, :id => "file_upload_content_type") if defined?(container_content_type) %>
 
-      <%- field_tag_options = defined?(uploader_options) ? uploader_options : {id: nil, multiple: true} %>
+        <%- field_tag_options = defined?(uploader_options) ? uploader_options : {multiple: true} %>
 
-      <%= file_field_tag "Filedata[]", field_tag_options %>
-      <%= submit_tag("Upload file", :name=>"upload_file", class: "btn") %>
-
-      <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
-      <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
-      <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
-    <% end %>
-</fieldset>
-</section>   
-    
-<section id="dropbox_upload">
-<h3>Import from a dropbox</h3>
-<p>For large files use the dropbox location to import files. Once they have 
-been uploaded you can select them from the list below. Associated files will 
-be processed as soon as you continue to the next step.</p>
-<%= render "dropbox_details" %>
-<%= render partial: "dropbox_file_navigator", locals: {file_set: @dropbox_files} %>
+        <div class="fileupload fileupload-new" data-provides="fileupload">
+          <div class="input-append">
+            <div class="uneditable-input span3">
+              <i class="icon-file fileupload-exists"></i>
+              <span class="fileupload-preview"></span>
+            </div>
+            <%= submit_tag("Upload", name: "upload_file", class: "btn fileupload-exists") %>
+            <span class="btn btn-file">
+              <span class="fileupload-new">Select</span>
+              <span class="fileupload-exists">Change</span>
+              <%= file_field_tag "", field_tag_options %>
+            </span>
+            <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+          </div>
+        </div>
+        
+        <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
+        <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
+        <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
+      <% end %>
+  </fieldset>
 </section>
+
+<section id="dropbox_upload">
+  <h3 id="dropbox_modal_label">Import from a dropbox</h3>
+  <p>For large files use the dropbox location to import files. Once they have 
+  been uploaded you can open the dropbox and attach them. 
+  Attached files will be processed as soon as you continue to the next step.</p>
+  <p><a class="btn dropbox-trigger" href="#">Open Dropbox</a></p>
+  <%= render partial: "dropbox_details" %>
+  <%= render partial: 'dropbox' %>
+</section>
+
 
 <div class="row-fluid">
   <div class="span12">

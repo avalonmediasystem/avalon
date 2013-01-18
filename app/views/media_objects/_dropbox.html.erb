@@ -1,0 +1,16 @@
+<div id="dropbox_modal" class="modal hide big-modal" tabindex="-1" role="dialog" aria-labelledby="dropbox_modal_label"/>
+  <%= form_tag(master_files_path) do -%>
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    </div>
+    <div class="modal-body">
+      <%= render partial: "dropbox_file_navigator", locals: {file_set: @dropbox_files} %>
+    </div>
+    <div class="modal-footer">
+      <p style="clear:both">
+        <%= button_tag "Close", type: "button", class: "btn", 'data-dismiss'=>'modal' %>
+        <%= submit_tag "Attach Selected Files", class: "btn", donot_advance: true %>
+      </p>
+    </div>
+  <% end %>
+</div>

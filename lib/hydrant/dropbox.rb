@@ -23,6 +23,7 @@ module Hydrant
             qualified_path: media_path,
             name: File.basename(media_path),
             size: (available ? File.size(media_path) : 'Loading...'),
+            modified: File.mtime(media_path),
             media_type: media_type,
             available: available
           }
