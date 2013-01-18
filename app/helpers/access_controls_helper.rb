@@ -41,7 +41,7 @@ module AccessControlsHelper
     return if not MediaObject.exists?(params[:id])
 
     mediaobject = MediaObject.find(params[:id])
-    unless mediaobject.access == "public" && mediaobject.is_published?
+    unless mediaobject.access == "public" && mediaobject.published?
       # TODO: uncomment when we use embargo
       # if @permissions_solr_document["embargo_release_date_dt"] 
       #   embargo_date = Date.parse(@permissions_solr_document["embargo_release_date_dt"].split(/T/)[0])

@@ -98,18 +98,19 @@ class MediaObject < ActiveFedora::Base
 
   accepts_nested_attributes_for :parts, :allow_destroy => true
 
-  def is_published?
+  def published?
     not self.avalon_publisher.blank?
   end
 
-  def publish!( user_key )
-    self.avalon_publisher = user_key
+  # Sets the publication status. To unpublish an object set it to nil or
+  # omit the status which will default to unpublished. This makes the act
+  # of publishing _explicit_ instead of an accidental side effect.
+  def publish!(user_key)
+    self.avalon_publisher = user_key.blank? ? nil : user_key 
     self.save(validate: false)
-  end
-
-  def unpublish!
-    self.avalon_publisher = nil
-    self.save( validate: false)
+    
+    puts "<< User key is #{user_key} >>"
+    puts "<< Avalon publisher is now #{avalon_publisher} >>"
   end
 
   def finished_processing?

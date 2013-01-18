@@ -161,16 +161,18 @@ describe MediaObjectsController do
       @media_object = MediaObject.new(pid: 'hydrant:1')
       request.env["HTTP_REFERER"] = '/'
     end
+
     it 'publishes media object' do
       @media_object.save(validate: false)
-      get 'update_status', :id => 'hydrant:1', :a => 'publish'
-      MediaObject.find('hydrant:1').is_published?.should be_true
+      get 'update_status', :id => 'hydrant:1', :status => 'publish'
+      MediaObject.find('hydrant:1').published?.should be_true
     end
+
     it 'unpublishes media object' do
       @media_object.avalon_publisher = 'archivist'
-      @media_object.save( validate: false)
-      get 'update_status', :id => 'hydrant:1', :a => 'unpublish'
-      MediaObject.find('hydrant:1').is_published?.should be_false
+      @media_object.save(validate: false)
+      get 'update_status', :id => 'hydrant:1', :status => 'unpublish' 
+      MediaObject.find('hydrant:1').published?.should be_false
     end
   end
 end

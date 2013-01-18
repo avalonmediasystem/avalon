@@ -17,7 +17,7 @@ class Ability
     if @user_groups.exclude? "archivist"
       cannot :read, MediaObject do |mediaobject|
         (cannot? :read, mediaobject.pid) || 
-          ((not mediaobject.is_published?) && 
+          ((not mediaobject.published?) && 
            (not can_read_unpublished(mediaobject)))
       end
     end

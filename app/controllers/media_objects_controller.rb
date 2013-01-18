@@ -66,14 +66,24 @@ class MediaObjectsController < ApplicationController
     end
   end
 
+  # Sets the published status for the object. If no argument is given then
+  # it will just toggle the state.
   def update_status
     media_object = MediaObject.find(params[:id])
     authorize! :manage, media_object
     
-    if params[:a] == 'publish'
-      media_object.publish!( user_key )
-    elsif params[:a] == 'unpublish'
-      media_object.unpublish!
+    puts "<< Status flag is #{params[:status]} >>"
+    case params[:status]
+      when 'publish'
+        puts "<< Setting user key to #{user_key} >>"
+        media_object.publish!(user_key)
+      when 'unpublish'
+        puts "<< Setting user key to nil >>"
+        media_object.publish!(nil)
+      when nil
+        puts "<< Toggling user key >>"
+        new_state = media_object.published? ? user_key : nil
+        media_object.publish!(new_state)        
     end
 
     redirect_to :back
