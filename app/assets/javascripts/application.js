@@ -29,4 +29,10 @@
 // Required by Blacklight
 //= require jquery-ui
 //= require jquery.ui.nestedSortable
+
+/*
+ * Place any local overrides in hydrant.js (for Blacklight, Hydra, jQuery,
+ * etc) 
+ */
+//= require hydrant
 //= require_self
