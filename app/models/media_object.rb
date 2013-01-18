@@ -109,8 +109,8 @@ class MediaObject < ActiveFedora::Base
     self.avalon_publisher = user_key.blank? ? nil : user_key 
     self.save(validate: false)
     
-    puts "<< User key is #{user_key} >>"
-    puts "<< Avalon publisher is now #{avalon_publisher} >>"
+    logger.debug "<< User key is #{user_key} >>"
+    logger.debug "<< Avalon publisher is now #{avalon_publisher} >>"
   end
 
   def finished_processing?

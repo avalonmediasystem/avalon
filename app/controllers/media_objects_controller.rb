@@ -72,16 +72,16 @@ class MediaObjectsController < ApplicationController
     media_object = MediaObject.find(params[:id])
     authorize! :manage, media_object
     
-    puts "<< Status flag is #{params[:status]} >>"
+    logger.debug "<< Status flag is #{params[:status]} >>"
     case params[:status]
       when 'publish'
-        puts "<< Setting user key to #{user_key} >>"
+        logger.debug "<< Setting user key to #{user_key} >>"
         media_object.publish!(user_key)
       when 'unpublish'
-        puts "<< Setting user key to nil >>"
+        logger.debug "<< Setting user key to nil >>"
         media_object.publish!(nil)
       when nil
-        puts "<< Toggling user key >>"
+        logger.debug "<< Toggling user key >>"
         new_state = media_object.published? ? user_key : nil
         media_object.publish!(new_state)        
     end
