@@ -1,5 +1,8 @@
   <% if can? :manage, @mediaobject %>
     <div id="administrative_options">
+      <%# If no status flag is set then the call to update_status will simply
+          toggle the value. This keeps the view much cleaner by avoiding lots
+          of if/then logic %>
       <% label = @mediaobject.published? ? 'Publish' : 'Unpublish' %>  
       <%= link_to label, update_status_media_object_path(@mediaobject), 
           class: 'btn' %>
