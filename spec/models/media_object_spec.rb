@@ -146,17 +146,7 @@ describe MediaObject do
   end
 
   describe 'change additional read permisions' do 
-    it "should be able to add more groups" do
-      mediaobject.access = "public"
-      default_groups = mediaobject.read_groups
-
-      test_groups = ["group1", "group2"]
-      mediaobject.group_exceptions = test_groups
-
-      # new read_groups should preserve default_groups and contain test_groups
-      (default_groups - mediaobject.read_groups).should be_empty 
-      (test_groups - mediaobject.read_groups).should be_empty           
-    end
+    it "should be able to have limited access" 
 
     it "should not add duplicated group" do
       mediaobject.access = "public"
