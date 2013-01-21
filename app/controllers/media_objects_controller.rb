@@ -82,7 +82,7 @@ class MediaObjectsController < ApplicationController
         media_object.publish!(nil)
       when nil
         logger.debug "<< Toggling user key >>"
-        new_state = media_object.published? ? user_key : nil
+        new_state = media_object.published? ? nil : user_key
         media_object.publish!(new_state)        
     end
 
