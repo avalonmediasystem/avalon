@@ -6,7 +6,7 @@
 app_path = "/srv/rails/hydrant-test/current"
 
 # Set unicorn options
-worker_processes 1
+worker_processes 2
 preload_app true
 timeout 180
 listen "0.0.0.0:3000"
@@ -21,8 +21,8 @@ working_directory app_path
 rails_env = ENV['RAILS_ENV'] || 'production'
 
 # Log everything to one file
-stderr_path "log/unicorn.log"
-stdout_path "log/unicorn.log"
+stderr_path "#{app_path}/log/unicorn.errors.log"
+stdout_path "#{app_path}/log/unicorn.stdout.log"
 
 # Set master PID location
 pid "#{app_path}/tmp/pids/unicorn.pid"
