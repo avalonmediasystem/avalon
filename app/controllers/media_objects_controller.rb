@@ -41,6 +41,20 @@ class MediaObjectsController < ApplicationController
         flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
       end
     end
+
+    if 'access-control' == @active_step 
+      @group_exceptions = []
+      if @mediaobject.access == "limited"
+        # When access is limited, group_exceptions content is stored in read_groups
+        @mediaobject.read_groups.each { |g| @group_exceptions << Admin::Group.find(g).name }
+        @user_exceptions = @mediaobject.read_users 
+       else
+        @mediaobject.group_exceptions.each { |g| @group_exceptions << Admin::Group.find(g).name }
+        @user_exceptions = @mediaobject.user_exceptions 
+      end
+
+      @addable_groups = Admin::Group.non_system_groups.reject { |g| @group_exceptions.include? g.name }
+    end
   end
 
   def show

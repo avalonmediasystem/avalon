@@ -1,3 +1,5 @@
+#require 'hydra/rights_metadata'
+
 class MediaObject < ActiveFedora::Base
   include Hydra::ModelMixins::CommonMetadata
   include Hydra::ModelMethods
@@ -124,52 +126,91 @@ class MediaObject < ActiveFedora::Base
   def access
     logger.debug "<< ACCESS >>"
     logger.debug "<< #{self.read_groups} >>"
-    
-    if self.read_groups.empty?
+    if self.read_users.present?
+      "limited"
+    elsif self.read_groups.empty?
       "private"
     elsif self.read_groups.include? "public"
       "public"
     elsif self.read_groups.include? "registered"
       "restricted" 
+    else 
+      "limited"
     end
   end
 
   def access= access_level
+    # Preserves group_exceptions when access_level changes to be not limited
+    # This is a work-around for the limitation in Hydra: 1 group can't belong to both :read and :exceptions
+    if access == "limited" && access_level != access
+      self.group_exceptions = read_groups
+      self.user_exceptions = read_users
+      self.read_users = []
+    end
+
     if access_level == "public"
-      groups = self.read_groups
-      groups << 'public'
-      groups << 'registered'
-      self.read_groups = groups
+      self.read_groups = ['public', 'registered'] 
     elsif access_level == "restricted"
-      groups = self.read_groups
-      groups.delete 'public'
-      groups << 'registered'
-      self.read_groups = groups
-    else #private
-      groups = self.read_groups
-      groups.delete 'public'
-      groups.delete 'registered'
-      self.read_groups = groups
+      self.read_groups = ['registered'] 
+    elsif access_level == "private"
+      self.read_groups = []
+    else #limited
+      # Setting access to "limited" will copy group_exceptions to read_groups
+      if access != "limited"
+        self.read_groups = group_exceptions
+        self.read_users = user_exceptions
+      else
+        self.read_groups = (read_groups + group_exceptions).uniq
+        self.read_users = (read_users + user_exceptions).uniq
+      end 
     end
   end
 
-  alias :user_exceptions :read_users
-  alias :user_exceptions= :read_users=
-
-  def group_exceptions
-    groups = self.read_groups
-    groups.delete 'public'
-    groups.delete 'registered'
-    groups
+  # user_exceptions and group_exceptions are used to store exceptions info
+  # They aren't activated until access is set to limited
+  def user_exceptions
+    rightsMetadata.individuals.map {|k, v| k if v == 'exceptions'}.compact  
   end
 
-  def group_exceptions= group_list
-    access_level = access
-    self.read_groups = []
-    self.access = access_level
-    groups = self.read_groups
-    groups += group_list
-    self.read_groups = groups
+  def user_exceptions= users
+    set_entities(:exceptions, :person, users, user_exceptions)
+  end
+
+  # Return a list of groups that have exceptions permission
+  def group_exceptions
+    rightsMetadata.groups.map {|k, v| k if v == 'exceptions'}.compact
+  end
+
+  # Grant read permissions to the groups specified. Revokes read permission for all other groups.
+  # @param[Array] groups a list of group names
+  # @example
+  #  r.read_groups= ['one', 'two', 'three']
+  #  r.read_groups 
+  #  => ['one', 'two', 'three']
+  #
+  def group_exceptions= groups
+    set_entities(:exceptions, :group, groups, group_exceptions)
+  end
+
+  # Get those permissions we don't want to change
+  # Overrides the one in hydra-access-controls/lib/hydra/model_mixins/rights_metadata.rb
+  # to support group_exceptions
+  def preserved(type, permission)
+    # Always preserves exceptions
+    g = Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'exceptions'}] || {} 
+
+    case permission
+    when :exceptions
+      # Preserves edit groups/users 
+      g.merge! Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'edit'}]
+    when :read
+      puts g.inspect
+      g.merge! Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'edit'}]
+      puts g.inspect
+    when :discover
+      g.merge! Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'discover'}]
+    end
+    g
   end
 
   def hidden= value
