@@ -2,7 +2,6 @@ server "lancelot.dlib.indiana.edu", :app, :web, :db, :primary => true
 server "mallorn.dlib.indiana.edu", :app, :web, :db, :primary => true
 
 set :deploy_env, "development"
-
 set :git_enable_submodules, true
 
 # if you want to clean up old releases on each deploy uncomment this:
@@ -34,20 +33,16 @@ namespace :deploy do
 
   task :start, :roles => :app do
     run "cd #{current_release}; rake hydrant:services:start"
-    #run "cd #{current_release}; rails s -d"
   end
 
   task :stop, :roles => :app do
     run "cd #{current_release}; rake hydrant:services:stop"
-    #run "kill -9 `pgrep ruby`"
   end
 
   desc "Restart Application"
   task :restart, :roles => :app do
     run "cd #{current_release}; rake hydrant:services:stop"
     run "cd #{current_release}; rake hydrant:services:start"
-    #run "kill -9 `pgrep ruby`"
-    #run "cd #{current_release}; rails s -d"
   end
 
   task :quick_update, :roles => :app do
@@ -93,3 +88,4 @@ end
 after("deploy:update_code", "deploy:bundle:install")
 after("deploy:update_code", "deploy:jetty:config")
 after("deploy:update_code", "deploy:db:setup")
+after 'deploy:restart', 'unicorn:restart'

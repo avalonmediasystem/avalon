@@ -11,6 +11,8 @@
 
   gem 'hydrant-workflow', git: 'https://github.com/variations-on-video/hydrant-workflow.git'
   gem 'hydrant-engage', git: "https://github.com/variations-on-video/hydrant-engage.git"
+  gem 'hydrant-batch',
+    :git => "https://github.com/variations-on-video/hydrant-batch.git"
  
   platforms :jruby do
     gem 'jruby-openssl'
@@ -46,8 +48,6 @@
   gem 'whenever', :require => false
   gem 'chronic_duration'
 
-  gem 'hydrant-batch',
-    :git => "https://github.com/variations-on-video/hydrant-batch.git"
 
   gem 'equivalent-xml'
   
