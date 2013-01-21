@@ -17,12 +17,11 @@ Hydrant::Application.routes.draw do
 
   # My routes go here
   # Routes for subjects and pbcore controller
-  #resources :media_objects, except: [:index], as: :media
-  #resources :master_files, as: :resources
   resources :media_objects, except: [:create] do
     member do
-      get 'mobile'
       get :update_status
+      # 'delete' has special signifigance so use 'remove' for now
+      get :remove
     end
   end
   resources :master_files, except: [:show, :new, :index] do

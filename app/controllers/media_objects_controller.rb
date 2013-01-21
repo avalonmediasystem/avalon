@@ -6,6 +6,7 @@ class MediaObjectsController < ApplicationController
 
   before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
+  before_filter :load_player_context, only: [:show, :remove]
 
   layout 'hydrant'
 
@@ -43,12 +44,7 @@ class MediaObjectsController < ApplicationController
   end
 
   def show
-    @mediaobject = MediaObject.find(params[:id])
-
-    @masterFiles = load_master_files
-    @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
-    @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
-    @currentStreamInfo = @currentStream.stream_details(@token) rescue {}
+    #@mediaobject = MediaObject.find(params[:id])
 
     respond_to do |format|
       # The flash notice is only set if you are returning HTML since it makes no
@@ -64,6 +60,23 @@ class MediaObjectsController < ApplicationController
         render :json => @currentStreamInfo 
       end
     end
+  end
+
+  # This sets up the delete view which is an item preview with the ability
+  # to take the item out of the system for good (by POSTing to the destroy
+  # action)
+  def remove 
+    #@mediaobject = MediaObject.find(params[:id])
+    @previous_view = media_object_path(@mediaobject)
+  end
+
+  def destroy
+    unless params[:id].nil?
+      media = MediaObject.find(params[:id])
+      flash[:notice] = "#{media.title} (#{params[:id]}) has been successfuly deleted"
+      media.delete
+    end
+    redirect_to root_path
   end
 
   # Sets the published status for the object. If no argument is given then
@@ -89,20 +102,6 @@ class MediaObjectsController < ApplicationController
     redirect_to :back
   end
   
-  def destroy
-    @mediaobject = MediaObject.find(params[:id]).delete
-    flash[:notice] = "#{params[:id]} has been deleted from the system"
-    redirect_to root_path
-  end
- 
-  def mobile
-    @mediaobject = MediaObject.find(params[:id])
-    @masterFiles = @mediaobject.parts
-    @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
-
-    render 'mobile', layout: false
-  end
-
   def self.initialize_media_object( user_key )
     mediaobject = MediaObject.new( avalon_uploader: user_key )
     set_default_item_permissions( mediaobject, user_key )
@@ -125,7 +124,21 @@ class MediaObjectsController < ApplicationController
     @mediaobject.parts
   end
 
+  def load_player_context
+    @mediaobject = MediaObject.find(params[:id])
+    logger.debug "<< Preparing media object #{@mediaobject} >>"
+
+    @masterFiles = load_master_files
+    @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
+    @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
+    # This rescue statement seems a bit dodgy because it catches *all*
+    # exceptions. It might be worth refactoring when there are some extra
+    # cycles available.
+    @currentStreamInfo = @currentStream.stream_details(@token) rescue {}
+ end
+
   # The goal of this method is to determine which stream to provide to the interface
+  #
   # for immediate playback. Eventually this might be replaced by an AJAX call but for
   # now to update the stream you must do a full page refresh.
   # 

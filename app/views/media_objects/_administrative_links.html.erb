@@ -11,7 +11,7 @@
       <%# This might not be the best approach because it makes accidental 
           deletion possible just by following a link. Need to revisit when
           extra cycles are available %>
-      <%# link_to 'Delete', delete_media_object_path(@mediaobject), class: 'btn' %>
+      <%= link_to 'Delete', remove_media_object_path(@mediaobject), class: 'btn' %>
     </div>
   <% end %>
  
