@@ -1,4 +1,10 @@
-<div class="span10">
+<% if flash[:notice].present? %>
+<div class="span9 clearfix" id="alerts">
+  <div class="alert alert-success"><%= flash[:notice] %></div>  
+</div>
+<% end %>
+
+<div class="span9">
   <h2>Avalon Media System</h2>
   <p class="leading">To get started with Avalon search for existing content or i
     ingest your educational materials. We will walk you step by step through the
