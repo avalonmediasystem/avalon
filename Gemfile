@@ -78,7 +78,9 @@
     gem 'pry'
     gem 'pry-rails'
     gem 'unicorn-rails'
-    gem 'capistrano-unicorn', :require => false
+    #gem 'capistrano-unicorn', :require => false
+    gem 'capistrano-unicorn',
+      git: "git://github.com/sosedoff/capistrano-unicorn.git"
     gem 'rb-fsevent', '~> 0.9.1'
     gem 'debugger'
     gem 'letter_opener'
