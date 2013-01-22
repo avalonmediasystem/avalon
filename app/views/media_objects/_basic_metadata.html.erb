@@ -11,19 +11,19 @@
     <%= vid.text_field :date_issued, 'Issue date', class: 'span8' %>
     <%= vid.text_field :copyright_date, 'Copyright date', class: 'span8' %>
     
-    <%= vid.text_fields :temporal_subject, 'Time periods', class: 'span8 dynamic_field', mininum_fields: 2, value: @mediaobject.temporal_subject %>
+    <%= vid.text_fields :temporal_subject, 'Time periods', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.temporal_subject %>
     
-    <%= vid.text_fields :geographic_subject, 'Locations', class: 'span8 dynamic_field', minimum_fields: 2, value: @mediaobject.geographic_subject %>
+    <%= vid.text_fields :geographic_subject, 'Locations', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.geographic_subject %>
   
-    <%= vid.text_fields :contributor, 'Contributor(s)', class: 'span8 dynamic_field', value: @mediaobject.contributor %>
+    <%= vid.text_fields :contributor, 'Contributor(s)', class: 'span8', dynamic: true, value: @mediaobject.contributor %>
 
-    <%= vid.text_fields :publisher, 'Publisher(s)', class: 'span8 dynamic_field', minimum_fields: 3, value: @mediaobject.publisher %>
+    <%= vid.text_fields :publisher, 'Publisher(s)', class: 'span8', dynamic: true, minimum_fields: 3, value: @mediaobject.publisher %>
   
     <%= vid.text_field :genre, 'Genre', class: 'span8' %>
     
-    <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span8 dynamic_field', value: @mediaobject.topical_subject %>
+    <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span8', dynamic: true, value: @mediaobject.topical_subject %>
 
-    <%= vid.text_fields :collection, 'Collection(s)', class: 'span8 dynamic_field', minimum_fields: 3, value: @mediaobject.collection %>
+    <%= vid.text_fields :collection, 'Collection(s)', class: 'span8', dynamic: true, minimum_fields: 3, value: @mediaobject.collection %>
 
   <%= vid.actions do |actions| %>
       <%= render 'workflow_buttons', form: vid %>
@@ -31,10 +31,11 @@
 <% end %>
 
 <% content_for :page_scripts do %>
+  <%= javascript_include_tag 'dynamic_fields' %>
 <script>
   $().ready(function() {
     DynamicFields.initialize();
-  })
+  });
 </script>
 <% end %>
 
