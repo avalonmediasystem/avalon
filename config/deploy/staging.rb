@@ -4,6 +4,9 @@ server "mallorn.dlib.indiana.edu", :app, :web, :db, :primary => true
 set :deploy_env, "development"
 set :git_enable_submodules, true
 
+#For capistrano to send the correct rails env to unicorn
+set :unicorn_env, "staging"
+
 # if you want to clean up old releases on each deploy uncomment this:
 # after "deploy:restart", "deploy:cleanup"
 
@@ -88,3 +91,4 @@ end
 after("deploy:update_code", "deploy:bundle:install")
 after("deploy:update_code", "deploy:jetty:config")
 after("deploy:update_code", "deploy:db:setup")
+after('deploy:restart', 'unicorn:restart')
