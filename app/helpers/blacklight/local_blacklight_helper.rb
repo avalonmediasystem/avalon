@@ -7,9 +7,7 @@ module Blacklight::LocalBlacklightHelper
   end
 
   def facet_group_names
-    groupnames = []
-    blacklight_config.facet_fields.map {|facet,opts| groupnames << opts[:group]}
-    groupnames.uniq!
+    blacklight_config.facet_fields.map {|facet,opts| opts[:group]}.uniq
   end
 
   def render_index_doc_actions(document, options={})   
