@@ -4,25 +4,18 @@
   <%= hidden_field_tag :step, @active_step %>
   <%# vid.fieldset 'Required fields', id: 'required_fields' do %>
     <%= vid.text_field :title, 'Title *', class: 'span8' %>
-    <%= vid.text_field :creator, 'Creator *', class: 'span8' %>
-    <%= vid.text_field :date_created, 'Creation date *', class: 'span8' %>
-    <%= vid.text_area :abstract, 'Summary', class: 'span8', rows: 6 %>
+    <%= vid.text_fields :creator, 'Main contributor(s) *', class: 'span8' %>
+    <%= vid.text_field :date_issueed, 'Date *', class: 'span8' %>
+    <%= vid.text_area :abstract, 'Description', class: 'span8', rows: 6 %>
 
-    <%= vid.text_field :date_issued, 'Issue date', class: 'span8' %>
-    <%= vid.text_field :copyright_date, 'Copyright date', class: 'span8' %>
-    
-    <%= vid.text_fields :temporal_subject, 'Time periods', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.temporal_subject %>
-    
-    <%= vid.text_fields :geographic_subject, 'Locations', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.geographic_subject %>
-  
     <%= vid.text_fields :contributor, 'Contributor(s)', class: 'span8', dynamic: true, value: @mediaobject.contributor %>
-
     <%= vid.text_fields :publisher, 'Publisher(s)', class: 'span8', dynamic: true, minimum_fields: 3, value: @mediaobject.publisher %>
-  
-    <%= vid.text_field :genre, 'Genre', class: 'span8' %>
-    
-    <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span8', dynamic: true, value: @mediaobject.topical_subject %>
+    <%= vid.text_fields :genre, 'Genre(s)', class: 'span8', dynamic: true, value: @mediaobject.genre %>
 
+    <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span8', dynamic: true, value: @mediaobject.topical_subject %>
+    <%= vid.text_fields :temporal_subject, 'Time periods', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.temporal_subject %>
+    <%= vid.text_fields :geographic_subject, 'Locations', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.geographic_subject %>
+    
     <%= vid.text_fields :collection, 'Collection(s)', class: 'span8', dynamic: true, minimum_fields: 3, value: @mediaobject.collection %>
 
   <%= vid.actions do |actions| %>
