@@ -30,20 +30,20 @@
 	     * For efficiency cache $(this) instead of making repeated calls
 	     * against the DOM
 	     */
-	    node = $(this)
+	var node = $(this)
         input_fields_in_control_group = node.parent('.controls').find('input');
         if (input_fields_in_control_group.length > 1) {
           node.prev().remove();
           node.remove();
         }
 
-	    /*
+	/*
 	 * If there is only one item then hide the controls since you can't actually
-	 * click the button in that case */
+	 * click the button in that case. Reshow when there are two or more fields */
           if (1 == input_fields_in_control_group.length) {
          node.hide();
        }
-      });
+     });
     },
 
     add_controls_to_label: function() {
