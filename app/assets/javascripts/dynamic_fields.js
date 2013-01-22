@@ -48,17 +48,14 @@
 
     add_controls_to_label: function() {
       $('.controls[data-dynamic="true"]').each(function() {
+        alert('[LABELS] ' + this.add_button_html);
 	label = $(this).parent().children('label').append(this.add_button_html);
       });
     },
 
     /* This probably does not work with the new markup */
     add_remove_buttons_to_dynamic_fields: function(){
-      $('.controls[data-dynamic="true"]').each(function() {
-	$(this).parent().children('input').each(function(node) {
-	  $(node).append(this.remove_button_htmli);
-	})
-      });
+      $('.controls[data-dynamic="true"] input').after(this.remove_button_html);   
     },
 
     copy_and_increment_rails_collection_id: function( current_id ) {
