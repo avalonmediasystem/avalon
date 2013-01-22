@@ -1,7 +1,7 @@
   window.DynamicFields = {
     initialize: function() {
       /* Any fields marked with the class 'dynamic_field' will have an add button appended
-       * to the DOM after the label */	
+       * to the DOM after the label */  
       this.add_remove_buttons_to_dynamic_fields();
 
       $(document).on('click', '.add-dynamic-field', function(event){
@@ -25,26 +25,28 @@
       $(document).on('click', '.remove-dynamic-field', function(event){
         event.preventDefault();
 
-	/*
-	 * For efficiency's sake cache $(this) instead of making repeated calls against
-	 * the DOM
-	 */
-	node = $(this)
+        // For efficiency's sake cache $(this) instead of making repeated calls against the DOM
+        // Using a local variable instead of a global variable
+        var node = $(this);
         input_fields_in_control_group = node.parent('.controls').find('input');
         // only remove the input field if there is another input field in the list      
-        if (input_fields_in_control_group.length > 1) {
+        if ( input_fields_in_control_group.length > 1 ) {
           //remove input field
           node.prev().remove();
           //remove remove icon
           node.remove();
         }
 
-	/*
-	 * If there is only one item then hide the controls since you can't actually
-	 * click the button in that case */
-       if (1 == input_fields_in_control_group.length) {
-         node.hide();
-       }
+        /*
+          If there is only one item then hide the controls since you can't actually
+          click the button in that case 
+
+          NOTE: This does not work as expected because it hides a node already removed.  Commenting out.
+        */
+        
+        //if ( input_fields_in_control_group.length == 1 ) {
+        //  node.hide();
+        //}
       });
     },
 
