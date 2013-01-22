@@ -15,14 +15,14 @@
 
       # Limited access stuff
       if context[:delete_group].present?
-        groups = mediaobject.group_exceptions
+        groups = mediaobject.read_groups
         groups.delete context[:delete_group]
-        mediaobject.group_exceptions = groups 
+        mediaobject.read_groups = groups
       end 
       if context[:delete_user].present?
-        users = mediaobject.user_exceptions
+        users = mediaobject.read_users
         users.delete context[:delete_user]
-        mediaobject.user_exceptions = users 
+        mediaobject.read_users = users
       end 
 
       if context[:commit] == "Add Group"
