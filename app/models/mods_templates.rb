@@ -24,7 +24,7 @@ module ModsTemplates
 
 		  # Name Templates
 		  define_template :name do |xml, name, attributes|
-		  	opts = { type: 'personal', role_code: 'cre', role_text: 'Creator', primary: false }.merge(attributes)
+		  	opts = { type: 'personal', role_code: 'ctb', role_text: 'Contributor', primary: false }.merge(attributes)
 		  	logger.debug([name, opts].inspect)
 		  	attrs = { :type => opts[:type] }
 		  	attrs['usage']="primary" if opts[:primary]
@@ -40,7 +40,7 @@ module ModsTemplates
 		    logger.debug(xml.parent.to_xml)
 		  end
 		  def add_creator(name, attrs={})
-		  	add_child_node(ng_xml.root, :name, name, (attrs).merge(primary: true))
+		  	add_child_node(ng_xml.root, :name, name, (attrs).merge(role_code: 'cre', role_text: 'Creator', primary: true))
 		  end
 		  def add_contributor(name, attrs={})
 		  	add_child_node(ng_xml.root, :name, name, attrs)
@@ -85,11 +85,11 @@ module ModsTemplates
 		  	}
 		  end
 
-		  define_template :collection do |xml,text|
+		  define_template :collection do |xml,collection_name|
 		  	xml.relatedItem(:type => 'host') {
 		  		xml.titleInfo {
 		  			xml.title {
-		  				xml.text(Array(text).first)
+		  				xml.text(collection_name)
 		  			}
 		  		}
 		  	}

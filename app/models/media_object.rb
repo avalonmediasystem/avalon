@@ -31,7 +31,7 @@ class MediaObject < ActiveFedora::Base
 
   validates :title, :presence_with_full_error_message => true
   validates :creator, :presence_with_full_error_message => true
-  validates :date_created, :presence_with_full_error_message => true
+  validates :date_issued, :presence_with_full_error_message => true
 
   # this method returns a hash: class attribute -> metadata attribute
   # this is useful for decoupling the metdata from the view
@@ -73,7 +73,7 @@ class MediaObject < ActiveFedora::Base
   delegate :translated_title, to: :descMetadata, at: [:translated_title]
   delegate :uniform_title, to: :descMetadata, at: [:uniform_title]
   delegate :statement_of_responsibility, to: :descMetadata, at: [:statement_of_responsibility], unique: true
-  delegate :creator, to: :descMetadata, at: [:creator], unique: true
+  delegate :creator, to: :descMetadata, at: [:creator]
   delegate :date_created, to: :descMetadata, at: [:date_created], unique: true
   delegate :date_issued, to: :descMetadata, at: [:date_issued], unique: true
   delegate :copyright_date, to: :descMetadata, at: [:copyright_date], unique: true
@@ -83,7 +83,7 @@ class MediaObject < ActiveFedora::Base
   # Additional descriptive metadata
   delegate :contributor, to: :descMetadata, at: [:contributor]
   delegate :publisher, to: :descMetadata, at: [:publisher]
-  delegate :genre, to: :descMetadata, at: [:genre], unique: true
+  delegate :genre, to: :descMetadata, at: [:genre]
   delegate :subject, to: :descMetadata, at: [:topical_subject]
   delegate :related_item, to: :descMetadata, at: [:related_item_id]
   delegate :collection, to: :descMetadata, at: [:collection]
@@ -261,6 +261,7 @@ class MediaObject < ActiveFedora::Base
   def update_attribute_in_metadata(attribute, value = [], attributes = [])
     # class attributes should be decoupled from metadata attributes
     # class attributes are displayed in the view and posted to the server
+    logger.debug "Updating #{attribute.inspect} with value #{value.inspect} and attributes #{attributes.inspect}"
     metadata_attribute = klass_attribute_to_metadata_attribute_map[ attribute.to_sym ]
     metadata_attribute_value = value
     if metadata_attribute.nil? and descMetadata.class.terminology.terms.has_key?(attribute.to_sym)
@@ -277,7 +278,7 @@ class MediaObject < ActiveFedora::Base
       Array(value).each_with_index do |val, i|
         logger.debug "<< Adding node #{metadata_attribute}[#{i}] >>"
         logger.debug("descMetadata.add_child_node(descMetadata.ng_xml.root, #{metadata_attribute.to_sym.inspect}, #{val.inspect}, #{(attributes[i]||{}).inspect})")
-        descMetadata.add_child_node(descMetadata.ng_xml.root, metadata_attribute, metadata_attribute_value, (attributes[i]||{}))
+        descMetadata.add_child_node(descMetadata.ng_xml.root, metadata_attribute, val, (attributes[i]||{}))
       end
       #end
     elsif descMetadata.respond_to?("add_#{metadata_attribute}")
