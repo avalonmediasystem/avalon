@@ -48,8 +48,12 @@ module ApplicationHelper
     end
   end
 
-  def display_multiple(value, delim='; ')
-    value.select { |v| not (v.nil? or v.strip.empty?) }.join(delim)
+  def display_metadata(label, value, default=nil)
+    return if value.blank? and default.nil?
+    result = content_tag(:dt, label) +
+    content_tag(:dd) {
+      Array(value).collect { |v| sanitize(v.to_s.strip) }.delete_if(&:empty?).join('; ')
+    }
   end
 
   #FIXME
