@@ -1,19 +1,8 @@
-<% unless HYDRANT_STEPS.first?(@active_step) %>
-  <%= link_to "Back to #{HYDRANT_STEPS.previous(@active_step).title}",
-        edit_media_object_path(@mediaobject, 
-          step: HYDRANT_STEPS.previous(@active_step).step),
-          id: 'previous_screen',
-          class: 'btn',
-          name: 'previous_screen' %>
-<% end %>
+<%= submit_tag 'Save', class: "btn btn-success" %>
 
 <%= hidden_field_tag :step, @active_step %>
 <% if HYDRANT_STEPS.last?(@active_step) %>
-  <% if @mediaobject.published? %>
-    <%= link_to 'Unpublish', update_status_media_object_path(@mediaobject, a: 'unpublish'), class: 'btn' %>
-  <% else %>
-    <%= link_to 'Publish', update_status_media_object_path(@mediaobject, a: 'publish'), class: 'btn' %>
-  <% end %>
+    <%= submit_tag 'Save & Continue to Review', class: 'btn btn-primary' %>
 <% else %>
-  <%= form.submit "Continue to #{HYDRANT_STEPS.next(@active_step).title}" %>
+  <%= form.submit "Save & Continue to #{HYDRANT_STEPS.next(@active_step).title}" %>
 <% end %>

@@ -19,7 +19,8 @@ Hydrant::Application.routes.draw do
   # Routes for subjects and pbcore controller
   resources :media_objects, except: [:create] do
     member do
-      get :update_status
+      put :update_status
+      put :update_visibility
       # 'delete' has special signifigance so use 'remove' for now
       get :remove
     end

@@ -1,12 +1,15 @@
-<div class="row-fluid whitespace">
-  <div class="alert-info span6">
-    <strong>Delete resource</strong>
-    <p>Are you certain you want to remove this resource?</p>
-    <%# This shouldn't be a plain link but the button_to helper does not render
-        correctly and fixing it might take a while %>
-    <%= link_to 'Yes, I am sure', @mediaobject, method: :delete, class: 'btn btn-error' %>
-    <%= link_to 'No, go back', @previous_view, class: 'btn btn-success' %> 
+<% #Copied from _administrative_links, should DRY it up %>
+<% if can? :manage, @mediaobject %>
+  <div class="row-fluid">
+    <div class="alert alert-info">
+      <strong>Administrative Actions</strong>
+      <p>Are you certain you want to remove this resource?</p>
+      <%# This shouldn't be a plain link but the button_to helper does not render
+          correctly and fixing it might take a while %>
+      <%= link_to 'Yes, I am sure', @mediaobject, method: :delete, class: 'btn btn-danger' %>
+      <%= link_to 'No, go back', @previous_view, class: 'btn btn-success' %> 
+    </div>
   </div>
-</div>
+<% end %>
 
 <%= render 'item_view' %>
