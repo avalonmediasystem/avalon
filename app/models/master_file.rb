@@ -259,7 +259,7 @@ class MasterFile < ActiveFedora::Base
       newpath = nil
       if !config_path.nil? and File.directory?(config_path)
         newpath = File.join(Hydrant::Configuration['matterhorn']['media_path'], original_name)
-        FileUtils.cp(realpath, config_path)
+        FileUtils.cp(realpath, newpath)
       else
         newpath = File.join(File.dirname(realpath), original_name)
         File.rename(realpath, newpath)
