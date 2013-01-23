@@ -4,12 +4,7 @@
     class: "btn" %>	
 </div>
 <% else %>
-<div class="alert alert-error">
-  <%= button_to("Delete item", {:action => :destroy, 
-      :controller => :"media_objects", 
-      :id => @mediaobject.pid}, 
-    :data => { :confirm => 'Are you sure?' },
-    :method => :delete, 
-    class: "btn" )%>
-</div>
+  <div class="alert alert-info" id="delete-asset">
+    <%= link_to "Delete", remove_media_object_path(params[:id]), class: 'btn' %>
+  </div>
 <% end %>

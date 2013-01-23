@@ -58,8 +58,6 @@ class MediaObjectsController < ApplicationController
   end
 
   def show
-    #@mediaobject = MediaObject.find(params[:id])
-
     respond_to do |format|
       # The flash notice is only set if you are returning HTML since it makes no
       # sense in an AJAX context (yet)
@@ -80,16 +78,23 @@ class MediaObjectsController < ApplicationController
   # to take the item out of the system for good (by POSTing to the destroy
   # action)
   def remove 
-    #@mediaobject = MediaObject.find(params[:id])
     @previous_view = media_object_path(@mediaobject)
   end
 
+  # Deletes a media object from the system. This needs to be somewhat robust so that
+  # you can't delete an object if you do not have permission, if it does not exist, or
+  # (most likely) if the 'Yes' button was accidentally submitted twice
   def destroy
-    unless params[:id].nil?
+    logger.debug "<< DESTROY >>"
+    logger.debug "<< Media object => #{params[:id]} >>"
+    logger.debug "<< Exists? #{MediaObject.exists? params[:id]} >>"
+    unless params[:id].nil? or (not MediaObject.exists?(params[:id]))
+      logger.debug "<< Removing PID from system >>"
       media = MediaObject.find(params[:id])
       flash[:notice] = "#{media.title} (#{params[:id]}) has been successfuly deleted"
       media.delete
     end
+    logger.debug "<< Exists? #{MediaObject.exists? params[:id]} >>"
     redirect_to root_path
   end
 
