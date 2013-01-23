@@ -1,17 +1,43 @@
-  <% if can? :manage, @mediaobject %>
-    <div id="administrative_options">
-      <%# If no status flag is set then the call to update_status will simply
-          toggle the value. This keeps the view much cleaner by avoiding lots
-          of if/then logic %>
-      <% label = @mediaobject.published? ? 'Unpublish' : 'Publish' %>  
-      <%= link_to label, update_status_media_object_path(@mediaobject), 
-          class: 'btn' %>
+<% if can? :manage, @mediaobject %>
+  <div class="row-fluid">
+    <div class="alert alert-info">
+      <strong>Administrative Actions</strong>
+      <p>
+        <ul class="unstyled">
+          <li>
+            <% if @mediaobject.published? %>
+              <span class="label label-success">Published</span> Authorized users can view the item</li>
+            <% else %>
+              <span class="label label-important">Unpublished</span> Users cannot view the item</li>
+            <% end %>
+          <li>
+            <% unless @mediaobject.discover_groups.include? "nobody" %>
+              <span class="label label-success">Visible</span> Users can search for the item</li>
+            <% else %>
+              <span class="label label-important">Hidden</span> Users cannot search for the item</li>
+            <% end %>
+        </ul>
+      </p>
 
-      <%= link_to 'Edit', edit_media_object_path(@mediaobject), class: 'btn' %>
-      <%# This might not be the best approach because it makes accidental 
-          deletion possible just by following a link. Need to revisit when
-          extra cycles are available %>
-      <%= link_to 'Delete', remove_media_object_path(@mediaobject), class: 'btn' %>
-    </div>
-  <% end %>
+      <div id="administrative_options">
+        <%# If no status flag is set then the call to update_status will simply
+            toggle the value. This keeps the view much cleaner by avoiding lots
+            of if/then logic %>
+        <% label = @mediaobject.published? ? 'Unpublish' : 'Publish' %>  
+        <%= link_to label, update_status_media_object_path(@mediaobject), method: :put, 
+            class: 'btn' %>
+
+        <% label = @mediaobject.discover_groups.include?("nobody") ? 'Unhide' : 'Hide' %>  
+        <%= link_to label, update_visibility_media_object_path(@mediaobject), method: :put, 
+            class: 'btn' %>
+
+        <%= link_to 'Edit', edit_media_object_path(@mediaobject), class: 'btn btn-primary' %>
+        <%# This might not be the best approach because it makes accidental 
+            deletion possible just by following a link. Need to revisit when
+            extra cycles are available %>
+        <%= link_to 'Delete', remove_media_object_path(@mediaobject), class: 'btn btn-danger' %>
+      </div>
  
+    </div>
+  </div>
+<% end %>

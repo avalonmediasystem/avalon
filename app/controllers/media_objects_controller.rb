@@ -115,6 +115,30 @@ class MediaObjectsController < ApplicationController
 
     redirect_to :back
   end
+
+  # Sets the published status for the object. If no argument is given then
+  # it will just toggle the state.
+  def update_visibility
+    media_object = MediaObject.find(params[:id])
+    authorize! :manage, media_object
+    
+    logger.debug "<< Visibility flag is #{params[:status]} >>"
+    case params[:status]
+      when 'show'
+        logger.debug "<< Setting hidden to false >>"
+        media_object.hidden = false
+      when 'hide'
+        logger.debug "<< Setting hidden to true >>"
+        media_object.hidden = true
+      when nil
+        logger.debug "<< Toggling visibility >>"
+        new_state = media_object.hidden? ? false : true
+        media_object.hidden = new_state        
+    end
+
+    media_object.save
+    redirect_to :back
+  end
   
   def self.initialize_media_object( user_key )
     mediaobject = MediaObject.new( avalon_uploader: user_key )

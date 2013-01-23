@@ -126,14 +126,13 @@
       <div class="overlay"></div>
     </div>
 
-</div>
-
-<div class="row-fluid">
-  <div class="span12">
-      <%= submit_tag 'Save', class: "btn btn-success" %>
-      <%= render "workflow_buttons", form: vid %>
   </div>
-</div>
+
+  <div class="row-fluid">
+    <div class="span12">
+      <%= render "workflow_buttons", form: vid %>
+    </div>
+  </div>
 <% end #form_for %>		
 
 <% content_for :page_scripts do %>
