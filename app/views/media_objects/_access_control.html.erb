@@ -16,7 +16,6 @@
   
     <h4>Item Access Policy</h4>
 
-    <%= hidden_field_tag :donot_advance, true %>
     <%= hidden_field_tag :step, @active_step %>
     <%= vid.hidden_field :pid %>
 
@@ -39,9 +38,6 @@
     <%= radio_button_tag :access, 'limited', (@mediaobject.access == 'limited') %>
       Limit access to these users and groups  
     <% end %>
-
-    <%= hidden_field_tag :donot_advance, true %>
-    <%= hidden_field_tag :step, @active_step %>
 
     <style>
       .overlay {

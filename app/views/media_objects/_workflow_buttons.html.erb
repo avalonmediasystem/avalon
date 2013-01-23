@@ -2,9 +2,7 @@
 
 <%= hidden_field_tag :step, @active_step %>
 <% if HYDRANT_STEPS.last?(@active_step) %>
-  <% if @mediaobject.published? %>
-    <%= link_to 'Save & Continue to Preview', media_object_path(@mediaobject), class: 'btn btn-primary' %>
-  <% end %>
+    <%= submit_tag 'Save & Continue to Review', class: 'btn btn-primary' %>
 <% else %>
   <%= form.submit "Save & Continue to #{HYDRANT_STEPS.next(@active_step).title}" %>
 <% end %>
