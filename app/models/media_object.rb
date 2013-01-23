@@ -273,16 +273,17 @@ class MediaObject < ActiveFedora::Base
       logger.debug "Metadata attribute was nil, attribute is: #{attribute}"
     end
 
+    values = Array(value).select { |v| not v.blank? }
     descMetadata.find_by_terms( metadata_attribute ).each &:remove
     if descMetadata.template_registry.has_node_type?( metadata_attribute )
-      Array(value).each_with_index do |val, i|
+      values.each_with_index do |val, i|
         logger.debug "<< Adding node #{metadata_attribute}[#{i}] >>"
         logger.debug("descMetadata.add_child_node(descMetadata.ng_xml.root, #{metadata_attribute.to_sym.inspect}, #{val.inspect}, #{(attributes[i]||{}).inspect})")
         descMetadata.add_child_node(descMetadata.ng_xml.root, metadata_attribute, val, (attributes[i]||{}))
       end
       #end
     elsif descMetadata.respond_to?("add_#{metadata_attribute}")
-      Array(value).each_with_index do |val, i|
+      values.each_with_index do |val, i|
         logger.debug("descMetadata.add_#{metadata_attribute}(#{val.inspect}, #{attributes[i].inspect})")
         descMetadata.send("add_#{metadata_attribute}", val, (attributes[i] || {}))
       end;
@@ -290,12 +291,12 @@ class MediaObject < ActiveFedora::Base
       # Put in a placeholder so that the inserted nodes go into the right part of the
       # document. Afterwards take it out again - unless it does not have a template
       # in which case this is all that needs to be done
-      if self.respond_to?("#{metadata_attribute}=", value)
+      if self.respond_to?("#{metadata_attribute}=")
         logger.debug "<< Calling delegated method #{metadata_attribute} >>"
-        self.send("#{metadata_attribute}=", value)
+        self.send("#{metadata_attribute}=", values)
       else
         logger.debug "<< Calling descMetadata method #{metadata_attribute} >>"
-        descMetadata.send("#{metadata_attribute}=", value)
+        descMetadata.send("#{metadata_attribute}=", values)
       end
     end
   end
