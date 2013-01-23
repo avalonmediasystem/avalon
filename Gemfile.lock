@@ -537,7 +537,7 @@ DEPENDENCIES
   hydrant-workflow!
   jdbc-sqlite3
   jettywrapper
-  jquery-rails (~> 2.1.4)
+  jquery-rails
   jruby-openssl
   letter_opener
   loofah
