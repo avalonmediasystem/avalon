@@ -30,7 +30,7 @@ describe 'Batch Ingest Email' do
     media_object = MediaObject.new
     media_object.update_datastream(:descMetadata, title: 'Hiking')
     media_object.update_datastream(:descMetadata, creator: 'Adam')
-    media_object.update_datastream(:descMetadata, date_created: 'January 2007')
+    media_object.update_datastream(:descMetadata, date_issued: 'January 2007')
     media_object.save
 
     master_file = MasterFile.new(pid:'hydrant:hiking-movie')
