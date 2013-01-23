@@ -2,7 +2,7 @@
 <% if has_facet_values? facet_field_names(groupname) %>
 <div id="facets<%= "-#{groupname}" unless groupname.nil?%>" class="facets sidenav">
  
-  <h4 data-toggle="collapse" data-target=".facets-collapse">
+  <h4 data-toggle="collapse" data-target="#facets<%= "-#{groupname}" unless groupname.nil?%>-collapse">
 
       <a class="btn btn-navbar">
                       <span class="icon-bar"></span>
@@ -11,7 +11,7 @@
   	<%= groupname.blank? ? t('blacklight.search.facets.title') : t("blacklight.search.facets-#{groupname}.title") %>
 
   </h4>
-  <div class="facets-collapse">
+  <div id="facets<%= "-#{groupname}" unless groupname.nil?%>-collapse" class="facets-collapse">
     <%= render_facet_partials facet_field_names(groupname)%>
   </div>
 </div>
