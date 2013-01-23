@@ -1,4 +1,5 @@
 require 'hydrant/matterhorn_jobs'
+require 'fileutils'
 
 class MasterFile < ActiveFedora::Base
   include ActiveFedora::Associations
@@ -254,12 +255,20 @@ class MasterFile < ActiveFedora::Base
   def saveOriginal(file, original_name)
     realpath = File.realpath(file.path)
     if !original_name.nil?
-      newpath = File.dirname(realpath) + "/" + original_name
-      File.rename(realpath, newpath)
+      config_path = Hydrant::Configuration['matterhorn']['media_path']
+      newpath = nil
+      if !config_path.nil? and File.directory?(config_path)
+        newpath = File.join(Hydrant::Configuration['matterhorn']['media_path'], original_name)
+        FileUtils.cp(realpath, config_path)
+      else
+        newpath = File.join(File.dirname(realpath), original_name)
+        File.rename(realpath, newpath)
+      end
       self.file_location = newpath
     else 
       self.file_location = realpath
     end
+
     self.file_size = file.size.to_s
 
     logger.debug "<< File location #{ file_location } >>"
