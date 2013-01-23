@@ -1,9 +1,10 @@
 class CommentsController < ApplicationController
     before_filter :set_subjects
-    
+    layout 'hydrant'
+
     # Index replaces new in this context
 	def index 
-		@comment = Comment.new
+	  @comment = Comment.new
 	end
 
 	def create
@@ -13,8 +14,6 @@ class CommentsController < ApplicationController
 	  @comment.email_confirmation = params[:comment][:email_confirmation]
 	  @comment.subject = params[:comment][:subject]
 	  @comment.comment = params[:comment][:comment]
-	  
-	  logger.debug "<< Valid feedback submission? #{@comment.valid?} >>"
 	  
 		if (@comment.valid? && !@comment.spam?)
 		    begin
@@ -27,10 +26,6 @@ class CommentsController < ApplicationController
 			  render action: "index"
 			end
 		else
-		   logger.debug("#{@comment.errors.count} problems found with the form")
-		   logger.debug(@comment.errors.inspect)
-		   logger.debug(@comment.errors.keys)
-		   
 		   flash[:error] = "There were problems submitting your comment. Please correct the errors and try again."
 			render action: "index"
 		end 

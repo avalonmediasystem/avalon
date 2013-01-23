@@ -18,6 +18,8 @@
 
     <%= comment.label :email, "Email address" do |controls| %> 
       <%= controls.email_field :email, class: 'span4' %>
+    <% end %>
+    <%= comment.label :email_confirmation, "Confirm email address" do |controls| %>
       <%= controls.email_field :email_confirmation, class: 'span4' %> 
     <% end %>
     
