@@ -49,7 +49,7 @@ class CatalogController < ApplicationController
     #
     # :show may be set to false if you don't want the facet to be drawn in the 
     # facet bar
-    config.add_facet_field 'format_facet', :label => 'Format', :limit => 5
+    config.add_facet_field 'format_facet', :label => 'Format', :limit => 5, :expanded => true
     # Eventually these need to be merged into a single facet
     config.add_facet_field 'contributor_facet', :label => 'Contributor', :limit => 5
     #TODO add "Date" facet that points to issue date in mediaobject
