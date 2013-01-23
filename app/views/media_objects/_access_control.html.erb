@@ -7,8 +7,8 @@
 <p class="whitespace">Some short blurb explaining what the point of access controls are]</p>
 
 <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
-<div class="whitespace" id="default_level">
-   <h4>Item Discovery Policy</h4>
+  <div class="whitespace" id="default_level">
+    <h4>Item Discovery Policy</h4>
     <%= label_tag :hidden do %>
       <%= vid.check_box :hidden? %>
       Hide this item in search results 
@@ -20,29 +20,28 @@
     <%= hidden_field_tag :step, @active_step %>
     <%= vid.hidden_field :pid %>
 
-  <%= label_tag :access do %>
-  <%= radio_button_tag :access, 'public', (@mediaobject.access == 'public') %>
-  This resource should be accessible to the general public without having to register
-  <% end %>
-
-  <%= label_tag :access do %>
-  <%= radio_button_tag :access, 'restricted', (@mediaobject.access == 'restricted') %>
-  Only registered users should have access to this resource
-  <% end %>
+    <%= label_tag :access do %>
+    <%= radio_button_tag :access, 'public', (@mediaobject.access == 'public') %>
+      This resource should be accessible to the general public without having to register
+    <% end %>
 
     <%= label_tag :access do %>
-      <%= radio_button_tag :access, 'private', (@mediaobject.access == 'private') %>
+    <%= radio_button_tag :access, 'restricted', (@mediaobject.access == 'restricted') %>
+      Only registered users should have access to this resource
+    <% end %>
+
+    <%= label_tag :access do %>
+    <%= radio_button_tag :access, 'private', (@mediaobject.access == 'private') %>
       Only I should be able to see this resource
     <% end %>
     
-     <%= label_tag :access do %>
-      <%= radio_button_tag :access, 'limited', (@mediaobject.access == 'limited') %>
+    <%= label_tag :access do %>
+    <%= radio_button_tag :access, 'limited', (@mediaobject.access == 'limited') %>
       Limit access to these users and groups  
     <% end %>
 
     <%= hidden_field_tag :donot_advance, true %>
     <%= hidden_field_tag :step, @active_step %>
-    
 
     <style>
       .overlay {
