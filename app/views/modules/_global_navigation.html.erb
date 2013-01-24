@@ -24,7 +24,7 @@
               html: {target: '_admin'} %>
           <% end %>
           <li class="visible-phone">
-            <% if user.signed_in? %>
+            <% if user_signed_in? %>
               <%= link_to 'Sign out', destroy_user_session_path %>
             <% else %>
               <%= link_to 'Sign in', new_user_session_path %>
