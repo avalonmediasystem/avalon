@@ -1,9 +1,9 @@
 <% if can? :manage, @mediaobject %>
   <div class="row-fluid">
     <div class="alert alert-info">
-      <strong>Administrative Actions</strong>
+      <strong>Manage Item</strong>
       <p>
-        <ul class="unstyled">
+        <ul class="unstyled hidden">
           <li>
             <% if @mediaobject.published? %>
               <span class="label label-success">Published</span> Authorized users can view the item</li>
@@ -27,9 +27,8 @@
         <%= link_to label, update_status_media_object_path(@mediaobject), method: :put, 
             class: 'btn' %>
 
-        <% label = @mediaobject.discover_groups.include?("nobody") ? 'Unhide' : 'Hide' %>  
-        <%= link_to label, update_visibility_media_object_path(@mediaobject), method: :put, 
-            class: 'btn' %>
+        <% #label = @mediaobject.discover_groups.include?("nobody") ? 'Unhide' : 'Hide' %>  
+        <%#= link_to label, update_visibility_media_object_path(@mediaobject), method: :put, class: 'btn' %>
 
         <%= link_to 'Edit', edit_media_object_path(@mediaobject), class: 'btn btn-primary' %>
         <%# This might not be the best approach because it makes accidental 
