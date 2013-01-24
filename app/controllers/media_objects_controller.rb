@@ -78,7 +78,7 @@ class MediaObjectsController < ApplicationController
   # to take the item out of the system for good (by POSTing to the destroy
   # action)
   def remove 
-    @previous_view = media_object_path(@mediaobject)
+    #@previous_view = media_object_path(@mediaobject)
   end
 
   # Deletes a media object from the system. This needs to be somewhat robust so that
