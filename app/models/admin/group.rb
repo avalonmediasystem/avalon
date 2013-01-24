@@ -11,11 +11,12 @@ class Admin::Group
   attr_accessor :name, :users
   validates :name, presence: {message: "Name is a required field"}
 
-  SYSTEM_GROUP_NAMES = ["archivist", "admin_policy_object_editor"]
-
   def self.non_system_groups
     groups = all
-    groups.reject! { |g| SYSTEM_GROUP_NAMES.include? g.name }
+    if Hydrant::Configuration['groups'] && Hydrant::Configuration['groups']['non_system_groups']
+      non_system_groups = Hydrant::Configuration['groups']['non_system_groups'].map{|k,groups| groups}.flatten
+      groups.reject! { |g| non_system_groups.include? g.name }
+    end
     groups
   end
  
