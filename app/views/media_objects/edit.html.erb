@@ -2,9 +2,7 @@
   <div class="span2" id="left_column">
     <%= render "toggle_preview_mode" %>
     
-    <% if can? :edit, @mediaobject %>
-      <%= render "ingest_steps" %>
-    <% end %>
+    <%= render "ingest_steps" %>
   </div>
   
   <div id="main_body" class="span10">
