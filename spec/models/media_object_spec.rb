@@ -135,11 +135,6 @@ describe MediaObject do
       mediaobject.workflow.current?('access-control').should == true
     end
 
-    it "should verify that the current step is last when the item is published" do
-      mediaobject.workflow.publish
-      mediaobject.workflow.last_completed_step.should == ['preview']
-    end
-
     it "should default to the first workflow step" do
       mediaobject.workflow.last_completed_step.should == ['']
     end
