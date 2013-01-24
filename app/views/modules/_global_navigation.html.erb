@@ -15,11 +15,11 @@
         <ul class="nav nav-tabs">
           <li><%= link_to 'Browse', catalog_index_path(search_field: 'all_fields', utf8: '✓', q: '') %></li>
           <% if can? :create, MediaObject %>
-            <li class="hidden-phone"><%= link_to 'Create', new_media_object_path %></li>
+            <li><%= link_to 'Create', new_media_object_path %></li>
           <% end %>
 
           <% if can? :manage, Admin::Group %>
-            <li class="hidden-phone"><%= link_to 'Manage Groups', 
+            <li><%= link_to 'Manage Groups', 
               admin_index_path,
               html: {target: '_admin'} %>
           <% end %>
