@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe MediaObjectsController do
+describe MediaObjectsController, type: :controller do
   render_views
 
   describe "#new" do
@@ -138,20 +138,31 @@ describe MediaObjectsController do
   end
     
   describe "#destroy" do
+    before(:each) do 
+      login_as 'cataloger'
+      load_fixture 'hydrant:electronic-resource'
+    end
+    
     it "should remove the MediaObject from the system" do
       load_fixture 'hydrant:electronic-resource'
-      mo = MediaObject.find 'hydrant:electronic-resource'
-      
-      mo.destroy
+      delete :destroy, id: 'hydrant:electronic-resource'
+
       MediaObject.exists?('hydrant:electronic-resource').should == false
     end
 
     it "should not be accessible through the search interface" do
       load_fixture 'hydrant:electronic-resource'
-      mo = MediaObject.find 'hydrant:electronic-resource'
-      mo.destroy
+      delete :destroy, id: 'hydrant:electronic-resource'
 
       pending "Figure out how to make the right query against Solr"
+    end
+
+    # This test may need to be more robust to catch errors but is just a first cut
+    # for the time being
+    it "should not be possible to delete an object which does not exist" do
+      pending "Fix access controls to stop throwing exception"
+      delete :destroy, id: 'hydrant:this-pid-is-fake'
+      response.should redirect_to root_path
     end
   end
 
