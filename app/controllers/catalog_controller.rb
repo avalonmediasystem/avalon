@@ -51,7 +51,7 @@ class CatalogController < ApplicationController
     # facet bar
     config.add_facet_field 'format_facet', :label => 'Format', :limit => 5, :expanded => true
     # Eventually these need to be merged into a single facet
-    config.add_facet_field 'contributor_facet', :label => 'Contributor', :limit => 5
+    config.add_facet_field 'creator_facet', :label => 'Main contributor', :limit => 5
     #TODO add "Date" facet that points to issue date in mediaobject
     config.add_facet_field 'date_facet', :label => 'Date', :limit => 5
     config.add_facet_field 'genre_facet', :label => 'Genres', :limit => 5
@@ -154,8 +154,7 @@ class CatalogController < ApplicationController
     # except in the relevancy case).
     config.add_sort_field 'score desc, title_sort asc, date_sort desc', :label => 'Relevance'
     config.add_sort_field 'date_sort desc, title_sort asc', :label => 'Year'
-    #FIXME creator needs to become contributor and probably needs reindexing
-    #config.add_sort_field 'creator_sort asc, title_sort asc', :label => 'Creator'
+    config.add_sort_field 'creator_sort asc, title_sort asc', :label => 'Main contributor'
     config.add_sort_field 'title_sort asc, date_sort desc', :label => 'Title'
 
     # If there are more than this many search results, no spelling ("did you 
