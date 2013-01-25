@@ -106,16 +106,16 @@ class MasterFilesController < ApplicationController
       # a list of search results
       if master_file.status_code.eql? 'SUCCEEDED'
         master_file.update_progress_on_success!( workflow )
+      end
 
-        # We handle the case where the item was batch ingested. If so the
-        # update method needs to kick off an email letting the uploader know it is
-        # ready to be previewed
-        ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( master_file.mediaobject.id )
-        if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
-          IngestBatchMailer.status_email(ingest_batch.id).deliver
-          ingest_batch.email_sent = true
-          ingest_batch.save!
-        end
+      # We handle the case where the item was batch ingested. If so the
+      # update method needs to kick off an email letting the uploader know it is
+      # ready to be previewed
+      ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( master_file.mediaobject.id )
+      if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
+        IngestBatchMailer.status_email(ingest_batch.id).deliver
+        ingest_batch.email_sent = true
+        ingest_batch.save!
       end
     end
 
