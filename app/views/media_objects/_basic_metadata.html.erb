@@ -13,8 +13,8 @@
     <%= vid.text_fields :genre, 'Genre(s)', class: 'span8', dynamic: true, value: @mediaobject.genre %>
 
     <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span8', dynamic: true, value: @mediaobject.topical_subject %>
-    <%= vid.text_fields :temporal_subject, 'Time periods', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.temporal_subject %>
-    <%= vid.text_fields :geographic_subject, 'Locations', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.geographic_subject %>
+    <%= vid.text_fields :temporal_subject, 'Time period(s)', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.temporal_subject %>
+    <%= vid.text_fields :geographic_subject, 'Location(s)', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.geographic_subject %>
     
     <%= vid.text_fields :collection, 'Collection(s)', class: 'span8', dynamic: true, minimum_fields: 3, value: @mediaobject.collection %>
 

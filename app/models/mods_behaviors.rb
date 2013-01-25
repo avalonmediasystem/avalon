@@ -20,12 +20,12 @@ module ModsBehaviors
     solr_doc[:heading_display] = self.find_by_terms(:main_title).text
 
 
-    solr_doc[:creator_display] = self.find_by_terms(:creator).text
+    solr_doc[:creator_display] = gather_terms(self.find_by_terms(:creator))
     solr_doc[:creator_sort] = self.find_by_terms(:creator).text
     # Individual fields
     solr_doc[:summary_display] = self.find_by_terms(:abstract).text
     solr_doc[:publisher_display] = gather_terms(self.find_by_terms(:publisher))
-    solr_doc[:contributors_display] = gather_terms(self.find_by_terms(:contributor))
+    solr_doc[:contributor_display] = gather_terms(self.find_by_terms(:contributor))
     solr_doc[:subject_display] = gather_terms(self.find_by_terms(:subject))
     solr_doc[:genre_display] = gather_terms(self.find_by_terms(:genre))
 #    solr_doc[:physical_dtl_display] = gather_terms(self.find_by_terms(:format))

@@ -72,7 +72,7 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
-    config.add_index_field 'contributors_display', :label => 'Contributors:', :helper_method => :contributor_index_display 
+    config.add_index_field 'creator_display', :label => 'Main contributors:', :helper_method => :contributor_index_display 
     config.add_index_field 'date_display', :label => 'Date:' 
     config.add_index_field 'summary_display', label: 'Description:', :helper_method => :description_index_display
     
