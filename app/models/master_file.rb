@@ -23,10 +23,11 @@ class MasterFile < ActiveFedora::Base
     d.field :mediapackage_id, :string
     d.field :percent_complete, :string
     d.field :status_code, :string
+    d.field :failures, :string
   end
 
   delegate_to 'descMetadata', [:file_location, :file_checksum, :file_size, :duration, :file_format], unique: true
-  delegate_to 'mhMetadata', [:workflow_id, :mediapackage_id, :percent_complete, :status_code], unique:true
+  delegate_to 'mhMetadata', [:workflow_id, :mediapackage_id, :percent_complete, :status_code, :failures], unique:true
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
@@ -43,6 +44,8 @@ class MasterFile < ActiveFedora::Base
   UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
 
   QUALITY_ORDER = { "low" => 1, "medium" => 2, "high" => 3 }
+
+  END_STATES = ['STOPPED', 'SUCCEEDED', 'FAILED', 'SKIPPED']
 
   def save_parent
     unless mediaobject.nil?
@@ -94,7 +97,8 @@ class MasterFile < ActiveFedora::Base
       when "RUNNING"
         "Creating derivatives"
       when "SUCCEEDED"
-        "Processing is complete"
+        s = self.failures.to_i > 0 ? " (#{failures} failed steps)" : ""
+        "Processing is complete#{s}"
       when "FAILED"
         "File(s) could not be processed"
       when "STOPPED"
@@ -133,7 +137,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def finished_processing?
-    ['STOPPED', 'SUCCEEDED', 'FAILED'].include?(status_code)
+    END_STATES.include?(status_code)
   end
 
   def poster_url
@@ -152,6 +156,7 @@ class MasterFile < ActiveFedora::Base
 
     self.percent_complete = calculate_percent_complete(matterhorn_response)
     self.status_code = matterhorn_response.state[0]
+    self.failures = matterhorn_response.operations.operation.operation_state.select { |state| state == 'FAILED' }.length.to_s
 
     # Because there is no attribute_changed? in AF
     # we want to find out if the duration has changed
@@ -223,13 +228,12 @@ class MasterFile < ActiveFedora::Base
 
   def calculate_percent_complete matterhorn_response
     totalOperations = matterhorn_response.operations.operation.length
-    finishedOperations = 0
 
     # DEBUG
     logger.debug "<< Inspecting nodes for percentage >>"
     logger.debug matterhorn_response.operations
     # END DEBUG
-    matterhorn_response.operations.operation.operation_state.each {|state| finishedOperations += 1 if state == "SUCCEEDED" || state == "SKIPPED"}
+    finishedOperations = matterhorn_response.operations.operation.operation_state.select { |state| END_STATES.include? state }.length
     percent = finishedOperations * 100 / totalOperations
     logger.debug "percent_complete #{percent}"
     percent.to_s
