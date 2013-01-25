@@ -13,11 +13,11 @@ describe Hydrant::Batch do
     Hydrant::DropboxService = Hydrant::Dropbox.new 'spec/fixtures/dropbox'
 
     # this is a test environment, we don't want to kick off
-    # gneration jobs if possible
+    # generation jobs if possible
     MasterFile.any_instance.stub(:save).and_return( true )
   end
 
-  it 'creates an ingest batch object when there is more than one batch' do
+  it 'creates an ingest batch object' do
     Hydrant::Batch.ingest
     IngestBatch.count.should == 1
   end
