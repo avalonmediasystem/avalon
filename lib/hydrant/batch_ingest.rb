@@ -67,9 +67,6 @@ module Hydrant
             context = {media_object: { pid: mediaobject.pid, hidden: opts[:hidden] ? '1' : nil, access: 'private' }, mediaobject: mediaobject, user: 'batch'}
             context = HYDRANT_STEPS.get_step('access-control').execute context
 
-            context = {mediaobject: mediaobject, user: email_address}
-            context = HYDRANT_STEPS.get_step('preview').execute context
-
             mediaobject.workflow.last_completed_step = 'access-control'
 
             if opts[:publish]

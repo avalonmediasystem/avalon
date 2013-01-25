@@ -75,4 +75,4 @@ cucumber-results/
 .idea
 public/media_objects
 config/hydrant.yml
-dropbox/
+/dropbox
