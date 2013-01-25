@@ -182,6 +182,8 @@ tr.active-false td {
   margin-left: -40%;
 }
 
+// If we are being responsive should really avoid using px measurements unless 
+// actually needed (!)
 div#dropbox_modal {
   margin-top: -350px;
   div.dataTables_paginate {
