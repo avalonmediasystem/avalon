@@ -113,7 +113,7 @@ tr.active-false td {
     padding: $baseLineHeight/2;
     margin-bottom: $baseLineHeight;
     text-align: left;
-    @include border-radius(4px);
+    @include border-radius($baseBorderRadius);
 
     background-color: $grayLighter;
     border: $gray;
@@ -194,5 +194,18 @@ div#dropbox_modal {
 
 .fileupload .uneditable-input {
   white-space: normal;
+}
+
+/* 
+ * Modal tooltips for the form should be visually distinct from the label or form
+ * fields. Using Bootstrap variables for easy thematic overrides. This can't be called
+ * just 'tooltip' because that class already exists in Bootstrap proper for other 
+ * things
+ */
+.form-tooltip {
+  background: $grayLighter;
+  color: $black;  
+  @include border-radius($baseBorderRadius)
+
 }
 

@@ -2,8 +2,27 @@
 
 <%= twitter_bootstrap_form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |vid| %>
   <%= hidden_field_tag :step, @active_step %>
-  <%# vid.fieldset 'Required fields', id: 'required_fields' do %>
-    <%= vid.text_field :title, 'Title *', class: 'span8' %>
+    <%# vid.label :title do 
+      <div id="title_help">
+        <p>Titles are important. Without titles how will people know how to find things in
+           the library catalog?</p>
+        <p>Example : 'The Great Gatsby', 'Ulysses', 'Chucky Lou'</p>
+      </div>
+    <% end %>
+    <div class="control-group">
+      <label class="control-label" for="media_object_title">
+        <a href="http://wiki.dlib.indiana.edu" target="_help" data-toggle="collapse" data-target="#title_tooltip">Title *</a>
+      </label>
+      <div id="title_tooltip" class="collapse form-tooltip">
+        <p>Title for the resource</p>
+        <p>'Ulysses', 'Gone With the Wind', 'Chucky Lou'</p>
+      </div>
+      <div class="controls">
+        <input type="text" id="media_object_title" name="media_object_title" class="span8">
+      </div>
+    </div>
+
+    <%# vid.text_field :title, 'Title *', class: 'span8' %>
     <%= vid.text_fields :creator, 'Main contributor(s) *', class: 'span8', dynamic: true, value: @mediaobject.creator %>
     <%= vid.text_field :date_issued, 'Date *', class: 'span8' %>
     <%= vid.text_field :date_created, 'Creation date', class: 'span8' %>
@@ -29,6 +48,15 @@
 <script>
   $().ready(function() {
     DynamicFields.initialize();
+
+    /* 
+     * Disable the default action for tooltips if the Javascript for the
+     * inline tip is able to work. Since we know that these will have additional
+     * data attributes there is no need for another class hook
+     */
+     $('a[data-target]').click(function(event) {
+       event.preventDefault();
+     });
   });
 </script>
 <% end %>
