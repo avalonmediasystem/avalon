@@ -205,7 +205,26 @@ div#dropbox_modal {
 .form-tooltip {
   background: $grayLighter;
   color: $black;  
-  @include border-radius($baseBorderRadius)
+  padding: $paddingLarge;
+  @include border-radius($baseBorderRadius);
 
+  &.collapse {
+    display: none;
+    height: 0;
+    @include transition(height 0.5s, display 0.5s);
+
+    &.in {
+      display: block; 
+    }
+  }
 }
 
+/*
+ * Fix that shouldn't be needed to make sure that the text behaves like a regular
+ * link
+ */
+label {
+  a[data-target] {
+    text-decoration: none;
+  }
+}
