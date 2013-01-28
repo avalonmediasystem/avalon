@@ -11,7 +11,7 @@
     <% end %>
     <div class="control-group">
       <label class="control-label" for="media_object_title">
-        <a href="http://wiki.dlib.indiana.edu" target="_help" data-toggle="collapse" data-target="#title_tooltip">Title *</a>
+        <a href="http://wiki.dlib.indiana.edu" target="_help" data-tooltip="#title_tooltip">Title *</a>
       </label>
       <div id="title_tooltip" class="collapse form-tooltip">
         <p>Title for the resource</p>
@@ -54,9 +54,11 @@
      * inline tip is able to work. Since we know that these will have additional
      * data attributes there is no need for another class hook
      */
-     $('a[data-target]').click(function(event) {
+     $('a[data-tooltip]').click(function(event) {
        event.preventDefault();
        $(this).removeAttr('href');
+
+       $('#title_tooltip').toggleClass('in');
      });
   });
 </script>
