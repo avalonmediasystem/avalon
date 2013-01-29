@@ -1,46 +1,41 @@
 <% if flash[:error] %><div class='alert alert-error'><%= flash[:error] %></div><% end %>
 
-<%= twitter_bootstrap_form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |vid| %>
+<%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
   <%= hidden_field_tag :step, @active_step %>
-    <%# vid.label :title do 
-      <div id="title_help">
-        <p>Titles are important. Without titles how will people know how to find things in
-           the library catalog?</p>
-        <p>Example : 'The Great Gatsby', 'Ulysses', 'Chucky Lou'</p>
-      </div>
+  <%= render_metadata_input :title, :text_field, required: true do |f| %>
+    <%# The label block is optional. If omitted it will default to a humanized version of the
+        symbol %>
+    <% content_for :label do %>
+      <a href="http://wiki.dlib.indiana.edu" target="_help" data-tooltip="#title_tooltip">Title *</a>
     <% end %>
-    <div class="control-group">
-      <label class="control-label" for="media_object_title">
-        <a href="http://wiki.dlib.indiana.edu" target="_help" data-tooltip="#title_tooltip">Title *</a>
-      </label>
+    <%# This optional section inserts a tooltip %>
+    <% content_for :tooltip do %>
       <div id="title_tooltip" class="collapse form-tooltip span8">
         <p>Title for the resource</p>
         <p>'Ulysses', 'Gone With the Wind', 'Chucky Lou'</p>
       </div>
-      <div class="controls">
-        <input type="text" id="media_object_title" name="media_object_title" class="span8">
-      </div>
-    </div>
+    <% end %>
+    <%# Anything else goes into the controls <div> using the attribute name and input type
+        provided to the helper method. %>
+  <% end %> 
 
-    <%# vid.text_field :title, 'Title *', class: 'span8' %>
-    <%= vid.text_fields :creator, 'Main contributor(s) *', class: 'span8', dynamic: true, value: @mediaobject.creator %>
-    <%= vid.text_field :date_issued, 'Date *', class: 'span8' %>
-    <%= vid.text_field :date_created, 'Creation date', class: 'span8' %>
-    <%= vid.text_area :abstract, 'Description', class: 'span8', rows: 6 %>
+    <%# vid.text_fields :creator, 'Main contributor(s) *', class: 'span8', dynamic: true, value: @mediaobject.creator %>
+    <%# vid.text_field :date_issued, 'Date *', class: 'span8' %>
+    <%# vid.text_field :date_created, 'Creation date', class: 'span8' %>
+    <%# vid.text_area :abstract, 'Description', class: 'span8', rows: 6 %>
 
-    <%= vid.text_fields :contributor, 'Contributor(s)', class: 'span8', dynamic: true, value: @mediaobject.contributor %>
-    <%= vid.text_fields :publisher, 'Publisher(s)', class: 'span8', dynamic: true, minimum_fields: 3, value: @mediaobject.publisher %>
-    <%= vid.text_fields :genre, 'Genre(s)', class: 'span8', dynamic: true, value: @mediaobject.genre %>
+    <%# vid.text_fields :contributor, 'Contributor(s)', class: 'span8', dynamic: true, value: @mediaobject.contributor %>
+    <%# vid.text_fields :publisher, 'Publisher(s)', class: 'span8', dynamic: true, minimum_fields: 3, value: @mediaobject.publisher %>
+    <%# vid.text_fields :genre, 'Genre(s)', class: 'span8', dynamic: true, value: @mediaobject.genre %>
 
-    <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span8', dynamic: true, value: @mediaobject.topical_subject %>
-    <%= vid.text_fields :temporal_subject, 'Time period(s)', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.temporal_subject %>
-    <%= vid.text_fields :geographic_subject, 'Location(s)', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.geographic_subject %>
+    <%# vid.text_fields :topical_subject, 'Subject(s)', class: 'span8', dynamic: true, value: @mediaobject.topical_subject %>
+    <%# vid.text_fields :temporal_subject, 'Time period(s)', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.temporal_subject %>
+    <%# vid.text_fields :geographic_subject, 'Location(s)', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.geographic_subject %>
     
-    <%= vid.text_fields :collection, 'Collection(s)', class: 'span8', dynamic: true, minimum_fields: 3, value: @mediaobject.collection %>
-
-  <%= vid.actions do |actions| %>
-      <%= render 'workflow_buttons', form: vid %>
-  <% end %>
+    <%# vid.text_fields :collection, 'Collection(s)', class: 'span8', dynamic: true, minimum_fields: 3, value: @mediaobject.collection %>
+    <div class="form-actions">
+      <%= render 'workflow_buttons', form: media %>
+    </div>  
 <% end %>
 
 <% content_for :page_scripts do %>

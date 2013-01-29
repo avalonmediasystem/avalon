@@ -1,0 +1,74 @@
+<% if flash[:error] %><div class='alert alert-error'><%= flash[:error] %></div><% end %>
+
+<%= twitter_bootstrap_form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |vid| %>
+  <%= hidden_field_tag :step, @active_step %>
+    <div class="control-group">
+      <label class="control-label" for="media_object_title">
+      </label>
+      <div class="controls">
+        <input type="text" id="media_object_title" name="media_object_title" class="span8">
+      </div>
+    </div>
+
+    <%= render_metadata_input :title, required: true do |f| %>
+      <%# The label block is optional. If omitted it will default to a humanized version of the
+          symbol %>
+      <% content_for :label do %>
+        <a href="http://wiki.dlib.indiana.edu" target="_help" data-tooltip="#title_tooltip">Title *</a>
+      <% end %>
+      <%# This optional section inserts a tooltip %>
+      <% content_for :tooltip do %>
+        <div id="title_tooltip" class="collapse form-tooltip span8">
+          <p>Title for the resource</p>
+          <p>'Ulysses', 'Gone With the Wind', 'Chucky Lou'</p>
+        </div>
+      <% end %>
+      <%# Anything else goes into the controls <div> %>
+      <% input
+    <% end %> 
+
+    <!--
+    <%= vid.text_fields :creator, 'Main contributor(s) *', class: 'span8', dynamic: true, value: @mediaobject.creator %>
+    <%= vid.text_field :date_issued, 'Date *', class: 'span8' %>
+    <%= vid.text_field :date_created, 'Creation date', class: 'span8' %>
+    <%= vid.text_area :abstract, 'Description', class: 'span8', rows: 6 %>
+
+    <%= vid.text_fields :contributor, 'Contributor(s)', class: 'span8', dynamic: true, value: @mediaobject.contributor %>
+    <%= vid.text_fields :publisher, 'Publisher(s)', class: 'span8', dynamic: true, minimum_fields: 3, value: @mediaobject.publisher %>
+    <%= vid.text_fields :genre, 'Genre(s)', class: 'span8', dynamic: true, value: @mediaobject.genre %>
+
+    <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span8', dynamic: true, value: @mediaobject.topical_subject %>
+    <%= vid.text_fields :temporal_subject, 'Time period(s)', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.temporal_subject %>
+    <%= vid.text_fields :geographic_subject, 'Location(s)', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.geographic_subject %>
+    
+    <%= vid.text_fields :collection, 'Collection(s)', class: 'span8', dynamic: true, minimum_fields: 3, value: @mediaobject.collection %>
+  -->
+  <%= vid.actions do |actions| %>
+      <%= render 'workflow_buttons', form: vid %>
+  <% end %>
+<% end %>
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'dynamic_fields' %>
+<script>
+  $().ready(function() {
+    DynamicFields.initialize();
+
+    /* 
+     * Disable the default action for tooltips if the Javascript for the
+     * inline tip is able to work. Since we know that these will have additional
+     * data attributes there is no need for another class hook
+     */
+     $('a[data-tooltip]').each(function() {
+       $(this).removeAttr('href');
+     });
+
+     $('a[data-tooltip]').click(function(event) {
+       event.preventDefault();
+
+       $('#title_tooltip').toggleClass('in');
+     });
+  });
+</script>
+<% end %>
+
