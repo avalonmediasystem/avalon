@@ -4,18 +4,14 @@
   <%= hidden_field_tag :step, @active_step %>
   
   <%# This is not very DRY for a first pass but that can come once it shows some promise %>
-  <!-- Title field -->
-  <div class="control-group">
-    <%= media.label :title do %>
-      <a href='http://wiki.dlib.indiana.edu' target: '_help' data-tooltip="#title_tooltip">Title *</a> 
-    <% end %>
-    <div class="collapse form-tooltip span8" id="title_tooltip">
-      <%= render 'media_objects/tooltips/title_field' %>
-    </div>
-    <%= media.text_field :title, class: 'span8' %>
-  </div>
+  <%= render partial: 'text_field', 
+             locals: {media: media, field: :title, 
+                      options: {required: true, tooltip: true}} %>
 
-    <%# vid.text_fields :creator, 'Main contributor(s) *', class: 'span8', dynamic: true, value: @mediaobject.creator %>
+  <%= render partial: 'text_fields',
+             locals: {media: media, field: :creator,
+                      label: 'Main contributor(s)', tooltip: true} %>
+
     <%# vid.text_field :date_issued, 'Date *', class: 'span8' %>
     <%# vid.text_field :date_created, 'Creation date', class: 'span8' %>
     <%# vid.text_area :abstract, 'Description', class: 'span8', rows: 6 %>

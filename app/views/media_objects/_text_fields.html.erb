@@ -1,0 +1,21 @@
+<% human_label = field.to_s %>
+<% count = [3, @mediaobject[field].length].max %>
+
+<!-- <%= human_label.humanize %> field -->
+  <div class="control-group">
+    <%= media.label field do %>
+    <a href='http://wiki.dlib.indiana.edu' target: '_help'<% if options[:tooltip] %> data-tooltip="#<%= human_label %>_tooltip"><% end %><%= label || human_label.humanize %><% if options[:required] %> *<% end %></a> 
+    <% end %>
+    <% if options[:tooltip] %>
+      <div class="collapse form-tooltip span8" id="<%= human_label %>_tooltip">
+        <%= render "media_objects/tooltips/#{human_label}_field" %>
+      </div>
+    <% end %>
+    <div class="controls <% if options[:dynamic] %>dynamic<% end %>">
+      <% count.times do |i| %>
+        <%= media.text_field field, class: 'span8' %>
+      <% end %>
+    </div>
+  </div>
+
+
