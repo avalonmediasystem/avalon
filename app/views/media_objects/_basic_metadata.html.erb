@@ -2,22 +2,18 @@
 
 <%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
   <%= hidden_field_tag :step, @active_step %>
-  <%= render_metadata_input :title, :text_field, required: true do |f| %>
-    <%# The label block is optional. If omitted it will default to a humanized version of the
-        symbol %>
-    <% content_for :label do %>
-      <a href="http://wiki.dlib.indiana.edu" target="_help" data-tooltip="#title_tooltip">Title *</a>
+  
+  <%# This is not very DRY for a first pass but that can come once it shows some promise %>
+  <!-- Title field -->
+  <div class="control-group">
+    <%= media.label :title do %>
+      <a href='http://wiki.dlib.indiana.edu' target: '_help' data-tooltip="#title_tooltip">Title *</a> 
     <% end %>
-    <%# This optional section inserts a tooltip %>
-    <% content_for :tooltip do %>
-      <div id="title_tooltip" class="collapse form-tooltip span8">
-        <p>Title for the resource</p>
-        <p>'Ulysses', 'Gone With the Wind', 'Chucky Lou'</p>
-      </div>
-    <% end %>
-    <%# Anything else goes into the controls <div> using the attribute name and input type
-        provided to the helper method. %>
-  <% end %> 
+    <div class="collapse form-tooltip span8" id="title_tooltip">
+      <%= render 'media_objects/tooltips/title_field' %>
+    </div>
+    <%= media.text_field :title, class: 'span8' %>
+  </div>
 
     <%# vid.text_fields :creator, 'Main contributor(s) *', class: 'span8', dynamic: true, value: @mediaobject.creator %>
     <%# vid.text_field :date_issued, 'Date *', class: 'span8' %>
