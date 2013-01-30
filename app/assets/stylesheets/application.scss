@@ -12,8 +12,6 @@ body {
   padding-top: 1em;
 }
 
-@import "hydrant";
-
 /*
  * This is the default theme. You can modify many of the settings 
  * by editing your local app/assets/stylesheets/blacklight_themes/standard.css
@@ -36,5 +34,7 @@ body {
  *
  * require_tree .
  *= require 'hydrant-engage'
- *= require_self
+ *= require self
 */
+@import "hydrant";
+

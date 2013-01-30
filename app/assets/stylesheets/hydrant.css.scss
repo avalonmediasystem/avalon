@@ -1,4 +1,4 @@
-@import "bootstrap";
+@import "bootstrap/variables";
 @import "bootstrap-responsive";
 
 /**
@@ -113,7 +113,7 @@ tr.active-false td {
     padding: $baseLineHeight/2;
     margin-bottom: $baseLineHeight;
     text-align: left;
-    @include border-radius(4px);
+    @include border-radius($baseBorderRadius);
 
     background-color: $grayLighter;
     border: $gray;
@@ -196,3 +196,40 @@ div#dropbox_modal {
   white-space: normal;
 }
 
+/* 
+ * Modal tooltips for the form should be visually distinct from the label or form
+ * fields. Using Bootstrap variables for easy thematic overrides. This can't be called
+ * just 'tooltip' because that class already exists in Bootstrap proper for other 
+ * things
+ *
+ * 'collapse' and 'in' could probably be renamed since the Javascript no longer uses
+ * Bootstrap specific code.
+ */
+.form-tooltip {
+  background: $grayLighter;
+  color: $black;  
+  padding: $paddingLarge;
+  margin-bottom: $baseLineHeight/2;
+
+  @include border-radius($baseBorderRadius);
+
+  &.collapse {
+    display: none;
+    height: 0;
+
+    &.in {
+      display: block; 
+      height: auto;
+    }
+  }
+}
+
+/*
+ * Fix that shouldn't be needed to make sure that the text behaves like a regular
+ * link
+ */
+label {
+  a[data-tooltip] {
+    text-decoration: none;
+  }
+}

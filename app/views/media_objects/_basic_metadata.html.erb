@@ -1,27 +1,77 @@
 <% if flash[:error] %><div class='alert alert-error'><%= flash[:error] %></div><% end %>
 
-<%= twitter_bootstrap_form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |vid| %>
+<%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
   <%= hidden_field_tag :step, @active_step %>
-  <%# vid.fieldset 'Required fields', id: 'required_fields' do %>
-    <%= vid.text_field :title, 'Title *', class: 'span8' %>
-    <%= vid.text_fields :creator, 'Main contributor(s) *', class: 'span8', dynamic: true, value: @mediaobject.creator %>
-    <%= vid.text_field :date_issued, 'Date *', class: 'span8' %>
-    <%= vid.text_field :date_created, 'Creation date', class: 'span8' %>
-    <%= vid.text_area :abstract, 'Description', class: 'span8', rows: 6 %>
+  
+  <%# This is not very DRY for a first pass but that can come once it shows some promise %>
+  <%= render partial: 'text_field', 
+             locals: {media: media, field: :title, 
+                      options: {required: true, tooltip: true}} %>
 
-    <%= vid.text_fields :contributor, 'Contributor(s)', class: 'span8', dynamic: true, value: @mediaobject.contributor %>
-    <%= vid.text_fields :publisher, 'Publisher(s)', class: 'span8', dynamic: true, minimum_fields: 3, value: @mediaobject.publisher %>
-    <%= vid.text_fields :genre, 'Genre(s)', class: 'span8', dynamic: true, value: @mediaobject.genre %>
+  <%# This clearly needs to be refactored once it works right and there is 
+      proper test coverage %>
+  <%= render partial: 'text_fields',
+             locals: {media: media, field: :creator,
+                      count: [3, @mediaobject.creator.length].max,
+                      label: 'Main contributor(s)', 
+                      options: {required: true, tooltip: true}} %>
+                    
+  <%= render partial: 'text_field', 
+             locals: {media: media, field: :date_issued, 
+                      options: {tooltip: true, required: true}} %>
 
-    <%= vid.text_fields :topical_subject, 'Subject(s)', class: 'span8', dynamic: true, value: @mediaobject.topical_subject %>
-    <%= vid.text_fields :temporal_subject, 'Time period(s)', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.temporal_subject %>
-    <%= vid.text_fields :geographic_subject, 'Location(s)', class: 'span8', minimum_fields: 2, dynamic: true, value: @mediaobject.geographic_subject %>
-    
-    <%= vid.text_fields :collection, 'Collection(s)', class: 'span8', dynamic: true, minimum_fields: 3, value: @mediaobject.collection %>
+  <%= render partial: 'text_field', 
+             locals: {media: media, field: :date_created,
+                      label: 'Creation date',
+                      options: {tooltip: true, required: true}} %>
 
-  <%= vid.actions do |actions| %>
-      <%= render 'workflow_buttons', form: vid %>
-  <% end %>
+  <%= render partial: 'text_area', 
+             locals: {media: media, field: :abstract,
+                      label: 'Description',
+                      options: {required: true, tooltip: true}} %>
+
+  <%= render partial: 'text_fields',
+             locals: {media: media, field: :contributor,
+                      count: [3, @mediaobject.contributor.length].max,
+                      label: 'Contributor(s)', 
+                      options: {tooltip: true, dynamic: true}} %>
+
+  <%= render partial: 'text_fields',
+             locals: {media: media, field: :publisher,
+                      count: [3, @mediaobject.publisher.length].max,
+                      label: 'Publisher(s)', 
+                      options: {tooltip: true, dynamic: true}} %>
+
+  <%= render partial: 'text_fields',
+             locals: {media: media, field: :genre,
+                      count: [3, @mediaobject.genre.length].max,
+                      label: 'Genre(s)', 
+                      options: {tooltip: true, dynamic: true}} %>
+  <%= render partial: 'text_fields',
+             locals: {media: media, field: :topical_subject,
+                      count: [3, @mediaobject.topical_subject.length].max,
+                      label: 'Subject(s)', 
+                      options: {tooltip: true, dynamic: true}} %>
+  <%= render partial: 'text_fields',
+             locals: {media: media, field: :temporal_subject,
+                      count: [3, @mediaobject.temporal_subject.length].max,
+                      label: 'Time period(s)', 
+                      options: {tooltip: true, dynamic: true}} %>
+  <%= render partial: 'text_fields',
+             locals: {media: media, field: :geographic_subject,
+                      count: [3, @mediaobject.geographic_subject.length].max,
+                      label: 'Location(s)', 
+                      options: {tooltip: true, dynamic: true}} %>
+                      
+  <%= render partial: 'text_fields',
+             locals: {media: media, field: :collection,
+                      count: [3, @mediaobject.collection.length].max,
+                      label: 'Collection(s)', 
+                      options: {tooltip: true, dynamic: true}} %>
+
+    <div class="form-actions">
+      <%= render 'workflow_buttons', form: media %>
+    </div>  
 <% end %>
 
 <% content_for :page_scripts do %>
@@ -29,6 +79,21 @@
 <script>
   $().ready(function() {
     DynamicFields.initialize();
+
+    /* 
+     * Disable the default action for tooltips if the Javascript for the
+     * inline tip is able to work. Since we know that these will have additional
+     * data attributes there is no need for another class hook
+     */
+     $('a[data-tooltip]').each(function() {
+       $(this).removeAttr('href');
+     });
+
+     $('a[data-tooltip]').click(function(event) {
+       event.preventDefault();
+       targetNode = $(this).data('tooltip');
+       $(targetNode).toggleClass('in');
+     });
   });
 </script>
 <% end %>
