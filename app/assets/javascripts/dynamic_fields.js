@@ -26,13 +26,6 @@
         $(fields).append(clone);
         $(fields).append(DynamicFields.remove_button_html);
         
-	alert($(this).parent().parent().html());
-	alert($(this).parent().parent().find('.controls.dynamic').html());
-	alert('inputs => ' + $(fields).data('inputs'));
-	alert('ID => ' + incremented_rails_id);
-        alert(clone);
-        alert(fields);
-
 	// show the first remove dynamic field button
         // because we remove it when there is only one field
         if (inputs.length == 1) {
