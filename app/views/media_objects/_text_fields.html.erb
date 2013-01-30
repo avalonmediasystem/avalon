@@ -18,9 +18,12 @@
         <%= render "media_objects/tooltips/#{default_label}_field" %>
       </div>
     <% end %>
+    
+    <%# This is NOT a good approach at all but it works for prototyping %>
+    <% values = ['', '', ''] %>
     <div class="controls <% if options[:dynamic] %>dynamic<% end %>">
       <% count.times do |i| %>
-        <%= media.text_field field, class: 'span8' %>
+        <%= text_field_tag "mediaobject[default_label][#{i}]", values[i], class: 'span8' %>
       <% end %>
     </div>
   </div>

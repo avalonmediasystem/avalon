@@ -13,59 +13,62 @@
   <%= render partial: 'text_fields',
              locals: {media: media, field: :creator,
                       count: [3, @mediaobject.creator.length].max,
-                      text_label: 'Main contributor(s)', 
-                      options: {tooltip: true}} %>
+                      label: 'Main contributor(s)', 
+                      options: {required: true, tooltip: true}} %>
                     
   <%= render partial: 'text_field', 
              locals: {media: media, field: :date_issued, 
-                      options: {required: true}} %>
+                      options: {tooltip: true, required: true}} %>
 
   <%= render partial: 'text_field', 
              locals: {media: media, field: :date_created,
-                      text_label: 'Creation date'} %>
+                      label: 'Creation date',
+                      options: {tooltip: true, required: true}} %>
+
 
   <%= render partial: 'text_area', 
              locals: {media: media, field: :abstract,
-                      text_label: 'Description'} %>
+                      label: 'Description',
+                      options: {required: true, tooltip: true}} %>
 
   <%= render partial: 'text_fields',
              locals: {media: media, field: :contributor,
                       count: [3, @mediaobject.contributor.length].max,
-                      text_label: 'Contributor(s)', 
-                      options: {dynamic: true}} %>
+                      label: 'Contributor(s)', 
+                      options: {tooltip: true, dynamic: true}} %>
 
   <%= render partial: 'text_fields',
              locals: {media: media, field: :publisher,
                       count: [3, @mediaobject.publisher.length].max,
-                      text_label: 'Publisher(s)', 
-                      options: {dynamic: true}} %>
+                      label: 'Publisher(s)', 
+                      options: {tooltip: true, dynamic: true}} %>
 
   <%= render partial: 'text_fields',
              locals: {media: media, field: :genre,
                       count: [3, @mediaobject.genre.length].max,
-                      text_label: 'Genre(s)', 
-                      options: {dynamic: true}} %>
+                      label: 'Genre(s)', 
+                      options: {tooltip: true, dynamic: true}} %>
   <%= render partial: 'text_fields',
              locals: {media: media, field: :topical_subject,
                       count: [3, @mediaobject.topical_subject.length].max,
-                      text_label: 'Subject(s)', 
-                      options: {dynamic: true}} %>
+                      label: 'Subject(s)', 
+                      options: {tooltip: true, dynamic: true}} %>
   <%= render partial: 'text_fields',
              locals: {media: media, field: :temporal_subject,
                       count: [3, @mediaobject.temporal_subject.length].max,
-                      text_label: 'Time period(s)', 
-                      options: {dynamic: true}} %>
+                      label: 'Time period(s)', 
+                      options: {tooltip: true, dynamic: true}} %>
   <%= render partial: 'text_fields',
              locals: {media: media, field: :geographic_subject,
                       count: [3, @mediaobject.geographic_subject.length].max,
-                      text_label: 'Location(s)', 
-                      options: {dynamic: true}} %>
+                      label: 'Location(s)', 
+                      options: {tooltip: true, dynamic: true}} %>
                       
   <%= render partial: 'text_fields',
              locals: {media: media, field: :collection,
                       count: [3, @mediaobject.collection.length].max,
-                      text_label: 'Collection(s)', 
-                      options: {dynamic: true}} %>
+                      label: 'Collection(s)', 
+                      options: {tooltip: true, dynamic: true}} %>
 
     <div class="form-actions">
       <%= render 'workflow_buttons', form: media %>
@@ -89,8 +92,8 @@
 
      $('a[data-tooltip]').click(function(event) {
        event.preventDefault();
-
-       $('#title_tooltip').toggleClass('in');
+       targetNode = $(this).data('tooltip');
+       $(targetNode).toggleClass('in');
      });
   });
 </script>
