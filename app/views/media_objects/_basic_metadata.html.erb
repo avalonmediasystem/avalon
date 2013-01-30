@@ -8,8 +8,8 @@
              locals: {media: media, field: :title, 
                       options: {required: true, tooltip: true}} %>
 
-  <%# This clearly needs to be refactored once it works right and there is proper
-      test coverage %>
+  <%# This clearly needs to be refactored once it works right and there is 
+      proper test coverage %>
   <%= render partial: 'text_fields',
              locals: {media: media, field: :creator,
                       count: [3, @mediaobject.creator.length].max,
@@ -24,7 +24,6 @@
              locals: {media: media, field: :date_created,
                       label: 'Creation date',
                       options: {tooltip: true, required: true}} %>
-
 
   <%= render partial: 'text_area', 
              locals: {media: media, field: :abstract,

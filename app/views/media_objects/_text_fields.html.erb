@@ -20,10 +20,11 @@
     <% end %>
     
     <%# This is NOT a good approach at all but it works for prototyping %>
-    <% values = ['', '', ''] %>
+    <% values = @mediaobject.send(field) %>
     <div class="controls <% if options[:dynamic] %>dynamic<% end %>">
       <% count.times do |i| %>
-        <%= text_field_tag "mediaobject[default_label][#{i}]", values[i], class: 'span8' %>
+        <% contents = values[i] || '' %>
+        <%= text_field_tag "media_object[#{default_label}][]", contents, class: 'span8' %>
       <% end %>
     </div>
   </div>
