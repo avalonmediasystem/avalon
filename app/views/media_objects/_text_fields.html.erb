@@ -21,7 +21,7 @@
     
     <%# This is NOT a good approach at all but it works for prototyping %>
     <% values = @mediaobject.send(field) %>
-    <div class="controls <% if options[:dynamic] %>dynamic<% end %>">
+  <div class="controls <% if options[:dynamic] %>dynamic<% end %>" data-inputs="<%= count %>">
       <% count.times do |i| %>
         <% contents = values[i] || '' %>
         <%= text_field_tag "media_object[#{default_label}][]", contents, class: 'span8' %>

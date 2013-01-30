@@ -9,20 +9,33 @@
       $(document).on('click', '.add-dynamic-field', function(event){
 
         // find all the input controls after the add button
-        var fields = $(this).parent().find('.controls');
+        var fields = $(this).parent().parent().find('.controls.dynamic');
         var inputs = $(fields).find('input');
-        var last_input = inputs[inputs.length - 1];
+        var input_template = inputs.first()
 
-        var incremented_rails_id = DynamicFields.copy_and_increment_rails_collection_id( $(last_input).attr('id') );
-        var clone = $(last_input).clone().attr('id', incremented_rails_id ).val('');
+	/*
+	 * Make this simpler - store an attribute on the control container that keeps
+	 * track of the index of the last input ID, increment it, and then put it back
+	 * in the DOM
+	 */
+        var incremented_rails_id = parseInt($(fields).data('inputs')) + 1; 
+        $(fields).data('inputs', incremented_rails_id);
+	var clone = $(input_template).clone().attr('id', incremented_rails_id).val('');
 
         // add input and remove button
-        $(fields).append( clone );
-        $(fields).append( DynamicFields.remove_button_html );
+        $(fields).append(clone);
+        $(fields).append(DynamicFields.remove_button_html);
         
-        // show the first remove dynamic field button
+	alert($(this).parent().parent().html());
+	alert($(this).parent().parent().find('.controls.dynamic').html());
+	alert('inputs => ' + $(fields).data('inputs'));
+	alert('ID => ' + incremented_rails_id);
+        alert(clone);
+        alert(fields);
+
+	// show the first remove dynamic field button
         // because we remove it when there is only one field
-        if ( inputs.length == 1) {
+        if (inputs.length == 1) {
           $(inputs[0]).next('.remove-dynamic-field').show();
         }
 
@@ -57,15 +70,8 @@
 
       var that = this;
       labels.each(function(index,label){
-        $(label).after(that.add_button_html);
+        $(label).append(that.add_button_html);
       });
-
-      /*
-       * This really should be set somewhere else than here
-       */
-      labels.css('display', 'inline-table');
-      labels.css('padding-right','4px');
-
     },
 
     add_remove_buttons_to_dynamic_fields: function(){
