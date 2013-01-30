@@ -14,7 +14,7 @@
              locals: {media: media, field: :creator,
                       count: [3, @mediaobject.creator.length].max,
                       label: 'Main contributor(s)', 
-                      options: {required: true, tooltip: true}} %>
+                      options: {required: true, tooltip: true, dynamic: true}} %>
                     
   <%= render partial: 'text_field', 
              locals: {media: media, field: :date_issued, 

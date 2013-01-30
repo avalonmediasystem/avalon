@@ -53,20 +53,23 @@
 
     add_controls_to_label: function() {
 
-      var labels = $('input[dynamic="true"]').parent('.controls').parent('.control-group').children('label');
+      var labels = $('.controls.dynamic').parent('.control-group').children('label');
 
       var that = this;
       labels.each(function(index,label){
         $(label).after(that.add_button_html);
       });
 
+      /*
+       * This really should be set somewhere else than here
+       */
       labels.css('display', 'inline-table');
       labels.css('padding-right','4px');
 
     },
 
     add_remove_buttons_to_dynamic_fields: function(){
-      $('.controls > input[dynamic="true"]').after(this.remove_button_html);   
+      $('.controls.dynamic > input').after(this.remove_button_html);   
     },
 
     //makes an attempt at making sure the id's of each input are unique
