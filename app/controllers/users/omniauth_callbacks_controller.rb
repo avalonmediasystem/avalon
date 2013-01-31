@@ -1,4 +1,8 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  def after_omniauth_failure_path_for(scope)
+    new_user_session_path(scope)
+  end
+
   def cas
     find_user('CAS')
   end
