@@ -2,7 +2,7 @@
 
 <%= hidden_field_tag :step, @active_step %>
 <% if HYDRANT_STEPS.last?(@active_step) %>
-    <%= submit_tag 'Save and continue', class: 'btn btn-primary' %>
+  <%= submit_tag 'Save and continue', class: 'btn btn-primary' %>
 <% else %>
-  <%= form.submit "Save and continue" %>
+  <%= form.submit "Save and continue", class: 'btn btn-primary' %>
 <% end %>
