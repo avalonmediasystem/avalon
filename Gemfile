@@ -60,9 +60,8 @@
 
     # For overriding the default interface with Twitter Bootstrap
     # This is now inherited from Blacklight
-    #gem 'less-rails'
-    #gem 'bootstrap-sass'    
     gem 'sass-rails', '~> 3.2.3'
+    gem 'font-awesome-sass-rails'
     gem 'twitter_bootstrap_form_for',
       git: "https://github.com/variations-on-video/twitter_bootstrap_form_for.git",
       branch: "bootstrap-2.0"

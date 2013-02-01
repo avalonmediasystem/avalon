@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite tests="106" failures="0" errors="0" time="175.699901" timestamp="2013-02-01T10:20:45-05:00">
+  <properties/>
+  <testcase classname="_/spec/controllers/groups_controller_spec_rb" name="Admin::GroupsController creating a new group should redirect to sign in page with a notice when unauthenticated" time="0.484230"/>
+  <testcase classname="_/spec/controllers/groups_controller_spec_rb" name="Admin::GroupsController creating a new group should redirect to home page with a notice when authenticated but unauthorized" time="0.259810"/>
+  <testcase classname="_/spec/controllers/groups_controller_spec_rb" name="Admin::GroupsController creating a new group Default permissions should be applied should be create-able by the policy_editor" time="0.021772"/>
+  <testcase classname="_/spec/controllers/groups_controller_spec_rb" name="Admin::GroupsController Modifying a group:  editing a group should redirect to sign in page with a notice on when unauthenticated" time="0.013279"/>
+  <testcase classname="_/spec/controllers/groups_controller_spec_rb" name="Admin::GroupsController Modifying a group:  editing a group should redirect to home page with a notice when authenticated but unauthorized" time="0.021555"/>
+  <testcase classname="_/spec/controllers/groups_controller_spec_rb" name="Admin::GroupsController Modifying a group:  editing a group should be able to change group users when authenticated and authorized" time="0.025344"/>
+  <testcase classname="_/spec/controllers/groups_controller_spec_rb" name="Admin::GroupsController Modifying a group:  editing a group should be able to change group name when authenticated and authorized" time="0.024655"/>
+  <testcase classname="_/spec/controllers/groups_controller_spec_rb" name="Admin::GroupsController Modifying a group:  Deleting a group should redirect to sign in page with a notice on when unauthenticated" time="0.014090"/>
+  <testcase classname="_/spec/controllers/groups_controller_spec_rb" name="Admin::GroupsController Modifying a group:  Deleting a group should redirect to home page with a notice when authenticated but unauthorized" time="0.021997"/>
+  <testcase classname="_/spec/controllers/groups_controller_spec_rb" name="Admin::GroupsController Modifying a group:  Deleting a group should be able to change group users when authenticated and authorized" time="0.022088"/>
+  <testcase classname="_/spec/controllers/master_files_controller_spec_rb" name="MasterFilesController#create must provide a container id should fail if no container id provided" time="2.864068"/>
+  <testcase classname="_/spec/controllers/master_files_controller_spec_rb" name="MasterFilesController#create cannot upload a file over the defined limit should provide a warning about the file size" time="0.964856"/>
+  <testcase classname="_/spec/controllers/master_files_controller_spec_rb" name="MasterFilesController#create must be a valid MIME type should recognize a video format" time="2.191402"/>
+  <testcase classname="_/spec/controllers/master_files_controller_spec_rb" name="MasterFilesController#create must be a valid MIME type should recognize an audio format" time="1.562141"/>
+  <testcase classname="_/spec/controllers/master_files_controller_spec_rb" name="MasterFilesController#create must be a valid MIME type should reject non audio/video format" time="1.711051"/>
+  <testcase classname="_/spec/controllers/master_files_controller_spec_rb" name="MasterFilesController#create must be a valid MIME type should recognize audio/video based on extension when MIMETYPE is of unknown format" time="6.642012"/>
+  <testcase classname="_/spec/controllers/master_files_controller_spec_rb" name="MasterFilesController#create should process file successfully should associate with a MediaObject" time="6.731005"/>
+  <testcase classname="_/spec/controllers/master_files_controller_spec_rb" name="MasterFilesController#create should have default permissions should set edit_user and edit_group" time="6.864989"/>
+  <testcase classname="_/spec/controllers/master_files_controller_spec_rb" name="MasterFilesController#update should handle Matterhorn pingbacks should create Derivatives when processing succeeded" time="5.122431"/>
+  <testcase classname="_/spec/controllers/master_files_controller_spec_rb" name="MasterFilesController#destroy should be deleted should no longer exist" time="2.211505"/>
+  <testcase classname="_/spec/controllers/master_files_controller_spec_rb" name="MasterFilesController#destroy should stop processing in Matterhorn should no longer be in the Matterhorn pipeline" time="0.000060">
+    <skipped/>
+  </testcase>
+  <testcase classname="_/spec/controllers/master_files_controller_spec_rb" name="MasterFilesController#destroy should no longer be associated with its parent object should create then remove a file from a video object" time="2.335938"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#new should redirect to sign in page with a notice when unauthenticated" time="0.170416"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#new should redirect to home page with a notice when authenticated but unauthorized" time="0.037790"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#new Default permissions should be applied should be editable by the creator" time="43.365080"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#new Default permissions should be applied should inherit default permissions" time="0.871335"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#edit should redirect to sign in page with a notice on when unauthenticated" time="0.788718"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#edit should redirect to show page with a notice when authenticated but unauthorized" time="0.804560"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#edit should redirect to first workflow step if authorized to edit" time="2.285444"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#edit Updating the metadata should result in valid input should ignore the PID if provided as a parameter" time="0.000070">
+    <skipped/>
+  </testcase>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#edit Updating the metadata should result in valid input should ignore invalid attributes" time="0.000104">
+    <skipped/>
+  </testcase>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#edit Updating the metadata should result in valid input should be able to retrieve an existing record from Fedora" time="1.048992"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#show Known items should be retrievable should be accesible by its PID" time="1.169041"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#show Known items should be retrievable should return an error if the PID does not exist" time="0.044611"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#show Known items should be retrievable should be available to an archivist when unpublished" time="1.546803"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#show Known items should be retrievable should provide a JSON stream description to the client" time="3.414758"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#show Items should not be available to unauthorized users should not be available when unpublished" time="1.569071"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#destroy should remove the MediaObject from the system" time="1.798655"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#destroy should not be accessible through the search interface" time="1.582465">
+    <skipped/>
+  </testcase>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#destroy should not be possible to delete an object which does not exist" time="0.629381">
+    <skipped/>
+  </testcase>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#update_status publishes media object" time="2.694306"/>
+  <testcase classname="_/spec/controllers/media_objects_controller_spec_rb" name="MediaObjectsController#update_status unpublishes media object" time="3.234825"/>
+  <testcase classname="_/spec/lib/hydrant/batch_ingest_spec_rb" name="Hydrant::Batch creates an ingest batch object" time="1.638676"/>
+  <testcase classname="_/spec/lib/hydrant/batch_ingest_spec_rb" name="Hydrant::Batch does not create an ingest batch object when there are zero packages" time="0.004178"/>
+  <testcase classname="_/spec/mailers/ingest_batch_mailer_spec_rb" name="Batch Ingest Email has an error if media object has not been set" time="0.689452"/>
+  <testcase classname="_/spec/mailers/ingest_batch_mailer_spec_rb" name="Batch Ingest Email has an error if there are no media objects present" time="0.030971"/>
+  <testcase classname="_/spec/mailers/ingest_batch_mailer_spec_rb" name="Batch Ingest Email shows the title of one media object" time="46.386476"/>
+  <testcase classname="_/spec/mailers/ingest_batch_mailer_spec_rb" name="Batch Ingest Email has the status of the master file in a first row" time="3.508387"/>
+  <testcase classname="_/spec/models/comments_spec_rb" name="Comment should validate if all fields are entered correctly" time="0.004278"/>
+  <testcase classname="_/spec/models/comments_spec_rb" name="Comment should fail if the name is missing" time="0.005541"/>
+  <testcase classname="_/spec/models/comments_spec_rb" name="Comment Subject should fail if there is no subject" time="0.003905"/>
+  <testcase classname="_/spec/models/comments_spec_rb" name="Comment Subject should fail if the subject is not in the list" time="0.003837"/>
+  <testcase classname="_/spec/models/comments_spec_rb" name="Comment Comments should fail if there is no comment" time="0.004233"/>
+  <testcase classname="_/spec/models/comments_spec_rb" name="Comment Comments should strip out any unsafe HTML" time="0.008840"/>
+  <testcase classname="_/spec/models/comments_spec_rb" name="Comment Email validation should warn if the addresses do not match" time="0.003805"/>
+  <testcase classname="_/spec/models/comments_spec_rb" name="Comment Email validation should warn if an address is invalid" time="0.003737"/>
+  <testcase classname="_/spec/models/comments_spec_rb" name="Comment Email validation should have matching email addresses" time="0.003044"/>
+  <testcase classname="_/spec/models/comments_spec_rb" name="Comment Captcha should fail if a captcha value is entered" time="0.004902"/>
+  <testcase classname="_/spec/models/derivative_spec_rb" name="Derivative masterfile should set relationships on self and masterfile" time="0.908845"/>
+  <testcase classname="_/spec/models/ingest_batch_spec_rb" name="IngestBatch persists media object ids" time="0.122762"/>
+  <testcase classname="_/spec/models/ingest_batch_spec_rb" name="IngestBatch#finished? returns true when all the master files are finished" time="0.437104"/>
+  <testcase classname="_/spec/models/ingest_batch_spec_rb" name="IngestBatch#finished? returns false when one or more master files are not finished" time="0.001511">
+    <skipped/>
+  </testcase>
+  <testcase classname="_/spec/models/ingest_batch_spec_rb" name="IngestBatch#media_objects returns an empty array if media_object_ids is nil" time="0.002010"/>
+  <testcase classname="_/spec/models/ingest_batch_spec_rb" name="IngestBatch#media_objects returns an array of media objects based on ids passed in" time="5.861636"/>
+  <testcase classname="_/spec/models/ingest_batch_spec_rb" name="IngestBatch#email_sent? returns true if email_sent is true" time="0.001713"/>
+  <testcase classname="_/spec/models/ingest_batch_spec_rb" name="IngestBatch#email_sent? returns false if email_sent is false" time="0.001380"/>
+  <testcase classname="_/spec/models/master_file_spec_rb" name="MasterFile masterfiles= should set hasDerivation relationships on self" time="0.812086"/>
+  <testcase classname="_/spec/models/master_file_spec_rb" name="MasterFile#finished_processing? classifying statuses returns true for stopped" time="0.004969"/>
+  <testcase classname="_/spec/models/master_file_spec_rb" name="MasterFile#finished_processing? classifying statuses returns true for succeeded" time="0.004691"/>
+  <testcase classname="_/spec/models/master_file_spec_rb" name="MasterFile#finished_processing? classifying statuses returns true for failed" time="0.004431"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject Required metadata is present should have no errors on creator if creator present" time="0.007149"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject Required metadata is present should have no errors on title if title present" time="0.006324"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject Required metadata is present should have no errors on date_issued if date_issued present" time="0.009916"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject Required metadata is present should have errors if requied fields are missing" time="0.008947"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject Required metadata is present should have errors if required fields are empty" time="0.009337"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject Field persistence should reject unknown fields" time="0.000279">
+    <skipped/>
+  </testcase>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject Field persistence should update the contributors field" time="1.187063"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject Field persistence should support multiple contributors" time="1.500467"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject Field persistence should support multiple publishers" time="1.476682"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject Valid formats should only accept ISO formatted dates" time="0.000075">
+    <skipped/>
+  </testcase>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject access should set access level to public" time="0.017273"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject access should set access level to restricted" time="0.011495"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject access should set access level to private" time="0.008696"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject access should return public" time="0.014931"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject access should return restricted" time="0.012177"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject access should return private" time="0.132846"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject discovery should default to discoverable" time="0.097127"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject discovery should set hidden?" time="0.207156"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject Ingest status should default to unpublished" time="0.003816"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject Ingest status should be published when the item is visible" time="0.004577"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject Ingest status should recognize the current step" time="0.004363"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject Ingest status should default to the first workflow step" time="0.003375"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject change additional read permisions should be able to have limited access" time="0.000053">
+    <skipped/>
+  </testcase>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject change additional read permisions should not add duplicated group" time="0.152241"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject#finished_processing? returns true if the statuses indicate processing is finished" time="0.008308"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject#finished_processing? returns true if the statuses indicate processing is not finished" time="0.008746"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject#calculate_duration returns zero if there are zero master files" time="0.002806"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject#calculate_duration returns the correct duration with two master files" time="0.008680"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject#calculate_duration returns the correct duration with two master files one nil" time="0.008222"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject#calculate_duration returns the correct duration with one master file that is nil" time="0.006549"/>
+  <testcase classname="_/spec/models/media_object_spec_rb" name="MediaObject#populate_duration! sets duration on the model" time="0.004323"/>
+  <testcase classname="_/spec/models/stream_token_spec_rb" name="StreamToken add some examples to (or delete) /home/cureo/hydrant/spec/models/stream_token_spec.rb" time="0.000055">
+    <skipped/>
+  </testcase>
+  <testcase classname="_/spec/models/user_spec_rb" name="User Ability should have an ability" time="0.560873"/>
+  <testcase classname="_/spec/models/user_spec_rb" name="User Ability should not be able to read any MediaObject" time="0.479122"/>
+  <testcase classname="_/spec/models/user_spec_rb" name="User Ability should not be able to read authorized, unpublished MediaObject" time="0.563326"/>
+  <testcase classname="_/spec/models/user_spec_rb" name="User Ability should be able to read authorized, published MediaObject" time="0.970232"/>
+</testsuite>

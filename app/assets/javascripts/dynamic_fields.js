@@ -22,5 +22,5 @@
       var controls = $('.controls.dynamic').append(DynamicFields.add_input_html);
     },
 
-    add_input_html: '<span class="add-dynamic-field"><i class="icon-plus-sign"></i></span>'
+    add_input_html: '<span class="add-dynamic-field"><i class="icon-plus"></i></span>'
   }

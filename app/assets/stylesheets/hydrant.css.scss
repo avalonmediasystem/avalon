@@ -254,3 +254,12 @@ label {
 #groups-ex, #users-ex { 
   position: relative 
 }
+
+/**
+ * Make the plus icon controls appear like a button
+ */
+.add-dynamic-field {
+  font-size: 125%;
+  vertical-align: center;
+  cursor: pointer
+}
