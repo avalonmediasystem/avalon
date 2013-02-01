@@ -46,13 +46,10 @@
 	</table>
 <% end %>
 
-<div class="row-fluid">
-  <div class="span12">
-    <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |vid| %>
-      <%= render "workflow_buttons", form: vid %>
-    <% end %>		
-  </div>
-</div>
+
+<%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
+  <%= render "workflow_buttons", form: media %>
+<% end %>	
 
 <% content_for :page_scripts do %>
   <script>

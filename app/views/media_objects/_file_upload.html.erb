@@ -1,5 +1,3 @@
-<% content_for(:page_styles) { stylesheet_link_tag "jasny-bootstrap.min", media: "all" } %>
-<% content_for(:page_scripts) { javascript_include_tag "bootstrap-fileupload" } %>
 
 <h2>Manage file(s)</h2>
 <% unless @masterFiles.empty? %>
@@ -118,15 +116,16 @@
 </section>
 
 
-<div class="row-fluid">
-  <div class="span12">
-    <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |vid| %>
-      <%= render "workflow_buttons", form: vid %>
-    <% end %>		
-  </div>
-</div>
+<%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
+  <%= render "workflow_buttons", locals: { form: media } %>
+<% end %>		
+
+<% content_for :page_styles do %>
+  <%= stylesheet_link_tag "jasny-bootstrap.min", media: "all" %>
+<% end %>
 
 <% content_for :page_scripts do %>
+  <%= javascript_include_tag "bootstrap-fileupload" %>
   <script>
     /* Hide the alert dialog on the page loading if Javascript is enabled */
     <% unless flash[:upload] %>$('#upload_format').hide();<% end %>

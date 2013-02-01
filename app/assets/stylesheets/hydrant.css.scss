@@ -233,3 +233,24 @@ label {
     text-decoration: none;
   }
 }
+
+/*
+ * Pulling this out of the page so it is easier to maintain. Inline CSS is 
+ * *bad*!
+ */
+.overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  z-index: 2;
+  background-color: white;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+  filter: alpha(opacity=50);
+  opacity: 0.5;
+}
+      
+#groups-ex, #users-ex { 
+  position: relative 
+}
