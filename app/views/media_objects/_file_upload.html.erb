@@ -117,7 +117,7 @@
 
 
 <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
-  <%= render "workflow_buttons", locals: { form: media } %>
+  <%= render "workflow_buttons", form: media %>
 <% end %>		
 
 <% content_for :page_styles do %>
