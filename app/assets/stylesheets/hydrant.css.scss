@@ -210,6 +210,7 @@ div#dropbox_modal {
   color: $black;  
   padding: $paddingLarge;
   margin-bottom: $baseLineHeight/2;
+  cursor: help;
 
   @include border-radius($baseBorderRadius);
 
@@ -253,4 +254,13 @@ label {
       
 #groups-ex, #users-ex { 
   position: relative 
+}
+
+/**
+ * Make the plus icon controls appear like a button
+ */
+.add-dynamic-field {
+  font-size: 125%;
+  vertical-align: center;
+  cursor: pointer
 }
