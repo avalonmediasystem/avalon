@@ -11,7 +11,7 @@
     <%= vid.fieldset 'Item discovery' do %>
     <%= label_tag :hidden do %>
       <%= vid.check_box :hidden? %>
-      Hide this item in search results 
+      Hide this item from search results 
     <% end %>
   <% end %>
     
@@ -21,22 +21,22 @@
 
     <%= label_tag :access do %>
     <%= radio_button_tag :access, 'public', (@mediaobject.access == 'public') %>
-      This resource should be accessible to the general public without having to register
+      Available to the general public
     <% end %>
 
     <%= label_tag :access do %>
     <%= radio_button_tag :access, 'restricted', (@mediaobject.access == 'restricted') %>
-      Only registered users should have access to this resource
+      Authenticated users only
     <% end %>
 
     <%= label_tag :access do %>
     <%= radio_button_tag :access, 'private', (@mediaobject.access == 'private') %>
-      Only I should be able to see this resource
+      Archivists only
     <% end %>
     
     <%= label_tag :access do %>
     <%= radio_button_tag :access, 'limited', (@mediaobject.access == 'limited') %>
-      Limit access to these users and groups  
+      Limit access to
     <% end %>
  
     <div id="groups-ex" class="span5">
@@ -126,7 +126,5 @@
     });
     
     $("#access_public, #access_restricted, #access_private").change(function() { $(".overlay").show(); });
-
-    //$("#new_group");
   </script>
 <% end %>

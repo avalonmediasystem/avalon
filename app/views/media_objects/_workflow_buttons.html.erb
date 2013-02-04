@@ -1,6 +1,6 @@
 <div class="form-actions">
-  <%= submit_tag 'Save', class: "btn btn-success" %>
+  <%= submit_tag 'Save', name: 'save', class: "btn btn-success" %>
 
   <%= hidden_field_tag :step, @active_step %>
-  <%= form.submit "Save and continue", class: 'btn btn-primary' %>
+  <%= form.submit "Save and continue", name: 'save_and_continue', class: 'btn btn-primary' %>
 </div>
