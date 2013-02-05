@@ -25,7 +25,7 @@ module Hydrant
           logger.debug "<< Processing package #{index} >>"
 
           media_objects = []
-          email_address = package.manifest.email || Hydrant::Configuration['dropbox']['notification_email_address']
+          email_address = package.manifest.email || Hydrant::Configuration['email']['notification']
           
           package.process do |fields, files, opts|
             # Creates and processes MasterFiles

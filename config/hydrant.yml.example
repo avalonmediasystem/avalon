@@ -10,6 +10,10 @@ development:
     baseApplication: 'avalon'
   mediainfo:
     path: '/usr/local/bin/mediainfo'
+  email:
+    comments: 'avalon-comments@example.edu'
+    notification: 'avalon-notifications@example.edu'
+    support: 'avalon-support@example.edu'
 test:
   dropbox:
     path: '/srv/avalon/dropbox/'
@@ -22,3 +26,7 @@ test:
     baseApplication: 'avalon'
   mediainfo:
     path: '/usr/local/bin/mediainfo'
+  email:
+    comments: 'avalon-comments@example.edu'
+    notification: 'avalon-notifications@example.edu'
+    support: 'avalon-support@example.edu'

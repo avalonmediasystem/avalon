@@ -22,7 +22,7 @@ class CommentsController < ApplicationController
 			  logger.warn "The mail server does not appear to be responding"
 			  logger.warn e
 			  
-			  flash[:notice] = "The message could not be sent in a timely fashion. Contact us at <....@indiana.edu> to report the problem."
+			  flash[:notice] = "The message could not be sent in a timely fashion. Contact us at #{Hydrant::Configuration['email']['support']} to report the problem."
 			  render action: "index"
 			end
 		else

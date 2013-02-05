@@ -1,5 +1,5 @@
 class CommentsMailer < ActionMailer::Base
-  default :to => "vovcomment@dlib.indiana.edu"
+  default :to => Hydrant::Configuration['email']['comments']
   
   def contact_email(comment)
     @comment = comment
