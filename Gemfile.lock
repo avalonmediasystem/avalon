@@ -53,7 +53,7 @@ GIT
 
 GIT
   remote: https://github.com/variations-on-video/hydrant-workflow.git
-  revision: acbafb4a54bf791457eabf67995fce96b8ec5ac9
+  revision: 872c0d246aac514d38c34f93611cea66b3cb3493
   specs:
     hydrant-workflow (0.0.2a)
 
