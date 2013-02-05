@@ -17,9 +17,10 @@ class MediaObject < ActiveFedora::Base
   
   # Before saving put the pieces into the right order and validate to make sure that
   # there are no syntactic errors
-  before_save 'descMetadata.ensure_identifier_exists!', prepend: true
-  before_save 'descMetadata.update_change_date!', prepend: true
-  before_save 'descMetadata.reorder_elements!', prepend: true
+  before_save 'descMetadata.ensure_identifier_exists!'
+  before_save 'set_media_types!'
+  before_save 'descMetadata.update_change_date!'
+  before_save 'descMetadata.reorder_elements!'
   
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
@@ -299,6 +300,16 @@ class MediaObject < ActiveFedora::Base
         descMetadata.send("#{metadata_attribute}=", values)
       end
     end
+  end
+
+  def set_media_types!
+    resource_type_names = { 
+      'audio' => 'sound recording',
+      'video' => 'moving image'
+    }
+    mime_types = parts.collect { |mf| Rack::Mime.mime_type(File.extname(mf.file_location)) }.compact.uniq
+    resource_types = mime_types.collect { |mime| resource_type_names[mime.split('/').first] }.compact.uniq
+    descMetadata.update_values([:physical_description, :internet_media_type] => mime_types, [:resource_type] => resource_types)
   end
   
   def to_solr(solr_doc = Hash.new, opts = {})

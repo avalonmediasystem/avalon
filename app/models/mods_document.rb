@@ -143,7 +143,6 @@ class ModsDocument < ActiveFedora::NokogiriDatastream
     builder = Nokogiri::XML::Builder.new do |xml|
     xml.mods("xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "xmlns"=>"http://www.loc.gov/mods/v3",
         "xsi:schemaLocation"=>"http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd") {
-      xml.typeOfResource('moving image')
       xml.originInfo
       xml.physicalDescription
       xml.recordInfo {
