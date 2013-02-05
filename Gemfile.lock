@@ -53,7 +53,7 @@ GIT
 
 GIT
   remote: https://github.com/variations-on-video/hydrant-workflow.git
-  revision: 687f72e953cdb0019ac9b9a8f2e2bb9173d92733
+  revision: 9413b4e1c3b64cdaeb515906b14bf534e2121662
   specs:
     hydrant-workflow (0.0.2a)
 
@@ -141,7 +141,7 @@ GEM
     bootstrap-sass (2.2.2.0)
       sass (~> 3.2)
     builder (3.0.4)
-    cancan (1.6.8)
+    cancan (1.6.9)
     capistrano (2.12.0)
       highline
       net-scp (>= 1.0.0)
@@ -391,7 +391,7 @@ GEM
       rspec-core (~> 2.12.0)
       rspec-expectations (~> 2.12.0)
       rspec-mocks (~> 2.12.0)
-    rspec_junit_formatter (0.1.5)
+    rspec_junit_formatter (0.1.6)
       builder
       rspec (~> 2.0)
       rspec-core (!= 2.12.0)
