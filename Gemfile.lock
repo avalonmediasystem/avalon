@@ -46,14 +46,14 @@ GIT
 
 GIT
   remote: https://github.com/variations-on-video/hydrant-engage.git
-  revision: a61c10eca3b7371cec0a69b82afc5c78992801e2
+  revision: 9d79af2ef720097cd47ebefafbbe074623dd9583
   specs:
     hydrant-engage (0.0.1)
       less-rails (~> 2.2.3)
 
 GIT
   remote: https://github.com/variations-on-video/hydrant-workflow.git
-  revision: ac75d5dc221412f5d7d7d8aace68518bec9f9307
+  revision: 687f72e953cdb0019ac9b9a8f2e2bb9173d92733
   specs:
     hydrant-workflow (0.0.2a)
 
@@ -71,7 +71,7 @@ GIT
 
 GIT
   remote: https://github.com/variations-on-video/twitter_bootstrap_form_for.git
-  revision: 4268432d4da912004551dad5d56e05e0a7d88af6
+  revision: eff5f50fdb19670a942ae87189e804bcb044409c
   branch: bootstrap-2.0
   specs:
     twitter_bootstrap_form_for (2.0.1.0.rc2)
@@ -126,7 +126,7 @@ GEM
       gyoku (>= 0.4.0)
       nokogiri (>= 1.4.0)
     arel (3.0.2)
-    backports (2.7.1)
+    backports (2.8.2)
     bcrypt-ruby (3.0.1)
     blacklight (4.0.1)
       bootstrap-sass (~> 2.2.0)
@@ -155,9 +155,8 @@ GEM
       rack-test (>= 0.5.4)
       selenium-webdriver (~> 2.0)
       xpath (~> 1.0.0)
-    childprocess (0.3.6)
+    childprocess (0.3.7)
       ffi (~> 1.0, >= 1.0.6)
-    choice (0.1.6)
     chronic (0.9.0)
     chronic_duration (0.9.6)
       numerizer (~> 0.1.1)
@@ -182,21 +181,21 @@ GEM
       compass (>= 0.11.1)
     daemons (1.1.9)
     database_cleaner (0.9.1)
-    debugger (1.2.4)
+    debugger (1.3.0)
       columnize (>= 0.3.1)
       debugger-linecache (~> 1.1.1)
       debugger-ruby_core_source (~> 1.1.7)
     debugger-linecache (1.1.2)
       debugger-ruby_core_source (>= 1.1.1)
     debugger-ruby_core_source (1.1.7)
-    delayed_job (3.0.4)
+    delayed_job (3.0.5)
       activesupport (~> 3.0)
     delayed_job_active_record (0.3.3)
       activerecord (>= 2.1.0, < 4)
       delayed_job (~> 3.0)
     deprecation (0.0.5)
       activesupport
-    devise (2.2.2)
+    devise (2.2.3)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
       railties (~> 3.1)
@@ -210,35 +209,26 @@ GEM
     erubis (2.7.0)
     execjs (1.4.0)
       multi_json (~> 1.0)
-    factory_girl (4.1.0)
+    factory_girl (4.2.0)
       activesupport (>= 3.0.0)
-    factory_girl_rails (4.1.0)
-      factory_girl (~> 4.1.0)
+    factory_girl_rails (4.2.0)
+      factory_girl (~> 4.2.0)
       railties (>= 3.0.0)
-    faraday (0.8.4)
-      multipart-post (~> 1.1)
     fastercsv (1.5.5)
     ffi (1.3.1)
     font-awesome-sass-rails (3.0.0.1)
       railties (>= 3.1.1)
       sass-rails (>= 3.1.1)
-    fssm (0.2.9)
-    google-spreadsheet-ruby (0.3.1)
-      google_drive (>= 0.3.0)
-    google_drive (0.3.3)
-      nokogiri (>= 1.4.4, != 1.5.2, != 1.5.1)
-      oauth (>= 0.3.6)
-      oauth2 (>= 0.5.0)
+    fssm (0.2.10)
     gyoku (1.0.0)
       builder (>= 2.1.2)
     haml (3.1.7)
     hashie (1.2.0)
-    headless (0.3.1)
+    headless (1.0.0)
     highline (1.6.15)
     hike (1.2.1)
     hooks (0.2.2)
-    httpauth (0.2.0)
-    httpi (2.0.0)
+    httpi (2.0.2)
       rack
     hydra-access-controls (5.0.1)
       active-fedora
@@ -276,8 +266,6 @@ GEM
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
     json (1.7.6)
-    jwt (0.1.5)
-      multi_json (>= 1.0)
     kaminari (0.14.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -292,7 +280,6 @@ GEM
     letter_opener (1.0.0)
       launchy (>= 2.0.4)
     libv8 (3.3.10.4)
-    log4r (1.1.10)
     logger (1.2.8)
     loofah (1.2.1)
       nokogiri (>= 1.4.4)
@@ -304,7 +291,7 @@ GEM
     mediainfo (0.7.2)
     mediashelf-loggable (0.4.9)
     method_source (0.8.1)
-    mime-types (1.19)
+    mime-types (1.20.1)
     multi_json (1.5.0)
     multipart-post (1.1.5)
     net-http-digest_auth (1.2.1)
@@ -319,13 +306,6 @@ GEM
     nokogiri (1.5.6)
     nori (2.0.3)
     numerizer (0.1.1)
-    oauth (0.4.7)
-    oauth2 (0.8.0)
-      faraday (~> 0.8)
-      httpauth (~> 0.1)
-      jwt (~> 0.1.4)
-      multi_json (~> 1.0)
-      rack (~> 1.2)
     om (1.8.0)
       activemodel
       activesupport
@@ -355,7 +335,7 @@ GEM
     rack (1.4.4)
     rack-cache (1.2)
       rack (>= 0.4)
-    rack-ssl (1.3.2)
+    rack-ssl (1.3.3)
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
@@ -390,13 +370,10 @@ GEM
       json (~> 1.4)
     rest-client (1.6.7)
       mime-types (>= 1.16)
-    roo (1.10.1)
-      choice (>= 0.1.4)
-      google-spreadsheet-ruby (>= 0.1.5)
-      nokogiri (>= 1.5.0)
-      rubyzip (>= 0.9.4)
+    roo (1.10.2)
+      nokogiri (>= 1.5.6)
+      rubyzip (>= 0.9.9)
       spreadsheet (> 0.6.4)
-      todonotes (>= 0.1.0)
     rsolr (1.0.8)
       builder (>= 2.1.2)
     rspec (2.12.0)
@@ -406,7 +383,7 @@ GEM
     rspec-core (2.12.2)
     rspec-expectations (2.12.1)
       diff-lcs (~> 1.1.3)
-    rspec-mocks (2.12.1)
+    rspec-mocks (2.12.2)
     rspec-rails (2.12.2)
       actionpack (>= 3.0)
       activesupport (>= 3.0)
@@ -440,11 +417,11 @@ GEM
       railties (~> 3.2.0)
       sass (>= 3.1.10)
       tilt (~> 1.3)
-    savon (2.0.3)
+    savon (2.1.0)
       akami (~> 1.2.0)
       builder (>= 2.1.2)
       gyoku (~> 1.0.0)
-      httpi (~> 2.0.0)
+      httpi (~> 2.0.2)
       nokogiri (>= 1.4.0)
       nori (~> 2.0.3)
       wasabi (~> 3.0.0)
@@ -465,7 +442,7 @@ GEM
       om (>= 1.5.0)
       stomp
       xml-simple
-    spreadsheet (0.7.6)
+    spreadsheet (0.7.7)
       ruby-ole (>= 1.0)
     sprockets (2.2.2)
       hike (~> 1.2)
@@ -476,10 +453,8 @@ GEM
     stomp (1.2.8)
     therubyracer (0.10.2)
       libv8 (~> 3.3.10)
-    thor (0.16.0)
+    thor (0.17.0)
     tilt (1.3.3)
-    todonotes (0.1.1)
-      log4r
     treetop (1.4.12)
       polyglot
       polyglot (>= 0.3.1)
@@ -500,7 +475,7 @@ GEM
     wasabi (3.0.0)
       httpi (~> 2.0)
       nokogiri (>= 1.4.0)
-    websocket (1.0.6)
+    websocket (1.0.7)
     whenever (0.8.2)
       activesupport (>= 2.3.4)
       chronic (>= 0.6.3)
