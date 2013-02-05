@@ -63,7 +63,7 @@ module ModsTemplates
 	  		add_child_node(ng_xml.root.add_child('<subject/>'), :name, name, type: type)
 	  	end
 	  	def add_person_subject(name, *args);     add_name_subject(name, :personal);   end
-	  	def add_corporate_subject(nam, *argse);  add_name_subject(name, :corporate);  end
+	  	def add_corporate_subject(name, *args);  add_name_subject(name, :corporate);  end
 	  	def add_occupation_subject(name, *args); add_name_subject(name, :occupation); end
 
 		  define_template :language do |xml, code, text|
@@ -93,6 +93,18 @@ module ModsTemplates
 		  			}
 		  		}
 		  	}
+		  end
+
+		  define_template :place do |xml,place_term|
+		  	xml.place {
+		  		xml.placeTerm {
+		  			xml.text(place_term)
+		  		}
+		  	}
+		  end
+
+		  def add_place_of_origin(place_term, *args)
+		  	add_child_node(find_by_terms(:origin_info), :place, place_term)
 		  end
 
 		end
