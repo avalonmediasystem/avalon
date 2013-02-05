@@ -307,7 +307,9 @@ class MediaObject < ActiveFedora::Base
       'audio' => 'sound recording',
       'video' => 'moving image'
     }
-    mime_types = parts.collect { |mf| Rack::Mime.mime_type(File.extname(mf.file_location)) }.compact.uniq
+    mime_types = parts.collect { |mf| 
+      mf.file_location.nil? ? nil : Rack::Mime.mime_type(File.extname(mf.file_location)) 
+    }.compact.uniq
     resource_types = mime_types.collect { |mime| resource_type_names[mime.split('/').first] }.compact.uniq
     descMetadata.update_values([:physical_description, :internet_media_type] => mime_types, [:resource_type] => resource_types)
   end

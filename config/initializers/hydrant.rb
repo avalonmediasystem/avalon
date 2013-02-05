@@ -8,6 +8,7 @@ require 'hydrant/dropbox'
 module Hydrant
   env = ENV['RAILS_ENV'] || 'development'
   Configuration = YAML::load(File.read(Rails.root.join('config', 'hydrant.yml')))[env]
+  ['dropbox','matterhorn','mediainfo','email'].each { |key| Configuration[key] ||= {} }
   DropboxService = Dropbox.new Hydrant::Configuration['dropbox']['path']
   begin
   	Mediainfo.path = Hydrant::Configuration['mediainfo']['path'] 
