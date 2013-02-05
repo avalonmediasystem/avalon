@@ -33,7 +33,7 @@ module ModsBehaviors
     solr_doc[:notes_display] = gather_terms(self.find_by_terms(:note))
     solr_doc[:access_display] = gather_terms(self.find_by_terms(:usage))
 #    solr_doc[:collection_display] = gather_terms(self.find_by_terms(:archival_collection))
-    solr_doc[:format_display] = gather_terms(self.find_by_terms(:media_type))
+    solr_doc[:format_display] = gather_terms(self.find_by_terms(:resource_type)).collect(&:titleize)
     solr_doc[:location_display] = gather_terms(self.find_by_terms(:geographic_subject))
 
     # Blacklight facets - these are the same facet fields used in our Blacklight app
@@ -51,7 +51,7 @@ module ModsBehaviors
     solr_doc[:subject_corporate_facet] = gather_terms(self.find_by_terms(:corporate_subject))
     solr_doc[:subject_family_facet] = gather_terms(self.find_by_terms(:family_subject))
     solr_doc[:subject_title_facet] = gather_terms(self.find_by_terms(:title_subject))
-    solr_doc[:format_facet] = gather_terms(self.find_by_terms(:media_type))
+    solr_doc[:format_facet] = gather_terms(self.find_by_terms(:resource_type)).collect(&:titleize)
     solr_doc[:location_facet] = gather_terms(self.find_by_terms(:geographic_subject))
     solr_doc[:time_facet] = gather_terms(self.find_by_terms(:temporal_subject))
 
