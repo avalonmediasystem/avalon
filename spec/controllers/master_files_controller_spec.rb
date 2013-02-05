@@ -155,7 +155,7 @@ describe MasterFilesController do
           master_file.mediaobject.save(validate:false)
           master_file.save
   
-        lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }
+        lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }.by(-1)
       end
     end
     
@@ -175,7 +175,7 @@ describe MasterFilesController do
         master_file.mediaobject.save(validate:false)
         master_file.save
           
-        lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }
+        lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }.by(-1)
         media_object.parts.should_not include master_file         
       end
     end
