@@ -10,6 +10,7 @@ class Ability
     
 		if @user_groups.include? "admin_policy_object_editor"
 		  can :manage, Admin::Group
+      can :manage, Dropbox
 		end
 	end
 
