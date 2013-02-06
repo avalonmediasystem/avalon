@@ -21,14 +21,6 @@ $(document).ready ->
     $(nodes).each (index, node) ->
       $(node).find('input[type="checkbox"]').prop 'checked', toggle_val
 
-  # when a user switches pages it should clear the checkboxes
-  # so that a user doesn't accidentally delete files that are
-  # on another page
-  # $('.dataTables_paginate').live 'page_change', ->
-  #   $('input[type="checkbox"]').prop 'checked', false
-
-  # when a user unchecks a checkbox should the select all checkbox still be selected
-
   # when a user closes the modal the checkboxes should be cleared
   $('#dropbox_modal').on 'hidden', ->
     $('input[type="checkbox"]').prop 'checked', false
