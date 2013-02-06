@@ -50,7 +50,14 @@ Hydrant::Application.routes.draw do
         put 'update_users'
       end
     end
-  end  
+  end
+
+  resources :dropbox, :only => [] do
+    collection do
+      delete :bulk_delete
+    end
+  end
+
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

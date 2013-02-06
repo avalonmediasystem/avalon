@@ -39,7 +39,7 @@ module Hydrant
       return nil if @base_directory.blank? or not Dir.exists?(@base_directory)
 
       Dir.entries(@base_directory).each do |path|
-        full_path = @base_directory + path
+        full_path = File.join( @base_directory, path)
         if File.file?( full_path ) && 
           File.extname( path ) != ".md5" && 
           id == Digest::MD5.hexdigest(full_path).to_s[1..5]
@@ -48,6 +48,17 @@ module Hydrant
       end
 
       return nil
+    end
+
+    def delete( filename )
+      full_path = File.join( @base_directory, filename )
+      begin
+        File.delete full_path
+        true
+      rescue Exception => e
+        logger.warn "Could not delete file #{filename} in #{@base_directory}: #{e}"
+        false
+      end
     end
     
     # Gets completed, uningested batch packages

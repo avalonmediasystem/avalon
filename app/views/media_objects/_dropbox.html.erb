@@ -8,6 +8,7 @@
     </div>
     <div class="modal-footer">
       <p style="clear:both">
+        <%= link_to 'Remove Selected Files', bulk_delete_dropbox_index_path, class: 'btn btn-danger pull-left remove-selected-files' %>
         <%= button_tag "Close", type: "button", class: "btn", 'data-dismiss'=>'modal' %>
         <%= submit_tag "Attach Selected Files", class: "btn", donot_advance: true %>
       </p>
