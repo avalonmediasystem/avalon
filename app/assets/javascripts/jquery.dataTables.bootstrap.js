@@ -38,7 +38,9 @@ $.extend( $.fn.dataTableExt.oPagination, {
 				e.preventDefault();
 				if ( oSettings.oApi._fnPageChange(oSettings, e.data.action) ) {
 					fnDraw( oSettings );
+					$('.dataTables_paginate').trigger('page_change');
 				}
+
 			};
 
 			$(nPaging).addClass('pagination').append(
@@ -83,7 +85,11 @@ $.extend( $.fn.dataTableExt.oPagination, {
 					$('<li '+sClass+'><a href="#">'+j+'</a></li>')
 						.insertBefore( $('li:last', an[i])[0] )
 						.bind('click', function (e) {
-							e.preventDefault();
+							
+							// because html is added and removed it's impossible to bind 
+							// to these elements on change.							
+							// $('.dataTables_paginate').trigger('page_change');
+
 							oSettings._iDisplayStart = (parseInt($('a', this).text(),10)-1) * oPaging.iLength;
 							fnDraw( oSettings );
 						} );
@@ -143,15 +149,3 @@ if ( $.fn.DataTable.TableTools ) {
 		}
 	} );
 }
-
-
-/* Table initialisation */
-$(document).ready(function() {
-	$('#example').dataTable( {
-		"sDom": "<'row'<'span6'l><'span6'f>r>t<'row'<'span6'i><'span6'p>>",
-		"sPaginationType": "bootstrap",
-		"oLanguage": {
-			"sLengthMenu": "_MENU_ records per page"
-		}
-	} );
-} );
