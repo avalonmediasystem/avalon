@@ -80,7 +80,6 @@ window.dropBoxDataTable =
       else
         $('.remove-selected-files').attr('disabled', false)
 
-
   delete_selected_files_ajax_request: ( url, filenames ) ->
     $.ajax
       type: 'delete'
