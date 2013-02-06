@@ -13,6 +13,31 @@ $(document).ready ->
       keyboard: true
     .addClass('big-modal')
 
+  # a toggle for selecting and deselecting all the items
+  # on the current page
+  $('#select_deselect_all').click ->
+    toggle_val = $(@).is(':checked') ? false : true
+    nodes = $('#file-list > tbody > tr') #data_table.fnGetNodes()
+    $(nodes).each (index, node) ->
+      $(node).find('input[type="checkbox"]').prop 'checked', toggle_val
+
+  # when a user switches pages it should clear the checkboxes
+  # so that a user doesn't accidentally delete files that are
+  # on another page
+  # $('.dataTables_paginate').live 'page_change', ->
+  #   $('input[type="checkbox"]').prop 'checked', false
+
+  # when a user unchecks a checkbox should the select all checkbox still be selected
+
+  # when a user closes the modal the checkboxes should be cleared
+  $('#dropbox_modal').on 'hidden', ->
+    $('input[type="checkbox"]').prop 'checked', false
+
+  # do an ajax request
+  $('.remove-selected-files').click (e) ->
+    e.preventDefault()
+    window.dropBoxDataTable.remove_selected_files_event(e, @.href)
+
   $.extend $.fn.dataTableExt.oSort,
     "file-size-pre": (a) ->
       mags =
@@ -30,7 +55,7 @@ $(document).ready ->
 
   $.fn.dataTableExt.oStdClasses.sSortColumn = 'sorting_ignore_'
 
-  $('#file-list').dataTable
+  window.data_table = $('#file-list').dataTable
     sDom: "<'row'<'span6'p><'span6'f>r>t>"
     sWrapper: "dataTables_wrapper form-inline"
     aaSorting: [[3, 'desc']]
@@ -40,4 +65,46 @@ $(document).ready ->
       { aTargets: [2], sType: 'file-size' }
     ]
     iDisplayLength: 8
+    page: ->
+      console.log('pagggging')
 
+window.dropBoxDataTable =
+
+  remove_selected_files_event: (event, url) ->
+    nodes = window.data_table.fnGetNodes()
+
+    # using this would select only the rows on the page viewed by the user
+    #nodes = $('#file-list > tbody > tr')
+
+    # selected filenames
+    filenames = $(nodes).map((i, node) ->
+      $(node).find('.name').text() if $(node).find('input[type=\"checkbox\"]').is ':checked'
+    )
+    if filenames.length > 0
+      $('.remove-selected-files').attr('disabled', true)
+      filenames_array = filenames.toArray()
+      if confirm("Deleted files cannot be recovered. Are you sure?\n-------------------------\n" + filenames_array.join("\n"))
+        window.dropBoxDataTable.delete_selected_files_ajax_request(url, filenames_array )
+      else
+        $('.remove-selected-files').attr('disabled', false)
+
+
+  delete_selected_files_ajax_request: ( url, filenames ) ->
+    $.ajax
+      type: 'delete'
+      _method: 'delete'
+      url: url
+      data: { filenames: filenames }
+      success: (response) ->
+        deleted_filenames = response.deleted_filenames
+        if deleted_filenames.length > 0
+          $(window.data_table.fnGetNodes()).map (index, row) ->
+            name = $(row).find("td.name").text()
+            window.data_table.fnDeleteRow( row ) if $.inArray(name, deleted_filenames ) != -1 # this doesn't return a bool (unfortunately)
+
+
+          # re-enable the submit button once the form is finished
+          $('.remove-selected-files').attr('disabled', false)
+
+          # the select all checkbox should be deselected after successfully deleting files
+          $('#select_deselect_all').prop 'checked', false
