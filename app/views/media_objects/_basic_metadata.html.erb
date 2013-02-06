@@ -28,7 +28,7 @@
   <%= render partial: 'text_area', 
              locals: {media: media, field: :abstract,
                       text_label: 'Description',
-                      options: {required: true}} %>
+                      options: {tooltip: true}} %>
 
   <%= render partial: 'text_fields',
              locals: {media: media, field: :contributor,
