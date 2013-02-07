@@ -1,4 +1,12 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  def passthru
+    begin
+      render "modules/#{params[:provider]}_auth_form"
+    rescue ActionView::MissingTemplate
+      super
+    end
+  end
+
   def after_omniauth_failure_path_for(scope)
     new_user_session_path(scope)
   end
