@@ -10,7 +10,7 @@
 	  $('.sortable').sortable({ 
 			disabled: false,
 			update: function(e, ui) {
-				var mfs = [];
+				var ordered_master_files = [];
 				/*
 				 * To provide the right order look at each row in the table and cherry
 				 * pick the segments. This is a bit faster than going through the 
@@ -20,46 +20,25 @@
 				 * For more information on using HTML5 data attributes check out
 				 * http://html5doctor.com/html5-custom-data-attributes/
 				 */
-				$(this).find('tr[data-segment]').each(function(){
-					mfs.push($(this).attr('data-segment'));
-				})
+				$(this).find('tr').each(function(){
+				  ordered_master_files.push($(this).data('segment'));
+				});
+                $('#ajax_confirmation').removeClass('hidden');
+                
 				$.ajax({
-					type: 'PUT',
-					url: post_path,
 					data: { _method: 'update', 
-					  masterfile_ids: mfs, 
+					  masterfile_ids: ordered_master_files, 
 					  step: 'structure', 
-					  donot_advance: 'true', 
 					  format: 'json' },
-				success: function(data) {
-				  $('#ajax_messages').removeClass('hidden').hide().text('Saving to the database').fadeIn(500).delay(1500).fadeOut(500);
-				}
-				})
-			}
-		});
-	  $('.sortable').disableSelection();
-		$('.sortable').css('cursor', 'move');
-
-    $('.sequence-btn').click(function(){
-      $('.sortable').sortable({ disabled: false });
-      $('.sortable').disableSelection();
-
-      toggleBtns($(this));
-    })
-      
-    $('.version-btn').click(function(){
-      $('.sortable').sortable({ disabled: true });
-      $('.sortable').css('cursor', 'auto');
-      toggleBtns($(this));
-    })
-      
-    function toggleBtns(btn) {
-      $('.btn-group .btn').removeClass('btn-success');
-      btn.addClass('btn-success');
-    }
+				    success: function(data) { 
+				      $('#ajax_confirmation').addClass('hidden') },
+ 					type: 'PUT',
+					url: post_path,
+		       })
+		   }
+	  }).disableSelection().css('cursor', 'move');
   
     $(".sortable").nestedSortable({
-      placeholder: 'dropPlaceHolder',
       forcePlaceholderSize:true,
       handle: 'div',
       helper: 'clone',
