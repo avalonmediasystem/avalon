@@ -12,7 +12,7 @@
 
 
       <div class="nav-collapse collapse">
-        <ul class="nav nav-tabs">
+        <ul class="nav">
           <li><%= link_to 'Browse', catalog_index_path(search_field: 'all_fields', utf8: '✓', q: '') %></li>
           <% if can? :create, MediaObject %>
             <li><%= link_to 'Create', new_media_object_path %></li>
