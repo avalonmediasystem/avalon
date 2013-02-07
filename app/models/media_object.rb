@@ -205,9 +205,7 @@ class MediaObject < ActiveFedora::Base
       # Preserves edit groups/users 
       g.merge! Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'edit'}]
     when :read
-      puts g.inspect
       g.merge! Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'edit'}]
-      puts g.inspect
     when :discover
       g.merge! Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'discover'}]
     end

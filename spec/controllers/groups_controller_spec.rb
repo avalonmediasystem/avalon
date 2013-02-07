@@ -33,8 +33,6 @@ describe Admin::GroupsController do
     # Cleans up
     after(:each) do
       clean_groups [test_group, test_group_new]
-
-
     end
   end
 
@@ -53,7 +51,6 @@ describe Admin::GroupsController do
     
     context "editing a group" do
       it "should redirect to sign in page with a notice on when unauthenticated" do    
-  
         get 'edit', id: test_group
         flash[:notice].should_not be_nil
         response.should redirect_to(new_user_session_path)
@@ -86,23 +83,6 @@ describe Admin::GroupsController do
 
         response.should redirect_to(edit_admin_group_path Admin::Group.find(test_group_new))
       end
-
-      # it "should be able to add resources to group when authenticated and authorized" do
-      #   login_as('policy_editor')
-      #   pid = 'hydrant:318'
-      #   load_fixture pid        
-      #   
-      #   group = Admin::Group.new
-      #   group.name = test_group
-      #   
-      #   lambda { 
-      #     post 'update', admin_group: { name: test_group, users: [], resources: [pid] }, id: test_group
-      #     logger.debug Video.find(pid).read_groups.inspect
-      #   }.should change { group.resources }
-      # 
-      #   flash[:notice].should_not be_nil
-      #   response.should redirect_to(admin_groups_path)
-      # end
     end
     
     context "Deleting a group" do

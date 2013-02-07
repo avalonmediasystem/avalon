@@ -1,7 +1,7 @@
 <%# pulled in from blacklight to add autoexpand support %>
 <ul>
-  <% if facet_field[:expanded] == true %>
-    <span class="selected"/>
+  <% if facet_field[:expanded] %>
+    <span class="selected" />
   <% end %>
   <% paginator =    
       Blacklight::Solr::FacetPaginator.new(display_facet.items,        

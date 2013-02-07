@@ -38,7 +38,6 @@ class Admin::GroupsController < ApplicationController
   def create
     @group = Admin::Group.new
     @group.name = params["admin_group"]
-    puts @group.inspect
     if @group.save
       redirect_to edit_admin_group_path(@group)
     else
