@@ -267,7 +267,9 @@ label {
 }
 
 /* UI Fixes */
-
+/* TODO at some future point
+ * Some of these need to be pushed up (like the font family overrides) into a
+ * Bootstrap theme so that we don't wind up fighting it. */
 body {
   margin-top: 0;
   padding-top: 0;
