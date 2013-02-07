@@ -12,7 +12,7 @@
         var input_template = $(this).parent().find('input:last');
 	/* By doing this we should just keep pushing the add button down as the last
 	 * element of the parent container */
-	var new_input = $(input_template).clone();
+	var new_input = $(input_template).clone().attr('value', '');
         $(input_template).after(new_input);
       });
     },
