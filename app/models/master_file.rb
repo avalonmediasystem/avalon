@@ -240,6 +240,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def determine_format(file, content_type = nil)
+    #FIXME Catch exceptions here and do something helpful like log warning and set format to unknown
     media_format = Mediainfo.new file
 
     # It appears that formats like MP4 can be caught as both audio and video
