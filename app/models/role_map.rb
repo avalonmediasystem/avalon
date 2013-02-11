@@ -39,4 +39,10 @@ module Hydra::RoleMapperBehavior::ClassMethods
     RoleMap.reset! if RoleMap.count == 0
     RoleMap.load
   end
+
+  def update
+    m = map
+    yield m
+    RoleMap.replace_with! m
+  end
 end
