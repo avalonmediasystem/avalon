@@ -293,7 +293,7 @@ header div, .logo {
   background-color: #FBB040;
   padding: .8em;
   &:after {
-    content: " \226B"
+    content: "\003e \003e"
   }
 }
 
@@ -354,7 +354,7 @@ footer .release {
   color: white;
   text-shadow: rgba(0, 0, 0, 0.1) 0px 1px 0px;
   h1, h2, h3, h4, h5, a {
-    color: white;
+    color: $white;
   }
   a:hover {
     color: #f2f6f3;
