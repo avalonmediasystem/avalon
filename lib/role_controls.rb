@@ -69,13 +69,7 @@ class RoleControls
     end
   
     def save_changes
-      doc = ""
-      RoleMapper.map.each_pair do |k, v|
-        usrarr = v.join("\r\n  - ")
-        doc += "#{k}:\r\n  - #{usrarr}\r\n"
-      end
-      
-      File.open(File.join(Rails.root, "config/role_map_#{Rails.env}.yml"), "w") {|f| f.write(doc) }
+      RoleMap.replace_with! RoleMapper.map
     end
   end
 end
