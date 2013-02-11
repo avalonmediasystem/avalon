@@ -29,9 +29,11 @@ namespace :deploy do
   end
 
   task :update_submodules, :roles => :app do
-    run "cd #{current_release}/felix; git clean -df; git checkout HEAD .; git pull origin trunk"
-    run "cd #{current_release}/red5; git clean -df; git checkout HEAD .; git pull origin master"
-    run "cd #{current_release}/jetty; git clean -df; git checkout HEAD .; git pull origin master"
+    #Make sure that the services are stopped before doing this
+    run "cd #{current_release}/felix; git clean -df .; git checkout HEAD ."
+    run "cd #{current_release}/red5; git clean -df .; git checkout HEAD ."
+    run "cd #{current_release}/jetty; git clean -df .; git checkout HEAD ."
+    run "cd #{current_release}; git submodule update"
   end
 
   task :start, :roles => :app do
@@ -55,6 +57,21 @@ namespace :deploy do
   namespace :jetty do
     task :config, :roles => :app do
       run "cd #{current_release}; rake jetty:config"
+    end
+    task :clear, :roles => :app do
+      run "cd #{current_release}/jetty; git clean -df .; git checkout HEAD ."
+    end
+  end
+
+  namespace :felix do
+    task :clear, :roles => :app do
+      run "cd #{current_release}/felix; git clean -df .; git checkout HEAD ."
+    end
+  end
+
+  namespace :red5 do
+    task :clear, :roles => :app do
+      run "cd #{current_release}/red5; git clean -df .; git checkout HEAD ."
     end
   end
 
@@ -88,7 +105,9 @@ namespace :deploy do
   end
 end
 
+before("deploy:update_submodules", "deploy:stop")
 after("deploy:update_code", "deploy:bundle:install")
+after("deploy:update_code", "deploy:update_submodules")
 after("deploy:update_code", "deploy:jetty:config")
 after("deploy:update_code", "deploy:db:setup")
 after('deploy:restart', 'unicorn:restart')
