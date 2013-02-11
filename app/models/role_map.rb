@@ -24,13 +24,17 @@ class RoleMap < ActiveRecord::Base
     roles.each { |r| r.destroy unless map.keys.include?(r.entry) }
     map.each_pair do |role, entries|
       r = self.find_or_create_by_entry_and_parent_id(role, nil)
-      existing = r.entries.collect &:entry
-      add = entries - existing
-      delete = existing - entries
-      delete.each { |e| r.entries.find_by_entry(e).destroy }
-      add.each { |e| r.entries.create :entry => e }
+      r.set_entries entries
     end
     Rails.cache.delete('RoleMapHash')
+  end
+
+  def set_entries new_entries
+    existing = entries.collect &:entry
+    add = new_entries - existing
+    delete = existing - new_entries
+    delete.each { |e| entries.find_by_entry(e).destroy }
+    add.each    { |e| entries.create :entry => e       }
   end
 end
 
