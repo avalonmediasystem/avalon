@@ -75,7 +75,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def process
-    args = {"url" => "file://" + file_location,
+    args = {"url" => URI.join("file:///", URI.escape(file_location)).to_s,
                 "title" => pid,
                 "flavor" => "presenter/source",
                 "filename" => File.basename(file_location)}
