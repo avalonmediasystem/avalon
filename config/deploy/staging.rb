@@ -4,6 +4,8 @@ server "mallorn.dlib.indiana.edu", :app, :web, :db, :primary => true
 set :deploy_env, "development"
 set :git_enable_submodules, true
 
+set :dropbox_path, "/srv/avalon/dropbox"
+
 #For capistrano to send the correct rails env to unicorn
 set :unicorn_env, "staging"
 
@@ -103,6 +105,23 @@ namespace :deploy do
       run "cd #{current_release}; rake delayed_job:restart"
     end
   end
+
+  namespace :hydrant do
+    task :load_fixtures, :roles => :app do
+      run "rm #{dropbox_path}/demo_fixtures/*.processed"
+      #XXX Do something fancy like get dropbox location from the server then scp or local fs copy the whole batch into place from source control
+#      run "rails r \"p Hydrant::Configuration['dropbox']['path']\"" do |channel, stream, data|
+#        dropbox_path = data
+#        return if dropbox_path.blank?
+#        p "Dropbox path: #{dropbox_path}"
+#
+#        #Delete old fixtures batch directory from dropbox
+#        run "rm -r #{dropbox_path}/demo_fixtures"
+#        #Copy new fixtures batch directory to dropbox
+#        run "cp -r #{current_release}/spec/fixtures/demo_fixtures #{dropbox_path}"
+#      end
+      end
+    end
 end
 
 before("deploy:update_submodules", "deploy:stop")
