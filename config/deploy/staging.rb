@@ -4,6 +4,8 @@ server "mallorn.dlib.indiana.edu", :app, :web, :db, :primary => true
 set :deploy_env, "development"
 set :git_enable_submodules, true
 
+set :dropbox_path, "/srv/avalon/dropbox"
+
 #For capistrano to send the correct rails env to unicorn
 set :unicorn_env, "staging"
 
@@ -29,9 +31,11 @@ namespace :deploy do
   end
 
   task :update_submodules, :roles => :app do
-    run "cd #{current_release}/felix; git clean -df; git checkout HEAD .; git pull origin trunk"
-    run "cd #{current_release}/red5; git clean -df; git checkout HEAD .; git pull origin master"
-    run "cd #{current_release}/jetty; git clean -df; git checkout HEAD .; git pull origin master"
+    #Make sure that the services are stopped before doing this
+    run "cd #{current_release}/felix; git clean -df .; git checkout HEAD ."
+    run "cd #{current_release}/red5; git clean -df .; git checkout HEAD ."
+    run "cd #{current_release}/jetty; git clean -df .; git checkout HEAD ."
+    run "cd #{current_release}; git submodule update"
   end
 
   task :start, :roles => :app do
@@ -55,6 +59,21 @@ namespace :deploy do
   namespace :jetty do
     task :config, :roles => :app do
       run "cd #{current_release}; rake jetty:config"
+    end
+    task :clear, :roles => :app do
+      run "cd #{current_release}/jetty; git clean -df .; git checkout HEAD ."
+    end
+  end
+
+  namespace :felix do
+    task :clear, :roles => :app do
+      run "cd #{current_release}/felix; git clean -df .; git checkout HEAD ."
+    end
+  end
+
+  namespace :red5 do
+    task :clear, :roles => :app do
+      run "cd #{current_release}/red5; git clean -df .; git checkout HEAD ."
     end
   end
 
@@ -86,9 +105,28 @@ namespace :deploy do
       run "cd #{current_release}; rake delayed_job:restart"
     end
   end
+
+  namespace :hydrant do
+    task :load_fixtures, :roles => :app do
+      run "rm #{dropbox_path}/demo_fixtures/*.processed"
+      #XXX Do something fancy like get dropbox location from the server then scp or local fs copy the whole batch into place from source control
+#      run "rails r \"p Hydrant::Configuration['dropbox']['path']\"" do |channel, stream, data|
+#        dropbox_path = data
+#        return if dropbox_path.blank?
+#        p "Dropbox path: #{dropbox_path}"
+#
+#        #Delete old fixtures batch directory from dropbox
+#        run "rm -r #{dropbox_path}/demo_fixtures"
+#        #Copy new fixtures batch directory to dropbox
+#        run "cp -r #{current_release}/spec/fixtures/demo_fixtures #{dropbox_path}"
+#      end
+      end
+    end
 end
 
+before("deploy:update_submodules", "deploy:stop")
 after("deploy:update_code", "deploy:bundle:install")
+after("deploy:update_code", "deploy:update_submodules")
 after("deploy:update_code", "deploy:jetty:config")
 after("deploy:update_code", "deploy:db:setup")
 after('deploy:restart', 'unicorn:restart')

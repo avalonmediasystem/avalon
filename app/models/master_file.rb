@@ -75,7 +75,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def process
-    args = {"url" => "file://" + file_location,
+    args = {"url" => URI.join("file:///", URI.escape(file_location)).to_s,
                 "title" => pid,
                 "flavor" => "presenter/source",
                 "filename" => File.basename(file_location)}
@@ -122,10 +122,12 @@ class MasterFile < ActiveFedora::Base
     flash = sort_streams flash
     hls = sort_streams hls
 
+    poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self) unless poster.new?
+
     # Returns the hash
     {
       label: label,
-      poster_image: poster_url,
+      poster_image: poster_path,
       mediapackage_id: mediapackage_id,
       stream_flash: flash, 
       stream_hls: hls 
@@ -240,6 +242,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def determine_format(file, content_type = nil)
+    #FIXME Catch exceptions here and do something helpful like log warning and set format to unknown
     media_format = Mediainfo.new file
 
     # It appears that formats like MP4 can be caught as both audio and video

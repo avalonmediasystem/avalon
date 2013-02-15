@@ -11,9 +11,13 @@ module Hydrant
   ['dropbox','matterhorn','mediainfo','email'].each { |key| Configuration[key] ||= {} }
   DropboxService = Dropbox.new Hydrant::Configuration['dropbox']['path']
   begin
-  	Mediainfo.path = Hydrant::Configuration['mediainfo']['path'] 
-	rescue
-	end
+    mipath = Hydrant::Configuration['mediainfo']['path']
+    unless mipath.blank? 
+      Mediainfo.path = Hydrant::Configuration['mediainfo']['path']
+    end
+  rescue
+    #TODO log some helpful error here instead of silently failing
+  end
 
   def self.matterhorn_config
   	mh_server = Configuration['matterhorn']['root'].sub(%r{/+$},'')

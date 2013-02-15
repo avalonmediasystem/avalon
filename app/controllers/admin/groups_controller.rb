@@ -56,7 +56,7 @@ class Admin::GroupsController < ApplicationController
 
     @group = Admin::Group.find(params["id"])
     @group.name = new_group_name unless new_group_name.blank?
-    @group.users << new_user unless new_user.blank?
+    @group.users += [new_user] unless new_user.blank?
     
     if @group.save
       flash[:notice] = "Successfully updated group \"#{@group.name}\""

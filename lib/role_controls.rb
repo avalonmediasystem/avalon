@@ -29,12 +29,12 @@ class RoleControls
     end 
     
     def assign_users(new_users, role)
-      RoleMapper.map[role] = new_users.reject { |u| u.blank? }
+      RoleMapper.update { |map| map[role] = new_users.reject { |u| u.blank? } }
     end
     
     def add_role(role)
       if RoleMapper.map[role].nil?
-        RoleMapper.map[role] = []
+        RoleMapper.update { |map| map[role] = [] }
       else
         raise RoleExists, "Cannot add role \"#{role}\", it already exists"
       end
@@ -44,7 +44,7 @@ class RoleControls
       if RoleMapper.map[role].nil?
         raise RoleNotExist, "Cannot remove role \"#{role}\", it does not exist"
       else
-        RoleMapper.map.delete(role)
+        RoleMapper.update { |map| map.delete(role) }
       end
     end
   
@@ -54,7 +54,7 @@ class RoleControls
       elsif !RoleMapper.map[role].include? user
         raise UserRoleExists, "Cannot remove user-role \"#{user}\" - \"#{role}\", relationship does not exist"
       else
-        RoleMapper.map[role].delete(user)
+        RoleMapper.update { |map| map[role].delete(user) }
       end
     end
   
@@ -64,18 +64,12 @@ class RoleControls
       elsif RoleMapper.map[role].include? user
         raise UserRoleExists, "Cannot add user \"#{user}\" to role \"#{role}\", relationship already exists"
       else
-        RoleMapper.map[role] << user
+        RoleMapper.update { |map| map[role] << user }
       end
     end
   
     def save_changes
-      doc = ""
-      RoleMapper.map.each_pair do |k, v|
-        usrarr = v.join("\r\n  - ")
-        doc += "#{k}:\r\n  - #{usrarr}\r\n"
-      end
-      
-      File.open(File.join(Rails.root, "config/role_map_#{Rails.env}.yml"), "w") {|f| f.write(doc) }
+      # noop!
     end
   end
 end
