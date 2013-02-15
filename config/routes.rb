@@ -23,7 +23,7 @@ Hydrant::Application.routes.draw do
       put :update_visibility
       # 'delete' has special signifigance so use 'remove' for now
       get :remove
-      get 'content/:datastream', :action => :deliver_content, :as => :inspect
+      get 'content/:datastream', :action => :deliver_content
     end
   end
   resources :master_files, except: [:show, :new, :index] do
