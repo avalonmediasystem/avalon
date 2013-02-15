@@ -6,6 +6,7 @@ class Ability
 		if @user_groups.include? "archivist"
 			can :manage, MediaObject
 			can :manage, MasterFile
+      can :inspect, MediaObject
     end
     
 		if @user_groups.include? "admin_policy_object_editor"
