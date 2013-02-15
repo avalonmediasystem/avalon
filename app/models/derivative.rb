@@ -12,35 +12,53 @@ class Derivative < ActiveFedora::Base
   # strategy is required.
   has_metadata name: "descMetadata", :type => ActiveFedora::SimpleDatastream do |d|
     d.field :location_url, :string
+    d.field :hls_url, :string
     d.field :duration, :string
     d.field :track_id, :string
   end
 
-  delegate_to 'descMetadata', [:location_url, :duration, :track_id], unique: true
+  delegate_to 'descMetadata', [:location_url, :hls_url, :duration, :track_id], unique: true
 
   has_metadata name: 'encoding', type: EncodingProfileDocument
 
   # Getting the track ID from the fragment is not great but it does reduce the number
   # of calls to Matterhorn 
   def self.create_from_master_file(masterfile, markup)
-    derivative = Derivative.create
-    derivative.track_id = markup.track_id
-    
-    matterhorn_response = Rubyhorn.client.instance_xml(masterfile.workflow_id)
-    derivative.duration = markup.duration.first
-    derivative.location_url = markup.url.first
-    derivative.encoding.mime_type = markup.mimetype.first
-    derivative.encoding.quality = markup.tags.quality.first.split('-')[1] unless markup.tags.quality.empty?
+    # Looks for an existing derivative of the same quality
+    # and adds the track URL to it
+    quality = markup.tags.quality.first.split('-')[1] unless markup.tags.quality.empty?
+    derivative = nil
+    masterfile = MasterFile.find(masterfile.pid)
+    masterfile.derivatives.each do |d|
+      derivative = d if d.encoding.quality.first == quality
+    end 
 
-    derivative.encoding.audio.audio_bitrate = markup.audio.a_bitrate.first
-    derivative.encoding.audio.audio_codec = markup.audio.a_codec.first
+    # If same quality derivative doesn't exist, create one
+    if derivative.blank?
+      puts "CREATING"
+      derivative = Derivative.create 
+      derivative.track_id = markup.track_id
+      
+      derivative.duration = markup.duration.first
+      derivative.encoding.mime_type = markup.mimetype.first
+      derivative.encoding.quality = quality 
 
-    unless markup.video.empty?
-      derivative.encoding.video.video_bitrate = markup.video.v_bitrate.first
-      derivative.encoding.video.video_codec = markup.video.v_codec.first
-      derivative.encoding.video.resolution = markup.video.resolution.first
+      derivative.encoding.audio.audio_bitrate = markup.audio.a_bitrate.first
+      derivative.encoding.audio.audio_codec = markup.audio.a_codec.first
+ 
+      unless markup.video.empty?
+        derivative.encoding.video.video_bitrate = markup.video.v_bitrate.first
+        derivative.encoding.video.video_codec = markup.video.v_codec.first
+        derivative.encoding.video.resolution = markup.video.resolution.first
+      end
     end
-    
+
+    if markup.tags.tag.include? "hls"   
+      derivative.hls_url = markup.url.first
+    else
+      derivative.location_url = markup.url.first
+    end
+
     derivative.masterfile = masterfile
     derivative.save
     
@@ -77,7 +95,9 @@ class Derivative < ActiveFedora::Base
       uri = URI.parse(location_url)
       (application, prefix, media_id, stream_id, filename, extension) = uri.path.scan(regex).flatten
       application = "avalon"
-      if (is_mobile)
+      if is_mobile && Hydrant::Configuration['matterhorn']['use_red5']
+        uri = URI.parse(hls_url)
+      elsif (is_mobile)
         application += "/audio-only" if format == 'audio'
         uri.scheme = 'http'
         uri.path = "/#{application}/#{media_id}/#{stream_id}/#{filename}.#{extension}.m3u8"
