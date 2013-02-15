@@ -122,10 +122,12 @@ class MasterFile < ActiveFedora::Base
     flash = sort_streams flash
     hls = sort_streams hls
 
+    poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self) unless poster.new?
+
     # Returns the hash
     {
       label: label,
-      poster_image: poster_url,
+      poster_image: poster_path,
       mediapackage_id: mediapackage_id,
       stream_flash: flash, 
       stream_hls: hls 
