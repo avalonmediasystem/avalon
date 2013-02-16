@@ -24,3 +24,7 @@
   <%= display_metadata('Location', @mediaobject.geographic_subject) %>
   <%= display_metadata('Collection', @mediaobject.collection) %>
 </dl>
+<% if can? :inspect, @mediaobject %>
+  <%= link_to 'View Raw Metadata', inspect_media_object_path(@mediaobject.pid, 'descMetadata'), :target => 'blank', :class => "btn btn-small btn-info" %>
+<% end %>
+
