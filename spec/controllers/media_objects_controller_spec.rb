@@ -186,4 +186,30 @@ describe MediaObjectsController, type: :controller do
       MediaObject.find('hydrant:1').published?.should be_false
     end
   end
+
+  describe "#deliver_content" do
+    it 'cannot inspect metadata anonymously' do
+      get 'deliver_content', :id => 'hydrant:1', :datastream => 'descMetadata'
+      response.response_code.should == 401
+    end
+
+    it 'cannot inspect metadata without authorization' do
+      login_as 'student'
+      get 'deliver_content', :id => 'hydrant:1', :datastream => 'descMetadata'
+      response.response_code.should == 401
+    end
+
+    it 'can inspect metadata with authorization' do
+      login_as 'content_provider'
+      get 'deliver_content', :id => 'hydrant:1', :datastream => 'descMetadata'
+      response.response_code.should == 200
+      response.body.should be_equivalent_to(MediaObject.find('hydrant:1').descMetadata.content)
+    end
+
+    it 'returns a not found error for nonexistent datastreams' do
+      login_as 'content_provider'
+      get 'deliver_content', :id => 'hydrant:1', :datastream => 'nonExistentMetadata'
+      response.response_code.should == 404
+    end
+  end
 end
