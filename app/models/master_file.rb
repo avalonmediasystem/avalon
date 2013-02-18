@@ -170,7 +170,7 @@ class MasterFile < ActiveFedora::Base
       # The media object has a duration that is the sum of all master files.
       media_object = self.mediaobject
       media_object.populate_duration!
-      media_object.save
+      media_object.save( validate: false )
     end
 
     save
