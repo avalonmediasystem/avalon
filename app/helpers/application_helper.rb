@@ -124,9 +124,14 @@ module ApplicationHelper
 
   def git_commit_info pattern="%s %s"
     begin
-      branch = `git symbolic-ref HEAD 2> /dev/null | cut -b 12-`.strip
-      commit = `git log --pretty=format:\"%h\" -1`.strip
-      pattern % [branch,commit]
+      git = ['/usr/local/bin/git','/usr/bin/git'].find { |f| File.exists?(f) }
+      if git
+        branch = `#{git} symbolic-ref HEAD 2> /dev/null | cut -b 12-`.strip
+        commit = `#{git} log --pretty=format:\"%h\" -1`.strip
+        pattern % [branch,commit]
+      else
+        ""
+      end
     rescue
       ""
     end
