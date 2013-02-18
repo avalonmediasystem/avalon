@@ -5,6 +5,9 @@
 	     <li><a href="http://www.avalonmediasystem.org">Avalon Media System Project Website</a> </li>
 	     <li><%= link_to "Contact Us", comments_path %></li>
 	   </ul>
-	   <div class="release">Release 1.0</div>
+	   <div class="release">
+	   	Release 1.0
+	   	<%= git_commit_info(" (%s %s)") if Rails.env == 'development' %>
+	   </div>
        </footer>
     </div>
