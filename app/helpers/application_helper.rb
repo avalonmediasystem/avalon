@@ -71,7 +71,7 @@ module ApplicationHelper
       item_duration = item['duration_t'].first
       if item_duration.respond_to?(:to_i)
         formatted_duration = milliseconds_to_formatted_time(item_duration.to_i)
-        label += "(#{formatted_duration})"
+        label += " (#{formatted_duration})"
       end
     end
 
@@ -108,15 +108,21 @@ module ApplicationHelper
 
   # the mediainfo gem returns duration as milliseconds
   # see attr_reader.rb line 48 in the mediainfo source
-  def milliseconds_to_formatted_time( milliseconds, format = :short )
-    if milliseconds >= 1000
-      seconds = milliseconds / 1000
-      ChronicDuration.output(seconds, :format => format)
-    else
-      'less than 1 second'
-    end
-  end
+  def milliseconds_to_formatted_time( milliseconds )
+    total_seconds = milliseconds / 1000                                     
+    hours = total_seconds / (60 * 60)
+    minutes = (total_seconds / 60) % 60
+    seconds = total_seconds % 60
 
+    output = ''
+    if hours > 0
+      output += "#{hours}:"
+    end
+
+    output += "#{minutes}:#{seconds.to_s.rjust(2,'0')}"
+    output
+  end
+  
   def link_to_add_dynamic_field( name, opts = {} )
     opts.merge!( class: 'add-dynamic-field btn btn-mini' )
     link_to name, '#', opts
