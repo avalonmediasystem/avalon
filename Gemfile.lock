@@ -53,7 +53,7 @@ GIT
 
 GIT
   remote: https://github.com/variations-on-video/hydrant-workflow.git
-  revision: 872c0d246aac514d38c34f93611cea66b3cb3493
+  revision: e6c2cb02c5b7d9dbff46244d95cd8029db63c65c
   specs:
     hydrant-workflow (0.0.2a)
 
@@ -158,8 +158,6 @@ GEM
     childprocess (0.3.7)
       ffi (~> 1.0, >= 1.0.6)
     chronic (0.9.0)
-    chronic_duration (0.9.6)
-      numerizer (~> 0.1.1)
     chunky_png (1.2.7)
     coderay (1.0.8)
     coffee-rails (3.2.2)
@@ -305,7 +303,6 @@ GEM
       net-ssh (>= 1.99.1)
     nokogiri (1.5.6)
     nori (2.0.3)
-    numerizer (0.1.1)
     om (1.8.0)
       activemodel
       activesupport
@@ -494,7 +491,6 @@ DEPENDENCIES
   capistrano (~> 2.12.0)
   capistrano-unicorn!
   capybara
-  chronic_duration
   coffee-rails (~> 3.2.1)
   compass-rails (~> 1.0.0)
   compass-susy-plugin (~> 0.9.0)
