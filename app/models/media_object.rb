@@ -98,12 +98,33 @@ class MediaObject < ActiveFedora::Base
     sds.field :duration, :string
   end
 
+  has_metadata name:'sectionsMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
+    sds.field :section_pid, :string
+  end
+
   delegate_to 'displayMetadata', [:duration], unique: true
+  delegate_to 'sectionsMetadata', [:section_pid]
 
   accepts_nested_attributes_for :parts, :allow_destroy => true
 
   def published?
     not self.avalon_publisher.blank?
+  end
+
+  def parts_with_order= masterfiles
+    new_order = []
+    masterfiles.each do |mf| 
+      new_order << mf.pid
+    end
+    self.section_pid = new_order.uniq
+  end
+
+  def parts_with_order
+    masterfiles = []
+    section_pid.each do |pid| 
+      masterfiles << MasterFile.find(pid)
+    end
+    masterfiles
   end
 
   # Sets the publication status. To unpublish an object set it to nil or

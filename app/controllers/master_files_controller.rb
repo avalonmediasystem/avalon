@@ -42,6 +42,7 @@ class MasterFilesController < ApplicationController
 
         master_file = MasterFile.new
         master_file.mediaobject = media_object
+        media_object.parts_with_order += [master_file]
         master_file.setContent(file)
         MasterFilesController.set_default_item_permissions(master_file, user_key)
  
@@ -60,6 +61,7 @@ class MasterFilesController < ApplicationController
         unless master_file.save
           flash[:errors] = "There was a problem storing the file"
         else
+          media_object.save
           master_file.process
           @master_files << master_file
         end
@@ -71,12 +73,14 @@ class MasterFilesController < ApplicationController
         file_path = Hydrant::DropboxService.find(file[:id])
         master_file = MasterFile.new
         master_file.mediaobject = media_object
+        media_object.parts_with_order += [master_file]
         master_file.setContent(File.open(file_path, 'rb'))
         MasterFilesController.set_default_item_permissions(master_file, user_key)
         
         unless master_file.save
           flash[:errors] = "There was a problem storing the file"
         else
+          media_object.save
           master_file.process
           @master_files << master_file
         end
@@ -130,6 +134,8 @@ class MasterFilesController < ApplicationController
     authorize! :edit, parent, message: "You do not have sufficient privileges to delete files"
 
     filename = master_file.label
+    media_object.parts_with_order -= [master_file]
+    media_object.save
     master_file.destroy
     
     flash[:upload] = "#{filename} has been deleted from the system"
