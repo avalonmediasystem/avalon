@@ -17,7 +17,8 @@
                       options: {required: true, tooltip: true, dynamic: true}} %>
                     
   <%= render partial: 'text_field', 
-             locals: {media: media, field: :date_issued, 
+             locals: {media: media, field: :date_issued,
+                      text_label: 'Publication date',
                       options: {tooltip: true, required: true}} %>
 
   <%= render partial: 'text_field', 
