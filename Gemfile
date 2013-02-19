@@ -48,7 +48,6 @@
   gem 'whenever', :require => false
   gem 'chronic_duration'
 
-
   gem 'equivalent-xml'
   
   group :assets, :production do
