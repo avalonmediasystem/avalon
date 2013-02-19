@@ -89,6 +89,12 @@ module ModsBehaviors
     self.record_change_date = t
   end
 
+  def ensure_physical_description_exists!
+    if find_by_terms(:physical_description).empty?
+      ng_xml.root.add_child('<physicalDescription/>')
+    end
+  end
+
   def remove_empty_nodes!
   	patterns = [
       '//mods:title[text()=""]',
