@@ -34,6 +34,7 @@ class MediaObject < ActiveFedora::Base
   validates :title, :presence_with_full_error_message => true
   validates :creator, :presence_with_full_error_message => true
   validates :date_issued, :presence_with_full_error_message => true
+  validate  :report_missing_attributes
 
   # this method returns a hash: class attribute -> metadata attribute
   # this is useful for decoupling the metdata from the view
@@ -248,7 +249,24 @@ class MediaObject < ActiveFedora::Base
     self.discover_groups.include? "nobody"
   end
 
+  def missing_attributes
+    @missing_attributes ||= {}
+  end
+
+  def report_missing_attributes
+    missing_attributes.each_pair { |a,m| errors.add a, m }
+  end
+
+  def find_metadata_attribute(attribute)
+    metadata_attribute = klass_attribute_to_metadata_attribute_map[ attribute.to_sym ]
+    if metadata_attribute.nil? and descMetadata.class.terminology.terms.has_key?(attribute.to_sym)
+      metadata_attribute = attribute.to_sym
+    end
+    metadata_attribute
+  end
+
   def update_datastream(datastream = :descMetadata, values = {})
+    missing_attributes.clear
     values.each do |k, v|
       # First remove all blank attributes in arrays
       v.keep_if { |item| not item.blank? } if v.instance_of?(Array)
@@ -283,41 +301,39 @@ class MediaObject < ActiveFedora::Base
     # class attributes should be decoupled from metadata attributes
     # class attributes are displayed in the view and posted to the server
     logger.debug "Updating #{attribute.inspect} with value #{value.inspect} and attributes #{attributes.inspect}"
-    metadata_attribute = klass_attribute_to_metadata_attribute_map[ attribute.to_sym ]
+    metadata_attribute = find_metadata_attribute(attribute)
     metadata_attribute_value = value
-    if metadata_attribute.nil? and descMetadata.class.terminology.terms.has_key?(attribute.to_sym)
-      metadata_attribute = attribute.to_sym
-    end
 
     if metadata_attribute.nil?
-      raise "Metadata attribute not found, class attribute: #{attribute}"
+      missing_attributes[attribute] = "Metadata attribute `#{attribute}' not found"
       logger.debug "Metadata attribute was nil, attribute is: #{attribute}"
-    end
-
-    values = Array(value).select { |v| not v.blank? }
-    descMetadata.find_by_terms( metadata_attribute ).each &:remove
-    if descMetadata.template_registry.has_node_type?( metadata_attribute )
-      values.each_with_index do |val, i|
-        logger.debug "<< Adding node #{metadata_attribute}[#{i}] >>"
-        logger.debug("descMetadata.add_child_node(descMetadata.ng_xml.root, #{metadata_attribute.to_sym.inspect}, #{val.inspect}, #{(attributes[i]||{}).inspect})")
-        descMetadata.add_child_node(descMetadata.ng_xml.root, metadata_attribute, val, (attributes[i]||{}))
-      end
-      #end
-    elsif descMetadata.respond_to?("add_#{metadata_attribute}")
-      values.each_with_index do |val, i|
-        logger.debug("descMetadata.add_#{metadata_attribute}(#{val.inspect}, #{attributes[i].inspect})")
-        descMetadata.send("add_#{metadata_attribute}", val, (attributes[i] || {}))
-      end;
+      return false
     else
-      # Put in a placeholder so that the inserted nodes go into the right part of the
-      # document. Afterwards take it out again - unless it does not have a template
-      # in which case this is all that needs to be done
-      if self.respond_to?("#{metadata_attribute}=")
-        logger.debug "<< Calling delegated method #{metadata_attribute} >>"
-        self.send("#{metadata_attribute}=", values)
+      values = Array(value).select { |v| not v.blank? }
+      descMetadata.find_by_terms( metadata_attribute ).each &:remove
+      if descMetadata.template_registry.has_node_type?( metadata_attribute )
+        values.each_with_index do |val, i|
+          logger.debug "<< Adding node #{metadata_attribute}[#{i}] >>"
+          logger.debug("descMetadata.add_child_node(descMetadata.ng_xml.root, #{metadata_attribute.to_sym.inspect}, #{val.inspect}, #{(attributes[i]||{}).inspect})")
+          descMetadata.add_child_node(descMetadata.ng_xml.root, metadata_attribute, val, (attributes[i]||{}))
+        end
+        #end
+      elsif descMetadata.respond_to?("add_#{metadata_attribute}")
+        values.each_with_index do |val, i|
+          logger.debug("descMetadata.add_#{metadata_attribute}(#{val.inspect}, #{attributes[i].inspect})")
+          descMetadata.send("add_#{metadata_attribute}", val, (attributes[i] || {}))
+        end;
       else
-        logger.debug "<< Calling descMetadata method #{metadata_attribute} >>"
-        descMetadata.send("#{metadata_attribute}=", values)
+        # Put in a placeholder so that the inserted nodes go into the right part of the
+        # document. Afterwards take it out again - unless it does not have a template
+        # in which case this is all that needs to be done
+        if self.respond_to?("#{metadata_attribute}=")
+          logger.debug "<< Calling delegated method #{metadata_attribute} >>"
+          self.send("#{metadata_attribute}=", values)
+        else
+          logger.debug "<< Calling descMetadata method #{metadata_attribute} >>"
+          descMetadata.send("#{metadata_attribute}=", values)
+        end
       end
     end
   end
@@ -331,6 +347,9 @@ class MediaObject < ActiveFedora::Base
       mf.file_location.nil? ? nil : Rack::Mime.mime_type(File.extname(mf.file_location)) 
     }.compact.uniq
     resource_types = mime_types.collect { |mime| resource_type_names[mime.split('/').first] }.compact.uniq
+
+    mime_types = nil if mime_types.empty?
+    resource_types = nil if resource_types.empty?
 
     descMetadata.ensure_physical_description_exists!
     descMetadata.update_values([:physical_description, :internet_media_type] => mime_types, [:resource_type] => resource_types)

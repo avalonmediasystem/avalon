@@ -38,7 +38,7 @@ GIT
 
 GIT
   remote: https://github.com/variations-on-video/hydrant-batch.git
-  revision: 1ff03272de5053ab84e2ef5a2f1235a189c8aca8
+  revision: 6b38f9012b4138870c5e9b5287d9a3cb4d5642f5
   specs:
     hydrant-batch (0.0.1)
       activesupport
@@ -330,6 +330,7 @@ GEM
       rubyntlm (~> 0.1.1)
     orm_adapter (0.4.0)
     polyglot (0.3.3)
+    posix-spawn (0.3.6)
     pry (0.9.12)
       coderay (~> 1.0.5)
       method_source (~> 0.8)

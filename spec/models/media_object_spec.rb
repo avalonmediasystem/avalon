@@ -32,6 +32,13 @@ describe MediaObject do
     end
   end
 
+  describe "Unknown metadata generates error" do
+    it "should have an error on an unknown attribute" do
+      mediaobject.update_attribute_in_metadata :foo, 'bar'
+      mediaobject.should have(1).errors_on(:foo)
+    end
+  end
+
   describe "Field persistence" do
     it "should reject unknown fields"
     it "should update the contributors field" do

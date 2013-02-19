@@ -19,6 +19,8 @@ describe Hydrant::Batch do
     # we need to remove it so can re-run the tests
     processed_status_file = 'spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx.processed'
     File.delete( processed_status_file ) if File.exists?( processed_status_file)
+    error_status_file = 'spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx.error'
+    File.delete( error_status_file ) if File.exists?( error_status_file)
     
     # this is a test environment, we don't want to kick off
     # generation jobs if possible
