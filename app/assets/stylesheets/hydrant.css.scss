@@ -176,6 +176,19 @@ tr.active-false td {
   .result-body {
     color: $gray;
   }
+
+  ul {
+    list-style-type: none;
+    
+    li {
+      color: #777;
+    }
+
+    span {
+      color: #333;
+      padding-left: .8em;
+    }
+  }
 }
 
 .big-modal {
@@ -368,3 +381,34 @@ footer .release {
   }
 }
 
+/* Search Filters & Facets */
+
+#sortAndPerPage {
+  padding: 0.4em;
+}
+.constraints-container {
+  padding: 0.4em;
+  margin-bottom: .8em;
+}
+
+.appliedFilter {
+  margin: .4em 0;
+}
+
+.appliedFilter .queryName, .appliedFilter .filterName {
+  /* ">" image */ 
+  background:none;
+  position: relative;
+  &:after {
+    content: "\003e";
+    position: absolute;
+    top: -2px;
+    right: 0px; 
+  }
+}
+
+.appliedFilter .btnRemove:active, .appliedFilter .btnRemove:focus {
+  border: 1px dotted #FFD27A;
+}
+
+#facets span.selected, .facets span.selected {color: #2A5459;}

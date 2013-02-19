@@ -37,6 +37,9 @@ $logo_image: 'VarVideo.png';
 
 // $constraint_bg_color: #E2EDFE;
 
+$constraint_bg_color: scale-color(#83aa93, $saturation: -20%, $lightness: 50%);
+$constraint_border_color: scale-color(#83aa93, $saturation: -20%, $lightness: 30%); 
+
 // $constraint_border_color: #C4DAFE;
 // $constraint_border_active_color: #FFD27A;
 
@@ -57,4 +60,3 @@ $logo_image: 'VarVideo.png';
 
 // And then this imports the base blacklight stylesheet.
 //@import 'blacklight/blacklight_base';
-
