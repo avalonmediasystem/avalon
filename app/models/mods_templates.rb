@@ -17,10 +17,42 @@ module ModsTemplates
 		  def add_title(title, attrs={}, defaults={})
 		  	add_child_node(ng_xml.root, :title_info, title, defaults.merge(attrs))
 		  end
-		  def add_main_title(title, attrs={}); 				add_title(title, attrs, primary: true);     end
+		  def add_main_title(title, attrs={}); 				add_title(title, attrs, primary: true);      end
 		  def add_alternative_title(title, attrs={}); add_title(title, attrs, type: :alternative); end
 		  def add_translated_title(title, attrs={});  add_title(title, attrs, type: :translated);  end
 		  def add_uniform_title(title, attrs={});     add_title(title, attrs, type: :uniform);     end
+
+		  define_template :origin_info_child do |xml, type, value, attributes={}|
+		  	xml.send(type, attributes) { xml.text value }
+		  end
+
+		  def get_origin_info
+		  	node = find_by_terms(:origin_info)
+		  	if node.empty?
+		  		node = ng_xml.root.add_child('<originInfo/>')
+		  	end
+		  	node
+		  end
+
+		  def add_origin_info(type, value, attrs={})
+		  	add_child_node(get_origin_info, :origin_info_child, type, value, attrs)
+		  end
+
+		  def add_publisher(value, attrs={})
+		  	add_origin_info(:publisher, value)
+		  end
+
+		  def add_date_created(value, attrs={})
+		  	add_origin_info(:dateCreated, value, { :encoding => 'edtf' })
+		  end
+
+		  def add_date_issued(value, attrs={})
+		  	add_origin_info(:dateIssued, value, { :encoding => 'edtf' })
+		  end
+
+		  def add_copyright_date(value, attrs={})
+		  	add_origin_info(:copyrightDate, value, { :encoding => 'iso8601' })
+		  end
 
 		  # Name Templates
 		  define_template :name do |xml, name, attributes|
@@ -104,7 +136,7 @@ module ModsTemplates
 		  end
 
 		  def add_place_of_origin(place_term, *args)
-		  	add_child_node(find_by_terms(:origin_info), :place, place_term)
+		  	add_child_node(get_origin_info, :place, place_term)
 		  end
 
 		end
