@@ -383,16 +383,36 @@ footer .release {
 
 /* Search Filters & Facets */
 
+.suggest {
+  font-weight: normal;
+}
+
 #sortAndPerPage {
   padding: 0.4em;
 }
+
+.css-dropdown li {
+  padding: 1px 10px;
+}
+
 .constraints-container {
   padding: 0.4em;
   margin-bottom: .8em;
 }
 
+span.constraints-label {
+  font-weight: normal;
+  margin-right: .4em;
+}
+
+.appliedParams {
+  font-size: 14px;
+}
+
 .appliedFilter {
   margin: .4em 0;
+  padding: 3px 40px 3px 0.8em;
+  border-radius: 6px;
 }
 
 .appliedFilter .queryName, .appliedFilter .filterName {
