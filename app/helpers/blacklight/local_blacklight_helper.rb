@@ -6,6 +6,14 @@ module Blacklight::LocalBlacklightHelper
     }.keys
   end
 
+  # There might be a better way to do this but the goal is to retrieve the
+  # name of the first facet group. This will be used as the link so that
+  # when the page goes responsive it collapses _all_ groups into a single
+  # dropdown to save screen real estate
+  def facet_header 
+    t('blacklight.search.facets.title')
+  end
+
   def facet_group_names
     blacklight_config.facet_fields.map {|facet,opts| opts[:group]}.uniq
   end

@@ -191,7 +191,7 @@ en:
       documents:
         counter: '%{counter}. '
       facets:
-        title: 'Limit your search'
+        title: 'Browse by'
         sort:
           count: 'Numerical Sort'
           index: 'A to Z Sort'
@@ -200,7 +200,7 @@ en:
         selected:
           remove: '[remove]'
       facets-workflow:
-        title: 'Workflow'
+        title: 'Limit to'
       filters:
         title: 'You searched for'
         label: '%{label}'
