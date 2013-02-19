@@ -82,11 +82,17 @@ module ModsBehaviors
 	end
 
   def ensure_identifier_exists!
-    self.identifier = self.pid if self.identifier.empty?
+    self.record_identifier = self.pid if self.record_identifier.empty? or self.record_identifier.join.empty?
   end
 
   def update_change_date!(t=Time.now.iso8601)
     self.record_change_date = t
+  end
+
+  def ensure_physical_description_exists!
+    if find_by_terms(:physical_description).empty?
+      ng_xml.root.add_child('<physicalDescription/>')
+    end
   end
 
   def remove_empty_nodes!
@@ -97,12 +103,15 @@ module ModsBehaviors
       '//mods:subject[count(*)=0]',
       '//mods:language[count(mods:languageTerm)=0]',
       '//mods:relatedItem[count(*)=0]',
-      '//*[namespace-uri()="http://www.loc.gov/mods/v3"][count(*|@*)=0 and text()=""]'
+      '//mods:originInfo[count(*)=0]',
+      '//mods:physicalDescription[count(*)=0]',
+      '//*[namespace-uri()="http://www.loc.gov/mods/v3"][count(*|@*|text())=0]'
   	]
 
   	patterns.each do |path|
   		self.ng_xml.xpath(path, ns).each { |node| node.remove }
   	end
+    serialize!
   end
 
   def reorder_elements!
@@ -130,7 +139,6 @@ module ModsBehaviors
       'mods:mods/*'
     ]
 
-    remove_empty_nodes!
     new_doc = self.class.blank_template
     order.each do |node|
       self.ng_xml.xpath(node, ns).each do |element|
@@ -140,6 +148,7 @@ module ModsBehaviors
     end
 
     self.ng_xml = new_doc
+    serialize!
   end
 
   private

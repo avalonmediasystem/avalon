@@ -27,7 +27,6 @@ require 'hydrant/dropbox'
        # Reloads mediaobject.parts, should use .reload when we update hydra-head 
        media = MediaObject.find(context[:mediaobject].pid)
        unless media.parts.empty?
-         media.format = media.parts.first.file_format
          media.save(validate: false)
          context[:mediaobject] = media
        end

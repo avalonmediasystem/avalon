@@ -17,10 +17,11 @@ class MediaObject < ActiveFedora::Base
   
   # Before saving put the pieces into the right order and validate to make sure that
   # there are no syntactic errors
-  before_save 'descMetadata.ensure_identifier_exists!'
   before_save 'set_media_types!'
+  before_save 'descMetadata.ensure_identifier_exists!'
   before_save 'descMetadata.update_change_date!'
   before_save 'descMetadata.reorder_elements!'
+  before_save 'descMetadata.remove_empty_nodes!'
   
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
@@ -309,6 +310,8 @@ class MediaObject < ActiveFedora::Base
       mf.file_location.nil? ? nil : Rack::Mime.mime_type(File.extname(mf.file_location)) 
     }.compact.uniq
     resource_types = mime_types.collect { |mime| resource_type_names[mime.split('/').first] }.compact.uniq
+
+    descMetadata.ensure_physical_description_exists!
     descMetadata.update_values([:physical_description, :internet_media_type] => mime_types, [:resource_type] => resource_types)
   end
   
