@@ -1,0 +1,5 @@
+%p Initial processing of your batch ingest failed:
+- @package.errors.each_pair do |row, errors|
+  %h5 Row: #{row}
+  - errors.messages.each_pair do |field, errors|
+    %p.text-error= errors.join(' ')

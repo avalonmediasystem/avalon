@@ -158,8 +158,6 @@ GEM
     childprocess (0.3.8)
       ffi (~> 1.0, >= 1.0.11)
     chronic (0.9.0)
-    chronic_duration (0.9.6)
-      numerizer (~> 0.1.1)
     chunky_png (1.2.7)
     coderay (1.0.8)
     coffee-rails (3.2.2)
@@ -310,7 +308,6 @@ GEM
       net-ssh (>= 2.6.5)
     nokogiri (1.5.6)
     nori (2.0.3)
-    numerizer (0.1.1)
     om (1.8.0)
       activemodel
       activesupport
@@ -500,7 +497,6 @@ DEPENDENCIES
   capistrano (~> 2.12.0)
   capistrano-unicorn!
   capybara
-  chronic_duration
   coffee-rails (~> 3.2.1)
   compass-rails (~> 1.0.0)
   compass-susy-plugin (~> 0.9.0)
