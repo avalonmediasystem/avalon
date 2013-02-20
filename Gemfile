@@ -11,6 +11,8 @@
 
   gem 'hydrant-workflow', git: 'https://github.com/variations-on-video/hydrant-workflow.git'
   gem 'hydrant-engage', git: "https://github.com/variations-on-video/hydrant-engage.git"
+  #gem 'hydrant-engage',
+  #  path: '~/hydrant-engage'
   gem 'hydrant-batch',
     :git => "https://github.com/variations-on-video/hydrant-batch.git"
  

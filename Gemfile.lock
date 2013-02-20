@@ -38,7 +38,7 @@ GIT
 
 GIT
   remote: https://github.com/variations-on-video/hydrant-batch.git
-  revision: 1ff03272de5053ab84e2ef5a2f1235a189c8aca8
+  revision: 6b38f9012b4138870c5e9b5287d9a3cb4d5642f5
   specs:
     hydrant-batch (0.0.1)
       activesupport
@@ -46,7 +46,7 @@ GIT
 
 GIT
   remote: https://github.com/variations-on-video/hydrant-engage.git
-  revision: 2342f3dc1fd3fc7c23fcd40535ef63e6c82a2abe
+  revision: 70927fc0c316c2d3b85a96bfe63967a091560de6
   specs:
     hydrant-engage (0.0.1)
       less-rails (~> 2.2.3)
@@ -225,7 +225,7 @@ GEM
     haml (4.0.0)
       tilt
     hashie (1.2.0)
-    headless (1.0.0)
+    headless (1.0.1)
     highline (1.6.15)
     hike (1.2.1)
     hooks (0.2.2)
@@ -426,7 +426,7 @@ GEM
       nokogiri (>= 1.4.0)
       nori (~> 2.0.3)
       wasabi (~> 3.0.0)
-    selenium-webdriver (2.29.0)
+    selenium-webdriver (2.30.0)
       childprocess (>= 0.2.5)
       multi_json (~> 1.0)
       rubyzip
