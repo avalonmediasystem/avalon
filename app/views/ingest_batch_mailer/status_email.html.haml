@@ -1,32 +1,27 @@
-%html
-  %head
-    %link{:href => "http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css", :rel => "stylesheet"}/
 
-  %body
-    .inner
-      %h2 Batch Ingest Status
+%h2 Batch Ingest Status
 
-      - if @media_objects && @media_objects.count > 0
-        - @media_objects.each do |media_object|
-          %h4= media_object.title
-          - master_files = media_object.parts
-          - if master_files.count > 0 
-            %table.master-files.table.table-striped
-              %thead
-                %th Name
-                %th % Complete
-                %th Status
-              %tbody
-                - master_files.each do |master_file|
-                  - status_code = master_file.status_code.downcase
-                  %tr
-                    %td.master-file= link_to File.basename(master_file.file_location), master_file_path(master_file)
-                    %td.percent-complete= "#{master_file.percent_complete}%"
-                    %td.status-code{ :class => "status-#{status_code}" }= status_code.titleize
-          - else
-            No files found.
-      - else
-        %h1 There was an error.  It appears no files have been submitted
+- if @media_objects && @media_objects.count > 0
+  - @media_objects.each do |media_object|
+    %h4= media_object.title
+    - master_files = media_object.parts
+    - if master_files.count > 0 
+      %table.master-files.table.table-striped
+        %thead
+          %th Name
+          %th % Complete
+          %th Status
+        %tbody
+          - master_files.each do |master_file|
+            - status_code = master_file.status_code.downcase
+            %tr
+              %td.master-file= link_to File.basename(master_file.file_location), master_file_path(master_file)
+              %td.percent-complete= "#{master_file.percent_complete}%"
+              %td.status-code{ :class => "status-#{status_code}" }= status_code.titleize
+    - else
+      No files found.
+- else
+  %h1 There was an error.  It appears no files have been submitted
 
 :css
   .status-succeeded {
