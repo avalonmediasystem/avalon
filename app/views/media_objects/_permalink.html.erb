@@ -1,8 +1,7 @@
   <div class=row-fluid">  
       <div class="span8">
-        <div id="permalink" class="alert alert-success">
-          <h4 class="alert-heading">Share resource</h4>
-          <address data-type="permalink"><%= link_to media_object_url(@mediaobject.pid) %></address>
+        <div id="permalink">
+          <address data-type="permalink"><i class="icon-share"></i> Copy link to share: <%= link_to media_object_url(@mediaobject.pid) %></address>
         </div>
       </div>
     </div>

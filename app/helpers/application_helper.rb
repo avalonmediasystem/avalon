@@ -48,15 +48,24 @@ module ApplicationHelper
     end
   end
 
+  # def display_metadata(label, value, default=nil)
+  #   return if value.blank? and default.nil?
+  #   value ||= default
+  #   sanitized_values = Array(value).collect { |v| sanitize(v.to_s.strip) }.delete_if(&:empty?)
+  #   label = label.pluralize(sanitized_values.size)
+  #   result = content_tag(:dt, label) +
+  #   content_tag(:dd) {
+  #     sanitized_values.join('; ')
+  #   }
+  # end
+
   def display_metadata(label, value, default=nil)
     return if value.blank? and default.nil?
     value ||= default
     sanitized_values = Array(value).collect { |v| sanitize(v.to_s.strip) }.delete_if(&:empty?)
     label = label.pluralize(sanitized_values.size)
-    result = content_tag(:dt, label) +
-    content_tag(:dd) {
-      sanitized_values.join('; ')
-    }
+    label_value_pair = label + ': ' + sanitized_values.join('; ')
+    result = content_tag(:li, label_value_pair)
   end
 
   #FIXME

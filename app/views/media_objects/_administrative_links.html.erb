@@ -1,7 +1,5 @@
 <% if can? :manage, @mediaobject %>
   <div class="row-fluid">
-    <div class="alert alert-info">
-      <strong>Manage Item</strong>
       <p>
         <ul class="unstyled hidden">
           <li>
@@ -19,7 +17,7 @@
         </ul>
       </p>
 
-      <div id="administrative_options">
+      <div id="administrative_options" style="margin-bottom:1em;">
         <%# If no status flag is set then the call to update_status will simply
             toggle the value. This keeps the view much cleaner by avoiding lots
             of if/then logic %>
@@ -36,7 +34,5 @@
             extra cycles are available %>
         <%= link_to 'Delete', remove_media_object_path(@mediaobject), class: 'btn btn-danger' %>
       </div>
- 
-    </div>
   </div>
 <% end %>

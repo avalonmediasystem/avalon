@@ -12,7 +12,7 @@
         <% end %>
      </div>
     
-<dl id="creation_metadata">
+<ul id="creation_metadata">
   <%= display_metadata('Main contributor', @mediaobject.creator, 'Not provided') %>
   <%= display_metadata('Date', @mediaobject.date_issued, 'Not provided') %>
   <%= display_metadata('Summary', @mediaobject.abstract, 'No summary available') %>
@@ -23,7 +23,7 @@
   <%= display_metadata('Time period', @mediaobject.temporal_subject) %>
   <%= display_metadata('Location', @mediaobject.geographic_subject) %>
   <%= display_metadata('Collection', @mediaobject.collection) %>
-</dl>
+</ul>
 <% if can? :inspect, @mediaobject %>
   <%= link_to 'View Raw Metadata', inspect_media_object_path(@mediaobject.pid, 'descMetadata'), :target => 'blank', :class => "btn btn-small btn-info" %>
 <% end %>

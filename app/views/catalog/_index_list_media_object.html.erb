@@ -1,15 +1,17 @@
 <div class="result clearfix">
-<% if can?(:read, document) then %>
-  <% unless image_for(document[:id]).nil? %>
-    <%= link_to(media_object_path(document[:id]), {class: 'result-thumbnail span2'}) do
-          image_tag image_for(document[:id])
-        end %>
-  <% else %>
-    <%= image_tag 'no_icon.png', class: 'result-thumbnail span2' %>
-  <% end %> 
-  <% else %>
-    <%= image_tag image_for(document[:id]), class: 'result-thumbnail span2' %>
-<% end %>
+  <div class="span2">
+    <% if can?(:read, document) then %>
+      <% unless image_for(document[:id]).nil? %>
+        <%= link_to(media_object_path(document[:id]), {class: 'result-thumbnail'}) do
+              image_tag image_for(document[:id])
+            end %>
+      <% else %>
+        <%= image_tag 'no_icon.png', class: 'result-thumbnail' %>
+      <% end %> 
+      <% else %>
+        <%= image_tag image_for(document[:id]), class: 'result-thumbnail' %>
+    <% end %>
+  </div>
 
 <ul class="span6 result-list">
 <% index_fields.each do |solr_fname, field| -%>
