@@ -220,6 +220,10 @@ GEM
       railties (>= 3.1.1)
       sass-rails (>= 3.1.1)
     fssm (0.2.10)
+    grit (2.5.0)
+      diff-lcs (~> 1.1)
+      mime-types (~> 1.15)
+      posix-spawn (~> 0.3.6)
     gyoku (1.0.0)
       builder (>= 2.1.2)
     haml (4.0.0)
@@ -326,6 +330,7 @@ GEM
       rubyntlm (~> 0.1.1)
     orm_adapter (0.4.0)
     polyglot (0.3.3)
+    posix-spawn (0.3.6)
     pry (0.9.12)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
@@ -509,6 +514,7 @@ DEPENDENCIES
   factory_girl_rails
   felixwrapper!
   font-awesome-sass-rails
+  grit
   haml
   headless
   hydra-head (~> 5.0.0)

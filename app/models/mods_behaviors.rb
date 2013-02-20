@@ -96,20 +96,12 @@ module ModsBehaviors
   end
 
   def remove_empty_nodes!
-  	patterns = [
-      '//mods:title[text()=""]',
-      '//mods:titleInfo[count(mods:title)=0]',
-      '//mods:name[count(mods:namePart)=0]',
-      '//mods:subject[count(*)=0]',
-      '//mods:language[count(mods:languageTerm)=0]',
-      '//mods:relatedItem[count(*)=0]',
-      '//mods:originInfo[count(*)=0]',
-      '//mods:physicalDescription[count(*)=0]',
-      '//*[namespace-uri()="http://www.loc.gov/mods/v3"][count(*|@*|text())=0]'
-  	]
+  	pattern = '//*[namespace-uri()="http://www.loc.gov/mods/v3"][count(*|@*)=0 and normalize-space(text())=""]'
 
-  	patterns.each do |path|
-  		self.ng_xml.xpath(path, ns).each { |node| node.remove }
+    empty_nodes = self.ng_xml.xpath(pattern, ns)
+  	while empty_nodes.length > 0
+  		empty_nodes.each &:remove
+      empty_nodes = self.ng_xml.xpath(pattern, ns)
   	end
     serialize!
   end

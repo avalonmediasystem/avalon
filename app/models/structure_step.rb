@@ -13,11 +13,8 @@
           # it will not return the results in the correct order
           master_files = context[:masterfile_ids].map{ |masterfile_id| MasterFile.find(masterfile_id) }
 
-          # remove the parts
-          media_object.parts.clear
-          
           # re-add the parts that are now in the right order
-          media_object.parts = master_files
+          media_object.parts_with_order = master_files
 
           media_object.save 
         end
