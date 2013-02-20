@@ -134,8 +134,8 @@ class MasterFilesController < ApplicationController
     authorize! :edit, parent, message: "You do not have sufficient privileges to delete files"
 
     filename = master_file.label
-    media_object.parts_with_order -= [master_file]
-    media_object.save
+    parent.parts_with_order -= [master_file]
+    parent.save
     master_file.destroy
     
     flash[:upload] = "#{filename} has been deleted from the system"
