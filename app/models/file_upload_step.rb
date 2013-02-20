@@ -51,7 +51,7 @@ require 'hydrant/dropbox'
             next unless not selected_part.blank?
 
             if part[:remove]
-              logger.info "<< Deleting master file #{part[:pid]} from the system >>"
+              logger.info "<< Deleting master file #{selected_part.pid} from the system >>"
               selected_part.delete
             else
               selected_part.label = part[:label]

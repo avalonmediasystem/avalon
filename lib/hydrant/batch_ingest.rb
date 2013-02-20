@@ -45,10 +45,11 @@ module Hydrant
               # changes only have to be made in one place. This may mean some
               # refactoring of the master_file_controller class eventually.
               files.each do |file_path|
-                mf = MasterFile.new
+                mf = MasterFile.create
                 mf.mediaobject = mediaobject
                 mf.setContent(File.open(file_path, 'rb'))
                 if mf.save
+                  mediaobject.save(validate: false)
                   logger.debug "<< Created and associated MasterFile #{mf.pid} >>"
                   mf.process
                 end
