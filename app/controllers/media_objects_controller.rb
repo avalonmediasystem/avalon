@@ -162,9 +162,9 @@ class MediaObjectsController < ApplicationController
 
   def load_master_files
     logger.debug "<< LOAD MASTER FILES >>"
-    logger.debug "<< #{@mediaobject.parts} >>"
+    logger.debug "<< #{@mediaobject.parts_with_order} >>"
 
-    @mediaobject.parts
+    @mediaobject.parts_with_order
   end
 
   def load_player_context

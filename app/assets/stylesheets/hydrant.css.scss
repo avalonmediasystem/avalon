@@ -176,6 +176,19 @@ tr.active-false td {
   .result-body {
     color: $gray;
   }
+
+  ul {
+    list-style-type: none;
+    
+    li {
+      color: #777;
+    }
+
+    span {
+      color: #333;
+      padding-left: .8em;
+    }
+  }
 }
 
 .big-modal {
@@ -368,3 +381,54 @@ footer .release {
   }
 }
 
+/* Search Filters & Facets */
+
+.suggest {
+  font-weight: normal;
+}
+
+#sortAndPerPage {
+  padding: 0.4em;
+}
+
+.css-dropdown li {
+  padding: 1px 10px;
+}
+
+.constraints-container {
+  padding: 0.4em;
+  margin-bottom: .8em;
+}
+
+span.constraints-label {
+  font-weight: normal;
+  margin-right: .4em;
+}
+
+.appliedParams {
+  font-size: 14px;
+}
+
+.appliedFilter {
+  margin: .4em 0;
+  padding: 3px 40px 3px 0.8em;
+  border-radius: 6px;
+}
+
+.appliedFilter .queryName, .appliedFilter .filterName {
+  /* ">" image */ 
+  background:none;
+  position: relative;
+  &:after {
+    content: "\003e";
+    position: absolute;
+    top: -2px;
+    right: 0px; 
+  }
+}
+
+.appliedFilter .btnRemove:active, .appliedFilter .btnRemove:focus {
+  border: 1px dotted #FFD27A;
+}
+
+#facets span.selected, .facets span.selected {color: #2A5459;}
