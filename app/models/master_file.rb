@@ -74,6 +74,28 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
+  alias_method :'_mediaobject=', :'mediaobject='
+
+  # This requires the MasterFile having an actual pid
+  def mediaobject=(mo)
+    # Removes existing association
+    if self.mediaobject.present?
+      self.mediaobject.parts_with_order -= [self]
+      self.mediaobject.save(validate: false)
+    end
+
+    self._mediaobject=(mo)
+    unless mo.nil?
+      mo.parts_with_order += [self]
+    end
+  end
+
+  def delete 
+    puts "DESTROY #{self}"
+    self.mediaobject = nil 
+    super
+  end
+
   def process
     args = {"url" => URI.join("file:///", URI.escape(file_location)).to_s,
                 "title" => pid,
