@@ -97,7 +97,8 @@ class MasterFile < ActiveFedora::Base
   end
 
   def process
-    args = {"url" => URI.join("file:///", URI.escape(file_location)).to_s,
+    puts URI.escape(file_location)
+    args = {"url" => "file://" + URI.escape(file_location),
                 "title" => pid,
                 "flavor" => "presenter/source",
                 "filename" => File.basename(file_location)}
@@ -108,6 +109,7 @@ class MasterFile < ActiveFedora::Base
       args['workflow'] = "hydrant"
     end
     
+    puts "ARGS: #{args}"
     m = MatterhornJobs.new
     m.send_request args
   end
