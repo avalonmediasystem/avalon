@@ -23,6 +23,6 @@ class StreamToken < ActiveRecord::Base
   end
 
   def renew!
-    self.update_attribute :expires, ( Time.now + Hydrant::Configuration['security']['stream_token_ttl'].minutes )
+    self.update_attribute :expires, ( Time.now + Hydrant::Configuration['streaming']['stream_token_ttl'].minutes )
   end
 end

@@ -11,18 +11,25 @@ module Hydrant
     "matterhorn"=>{},
     "mediainfo"=>{"path"=>"/usr/local/bin/mediainfo"},
     "email"=>{},
-    "security"=>{"stream_token_ttl"=>20}
+    "streaming"=>{
+      "server"=>:generic,
+      "rtmp_base"=>"rtmp://localhost/avalon/",
+      "http_base"=>"http://localhost:3000/streams/",
+      "stream_token_ttl"=>20
+    }
    }
 
   env = ENV['RAILS_ENV'] || 'development'
-  Configuration = DEFAULT_CONFIGURATION.merge(YAML::load(File.read(Rails.root.join('config', 'hydrant.yml')))[env])
-  ['dropbox','matterhorn','mediainfo','email'].each { |key| Configuration[key] ||= {} }
+  Configuration = DEFAULT_CONFIGURATION.deep_merge(YAML::load(File.read(Rails.root.join('config', 'hydrant.yml')))[env])
+  ['dropbox','matterhorn','mediainfo','email','streaming'].each { |key| Configuration[key] ||= {} }
   DropboxService = Dropbox.new Hydrant::Configuration['dropbox']['path']
   begin
     mipath = Hydrant::Configuration['mediainfo']['path']
     unless mipath.blank? 
       Mediainfo.path = Hydrant::Configuration['mediainfo']['path']
     end
+    url_handler_class = Hydrant::Configuration['streaming']['server'].to_s.classify
+    Derivative.url_handler = UrlHandler.const_get(url_handler_class.to_sym)
   rescue
     #TODO log some helpful error here instead of silently failing
   end

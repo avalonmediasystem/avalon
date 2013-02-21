@@ -1,6 +1,8 @@
 class Derivative < ActiveFedora::Base
   include ActiveFedora::Associations
 
+  class_attribute :url_handler
+
   belongs_to :masterfile, :class_name=>'MasterFile', :property=>:is_derivation_of
 
   # These fields do not fit neatly into the Dublin Core so until a long
@@ -78,35 +80,27 @@ class Derivative < ActiveFedora::Base
   end      
 
   def streaming_url(is_mobile=false)
-      # We need to tweak the RTMP stream to reflect the right format for AMS.
-      # That means extracting the extension from the end and placing it just
-      # after the application in the URL
+    # We need to tweak the RTMP stream to reflect the right format for AMS.
+    # That means extracting the extension from the end and placing it just
+    # after the application in the URL
 
-      # Example input: /avalon/mp4:98285a5b-603a-4a14-acc0-20e37a3514bb/b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3/MVI_0057.mp4
-      regex = %r{^
-        /(.+)             # application (avalon)
-        /(.+:)?           # prefix      (mp4:)
-        ([0-9a-f-]{36})   # media_id    (98285a5b-603a-4a14-acc0-20e37a3514bb)
-        /([0-9a-f-]{36})  # stream_id   (b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3)
-        /(.+?)            # filename    (MVI_0057)
-        (?:\.(.+))?$      # extension   (mp4)
-      }x
+    protocol = is_mobile ? 'http' : 'rtmp'
 
-      uri = URI.parse(location_url)
-      (application, prefix, media_id, stream_id, filename, extension) = uri.path.scan(regex).flatten
-      application = "avalon"
-      if is_mobile && Hydrant::Configuration['matterhorn']['use_red5']
-        uri = URI.parse(hls_url)
-      elsif (is_mobile)
-        application += "/audio-only" if format == 'audio'
-        uri.scheme = 'http'
-        uri.path = "/#{application}/#{media_id}/#{stream_id}/#{filename}.#{extension}.m3u8"
-      else
-        uri.path = "/#{application}/#{extension}:#{media_id}/#{stream_id}/#{filename}"
-      end
+    # Example input: /avalon/mp4:98285a5b-603a-4a14-acc0-20e37a3514bb/b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3/MVI_0057.mp4
+    regex = %r{^
+      /(.+)             # application (avalon)
+      /(?:(.+):)?       # prefix      (mp4:)
+      ([0-9a-f-]{36})   # media_id    (98285a5b-603a-4a14-acc0-20e37a3514bb)
+      /([0-9a-f-]{36})  # stream_id   (b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3)
+      /(.+?)            # filename    (MVI_0057)
+      (?:\.(.+))?$      # extension   (mp4)
+    }x
 
-      logger.info "Serving stream #{uri.to_s}"
-      uri.to_s
+    uri = URI.parse(location_url)
+    (application, prefix, media_id, stream_id, filename, extension) = uri.path.scan(regex).flatten
+
+    template = ERB.new(self.class.url_handler.patterns[protocol][format])
+    result = File.join(Hydrant::Configuration['streaming']["#{protocol}_base"],template.result(binding))
   end
 
   def format

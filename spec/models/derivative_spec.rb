@@ -22,4 +22,64 @@ describe Derivative do
 #      mf.relationships_are_dirty.should be true
     end
   end
+
+  describe "streaming" do
+
+    before :each do
+      @d = Derivative.new
+      @d.location_url = "rtmp://localhost/avalon/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4"
+    end
+
+    describe "generic" do
+      before :each do
+        Derivative.url_handler = UrlHandler::Generic
+      end
+
+      it "should properly create an RTMP video streaming URL" do
+        @d.encoding.video = 'true'
+        @d.streaming_url(false).should == "rtmp://localhost/avalon/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      end
+
+      it "should properly create an RTMP audio streaming URL" do
+        @d.encoding.audio = 'true'
+        @d.streaming_url(false).should == "rtmp://localhost/avalon/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      end
+
+      it "should properly create an HTTP video streaming URL" do
+        @d.encoding.video = 'true'
+        @d.streaming_url(true).should == "http://localhost:3000/streams/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4"
+      end
+
+      it "should properly create an HTTP audio streaming URL" do
+        @d.encoding.audio = 'true'
+        @d.streaming_url(true).should == "http://localhost:3000/streams/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4"
+      end
+    end
+
+    describe "adobe" do
+      before :each do
+        Derivative.url_handler = UrlHandler::Adobe
+      end
+
+      it "should properly create an RTMP video streaming URL" do
+        @d.encoding.video = 'true'
+        @d.streaming_url(false).should == "rtmp://localhost/avalon/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      end
+
+      it "should properly create an RTMP audio streaming URL" do
+        @d.encoding.audio = 'true'
+        @d.streaming_url(false).should == "rtmp://localhost/avalon/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      end
+
+      it "should properly create an HTTP video streaming URL" do
+        @d.encoding.video = 'true'
+        @d.streaming_url(true).should == "http://localhost:3000/streams/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4"
+      end
+
+      it "should properly create an HTTP audio streaming URL" do
+        @d.encoding.audio = 'true'
+        @d.streaming_url(true).should == "http://localhost:3000/streams/audio-only/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4"
+      end
+    end
+  end
 end
