@@ -15,6 +15,8 @@ development:
     comments: 'avalon-comments@example.edu'
     notification: 'avalon-notifications@example.edu'
     support: 'avalon-support@example.edu'
+  security:
+    stream_token_ttl: 20 #minutes
 test:
   dropbox:
     path: '/srv/avalon/dropbox/'
@@ -32,3 +34,5 @@ test:
     comments: 'avalon-comments@example.edu'
     notification: 'avalon-notifications@example.edu'
     support: 'avalon-support@example.edu'
+  security:
+    stream_token_ttl: 20 #minutes
