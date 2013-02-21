@@ -203,4 +203,18 @@ describe MediaObject do
       media_object.duration.should == '0'
     end
   end
+
+  describe '#publish!' do
+    let(:media_object) { MediaObject.new }
+    describe 'facet' do
+      it 'publishes' do
+        media_object.publish!('adam@adam.com')
+        media_object.to_solr[:workflow_published_facet].should == 'Published'
+      end
+      it 'unpublishes' do
+        media_object.publish!(nil)
+        media_object.to_solr[:workflow_published_facet].should == 'Unpublished'        
+      end
+    end
+  end
 end
