@@ -112,11 +112,29 @@ class MediaObject < ActiveFedora::Base
     not self.avalon_publisher.blank?
   end
 
+  # Removes one or many MasterFiles from parts_with_order
+  def parts_with_order_remove masterfiles
+    new_order = self.section_pid
+    masterfiles.each do |mf| 
+      new_order.delete mf.pid
+    end
+
+    new_parts = []
+    new_order.each do |pid|
+      new_parts << MasterFile.find(pid)
+    end
+    
+    self.parts_with_order = new_parts
+  end
+
   def parts_with_order= masterfiles
     new_order = []
     masterfiles.each do |mf| 
       new_order << mf.pid
     end
+    
+    # Workaround for a really weird bug does not allow assigning a new array of fewer elements
+    self.section_pid.count.times { self.section_pid = [""] }
     self.section_pid = new_order.uniq
   end
 

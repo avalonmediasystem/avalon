@@ -80,7 +80,8 @@ class MasterFile < ActiveFedora::Base
   def mediaobject=(mo)
     # Removes existing association
     if self.mediaobject.present?
-      self.mediaobject.parts_with_order -= [self]
+      self.mediaobject.parts_with_order_remove [self]
+      puts self.mediaobject.parts_with_order 
       self.mediaobject.save(validate: false)
     end
 
@@ -91,9 +92,9 @@ class MasterFile < ActiveFedora::Base
   end
 
   def delete 
-    puts "DESTROY #{self}"
     self.mediaobject = nil 
     super
+    self.mediaobject.save
   end
 
   def process
