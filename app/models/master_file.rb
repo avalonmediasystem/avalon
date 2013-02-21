@@ -81,8 +81,6 @@ class MasterFile < ActiveFedora::Base
     # Removes existing association
     if self.mediaobject.present?
       self.mediaobject.parts_with_order_remove [self]
-      puts self.mediaobject.parts_with_order 
-      self.mediaobject.save(validate: false)
     end
 
     self._mediaobject=(mo)
