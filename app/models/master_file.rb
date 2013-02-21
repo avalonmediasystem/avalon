@@ -90,9 +90,10 @@ class MasterFile < ActiveFedora::Base
   end
 
   def delete 
+    mo = self.mediaobject
     self.mediaobject = nil 
     super
-    self.mediaobject.save
+    mo.save
   end
 
   def process
