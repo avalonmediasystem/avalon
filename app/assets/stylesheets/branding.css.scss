@@ -4,3 +4,45 @@
  * so it is preferred over the defaults. */
 $sansFontFamily: Arial, Helvetica, sans-serif;
 
+/**
+ * If you want to override the default color scheme do so here
+ *
+ * Bootstrap provides settings for
+ * blue
+ * red
+ * green
+ * yellow
+ * orange
+ * pink
+ * purple
+ * white
+ * black
+ * gray
+ */
+$green: rgb(128, 165, 144);
+$greenLight: lighten($green, 20%);
+$greenBG: rgb(232,236,234);
+$white: rgb(255, 255, 255);
+$orange: rgb(42, 84, 69);
+$gray: rgb(51,51,51);
+
+$linkColor: #2A5459;
+
+$btnPrimaryBackground: #006dcc;
+
+$successText: #333;
+
+/* Header */
+
+$headerBackgroundColor: #e9e9e9;
+$headerTextColor: $white;
+$loginTextColor: $gray;
+$loginLinkColor: #2A5459;
+$loginLinkBackgroundColor: #FBB040;
+
+$sidebarHeaderBackgroundColor: $greenBG;
+
+/* Search Facets */
+
+$constraint_bg_color: $greenBG;
+$constraint_border_color: scale-color($greenBG, $lightness: -20%); 

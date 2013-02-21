@@ -1,9 +1,9 @@
 
-<h2>Manage file(s)</h2>
+<h3>Manage file(s)</h3>
 <% unless @masterFiles.empty? %>
 <section id="associated_files">
-      <h4>Associated files</h4>
-      <p>Update the display labels to change the information that end users will see. Changes persist once you select Update.</p>
+      <legend>Associated files</legend>
+      <p class="muted">Update the display labels to change the information that end users will see. Changes persist once you select Update.</p>
       
 	  <hr />
       <%= twitter_bootstrap_form_for @mediaobject do |file_list| %>
@@ -71,8 +71,8 @@
 
 <section id="web_upload">
   <fieldset id='uploader'>
-    <h3>Upload through the web</h3>
-    <p>Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
+    <legend>Upload through the web</legend>
+    <p class="muted">Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
 
       <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
         <input type="hidden" name="container_id" value="<%=h @mediaobject.pid %>"/>
@@ -106,10 +106,8 @@
 </section>
 
 <section id="dropbox_upload">
-  <h3 id="dropbox_modal_label">Import from a dropbox</h3>
-  <p>For large files use the dropbox location to import files. Once they have 
-  been uploaded you can open the dropbox and attach them. 
-  Attached files will be processed as soon as you continue to the next step.</p>
+  <legend id="dropbox_modal_label">Import from a dropbox</legend>
+  <p class="muted">Use the dropbox to import large files. Attach selected files after uploading. Files will be begin processing when you click Save and continue.</p>
   <p><a class="btn dropbox-trigger" href="#">Open Dropbox</a></p>
   <%= render partial: "dropbox_details" %>
   <%= render partial: 'dropbox' %>

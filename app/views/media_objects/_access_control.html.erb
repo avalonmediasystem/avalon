@@ -4,7 +4,6 @@
 
 <% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
 <h3>Access control</h3>
-<p class="whitespace">Some short blurb explaining what the point of access controls are</p>
 
 <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
   <div class="whitespace" id="default_level">
