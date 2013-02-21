@@ -11,9 +11,9 @@ module ModsBehaviors
     solr_doc[:title_display] = self.find_by_terms(:main_title).text
     solr_doc[:title_sort] = self.find_by_terms(:main_title).text
     addl_titles = [[:main_title_info, :subtitle], 
-    		:alternative_title, [:alternative_title_info, :subtitle], 
-	    	:translated_title, [:translated_title_info, :subtitle], 
-	    	:uniform_title, [:uniform_title_info, :subtitle]].collect do |addl_title| 
+        :alternative_title, [:alternative_title_info, :subtitle], 
+        :translated_title, [:translated_title_info, :subtitle], 
+        :uniform_title, [:uniform_title_info, :subtitle]].collect do |addl_title| 
       self.find_by_terms(*addl_title)
     end
     solr_doc[:title_addl_display] = gather_terms(addl_titles)
@@ -78,8 +78,8 @@ module ModsBehaviors
   end
 
   def ns
-  	{ 'mods' => 'http://www.loc.gov/mods/v3' }
-	end
+    { 'mods' => 'http://www.loc.gov/mods/v3' }
+  end
 
   def ensure_identifier_exists!
     self.record_identifier = self.pid if self.record_identifier.empty? or self.record_identifier.join.empty?
@@ -96,13 +96,14 @@ module ModsBehaviors
   end
 
   def remove_empty_nodes!
-  	pattern = '//*[namespace-uri()="http://www.loc.gov/mods/v3"][count(*|@*)=0 and normalize-space(text())=""]'
+    self.ng_xml.xpath('//mods:name[count(mods:namePart)=0]',ns).each &:remove
 
+    pattern = '//*[namespace-uri()="http://www.loc.gov/mods/v3"][count(*)=0 and normalize-space(text())=""]'
     empty_nodes = self.ng_xml.xpath(pattern, ns)
-  	while empty_nodes.length > 0
-  		empty_nodes.each &:remove
+    while empty_nodes.length > 0
+      empty_nodes.each &:remove
       empty_nodes = self.ng_xml.xpath(pattern, ns)
-  	end
+    end
     serialize!
   end
 

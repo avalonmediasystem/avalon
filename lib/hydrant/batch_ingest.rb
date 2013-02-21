@@ -90,10 +90,11 @@ module Hydrant
 
               media_objects << mediaobject
             end
-            # TODO: Send email confirming kickoff of batch
+            # send email confirming kickoff of batch
+            IngestBatchMailer.batch_ingest_validation_success( package ).deliver
           else
             package.manifest.error!
-            # TODO: Send email enumerating errors in package#errors
+            IngestBatchMailer.batch_ingest_validation_error( package ).deliver
           end
 
           # Create an ingest batch object for 
