@@ -6,7 +6,7 @@ module Hydrant
 		end
 
 		def call(env)
-			if env["PATH_INFO"].start_with?(@opts[:prefix]) and env["REQUEST_METHOD"] != 'HEAD'
+			if env["PATH_INFO"] =~ %r{#{@opts[:prefix]}.+\.m3u8$} and env["REQUEST_METHOD"] != 'HEAD'
 				mediapackage_id = env["PATH_INFO"][@opts[:prefix].length..-1].split(%r{/}).first
 				auth_env = env.dup
 				auth_path = "/authorize"
