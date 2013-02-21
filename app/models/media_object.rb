@@ -378,6 +378,7 @@ class MediaObject < ActiveFedora::Base
     solr_doc[:created_by_facet] = self.DC.creator
     solr_doc[:hidden_b] = hidden?
     solr_doc[:duration_display] = self.duration
+    solr_doc[:workflow_published_facet] = published? ? 'Published' : 'Unpublished'
     return solr_doc
   end
 
