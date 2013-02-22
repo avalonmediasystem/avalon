@@ -13,8 +13,8 @@ class Admin::Group
 
   def self.non_system_groups
     groups = all
-    if Hydrant::Configuration['groups'] && Hydrant::Configuration['groups']['non_system_groups']
-      non_system_groups = Hydrant::Configuration['groups']['non_system_groups'].map{|k,groups| groups}.flatten
+    if Avalon::Configuration['groups'] && Avalon::Configuration['groups']['non_system_groups']
+      non_system_groups = Avalon::Configuration['groups']['non_system_groups'].map{|k,groups| groups}.flatten
       groups.reject! { |g| non_system_groups.include? g.name }
     end
     groups

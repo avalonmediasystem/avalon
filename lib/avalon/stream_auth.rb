@@ -1,4 +1,4 @@
-module Hydrant
+module Avalon
 	class StreamAuth
 		def initialize(app, options={})
 			@app = app

@@ -1,1 +1,1 @@
-rvm use ruby-1.9.3@hydrant --create >/dev/null 2>&1
+rvm use ruby-1.9.3@avalon --create >/dev/null 2>&1

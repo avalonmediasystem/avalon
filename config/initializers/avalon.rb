@@ -1,13 +1,14 @@
 # Loads configuration information from the YAML file and then sets up the
-# dropbox so that it can monitor using the guard-hydrant gem
+# dropbox 
 #
 # This makes a Dropbox object accessible in the controllers to query and find
-# out what is available. See lib/hydrant/dropbox.rb for details on the API 
-require 'hydrant/dropbox'
+# out what is available. See lib/avalon/dropbox.rb for details on the API 
+require 'avalon/dropbox'
 
-module Hydrant
+module Avalon
   DEFAULT_CONFIGURATION = {
     "dropbox"=>{},
+    "fedora"=>{"namespace"=>"avalon"},
     "matterhorn"=>{},
     "mediainfo"=>{"path"=>"/usr/local/bin/mediainfo"},
     "email"=>{},
@@ -20,15 +21,15 @@ module Hydrant
    }
 
   env = ENV['RAILS_ENV'] || 'development'
-  Configuration = DEFAULT_CONFIGURATION.deep_merge(YAML::load(File.read(Rails.root.join('config', 'hydrant.yml')))[env])
+  Configuration = DEFAULT_CONFIGURATION.deep_merge(YAML::load(File.read(Rails.root.join('config', 'avalon.yml')))[env])
   ['dropbox','matterhorn','mediainfo','email','streaming'].each { |key| Configuration[key] ||= {} }
-  DropboxService = Dropbox.new Hydrant::Configuration['dropbox']['path']
+  DropboxService = Dropbox.new Avalon::Configuration['dropbox']['path']
   begin
-    mipath = Hydrant::Configuration['mediainfo']['path']
+    mipath = Avalon::Configuration['mediainfo']['path']
     unless mipath.blank? 
-      Mediainfo.path = Hydrant::Configuration['mediainfo']['path']
+      Mediainfo.path = Avalon::Configuration['mediainfo']['path']
     end
-    url_handler_class = Hydrant::Configuration['streaming']['server'].to_s.classify
+    url_handler_class = Avalon::Configuration['streaming']['server'].to_s.classify
     Derivative.url_handler = UrlHandler.const_get(url_handler_class.to_sym)
   rescue
     #TODO log some helpful error here instead of silently failing

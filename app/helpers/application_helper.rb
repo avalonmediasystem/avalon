@@ -1,6 +1,6 @@
 module ApplicationHelper
   def application_name
-    'Hydrant'
+    'Avalon'
   end
   
   def image_for(item_id)

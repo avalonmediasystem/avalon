@@ -4,4 +4,4 @@
 require File.expand_path('../config/application', __FILE__)
 require 'rake'
 
-Hydrant::Application.load_tasks
+Avalon::Application.load_tasks

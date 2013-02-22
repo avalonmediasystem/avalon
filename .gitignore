@@ -74,6 +74,6 @@ lib/tasks/cucumber.rake
 cucumber-results/
 .idea
 public/media_objects
-config/hydrant.yml
+config/avalon.yml
 /dropbox
 public/streams

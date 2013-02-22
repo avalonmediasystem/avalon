@@ -10,11 +10,11 @@ describe DropboxController do
 
     login_as_archivist 
     @temp_files = (0..20).map{|index| { name: "a_movie_#{index}.mov" } }
-    Hydrant::DropboxService.stub(:all).and_return @temp_files
+    Avalon::DropboxService.stub(:all).and_return @temp_files
   end
 
   it 'deletes video/audio files' do
-    Hydrant::DropboxService.should_receive(:delete).exactly(@temp_files.count).times
+    Avalon::DropboxService.should_receive(:delete).exactly(@temp_files.count).times
     delete :bulk_delete, { :filenames => @temp_files.map{|f| f[:name] } }
   end
 

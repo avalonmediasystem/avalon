@@ -1,4 +1,3 @@
-require 'hydrant/matterhorn_jobs'
 require 'fileutils'
 
 class MasterFile < ActiveFedora::Base
@@ -97,7 +96,6 @@ class MasterFile < ActiveFedora::Base
   end
 
   def process
-    puts URI.escape(file_location)
     args = {"url" => "file://" + URI.escape(file_location),
                 "title" => pid,
                 "flavor" => "presenter/source",
@@ -106,10 +104,9 @@ class MasterFile < ActiveFedora::Base
     if file_format == 'Sound'
       args['workflow'] = "fullaudio"
     elsif file_format == 'Moving image'
-      args['workflow'] = "hydrant"
+      args['workflow'] = "avalon"
     end
     
-    puts "ARGS: #{args}"
     m = MatterhornJobs.new
     m.send_request args
   end
@@ -286,10 +283,10 @@ class MasterFile < ActiveFedora::Base
   def saveOriginal(file, original_name)
     realpath = File.realpath(file.path)
     if !original_name.nil?
-      config_path = Hydrant::Configuration['matterhorn']['media_path']
+      config_path = Avalon::Configuration['matterhorn']['media_path']
       newpath = nil
       if !config_path.nil? and File.directory?(config_path)
-        newpath = File.join(Hydrant::Configuration['matterhorn']['media_path'], original_name)
+        newpath = File.join(Avalon::Configuration['matterhorn']['media_path'], original_name)
         FileUtils.cp(realpath, newpath)
       else
         newpath = File.join(File.dirname(realpath), original_name)

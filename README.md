@@ -10,11 +10,11 @@ Instructions on how to get a local installation of Avalon Media System installed
 * ```git submodule init```
 * ```git submodule update```
 * Install Mediainfo cli: http://mediainfo.sourceforge.net
-* Copy config/hydrant.yml.example to config/hydrant.yml and change as necessary
+* Copy config/avalon.yml.example to config/avalon.yml and change as necessary
 * ```rake db:migrate```
 * ```rake jetty:start```
 * ```rake felix:start```
 * ```rake spec```
 
 # For batch ingest:
-* rake hydrant:batch:ingest
+* rake avalon:batch:ingest

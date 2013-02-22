@@ -37,25 +37,25 @@ GIT
       mediashelf-loggable
 
 GIT
-  remote: https://github.com/variations-on-video/avalon-workflow.git
-  revision: 1c573cef34b5ac4177de0bc872de57f3a37763a9
+  remote: https://github.com/variations-on-video/avalon-batch.git
+  revision: 7ea0ae79b1db1f8301e5251c1d65fc0ee7404186
   specs:
-    avalon-workflow (0.0.2a)
-
-GIT
-  remote: https://github.com/variations-on-video/hydrant-batch.git
-  revision: 6b38f9012b4138870c5e9b5287d9a3cb4d5642f5
-  specs:
-    hydrant-batch (0.0.1)
+    avalon-batch (0.0.1)
       activesupport
       roo
 
 GIT
-  remote: https://github.com/variations-on-video/hydrant-engage.git
-  revision: 9e06f6ceb61588ad0b0414c066b841bd08519962
+  remote: https://github.com/variations-on-video/avalon-engage.git
+  revision: f2480900eb96f960d1ed1c7cd184e21375535d7d
   specs:
-    hydrant-engage (0.0.1)
+    avalon-engage (0.0.1)
       less-rails (~> 2.2.3)
+
+GIT
+  remote: https://github.com/variations-on-video/avalon-workflow.git
+  revision: 1c573cef34b5ac4177de0bc872de57f3a37763a9
+  specs:
+    avalon-workflow (0.0.2a)
 
 GIT
   remote: https://github.com/variations-on-video/rubyhorn.git
@@ -492,6 +492,8 @@ PLATFORMS
 DEPENDENCIES
   active-fedora (~> 5.0.0)
   activerecord-jdbcsqlite3-adapter
+  avalon-batch!
+  avalon-engage!
   avalon-workflow!
   blacklight (~> 4.0.0)
   builder (~> 3.0.0)
@@ -515,8 +517,6 @@ DEPENDENCIES
   haml
   headless
   hydra-head (~> 5.0.0)
-  hydrant-batch!
-  hydrant-engage!
   jdbc-sqlite3
   jettywrapper
   jquery-rails (~> 2.1.4)

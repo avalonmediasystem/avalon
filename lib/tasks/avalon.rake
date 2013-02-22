@@ -1,19 +1,19 @@
-namespace :hydrant do
+namespace :avalon do
   namespace :services do
     services = ["jetty", "felix", "delayed_job"]
-    desc "Start Hydrant's dependent services"
+    desc "Start Avalon's dependent services"
     task :start do
       services.map { |service| Rake::Task["#{service}:start"].invoke }
     end
-    desc "Stop Hydrant's dependent services"
+    desc "Stop Avalon's dependent services"
     task :stop do
       services.map { |service| Rake::Task["#{service}:stop"].invoke }
     end
-    desc "Status of Hydrant's dependent services"
+    desc "Status of Avalon's dependent services"
     task :status do
       services.map { |service| Rake::Task["#{service}:status"].invoke }
     end
-    desc "Restart Hydrant's dependent services"
+    desc "Restart Avalon's dependent services"
     task :restart do
       services.map { |service| Rake::Task["#{service}:restart"].invoke }
     end
@@ -26,11 +26,11 @@ namespace :hydrant do
    end
   end
   namespace :batch do 
-    desc "Starts Hydrant batch ingest"
+    desc "Starts Avalon batch ingest"
     task :ingest => :environment do
       # Starts the ingest process
-      require 'hydrant/batch_ingest'
-      Hydrant::Batch.ingest
+      require 'avalon/batch_ingest'
+      Avalon::Batch.ingest
     end
   end  
 end

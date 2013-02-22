@@ -1,10 +1,10 @@
 require 'net/http/digest_auth'
 require 'net/http/post/multipart'
 require 'rubyhorn'
-require 'hydrant/controller/controller_behavior'
+require 'avalon/controller/controller_behavior'
 
 class MasterFilesController < ApplicationController
-  include Hydrant::Controller::ControllerBehavior
+  include Avalon::Controller::ControllerBehavior
 
   skip_before_filter :verify_authenticity_token, :only => [:update]
   before_filter :authenticate_user!, :only => [:create]
@@ -69,7 +69,7 @@ class MasterFilesController < ApplicationController
     elsif params.has_key?(:dropbox)
       @master_files = []
       params[:dropbox].each do |file|
-        file_path = Hydrant::DropboxService.find(file[:id])
+        file_path = Avalon::DropboxService.find(file[:id])
         master_file = MasterFile.create
         master_file.mediaobject = media_object
         master_file.setContent(File.open(file_path, 'rb'))

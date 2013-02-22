@@ -1,4 +1,4 @@
-require 'hydrant/dropbox'
+require 'avalon/dropbox'
 
   class FileUploadStep < Avalon::Workflow::BasicStep
     def initialize(step = 'file-upload', 
@@ -12,7 +12,7 @@ require 'hydrant/dropbox'
     # just need to ask the dropbox if there are any files. If so load
     # them into a variable that can be referred to later
     def before_step context
-       dropbox_files = Hydrant::DropboxService.all
+       dropbox_files = Avalon::DropboxService.all
        context[:dropbox_files] = dropbox_files 
        context
     end

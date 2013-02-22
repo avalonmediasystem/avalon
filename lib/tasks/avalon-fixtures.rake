@@ -1,11 +1,11 @@
-namespace :hydrant do
+namespace :avalon do
   
-  desc "Init Hydrant configuration" 
+  desc "Init Avalon configuration" 
   task :init => [:environment] do
     # We need to just start rails so that all the models are loaded
   end
 
-  desc "Load hydrant models"
+  desc "Load avalon models"
   task :load_models do
     require "hydra-head"
 		require File.expand_path(File.dirname(__FILE__) + '../../../config/environment')
@@ -51,7 +51,7 @@ namespace :hydrant do
       end
     end
 
-    desc "Refresh default Hydrant fixtures"
+    desc "Refresh default Avalon fixtures"
     task :refresh => [:load_models, :delete, :load]
 
   end

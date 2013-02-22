@@ -1,4 +1,4 @@
-Hydrant::Application.routes.draw do
+Avalon::Application.routes.draw do
   Blacklight.add_routes(self, except: [:bookmarks, :feedback, :catalog])
 #  HydraHead.add_routes(self)
 

@@ -1,5 +1,5 @@
 require 'digest/md5'
-module Hydrant
+module Avalon
   class Dropbox
     attr_reader :base_directory 
     
@@ -63,12 +63,12 @@ module Hydrant
     
     # Gets completed, uningested batch packages
     def find_new_packages()
-      Hydrant::Batch::Package.locate(@base_directory)
+      Avalon::Batch::Package.locate(@base_directory)
     end
 
   #  protected
     def find_open_files(files)
-      Hydrant::Batch.find_open_files(files, @base_directory)
+      Avalon::Batch.find_open_files(files, @base_directory)
     end
   end
 end

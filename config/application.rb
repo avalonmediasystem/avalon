@@ -11,9 +11,8 @@ if defined?(Bundler)
   # Bundler.require(:default, :assets, Rails.env)
 end
 
-module Hydrant
+module Avalon
   class Application < Rails::Application
-    require 'hydrant/matterhorn_jobs'
     require 'rubyhorn/rest_client/ingest'
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers

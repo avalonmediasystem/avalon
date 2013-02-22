@@ -19,7 +19,7 @@ describe 'Batch Ingest Email' do
   end
 
   it 'shows the title of one media object' do
-    load_fixture 'hydrant:video-segment'
+    load_fixture 'avalon:video-segment'
     media_object = MediaObject.all.first
     ingest_batch = IngestBatch.create(media_object_ids: [media_object.id])
     @email = IngestBatchMailer.status_email(ingest_batch.id)
@@ -33,7 +33,7 @@ describe 'Batch Ingest Email' do
     media_object.update_datastream(:descMetadata, date_issued: 'January 2007')
     media_object.save
 
-    master_file = MasterFile.new(pid:'hydrant:hiking-movie')
+    master_file = MasterFile.new(pid:'avalon:hiking-movie')
     master_file.status_code =  ['STOPPED']
     master_file.file_location = 'something/granite-mountain-hike.mov'
     master_file.percent_complete = ['100']

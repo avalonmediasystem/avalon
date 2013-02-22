@@ -36,28 +36,28 @@ describe MediaObjectsController, type: :controller do
 
   describe "#edit" do
     it "should redirect to sign in page with a notice on when unauthenticated" do    
-      load_fixture 'hydrant:electronic-resource'
+      load_fixture 'avalon:electronic-resource'
 
-      get 'edit', id: 'hydrant:electronic-resource'
+      get 'edit', id: 'avalon:electronic-resource'
       flash[:notice].should_not be_nil
 
       response.should redirect_to(new_user_session_path)
     end
   
     it "should redirect to show page with a notice when authenticated but unauthorized" do
-      load_fixture 'hydrant:print-publication'
+      load_fixture 'avalon:print-publication'
       login_as('student')
       
-      get 'edit', id: 'hydrant:print-publication'
+      get 'edit', id: 'avalon:print-publication'
       flash[:notice].should_not be_nil
-      response.should redirect_to(media_object_path 'hydrant:print-publication')
+      response.should redirect_to(media_object_path 'avalon:print-publication')
     end
 
     it "should redirect to first workflow step if authorized to edit" do
-       load_fixture "hydrant:print-publication"
+       load_fixture "avalon:print-publication"
 
        login_as 'cataloger'
-       get 'edit', id: 'hydrant:print-publication'
+       get 'edit', id: 'avalon:print-publication'
        response.should be_success
        response.should render_template HYDRANT_STEPS.first.template
      end
@@ -66,13 +66,13 @@ describe MediaObjectsController, type: :controller do
       it "should ignore the PID if provided as a parameter"
       it "should ignore invalid attributes"
       it "should be able to retrieve an existing record from Fedora" do
-        load_fixture 'hydrant:video-segment'
-        mo = MediaObject.find 'hydrant:video-segment'
+        load_fixture 'avalon:video-segment'
+        mo = MediaObject.find 'avalon:video-segment'
         mo.workflow.last_completed_step = 'resource-description'
          
         # Set the task so that it can get to the resource-description step
         login_as 'cataloger'
-        get :edit, {id: 'hydrant:video-segment', step: 'resource-description'}
+        get :edit, {id: 'avalon:video-segment', step: 'resource-description'}
         response.response_code.should == 200
       end
     end
@@ -81,8 +81,8 @@ describe MediaObjectsController, type: :controller do
   describe "#show" do
     context "Known items should be retrievable" do
       it "should be accesible by its PID" do
-        load_fixture 'hydrant:video-segment'
-        get :show, id: 'hydrant:video-segment'
+        load_fixture 'avalon:video-segment'
+        get :show, id: 'avalon:video-segment'
 
         response.response_code.should == 200
       end
@@ -93,30 +93,30 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should be available to an archivist when unpublished" do
-        load_fixture 'hydrant:video-segment'
-        mo = MediaObject.find('hydrant:video-segment')
+        load_fixture 'avalon:video-segment'
+        mo = MediaObject.find('avalon:video-segment')
         mo.access = "public"
         mo.save
         
         login_as('cataloger')
-        get 'show', id: 'hydrant:video-segment'
+        get 'show', id: 'avalon:video-segment'
         response.should_not redirect_to new_user_session_path
       end
 
       it "should provide a JSON stream description to the client" do
-        fixtures = ['hydrant:video-segment',
-          'hydrant:electronic-resource',
-          'hydrant:print-publication',
-          'hydrant:musical-performance']
+        fixtures = ['avalon:video-segment',
+          'avalon:electronic-resource',
+          'avalon:print-publication',
+          'avalon:musical-performance']
         fixtures.collect { |f| load_fixture f }
         
-        mo = MediaObject.find 'hydrant:print-publication' 
+        mo = MediaObject.find 'avalon:print-publication' 
         mo.access = "public"
         mo.save
 
         mo.parts.collect { |part| 
           package_id = part.mediapackage_id 
-          get 'show', id: 'hydrant:print-publication', format: 'json', content: part.pid
+          get 'show', id: 'avalon:print-publication', format: 'json', content: part.pid
           json_obj = JSON.parse(response.body)
           json_obj['mediapackage_id'].should == part.mediapackage_id
         }
@@ -125,13 +125,13 @@ describe MediaObjectsController, type: :controller do
     
     context "Items should not be available to unauthorized users" do
       it "should not be available when unpublished" do
-        load_fixture 'hydrant:electronic-resource'
+        load_fixture 'avalon:electronic-resource'
 
-        mo = MediaObject.find 'hydrant:electronic-resource' 
+        mo = MediaObject.find 'avalon:electronic-resource' 
         mo.access = "private"
         mo.save
         
-        get 'show', id: 'hydrant:electronic-resource'
+        get 'show', id: 'avalon:electronic-resource'
         response.should redirect_to new_user_session_path
       end
     end
@@ -140,19 +140,19 @@ describe MediaObjectsController, type: :controller do
   describe "#destroy" do
     before(:each) do 
       login_as 'cataloger'
-      load_fixture 'hydrant:electronic-resource'
+      load_fixture 'avalon:electronic-resource'
     end
     
     it "should remove the MediaObject from the system" do
-      load_fixture 'hydrant:electronic-resource'
-      delete :destroy, id: 'hydrant:electronic-resource'
+      load_fixture 'avalon:electronic-resource'
+      delete :destroy, id: 'avalon:electronic-resource'
 
-      MediaObject.exists?('hydrant:electronic-resource').should == false
+      MediaObject.exists?('avalon:electronic-resource').should == false
     end
 
     it "should not be accessible through the search interface" do
-      load_fixture 'hydrant:electronic-resource'
-      delete :destroy, id: 'hydrant:electronic-resource'
+      load_fixture 'avalon:electronic-resource'
+      delete :destroy, id: 'avalon:electronic-resource'
 
       pending "Figure out how to make the right query against Solr"
     end
@@ -161,7 +161,7 @@ describe MediaObjectsController, type: :controller do
     # for the time being
     it "should not be possible to delete an object which does not exist" do
       pending "Fix access controls to stop throwing exception"
-      delete :destroy, id: 'hydrant:this-pid-is-fake'
+      delete :destroy, id: 'avalon:this-pid-is-fake'
       response.should redirect_to root_path
     end
   end
@@ -169,50 +169,50 @@ describe MediaObjectsController, type: :controller do
   describe "#update_status" do
     before(:each) do
       login_as('content_provider')
-      @media_object = MediaObject.new(pid: 'hydrant:1')
+      @media_object = MediaObject.new(pid: 'avalon:1')
       request.env["HTTP_REFERER"] = '/'
     end
 
     it 'publishes media object' do
       @media_object.save(validate: false)
-      get 'update_status', :id => 'hydrant:1', :status => 'publish'
-      MediaObject.find('hydrant:1').published?.should be_true
+      get 'update_status', :id => 'avalon:1', :status => 'publish'
+      MediaObject.find('avalon:1').published?.should be_true
     end
 
     it 'unpublishes media object' do
       @media_object.avalon_publisher = 'archivist'
       @media_object.save(validate: false)
-      get 'update_status', :id => 'hydrant:1', :status => 'unpublish' 
-      MediaObject.find('hydrant:1').published?.should be_false
+      get 'update_status', :id => 'avalon:1', :status => 'unpublish' 
+      MediaObject.find('avalon:1').published?.should be_false
     end
   end
 
   describe "#deliver_content" do
     before(:each) do
-      load_fixture 'hydrant:electronic-resource'
+      load_fixture 'avalon:electronic-resource'
     end
 
     it 'cannot inspect metadata anonymously' do
-      get 'deliver_content', :id => 'hydrant:electronic-resource', :datastream => 'descMetadata'
+      get 'deliver_content', :id => 'avalon:electronic-resource', :datastream => 'descMetadata'
       response.response_code.should == 401
     end
 
     it 'cannot inspect metadata without authorization' do
       login_as 'student'
-      get 'deliver_content', :id => 'hydrant:electronic-resource', :datastream => 'descMetadata'
+      get 'deliver_content', :id => 'avalon:electronic-resource', :datastream => 'descMetadata'
       response.response_code.should == 401
     end
 
     it 'can inspect metadata with authorization' do
       login_as 'content_provider'
-      get 'deliver_content', :id => 'hydrant:electronic-resource', :datastream => 'descMetadata'
+      get 'deliver_content', :id => 'avalon:electronic-resource', :datastream => 'descMetadata'
       response.response_code.should == 200
-      response.body.should be_equivalent_to(MediaObject.find('hydrant:electronic-resource').descMetadata.content)
+      response.body.should be_equivalent_to(MediaObject.find('avalon:electronic-resource').descMetadata.content)
     end
 
     it 'returns a not found error for nonexistent datastreams' do
       login_as 'content_provider'
-      get 'deliver_content', :id => 'hydrant:electronic-resource', :datastream => 'nonExistentMetadata'
+      get 'deliver_content', :id => 'avalon:electronic-resource', :datastream => 'nonExistentMetadata'
       response.response_code.should == 404
     end
   end

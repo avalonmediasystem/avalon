@@ -31,8 +31,8 @@
 //= require jquery.ui.nestedSortable
 
 /*
- * Place any local overrides in hydrant.js (for Blacklight, Hydra, jQuery,
+ * Place any local overrides in avalon.js (for Blacklight, Hydra, jQuery,
  * etc) 
  */
-//= require hydrant
+//= require avalon
 //= require_self

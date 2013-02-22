@@ -1,0 +1,2 @@
+class AvalonLocalFileResource < AvalonFileResource
+end

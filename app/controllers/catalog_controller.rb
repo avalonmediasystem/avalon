@@ -181,6 +181,6 @@ class CatalogController < ApplicationController
     end
   end
 
-  layout 'hydrant'
+  layout 'avalon'
 
 end 

@@ -1,14 +1,14 @@
-require 'hydrant/controller/controller_behavior'
+require 'avalon/controller/controller_behavior'
 
 class MediaObjectsController < ApplicationController 
   include Avalon::Workflow::WorkflowControllerBehavior
-  include Hydrant::Controller::ControllerBehavior
+  include Avalon::Controller::ControllerBehavior
 
   before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
   before_filter :load_player_context, only: [:show, :remove]
 
-  layout 'hydrant'
+  layout 'avalon'
 
   # Catch exceptions when you try to reference an object that doesn't exist.
   # Attempt to resolve it to a close match if one exists and offer a link to
@@ -154,7 +154,7 @@ class MediaObjectsController < ApplicationController
 
   def matterhorn_service_config
     respond_to do |format|
-      format.any(:xml, :json) { render request.format.to_sym => Hydrant.matterhorn_config }
+      format.any(:xml, :json) { render request.format.to_sym => Avalon.matterhorn_config }
     end
   end
 

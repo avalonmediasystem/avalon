@@ -39,17 +39,17 @@ namespace :deploy do
   end
 
   task :start, :roles => :app do
-    run "cd #{current_release}; rake hydrant:services:start"
+    run "cd #{current_release}; rake avalon:services:start"
   end
 
   task :stop, :roles => :app do
-    run "cd #{current_release}; rake hydrant:services:stop"
+    run "cd #{current_release}; rake avalon:services:stop"
   end
 
   desc "Restart Application"
   task :restart, :roles => :app do
-    run "cd #{current_release}; rake hydrant:services:stop"
-    run "cd #{current_release}; rake hydrant:services:start"
+    run "cd #{current_release}; rake avalon:services:stop"
+    run "cd #{current_release}; rake avalon:services:start"
   end
 
   task :quick_update, :roles => :app do
@@ -106,11 +106,11 @@ namespace :deploy do
     end
   end
 
-  namespace :hydrant do
+  namespace :avalon do
     task :load_fixtures, :roles => :app do
       run "rm #{dropbox_path}/demo_fixtures/*.processed"
       #XXX Do something fancy like get dropbox location from the server then scp or local fs copy the whole batch into place from source control
-#      run "rails r \"p Hydrant::Configuration['dropbox']['path']\"" do |channel, stream, data|
+#      run "rails r \"p Avalon::Configuration['dropbox']['path']\"" do |channel, stream, data|
 #        dropbox_path = data
 #        return if dropbox_path.blank?
 #        p "Dropbox path: #{dropbox_path}"

@@ -2,7 +2,7 @@
 @import "bootstrap";
 @import "bootstrap-responsive";
 @import "font-awesome";
-@import "blacklight_themes/hydrant";
+@import "blacklight_themes/avalon";
 @import "blacklight_themes/_facets";
 @import "blacklight_themes/_facets_responsive";
 @import "blacklight/blacklight";
@@ -17,7 +17,7 @@ body {
 /*
  * This is the default theme. You can modify many of the settings 
  * by editing your local app/assets/stylesheets/blacklight_themes/standard.css
- * require 'blacklight_themes/hydrant'         
+ * require 'blacklight_themes/avalon'         
  *
  * This is a manifest file that'll be compiled into application.css, which will include all the files
  * listed below.
@@ -38,5 +38,5 @@ body {
  *= require 'hydrant-engage'
  *= require self
 */
-@import "hydrant";
+@import "avalon";
 

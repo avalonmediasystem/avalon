@@ -1,21 +1,21 @@
 require 'iconv'
 require 'avalon/workflow/workflow_controller_behavior'
-require 'hydrant/controller/controller_behavior'
-require 'hydrant/dropbox'
+require 'avalon/controller/controller_behavior'
+require 'avalon/dropbox'
 
-module Hydrant
+module Avalon
   module Batch
 
-    include Hydrant::Controller::ControllerBehavior
+    include Avalon::Controller::ControllerBehavior
 
     def self.ingest
       # Scans dropbox for new batch packages
       logger.debug "============================================"
       logger.debug "<< Starts scanning for new batch packages >>"
       
-      #dropbox = Hydrant::Dropbox.new( Hydrant::Configuration['dropbox']['path'] )
+      #dropbox = Avalon::Dropbox.new( Avalon::Configuration['dropbox']['path'] )
 
-      new_packages = Hydrant::DropboxService.find_new_packages
+      new_packages = Avalon::DropboxService.find_new_packages
       logger.debug "<< Found #{new_packages.count} new packages >>"
 
 
@@ -25,7 +25,7 @@ module Hydrant
           logger.debug "<< Processing package #{index} >>"
 
           media_objects = []
-          email_address = package.manifest.email || Hydrant::Configuration['email']['notification']
+          email_address = package.manifest.email || Avalon::Configuration['email']['notification']
 
           package.validate do |entry|
             mo = MediaObject.new

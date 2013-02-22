@@ -10,8 +10,8 @@
   gem 'active-fedora', '~> 5.0.0'
 
   gem 'avalon-workflow', git: 'https://github.com/variations-on-video/avalon-workflow.git'
-  gem 'hydrant-engage', git: "https://github.com/variations-on-video/hydrant-engage.git"
-  gem 'hydrant-batch', git: "https://github.com/variations-on-video/hydrant-batch.git"
+  gem 'avalon-engage', git: "https://github.com/variations-on-video/avalon-engage.git"
+  gem 'avalon-batch', git: "https://github.com/variations-on-video/avalon-batch.git"
  
   platforms :jruby do
     gem 'jruby-openssl'

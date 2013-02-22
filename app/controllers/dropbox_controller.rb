@@ -9,12 +9,12 @@ class DropboxController < ApplicationController
     # failsafe for spaces that might be attached to string
     filenames = params[:filenames].map(&:strip)
 
-    dropbox_filenames = Hydrant::DropboxService.all.map{|f| f[:name] }
+    dropbox_filenames = Avalon::DropboxService.all.map{|f| f[:name] }
     deleted_filenames = []
 
     filenames.each do |filename|
       if dropbox_filenames.include?( filename )
-        if Hydrant::DropboxService.delete( filename ) 
+        if Avalon::DropboxService.delete( filename ) 
           deleted_filenames << filename
           logger.info "The user #{current_user.username} deleted #{filename} from the dropbox."
         end

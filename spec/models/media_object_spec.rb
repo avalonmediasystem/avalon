@@ -42,8 +42,8 @@ describe MediaObject do
   describe "Field persistence" do
     it "should reject unknown fields"
     it "should update the contributors field" do
-      load_fixture 'hydrant:electronic-resource'
-      mediaobject = MediaObject.find 'hydrant:electronic-resource'
+      load_fixture 'avalon:electronic-resource'
+      mediaobject = MediaObject.find 'avalon:electronic-resource'
       mediaobject.update_attribute_in_metadata :contributor, 'Updated contributor'
       mediaobject.save
 
@@ -52,8 +52,8 @@ describe MediaObject do
     end
 
     it "should support multiple contributors" do
-      load_fixture 'hydrant:print-publication'
-      mediaobject = MediaObject.find 'hydrant:print-publication'
+      load_fixture 'avalon:print-publication'
+      mediaobject = MediaObject.find 'avalon:print-publication'
       mediaobject.contributor = ['Chris Colvard', 'Phuong Dinh', 'Michael Klein', 
         'Nathan Rogers']
       mediaobject.save
@@ -61,8 +61,8 @@ describe MediaObject do
     end
 
     it "should support multiple publishers" do
-      load_fixture 'hydrant:video-segment'
-      mediaobject = MediaObject.find 'hydrant:video-segment'
+      load_fixture 'avalon:video-segment'
+      mediaobject = MediaObject.find 'avalon:video-segment'
       mediaobject.publisher.length.should == 1
       
       mediaobject.publisher = ['Indiana University', 'Northwestern University',

@@ -5,7 +5,7 @@ describe MasterFilesController do
 
     before(:each) do
       login_as_archivist
-      load_fixture 'hydrant:video-segment'
+      load_fixture 'avalon:video-segment'
     end
 
     context "must provide a container id" do
@@ -24,7 +24,7 @@ describe MasterFilesController do
       @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
       @file.stub(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2^21)  
      
-      lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment'}.should_not change { MasterFile.count }
+      lambda { post :create, Filedata: [@file], original: 'any', container_id: 'avalon:video-segment'}.should_not change { MasterFile.count }
       logger.debug "<< Flash message is present? #{flash[:notice]} >>"
      
       flash[:errors].should_not be_nil
@@ -37,9 +37,9 @@ describe MasterFilesController do
         post :create, 
           Filedata: [@file], 
           original: 'any', 
-          container_id: 'hydrant:video-segment' 
+          container_id: 'avalon:video-segment' 
 
-        mediaobject = MediaObject.find('hydrant:video-segment')
+        mediaobject = MediaObject.find('avalon:video-segment')
         master_file = mediaobject.parts.first
         master_file.file_format.should eq "Moving image" 
              
@@ -51,19 +51,19 @@ describe MasterFilesController do
        post :create, 
          Filedata: [@file], 
          original: 'any', 
-         container_id: 'hydrant:video-segment' 
+         container_id: 'avalon:video-segment' 
 
-       mediaobject = MediaObject.find('hydrant:video-segment')
+       mediaobject = MediaObject.find('avalon:video-segment')
        master_file = mediaobject.parts.first
        master_file.file_format.should eq "Sound" 
      end
        
      it "should reject non audio/video format" do
        request.env["HTTP_REFERER"] = "/"
-       load_fixture 'hydrant:electronic-resource'
+       load_fixture 'avalon:electronic-resource'
      
        @file = fixture_file_upload('/public-domain-book.txt', 'application/json')
-       lambda { post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:electronic-resource' }.should_not change { MasterFile.count }
+       lambda { post :create, Filedata: [@file], original: 'any', container_id: 'avalon:electronic-resource' }.should_not change { MasterFile.count }
        logger.debug "<< Flash errors is present? #{flash[:errors]} >>"
      
        flash[:errors].should_not be_nil
@@ -75,7 +75,7 @@ describe MasterFilesController do
        post :create, 
          Filedata: [@file], 
          original: 'any', 
-         container_id: 'hydrant:video-segment' 
+         container_id: 'avalon:video-segment' 
        master_file = MasterFile.find(:all, order: "created_on ASC").last
        master_file.file_format.should eq "Moving image" 
              
@@ -91,12 +91,12 @@ describe MasterFilesController do
           attr_reader :tempfile
         end
    
-        post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment'
+        post :create, Filedata: [@file], original: 'any', container_id: 'avalon:video-segment'
          
         master_file = MasterFile.find(:all, order: "created_on ASC").last
-        mediaobject = MediaObject.find('hydrant:video-segment')
+        mediaobject = MediaObject.find('avalon:video-segment')
         mediaobject.parts.should include master_file
-        master_file.mediaobject.pid.should eq('hydrant:video-segment')
+        master_file.mediaobject.pid.should eq('avalon:video-segment')
          
         flash[:errors].should be_nil        
       end
@@ -110,7 +110,7 @@ describe MasterFilesController do
           attr_reader :tempfile
         end
    
-        post :create, Filedata: [@file], original: 'any', container_id: 'hydrant:video-segment'
+        post :create, Filedata: [@file], original: 'any', container_id: 'avalon:video-segment'
          
         master_file = MasterFile.find(:all, order: "created_on ASC").last
         master_file.edit_groups.should include "archivist"

@@ -1,3 +1,3 @@
 unless Rails.env.test?
-  Hydrant::Application.config.action_mailer.smtp_settings = Hydrant::Configuration['email']['mailer']['smtp']
+  Avalon::Application.config.action_mailer.smtp_settings = Avalon::Configuration['email']['mailer']['smtp']
 end

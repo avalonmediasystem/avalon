@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   include AccessControlsHelper
 
   def layout_name
-   'hydrant'
+   'avalon'
   end
 
   # Please be sure to implement current_user and user_session. Blacklight depends on 

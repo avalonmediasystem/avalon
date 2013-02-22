@@ -53,10 +53,10 @@ RSpec.configure do |config|
     
     # Put named fixtures from the fixtures directory here so they are cleaned
     # up if they exist
-    test_fixtures = ['hydrant:video-segment', 
-      'hydrant:electronic-resource',
-      'hydrant:musical-performance',
-      'hydrant:print-publication']
+    test_fixtures = ['avalon:video-segment', 
+      'avalon:electronic-resource',
+      'avalon:musical-performance',
+      'avalon:print-publication']
     test_fixtures.each do |fixture|
       logger.debug "Removing test object #{fixture} if present" 
       MediaObject.find(fixture).delete if MediaObject.exists?(fixture) 

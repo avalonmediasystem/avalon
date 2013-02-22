@@ -1,4 +1,4 @@
-module Hydrant
+module Avalon
   module Controller
     module ControllerBehavior
       def self.included(base)

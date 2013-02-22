@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'hydrant/dropbox'
-require 'hydrant/batch_ingest'
+require 'avalon/dropbox'
+require 'avalon/batch_ingest'
 
-describe Hydrant::Batch do
+describe Avalon::Batch do
   # Get rid of all .processing stubs left over in case something was aborted
   # mid test
   before :all do
@@ -11,7 +11,7 @@ describe Hydrant::Batch do
   end
 
   before :each do
-    Hydrant::DropboxService = Hydrant::Dropbox.new 'spec/fixtures/dropbox'
+    Avalon::DropboxService = Avalon::Dropbox.new 'spec/fixtures/dropbox'
   end
 
   after :each do
@@ -28,13 +28,13 @@ describe Hydrant::Batch do
    end
 
   it 'creates an ingest batch object' do
-    Hydrant::Batch.ingest
+    Avalon::Batch.ingest
     IngestBatch.count.should == 1
   end
 
   it 'does not create an ingest batch object when there are zero packages' do
-    Hydrant::DropboxService.stub(:find_new_packages).and_return []
-    Hydrant::Batch.ingest
+    Avalon::DropboxService.stub(:find_new_packages).and_return []
+    Avalon::Batch.ingest
     IngestBatch.count.should == 0
   end
 end

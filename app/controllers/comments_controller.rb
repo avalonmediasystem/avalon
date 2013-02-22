@@ -1,6 +1,6 @@
 class CommentsController < ApplicationController
     before_filter :set_subjects
-    layout 'hydrant'
+    layout 'avalon'
 
     # Index replaces new in this context
 	def index 
@@ -22,7 +22,7 @@ class CommentsController < ApplicationController
 			  logger.warn "The mail server does not appear to be responding"
 			  logger.warn e
 			  
-			  flash[:notice] = "The message could not be sent in a timely fashion. Contact us at #{Hydrant::Configuration['email']['support']} to report the problem."
+			  flash[:notice] = "The message could not be sent in a timely fashion. Contact us at #{Avalon::Configuration['email']['support']} to report the problem."
 			  render action: "index"
 			end
 		else

@@ -100,7 +100,7 @@ class Derivative < ActiveFedora::Base
     (application, prefix, media_id, stream_id, filename, extension) = uri.path.scan(regex).flatten
 
     template = ERB.new(self.class.url_handler.patterns[protocol][format])
-    result = File.join(Hydrant::Configuration['streaming']["#{protocol}_base"],template.result(binding))
+    result = File.join(Avalon::Configuration['streaming']["#{protocol}_base"],template.result(binding))
   end
 
   def format

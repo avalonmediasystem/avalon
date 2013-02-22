@@ -22,11 +22,11 @@ describe IngestBatch do
     it 'returns false when one or more master files are not finished' do
        pending "Fix problems with this test"
 
-       media_object = MediaObject.new(pid:'hydrant:ingest-batch-test')
+       media_object = MediaObject.new(pid:'avalon:ingest-batch-test')
        media_object.add_relationship(:has_part, MasterFile.new(status_code: ['STOPPED']))
        media_object.parts << MasterFile.create(status_code: ['RUNNING'])
        media_object.save(validate: false)
-       ingest_batch = IngestBatch.new(media_object_ids: ['hydrant:ingest-batch-test'], email: 'email@something.com')
+       ingest_batch = IngestBatch.new(media_object_ids: ['avalon:ingest-batch-test'], email: 'email@something.com')
        ingest_batch.finished?.should be_false
     end
   end
