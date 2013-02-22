@@ -1,5 +1,5 @@
 require 'iconv'
-require 'hydrant/workflow/workflow_controller_behavior'
+require 'avalon/workflow/workflow_controller_behavior'
 require 'hydrant/controller/controller_behavior'
 require 'hydrant/dropbox'
 

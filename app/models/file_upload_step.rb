@@ -1,6 +1,6 @@
 require 'hydrant/dropbox'
 
-  class FileUploadStep < Hydrant::Workflow::BasicStep
+  class FileUploadStep < Avalon::Workflow::BasicStep
     def initialize(step = 'file-upload', 
                    title = "Manage file(s)", 
                    summary = "Associated bitstreams",

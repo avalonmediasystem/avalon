@@ -1,7 +1,7 @@
 require 'hydrant/controller/controller_behavior'
 
 class MediaObjectsController < ApplicationController 
-  include Hydrant::Workflow::WorkflowControllerBehavior
+  include Avalon::Workflow::WorkflowControllerBehavior
   include Hydrant::Controller::ControllerBehavior
 
   before_filter :enforce_access_controls

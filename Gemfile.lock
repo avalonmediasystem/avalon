@@ -37,6 +37,12 @@ GIT
       mediashelf-loggable
 
 GIT
+  remote: https://github.com/variations-on-video/avalon-workflow.git
+  revision: 1c573cef34b5ac4177de0bc872de57f3a37763a9
+  specs:
+    avalon-workflow (0.0.2a)
+
+GIT
   remote: https://github.com/variations-on-video/hydrant-batch.git
   revision: 6b38f9012b4138870c5e9b5287d9a3cb4d5642f5
   specs:
@@ -52,14 +58,8 @@ GIT
       less-rails (~> 2.2.3)
 
 GIT
-  remote: https://github.com/variations-on-video/hydrant-workflow.git
-  revision: e6c2cb02c5b7d9dbff46244d95cd8029db63c65c
-  specs:
-    hydrant-workflow (0.0.2a)
-
-GIT
   remote: https://github.com/variations-on-video/rubyhorn.git
-  revision: ed09027b51b174368fe6704c748f9a19845d43ff
+  revision: deab1f0bd069e7666338bf265f6323e3c6f61c0c
   specs:
     rubyhorn (0.0.4)
       activesupport
@@ -214,7 +214,7 @@ GEM
       railties (>= 3.0.0)
     fastercsv (1.5.5)
     ffi (1.4.0)
-    font-awesome-sass-rails (3.0.2.1)
+    font-awesome-sass-rails (3.0.2.2)
       railties (>= 3.1.1)
       sass-rails (>= 3.1.1)
     fssm (0.2.10)
@@ -492,6 +492,7 @@ PLATFORMS
 DEPENDENCIES
   active-fedora (~> 5.0.0)
   activerecord-jdbcsqlite3-adapter
+  avalon-workflow!
   blacklight (~> 4.0.0)
   builder (~> 3.0.0)
   capistrano (~> 2.12.0)
@@ -516,7 +517,6 @@ DEPENDENCIES
   hydra-head (~> 5.0.0)
   hydrant-batch!
   hydrant-engage!
-  hydrant-workflow!
   jdbc-sqlite3
   jettywrapper
   jquery-rails (~> 2.1.4)

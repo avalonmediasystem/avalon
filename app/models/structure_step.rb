@@ -1,4 +1,4 @@
-  class StructureStep < Hydrant::Workflow::BasicStep
+  class StructureStep < Avalon::Workflow::BasicStep
     def initialize(step = 'structure', title = "Structure", summary = "Organization of resources", template = 'structure')
       super
     end

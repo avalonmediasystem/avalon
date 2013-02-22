@@ -1,4 +1,4 @@
-	class PreviewStep < Hydrant::Workflow::BasicStep
+	class PreviewStep < Avalon::Workflow::BasicStep
                 def initialize(step = 'preview', 
                                title = "Preview and publish", 
                                summary = "Release the item for use", 

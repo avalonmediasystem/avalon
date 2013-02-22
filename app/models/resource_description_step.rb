@@ -1,4 +1,4 @@
-class ResourceDescriptionStep < Hydrant::Workflow::BasicStep
+class ResourceDescriptionStep < Avalon::Workflow::BasicStep
   def initialize(step = 'resource-description', title = "Resource description", summary = "Metadata about the item", template = 'basic_metadata')
     super
   end

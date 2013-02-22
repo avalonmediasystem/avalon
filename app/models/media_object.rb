@@ -5,7 +5,7 @@ class MediaObject < ActiveFedora::Base
   include Hydra::ModelMethods
   include ActiveFedora::Associations
   include Hydra::ModelMixins::RightsMetadata
-  include Hydrant::Workflow::WorkflowModelMixin
+  include Avalon::Workflow::WorkflowModelMixin
 
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
