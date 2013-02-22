@@ -76,3 +76,4 @@ cucumber-results/
 public/media_objects
 config/hydrant.yml
 /dropbox
+public/streams

@@ -47,12 +47,12 @@ describe Derivative do
 
       it "should properly create an HTTP video streaming URL" do
         @d.encoding.video = 'true'
-        @d.streaming_url(true).should == "http://localhost:3000/streams/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4"
+        @d.streaming_url(true).should == "http://localhost:3000/streams/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
       end
 
       it "should properly create an HTTP audio streaming URL" do
         @d.encoding.audio = 'true'
-        @d.streaming_url(true).should == "http://localhost:3000/streams/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4"
+        @d.streaming_url(true).should == "http://localhost:3000/streams/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
       end
     end
 
@@ -73,12 +73,12 @@ describe Derivative do
 
       it "should properly create an HTTP video streaming URL" do
         @d.encoding.video = 'true'
-        @d.streaming_url(true).should == "http://localhost:3000/streams/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4"
+        @d.streaming_url(true).should == "http://localhost:3000/streams/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
       end
 
       it "should properly create an HTTP audio streaming URL" do
         @d.encoding.audio = 'true'
-        @d.streaming_url(true).should == "http://localhost:3000/streams/audio-only/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4"
+        @d.streaming_url(true).should == "http://localhost:3000/streams/audio-only/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
       end
     end
   end
