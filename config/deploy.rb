@@ -5,7 +5,7 @@ require 'rvm/capistrano'
 require 'whenever/capistrano'
 
 set :application, "avalon"
-set :repository,  "git://github.com/variations-on-video/avalon.git"
+set :repository,  "git://github.com/avalonmediasystem/avalon.git"
 
 set :scm, :git
 # Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`

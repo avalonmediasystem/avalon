@@ -3,7 +3,7 @@
 	url = git://github.com/projecthydra/hydra-jetty.git
 [submodule "felix"]
 	path = felix
-	url = git://github.com/variations-on-video/avalon-felix.git
+	url = git://github.com/avalonmediasystem/avalon-felix.git
 [submodule "red5"]
 	path = red5
-	url = git://github.com/variations-on-video/avalon-red5.git
+	url = git://github.com/avalonmediasystem/avalon-red5.git

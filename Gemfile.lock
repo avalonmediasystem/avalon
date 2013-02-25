@@ -6,7 +6,28 @@ GIT
       capistrano
 
 GIT
-  remote: https://github.com/cjcolvar/felixwrapper.git
+  remote: https://github.com/avalonmediasystem/avalon-batch.git
+  revision: 7ea0ae79b1db1f8301e5251c1d65fc0ee7404186
+  specs:
+    avalon-batch (0.0.1)
+      activesupport
+      roo
+
+GIT
+  remote: https://github.com/avalonmediasystem/avalon-engage.git
+  revision: f2480900eb96f960d1ed1c7cd184e21375535d7d
+  specs:
+    avalon-engage (0.0.1)
+      less-rails (~> 2.2.3)
+
+GIT
+  remote: https://github.com/avalonmediasystem/avalon-workflow.git
+  revision: 1c573cef34b5ac4177de0bc872de57f3a37763a9
+  specs:
+    avalon-workflow (0.0.2a)
+
+GIT
+  remote: https://github.com/avalonmediasystem/felixwrapper.git
   revision: 4bf68e742910157de8e82291aaf34c9764085a79
   specs:
     felixwrapper (0.0.1)
@@ -17,16 +38,7 @@ GIT
       mediashelf-loggable
 
 GIT
-  remote: https://github.com/cjcolvar/omniauth-cas.git
-  revision: 972ded584cbb44e8cb25469836a1253174ed95aa
-  specs:
-    omniauth-cas (0.0.7)
-      addressable (~> 2.2)
-      nokogiri (~> 1.5)
-      omniauth (~> 1.1.0)
-
-GIT
-  remote: https://github.com/cjcolvar/red5wrapper.git
+  remote: https://github.com/avalonmediasystem/red5wrapper.git
   revision: baaa7f9c9c0808b737991ba74908f08b254b4879
   specs:
     red5wrapper (0.0.1)
@@ -37,28 +49,7 @@ GIT
       mediashelf-loggable
 
 GIT
-  remote: https://github.com/variations-on-video/avalon-batch.git
-  revision: 7ea0ae79b1db1f8301e5251c1d65fc0ee7404186
-  specs:
-    avalon-batch (0.0.1)
-      activesupport
-      roo
-
-GIT
-  remote: https://github.com/variations-on-video/avalon-engage.git
-  revision: f2480900eb96f960d1ed1c7cd184e21375535d7d
-  specs:
-    avalon-engage (0.0.1)
-      less-rails (~> 2.2.3)
-
-GIT
-  remote: https://github.com/variations-on-video/avalon-workflow.git
-  revision: 1c573cef34b5ac4177de0bc872de57f3a37763a9
-  specs:
-    avalon-workflow (0.0.2a)
-
-GIT
-  remote: https://github.com/variations-on-video/rubyhorn.git
+  remote: https://github.com/avalonmediasystem/rubyhorn.git
   revision: deab1f0bd069e7666338bf265f6323e3c6f61c0c
   specs:
     rubyhorn (0.0.4)
@@ -70,13 +61,22 @@ GIT
       om
 
 GIT
-  remote: https://github.com/variations-on-video/twitter_bootstrap_form_for.git
+  remote: https://github.com/avalonmediasystem/twitter_bootstrap_form_for.git
   revision: eff5f50fdb19670a942ae87189e804bcb044409c
   branch: bootstrap-2.0
   specs:
     twitter_bootstrap_form_for (2.0.1.0.rc2)
       actionpack (~> 3)
       railties (~> 3)
+
+GIT
+  remote: https://github.com/cjcolvar/omniauth-cas.git
+  revision: 972ded584cbb44e8cb25469836a1253174ed95aa
+  specs:
+    omniauth-cas (0.0.7)
+      addressable (~> 2.2)
+      nokogiri (~> 1.5)
+      omniauth (~> 1.1.0)
 
 GEM
   remote: http://rubygems.org/

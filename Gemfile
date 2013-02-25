@@ -9,9 +9,9 @@
   gem 'rubydora', '< 1.0.0'
   gem 'active-fedora', '~> 5.0.0'
 
-  gem 'avalon-workflow', git: 'https://github.com/variations-on-video/avalon-workflow.git'
-  gem 'avalon-engage', git: "https://github.com/variations-on-video/avalon-engage.git"
-  gem 'avalon-batch', git: "https://github.com/variations-on-video/avalon-batch.git"
+  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git'
+  gem 'avalon-engage', git: "https://github.com/avalonmediasystem/avalon-engage.git"
+  gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git"
  
   platforms :jruby do
     gem 'jruby-openssl'
@@ -32,9 +32,9 @@
   gem 'haml'
 
   gem "jettywrapper"
-  gem 'rubyhorn', :git => "https://github.com/variations-on-video/rubyhorn.git"
-  gem 'felixwrapper', :git => "https://github.com/cjcolvar/felixwrapper.git"
-  gem 'red5wrapper', :git => "https://github.com/cjcolvar/red5wrapper.git"
+  gem 'rubyhorn', :git => "https://github.com/avalonmediasystem/rubyhorn.git"
+  gem 'felixwrapper', :git => "https://github.com/avalonmediasystem/felixwrapper.git"
+  gem 'red5wrapper', :git => "https://github.com/avalonmediasystem/red5wrapper.git"
 
   gem 'validates_email_format_of'
   gem 'loofah'
@@ -60,7 +60,7 @@
     gem 'sass-rails', '~> 3.2.3'
     gem 'font-awesome-sass-rails'
     gem 'twitter_bootstrap_form_for',
-      git: "https://github.com/variations-on-video/twitter_bootstrap_form_for.git",
+      git: "https://github.com/avalonmediasystem/twitter_bootstrap_form_for.git",
       branch: "bootstrap-2.0"
   end
 
