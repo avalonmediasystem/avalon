@@ -128,7 +128,7 @@ class MediaObject < ActiveFedora::Base
   def section_pid=( pids )
     self.sectionsMetadata.find_by_terms(:section_pid).each &:remove
     self.sectionsMetadata.update_values(['section_pid'] => pids)
-    self.save(validate:false)
+    self.save( validate: false )
   end
 
   # Sets the publication status. To unpublish an object set it to nil or
