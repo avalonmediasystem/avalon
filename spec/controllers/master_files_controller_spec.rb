@@ -125,8 +125,8 @@ describe MasterFilesController do
         #stub Rubyhorn call and return a workflow fixture and check that Derivative.create_from_master_file is called
         xml = File.new("spec/fixtures/matterhorn_workflow_doc.xml")
         doc = Rubyhorn::Workflow.from_xml(xml)
-        Rubyhorn.client.stub(:instance_xml).and_return(doc)     
-        Rubyhorn.client.stub(:get).and_return(nil)
+        Rubyhorn.stub_chain(:client,:instance_xml).and_return(doc)
+        Rubyhorn.stub_chain(:client,:get).and_return(nil)
         mf = MasterFile.create!
         mo = MediaObject.new
         mo.save(validate: false)
