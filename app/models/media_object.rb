@@ -113,37 +113,22 @@ class MediaObject < ActiveFedora::Base
   end
 
   # Removes one or many MasterFiles from parts_with_order
-  def parts_with_order_remove masterfiles
-    new_order = self.section_pid
-    masterfiles.each do |mf| 
-      new_order.delete mf.pid
-    end
-
-    new_parts = []
-    new_order.each do |pid|
-      new_parts << MasterFile.find(pid)
-    end
-    
-    self.parts_with_order = new_parts
+  def parts_with_order_remove part
+    self.parts_with_order = self.parts_with_order.reject{|master_file| master_file.pid == part.pid }
   end
 
-  def parts_with_order= masterfiles
-    new_order = []
-    masterfiles.each do |mf| 
-      new_order << mf.pid
-    end
-    
-    # Workaround for a really weird bug does not allow assigning a new array of fewer elements
-    self.section_pid.count.times { self.section_pid = [""] }
-    self.section_pid = new_order.uniq
+  def parts_with_order= master_files
+    self.section_pid = master_files.map(&:pid)
   end
 
   def parts_with_order
-    masterfiles = []
-    section_pid.each do |pid| 
-      masterfiles << MasterFile.find(pid)
-    end
-    masterfiles
+    self.section_pid.map{|pid| MasterFile.find(pid)}
+  end
+
+  def section_pid=( pids )
+    self.sectionsMetadata.find_by_terms(:section_pid).each &:remove
+    self.sectionsMetadata.update_values(['section_pid'] => pids)
+    self.save(validate:false)
   end
 
   # Sets the publication status. To unpublish an object set it to nil or
