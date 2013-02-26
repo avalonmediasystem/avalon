@@ -56,7 +56,7 @@ class MasterFile < ActiveFedora::Base
     parent = mediaobject
     parent.parts -= [self]
 
-    unless new_object?
+    unless new_object? || finished_processing?
       parent.save(validate: false)
       Rubyhorn.client.stop(workflow_id) if workflow_id
       delete
