@@ -49,4 +49,4 @@ test:
   streaming:
     stream_token_ttl: 20 #minute
     rtmp_base: 'rtmp://localhost/avalon'
-    http_base: 'http://localhost:3000/avalon's
+    http_base: 'http://localhost:3000/avalon'
