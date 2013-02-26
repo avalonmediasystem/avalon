@@ -41,24 +41,23 @@ require 'avalon/dropbox'
   # label - Display label in the interface
   # pid - Identifier for the masterFile to help with mapping
   def update_master_files(mediaobject, files = [])
-        if not files.blank?
-          files.each do |part|
-            logger.debug "<< #{part} >>"
-            selected_part = nil
-            mediaobject.parts.each do |current_part|
-              selected_part = current_part if current_part.pid == part[:pid]
-            end
-            next unless not selected_part.blank?
+    if not files.blank?
+      files.each do |part|
+        logger.debug "<< #{part} >>"
 
-            if part[:remove]
-              logger.info "<< Deleting master file #{selected_part.pid} from the system >>"
-              selected_part.delete
-            else
-              selected_part.label = part[:label]
-              selected_part.save
-            end
+        selected_part = mediaobject.parts.find{|p| p.pid == part[:pid]}
+
+        if selected_part
+          if part[:remove]
+            logger.info "<< Deleting master file #{selected_part.pid} from the system >>"
+            selected_part.destroy
+          else
+            selected_part.label = part[:label]
+            selected_part.save
           end
         end
+      end
+    end
   end
 
   end

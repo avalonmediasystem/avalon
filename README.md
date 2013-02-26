@@ -12,9 +12,9 @@ Instructions on how to get a local installation of Avalon Media System installed
 * Install Mediainfo cli: http://mediainfo.sourceforge.net
 * Copy config/avalon.yml.example to config/avalon.yml and change as necessary
 * ```rake db:migrate```
-* ```rake jetty:start```
-* ```rake felix:start```
+* ```rake db:test:prepare```
 * ```rake spec```
+* ```rake avalon:services:start```
 
 # For batch ingest:
 * rake avalon:batch:ingest
