@@ -91,6 +91,10 @@ class MediaObjectsController < ApplicationController
     unless params[:id].nil? or (not MediaObject.exists?(params[:id]))
       logger.debug "<< Removing PID from system >>"
       media = MediaObject.find(params[:id])
+
+      # attempt to stop the matterhorn processing job
+      media.parts.each(&:destroy)
+      
       flash[:notice] = "#{media.title} (#{params[:id]}) has been successfuly deleted"
       media.delete
     end
