@@ -22,6 +22,8 @@ development:
         enable_starttls_auto: false
   streaming:
     stream_token_ttl: 20 #minutes
+    rtmp_base: 'rtmp://localhost/avalon'
+    http_base: 'http://localhost:3000/avalon'
 test:
   dropbox:
     path: '/srv/avalon/dropbox/'
@@ -45,4 +47,6 @@ test:
         port: 587
         enable_starttls_auto: false
   streaming:
-    stream_token_ttl: 20 #minutes
+    stream_token_ttl: 20 #minute
+    rtmp_base: 'rtmp://localhost/avalon'
+    http_base: 'http://localhost:3000/avalon's
