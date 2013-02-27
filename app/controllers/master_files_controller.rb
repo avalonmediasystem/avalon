@@ -99,15 +99,15 @@ class MasterFilesController < ApplicationController
     if params[:workflow_id].present?
       master_file.workflow_id ||= params[:workflow_id]
       workflow = Rubyhorn.client.instance_xml(params[:workflow_id])
-      master_file.update_progress!( params, workflow ) 
+      master_file.update_progress!(params, workflow) 
 
       # If Matterhorn reports that the processing is complete then we need
       # to prepare Fedora by pulling several important values closer to the
-      # interface. This will sped up searching, allow for on-the-fly quality
-      # switching, and avois hitting Matterhorn repeatedly when loading up
+      # interface. This will speed up searching, allow for on-the-fly quality
+      # switching, and avoids hitting Matterhorn repeatedly when loading up
       # a list of search results
       if master_file.status_code.eql? 'SUCCEEDED'
-        master_file.update_progress_on_success!( workflow )
+        master_file.update_progress_on_success!(workflow)
       end
 
       # We handle the case where the item was batch ingested. If so the
