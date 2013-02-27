@@ -1,8 +1,8 @@
 <%# Partial once the layout makes sense %>
       <% unless sections.blank? or sections.length == 1 %>
-      <section>
-        <legend>Sections</legend>
-          <ul class="unstyled" id="section_links">
+      <section class="whitespace">
+        <legend><i class="icon-list-alt"></i> Sections</legend>
+          <ol id="section_links">
             <% sections.each do |section| %>
               <li>
                 <%# If the label has not been set use the file name as a default %>
@@ -17,7 +17,7 @@
                 <% end %>
               </li>
               <% end %>
-          </ul>
+          </ol>
        </section>
 
            <% end %>

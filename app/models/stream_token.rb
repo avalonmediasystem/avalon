@@ -4,9 +4,14 @@ class StreamToken < ActiveRecord::Base
   attr_accessible :token, :target, :expires
   
   def self.find_or_create_session_token(session, target)
+    self.purge_expired!
     result = self.find_or_create_by_token_and_target(session[:session_id], target)
     result.renew!
     result.token
+  end
+
+  def self.purge_expired!
+    self.where("expires <= :now", :now => Time.now).each &:delete
   end
 
   def self.validate_token(value)

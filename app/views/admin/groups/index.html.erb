@@ -23,7 +23,7 @@
 
   <%= form_tag(admin_groups_path) do -%>
     <%= text_field_tag 'admin_group', nil, :placeholder => 'Enter group name here...' %> 
-    <%= submit_tag 'Create Group', class: "btn btn-primary" %>
+    <%= submit_tag 'Create Group', class: "btn" %>
   <% end -%>
 
   <%= form_tag update_multiple_admin_groups_path, method: :put do %>

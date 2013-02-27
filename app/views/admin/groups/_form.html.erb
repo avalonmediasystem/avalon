@@ -7,13 +7,13 @@
 <%= twitter_bootstrap_form_for @group, html: { :class => 'form-inline'}  do |f| %>
     <h3>Group</h3>
     <%= text_field_tag :group_name, "Group name", value: @group.name %>
-    <%= submit_tag "Save", class: "btn btn-primary" %>
+    <%= submit_tag "Save", class: "btn" %>
     <%= link_to "Delete Group", admin_group_path(@group.name), 
         :method => :delete, confirm: "Deleted group cannot be recovered. Are you sure?", class: "btn btn-danger inline" %>
 
     <h3 style="margin-top: 35px">Group Members</h3>
     <%= text_field_tag :new_user, nil, placeholder: 'Enter an username here' %>
-    <%= f.submit "Add user" %>
+    <%= f.submit "Add user", class: "btn" %>
 <% end %>
 
 <%= form_tag update_users_admin_group_path, method: :put do %>

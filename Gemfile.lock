@@ -15,7 +15,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-engage.git
-  revision: f2480900eb96f960d1ed1c7cd184e21375535d7d
+  revision: f28ac2298dd3a0583b1c0f557ead734d8a2a39a3
   specs:
     avalon-engage (0.0.1)
       less-rails (~> 2.2.3)
@@ -257,7 +257,7 @@ GEM
       rails (>= 3.2.6)
     hydra-mods (0.0.6)
       active-fedora (> 4.1)
-    i18n (0.6.1)
+    i18n (0.6.2)
     jettywrapper (1.3.2)
       activesupport (>= 3.0.0)
       childprocess

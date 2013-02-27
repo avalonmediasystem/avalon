@@ -130,6 +130,9 @@ tr.active-false td {
     border-color: $successBorder;
     color: $successText;
   }
+  li.nav-success a {
+    text-shadow: rgba(255, 255, 255, 0.2) 0px 1px 0px;
+  }
 
   li.nav-info {
     background-color: $infoBackground;
@@ -289,6 +292,14 @@ body {
   padding-top: 0;
 }
 
+input[type="radio"], input[type="checkbox"]{
+  margin-top:-4px;
+}
+
+input[type="text"]#admin_group {
+  margin-bottom: 0;
+}
+
 /* Header */
 .custom-header {
   background-color: #e9e9e9;
@@ -321,7 +332,7 @@ header div, .logo {
 }
 
 .sidenav h4 {
-  background-color: $sidebarHeaderBackgroundColor;
+  background-color: $sidenavHeaderBackgroundColor;
   @include border-top-radius(6px);
 }
 
@@ -362,18 +373,19 @@ footer .release {
   }
 }
 
-/* Alert colors */
+/* Alerts */
+
 #alerts {
   margin-left: 0px;
 }
 
 .alert-success {
   text-shadow: rgba(0, 0, 0, 0.1) 0px 1px 0px;
-  h1, h2, h3, h4, h5, a {
-    color: $successText;
-  }
-  a:hover {
-    color: $successText;
+  a {
+    color: $successLink;
+    &:hover {
+    color: scale-color($successLink, $lightness: -20%);
+    }
   }
 }
 
@@ -444,6 +456,10 @@ ul#creation_metadata {
   }
 }
 
-input[type="text"]#admin_group {
-  margin-bottom: 0;
+.btn-options {
+  margin-bottom: 1em;
+}
+
+#permalink {
+  margin-top: 2em;
 }

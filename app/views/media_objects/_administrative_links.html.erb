@@ -28,7 +28,7 @@
         <% #label = @mediaobject.discover_groups.include?("nobody") ? 'Unhide' : 'Hide' %>  
         <%#= link_to label, update_visibility_media_object_path(@mediaobject), method: :put, class: 'btn' %>
 
-        <%= link_to 'Edit', edit_media_object_path(@mediaobject), class: 'btn btn-primary' %>
+        <%= link_to 'Edit', edit_media_object_path(@mediaobject), class: 'btn' %>
         <%# This might not be the best approach because it makes accidental 
             deletion possible just by following a link. Need to revisit when
             extra cycles are available %>

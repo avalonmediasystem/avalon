@@ -270,6 +270,10 @@ class MediaObject < ActiveFedora::Base
 
   def update_datastream(datastream = :descMetadata, values = {})
     missing_attributes.clear
+    if values.keys.any? { |k| [:language_code,:language_text].include? k }
+      descMetadata.find_by_terms(:language).each &:remove
+    end
+
     values.each do |k, v|
       # First remove all blank attributes in arrays
       v.keep_if { |item| not item.blank? } if v.instance_of?(Array)
@@ -313,7 +317,9 @@ class MediaObject < ActiveFedora::Base
       return false
     else
       values = Array(value).select { |v| not v.blank? }
-      descMetadata.find_by_terms( metadata_attribute ).each &:remove
+      unless [:language_code,:language_text].include? metadata_attribute
+        descMetadata.find_by_terms( metadata_attribute ).each &:remove
+      end
       if descMetadata.template_registry.has_node_type?( metadata_attribute )
         values.each_with_index do |val, i|
           logger.debug "<< Adding node #{metadata_attribute}[#{i}] >>"

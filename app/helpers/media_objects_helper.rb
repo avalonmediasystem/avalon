@@ -34,8 +34,8 @@ module MediaObjectsHelper
         logger.debug "<< Completed? #{context.workflow.completed?(step)} >>"
 
         css_class = case 
-          when context.workflow.current?(step)
-            'nav-info'
+          # when context.workflow.current?(step)
+          #   'nav-info'
           when context.workflow.completed?(step)
             'nav-success'
           else 'nav-disabled' 

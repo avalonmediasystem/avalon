@@ -105,6 +105,36 @@ module ModsTemplates
 		    }
 		  end
 
+		  define_template :language_term do |xml, type, value|
+	      xml.languageTerm(:type => type) { xml.text(value) } if value.present?
+		  end
+
+	  	def add_language(term)
+	  		add_child_node(ng_xml.root, :language, term.code, term.text)
+	  	end
+
+	  	def add_language_code(value, opts={})
+	  		term = LanguageTerm.find_by_code(value)
+	  		return if self.language_code.include? term.code
+	  		existing = self.find_by_terms(:language_text).find { |n| n.text == term.text }
+	  		if existing.nil?
+	  			add_language term
+		  	else
+		  		add_child_node(existing.parent, :language_term, 'code', term.code)
+		  	end
+	  	end
+
+	  	def add_language_text(value, opts={})
+	  		term = LanguageTerm.find_by_text(value)
+	  		return if self.language_text.include? term.text
+	  		existing = self.find_by_terms(:language_code).find { |n| n.text == term.code }
+	  		if existing.nil?
+	  			add_language term
+		  	else
+		  		add_child_node(existing.parent, :language_term, 'text', term.text)
+		  	end
+	  	end
+
 		  define_template :media_type do |xml,mime_type|
 		    xml.physicalDescription {
 		      xml.internetMediaType mime_type
