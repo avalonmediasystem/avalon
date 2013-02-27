@@ -11,6 +11,8 @@
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git'
   gem 'avalon-engage', git: "https://github.com/avalonmediasystem/avalon-engage.git"
+  #gem 'avalon-engage',
+  #  path: '~/avalon-engage'
   gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git"
  
   platforms :jruby do
