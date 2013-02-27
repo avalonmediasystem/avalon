@@ -32,6 +32,14 @@ describe MediaObject do
     end
   end
 
+  describe "Languages are handled correctly" do
+    it "should handle pairs of language codes and language names" do
+      mediaobject.update_datastream(:descMetadata, :language_code => 'en', :language_text => 'French')
+      mediaobject.descMetadata.language_code.to_a.should =~ ['eng','fre']
+      mediaobject.descMetadata.language_text.to_a.should =~ ['English','French']
+    end
+  end
+
   describe "Unknown metadata generates error" do
     it "should have an error on an unknown attribute" do
       mediaobject.update_attribute_in_metadata :foo, 'bar'

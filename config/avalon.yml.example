@@ -10,7 +10,7 @@ development:
     baseApplication: 'avalon'
     use_red5: true
   mediainfo:
-    path: '/usr/local/bin/mediainfo'
+    path: '/usr/bin/mediainfo'
   email:
     comments: 'avalon-comments@example.edu'
     notification: 'avalon-notifications@example.edu'
@@ -23,7 +23,7 @@ development:
   streaming:
     stream_token_ttl: 20 #minutes
     rtmp_base: 'rtmp://localhost/avalon'
-    http_base: 'http://localhost:3000/avalon'
+    http_base: 'http://localhost:3000/streams'
 test:
   dropbox:
     path: '/srv/avalon/dropbox/'
@@ -36,7 +36,7 @@ test:
     baseApplication: 'avalon'
     use_red5: true
   mediainfo:
-    path: '/usr/local/bin/mediainfo'
+    path: '/usr/bin/mediainfo'
   email:
     comments: 'avalon-comments@example.edu'
     notification: 'avalon-notifications@example.edu'
@@ -49,4 +49,4 @@ test:
   streaming:
     stream_token_ttl: 20 #minute
     rtmp_base: 'rtmp://localhost/avalon'
-    http_base: 'http://localhost:3000/avalon's
+    http_base: 'http://localhost:3000/streams'

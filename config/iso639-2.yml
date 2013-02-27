@@ -1,0 +1,3530 @@
+---
+- :alpha3: ! "\uFEFFaar"
+  :alternate: ''
+  :alpha2: aa
+  :en:
+  - Afar
+  :fr:
+  - afar
+- :alpha3: abk
+  :alternate: ''
+  :alpha2: ab
+  :en:
+  - Abkhazian
+  :fr:
+  - abkhaze
+- :alpha3: ace
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Achinese
+  :fr:
+  - aceh
+- :alpha3: ach
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Acoli
+  :fr:
+  - acoli
+- :alpha3: ada
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Adangme
+  :fr:
+  - adangme
+- :alpha3: ady
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Adyghe
+  - Adygei
+  :fr:
+  - adyghé
+- :alpha3: afa
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Afro-Asiatic languages
+  :fr:
+  - afro-asiatiques, langues
+- :alpha3: afh
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Afrihili
+  :fr:
+  - afrihili
+- :alpha3: afr
+  :alternate: ''
+  :alpha2: af
+  :en:
+  - Afrikaans
+  :fr:
+  - afrikaans
+- :alpha3: ain
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Ainu
+  :fr:
+  - aïnou
+- :alpha3: aka
+  :alternate: ''
+  :alpha2: ak
+  :en:
+  - Akan
+  :fr:
+  - akan
+- :alpha3: akk
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Akkadian
+  :fr:
+  - akkadien
+- :alpha3: alb
+  :alternate: sqi
+  :alpha2: sq
+  :en:
+  - Albanian
+  :fr:
+  - albanais
+- :alpha3: ale
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Aleut
+  :fr:
+  - aléoute
+- :alpha3: alg
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Algonquian languages
+  :fr:
+  - algonquines, langues
+- :alpha3: alt
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Southern Altai
+  :fr:
+  - altai du Sud
+- :alpha3: amh
+  :alternate: ''
+  :alpha2: am
+  :en:
+  - Amharic
+  :fr:
+  - amharique
+- :alpha3: ang
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - English, Old (ca.450-1100)
+  :fr:
+  - anglo-saxon (ca.450-1100)
+- :alpha3: anp
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Angika
+  :fr:
+  - angika
+- :alpha3: apa
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Apache languages
+  :fr:
+  - apaches, langues
+- :alpha3: ara
+  :alternate: ''
+  :alpha2: ar
+  :en:
+  - Arabic
+  :fr:
+  - arabe
+- :alpha3: arc
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Official Aramaic (700-300 BCE)
+  - Imperial Aramaic (700-300 BCE)
+  :fr:
+  - araméen d'empire (700-300 BCE)
+- :alpha3: arg
+  :alternate: ''
+  :alpha2: an
+  :en:
+  - Aragonese
+  :fr:
+  - aragonais
+- :alpha3: arm
+  :alternate: hye
+  :alpha2: hy
+  :en:
+  - Armenian
+  :fr:
+  - arménien
+- :alpha3: arn
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Mapudungun
+  - Mapuche
+  :fr:
+  - mapudungun
+  - mapuche
+  - mapuce
+- :alpha3: arp
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Arapaho
+  :fr:
+  - arapaho
+- :alpha3: art
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Artificial languages
+  :fr:
+  - artificielles, langues
+- :alpha3: arw
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Arawak
+  :fr:
+  - arawak
+- :alpha3: asm
+  :alternate: ''
+  :alpha2: as
+  :en:
+  - Assamese
+  :fr:
+  - assamais
+- :alpha3: ast
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Asturian
+  - Bable
+  - Leonese
+  - Asturleonese
+  :fr:
+  - asturien
+  - bable
+  - léonais
+  - asturoléonais
+- :alpha3: ath
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Athapascan languages
+  :fr:
+  - athapascanes, langues
+- :alpha3: aus
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Australian languages
+  :fr:
+  - australiennes, langues
+- :alpha3: ava
+  :alternate: ''
+  :alpha2: av
+  :en:
+  - Avaric
+  :fr:
+  - avar
+- :alpha3: ave
+  :alternate: ''
+  :alpha2: ae
+  :en:
+  - Avestan
+  :fr:
+  - avestique
+- :alpha3: awa
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Awadhi
+  :fr:
+  - awadhi
+- :alpha3: aym
+  :alternate: ''
+  :alpha2: ay
+  :en:
+  - Aymara
+  :fr:
+  - aymara
+- :alpha3: aze
+  :alternate: ''
+  :alpha2: az
+  :en:
+  - Azerbaijani
+  :fr:
+  - azéri
+- :alpha3: bad
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Banda languages
+  :fr:
+  - banda, langues
+- :alpha3: bai
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Bamileke languages
+  :fr:
+  - bamiléké, langues
+- :alpha3: bak
+  :alternate: ''
+  :alpha2: ba
+  :en:
+  - Bashkir
+  :fr:
+  - bachkir
+- :alpha3: bal
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Baluchi
+  :fr:
+  - baloutchi
+- :alpha3: bam
+  :alternate: ''
+  :alpha2: bm
+  :en:
+  - Bambara
+  :fr:
+  - bambara
+- :alpha3: ban
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Balinese
+  :fr:
+  - balinais
+- :alpha3: baq
+  :alternate: eus
+  :alpha2: eu
+  :en:
+  - Basque
+  :fr:
+  - basque
+- :alpha3: bas
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Basa
+  :fr:
+  - basa
+- :alpha3: bat
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Baltic languages
+  :fr:
+  - baltes, langues
+- :alpha3: bej
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Beja
+  - Bedawiyet
+  :fr:
+  - bedja
+- :alpha3: bel
+  :alternate: ''
+  :alpha2: be
+  :en:
+  - Belarusian
+  :fr:
+  - biélorusse
+- :alpha3: bem
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Bemba
+  :fr:
+  - bemba
+- :alpha3: ben
+  :alternate: ''
+  :alpha2: bn
+  :en:
+  - Bengali
+  :fr:
+  - bengali
+- :alpha3: ber
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Berber languages
+  :fr:
+  - berbères, langues
+- :alpha3: bho
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Bhojpuri
+  :fr:
+  - bhojpuri
+- :alpha3: bih
+  :alternate: ''
+  :alpha2: bh
+  :en:
+  - Bihari languages
+  :fr:
+  - langues biharis
+- :alpha3: bik
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Bikol
+  :fr:
+  - bikol
+- :alpha3: bin
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Bini
+  - Edo
+  :fr:
+  - bini
+  - edo
+- :alpha3: bis
+  :alternate: ''
+  :alpha2: bi
+  :en:
+  - Bislama
+  :fr:
+  - bichlamar
+- :alpha3: bla
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Siksika
+  :fr:
+  - blackfoot
+- :alpha3: bnt
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Bantu (Other)
+  :fr:
+  - bantoues, autres langues
+- :alpha3: bos
+  :alternate: ''
+  :alpha2: bs
+  :en:
+  - Bosnian
+  :fr:
+  - bosniaque
+- :alpha3: bra
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Braj
+  :fr:
+  - braj
+- :alpha3: bre
+  :alternate: ''
+  :alpha2: br
+  :en:
+  - Breton
+  :fr:
+  - breton
+- :alpha3: btk
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Batak languages
+  :fr:
+  - batak, langues
+- :alpha3: bua
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Buriat
+  :fr:
+  - bouriate
+- :alpha3: bug
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Buginese
+  :fr:
+  - bugi
+- :alpha3: bul
+  :alternate: ''
+  :alpha2: bg
+  :en:
+  - Bulgarian
+  :fr:
+  - bulgare
+- :alpha3: bur
+  :alternate: mya
+  :alpha2: my
+  :en:
+  - Burmese
+  :fr:
+  - birman
+- :alpha3: byn
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Blin
+  - Bilin
+  :fr:
+  - blin
+  - bilen
+- :alpha3: cad
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Caddo
+  :fr:
+  - caddo
+- :alpha3: cai
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Central American Indian languages
+  :fr:
+  - amérindiennes de L'Amérique centrale, langues
+- :alpha3: car
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Galibi Carib
+  :fr:
+  - karib
+  - galibi
+  - carib
+- :alpha3: cat
+  :alternate: ''
+  :alpha2: ca
+  :en:
+  - Catalan
+  - Valencian
+  :fr:
+  - catalan
+  - valencien
+- :alpha3: cau
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Caucasian languages
+  :fr:
+  - caucasiennes, langues
+- :alpha3: ceb
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Cebuano
+  :fr:
+  - cebuano
+- :alpha3: cel
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Celtic languages
+  :fr:
+  - celtiques, langues
+  - celtes, langues
+- :alpha3: cha
+  :alternate: ''
+  :alpha2: ch
+  :en:
+  - Chamorro
+  :fr:
+  - chamorro
+- :alpha3: chb
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Chibcha
+  :fr:
+  - chibcha
+- :alpha3: che
+  :alternate: ''
+  :alpha2: ce
+  :en:
+  - Chechen
+  :fr:
+  - tchétchène
+- :alpha3: chg
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Chagatai
+  :fr:
+  - djaghataï
+- :alpha3: chi
+  :alternate: zho
+  :alpha2: zh
+  :en:
+  - Chinese
+  :fr:
+  - chinois
+- :alpha3: chk
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Chuukese
+  :fr:
+  - chuuk
+- :alpha3: chm
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Mari
+  :fr:
+  - mari
+- :alpha3: chn
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Chinook jargon
+  :fr:
+  - chinook, jargon
+- :alpha3: cho
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Choctaw
+  :fr:
+  - choctaw
+- :alpha3: chp
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Chipewyan
+  - Dene Suline
+  :fr:
+  - chipewyan
+- :alpha3: chr
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Cherokee
+  :fr:
+  - cherokee
+- :alpha3: chu
+  :alternate: ''
+  :alpha2: cu
+  :en:
+  - Church Slavic
+  - Old Slavonic
+  - Church Slavonic
+  - Old Bulgarian
+  - Old Church Slavonic
+  :fr:
+  - slavon d'église
+  - vieux slave
+  - slavon liturgique
+  - vieux bulgare
+- :alpha3: chv
+  :alternate: ''
+  :alpha2: cv
+  :en:
+  - Chuvash
+  :fr:
+  - tchouvache
+- :alpha3: chy
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Cheyenne
+  :fr:
+  - cheyenne
+- :alpha3: cmc
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Chamic languages
+  :fr:
+  - chames, langues
+- :alpha3: cop
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Coptic
+  :fr:
+  - copte
+- :alpha3: cor
+  :alternate: ''
+  :alpha2: kw
+  :en:
+  - Cornish
+  :fr:
+  - cornique
+- :alpha3: cos
+  :alternate: ''
+  :alpha2: co
+  :en:
+  - Corsican
+  :fr:
+  - corse
+- :alpha3: cpe
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Creoles and pidgins, English based
+  :fr:
+  - créoles et pidgins basés sur l'anglais
+- :alpha3: cpf
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - ! 'Creoles and pidgins, French-based '
+  :fr:
+  - créoles et pidgins basés sur le français
+- :alpha3: cpp
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - ! 'Creoles and pidgins, Portuguese-based '
+  :fr:
+  - créoles et pidgins basés sur le portugais
+- :alpha3: cre
+  :alternate: ''
+  :alpha2: cr
+  :en:
+  - Cree
+  :fr:
+  - cree
+- :alpha3: crh
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Crimean Tatar
+  - Crimean Turkish
+  :fr:
+  - tatar de Crimé
+- :alpha3: crp
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - ! 'Creoles and pidgins '
+  :fr:
+  - créoles et pidgins
+- :alpha3: csb
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kashubian
+  :fr:
+  - kachoube
+- :alpha3: cus
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Cushitic languages
+  :fr:
+  - couchitiques, langues
+- :alpha3: cze
+  :alternate: ces
+  :alpha2: cs
+  :en:
+  - Czech
+  :fr:
+  - tchèque
+- :alpha3: dak
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Dakota
+  :fr:
+  - dakota
+- :alpha3: dan
+  :alternate: ''
+  :alpha2: da
+  :en:
+  - Danish
+  :fr:
+  - danois
+- :alpha3: dar
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Dargwa
+  :fr:
+  - dargwa
+- :alpha3: day
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Land Dayak languages
+  :fr:
+  - dayak, langues
+- :alpha3: del
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Delaware
+  :fr:
+  - delaware
+- :alpha3: den
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Slave (Athapascan)
+  :fr:
+  - esclave (athapascan)
+- :alpha3: dgr
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Dogrib
+  :fr:
+  - dogrib
+- :alpha3: din
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Dinka
+  :fr:
+  - dinka
+- :alpha3: div
+  :alternate: ''
+  :alpha2: dv
+  :en:
+  - Divehi
+  - Dhivehi
+  - Maldivian
+  :fr:
+  - maldivien
+- :alpha3: doi
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Dogri
+  :fr:
+  - dogri
+- :alpha3: dra
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Dravidian languages
+  :fr:
+  - dravidiennes, langues
+- :alpha3: dsb
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Lower Sorbian
+  :fr:
+  - bas-sorabe
+- :alpha3: dua
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Duala
+  :fr:
+  - douala
+- :alpha3: dum
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Dutch, Middle (ca.1050-1350)
+  :fr:
+  - néerlandais moyen (ca. 1050-1350)
+- :alpha3: dut
+  :alternate: nld
+  :alpha2: nl
+  :en:
+  - Dutch
+  - Flemish
+  :fr:
+  - néerlandais
+  - flamand
+- :alpha3: dyu
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Dyula
+  :fr:
+  - dioula
+- :alpha3: dzo
+  :alternate: ''
+  :alpha2: dz
+  :en:
+  - Dzongkha
+  :fr:
+  - dzongkha
+- :alpha3: efi
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Efik
+  :fr:
+  - efik
+- :alpha3: egy
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Egyptian (Ancient)
+  :fr:
+  - égyptien
+- :alpha3: eka
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Ekajuk
+  :fr:
+  - ekajuk
+- :alpha3: elx
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Elamite
+  :fr:
+  - élamite
+- :alpha3: eng
+  :alternate: ''
+  :alpha2: en
+  :en:
+  - English
+  :fr:
+  - anglais
+- :alpha3: enm
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - English, Middle (1100-1500)
+  :fr:
+  - anglais moyen (1100-1500)
+- :alpha3: epo
+  :alternate: ''
+  :alpha2: eo
+  :en:
+  - Esperanto
+  :fr:
+  - espéranto
+- :alpha3: est
+  :alternate: ''
+  :alpha2: et
+  :en:
+  - Estonian
+  :fr:
+  - estonien
+- :alpha3: ewe
+  :alternate: ''
+  :alpha2: ee
+  :en:
+  - Ewe
+  :fr:
+  - éwé
+- :alpha3: ewo
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Ewondo
+  :fr:
+  - éwondo
+- :alpha3: fan
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Fang
+  :fr:
+  - fang
+- :alpha3: fao
+  :alternate: ''
+  :alpha2: fo
+  :en:
+  - Faroese
+  :fr:
+  - féroïen
+- :alpha3: fat
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Fanti
+  :fr:
+  - fanti
+- :alpha3: fij
+  :alternate: ''
+  :alpha2: fj
+  :en:
+  - Fijian
+  :fr:
+  - fidjien
+- :alpha3: fil
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Filipino
+  - Pilipino
+  :fr:
+  - filipino
+  - pilipino
+- :alpha3: fin
+  :alternate: ''
+  :alpha2: fi
+  :en:
+  - Finnish
+  :fr:
+  - finnois
+- :alpha3: fiu
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Finno-Ugrian languages
+  :fr:
+  - finno-ougriennes, langues
+- :alpha3: fon
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Fon
+  :fr:
+  - fon
+- :alpha3: fre
+  :alternate: fra
+  :alpha2: fr
+  :en:
+  - French
+  :fr:
+  - français
+- :alpha3: frm
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - French, Middle (ca.1400-1600)
+  :fr:
+  - français moyen (1400-1600)
+- :alpha3: fro
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - French, Old (842-ca.1400)
+  :fr:
+  - français ancien (842-ca.1400)
+- :alpha3: frr
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Northern Frisian
+  :fr:
+  - frison septentrional
+- :alpha3: frs
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Eastern Frisian
+  :fr:
+  - frison oriental
+- :alpha3: fry
+  :alternate: ''
+  :alpha2: fy
+  :en:
+  - Western Frisian
+  :fr:
+  - frison occidental
+- :alpha3: ful
+  :alternate: ''
+  :alpha2: ff
+  :en:
+  - Fulah
+  :fr:
+  - peul
+- :alpha3: fur
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Friulian
+  :fr:
+  - frioulan
+- :alpha3: gaa
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Ga
+  :fr:
+  - ga
+- :alpha3: gay
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Gayo
+  :fr:
+  - gayo
+- :alpha3: gba
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Gbaya
+  :fr:
+  - gbaya
+- :alpha3: gem
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Germanic languages
+  :fr:
+  - germaniques, langues
+- :alpha3: geo
+  :alternate: kat
+  :alpha2: ka
+  :en:
+  - Georgian
+  :fr:
+  - géorgien
+- :alpha3: ger
+  :alternate: deu
+  :alpha2: de
+  :en:
+  - German
+  :fr:
+  - allemand
+- :alpha3: gez
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Geez
+  :fr:
+  - guèze
+- :alpha3: gil
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Gilbertese
+  :fr:
+  - kiribati
+- :alpha3: gla
+  :alternate: ''
+  :alpha2: gd
+  :en:
+  - Gaelic
+  - Scottish Gaelic
+  :fr:
+  - gaélique
+  - gaélique écossais
+- :alpha3: gle
+  :alternate: ''
+  :alpha2: ga
+  :en:
+  - Irish
+  :fr:
+  - irlandais
+- :alpha3: glg
+  :alternate: ''
+  :alpha2: gl
+  :en:
+  - Galician
+  :fr:
+  - galicien
+- :alpha3: glv
+  :alternate: ''
+  :alpha2: gv
+  :en:
+  - Manx
+  :fr:
+  - manx
+  - mannois
+- :alpha3: gmh
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - German, Middle High (ca.1050-1500)
+  :fr:
+  - allemand, moyen haut (ca. 1050-1500)
+- :alpha3: goh
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - German, Old High (ca.750-1050)
+  :fr:
+  - allemand, vieux haut (ca. 750-1050)
+- :alpha3: gon
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Gondi
+  :fr:
+  - gond
+- :alpha3: gor
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Gorontalo
+  :fr:
+  - gorontalo
+- :alpha3: got
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Gothic
+  :fr:
+  - gothique
+- :alpha3: grb
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Grebo
+  :fr:
+  - grebo
+- :alpha3: grc
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Greek, Ancient (to 1453)
+  :fr:
+  - grec ancien (jusqu'à 1453)
+- :alpha3: gre
+  :alternate: ell
+  :alpha2: el
+  :en:
+  - Greek, Modern (1453-)
+  :fr:
+  - grec moderne (après 1453)
+- :alpha3: grn
+  :alternate: ''
+  :alpha2: gn
+  :en:
+  - Guarani
+  :fr:
+  - guarani
+- :alpha3: gsw
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Swiss German
+  - Alemannic
+  - Alsatian
+  :fr:
+  - suisse alémanique
+  - alémanique
+  - alsacien
+- :alpha3: guj
+  :alternate: ''
+  :alpha2: gu
+  :en:
+  - Gujarati
+  :fr:
+  - goudjrati
+- :alpha3: gwi
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Gwich'in
+  :fr:
+  - gwich'in
+- :alpha3: hai
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Haida
+  :fr:
+  - haida
+- :alpha3: hat
+  :alternate: ''
+  :alpha2: ht
+  :en:
+  - Haitian
+  - Haitian Creole
+  :fr:
+  - haïtien
+  - créole haïtien
+- :alpha3: hau
+  :alternate: ''
+  :alpha2: ha
+  :en:
+  - Hausa
+  :fr:
+  - haoussa
+- :alpha3: haw
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Hawaiian
+  :fr:
+  - hawaïen
+- :alpha3: heb
+  :alternate: ''
+  :alpha2: he
+  :en:
+  - Hebrew
+  :fr:
+  - hébreu
+- :alpha3: her
+  :alternate: ''
+  :alpha2: hz
+  :en:
+  - Herero
+  :fr:
+  - herero
+- :alpha3: hil
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Hiligaynon
+  :fr:
+  - hiligaynon
+- :alpha3: him
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Himachali languages
+  - Western Pahari languages
+  :fr:
+  - langues himachalis
+  - langues paharis occidentales
+- :alpha3: hin
+  :alternate: ''
+  :alpha2: hi
+  :en:
+  - Hindi
+  :fr:
+  - hindi
+- :alpha3: hit
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Hittite
+  :fr:
+  - hittite
+- :alpha3: hmn
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Hmong
+  - Mong
+  :fr:
+  - hmong
+- :alpha3: hmo
+  :alternate: ''
+  :alpha2: ho
+  :en:
+  - Hiri Motu
+  :fr:
+  - hiri motu
+- :alpha3: hrv
+  :alternate: ''
+  :alpha2: hr
+  :en:
+  - Croatian
+  :fr:
+  - croate
+- :alpha3: hsb
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Upper Sorbian
+  :fr:
+  - haut-sorabe
+- :alpha3: hun
+  :alternate: ''
+  :alpha2: hu
+  :en:
+  - Hungarian
+  :fr:
+  - hongrois
+- :alpha3: hup
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Hupa
+  :fr:
+  - hupa
+- :alpha3: iba
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Iban
+  :fr:
+  - iban
+- :alpha3: ibo
+  :alternate: ''
+  :alpha2: ig
+  :en:
+  - Igbo
+  :fr:
+  - igbo
+- :alpha3: ice
+  :alternate: isl
+  :alpha2: is
+  :en:
+  - Icelandic
+  :fr:
+  - islandais
+- :alpha3: ido
+  :alternate: ''
+  :alpha2: io
+  :en:
+  - Ido
+  :fr:
+  - ido
+- :alpha3: iii
+  :alternate: ''
+  :alpha2: ii
+  :en:
+  - Sichuan Yi
+  - Nuosu
+  :fr:
+  - yi de Sichuan
+- :alpha3: ijo
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Ijo languages
+  :fr:
+  - ijo, langues
+- :alpha3: iku
+  :alternate: ''
+  :alpha2: iu
+  :en:
+  - Inuktitut
+  :fr:
+  - inuktitut
+- :alpha3: ile
+  :alternate: ''
+  :alpha2: ie
+  :en:
+  - Interlingue
+  - Occidental
+  :fr:
+  - interlingue
+- :alpha3: ilo
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Iloko
+  :fr:
+  - ilocano
+- :alpha3: ina
+  :alternate: ''
+  :alpha2: ia
+  :en:
+  - Interlingua (International Auxiliary Language Association)
+  :fr:
+  - interlingua (langue auxiliaire internationale)
+- :alpha3: inc
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Indic languages
+  :fr:
+  - indo-aryennes, langues
+- :alpha3: ind
+  :alternate: ''
+  :alpha2: id
+  :en:
+  - Indonesian
+  :fr:
+  - indonésien
+- :alpha3: ine
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Indo-European languages
+  :fr:
+  - indo-européennes, langues
+- :alpha3: inh
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Ingush
+  :fr:
+  - ingouche
+- :alpha3: ipk
+  :alternate: ''
+  :alpha2: ik
+  :en:
+  - Inupiaq
+  :fr:
+  - inupiaq
+- :alpha3: ira
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Iranian languages
+  :fr:
+  - iraniennes, langues
+- :alpha3: iro
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Iroquoian languages
+  :fr:
+  - iroquoises, langues
+- :alpha3: ita
+  :alternate: ''
+  :alpha2: it
+  :en:
+  - Italian
+  :fr:
+  - italien
+- :alpha3: jav
+  :alternate: ''
+  :alpha2: jv
+  :en:
+  - Javanese
+  :fr:
+  - javanais
+- :alpha3: jbo
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Lojban
+  :fr:
+  - lojban
+- :alpha3: jpn
+  :alternate: ''
+  :alpha2: ja
+  :en:
+  - Japanese
+  :fr:
+  - japonais
+- :alpha3: jpr
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Judeo-Persian
+  :fr:
+  - judéo-persan
+- :alpha3: jrb
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Judeo-Arabic
+  :fr:
+  - judéo-arabe
+- :alpha3: kaa
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kara-Kalpak
+  :fr:
+  - karakalpak
+- :alpha3: kab
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kabyle
+  :fr:
+  - kabyle
+- :alpha3: kac
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kachin
+  - Jingpho
+  :fr:
+  - kachin
+  - jingpho
+- :alpha3: kal
+  :alternate: ''
+  :alpha2: kl
+  :en:
+  - Kalaallisut
+  - Greenlandic
+  :fr:
+  - groenlandais
+- :alpha3: kam
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kamba
+  :fr:
+  - kamba
+- :alpha3: kan
+  :alternate: ''
+  :alpha2: kn
+  :en:
+  - Kannada
+  :fr:
+  - kannada
+- :alpha3: kar
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Karen languages
+  :fr:
+  - karen, langues
+- :alpha3: kas
+  :alternate: ''
+  :alpha2: ks
+  :en:
+  - Kashmiri
+  :fr:
+  - kashmiri
+- :alpha3: kau
+  :alternate: ''
+  :alpha2: kr
+  :en:
+  - Kanuri
+  :fr:
+  - kanouri
+- :alpha3: kaw
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kawi
+  :fr:
+  - kawi
+- :alpha3: kaz
+  :alternate: ''
+  :alpha2: kk
+  :en:
+  - Kazakh
+  :fr:
+  - kazakh
+- :alpha3: kbd
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kabardian
+  :fr:
+  - kabardien
+- :alpha3: kha
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Khasi
+  :fr:
+  - khasi
+- :alpha3: khi
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Khoisan languages
+  :fr:
+  - khoïsan, langues
+- :alpha3: khm
+  :alternate: ''
+  :alpha2: km
+  :en:
+  - Central Khmer
+  :fr:
+  - khmer central
+- :alpha3: kho
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Khotanese
+  - Sakan
+  :fr:
+  - khotanais
+  - sakan
+- :alpha3: kik
+  :alternate: ''
+  :alpha2: ki
+  :en:
+  - Kikuyu
+  - Gikuyu
+  :fr:
+  - kikuyu
+- :alpha3: kin
+  :alternate: ''
+  :alpha2: rw
+  :en:
+  - Kinyarwanda
+  :fr:
+  - rwanda
+- :alpha3: kir
+  :alternate: ''
+  :alpha2: ky
+  :en:
+  - Kirghiz
+  - Kyrgyz
+  :fr:
+  - kirghiz
+- :alpha3: kmb
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kimbundu
+  :fr:
+  - kimbundu
+- :alpha3: kok
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Konkani
+  :fr:
+  - konkani
+- :alpha3: kom
+  :alternate: ''
+  :alpha2: kv
+  :en:
+  - Komi
+  :fr:
+  - kom
+- :alpha3: kon
+  :alternate: ''
+  :alpha2: kg
+  :en:
+  - Kongo
+  :fr:
+  - kongo
+- :alpha3: kor
+  :alternate: ''
+  :alpha2: ko
+  :en:
+  - Korean
+  :fr:
+  - coréen
+- :alpha3: kos
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kosraean
+  :fr:
+  - kosrae
+- :alpha3: kpe
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kpelle
+  :fr:
+  - kpellé
+- :alpha3: krc
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Karachay-Balkar
+  :fr:
+  - karatchai balkar
+- :alpha3: krl
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Karelian
+  :fr:
+  - carélien
+- :alpha3: kro
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kru languages
+  :fr:
+  - krou, langues
+- :alpha3: kru
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kurukh
+  :fr:
+  - kurukh
+- :alpha3: kua
+  :alternate: ''
+  :alpha2: kj
+  :en:
+  - Kuanyama
+  - Kwanyama
+  :fr:
+  - kuanyama
+  - kwanyama
+- :alpha3: kum
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kumyk
+  :fr:
+  - koumyk
+- :alpha3: kur
+  :alternate: ''
+  :alpha2: ku
+  :en:
+  - Kurdish
+  :fr:
+  - kurde
+- :alpha3: kut
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kutenai
+  :fr:
+  - kutenai
+- :alpha3: lad
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Ladino
+  :fr:
+  - judéo-espagnol
+- :alpha3: lah
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Lahnda
+  :fr:
+  - lahnda
+- :alpha3: lam
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Lamba
+  :fr:
+  - lamba
+- :alpha3: lao
+  :alternate: ''
+  :alpha2: lo
+  :en:
+  - Lao
+  :fr:
+  - lao
+- :alpha3: lat
+  :alternate: ''
+  :alpha2: la
+  :en:
+  - Latin
+  :fr:
+  - latin
+- :alpha3: lav
+  :alternate: ''
+  :alpha2: lv
+  :en:
+  - Latvian
+  :fr:
+  - letton
+- :alpha3: lez
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Lezghian
+  :fr:
+  - lezghien
+- :alpha3: lim
+  :alternate: ''
+  :alpha2: li
+  :en:
+  - Limburgan
+  - Limburger
+  - Limburgish
+  :fr:
+  - limbourgeois
+- :alpha3: lin
+  :alternate: ''
+  :alpha2: ln
+  :en:
+  - Lingala
+  :fr:
+  - lingala
+- :alpha3: lit
+  :alternate: ''
+  :alpha2: lt
+  :en:
+  - Lithuanian
+  :fr:
+  - lituanien
+- :alpha3: lol
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Mongo
+  :fr:
+  - mongo
+- :alpha3: loz
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Lozi
+  :fr:
+  - lozi
+- :alpha3: ltz
+  :alternate: ''
+  :alpha2: lb
+  :en:
+  - Luxembourgish
+  - Letzeburgesch
+  :fr:
+  - luxembourgeois
+- :alpha3: lua
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Luba-Lulua
+  :fr:
+  - luba-lulua
+- :alpha3: lub
+  :alternate: ''
+  :alpha2: lu
+  :en:
+  - Luba-Katanga
+  :fr:
+  - luba-katanga
+- :alpha3: lug
+  :alternate: ''
+  :alpha2: lg
+  :en:
+  - Ganda
+  :fr:
+  - ganda
+- :alpha3: lui
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Luiseno
+  :fr:
+  - luiseno
+- :alpha3: lun
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Lunda
+  :fr:
+  - lunda
+- :alpha3: luo
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Luo (Kenya and Tanzania)
+  :fr:
+  - luo (Kenya et Tanzanie)
+- :alpha3: lus
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Lushai
+  :fr:
+  - lushai
+- :alpha3: mac
+  :alternate: mkd
+  :alpha2: mk
+  :en:
+  - Macedonian
+  :fr:
+  - macédonien
+- :alpha3: mad
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Madurese
+  :fr:
+  - madourais
+- :alpha3: mag
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Magahi
+  :fr:
+  - magahi
+- :alpha3: mah
+  :alternate: ''
+  :alpha2: mh
+  :en:
+  - Marshallese
+  :fr:
+  - marshall
+- :alpha3: mai
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Maithili
+  :fr:
+  - maithili
+- :alpha3: mak
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Makasar
+  :fr:
+  - makassar
+- :alpha3: mal
+  :alternate: ''
+  :alpha2: ml
+  :en:
+  - Malayalam
+  :fr:
+  - malayalam
+- :alpha3: man
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Mandingo
+  :fr:
+  - mandingue
+- :alpha3: mao
+  :alternate: mri
+  :alpha2: mi
+  :en:
+  - Maori
+  :fr:
+  - maori
+- :alpha3: map
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Austronesian languages
+  :fr:
+  - austronésiennes, langues
+- :alpha3: mar
+  :alternate: ''
+  :alpha2: mr
+  :en:
+  - Marathi
+  :fr:
+  - marathe
+- :alpha3: mas
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Masai
+  :fr:
+  - massaï
+- :alpha3: may
+  :alternate: msa
+  :alpha2: ms
+  :en:
+  - Malay
+  :fr:
+  - malais
+- :alpha3: mdf
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Moksha
+  :fr:
+  - moksa
+- :alpha3: mdr
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Mandar
+  :fr:
+  - mandar
+- :alpha3: men
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Mende
+  :fr:
+  - mendé
+- :alpha3: mga
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Irish, Middle (900-1200)
+  :fr:
+  - irlandais moyen (900-1200)
+- :alpha3: mic
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Mi'kmaq
+  - Micmac
+  :fr:
+  - mi'kmaq
+  - micmac
+- :alpha3: min
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Minangkabau
+  :fr:
+  - minangkabau
+- :alpha3: mis
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Uncoded languages
+  :fr:
+  - langues non codées
+- :alpha3: mkh
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Mon-Khmer languages
+  :fr:
+  - môn-khmer, langues
+- :alpha3: mlg
+  :alternate: ''
+  :alpha2: mg
+  :en:
+  - Malagasy
+  :fr:
+  - malgache
+- :alpha3: mlt
+  :alternate: ''
+  :alpha2: mt
+  :en:
+  - Maltese
+  :fr:
+  - maltais
+- :alpha3: mnc
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Manchu
+  :fr:
+  - mandchou
+- :alpha3: mni
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Manipuri
+  :fr:
+  - manipuri
+- :alpha3: mno
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Manobo languages
+  :fr:
+  - manobo, langues
+- :alpha3: moh
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Mohawk
+  :fr:
+  - mohawk
+- :alpha3: mon
+  :alternate: ''
+  :alpha2: mn
+  :en:
+  - Mongolian
+  :fr:
+  - mongol
+- :alpha3: mos
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Mossi
+  :fr:
+  - moré
+- :alpha3: mul
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Multiple languages
+  :fr:
+  - multilingue
+- :alpha3: mun
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Munda languages
+  :fr:
+  - mounda, langues
+- :alpha3: mus
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Creek
+  :fr:
+  - muskogee
+- :alpha3: mwl
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Mirandese
+  :fr:
+  - mirandais
+- :alpha3: mwr
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Marwari
+  :fr:
+  - marvari
+- :alpha3: myn
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Mayan languages
+  :fr:
+  - maya, langues
+- :alpha3: myv
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Erzya
+  :fr:
+  - erza
+- :alpha3: nah
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Nahuatl languages
+  :fr:
+  - nahuatl, langues
+- :alpha3: nai
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - North American Indian languages
+  :fr:
+  - nord-amérindiennes, langues
+- :alpha3: nap
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Neapolitan
+  :fr:
+  - napolitain
+- :alpha3: nau
+  :alternate: ''
+  :alpha2: na
+  :en:
+  - Nauru
+  :fr:
+  - nauruan
+- :alpha3: nav
+  :alternate: ''
+  :alpha2: nv
+  :en:
+  - Navajo
+  - Navaho
+  :fr:
+  - navaho
+- :alpha3: nbl
+  :alternate: ''
+  :alpha2: nr
+  :en:
+  - Ndebele, South
+  - South Ndebele
+  :fr:
+  - ndébélé du Sud
+- :alpha3: nde
+  :alternate: ''
+  :alpha2: nd
+  :en:
+  - Ndebele, North
+  - North Ndebele
+  :fr:
+  - ndébélé du Nord
+- :alpha3: ndo
+  :alternate: ''
+  :alpha2: ng
+  :en:
+  - Ndonga
+  :fr:
+  - ndonga
+- :alpha3: nds
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Low German
+  - Low Saxon
+  - German, Low
+  - Saxon, Low
+  :fr:
+  - bas allemand
+  - bas saxon
+  - allemand, bas
+  - saxon, bas
+- :alpha3: nep
+  :alternate: ''
+  :alpha2: ne
+  :en:
+  - Nepali
+  :fr:
+  - népalais
+- :alpha3: new
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Nepal Bhasa
+  - Newari
+  :fr:
+  - nepal bhasa
+  - newari
+- :alpha3: nia
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Nias
+  :fr:
+  - nias
+- :alpha3: nic
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Niger-Kordofanian languages
+  :fr:
+  - nigéro-kordofaniennes, langues
+- :alpha3: niu
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Niuean
+  :fr:
+  - niué
+- :alpha3: nno
+  :alternate: ''
+  :alpha2: nn
+  :en:
+  - Norwegian Nynorsk
+  - Nynorsk, Norwegian
+  :fr:
+  - norvégien nynorsk
+  - nynorsk, norvégien
+- :alpha3: nob
+  :alternate: ''
+  :alpha2: nb
+  :en:
+  - Bokmål, Norwegian
+  - Norwegian Bokmål
+  :fr:
+  - norvégien bokmål
+- :alpha3: nog
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Nogai
+  :fr:
+  - nogaï
+  - nogay
+- :alpha3: non
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Norse, Old
+  :fr:
+  - norrois, vieux
+- :alpha3: nor
+  :alternate: ''
+  :alpha2: 'no'
+  :en:
+  - Norwegian
+  :fr:
+  - norvégien
+- :alpha3: nqo
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - N'Ko
+  :fr:
+  - n'ko
+- :alpha3: nso
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Pedi
+  - Sepedi
+  - Northern Sotho
+  :fr:
+  - pedi
+  - sepedi
+  - sotho du Nord
+- :alpha3: nub
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Nubian languages
+  :fr:
+  - nubiennes, langues
+- :alpha3: nwc
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Classical Newari
+  - Old Newari
+  - Classical Nepal Bhasa
+  :fr:
+  - newari classique
+- :alpha3: nya
+  :alternate: ''
+  :alpha2: ny
+  :en:
+  - Chichewa
+  - Chewa
+  - Nyanja
+  :fr:
+  - chichewa
+  - chewa
+  - nyanja
+- :alpha3: nym
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Nyamwezi
+  :fr:
+  - nyamwezi
+- :alpha3: nyn
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Nyankole
+  :fr:
+  - nyankolé
+- :alpha3: nyo
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Nyoro
+  :fr:
+  - nyoro
+- :alpha3: nzi
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Nzima
+  :fr:
+  - nzema
+- :alpha3: oci
+  :alternate: ''
+  :alpha2: oc
+  :en:
+  - Occitan (post 1500)
+  - Provençal
+  :fr:
+  - occitan (après 1500)
+  - provençal
+- :alpha3: oji
+  :alternate: ''
+  :alpha2: oj
+  :en:
+  - Ojibwa
+  :fr:
+  - ojibwa
+- :alpha3: ori
+  :alternate: ''
+  :alpha2: or
+  :en:
+  - Oriya
+  :fr:
+  - oriya
+- :alpha3: orm
+  :alternate: ''
+  :alpha2: om
+  :en:
+  - Oromo
+  :fr:
+  - galla
+- :alpha3: osa
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Osage
+  :fr:
+  - osage
+- :alpha3: oss
+  :alternate: ''
+  :alpha2: os
+  :en:
+  - Ossetian
+  - Ossetic
+  :fr:
+  - ossète
+- :alpha3: ota
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Turkish, Ottoman (1500-1928)
+  :fr:
+  - turc ottoman (1500-1928)
+- :alpha3: oto
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Otomian languages
+  :fr:
+  - otomi, langues
+- :alpha3: paa
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Papuan languages
+  :fr:
+  - papoues, langues
+- :alpha3: pag
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Pangasinan
+  :fr:
+  - pangasinan
+- :alpha3: pal
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Pahlavi
+  :fr:
+  - pahlavi
+- :alpha3: pam
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Pampanga
+  - Kapampangan
+  :fr:
+  - pampangan
+- :alpha3: pan
+  :alternate: ''
+  :alpha2: pa
+  :en:
+  - Panjabi
+  - Punjabi
+  :fr:
+  - pendjabi
+- :alpha3: pap
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Papiamento
+  :fr:
+  - papiamento
+- :alpha3: pau
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Palauan
+  :fr:
+  - palau
+- :alpha3: peo
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Persian, Old (ca.600-400 B.C.)
+  :fr:
+  - perse, vieux (ca. 600-400 av. J.-C.)
+- :alpha3: per
+  :alternate: fas
+  :alpha2: fa
+  :en:
+  - Persian
+  :fr:
+  - persan
+- :alpha3: phi
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Philippine languages
+  :fr:
+  - philippines, langues
+- :alpha3: phn
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Phoenician
+  :fr:
+  - phénicien
+- :alpha3: pli
+  :alternate: ''
+  :alpha2: pi
+  :en:
+  - Pali
+  :fr:
+  - pali
+- :alpha3: pol
+  :alternate: ''
+  :alpha2: pl
+  :en:
+  - Polish
+  :fr:
+  - polonais
+- :alpha3: pon
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Pohnpeian
+  :fr:
+  - pohnpei
+- :alpha3: por
+  :alternate: ''
+  :alpha2: pt
+  :en:
+  - Portuguese
+  :fr:
+  - portugais
+- :alpha3: pra
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Prakrit languages
+  :fr:
+  - prâkrit, langues
+- :alpha3: pro
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Provençal, Old (to 1500)
+  :fr:
+  - provençal ancien (jusqu'à 1500)
+- :alpha3: pus
+  :alternate: ''
+  :alpha2: ps
+  :en:
+  - Pushto
+  - Pashto
+  :fr:
+  - pachto
+- :alpha3: qaa-qtz
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Reserved for local use
+  :fr:
+  - réservée à l'usage local
+- :alpha3: que
+  :alternate: ''
+  :alpha2: qu
+  :en:
+  - Quechua
+  :fr:
+  - quechua
+- :alpha3: raj
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Rajasthani
+  :fr:
+  - rajasthani
+- :alpha3: rap
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Rapanui
+  :fr:
+  - rapanui
+- :alpha3: rar
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Rarotongan
+  - Cook Islands Maori
+  :fr:
+  - rarotonga
+  - maori des îles Cook
+- :alpha3: roa
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Romance languages
+  :fr:
+  - romanes, langues
+- :alpha3: roh
+  :alternate: ''
+  :alpha2: rm
+  :en:
+  - Romansh
+  :fr:
+  - romanche
+- :alpha3: rom
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Romany
+  :fr:
+  - tsigane
+- :alpha3: rum
+  :alternate: ron
+  :alpha2: ro
+  :en:
+  - Romanian
+  - Moldavian
+  - Moldovan
+  :fr:
+  - roumain
+  - moldave
+- :alpha3: run
+  :alternate: ''
+  :alpha2: rn
+  :en:
+  - Rundi
+  :fr:
+  - rundi
+- :alpha3: rup
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Aromanian
+  - Arumanian
+  - Macedo-Romanian
+  :fr:
+  - aroumain
+  - macédo-roumain
+- :alpha3: rus
+  :alternate: ''
+  :alpha2: ru
+  :en:
+  - Russian
+  :fr:
+  - russe
+- :alpha3: sad
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Sandawe
+  :fr:
+  - sandawe
+- :alpha3: sag
+  :alternate: ''
+  :alpha2: sg
+  :en:
+  - Sango
+  :fr:
+  - sango
+- :alpha3: sah
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Yakut
+  :fr:
+  - iakoute
+- :alpha3: sai
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - South American Indian (Other)
+  :fr:
+  - indiennes d'Amérique du Sud, autres langues
+- :alpha3: sal
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Salishan languages
+  :fr:
+  - salishennes, langues
+- :alpha3: sam
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Samaritan Aramaic
+  :fr:
+  - samaritain
+- :alpha3: san
+  :alternate: ''
+  :alpha2: sa
+  :en:
+  - Sanskrit
+  :fr:
+  - sanskrit
+- :alpha3: sas
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Sasak
+  :fr:
+  - sasak
+- :alpha3: sat
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Santali
+  :fr:
+  - santal
+- :alpha3: scn
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Sicilian
+  :fr:
+  - sicilien
+- :alpha3: sco
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Scots
+  :fr:
+  - écossais
+- :alpha3: sel
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Selkup
+  :fr:
+  - selkoupe
+- :alpha3: sem
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Semitic languages
+  :fr:
+  - sémitiques, langues
+- :alpha3: sga
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Irish, Old (to 900)
+  :fr:
+  - irlandais ancien (jusqu'à 900)
+- :alpha3: sgn
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Sign Languages
+  :fr:
+  - langues des signes
+- :alpha3: shn
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Shan
+  :fr:
+  - chan
+- :alpha3: sid
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Sidamo
+  :fr:
+  - sidamo
+- :alpha3: sin
+  :alternate: ''
+  :alpha2: si
+  :en:
+  - Sinhala
+  - Sinhalese
+  :fr:
+  - singhalais
+- :alpha3: sio
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Siouan languages
+  :fr:
+  - sioux, langues
+- :alpha3: sit
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Sino-Tibetan languages
+  :fr:
+  - sino-tibétaines, langues
+- :alpha3: sla
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Slavic languages
+  :fr:
+  - slaves, langues
+- :alpha3: slo
+  :alternate: slk
+  :alpha2: sk
+  :en:
+  - Slovak
+  :fr:
+  - slovaque
+- :alpha3: slv
+  :alternate: ''
+  :alpha2: sl
+  :en:
+  - Slovenian
+  :fr:
+  - slovène
+- :alpha3: sma
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Southern Sami
+  :fr:
+  - sami du Sud
+- :alpha3: sme
+  :alternate: ''
+  :alpha2: se
+  :en:
+  - Northern Sami
+  :fr:
+  - sami du Nord
+- :alpha3: smi
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Sami languages
+  :fr:
+  - sames, langues
+- :alpha3: smj
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Lule Sami
+  :fr:
+  - sami de Lule
+- :alpha3: smn
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Inari Sami
+  :fr:
+  - sami d'Inari
+- :alpha3: smo
+  :alternate: ''
+  :alpha2: sm
+  :en:
+  - Samoan
+  :fr:
+  - samoan
+- :alpha3: sms
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Skolt Sami
+  :fr:
+  - sami skolt
+- :alpha3: sna
+  :alternate: ''
+  :alpha2: sn
+  :en:
+  - Shona
+  :fr:
+  - shona
+- :alpha3: snd
+  :alternate: ''
+  :alpha2: sd
+  :en:
+  - Sindhi
+  :fr:
+  - sindhi
+- :alpha3: snk
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Soninke
+  :fr:
+  - soninké
+- :alpha3: sog
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Sogdian
+  :fr:
+  - sogdien
+- :alpha3: som
+  :alternate: ''
+  :alpha2: so
+  :en:
+  - Somali
+  :fr:
+  - somali
+- :alpha3: son
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Songhai languages
+  :fr:
+  - songhai, langues
+- :alpha3: sot
+  :alternate: ''
+  :alpha2: st
+  :en:
+  - Sotho, Southern
+  :fr:
+  - sotho du Sud
+- :alpha3: spa
+  :alternate: ''
+  :alpha2: es
+  :en:
+  - Spanish
+  - Castilian
+  :fr:
+  - espagnol
+  - castillan
+- :alpha3: srd
+  :alternate: ''
+  :alpha2: sc
+  :en:
+  - Sardinian
+  :fr:
+  - sarde
+- :alpha3: srn
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Sranan Tongo
+  :fr:
+  - sranan tongo
+- :alpha3: srp
+  :alternate: ''
+  :alpha2: sr
+  :en:
+  - Serbian
+  :fr:
+  - serbe
+- :alpha3: srr
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Serer
+  :fr:
+  - sérère
+- :alpha3: ssa
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Nilo-Saharan languages
+  :fr:
+  - nilo-sahariennes, langues
+- :alpha3: ssw
+  :alternate: ''
+  :alpha2: ss
+  :en:
+  - Swati
+  :fr:
+  - swati
+- :alpha3: suk
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Sukuma
+  :fr:
+  - sukuma
+- :alpha3: sun
+  :alternate: ''
+  :alpha2: su
+  :en:
+  - Sundanese
+  :fr:
+  - soundanais
+- :alpha3: sus
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Susu
+  :fr:
+  - soussou
+- :alpha3: sux
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Sumerian
+  :fr:
+  - sumérien
+- :alpha3: swa
+  :alternate: ''
+  :alpha2: sw
+  :en:
+  - Swahili
+  :fr:
+  - swahili
+- :alpha3: swe
+  :alternate: ''
+  :alpha2: sv
+  :en:
+  - Swedish
+  :fr:
+  - suédois
+- :alpha3: syc
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Classical Syriac
+  :fr:
+  - syriaque classique
+- :alpha3: syr
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Syriac
+  :fr:
+  - syriaque
+- :alpha3: tah
+  :alternate: ''
+  :alpha2: ty
+  :en:
+  - Tahitian
+  :fr:
+  - tahitien
+- :alpha3: tai
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tai languages
+  :fr:
+  - tai, langues
+- :alpha3: tam
+  :alternate: ''
+  :alpha2: ta
+  :en:
+  - Tamil
+  :fr:
+  - tamoul
+- :alpha3: tat
+  :alternate: ''
+  :alpha2: tt
+  :en:
+  - Tatar
+  :fr:
+  - tatar
+- :alpha3: tel
+  :alternate: ''
+  :alpha2: te
+  :en:
+  - Telugu
+  :fr:
+  - télougou
+- :alpha3: tem
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Timne
+  :fr:
+  - temne
+- :alpha3: ter
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tereno
+  :fr:
+  - tereno
+- :alpha3: tet
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tetum
+  :fr:
+  - tetum
+- :alpha3: tgk
+  :alternate: ''
+  :alpha2: tg
+  :en:
+  - Tajik
+  :fr:
+  - tadjik
+- :alpha3: tgl
+  :alternate: ''
+  :alpha2: tl
+  :en:
+  - Tagalog
+  :fr:
+  - tagalog
+- :alpha3: tha
+  :alternate: ''
+  :alpha2: th
+  :en:
+  - Thai
+  :fr:
+  - thaï
+- :alpha3: tib
+  :alternate: bod
+  :alpha2: bo
+  :en:
+  - Tibetan
+  :fr:
+  - tibétain
+- :alpha3: tig
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tigre
+  :fr:
+  - tigré
+- :alpha3: tir
+  :alternate: ''
+  :alpha2: ti
+  :en:
+  - Tigrinya
+  :fr:
+  - tigrigna
+- :alpha3: tiv
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tiv
+  :fr:
+  - tiv
+- :alpha3: tkl
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tokelau
+  :fr:
+  - tokelau
+- :alpha3: tlh
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Klingon
+  - tlhIngan-Hol
+  :fr:
+  - klingon
+- :alpha3: tli
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tlingit
+  :fr:
+  - tlingit
+- :alpha3: tmh
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tamashek
+  :fr:
+  - tamacheq
+- :alpha3: tog
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tonga (Nyasa)
+  :fr:
+  - tonga (Nyasa)
+- :alpha3: ton
+  :alternate: ''
+  :alpha2: to
+  :en:
+  - Tonga (Tonga Islands)
+  :fr:
+  - tongan (Îles Tonga)
+- :alpha3: tpi
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tok Pisin
+  :fr:
+  - tok pisin
+- :alpha3: tsi
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tsimshian
+  :fr:
+  - tsimshian
+- :alpha3: tsn
+  :alternate: ''
+  :alpha2: tn
+  :en:
+  - Tswana
+  :fr:
+  - tswana
+- :alpha3: tso
+  :alternate: ''
+  :alpha2: ts
+  :en:
+  - Tsonga
+  :fr:
+  - tsonga
+- :alpha3: tuk
+  :alternate: ''
+  :alpha2: tk
+  :en:
+  - Turkmen
+  :fr:
+  - turkmène
+- :alpha3: tum
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tumbuka
+  :fr:
+  - tumbuka
+- :alpha3: tup
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tupi languages
+  :fr:
+  - tupi, langues
+- :alpha3: tur
+  :alternate: ''
+  :alpha2: tr
+  :en:
+  - Turkish
+  :fr:
+  - turc
+- :alpha3: tut
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Altaic languages
+  :fr:
+  - altaïques, langues
+- :alpha3: tvl
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tuvalu
+  :fr:
+  - tuvalu
+- :alpha3: twi
+  :alternate: ''
+  :alpha2: tw
+  :en:
+  - Twi
+  :fr:
+  - twi
+- :alpha3: tyv
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Tuvinian
+  :fr:
+  - touva
+- :alpha3: udm
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Udmurt
+  :fr:
+  - oudmourte
+- :alpha3: uga
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Ugaritic
+  :fr:
+  - ougaritique
+- :alpha3: uig
+  :alternate: ''
+  :alpha2: ug
+  :en:
+  - Uighur
+  - Uyghur
+  :fr:
+  - ouïgour
+- :alpha3: ukr
+  :alternate: ''
+  :alpha2: uk
+  :en:
+  - Ukrainian
+  :fr:
+  - ukrainien
+- :alpha3: umb
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Umbundu
+  :fr:
+  - umbundu
+- :alpha3: und
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Undetermined
+  :fr:
+  - indéterminée
+- :alpha3: urd
+  :alternate: ''
+  :alpha2: ur
+  :en:
+  - Urdu
+  :fr:
+  - ourdou
+- :alpha3: uzb
+  :alternate: ''
+  :alpha2: uz
+  :en:
+  - Uzbek
+  :fr:
+  - ouszbek
+- :alpha3: vai
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Vai
+  :fr:
+  - vaï
+- :alpha3: ven
+  :alternate: ''
+  :alpha2: ve
+  :en:
+  - Venda
+  :fr:
+  - venda
+- :alpha3: vie
+  :alternate: ''
+  :alpha2: vi
+  :en:
+  - Vietnamese
+  :fr:
+  - vietnamien
+- :alpha3: vol
+  :alternate: ''
+  :alpha2: vo
+  :en:
+  - Volapük
+  :fr:
+  - volapük
+- :alpha3: vot
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Votic
+  :fr:
+  - vote
+- :alpha3: wak
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Wakashan languages
+  :fr:
+  - wakashanes, langues
+- :alpha3: wal
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Walamo
+  :fr:
+  - walamo
+- :alpha3: war
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Waray
+  :fr:
+  - waray
+- :alpha3: was
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Washo
+  :fr:
+  - washo
+- :alpha3: wel
+  :alternate: cym
+  :alpha2: cy
+  :en:
+  - Welsh
+  :fr:
+  - gallois
+- :alpha3: wen
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Sorbian languages
+  :fr:
+  - sorabes, langues
+- :alpha3: wln
+  :alternate: ''
+  :alpha2: wa
+  :en:
+  - Walloon
+  :fr:
+  - wallon
+- :alpha3: wol
+  :alternate: ''
+  :alpha2: wo
+  :en:
+  - Wolof
+  :fr:
+  - wolof
+- :alpha3: xal
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Kalmyk
+  - Oirat
+  :fr:
+  - kalmouk
+  - oïrat
+- :alpha3: xho
+  :alternate: ''
+  :alpha2: xh
+  :en:
+  - Xhosa
+  :fr:
+  - xhosa
+- :alpha3: yao
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Yao
+  :fr:
+  - yao
+- :alpha3: yap
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Yapese
+  :fr:
+  - yapois
+- :alpha3: yid
+  :alternate: ''
+  :alpha2: yi
+  :en:
+  - Yiddish
+  :fr:
+  - yiddish
+- :alpha3: yor
+  :alternate: ''
+  :alpha2: yo
+  :en:
+  - Yoruba
+  :fr:
+  - yoruba
+- :alpha3: ypk
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Yupik languages
+  :fr:
+  - yupik, langues
+- :alpha3: zap
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Zapotec
+  :fr:
+  - zapotèque
+- :alpha3: zbl
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Blissymbols
+  - Blissymbolics
+  - Bliss
+  :fr:
+  - symboles Bliss
+  - Bliss
+- :alpha3: zen
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Zenaga
+  :fr:
+  - zenaga
+- :alpha3: zgh
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Standard Moroccan Tamazight
+  :fr:
+  - amazighe standard marocain
+- :alpha3: zha
+  :alternate: ''
+  :alpha2: za
+  :en:
+  - Zhuang
+  - Chuang
+  :fr:
+  - zhuang
+  - chuang
+- :alpha3: znd
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Zande languages
+  :fr:
+  - zandé, langues
+- :alpha3: zul
+  :alternate: ''
+  :alpha2: zu
+  :en:
+  - Zulu
+  :fr:
+  - zoulou
+- :alpha3: zun
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Zuni
+  :fr:
+  - zuni
+- :alpha3: zxx
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - No linguistic content
+  - Not applicable
+  :fr:
+  - pas de contenu linguistique
+  - non applicable
+- :alpha3: zza
+  :alternate: ''
+  :alpha2: ''
+  :en:
+  - Zaza
+  - Dimili
+  - Dimli
+  - Kirdki
+  - Kirmanjki
+  - Zazaki
+  :fr:
+  - zaza
+  - dimili
+  - dimli
+  - kirdki
+  - kirmanjki
+  - zazaki

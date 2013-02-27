@@ -113,37 +113,22 @@ class MediaObject < ActiveFedora::Base
   end
 
   # Removes one or many MasterFiles from parts_with_order
-  def parts_with_order_remove masterfiles
-    new_order = self.section_pid
-    masterfiles.each do |mf| 
-      new_order.delete mf.pid
-    end
-
-    new_parts = []
-    new_order.each do |pid|
-      new_parts << MasterFile.find(pid)
-    end
-    
-    self.parts_with_order = new_parts
+  def parts_with_order_remove part
+    self.parts_with_order = self.parts_with_order.reject{|master_file| master_file.pid == part.pid }
   end
 
-  def parts_with_order= masterfiles
-    new_order = []
-    masterfiles.each do |mf| 
-      new_order << mf.pid
-    end
-    
-    # Workaround for a really weird bug does not allow assigning a new array of fewer elements
-    self.section_pid.count.times { self.section_pid = [""] }
-    self.section_pid = new_order.uniq
+  def parts_with_order= master_files
+    self.section_pid = master_files.map(&:pid)
   end
 
   def parts_with_order
-    masterfiles = []
-    section_pid.each do |pid| 
-      masterfiles << MasterFile.find(pid)
-    end
-    masterfiles
+    self.section_pid.map{|pid| MasterFile.find(pid)}
+  end
+
+  def section_pid=( pids )
+    self.sectionsMetadata.find_by_terms(:section_pid).each &:remove
+    self.sectionsMetadata.update_values(['section_pid'] => pids)
+    self.save( validate: false )
   end
 
   # Sets the publication status. To unpublish an object set it to nil or
@@ -285,6 +270,10 @@ class MediaObject < ActiveFedora::Base
 
   def update_datastream(datastream = :descMetadata, values = {})
     missing_attributes.clear
+    if values.keys.any? { |k| [:language_code,:language_text].include? k }
+      descMetadata.find_by_terms(:language).each &:remove
+    end
+
     values.each do |k, v|
       # First remove all blank attributes in arrays
       v.keep_if { |item| not item.blank? } if v.instance_of?(Array)
@@ -328,7 +317,9 @@ class MediaObject < ActiveFedora::Base
       return false
     else
       values = Array(value).select { |v| not v.blank? }
-      descMetadata.find_by_terms( metadata_attribute ).each &:remove
+      unless [:language_code,:language_text].include? metadata_attribute
+        descMetadata.find_by_terms( metadata_attribute ).each &:remove
+      end
       if descMetadata.template_registry.has_node_type?( metadata_attribute )
         values.each_with_index do |val, i|
           logger.debug "<< Adding node #{metadata_attribute}[#{i}] >>"
