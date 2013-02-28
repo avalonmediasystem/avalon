@@ -55,12 +55,11 @@ class MasterFile < ActiveFedora::Base
   def destroy
     parent = mediaobject
     parent.parts -= [self]
-
+    parent.save(validate: false)
     unless new_object? || finished_processing?
-      parent.save(validate: false)
       Rubyhorn.client.stop(workflow_id) if workflow_id
-      delete
     end
+    delete
   end
 
   def setContent(file, content_type = nil)
