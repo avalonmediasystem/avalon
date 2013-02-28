@@ -10,6 +10,10 @@ class StreamToken < ActiveRecord::Base
     result.token
   end
 
+  def self.logout!(session)
+    self.find_all_by_token(session[:session_id]).each &:delete
+  end
+
   def self.purge_expired!
     self.where("expires <= :now", :now => Time.now).each &:delete
   end
