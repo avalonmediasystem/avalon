@@ -98,41 +98,16 @@ module ModsTemplates
 	  	def add_corporate_subject(name, *args);  add_name_subject(name, :corporate);  end
 	  	def add_occupation_subject(name, *args); add_name_subject(name, :occupation); end
 
-		  define_template :language do |xml, code, text|
+		  define_template :_language do |xml, code, text|
 		    xml.language {
 		      xml.languageTerm(:type => 'code') { xml.text(code) } if code.present?
 		      xml.languageTerm(:type => 'text') { xml.text(text) } if text.present?
 		    }
 		  end
 
-		  define_template :language_term do |xml, type, value|
-	      xml.languageTerm(:type => type) { xml.text(value) } if value.present?
-		  end
-
-	  	def add_language(term)
-	  		add_child_node(ng_xml.root, :language, term.code, term.text)
-	  	end
-
-	  	def add_language_code(value, opts={})
-	  		term = LanguageTerm.find_by_code(value)
-	  		return if self.language_code.include? term.code
-	  		existing = self.find_by_terms(:language_text).find { |n| n.text == term.text }
-	  		if existing.nil?
-	  			add_language term
-		  	else
-		  		add_child_node(existing.parent, :language_term, 'code', term.code)
-		  	end
-	  	end
-
-	  	def add_language_text(value, opts={})
-	  		term = LanguageTerm.find_by_text(value)
-	  		return if self.language_text.include? term.text
-	  		existing = self.find_by_terms(:language_code).find { |n| n.text == term.code }
-	  		if existing.nil?
-	  			add_language term
-		  	else
-		  		add_child_node(existing.parent, :language_term, 'text', term.text)
-		  	end
+	  	def add_language(value, opts={})
+	  		term = LanguageTerm.find(value)
+	  		add_child_node(ng_xml.root, :_language, term.code, term.text)
 	  	end
 
 		  define_template :media_type do |xml,mime_type|
