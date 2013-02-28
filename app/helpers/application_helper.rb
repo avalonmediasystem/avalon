@@ -73,7 +73,7 @@ module ApplicationHelper
   def search_result_label item
     label = item.id
     unless item["title_display"].blank?
-      label = truncate(item["title_display"], length: 35)
+      label = truncate(item["title_display"], length: 100)
     end
     
     if ! item['duration_t'].nil? && ! item['duration_t'].empty? 
