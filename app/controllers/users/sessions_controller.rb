@@ -6,4 +6,12 @@ class Users::SessionsController < Devise::SessionsController
 			super
 		end
 	end
+
+
+        def destroy
+          session_key = session[:session_id]
+          flash[:notice] = "You have been logged out of Avalon"
+          reset_session
+          redirect_to root_url
+        end
 end
