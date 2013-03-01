@@ -8,7 +8,7 @@
       </legend>
         <% if not @currentStream.blank? and 
           @masterFiles.length >= 2 %>
-         <h4 id="stream_label"><%= @currentStream.label %></h4>
+         <h4 id="stream_label"><%= stream_label_for @currentStream %></h4>
         <% end %>
      </div>
     

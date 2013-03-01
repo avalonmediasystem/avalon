@@ -13,7 +13,7 @@
                     class: (section.pid == activeStream.pid ? 'current-stream' : nil)
                 %>
                 <% unless section.duration.blank? %>
-                  ( <%= milliseconds_to_formatted_time(section.duration.to_i) %> )
+                  (<%= milliseconds_to_formatted_time(section.duration.to_i) %>)
                 <% end %>
               </li>
               <% end %>
