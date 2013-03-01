@@ -13,8 +13,8 @@ module ApplicationHelper
     video_count = 0
     audio_count = 0
     media_object.parts.each do |part|
-      video_count = video_count + 1 if "Moving image" == part.format
-      audio_count = audio_count + 1 if "Sound" == part.format
+      video_count = video_count + 1 if "Moving image" == part.file_format
+      audio_count = audio_count + 1 if "Sound" == part.file_format
     end
 
     logger.debug "<< Object has #{video_count} videos and #{audio_count} audios >>"
