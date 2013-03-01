@@ -56,7 +56,7 @@ describe MediaObjectsController, type: :controller do
     it "should redirect to first workflow step if authorized to edit" do
        load_fixture "avalon:print-publication"
 
-       login_as 'cataloger'
+       login_as 'content_provider'
        get 'edit', id: 'avalon:print-publication'
        response.should be_success
        response.should render_template HYDRANT_STEPS.first.template
@@ -71,7 +71,7 @@ describe MediaObjectsController, type: :controller do
         mo.workflow.last_completed_step = 'resource-description'
          
         # Set the task so that it can get to the resource-description step
-        login_as 'cataloger'
+        login_as 'content_provider'
         get :edit, {id: 'avalon:video-segment', step: 'resource-description'}
         response.response_code.should == 200
       end
@@ -98,7 +98,7 @@ describe MediaObjectsController, type: :controller do
         mo.access = "public"
         mo.save
         
-        login_as('cataloger')
+        login_as 'content_provider'
         get 'show', id: 'avalon:video-segment'
         response.should_not redirect_to new_user_session_path
       end

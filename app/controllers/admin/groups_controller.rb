@@ -17,7 +17,7 @@ class Admin::GroupsController < ApplicationController
   end
   
   def index
-    default_groups = ["archivist", "admin_policy_object_editor"]
+    default_groups = ["collection_manager", "group_manager"]
     @default_groups = []
     @groups = []
 

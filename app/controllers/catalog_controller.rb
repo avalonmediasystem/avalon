@@ -57,8 +57,7 @@ class CatalogController < ApplicationController
     config.add_facet_field 'genre_facet', :label => 'Genres', :limit => 5
     config.add_facet_field 'collection_facet', :label => 'Collection', :limit => 5
 
-    #hide these facets if not an "archivist"
-    #put these facets into a seperate block in the interface
+    # Hide these facets if not a Collection Manager
     config.add_facet_field 'workflow_published_facet', :label => 'Published', :limit => 5, :if_user_can => [:manage, MediaObject], :group=>"workflow"
     config.add_facet_field 'created_by_facet', :label => 'Created by', :limit => 5, :if_user_can => [:manage, MediaObject], :group=>"workflow"
 

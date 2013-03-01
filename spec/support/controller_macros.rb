@@ -5,6 +5,8 @@ module ControllerMacros
   end
 
   def login_as(role = 'student')
+    puts "Role => #{role}"
+
     @request.env["devise.mapping"] = Devise.mappings[role]
     user = FactoryGirl.create(role)
     
