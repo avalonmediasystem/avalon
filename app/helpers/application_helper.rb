@@ -100,6 +100,7 @@ module ApplicationHelper
   
   def stream_label_for(resource)
     label = ''
+    
     unless resource.nil?
       if resource.label.blank?
         label = File.basename(resource.file_location)
