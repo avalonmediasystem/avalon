@@ -128,7 +128,7 @@ module ApplicationHelper
       output += "#{hours}:"
     end
 
-    output += "#{minutes}:#{seconds.to_s.rjust(2,'0')}"
+    output += "#{minutes.to_s.rjust(2,'0')}:#{seconds.to_s.rjust(2,'0')}"
     output
   end
   
