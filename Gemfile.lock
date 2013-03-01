@@ -15,7 +15,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-engage.git
-  revision: f0b0ceb6b82857b9c21dd6caaaff1d7dac3be784
+  revision: 7d576a29b57d8f668f5e179a342a8780e393e555
   specs:
     avalon-engage (0.0.1)
       less-rails (~> 2.2.3)
@@ -257,7 +257,7 @@ GEM
       rails (>= 3.2.6)
     hydra-mods (0.0.6)
       active-fedora (> 4.1)
-    i18n (0.6.2)
+    i18n (0.6.4)
     jettywrapper (1.3.2)
       activesupport (>= 3.0.0)
       childprocess
@@ -457,7 +457,7 @@ GEM
     therubyracer (0.10.2)
       libv8 (~> 3.3.10)
     thor (0.17.0)
-    tilt (1.3.3)
+    tilt (1.3.4)
     treetop (1.4.12)
       polyglot
       polyglot (>= 0.3.1)
