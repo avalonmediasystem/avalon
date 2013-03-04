@@ -78,7 +78,12 @@ class MediaObjectsController < ApplicationController
     respond_to do |format|
       format.any(:xml, :json) do
         render request.format.to_sym => Hash[
-          @masterFiles.collect { |mf| [mf.pid, { :status => mf.status_code, :complete => mf.percent_complete }] }
+          @masterFiles.collect { |mf| [mf.pid, {
+            :status => mf.status_code,
+            :complete => mf.percent_complete,
+            :operation => mf.operation,
+            :error => mf.error.try(:sub,/^.+:/,'')
+          }] }
         ]
       end
     end

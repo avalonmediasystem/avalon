@@ -1,6 +1,6 @@
 <%# Partial once the layout makes sense %>
-      <% unless sections.blank? or sections.length == 1 %>
       <% show_progress = sections.any? { |s| not s.succeeded? } %>
+      <% unless (sections.blank? or sections.length == 1) and not show_progress %>
       <section class="whitespace">
         <legend><i class="icon-list-alt"></i> Sections</legend>
           <ol id="section_links">
@@ -18,6 +18,9 @@
                 %>
                 <% unless section.duration.blank? %>
                   (<%= milliseconds_to_formatted_time(section.duration.to_i) %>)
+                <% end %>
+                <% if show_progress %>
+                  <div class="status-detail alert" style="display: none"></div>
                 <% end %>
               </li>
               <% end %>

@@ -22,11 +22,13 @@ class MasterFile < ActiveFedora::Base
     d.field :mediapackage_id, :string
     d.field :percent_complete, :string
     d.field :status_code, :string
+    d.field :operation, :string
+    d.field :error, :string
     d.field :failures, :string
   end
 
   delegate_to 'descMetadata', [:file_location, :file_checksum, :file_size, :duration, :file_format], unique: true
-  delegate_to 'mhMetadata', [:workflow_id, :mediapackage_id, :percent_complete, :status_code, :failures], unique:true
+  delegate_to 'mhMetadata', [:workflow_id, :mediapackage_id, :percent_complete, :status_code, :operation, :error, :failures], unique:true
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
@@ -195,6 +197,8 @@ class MasterFile < ActiveFedora::Base
     self.percent_complete = calculate_percent_complete(matterhorn_response)
     self.status_code = matterhorn_response.state[0]
     self.failures = matterhorn_response.operations.operation.operation_state.select { |state| state == 'FAILED' }.length.to_s
+    self.operation = matterhorn_response.find_by_terms(:operations,:operation).select { |n| ['RUNNING','FAILED','SUCCEEDED'].include?n['state'] }.last.try(:[],'description')
+    self.error = matterhorn_response.errors.last
 
     # Because there is no attribute_changed? in AF
     # we want to find out if the duration has changed
