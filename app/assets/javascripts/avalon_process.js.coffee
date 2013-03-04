@@ -26,11 +26,16 @@ class AvalonProgress
     sections.each ->
       id = $(this).data('segment')
       bar = $(this).prev('span.progress')
+      info_box = $(this).next('div.alert')
+
       data = AvalonProgress.data[id]
       
       if data?
+        bar.data('status',data)
+
         setActive(bar, data.complete < 100 and (data.status == 'RUNNING' or data.status == 'WAITING'))
 
+        info_box.html(data.operation) if data.operation?
         switch data.status
           when 'RUNNING', 'SUCCEEDED'
             total += Math.min(100,Math.ceil(data.complete / sections.length))
@@ -40,8 +45,14 @@ class AvalonProgress
             error = 100 - data.complete
             addBar(bar, '', data.complete)
             addBar(bar, 'bar-danger', error)
+            info_box.html("ERROR: #{data.error}")
+            info_box.addClass('alert-error')
+            info_box.show()
           else
             addBar(bar, 'bar-warning', 100)
+
+    if (total + total_error) > 100 then total_error = (100 - total)
+    total = Math.min(100,total)
 
     setActive($('#overall'), total + total_error < 100)
     $('#overall').append "<div class='bar' style='width: #{total}%'></div>"
@@ -55,6 +66,10 @@ class AvalonProgress
       $('#player').html('<div id="nojs"></div>')
 
 $(document).ready ->
+  $('.status-detail').hide()
   AvalonProgress.retrieve(true)
+  $('.progress-inline').click ->
+    $(this).nextAll('.status-detail').slideToggle()
+
   $('a[data-segment]').bind 'streamswitch', ->
     AvalonProgress.click_section($(this).data('segment'))

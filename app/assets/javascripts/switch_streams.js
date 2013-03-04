@@ -26,7 +26,7 @@
                      hls: stream_info.stream_hls, 
                      poster: stream_info.poster_image,
                      mediaPackageId: stream_info.mediapackage_id };
-        if (currentPlayer != null)
+        if (typeof currentPlayer !== "undefined" && currentPlayer !== null)
           currentPlayer.switchStream(opts);
         else
           currentPlayer = AvalonPlayer.init($('#player'), opts);
