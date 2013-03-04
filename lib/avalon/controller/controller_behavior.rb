@@ -8,7 +8,7 @@ module Avalon
       module ClassMethods
         def set_default_item_permissions( item, user_key )
           unless item.rightsMetadata.nil?
-            item.edit_groups = ["archivist"]
+            item.edit_groups = ["collection_manager"]
             item.apply_depositor_metadata user_key
           end
         end

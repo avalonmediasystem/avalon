@@ -1,7 +1,4 @@
-uva-only:
-  - uva-only
-  - test
-archivist:
+collection_manager:
   - archivist1@example.com
   - archivist2
   - pdinh
@@ -21,15 +18,11 @@ archivist:
   - stubaker@northwestern.edu
   - k-miller3@northwestern.edu
   - brendan-quinn@northwestern.edu
-donor:
-  - donor1@example.com
-researcher:
-  - researcher1@example.com
 registered:
   - pdinh
   - rogersna
   - cjcolvar
-admin_policy_object_editor:
+group_manager:
   - archivist1@example.com
   - pdinh
   - cjcolvar

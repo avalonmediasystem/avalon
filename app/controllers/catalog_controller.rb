@@ -57,8 +57,7 @@ class CatalogController < ApplicationController
     config.add_facet_field 'genre_facet', :label => 'Genres', :limit => 5
     config.add_facet_field 'collection_facet', :label => 'Collection', :limit => 5
 
-    #hide these facets if not an "archivist"
-    #put these facets into a seperate block in the interface
+    # Hide these facets if not a Collection Manager
     config.add_facet_field 'workflow_published_facet', :label => 'Published', :limit => 5, :if_user_can => [:manage, MediaObject], :group=>"workflow"
     config.add_facet_field 'created_by_facet', :label => 'Created by', :limit => 5, :if_user_can => [:manage, MediaObject], :group=>"workflow"
 
@@ -74,7 +73,7 @@ class CatalogController < ApplicationController
     #   The ordering of the field names is the order of the display 
     config.add_index_field 'creator_display', :label => 'Main contributors:', :helper_method => :contributor_index_display 
     config.add_index_field 'date_display', :label => 'Date:' 
-    config.add_index_field 'summary_display', label: 'Description:', :helper_method => :description_index_display
+    config.add_index_field 'summary_display', label: 'Summary:', :helper_method => :description_index_display
     
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display 

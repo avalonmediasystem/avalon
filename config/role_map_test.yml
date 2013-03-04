@@ -1,20 +1,9 @@
-archivist:
+collection_manager:
   - archivist1
   - archivist2
   - archivist1@example.com
   - archivist2@example.com
   - leland_himself@example.com
-admin_policy_object_editor:
+group_manager:
   - archivist1
   - archivist1@example.com
-donor:
-  - donor1@example.com
-  - leland_himself@example.com
-researcher:
-  - archivist1
-  - archivist1@example.com
-  - researcher1@example.com
-patron:
-  - ann.e.student
-  - patron1@example.com
-  - leland_himself@example.com

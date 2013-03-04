@@ -9,12 +9,21 @@ module ApplicationHelper
     masterfile = media_object.parts.first 
 
     imageurl = thumbnail_master_file_path(masterfile) unless masterfile.nil? or masterfile.thumbnail.new?
+
+    video_count = 0
+    audio_count = 0
+    media_object.parts.each do |part|
+      video_count = video_count + 1 if "Moving image" == part.file_format
+      audio_count = audio_count + 1 if "Sound" == part.file_format
+    end
+
+    logger.debug "<< Object has #{video_count} videos and #{audio_count} audios >>"
     imageurl ||= case
-                 when media_object.format == "Moving image"
+                 when (video_count > 0 and 0 == audio_count)
                    "video_icon.png"
-                 when media_object.format == "Sound"
+                 when (audio_count > 0 and 0 == video_count)
                    "audio_icon.png"
-                 when (media_object.parts.length >= 2) 
+                 when (video_count > 0 and audio_count > 0)
                    # TODO
                    # We need to test if both audio and video are present
                    # instead of assuming when there is more than one part
@@ -100,6 +109,7 @@ module ApplicationHelper
   
   def stream_label_for(resource)
     label = ''
+    
     unless resource.nil?
       if resource.label.blank?
         label = File.basename(resource.file_location)

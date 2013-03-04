@@ -46,6 +46,6 @@ module Blacklight::LocalBlacklightHelper
 
   def description_index_display args
     field = args[:document][args[:field]]
-    truncate(field.first, length: 100) unless (field.blank? or field.first.blank?)
+    truncate(field.first, length: 200) unless (field.blank? or field.first.blank?)
   end
 end

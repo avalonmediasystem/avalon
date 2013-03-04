@@ -13,6 +13,7 @@ class DerivativesController < ApplicationController
   def authorize
     begin
       resp = { :authorized => StreamToken.validate_token(params[:token]) }
+      
       respond_to do |format|
         format.urlencoded { render :text => resp.to_query, :content_type => :urlencoded, :status => :accepted }
         format.text       { render :text => resp[:authorized], :status => :accepted }

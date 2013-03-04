@@ -1,11 +1,15 @@
 <%# Partial once the layout makes sense %>
-      <% unless sections.blank? or sections.length == 1 %>
+      <% show_progress = sections.any? { |s| not s.succeeded? } %>
+      <% unless (sections.blank? or sections.length == 1) and not show_progress %>
       <section class="whitespace">
         <legend><i class="icon-list-alt"></i> Sections</legend>
           <ol id="section_links">
             <% sections.each do |section| %>
-              <li>
+              <li class="<%= show_progress ? 'progress-indented' : ''%>">
                 <%# If the label has not been set use the file name as a default %>
+                <% if show_progress %>
+                  <span class="progress progress-inline"></span>
+                <% end %>
                 <%=
                   link_to stream_label_for(section),
                     media_object_path(mediaobject, {content: section.pid}),
@@ -13,11 +17,13 @@
                     class: (section.pid == activeStream.pid ? 'current-stream' : nil)
                 %>
                 <% unless section.duration.blank? %>
-                  ( <%= milliseconds_to_formatted_time(section.duration.to_i) %> )
+                  (<%= milliseconds_to_formatted_time(section.duration.to_i) %>)
+                <% end %>
+                <% if show_progress %>
+                  <div class="status-detail alert" style="display: none"></div>
                 <% end %>
               </li>
               <% end %>
           </ol>
        </section>
-
-           <% end %>
+       <% end %>

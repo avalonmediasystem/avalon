@@ -22,11 +22,13 @@ class MasterFile < ActiveFedora::Base
     d.field :mediapackage_id, :string
     d.field :percent_complete, :string
     d.field :status_code, :string
+    d.field :operation, :string
+    d.field :error, :string
     d.field :failures, :string
   end
 
   delegate_to 'descMetadata', [:file_location, :file_checksum, :file_size, :duration, :file_format], unique: true
-  delegate_to 'mhMetadata', [:workflow_id, :mediapackage_id, :percent_complete, :status_code, :failures], unique:true
+  delegate_to 'mhMetadata', [:workflow_id, :mediapackage_id, :percent_complete, :status_code, :operation, :error, :failures], unique:true
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
@@ -128,6 +130,22 @@ class MasterFile < ActiveFedora::Base
       end
   end
 
+  def status?(value)
+    status_code == value
+  end
+
+  def running?
+    status?('RUNNING')
+  end
+
+  def failed?
+    status?('FAILED')
+  end
+
+  def succeeded?
+    status?('SUCCEEDED')
+  end
+
   def stream_details(token)
     flash, hls = [], []
     derivatives.each do |d|
@@ -179,6 +197,8 @@ class MasterFile < ActiveFedora::Base
     self.percent_complete = calculate_percent_complete(matterhorn_response)
     self.status_code = matterhorn_response.state[0]
     self.failures = matterhorn_response.operations.operation.operation_state.select { |state| state == 'FAILED' }.length.to_s
+    self.operation = matterhorn_response.find_by_terms(:operations,:operation).select { |n| ['RUNNING','FAILED','SUCCEEDED'].include?n['state'] }.last.try(:[],'description')
+    self.error = matterhorn_response.errors.last
 
     # Because there is no attribute_changed? in AF
     # we want to find out if the duration has changed
@@ -249,15 +269,27 @@ class MasterFile < ActiveFedora::Base
   protected
 
   def calculate_percent_complete matterhorn_response
-    totalOperations = matterhorn_response.operations.operation.length
+    totals = {
+      :transcode => 70,
+      :distribution => 20,
+      :other => 10
+    }
 
-    # DEBUG
-    logger.debug "<< Inspecting nodes for percentage >>"
-    logger.debug matterhorn_response.operations
-    # END DEBUG
-    finishedOperations = matterhorn_response.operations.operation.operation_state.select { |state| END_STATES.include? state }.length
-    percent = finishedOperations * 100 / totalOperations
-    logger.debug "percent_complete #{percent}"
+    operations = matterhorn_response.find_by_terms(:operations, :operation).collect { |op|
+      type = case op['description']
+             when /mp4/ then :transcode
+             when /^Distributing/ then :distribution
+             else :other
+             end
+      { :description => op['description'], :state => op['state'], :type => type } 
+    }
+
+    operations.each { |op|
+      op[:pct] = (totals[op[:type]].to_f / operations.select { |o| o[:type] == op[:type] }.count.to_f).ceil
+    }
+
+    percent = [operations.inject(0) { |t,op| t += op[:pct] if END_STATES.include?(op[:state]); t },100].min
+
     percent.to_s
   end
 
