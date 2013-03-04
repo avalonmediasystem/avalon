@@ -128,6 +128,22 @@ class MasterFile < ActiveFedora::Base
       end
   end
 
+  def status?(value)
+    status_code == value
+  end
+
+  def running?
+    status?('RUNNING')
+  end
+
+  def failed?
+    status?('FAILED')
+  end
+
+  def succeeded?
+    status?('SUCCEEDED')
+  end
+
   def stream_details(token)
     flash, hls = [], []
     derivatives.each do |d|
@@ -249,15 +265,27 @@ class MasterFile < ActiveFedora::Base
   protected
 
   def calculate_percent_complete matterhorn_response
-    totalOperations = matterhorn_response.operations.operation.length
+    totals = {
+      :transcode => 70,
+      :distribution => 20,
+      :other => 10
+    }
 
-    # DEBUG
-    logger.debug "<< Inspecting nodes for percentage >>"
-    logger.debug matterhorn_response.operations
-    # END DEBUG
-    finishedOperations = matterhorn_response.operations.operation.operation_state.select { |state| END_STATES.include? state }.length
-    percent = finishedOperations * 100 / totalOperations
-    logger.debug "percent_complete #{percent}"
+    operations = matterhorn_response.find_by_terms(:operations, :operation).collect { |op|
+      type = case op['description']
+             when /mp4/ then :transcode
+             when /^Distributing/ then :distribution
+             else :other
+             end
+      { :description => op['description'], :state => op['state'], :type => type } 
+    }
+
+    operations.each { |op|
+      op[:pct] = (totals[op[:type]].to_f / operations.select { |o| o[:type] == op[:type] }.count.to_f).ceil
+    }
+
+    percent = [operations.inject(0) { |t,op| t += op[:pct] if END_STATES.include?(op[:state]); t },100].min
+
     percent.to_s
   end
 

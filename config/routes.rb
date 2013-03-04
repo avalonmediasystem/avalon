@@ -23,6 +23,7 @@ Avalon::Application.routes.draw do
       put :update_visibility
       # 'delete' has special signifigance so use 'remove' for now
       get :remove
+      get :progress, :action => :show_progress
       get 'content/:datastream', :action => :deliver_content, :as => :inspect
     end
   end

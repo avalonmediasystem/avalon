@@ -6,6 +6,7 @@
     function setActiveSection(activeSegment) {
       $('a[data-segment]').removeClass('current-stream');
       $("a[data-segment='" + activeSegment + "']").addClass('current-stream');
+      $('a.current-stream').trigger('streamswitch')
     }
 
     function setActiveLabel(title) {
@@ -20,11 +21,16 @@
      * to the player
      */
     function refreshStream(stream_info) {
-      var opts = { flash: stream_info.stream_flash, 
-                   hls: stream_info.stream_hls, 
-                   poster: stream_info.poster_image,
-                   mediaPackageId: stream_info.mediapackage_id };
-      currentPlayer.switchStream(opts);
+      if (stream_info.stream_flash.length > 0) {
+        var opts = { flash: stream_info.stream_flash, 
+                     hls: stream_info.stream_hls, 
+                     poster: stream_info.poster_image,
+                     mediaPackageId: stream_info.mediapackage_id };
+        if (currentPlayer != null)
+          currentPlayer.switchStream(opts);
+        else
+          currentPlayer = AvalonPlayer.init($('#player'), opts);
+      }
     }
 
     $(document).ready(function() {

@@ -6,7 +6,7 @@ class MediaObjectsController < ApplicationController
 
   before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
-  before_filter :load_player_context, only: [:show, :remove]
+  before_filter :load_player_context, only: [:show, :show_progress, :remove]
 
   layout 'avalon'
 
@@ -70,6 +70,16 @@ class MediaObjectsController < ApplicationController
       end
       format.json do
         render :json => @currentStreamInfo 
+      end
+    end
+  end
+
+  def show_progress
+    respond_to do |format|
+      format.any(:xml, :json) do
+        render request.format.to_sym => Hash[
+          @masterFiles.collect { |mf| [mf.pid, { :status => mf.status_code, :complete => mf.percent_complete }] }
+        ]
       end
     end
   end
