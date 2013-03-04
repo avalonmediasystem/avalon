@@ -32,7 +32,7 @@
   <%= javascript_include_tag 'swfobject' %>
   <%= javascript_include_tag 'avalonplayer' %>
 
-  <% if @currentStream.succeeded? %>
+  <% if @currentStream.present? and @currentStream.succeeded? %>
   <script>
     $().ready(function() {
       if ($("#nojs").length > 0) {
