@@ -7,11 +7,11 @@ class Ability
 			can :manage, MediaObject
 			can :manage, MasterFile
       can :inspect, MediaObject
+      can :manage, Dropbox
     end
     
 		if @user_groups.include? "group_manager"
 		  can :manage, Admin::Group
-      can :manage, Dropbox
 		end
 	end
 
