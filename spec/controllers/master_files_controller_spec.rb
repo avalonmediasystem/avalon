@@ -4,8 +4,8 @@ describe MasterFilesController do
   describe "#create" do
 
     before(:each) do
-      login_as_archivist
       load_fixture 'avalon:video-segment'
+      login_as 'content_provider'
     end
 
     context "must provide a container id" do
@@ -25,7 +25,6 @@ describe MasterFilesController do
       @file.stub(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2^21)  
      
       lambda { post :create, Filedata: [@file], original: 'any', container_id: 'avalon:video-segment'}.should_not change { MasterFile.count }
-      logger.debug "<< Flash message is present? #{flash[:notice]} >>"
      
       flash[:errors].should_not be_nil
      end
@@ -111,10 +110,9 @@ describe MasterFilesController do
         end
    
         post :create, Filedata: [@file], original: 'any', container_id: 'avalon:video-segment'
-         
         master_file = MasterFile.find(:all, order: "created_on ASC").last
-        master_file.edit_groups.should include "archivist"
-        master_file.edit_users.should include "archivist1@example.com"
+        master_file.edit_groups.should include "collection_manager"
+        master_file.edit_users.should include "archivist2"
       end
     end
   end
@@ -145,7 +143,7 @@ describe MasterFilesController do
   describe "#destroy" do
     context "should be deleted" do
       it "should no longer exist" do
-          login_as_archivist
+          login_as 'content_provider'
   
           media_object = MediaObject.new
           media_object.save(validate: false)
@@ -165,7 +163,7 @@ describe MasterFilesController do
     
     context "should no longer be associated with its parent object" do
       it "should create then remove a file from a video object" do
-        login_as_archivist
+        login_as 'content_provider'
           
         media_object = MediaObject.new
         media_object.save(validate: false)

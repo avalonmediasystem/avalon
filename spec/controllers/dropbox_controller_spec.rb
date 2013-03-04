@@ -8,7 +8,7 @@ describe DropboxController do
     # have the group admin_policy_object_editor. roles should be refactored into
     # a database backed model SOON so testing of permissions/abilities is more granular
 
-    login_as_archivist 
+    login_as 'content_provider' 
     @temp_files = (0..20).map{|index| { name: "a_movie_#{index}.mov" } }
     Avalon::DropboxService.stub(:all).and_return @temp_files
   end

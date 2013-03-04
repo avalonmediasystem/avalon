@@ -26,9 +26,9 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should inherit default permissions" do
-        login_as('content_provider')
+        login_as 'content_provider'
         get 'new'
-        assigns(:mediaobject).edit_groups.should eq ["archivist"]
+        assigns(:mediaobject).edit_groups.should eq ["collection_manager"]
         assigns(:mediaobject).edit_users.should eq ['archivist2'] 
       end
     end
@@ -54,9 +54,9 @@ describe MediaObjectsController, type: :controller do
     end
 
     it "should redirect to first workflow step if authorized to edit" do
+       login_as 'content_provider'
        load_fixture "avalon:print-publication"
 
-       login_as 'policy_editor'
        get 'edit', id: 'avalon:print-publication'
        response.should be_success
        response.should render_template HYDRANT_STEPS.first.template
@@ -92,7 +92,7 @@ describe MediaObjectsController, type: :controller do
         response.response_code.should == 404
       end
 
-      it "should be available to an archivist when unpublished" do
+      it "should be available to an collection manager when unpublished" do
         load_fixture 'avalon:video-segment'
         mo = MediaObject.find('avalon:video-segment')
         mo.access = "public"
@@ -169,21 +169,21 @@ describe MediaObjectsController, type: :controller do
   describe "#update_status" do
     before(:each) do
       login_as('content_provider')
-      @media_object = MediaObject.new(pid: 'avalon:1')
+      @media_object = MediaObject.new(pid: 'avalon:status-update')
       request.env["HTTP_REFERER"] = '/'
     end
 
     it 'publishes media object' do
       @media_object.save(validate: false)
-      get 'update_status', :id => 'avalon:1', :status => 'publish'
-      MediaObject.find('avalon:1').published?.should be_true
+      get 'update_status', :id => 'avalon:status-update', :status => 'publish'
+      MediaObject.find('avalon:status-update').published?.should be_true
     end
 
     it 'unpublishes media object' do
       @media_object.avalon_publisher = 'archivist'
       @media_object.save(validate: false)
-      get 'update_status', :id => 'avalon:1', :status => 'unpublish' 
-      MediaObject.find('avalon:1').published?.should be_false
+      get 'update_status', :id => 'avalon:status-update', :status => 'unpublish' 
+      MediaObject.find('avalon:status-update').published?.should be_false
     end
   end
 
