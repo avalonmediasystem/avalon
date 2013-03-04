@@ -215,6 +215,7 @@ xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/
     <machine>
       <person>jlhardes</person>
       <group>archivist</group>
+      <group>collection_manager</group>
     </machine>
   </access>
   <embargo>
