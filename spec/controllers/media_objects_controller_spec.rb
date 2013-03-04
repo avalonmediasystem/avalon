@@ -56,7 +56,7 @@ describe MediaObjectsController, type: :controller do
     it "should redirect to first workflow step if authorized to edit" do
        load_fixture "avalon:print-publication"
 
-       login_as 'content_provider'
+       login_as 'policy_editor'
        get 'edit', id: 'avalon:print-publication'
        response.should be_success
        response.should render_template HYDRANT_STEPS.first.template

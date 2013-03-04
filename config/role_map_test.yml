@@ -1,3 +1,9 @@
+archivist:
+  - archivist1
+  - archivist2
+  - archivist1@example.com
+  - archivist2@example.com
+  - leland_himself@example.com
 collection_manager:
   - archivist1
   - archivist2
