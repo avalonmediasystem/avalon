@@ -10,6 +10,16 @@ describe Avalon::Batch do
 
   before :each do
     Avalon::DropboxService = Avalon::Dropbox.new 'spec/fixtures/dropbox'
+    # Dirty hack is to remove the .processed files both before and after the
+    # test. Need to look closer into the ideal timing for where this should take
+    # place
+    # this file is created to signify that the file has been processed
+    # we need to remove it so can re-run the tests
+    processed_status_file = 'spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx.processed'
+    error_status_file = 'spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx.error'
+
+    File.delete(processed_status_file) if File.exists?(processed_status_file)
+    File.delete(error_status_file) if File.exists?(error_status_file)    
   end
 
   after :each do
