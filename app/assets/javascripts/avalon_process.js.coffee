@@ -1,7 +1,13 @@
 class AvalonProgress
-  @data = {}
+  setActive = (target, active) -> 
+    if active then target.addClass('progress-striped active') else target.removeClass('progress-striped active')
 
-  @retrieve = (auto=false) ->
+  updateBar = (bar, attrs) -> 
+    for type, percent of attrs
+      target = $(".bar.bar-#{type}",bar)
+      target.css('width',"#{percent}%")
+
+  retrieve: (auto=false) ->
     $.ajax $('#progress').data('progress-url'),
       dataType: 'json',
       success: (data) => 
@@ -11,65 +17,50 @@ class AvalonProgress
             @retrieve(auto)
           , 10000
 
-  @update = ->
-    $('div.bar').remove()
+  data: {}
 
-    setActive = (target, active) -> 
-      if active then target.addClass('progress-striped active') else target.removeClass('progress-striped active')
-    addBar = (bar, type, percent) -> 
-      bar.append "<div class='bar #{type}' style='width:#{percent}%'></div>"
-        
-    total = 0
-    total_error = 0
-
+  update: ->
     sections = $('a[data-segment]')
-    sections.each ->
-      id = $(this).data('segment')
-      bar = $(this).prev('span.progress')
-      info_box = $(this).next('div.alert')
+    sections.each (i,sec) =>
+      id = $(sec).data('segment')
+      bar = $(sec).prev('span.progress')
+      info_box = $(sec).next('div.alert')
 
-      data = AvalonProgress.data[id]
+      info = @data[id]
       
-      if data?
-        bar.data('status',data)
+      if info?
+        setActive(bar, info.complete < 100 and (info.status == 'RUNNING' or info.status == 'WAITING'))
 
-        setActive(bar, data.complete < 100 and (data.status == 'RUNNING' or data.status == 'WAITING'))
+        info_box.html(info.operation) if info.operation?
+        updateBar(bar, {success: info.success, danger: info.error})
+        if info.status == 'FAILED'
+          info_box.html("ERROR: #{info.message}")
+          info_box.addClass('alert-error')
+          info_box.show()
+#          else
+#            updateBar(bar, 'bar-warning', 100)
+        bar.data('status',info)
 
-        info_box.html(data.operation) if data.operation?
-        switch data.status
-          when 'RUNNING', 'SUCCEEDED'
-            total += Math.min(100,Math.ceil(data.complete / sections.length))
-            addBar(bar, '', data.complete)
-          when 'FAILED'
-            total_error += (100 / sections.length)
-            error = 100 - data.complete
-            addBar(bar, '', data.complete)
-            addBar(bar, 'bar-danger', error)
-            info_box.html("ERROR: #{data.error}")
-            info_box.addClass('alert-error')
-            info_box.show()
-          else
-            addBar(bar, 'bar-warning', 100)
+    info = @data['overall']
+    setActive($('#overall'), info.success + info.error < 100)
 
-    if (total + total_error) > 100 then total_error = (100 - total)
-    total = Math.min(100,total)
+    updateBar($('#overall'), {success: info.success, danger: info.error})
+    $('#overall').data('status',info)
+    return info.success + info.error < 100
 
-    setActive($('#overall'), total + total_error < 100)
-    $('#overall').append "<div class='bar' style='width: #{total}%'></div>"
-    $('#overall').append "<div class='bar bar-danger' style='width: #{total_error}%'></div>"
-    return total+total_error < 100
-
-  @click_section = (section_id) ->
-    data = AvalonProgress.data[section_id]
+  click_section: (section_id) ->
+    data = @data[section_id]
     if data.status != 'SUCCEEDED' or data.complete < 100
       window.currentPlayer = null
       $('#player').html('<div id="nojs"></div>')
 
 $(document).ready ->
+  progress_controller = new AvalonProgress()
+
   $('.status-detail').hide()
-  AvalonProgress.retrieve(true)
+  progress_controller.retrieve(true)
   $('.progress-inline').click ->
     $(this).nextAll('.status-detail').slideToggle()
 
   $('a[data-segment]').bind 'streamswitch', ->
-    AvalonProgress.click_section($(this).data('segment'))
+    progress_controller.click_section($(this).data('segment'))

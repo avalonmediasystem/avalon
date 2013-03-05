@@ -21,6 +21,8 @@ class MasterFile < ActiveFedora::Base
     d.field :workflow_id, :string
     d.field :mediapackage_id, :string
     d.field :percent_complete, :string
+    d.field :percent_succeeded, :string
+    d.field :percent_failed, :string
     d.field :status_code, :string
     d.field :operation, :string
     d.field :error, :string
@@ -28,7 +30,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   delegate_to 'descMetadata', [:file_location, :file_checksum, :file_size, :duration, :file_format], unique: true
-  delegate_to 'mhMetadata', [:workflow_id, :mediapackage_id, :percent_complete, :status_code, :operation, :error, :failures], unique:true
+  delegate_to 'mhMetadata', [:workflow_id, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures], unique:true
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
@@ -194,7 +196,11 @@ class MasterFile < ActiveFedora::Base
 
     response_duration = matterhorn_response.source_tracks(0).duration.try(:first)
 
-    self.percent_complete = calculate_percent_complete(matterhorn_response)
+    pct = calculate_percent_complete(matterhorn_response)
+    self.percent_complete  = pct[:complete].to_i.to_s
+    self.percent_succeeded = pct[:succeeded].to_i.to_s
+    self.percent_failed    = (pct[:failed].to_i + pct[:stopped].to_i).to_s
+
     self.status_code = matterhorn_response.state[0]
     self.failures = matterhorn_response.operations.operation.operation_state.select { |state| state == 'FAILED' }.length.to_s
     self.operation = matterhorn_response.find_by_terms(:operations,:operation).select { |n| ['RUNNING','FAILED','SUCCEEDED'].include?n['state'] }.last.try(:[],'description')
@@ -272,6 +278,7 @@ class MasterFile < ActiveFedora::Base
     totals = {
       :transcode => 70,
       :distribution => 20,
+      :cleaning => 0,
       :other => 10
     }
 
@@ -284,13 +291,16 @@ class MasterFile < ActiveFedora::Base
       { :description => op['description'], :state => op['state'], :type => type } 
     }
 
+    result = Hash.new { |h,k| h[k] = 0 }
     operations.each { |op|
       op[:pct] = (totals[op[:type]].to_f / operations.select { |o| o[:type] == op[:type] }.count.to_f).ceil
+      state = op[:state].downcase.to_sym 
+      result[state] += op[:pct]
+      result[:complete] += op[:pct] if END_STATES.include?(op[:state])
     }
-
-    percent = [operations.inject(0) { |t,op| t += op[:pct] if END_STATES.include?(op[:state]); t },100].min
-
-    percent.to_s
+    result[:succeeded] += result.delete(:skipped).to_i
+    result.each { |k,v| result[k] = 100 if v > 100 }
+    result
   end
 
   def determine_format(file, content_type = nil)

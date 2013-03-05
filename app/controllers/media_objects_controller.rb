@@ -75,17 +75,36 @@ class MediaObjectsController < ApplicationController
   end
 
   def show_progress
+    overall = { :success => 0, :error => 0 }
+
+    result = Hash[
+      @masterFiles.collect { |mf| 
+        mf_status = {
+          :status => mf.status_code,
+          :complete => mf.percent_complete.to_i,
+          :success => mf.percent_succeeded.to_i,
+          :error => mf.percent_failed.to_i,
+          :operation => mf.operation,
+          :message => mf.error.try(:sub,/^.+:/,'')
+        }
+        if mf.status_code == 'FAILED'
+          mf_status[:error] = 100-mf_status[:success]
+          overall[:error] += 100
+        else
+          overall[:success] += mf_status[:complete]
+        end
+        [mf.pid, mf_status]
+      }
+    ]
+    overall.each { |k,v| overall[k] = [0,[100,v.to_f/@masterFiles.length.to_f].min].max.round }
+
+    if overall[:success]+overall[:error] > 100
+      overall[:error] = 100-overall[:success]
+    end
+
+    result['overall'] = overall
     respond_to do |format|
-      format.any(:xml, :json) do
-        render request.format.to_sym => Hash[
-          @masterFiles.collect { |mf| [mf.pid, {
-            :status => mf.status_code,
-            :complete => mf.percent_complete,
-            :operation => mf.operation,
-            :error => mf.error.try(:sub,/^.+:/,'')
-          }] }
-        ]
-      end
+      format.any(:xml, :json) { render request.format.to_sym => result }
     end
   end
 
