@@ -108,7 +108,11 @@ namespace :deploy do
 
   namespace :avalon do
     task :load_fixtures, :roles => :app do
-      run "rm #{dropbox_path}/demo_fixtures/*.processed"
+      # This doesn't work
+      #run "rm #{dropbox_path}/demo_fixtures/*.processed"
+      # Suggested as a fix by Michael Klein
+      run "find #{dropbox_path}/demo_fixtures -name '*.processed' -delete" 
+
       #XXX Do something fancy like get dropbox location from the server then scp or local fs copy the whole batch into place from source control
 #      run "rails r \"p Avalon::Configuration['dropbox']['path']\"" do |channel, stream, data|
 #        dropbox_path = data
