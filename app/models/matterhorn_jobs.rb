@@ -15,6 +15,7 @@ class MatterhornJobs
     master_file = MasterFile.find(pid)
     # add message here to update master file
     master_file.status_code = 'FAILED'
+    master_file.error = message
     master_file.save
   end
 
