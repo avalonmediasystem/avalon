@@ -97,6 +97,9 @@ class Derivative < ActiveFedora::Base
 
     uri = URI.parse(location_url)
     (application, prefix, media_id, stream_id, filename, extension) = uri.path.scan(regex).flatten
+    if extension.nil? or prefix.nil?
+      prefix = extension = [extension,prefix].find { |thing| not thing.nil? }
+    end
 
     template = ERB.new(self.class.url_handler.patterns[protocol][format])
     result = File.join(Avalon::Configuration['streaming']["#{protocol}_base"],template.result(binding))
