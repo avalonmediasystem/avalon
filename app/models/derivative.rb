@@ -37,7 +37,6 @@ class Derivative < ActiveFedora::Base
 
     # If same quality derivative doesn't exist, create one
     if derivative.blank?
-      puts "CREATING"
       derivative = Derivative.create 
       derivative.track_id = markup.track_id
       
