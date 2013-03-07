@@ -23,6 +23,11 @@ class Derivative < ActiveFedora::Base
 
   has_metadata name: 'encoding', type: EncodingProfileDocument
 
+  def self.url_handler
+    url_handler_class = Avalon::Configuration['streaming']['server'].to_s.classify
+    @url_handler ||= UrlHandler.const_get(url_handler_class.to_sym)
+  end
+
   # Getting the track ID from the fragment is not great but it does reduce the number
   # of calls to Matterhorn 
   def self.create_from_master_file(masterfile, markup)
