@@ -30,11 +30,10 @@ module Avalon
     unless mipath.blank? 
       Mediainfo.path = Avalon::Configuration['mediainfo']['path']
     end
-    url_handler_class = Avalon::Configuration['streaming']['server'].to_s.classify
-    Derivative.url_handler = UrlHandler.const_get(url_handler_class.to_sym)
   rescue Exception => e
-    logger.fatal "Danger Will Robinson"
+    logger.fatal "Initialization failed"
     logger.fatal e.backtrace
+    raise
   end
 
   def self.matterhorn_config
