@@ -32,7 +32,7 @@ module Avalon
     end
     url_handler_class = Avalon::Configuration['streaming']['server'].to_s.classify
     Derivative.url_handler = UrlHandler.const_get(url_handler_class.to_sym)
-  rescue Exception: e
+  rescue Exception => e
     logger.fatal "Danger Will Robinson"
     logger.fatal e.backtrace
   end
