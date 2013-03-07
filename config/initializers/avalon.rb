@@ -24,6 +24,7 @@ module Avalon
   Configuration = DEFAULT_CONFIGURATION.deep_merge(YAML::load(File.read(Rails.root.join('config', 'avalon.yml')))[env])
   ['dropbox','matterhorn','mediainfo','email','streaming'].each { |key| Configuration[key] ||= {} }
   DropboxService = Dropbox.new Avalon::Configuration['dropbox']['path']
+  
   begin
     mipath = Avalon::Configuration['mediainfo']['path']
     unless mipath.blank? 
@@ -31,8 +32,9 @@ module Avalon
     end
     url_handler_class = Avalon::Configuration['streaming']['server'].to_s.classify
     Derivative.url_handler = UrlHandler.const_get(url_handler_class.to_sym)
-  rescue
-    #TODO log some helpful error here instead of silently failing
+  rescue Exception: e
+    logger.fatal "Danger Will Robinson"
+    logger.fatal e.backtrace
   end
 
   def self.matterhorn_config
