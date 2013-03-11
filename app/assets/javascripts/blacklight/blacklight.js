@@ -49,4 +49,5 @@
           });
         };
 */
-Blacklight.do_facet_expand_contract_behavior.selector = '.facets h5';
+//Blacklight.do_facet_expand_contract_behavior.selector = '.facets h5';
+Blacklight.do_facet_expand_contract_behavior.selector = nil
