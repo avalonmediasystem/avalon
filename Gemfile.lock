@@ -1,0 +1,44 @@
+GIT
+  remote: git://github.com/sosedoff/capistrano-unicorn.git
+  revision: c9d2b76f986ec74a98a3bc4dc9f655264d720e52
+  specs:
+    capistrano-unicorn (0.1.6)
+      capistrano
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    activesupport (3.2.12)
+      i18n (~> 0.6)
+      multi_json (~> 1.0)
+    capistrano (2.12.0)
+      highline
+      net-scp (>= 1.0.0)
+      net-sftp (>= 2.0.0)
+      net-ssh (>= 2.0.14)
+      net-ssh-gateway (>= 1.1.0)
+    chronic (0.9.1)
+    highline (1.6.15)
+    i18n (0.6.4)
+    multi_json (1.6.1)
+    net-scp (1.1.0)
+      net-ssh (>= 2.6.5)
+    net-sftp (2.1.1)
+      net-ssh (>= 2.6.5)
+    net-ssh (2.6.6)
+    net-ssh-gateway (1.2.0)
+      net-ssh (>= 2.6.5)
+    rvm-capistrano (1.2.7)
+      capistrano (>= 2.0.0)
+    whenever (0.8.2)
+      activesupport (>= 2.3.4)
+      chronic (>= 0.6.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  capistrano (~> 2.12.0)
+  capistrano-unicorn!
+  rvm-capistrano
+  whenever
