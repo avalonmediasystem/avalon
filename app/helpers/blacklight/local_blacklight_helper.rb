@@ -48,4 +48,20 @@ module Blacklight::LocalBlacklightHelper
     field = args[:document][args[:field]]
     truncate(field.first, length: 200) unless (field.blank? or field.first.blank?)
   end
+
+  # Determine whether to expand the facet or not based on the settings in
+  # the catalog controller and the (lack of) presence in the params hash
+  #
+  # This is a new method that doesn't currently exist in the Blacklight
+  # module
+  def expand_facet? facet
+    expand = facet.expanded || false
+    # If the controller doesn't not expand it by default we need to do some
+    # extra work and check the params hash
+    if params[:f].present?
+      expand = expand || params[:f][facet.field].present?
+    end
+
+    expand
+  end
 end

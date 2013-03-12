@@ -1,5 +1,5 @@
 <%# pulled in from blacklight to add autoexpand support %>
-<ul id="<%= solr_fname.parameterize %>" class="collapse <% if facet_field[:expanded] %>in<% end %>">
+<ul id="<%= solr_fname.parameterize %>" class="collapse <% if expand_facet? facet_field %>in<% end %>">
  <% paginator =    
       Blacklight::Solr::FacetPaginator.new(display_facet.items,        
         :limit => facet_limit_for(solr_field))
