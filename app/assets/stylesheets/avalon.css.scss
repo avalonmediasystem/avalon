@@ -448,11 +448,16 @@ span.constraints-label {
 
 #facets span.selected, .facets span.selected {color: #2A5459;}
 
-ul#creation_metadata {
-  list-style-type: none;
-  margin-left: 0;
-  li {
-    margin-bottom: 1em;
+#creation_metadata {
+  // Make <pre> formatted text look like normal output instead of
+  // bounded in gray
+  pre {
+    background: $white;
+    font-family: $sansFontFamily;
+    font-size: $baseFontSize;
+    padding: 0;
+    background-color: transparent;
+    border: 0;
   }
 }
 
