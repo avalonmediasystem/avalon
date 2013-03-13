@@ -38,10 +38,17 @@ Avalon::Application.configure do
   config.assets.debug = true
 
   # Keep only five logs and rotate them every 5 MB
-  config.logger = Logger.new(Rails.root.join("log", 
-    Rails.env + ".log"), 
-    10, 10*(2**20))
+  #config.logger = Logger.new(Rails.root.join("log", 
+  #  Rails.env + ".log"), 
+  #  10, 10*(2**20))
   
+  # Configure logging to provide a meaningful context such as the 
+  # timestamp and log level. This only works under Rails 3.2.x so if you
+  # are using an older version be sure to comment it out
+  config.log_tags = ['AVALON',
+    :remote_ip,
+    Proc.new { Time.now.strftime('%Y.%m.%D %H:%M:%S.%L')}]
+   
   config.action_mailer.delivery_method = :letter_opener if ENV['LETTER_OPENER']
 
   #config.middleware.insert_before Rails::Rack::Logger, DisableAssetsLogger

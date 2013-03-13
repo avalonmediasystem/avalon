@@ -1,56 +1,60 @@
-/**
- * Use an anonymous inner function to scope it from the global namespace.
- * Bad Javascript!
- */
-(function() {
-    function setActiveSection(activeSegment) {
+window.AvalonStreams = {
+    setActiveSection: function(activeSegment) {
+      /* Start by resetting the state of all sections */
+      $('a.current-stream ~ i').remove();
       $('a[data-segment]').removeClass('current-stream');
-      $("a[data-segment='" + activeSegment + "']").addClass('current-stream');
-      $('a.current-stream').trigger('streamswitch')
-    }
 
-    function setActiveLabel(title) {
+      $("a[data-segment='" + activeSegment + "']").addClass('current-stream');
+      $('a.current-stream').trigger('streamswitch').parent().append(AvalonStreams.nowPlaying);
+    },
+
+    setActiveLabel: function(title) {
       target = $('#stream_label');
       if (target) {
         target.fadeToggle(50, function() { target.text(title); target.fadeToggle(50) });
       }
-    }
+    },
 
     /*
      * This method should take care of the heavy lifting involved in passing a message
      * to the player
      */
-    function refreshStream(stream_info) {
+    refreshStream: function(stream_info) {
       if (stream_info.stream_flash.length > 0) {
         var opts = { flash: stream_info.stream_flash, 
                      hls: stream_info.stream_hls, 
                      poster: stream_info.poster_image,
                      mediaPackageId: stream_info.mediapackage_id };
-        if (typeof currentPlayer !== "undefined" && currentPlayer !== null)
+        if (typeof currentPlayer !== "undefined" && currentPlayer !== null) {
+          //debugger;
           currentPlayer.switchStream(opts);
-        else
+        } else {
           currentPlayer = AvalonPlayer.init($('#player'), opts);
+        }
       }
-    }
+    },
+    
+    nowPlaying: '<i class="icon-circle-arrow-left"></i>'
+};
 
-    $(document).ready(function() {
-        $('a[data-segment]').click(function(event) {
-            event.preventDefault();
-            var target = $(this);
-            /*
-             * Do three things to update a stream
-             *
-             * 1) Replace the H2 container's text with the new section name
-             * 2) Set the active stream
-             * 3) Refresh the stream by passing a message to the player
-             */
-            var uri = target.attr('href').split('?')
-            $.getJSON(uri[0], uri[1], function(data) {
-                setActiveLabel(data.label);
-                setActiveSection(target.attr('data-segment'));
-                //refreshStream(data.stream, data.mediapackage_id);
-                refreshStream(data);
-            });
+$().ready(function() {
+    /* Initialize the extra eye candy on page load */
+    AvalonStreams.setActiveSection($('a.current-stream').data('segment'));
+    
+    $('a[data-segment]').click(function(event) {
+        event.preventDefault();
+        var target = $(this);
+
+        /**
+         * Explicitly make this a JSON request 
+         */
+        var uri = target.attr('href').split('?')[0] + '.json';
+        var segment = $(this).data('segment');
+        
+        $.getJSON(uri, 'content=' + segment, function(data) {
+            AvalonStreams.setActiveLabel(data.label);
+            AvalonStreams.setActiveSection(segment);
+            AvalonStreams.refreshStream(data);
         });
     });
-}());
+});

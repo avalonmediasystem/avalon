@@ -89,7 +89,9 @@ footer {
   pointer-events: none !important;
 }
 
-a.current-stream {
+.current-stream {
+  font-weight: bold;
+
   &:link { @hidden-disabled-link }
   &:hover { @hidden-disabled-link }
   &:active { @hidden-disabled-link }
@@ -448,11 +450,16 @@ span.constraints-label {
 
 #facets span.selected, .facets span.selected {color: #2A5459;}
 
-ul#creation_metadata {
-  list-style-type: none;
-  margin-left: 0;
-  li {
-    margin-bottom: 1em;
+#creation_metadata {
+  // Make <pre> formatted text look like normal output instead of
+  // bounded in gray
+  pre {
+    background: $white;
+    font-family: $sansFontFamily;
+    font-size: $baseFontSize;
+    padding: 0;
+    background-color: transparent;
+    border: 0;
   }
 }
 
@@ -471,4 +478,23 @@ ul#creation_metadata {
     margin-right: 2pt;
     margin-bottom: 0;
     cursor: pointer;
+}
+
+/**
+ * Fix some stuff relating to the facets so that they hide properly
+ */
+#facets .collapse,
+.facet_limit .collapse {
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom:0 ;
+  height: 0;
+  @include transition(all 0.35s ease);
+
+  &.in {
+    padding-top: 0.5em;
+    padding-bottom: 1em;
+    height: auto;
+  }
 }
