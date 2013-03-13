@@ -1,7 +1,7 @@
 <%# Partial once the layout makes sense %>
       <% show_progress = sections.any? { |s| not s.succeeded? } %>
       <% unless (sections.blank? or sections.length == 1) and not show_progress %>
-      <section class="whitespace">
+      <section class="whitespace" id="segments">
         <legend><i class="icon-list-alt"></i> Sections</legend>
           <ol id="section_links">
             <% sections.each do |section| %>

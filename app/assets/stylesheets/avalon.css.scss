@@ -89,7 +89,9 @@ footer {
   pointer-events: none !important;
 }
 
-a.current-stream {
+.current-stream {
+  font-weight: bold;
+
   &:link { @hidden-disabled-link }
   &:hover { @hidden-disabled-link }
   &:active { @hidden-disabled-link }
