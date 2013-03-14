@@ -50,7 +50,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
-  revision: 53c4befd15c92ed4f20aa4844baf66b38d9f2ced
+  revision: d82dc9ffccb75917241cbe88b25c6d04152be2ea
   specs:
     rubyhorn (0.0.4)
       activesupport

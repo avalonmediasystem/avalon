@@ -57,12 +57,6 @@ class MasterFile < ActiveFedora::Base
   end
 
   def destroy
-    parent = mediaobject
-    parent.parts -= [self]
-    parent.save(validate: false)
-    unless new_object? || finished_processing?
-      Rubyhorn.client.stop(workflow_id) if workflow_id
-    end
     delete
   end
 
@@ -92,10 +86,36 @@ class MasterFile < ActiveFedora::Base
   end
 
   def delete 
+    # Stops all processing and deletes the workflow
+    unless new_object? || finished_processing?
+      Rubyhorn.client.stop(workflow_id) if workflow_id
+    end
+
+    parent = mediaobject
+    parent.save(validate: false)
+
     mo = self.mediaobject
-    self.mediaobject = nil 
-    super
-    mo.save
+    self.mediaobject = nil
+    mo.parts -= [self]
+
+    derivatives_deleted = true
+    self.derivatives.each do |d|
+      if !d.delete
+        derivatives_deleted = false
+      end
+    end
+    if !derivatives_deleted 
+      #flash[:error] << "Some derivatives could not be deleted."
+    end 
+
+    if Rubyhorn.client.stop(workflow_id)
+      super
+    else 
+      # If can't delete workflow from Matterhorn.
+      # Detaches the MasterFile anyway, but don't delete it so we have a record of what failed
+      #flash[:error] << "MasterFile's workflow could not be deleted from Matterhorn."
+    end
+    mo.save(validate: false)
   end
 
   def process

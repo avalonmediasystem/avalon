@@ -17,9 +17,10 @@ class Derivative < ActiveFedora::Base
     d.field :hls_url, :string
     d.field :duration, :string
     d.field :track_id, :string
+    d.field :hls_track_id, :string
   end
 
-  delegate_to 'descMetadata', [:location_url, :hls_url, :duration, :track_id], unique: true
+  delegate_to 'descMetadata', [:location_url, :hls_url, :duration, :track_id, :hls_track_id], unique: true
 
   has_metadata name: 'encoding', type: EncodingProfileDocument
 
@@ -31,6 +32,7 @@ class Derivative < ActiveFedora::Base
   # Getting the track ID from the fragment is not great but it does reduce the number
   # of calls to Matterhorn 
   def self.create_from_master_file(masterfile, markup)
+    
     # Looks for an existing derivative of the same quality
     # and adds the track URL to it
     quality = markup.tags.quality.first.split('-')[1] unless markup.tags.quality.empty?
@@ -43,7 +45,6 @@ class Derivative < ActiveFedora::Base
     # If same quality derivative doesn't exist, create one
     if derivative.blank?
       derivative = Derivative.create 
-      derivative.track_id = markup.track_id
       
       derivative.duration = markup.duration.first
       derivative.encoding.mime_type = markup.mimetype.first
@@ -60,8 +61,10 @@ class Derivative < ActiveFedora::Base
     end
 
     if markup.tags.tag.include? "hls"   
+      derivative.hls_track_id = markup.track_id
       derivative.hls_url = markup.url.first
     else
+      derivative.track_id = markup.track_id
       derivative.location_url = markup.url.first
     end
 
@@ -119,5 +122,11 @@ class Derivative < ActiveFedora::Base
       else
         "other"
       end
+  end
+
+  def delete
+    Rubyhorn.client.delete_track(masterfile.workflow_id, track_id) if track_id.present? 
+    Rubyhorn.client.delete_hls_track(masterfile.workflow_id, hls_track_id) if hls_track_id.present? 
+    super
   end
 end 
