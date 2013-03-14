@@ -47,7 +47,7 @@ Avalon::Application.configure do
   # are using an older version be sure to comment it out
   config.log_tags = ['AVALON',
     :remote_ip,
-    Proc.new { Time.now.strftime('%Y.%m.%D %H:%M:%S.%L')}]
+    Proc.new { Time.now.strftime('%Y.%m.%d %H:%M:%S.%L')}]
    
   config.action_mailer.delivery_method = :letter_opener if ENV['LETTER_OPENER']
 
