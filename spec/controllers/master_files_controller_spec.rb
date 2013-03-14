@@ -62,6 +62,8 @@ describe MasterFilesController do
        load_fixture 'avalon:electronic-resource'
      
        @file = fixture_file_upload('/public-domain-book.txt', 'application/json')
+        Rubyhorn.stub_chain(:client,:stop).and_return(true)
+
        lambda { post :create, Filedata: [@file], original: 'any', container_id: 'avalon:electronic-resource' }.should_not change { MasterFile.count }
        logger.debug "<< Flash errors is present? #{flash[:errors]} >>"
      
@@ -125,6 +127,7 @@ describe MasterFilesController do
         doc = Rubyhorn::Workflow.from_xml(xml)
         Rubyhorn.stub_chain(:client,:instance_xml).and_return(doc)
         Rubyhorn.stub_chain(:client,:get).and_return(nil)
+        Rubyhorn.stub_chain(:client,:stop).and_return(true)
         mf = MasterFile.create!
         mo = MediaObject.new
         mo.save(validate: false)
@@ -152,7 +155,8 @@ describe MasterFilesController do
           master_file.mediaobject = media_object
           master_file.mediaobject.save(validate:false)
           master_file.save
-  
+         Rubyhorn.stub_chain(:client,:stop).and_return(true) 
+
         lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }.by(-1)
       end
     end
@@ -172,7 +176,8 @@ describe MasterFilesController do
         master_file.mediaobject = media_object
         master_file.mediaobject.save(validate:false)
         master_file.save
-          
+        Rubyhorn.stub_chain(:client,:stop).and_return(true)
+
         lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }.by(-1)
         media_object.parts.should_not include master_file         
       end

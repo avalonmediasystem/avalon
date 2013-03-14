@@ -1,3 +1,5 @@
+require File.join(Rails.root, "app/models/role_map")
+
 class RoleControls
   class RoleExists < StandardError
   end

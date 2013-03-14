@@ -57,12 +57,6 @@ class MasterFile < ActiveFedora::Base
   end
 
   def destroy
-    parent = mediaobject
-    parent.parts -= [self]
-    parent.save(validate: false)
-    unless new_object? || finished_processing?
-      Rubyhorn.client.stop(workflow_id) if workflow_id
-    end
     delete
   end
 
@@ -92,10 +86,32 @@ class MasterFile < ActiveFedora::Base
   end
 
   def delete 
+    # Stops all processing and deletes the workflow
+    unless new_object? || finished_processing?
+      Rubyhorn.client.stop(workflow_id) if workflow_id
+    end
+
+    parent = mediaobject
+    parent.save(validate: false)
+
     mo = self.mediaobject
-    self.mediaobject = nil 
+    self.mediaobject = nil
+    mo.parts -= [self]
+
+    derivatives_deleted = true
+    self.derivatives.each do |d|
+      if !d.delete
+        derivatives_deleted = false
+      end
+    end
+    if !derivatives_deleted 
+      #flash[:error] << "Some derivatives could not be deleted."
+    end 
+
+    Rubyhorn.client.stop(workflow_id)
     super
-    mo.save
+
+    mo.save(validate: false)
   end
 
   def process
