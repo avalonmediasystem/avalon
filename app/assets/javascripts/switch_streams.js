@@ -56,9 +56,9 @@ $().ready(function() {
         
         $.getJSON(uri, 'content=' + segment, function(data) {
 	    if (null != data.label) {
-              AvalonStreams.setActiveLabel(data.label);
+          AvalonStreams.setActiveLabel(data.label);
 	    } else {
-	      AvalonStreams.setActiveLabel(this.text());
+	      AvalonStreams.setActiveLabel(target.text());
 	    }
 	    AvalonStreams.setActiveSection(segment);
             AvalonStreams.refreshStream(data);
