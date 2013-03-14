@@ -58,7 +58,7 @@ $().ready(function() {
 	    if (null != data.label) {
               AvalonStreams.setActiveLabel(data.label);
 	    } else {
-	      AvalonStreams.setActiveLabel(this.text);
+	      AvalonStreams.setActiveLabel(this.text());
 	    }
 	    AvalonStreams.setActiveSection(segment);
             AvalonStreams.refreshStream(data);
