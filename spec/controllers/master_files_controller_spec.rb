@@ -155,7 +155,8 @@ describe MasterFilesController do
           master_file.mediaobject = media_object
           master_file.mediaobject.save(validate:false)
           master_file.save
-  
+         Rubyhorn.stub_chain(:client,:stop).and_return(true) 
+
         lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }.by(-1)
       end
     end
