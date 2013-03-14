@@ -108,13 +108,9 @@ class MasterFile < ActiveFedora::Base
       #flash[:error] << "Some derivatives could not be deleted."
     end 
 
-    if Rubyhorn.client.stop(workflow_id)
-      super
-    else 
-      # If can't delete workflow from Matterhorn.
-      # Detaches the MasterFile anyway, but don't delete it so we have a record of what failed
-      #flash[:error] << "MasterFile's workflow could not be deleted from Matterhorn."
-    end
+    Rubyhorn.client.stop(workflow_id)
+    super
+
     mo.save(validate: false)
   end
 
