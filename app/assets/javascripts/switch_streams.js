@@ -11,6 +11,9 @@ window.AvalonStreams = {
     setActiveLabel: function(title) {
       target = $('#stream_label');
       if (target) {
+	/* This seems a bit unneeded with CSS3 but that can wait for a
+	 * future release
+	 */
         target.fadeToggle(50, function() { target.text(title); target.fadeToggle(50) });
       }
     },
@@ -52,8 +55,12 @@ $().ready(function() {
         var segment = $(this).data('segment');
         
         $.getJSON(uri, 'content=' + segment, function(data) {
-            AvalonStreams.setActiveLabel(data.label);
-            AvalonStreams.setActiveSection(segment);
+	    if (null != data.label) {
+              AvalonStreams.setActiveLabel(data.label);
+	    } else {
+	      AvalonStreams.setActiveLabel(this.text);
+	    }
+	    AvalonStreams.setActiveSection(segment);
             AvalonStreams.refreshStream(data);
         });
     });
