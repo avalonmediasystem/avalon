@@ -23,7 +23,9 @@ require 'avalon/dropbox'
 
     def execute context
          logger.debug "<< Processing FILE-UPLOAD step >>"
-       update_master_files context[:mediaobject], context[:parts] 
+       deleted_parts = update_master_files context[:mediaobject], context[:parts] 
+       context[:notice] = "Several clean up jobs have been sent out. Their statuses can be viewed by your sysadmin at #{ Avalon::Configuration['matterhorn']['cleanup_log'] }" unless deleted_parts.empty?
+       
        # Reloads mediaobject.parts, should use .reload when we update hydra-head 
        media = MediaObject.find(context[:mediaobject].pid)
        unless media.parts.empty?
@@ -41,6 +43,7 @@ require 'avalon/dropbox'
   # label - Display label in the interface
   # pid - Identifier for the masterFile to help with mapping
   def update_master_files(mediaobject, files = [])
+    deleted_parts = []
     if not files.blank?
       files.each do |part|
         logger.debug "<< #{part} >>"
@@ -49,9 +52,8 @@ require 'avalon/dropbox'
         if selected_part
           if part[:remove]
             logger.info "<< Deleting master file #{selected_part.pid} from the system >>"
+            deleted_parts << selected_part
             selected_part.destroy
-            context[:notice] = "Several clean up jobs have been sent out. Their statuses can be viewed by your sysadmin at #{ Avalon::Configuration['matterhorn']['cleanup_log'] }"
-        
           else
             selected_part.label = part[:label]
             selected_part.save
@@ -59,6 +61,7 @@ require 'avalon/dropbox'
         end
       end
     end
+    return deleted_parts
   end
 
   end
