@@ -87,8 +87,8 @@ class MasterFile < ActiveFedora::Base
 
   def delete 
     # Stops all processing and deletes the workflow
-    unless new_object? || finished_processing?
-      Rubyhorn.client.stop(workflow_id) if workflow_id
+    unless workflow_id.blank? || new_object? || finished_processing?
+      Rubyhorn.client.stop(workflow_id)
     end
 
     parent = mediaobject
@@ -108,7 +108,6 @@ class MasterFile < ActiveFedora::Base
       #flash[:error] << "Some derivatives could not be deleted."
     end 
 
-    Rubyhorn.client.stop(workflow_id)
     super
 
     mo.save(validate: false)

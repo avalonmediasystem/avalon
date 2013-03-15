@@ -57,6 +57,10 @@ class MediaObjectsController < ApplicationController
     end
   end
 
+  def custom_update
+    flash[:notice] = @notice
+  end
+
   def show
     respond_to do |format|
       # The flash notice is only set if you are returning HTML since it makes no
@@ -135,6 +139,7 @@ class MediaObjectsController < ApplicationController
     logger.debug "<< Exists? #{MediaObject.exists? params[:id]} >>"
     redirect_to root_path
   end
+
 
   # Sets the published status for the object. If no argument is given then
   # it will just toggle the state.

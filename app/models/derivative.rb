@@ -125,8 +125,13 @@ class Derivative < ActiveFedora::Base
   end
 
   def delete
-    Rubyhorn.client.delete_track(masterfile.workflow_id, track_id) if track_id.present? 
-    Rubyhorn.client.delete_hls_track(masterfile.workflow_id, hls_track_id) if hls_track_id.present? 
+    job_urls = []
+    job_urls << Rubyhorn.client.delete_track(masterfile.workflow_id, track_id) 
+    job_urls << Rubyhorn.client.delete_hls_track(masterfile.workflow_id, hls_track_id) if hls_track_id.present? 
+
+    # Logs retraction jobs for sysadmin 
+    File.open(Avalon::Configuration['matterhorn']['cleanup_log'], "a+") { |f| f << job_urls.join("\n") + "\n" }
+
     super
   end
 end 

@@ -44,13 +44,14 @@ require 'avalon/dropbox'
     if not files.blank?
       files.each do |part|
         logger.debug "<< #{part} >>"
-
         selected_part = mediaobject.parts.find{|p| p.pid == part[:pid]}
 
         if selected_part
           if part[:remove]
             logger.info "<< Deleting master file #{selected_part.pid} from the system >>"
             selected_part.destroy
+            context[:notice] = "Several clean up jobs have been sent out. Their statuses can be viewed by your sysadmin at #{ Avalon::Configuration['matterhorn']['cleanup_log'] }"
+        
           else
             selected_part.label = part[:label]
             selected_part.save
