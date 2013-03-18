@@ -460,6 +460,11 @@ span.constraints-label {
     padding: 0;
     background-color: transparent;
     border: 0;
+    
+    /* Force the summary to wrap neatly */
+    word-wrap: normal;
+    word-break: normal;
+    overflow-wrap: normal;
   }
 }
 
