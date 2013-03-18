@@ -9,6 +9,9 @@ set :dropbox_path, "/srv/avalon/dropbox"
 #For capistrano to send the correct rails env to unicorn
 set :unicorn_env, "staging"
 
+set :branch, "develop"
+set :branch, ENV['SCM_BRANCH'] if ENV['SCM_BRANCH']
+
 # if you want to clean up old releases on each deploy uncomment this:
 # after "deploy:restart", "deploy:cleanup"
 
@@ -26,8 +29,7 @@ set :unicorn_env, "staging"
 
 namespace :deploy do
   task :update_code, :roles => :app do
-#    run "cd #{current_release}; git stash"
-    run "cd #{current_release}; git checkout Gemfile.lock; git checkout config/role_map_development.yml; git pull origin master"
+    run "cd #{current_release}; git checkout Gemfile.lock; git checkout config/role_map_development.yml; git pull origin #{branch}"
   end
 
   task :update_submodules, :roles => :app do
