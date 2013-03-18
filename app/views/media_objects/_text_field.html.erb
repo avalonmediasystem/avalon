@@ -6,7 +6,7 @@
   <div class="control-group">
     <%= media.label field do %>
       <% if options[:tooltip] %>
-        <a href='https://wiki.dlib.indiana.edu/display/VarVideo/Resource+Description+Help#<%= default_label %>' target: '_help' data-tooltip="#<%= default_label %>_tooltip"><%= text_label %><% if options[:required] %> *<% end %></a> 
+        <a href='https://wiki.dlib.indiana.edu/display/VarVideo/Resource+Description+Help#<%= default_label %>' target='_help' data-tooltip="#<%= default_label %>_tooltip"><%= text_label %><% if options[:required] %> *<% end %></a> 
     <% else %>
       <%= text_label %><% if options[:required] %> *<% end %>
     <% end %>

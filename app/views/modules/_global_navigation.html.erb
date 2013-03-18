@@ -22,7 +22,7 @@
           <% if can? :manage, Admin::Group %>
             <li><%= link_to 'Manage Groups', 
               admin_index_path,
-              html: {target: '_admin'} %>
+              target: '_admin' %>
           <% end %>
        </ul>        
       <form action="/" method="get" class="navbar-search pull-right">

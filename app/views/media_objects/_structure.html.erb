@@ -31,7 +31,7 @@
                           <% end %>
         </td>
         <td>
-          <%= masterfile.label.blank? ? '&#8212'.html_safe : masterfile.label %>
+          <%= masterfile.label.blank? ? '&#8212;'.html_safe : masterfile.label %>
         </td>
         <td>
 	  	    <%= truncate(File.basename(masterfile.file_location), length: 25) %>

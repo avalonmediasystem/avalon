@@ -35,6 +35,7 @@
 
   <h2 class="muted"><%= @mediaobject.title.present? ? truncate(@mediaobject.title, length: 50) : '[Untitled]' %> (<%= @mediaobject.pid %>)</h2>  
   <%= render current_step_for @active_step %>
+  </div>
 </div>
 
 <% content_for :title do %>
