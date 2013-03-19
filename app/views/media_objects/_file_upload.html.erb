@@ -3,8 +3,7 @@
 <% unless @masterFiles.empty? %>
 <section id="associated_files">
       <legend>Associated files</legend>
-      <p class="muted">Update the display labels to change the information that end users will see. Changes persist once you select Update.</p>
-      
+      <p class="muted">For items with multiple files, provide display labels for each file. Changes will not be saved until you update the page.</p>
 	  <hr />
       <%= twitter_bootstrap_form_for @mediaobject do |file_list| %>
       <%= hidden_field_tag :donot_advance, true %>
