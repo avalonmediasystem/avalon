@@ -19,6 +19,7 @@
 
 // Let's be selective on which modules we include instead of going down the 
 // kitchen sink route. Even some of these may not be needed down the road.
+//= require bootstrap-alert
 //= require bootstrap-dropdown
 //= require bootstrap-transition
 //= require bootstrap-collapse
