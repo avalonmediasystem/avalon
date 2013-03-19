@@ -27,27 +27,27 @@ $gray: rgb(51,51,51);
 
 /* Links */
 
-$linkColor: #2A5459;
+$linkColor: rgb(42, 84, 89);
 
 /* Alerts */
 
-$warningText: #333;
-$warningBackground: #e9e9e9;
+$warningText: $gray;
+$warningBackground: rgb(234, 234, 234);
 
-$successText: #333;
+$successText: $gray;
 $successLink: rgb(250, 250, 250);
 $successBackground: $greenBG;
 
-$infoText: #333;
-$infoBackground: #e9e9e9;
+$infoText: $gray;
+$infoBackground: rgb(234, 234, 234);
 
 /* Header */
 
-$headerBackgroundColor: #e9e9e9;
+$headerBackgroundColor: rgb(234, 234, 234);
 $headerTextColor: $white;
 $loginTextColor: $gray;
-$loginLinkColor: #2A5459;
-$loginLinkBackgroundColor: #FBB040;
+$loginLinkColor: rgb(42, 84, 89);
+$loginLinkBackgroundColor: rgb(251, 176, 64);
 
 /* Sidenav */
 
