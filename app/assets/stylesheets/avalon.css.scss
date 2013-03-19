@@ -503,3 +503,13 @@ span.constraints-label {
     height: auto;
   }
 }
+
+/**
+ * When H2s are muted reduced not only the color contrast but the
+ * font size as well
+ */
+h2.muted {
+  font-size: 150%;
+  padding: 0;
+  margin: 0;
+}

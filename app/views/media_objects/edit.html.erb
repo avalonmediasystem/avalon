@@ -31,14 +31,8 @@
     </div>
   <% end %>
 
-  
+  <h2 class="muted"><%= @mediaobject.title.present? ? truncate(@mediaobject.title, length: 50) : '[Untitled]' %> (<%= @mediaobject.pid %>)</h2>  
   <%= render current_step_for @active_step %>
-
-<!--     <div id="permalink" class="alert alert-success">
-      <h4 class="alert-heading">Permalink</h4>
-      <p>To share this item with others use the following canonical link</p>
-      <address><%= link_to media_object_url(params[:id]), media_object_url(params[:id]) %></address>
-    </div> -->
 </div>
 
 <% content_for :title do %>
@@ -46,9 +40,5 @@
      and since we are all about efficiency right now it will work until there
      is time to revisit the workflow %>
   <%= HYDRANT_STEPS.get_step(@active_step).title %> -
-  <% unless @mediaobject.title.blank? %>
-    <%= @mediaobject.title %> (<%= @mediaobject.pid %>)
-  <% else %>
-    <%= @mediaobject.pid %>
-  <% end %>
+  <%= @mediaobject.title.present? ? truncate(@mediaobject.title, length: 50) : '[Untitled]' %> (<%= @mediaobject.pid %>)
 <% end %>
