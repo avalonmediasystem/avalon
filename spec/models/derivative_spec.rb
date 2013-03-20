@@ -35,7 +35,7 @@ describe Derivative do
 
       @derivative.save
 
-      File.open(Avalon::Configuration['matterhorn']['cleanup_log'], "w+") { |f| f = "" }
+      File.open(Avalon::Configuration['matterhorn']['cleanup_log'], "w+") {}
     end
 
     it "should delete and start retraction jobs" do
