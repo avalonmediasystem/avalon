@@ -36,6 +36,7 @@ test:
     root: 'http://localhost:8080/'
     baseApplication: 'avalon'
     use_red5: true
+    cleanup_log: 'log/cleanup_jobs.log'
   mediainfo:
     path: '/usr/bin/mediainfo'
   email:
