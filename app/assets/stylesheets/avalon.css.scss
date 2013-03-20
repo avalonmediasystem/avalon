@@ -514,6 +514,10 @@ h2.muted {
   margin: 0;
 }
 
+button.close {
+  display: block;
+}
+
 /**
  * Set the breakpoint for hiding the header based on the responsive point
  * where the navbar collapses
@@ -522,4 +526,4 @@ h2.muted {
   .custom-header {
     display: none;
   }
-}
+

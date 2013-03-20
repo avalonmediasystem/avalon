@@ -1,6 +1,9 @@
 <% if flash[:notice].present? %>
-<div class="span9 clearfix" id="alerts">
-  <div class="alert alert-success"><%= flash[:notice] %></div>  
+<div class="clearfix" id="alerts">
+  <div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <%= flash[:notice] %>
+  </div>  
 </div>
 <% end %>
 

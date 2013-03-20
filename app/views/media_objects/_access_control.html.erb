@@ -2,7 +2,6 @@
   .overlay { display: none }
 </style>
 
-<% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
 <h3>Access control</h3>
 
 <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
