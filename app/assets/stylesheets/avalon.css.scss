@@ -513,3 +513,13 @@ h2.muted {
   padding: 0;
   margin: 0;
 }
+
+/**
+ * Set the breakpoint for hiding the header based on the responsive point
+ * where the navbar collapses
+ */
+@media (max-width: $navbarCollapseWidth) {
+  .custom-header {
+    display: none;
+  }
+}

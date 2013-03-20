@@ -54,6 +54,8 @@ $loginLinkBackgroundColor: rgb(251, 176, 64);
 $sidenavHeaderBackgroundColor: $greenBG;
 
 /* Search Facets */
-
 $constraint_bg_color: $greenBG;
 $constraint_border_color: scale-color($greenBG, $lightness: -20%);
+
+/* Change default breakpoint for the navigation bar */
+$navCollapseWidth: 650px;
