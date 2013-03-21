@@ -55,8 +55,14 @@ describe Derivative do
       log_count.should == 2
     end 
 
-    after :each do 
-    end
+    it "should delete even if retraction fails (VOV-1356)" do
+      pid = @derivative.pid
+
+      Rubyhorn.stub_chain(:client,:delete_track).and_raise("Stream not found error")
+      Rubyhorn.stub_chain(:client,:delete_hls_track).and_raise("Stream not found error")
+
+      expect { @derivative.delete }.to change(Derivative.all.count).by(-1)
+    end 
   end
 
   describe "streaming" do
