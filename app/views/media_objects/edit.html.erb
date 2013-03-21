@@ -33,7 +33,7 @@
     </div>
   <% end %>
 
-  <h2 class="muted"><%= @mediaobject.title.present? ? truncate(@mediaobject.title, length: 50) : '[Untitled]' %> (<%= @mediaobject.pid %>)</h2>  
+  <h3><%= HYDRANT_STEPS.get_step(@active_step).title %> <span class="muted"><%= @mediaobject.title.present? ? truncate(@mediaobject.title, length: 30) : '[Untitled]' %></span></h3>  
   <%= render current_step_for @active_step %>
   </div>
 </div>
