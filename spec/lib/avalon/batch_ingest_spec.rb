@@ -46,4 +46,16 @@ describe Avalon::Batch do
     Avalon::Batch.ingest
     IngestBatch.count.should == 0
   end
+
+  it 'should have a column for file labels' do
+    pending "[VOV-1347] Wait until implemented" 
+  end
+
+  it "should be able to default to public access" do
+    pending "[VOV-1348] Wait until implemented"
+  end
+
+  it "should be able to default to specific groups" do
+    pending "[VOV-1348] Wait until implemented"
+  end
 end

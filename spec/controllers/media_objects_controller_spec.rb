@@ -62,6 +62,10 @@ describe MediaObjectsController, type: :controller do
        response.should render_template HYDRANT_STEPS.first.template
      end
     
+    it "should not default to the Access Control page" do
+      pending "[VOV-1165] Wait for product owner feedback on which step to default to"
+    end
+
     context "Updating the metadata should result in valid input" do
       it "should ignore the PID if provided as a parameter"
       it "should ignore invalid attributes"
