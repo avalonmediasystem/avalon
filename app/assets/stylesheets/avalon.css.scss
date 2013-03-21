@@ -526,4 +526,13 @@ button.close {
   .custom-header {
     display: none;
   }
+
+  /**
+   * Override the default since the Avalon logo is larger. If you do not
+   * need the space it can be dialed back or removed completely without
+   * any negative effects
+   */
+  .navbar .brand {
+    width: 50px;
+  } 
 }
