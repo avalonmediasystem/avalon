@@ -56,6 +56,7 @@ describe Derivative do
     end 
 
     it "should delete even if retraction fails (VOV-1356)" do
+      pending "Do not test until VOV-1356 is fixed"
       pid = @derivative.pid
 
       Rubyhorn.stub_chain(:client,:delete_track).and_raise("Stream not found error")
