@@ -6,7 +6,7 @@ require 'whenever/capistrano'
 set :application, "avalon"
 set :repository,  "git://github.com/avalonmediasystem/avalon.git"
 
-set :stages, %W(dev testing prod)
+set :stages, %W(dev testing prod vagrant)
 set :default_stage, "dev"
 require 'capistrano/ext/multistage'
 
