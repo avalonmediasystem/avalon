@@ -22,8 +22,8 @@
 
   platforms :ruby do
     gem 'sqlite3'
-  gem 'execjs'
-     gem 'therubyracer', '= 0.10.2'
+    gem 'execjs'
+    gem 'therubyracer', '= 0.10.2'
   end
 
   # You are free to implement your own User/Authentication solution in its place.
@@ -38,7 +38,7 @@
 
   gem 'validates_email_format_of'
   gem 'loofah'
-  gem 'omniauth-cas', :git => "https://github.com/cjcolvar/omniauth-cas.git"
+  gem 'omniauth-cas'
   gem 'omniauth-identity'
   gem 'omniauth-ldap'
 
