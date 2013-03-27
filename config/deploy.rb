@@ -15,7 +15,8 @@ set(:bundle_flags) { "--quiet --path=#{deploy_to}/shared/gems" }
 set :rvm_ruby_string, "1.9.3"
 set :rvm_type, :system
 
-after :bundle_install, "deploy:migrate"
+before "deploy:finalize_update", "deploy:remove_symlink_targets"
+after "deploy:update_code", "deploy:migrate"
 after "deploy:create_symlink", "deploy:trust_rvmrc"
 
 set(:shared_children) { 
@@ -42,20 +43,27 @@ task :uname do
 end
 
 namespace :deploy do
+	task :remove_symlink_targets do
+		shared_children.each do |target|
+			t = File.join(latest_release,target)
+			run "if [ -f #{t} ]; then rm #{t}; fi"
+		end
+	end
+
 	task :trust_rvmrc do
 	  run "/usr/local/rvm/bin/rvm rvmrc trust #{latest_release}"
 	end
 
   task :start do
-    run "cd #{current_release} && bundle exec rake delayed_job:start"
+    run "cd #{current_release} && #{rake} RAILS_ENV=#{rails_env} delayed_job:start"
   end
 
   task :stop do
-    run "cd #{current_release} && bundle exec rake delayed_job:stop"
+    run "cd #{current_release} && #{rake} RAILS_ENV=#{rails_env} delayed_job:stop"
   end
 
   task :restart, :roles => :app, :except => { :no_release => true } do
-    run "cd #{current_release} && bundle exec rake delayed_job:restart"
+    run "cd #{current_release} && #{rake} RAILS_ENV=#{rails_env} delayed_job:restart"
     run "touch #{File.join(current_path,'tmp','restart.txt')}"
   end
 end
