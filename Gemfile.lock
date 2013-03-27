@@ -288,6 +288,7 @@ GEM
     mime-types (1.21)
     multi_json (1.6.1)
     multipart-post (1.2.0)
+    mysql2 (0.3.11)
     net-http-digest_auth (1.2.1)
     net-ldap (0.2.2)
     net-scp (1.1.0)
@@ -520,6 +521,7 @@ DEPENDENCIES
   loofah
   mediainfo
   mime-types (>= 1.1)
+  mysql2
   om (~> 1.8.0)
   omniauth-cas
   omniauth-identity
