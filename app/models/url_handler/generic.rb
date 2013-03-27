@@ -8,8 +8,8 @@ module UrlHandler
 					'audio' => "<%=prefix%>:<%=media_id%>/<%=stream_id%>/<%=filename%>",
 				},
 				'http' => {
-					'video' => "<%=media_id%>/<%=stream_id%>/<%=filename%>.<%=extension%>.m3u8",
-					'audio' => "<%=media_id%>/<%=stream_id%>/<%=filename%>.<%=extension%>.m3u8",
+					'video' => "<%=media_id%>/<%=stream_id%>/<%=filename%>.m3u8",
+					'audio' => "<%=media_id%>/<%=stream_id%>/<%=filename%>.m3u8",
 				}
 			}
 		end
