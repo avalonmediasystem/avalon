@@ -69,15 +69,6 @@ GIT
       actionpack (~> 3)
       railties (~> 3)
 
-GIT
-  remote: https://github.com/cjcolvar/omniauth-cas.git
-  revision: 972ded584cbb44e8cb25469836a1253174ed95aa
-  specs:
-    omniauth-cas (0.0.7)
-      addressable (~> 2.2)
-      nokogiri (~> 1.5)
-      omniauth (~> 1.1.0)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -297,8 +288,8 @@ GEM
     mime-types (1.21)
     multi_json (1.7.2)
     multipart-post (1.2.0)
+    mysql2 (0.3.11)
     net-http-digest_auth (1.2.1)
-    net-ldap (0.2.2)
     net-scp (1.1.0)
       net-ssh (>= 2.6.5)
     net-sftp (2.1.1)
@@ -320,11 +311,6 @@ GEM
     omniauth-identity (1.1.0)
       bcrypt-ruby (~> 3.0)
       omniauth (~> 1.0)
-    omniauth-ldap (1.0.3)
-      net-ldap (~> 0.2.2)
-      omniauth (~> 1.0)
-      pyu-ruby-sasl (~> 0.0.3.1)
-      rubyntlm (~> 0.1.1)
     orm_adapter (0.4.0)
     polyglot (0.3.3)
     posix-spawn (0.3.6)
@@ -334,7 +320,6 @@ GEM
       slop (~> 3.4)
     pry-rails (0.2.2)
       pry (>= 0.9.10)
-    pyu-ruby-sasl (0.0.3.3)
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -409,7 +394,6 @@ GEM
       nokogiri
       rest-client
       savon
-    rubyntlm (0.1.1)
     rubyzip (0.9.9)
     rvm-capistrano (1.2.7)
       capistrano (>= 2.0.0)
@@ -525,10 +509,9 @@ DEPENDENCIES
   loofah
   mediainfo
   mime-types (>= 1.1)
+  mysql2
   om (~> 1.8.0)
-  omniauth-cas!
   omniauth-identity
-  omniauth-ldap
   pry
   pry-rails
   rails (~> 3.2.3)
