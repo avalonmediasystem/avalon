@@ -21,9 +21,8 @@
   end
 
   platforms :ruby do
-    gem 'sqlite3'
-  gem 'execjs'
-     gem 'therubyracer', '= 0.10.2'
+    gem 'execjs'
+    gem 'therubyracer', '= 0.10.2'
   end
 
   # You are free to implement your own User/Authentication solution in its place.
@@ -38,9 +37,7 @@
 
   gem 'validates_email_format_of'
   gem 'loofah'
-  gem 'omniauth-cas', :git => "https://github.com/cjcolvar/omniauth-cas.git"
   gem 'omniauth-identity'
-  gem 'omniauth-ldap'
 
   gem 'mediainfo'
   gem 'delayed_job_active_record'
@@ -64,8 +61,17 @@
       branch: "bootstrap-2.0"
   end
 
+  group :production do
+    platforms :ruby do
+      gem 'mysql2'
+    end
+  end
+
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do 
+    platforms :ruby do
+      gem 'sqlite3'
+    end
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano'
     gem 'database_cleaner'
