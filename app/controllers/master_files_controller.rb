@@ -8,6 +8,7 @@ class MasterFilesController < ApplicationController
 
   skip_before_filter :verify_authenticity_token, :only => [:update]
   before_filter :authenticate_user!, :only => [:create]
+  before_filter :ensure_readable_filedata, :only => [:create]
 
   # Creates and Saves a File Asset to contain the the Uploaded file 
   # If container_id is provided:
@@ -164,5 +165,15 @@ protected
        text = 'The uploaded content could not be identified';
       end 
     return text
+  end
+
+  def ensure_readable_filedata
+    params[:Filedata].each do |file|
+      begin
+        file.chmod(file.stat.mode | 0044) # Equivalent to "go+r"
+      rescue Exception => e
+        logger.warn("Error setting permissions on #{file.path}: #{e.message}")
+      end
+    end
   end
 end
