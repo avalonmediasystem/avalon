@@ -15,6 +15,7 @@ set(:bundle_flags) { "--quiet --path=#{deploy_to}/shared/gems" }
 set :rvm_ruby_string, "1.9.3"
 set :rvm_type, :system
 
+before "bundle:install", "deploy:link_local_gemfile"
 before "deploy:finalize_update", "deploy:remove_symlink_targets"
 after "deploy:update_code", "deploy:migrate"
 after "deploy:create_symlink", "deploy:trust_rvmrc"
@@ -48,6 +49,10 @@ namespace :deploy do
 			t = File.join(latest_release,target)
 			run "if [ -f #{t} ]; then rm #{t}; fi"
 		end
+	end
+
+	task :link_local_gemfile do
+		run "if [ -f #{shared_path}/Gemfile.local ]; then ln -s #{shared_path}/Gemfile.local #{latest_release}/Gemfile.local; fi"
 	end
 
 	task :trust_rvmrc do
