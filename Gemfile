@@ -37,9 +37,7 @@
 
   gem 'validates_email_format_of'
   gem 'loofah'
-  gem 'omniauth-cas'
   gem 'omniauth-identity'
-  gem 'omniauth-ldap'
 
   gem 'mediainfo'
   gem 'delayed_job_active_record'
