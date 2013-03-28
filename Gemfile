@@ -91,4 +91,4 @@
   end
 
   extra_gems = File.expand_path("../Gemfile.local",__FILE__)
-  load extra_gems if File.exists?(extra_gems)
+  eval File.read(extra_gems) if File.exists?(extra_gems)
