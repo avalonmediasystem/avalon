@@ -21,6 +21,7 @@
   end
 
   platforms :ruby do
+    gem 'sqlite3'
     gem 'execjs'
     gem 'therubyracer', '= 0.10.2'
   end
@@ -61,17 +62,8 @@
       branch: "bootstrap-2.0"
   end
 
-  group :production do
-    platforms :ruby do
-      gem 'mysql2'
-    end
-  end
-
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do 
-    platforms :ruby do
-      gem 'sqlite3'
-    end
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano'
     gem 'database_cleaner'
@@ -97,3 +89,6 @@
     gem 'email_spec'
     gem 'capybara'   
   end
+
+  extra_gems = File.expand_path("../Gemfile.local",__FILE__)
+  load extra_gems if File.exists?(extra_gems)
