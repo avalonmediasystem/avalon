@@ -25,6 +25,8 @@ development:
     stream_token_ttl: 20 #minutes
     rtmp_base: 'rtmp://localhost/avalon'
     http_base: 'http://localhost:3000/streams'
+  groups:
+    system_groups: [collection_manager, group_manager]
 test:
   dropbox:
     path: '/srv/avalon/dropbox/'
@@ -52,3 +54,5 @@ test:
     stream_token_ttl: 20 #minute
     rtmp_base: 'rtmp://localhost/avalon'
     http_base: 'http://localhost:3000/streams'
+  groups:
+    system_groups: [collection_manager, group_manager]
