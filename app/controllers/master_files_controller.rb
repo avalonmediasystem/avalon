@@ -168,12 +168,14 @@ protected
   end
 
   def ensure_readable_filedata
-    params[:Filedata].each do |file|
-      begin
-        new_mode = File.stat(file.path).mode | 0044 # equivalent to go+r
-        File.chmod(new_mode, file.path)
-      rescue Exception => e
-        logger.warn("Error setting permissions on #{file.path}: #{e.message}")
+    if params[:Filedata].present?
+      params[:Filedata].each do |file|
+        begin
+          new_mode = File.stat(file.path).mode | 0044 # equivalent to go+r
+          File.chmod(new_mode, file.path)
+        rescue Exception => e
+          logger.warn("Error setting permissions on #{file.path}: #{e.message}")
+        end
       end
     end
   end
