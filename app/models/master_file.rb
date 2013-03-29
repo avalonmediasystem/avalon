@@ -163,14 +163,14 @@ class MasterFile < ActiveFedora::Base
     status?('SUCCEEDED')
   end
 
-  def stream_details(token)
+  def stream_details(token,host=nil)
     flash, hls = [], []
     derivatives.each do |d|
       common = { quality: d.encoding.quality.first,
                  mimetype: d.encoding.mime_type.first,
                  format: d.format } 
-      flash << common.merge(url: d.tokenized_url(token, false))
-      hls << common.merge(url: d.tokenized_url(token, true)) 
+      flash << common.merge(url: Avalon.rehost(d.tokenized_url(token, false),host))
+      hls << common.merge(url: Avalon.rehost(d.tokenized_url(token, true),host)) 
     end
 
     # Sorts the streams in order of quality, note: Hash order only works in Ruby 1.9 or later

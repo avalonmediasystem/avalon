@@ -3,5 +3,5 @@
   <h2>Unable to locate that stream. Please try again with a valid identifier</h2>
 </div>
 <% else %>
-<%= render partial: "modules/video_player", locals: @currentStream.stream_details(@token) %>
+<%= render partial: "modules/video_player", locals: @currentStream.stream_details(@token,request.host) %>
 <% end %>

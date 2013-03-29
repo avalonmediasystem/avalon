@@ -36,8 +36,16 @@ module Avalon
     raise
   end
 
-  def self.matterhorn_config
-    mh_server = Configuration['matterhorn']['root'].sub(%r{/+$},'')
+  def self.rehost(url, host=nil)
+    if host.present?
+      url.sub(%r{/localhost([/:])},"/#{host}\\1") 
+    else
+      url
+    end
+  end
+
+  def self.matterhorn_config(host=nil)
+    mh_server = self.rehost(Configuration['matterhorn']['root'].sub(%r{/+$},''), host)
     {
       "plugin_urls"=>{
         "analytics"=>"#{mh_server}/usertracking/footprint.xml",
