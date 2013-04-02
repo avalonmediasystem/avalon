@@ -89,9 +89,9 @@ module ModsBehaviors
     self.record_change_date = t
   end
 
-  def ensure_physical_description_exists!
-    if find_by_terms(:physical_description).empty?
-      ng_xml.root.add_child('<physicalDescription/>')
+  def ensure_root_term_exists!(term)
+    if find_by_terms(term).empty?
+      ng_xml.root.add_child("<#{term.to_s.camelcase(first_letter = :lower)}/>")
     end
   end
 
