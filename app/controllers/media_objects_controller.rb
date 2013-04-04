@@ -46,10 +46,10 @@ class MediaObjectsController < ApplicationController
       @group_exceptions = []
       if @mediaobject.access == "limited"
         # When access is limited, group_exceptions content is stored in read_groups
-        @mediaobject.read_groups.each { |g| @group_exceptions << Admin::Group.find(g).name }
+        @mediaobject.read_groups.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
         @user_exceptions = @mediaobject.read_users 
        else
-        @mediaobject.group_exceptions.each { |g| @group_exceptions << Admin::Group.find(g).name }
+        @mediaobject.group_exceptions.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
         @user_exceptions = @mediaobject.user_exceptions 
       end
 
