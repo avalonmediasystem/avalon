@@ -15,7 +15,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-engage.git
-  revision: da70efc9e996b3d20a5c47c11394cacc3aad547b
+  revision: badaae9ca9be27cf43526681cb05d09a62ae92b9
   specs:
     avalon-engage (0.0.1)
       less-rails (~> 2.2.3)
