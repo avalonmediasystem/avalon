@@ -346,7 +346,7 @@ class MediaObject < ActiveFedora::Base
       mf.file_location.nil? ? nil : Rack::Mime.mime_type(File.extname(mf.file_location)) 
     }.compact.uniq
     
-    resource_type_to_formatted_text_map = {'Moving image' => 'Moving image', 'Sound' => 'Sound recording'}
+    resource_type_to_formatted_text_map = {'Moving image' => 'moving image', 'Sound' => 'sound recording'}
     resource_types = self.parts.collect{|master_file| resource_type_to_formatted_text_map[master_file.file_format] }.uniq
 
     mime_types = nil if mime_types.empty?
