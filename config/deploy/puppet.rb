@@ -1,4 +1,4 @@
-set(:rails_env) { "production" }
+set(:rails_env) { ENV['RAILS_ENV'] || "production" }
 set(:deployment_host) { "localhost" }  # Host(s) to deploy to
 set(:deploy_to) { "/var/www/avalon" }  # Directory to deploy into
 set(:user) { 'avalon' }                # User to deploy as
