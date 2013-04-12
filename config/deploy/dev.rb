@@ -1,5 +1,5 @@
 # These are the configurable bits
-set(:rails_env) { "development" }
+set(:rails_env, "development")
 set(:deployment_host) { "avalonwebdev.library.northwestern.edu" }  # Host(s) to deploiy to
 set(:deploy_to) { "/var/www/avalon" }                              # Directory to deploy into
 set(:user) { 'avalon' }                                            # User to deploy as

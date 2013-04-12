@@ -15,6 +15,7 @@ set(:bundle_flags) { "--quiet --path=#{deploy_to}/shared/gems" }
 set :rvm_ruby_string, "1.9.3"
 set :rvm_type, :system
 
+before "deploy", "deploy:log_environment"
 before "bundle:install", "deploy:link_local_gemfile"
 before "deploy:finalize_update", "deploy:remove_symlink_targets"
 after "deploy:update_code", "deploy:migrate"
@@ -44,6 +45,10 @@ task :uname do
 end
 
 namespace :deploy do
+  task :log_environment do
+    logger.info "Deploying to #{fetch(:rails_env)}"
+  end
+
 	task :remove_symlink_targets do
 		shared_children.each do |target|
 			t = File.join(latest_release,target)
