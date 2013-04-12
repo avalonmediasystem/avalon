@@ -33,4 +33,57 @@ namespace :avalon do
       Avalon::Batch.ingest
     end
   end  
+  namespace :user do
+    desc "Create user (assumes identity authentication)"
+    task :create => :environment do
+      if ENV['avalon_username'].nil? or ENV['avalon_password'].nil?
+        abort "You must specify a username and password.  Example: rake avalon:user:create avalon_username=user@example.edu avalon_password=password avalon_groups=group1,group2"
+      end
+
+      require 'role_controls'
+      username = ENV['avalon_username'].dup
+      password = ENV['avalon_password']
+      groups = ENV['avalon_groups'].split(",")
+     
+      Identity.create(email: username, password: password)
+      User.create(username: username)
+      groups.each do |group|
+	RoleControls.add_role(group) unless RoleControls.role_exists? group
+        RoleControls.add_user_role(username, group)
+      end
+
+      puts "User #{username} created and added to groups #{groups}"
+    end
+    desc "Delete user"
+    task :delete => :environment do
+      if ENV['avalon_username'].nil?
+        abort "You must specify a username  Example: rake avalon:user:delete avalon_username=user@example.edu"
+      end
+
+      require 'role_controls'
+      username = ENV['avalon_username'].dup
+      groups = RoleControls.user_roles username
+
+      Identity.where(email: username).destroy_all
+      User.where(username: username).destroy_all
+      groups.each do |group|
+        RoleControls.remove_user_role(username, group)
+      end
+
+      puts "Deleted user #{username} and removed them from groups #{groups}"
+    end
+    desc "Change password (assumes identity authentication)"
+    task :passwd => :environment do  
+      if ENV['avalon_username'].nil? or ENV['avalon_password'].nil?
+        abort "You must specify a username and password.  Example: rake avalon:user:passwd avalon_username=user@example.edu avalon_password=password"
+      end
+
+      username = ENV['avalon_username'].dup
+      password = ENV['avalon_password']
+      Identity.where(email: username).each {|identity| identity.password = password; identity.save}
+
+      puts "Updated password for user #{username}"
+    end
+  end
 end
+
