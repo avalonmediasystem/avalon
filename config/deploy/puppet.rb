@@ -5,7 +5,7 @@ set(:user) { 'avalon' }                # User to deploy as
 set(:branch) { "release/1.0.0" }       # Git branch to deploy
 ssh_options[:keys] = ["/opt/staging/avalon/deployment_key"]
 
-set :bundle_without, [:development,:test]
+set :bundle_without, [:development,:test] if rails_env == 'production'
 
 role :web, "localhost"
 role :app, "localhost"
