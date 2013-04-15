@@ -6,20 +6,17 @@
         <%= @mediaobject.pid %>
       <% end %>
       </legend>
-        <% if not @currentStream.blank? and 
-          @masterFiles.length >= 2 %>
-         <h4 id="stream_label"><%= stream_label_for @currentStream %></h4>
-        <% end %>
      </div>
     
 <dl id="creation_metadata">
   <%= display_metadata('Main contributor', @mediaobject.creator, 'Not provided') %>
   <%= display_metadata('Date', @mediaobject.date_issued, 'Not provided') %>
-  <%# display_metadata('Summary', @mediaobject.abstract, 'No summary available') %>
+  <% unless @mediaobject.abstract.blank? %>
   <dt>Summary</dt>
   <dd>
     <pre><%= @mediaobject.abstract %></pre>
   </dd>
+  <% end %>
   <%= display_metadata('Contributor', @mediaobject.contributor) %>
   <%= display_metadata('Publisher', @mediaobject.publisher) %>
   <%= display_metadata('Genre', @mediaobject.genre) %>

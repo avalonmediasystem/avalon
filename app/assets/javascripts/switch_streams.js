@@ -55,13 +55,8 @@ $().ready(function() {
         var segment = $(this).data('segment');
         
         $.getJSON(uri, 'content=' + segment, function(data) {
-	    if (null != data.label) {
-          AvalonStreams.setActiveLabel(data.label);
-	    } else {
-	      AvalonStreams.setActiveLabel(target.text());
-	    }
-	    AvalonStreams.setActiveSection(segment);
-            AvalonStreams.refreshStream(data);
+	      AvalonStreams.setActiveSection(segment);
+          AvalonStreams.refreshStream(data);
         });
     });
 });

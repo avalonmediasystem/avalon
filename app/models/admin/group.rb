@@ -13,9 +13,9 @@ class Admin::Group
 
   def self.non_system_groups
     groups = all
-    if Avalon::Configuration['groups'] && Avalon::Configuration['groups']['non_system_groups']
-      non_system_groups = Avalon::Configuration['groups']['non_system_groups'].map{|k,groups| groups}.flatten
-      groups.reject! { |g| non_system_groups.include? g.name }
+    if Avalon::Configuration['groups'] && Avalon::Configuration['groups']['system_groups']
+      system_groups = Avalon::Configuration['groups']['system_groups']
+      groups.reject! { |g| system_groups.include? g.name }
     end
     groups
   end

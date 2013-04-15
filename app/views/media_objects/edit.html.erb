@@ -8,6 +8,7 @@
 
   <% if flash[:errors] %>
     <div id="errors_information" class="alert alert-error active">
+     <button type="button" class="close" data-dismiss="alert">&times;</button>
      <% if flash[:errors].is_a?(Array) 
        flash[:errors].each do |err| %>
        <p class="notice"><%= err %></p>
@@ -18,27 +19,29 @@
   </div>
   <% end %>
 
+  <% if flash[:notice] %>
+    <div class="alert alert-info">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+
   <% if flash[:upload] and not flash[:errors] %>
     <div id="upload_format" class="alert active">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
       <p class="notice"><%= flash[:upload] %></p>
     </div>
   <% end %>
 
-  
+  <h3><%= HYDRANT_STEPS.get_step(@active_step).title %>: <span class="muted"><%= @mediaobject.title.present? ? truncate(@mediaobject.title, length: 30) : '[Untitled]' %></span></h3>  
   <%= render current_step_for @active_step %>
-
-<!--     <div id="permalink" class="alert alert-success">
-      <h4 class="alert-heading">Permalink</h4>
-      <p>To share this item with others use the following canonical link</p>
-      <address><%= link_to media_object_url(params[:id]), media_object_url(params[:id]) %></address>
-    </div> -->
+  </div>
 </div>
 
 <% content_for :title do %>
-  Edit -
-  <% unless @mediaobject.title.blank? %>
-    <%= @mediaobject.title %> (<%= @mediaobject.pid %>)
-  <% else %>
-    <%= @mediaobject.pid %>
-  <% end %>
+  <%# This might be a bit brittle but it is the fastest patch for the problem
+     and since we are all about efficiency right now it will work until there
+     is time to revisit the workflow %>
+  <%= HYDRANT_STEPS.get_step(@active_step).title %> -
+  <%= @mediaobject.title.present? ? truncate(@mediaobject.title, length: 50) : '[Untitled]' %> (<%= @mediaobject.pid %>)
 <% end %>

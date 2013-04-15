@@ -56,4 +56,12 @@ describe MasterFile do
       end
     end
   end
+
+  describe "delete" do
+    subject(:masterfile) { MasterFile.create }
+    it "should delete when parent is nil (VOV-1357)" do
+      pending "bugfix"      
+      expect { masterfile.delete }.to change(MasterFile.all.count).by(-1)
+    end
+  end
 end

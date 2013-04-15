@@ -460,6 +460,11 @@ span.constraints-label {
     padding: 0;
     background-color: transparent;
     border: 0;
+    
+    /* Force the summary to wrap neatly */
+    word-wrap: normal;
+    word-break: normal;
+    overflow-wrap: normal;
   }
 }
 
@@ -497,4 +502,37 @@ span.constraints-label {
     padding-bottom: 1em;
     height: auto;
   }
+}
+
+/**
+ * When H2s are muted reduced not only the color contrast but the
+ * font size as well
+ */
+h2.muted {
+  font-size: 150%;
+  padding: 0;
+  margin: 0;
+}
+
+button.close {
+  display: block;
+}
+
+/**
+ * Set the breakpoint for hiding the header based on the responsive point
+ * where the navbar collapses
+ */
+@media (max-width: $navbarCollapseWidth) {
+  .custom-header {
+    display: none;
+  }
+
+  /**
+   * Override the default since the Avalon logo is larger. If you do not
+   * need the space it can be dialed back or removed completely without
+   * any negative effects
+   */
+  .navbar .brand {
+    width: 50px;
+  } 
 }

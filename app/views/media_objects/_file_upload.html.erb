@@ -1,10 +1,7 @@
-
-<h3>Manage file(s)</h3>
 <% unless @masterFiles.empty? %>
 <section id="associated_files">
       <legend>Associated files</legend>
-      <p class="muted">Update the display labels to change the information that end users will see. Changes persist once you select Update.</p>
-      
+      <p class="muted">For items with multiple files, provide display labels for each file. Changes will be saved when you select Update.</p>
 	  <hr />
       <%= twitter_bootstrap_form_for @mediaobject do |file_list| %>
       <%= hidden_field_tag :donot_advance, true %>
@@ -88,7 +85,7 @@
               <i class="icon-file fileupload-exists"></i>
               <span class="fileupload-preview"></span>
             </div>
-            <%= submit_tag("Upload", name: "upload_file", class: "btn fileupload-exists") %>
+            <%= button_tag "Upload", name: "upload_file", class: "btn fileupload-exists" %>
             <span class="btn btn-file">
               <span class="fileupload-new">Select</span>
               <span class="fileupload-exists">Change</span>

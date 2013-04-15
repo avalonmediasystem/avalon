@@ -1,4 +1,8 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  # The default OmniAuth forms don't provide CSRF tokens, so we can't verify
+  # them. Trying to verify results in a cleared session.
+  skip_before_filter :verify_authenticity_token
+
   def passthru
     begin
       render "modules/#{params[:provider]}_auth_form"
@@ -11,27 +15,21 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     new_user_session_path(scope)
   end
 
-  def cas
-    find_user('CAS')
-  end
-
-  def identity
-    find_user('Identity')
-  end
-
-  def ldap
-    find_user('LDAP')
+  def method_missing(sym, *args, &block)
+    logger.debug "Attempting to find user with #{sym.to_s} strategy"
+    find_user(sym.to_s)
   end
 
   def find_user(auth_type)
-    find_method = "find_for_#{auth_type.downcase}".to_sym
+    auth_type.downcase!
+    find_method = "find_for_#{auth_type}".to_sym
     logger.debug "#{auth_type} :: #{current_user.inspect}"
   	@user = User.send(find_method,request.env["omniauth.auth"], current_user)
     if @user.persisted?
       flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => auth_type
       sign_in_and_redirect @user, :event => :authentication
     else
-      session["devise.#{auth_type.downcase}_data"] = request.env["omniauth.auth"]
+      session["devise.#{auth_type}_data"] = request.env["omniauth.auth"]
       redirect_to root_url #Have this redirect someplace better like IU CAS guest account creation page
     end
   end

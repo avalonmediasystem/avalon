@@ -342,19 +342,22 @@ class MediaObject < ActiveFedora::Base
   end
 
   def set_media_types!
-    resource_type_names = { 
-      'audio' => 'sound recording',
-      'video' => 'moving image'
-    }
     mime_types = parts.collect { |mf| 
       mf.file_location.nil? ? nil : Rack::Mime.mime_type(File.extname(mf.file_location)) 
     }.compact.uniq
-    resource_types = mime_types.collect { |mime| resource_type_names[mime.split('/').first] }.compact.uniq
+    
+    resource_type_to_formatted_text_map = {'Moving image' => 'moving image', 'Sound' => 'sound recording'}
+    resource_types = self.parts.collect{|master_file| resource_type_to_formatted_text_map[master_file.file_format] }.uniq
 
     mime_types = nil if mime_types.empty?
     resource_types = nil if resource_types.empty?
 
-    descMetadata.ensure_physical_description_exists!
+    descMetadata.ensure_root_term_exists!(:physical_description)
+    descMetadata.ensure_root_term_exists!(:resource_type)
+
+    descMetadata.find_by_terms(:physical_description, :internet_media_type).remove
+    descMetadata.find_by_terms(:resource_type).remove
+
     descMetadata.update_values([:physical_description, :internet_media_type] => mime_types, [:resource_type] => resource_types)
   end
   

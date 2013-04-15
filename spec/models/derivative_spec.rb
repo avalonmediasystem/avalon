@@ -23,6 +23,49 @@ describe Derivative do
     end
   end
 
+  describe "deleting" do
+    before :each do 
+      @derivative = Derivative.new
+      @derivative.track_id = "track-1"
+      @derivative.hls_track_id = "track-2"
+
+      mf = MasterFile.new
+      mf.workflow_id = "1"
+      @derivative.masterfile = mf
+
+      @derivative.save
+
+      File.open(Avalon::Configuration['matterhorn']['cleanup_log'], "w+") {}
+    end
+
+    it "should delete and start retraction jobs" do
+      pid = @derivative.pid
+
+      job_urls = ["http://test.com/retract_rtmp.xml", "http://test.com/retract_hls.xml"]
+      Rubyhorn.stub_chain(:client,:delete_track).and_return(job_urls[0])
+      Rubyhorn.stub_chain(:client,:delete_hls_track).and_return(job_urls[1])
+
+      prev_count = Derivative.all.count
+      @derivative.delete 
+
+      Derivative.all.count.should == prev_count - 1
+      log_count = 0
+      file = File.new(Avalon::Configuration['matterhorn']['cleanup_log'])
+      file.each { |line| log_count += 1 if line.start_with?(job_urls[0]) || line.start_with?(job_urls[1]) }
+      log_count.should == 2
+    end 
+
+    it "should delete even if retraction fails (VOV-1356)" do
+      pending "Do not test until VOV-1356 is fixed"
+      pid = @derivative.pid
+
+      Rubyhorn.stub_chain(:client,:delete_track).and_raise("Stream not found error")
+      Rubyhorn.stub_chain(:client,:delete_hls_track).and_raise("Stream not found error")
+
+      expect { @derivative.delete }.to change(Derivative.all.count).by(-1)
+    end 
+  end
+
   describe "streaming" do
 
     before :each do

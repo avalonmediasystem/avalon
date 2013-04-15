@@ -77,3 +77,4 @@ public/media_objects
 config/avalon.yml
 /dropbox
 public/streams
+config/authentication.yml

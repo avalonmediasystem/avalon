@@ -1,10 +1,3 @@
-<style>
-  .overlay { display: none }
-</style>
-
-<% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
-<h3>Access control</h3>
-
 <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
   <div class="whitespace" id="default_level">
     <%= vid.fieldset 'Item discovery' do %>
@@ -68,7 +61,11 @@
       </table>
     
       <!-- Opaque layer to disable content underneath -->
-      <div class="overlay"></div>
+      <% if @mediaobject.access == 'limited' %>
+        <div class="overlay" style="display:none"></div>
+      <% else %>
+        <div class="overlay"></div>
+      <% end %>
     </div>
 
     <div id="users-ex" class="span5">
@@ -101,25 +98,19 @@
       </table>
 
       <!-- Opaque layer to disable content underneath -->
-      <div class="overlay"></div>
+      <% if @mediaobject.access == 'limited' %>
+        <div class="overlay" style="display:none"></div>
+      <% else %>
+        <div class="overlay"></div>
+      <% end %>
     </div>
-  </div>
   <% end %>
-  
+ </div> 
   <%= render "workflow_buttons", form: vid %>	
 <% end #form_for %>		
 
 <% content_for :page_scripts do %>
   <script>
-    $(function() {
-      /* The overlays are hidden by default, unless radio button #access_limited
-       * is not checked. This method is a little faster since it can rely on 
-       * the DOM instead of extra Javascript */ 
-      if (0 == $("#access_limited:checked").length) {
-         $(".overlay").show();
-      }
-    })
-
     $("#access_limited").change(function() { 
       $(".overlay").hide(); 
     });

@@ -5,16 +5,16 @@
         locals: {mediaobject: @mediaobject,
                  sections: @masterFiles,
                  activeStream: @currentStream} %>
+
+  <%= render 'permalink' %>
   </div>
 
   <div class="span4" id="right-column">
-
     <div id="metadata_container" class="">
       <section id="metadata"><%= render "metadata_display" %></section>
     </div>
   </div>
 
-  <%= render 'permalink' %>
 </div>
 
 <% content_for :title do %>
