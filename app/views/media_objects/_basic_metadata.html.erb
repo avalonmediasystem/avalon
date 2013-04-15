@@ -1,3 +1,7 @@
+<% if flash[:error].present? %>
+  <div class='alert alert-error' style='display: inline-table;'><%= flash[:error] %></div>
+<% end %>
+
 <%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
   <%= hidden_field_tag :step, @active_step %>
   
