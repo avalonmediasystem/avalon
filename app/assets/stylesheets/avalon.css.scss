@@ -536,3 +536,10 @@ button.close {
     width: 50px;
   } 
 }
+
+.control-group .controls {
+  &.error {
+    input:first-child{ border-color: $errorText; }
+  }
+  .field_with_errors input { border-color: $errorText; }
+}
