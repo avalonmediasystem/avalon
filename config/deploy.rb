@@ -1,25 +1,20 @@
-set :stages, %w(production staging)
-set :default_stage, "staging"
-require 'capistrano/ext/multistage'
-require 'rvm/capistrano'
+require 'bundler/setup'
+require "rvm/capistrano"
+require 'bundler/capistrano'
 require 'whenever/capistrano'
 
-set :application, "avalon"
-set :repository,  "git://github.com/avalonmediasystem/avalon.git"
+set :stages, %W(avalon matterhorn)
+set :default_stage, "avalon"
+require 'capistrano/ext/multistage'
+
+set(:whenever_command) { "bundle exec whenever" }
+set(:bundle_flags) { "--quiet --path=#{deploy_to}/shared/gems" }
+set :rvm_ruby_string, "1.9.3"
+set :rvm_type, :system
 
 set :scm, :git
-# Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`
-
-set :deploy_to, "/srv/rails/hydrant-test"
-set :user, "vov"
-set :use_sudo, false
-
-#set :rvm_type, :root
-set :rvm_ruby_string, 'ruby-1.9.3@avalon'                     # Or:
-#set :rvm_ruby_string, ENV['GEM_HOME'].gsub(/.*\//,"") # Read from local system
+set :keep_releases, 3
 
 task :uname do
   run "uname -a"
 end
-
-require 'capistrano-unicorn'
