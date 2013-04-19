@@ -273,6 +273,8 @@ GEM
     letter_opener (1.1.0)
       launchy (~> 2.2.0)
     libv8 (3.3.10.4)
+    license_header (0.0.4)
+      highline
     logger (1.2.8)
     loofah (1.2.1)
       nokogiri (>= 1.4.4)
@@ -504,6 +506,7 @@ DEPENDENCIES
   jquery-rails (~> 2.1.4)
   jruby-openssl
   letter_opener
+  license_header
   loofah
   mediainfo
   mime-types (>= 1.1)
