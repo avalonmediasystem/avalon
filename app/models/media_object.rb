@@ -374,7 +374,8 @@ class MediaObject < ActiveFedora::Base
       descMetadata.find_by_terms(:resource_type).remove
 
       descMetadata.update_values([:physical_description, :internet_media_type] => mime_types, [:resource_type] => resource_types)
-    rescue
+    rescue Exception => e
+      logger.warn "Error in set_media_types!: #{e}"
     end
   end
   
