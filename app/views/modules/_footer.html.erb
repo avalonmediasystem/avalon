@@ -1,12 +1,12 @@
    <div class="container-fluid">
 	  <footer>
 	   <ul>
-	   	 <li><%= image_tag "AvalonMediaSystem_Logo_A.png", alt: "Avalon Media System - Release 1" %>
+	   	 <li><%= image_tag "AvalonMediaSystem_Logo_A.png", alt: "Avalon Media System - #{t(:avalon_release)}" %>
 	     <li><a href="http://www.avalonmediasystem.org">Avalon Media System Project Website</a> </li>
 	     <li><%= link_to "Contact Us", comments_path %></li>
 	   </ul>
 	   <div class="release">
-	   	Release 1.0
+	   	<%=t(:avalon_release)%>
 	   	<%= git_commit_info(" (%s %s)") if Rails.env == 'development' %>
 	   </div>
        </footer>
