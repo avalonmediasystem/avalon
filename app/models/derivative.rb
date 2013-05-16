@@ -88,12 +88,6 @@ class Derivative < ActiveFedora::Base
     derivative
   end
 
-  def url_hash
-    h = Digest::MD5.new
-    h << location_url
-    h.hexdigest
-  end
-
   def tokenized_url(token, mobile=false)
     #uri = URI.parse(url.first)
     uri = streaming_url(mobile)
