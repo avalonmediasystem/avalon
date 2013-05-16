@@ -180,6 +180,4 @@ class CatalogController < ApplicationController
     end
   end
 
-  layout 'avalon'
-
 end 

@@ -13,8 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class CommentsController < ApplicationController
-    before_filter :set_subjects
-    layout 'avalon'
+  before_filter :set_subjects
 
     # Index replaces new in this context
 	def index 

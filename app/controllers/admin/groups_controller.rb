@@ -16,7 +16,6 @@
 require "role_controls"
 class Admin::GroupsController < ApplicationController  
   before_filter :auth
-  layout "avalon"
   
   # Currently assumes that to do anything you have to be able to manage Group
   # TODO: finer controls
