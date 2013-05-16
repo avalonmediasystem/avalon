@@ -45,9 +45,9 @@ class MediaObject < ActiveFedora::Base
   # blank. Since identifier is set automatically we only need to worry about creator,
   # title, and date of creation.
 
-  validates :title, :presence_with_full_error_message => true
-  validates :creator, :presence_with_full_error_message => true
-  validates :date_issued, :presence_with_full_error_message => true
+  validates :title, :presence => true
+  validates :creator, :presence => true
+  validates :date_issued, :presence => true
   validate  :report_missing_attributes
 
   # this method returns a hash: class attribute -> metadata attribute

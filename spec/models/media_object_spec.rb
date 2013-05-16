@@ -18,32 +18,9 @@ describe MediaObject do
   let (:mediaobject) { MediaObject.new }
 
   describe "Required metadata is present" do
-    it "should have no errors on creator if creator present" do
-      mediaobject.update_attribute_in_metadata(:creator, 'John Doe')
-      mediaobject.should have(0).errors_on(:creator)
-    end
-    it "should have no errors on title if title present" do
-      mediaobject.update_attribute_in_metadata(:title, 'Title')
-      mediaobject.should have(0).errors_on(:title)
-    end
-    it "should have no errors on date_issued if date_issued present" do
-      mediaobject.update_attribute_in_metadata(:date_issued, '2012-12-12')
-      mediaobject.should have(0).errors_on :date_issued
-    end
-    it "should have errors if requied fields are missing" do
-      mediaobject.should have(1).errors_on(:creator)
-      mediaobject.should have(1).errors_on(:title)
-      mediaobject.should have(1).errors_on(:date_issued)
-    end
-    it "should have errors if required fields are empty" do
-      mediaobject.update_attribute_in_metadata :creator, ''
-      mediaobject.update_attribute_in_metadata :title, ''
-      mediaobject.update_attribute_in_metadata :date_issued, ''
-
-      mediaobject.should have(1).errors_on(:creator)
-      mediaobject.should have(1).errors_on(:title)
-      mediaobject.should have(1).errors_on(:date_issued)
-    end
+    it {should validate_presence_of(:creator)}
+    it {should validate_presence_of(:date_issued)}
+    it {should validate_presence_of(:title)}
   end
 
   describe "Languages are handled correctly" do
