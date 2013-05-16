@@ -61,16 +61,6 @@ module ApplicationHelper
     end
   end
 
-  
-  # Not the best way to do this but it works for the time being
-  def wrap_text(content)
-    unless content.nil? or content.empty?
-      content.gsub(/\n/, '<br />').html_safe
-    else
-      "<em>Not provided</em>".html_safe
-    end
-  end
-
   def display_metadata(label, value, default=nil)
     return if value.blank? and default.nil?
     value ||= default
@@ -110,17 +100,6 @@ module ApplicationHelper
     label
   end
 
-  # Retrieve the current status of processing and display a concise version
-  # for use in the interface
-  def conversion_status_for(mediaobject)
-    unless mediaobject.parts.empty?
-      masterfile = mediaobject.parts.first.pid
-      masterfile.status
-    else
-      "No files have been selected"
-    end
-  end   
-  
   def stream_label_for(resource)
     label = ''
     
