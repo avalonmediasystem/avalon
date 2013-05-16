@@ -89,6 +89,7 @@
     gem 'simplecov'
     gem 'email_spec'
     gem 'capybara'   
+    gem 'shoulda-matchers'
   end
 
   extra_gems = File.expand_path("../Gemfile.local",__FILE__)
