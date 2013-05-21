@@ -40,15 +40,31 @@ window.AvalonStreams = {
      */
     refreshStream: function(stream_info) {
       if (stream_info.stream_flash.length > 0) {
-        var opts = { flash: stream_info.stream_flash, 
-                     hls: stream_info.stream_hls, 
-                     poster: stream_info.poster_image,
-                     mediaPackageId: stream_info.mediapackage_id };
         if (typeof currentPlayer !== "undefined" && currentPlayer !== null) {
-          //debugger;
-          currentPlayer.switchStream(opts);
+          currentPlayer.pause();
+          var newSrc = [];
+          var sources = [];
+          var videoNode = $(currentPlayer.domNode);
+          videoNode.html("");
+
+          for (var i = 0; i < stream_info.stream_flash.length; i++) {
+            var flash = stream_info.stream_flash[i];
+            newSrc.push({ src: flash.url, type: 'video/rtmp' });
+            videoNode.append('<source src="' + flash.url + '" data-quality="' + flash.quality + '" data-plugin-type="flash" type="video/rtmp">');
+          }
+          for (var i = 0; i < stream_info.stream_hls.length; i++) {
+            var hls = stream_info.stream_hls[i];
+            newSrc.push({ src: hls.url, type: 'application/vnd.apple.mpegURL' });
+            videoNode.append('<source src="' + hls.url + '" data-quality="' + hls.quality + '" data-plugin-type="native" type="application/vnd.apple.mpegURL">');
+          }
+          
+          // Rebuilds the quality selector
+          //currentPlayer.setSrc(newSrc);
+          currentPlayer.setPoster(stream_info.poster_image);
+          currentPlayer.buildqualities(currentPlayer, currentPlayer.controls, currentPlayer.layers, currentPlayer.media);
+          //currentPlayer.load(); 
         } else {
-          currentPlayer = AvalonPlayer.init($('#player'), opts);
+          //currentPlayer = AvalonPlayer.init($('#player'), opts);
         }
       }
     },
