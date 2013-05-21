@@ -1,10 +1,5 @@
     <%# Refactor into its own partial once the layout is clear %>
-      <section id="player">
-          <div id="nojs">
-            <%# TODO : Come up with a more user friendly error message %>
-            <noscript>You don't have Javascript</noscript>
-          </div>
-      </section>
+
       <section id="progress" data-progress-url="<%= progress_media_object_path :id => @mediaobject.pid, :format => :json %>">
         <% if @masterFiles.blank? %>
           <div class="alert">

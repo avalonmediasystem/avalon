@@ -38,6 +38,14 @@ GIT
       mediashelf-loggable
 
 GIT
+  remote: https://github.com/avalonmediasystem/mediaelement_rails.git
+  revision: 9e12dab99c2973afbe028a28afb57ef58db5d1ae
+  specs:
+    mediaelement_rails (0.5.1)
+      jquery-rails (>= 1.0)
+      railties (>= 3.1)
+
+GIT
   remote: https://github.com/avalonmediasystem/red5wrapper.git
   revision: baaa7f9c9c0808b737991ba74908f08b254b4879
   specs:
@@ -68,6 +76,12 @@ GIT
     twitter_bootstrap_form_for (2.0.1.0.rc2)
       actionpack (~> 3)
       railties (~> 3)
+
+GIT
+  remote: https://github.com/cjcolvar/mediaelement-qualityselector.git
+  revision: cc7d543869bc1a8dc628bce035be43c92c7bafd9
+  specs:
+    mediaelement-qualityselector (0.0.1)
 
 GEM
   remote: http://rubygems.org/
@@ -258,7 +272,7 @@ GEM
     jquery-rails (2.1.4)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
-    json (1.7.7)
+    json (1.8.0)
     kaminari (0.14.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -287,7 +301,7 @@ GEM
     mediashelf-loggable (0.4.9)
     method_source (0.8.1)
     mime-types (1.21)
-    multi_json (1.7.2)
+    multi_json (1.7.3)
     multipart-post (1.2.0)
     net-http-digest_auth (1.3)
     net-scp (1.1.0)
@@ -442,8 +456,8 @@ GEM
     stomp (1.2.9)
     therubyracer (0.10.2)
       libv8 (~> 3.3.10)
-    thor (0.18.0)
-    tilt (1.3.7)
+    thor (0.18.1)
+    tilt (1.4.1)
     treetop (1.4.12)
       polyglot
       polyglot (>= 0.3.1)
@@ -510,6 +524,8 @@ DEPENDENCIES
   letter_opener
   license_header
   loofah
+  mediaelement-qualityselector!
+  mediaelement_rails!
   mediainfo
   mime-types (>= 1.1)
   om (~> 1.8.0)
