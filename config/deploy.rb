@@ -12,7 +12,7 @@ require 'capistrano/ext/multistage'
 
 set(:whenever_command) { "bundle exec whenever" }
 set(:bundle_flags) { "--quiet --path=#{deploy_to}/shared/gems" }
-set :rvm_ruby_string, "1.9.3"
+set :rvm_ruby_string, "ruby-1.9.3-p429"
 set :rvm_type, :system
 
 before "deploy", "deploy:log_environment"
