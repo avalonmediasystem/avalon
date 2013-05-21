@@ -150,4 +150,8 @@ module ApplicationHelper
       ""
     end
   end
+
+  def active_for_controller( name )
+    params[:controller].split('/').last == name ? 'active' : ''
+  end
 end

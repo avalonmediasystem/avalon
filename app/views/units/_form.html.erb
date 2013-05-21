@@ -1,0 +1,6 @@
+<% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
+
+<%= twitter_bootstrap_form_for @unit, url: polymorphic_path([ @parent_name, @unit ]) do |f| %>
+  <%= f.text_field :name %>
+  <%= submit_tag params[:action] == 'edit' ? 'Update' : 'Save', class: "btn" %>
+<% end %>

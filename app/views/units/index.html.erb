@@ -1,0 +1,27 @@
+<div class='container'>
+  <%= link_to 'New Unit', new_polymorphic_path([@parent_name, Unit]), class: 'btn pull-right' %>
+  <br/><br/>
+  <table class='table table-bordered table-condensed'>
+    <thead>
+      <th> Name </th>
+      <th> Manager(s) </th>
+      <th> Actions</th>
+    </thead>
+    <tbody>
+      <% @units.each do |unit| %>
+        <tr>
+          <td> <%= link_to unit.name, polymorphic_path([@parent_name, unit]) %> </td>
+          <td>Joe S.</td>
+          <td>
+            <%= link_to edit_polymorphic_path([@parent_name, unit]), class:'btn' do %>
+              <i class='icon-edit'></i>
+            <% end %>
+            <%= link_to polymorphic_path([@parent_name, unit]), method: :delete, confirm: "Are you sure you want to delete: #{unit.name}", class:'btn' do %>
+              <i class='icon-trash'></i>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

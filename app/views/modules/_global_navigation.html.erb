@@ -20,10 +20,17 @@
           <% end %>
 
           <% if can? :manage, Admin::Group %>
-            <li><%= link_to 'Manage Groups', 
-              admin_index_path,
-              target: '_admin' %>
+            <li class="<%= active_for_controller('groups') %>">
+              <%= link_to 'Manage Groups', admin_index_path, target: '_admin' %>
+            </li>
           <% end %>
+
+          <% if can? :manage, Unit %>
+            <li class="<%= active_for_controller('units') %>">
+              <%= link_to 'Units', polymorphic_url([:admin, Unit]) %>
+            </li>
+          <% end %>
+
        </ul>        
       <form action="/" method="get" class="navbar-search pull-right">
         <input type="text" class="search-query" name="q" placeholder="Search">

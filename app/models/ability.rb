@@ -26,6 +26,7 @@ class Ability
     
 		if @user_groups.include? "group_manager"
 		  can :manage, Admin::Group
+      can :manage, Unit
 		end
 	end
 
