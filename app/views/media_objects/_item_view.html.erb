@@ -48,6 +48,9 @@
   <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %> 
 
   <script>
-    currentPlayer = new MediaElementPlayer('#video-tag', { features: ['playpause','current','progress','duration','qualities','volume','fullscreen']});
+    currentPlayer = new MediaElementPlayer('#video-tag', 
+        { mode: 'auto_plugin',
+          features: ['playpause','current','progress','duration','qualities','volume','fullscreen']
+        });
   </script>
 <% end %>
