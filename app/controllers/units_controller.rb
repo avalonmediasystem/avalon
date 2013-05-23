@@ -2,11 +2,20 @@ require "role_controls"
 class UnitsController < ApplicationController
   before_filter :authenticate_user!, :set_parent_name!
   load_and_authorize_resource
+  respond_to :html
+  responders :flash
+
+  def index
+    @units = search_sort_paginate(params, Unit.scoped)
+  end
 
   def create
     @unit = Unit.new(params[:unit])
+    @unit.created_by_user_id = current_user.user_key
     if @unit.save
-      redirect_to polymorphic_path([@parent_name, @unit])
+      respond_with @unit do |format|
+        format.html { redirect_to [@parent_name, @unit] }
+      end
     else
       render 'new'
     end
@@ -15,25 +24,22 @@ class UnitsController < ApplicationController
   def update
     @unit = Unit.find(params[:id])
     if @unit.update_attributes params[:unit]
-      redirect_to polymorphic_path([@parent_name, @unit]), flash: { notificaton: restful_flash_message }
+      respond_with @unit do |format|
+        format.html { redirect_to [@parent_name, @unit] }
+      end
     else
       render 'edit'
     end
   end
 
-  private
-
-    def restful_flash_message
-      action_past_tense = case params[:action]
-        when 'create'
-          'created'
-        when 'update'
-          'updated'
-        when 'destroy'
-          'deleted'
-        end
-      "Successfully #{action_past_tense} #{controller_name.downcase.singularize}." if action_past_tense
+  def destroy
+    @unit.destroy
+    respond_with @unit do |format|
+      format.html { redirect_to [@parent_name, @unit] }
     end
+  end
+
+  private
 
     def set_parent_name!
       @parent_name =  params[:controller].to_s.split('/')[-2..-2].try :first

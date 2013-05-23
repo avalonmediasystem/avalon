@@ -81,9 +81,10 @@ ActiveRecord::Schema.define(:version => 20130521163208) do
   end
 
   create_table "units", :force => true do |t|
-    t.string   "name",       :limit => 100
-    t.datetime "created_at",                :null => false
-    t.datetime "updated_at",                :null => false
+    t.string   "name",               :limit => 100
+    t.text     "created_by_user_id"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
   end
 
   create_table "users", :force => true do |t|

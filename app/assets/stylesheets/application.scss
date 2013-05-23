@@ -22,14 +22,14 @@
 @import "blacklight_themes/_facets";
 @import "blacklight_themes/_facets_responsive";
 @import "blacklight/blacklight";
-
+@import "sorting";
 /**
  * Blacklight overrides
  */
 body {
   padding-top: 1em;
 }
-
+ 
 /*
  * This is the default theme. You can modify many of the settings 
  * by editing your local app/assets/stylesheets/blacklight_themes/standard.css

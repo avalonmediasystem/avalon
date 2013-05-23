@@ -1,10 +1,21 @@
 <div class='container'>
-  <%= link_to 'New Unit', new_polymorphic_path([@parent_name, Unit]), class: 'btn pull-right' %>
-  <br/><br/>
+
+  <div class="navbar">
+    <div class="navbar-inner">
+      <%= form_tag polymorphic_path([@parent_name, Unit]), method: 'get', class: 'navbar-form pull-left' do %>
+        <%= hidden_field_tag :direction, params[:direction] %>
+        <%= text_field_tag :search, params[:search], class: 'span2' %>
+        <%= submit_tag 'Search', :class => 'btn'%>
+      <% end %>
+      <%= link_to 'New Unit', new_polymorphic_path([@parent_name, Unit]), class: 'btn pull-right' %>
+    </div>
+  </div>
+
   <table class='table table-bordered table-condensed'>
     <thead>
-      <th> Name </th>
+      <th> <%= sort_link :name %> </th>
       <th> Manager(s) </th>
+      <th> <%= sort_link :created_at, class: 'headerSortUp' %></th>
       <th> Actions</th>
     </thead>
     <tbody>
@@ -12,6 +23,7 @@
         <tr>
           <td> <%= link_to unit.name, polymorphic_path([@parent_name, unit]) %> </td>
           <td>Joe S.</td>
+          <td> <%= unit.created_at.strftime '%m/%d/%Y %l:%M %p' %></td>
           <td>
             <%= link_to edit_polymorphic_path([@parent_name, unit]), class:'btn' do %>
               <i class='icon-edit'></i>
@@ -24,4 +36,15 @@
       <% end %>
     </tbody>
   </table>
+
+  <% if @units.unscoped.count > page_size %>
+  <div class="row record-padding">
+    <div class="span9"> 
+      <div class="pagination">
+        <%= paginate @units, :outer_window => 2, :theme => 'blacklight' %>
+      </div>
+    </div>
+  </div>
+  <% end %>
+
 </div>

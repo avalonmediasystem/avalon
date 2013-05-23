@@ -3,4 +3,5 @@
 <%= twitter_bootstrap_form_for @unit, url: polymorphic_path([ @parent_name, @unit ]) do |f| %>
   <%= f.text_field :name %>
   <%= submit_tag params[:action] == 'edit' ? 'Update' : 'Save', class: "btn" %>
+  <%= link_to 'Cancel', :back, class: 'btn' %>
 <% end %>
