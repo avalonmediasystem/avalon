@@ -35,7 +35,7 @@
 //= require noty/jquery.noty
 //= require noty/layouts/topRight
 //= require noty/themes/default
-//= require notifications
+//= require select2/select2
 
 //= require blacklight/blacklight
 

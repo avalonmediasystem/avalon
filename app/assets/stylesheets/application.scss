@@ -23,6 +23,11 @@
 @import "blacklight_themes/_facets_responsive";
 @import "blacklight/blacklight";
 @import "sorting";
+@import "placeholder";
+@import "select2";
+@import "select2_bootstrap";
+@import "avalon";
+
 /**
  * Blacklight overrides
  */
@@ -54,4 +59,4 @@ body {
  *= require 'avalon-engage'
  *= require self
 */
-@import "avalon";
+

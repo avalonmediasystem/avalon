@@ -49,6 +49,8 @@ Avalon::Application.routes.draw do
         get 'edit'
       end
     end
+
+    match 'ldap/search' => 'ldap#search'
     resources :groups, except: [:show] do 
       collection do 
         put 'update_multiple'
