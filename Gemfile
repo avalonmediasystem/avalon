@@ -2,7 +2,6 @@
 
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
-  gem 'mysql2'
 
   gem 'blacklight', '~> 4.0.0' 
   gem 'om', '~>1.8.0'
