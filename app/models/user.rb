@@ -25,7 +25,7 @@ class User < ActiveRecord::Base
   attr_accessible :email, :guest
   
   delegate :can?, :cannot?, :to => :ability
-  validates_email_format_of :email
+  validates_email_format_of :email, unless: :guest?
 
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for

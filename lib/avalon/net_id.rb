@@ -2,14 +2,15 @@ module Avalon
   class NetID
     attr_reader :connection, :base
    
-    def initialize(bind_dn, pw, attrs={})
+    def initialize(attrs={})
+      provider = Avalon::Authentication::Providers.first[:params]
       bind_attrs = {
-        :host => 'registry.northwestern.edu', 
-        :port => 636, :encryption => :simple_tls, 
-        :auth => { :method => :simple, :username => bind_dn, :password => pw }
+        :host => provider[:host],
+        :port => provider[:port], :encryption => :simple_tls, 
+        :auth => { :method => :simple, :username => provider[:bind_dn], :password => provider[:password] }
       }.merge(attrs)
       @connection = Net::LDAP.new bind_attrs
-      @base = "ou=people,dc=northwestern,dc=edu"
+      @base = provider[:base]
     end
    
     def search(filter, args={})
@@ -56,11 +57,11 @@ module Avalon
       }
     end
    
-    def valid_net_id?(net_id)
+    def valid_uid?(net_id)
       find_by_net_id(net_id).length == 1
     end
 
-    def find_by_net_id(net_id)
+    def find_by_uid(net_id)
       filter = Net::LDAP::Filter.eq('uid',net_id)
       result = search(filter, attributes: ['uid','mail','sn','givenname','displayname'] )
       return as_json(result.first) if result.length == 1

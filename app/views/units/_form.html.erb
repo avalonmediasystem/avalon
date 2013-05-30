@@ -20,7 +20,7 @@
   <script>
   $(document).ready(function(){
     new UserSelectBox(<%= @unit.managers.map{|m| 
-      Avalon::NetID.format_autocomplete_entry( uid: m.uid, full_name: m.full_name, email: m.email )  }.to_json.html_safe 
+      Avalon::UserSearch.format_autocomplete_entry( uid: m.uid, full_name: m.full_name, email: m.email )  }.to_json.html_safe 
     %>)
   })
   </script>

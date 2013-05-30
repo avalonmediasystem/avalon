@@ -22,7 +22,7 @@
     <dt>Managers:</dt>
     <dd> 
       <% if @unit.managers.count > 0 %>
-        <%= @unit.managers.map(&:full_name).join(', ') %>
+        <%= @unit.managers.map{ |m| m[:full_name] || m[:username] }.join(', ') %>
       <% else %>
         -
       <% end %>

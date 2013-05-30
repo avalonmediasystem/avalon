@@ -55,30 +55,30 @@ class UnitsController < ApplicationController
     end
 
     def find_managers!(params)
-      provider = Avalon::Authentication::Providers.first[:params]
-      ldap_client = Avalon::NetID.new provider[:bind_dn], provider[:password], :host => provider[:host]
+      user_search = Avalon::UserSearch.new
 
       manager_uids = params[:managers].split(',')
       manager_uids.delete('multiple')
       manager_uids.map do |uid|
 
-        ldap_user = ldap_client.find_by_net_id( uid )
-        raise "Could not find user in LDAP with uid: #{uid}" unless ldap_user
+        user_from_directory = user_search.find_by_uid( uid )
+        raise "Could not find user in directory with uid: #{uid}" unless user_from_directory
         
         user = User.find_by_uid(uid)
-        user ||= User.find_by_email(ldap_user[:email])
-
-        unless user
+        user ||= User.find_by_email(user_from_directory[:email]) if user_from_directory[:email]
+        
+        if ! user
           user = User.new
+          user.guest = true
         end
 
-        # create or update user information based upon what is in ldap
-        user.email = ldap_user[:email]
-        user.username = ldap_user[:email]
-        user.full_name = ldap_user[:full_name]
-        user.uid = ldap_user[:uid]
+        # create or update user information based upon what is available
+        user.email = user_from_directory[:email]
+        user.username = user_from_directory[:email] || user_from_directory[:uid] #cannot be blank
+        user.full_name = user_from_directory[:full_name]
+        user.uid = user_from_directory[:uid]
         user.save!
-      
+
         user
       end
     
