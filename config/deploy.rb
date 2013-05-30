@@ -57,7 +57,7 @@ namespace :deploy do
 	end
 
 	task :link_local_gemfile do
-		run "if [ -f #{shared_path}/Gemfile.local ]; then ln -s #{shared_path}/Gemfile.local #{latest_release}/Gemfile.local; fi"
+		run "if [ -f #{shared_path}/Gemfile.local ]; then rm -f #{latest_release}/Gemfile.local; ln -s #{shared_path}/Gemfile.local #{latest_release}/Gemfile.local; fi"
 	end
 
 	task :trust_rvmrc do
