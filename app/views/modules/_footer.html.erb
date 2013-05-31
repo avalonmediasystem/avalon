@@ -1,13 +1,14 @@
-   <div class="container-fluid">
-	  <footer>
-	   <ul>
-	   	 <li><%= image_tag "AvalonMediaSystem_Logo_A.png", alt: "Avalon Media System - #{t(:avalon_release)}" %>
-	     <li><a href="http://www.avalonmediasystem.org">Avalon Media System Project Website</a> </li>
-	     <li><%= link_to "Contact Us", comments_path %></li>
-	   </ul>
-	   <div class="release">
-	   	<%=t(:avalon_release)%>
-	   	<%= git_commit_info(" (%s %s)") if Rails.env == 'development' %>
-	   </div>
-       </footer>
+<div class='clearfix'></div>
+<div class="container-fluid">
+  <footer>
+    <ul>
+      <li><%= image_tag "AvalonMediaSystem_Logo_A.png", alt: "Avalon Media System - #{t(:avalon_release)}" %></li>
+      <li><a href="http://www.avalonmediasystem.org">Avalon Media System Project Website</a> </li>
+      <li><%= link_to "Contact Us", comments_path %></li>
+    </ul>
+    <div class="release">
+      <%=t(:avalon_release)%>
+      <%= git_commit_info(" (%s %s)") if Rails.env == 'development' %>
     </div>
+  </footer>
+</div>

@@ -370,6 +370,8 @@ GEM
       rdf (>= 0.3.4)
     rdoc (3.12.2)
       json (~> 1.4)
+    responders (0.9.3)
+      railties (~> 3.1)
     rest-client (1.6.7)
       mime-types (>= 1.16)
     roo (1.11.1)
@@ -426,6 +428,11 @@ GEM
       nokogiri (>= 1.4.0)
       nori (~> 2.0.3)
       wasabi (~> 3.0.0)
+    search_sort_paginate (0.0.1)
+      activesupport
+      kaminari
+      rails
+      railties
     selenium-webdriver (2.31.0)
       childprocess (>= 0.2.5)
       multi_json (~> 1.0)
@@ -535,12 +542,14 @@ DEPENDENCIES
   rails (~> 3.2.3)
   rb-fsevent (~> 0.9.1)
   red5wrapper!
+  responders
   rspec-rails (>= 2.9.0)
   rspec_junit_formatter
   rubydora (< 1.0.0)
   rubyhorn!
   rvm-capistrano
   sass-rails (~> 3.2.3)
+  search_sort_paginate
   shoulda-matchers
   simplecov
   sqlite3

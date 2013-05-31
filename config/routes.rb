@@ -44,6 +44,13 @@ Avalon::Application.routes.draw do
 
   resources :admin, only: [:index]
   namespace :admin do
+    resources :units do
+      member do
+        get 'edit'
+      end
+    end
+
+    match 'ldap/search' => 'ldap#search'
     resources :groups, except: [:show] do 
       collection do 
         put 'update_multiple'
