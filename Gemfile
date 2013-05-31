@@ -9,9 +9,8 @@
   gem 'rubydora', '< 1.0.0'
   gem 'active-fedora', '~> 5.0.0'
 
-  gem 'search_sort_paginate', git: 'https://github.com/atomical/search_sort_paginate.git'
+  gem 'search_sort_paginate'
   gem 'responders'
-  gem 'net-ldap', '0.2.2'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git'
   gem 'avalon-engage', git: "https://github.com/avalonmediasystem/avalon-engage.git"
