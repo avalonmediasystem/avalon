@@ -23,6 +23,7 @@ class MediaObject < ActiveFedora::Base
 
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
+  has_many :collections, property: :has_collection_member, class: 'Collection'
 
   has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: ModsDocument	
@@ -378,14 +379,26 @@ class MediaObject < ActiveFedora::Base
       logger.warn "Error in set_media_types!: #{e}"
     end
   end
+
+  def thumbnail_url
+    default_thumbnail_url = ActionController::Base.helpers.asset_path('video_icon.png')
+    if parts.count > 0 && parts.first.thumbnail.mimeType.present?
+      Rails.application.routes.url_helpers.thumbnail_master_file_path(parts.first) 
+    else
+      default_thumbnail_url
+    end
+  end
   
   def to_solr(solr_doc = Hash.new, opts = {})
     super(solr_doc, opts)
-    solr_doc[:created_by_facet] = self.DC.creator
-    solr_doc[:hidden_b] = hidden?
-    solr_doc[:duration_display] = self.duration
-    solr_doc[:workflow_published_facet] = published? ? 'Published' : 'Unpublished'
-    return solr_doc
+    map = Solrizer::FieldMapper::Default.new
+    solr_doc[ map.solr_name(:creatd_by, :string, :facetable).to_sym ] = self.DC.creator
+    solr_doc[ map.solr_name(:hidden, :boolean).to_sym ] = hidden?
+    solr_doc[ map.solr_name(:duration, :strong, :displayable).to_sym  ] = duration    
+    solr_doc[ map.solr_name(:workflow_published, :string,  :facetable).to_sym ] = published? ? 'Published' : 'Unpublished'
+    solr_doc[ map.solr_name(:collection, :string, :facetable).to_sym  ] = collection_ids
+    solr_doc[ map.solr_name(:collection, :string, :searchable).to_sym ] = collection_ids
+    solr_doc
   end
 
   # Other validation to consider adding into future iterations is the ability to

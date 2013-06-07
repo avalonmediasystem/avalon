@@ -1,0 +1,32 @@
+<% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
+
+<%= twitter_bootstrap_form_for @collection, url: polymorphic_path([ @parent_name, @collection ]) do |f| %>
+  
+  <fieldset>
+  <%= f.text_field :name %>
+  <%= label_tag  'media_object_ids', 'Media' %>
+  <%= hidden_field_tag 'collection[media_object_ids]', :multiple %>
+
+  <hr/>
+  <div class='control-group'>
+  <%= link_to 'Cancel', :back, class: 'btn' %>
+  <%= submit_tag params[:action] == 'edit' ? 'Update' : 'Save', class: "btn" %>
+  </div>
+  </fieldset>
+<% end %>
+
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'collections' %>
+  <script>
+  $(document).ready(function(){
+    var url = '<%= Rails.application.routes.url_helpers.autocomplete_admin_collections_path %>';
+    var selections = <%= @collection.media_objects.map{ |media_object|  
+        Select2::Autocomplete.as_json(media_object.pid, media_object.title, { thumbnail_url: media_object.thumbnail_url })
+      }.to_json.html_safe %>;
+
+    new MediaObjectSelectBox(url, selections)
+  })
+  </script>
+<% end %>
+

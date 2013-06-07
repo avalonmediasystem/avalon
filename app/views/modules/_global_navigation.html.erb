@@ -31,6 +31,12 @@
             </li>
           <% end %>
 
+          <% if can? :manage, Collection %>
+            <li class="<%= active_for_controller('collections') %>">
+              <%= link_to 'Collections', polymorphic_url([:admin, Collection]) %>
+            </li>            
+          <% end %>
+
        </ul>        
       <form action="/" method="get" class="navbar-search pull-right">
         <input type="text" class="search-query" name="q" placeholder="Search">

@@ -27,6 +27,7 @@ class Ability
 		if @user_groups.include? "group_manager"
 		  can :manage, Admin::Group
       can :manage, Unit
+      can :manage, Collection
 		end
 	end
 
@@ -37,6 +38,18 @@ class Ability
           ((not mediaobject.published?) && 
            (not can_read_unpublished(mediaobject)))
       end
+    end
+
+    can :manage, Collection do |collection|
+      can_manage = false
+      # Can a collection belong to more than one unit?
+      # Unit managers can manage any collection in their unit
+      
+      if collection.unit && collection.unit.managers.include?(user.key)
+        can_manage = true
+      end
+
+      can_manage
     end
    
     can :read, Derivative do |derivative|

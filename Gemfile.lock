@@ -83,6 +83,13 @@ GIT
   specs:
     mediaelement-qualityselector (0.0.1)
 
+GIT
+  remote: https://github.com/nulib/omniauth-nuldap.git
+  revision: 204c7780a6a022a7ba9f22204090b05daea5c318
+  specs:
+    omniauth-nuldap (0.0.1)
+      omniauth-ldap
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -100,17 +107,17 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.2.1)
-    active-fedora (5.0.0)
+    active-fedora (5.4.0)
       activeresource (>= 3.0.0)
       activesupport (>= 3.0.0)
       builder (~> 3.0.0)
       deprecation
       mediashelf-loggable
-      om (~> 1.8.0.rc1)
+      om (~> 1.8.0)
       rdf
       rdf-rdfxml (~> 0.3.8)
       rsolr
-      rubydora (~> 0.5.13)
+      rubydora (~> 1.2)
       solrizer (~> 2.0.0)
     activemodel (3.2.13)
       activesupport (= 3.2.13)
@@ -126,12 +133,8 @@ GEM
     activesupport (3.2.13)
       i18n (= 0.6.1)
       multi_json (~> 1.0)
-    addressable (2.3.3)
-    akami (1.2.0)
-      gyoku (>= 0.4.0)
-      nokogiri (>= 1.4.0)
+    addressable (2.3.4)
     arel (3.0.2)
-    backports (3.1.1)
     bcrypt-ruby (3.0.1)
     blacklight (4.0.1)
       bootstrap-sass (~> 2.2.0)
@@ -226,17 +229,13 @@ GEM
       diff-lcs (~> 1.1)
       mime-types (~> 1.15)
       posix-spawn (~> 0.3.6)
-    gyoku (1.0.0)
-      builder (>= 2.1.2)
     haml (4.0.1)
       tilt
     hashie (1.2.0)
     headless (1.0.1)
     highline (1.6.16)
     hike (1.2.2)
-    hooks (0.2.2)
-    httpi (2.0.2)
-      rack
+    hooks (0.3.1)
     hydra-access-controls (5.0.1)
       active-fedora
       activesupport
@@ -300,10 +299,12 @@ GEM
     mediainfo (0.7.2)
     mediashelf-loggable (0.4.9)
     method_source (0.8.1)
-    mime-types (1.21)
-    multi_json (1.7.3)
+    mime-types (1.23)
+    multi_json (1.7.6)
     multipart-post (1.2.0)
+    mysql2 (0.3.11)
     net-http-digest_auth (1.3)
+    net-ldap (0.2.2)
     net-scp (1.1.0)
       net-ssh (>= 2.6.5)
     net-sftp (2.1.1)
@@ -312,7 +313,6 @@ GEM
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
     nokogiri (1.5.9)
-    nori (2.0.4)
     om (1.8.0)
       activemodel
       activesupport
@@ -325,6 +325,11 @@ GEM
     omniauth-identity (1.1.0)
       bcrypt-ruby (~> 3.0)
       omniauth (~> 1.0)
+    omniauth-ldap (1.0.3)
+      net-ldap (~> 0.2.2)
+      omniauth (~> 1.0)
+      pyu-ruby-sasl (~> 0.0.3.1)
+      rubyntlm (~> 0.1.1)
     orm_adapter (0.4.0)
     polyglot (0.3.3)
     posix-spawn (0.3.6)
@@ -334,6 +339,7 @@ GEM
       slop (~> 3.4)
     pry-rails (0.2.2)
       pry (>= 0.9.10)
+    pyu-ruby-sasl (0.0.3.3)
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -359,13 +365,12 @@ GEM
     raindrops (0.10.0)
     rake (10.0.4)
     rb-fsevent (0.9.3)
-    rdf (1.0.4)
+    rdf (1.0.6)
       addressable (>= 2.2)
     rdf-rdfxml (0.3.9)
       rdf (>= 0.3.11)
       rdf-xsd (>= 0.3.8)
-    rdf-xsd (1.0.0)
-      backports
+    rdf-xsd (1.0.2.1)
       nokogiri (>= 1.5.0)
       rdf (>= 0.3.4)
     rdoc (3.12.2)
@@ -378,7 +383,7 @@ GEM
       nokogiri
       rubyzip
       spreadsheet (> 0.6.4)
-    rsolr (1.0.8)
+    rsolr (1.0.9)
       builder (>= 2.1.2)
     rspec (2.13.0)
       rspec-core (~> 2.13.0)
@@ -400,16 +405,17 @@ GEM
       rspec (~> 2.0)
       rspec-core (!= 2.12.0)
     ruby-ole (1.2.11.6)
-    rubydora (0.5.13)
+    rubydora (1.2.0)
       activemodel
       activesupport
       deprecation
+      equivalent-xml
       fastercsv
       hooks
       mime-types
       nokogiri
       rest-client
-      savon
+    rubyntlm (0.1.1)
     rubyzip (0.9.9)
     rvm-capistrano (1.2.7)
       capistrano (>= 2.0.0)
@@ -420,14 +426,6 @@ GEM
       railties (~> 3.2.0)
       sass (>= 3.1.10)
       tilt (~> 1.3)
-    savon (2.1.0)
-      akami (~> 1.2.0)
-      builder (>= 2.1.2)
-      gyoku (~> 1.0.0)
-      httpi (~> 2.0.2)
-      nokogiri (>= 1.4.0)
-      nori (~> 2.0.3)
-      wasabi (~> 3.0.0)
     search_sort_paginate (0.0.1)
       activesupport
       kaminari
@@ -482,9 +480,6 @@ GEM
     validates_email_format_of (1.5.3)
     warden (1.2.1)
       rack (>= 1.0)
-    wasabi (3.0.0)
-      httpi (~> 2.0)
-      nokogiri (>= 1.4.0)
     websocket (1.0.7)
     whenever (0.8.2)
       activesupport (>= 2.3.4)
@@ -497,7 +492,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  active-fedora (~> 5.0.0)
+  active-fedora (= 5.4.0)
   activerecord-jdbcsqlite3-adapter
   avalon-batch!
   avalon-engage!
@@ -535,8 +530,11 @@ DEPENDENCIES
   mediaelement_rails!
   mediainfo
   mime-types (>= 1.1)
+  mysql2
+  net-ldap (= 0.2.2)
   om (~> 1.8.0)
   omniauth-identity
+  omniauth-nuldap!
   pry
   pry-rails
   rails (~> 3.2.3)
@@ -545,7 +543,7 @@ DEPENDENCIES
   responders
   rspec-rails (>= 2.9.0)
   rspec_junit_formatter
-  rubydora (< 1.0.0)
+  rubydora (= 1.2.0)
   rubyhorn!
   rvm-capistrano
   sass-rails (~> 3.2.3)

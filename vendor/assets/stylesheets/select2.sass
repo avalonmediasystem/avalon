@@ -441,7 +441,7 @@
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3)
   .select2-choices
     li
-      float: left
+      //float: left
       list-style: none
     .select2-search-field
       margin: 0
@@ -467,6 +467,7 @@
 
 .select2-container-multi .select2-choices
   .select2-search-choice
+    height: auto
     padding: 3px 5px 3px 18px
     margin: 3px 0 3px 5px
     position: relative
@@ -499,6 +500,14 @@
     background-image: linear-gradient(top, #f4f4f4 20%, #f0f0f0 50%, #e8e8e8 52%, #eeeeee 100%)
     span
       cursor: default
+    div.inner
+      .thumbnail img
+        height: 102px
+        width: 102px
+      img
+        border-radius: 16px
+        height: 68px
+        width: 98px
   .select2-search-choice-focus
     background: #d4d4d4
 

@@ -1,15 +1,14 @@
 require 'role_controls'
 
-class Unit < ActiveRecord::Base
-  belongs_to :created_by_user, primary_key: 'username', foreign_key: 'created_by_user_id', class_name: 'User'
-  has_and_belongs_to_many :managers, join_table: 'units_users', class_name: 'User'
+class Unit < ActiveFedora::Base
+  has_metadata name: "descMetadata", type: ModsDocument
 
-  attr_accessible :name
-  validates :name, length: { minimum: 4 }, uniqueness: { :case_sensitive => false }
+  has_and_belongs_to_many :managers, property: :has_managers, property: 'User'
+  has_and_belongs_to_many :collections, property: :has_collections, class_name: 'Collection'
 
-  def self.searchable_fields
-    [ 
-      :name 
-    ] 
+  delegate :name, to: :descMetadata, unique: true
+
+  def created_at
+    @created_at ||= DateTime.parse(create_date)
   end
 end

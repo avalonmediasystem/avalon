@@ -1,12 +1,13 @@
 require "role_controls"
 class UnitsController < ApplicationController
   before_filter :authenticate_user!, :set_parent_name!
+  before_filter 
   load_and_authorize_resource
   respond_to :html
   responders :flash
 
   def index
-    @units = search_sort_paginate(params, Unit.scoped)
+    @units = Unit.all
   end
 
   def create
@@ -23,22 +24,25 @@ class UnitsController < ApplicationController
     end
   end
 
+  def show
+  end
+
   def update
     @unit = Unit.find(params[:id])
     @unit.name = params[:unit][:name]
 
-    Unit.transaction do 
-      @unit.managers.clear
-      @unit.managers =  find_managers!( params )
 
-      if @unit.valid? && @unit.save!
-        respond_with @unit do |format|
-          format.html { redirect_to [@parent_name, @unit] }
-        end
-      else
-        render 'edit'
+    @unit.managers.clear
+    @unit.managers =  find_managers!( params )
+
+    if @unit.valid? && @unit.save!
+      respond_with @unit do |format|
+        format.html { redirect_to [@parent_name, @unit] }
       end
+    else
+      render 'edit'
     end
+
   end
 
   def destroy

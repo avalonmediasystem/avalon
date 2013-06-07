@@ -38,4 +38,36 @@ class ApplicationController < ActionController::Base
     logger.debug "<< CURRENT SESSION INFORMATION >>"
     logger.debug session.inspect
   end
+
+
+  # To be used with CanCan and load_and_authorize_resource (macro loads and sets instance variable @model_name)
+  # POST /collections?media_object_ids=1,2,3,4
+  # POST /collections?subcollection_ids=1,2,3,4
+  # @collection.media_objects and @collection.subcollection_ids are pre-loaded
+  # before controller#create, controller#update, controller#edit
+  def load_and_authorize_nested_models
+    model_name       = controller_name.classify.downcase
+    model            = instance_variable_get "@#{model_name}"
+
+    params[model_name.to_sym].each do |name, value|
+      match = /(.+)_ids$/.match(name).try :captures
+      if match
+        association_ids        = value
+        association_name       = match.first
+        association_klass      = association_name.classify.constantize
+        association_collection = association_ids.split(',').map do |association_id|
+          next if ! association_id.include?(':')
+          association = association_klass.find(association_id)
+          authorize! :read, association
+        end.compact
+
+        model.clear_relationship(:has_collection_member)
+        association_collection.each do |association| 
+          model.add_relationship(:has_collection_member, "info:fedora/#{association.pid}")
+        end
+        
+        model.send("#{association_name.pluralize}=".to_sym, association_collection)
+      end
+    end if params[model_name.to_sym]
+  end
 end

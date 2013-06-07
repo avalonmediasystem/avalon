@@ -246,6 +246,8 @@ class MasterFile < ActiveFedora::Base
 
     thumbnail = matterhorn_response.thumbnail_images(0)      
 
+
+
     # TODO : Since these are the same write a method to DRY up updating an
     #        image datastream
     unless thumbnail.empty?
