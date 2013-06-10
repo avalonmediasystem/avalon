@@ -2,6 +2,7 @@ class Admin::CollectionsController < ApplicationController
   before_filter :authenticate_user!, :set_parent_name!
   load_and_authorize_resource
   before_filter :load_and_authorize_nested_models, only: [:create, :update]
+  before_filter :load_and_authorize_unit, only: [:create, :update]
   respond_to :html
   responders :flash
 
@@ -20,6 +21,16 @@ class Admin::CollectionsController < ApplicationController
     end
   end
 
+  def update
+    if @collection.update_attributes params[:collection]
+      respond_with @collection do |format|
+        format.html{ redirect_to [@parent_name, @collection] }
+      end
+    else
+      render 'edit'
+    end
+  end
+
   def autocomplete
     solr_search_params_logic  = {}
     filter_for_media_objects(solr_search_params_logic)
@@ -34,6 +45,15 @@ class Admin::CollectionsController < ApplicationController
   end
 
   private
+
+    def load_and_authorize_unit
+      unit_id = params[:collection].delete(:unit_id)
+      if unit_id
+        @unit = Unit.find(unit_id)
+        authorize! :manage, @unit
+        @collection.unit = @unit
+      end
+   end
     
     def set_parent_name!
       @parent_name =  params[:controller].to_s.split('/')[-2..-2].try :first

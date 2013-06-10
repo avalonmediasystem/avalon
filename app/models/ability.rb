@@ -29,6 +29,18 @@ class Ability
       can :manage, Unit
       can :manage, Collection
 		end
+
+    # can :manage, Collection do |collection|
+    #   can_manage = false
+    #   # Can a collection belong to more than one unit?
+    #   # Unit managers can manage any collection in their unit
+    #   debugger
+    #   if collection.unit && collection.unit.managers.include?(user.key)
+    #     can_manage = true
+    #   end
+
+    #   can_manage
+    # end
 	end
 
   def custom_permissions(user=nil, session=nil)
@@ -38,18 +50,6 @@ class Ability
           ((not mediaobject.published?) && 
            (not can_read_unpublished(mediaobject)))
       end
-    end
-
-    can :manage, Collection do |collection|
-      can_manage = false
-      # Can a collection belong to more than one unit?
-      # Unit managers can manage any collection in their unit
-      
-      if collection.unit && collection.unit.managers.include?(user.key)
-        can_manage = true
-      end
-
-      can_manage
     end
    
     can :read, Derivative do |derivative|

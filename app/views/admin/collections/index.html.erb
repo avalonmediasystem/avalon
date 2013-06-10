@@ -24,6 +24,7 @@
       <thead>
         <th> <%= sort_link :name %> </th>
         <th> Unit </th>
+        <th> Number of Items </th>
         <th> <%= sort_link :created_at, class: 'headerSortUp' %></th>
         <th> Actions</th>
       </thead>
@@ -38,6 +39,8 @@
                 -
               <% end %>
             </td>
+
+            <td> <%= collection.media_objects_count %> </td>
             <td>
               <%= collection.created_at.strftime '%m/%d/%Y %l:%M %p' %>
             </td>

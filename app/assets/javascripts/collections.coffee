@@ -1,3 +1,10 @@
+window.CollectionSelectBox =
+  class CollectionSelectbox
+    constructor: (@url, @collectionSelections) ->
+
+
+
+
 window.MediaObjectSelectBox =
   class MediaObjectSelectBox
     constructor: (@url, @unitSelections) ->
@@ -12,18 +19,12 @@ window.MediaObjectSelectBox =
           $(container).empty().append( template )
           template = 
             """
-            <div class="thumbnail" style="float: left;">
-              <img src="#{mediaObject.thumbnail_url}"/>
+            <div class="" style="float: left;">
+              <img class='media-object img-circle' src="#{mediaObject.thumbnail_url}"/>
             </div>
 
             <div class="caption">
               <h4>#{mediaObject.text}</h4>
-              <div class='span2'>
-                <dl class="dl-horizontal">
-                  <dt>Main title</dt>
-                  <dd>asdfasdf.</dd>
-                </dl>
-              </div>
               <div class='clearfix'/>
             </div>
             """
@@ -31,7 +32,7 @@ window.MediaObjectSelectBox =
           undefined
         formatResult: (mediaObject) ->
           mediaObject.text unless mediaObject.thumbnail_url?
-          "<img class='' src='#{mediaObject.thumbnail_url}'/> #{mediaObject.text}"
+          "<img class='media-object img-circle' src='#{mediaObject.thumbnail_url}'/> #{mediaObject.text}"
         initSelection: (element, callback) =>
           callback @unitSelections
         ajax:

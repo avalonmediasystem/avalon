@@ -3,15 +3,17 @@
 <%= twitter_bootstrap_form_for @collection, url: polymorphic_path([ @parent_name, @collection ]) do |f| %>
   
   <fieldset>
-  <%= f.text_field :name %>
-  <%= label_tag  'media_object_ids', 'Media' %>
-  <%= hidden_field_tag 'collection[media_object_ids]', :multiple %>
+    <%= f.text_field :name %>
+    <%= label_tag 'unit_id', 'Unit' %>
+    <%= select_tag('collection[unit_id]',options_from_collection_for_select(Unit.all, 'id', 'name', selected: @collection.unit.id)) %>
+    <%= label_tag  'media_object_ids', 'Media' %>
+    <%= hidden_field_tag 'collection[media_object_ids]', :multiple %>
 
-  <hr/>
-  <div class='control-group'>
-  <%= link_to 'Cancel', :back, class: 'btn' %>
-  <%= submit_tag params[:action] == 'edit' ? 'Update' : 'Save', class: "btn" %>
-  </div>
+    <hr/>
+    <div class='control-group'>
+    <%= link_to 'Cancel', :back, class: 'btn' %>
+    <%= submit_tag params[:action] == 'edit' ? 'Update' : 'Save', class: "btn" %>
+    </div>
   </fieldset>
 <% end %>
 
@@ -26,6 +28,7 @@
       }.to_json.html_safe %>;
 
     new MediaObjectSelectBox(url, selections)
+    $('#collection_unit_id').select2()
   })
   </script>
 <% end %>
