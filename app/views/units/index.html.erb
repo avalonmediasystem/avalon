@@ -1,0 +1,65 @@
+<div class='container'>
+  <h3> Units </h3>
+  <% if @units.count == 0 %>
+
+    <%= render :partial => 'shared/placeholder', locals: { 
+          content: 'There currently aren\'t any units.  Click the button below to create one.', link: { name: 'New Unit', url: new_polymorphic_path([@parent_name, Unit]) } 
+        } 
+    %>
+
+  <% else %>
+
+    <div class="navbar">
+      <div class="navbar-inner">
+        <%= form_tag polymorphic_path([@parent_name, Unit]), method: 'get', class: 'navbar-form pull-left' do %>
+          <%= hidden_field_tag :direction, params[:direction] %>
+          <%= text_field_tag :search, params[:search], class: 'span2' %>
+          <%= submit_tag 'Search', :class => 'btn'%>
+        <% end %>
+        <%= link_to 'New Unit', new_polymorphic_path([@parent_name, Unit]), class: 'btn pull-right' %>
+      </div>
+    </div>
+
+    <table class='table table-bordered table-condensed'>
+      <thead>
+        <th> <%= sort_link :name %> </th>
+        <th> Manager(s) </th>
+        <th> <%= sort_link :created_at, class: 'headerSortUp' %></th>
+        <th> Actions</th>
+      </thead>
+      <tbody>
+        <% @units.each do |unit| %>
+          <tr>
+            <td> <%= link_to unit.name, polymorphic_path([@parent_name, unit]) %> </td>
+            <td> <%= unit.managers.map(&:full_name).join(', ') %> </td>
+            <td> <%= unit.created_at.strftime '%m/%d/%Y %l:%M %p' %></td>
+            <td>
+              <%= link_to edit_polymorphic_path([@parent_name, unit]), class:'btn' do %>
+                <i class='icon-edit'></i>
+              <% end %>
+              <%= link_to polymorphic_path([@parent_name, unit]), method: :delete, confirm: "Are you sure you want to delete: #{unit.name}", class:'btn' do %>
+                <i class='icon-trash'></i>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <% if @units.count> page_size %>
+    <div class="row record-padding">
+      <div class="span9"> 
+        <div class="pagination">
+        
+        </div>
+      </div>
+    </div>
+    <% end %>
+<% end %>
+
+
+</div>
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'notifications' %>
+<% end %>

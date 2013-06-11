@@ -158,6 +158,12 @@ class ModsDocument < ActiveFedora::NokogiriDatastream
     xml.mods("xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance", "xmlns"=>"http://www.loc.gov/mods/v3",
         "xsi:schemaLocation"=>"http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd") {
       xml.originInfo
+      xml.title_info do |t|
+        t.non_sort(:path => 'nonSort')
+        t.title
+        t.subtitle(:path => 'subTitle')
+      end
+
       xml.physicalDescription
       xml.recordInfo {
         xml.recordOrigin('Avalon Media System')

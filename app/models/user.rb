@@ -25,6 +25,7 @@ class User < ActiveRecord::Base
   attr_accessible :email, :guest
   
   delegate :can?, :cannot?, :to => :ability
+  validates_email_format_of :email, unless: :guest?
 
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
@@ -38,10 +39,16 @@ class User < ActiveRecord::Base
     user = User.where(:username => username).first
 
     unless user
-      user = User.create(username: username)
+      user = User.create(username: username, email: username)
     end
     user
   end
+
+  # def self.find_for_nuldap(access_token, signed_in_resource=nil)
+  #   User.find_or_create_by_username( access_token.info['email']){ |u|
+  #     u.email = access_token.info['email']
+  #   }
+  # end
 
   def ability
     @ability ||= Ability.new(self)

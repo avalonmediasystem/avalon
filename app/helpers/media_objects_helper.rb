@@ -22,20 +22,6 @@ module MediaObjectsHelper
         
         HYDRANT_STEPS.template(status)
       end
-      
-      def next_step_for(status)
-        unless HYDRANT_STEPS.exists?(status)
-          status = HYDRANT_STEPS.first.step
-        end
-        HYDRANT_STEPS.next(status)
-      end
-
-      def previous_step_for(status)
-        unless HYDRANT_STEPS.exists?(status)
-          status = HYDRANT_STEPS.first.step
-        end
-        HYDRANT_STEPS.previous(status)
-      end  
      
       # Based on the current context it will choose which class should be
       # applied to the display. If you are not using Twitter Bootstrap or

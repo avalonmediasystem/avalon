@@ -143,30 +143,8 @@ class MasterFile < ActiveFedora::Base
     m.send_request args
   end
 
-  def status_description
-    case status_code
-      when "INSTANTIATED"
-        "Preparing file for conversion"
-      when "RUNNING"
-        "Creating derivatives"
-      when "SUCCEEDED"
-        s = self.failures.to_i > 0 ? " (#{failures} failed steps)" : ""
-        "Processing is complete#{s}"
-      when "FAILED"
-        "File(s) could not be processed"
-      when "STOPPED"
-        "Processing has been stopped"
-      else
-        "Waiting for conversion to begin"
-      end
-  end
-
   def status?(value)
     status_code == value
-  end
-
-  def running?
-    status?('RUNNING')
   end
 
   def failed?
@@ -209,16 +187,6 @@ class MasterFile < ActiveFedora::Base
 
   def finished_processing?
     END_STATES.include?(status_code)
-  end
-
-  def poster_url
-    #poster.url yeilds something like "objects/changeme%3A314/datastreams/poster/content" which needs fedora's base added on to it
-    poster.new? ? nil : ActiveFedora.fedora.config[:url] + "/" + poster.url
-  end
-
-  def thumbnail_url
-    #thumbnail.url yeilds something like "objects/changeme%3A314/datastreams/thumbnail/content" which needs fedora's base added on to it
-    thumbnail.new? ? nil : ActiveFedora.fedora.config[:url] + "/" + thumbnail.url
   end
 
   def update_progress!( params, matterhorn_response )
@@ -277,6 +245,8 @@ class MasterFile < ActiveFedora::Base
     end
 
     thumbnail = matterhorn_response.thumbnail_images(0)      
+
+
 
     # TODO : Since these are the same write a method to DRY up updating an
     #        image datastream

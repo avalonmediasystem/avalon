@@ -1,12 +1,27 @@
 <div class="row">
   <div class="span8" id="left_column">
-      <%= render 'video_player' %>
-      <%= render partial: 'sections', 
+    <section id="player" style="width: 100%">
+      <% if @currentStream.present? and @currentStream.succeeded? %>
+        <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
+        <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>   
+
+        <video controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] %>" preload="true">
+          <% @currentStreamInfo[:stream_flash].each do |flash| %>
+            <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
+          <% end %>
+          <% @currentStreamInfo[:stream_hls].each do |hls| %>
+            <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
+          <% end %>
+        </video>
+      <% end %>
+    </section>
+    <%= render 'video_player' %>
+    <%= render partial: 'sections', 
         locals: {mediaobject: @mediaobject,
                  sections: @masterFiles,
                  activeStream: @currentStream} %>
 
-  <%= render 'permalink' %>
+    <%= render 'permalink' %>
   </div>
 
   <div class="span4" id="right-column">
@@ -20,29 +35,23 @@
 <% content_for :title do %>
   Preview -
   <% unless @mediaobject.title.blank? %>
-  <%= @mediaobject.title %> (<%= @mediaobject.pid %>)
+    <%= @mediaobject.title %> (<%= @mediaobject.pid %>)
   <% else %>
     <%= @mediaobject.pid %>
   <% end %>
 <% end %>
 
 <% content_for :page_scripts do %>
-  <%# Since there are no streams if @currentStream is nil then don't bother including any of the following content %>
-  <%= javascript_include_tag 'switch_streams' %>
-  <%= javascript_include_tag 'swfobject' %>
-  <%= javascript_include_tag 'avalonplayer' %>
+  <%= javascript_include_tag :jquery =%>
+  <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
+  <%= javascript_include_tag 'switch_streams' %> 
+  <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %> 
 
-  <% if @currentStream.present? and @currentStream.succeeded? %>
   <script>
-    $().ready(function() {
-      if ($("#nojs").length > 0) {
-        currentPlayer = AvalonPlayer.init($('#player'), 
-                   { hls: <%= @currentStreamInfo[:stream_hls].to_json.html_safe %>,
-                     poster: "<%= @currentStreamInfo[:poster_image] %>", 
-                     mediaPackageId: "<%= @currentStreamInfo[:mediapackage_id] %>", 
-                     flash: <%= @currentStreamInfo[:stream_flash].to_json.html_safe %> });
-      }
-    });
+    currentPlayer = new MediaElementPlayer('#video-tag', 
+        { mode: 'auto_plugin',
+          usePluginFullScreen: false,
+          features: ['playpause','current','progress','duration','qualities','volume','fullscreen']
+        });
   </script>
-  <% end %>
 <% end %>

@@ -1,0 +1,30 @@
+<% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
+
+<%= twitter_bootstrap_form_for @unit, url: polymorphic_path([ @parent_name, @unit ]) do |f| %>
+  
+  <fieldset>
+  <%= f.text_field :name %>
+  <%= label_tag  'manager_ids', 'Managers' %>
+  <%= hidden_field_tag 'managers', :multiple, 'data-placeholder' => 'Enter theaasdf' %>
+  <hr/>
+  <div class='control-group'>
+  <%= link_to 'Cancel', :back, class: 'btn' %>
+  <%= submit_tag params[:action] == 'edit' ? 'Update' : 'Save', class: "btn" %>
+  </div>
+  </fieldset>
+<% end %>
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'units' %>
+  <script>
+  $(document).ready(function(){
+    new UserSelectBox(<%= @unit.managers.map{|m| 
+      Avalon::UserSearch.format_autocomplete_entry( uid: m.uid, full_name: m.full_name, email: m.email )  }.to_json.html_safe 
+    %>)
+    new CollectionSelectBox(<%= @unit.collections.map{|m| Select2::Autocomplete.as_json( id: m.pid, text: m.title ) } %>.to_json.html_safe)
+  })
+  </script>
+<% end %>
+
+
+

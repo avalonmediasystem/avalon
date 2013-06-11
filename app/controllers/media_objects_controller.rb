@@ -22,8 +22,6 @@ class MediaObjectsController < ApplicationController
   before_filter :inject_workflow_steps, only: [:edit, :update]
   before_filter :load_player_context, only: [:show, :show_progress, :remove]
 
-  layout 'avalon'
-
   # Catch exceptions when you try to reference an object that doesn't exist.
   # Attempt to resolve it to a close match if one exists and offer a link to
   # the show page for that item. Otherwise ... nothing!

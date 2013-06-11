@@ -91,7 +91,7 @@ describe MasterFilesController do
          Filedata: [@file], 
          original: 'any', 
          container_id: 'avalon:video-segment' 
-       master_file = MasterFile.find(:all, order: "created_on ASC").last
+       master_file = MasterFile.all.last
        master_file.file_format.should eq "Moving image" 
              
        flash[:errors].should be_nil
@@ -108,7 +108,7 @@ describe MasterFilesController do
    
         post :create, Filedata: [@file], original: 'any', container_id: 'avalon:video-segment'
          
-        master_file = MasterFile.find(:all, order: "created_on ASC").last
+        master_file = MasterFile.all.last
         mediaobject = MediaObject.find('avalon:video-segment')
         mediaobject.parts.should include master_file
         master_file.mediaobject.pid.should eq('avalon:video-segment')
@@ -126,7 +126,8 @@ describe MasterFilesController do
         end
    
         post :create, Filedata: [@file], original: 'any', container_id: 'avalon:video-segment'
-        master_file = MasterFile.find(:all, order: "created_on ASC").last
+
+        master_file = MasterFile.all.last
         master_file.edit_groups.should include "collection_manager"
         master_file.edit_users.should include "archivist2"
       end
@@ -142,7 +143,11 @@ describe MasterFilesController do
         Rubyhorn.stub_chain(:client,:instance_xml).and_return(doc)
         Rubyhorn.stub_chain(:client,:get).and_return(nil)
         Rubyhorn.stub_chain(:client,:stop).and_return(true)
-        mf = MasterFile.create!
+        mf = MasterFile.new
+
+        mf.thumbnail.mimeType = 'image/png'
+        mf.thumbnail.content = 'PNG'
+        mf.save
         mo = MediaObject.new
         mo.save(validate: false)
         mf.mediaobject = mo
