@@ -14,6 +14,8 @@ class Unit < ActiveFedora::Base
   delegate :name, to: :descMetadata, unique: true
   delegate :created_by_user_id, to: :objectMetadata
 
+  validates :name, presence: true
+
   def created_at
     @created_at ||= DateTime.parse(create_date)
   end
