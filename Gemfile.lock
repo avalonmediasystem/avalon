@@ -39,7 +39,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: c22c3e0ee6b8c239e38aa0ef398ece037546910d
+  revision: fce7ca2172bd27070892195d522e53b13c549782
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
@@ -79,7 +79,7 @@ GIT
 
 GIT
   remote: https://github.com/cjcolvar/mediaelement-qualityselector.git
-  revision: cc7d543869bc1a8dc628bce035be43c92c7bafd9
+  revision: 05bb80d7268ba054c235a310d6e5db9bf288a640
   specs:
     mediaelement-qualityselector (0.0.1)
 
