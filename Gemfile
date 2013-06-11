@@ -6,13 +6,18 @@
   gem 'blacklight', '~> 4.0.0' 
   gem 'om', '~>1.8.0'
   gem 'hydra-head', '~> 5.0.0'
-  gem 'rubydora', '< 1.0.0'
-  gem 'active-fedora', '~> 5.0.0'
+  gem 'rubydora', '1.2.0'
+  gem 'active-fedora', '5.4.0'
+
+  gem 'search_sort_paginate'
+  gem 'responders'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git'
   gem 'avalon-engage', git: "https://github.com/avalonmediasystem/avalon-engage.git"
   gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git"
- 
+  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git' 
+  gem 'mediaelement-qualityselector', git: 'https://github.com/cjcolvar/mediaelement-qualityselector.git' 
+
   platforms :jruby do
     gem 'jruby-openssl'
     gem 'activerecord-jdbcsqlite3-adapter'
@@ -89,6 +94,7 @@
     gem 'simplecov'
     gem 'email_spec'
     gem 'capybara'   
+    gem 'shoulda-matchers'
   end
 
   extra_gems = File.expand_path("../Gemfile.local",__FILE__)

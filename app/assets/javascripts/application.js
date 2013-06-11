@@ -31,6 +31,12 @@
 //= require fix_console
 //= require jquery
 //= require jquery_ujs
+
+//= require noty/jquery.noty
+//= require noty/layouts/topRight
+//= require noty/themes/default
+//= require select2/select2
+
 //= require blacklight/blacklight
 
 // Let's be selective on which modules we include instead of going down the 

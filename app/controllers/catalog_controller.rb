@@ -179,7 +179,4 @@ class CatalogController < ApplicationController
       solr_parameters[:fq] << '!hidden_b:true'
     end
   end
-
-  layout 'avalon'
-
 end 

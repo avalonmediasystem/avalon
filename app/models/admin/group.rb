@@ -23,7 +23,7 @@ class Admin::Group
   # For now this list is a hardcoded constant. Eventually it might be more flexible
   # as more thought is put into the process of providing a comment
   attr_accessor :name, :users
-  validates :name, presence: {message: "Name is a required field"}
+  validates :name, :presence => true 
 
   def self.non_system_groups
     groups = all

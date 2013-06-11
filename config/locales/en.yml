@@ -3,3 +3,6 @@
 
 en:
   avalon_release: "Release 1.0"
+  errors:
+    messages:
+      blank: "field is required."
