@@ -65,6 +65,8 @@
     gem 'twitter_bootstrap_form_for',
       git: "https://github.com/avalonmediasystem/twitter_bootstrap_form_for.git",
       branch: "bootstrap-2.0"
+    gem 'select2-rails'
+    gem 'noty-rails'
   end
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
