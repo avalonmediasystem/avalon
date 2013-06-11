@@ -30,8 +30,6 @@ class UnitsController < ApplicationController
   def update
     @unit = Unit.find(params[:id])
     @unit.name = params[:unit][:name]
-
-
     @unit.managers.clear
     @unit.managers =  find_managers!( params )
 
