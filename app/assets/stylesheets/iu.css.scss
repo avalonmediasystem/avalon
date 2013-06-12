@@ -1,0 +1,65 @@
+/****************************************
+ * Branding Bar
+ ****************************************/
+
+#header {
+  background-color: #7d120c;
+  width: auto;
+  border-bottom: 1px solid #2a2a2a;
+}
+#header hr {
+  display: none;
+}
+#headerIU a.iu {
+  background: url(iu_crimson.gif) no-repeat 20px 0;
+  display: block;
+  height: 44px;
+  left: -20px;
+  width: 250px;
+}
+
+.log-in-out {
+  color: white;
+  font-size: 1.2em;
+}
+.log-in-out a {
+  color: white;
+  background: none;
+  padding: 0;
+}
+.log-in-out a:after {
+  content: none;
+}
+.log-in-out span + a:before {
+  content: " | ";
+}
+.log-in-out .pull-right {
+  padding: 1em 1em;
+}
+
+footer {
+  font-size: .8em;
+}
+
+footer ul {
+  clear: both;
+}
+
+footer li:before {
+  content: " | ";
+}
+
+footer .copyright li:nth-child(2):before {
+  content: none;
+}
+
+footer a:visited {
+  color: #990000;
+  text-decoration: none;
+  font-weight: normal;
+}
+footer a:link {
+  color: #990000;
+  text-decoration: none;
+  font-weight: normal;
+}

@@ -22,12 +22,27 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 <% end %>
 
-<h2>Sample Content</h2>
+<h2>Featured Content</h2>
 
 <ul class="thumbnails">
-  <li class="span3"><h5>Featured Collection</h5><a href="#" class="thumbnail"><%= image_tag "Nutcracker-Ballet.png", alt: "Featured Collection" %></a></li>
-  <li class="span3"><h5>Featured Video</h5><a href="#" class="thumbnail"><%= image_tag "Charlie-McCarthy.png", alt: "Featured Collection" %></a></li>
-  <li class="span3"><h5>Featured Audio</h5><a href="#" class="thumbnail"><%= image_tag "Chucky-Lou.png", alt: "Featured Collection" %></a></li>
+  <li class="span3">
+    <%= link_to (MediaObject.exists?("avalon:149") ? MediaObject.find("avalon:149") : "#"), class: "thumbnail" do %>
+      <%= image_tag "featured/iu-goes-to-war.jpg", alt: "Featured Film" %>
+    <% end %>
+    <h5>Film: I.U. Goes to War (1943)</h5>
+  </li>
+  <li class="span3">
+    <%= link_to (MediaObject.exists?("avalon:144") ? MediaObject.find("avalon:144") : "#"), class: "thumbnail" do %>
+      <%= image_tag "featured/westbrook.jpg", alt: "Featured Video" %>
+    <% end %>
+    <h5>Video: Logan Westbrooks (2013)</h5>
+  </li>
+  <li class="span3">
+    <%= link_to (MediaObject.exists?("avalon:62") ? MediaObject.find("avalon:62") : "#"), class: "thumbnail" do %>
+      <%= image_tag "featured/mahler.jpg", alt: "Featured Audio" %>
+    <% end %>
+    <h5>Audio: Mahler Symphony No. 3</h5>
+  </li>
 </ul>
 
 <h4>Using the System</h4>

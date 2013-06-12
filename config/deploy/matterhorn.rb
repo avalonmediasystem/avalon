@@ -1,9 +1,8 @@
 set :application, "matterhorn"
-set :git_application, "avalon-felix"
 set :repository,  "https://github.com/avalonmediasystem/avalon-felix/archive"
 
-set(:deployment_host) { "lancelot.dlib.indiana.edu" }  # Host(s) to deploy to
-set(:deploy_to) { ENV['DEPLOY_DIR'] || "/srv/avalon/matterhorn" }  # Directory to deploy into
+set(:deployment_host) { "elm.dlib.indiana.edu" }  # Host(s) to deploy to
+set(:deploy_to) { "/srv/avalon/matterhorn" }  # Directory to deploy into
 set(:user) { 'vov' }                # User to deploy as
 set(:branch) { "release/3.0.0" }       # Git branch to deploy
 set :branch, ENV['SCM_BRANCH'] if ENV['SCM_BRANCH']
@@ -19,11 +18,11 @@ after "deploy:update_code", "deploy:copy_config"
 
 namespace :deploy do
   task :migrate do
-    puts "    not doing migrate because not a Rails application.#{deployment_host}"
+    puts "    not doing migrate because not a Rails application."
   end
 
   task :update_code do
-    run "#{sudo :as => 'matterhorn'} -i -- sh -c 'cd #{deploy_to}; rm -rf current; wget --no-check-certificate #{repository}/#{branch}.zip -O #{git_application}.zip; unzip #{git_application}.zip; mv #{git_application}-#{branch.gsub('/', '-')} current; rm -f *.zip'"
+    run "#{sudo :as => 'matterhorn'} -i -- sh -c 'cd #{deploy_to}; rm -rf current; wget --no-check-certificate #{repository}/#{branch}.zip -O #{application}.zip; unzip #{application}.zip; mv avalon-felix-release-1.0.0 current; rm -f *.zip'"
   end
 
   task :copy_config do
@@ -32,14 +31,6 @@ namespace :deploy do
 
   task :create_symlink do
     puts "    not doing create_symlink because not a Rails application."
-  end
-
-  task :symlink_dirs do
-    puts "    not doing symlink_dirs because not a Rails application."
-  end
-
-  task :trust_rvmrc do
-    puts "    not doing trust_rvmrc because not a Rails application."
   end
 
   task :start do

@@ -37,6 +37,9 @@ $sansFontFamily: Arial, Helvetica, sans-serif;
  */
 $green: rgb(128, 165, 144);
 $greenBG: scale-color($green, $saturation: -40%, $lightness: 60%);
+
+$red: rgb(124, 18, 12);
+/*$greenBG: scale-color($red, $saturation: -80%, $lightness: 80%);*/
 $white: rgb(255, 255, 255);
 $orange: rgb(42, 84, 69);
 $gray: rgb(51,51,51);
@@ -75,3 +78,5 @@ $constraint_border_color: scale-color($greenBG, $lightness: -20%);
 
 /* Change default breakpoint for the navigation bar */
 $navCollapseWidth: 650px;
+
+

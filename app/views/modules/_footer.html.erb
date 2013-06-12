@@ -16,13 +16,16 @@ Unless required by applicable law or agreed to in writing, software distributed
    <div class="container-fluid">
 	  <footer>
 	   <ul>
-	   	 <li><%= image_tag "AvalonMediaSystem_Logo_A.png", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
-	     <li><a href="http://www.avalonmediasystem.org">Avalon Media System Project Website</a> </li>
+	     <li>Supported by <a href="http://www.avalonmediasystem.org">Indiana University Bloomington Libraries</a> </li>
 	     <li><%= link_to "Contact Us", comments_path %></li>
 	   </ul>
-	   <div class="release">
-	   	<%=release_text%>
-	   	<%= git_commit_info(" (%s %s [%s])") if Rails.env == 'development' %>
-	   </div>
-       </footer>
-    </div>
+     
+	   <ul class="copyright">
+	   	 <li><%= image_tag "blockiu_white.gif", alt: "Avalon Media System - #{t(:avalon_release)}" %>
+	     <li><a href="http://www.indiana.edu/comments/copyright.shtml">Copyright</a> © 2013 <a href="http://www.indiana.edu/">The Trustees of Indiana University</a> </li>
+	     <li><a href="http://www.indiana.edu/comments/complaint.shtml">Copyright Complaints</a></li>
+	     <li><a href="http://go.iu.edu/4My">Libraries Privacy Policy</a></li>
+	   </ul>
+
+    </footer>
+   </div>
