@@ -32,7 +32,7 @@
         <% @units.each do |unit| %>
           <tr>
             <td> <%= link_to unit.name, polymorphic_path([@parent_name, unit]) %> </td>
-            <td> <%= unit.managers.map{|m| m.full_name || m.username}.join(', ') %> </td>
+            <td> <%= unit.managers.map(&:unique_name).join(', ') %> </td>
             <td>
               <ul class="inline">
               <% unit.collections.each do |collection| %>

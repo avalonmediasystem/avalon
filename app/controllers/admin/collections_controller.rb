@@ -14,18 +14,13 @@ class Admin::CollectionsController < ApplicationController
   def create
     @collection.unit = @unit
     if @collection.save
-      @unit.collections += [@collection]
+      after_save
       respond_with @collection do |format|
         format.html{ redirect_to [@parent_name, @collection] }
       end
     else
       render 'new'
     end
-  end
-
-  def destroy
-    @collection.destroy
-     redirect_to [@parent_name, Collection]
   end
 
   def update
@@ -45,6 +40,11 @@ class Admin::CollectionsController < ApplicationController
     end
   end
 
+  def destroy
+    @collection.destroy
+    redirect_to [@parent_name, Collection]
+  end
+
   def autocomplete
     solr_search_params_logic  = {}
     filter_for_collection_objects(solr_search_params_logic)
@@ -60,7 +60,7 @@ class Admin::CollectionsController < ApplicationController
 
   private
 
-    def load_and_authorize_unit
+    def after_load
       unit_id = params[:collection].delete(:unit_id)
       if unit_id.present?
         @unit = Unit.find(unit_id)
@@ -68,12 +68,17 @@ class Admin::CollectionsController < ApplicationController
       else
         @unit = nil
       end
-    end
-    
-    def set_parent_name!
-      @parent_name =  params[:controller].to_s.split('/')[-2..-2].try :first
+      
+      @collection.managers =  find_managers!( params )
     end
 
+    def after_save
+      if @unit.present?
+        @unit.reload
+        @unit.collection = @collection
+        @unit.save( validate: false )
+      end
+    end
 
     def filter_for_collection_objects(solr_parameters)
       solr_parameters[:fq] ||= []

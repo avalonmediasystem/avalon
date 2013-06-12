@@ -23,9 +23,6 @@ class UnitsController < ApplicationController
     end
   end
 
-  def show
-  end
-
   def update
     @unit = Unit.find(params[:id])
     @unit.name = params[:unit][:name]

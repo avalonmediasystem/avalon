@@ -50,6 +50,10 @@ class User < ActiveRecord::Base
   #   }
   # end
 
+  def unique_name
+    full_name.present? ? full_name : username
+  end
+
   def ability
     @ability ||= Ability.new(self)
   end

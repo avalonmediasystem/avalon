@@ -5,6 +5,8 @@
   <fieldset>
     <%= f.text_field :name %>
     <%= f.collection_select(:unit_id, nil, Unit.all, :id, :name, include_blank: true  ) %>
+    <%= label_tag  'manager_ids', 'Managers' %>
+    <%= hidden_field_tag 'managers', :multiple %>
     <%= label_tag  'media_object_ids', 'Media' %>
     <%= hidden_field_tag 'collection[media_object_ids]', :multiple %>
 
@@ -21,12 +23,18 @@
   <%= javascript_include_tag 'select_boxes' %>
   <script>
   $(document).ready(function(){
-    var url = '<%= autocomplete_admin_media_objects_path %>';
-    var selections = <%= @collection.media_objects.map{ |media_object|  
+
+    var user_autocomplete_url = "<%= admin_user_search_path %>";
+    var selected_users = <%= @collection.managers.map{|m| Avalon::UserSearch.format_autocomplete_entry( uid: m.uid, full_name: m.full_name, email: m.email )  }.to_json.html_safe %>
+
+    new UserSelectBox(user_autocomplete_url, selected_users )
+
+    var media_url = '<%= autocomplete_admin_media_objects_path %>';
+    var media_selections = <%= @collection.media_objects.map{ |media_object|  
         Select2::Autocomplete.as_json(media_object.pid, media_object.title, { thumbnail_url: media_object.thumbnail_url })
       }.to_json.html_safe %>;
 
-    new MediaObjectSelectBox(url, selections)
+    new MediaObjectSelectBox(media_url, media_selections)
     $('#collection_unit_id').select2({
       placeholder: 'Select a Unit',
       allowClear: true

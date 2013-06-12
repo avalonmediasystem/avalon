@@ -2,6 +2,7 @@ require 'role_controls'
 
 class Unit < ActiveFedora::Base
   include ActiveFedora::Associations
+  include Avalon::ManagerAssociation
 
   has_many :collections, property: :is_member_of
 
@@ -39,7 +40,7 @@ class Unit < ActiveFedora::Base
     super(solr_doc, opts)
     map = Solrizer::FieldMapper::Default.new
     solr_doc[ map.solr_name(:name, :string, :searchable).to_sym ] = self.name
-    solr_doc[ map.solr_name(:collection_count, :integer, :sortable).to_sym ] = self.collections.size
-    solr_doc
+    solr_doc[ map.solr_name(:collections_count, :integer, :sortable).to_sym ] = self.collections.count
+    super(solr_doc)
   end
 end

@@ -1,6 +1,6 @@
 window.UserSelectBox =
   class UserSelectBox
-    constructor: (@unitSelections, @url) ->
+    constructor: (@url, @selections) ->
       $('#managers').select2
         placeholder: 'Search by name or net id'
         minimumInputLength: 7
@@ -8,7 +8,7 @@ window.UserSelectBox =
         width: '500px'
 
         initSelection: (element, callback) =>
-          callback @unitSelections
+          callback @selections
         ajax:
           url: @url
           dataType: 'json'

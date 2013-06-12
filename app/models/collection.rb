@@ -1,10 +1,12 @@
 class Collection < ActiveFedora::Base
   # include Hydra::ModelMethods
   include ActiveFedora::Associations
+  include Avalon::ManagerAssociation
   include Hydra::ModelMixins::RightsMetadata
+  include Avalon::ManagerAssociation
 
   belongs_to :unit, class_name: 'Unit', property: :is_part_of
-  has_and_belongs_to_many :media_objects, property: :has_collection_member, class_name: 'MediaObject' 
+  has_and_belongs_to_many :media_objects, property: :has_collection_member, class_name: 'MediaObject'
   has_metadata name: 'descMetadata', type: Hydra::ModsCollection
   has_metadata name: 'rightsMetadata', type: Hydra::Datastream::RightsMetadata 
   has_metadata name: 'objectMetadata', type: ActiveFedora::SimpleDatastream do |sds|

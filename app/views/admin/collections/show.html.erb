@@ -12,56 +12,56 @@
     </div>
   </div>
 </h3>
-  <div class='clearfix'></div>
+<div class='clearfix'></div>
   
-  <hr/>
+<hr/>
 
-  <h4> Unit </h4>
+<h4> Unit </h4>
+<div class='inner-section'>
+  <% if @collection.unit && @collection.unit.name.present? %>
+    <%= link_to @collection.unit.name, polymorphic_path([@parent_name, @collection.unit]) %>
+  <% else %>
+    -
+  <% end %>
+</div>
 
-    <div class='inner-section'>
-      <% if @collection.unit && @collection.unit.name.present? %>
-        <%= link_to @collection.unit.name, polymorphic_path([@parent_name, @collection.unit]) %>
-      <% else %>
-        -
-      <% end %>
+<h4> Managers </h4>
+<div class='inner-section'>
+  <% if @collection.managers.count > 0 %>
+    <%= @collection.managers.map(&:full_name).join(', ') %>
+  <% else %>
+    -
+  <% end %>
+</div>
 
-    </div>
-
-
-
-
-
-    <h4> Media </h4>
-      <div class='inner-section'>
-        <% if @collection.media_objects.count > 0 %>
-            <table class='media-objects table'>
-              <thead>
-                <th/>
-                <th>Title</th>
-                <th>Creator</th>
-                <th>Publication Date</th>
-              </thead>
-              <tbody>
-                <% @collection.media_objects.each do |media_object| %>
-                  <tr>
-                    <td> 
-                      <%= link_to media_object_path(media_object) do  %>
-                        <img class='media-object img-circle' height='50' width='50' src="<%= media_object.thumbnail_url %>"/>  
-                      <% end %>
-                    </td>
-                    <td> <%= link_to media_object.title, media_object_path(media_object) %>  </td>
-                    <td> <%= media_object.creator.join(', ') %> </td>
-                    <td> <%= media_object.date_issued %> </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-        <% else %>
-          There are not any media objects attached to this collection.
+<h4> Media </h4>
+<div class='inner-section'>
+  <% if @collection.media_objects.count > 0 %>
+    <table class='media-objects table'>
+      <thead>
+        <th/>
+        <th>Title</th>
+        <th>Creator</th>
+        <th>Publication Date</th>
+      </thead>
+      <tbody>
+        <% @collection.media_objects.each do |media_object| %>
+          <tr>
+            <td> 
+              <%= link_to media_object_path(media_object) do  %>
+                <img class='media-object img-circle' height='50' width='50' src="<%= media_object.thumbnail_url %>"/>  
+              <% end %>
+            </td>
+            <td> <%= link_to media_object.title, media_object_path(media_object) %>  </td>
+            <td> <%= media_object.creator.join(', ') %> </td>
+            <td> <%= media_object.date_issued %> </td>
+          </tr>
         <% end %>
-    </div>
-
-
+      </tbody>
+    </table>
+  <% else %>
+    There are not any media objects attached to this collection.
+  <% end %>
 </div>
 
 <% content_for :page_scripts do %>
