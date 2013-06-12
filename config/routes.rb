@@ -46,6 +46,11 @@ Avalon::Application.routes.draw do
 
   resources :admin, only: [:index]
   namespace :admin do
+    resources :media_objects, only: [] do 
+      collection do 
+        get 'autocomplete'
+      end
+    end
     resources :units do
       member do
         get 'edit'
@@ -56,7 +61,7 @@ Avalon::Application.routes.draw do
         get 'autocomplete'
       end
     end
-    match 'ldap/search' => 'ldap#search'
+    match 'users/search' => 'users#search', :as => :user_search
     resources :groups, except: [:show] do 
       collection do 
         put 'update_multiple'

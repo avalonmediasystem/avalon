@@ -24,6 +24,7 @@
       <thead>
         <th> <%= sort_link :name %> </th>
         <th> Manager(s) </th>
+        <th> Collection </th>
         <th> <%= sort_link :created_at, class: 'headerSortUp' %></th>
         <th> Actions</th>
       </thead>
@@ -32,6 +33,11 @@
           <tr>
             <td> <%= link_to unit.name, polymorphic_path([@parent_name, unit]) %> </td>
             <td> <%= unit.managers.map(&:full_name).join(', ') %> </td>
+            <td>
+              <% if unit.collection.present? %> 
+                <%= link_to unit.collection.name, polymorphic_path([@parent_name, unit.collection]) %> 
+              <% end %>
+            </td>
             <td> <%= unit.created_at.strftime '%m/%d/%Y %l:%M %p' %></td>
             <td>
               <%= link_to edit_polymorphic_path([@parent_name, unit]), class:'btn' do %>

@@ -5,7 +5,10 @@
   <fieldset>
   <%= f.text_field :name %>
   <%= label_tag  'manager_ids', 'Managers' %>
-  <%= hidden_field_tag 'managers', :multiple, 'data-placeholder' => 'Enter theaasdf' %>
+  <%= hidden_field_tag 'managers', :multiple %>
+<!--   <%= f.hidden_field :collection_id %>
+ -->
+  <!-- f.collection_select(:collection_id, nil, Collection.all, :id, :name, include_blank: true  ) -->
   <hr/>
   <div class='control-group'>
   <%= link_to 'Cancel', :back, class: 'btn' %>
@@ -15,13 +18,21 @@
 <% end %>
 
 <% content_for :page_scripts do %>
-  <%= javascript_include_tag 'units' %>
+  <%= javascript_include_tag 'select_boxes' %>
   <script>
   $(document).ready(function(){
-    new UserSelectBox(<%= @unit.managers.map{|m| 
-      Avalon::UserSearch.format_autocomplete_entry( uid: m.uid, full_name: m.full_name, email: m.email )  }.to_json.html_safe 
-    %>)
-    new CollectionSelectBox(<%= @unit.collections.map{|m| Select2::Autocomplete.as_json( id: m.pid, text: m.title ) } %>.to_json.html_safe)
+    var admin_user_search_path          = "<%= admin_user_search_path %>";
+    var autocomplete_admin_collections_path  = "<%= autocomplete_admin_collections_path %>";
+    var users_selected = <%= @unit.managers.map{|m| Avalon::UserSearch.format_autocomplete_entry( uid: m.uid, full_name: m.full_name, email: m.email )  }.to_json.html_safe %>
+    var collection_selected = <% if @unit.collection.present? %>
+        <%= Select2::Autocomplete.as_json( @unit.collection.id, @unit.collection.name ).to_json.html_safe %>
+      <% else %>
+        {}
+      <% end %>;
+
+    new UserSelectBox(users_selected, admin_user_search_path )
+    new CollectionSelectBox(collection_selected, autocomplete_admin_collections_path)
+  
   })
   </script>
 <% end %>

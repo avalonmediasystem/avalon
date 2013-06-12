@@ -1,4 +1,3 @@
-<%= current_user.user_key %>
 <div class='container'>
   <div class='inline-block'>
     <h3> <%= @unit.name %>
@@ -27,6 +26,15 @@
       <% else %>
         -
       <% end %>
+    </dd>
+    <dt>Collection: </dt>
+    <dd>
+      <% if @unit.collection.present? %>
+        <%= @unit.collection.name %>
+      <% else %>
+        -
+      <% end %>
+
     </dd>
   </dl>
 
