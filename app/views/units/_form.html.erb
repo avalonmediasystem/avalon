@@ -23,7 +23,7 @@
   $(document).ready(function(){
     var admin_user_search_path          = "<%= admin_user_search_path %>";
     var autocomplete_admin_collections_path  = "<%= autocomplete_admin_collections_path %>";
-    var users_selected = <%= @unit.managers.map{|m| Avalon::UserSearch.format_autocomplete_entry( uid: m.uid, full_name: m.full_name, email: m.email )  }.to_json.html_safe %>
+    var users_selected = <%= @unit.managers.map{|m| Avalon::UserSearchService.format_autocomplete_entry( uid: m.uid, full_name: m.full_name, email: m.email )  }.to_json.html_safe %>
     var collection_selected = <% if @unit.collection.present? %>
         <%= Select2::Autocomplete.as_json( @unit.collection.id, @unit.collection.name ).to_json.html_safe %>
       <% else %>
@@ -32,7 +32,6 @@
 
     new UserSelectBox(users_selected, admin_user_search_path )
     new CollectionSelectBox(collection_selected, autocomplete_admin_collections_path)
-  
   })
   </script>
 <% end %>

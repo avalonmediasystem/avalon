@@ -57,16 +57,15 @@ class UnitsController < ApplicationController
     end
 
     def find_managers!(params)
-      user_search = Avalon::UserSearch.new
-
       manager_uids = params[:managers].split(',')
       manager_uids.delete('multiple')
       manager_uids.map do |uid|
 
-        user_from_directory = user_search.find_by_uid( uid )
+        user_from_directory = Avalon::UserSearchService.find_by_uid( uid )
         raise "Could not find user in directory with uid: #{uid}" unless user_from_directory
         
-        user = User.find_by_uid(uid)
+        user = User.find_by_uid(uid) 
+        user ||= User.find_by_username(user_from_directory[:username]) if user_from_directory[:username]
         user ||= User.find_by_email(user_from_directory[:email]) if user_from_directory[:email]
         
         if ! user
@@ -74,9 +73,10 @@ class UnitsController < ApplicationController
           user.guest = true
         end
 
+        p "email #{ user_from_directory.inspect }"
         # create or update user information based upon what is available
         user.email = user_from_directory[:email]
-        user.username = user_from_directory[:email] || user_from_directory[:uid] #cannot be blank
+        user.username = user_from_directory[:email] || user_from_directory[:username] #cannot be blank
         user.full_name = user_from_directory[:full_name]
         user.uid = user_from_directory[:uid]
         user.save!

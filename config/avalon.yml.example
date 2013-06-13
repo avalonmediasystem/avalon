@@ -23,6 +23,8 @@ development:
     http_base: 'http://localhost:3000/streams'
   groups:
     system_groups: [collection_manager, group_manager]
+  users:
+    user_search: :local
 test:
   dropbox:
     path: '/srv/avalon/dropbox/'

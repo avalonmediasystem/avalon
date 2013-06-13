@@ -99,8 +99,8 @@ ActiveRecord::Schema.define(:version => 20130528195130) do
     t.string   "provider"
     t.string   "uid"
     t.string   "email"
-    t.string   "full_name"
     t.string   "guest"
+    t.string   "full_name"
   end
 
   add_index "users", ["username"], :name => "index_users_on_username", :unique => true
