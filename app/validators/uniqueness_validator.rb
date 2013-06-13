@@ -7,7 +7,7 @@ class UniquenessValidator < ActiveModel::EachValidator
     klass = record.class
     existing_doc = find_doc(klass, value)
     
-    if ! existing_doc.nil?
+    if ! existing_doc.nil? && existing_doc.pid != record.pid
       record.errors.add attribute, :taken, value: value
     end
   end

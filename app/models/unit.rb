@@ -3,24 +3,24 @@ require 'role_controls'
 class Unit < ActiveFedora::Base
   include ActiveFedora::Associations
 
-  has_metadata name: 'descMetadata', type: ModsDocument
-  belongs_to :collection, property: :is_member_of, class_name: 'Collection'
-  has_metadata name: 'objectMetadata', type: ActiveFedora::SimpleDatastream do |sds|
-    sds.field :created_by_user_id, :string
-    sds.field :collections_count, :integer
+  has_many :collections, property: :is_member_of
+
+  has_metadata name: 'descMetadata', type: ActiveFedora::SimpleDatastream do |sds|
+    sds.field :name, :string
   end
 
   delegate :name, to: :descMetadata, unique: true
-  delegate :created_by_user_id, to: :objectMetadata
-  delegate :collections_count, to: :objectMetadata
 
   validates :name, :uniqueness => { :solr_name => 'name_t'}, presence: true
 
-
-  validates :name, presence: true
-
+  #Move this into a decorator?
   def created_at
-    @created_at ||= DateTime.parse(create_date)
+    if new?
+      #Note that this time changes until it has been persisted in Fedora
+      create_date.to_datetime
+    else
+      @created_at ||= DateTime.parse(create_date) 
+    end
   end
 
   def managers
@@ -35,11 +35,11 @@ class Unit < ActiveFedora::Base
     end
   end
 
-
   def to_solr(solr_doc = Hash.new, opts = {})
+    super(solr_doc, opts)
     map = Solrizer::FieldMapper::Default.new
     solr_doc[ map.solr_name(:name, :string, :searchable).to_sym ] = self.name
-    solr_doc[ map.solr_name(:collectios_count, :integer, :sortable).to_sym ] = self.collections_count
-    super(solr_doc)
+    solr_doc[ map.solr_name(:collection_count, :integer, :sortable).to_sym ] = self.collections.size
+    solr_doc
   end
 end
