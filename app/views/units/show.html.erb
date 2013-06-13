@@ -27,10 +27,10 @@
         -
       <% end %>
     </dd>
-    <dt>Collection: </dt>
+    <dt>Collections: </dt>
     <dd>
-      <% if @unit.collection.present? %>
-        <%= @unit.collection.name %>
+      <% if @unit.collections.count > 0 %>
+        <%= @unit.collections.map{ |c| c.name}.join(', ') %>
       <% else %>
         -
       <% end %>

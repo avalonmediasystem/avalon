@@ -12,8 +12,9 @@ class Admin::CollectionsController < ApplicationController
   end
 
   def create
+    @collection.unit = @unit
     if @collection.save
-      @unit.collection = @collection
+      @unit.collections += [@collection]
       respond_with @collection do |format|
         format.html{ redirect_to [@parent_name, @collection] }
       end
@@ -28,9 +29,14 @@ class Admin::CollectionsController < ApplicationController
   end
 
   def update
+    @oldunit = @collection.unit
     if @collection.update_attributes params[:collection]
-      @unit.collection = @collection
+      @collection.unit = @unit
+      @collection.save
+      @unit.collections += [@collection]
       @unit.save( validate:false )
+      @oldunit.collections -= [@collection]
+      @oldunit.save(validate: false)
       respond_with @collection do |format|
         format.html{ redirect_to [@parent_name, @collection] }
       end
@@ -59,7 +65,6 @@ class Admin::CollectionsController < ApplicationController
       if unit_id.present?
         @unit = Unit.find(unit_id)
         authorize! :manage, @unit
-        @collection.unit = @unit
       else
         @unit = nil
       end

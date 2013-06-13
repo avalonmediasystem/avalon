@@ -12,7 +12,6 @@ class UnitsController < ApplicationController
 
   def create
     @unit = Unit.new(params[:unit])
-    @unit.created_by_user_id = current_user.user_key
     @unit.managers =  find_managers!( params )
 
     if @unit.save
@@ -71,8 +70,6 @@ class UnitsController < ApplicationController
         if ! user
           user = User.new
           user.guest = true
-        end
-
         p "email #{ user_from_directory.inspect }"
         # create or update user information based upon what is available
         user.email = user_from_directory[:email]
@@ -80,6 +77,8 @@ class UnitsController < ApplicationController
         user.full_name = user_from_directory[:full_name]
         user.uid = user_from_directory[:uid]
         user.save!
+        end
+
 
         user
       end
