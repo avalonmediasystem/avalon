@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <table class='table table-bordered table-condensed'>
+    <table class='table table-striped'>
       <thead>
         <th> <%= sort_link :name %> </th>
         <th> Manager(s) </th>
@@ -32,20 +32,18 @@
         <% @units.each do |unit| %>
           <tr>
             <td> <%= link_to unit.name, polymorphic_path([@parent_name, unit]) %> </td>
-            <td> <%= unit.managers.map(&:full_name).join(', ') %> </td>
+            <td> <%= unit.managers.map{|m| m.full_name || m.username}.join(', ') %> </td>
             <td>
+              <ul class="inline">
               <% unit.collections.each do |collection| %>
-                <%= link_to collection.name, polymorphic_path([@parent_name, collection]) %> 
+                <li><%= link_to collection.name, polymorphic_path([@parent_name, collection]) %></li>
               <% end %>
+              </ul>
             </td>
             <td> <%= unit.created_at.strftime '%m/%d/%Y %l:%M %p' %></td>
             <td>
-              <%= link_to edit_polymorphic_path([@parent_name, unit]), class:'btn' do %>
-                <i class='icon-edit'></i>
-              <% end %>
-              <%= link_to polymorphic_path([@parent_name, unit]), method: :delete, confirm: "Are you sure you want to delete: #{unit.name}", class:'btn' do %>
-                <i class='icon-trash'></i>
-              <% end %>
+              <%= link_to "Edit", edit_polymorphic_path([@parent_name, unit]), class:'btn' %>
+              <%= link_to "Delete", polymorphic_path([@parent_name, unit]), method: :delete, confirm: "Are you sure you want to delete: #{unit.name}", class:'btn btn-danger' %>
             </td>
           </tr>
         <% end %>

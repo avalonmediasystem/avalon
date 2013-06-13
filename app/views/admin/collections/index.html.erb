@@ -20,7 +20,7 @@
       </div>
     </div>
 
-    <table class='table table-bordered table-condensed'>
+    <table class='table table-striped'>
       <thead>
         <th> <%= sort_link :name %> </th>
         <th> Unit </th>
@@ -45,12 +45,8 @@
               <%= collection.created_at.strftime '%m/%d/%Y %l:%M %p' %>
             </td>
             <td>
-              <%= link_to edit_polymorphic_path([@parent_name, collection]), class:'btn' do %>
-                <i class='icon-edit'></i>
-              <% end %>
-              <%= link_to polymorphic_path([@parent_name, collection]), method: :delete, confirm: "Are you sure you want to delete: #{collection.name}", class:'btn' do %>
-                <i class='icon-trash'></i>
-              <% end %>
+              <%= link_to "Edit", edit_polymorphic_path([@parent_name, collection]), class:'btn' %>
+              <%= link_to "Delete", polymorphic_path([@parent_name, collection]), method: :delete, confirm: "Are you sure you want to delete: #{collection.name}", class:'btn btn-danger' %>
             </td>
           </tr>
         <% end %>
