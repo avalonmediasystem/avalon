@@ -51,6 +51,7 @@ class ApplicationController < ActionController::Base
       
       user = User.find_by_uid(uid)
       user ||= User.find_by_email(user_from_directory[:email]) if user_from_directory[:email]
+      user ||= User.find_by_username(user_from_directory[:email]) if user_from_directory[:email]
       
       if ! user
         user = User.new
