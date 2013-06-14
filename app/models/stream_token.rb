@@ -16,16 +16,20 @@ class StreamToken < ActiveRecord::Base
   class Unauthorized < Exception; end
 
   attr_accessible :token, :target, :expires
-  
+
+  def self.media_token(session)
+    session[:media_token] ||= SecureRandom.hex(16)
+  end
+
   def self.find_or_create_session_token(session, target)
     self.purge_expired!
-    result = self.find_or_create_by_token_and_target(session[:session_id], target)
+    result = self.find_or_create_by_token_and_target(media_token(session), target)
     result.renew!
     result.token
   end
 
   def self.logout!(session)
-    self.find_all_by_token(session[:session_id]).each &:delete
+    self.find_all_by_token(media_token(session)).each &:delete
   end
 
   def self.purge_expired!
