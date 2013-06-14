@@ -3,7 +3,7 @@ module Avalon
     attr_reader :connection, :base
    
     def initialize(attrs={})
-      provider = Avalon::Authentication::Providers.first[:params]
+      provider = YAML.load(File.read(File.expand_path('../../nuldap_directory.yml',__FILE__))).first[:params]
       bind_attrs = {
         :host => provider[:host],
         :port => provider[:port], :encryption => :simple_tls, 
