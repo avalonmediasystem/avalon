@@ -32,6 +32,12 @@ class Admin::CollectionsController < ApplicationController
       @unit.save( validate:false )
       @oldunit.collections -= [@collection]
       @oldunit.save(validate: false)
+    end
+    @collection.managers.clear
+    @collection.managers =  find_managers!( params )
+    
+    before_save
+    if @collection.update_attributes(params[:collection])
       respond_with @collection do |format|
         format.html{ redirect_to [@parent_name, @collection] }
       end
