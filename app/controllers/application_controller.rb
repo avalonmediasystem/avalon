@@ -39,50 +39,14 @@ class ApplicationController < ActionController::Base
     logger.debug session.inspect
   end
 
-
-  # To be used with CanCan and load_and_authorize_resource (macro loads and sets instance variable @model_name)
-  # POST /collections?media_object_ids=1,2,3,4
-  # POST /collections?subcollection_ids=1,2,3,4
-  # @collection.media_objects and @collection.subcollection_ids are pre-loaded
-  # before controller#create, controller#update, controller#edit
-  def load_and_authorize_nested_models
-    model_name       = controller_name.classify.downcase
-    model            = instance_variable_get "@#{model_name}"
-
-    params[model_name.to_sym].each do |name, value|
-      match = /(.+)_ids$/.match(name).try :captures
-      if match
-        association_ids        = value
-        association_name       = match.first
-        association_klass      = association_name.classify.constantize
-        association_collection = association_ids.split(',').map do |association_id|
-          next if ! association_id.include?(':')
-          association = association_klass.find(association_id)
-          authorize! :read, association
-        end.compact
-
-        model.clear_relationship(:has_collection_member)
-        association_collection.each do |association| 
-          model.add_relationship(:has_collection_member, "info:fedora/#{association.pid}")
-        end
-        
-        model.send("#{association_name.pluralize}=".to_sym, association_collection)
-      end
-    end if params[model_name.to_sym]
-  end
-
   def set_parent_name!
     @parent_name =  params[:controller].to_s.split('/')[-2..-2].try :first
   end
 
   def find_managers!(params)
-    user_search = Avalon::UserSearch.new
+    Select2::Autocomplete.param_to_array(params[:managers]).map do |uid|
 
-    manager_uids = params[:managers].split(',')
-    manager_uids.delete('multiple')
-    manager_uids.map do |uid|
-
-      user_from_directory = user_search.find_by_uid( uid )
+      user_from_directory = Avalon::UserSearch.new.find_by_uid( uid )
       raise "Could not find user in directory with uid: #{uid}" unless user_from_directory
       
       user = User.find_by_uid(uid)
@@ -101,7 +65,6 @@ class ApplicationController < ActionController::Base
       user.save!
 
       user
-    end
-  
+    end if params[:managers]
   end
 end

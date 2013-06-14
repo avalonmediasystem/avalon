@@ -23,8 +23,7 @@
     <table class='table table-striped'>
       <thead>
         <th> <%= sort_link :name %> </th>
-        <th> Unit </th>
-        <th> Number of Items </th>
+        <th> Number of Media Objects</th>
         <th> <%= sort_link :created_at, class: 'headerSortUp' %></th>
         <th> Actions</th>
       </thead>
@@ -32,14 +31,6 @@
         <% @collections.each do |collection| %>
           <tr>
             <td> <%= link_to collection.name, polymorphic_path([@parent_name, collection]) %> </td>
-            <td> 
-              <% if collection.unit.present? %> 
-                <%= link_to collection.unit.name, polymorphic_path([@parent_name, collection.unit]) %>
-              <% else %>
-                -
-              <% end %>
-            </td>
-
             <td> <%= collection.media_objects_count %> </td>
             <td>
               <%= collection.created_at.strftime '%m/%d/%Y %l:%M %p' %>
@@ -52,19 +43,7 @@
         <% end %>
       </tbody>
     </table>
-
-
-    <div class="row record-padding">
-      <div class="span9"> 
-        <div class="pagination">
-          
-        </div>
-      </div>
-    </div>
-
 <% end %>
-
-
 </div>
 
 <% content_for :page_scripts do %>

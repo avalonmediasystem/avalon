@@ -22,11 +22,10 @@
 
     <table class='table table-striped'>
       <thead>
-        <th> <%= sort_link :name %> </th>
-        <th> Manager(s) </th>
-        <th> Collections </th>
-        <th> <%= sort_link :created_at, class: 'headerSortUp' %></th>
-        <th> Actions</th>
+        <th> Name </th>
+        <th> Number of Collections </th>
+        <th> Created At </th>
+        <th> Actions </th>
       </thead>
       <tbody>
         <% @units.each do |unit| %>

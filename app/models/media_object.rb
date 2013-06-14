@@ -30,6 +30,8 @@ class MediaObject < ActiveFedora::Base
 
   after_create :after_create
   
+  attr_accessor :single_collection
+
   # Before saving put the pieces into the right order and validate to make sure that
   # there are no syntactic errors
   before_save 'set_media_types!'

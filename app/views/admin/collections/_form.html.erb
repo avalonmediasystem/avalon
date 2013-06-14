@@ -4,7 +4,7 @@
   
   <fieldset>
     <%= f.text_field :name %>
-    <%= f.collection_select(:unit_id, nil, Unit.all, :id, :name, include_blank: true  ) %>
+
     <%= label_tag  'manager_ids', 'Managers' %>
     <%= hidden_field_tag 'managers', :multiple %>
     <%= label_tag  'media_object_ids', 'Media' %>

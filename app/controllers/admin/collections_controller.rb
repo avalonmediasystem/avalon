@@ -46,19 +46,20 @@ class Admin::CollectionsController < ApplicationController
   end
 
   def autocomplete
+    authorize! :manage, Collection
     solr_search_params_logic  = {}
     filter_for_collection_objects(solr_search_params_logic)
     collection_response = ActiveFedora::SolrService.query("name_t:#{params[:q]}*", solr_search_params_logic)
-    collections = collection_response.map{|m| MediaObject.find( m['id'] ) }
-
-    collections_as_json = collections.map do |collection|
-      Select2::Autocomplete.as_json(collection.id, collection.name, collection.thumbnail_urls(4) )
+    collections = collection_response.map do |c|
+      collection = Collection.find( c['id'] )
+      Select2::Autocomplete.as_json(collection.id, collection.name)
     end
 
-    render json: { media_objects: media_objects_as_json }
+    render json: { collections: collections }
   end
 
   private
+
 
     def after_load
       unit_id = params[:collection].delete(:unit_id)
@@ -68,15 +69,25 @@ class Admin::CollectionsController < ApplicationController
       else
         @unit = nil
       end
-      
-      @collection.managers =  find_managers!( params )
     end
 
-    def after_save
-      if @unit.present?
-        @unit.reload
-        @unit.collection = @collection
-        @unit.save( validate: false )
+    def before_save
+      @new_media_objects = Select2::Autocomplete.param_to_array(params[:collection].delete(:media_object_ids)).map do |media_object_pid|
+        media_object = MediaObject.find(media_object_pid)
+        authorize! :manage, media_object
+        media_object
+      end
+
+      @old_media_objects = @collection.media_objects.map{|media_object| media_object unless @new_media_objects.include?( media_object ) }.compact
+
+      @new_media_objects.each do |media_object|
+        @collection.add_relationship(:has_collection_member, "info:fedora/#{media_object.pid}")
+        @collection.media_objects << media_object
+      end
+      
+      @old_media_objects.each do |media_object|
+        @collection.remove_relationship(:has_collection_member, "info:fedora/#{media_object.pid}")   
+        @collection.media_objects.delete media_object
       end
     end
 

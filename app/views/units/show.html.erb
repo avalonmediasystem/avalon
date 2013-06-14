@@ -30,7 +30,10 @@
     <dt>Collections: </dt>
     <dd>
       <% if @unit.collections.count > 0 %>
-        <%= @unit.collections.map{ |c| c.name}.join(', ') %>
+        <% @unit.collections.each do |collection| %>
+          <%= link_to collection.name, polymorphic_path([@parent_name, collection]) %>
+          <br/>
+        <% end %>
       <% else %>
         -
       <% end %>

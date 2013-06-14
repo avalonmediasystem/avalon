@@ -16,10 +16,13 @@
   
 <hr/>
 
-<h4> Unit </h4>
+<h4> Units </h4>
 <div class='inner-section'>
-  <% if @collection.unit && @collection.unit.name.present? %>
-    <%= link_to @collection.unit.name, polymorphic_path([@parent_name, @collection.unit]) %>
+  <% if @collection.units.count > 0 %>
+    <% @collection.units.each do |unit| %>
+      <%= link_to unit.name, polymorphic_path([@parent_name, unit]) %>
+      <br/>
+    <% end %>
   <% else %>
     -
   <% end %>

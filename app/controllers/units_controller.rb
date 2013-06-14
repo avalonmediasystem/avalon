@@ -1,8 +1,8 @@
 require "role_controls"
 class UnitsController < ApplicationController
   before_filter :authenticate_user!, :set_parent_name!
-  before_filter 
   load_and_authorize_resource
+  before_filter :before_save, only: [:create, :update]
   respond_to :html
   responders :flash
 
@@ -11,9 +11,9 @@ class UnitsController < ApplicationController
   end
 
   def create
-    @unit = Unit.new(params[:unit])
+    @unit.created_by_user_id = current_user.user_key
     @unit.managers =  find_managers!( params )
-
+    after_save
     if @unit.save
       respond_with @unit do |format|
         format.html { redirect_to [@parent_name, @unit] }
@@ -24,12 +24,12 @@ class UnitsController < ApplicationController
   end
 
   def update
-    @unit = Unit.find(params[:id])
     @unit.name = params[:unit][:name]
     @unit.managers.clear
     @unit.managers =  find_managers!( params )
 
-    if @unit.valid? && @unit.save!
+    if @unit.save
+      after_save
       respond_with @unit do |format|
         format.html { redirect_to [@parent_name, @unit] }
       end
@@ -40,6 +40,10 @@ class UnitsController < ApplicationController
   end
 
   def destroy
+    @unit.collections.each do |collection|
+      collection.remove_relationship(:is_part_of, "info:fedora/#{@unit.pid}")
+    end
+
     @unit.destroy
     respond_with @unit do |format|
       format.html { redirect_to [@parent_name, @unit] }

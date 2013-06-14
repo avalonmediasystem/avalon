@@ -7,7 +7,7 @@
 
   <% collections = Collection.find_all_by_manager_id(current_user.id).to_a %>
   <% if collections.count > 0 %>
-    <%= select_tag(:collections, options_from_collection_for_select(collections, :id, :name ) ) %>
+    <%= media.select(:single_collection, options_from_collection_for_select(collections, :id, :name ) ) %>
   <% end %>
 
   <br/>

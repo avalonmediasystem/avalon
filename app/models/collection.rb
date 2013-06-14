@@ -5,7 +5,7 @@ class Collection < ActiveFedora::Base
   include Hydra::ModelMixins::RightsMetadata
   include Avalon::ManagerAssociation
 
-  belongs_to :unit, class_name: 'Unit', property: :is_part_of
+  has_and_belongs_to_many :units, class_name: 'Unit', property: :is_part_of
   has_and_belongs_to_many :media_objects, property: :has_collection_member, class_name: 'MediaObject'
   has_metadata name: 'descMetadata', type: Hydra::ModsCollection
   has_metadata name: 'rightsMetadata', type: Hydra::Datastream::RightsMetadata 
@@ -16,7 +16,6 @@ class Collection < ActiveFedora::Base
   before_save :populate_dependent_attributes!
 
   validates :name, :uniqueness => { :solr_name => 'name_t'}, presence: true
-  validates :unit, inclusion: { in: Proc.new{ Unit.all } }, allow_nil: true
   
   delegate :name, to: :descMetadata, :unique => true
   delegate :media_objects_count, to: :objectMetadata
@@ -30,15 +29,6 @@ class Collection < ActiveFedora::Base
 
   def created_at
     @created_at ||= DateTime.parse(create_date)
-  end
-
-  def thumbnail_urls( number = 1 )
-    media_objects.map.take(number) do |media_object|
-      iter += 1
-      if iter < number
-        media_object.thumbnail_url
-      end
-    end.compact
   end
 
   def to_solr(solr_doc = Hash.new, opts = {})

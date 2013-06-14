@@ -3,14 +3,25 @@
 <%= twitter_bootstrap_form_for @unit, url: polymorphic_path([ @parent_name, @unit ]) do |f| %>
   
   <fieldset>
-  <%= f.text_field :name %>
-  <%= label_tag  'manager_ids', 'Managers' %>
-  <%= hidden_field_tag 'managers', :multiple %>
-  <hr/>
-  <div class='control-group'>
-  <%= link_to 'Cancel', :back, class: 'btn' %>
-  <%= submit_tag params[:action] == 'edit' ? 'Update' : 'Save', class: "btn" %>
-  </div>
+    <div class='control-group'>
+      <%= f.text_field :name %>
+    </div>
+
+    <div class='control-group'>
+      <%= label_tag  'manager_ids', 'Managers' %>
+      <%= hidden_field_tag 'managers', :multiple %>
+    </div>
+    
+    <div class='control-group'>
+      <%= label_tag 'collection_ids', 'Collections' %>
+      <%= hidden_field_tag 'unit[collection_ids]', :multiple %>
+    </div>
+
+    <hr/>
+    <div class='control-group'>
+      <%= link_to 'Cancel', :back, class: 'btn' %>
+      <%= submit_tag params[:action] == 'edit' ? 'Update' : 'Save', class: "btn" %>
+    </div>
   </fieldset>
 <% end %>
 
@@ -20,11 +31,12 @@
   $(document).ready(function(){
     var admin_user_search_path          = "<%= admin_user_search_path %>";
     var autocomplete_admin_collections_path  = "<%= autocomplete_admin_collections_path %>";
-    var users_selected = <%= @unit.managers.map{|m| Avalon::UserSearchService.format_autocomplete_entry( uid: m.uid || m.username, full_name: m.full_name, email: m.email )  }.to_json.html_safe %>
-    var collection_selected = <%= @unit.collections.map {|collection| Select2::Autocomplete.as_json( collection.id, collection.name )}.to_json.html_safe %>
 
-    new UserSelectBox(users_selected, admin_user_search_path )
-    new CollectionSelectBox(collection_selected, autocomplete_admin_collections_path)
+    var users_selected = <%= @unit.managers.map{|m| Avalon::UserSearch.format_autocomplete_entry( uid: m.uid, full_name: m.full_name, email: m.email )  }.to_json.html_safe %>;
+    var collections_selected = <%= @unit.collections.map{|c| Select2::Autocomplete.as_json(c.id, c.name)}.to_json.html_safe %>;
+
+    new UserSelectBox(admin_user_search_path, users_selected)
+    new CollectionSelectBox('#unit_collection_ids', autocomplete_admin_collections_path, collections_selected)
   })
   </script>
 <% end %>

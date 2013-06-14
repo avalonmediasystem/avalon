@@ -7,6 +7,12 @@ module Select2
       }.merge( opts )
     end
 
+    def self.param_to_array(param)
+      return [] if param.empty? || param == '[]' || param == 'multiple'
+      return [param] unless param.include?(',')
+      param.split(',') - ['multiple']
+    end
+
   end
 
 end
