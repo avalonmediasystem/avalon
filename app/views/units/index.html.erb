@@ -32,6 +32,8 @@
           <tr>
             <td> <%= link_to unit.name, polymorphic_path([@parent_name, unit]) %> </td>
             <td> <%= unit.managers.map(&:unique_name).join(', ') %> </td>
+            <td> <%= unit.collections.count %> </td>
+            <td> <%= unit.created_at.strftime '%m/%d/%Y %l:%M %p' %></td>
             <td>
               <ul class="inline">
               <% unit.collections.each do |collection| %>
