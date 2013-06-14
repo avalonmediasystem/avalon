@@ -14,11 +14,14 @@ collection_manager:
   - j-rudder@northwestern.edu
   - stefanelnabli@northwestern.edu
   - adam.t.hallett@gmail.com
+  - adam.hallett@northwestern.edu
   - claire-stewart@northwestern.edu
   - stubaker@northwestern.edu
   - k-miller3@northwestern.edu
   - brendan-quinn@northwestern.edu
+  - evilensky@northwestern.edu
 group_manager:
+  - adam.hallett@northwestern.edu
   - archivist1@example.com
   - pdinh
   - cjcolvar
@@ -33,3 +36,4 @@ group_manager:
   - stefanelnabli@northwestern.edu
   - adam.t.hallett@gmail.com
   - brendan-quinn@northwestern.edu
+  - evilensky@northwestern.edu
