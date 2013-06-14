@@ -26,7 +26,17 @@ class Ability
     
 		if @user_groups.include? "group_manager"
 		  can :manage, Admin::Group
+      can :manage, Unit
+      can :manage, Collection
 		end
+
+    can :manage, Collection do |collection|
+      can_manage = false
+      if collection.managers.include?(@user)
+        can_manage = true
+      end
+      can_manage
+    end
 	end
 
   def custom_permissions(user=nil, session=nil)

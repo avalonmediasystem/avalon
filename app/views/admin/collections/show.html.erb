@@ -1,0 +1,72 @@
+<div class='container'>
+  <div class='inline-block'>
+    <h3> <%= @collection.name %>
+    <div class='pull-right'>
+      <div class='btn-group'>
+        <%= link_to 'Edit', edit_polymorphic_path([@parent_name, @collection]), class: 'btn pull-right' %>
+      </div>
+
+      <div class='btn-group'>
+        <%= link_to 'Delete', polymorphic_path([@parent_name, @collection]), method: :delete, confirm: "Are you sure you want to delete: #{@collection.name}", class: 'btn btn-danger pull-right' %>
+      </div>
+    </div>
+  </div>
+</h3>
+<div class='clearfix'></div>
+  
+<hr/>
+
+<h4> Units </h4>
+<div class='inner-section'>
+  <% if @collection.units.count > 0 %>
+    <% @collection.units.each do |unit| %>
+      <%= link_to unit.name, polymorphic_path([@parent_name, unit]) %>
+      <br/>
+    <% end %>
+  <% else %>
+    -
+  <% end %>
+</div>
+
+<h4> Managers </h4>
+<div class='inner-section'>
+  <% if @collection.managers.count > 0 %>
+    <%= @collection.managers.map(&:full_name).join(', ') %>
+  <% else %>
+    -
+  <% end %>
+</div>
+
+<h4> Media </h4>
+<div class='inner-section'>
+  <% if @collection.media_objects.count > 0 %>
+    <table class='media-objects table'>
+      <thead>
+        <th/>
+        <th>Title</th>
+        <th>Creator</th>
+        <th>Publication Date</th>
+      </thead>
+      <tbody>
+        <% @collection.media_objects.each do |media_object| %>
+          <tr>
+            <td> 
+              <%= link_to media_object_path(media_object) do  %>
+                <img class='media-object img-circle' height='50' width='50' src="<%= media_object.thumbnail_url %>"/>  
+              <% end %>
+            </td>
+            <td> <%= link_to media_object.title, media_object_path(media_object) %>  </td>
+            <td> <%= media_object.creator.join(', ') %> </td>
+            <td> <%= media_object.date_issued %> </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    There are not any media objects attached to this collection.
+  <% end %>
+</div>
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'notifications' %>
+<% end %>

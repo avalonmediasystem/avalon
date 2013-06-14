@@ -24,6 +24,9 @@ module Avalon
   Configuration = DEFAULT_CONFIGURATION.deep_merge(YAML::load(File.read(Rails.root.join('config', 'avalon.yml')))[env])
   ['dropbox','matterhorn','mediainfo','email','streaming'].each { |key| Configuration[key] ||= {} }
   DropboxService = Dropbox.new Avalon::Configuration['dropbox']['path']
+
+  user_search_class = Avalon::Configuration['users']['user_search'].to_s.classify
+  UserSearchService ||= UserSearch.const_get(user_search_class.to_sym)
   
   begin
     mipath = Avalon::Configuration['mediainfo']['path']

@@ -3,8 +3,10 @@ Avalon::Application.routes.draw do
 #  HydraHead.add_routes(self)
 
   #Blacklight catalog routes
+  match 'auto/opensearch' => 'catalog#something'
   match "catalog/facet/:id", :to => 'catalog#facet', :as => 'catalog_facet'
   match "catalog", :to => 'catalog#index', :as => 'catalog_index'
+
 
   root :to => "catalog#index"
 
@@ -44,6 +46,22 @@ Avalon::Application.routes.draw do
 
   resources :admin, only: [:index]
   namespace :admin do
+    resources :media_objects, only: [] do 
+      collection do 
+        get 'autocomplete'
+      end
+    end
+    resources :units do
+      member do
+        get 'edit'
+      end
+    end
+    resources :collections  do
+      collection do 
+        get 'autocomplete'
+      end
+    end
+    match 'users/search' => 'users#search', :as => :user_search
     resources :groups, except: [:show] do 
       collection do 
         put 'update_multiple'

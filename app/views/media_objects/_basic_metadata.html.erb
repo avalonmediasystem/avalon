@@ -4,6 +4,14 @@
 
 <%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
   <%= hidden_field_tag :step, @active_step %>
+
+  <% collections = Collection.find_all_by_manager_id(current_user.id).to_a %>
+  <% if collections.count > 0 %>
+    <%= media.select(:single_collection, options_from_collection_for_select(collections, :id, :name ) ) %>
+  <% end %>
+
+  <br/>
+  <br>
   
   <%# This is not very DRY for a first pass but that can come once it shows some promise %>
   <%= render partial: 'text_field', 
@@ -79,6 +87,8 @@
   <%= javascript_include_tag 'dynamic_fields' %>
 <script>
   $().ready(function() {
+
+    $('#collection_').select2();
     DynamicFields.initialize();
 
     /* 

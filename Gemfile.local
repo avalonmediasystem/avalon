@@ -1,0 +1,4 @@
+gem 'omniauth-nuldap', :git => "https://github.com/nulib/omniauth-nuldap.git"
+gem 'net-ldap', '0.2.2'
+gem 'mysql2'
+#gem 'rakeshed'

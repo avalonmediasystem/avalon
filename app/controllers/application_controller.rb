@@ -38,4 +38,34 @@ class ApplicationController < ActionController::Base
     logger.debug "<< CURRENT SESSION INFORMATION >>"
     logger.debug session.inspect
   end
+
+  def set_parent_name!
+    @parent_name =  params[:controller].to_s.split('/')[-2..-2].try :first
+  end
+
+  def find_managers!(params)
+    Select2::Autocomplete.param_to_array(params[:managers]).map do |uid|
+
+      user_from_directory = Avalon::UserSearch.new.find_by_uid( uid )
+      raise "Could not find user in directory with uid: #{uid}" unless user_from_directory
+      
+      user = User.find_by_uid(uid)
+      user ||= User.find_by_email(user_from_directory[:email]) if user_from_directory[:email]
+      user ||= User.find_by_username(user_from_directory[:email]) if user_from_directory[:email]
+      
+      if ! user
+        user = User.new
+        user.guest = true
+      end
+
+      # create or update user information based upon what is available
+      user.email = user_from_directory[:email]
+      user.username = user_from_directory[:email] || user_from_directory[:uid] #cannot be blank
+      user.full_name = user_from_directory[:full_name]
+      user.uid = user_from_directory[:uid]
+      user.save!
+
+      user
+    end if params[:managers]
+  end
 end

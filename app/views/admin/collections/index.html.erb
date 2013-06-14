@@ -1,0 +1,51 @@
+<div class='container'>
+  <h3> Collections </h3>
+  <% if @collections.count == 0 %>
+
+    <%= render :partial => 'shared/placeholder', locals: { 
+          content: 'There currently aren\'t any collections.  Click the button below to create one.', link: { name: 'New collection', url: new_polymorphic_path([@parent_name, Collection]) } 
+        } 
+    %>
+
+  <% else %>
+
+    <div class="navbar">
+      <div class="navbar-inner">
+        <%= form_tag polymorphic_path([@parent_name, Collection]), method: 'get', class: 'navbar-form pull-left' do %>
+          <%= hidden_field_tag :direction, params[:direction] %>
+          <%= text_field_tag :search, params[:search], class: 'span2' %>
+          <%= submit_tag 'Search', :class => 'btn'%>
+        <% end %>
+        <%= link_to 'New collection', new_polymorphic_path([@parent_name, Collection]), class: 'btn pull-right' %>
+      </div>
+    </div>
+
+    <table class='table table-striped'>
+      <thead>
+        <th> <%= sort_link :name %> </th>
+        <th> Number of Media Objects</th>
+        <th> <%= sort_link :created_at, class: 'headerSortUp' %></th>
+        <th> Actions</th>
+      </thead>
+      <tbody>
+        <% @collections.each do |collection| %>
+          <tr>
+            <td> <%= link_to collection.name, polymorphic_path([@parent_name, collection]) %> </td>
+            <td> <%= collection.media_objects_count %> </td>
+            <td>
+              <%= collection.created_at.strftime '%m/%d/%Y %l:%M %p' %>
+            </td>
+            <td>
+              <%= link_to "Edit", edit_polymorphic_path([@parent_name, collection]), class:'btn' %>
+              <%= link_to "Delete", polymorphic_path([@parent_name, collection]), method: :delete, confirm: "Are you sure you want to delete: #{collection.name}", class:'btn btn-danger' %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+<% end %>
+</div>
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'notifications' %>
+<% end %>

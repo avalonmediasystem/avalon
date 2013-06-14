@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130211152936) do
+ActiveRecord::Schema.define(:version => 20130528195130) do
 
   create_table "bookmarks", :force => true do |t|
     t.integer  "user_id",     :null => false
@@ -80,6 +80,18 @@ ActiveRecord::Schema.define(:version => 20130211152936) do
     t.integer "user_id", :null => false
   end
 
+  create_table "units", :force => true do |t|
+    t.string   "name",               :limit => 100
+    t.text     "created_by_user_id"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
+  end
+
+  create_table "units_users", :id => false, :force => true do |t|
+    t.integer "unit_id"
+    t.integer "user_id"
+  end
+
   create_table "users", :force => true do |t|
     t.string   "username",   :default => "", :null => false
     t.datetime "created_at",                 :null => false
@@ -88,6 +100,7 @@ ActiveRecord::Schema.define(:version => 20130211152936) do
     t.string   "uid"
     t.string   "email"
     t.string   "guest"
+    t.string   "full_name"
   end
 
   add_index "users", ["username"], :name => "index_users_on_username", :unique => true

@@ -1,0 +1,48 @@
+<div class='container'>
+  <div class='inline-block'>
+    <h3> <%= @unit.name %>
+    <div class='pull-right'>
+      <div class='btn-group'>
+        <%= link_to 'Edit', edit_polymorphic_path([@parent_name, @unit]), class: 'btn pull-right' %>
+      </div>
+
+      <div class='btn-group'>
+        <%= link_to 'Delete', polymorphic_path([@parent_name, @unit]), method: :delete, confirm: "Are you sure you want to delete: #{@unit.name}", class: 'btn btn-danger pull-right' %>
+      </div>
+    </div>
+  </div>
+</h3>
+  <div class='clearfix'></div>
+  
+  <hr/>
+
+  <dl class='dl-horizontal'>
+    <dt>Name:</dt>
+    <dd> <%= @unit.name %></dd>
+    <dt>Managers:</dt>
+    <dd> 
+      <% if @unit.managers.count > 0 %>
+        <%= @unit.managers.map{ |m| m[:full_name] || m[:username] }.join(', ') %>
+      <% else %>
+        -
+      <% end %>
+    </dd>
+    <dt>Collections: </dt>
+    <dd>
+      <% if @unit.collections.count > 0 %>
+        <% @unit.collections.each do |collection| %>
+          <%= link_to collection.name, polymorphic_path([@parent_name, collection]) %>
+          <br/>
+        <% end %>
+      <% else %>
+        -
+      <% end %>
+
+    </dd>
+  </dl>
+
+</div>
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'notifications' %>
+<% end %>

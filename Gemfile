@@ -6,8 +6,11 @@
   gem 'blacklight', '~> 4.0.0' 
   gem 'om', '~>1.8.0'
   gem 'hydra-head', '~> 5.0.0'
-  gem 'rubydora', '< 1.0.0'
-  gem 'active-fedora', '~> 5.0.0'
+  gem 'rubydora', '1.2.0'
+  gem 'active-fedora', '5.4.0'
+
+  gem 'search_sort_paginate'
+  gem 'responders'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git'
   gem 'avalon-engage', git: "https://github.com/avalonmediasystem/avalon-engage.git"
@@ -23,7 +26,7 @@
   end
 
   platforms :ruby do
-    gem 'sqlite3'
+    # gem 'sqlite3'
     gem 'execjs'
     gem 'therubyracer', '= 0.10.2'
   end
@@ -62,6 +65,8 @@
     gem 'twitter_bootstrap_form_for',
       git: "https://github.com/avalonmediasystem/twitter_bootstrap_form_for.git",
       branch: "bootstrap-2.0"
+    gem 'select2-rails'
+    gem 'noty-rails'
   end
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head

@@ -1,0 +1,8 @@
+<div class='container'>
+  <h3> Edit Collection </h3>
+  <%= render partial: 'form' %>
+</div>
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'notifications' %>
+<% end %>
