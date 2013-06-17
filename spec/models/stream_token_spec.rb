@@ -15,5 +15,21 @@
 require 'spec_helper'
 
 describe StreamToken do
-  pending "add some examples to (or delete) #{__FILE__}"
+  let(:target) { '232A9B17-CCA8-4368-9599-117D2AF1D2EC' }
+
+  describe "existing session" do
+    let(:session) { { :session_id => '00112233445566778899aabbccddeeff' } }
+
+    it "should create a token" do
+      StreamToken.find_or_create_session_token(session, target).should =~ /^[0-9a-f]{32}$/
+    end
+  end
+
+  describe "new session" do
+    let(:session) { {} }
+
+    it "should create a token" do
+      StreamToken.find_or_create_session_token(session, target).should =~ /^[0-9a-f]{32}$/
+    end
+  end
 end
