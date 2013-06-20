@@ -1,0 +1,7 @@
+v1.0.1 (2013-06-17)
+  - Hotfix for VOV-1677 Video playback can fail the first time if you start at an item page 
+    in a new browser.
+
+v1.0.0 (2013-04-30)
+  - Initial R1 release
+
