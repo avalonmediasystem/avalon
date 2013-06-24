@@ -13,9 +13,42 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 FactoryGirl.define do
-  factory :user, aliases: [:manager] do
+  factory :user do
     email { Faker::Internet.email }
     username { |u| u.email }
+
+    factory :administrator do
+      after(:create) do |user|
+        begin
+          RoleControls.add_user_role(user.username, 'administrator')
+        rescue
+        end
+      end 
+    end
+    factory :manager do
+      after(:create) do |user|
+        begin
+          RoleControls.add_user_role(user.username, 'manager')
+        rescue
+        end
+      end 
+    end
+    factory :editor do
+      after(:create) do |user|
+        begin
+          RoleControls.add_user_role(user.username, 'editor')
+        rescue
+        end
+      end 
+    end
+    factory :depositor do
+      after(:create) do |user|
+        begin
+          RoleControls.add_user_role(user.username, 'depositor')
+        rescue
+        end
+      end 
+    end
   end 
 
   factory :cataloger, class: User  do

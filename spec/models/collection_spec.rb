@@ -3,8 +3,10 @@ require 'cancan/matchers'
 
 describe Collection do
   before(:each) do
-    @manager = FactoryGirl.create(:content_provider)
-    @collection = FactoryGirl.create(:collection, name: 'Herman B. Wells Collection', unit: "University Archives", description: "Collection about our 11th university president, 1938-1962", managers: [@manager])
+    @manager = FactoryGirl.create(:manager)
+    @editor = FactoryGirl.create(:editor)
+    @editor = FactoryGirl.create(:depositor)
+    @collection = FactoryGirl.create(:collection, name: 'Herman B. Wells Collection', unit: "University Archives", description: "Collection about our 11th university president, 1938-1962", managers: [@manager], editors: [@editor], depositors: [@depositor])
   end
 
   after(:each) do
@@ -14,12 +16,46 @@ describe Collection do
 
   describe 'abilities' do
 
-    subject{ ability }
-    let(:ability){ Ability.new(user) }
-    let(:user){ @collection.managers.first }
+    context 'when administator' do
+      subject{ ability }
+      let(:ability){ Ability.new(user) }
+      let(:user){ FactorGirl.create(:administrator) }
 
-    context 'when unit manager' do
       it{ should be_able_to(:manage, @collection) }
+    end
+
+    context 'when manager' do
+      subject{ ability}
+      let(:ability){ Ability.new(user) }
+      let(:user){ @manager }
+      
+      it{ should be_able_to(:update, @collection) }
+      it{ should be_able_to(:read, @collection) }
+      it{ should_not be_able_to(:create, @collection) }
+      it{ should_not be_able_to(:destroy, @collection) }
+    end
+
+    context 'when editor' do
+      subject{ ability}
+      let(:ability){ Ability.new(user) }
+      let(:user){ @editor }
+
+      #Will need to define new action that covers just the things that an editor is allowed to edit
+      it{ should be_able_to(:read, @collection) }
+      it{ should_not be_able_to(:create, @collection) }
+      it{ should_not be_able_to(:update, @collection) }
+      it{ should_not be_able_to(:destroy, @collection) }
+    end
+
+    context 'when depositor' do
+      subject{ ability}
+      let(:ability){ Ability.new(user) }
+      let(:user){ @depositor }
+
+      it{ should be_able_to(:read, @collection) }
+      it{ should_not be_able_to(:create, @collection) }
+      it{ should_not be_able_to(:update, @collection) }
+      it{ should_not be_able_to(:destroy, @collection) }
     end
   end
 
