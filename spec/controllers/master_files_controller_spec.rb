@@ -19,7 +19,7 @@ describe MasterFilesController do
 
     before(:each) do
       load_fixture 'avalon:video-segment'
-      login_as 'content_provider'
+      @content_provider = login_as 'content_provider', { username: 'jlhardes' }
     end
 
     context "must provide a container id" do
@@ -91,7 +91,7 @@ describe MasterFilesController do
          Filedata: [@file], 
          original: 'any', 
          container_id: 'avalon:video-segment' 
-       master_file = MasterFile.find(:all, order: "created_on ASC").last
+       master_file = MasterFile.all.last
        master_file.file_format.should eq "Moving image" 
              
        flash[:errors].should be_nil
@@ -108,7 +108,7 @@ describe MasterFilesController do
    
         post :create, Filedata: [@file], original: 'any', container_id: 'avalon:video-segment'
          
-        master_file = MasterFile.find(:all, order: "created_on ASC").last
+        master_file = MasterFile.all.last
         mediaobject = MediaObject.find('avalon:video-segment')
         mediaobject.parts.should include master_file
         master_file.mediaobject.pid.should eq('avalon:video-segment')
@@ -126,9 +126,9 @@ describe MasterFilesController do
         end
    
         post :create, Filedata: [@file], original: 'any', container_id: 'avalon:video-segment'
-        master_file = MasterFile.find(:all, order: "created_on ASC").last
+        master_file = MasterFile.all.last
         master_file.edit_groups.should include "collection_manager"
-        master_file.edit_users.should include "archivist2"
+        master_file.edit_users.should include @content_provider.username
       end
     end
   end

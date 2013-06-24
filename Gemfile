@@ -68,7 +68,7 @@
   group :development, :test do 
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano'
-    gem 'database_cleaner'
+    gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm'
     gem 'factory_girl_rails'
     gem 'rspec-rails', '>=2.9.0'
     gem 'pry'
@@ -92,6 +92,7 @@
     gem 'email_spec'
     gem 'capybara'   
     gem 'shoulda-matchers'
+    gem 'faker'
   end
 
   extra_gems = File.expand_path("../Gemfile.local",__FILE__)

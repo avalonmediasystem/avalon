@@ -6,6 +6,13 @@ GIT
       capistrano
 
 GIT
+  remote: https://github.com/atomical/database_cleaner
+  revision: 9f1ad8f041ae070e54ab882fff50743bd56ece28
+  branch: adding_support_for_active_fedora_orm
+  specs:
+    database_cleaner (1.0.1)
+
+GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
   revision: 7ea0ae79b1db1f8301e5251c1d65fc0ee7404186
   specs:
@@ -183,7 +190,6 @@ GEM
     compass-susy-plugin (0.9)
       compass (>= 0.11.1)
     daemons (1.1.9)
-    database_cleaner (0.9.1)
     debugger (1.5.0)
       columnize (>= 0.3.1)
       debugger-linecache (~> 1.2.0)
@@ -216,6 +222,8 @@ GEM
     factory_girl_rails (4.2.1)
       factory_girl (~> 4.2.0)
       railties (>= 3.0.0)
+    faker (1.1.2)
+      i18n (~> 0.5)
     fastercsv (1.5.5)
     ffi (1.6.0)
     font-awesome-sass-rails (3.0.2.2)
@@ -503,7 +511,7 @@ DEPENDENCIES
   coffee-rails (~> 3.2.1)
   compass-rails (~> 1.0.0)
   compass-susy-plugin (~> 0.9.0)
-  database_cleaner
+  database_cleaner!
   debugger
   delayed_job_active_record
   devise
@@ -511,6 +519,7 @@ DEPENDENCIES
   equivalent-xml
   execjs
   factory_girl_rails
+  faker
   felixwrapper!
   font-awesome-sass-rails
   grit

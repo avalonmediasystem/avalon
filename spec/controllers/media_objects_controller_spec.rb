@@ -40,10 +40,10 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should inherit default permissions" do
-        login_as 'content_provider'
+        @content_provider = login_as 'content_provider'
         get 'new'
-        assigns(:mediaobject).edit_groups.should eq ["collection_manager"]
-        assigns(:mediaobject).edit_users.should eq ['archivist2'] 
+        assigns(:mediaobject).edit_groups.should include('collection_manager')
+        assigns(:mediaobject).edit_users.should include(@content_provider.username)
       end
     end
   end
@@ -60,7 +60,7 @@ describe MediaObjectsController, type: :controller do
   
     it "should redirect to show page with a notice when authenticated but unauthorized" do
       load_fixture 'avalon:print-publication'
-      login_as('student')
+      login_as 'student'
       
       get 'edit', id: 'avalon:print-publication'
       flash[:notice].should_not be_nil
@@ -68,7 +68,7 @@ describe MediaObjectsController, type: :controller do
     end
 
     it "should redirect to first workflow step if authorized to edit" do
-       login_as 'content_provider'
+       login_as 'content_provider', {username: 'jlhardes'}
        load_fixture "avalon:print-publication"
 
        get 'edit', id: 'avalon:print-publication'
@@ -89,7 +89,7 @@ describe MediaObjectsController, type: :controller do
         mo.workflow.last_completed_step = 'resource-description'
          
         # Set the task so that it can get to the resource-description step
-        login_as 'content_provider'
+        login_as 'content_provider', {username: 'jlhardes'}
         get :edit, {id: 'avalon:video-segment', step: 'resource-description'}
         response.response_code.should == 200
       end
@@ -116,7 +116,7 @@ describe MediaObjectsController, type: :controller do
         mo.access = "public"
         mo.save
         
-        login_as 'content_provider'
+        login_as 'content_provider', {username: 'jlhardes'}
         get 'show', id: 'avalon:video-segment'
         response.should_not redirect_to new_user_session_path
       end
@@ -186,7 +186,7 @@ describe MediaObjectsController, type: :controller do
 
   describe "#update_status" do
     before(:each) do
-      login_as('content_provider')
+      login_as('content_provider'), {username: 'jlhardes'}
       @media_object = MediaObject.new(pid: 'avalon:status-update')
       request.env["HTTP_REFERER"] = '/'
     end
@@ -222,14 +222,14 @@ describe MediaObjectsController, type: :controller do
     end
 
     it 'can inspect metadata with authorization' do
-      login_as 'content_provider'
+      login_as 'content_provider', {username: 'jlhardes'}
       get 'deliver_content', :id => 'avalon:electronic-resource', :datastream => 'descMetadata'
       response.response_code.should == 200
       response.body.should be_equivalent_to(MediaObject.find('avalon:electronic-resource').descMetadata.content)
     end
 
     it 'returns a not found error for nonexistent datastreams' do
-      login_as 'content_provider'
+      login_as 'content_provider', {username: 'jlhardes'}
       get 'deliver_content', :id => 'avalon:electronic-resource', :datastream => 'nonExistentMetadata'
       response.response_code.should == 404
     end
