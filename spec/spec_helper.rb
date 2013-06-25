@@ -60,6 +60,7 @@ RSpec.configure do |config|
   config.before(:each) do
     Rails.cache.clear
     DatabaseCleaner.start
+    RoleMap.reset!
   end
 
   config.after(:each) do
