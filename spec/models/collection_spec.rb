@@ -5,12 +5,14 @@ describe Collection do
   before(:each) do
     @manager = FactoryGirl.create(:manager)
     @editor = FactoryGirl.create(:editor)
-    @editor = FactoryGirl.create(:depositor)
+    @depositor = FactoryGirl.create(:depositor)
     @collection = FactoryGirl.create(:collection, name: 'Herman B. Wells Collection', unit: "University Archives", description: "Collection about our 11th university president, 1938-1962", managers: [@manager], editors: [@editor], depositors: [@depositor])
   end
 
   after(:each) do
     @manager.destroy
+    @editor.destroy
+    @depositor.destroy
     @collection.destroy
   end
 
@@ -19,7 +21,7 @@ describe Collection do
     context 'when administator' do
       subject{ ability }
       let(:ability){ Ability.new(user) }
-      let(:user){ FactorGirl.create(:administrator) }
+      let(:user){ FactoryGirl.create(:administrator) }
 
       it{ should be_able_to(:manage, @collection) }
     end
@@ -87,27 +89,36 @@ describe Collection do
 
   describe "#managers" do
     it "should return the intersection of edit_users and managers role" do
-      collection = FactoryGirl.build(:collection)
+      collection = Collection.new
       collection.edit_users = ["cjcolvar", "pdinh"]
-      RoleControls.should_receive("users").with("managers").and_return(["cjcolvar", "atomical"])
-      collection.managers.should == ["cjcolvar"]  #collection.edit_users & RoleControls.users("managers")
+      RoleControls.should_receive("users").with("manager").and_return(["cjcolvar", "atomical"])
+      collection.managers.should == ["cjcolvar"]  #collection.edit_users & RoleControls.users("manager")
     end
+  end
+  describe "#managers=" do
+    pending it "should add user to collection's edit_users and the manager role"
   end
   describe "#editors" do
     it "should return the intersection of edit_users and editors role" do
-      collection = FactoryGirl.build(:collection)
+      collection = Collection.new
       collection.edit_users = ["cjcolvar", "pdinh"]
-      RoleControls.should_receive("users").with("editors").and_return(["pdinh", "mbklein"])
-      collection.editors.should == ["pdinh"]  #collection.edit_users & RoleControls.users("editors")
+      RoleControls.should_receive("users").with("editor").and_return(["pdinh", "mbklein"])
+      collection.editors.should == ["pdinh"]  #collection.edit_users & RoleControls.users("editor")
     end
+  end
+  describe "#editors=" do
+    pending it "should add user to collection's edit_users and the editor role"
   end
   describe "#depositors" do
     it "should return the intersection of default_edit_users and depositors role" do
-      collection = FactoryGirl.build(:collection)
-      collection.default_edit_users = ["cjcolvar", "pdinh"]
-      RoleControls.should_receive("users").with("depositors").and_return(["pdinh", "mbklein"])
-      collection.depositors.should == ["pdinh"]  #collection.default_edit_users & RoleControls.users("depositors")
+      collection = Collection.new
+      collection.defaultRights.permissions({user: ["cjcolvar", "pdinh"]}, "edit")
+      RoleControls.should_receive("users").with("depositor").and_return(["pdinh", "mbklein"])
+      collection.depositors.should == ["pdinh"]  #collection.default_edit_users & RoleControls.users("depositor")
     end
+  end
+  describe "#depositors=" do
+    pending it "should add user to collection's default rights edit users and the depositor role"
   end
 end
 
