@@ -2,19 +2,8 @@ require 'spec_helper'
 require 'cancan/matchers'
 
 describe Collection do
-  before(:each) do
-    @manager = FactoryGirl.create(:manager)
-    @editor = FactoryGirl.create(:editor)
-    @depositor = FactoryGirl.create(:depositor)
-    @collection = FactoryGirl.create(:collection, name: 'Herman B. Wells Collection', unit: "University Archives", description: "Collection about our 11th university president, 1938-1962", managers: [@manager], editors: [@editor], depositors: [@depositor])
-  end
-
-  after(:each) do
-    @manager.destroy
-    @editor.destroy
-    @depositor.destroy
-    @collection.destroy
-  end
+  subject {collection}
+  let(:collection) {FactoryGirl.create(:collection)}
 
   describe 'abilities' do
 
@@ -23,46 +12,50 @@ describe Collection do
       let(:ability){ Ability.new(user) }
       let(:user){ FactoryGirl.create(:administrator) }
 
-      it{ should be_able_to(:manage, @collection) }
+      it{ should be_able_to(:manage, collection) }
     end
 
     context 'when manager' do
       subject{ ability}
       let(:ability){ Ability.new(user) }
-      let(:user){ @manager }
+      let(:user){ FactoryGirl.create(:manager) }
       
-      it{ should be_able_to(:update, @collection) }
-      it{ should be_able_to(:read, @collection) }
-      it{ should_not be_able_to(:create, @collection) }
-      it{ should_not be_able_to(:destroy, @collection) }
+      it{ should be_able_to(:update, collection) }
+      it{ should be_able_to(:read, collection) }
+      it{ should_not be_able_to(:create, collection) }
+      it{ should_not be_able_to(:destroy, collection) }
     end
 
     context 'when editor' do
       subject{ ability}
       let(:ability){ Ability.new(user) }
-      let(:user){ @editor }
+      let(:user){ FactoryGirl.create(:editor) }
 
       #Will need to define new action that covers just the things that an editor is allowed to edit
-      it{ should be_able_to(:read, @collection) }
-      it{ should_not be_able_to(:create, @collection) }
-      it{ should_not be_able_to(:update, @collection) }
-      it{ should_not be_able_to(:destroy, @collection) }
+      it{ should be_able_to(:read, collection) }
+      it{ should_not be_able_to(:create, collection) }
+      it{ should_not be_able_to(:update, collection) }
+      it{ should_not be_able_to(:destroy, collection) }
     end
 
     context 'when depositor' do
       subject{ ability}
       let(:ability){ Ability.new(user) }
-      let(:user){ @depositor }
+      let(:user){ FactoryGirl.create(:depositor) }
 
-      it{ should be_able_to(:read, @collection) }
-      it{ should_not be_able_to(:create, @collection) }
-      it{ should_not be_able_to(:update, @collection) }
-      it{ should_not be_able_to(:destroy, @collection) }
+      it{ should be_able_to(:read, collection) }
+      it{ should_not be_able_to(:create, collection) }
+      it{ should_not be_able_to(:update, collection) }
+      it{ should_not be_able_to(:destroy, collection) }
     end
   end
 
   describe 'validations' do
-    subject {@collection}
+    subject {wells_collection}
+    let(:wells_collection) {FactoryGirl.create(:collection, name: 'Herman B. Wells Collection', unit: "University Archives", description: "Collection about our 11th university president, 1938-1962", managers: [manager], editors: [editor], depositors: [depositor])}
+    let(:manager) {FactoryGirl.create(:manager)}
+    let(:editor) {FactoryGirl.create(:editor)}
+    let(:depositor) {FactoryGirl.create(:depositor)}
     let(:unit_names) {["University Archives", "Black Film Center/Archive"]}
 
     it {should validate_presence_of(:name)}
@@ -73,8 +66,8 @@ describe Collection do
     its(:name) {should == "Herman B. Wells Collection"}
     its(:unit) {should == "University Archives"}
     its(:description) {should == "Collection about our 11th university president, 1938-1962"}
-    its(:created_at) {should == DateTime.parse(@collection.create_date)}
-    its(:managers) {should == [@manager]}
+    its(:created_at) {should == DateTime.parse(wells_collection.create_date)}
+    its(:managers) {should == [manager]}
 
     its(:rightsMetadata) {should be_kind_of Hydra::Datastream::RightsMetadata}
     its(:defaultRights) {should be_kind_of Hydra::Datastream::InheritableRightsMetadata}
@@ -83,7 +76,8 @@ describe Collection do
   describe "#to_solr" do
     it "should solrize important information" do
      map = Solrizer::FieldMapper::Default.new
-     @collection.to_solr[ map.solr_name(:name, :string, :searchable).to_sym ].should == "Herman B. Wells Collection"
+     collection.name = "Herman B. Wells Collection"
+     collection.to_solr[ map.solr_name(:name, :string, :searchable).to_sym ].should == "Herman B. Wells Collection"
     end
   end
 
