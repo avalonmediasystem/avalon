@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/atomical/database_cleaner
-  revision: 9f1ad8f041ae070e54ab882fff50743bd56ece28
+  revision: 3e6cba18b6cfb2b241a04db6a41cf5c70a07d0df
   branch: adding_support_for_active_fedora_orm
   specs:
     database_cleaner (1.0.1)
@@ -272,7 +272,7 @@ GEM
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
     json (1.8.0)
-    kaminari (0.14.1)
+    kaminari (0.14.0)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
     kgio (2.8.0)
@@ -374,7 +374,7 @@ GEM
       nokogiri
       rubyzip
       spreadsheet (> 0.6.4)
-    rsolr (1.0.9)
+    rsolr (1.0.8)
       builder (>= 2.1.2)
     rspec (2.13.0)
       rspec-core (~> 2.13.0)
