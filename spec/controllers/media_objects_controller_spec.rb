@@ -186,7 +186,7 @@ describe MediaObjectsController, type: :controller do
 
   describe "#update_status" do
     before(:each) do
-      login_as('content_provider'), {username: 'jlhardes'}
+      login_as 'content_provider', {username: 'jlhardes'}
       @media_object = MediaObject.new(pid: 'avalon:status-update')
       request.env["HTTP_REFERER"] = '/'
     end

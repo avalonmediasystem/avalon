@@ -142,7 +142,10 @@ describe MasterFilesController do
         Rubyhorn.stub_chain(:client,:instance_xml).and_return(doc)
         Rubyhorn.stub_chain(:client,:get).and_return(nil)
         Rubyhorn.stub_chain(:client,:stop).and_return(true)
-        mf = MasterFile.create!
+        mf = MasterFile.new
+        mf.thumbnail.mimeType = 'image/png'
+        mf.thumbnail.content = 'PNG'
+        mf.save 
         mo = MediaObject.new
         mo.save(validate: false)
         mf.mediaobject = mo

@@ -6,8 +6,8 @@
   gem 'blacklight', '~> 4.0.0' 
   gem 'om', '~>1.8.0'
   gem 'hydra-head', '~> 5.0.0'
-  gem 'rubydora', '< 1.0.0'
-  gem 'active-fedora', '~> 5.0.0'
+  gem 'rubydora', '~> 1.2.0'
+  gem 'active-fedora', '~> 5.4.0'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git'
   gem 'avalon-engage', git: "https://github.com/avalonmediasystem/avalon-engage.git"
