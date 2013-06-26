@@ -1,4 +1,5 @@
 class Collection < ActiveFedora::Base
+  include Hydra::ModelMixins::CommonMetadata
   include ActiveFedora::Associations
   include Hydra::ModelMixins::RightsMetadata
 
@@ -8,8 +9,7 @@ class Collection < ActiveFedora::Base
     sds.field :unit, :string
     sds.field :description, :string
   end
-  has_metadata name: 'rightsMetadata', type: Hydra::Datastream::RightsMetadata, autocreate: true 
-  has_metadata name: 'defaultRights', type: Hydra::Datastream::InheritableRightsMetadata, autocreate: true
+  has_metadata name: 'defaultRights', type: Hydra::Datastream::InheritableRightsMetadata
 
   validates :name, :uniqueness => { :solr_name => 'name_t'}, presence: true
   validates :unit, presence: true, inclusion: ["University Archives", "Black Film Center/Archive"] 
@@ -29,25 +29,41 @@ class Collection < ActiveFedora::Base
   end
 
   def managers
-    edit_users & RoleControls.users("manager") 
+    (edit_users & RoleControls.users("manager")).map {|u| User.where(username: u).first}.compact
   end
 
   def managers= users
-    users.each do |u|
-      rightsMetadata.permissions({user: u.username}, "edit")
-      RoleControls.add_user_role(u.username, 'manager') unless RoleControls.user_roles(u.username).include? "manager"
-    end
+    old_managers = managers
+    users.each {|u| add_manager u}
+    (old_managers - users).each {|u| remove_manager u}
+  end
+
+  def add_manager user
+    rightsMetadata.update_permissions({"person" => {user.username => "edit"}}) if RoleControls.user_roles(user.username).include?("manager")
+  end
+
+  def remove_manager user
+    rightsMetadata.update_permissions({"person" => {user.username => "none"}}) if RoleControls.user_roles(user.username).include?("manager")
   end
 
   def editors
-    edit_users & RoleControls.users("editor") 
+    (edit_users & RoleControls.users("editor")).map {|u| User.where(username: u).first}.compact
   end
 
   def editors= users
-    users.each do |u|
-      rightsMetadata.permissions({user: u.username}, "edit")
-      RoleControls.add_user_role(u.username, 'editor') unless RoleControls.user_roles(u.username).include? "editor"
-    end
+    old_editors = editors
+    users.each {|u| add_editor u}
+    (old_editors - users).each {|u| remove_editor u}
+  end
+
+  def add_editor user
+    rightsMetadata.update_permissions({"person" => {user.username => "edit"}})
+    RoleControls.add_user_role(user.username, 'editor') unless RoleControls.user_roles(user.username).include?("editor")
+  end
+
+  def remove_editor user
+    rightsMetadata.update_permissions({"person" => {user.username => "none"}})
+    RoleControls.remove_user_role(user.username, 'editor') unless Collection.where("edit_access_person_t" => user.username).first
   end
 
   def depositors

@@ -81,28 +81,130 @@ describe Collection do
     end
   end
 
-  describe "#managers" do
-    it "should return the intersection of edit_users and managers role" do
-      collection = Collection.new
-      collection.edit_users = ["cjcolvar", "pdinh"]
-      RoleControls.should_receive("users").with("manager").and_return(["cjcolvar", "atomical"])
-      collection.managers.should == ["cjcolvar"]  #collection.edit_users & RoleControls.users("manager")
+  describe "managers" do
+    let(:user) {FactoryGirl.create(:manager)}
+    let(:collection) {Collection.new}
+
+    describe "#managers" do
+      it "should return the intersection of edit_users and managers role" do
+        collection.edit_users = [user.username, "pdinh"]
+        RoleControls.should_receive("users").with("manager").and_return([user.username, "atomical"])
+        collection.managers.should == [user]  #collection.edit_users & RoleControls.users("manager")
+      end
+    end
+    describe "#managers=" do
+      it "should add managers to the collection" do
+        manager_list = [FactoryGirl.create(:manager), FactoryGirl.create(:manager)]
+        collection.managers = manager_list
+        collection.managers.should == manager_list
+      end
+      it "should call add_manager" do
+        manager_list = [FactoryGirl.create(:manager), FactoryGirl.create(:manager)]
+        collection.should_receive("add_manager").with(manager_list[0])
+        collection.should_receive("add_manager").with(manager_list[1])
+        collection.managers = manager_list
+      end
+      it "should remove managers from the collection" do
+        collection.add_manager(user)
+        manager_list = [FactoryGirl.create(:manager), FactoryGirl.create(:manager)]
+        collection.managers = manager_list
+        collection.managers.should == manager_list
+      end
+      it "should call remove_manager" do
+        collection.add_manager(user)
+        collection.should_receive("remove_manager").with(user)
+        collection.managers = [FactoryGirl.create(:manager)]
+      end
+    end
+    describe "#add_manager" do
+      it "should give edit access to the collection" do
+        collection.add_manager(user)
+        collection.edit_users.should include(user.username)
+        collection.managers.should include(user)
+      end
+      it "should not add users who do not have the manager role" do
+        not_manager = FactoryGirl.create(:user)
+        collection.add_manager(not_manager)
+        collection.managers.should_not include(not_manager)
+      end
+    end
+    describe "#remove_manager" do
+      it "should revoke edit access to the collection" do
+        collection.remove_manager(user)
+        collection.edit_users.should_not include(user.username)
+        collection.managers.should_not include(user)
+      end
+      it "should not remove users who do not have the manager role" do
+        not_manager = FactoryGirl.create(:user)
+        collection.edit_users = [not_manager.username]
+        collection.remove_manager(not_manager)
+        collection.edit_users.should include(not_manager.username)
+      end
     end
   end
-  describe "#managers=" do
-    pending it "should add user to collection's edit_users and the manager role"
-  end
-  describe "#editors" do
-    it "should return the intersection of edit_users and editors role" do
-      collection = Collection.new
-      collection.edit_users = ["cjcolvar", "pdinh"]
-      RoleControls.should_receive("users").with("editor").and_return(["pdinh", "mbklein"])
-      collection.editors.should == ["pdinh"]  #collection.edit_users & RoleControls.users("editor")
+
+  describe "editors" do
+    let(:user) {FactoryGirl.create(:editor)}
+    let(:collection) {Collection.new}
+
+    describe "#editors" do
+      it "should return the intersection of edit_users and editors role" do
+        collection.edit_users = [user.username, "pdinh"]
+        RoleControls.should_receive("users").with("editor").and_return([user.username, "atomical"])
+        collection.editors.should == [user]  #collection.edit_users & RoleControls.users("editor")
+      end
+    end
+    describe "#editors=" do
+      it "should add editors to the collection" do
+        editor_list = [FactoryGirl.create(:editor), FactoryGirl.create(:editor)]
+        collection.editors = editor_list
+        collection.editors.should == editor_list
+      end
+      it "should call add_editor" do
+        editor_list = [FactoryGirl.create(:editor), FactoryGirl.create(:editor)]
+        collection.should_receive("add_editor").with(editor_list[0])
+        collection.should_receive("add_editor").with(editor_list[1])
+        collection.editors = editor_list
+      end
+      it "should remove editors from the collection" do
+        collection.add_editor(user)
+        editor_list = [FactoryGirl.create(:editor), FactoryGirl.create(:editor)]
+        collection.editors = editor_list
+        collection.editors.should == editor_list
+      end
+      it "should call remove_editor" do
+        collection.add_editor(user)
+        collection.should_receive("remove_editor").with(user)
+        collection.editors = [FactoryGirl.create(:editor)]
+      end
+    end
+    describe "#add_editor" do
+      it "should give edit access to the collection" do
+        collection.add_editor(user)
+        collection.edit_users.should include(user.username)
+        collection.editors.should include(user)
+      end
+      it "should not add users who do not have the editor role" do
+        not_editor = FactoryGirl.create(:user)
+        collection.add_editor(not_editor)
+        collection.editors.should_not include(not_editor)
+      end
+    end
+    describe "#remove_editor" do
+      it "should revoke edit access to the collection" do
+        collection.remove_editor(user)
+        collection.edit_users.should_not include(user.username)
+        collection.editors.should_not include(user)
+      end
+      it "should not remove users who do not have the editor role" do
+        not_editor = FactoryGirl.create(:user)
+        collection.edit_users = [not_editor.username]
+        collection.remove_editor(not_editor)
+        collection.edit_users.should include(not_editor.username)
+      end
     end
   end
-  describe "#editors=" do
-    pending it "should add user to collection's edit_users and the editor role"
-  end
+
   describe "#depositors" do
     it "should return the intersection of default_edit_users and depositors role" do
       collection = Collection.new
