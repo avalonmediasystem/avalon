@@ -9,7 +9,7 @@ class Collection < ActiveFedora::Base
     sds.field :unit, :string
     sds.field :description, :string
   end
-  has_metadata name: 'defaultRights', type: Hydra::Datastream::InheritableRightsMetadata
+  has_metadata name: 'inheritedRights', type: Hydra::Datastream::InheritableRightsMetadata
 
   validates :name, :uniqueness => { :solr_name => 'name_t'}, presence: true
   validates :unit, presence: true, inclusion: ["University Archives", "Black Film Center/Archive"] 
@@ -39,11 +39,15 @@ class Collection < ActiveFedora::Base
   end
 
   def add_manager user
-    rightsMetadata.update_permissions({"person" => {user.username => "edit"}}) if RoleControls.user_roles(user.username).include?("manager")
+    return unless RoleControls.users("manager").include?(user.username)
+    self.edit_users += [user.username]
+    self.inherited_edit_users += [user.username]
   end
 
   def remove_manager user
-    rightsMetadata.update_permissions({"person" => {user.username => "none"}}) if RoleControls.user_roles(user.username).include?("manager")
+    return unless RoleControls.users("manager").include?(user.username)
+    self.edit_users -= [user.username]
+    self.inherited_edit_users -= [user.username]
   end
 
   def editors
@@ -57,24 +61,47 @@ class Collection < ActiveFedora::Base
   end
 
   def add_editor user
-    rightsMetadata.update_permissions({"person" => {user.username => "edit"}})
-    RoleControls.add_user_role(user.username, 'editor') unless RoleControls.user_roles(user.username).include?("editor")
+    self.edit_users += [user.username]
+    self.inherited_edit_users += [user.username]
+    RoleControls.add_user_role(user.username, 'editor') unless RoleControls.users("editor").include?(user.username)
   end
 
   def remove_editor user
-    rightsMetadata.update_permissions({"person" => {user.username => "none"}})
+    return unless RoleControls.users("editor").include? user.username
+    self.edit_users -= [user.username]
+    self.inherited_edit_users -= [user.username]
     RoleControls.remove_user_role(user.username, 'editor') unless Collection.where("edit_access_person_t" => user.username).first
   end
 
   def depositors
-    defaultRights.edit_access.machine.person & RoleControls.users("depositor") 
+    (inherited_edit_users & RoleControls.users("depositor")).map {|u| User.where(username: u).first}.compact
   end
 
   def depositors= users
-    users.each do |u|
-      defaultRights.permissions({user: u.username}, "edit")
-      RoleControls.add_user_role(u.username, 'depositor') unless RoleControls.user_roles(u.username).include? "depositor"
-    end
+    old_depositors = depositors
+    users.each {|u| add_depositor u}
+    (old_depositors - users).each {|u| remove_depositor u}
+  end
+
+  def add_depositor user
+    self.inherited_edit_users += [user.username]
+    RoleControls.add_user_role(user.username, 'depositor') unless RoleControls.users("depositor").include?(user.username)
+  end
+
+  def remove_depositor user
+    return unless RoleControls.users("depositor").include? user.username
+    self.inherited_edit_users -= [user.username]
+    RoleControls.remove_user_role(user.username, 'depositor') unless Collection.where("inheritable_edit_access_person_t" => user.username).first
+  end
+
+  def inherited_edit_users
+    inheritedRights.edit_access.machine.person
+  end
+
+  def inherited_edit_users= users
+    p = {}
+    (inherited_edit_users - users).each {|u| p[u] = 'none'}
+    users.each {|u| p[u] = 'edit'}
+    inheritedRights.update_permissions('person'=>p)
   end
 end
-
