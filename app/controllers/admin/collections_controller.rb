@@ -1,74 +1,65 @@
-class Admin::CollectionsController < ApplicationController
-  before_filter :authenticate_user!, :set_parent_name!
+class CollectionsController < ApplicationController
+  before_filter :authenticate_user!
   load_and_authorize_resource
-  before_filter :load_and_authorize_unit, only: [:create, :update]
   respond_to :html
 
-
+  # GET /collections
   def index
-    @collections = Collection.all
-    authorize! :manage, Collection
+    if can? :manage, Collection
+      @collections = Collection.all
+    else
+      @collections = Collection.where(inherited_edit_access_person_t: user_key)
+    end
   end
 
+  # GET /collections/1
+  def show
+  end
+
+  # GET /collections/new
+  def new
+    @collection = Collection.new
+  end
+
+  # GET /collections/1/edit
+  def edit
+  end
+
+  # POST /collections
   def create
-    if @collection.save
-      @unit.collections += [@collection]
-      respond_with @collection do |format|
-        format.html{ redirect_to [@parent_name, @collection] }
-      end
-    else
-      render 'new'
-    end
-  end
+    @collection = Collection.new(params[:collection])
+    @collection.managers = [user_key]
 
-  def destroy
-    @collection.destroy
-     redirect_to [@parent_name, Collection]
-  end
-
-  def update
-    if @collection.update_attributes params[:collection]
-      respond_with @collection do |format|
-        format.html{ redirect_to [@parent_name, @collection] }
-      end
-    else
-      render 'edit'
-    end
-  end
-
-  def autocomplete
-    solr_search_params_logic  = {}
-    filter_for_collection_objects(solr_search_params_logic)
-    collection_response = ActiveFedora::SolrService.query("name_t:#{params[:q]}*", solr_search_params_logic)
-    collections = collection_response.map{|m| MediaObject.find( m['id'] ) }
-
-    collections_as_json = collections.map do |collection|
-      Select2::Autocomplete.as_json(collection.id, collection.name, collection.thumbnail_urls(4) )
-    end
-
-    render json: { media_objects: media_objects_as_json }
-  end
-
-  private
-
-    def load_and_authorize_unit
-      unit_id = params[:collection].delete(:unit_id)
-      if unit_id.present?
-        @unit = Unit.find(unit_id)
-        authorize! :manage, @unit
+    respond_to do |format|
+      if @collection.save
+        redirect_to @collection, notice: 'Collection was successfully created.'
       else
-        @unit = nil
+        render action: "new"
       end
     end
-    
-    def set_parent_name!
-      @parent_name =  params[:controller].to_s.split('/')[-2..-2].try :first
+  end
+
+  # PUT /collections/1
+  def update
+    @collection = Collection.find(params[:id])
+    bad_params = params.select {|param| cannot? "update_#{param.key}".to_sym, @collection}
+
+    respond_to do |format|
+      if !bad_params.empty?
+        flash[:notice] = "You are not allowed to update " + bad_params.keys.join(",") + 'field'.plurlalize(bad_params.size)
+        render action: "edit"
+      elsif @collection.update_attributes(params[:collection])
+        redirect_to @collection, notice: 'Collection was successfully updated.'
+      else
+        render action: "edit"
+      end
     end
+  end
 
-
-    def filter_for_collection_objects(solr_parameters)
-      solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << 'has_model_s:"info:fedora/afmodel:Collection"'
-    end
-
+  # DELETE /collections/1
+  def destroy
+    @collection = Collection.find(params[:id])
+    @collection.destroy
+    redirect_to collections_url
+  end
 end
