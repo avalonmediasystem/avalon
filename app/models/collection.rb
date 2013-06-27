@@ -32,7 +32,7 @@ class Collection < ActiveFedora::Base
   end
 
   def managers
-    (edit_users & RoleControls.users("manager")).map {|u| User.where(username: u).first}.compact
+    edit_users & RoleControls.users("manager")
   end
 
   def managers= users
@@ -42,19 +42,19 @@ class Collection < ActiveFedora::Base
   end
 
   def add_manager user
-    return unless RoleControls.users("manager").include?(user.username)
-    self.edit_users += [user.username]
-    self.inherited_edit_users += [user.username]
+    return unless RoleControls.users("manager").include?(user)
+    self.edit_users += [user]
+    self.inherited_edit_users += [user]
   end
 
   def remove_manager user
-    return unless RoleControls.users("manager").include?(user.username)
-    self.edit_users -= [user.username]
-    self.inherited_edit_users -= [user.username]
+    return unless RoleControls.users("manager").include?(user)
+    self.edit_users -= [user]
+    self.inherited_edit_users -= [user]
   end
 
   def editors
-    (edit_users & RoleControls.users("editor")).map {|u| User.where(username: u).first}.compact
+    edit_users & RoleControls.users("editor")
   end
 
   def editors= users
@@ -64,20 +64,20 @@ class Collection < ActiveFedora::Base
   end
 
   def add_editor user
-    self.edit_users += [user.username]
-    self.inherited_edit_users += [user.username]
-    RoleControls.add_user_role(user.username, 'editor') unless RoleControls.users("editor").include?(user.username)
+    self.edit_users += [user]
+    self.inherited_edit_users += [user]
+    RoleControls.add_user_role(user, 'editor') unless RoleControls.users("editor").include?(user)
   end
 
   def remove_editor user
-    return unless RoleControls.users("editor").include? user.username
-    self.edit_users -= [user.username]
-    self.inherited_edit_users -= [user.username]
-    RoleControls.remove_user_role(user.username, 'editor') unless Collection.where("edit_access_person_t" => user.username).first
+    return unless RoleControls.users("editor").include? user
+    self.edit_users -= [user]
+    self.inherited_edit_users -= [user]
+    RoleControls.remove_user_role(user, 'editor') unless Collection.where("edit_access_person_t" => user).first
   end
 
   def depositors
-    (inherited_edit_users & RoleControls.users("depositor")).map {|u| User.where(username: u).first}.compact
+    inherited_edit_users & RoleControls.users("depositor")
   end
 
   def depositors= users
@@ -87,14 +87,14 @@ class Collection < ActiveFedora::Base
   end
 
   def add_depositor user
-    self.inherited_edit_users += [user.username]
-    RoleControls.add_user_role(user.username, 'depositor') unless RoleControls.users("depositor").include?(user.username)
+    self.inherited_edit_users += [user]
+    RoleControls.add_user_role(user, 'depositor') unless RoleControls.users("depositor").include?(user)
   end
 
   def remove_depositor user
-    return unless RoleControls.users("depositor").include? user.username
-    self.inherited_edit_users -= [user.username]
-    RoleControls.remove_user_role(user.username, 'depositor') unless Collection.where("inheritable_edit_access_person_t" => user.username).first
+    return unless RoleControls.users("depositor").include? user
+    self.inherited_edit_users -= [user]
+    RoleControls.remove_user_role(user, 'depositor') unless Collection.where("inheritable_edit_access_person_t" => user).first
   end
 
   def inherited_edit_users
