@@ -17,24 +17,41 @@ class Ability
 	include Hydra::Ability
 
 	def create_permissions(user=nil, session=nil)
-		if @user_groups.include? "collection_manager"
+		if @user_groups.include? "administrator"
 			can :manage, MediaObject
 			can :manage, MasterFile
       can :inspect, MediaObject
       can :manage, Dropbox
+		  can :manage, Admin::Group
     end
     
 		if @user_groups.include? "group_manager"
 		  can :manage, Admin::Group
 		end
+
+		if @user_groups.include? "depositor"
+		  can :create, MediaObject
+		end
 	end
 
   def custom_permissions(user=nil, session=nil)
-    if @user_groups.exclude? "collection_manager"
+    if @user_groups.exclude? "administrator"
       cannot :read, MediaObject do |mediaobject|
         (cannot? :read, mediaobject.pid) || 
           ((not mediaobject.published?) && 
-           (not can_read_unpublished(mediaobject)))
+           (not can_update(mediaobject)))
+      end
+
+      can :update, MediaObject do |mediaobject|
+        is_member_of?(mediaobject.collection)
+      end
+
+      can :destroy, MediaObject do |mediaobject|
+        can_destroy(mediaobject) 
+      end
+
+      can :update_access_control, MediaObject do |mediaobject|
+        is_member_of?(mediaobject.collection) && !mediaobject.collection.depositors.include?(@user.username)
       end
     end
    
@@ -43,7 +60,17 @@ class Ability
     end
   end
 
-  def can_read_unpublished(mediaobject)
-    @user.username == mediaobject.avalon_uploader || @user_groups.include?("collection_manager")
-  end  
+  def is_member_of?(collection)
+     @user_groups.include?("administrator") || 
+       collection.managers.include?(@user.username) ||
+       collection.editors.include?(@user.username) ||
+       collection.depositors.include?(@user.username)
+  end
+
+  def can_destroy(mediaobject)
+    # depositors can only destroy mediaobject if it's unpublished 
+    is_member_of?(mediaobject.collection) && 
+      ( !mediaobject.published? || 
+        (!mediaobject.collection.depositors.include?(@user.username) && !mediaobject.collection.editors.include?(@user.username)) ) 
+  end
 end

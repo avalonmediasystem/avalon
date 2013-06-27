@@ -13,9 +13,62 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'spec_helper'
+require 'cancan/matchers'
 
 describe MediaObject do
-  let (:mediaobject) { MediaObject.new }
+  let (:mediaobject) { MediaObject.create }
+
+  describe 'abilities' do
+    let (:collection) { FactoryGirl.create(:collection) } 
+    let (:mediaobject2) { MediaObject.new }
+    let (:collection2) { Collection.new } 
+
+    before :each do 
+      mediaobject.collection = collection
+      mediaobject2.collection = collection2
+    end
+
+    context 'when manager' do
+      subject{ ability}
+      let(:ability){ Ability.new(User.where(username: collection.managers.first).first) }
+
+      it{ should be_able_to(:create, MediaObject) }
+      it{ should be_able_to(:update, mediaobject) }
+      it{ should be_able_to(:destroy, mediaobject) }
+      it{ should be_able_to(:update, mediaobject) }
+    end
+
+    context 'when editor' do
+      subject{ ability}
+      let(:ability){ Ability.new(User.where(username: collection.editors.first).first) }
+
+      it{ should be_able_to(:create, MediaObject) }
+      it{ should be_able_to(:update, mediaobject) }
+      it{ should be_able_to(:destroy, mediaobject) }
+      it "should not be able to destroy published item" do
+        mediaobject.avalon_publisher = "someone"
+        mediaobject.save(validate: false)
+        ability.should_not be_able_to(:destroy, mediaobject)
+      end
+    end
+
+    context 'when depositor' do
+      subject{ ability}
+      let(:ability){ Ability.new(User.where(username: collection.depositors.first).first) }
+
+      it{ should be_able_to(:create, MediaObject) }
+      it{ should be_able_to(:update, mediaobject) }
+      it{ should be_able_to(:destroy, mediaobject) }
+      it "should not be able to destroy published item" do
+        mediaobject.avalon_publisher = "someone"
+        mediaobject.save(validate: false)
+        subject.should_not be_able_to(:destroy, mediaobject)
+      end
+      it "should not be able to change access control" do
+        subject.cannot(:update_access_control, mediaobject).should be_true
+      end
+    end
+  end
 
   describe "Required metadata is present" do
     it {should validate_presence_of(:creator)}

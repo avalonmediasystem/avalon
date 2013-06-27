@@ -23,6 +23,7 @@ class MediaObject < ActiveFedora::Base
 
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
+  belongs_to :collection, :class_name=>'Collection', :property=>:is_part_of
 
   has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: ModsDocument	
@@ -103,7 +104,6 @@ class MediaObject < ActiveFedora::Base
   delegate :genre, to: :descMetadata, at: [:genre]
   delegate :subject, to: :descMetadata, at: [:topical_subject]
   delegate :related_item, to: :descMetadata, at: [:related_item_id]
-  delegate :collection, to: :descMetadata, at: [:collection]
 
   delegate :geographic_subject, to: :descMetadata, at: [:geographic_subject]
   delegate :temporal_subject, to: :descMetadata, at: [:temporal_subject]

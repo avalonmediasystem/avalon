@@ -1,11 +1,11 @@
 administrator:
-- archivist1
+- admin1
 manager:
-- archivist1
+- manager1
 editor:
-- archivist1
+- editor1
 depositor:
-- archivist1
+- depositor1
 collection_manager:
   - archivist1
   - archivist2
