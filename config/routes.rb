@@ -54,6 +54,7 @@ Avalon::Application.routes.draw do
     end
   end
 
+  resources :collections
   resources :dropbox, :only => [] do
     collection do
       delete :bulk_delete

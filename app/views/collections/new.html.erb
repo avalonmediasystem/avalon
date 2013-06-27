@@ -1,0 +1,8 @@
+<div class='container'>
+  <h3> New Collection </h1>
+  <%= twitter_bootstrap_form_for @collection do |f| %>
+    <%= f.text_field :name %>
+    <%= f.text_area :description, size: '90x5' %>
+    <%= f.submit %>
+  <% end %>
+</div>

@@ -23,6 +23,7 @@ class Ability
       can :inspect, MediaObject
       can :manage, Dropbox
 		  can :manage, Admin::Group
+      can :manage, Collection
     end
     
 		if @user_groups.include? "group_manager"
