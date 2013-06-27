@@ -1,3 +1,5 @@
+require 'hydra/datastream/non_indexed_rights_metadata'
+
 class Collection < ActiveFedora::Base
   include Hydra::ModelMixins::CommonMetadata
   include ActiveFedora::Associations
@@ -10,6 +12,7 @@ class Collection < ActiveFedora::Base
     sds.field :description, :string
   end
   has_metadata name: 'inheritedRights', type: Hydra::Datastream::InheritableRightsMetadata
+  has_metadata name: 'defaultRights', type: Hydra::Datastream::NonIndexedRightsMetadata
 
   validates :name, :uniqueness => { :solr_name => 'name_t'}, presence: true
   validates :unit, presence: true, inclusion: ["University Archives", "Black Film Center/Archive"] 

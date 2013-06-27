@@ -73,6 +73,7 @@ describe Collection do
 
     its(:rightsMetadata) {should be_kind_of Hydra::Datastream::RightsMetadata}
     its(:inheritedRights) {should be_kind_of Hydra::Datastream::InheritableRightsMetadata}
+    its(:defaultRights) {should be_kind_of Hydra::Datastream::NonIndexedRightsMetadata}
   end
 
   describe "#to_solr" do
