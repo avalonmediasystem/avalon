@@ -22,6 +22,10 @@ describe Collection do
       
       it{ should be_able_to(:update, collection) }
       it{ should be_able_to(:read, collection) }
+      it{ should be_able_to(:update_unit, collection) }
+      it{ should be_able_to(:update_managers, collection) }
+      it{ should be_able_to(:update_editors, collection) }
+      it{ should be_able_to(:update_depositors, collection) }
       it{ should_not be_able_to(:create, collection) }
       it{ should_not be_able_to(:destroy, collection) }
     end
@@ -33,6 +37,10 @@ describe Collection do
 
       #Will need to define new action that covers just the things that an editor is allowed to edit
       it{ should be_able_to(:read, collection) }
+      it{ should_not be_able_to(:update_unit, collection) }
+      it{ should_not be_able_to(:update_managers, collection) }
+      it{ should_not be_able_to(:update_editors, collection) }
+      it{ should be_able_to(:update_depositors, collection) }
       it{ should_not be_able_to(:create, collection) }
       it{ should_not be_able_to(:update, collection) }
       it{ should_not be_able_to(:destroy, collection) }
@@ -44,6 +52,10 @@ describe Collection do
       let(:user){ FactoryGirl.create(:depositor) }
 
       it{ should be_able_to(:read, collection) }
+      it{ should_not be_able_to(:update_unit, collection) }
+      it{ should_not be_able_to(:update_managers, collection) }
+      it{ should_not be_able_to(:update_editors, collection) }
+      it{ should_not be_able_to(:update_depositors, collection) }
       it{ should_not be_able_to(:create, collection) }
       it{ should_not be_able_to(:update, collection) }
       it{ should_not be_able_to(:destroy, collection) }

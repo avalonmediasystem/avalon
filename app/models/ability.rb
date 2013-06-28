@@ -54,6 +54,22 @@ class Ability
       can :update_access_control, MediaObject do |mediaobject|
         is_member_of?(mediaobject.collection) && !mediaobject.collection.depositors.include?(@user.username)
       end
+
+      can :update_unit, Collection do |collection|
+        collection.managers.include?(@user.username)
+      end
+
+      can :update_managers, Collection do |collection|
+        collection.managers.include?(@user.username)
+      end
+
+      can :update_editors, Collection do |collection|
+        collection.managers.include?(@user.username)
+      end
+
+      can :update_depositors, Collection do |collection|
+        collection.managers.include?(@user.username) || collection.editors.include?(@user.username)
+      end
     end
    
     can :read, Derivative do |derivative|
