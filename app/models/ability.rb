@@ -30,8 +30,12 @@ class Ability
 		  can :manage, Admin::Group
 		end
 
-		if @user_groups.include? "depositor"
+		if !(@user_groups & ["manager", "editor", "depositor"]).empty?
 		  can :create, MediaObject
+		end
+
+    if @user_groups.include? "manager"
+		  can :create, Collection
 		end
 	end
 
@@ -40,7 +44,7 @@ class Ability
       cannot :read, MediaObject do |mediaobject|
         (cannot? :read, mediaobject.pid) || 
           ((not mediaobject.published?) && 
-           (not can_update(mediaobject)))
+           (not is_member_of?(mediaobject.collection)))
       end
 
       can :update, MediaObject do |mediaobject|
@@ -52,7 +56,17 @@ class Ability
       end
 
       can :update_access_control, MediaObject do |mediaobject|
-        is_member_of?(mediaobject.collection) && !mediaobject.collection.depositors.include?(@user.username)
+        is_editor_of?(mediaobject.collection) 
+      end
+
+      cannot :destroy, Collection
+
+      can :read, Collection do |collection|
+        is_member_of?(collection)
+      end
+
+      can :update, Collection do |collection|
+        is_editor_of?(collection) 
       end
 
       can :update_unit, Collection do |collection|
@@ -68,7 +82,7 @@ class Ability
       end
 
       can :update_depositors, Collection do |collection|
-        collection.managers.include?(@user.username) || collection.editors.include?(@user.username)
+        is_editor_of?(collection) 
       end
     end
    
@@ -82,6 +96,12 @@ class Ability
        collection.managers.include?(@user.username) ||
        collection.editors.include?(@user.username) ||
        collection.depositors.include?(@user.username)
+  end
+
+  def is_editor_of?(collection) 
+     @user_groups.include?("administrator") || 
+       collection.managers.include?(@user.username) ||
+       collection.editors.include?(@user.username)
   end
 
   def can_destroy(mediaobject)
