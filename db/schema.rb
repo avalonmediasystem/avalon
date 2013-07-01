@@ -80,18 +80,6 @@ ActiveRecord::Schema.define(:version => 20130528195130) do
     t.integer "user_id", :null => false
   end
 
-  create_table "units", :force => true do |t|
-    t.string   "name",               :limit => 100
-    t.text     "created_by_user_id"
-    t.datetime "created_at",                        :null => false
-    t.datetime "updated_at",                        :null => false
-  end
-
-  create_table "units_users", :id => false, :force => true do |t|
-    t.integer "unit_id"
-    t.integer "user_id"
-  end
-
   create_table "users", :force => true do |t|
     t.string   "username",   :default => "", :null => false
     t.datetime "created_at",                 :null => false
