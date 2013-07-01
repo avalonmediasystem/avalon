@@ -42,7 +42,6 @@ Avalon::Application.routes.draw do
   #match 'search/index' => 'search#index'
   #match 'search/facet/:id' => 'search#facet'
 
-  resources :admin, only: [:index]
   namespace :admin do
     resources :groups, except: [:show] do 
       collection do 
@@ -52,9 +51,9 @@ Avalon::Application.routes.draw do
         put 'update_users'
       end
     end
+    resources :collections
   end
 
-  resources :collections
   resources :dropbox, :only => [] do
     collection do
       delete :bulk_delete
