@@ -23,7 +23,7 @@ class MediaObject < ActiveFedora::Base
 
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
-  belongs_to :collection, :class_name=>'Collection', :property=>:is_part_of
+  belongs_to :collection, :property=>:is_member_of_collection
 
   has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: ModsDocument	

@@ -17,6 +17,7 @@ class ApplicationController < ActionController::Base
   include Blacklight::Controller  
   # Adds Hydra behaviors into the application controller 
   include Hydra::Controller::ControllerBehavior
+  include Hydra::PolicyAwareAccessControlsEnforcement
   include AccessControlsHelper
 
   layout 'avalon'
