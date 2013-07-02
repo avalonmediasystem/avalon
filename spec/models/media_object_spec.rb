@@ -16,16 +16,34 @@ require 'spec_helper'
 require 'cancan/matchers'
 
 describe MediaObject do
-  let (:mediaobject) { MediaObject.create }
+  let (:media_object) { MediaObject.create }
+
+  describe 'validations' do
+    before do 
+      media_object.valid?
+    end
+
+    describe 'collection present' do
+      it 'has error when not present' do
+        media_object.valid?
+        media_object.errors.should include(:collection)
+      end
+      it 'does not have error when present' do
+        media_object.collection = FactoryGirl.build(:collection)
+        media_object.valid?
+        media_object.errors[:collection].should be_empty
+      end
+    end
+  end
 
   describe 'abilities' do
     let (:collection) { FactoryGirl.create(:collection) } 
-    let (:mediaobject2) { MediaObject.new }
+    let (:media_object2) { MediaObject.new }
     let (:collection2) { Collection.new } 
 
     before :each do 
-      mediaobject.collection = collection
-      mediaobject2.collection = collection2
+      media_object.collection = collection
+      media_object2.collection = collection2
     end
 
     context 'when manager' do
@@ -33,9 +51,9 @@ describe MediaObject do
       let(:ability){ Ability.new(User.where(username: collection.managers.first).first) }
 
       it{ should be_able_to(:create, MediaObject) }
-      it{ should be_able_to(:update, mediaobject) }
-      it{ should be_able_to(:destroy, mediaobject) }
-      it{ should be_able_to(:update, mediaobject) }
+      it{ should be_able_to(:update, media_object) }
+      it{ should be_able_to(:destroy, media_object) }
+      it{ should be_able_to(:update, media_object) }
     end
 
     context 'when editor' do
@@ -43,12 +61,12 @@ describe MediaObject do
       let(:ability){ Ability.new(User.where(username: collection.editors.first).first) }
 
       it{ should be_able_to(:create, MediaObject) }
-      it{ should be_able_to(:update, mediaobject) }
-      it{ should be_able_to(:destroy, mediaobject) }
+      it{ should be_able_to(:update, media_object) }
+      it{ should be_able_to(:destroy, media_object) }
       it "should not be able to destroy published item" do
-        mediaobject.avalon_publisher = "someone"
-        mediaobject.save(validate: false)
-        ability.should_not be_able_to(:destroy, mediaobject)
+        media_object.avalon_publisher = "someone"
+        media_object.save(validate: false)
+        ability.should_not be_able_to(:destroy, media_object)
       end
     end
 
@@ -57,15 +75,15 @@ describe MediaObject do
       let(:ability){ Ability.new(User.where(username: collection.depositors.first).first) }
 
       it{ should be_able_to(:create, MediaObject) }
-      it{ should be_able_to(:update, mediaobject) }
-      it{ should be_able_to(:destroy, mediaobject) }
+      it{ should be_able_to(:update, media_object) }
+      it{ should be_able_to(:destroy, media_object) }
       it "should not be able to destroy published item" do
-        mediaobject.avalon_publisher = "someone"
-        mediaobject.save(validate: false)
-        subject.should_not be_able_to(:destroy, mediaobject)
+        media_object.avalon_publisher = "someone"
+        media_object.save(validate: false)
+        subject.should_not be_able_to(:destroy, media_object)
       end
       it "should not be able to change access control" do
-        subject.cannot(:update_access_control, mediaobject).should be_true
+        subject.cannot(:update_access_control, media_object).should be_true
       end
     end
   end
@@ -78,16 +96,16 @@ describe MediaObject do
 
   describe "Languages are handled correctly" do
     it "should handle pairs of language codes and language names" do
-      mediaobject.update_datastream(:descMetadata, :language => ['eng','French','Castilian','Uyghur'])
-      mediaobject.descMetadata.language_code.to_a.should =~ ['eng','fre','spa','uig']
-      mediaobject.descMetadata.language_text.to_a.should =~ ['English','French','Spanish','Uighur']
+      media_object.update_datastream(:descMetadata, :language => ['eng','French','Castilian','Uyghur'])
+      media_object.descMetadata.language_code.to_a.should =~ ['eng','fre','spa','uig']
+      media_object.descMetadata.language_text.to_a.should =~ ['English','French','Spanish','Uighur']
     end
   end
 
   describe "Unknown metadata generates error" do
     it "should have an error on an unknown attribute" do
-      mediaobject.update_attribute_in_metadata :foo, 'bar'
-      mediaobject.should have(1).errors_on(:foo)
+      media_object.update_attribute_in_metadata :foo, 'bar'
+      media_object.should have(1).errors_on(:foo)
     end
   end
 
@@ -95,32 +113,32 @@ describe MediaObject do
     it "should reject unknown fields"
     it "should update the contributors field" do
       load_fixture 'avalon:electronic-resource'
-      mediaobject = MediaObject.find 'avalon:electronic-resource'
-      mediaobject.update_attribute_in_metadata :contributor, 'Updated contributor'
-      mediaobject.save
+      media_object = MediaObject.find 'avalon:electronic-resource'
+      media_object.update_attribute_in_metadata :contributor, 'Updated contributor'
+      media_object.save
 
-      mediaobject.contributor.length.should == 1
-      mediaobject.contributor.should == ['Updated contributor']
+      media_object.contributor.length.should == 1
+      media_object.contributor.should == ['Updated contributor']
     end
 
     it "should support multiple contributors" do
       load_fixture 'avalon:print-publication'
-      mediaobject = MediaObject.find 'avalon:print-publication'
-      mediaobject.contributor = ['Chris Colvard', 'Phuong Dinh', 'Michael Klein', 
+      media_object = MediaObject.find 'avalon:print-publication'
+      media_object.contributor = ['Chris Colvard', 'Phuong Dinh', 'Michael Klein', 
         'Nathan Rogers']
-      mediaobject.save
-      mediaobject.contributor.length.should > 1
+      media_object.save
+      media_object.contributor.length.should > 1
     end
 
     it "should support multiple publishers" do
       load_fixture 'avalon:video-segment'
-      mediaobject = MediaObject.find 'avalon:video-segment'
-      mediaobject.publisher.length.should == 1
+      media_object = MediaObject.find 'avalon:video-segment'
+      media_object.publisher.length.should == 1
       
-      mediaobject.publisher = ['Indiana University', 'Northwestern University',
+      media_object.publisher = ['Indiana University', 'Northwestern University',
         'Ohio State University', 'Notre Dame']
-      mediaobject.save
-      mediaobject.publisher.length.should > 1
+      media_object.save
+      media_object.publisher.length.should > 1
     end
   end
   
@@ -130,72 +148,72 @@ describe MediaObject do
   
   describe "access" do
     it "should set access level to public" do
-      mediaobject = MediaObject.new
-      mediaobject.access = "public"
-      mediaobject.read_groups.should =~ ["public", "registered"]
+      media_object = MediaObject.new
+      media_object.access = "public"
+      media_object.read_groups.should =~ ["public", "registered"]
     end
     it "should set access level to restricted" do
-      mediaobject = MediaObject.new
-      mediaobject.access = "restricted"
-      mediaobject.read_groups.should =~ ["registered"]
+      media_object = MediaObject.new
+      media_object.access = "restricted"
+      media_object.read_groups.should =~ ["registered"]
     end
     it "should set access level to private" do
-      mediaobject = MediaObject.new
-      mediaobject.access = "private"
-      mediaobject.read_groups.should =~ []
+      media_object = MediaObject.new
+      media_object.access = "private"
+      media_object.read_groups.should =~ []
     end
     it "should return public" do
-      mediaobject = MediaObject.new
-      mediaobject.read_groups = ["public", "registered"]
-      mediaobject.access.should eq "public"
+      media_object = MediaObject.new
+      media_object.read_groups = ["public", "registered"]
+      media_object.access.should eq "public"
     end
     it "should return restricted" do
-      mediaobject = MediaObject.new
-      mediaobject.read_groups = ["registered"]
-      mediaobject.access.should eq "restricted"
+      media_object = MediaObject.new
+      media_object.read_groups = ["registered"]
+      media_object.access.should eq "restricted"
     end
     it "should return private" do
-      mediaobject = MediaObject.new
-      mediaobject.read_groups = []
-      mediaobject.access.should eq "private"
+      media_object = MediaObject.new
+      media_object.read_groups = []
+      media_object.access.should eq "private"
     end
   end
 
   describe "discovery" do
     it "should default to discoverable" do
-      @mediaobject = MediaObject.new
-      @mediaobject.hidden?.should be_false
-      @mediaobject.to_solr[:hidden_b].should be_false
+      @media_object = MediaObject.new
+      @media_object.hidden?.should be_false
+      @media_object.to_solr[:hidden_b].should be_false
     end
 
     it "should set hidden?" do
-      @mediaobject = MediaObject.new
-      @mediaobject.hidden = true
-      @mediaobject.hidden?.should be_true
-      @mediaobject.to_solr[:hidden_b].should be_true
+      @media_object = MediaObject.new
+      @media_object.hidden = true
+      @media_object.hidden?.should be_true
+      @media_object.to_solr[:hidden_b].should be_true
     end
   end
 
   describe "Ingest status" do
     it "should default to unpublished" do
-      mediaobject.workflow.published.first.should eq "false"
-      mediaobject.workflow.published?.should eq false
+      media_object.workflow.published.first.should eq "false"
+      media_object.workflow.published?.should eq false
     end
 
     it "should be published when the item is visible" do
-      mediaobject.workflow.publish
+      media_object.workflow.publish
 
-      mediaobject.workflow.published.should == ['true'] 
-      mediaobject.workflow.last_completed_step.first.should == HYDRANT_STEPS.last.step
+      media_object.workflow.published.should == ['true'] 
+      media_object.workflow.last_completed_step.first.should == HYDRANT_STEPS.last.step
     end
 
     it "should recognize the current step" do
-      mediaobject.workflow.last_completed_step = 'structure'
-      mediaobject.workflow.current?('access-control').should == true
+      media_object.workflow.last_completed_step = 'structure'
+      media_object.workflow.current?('access-control').should == true
     end
 
     it "should default to the first workflow step" do
-      mediaobject.workflow.last_completed_step.should == ['']
+      media_object.workflow.last_completed_step.should == ['']
     end
   end
 
@@ -203,26 +221,26 @@ describe MediaObject do
     it "should be able to have limited access" 
 
     it "should not add duplicated group" do
-      mediaobject.access = "public"
-      test_groups = ["group1", "group1", mediaobject.read_groups.first]
-      mediaobject.group_exceptions = test_groups
+      media_object.access = "public"
+      test_groups = ["group1", "group1", media_object.read_groups.first]
+      media_object.group_exceptions = test_groups
       
-      mediaobject.read_groups.should eql mediaobject.read_groups.uniq
+      media_object.read_groups.should eql media_object.read_groups.uniq
     end
   end
 
   describe '#finished_processing?' do
     it 'returns true if the statuses indicate processing is finished' do
-      mediaobject = MediaObject.new
-      mediaobject.parts << MasterFile.new(status_code: ['STOPPED'])
-      mediaobject.parts << MasterFile.new(status_code: ['SUCCEEDED'])
-      mediaobject.finished_processing?.should be_true
+      media_object = MediaObject.new
+      media_object.parts << MasterFile.new(status_code: ['STOPPED'])
+      media_object.parts << MasterFile.new(status_code: ['SUCCEEDED'])
+      media_object.finished_processing?.should be_true
     end
     it 'returns true if the statuses indicate processing is not finished' do
-      mediaobject = MediaObject.new
-      mediaobject.parts << MasterFile.new(status_code: ['STOPPED'])
-      mediaobject.parts << MasterFile.new(status_code: ['RUNNING'])
-      mediaobject.finished_processing?.should be_false
+      media_object = MediaObject.new
+      media_object.parts << MasterFile.new(status_code: ['STOPPED'])
+      media_object.parts << MasterFile.new(status_code: ['RUNNING'])
+      media_object.finished_processing?.should be_false
     end
   end
 
