@@ -36,6 +36,12 @@ describe MediaObject do
       it{ should be_able_to(:update, mediaobject) }
       it{ should be_able_to(:destroy, mediaobject) }
       it{ should be_able_to(:update, mediaobject) }
+      it "should be able to destroy and unpublish published item" do
+        mediaobject.avalon_publisher = "someone"
+        mediaobject.save(validate: false)
+        subject.should be_able_to(:destroy, mediaobject)
+        subject.can(:unpublish, mediaobject).should be_true
+      end
     end
 
     context 'when editor' do
@@ -45,10 +51,11 @@ describe MediaObject do
       it{ should be_able_to(:create, MediaObject) }
       it{ should be_able_to(:update, mediaobject) }
       it{ should be_able_to(:destroy, mediaobject) }
-      it "should not be able to destroy published item" do
+      it "should not be able to destroy and unpublish published item" do
         mediaobject.avalon_publisher = "someone"
         mediaobject.save(validate: false)
-        ability.should_not be_able_to(:destroy, mediaobject)
+        subject.should_not be_able_to(:destroy, mediaobject)
+        subject.cannot(:unpublish, mediaobject).should be_true
       end
     end
 
@@ -59,10 +66,11 @@ describe MediaObject do
       it{ should be_able_to(:create, MediaObject) }
       it{ should be_able_to(:update, mediaobject) }
       it{ should be_able_to(:destroy, mediaobject) }
-      it "should not be able to destroy published item" do
+      it "should not be able to destroy and unpublish published item" do
         mediaobject.avalon_publisher = "someone"
         mediaobject.save(validate: false)
         subject.should_not be_able_to(:destroy, mediaobject)
+        subject.cannot(:unpublish, mediaobject).should be_true
       end
       it "should not be able to change access control" do
         subject.cannot(:update_access_control, mediaobject).should be_true

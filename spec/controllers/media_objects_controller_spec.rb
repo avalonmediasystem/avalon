@@ -31,6 +31,10 @@ describe MediaObjectsController, type: :controller do
       response.should redirect_to(root_path)
     end
 
+    it "should not let manager of other collections create an item in this collection" do
+      
+    end
+
     context "Default permissions should be applied" do
       it "should be editable by the creator" do
         login_as('content_provider')
@@ -39,13 +43,19 @@ describe MediaObjectsController, type: :controller do
         response.should redirect_to(edit_media_object_path(id: pid))
       end
 
-      it "should inherit default permissions" do
-        @content_provider = login_as 'content_provider'
-        get 'new'
-        assigns(:mediaobject).edit_groups.should include('collection_manager')
-        assigns(:mediaobject).edit_users.should include(@content_provider.username)
+      it "should copy default permissions from its owning collection" do
+        depositor = login_as 'depositor'
+        collection = FactoryGirl.create(:collection)
+        collection.depositors = [depositor.user_key]
+        collection.save
+
+        get 'new', collection_id: collection.id 
+         
+        #MediaObject.all.last.edit_users.should include(collection.managers)
+        #MediaObject.all.last.edit_users.should include(collection.depositors)
       end
     end
+
   end
 
   describe "#edit" do

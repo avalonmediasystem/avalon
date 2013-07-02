@@ -65,8 +65,8 @@ describe Collection do
     subject {wells_collection}
     let(:wells_collection) {FactoryGirl.create(:collection, name: 'Herman B. Wells Collection', unit: "University Archives", description: "Collection about our 11th university president, 1938-1962", managers: [manager.username], editors: [editor.username], depositors: [depositor.username])}
     let(:manager) {FactoryGirl.create(:manager)}
-    let(:editor) {FactoryGirl.create(:editor)}
-    let(:depositor) {FactoryGirl.create(:depositor)}
+    let(:editor) {FactoryGirl.create(:user)}
+    let(:depositor) {FactoryGirl.create(:user)}
     let(:unit_names) {["University Archives", "Black Film Center/Archive"]}
 
     it {should validate_presence_of(:name)}
@@ -162,24 +162,23 @@ describe Collection do
   end
 
   describe "editors" do
-    let!(:user) {FactoryGirl.create(:editor)}
+    let!(:user) {FactoryGirl.create(:user)}
     let!(:collection) {Collection.new}
 
     describe "#editors" do
       it "should return the intersection of edit_users and editors role" do
         collection.edit_users = [user.username, "pdinh"]
-        RoleControls.should_receive("users").with("editor").and_return([user.username, "atomical"])
         collection.editors.should == [user.username]  #collection.edit_users & RoleControls.users("editor")
       end
     end
     describe "#editors=" do
       it "should add editors to the collection" do
-        editor_list = [FactoryGirl.create(:editor).username, FactoryGirl.create(:editor).username]
+        editor_list = [FactoryGirl.create(:user).username, FactoryGirl.create(:user).username]
         collection.editors = editor_list
         collection.editors.should == editor_list
       end
       it "should call add_editor" do
-        editor_list = [FactoryGirl.create(:editor).username, FactoryGirl.create(:editor).username]
+        editor_list = [FactoryGirl.create(:user).username, FactoryGirl.create(:user).username]
         collection.should_receive("add_editor").with(editor_list[0])
         collection.should_receive("add_editor").with(editor_list[1])
         collection.editors = editor_list
@@ -193,22 +192,16 @@ describe Collection do
       it "should call remove_editor" do
         collection.editors = [user.username]
         collection.should_receive("remove_editor").with(user.username)
-        collection.editors = [FactoryGirl.create(:editor).username]
+        collection.editors = [FactoryGirl.create(:user).username]
       end
     end
     describe "#add_editor" do
-      it "should give edit access to the collection and add to the editor role" do
+      it "should give edit access to the collection" do
         not_editor = FactoryGirl.create(:user)
         collection.add_editor(not_editor.username)
         collection.edit_users.should include(not_editor.username)
         collection.inherited_edit_users.should include(not_editor.username)
         collection.editors.should include(not_editor.username)
-        RoleControls.users("editor").should include(not_editor.username)
-      end
-      it "should not try to add the user to the editor role if they already have it" do
-        RoleControls.users("editor").should include(user.username)
-        RoleControls.should_not_receive("add_user_role") 
-        collection.add_editor(user.username)
       end
     end
     describe "#remove_editor" do
@@ -227,20 +220,11 @@ describe Collection do
         collection.edit_users.should include(not_editor.username)
         collection.inherited_edit_users.should_not include(user.username)
       end
-      it "should remove user from editor role if they no longer belong to a collection" do
-        collection.remove_editor(user.username)
-        RoleControls.users("editor").should_not include(user.username)
-      end
-      it "should not remove user from editor role if they still belong to collections" do
-        c = FactoryGirl.create(:collection, editors: [user.username])
-        collection.remove_editor(user.username)
-        RoleControls.users("editor").should include(user.username)
-      end
     end
   end
 
   describe "depositors" do
-    let!(:user) {FactoryGirl.create(:depositor)}
+    let!(:user) {FactoryGirl.create(:user)}
     let!(:collection) {Collection.new}
 
     describe "#depositors" do
@@ -252,12 +236,12 @@ describe Collection do
     end
     describe "#depositors=" do
       it "should add depositors to the collection" do
-        depositor_list = [FactoryGirl.create(:depositor).username, FactoryGirl.create(:depositor).username]
+        depositor_list = [FactoryGirl.create(:user).username, FactoryGirl.create(:user).username]
         collection.depositors = depositor_list
         collection.depositors.should == depositor_list
       end
       it "should call add_depositor" do
-        depositor_list = [FactoryGirl.create(:depositor).username, FactoryGirl.create(:depositor).username]
+        depositor_list = [FactoryGirl.create(:user).username, FactoryGirl.create(:user).username]
         collection.should_receive("add_depositor").with(depositor_list[0])
         collection.should_receive("add_depositor").with(depositor_list[1])
         collection.depositors = depositor_list
@@ -271,21 +255,14 @@ describe Collection do
       it "should call remove_depositor" do
         collection.add_depositor(user.username)
         collection.should_receive("remove_depositor").with(user.username)
-        collection.depositors = [FactoryGirl.create(:depositor).username]
       end
     end
     describe "#add_depositor" do
-      it "should give edit access to the collection and add to the depositor role" do
+      it "should give edit access to the collection" do
         not_depositor = FactoryGirl.create(:user)
         collection.add_depositor(not_depositor.username)
         collection.inherited_edit_users.should include(not_depositor.username)
         collection.depositors.should include(not_depositor.username)
-        RoleControls.users("depositor").should include(not_depositor.username)
-      end
-      it "should not try to add the user to the depositor role if they already have it" do
-        RoleControls.users("depositor").should include(user.username)
-        RoleControls.should_not_receive("add_user_role") 
-        collection.add_depositor(user.username)
       end
     end
     describe "#remove_depositor" do
@@ -300,15 +277,6 @@ describe Collection do
         collection.inherited_edit_users = [not_depositor.username]
         collection.remove_depositor(not_depositor.username)
         collection.inherited_edit_users.should include(not_depositor.username)
-      end
-      it "should remove user from depositor role if they no longer belong to a collection" do
-        collection.remove_depositor(user.username)
-        RoleControls.users("depositor").should_not include(user.username)
-      end
-      it "should not remove user from depositor role if they still belong to collections" do
-        c = FactoryGirl.create(:collection, depositors: [user.username])
-        collection.remove_depositor(user.username)
-        RoleControls.users("depositor").should include(user.username)
       end
     end
   end
