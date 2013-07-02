@@ -51,9 +51,15 @@ describe MediaObject do
       let(:ability){ Ability.new(User.where(username: collection.managers.first).first) }
 
       it{ should be_able_to(:create, MediaObject) }
-      it{ should be_able_to(:update, media_object) }
-      it{ should be_able_to(:destroy, media_object) }
-      it{ should be_able_to(:update, media_object) }
+      it{ should be_able_to(:update, mediaobject) }
+      it{ should be_able_to(:destroy, mediaobject) }
+      it{ should be_able_to(:update, mediaobject) }
+      it "should be able to destroy and unpublish published item" do
+        mediaobject.avalon_publisher = "someone"
+        mediaobject.save(validate: false)
+        subject.should be_able_to(:destroy, mediaobject)
+        subject.can(:unpublish, mediaobject).should be_true
+      end
     end
 
     context 'when editor' do
@@ -61,12 +67,13 @@ describe MediaObject do
       let(:ability){ Ability.new(User.where(username: collection.editors.first).first) }
 
       it{ should be_able_to(:create, MediaObject) }
-      it{ should be_able_to(:update, media_object) }
-      it{ should be_able_to(:destroy, media_object) }
-      it "should not be able to destroy published item" do
-        media_object.avalon_publisher = "someone"
-        media_object.save(validate: false)
-        ability.should_not be_able_to(:destroy, media_object)
+      it{ should be_able_to(:update, mediaobject) }
+      it{ should be_able_to(:destroy, mediaobject) }
+      it "should not be able to destroy and unpublish published item" do
+        mediaobject.avalon_publisher = "someone"
+        mediaobject.save(validate: false)
+        subject.should_not be_able_to(:destroy, mediaobject)
+        subject.cannot(:unpublish, mediaobject).should be_true
       end
     end
 
@@ -75,12 +82,13 @@ describe MediaObject do
       let(:ability){ Ability.new(User.where(username: collection.depositors.first).first) }
 
       it{ should be_able_to(:create, MediaObject) }
-      it{ should be_able_to(:update, media_object) }
-      it{ should be_able_to(:destroy, media_object) }
-      it "should not be able to destroy published item" do
-        media_object.avalon_publisher = "someone"
-        media_object.save(validate: false)
-        subject.should_not be_able_to(:destroy, media_object)
+      it{ should be_able_to(:update, mediaobject) }
+      it{ should be_able_to(:destroy, mediaobject) }
+      it "should not be able to destroy and unpublish published item" do
+        mediaobject.avalon_publisher = "someone"
+        mediaobject.save(validate: false)
+        subject.should_not be_able_to(:destroy, mediaobject)
+        subject.cannot(:unpublish, mediaobject).should be_true
       end
       it "should not be able to change access control" do
         subject.cannot(:update_access_control, media_object).should be_true

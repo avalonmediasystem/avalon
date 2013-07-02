@@ -33,22 +33,6 @@ FactoryGirl.define do
         end
       end 
     end
-    factory :editor do
-      after(:create) do |user|
-        begin
-          RoleControls.add_user_role(user.username, 'editor')
-        rescue
-        end
-      end 
-    end
-    factory :depositor do
-      after(:create) do |user|
-        begin
-          RoleControls.add_user_role(user.username, 'depositor')
-        rescue
-        end
-      end 
-    end
   end 
 
   factory :cataloger, class: User  do

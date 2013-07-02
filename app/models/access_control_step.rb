@@ -26,6 +26,10 @@
       # TO DO: Implement me
       logger.debug "<< Access flag = #{context[:access]} >>"
 
+      if cannot? :update_access_control, mediaobject
+        logger.debug "<<< No permission to update access control, forwarding: #{context.inspect} >>>"
+        return context
+      end
 
       # Limited access stuff
       if context[:delete_group].present?

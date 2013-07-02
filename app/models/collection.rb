@@ -1,4 +1,5 @@
 require 'hydra/datastream/non_indexed_rights_metadata'
+require 'role_controls'
 
 class Collection < ActiveFedora::Base
   include Hydra::ModelMixins::CommonMetadata
@@ -48,13 +49,13 @@ class Collection < ActiveFedora::Base
   end
 
   def remove_manager user
-    return unless RoleControls.users("manager").include?(user)
+    return unless managers.include? user
     self.edit_users -= [user]
     self.inherited_edit_users -= [user]
   end
 
   def editors
-    edit_users & RoleControls.users("editor")
+    edit_users - RoleControls.users("manager")
   end
 
   def editors= users
@@ -66,18 +67,16 @@ class Collection < ActiveFedora::Base
   def add_editor user
     self.edit_users += [user]
     self.inherited_edit_users += [user]
-    RoleControls.add_user_role(user, 'editor') unless RoleControls.users("editor").include?(user)
   end
 
   def remove_editor user
-    return unless RoleControls.users("editor").include? user
+    return unless editors.include? user
     self.edit_users -= [user]
     self.inherited_edit_users -= [user]
-    RoleControls.remove_user_role(user, 'editor') unless Collection.where("edit_access_person_t" => user).first
   end
 
   def depositors
-    inherited_edit_users & RoleControls.users("depositor")
+    read_users
   end
 
   def depositors= users
@@ -87,14 +86,14 @@ class Collection < ActiveFedora::Base
   end
 
   def add_depositor user
+    self.read_users += [user]
     self.inherited_edit_users += [user]
-    RoleControls.add_user_role(user, 'depositor') unless RoleControls.users("depositor").include?(user)
   end
 
   def remove_depositor user
-    return unless RoleControls.users("depositor").include? user
+    return unless depositors.include? user
+    self.read_users -= [user]
     self.inherited_edit_users -= [user]
-    RoleControls.remove_user_role(user, 'depositor') unless Collection.where("inheritable_edit_access_person_t" => user).first
   end
 
   def inherited_edit_users

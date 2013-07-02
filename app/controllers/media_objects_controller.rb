@@ -31,8 +31,14 @@ class MediaObjectsController < ApplicationController
   
   def new
     logger.debug "<< NEW >>"
+    collection = Collection.find(params[:collection_id])
+    unless can? :read, collection
+      redirect_to :back
+    end
+
     @mediaobject = MediaObjectsController.initialize_media_object(user_key)
     @mediaobject.workflow.origin = 'web'
+    @mediaobject.collection = collection
     @mediaobject.save(:validate => false)
 
     redirect_to edit_media_object_path(@mediaobject)
@@ -157,7 +163,7 @@ class MediaObjectsController < ApplicationController
   # it will just toggle the state.
   def update_status
     media_object = MediaObject.find(params[:id])
-    authorize! :manage, media_object
+    authorize! :update, media_object
     
     logger.debug "<< Status flag is #{params[:status]} >>"
     case params[:status]

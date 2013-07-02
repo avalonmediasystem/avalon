@@ -1,4 +1,4 @@
-<% if can? :manage, @mediaobject %>
+<% if can? :update, @mediaobject %>
   <div class="row-fluid">
       <p>
         <ul class="unstyled hidden">
@@ -21,9 +21,15 @@
         <%# If no status flag is set then the call to update_status will simply
             toggle the value. This keeps the view much cleaner by avoiding lots
             of if/then logic %>
-        <% label = @mediaobject.published? ? 'Unpublish' : 'Publish' %>  
-        <%= link_to label, update_status_media_object_path(@mediaobject), method: :put, 
-            class: 'btn' %>
+        <% if @mediaobject.published? && can?(:unpublish, @mediaobject) %>
+          <% label = 'Unpublish' %>  
+          <%= link_to label, update_status_media_object_path(@mediaobject), method: :put, 
+              class: 'btn' %>
+        <% elsif !@mediaobject.published? %>
+          <% label = 'Publish' %>  
+          <%= link_to label, update_status_media_object_path(@mediaobject), method: :put, 
+              class: 'btn' %>
+        <% end %>
 
         <% #label = @mediaobject.discover_groups.include?("nobody") ? 'Unhide' : 'Hide' %>  
         <%#= link_to label, update_visibility_media_object_path(@mediaobject), method: :put, class: 'btn' %>
@@ -32,7 +38,10 @@
         <%# This might not be the best approach because it makes accidental 
             deletion possible just by following a link. Need to revisit when
             extra cycles are available %>
-        <%= link_to 'Delete', remove_media_object_path(@mediaobject), class: 'btn btn-danger' %>
+
+        <% if can? :destroy, @mediaobject %>
+          <%= link_to 'Delete', remove_media_object_path(@mediaobject), class: 'btn btn-danger' %>
+        <% end %>
       </div>
   </div>
 <% end %>

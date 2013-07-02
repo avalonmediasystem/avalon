@@ -4,7 +4,7 @@ FactoryGirl.define do
     unit {"University Archives"}
     description {Faker::Lorem.sentence}
     managers {[FactoryGirl.create(:manager).username]}
-    editors {[FactoryGirl.create(:editor).username]}
-    depositors {[FactoryGirl.create(:depositor).username]}
+    editors {[FactoryGirl.create(:user).username]}
+    depositors {[FactoryGirl.create(:user).username]}
   end
 end

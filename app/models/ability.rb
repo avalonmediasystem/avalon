@@ -41,10 +41,9 @@ class Ability
 
   def custom_permissions(user=nil, session=nil)
     if @user_groups.exclude? "administrator"
-      cannot :read, MediaObject do |mediaobject|
-        (cannot? :read, mediaobject.pid) || 
-          ((not mediaobject.published?) && 
-           (not is_member_of?(mediaobject.collection)))
+      can :read, MediaObject do |mediaobject|
+        (can :read, mediaobject.pid && mediaobject.published?) || 
+          is_member_of?(mediaobject.collection)
       end
 
       can :update, MediaObject do |mediaobject|
@@ -57,6 +56,10 @@ class Ability
 
       can :update_access_control, MediaObject do |mediaobject|
         is_editor_of?(mediaobject.collection) 
+      end
+
+      can :unpublish, MediaObject do |mediaobject|
+        mediaobject.collection.managers.include?(@user.username) 
       end
 
       cannot :destroy, Collection
