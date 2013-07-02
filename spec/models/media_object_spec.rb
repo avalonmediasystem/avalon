@@ -16,16 +16,16 @@ require 'spec_helper'
 require 'cancan/matchers'
 
 describe MediaObject do
-  let (:media_object) { MediaObject.create }
+  let (:media_object) { MediaObject.new( collection: FactoryGirl.create(:collection)) }
 
   describe 'validations' do
-    describe 'collection present' do
-      it 'has error when not present' do
+    describe 'collection' do
+      it 'has errors when not present' do
+        media_object.collection = nil
         media_object.valid?
         media_object.errors.should include(:collection)
       end
-      it 'does not have error when present' do
-        media_object.collection = FactoryGirl.build(:collection)
+      it 'does not have errors when present' do
         media_object.valid?
         media_object.errors[:collection].should be_empty
       end
