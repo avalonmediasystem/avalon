@@ -6,7 +6,7 @@ class Collection < ActiveFedora::Base
   include ActiveFedora::Associations
   include Hydra::ModelMixins::RightsMetadata
 
-  has_and_belongs_to_many :media_objects, property: :has_collection_member, class_name: 'MediaObject' 
+  has_many :media_objects, property: :is_member_of_collection 
   has_metadata name: 'descMetadata', type: ActiveFedora::SimpleDatastream do |sds|
     sds.field :name, :string
     sds.field :unit, :string
