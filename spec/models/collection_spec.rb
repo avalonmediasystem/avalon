@@ -166,9 +166,9 @@ describe Collection do
     let!(:collection) {Collection.new}
 
     describe "#editors" do
-      it "should return the intersection of edit_users and editors role" do
-        collection.edit_users = [user.username, "pdinh"]
-        collection.editors.should == [user.username]  #collection.edit_users & RoleControls.users("editor")
+      it "should not return managers" do
+        collection.edit_users = [user.username, FactoryGirl.create(:manager).username]
+        collection.editors.should == [user.username]
       end
     end
     describe "#editors=" do
@@ -228,10 +228,9 @@ describe Collection do
     let!(:collection) {Collection.new}
 
     describe "#depositors" do
-      it "should return the intersection of edit_users and depositors role" do
-        collection.inherited_edit_users = [user.username, "pdinh"]
-        RoleControls.should_receive("users").with("depositor").and_return([user.username, "atomical"])
-        collection.depositors.should == [user.username]  #collection.edit_users & RoleControls.users("depositor")
+      it "should return the read_users" do
+        collection.read_users = [user.username]
+        collection.depositors.should == [user.username]
       end
     end
     describe "#depositors=" do
@@ -255,6 +254,7 @@ describe Collection do
       it "should call remove_depositor" do
         collection.add_depositor(user.username)
         collection.should_receive("remove_depositor").with(user.username)
+        collection.depositors = [FactoryGirl.create(:user).username]
       end
     end
     describe "#add_depositor" do

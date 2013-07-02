@@ -22,7 +22,7 @@ development:
     rtmp_base: 'rtmp://localhost/avalon'
     http_base: 'http://localhost:3000/streams'
   groups:
-    system_groups: [collection_manager, group_manager]
+    system_groups: [administrator, manager, collection_manager, group_manager]
 test:
   dropbox:
     path: '/srv/avalon/dropbox/'
@@ -47,4 +47,4 @@ test:
     rtmp_base: 'rtmp://localhost/avalon'
     http_base: 'http://localhost:3000/streams'
   groups:
-    system_groups: [collection_manager, group_manager]
+    system_groups: [administator, manager, collection_manager, group_manager]

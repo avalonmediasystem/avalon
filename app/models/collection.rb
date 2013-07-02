@@ -49,7 +49,7 @@ class Collection < ActiveFedora::Base
   end
 
   def remove_manager user
-    return unless RoleControls.users("manager").include?(user)
+    return unless managers.include? user
     self.edit_users -= [user]
     self.inherited_edit_users -= [user]
   end
@@ -70,12 +70,13 @@ class Collection < ActiveFedora::Base
   end
 
   def remove_editor user
+    return unless editors.include? user
     self.edit_users -= [user]
     self.inherited_edit_users -= [user]
   end
 
   def depositors
-    inherited_edit_users & self.read_users 
+    read_users
   end
 
   def depositors= users
@@ -90,6 +91,7 @@ class Collection < ActiveFedora::Base
   end
 
   def remove_depositor user
+    return unless depositors.include? user
     self.read_users -= [user]
     self.inherited_edit_users -= [user]
   end
