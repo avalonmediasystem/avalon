@@ -50,6 +50,7 @@ class MediaObject < ActiveFedora::Base
   validates :creator, :presence => true
   validates :date_issued, :presence => true
   validate  :report_missing_attributes
+  validates :collection, presence: true
 
   # this method returns a hash: class attribute -> metadata attribute
   # this is useful for decoupling the metdata from the view
