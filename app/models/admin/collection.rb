@@ -1,7 +1,7 @@
 require 'hydra/datastream/non_indexed_rights_metadata'
 require 'role_controls'
 
-class Collection < ActiveFedora::Base
+class Admin::Collection < ActiveFedora::Base
   include Hydra::ModelMixins::CommonMetadata
   include ActiveFedora::Associations
   include Hydra::ModelMixins::RightsMetadata

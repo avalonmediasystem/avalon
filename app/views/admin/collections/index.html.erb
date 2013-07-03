@@ -1,0 +1,15 @@
+<div class='container'>
+  <table class='table'>
+    <tbody>
+    <% @collections.to_a.each do |collection| %>
+      <tr>
+        <td> <%= link_to collection.name, admin_collection_path(collection) %> </td>
+        <td> <%= pluralize(collection.media_objects.size, 'item') %> </td>
+        <td> <%= pluralize(collection.managers.size, 'manager') %> </td>
+        <td> <%= collection.description %> </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+  <%= link_to 'Create Collection', new_admin_collection_path, class: 'btn' %>
+</div>

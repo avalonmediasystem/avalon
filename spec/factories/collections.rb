@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :collection do
+  factory :collection, class: Admin::Collection do
     sequence(:name) {|n| "Collection #{n}" }
     unit {"University Archives"}
     description {Faker::Lorem.sentence}

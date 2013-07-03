@@ -35,7 +35,7 @@ describe MediaObject do
   describe 'abilities' do
     let (:collection) { FactoryGirl.create(:collection) } 
     let (:media_object2) { MediaObject.new }
-    let (:collection2) { Collection.new } 
+    let (:collection2) { Admin::Collection.new } 
 
     before :each do 
       media_object.collection = collection

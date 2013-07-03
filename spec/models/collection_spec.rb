@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'cancan/matchers'
 
-describe Collection do
+describe Admin::Collection do
   subject {collection}
   let(:collection) {FactoryGirl.create(:collection)}
 
@@ -26,7 +26,7 @@ describe Collection do
       it{ should be_able_to(:update_managers, collection) }
       it{ should be_able_to(:update_editors, collection) }
       it{ should be_able_to(:update_depositors, collection) }
-      it{ should be_able_to(:create, Collection) }
+      it{ should be_able_to(:create, Admin::Collection) }
     end
 
     context 'when editor' do
@@ -41,7 +41,7 @@ describe Collection do
       it{ should_not be_able_to(:update_managers, collection) }
       it{ should_not be_able_to(:update_editors, collection) }
       it{ should be_able_to(:update_depositors, collection) }
-      it{ should_not be_able_to(:create, Collection) }
+      it{ should_not be_able_to(:create, Admin::Collection) }
       it{ should_not be_able_to(:destroy, collection) }
     end
 
@@ -97,7 +97,7 @@ describe Collection do
 
   describe "managers" do
     let!(:user) {FactoryGirl.create(:manager)}
-    let!(:collection) {Collection.new}
+    let!(:collection) {Admin::Collection.new}
 
     describe "#managers" do
       it "should return the intersection of edit_users and managers role" do
@@ -163,7 +163,7 @@ describe Collection do
 
   describe "editors" do
     let!(:user) {FactoryGirl.create(:user)}
-    let!(:collection) {Collection.new}
+    let!(:collection) {Admin::Collection.new}
 
     describe "#editors" do
       it "should not return managers" do
@@ -225,7 +225,7 @@ describe Collection do
 
   describe "depositors" do
     let!(:user) {FactoryGirl.create(:user)}
-    let!(:collection) {Collection.new}
+    let!(:collection) {Admin::Collection.new}
 
     describe "#depositors" do
       it "should return the read_users" do

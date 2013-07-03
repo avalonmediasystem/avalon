@@ -1,14 +1,14 @@
-class CollectionsController < ApplicationController
+class Admin::CollectionsController < ApplicationController
   before_filter :authenticate_user!
   load_and_authorize_resource
   respond_to :html
 
   # GET /collections
   def index
-    if can? :manage, Collection
-      @collections = Collection.all
+    if can? :manage, Admin::Collection
+      @collections = Admin::Collection.all
     else
-      @collections = Collection.where(inherited_edit_access_person_t: user_key)
+      @collections = Admin::Collection.where(inherited_edit_access_person_t: user_key)
     end
   end
 
@@ -18,7 +18,7 @@ class CollectionsController < ApplicationController
 
   # GET /collections/new
   def new
-    @collection = Collection.new
+    @collection = Admin::Collection.new
   end
 
   # GET /collections/1/edit
@@ -27,7 +27,7 @@ class CollectionsController < ApplicationController
 
   # POST /collections
   def create
-    @collection = Collection.new(params[:collection])
+    @collection = Admin::Collection.new(params[:collection])
     @collection.managers = [user_key]
 
     respond_to do |format|
@@ -41,7 +41,7 @@ class CollectionsController < ApplicationController
 
   # PUT /collections/1
   def update
-    @collection = Collection.find(params[:id])
+    @collection = Admin::Collection.find(params[:id])
     bad_params = params.select {|param| cannot? "update_#{param.key}".to_sym, @collection}
 
     respond_to do |format|
@@ -58,7 +58,7 @@ class CollectionsController < ApplicationController
 
   # DELETE /collections/1
   def destroy
-    @collection = Collection.find(params[:id])
+    @collection = Admin::Collection.find(params[:id])
     @collection.destroy
     redirect_to collections_url
   end

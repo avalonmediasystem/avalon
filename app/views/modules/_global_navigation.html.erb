@@ -15,7 +15,7 @@
       <div class="nav-collapse collapse">
         <ul class="nav">
           <li><%= link_to 'Browse', catalog_index_path(search_field: 'all_fields', utf8: '✓', q: '') %></li>
-          <% if can? :edit, Collection %>
+          <% if can? :read, Admin::Collection %>
             <li class=<%= active_for_controller('admin/collections') %>><%= link_to 'Manage Content', admin_collections_path %></li>
           <% end %>
 

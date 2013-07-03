@@ -23,7 +23,7 @@ class Ability
       can :inspect, MediaObject
       can :manage, Dropbox
 		  can :manage, Admin::Group
-      can :manage, Collection
+      can :manage, Admin::Collection
     end
     
 		if @user_groups.include? "group_manager"
@@ -35,7 +35,7 @@ class Ability
 		end
 
     if @user_groups.include? "manager"
-		  can :create, Collection
+		  can :create, Admin::Collection
 		end
 	end
 
@@ -62,29 +62,29 @@ class Ability
         mediaobject.collection.managers.include?(@user.username) 
       end
 
-      cannot :destroy, Collection
+      cannot :destroy, Admin::Collection
 
-      can :read, Collection do |collection|
+      can :read, Admin::Collection do |collection|
         is_member_of?(collection)
       end
 
-      can :update, Collection do |collection|
+      can :update, Admin::Collection do |collection|
         is_editor_of?(collection) 
       end
 
-      can :update_unit, Collection do |collection|
+      can :update_unit, Admin::Collection do |collection|
         collection.managers.include?(@user.username)
       end
 
-      can :update_managers, Collection do |collection|
+      can :update_managers, Admin::Collection do |collection|
         collection.managers.include?(@user.username)
       end
 
-      can :update_editors, Collection do |collection|
+      can :update_editors, Admin::Collection do |collection|
         collection.managers.include?(@user.username)
       end
 
-      can :update_depositors, Collection do |collection|
+      can :update_depositors, Admin::Collection do |collection|
         is_editor_of?(collection) 
       end
     end

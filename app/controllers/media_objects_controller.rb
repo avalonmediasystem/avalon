@@ -31,7 +31,7 @@ class MediaObjectsController < ApplicationController
   
   def new
     logger.debug "<< NEW >>"
-    collection = Collection.find(params[:collection_id])
+    collection = Admin::Collection.find(params[:collection_id])
     unless can? :read, collection
       redirect_to :back
     end
