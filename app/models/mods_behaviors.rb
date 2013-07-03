@@ -178,4 +178,23 @@ module ModsBehaviors
     end
   end
 
+  # Override NokogiriDatastream#update_term_values to use the explicit 
+  # template setter on a TemplateMissingException error
+  def update_indexed_attributes(params={}, opts={})
+    result = nil
+    begin
+      result = super
+    rescue OM::XML::TemplateMissingException
+      if params.length == 1 and params.keys.first.length == 1
+        params.each_pair do |attribute, value|
+          method = "add_#{attribute.first.to_s}".to_sym
+          result = self.send(method, value)
+        end
+      else
+        raise
+      end
+    end
+    return result
+  end
+
  end

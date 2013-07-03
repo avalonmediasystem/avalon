@@ -32,6 +32,14 @@ describe MediaObject do
     end
   end
 
+  describe 'delegators' do
+    it 'correctly sets the creator' do
+      media_object.creator = 'Creator, Joan'
+      media_object.creator.should include('Creator, Joan')
+      media_object.descMetadata.creator.should include('Creator, Joan')
+    end
+  end
+
   describe 'abilities' do
     let (:collection) { FactoryGirl.create(:collection) } 
     let (:media_object2) { MediaObject.new }
