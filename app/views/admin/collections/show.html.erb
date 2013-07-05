@@ -1,0 +1,8 @@
+<%= link_to 'Edit Collection', edit_admin_collection_path(@collection), class: 'btn', remote: true, modal: true %>
+
+
+<% content_for :page_scripts do %>
+  <script>
+    new ModalLogic()
+  </script>
+<% end %>

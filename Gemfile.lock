@@ -231,6 +231,10 @@ GEM
       posix-spawn (~> 0.3.6)
     haml (4.0.3)
       tilt
+    handlebars_assets (0.14.1)
+      execjs (>= 1.2.9)
+      sprockets (>= 2.0.3)
+      tilt
     hashie (2.0.5)
     headless (1.0.1)
     highline (1.6.19)
@@ -300,7 +304,8 @@ GEM
     method_source (0.8.1)
     mime-types (1.23)
     mini_portile (0.5.0)
-    modal_logic (0.0.1)
+    modal_logic (0.0.2)
+      handlebars_assets (= 0.14.1)
       rails (~> 3.2.13)
     multi_json (1.7.7)
     multipart-post (1.2.0)
@@ -499,6 +504,7 @@ DEPENDENCIES
   font-awesome-sass-rails
   grit
   haml
+  handlebars_assets
   headless
   hydra-head (~> 5.0.0)
   jdbc-sqlite3

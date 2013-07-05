@@ -27,6 +27,10 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1/edit
   def edit
+    @collection = Admin::Collection.find(params[:id])
+    respond_to do |format|
+      format.js   { render json: modal_form_response(@collection) }
+    end
   end
 
   # POST /collections
@@ -43,18 +47,21 @@ class Admin::CollectionsController < ApplicationController
   # PUT /collections/1
   def update
     @collection = Admin::Collection.find(params[:id])
-    bad_params = params.select {|param| cannot? "update_#{param.key}".to_sym, @collection}
+    bad_params = params[:admin_collection].select{|name| cannot?("update_#{name}".to_sym, @collection) }
+    error_message = 'You are not allowed to update ' + bad_params.keys.join(',') + 'field'.plurlalize(bad_params.size) if bad_params.present?
 
     respond_to do |format|
-      if !bad_params.empty?
-        flash[:notice] = "You are not allowed to update " + bad_params.keys.join(",") + 'field'.plurlalize(bad_params.size)
-        render action: "edit"
-      elsif @collection.update_attributes(params[:collection])
-        redirect_to @collection, notice: 'Collection was successfully updated.'
-      else
-        render action: "edit"
+      format.js do 
+        if bad_params.present?
+          @collection.attributes =  params[:admin_collection].reject{|key| key.in?(bad_params)}
+          render json: modal_form_response(@collection, errors: { base: error_message })
+        else
+          @collection.update_attributes params[:admin_collection]
+          render json: modal_form_response(@collection)
+        end
       end
     end
+
   end
 
   # DELETE /collections/1

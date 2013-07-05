@@ -47,7 +47,12 @@
 //= require jquery-ui
 //= require jquery.ui.nestedSortable
 
+/* requirements for handling modals with modal logic gem */
 //= require modal_logic
+//= require handlebars.runtime
+//= require templates/modal/crud
+
+
 
 /*
  * Place any local overrides in avalon.js (for Blacklight, Hydra, jQuery,

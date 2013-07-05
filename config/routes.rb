@@ -51,7 +51,11 @@ Avalon::Application.routes.draw do
         put 'update_users'
       end
     end
-    resources :collections
+    resources :collections do
+      member do
+        get 'edit'
+      end
+    end
   end
 
   resources :dropbox, :only => [] do
