@@ -15,6 +15,8 @@
   gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git' 
   gem 'mediaelement-qualityselector', git: 'https://github.com/cjcolvar/mediaelement-qualityselector.git' 
 
+  gem 'modal_logic'
+
   platforms :jruby do
     gem 'jruby-openssl'
     gem 'activerecord-jdbcsqlite3-adapter'

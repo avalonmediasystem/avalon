@@ -1,0 +1,5 @@
+<%= twitter_bootstrap_form_for @collection, remote: true, html: { modal: true } do |f| %>
+  <%= f.text_field :name %>
+    <a href="#" data-dismiss="modal" aria-hidden="true" class="btn">Cancel</a>
+    <%= f.submit class: 'btn btn-primary' %>
+<% end %>

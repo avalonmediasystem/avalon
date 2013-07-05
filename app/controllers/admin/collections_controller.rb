@@ -19,6 +19,10 @@ class Admin::CollectionsController < ApplicationController
   # GET /collections/new
   def new
     @collection = Admin::Collection.new
+    respond_to do |format|
+      format.js   { render json: modal_form_response(@collection) }
+      format.html { render 'new' }
+    end
   end
 
   # GET /collections/1/edit
@@ -27,14 +31,11 @@ class Admin::CollectionsController < ApplicationController
 
   # POST /collections
   def create
-    @collection = Admin::Collection.new(params[:collection])
-    @collection.managers = [user_key]
-
+    @collection = Admin::Collection.create(params[:admin_collection])
+    
     respond_to do |format|
-      if @collection.save
-        redirect_to @collection, notice: 'Collection was successfully created.'
-      else
-        render action: "new"
+      format.js do
+        render json: modal_form_response(@collection)
       end
     end
   end

@@ -47,6 +47,8 @@
 //= require jquery-ui
 //= require jquery.ui.nestedSortable
 
+//= require modal_logic
+
 /*
  * Place any local overrides in avalon.js (for Blacklight, Hydra, jQuery,
  * etc) 
