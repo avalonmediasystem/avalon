@@ -11,5 +11,12 @@
     <% end %>
     </tbody>
   </table>
-  <%= link_to 'Create Collection', new_admin_collection_path, class: 'btn' %>
+  <%= link_to 'Create Collection', new_admin_collection_path, remote: true, modal: true, class: 'btn' %>
 </div>
+
+
+<% content_for :page_scripts do %>
+  <script>
+    new ModalLogic()
+  </script>
+<% end %>
