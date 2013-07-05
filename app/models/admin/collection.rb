@@ -16,7 +16,7 @@ class Admin::Collection < ActiveFedora::Base
   has_metadata name: 'defaultRights', type: Hydra::Datastream::NonIndexedRightsMetadata
 
   validates :name, :uniqueness => { :solr_name => 'name_t'}, presence: true
-  validates :unit, presence: true, inclusion: ["University Archives", "Black Film Center/Archive"] 
+  # validates :unit, presence: true, inclusion: ["University Archives", "Black Film Center/Archive"] 
 
   delegate :name, to: :descMetadata, unique: true
   delegate :unit, to: :descMetadata, unique: true
@@ -33,7 +33,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def managers
-    edit_users & RoleControls.users("manager")
+    edit_users || [] & RoleControls.users("manager") || []
   end
 
   def managers= users
