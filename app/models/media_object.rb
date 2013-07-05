@@ -23,6 +23,7 @@ class MediaObject < ActiveFedora::Base
 
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
+  belongs_to :collection, :class_name=>'Admin::Collection', :property=>:is_governed_by
   belongs_to :collection, :class_name=>'Admin::Collection', :property=>:is_member_of_collection
 
   has_metadata name: "DC", type: DublinCoreDocument
@@ -382,6 +383,7 @@ class MediaObject < ActiveFedora::Base
   
   def to_solr(solr_doc = Hash.new, opts = {})
     super(solr_doc, opts)
+    #solr_doc[:is_governed_by_s] = self.collection
     solr_doc[:created_by_facet] = self.DC.creator
     solr_doc[:hidden_b] = hidden?
     solr_doc[:duration_display] = self.duration
