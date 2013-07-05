@@ -30,7 +30,7 @@ class Ability
 		  can :manage, Admin::Group
 		end
 
-		if !(@user_groups & ["manager", "editor", "depositor"]).empty?
+		if Admin::Collection.where("inheritable_edit_access_person_t" => @user.username).first.present?
 		  can :create, MediaObject
 		end
 
@@ -43,7 +43,7 @@ class Ability
     if @user_groups.exclude? "administrator"
       can :read, MediaObject do |mediaobject|
         (can :read, mediaobject.pid && mediaobject.published?) || 
-          is_member_of?(mediaobject.collection)
+          can(:edit, mediaobject)
       end
 
       can :update, MediaObject do |mediaobject|
@@ -51,7 +51,9 @@ class Ability
       end
 
       can :destroy, MediaObject do |mediaobject|
-        can_destroy(mediaobject) 
+        # non-managers can only destroy mediaobject if it's unpublished 
+        is_member_of?(mediaobject.collection) && 
+          ( !mediaobject.published? || mediaobject.collection.managers.include?(@user.username) )
       end
 
       can :update_access_control, MediaObject do |mediaobject|
@@ -105,12 +107,5 @@ class Ability
      @user_groups.include?("administrator") || 
        collection.managers.include?(@user.username) ||
        collection.editors.include?(@user.username)
-  end
-
-  def can_destroy(mediaobject)
-    # depositors can only destroy mediaobject if it's unpublished 
-    is_member_of?(mediaobject.collection) && 
-      ( !mediaobject.published? || 
-        (!mediaobject.collection.depositors.include?(@user.username) && !mediaobject.collection.editors.include?(@user.username)) ) 
   end
 end

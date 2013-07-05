@@ -65,12 +65,6 @@
                       count: [3, @mediaobject.geographic_subject.length].max,
                       text_label: 'Location(s)', 
                       options: {tooltip: true, dynamic: true}} %>
-                      
-  <%= render partial: 'text_fields',
-             locals: {media: media, field: :collection,
-                      count: [3, @mediaobject.collection.length].max,
-                      text_label: 'Collection(s)', 
-                      options: {tooltip: true, dynamic: true}} %>
 
   <%= render 'workflow_buttons', form: media %>
 <% end %>
