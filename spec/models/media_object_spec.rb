@@ -95,7 +95,28 @@ describe MediaObject do
     end
 
     context 'when end-user' do
-      pending 'should be able to read when authorized' #Move tests in here from user model spec
+      subject{ ability}
+      let(:ability){ Ability.new(user) }
+      let(:user){FactoryGirl.create(:user)}
+
+      it "should not be able to read unauthorized, published MediaObject" do
+        media_object.avalon_publisher = "random"
+        media_object.save
+        subject.cannot(:read, media_object).should be_true
+      end
+
+      it "should not be able to read authorized, unpublished MediaObject" do
+        media_object.read_users += [user.user_key]
+        media_object.should_not be_published
+        subject.cannot(:read, media_object).should be_true
+      end
+
+      it "should be able to read authorized, published MediaObject" do
+        media_object.read_users += [user.user_key]
+        media_object.avalon_publisher = "random"
+        media_object.save
+        subject.can(:read, media_object).should be_true
+      end
     end
   end
 
