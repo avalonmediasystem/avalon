@@ -27,5 +27,12 @@ if Hydra.respond_to?(:configure)
       :owner => "depositor_t",
       :embargo_release_date => "embargo_release_date_dt"
     }
+    config[:permissions][:inheritable] = {
+      :discover => {:group =>"inheritable_discover_access_group_t", :individual=>"inheritable_discover_access_person_t"},
+      :read => {:group =>"inheritable_read_access_group_t", :individual=>"inheritable_read_access_person_t"},
+      :edit => {:group =>"inheritable_edit_access_group_t", :individual=>"inheritable_edit_access_person_t"},
+      :owner => "inheritable_depositor_t",
+      :embargo_release_date => "inheritable_embargo_release_date_dt"
+    }
   end
 end

@@ -30,6 +30,9 @@ describe MediaObject do
         media_object.errors[:collection].should be_empty
       end
     end
+    describe 'governing_policy' do
+      it {should validate_presence_of(:governing_policy)}
+    end
   end
 
   describe 'delegators' do
