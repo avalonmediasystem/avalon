@@ -37,7 +37,7 @@ module AccessControlsHelper
     if current_user.nil? 
       flash[:notice] = "You need to login to edit resources"
       redirect_to new_user_session_path
-    elsif !can? :edit, params[:id]
+    elsif cannot? :edit, params[:id]
       session[:viewing_context] = "browse"
       flash[:notice] = "You do not have sufficient privileges to edit this document. You have been redirected to the read-only view."
       redirect_to :action=>:show

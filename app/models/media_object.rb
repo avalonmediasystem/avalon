@@ -23,7 +23,7 @@ class MediaObject < ActiveFedora::Base
 
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
-  belongs_to :collection, :class_name=>'Admin::Collection', :property=>:is_governed_by
+  belongs_to :governing_policy, :class_name=>'Admin::Collection', :property=>:is_governed_by
   belongs_to :collection, :class_name=>'Admin::Collection', :property=>:is_member_of_collection
 
   has_metadata name: "DC", type: DublinCoreDocument
@@ -52,6 +52,7 @@ class MediaObject < ActiveFedora::Base
   validates :date_issued, :presence => true
   validate  :report_missing_attributes
   validates :collection, presence: true
+  validates :governing_policy, presence: true
 
   # this method returns a hash: class attribute -> metadata attribute
   # this is useful for decoupling the metdata from the view
@@ -145,6 +146,17 @@ class MediaObject < ActiveFedora::Base
     self.sectionsMetadata.find_by_terms(:section_pid).each &:remove
     self.sectionsMetadata.update_values(['section_pid'] => pids)
     self.save( validate: false )
+  end
+
+  alias_method :'_collection=', :'collection='
+
+  # This requires the MediaObject having an actual pid
+  def collection= co
+    # TODO: Removes existing association
+
+    self._collection= co
+    self.governing_policy = co
+    self.rightsMetadata.content = co.defaultRights.content unless co.nil?
   end
 
   # Sets the publication status. To unpublish an object set it to nil or
@@ -383,7 +395,6 @@ class MediaObject < ActiveFedora::Base
   
   def to_solr(solr_doc = Hash.new, opts = {})
     super(solr_doc, opts)
-    #solr_doc[:is_governed_by_s] = self.collection
     solr_doc[:created_by_facet] = self.DC.creator
     solr_doc[:hidden_b] = hidden?
     solr_doc[:duration_display] = self.duration
