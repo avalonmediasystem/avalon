@@ -20,4 +20,11 @@ module ControllerMacros
     sign_in user
     user
   end 
+  def login_user(username)
+    user = User.where(username: username).first
+    @request.env["devise.mapping"] = Devise.mappings[:user]
+    logger.debug "Attempting to sign in user: #{user}"
+    sign_in user
+    user
+  end
 end

@@ -17,7 +17,7 @@ module AccessControlsHelper
     if current_user.nil? 
       flash[:notice] = "You need to login to add resources"
       redirect_to new_user_session_path
-    elsif cannot? :create, MediaObject
+    elsif cannot? :read, Admin::Collection.find(params[:collection_id])
       flash[:notice] = "You do not have sufficient privileges to add resources"
       redirect_to root_path
     else

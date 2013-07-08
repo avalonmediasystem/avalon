@@ -16,7 +16,7 @@ require 'spec_helper'
 require 'cancan/matchers'
 
 describe MediaObject do
-  let (:media_object) { MediaObject.new( collection: FactoryGirl.create(:collection)) }
+  let! (:media_object) { FactoryGirl.create(:media_object) }
 
   describe 'validations' do
     describe 'collection' do
@@ -41,23 +41,16 @@ describe MediaObject do
   end
 
   describe 'abilities' do
-    let (:collection) { FactoryGirl.create(:collection) } 
-    let (:media_object2) { MediaObject.new }
-    let (:collection2) { Admin::Collection.new } 
-
-    before :each do 
-      media_object.collection = collection
-      media_object2.collection = collection2
-    end
+    let (:collection) { media_object.collection.reload } 
 
     context 'when manager' do
       subject{ ability}
       let(:ability){ Ability.new(User.where(username: collection.managers.first).first) }
 
       it{ should be_able_to(:create, MediaObject) }
+      it{ should be_able_to(:read, media_object) }
       it{ should be_able_to(:update, media_object) }
       it{ should be_able_to(:destroy, media_object) }
-      it{ should be_able_to(:update, media_object) }
       it "should be able to destroy and unpublish published item" do
         media_object.avalon_publisher = "someone"
         media_object.save(validate: false)
@@ -71,6 +64,7 @@ describe MediaObject do
       let(:ability){ Ability.new(User.where(username: collection.editors.first).first) }
 
       it{ should be_able_to(:create, MediaObject) }
+      it{ should be_able_to(:read, media_object) }
       it{ should be_able_to(:update, media_object) }
       it{ should be_able_to(:destroy, media_object) }
       it "should not be able to destroy and unpublish published item" do
@@ -86,6 +80,7 @@ describe MediaObject do
       let(:ability){ Ability.new(User.where(username: collection.depositors.first).first) }
 
       it{ should be_able_to(:create, MediaObject) }
+      it{ should be_able_to(:read, media_object) }
       it{ should be_able_to(:update, media_object) }
       it{ should be_able_to(:destroy, media_object) }
       it "should not be able to destroy and unpublish published item" do
@@ -97,6 +92,10 @@ describe MediaObject do
       it "should not be able to change access control" do
         subject.cannot(:update_access_control, media_object).should be_true
       end
+    end
+
+    context 'when end-user' do
+      pending 'should be able to read when authorized' #Move tests in here from user model spec
     end
   end
 
@@ -124,33 +123,31 @@ describe MediaObject do
   describe "Field persistence" do
     it "should reject unknown fields"
     it "should update the contributors field" do
-      load_fixture 'avalon:electronic-resource'
-      media_object = MediaObject.find 'avalon:electronic-resource'
-      media_object.update_attribute_in_metadata :contributor, 'Updated contributor'
+      contributor =  'Nathan Rogers'
+      media_object.contributor = contributor
       media_object.save
 
       media_object.contributor.length.should == 1
-      media_object.contributor.should == ['Updated contributor']
+      media_object.contributor.should == [contributor]
     end
 
     it "should support multiple contributors" do
-      load_fixture 'avalon:print-publication'
-      media_object = MediaObject.find 'avalon:print-publication'
-      media_object.contributor = ['Chris Colvard', 'Phuong Dinh', 'Michael Klein', 
-        'Nathan Rogers']
+      contributors =  ['Chris Colvard', 'Phuong Dinh', 'Michael Klein', 'Nathan Rogers']
+      media_object.contributor = contributors
       media_object.save
       media_object.contributor.length.should > 1
+      media_object.contrinbutor.should == contributors
     end
 
     it "should support multiple publishers" do
-      load_fixture 'avalon:video-segment'
-      media_object = MediaObject.find 'avalon:video-segment'
+      media_object.publisher = ['Indiana University']
       media_object.publisher.length.should == 1
       
-      media_object.publisher = ['Indiana University', 'Northwestern University',
-        'Ohio State University', 'Notre Dame']
+      publishers = ['Indiana University', 'Northwestern University', 'Ohio State University', 'Notre Dame']
+      media_object.publisher = publishers
       media_object.save
       media_object.publisher.length.should > 1
+      media_object.publisher.should == publishers
     end
   end
   
@@ -160,32 +157,26 @@ describe MediaObject do
   
   describe "access" do
     it "should set access level to public" do
-      media_object = MediaObject.new
       media_object.access = "public"
       media_object.read_groups.should =~ ["public", "registered"]
     end
     it "should set access level to restricted" do
-      media_object = MediaObject.new
       media_object.access = "restricted"
       media_object.read_groups.should =~ ["registered"]
     end
     it "should set access level to private" do
-      media_object = MediaObject.new
       media_object.access = "private"
       media_object.read_groups.should =~ []
     end
     it "should return public" do
-      media_object = MediaObject.new
       media_object.read_groups = ["public", "registered"]
       media_object.access.should eq "public"
     end
     it "should return restricted" do
-      media_object = MediaObject.new
       media_object.read_groups = ["registered"]
       media_object.access.should eq "restricted"
     end
     it "should return private" do
-      media_object = MediaObject.new
       media_object.read_groups = []
       media_object.access.should eq "private"
     end
@@ -193,16 +184,14 @@ describe MediaObject do
 
   describe "discovery" do
     it "should default to discoverable" do
-      @media_object = MediaObject.new
-      @media_object.hidden?.should be_false
-      @media_object.to_solr[:hidden_b].should be_false
+      media_object.hidden?.should be_false
+      media_object.to_solr[:hidden_b].should be_false
     end
 
     it "should set hidden?" do
-      @media_object = MediaObject.new
-      @media_object.hidden = true
-      @media_object.hidden?.should be_true
-      @media_object.to_solr[:hidden_b].should be_true
+      media_object.hidden = true
+      media_object.hidden?.should be_true
+      media_object.to_solr[:hidden_b].should be_true
     end
   end
 
@@ -243,13 +232,11 @@ describe MediaObject do
 
   describe '#finished_processing?' do
     it 'returns true if the statuses indicate processing is finished' do
-      media_object = MediaObject.new
       media_object.parts << MasterFile.new(status_code: ['STOPPED'])
       media_object.parts << MasterFile.new(status_code: ['SUCCEEDED'])
       media_object.finished_processing?.should be_true
     end
     it 'returns true if the statuses indicate processing is not finished' do
-      media_object = MediaObject.new
       media_object.parts << MasterFile.new(status_code: ['STOPPED'])
       media_object.parts << MasterFile.new(status_code: ['RUNNING'])
       media_object.finished_processing?.should be_false
@@ -257,7 +244,6 @@ describe MediaObject do
   end
 
   describe '#calculate_duration' do
-    let(:media_object) { MediaObject.new }
     it 'returns zero if there are zero master files' do
       media_object.send(:calculate_duration).should == 0      
     end
@@ -280,14 +266,12 @@ describe MediaObject do
 
   describe '#populate_duration!' do
     it 'sets duration on the model' do
-      media_object = MediaObject.new
       media_object.populate_duration!
       media_object.duration.should == '0'
     end
   end
 
   describe '#publish!' do
-    let(:media_object) { MediaObject.new }
     describe 'facet' do
       it 'publishes' do
         media_object.publish!('adam@adam.com')

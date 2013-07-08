@@ -19,7 +19,7 @@ class MediaObjectsController < ApplicationController
   include Avalon::Controller::ControllerBehavior
   include Hydra::AccessControlsEnforcement
 
-  before_filter :enforce_show_permissions, :only=>:show
+  before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
   before_filter :load_player_context, only: [:show, :show_progress, :remove]
 
@@ -33,9 +33,6 @@ class MediaObjectsController < ApplicationController
   def new
     logger.debug "<< NEW >>"
     collection = Admin::Collection.find(params[:collection_id])
-    unless can? :read, collection
-      redirect_to :back
-    end
 
     @mediaobject = MediaObjectsController.initialize_media_object(user_key)
     @mediaobject.workflow.origin = 'web'
@@ -259,5 +256,5 @@ class MediaObjectsController < ApplicationController
 
     # If you haven't dropped out by this point return an empty item
     nil
-  end  
+  end 
 end

@@ -16,31 +16,30 @@ require 'spec_helper'
 
 describe User do
   describe "Ability" do
-    before (:each) do
-      @user = User.new
-      @user.username = "test"
-      @mo = MediaObject.new
-      @mo.save(:validate=>false)
-    end
+    subject {user}
+    let!(:user) {FactoryGirl.build(:user)}
+    let!(:media_object) {FactoryGirl.create(:media_object)}
 
-    it "should have an ability" do
-      @user.ability.should_not be_nil
-    end
+    its(:ability) {should_not be_nil}
 
-    it "should not be able to read any MediaObject" do
-      assert @user.cannot?(:read, @mo)
+    it "should not be able to read unauthorized, published MediaObject" do
+      media_object.access = 'private'
+      media_object.avalon_publisher = ["random"]
+      media_object.save
+      user.can?(:read, media_object).should be_false
     end
 
     it "should not be able to read authorized, unpublished MediaObject" do
-      @mo.read_users = [@user.user_key]
-      assert @user.cannot?(:read, @mo)
+      media_object.read_users = [user.user_key]
+      media_object.should_not be_published
+      user.can?(:read, media_object).should be_false
     end
 
     it "should be able to read authorized, published MediaObject" do
-      @mo.read_users += [@user.user_key]
-      @mo.avalon_publisher = ["random"]
-      @mo.save(:validate=>false)
-      assert @user.can?(:read, @mo)
+      media_object.read_users += [user.user_key]
+      media_object.avalon_publisher = ["random"]
+      media_object.save
+      user.can?(:read, media_object).should be_true
     end
   end
 end

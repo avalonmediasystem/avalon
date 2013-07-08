@@ -33,7 +33,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def managers
-    edit_users || [] & RoleControls.users("manager") || []
+    edit_users & (RoleControls.users("manager") || [])
   end
 
   def managers= users

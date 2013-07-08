@@ -91,11 +91,13 @@ class MasterFile < ActiveFedora::Base
     # Removes existing association
     if self.mediaobject.present?
       self.mediaobject.parts_with_order_remove self
+      self.mediaobject.parts -= [self]
     end
 
     self._mediaobject=(mo)
-    unless mo.nil?
-      mo.parts_with_order += [self]
+    unless self.mediaobject.nil?
+      self.mediaobject.parts_with_order += [self]
+      self.mediaobject.parts += [self]
     end
   end
 
@@ -105,12 +107,8 @@ class MasterFile < ActiveFedora::Base
       Rubyhorn.client.stop(workflow_id)
     end
 
-    parent = mediaobject
-    parent.save(validate: false)
-
     mo = self.mediaobject
     self.mediaobject = nil
-    mo.parts -= [self]
 
     derivatives_deleted = true
     self.derivatives.each do |d|
@@ -124,6 +122,7 @@ class MasterFile < ActiveFedora::Base
 
     super
 
+    #Only save the media object if the master file was successfully deleted
     mo.save(validate: false)
   end
 

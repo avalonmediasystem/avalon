@@ -15,6 +15,7 @@
 class Ability
 	include CanCan::Ability
 	include Hydra::Ability
+        include Hydra::PolicyAwareAbility
 
 	def create_permissions(user=nil, session=nil)
 		if @user_groups.include? "administrator"
