@@ -66,10 +66,10 @@ class Ability
         is_member_of?(mediaobject.collection)
       end
 
-      can :destroy, MediaObject do |mediaobject|
+      cannot :destroy, MediaObject do |mediaobject|
         # non-managers can only destroy mediaobject if it's unpublished 
-        is_member_of?(mediaobject.collection) && 
-          ( !mediaobject.published? || mediaobject.collection.managers.include?(@user.username) )
+        (!is_member_of?(mediaobject.collection)) || 
+          ( mediaobject.published? && !mediaobject.collection.managers.include?(@user.username) )
       end
 
       can :update_access_control, MediaObject do |mediaobject|
