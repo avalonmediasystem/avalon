@@ -226,7 +226,10 @@
         read_access_group_t,read_access_person_t,
         edit_access_group_t,edit_access_person_t,
         depositor_t,
-        embargo_release_date_dt
+        embargo_release_date_dt,
+        inheritable_discover_access_group_t,inheritable_discover_access_person_t,
+        inheritable_read_access_group_t,inheritable_read_access_person_t,
+        inheritable_edit_access_group_t,inheritable_edit_access_person_t
       </str>
     </lst>
   </requestHandler>
