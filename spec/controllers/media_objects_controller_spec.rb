@@ -61,7 +61,7 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#edit" do
-    let!(:media_object) { FactoryGirl.create(:media_object, access: 'public') }
+    let!(:media_object) { FactoryGirl.create(:media_object) }
 
     it "should redirect to sign in page with a notice when unauthenticated" do   
       get 'edit', id: media_object.pid
@@ -105,7 +105,7 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#show" do
-    let!(:media_object) { FactoryGirl.create(:media_object, access: 'public') }
+    let!(:media_object) { FactoryGirl.create(:published_media_object, access: 'public') }
 
     context "Known items should be retrievable" do
       it "should be accesible by its PID" do
@@ -125,11 +125,12 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should provide a JSON stream description to the client" do
-        media_object.avalon_publisher = media_object.collection.managers.first
         master_file = FactoryGirl.create(:master_file)
         master_file.mediaobject = media_object
         master_file.save
-        media_object.save
+
+        mopid = media_object.pid
+        media_object = MediaObject.find(mopid)
 
         media_object.parts.collect { |part| 
           package_id = part.mediapackage_id 
@@ -141,9 +142,18 @@ describe MediaObjectsController, type: :controller do
     end
     
     context "Items should not be available to unauthorized users" do
-      it "should not be available when unpublished" do
+      it "should redirect to sign in when not logged in and item is unpublished" do
+        media_object.publish!(nil)
+        media_object.should_not be_published
         get 'show', id: media_object.pid
         response.should redirect_to new_user_session_path
+      end
+      it "should redirect to home page when logged in and item is unpublished" do
+        media_object.publish!(nil)
+        media_object.should_not be_published
+        login_as :user
+        get 'show', id: media_object.pid
+        response.should redirect_to root_path
       end
     end
   end
