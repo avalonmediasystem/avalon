@@ -26,8 +26,8 @@
       # TO DO: Implement me
       logger.debug "<< Access flag = #{context[:access]} >>"
 
-      if cannot? :update_access_control, mediaobject
-        logger.debug "<<< No permission to update access control, forwarding: #{context.inspect} >>>"
+      unless User.where(username: context[:user]).first.ability.can? :update_access_control, mediaobject
+        logger.debug "<<< No permission to update access control, forwarding to next step >>>"
         return context
       end
 
