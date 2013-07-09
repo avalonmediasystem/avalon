@@ -51,6 +51,7 @@ describe Avalon::Batch do
    end
 
   it 'creates an ingest batch object' do
+    pending "Spec out and implement assigning batch objects to collections"
     Avalon::Batch.ingest
     IngestBatch.count.should == 1
   end
