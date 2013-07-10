@@ -43,7 +43,7 @@ class Ability
   def custom_permissions(user=nil, session=nil)
     unless @user_groups.include? "administrator"
       cannot :read, MediaObject do |mediaobject|
-        !mediaobject.published? && !test_edit(mediaobject.pid))
+        !mediaobject.published? && !test_edit(mediaobject.pid)
       end
 
       can :read, Admin::Collection do |collection|
