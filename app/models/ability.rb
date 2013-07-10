@@ -40,10 +40,10 @@ class Ability
     end
   end
 
-  def read_permissions(user=nil, session=nil)
+  def custom_permissions(user=nil, session=nil)
     unless @user_groups.include? "administrator"
-      can :read, MediaObject do |mediaobject|
-        (mediaobject.published? && test_read(mediaobject.pid)) || test_edit(mediaobject.pid)
+      cannot :read, MediaObject do |mediaobject|
+        !mediaobject.published? && !test_edit(mediaobject.pid))
       end
 
       can :read, Admin::Collection do |collection|
@@ -57,11 +57,7 @@ class Ability
       can :read, Derivative do |derivative|
         can? :read, derivative.masterfile.mediaobject
       end
-    end
-  end
- 
-  def custom_permissions(user=nil, session=nil)
-    unless @user_groups.include? "administrator"
+
       can :update, MediaObject do |mediaobject|
         is_member_of?(mediaobject.collection)
       end
