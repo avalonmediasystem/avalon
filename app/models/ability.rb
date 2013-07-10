@@ -86,6 +86,10 @@ class Ability
         collection.managers.include?(@user.username)
       end
 
+      can :update_access_control, Admin::Collection do |collection|
+        collection.managers.include?(@user.username)
+      end
+
       can :update_managers, Admin::Collection do |collection|
         collection.managers.include?(@user.username)
       end

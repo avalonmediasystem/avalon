@@ -1,5 +1,56 @@
-<%= link_to 'Edit Collection', edit_admin_collection_path(@collection), class: 'btn', remote: true, modal: true %>
+<div class="row-fluid">
+  <div class="span12">
+    <div class="well">
+    <h3><%= @collection.name %></h3>
+    <p> <strong>Description:</strong> <%= @collection.description %> </p>
+    <p> <strong>Unit:</strong> <%= @collection.unit %> </p>
+    <%= link_to('Create an Item', edit_admin_collection_path(@collection), class: 'btn btn-primary', remote: true, modal: true) if can? :create, MediaObject %>
+    <%= link_to('List all Items', edit_admin_collection_path(@collection), class: 'btn', remote: true, modal: true) %>
+    <%= link_to('Edit Collection', edit_admin_collection_path(@collection), class: 'btn', remote: true, modal: true) if can? :update, @collection %>
+    </div>
 
+    <%= twitter_bootstrap_form_for @collection, html: { class: "form-horizontal", id: 'access_control_form'}  do |co| %>
+
+      <%= co.fieldset 'Members' do %>
+        <div class="span3">
+          <p>Managers</p>
+          <% if can? :update_managers, @collection %>
+            <%= text_field_tag "new_manager", nil, class: "span9" %>
+            <%= submit_tag "Add", class: "btn" %>
+          <% end %>
+        </div>
+
+        <div class="span3">
+          <p>Editors</p>
+          <% if can? :update_editors, @collection %>
+            <%= text_field_tag "new_editor", nil, class: "span9" %>
+            <%= submit_tag "Add", class: "btn" %>
+          <% end %>
+        </div>
+
+        <div class="span3">
+          <p>Depositors</p>
+          <% if can? :update_depositors, @collection %>
+            <%= text_field_tag "new_depositor", nil, class: "span9" %>
+            <%= submit_tag "Add", class: "btn" %>
+          <% end %>
+        </div>
+
+      <% end %>
+
+      <div class="whitespace"></div>
+
+      <%= co.fieldset 'Default Access Control for New Items' do %>
+        <div class="span10">
+          <%= render "modules/access_control", { form: co, object: @collection, access: @collection.defaultRights.access, hidden: @collection.defaultRights.hidden? } %>	
+
+          <%= submit_tag "Save Access Settings", class: "btn" %>
+        </div>
+      <% end %>
+      
+    <% end %>
+  </div>
+</div>
 
 <% content_for :page_scripts do %>
   <script>

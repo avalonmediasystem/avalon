@@ -11,7 +11,7 @@
     <% end %>
     </tbody>
   </table>
-  <%= link_to 'Create Collection', new_admin_collection_path, remote: true, modal: true, class: 'btn' %>
+  <%= link_to('Create Collection', new_admin_collection_path, remote: true, modal: true, class: 'btn btn-primary') unless cannot? :create, Admin::Collection %>
 </div>
 
 
