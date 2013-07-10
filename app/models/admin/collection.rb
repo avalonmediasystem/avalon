@@ -66,6 +66,7 @@ class Admin::Collection < ActiveFedora::Base
 
   def add_editor user
     self.edit_users += [user]
+    logger.debug "EDIT USERS #{self.edit_users}"
     self.inherited_edit_users += [user]
   end
 
@@ -86,8 +87,13 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def add_depositor user
-    self.read_users += [user]
-    self.inherited_edit_users += [user]
+    # Do not add an edit_user to read_users or he will be removed from edit_users
+    unless self.edit_users.include? user
+      self.read_users += [user]
+      self.inherited_edit_users += [user]
+    else
+      raise "UserIsEditor"
+    end
   end
 
   def remove_depositor user

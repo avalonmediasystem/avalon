@@ -1,0 +1,34 @@
+          <% if can? "update_#{title}s".to_sym, @collection %>
+            <%= text_field_tag "new_#{title}", nil, class: "span9" %>
+            <%= submit_tag "Add", name: "add_#{title}", class: "btn" %>
+          <% end %>
+
+          <% if flash["notice_#{title}".to_sym] %>
+            <div class="alert alert-error">
+              <a href="#" class="close" data-dismiss="alert">&times;</a>
+              <%= flash["notice_#{title}".to_sym] %>
+            </div>
+          <% end %>
+
+          <table class="table table-striped">
+            <% unless @collection.send("#{title}s".to_sym).empty? %>
+            <tbody>
+              <% @collection.send("#{title}s".to_sym).each do |user| %>
+              <tr>
+                <td>
+                  <%= label_tag do %>
+                    <%= user %>
+                  <% end %>
+                </td>
+              <% if can? "update_#{title}s".to_sym, @collection %>
+                <td>
+                  <%= link_to "×", 
+                              polymorphic_path(@collection, "remove_#{title}".to_sym => user),
+                              method: :put, class: "close" %>
+                </td>
+              <% end %>
+              </tr>
+              <% end %>
+            </tbody>
+            <% end %>
+          </table>

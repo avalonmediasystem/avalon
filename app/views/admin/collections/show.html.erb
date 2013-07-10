@@ -14,26 +14,17 @@
       <%= co.fieldset 'Members' do %>
         <div class="span3">
           <p>Managers</p>
-          <% if can? :update_managers, @collection %>
-            <%= text_field_tag "new_manager", nil, class: "span9" %>
-            <%= submit_tag "Add", class: "btn" %>
-          <% end %>
+          <%= render "manage_members", title: "manager" %>
         </div>
 
         <div class="span3">
           <p>Editors</p>
-          <% if can? :update_editors, @collection %>
-            <%= text_field_tag "new_editor", nil, class: "span9" %>
-            <%= submit_tag "Add", class: "btn" %>
-          <% end %>
+          <%= render "manage_members", title: "editor" %>
         </div>
 
         <div class="span3">
           <p>Depositors</p>
-          <% if can? :update_depositors, @collection %>
-            <%= text_field_tag "new_depositor", nil, class: "span9" %>
-            <%= submit_tag "Add", class: "btn" %>
-          <% end %>
+          <%= render "manage_members", title: "depositor" %>
         </div>
 
       <% end %>
@@ -44,7 +35,7 @@
         <div class="span10">
           <%= render "modules/access_control", { form: co, object: @collection, access: @collection.defaultRights.access, hidden: @collection.defaultRights.hidden? } %>	
 
-          <%= submit_tag "Save Access Settings", class: "btn" %>
+          <%= submit_tag "Save Access Settings", name: "save_access", class: "btn" %>
         </div>
       <% end %>
       

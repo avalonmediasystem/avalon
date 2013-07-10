@@ -54,14 +54,12 @@ module Hydra
       end
 
       def hidden= value
-        logger.debug "<< HIDDEN VALUE #{value}"
         groups = self.discover_groups
         if value
           groups << "nobody"
         else
           groups.delete "nobody"
         end
-        logger.debug "<< DISCOVER GROUPS #{groups.inspect}"
         self.discover_groups = groups.uniq
       end
     

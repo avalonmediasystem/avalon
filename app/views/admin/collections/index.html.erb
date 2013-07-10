@@ -1,17 +1,37 @@
 <div class='container'>
-  <table class='table'>
-    <tbody>
-    <% @collections.to_a.each do |collection| %>
-      <tr>
-        <td> <%= link_to collection.name, admin_collection_path(collection) %> </td>
-        <td> <%= pluralize(collection.media_objects.size, 'item') %> </td>
-        <td> <%= pluralize(collection.managers.size, 'manager') %> </td>
-        <td> <%= collection.description %> </td>
-      </tr>
-    <% end %>
-    </tbody>
-  </table>
-  <%= link_to('Create Collection', new_admin_collection_path, remote: true, modal: true, class: 'btn btn-primary') unless cannot? :create, Admin::Collection %>
+  <% unless @collections.empty? %>
+    <h2>My Collections</h2>
+
+    <table class='table table-striped'>
+      <tbody>
+      <% @collections.to_a.each do |collection| %>
+        <tr>
+          <td> <%= link_to collection.name, admin_collection_path(collection) %> </td>
+          <td> <%= pluralize(collection.media_objects.size, 'item') %> </td>
+          <td> <%= pluralize(collection.managers.size, 'manager') %> </td>
+          <td> <%= collection.description %> </td>
+        </tr>
+      <% end %>
+      </tbody>
+    </table>
+    <%= link_to('Create Collection', new_admin_collection_path, remote: true, modal: true, class: 'btn btn-primary') unless cannot? :create, Admin::Collection %>
+  <% else %>
+    <div class="hero-unit">
+      <h2>You don't have any collection yet</h2>
+
+      <% if can? :create, Admin::Collection %>
+        <p>Would you like to create one?</p>
+        <div class="whitespace"></div>
+        <p>
+          <%= link_to('Create Collection', new_admin_collection_path, remote: true, modal: true, class: 'btn btn-primary btn-large')  %>
+        </p>
+      <% else %>
+        <p>You'll need to be assigned to one</p>
+      <% end %>
+
+    </div>
+  <% end %>
+
 </div>
 
 
