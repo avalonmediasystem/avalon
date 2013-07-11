@@ -1,10 +1,12 @@
 require 'hydra/datastream/non_indexed_rights_metadata'
+require 'hydra/model_mixins/hybrid_delegator'
 require 'role_controls'
 
 class Admin::Collection < ActiveFedora::Base
   include Hydra::ModelMixins::CommonMetadata
   include ActiveFedora::Associations
   include Hydra::ModelMixins::RightsMetadata
+  include Hydra::ModelMixins::HybridDelegator
 
   has_many :media_objects, property: :is_member_of_collection 
   has_metadata name: 'descMetadata', type: ActiveFedora::SimpleDatastream do |sds|
@@ -21,6 +23,8 @@ class Admin::Collection < ActiveFedora::Base
   delegate :name, to: :descMetadata, unique: true
   delegate :unit, to: :descMetadata, unique: true
   delegate :description, to: :descMetadata, unique: true
+  delegate :read_groups, to: :defaultRights, prefix: :default
+  delegate :read_users, to: :defaultRights, prefix: :default
 
   def self.units
     ["University Archives", "Black Film Center/Archive"]
@@ -116,4 +120,5 @@ class Admin::Collection < ActiveFedora::Base
     users.each {|u| p[u] = 'edit'}
     inheritedRights.update_permissions('person'=>p)
   end
+
 end
