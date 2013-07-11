@@ -41,7 +41,7 @@
 
       <%= co.fieldset 'Default Access Control for New Items' do %>
         <div class="span10">
-          <%= render "modules/access_control", { form: co, object: @collection, access: @collection.defaultRights.access, hidden: @collection.defaultRights.hidden? } %>	
+          <%= render "modules/access_control", { form: co, object: @collection, access: @collection.default_access, hidden: @collection.default_hidden? } %>	
 
           <%= submit_tag "Save Access Settings", name: "save_access", class: "btn" %>
         </div>

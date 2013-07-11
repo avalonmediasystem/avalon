@@ -23,13 +23,13 @@ class Admin::CollectionsController < ApplicationController
   # GET /collections/1
   def show
       @group_exceptions = []
-      if @collection.defaultRights.access == "limited"
+      if @collection.default_access == "limited"
         # When access is limited, group_exceptions content is stored in read_groups
-        @collection.defaultRights.read_groups.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
-        @user_exceptions = @collection.defaultRights.read_users 
+        @collection.default_read_groups.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
+        @user_exceptions = @collection.default_read_users 
        else
-        @collection.defaultRights.group_exceptions.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
-        @user_exceptions = @collection.defaultRights.user_exceptions 
+        @collection.default_group_exceptions.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
+        @user_exceptions = @collection.default_user_exceptions 
       end
 
       @addable_groups = Admin::Group.non_system_groups.reject { |g| @group_exceptions.include? g.name }
@@ -86,35 +86,34 @@ class Admin::CollectionsController < ApplicationController
     if can?(:update_access_control, @collection)
       # Limited access stuff
       if params[:delete_group].present?
-        groups = @collection.defaultRights.read_groups
+        groups = @collection.default_read_groups
         groups.delete params[:delete_group]
-        @collection.defaultRights.read_groups = groups
+        @collection.default_read_groups = groups
       end 
       if params[:delete_user].present?
-        users = @collection.defaultRights.read_users
+        users = @collection.default_read_users
         logger.debug "<< DELETE USER #{users} >>"
         users.delete params[:delete_user]
-        @collection.defaultRights.read_users = users
+        @collection.default_read_users = users
       end 
 
       if params[:commit] == "Add Group"
-        groups = @collection.defaultRights.group_exceptions
+        groups = @collection.default_group_exceptions
         groups << params[:new_group] unless params[:new_group].blank?
-        @collection.defaultRights.group_exceptions = groups
+        @collection.default_group_exceptions = groups
       elsif params[:commit] == "Add User"
-        users = @collection.defaultRights.user_exceptions
+        users = @collection.default_user_exceptions
         users << params[:new_user] unless params[:new_user].blank?
-        @collection.defaultRights.user_exceptions = users
-        puts "EXCEPTIONS #{MediaObject.find(@collection.defaultRights.pid).group_exceptions.inspect}"
+        @collection.default_user_exceptions = users
       end
 
-      @collection.defaultRights.access = params[:access] unless params[:access].blank? 
+      @collection.default_access = params[:access] unless params[:access].blank? 
 
       logger.debug "<< Hidden = #{params[:hidden]} >>"
-      @collection.defaultRights.hidden = params[:hidden] == "1"
+      @collection.default_hidden = params[:hidden] == "1"
 
-      logger.debug "<< Groups : #{@collection.defaultRights.read_groups} >>"
-      logger.debug "<< Users : #{@collection.defaultRights.read_users} >>"
+      logger.debug "<< Groups : #{@collection.default_read_groups} >>"
+      logger.debug "<< Users : #{@collection.default_read_users} >>"
     end
 
     @collection.save
