@@ -1,4 +1,4 @@
-class RoleMap < ActiveRecord::Migration
+class CreateRoleMap < ActiveRecord::Migration
   def change
     create_table :role_maps do |t|
       t.string :entry
