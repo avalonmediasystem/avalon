@@ -54,7 +54,7 @@ class Admin::CollectionsController < ApplicationController
 
   # POST /collections
   def create
-    @collection = Admin::Collection.create(params[:admin_collection])
+    @collection = Admin::Collection.create(params[:admin_collection].merge(managers: [user_key]))
     
     respond_to do |format|
       format.js do
