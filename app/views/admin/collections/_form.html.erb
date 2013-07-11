@@ -2,5 +2,5 @@
   <%= f.text_field :name %>
   <%= f.select(:unit, "Unit", Admin::Collection.units) %>
     <a href="#" data-dismiss="modal" aria-hidden="true" class="btn">Cancel</a>
-    <%= f.submit class: 'btn btn-primary', data: {loading_text: 'Saving...'} %>
+    <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: {loading_text: 'Saving...'} %>
 <% end %>
