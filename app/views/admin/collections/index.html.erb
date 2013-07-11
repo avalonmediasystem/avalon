@@ -17,7 +17,7 @@
     <%= link_to('Create Collection', new_admin_collection_path, remote: true, modal: true, class: 'btn btn-primary') unless cannot? :create, Admin::Collection %>
   <% else %>
     <div class="hero-unit">
-      <h2>You don't have any collection yet</h2>
+      <h2>You don't have any collections yet</h2>
 
       <% if can? :create, Admin::Collection %>
         <p>Would you like to create one?</p>
