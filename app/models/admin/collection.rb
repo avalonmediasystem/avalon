@@ -16,11 +16,15 @@ class Admin::Collection < ActiveFedora::Base
   has_metadata name: 'defaultRights', type: Hydra::Datastream::NonIndexedRightsMetadata
 
   validates :name, :uniqueness => { :solr_name => 'name_t'}, presence: true
-  # validates :unit, presence: true, inclusion: ["University Archives", "Black Film Center/Archive"] 
+  validates :unit, presence: true, inclusion: {in: proc{Admin::Collection.units}}
 
   delegate :name, to: :descMetadata, unique: true
   delegate :unit, to: :descMetadata, unique: true
   delegate :description, to: :descMetadata, unique: true
+
+  def self.units
+    ["University Archives", "Black Film Center/Archive"]
+  end
 
   def created_at
     @created_at ||= DateTime.parse(create_date)

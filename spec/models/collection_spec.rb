@@ -67,12 +67,11 @@ describe Admin::Collection do
     let(:manager) {FactoryGirl.create(:manager)}
     let(:editor) {FactoryGirl.create(:user)}
     let(:depositor) {FactoryGirl.create(:user)}
-    let(:unit_names) {["University Archives", "Black Film Center/Archive"]}
 
     it {should validate_presence_of(:name)}
     it {should validate_uniqueness_of(:name)}
     it {should validate_presence_of(:unit)}
-    it {should ensure_inclusion_of(:unit).in_array(unit_names)}
+    it {should ensure_inclusion_of(:unit).in_array(Admin::Collection.units)}
 
     its(:name) {should == "Herman B. Wells Collection"}
     its(:unit) {should == "University Archives"}
@@ -85,6 +84,13 @@ describe Admin::Collection do
     its(:rightsMetadata) {should be_kind_of Hydra::Datastream::RightsMetadata}
     its(:inheritedRights) {should be_kind_of Hydra::Datastream::InheritableRightsMetadata}
     its(:defaultRights) {should be_kind_of Hydra::Datastream::NonIndexedRightsMetadata}
+  end
+
+  describe "Admin::Collection.units" do
+    it "should return an array of units" do
+      Admin::Collection.units.should be_an_instance_of Array
+      Admin::Collection.units.should == ["University Archives", "Black Film Center/Archive"]
+    end
   end
 
   describe "#to_solr" do
