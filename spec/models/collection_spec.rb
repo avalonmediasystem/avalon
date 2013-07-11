@@ -72,6 +72,7 @@ describe Admin::Collection do
     it {should validate_uniqueness_of(:name)}
     it {should validate_presence_of(:unit)}
     it {should ensure_inclusion_of(:unit).in_array(Admin::Collection.units)}
+    it "should ensure length of :managers is_at_least(1)"
 
     its(:name) {should == "Herman B. Wells Collection"}
     its(:unit) {should == "University Archives"}

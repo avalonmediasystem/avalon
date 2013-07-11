@@ -19,6 +19,7 @@ class Admin::Collection < ActiveFedora::Base
 
   validates :name, :uniqueness => { :solr_name => 'name_t'}, presence: true
   validates :unit, presence: true, inclusion: {in: proc{Admin::Collection.units}}
+  validates :managers, length: {minimum: 1, message: 'Collection requires at least 1 manager'} 
 
   delegate :name, to: :descMetadata, unique: true
   delegate :unit, to: :descMetadata, unique: true
@@ -58,6 +59,8 @@ class Admin::Collection < ActiveFedora::Base
 
   def remove_manager user
     return unless managers.include? user
+    #raise "OneManagerLeft" if self.managers.size == 1 # Requires at least 1 manager
+
     self.edit_users -= [user]
     self.inherited_edit_users -= [user]
   end

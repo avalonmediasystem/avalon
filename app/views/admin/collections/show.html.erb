@@ -12,6 +12,14 @@
     <%= twitter_bootstrap_form_for @collection, html: { class: "form-horizontal", id: 'access_control_form'}  do |co| %>
 
       <%= co.fieldset 'Members' do %>
+
+          <% if flash[:notice] %>
+            <div class="alert alert-error span9">
+              <a href="#" class="close" data-dismiss="alert">&times;</a>
+              <%= flash[:notice] %>
+            </div>
+          <% end %>
+
         <div class="span3">
           <p>Managers</p>
           <%= render "manage_members", title: "manager" %>

@@ -3,13 +3,6 @@
             <%= submit_tag "Add", name: "add_#{title}", class: "btn" %>
           <% end %>
 
-          <% if flash["notice_#{title}".to_sym] %>
-            <div class="alert alert-error">
-              <a href="#" class="close" data-dismiss="alert">&times;</a>
-              <%= flash["notice_#{title}".to_sym] %>
-            </div>
-          <% end %>
-
           <table class="table table-striped">
             <% unless @collection.send("#{title}s".to_sym).empty? %>
             <tbody>

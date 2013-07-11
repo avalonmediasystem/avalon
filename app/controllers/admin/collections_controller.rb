@@ -4,7 +4,7 @@ class Admin::CollectionsController < ApplicationController
   respond_to :html
   rescue_from Exception do |e|
     if e.message == "UserIsEditor"
-      flash[:notice_depositor] = "User #{params[:new_depositor]} needs to be removed from manager or editor role first"
+      flash[:notice] = "User #{params[:new_depositor]} needs to be removed from manager or editor role first"
       redirect_to @collection
     else 
       raise e
@@ -118,6 +118,10 @@ class Admin::CollectionsController < ApplicationController
     end
 
     @collection.save
+
+        if @collection.errors.any?
+          flash[:notice] = "Collection requires at least 1 manager" 
+        end
 
     respond_to do |format|
       format.html { redirect_to @collection }
