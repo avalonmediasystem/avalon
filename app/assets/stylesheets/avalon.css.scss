@@ -559,3 +559,8 @@ button.close {
   }
   .field_with_errors input { border-color: $errorText; }
 }
+
+.modal {
+  position: fixed;
+  top: 10%;
+}

@@ -1,6 +1,7 @@
 <%= twitter_bootstrap_form_for @collection, remote: true, html: { modal: true } do |f| %>
-  <%= f.text_field :name %>
+  <%= f.text_field :name, class: 'span5' %>
+  <%= f.text_area :description, rows: 3, class: 'span5'  %>
   <%= f.select(:unit, "Unit", Admin::Collection.units) %>
-    <a href="#" data-dismiss="modal" aria-hidden="true" class="btn">Cancel</a>
     <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: {loading_text: 'Saving...'} %>
+    <a href="#" data-dismiss="modal" aria-hidden="true" class="btn">Cancel</a>
 <% end %>
