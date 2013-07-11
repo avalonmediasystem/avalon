@@ -55,10 +55,10 @@ class Admin::CollectionsController < ApplicationController
   # POST /collections
   def create
     @collection = Admin::Collection.create(params[:admin_collection].merge(managers: [user_key]))
-    
+
     respond_to do |format|
       format.js do
-        render json: modal_form_response(@collection)
+        render json: modal_form_response(@collection, redirect_location: admin_collection_path(@collection))
       end
     end
   end
