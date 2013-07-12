@@ -16,7 +16,7 @@ class Admin::CollectionsController < ApplicationController
     if can? :manage, Admin::Collection
       @collections = Admin::Collection.all
     else
-      @collections = Admin::Collection.where(inheritable_edit_access_person_t: user_key).all
+      @collections = Admin::Collection.where(inheritable_edit_access_person_tesim: user_key).all
     end
   end
 

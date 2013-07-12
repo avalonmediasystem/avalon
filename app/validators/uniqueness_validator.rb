@@ -1,7 +1,7 @@
 class UniquenessValidator < ActiveModel::EachValidator
   def initialize(options)
     unless options[:solr_name].present?
-      raise ArgumentError, "UniquenessValidator was not passed :solr_name. Example: validates :uniqueness => { :solr_name => 'name_t' }"
+      raise ArgumentError, "UniquenessValidator was not passed :solr_name. Example: validates :uniqueness => { :solr_name => 'name_tesim' }"
     end
     @solr_field = options[:solr_name]
     super

@@ -210,13 +210,13 @@ describe MediaObject do
   describe "discovery" do
     it "should default to discoverable" do
       media_object.hidden?.should be_false
-      media_object.to_solr[:hidden_b].should be_false
+      media_object.to_solr[:hidden_bsi].should be_false
     end
 
     it "should set hidden?" do
       media_object.hidden = true
       media_object.hidden?.should be_true
-      media_object.to_solr[:hidden_b].should be_true
+      media_object.to_solr[:hidden_bsi].should be_true
     end
   end
 
@@ -300,11 +300,11 @@ describe MediaObject do
     describe 'facet' do
       it 'publishes' do
         media_object.publish!('adam@adam.com')
-        media_object.to_solr[:workflow_published_facet].should == 'Published'
+        media_object.to_solr[:workflow_published_sim].should == 'Published'
       end
       it 'unpublishes' do
         media_object.publish!(nil)
-        media_object.to_solr[:workflow_published_facet].should == 'Unpublished'        
+        media_object.to_solr[:workflow_published_sim].should == 'Unpublished'        
       end
     end
   end
