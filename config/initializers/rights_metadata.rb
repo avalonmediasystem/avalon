@@ -1,6 +1,6 @@
 module Hydra
   module Datastream
-      class RightsMetadata < ActiveFedora::NokogiriDatastream
+      class RightsMetadata < ActiveFedora::OmDatastream
         extend_terminology do |t|
           t.root(:path=>"rightsMetadata", :xmlns=>"http://hydra-collab.stanford.edu/schemas/rightsMetadata/v1", :schema=>"http://github.com/projecthydra/schemas/tree/v1/rightsMetadata.xsd")
           t.exceptions_access(:ref=>[:access], :attributes=>{:type=>"exceptions"})
