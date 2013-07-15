@@ -12,7 +12,7 @@ describe CatalogController do
         assigns(:document_list).map(&:id).should == [mo.id]
       end
       it "should not show results for items that are not public" do
-        mo = FactoryGirl.create(:published_media_object, access: 'registered')
+        mo = FactoryGirl.create(:published_media_object, access: 'restricted')
         get 'index', :q => ""
         response.should be_success
         response.should render_template('catalog/index')
@@ -34,7 +34,7 @@ describe CatalogController do
         #TODO logout
       end
       it "should show results for items that are published and available to registered users" do
-        mo = FactoryGirl.create(:published_media_object, access: 'registered')
+        mo = FactoryGirl.create(:published_media_object, access: 'restricted')
         get 'index', :q => ""
         response.should be_success
         response.should render_template('catalog/index')

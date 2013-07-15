@@ -31,7 +31,7 @@ class Ability
       can :manage, Admin::Group
     end
 
-    if Admin::Collection.where("inheritable_edit_access_person_tesim" => @user.username).first.present?
+    if @user.id.present? and Admin::Collection.where("inheritable_edit_access_person_tesim" => @user.username).first.present?
       can :create, MediaObject
     end
 
