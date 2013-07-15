@@ -20,18 +20,18 @@ if Hydra.respond_to?(:configure)
     # You only need to change these values if you've indexed permissions by some means other than the Hydra's built-in tooling.
     # If you change these, you must also update the permissions request handler in your solrconfig.xml to return those values
     config[:permissions] = {
-      :catchall => "access_tesim",
-      :discover => {:group =>"discover_access_group_tesim", :individual=>"discover_access_person_tesim"},
-      :read => {:group =>"read_access_group_tesim", :individual=>"read_access_person_tesim"},
-      :edit => {:group =>"edit_access_group_tesim", :individual=>"edit_access_person_tesim"},
-      :owner => "depositor_tesim",
+      :catchall => "access_ssim",
+      :discover => {:group =>"discover_access_group_ssim", :individual=>"discover_access_person_ssim"},
+      :read => {:group =>"read_access_group_ssim", :individual=>"read_access_person_ssim"},
+      :edit => {:group =>"edit_access_group_ssim", :individual=>"edit_access_person_ssim"},
+      :owner => "depositor_ssim",
       :embargo_release_date => "embargo_release_date_dtsi"
     }
     config[:permissions][:inheritable] = {
-      :discover => {:group =>"inheritable_discover_access_group_tesim", :individual=>"inheritable_discover_access_person_tesim"},
-      :read => {:group =>"inheritable_read_access_group_tesim", :individual=>"inheritable_read_access_person_tesim"},
-      :edit => {:group =>"inheritable_edit_access_group_tesim", :individual=>"inheritable_edit_access_person_tesim"},
-      :owner => "inheritable_depositor_tesim",
+      :discover => {:group =>"inheritable_discover_access_group_ssim", :individual=>"inheritable_discover_access_person_ssim"},
+      :read => {:group =>"inheritable_read_access_group_ssim", :individual=>"inheritable_read_access_person_ssim"},
+      :edit => {:group =>"inheritable_edit_access_group_ssim", :individual=>"inheritable_edit_access_person_ssim"},
+      :owner => "inheritable_depositor_ssim",
       :embargo_release_date => "inheritable_embargo_release_date_dtsi"
     }
   end

@@ -32,11 +32,17 @@ class MediaObjectsController < ApplicationController
  
   rescue_from CanCan::AccessDenied do |exception|
     if current_user.nil?
-      flash[:notice] = 'You must be signed in to perform this action.'
+      flash[:notice] = 'You are not authorized to perform this action. Try logging in.'
       redirect_to new_user_session_path
     else
-      flash[:notice] = 'You are not authorized to perform this action.'
-      redirect_to root_path
+      case params[:action]
+      when 'edit'
+        flash[:notice] = 'You are not authorized to edit this document.  You have been redirected to a read-only view.'
+        redirect_to :action => :show
+      else
+        flash[:notice] = 'You are not authorized to perform this action.'
+        redirect_to root_path
+      end
     end
   end
 
