@@ -15,7 +15,7 @@ class Admin::Collection < ActiveFedora::Base
     sds.field :description, :string
   end
   has_metadata name: 'inheritedRights', type: Hydra::Datastream::InheritableRightsMetadata
-  has_metadata name: 'defaultRights', type: Hydra::Datastream::NonIndexedRightsMetadata
+  has_metadata name: 'defaultRights', type: Hydra::Datastream::NonIndexedRightsMetadata, autocreate: true
 
   validates :name, :uniqueness => { :solr_name => 'name_tesim'}, presence: true
   validates :unit, presence: true, inclusion: {in: proc{Admin::Collection.units}}
