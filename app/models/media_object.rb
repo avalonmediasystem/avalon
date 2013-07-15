@@ -77,11 +77,9 @@ class MediaObject < ActiveFedora::Base
     :genre => :genre,
     :subject => :topical_subject,
     :related_item => :related_item_id,
-    :collection => :collection,
     :geographic_subject => :geographic_subject,
     :temporal_subject => :temporal_subject,
-    :topical_subject => :topical_subject,
-    :collection => :collection
+    :topical_subject => :topical_subject
     }
   end
 
@@ -399,6 +397,7 @@ class MediaObject < ActiveFedora::Base
     solr_doc[Solrizer.default_field_mapper.solr_name("hidden", type: :boolean)] = hidden?
     solr_doc[Solrizer.default_field_mapper.solr_name("duration", :displayable, type: :string)] = self.duration
     solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
+    solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name
     return solr_doc
   end
 

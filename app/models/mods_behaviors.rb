@@ -74,9 +74,6 @@ module ModsBehaviors
     solr_doc[:language_sim] = self.find_by_terms(:language_text).text
     solr_doc[:language_sim] = self.find_by_terms(:language_text).text
 
-    solr_doc[:collection_sim] = gather_terms(self.find_by_terms(:collection))
-    solr_doc[:collection_sim] = self.find_by_terms(:collection)
-
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
     issue_date = self.find_by_terms(:date_issued).text.strip
     unless issue_date.nil? or issue_date.empty?

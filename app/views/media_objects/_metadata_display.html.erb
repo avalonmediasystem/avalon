@@ -23,7 +23,7 @@
   <%= display_metadata('Subject', @mediaobject.subject) %>
   <%= display_metadata('Time period', @mediaobject.temporal_subject) %>
   <%= display_metadata('Location', @mediaobject.geographic_subject) %>
-  <%= display_metadata('Collection', @mediaobject.collection) %>
+  <%= display_metadata('Collection', @mediaobject.collection.name) %>
 </dl>
 <% if can? :inspect, @mediaobject %>
   <%= link_to 'View Raw Metadata', inspect_media_object_path(@mediaobject.pid, 'descMetadata'), :target => 'blank', :class => "btn btn-small" %>
