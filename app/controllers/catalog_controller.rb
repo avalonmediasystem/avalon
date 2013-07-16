@@ -5,6 +5,7 @@ class CatalogController < ApplicationController
   include Blacklight::Catalog
   # Extend Blacklight::Catalog with Hydra behaviors (primarily editing).
   include Hydra::Controller::ControllerBehavior
+  include Hydra::PolicyAwareAccessControlsEnforcement
 
   # This applies appropriate access controls to all solr queries
   self.solr_search_params_logic += [:add_access_controls_to_solr_params]
