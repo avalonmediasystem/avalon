@@ -34,5 +34,6 @@ if Hydra.respond_to?(:configure)
       :owner => "inheritable_depositor_ssim",
       :embargo_release_date => "inheritable_embargo_release_date_dtsi"
     }
+    config[:permissions][:policy_class] = Admin::Collection
   end
 end
