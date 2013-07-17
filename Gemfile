@@ -76,6 +76,7 @@
     gem 'rspec-rails', '>=2.9.0'
     gem 'pry'
     gem 'pry-rails'
+    gem 'pry-debugger'
     gem 'unicorn-rails'
     #gem 'capistrano-unicorn', :require => false
     gem 'capistrano-unicorn',
