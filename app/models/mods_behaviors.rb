@@ -34,10 +34,10 @@ module ModsBehaviors
     solr_doc[:heading_sim] = self.find_by_terms(:main_title).text
 
 
-    solr_doc[:creator_sim] = gather_terms(self.find_by_terms(:creator))
-    solr_doc[:creator_ssi] = self.find_by_terms(:creator).text
+    solr_doc[:creator_ssim] = gather_terms(self.find_by_terms(:creator))
+#    solr_doc[:creator_ssi] = self.find_by_terms(:creator).text
     # Individual fields
-    solr_doc[:summary_sim] = self.find_by_terms(:abstract).text
+    solr_doc[:summary_ssim] = self.find_by_terms(:abstract).text
     solr_doc[:publisher_sim] = gather_terms(self.find_by_terms(:publisher))
     solr_doc[:contributor_sim] = gather_terms(self.find_by_terms(:contributor))
     solr_doc[:subject_sim] = gather_terms(self.find_by_terms(:subject))

@@ -57,6 +57,7 @@ class CatalogController < ApplicationController
     config.add_facet_field 'date_sim', :label => 'Date', :limit => 5
     config.add_facet_field 'genre_sim', :label => 'Genres', :limit => 5
     config.add_facet_field 'collection_ssim', :label => 'Collection', :limit => 5
+    config.add_facet_field 'unit_ssim', :label => 'Unit', :limit => 5
 
     # Hide these facets if not a Collection Manager
     config.add_facet_field 'workflow_published_sim', :label => 'Published', :limit => 5, :if_user_can => [:manage, MediaObject], :group=>"workflow"
@@ -72,9 +73,9 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
-    config.add_index_field 'creator_sim', :label => 'Main contributors:', :helper_method => :contributor_index_display 
-    config.add_index_field 'date_sim', :label => 'Date:' 
-    config.add_index_field 'summary_sim', label: 'Summary:', :helper_method => :description_index_display
+    config.add_index_field 'creator_ssim', :label => 'Main contributors:', :helper_method => :contributor_index_display 
+    config.add_index_field 'date_ssi', :label => 'Date:' 
+    config.add_index_field 'summary_ssim', label: 'Summary:', :helper_method => :description_index_display
     
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display 
