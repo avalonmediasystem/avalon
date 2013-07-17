@@ -7,5 +7,11 @@ FactoryGirl.define do
       mf.mediaobject = FactoryGirl.create(:media_object)
       mf.save
     end
+    factory :master_file_with_derivative do
+      after(:create) do |mf|
+        mf.derivatives += [FactoryGirl.create(:derivative)]
+        mf.save
+      end
+    end
   end
 end

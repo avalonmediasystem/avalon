@@ -112,7 +112,9 @@ class MasterFile < ActiveFedora::Base
 
     derivatives_deleted = true
     self.derivatives.each do |d|
-      if !d.delete
+      if d.delete
+        @derivatives.delete(d) # I don't like this, but there's a better fix in HH6 - MBK
+      else
         derivatives_deleted = false
       end
     end
