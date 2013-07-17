@@ -2,16 +2,6 @@ administrator:
 - admin1
 manager:
 - manager1
-editor:
-- editor1
-depositor:
-- depositor1
-collection_manager:
-  - archivist1
-  - archivist2
-  - archivist1@example.com
-  - archivist2@example.com
-  - leland_himself@example.com
 group_manager:
   - archivist1
   - archivist1@example.com
