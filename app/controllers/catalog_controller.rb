@@ -56,7 +56,7 @@ class CatalogController < ApplicationController
     #TODO add "Date" facet that points to issue date in mediaobject
     config.add_facet_field 'date_sim', :label => 'Date', :limit => 5
     config.add_facet_field 'genre_sim', :label => 'Genres', :limit => 5
-    config.add_facet_field 'collection_sim', :label => 'Collection', :limit => 5
+    config.add_facet_field 'collection_ssim', :label => 'Collection', :limit => 5
 
     # Hide these facets if not a Collection Manager
     config.add_facet_field 'workflow_published_sim', :label => 'Published', :limit => 5, :if_user_can => [:manage, MediaObject], :group=>"workflow"
