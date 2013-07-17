@@ -48,11 +48,17 @@ class MediaObject < ActiveFedora::Base
   # title, and date of creation.
 
   validates :title, :presence => true
-  validates :creator, :presence => true
+  validate  :validate_creator
   validates :date_issued, :presence => true
   validate  :report_missing_attributes
   validates :collection, presence: true
   validates :governing_policy, presence: true
+
+  def validate_creator
+    if Array(creator).select { |c| c.present? }.empty?
+      errors.add(:creator, "field is required.")
+    end
+  end
 
   # this method returns a hash: class attribute -> metadata attribute
   # this is useful for decoupling the metdata from the view
