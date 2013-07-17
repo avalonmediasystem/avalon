@@ -56,7 +56,7 @@ class MediaObject < ActiveFedora::Base
 
   def validate_creator
     if Array(creator).select { |c| c.present? }.empty?
-      errors.add(:creator, "field is required.")
+      errors.add(:creator, I18n.t("errors.messages.blank"))
     end
   end
 
