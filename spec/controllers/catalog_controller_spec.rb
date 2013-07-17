@@ -57,8 +57,8 @@ describe CatalogController do
       end
     end
     describe "as a manager" do
-      let(:collection) {FactoryGirl.create(:collection)}
-      let(:manager) {login_user(collection.managers.first)}
+      let!(:collection) {FactoryGirl.create(:collection)}
+      let!(:manager) {login_user(collection.managers.first)}
 
       it "should show results for items that are unpublished, private, and belong to one of my collections" do
         mo = FactoryGirl.create(:media_object, access: 'private', collection: collection)
