@@ -69,7 +69,7 @@ describe CatalogController do
         assigns(:document_list).map(&:id).should == [mo.id]
       end
       it "should not show results for items that do not belong to one of my collections" do
-        mo = FactoryGirl.create(:media_object, access: 'public')
+        mo = FactoryGirl.create(:media_object, access: 'private')
         get 'index', :q => ""
         response.should be_success
         response.should render_template('catalog/index')
