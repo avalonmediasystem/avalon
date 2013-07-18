@@ -72,7 +72,8 @@ describe MasterFile do
   end
 
   describe "delete" do
-    subject(:masterfile) { FactoryGirl.create(:master_file_with_derivative) }
+    subject(:masterfile) { derivative.masterfile }
+    let(:derivative) {FactoryGirl.create(:derivative)}
     it "should delete (VOV-1805)" do
       Rubyhorn.stub_chain(:client,:delete_track).and_return("http://test.com/retract_rtmp.xml")
       Rubyhorn.stub_chain(:client,:delete_hls_track).and_return("http://test.com/retract_hls.xml")
