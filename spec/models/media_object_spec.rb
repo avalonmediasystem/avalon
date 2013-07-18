@@ -308,4 +308,10 @@ describe MediaObject do
       end
     end
   end
+
+  describe 'indexing' do
+    it 'uses stringified keys for everything except :id' do
+      media_object.to_solr.keys.reject { |k| k.is_a?(String) }.should == [:id]
+    end
+  end
 end

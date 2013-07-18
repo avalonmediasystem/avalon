@@ -6,7 +6,7 @@
   gem 'hydra-head', '~> 6.0'
   gem 'bcrypt-ruby', '~> 3.0.0'
 
-  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', branch: 'hydra-head-6'
+  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git'
   gem 'avalon-engage', git: "https://github.com/avalonmediasystem/avalon-engage.git"
   gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git"
   gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git' 
