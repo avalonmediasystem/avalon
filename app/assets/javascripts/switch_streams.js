@@ -77,6 +77,10 @@ $().ready(function() {
     AvalonStreams.setActiveSection($('a.current-stream').data('segment'));
     
     $('a[data-segment]').click(function(event) {
+
+      // Only does the AJAX switching if type of new stream is identical to old stream,
+      // otherwise do the regular page load
+      if ($('a.current-stream').data('is-video') == $(this).data('is-video')) {
         event.preventDefault();
         var target = $(this);
 
@@ -85,10 +89,11 @@ $().ready(function() {
          */
         var uri = target.attr('href').split('?')[0] + '.json';
         var segment = $(this).data('segment');
-        
+
         $.getJSON(uri, 'content=' + segment, function(data) {
-	      AvalonStreams.setActiveSection(segment);
+          AvalonStreams.setActiveSection(segment);
           AvalonStreams.refreshStream(data);
         });
+      }
     });
 });

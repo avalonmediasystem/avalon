@@ -17,7 +17,7 @@
                 <%=
                   link_to stream_label_for(section),
                     media_object_path(mediaobject, {content: section.pid}),
-                    data: {segment: section.pid},
+                    data: {segment: section.pid, is_video: section.is_video?},
                     class: (section.pid == activeStream.pid ? 'current-stream' : nil)
                 %>
                 <% unless section.duration.blank? %>
