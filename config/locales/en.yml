@@ -2,7 +2,7 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  avalon_release: "Release 1.0"
+  release_label: "Release"
   errors:
     messages:
       blank: "field is required."
