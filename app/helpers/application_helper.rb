@@ -17,6 +17,10 @@ module ApplicationHelper
     'Avalon'
   end
   
+  def release_text
+    "#{application_name} #{t(:release_label)} #{Avalon::VERSION}"
+  end
+
   def image_for(item_id)
     #TODO index the thumbnail url to avoid having to hit fedora to get it
     media_object = MediaObject.find(item_id)
