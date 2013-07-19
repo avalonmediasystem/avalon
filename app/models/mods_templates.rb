@@ -17,7 +17,6 @@ module ModsTemplates
 
   included do
     class_eval do
-      template_registry.undefine :creator
       
       # Title Templates
       define_template :title_info do |xml, title, attributes={}|

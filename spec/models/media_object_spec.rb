@@ -176,6 +176,24 @@ describe MediaObject do
     end
   end
   
+  describe "Update datastream" do
+    it "should handle a complex update" do
+      params = {
+        'creator'     => [Faker::Name.name, Faker::Name.name],
+        'contributor' => [Faker::Name.name, Faker::Name.name, Faker::Name.name],
+        'title'       => Faker::Lorem.sentence,
+        'date_issued' => '2013',
+        'date_created'=> '1956'
+      }
+      media_object.update_datastream(:descMetadata, params)
+      media_object.creator.should      == params['creator']
+      media_object.contributor.should  == params['contributor']
+      media_object.title.should        == params['title']
+      media_object.date_issued.should  == params['date_issued']
+      media_object.date_created.should == params['date_created']
+    end
+  end
+
   describe "Valid formats" do
     it "should only accept ISO formatted dates"
   end
