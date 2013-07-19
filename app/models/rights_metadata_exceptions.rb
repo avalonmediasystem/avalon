@@ -1,18 +1,11 @@
 module RightsMetadataExceptions
   def self.apply_to(mod)
     mod.class_eval do
+      unless self == Hydra::Datastream::RightsMetadata
+        include OM::XML::Document
+        use_terminology(Hydra::Datastream::RightsMetadata) 
+      end
       extend_terminology do |t|
-        t.root(:path=>"rightsMetadata", :xmlns=>"http://hydra-collab.stanford.edu/schemas/rightsMetadata/v1", :schema=>"http://github.com/projecthydra/schemas/tree/v1/rightsMetadata.xsd")
-        t.access do
-          t.human_readable(:path=>"human")
-          t.machine {
-            t.group
-            t.person
-          }
-          t.person(:proxy=>[:machine, :person])
-          t.group(:proxy=>[:machine, :group])
-          # accessor :access_person, :term=>[:access, :machine, :person]
-        end
         t.exceptions_access(:ref=>[:access], :attributes=>{:type=>"exceptions"})
       end
 

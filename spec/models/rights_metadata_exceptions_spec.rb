@@ -29,4 +29,11 @@ describe RightsMetadataExceptions do
   	media_object.group_exceptions = groups
   	media_object.group_exceptions.should == groups
   end
+
+  it "should supply exceptions_access to all RightsMetadata descendants" do
+    Hydra::Datastream::RightsMetadata.terminology.xpath_for(:exceptions_access).should be_present
+    Hydra::Datastream::RightsMetadata.descendants.each { |desc|
+      desc.terminology.xpath_for(:exceptions_access).should be_present
+    }
+  end
 end
