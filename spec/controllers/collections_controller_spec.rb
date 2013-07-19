@@ -14,7 +14,7 @@
 
 require 'spec_helper'
 
-describe MediaObjectsController, type: :controller do
+describe Admin::CollectionsController, type: :controller do
   render_views
 
   describe "#edit" do

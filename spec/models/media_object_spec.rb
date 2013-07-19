@@ -176,6 +176,24 @@ describe MediaObject do
     end
   end
   
+  describe "Update datastream" do
+    it "should handle a complex update" do
+      params = {
+        'creator'     => [Faker::Name.name, Faker::Name.name],
+        'contributor' => [Faker::Name.name, Faker::Name.name, Faker::Name.name],
+        'title'       => Faker::Lorem.sentence,
+        'date_issued' => '2013',
+        'date_created'=> '1956'
+      }
+      media_object.update_datastream(:descMetadata, params)
+      media_object.creator.should      == params['creator']
+      media_object.contributor.should  == params['contributor']
+      media_object.title.should        == params['title']
+      media_object.date_issued.should  == params['date_issued']
+      media_object.date_created.should == params['date_created']
+    end
+  end
+
   describe "Valid formats" do
     it "should only accept ISO formatted dates"
   end
@@ -210,13 +228,13 @@ describe MediaObject do
   describe "discovery" do
     it "should default to discoverable" do
       media_object.hidden?.should be_false
-      media_object.to_solr[:hidden_b].should be_false
+      media_object.to_solr["hidden_bsi"].should be_false
     end
 
     it "should set hidden?" do
       media_object.hidden = true
       media_object.hidden?.should be_true
-      media_object.to_solr[:hidden_b].should be_true
+      media_object.to_solr["hidden_bsi"].should be_true
     end
   end
 
@@ -300,12 +318,18 @@ describe MediaObject do
     describe 'facet' do
       it 'publishes' do
         media_object.publish!('adam@adam.com')
-        media_object.to_solr[:workflow_published_facet].should == 'Published'
+        media_object.to_solr["workflow_published_sim"].should == 'Published'
       end
       it 'unpublishes' do
         media_object.publish!(nil)
-        media_object.to_solr[:workflow_published_facet].should == 'Unpublished'        
+        media_object.to_solr["workflow_published_sim"].should == 'Unpublished'        
       end
+    end
+  end
+
+  describe 'indexing' do
+    it 'uses stringified keys for everything except :id' do
+      media_object.to_solr.keys.reject { |k| k.is_a?(String) }.should == [:id]
     end
   end
 end

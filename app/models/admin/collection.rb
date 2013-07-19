@@ -15,9 +15,9 @@ class Admin::Collection < ActiveFedora::Base
     sds.field :description, :string
   end
   has_metadata name: 'inheritedRights', type: Hydra::Datastream::InheritableRightsMetadata
-  has_metadata name: 'defaultRights', type: Hydra::Datastream::NonIndexedRightsMetadata
+  has_metadata name: 'defaultRights', type: Hydra::Datastream::NonIndexedRightsMetadata, autocreate: true
 
-  validates :name, :uniqueness => { :solr_name => 'name_t'}, presence: true
+  validates :name, :uniqueness => { :solr_name => 'name_tesim'}, presence: true
   validates :unit, presence: true, inclusion: {in: proc{Admin::Collection.units}}
   validates :managers, length: {minimum: 1, message: 'Collection requires at least 1 manager'} 
 
@@ -36,8 +36,8 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def to_solr(solr_doc = Hash.new, opts = {})
-    map = Solrizer::FieldMapper::Default.new
-    solr_doc[ map.solr_name(:name, :string, :searchable).to_sym ] = self.name
+    map = Solrizer::default_field_mapper
+    solr_doc[ map.solr_name(:name, :stored_searchable, type: :string).to_sym ] = self.name
     super(solr_doc)
   end
 
