@@ -28,7 +28,7 @@ module Hydra
         end
       end  
 
-      @terminology = Hydra::Datastream::RightsMetadata.terminology
+      @terminology = Hydra::Datastream::RightsMetadata.terminology.dup
 
       def to_solr(solr_doc=Hash.new)
         return solr_doc
