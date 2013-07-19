@@ -6,12 +6,10 @@ module RightsMetadataExceptions
       t.root(:path=>"rightsMetadata", :xmlns=>"http://hydra-collab.stanford.edu/schemas/rightsMetadata/v1", :schema=>"http://github.com/projecthydra/schemas/tree/v1/rightsMetadata.xsd")
       t.exceptions_access(:ref=>[:access], :attributes=>{:type=>"exceptions"})
     end
-  end
 
-  # @param [Symbol] type (either :group or :person)
-  # @return 
-  # This method limits the response to known access levels.  Probably runs a bit faster than .permissions().
-  module ClassMethods
+    # @param [Symbol] type (either :group or :person)
+    # @return 
+    # This method limits the response to known access levels.  Probably runs a bit faster than .permissions().
     def quick_search_by_type(type)
       result = {}
       [{:discover_access=>"discover"},{:read_access=>"read"},{:edit_access=>"edit"},{:exceptions_access=>"exceptions"}].each do |access_levels_hash|
