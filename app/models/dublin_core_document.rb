@@ -54,8 +54,8 @@ class DublinCoreDocument < ActiveFedora::NokogiriDatastream
 
     def to_solr(solr_doc = {})
       super(solr_doc)
-      solr_doc["dc_creator_t"] = self.creator
-      solr_doc["dc_publisher_t"] = self.publisher
+      solr_doc["dc_creator_tesim"] = self.creator
+      solr_doc["dc_publisher_tesim"] = self.publisher
       return solr_doc
     end
 

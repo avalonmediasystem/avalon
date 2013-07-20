@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "UniquenessValidator" do
 
-  let(:solr_field) {"title_t"}
+  let(:solr_field) {"title_tesim"}
   let(:validator) {UniquenessValidator.new({:attributes => {}, :solr_name => solr_field})}
 
   before(:each) do

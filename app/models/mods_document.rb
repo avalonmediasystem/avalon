@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class ModsDocument < ActiveFedora::NokogiriDatastream
+class ModsDocument < ActiveFedora::OmDatastream
   
   include ModsTemplates
   include ModsBehaviors

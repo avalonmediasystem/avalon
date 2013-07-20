@@ -48,11 +48,17 @@ class MediaObject < ActiveFedora::Base
   # title, and date of creation.
 
   validates :title, :presence => true
-  validates :creator, :presence => true
+  validate  :validate_creator
   validates :date_issued, :presence => true
   validate  :report_missing_attributes
   validates :collection, presence: true
   validates :governing_policy, presence: true
+
+  def validate_creator
+    if Array(creator).select { |c| c.present? }.empty?
+      errors.add(:creator, I18n.t("errors.messages.blank"))
+    end
+  end
 
   # this method returns a hash: class attribute -> metadata attribute
   # this is useful for decoupling the metdata from the view
@@ -77,11 +83,9 @@ class MediaObject < ActiveFedora::Base
     :genre => :genre,
     :subject => :topical_subject,
     :related_item => :related_item_id,
-    :collection => :collection,
     :geographic_subject => :geographic_subject,
     :temporal_subject => :temporal_subject,
-    :topical_subject => :topical_subject,
-    :collection => :collection
+    :topical_subject => :topical_subject
     }
   end
 
@@ -395,10 +399,12 @@ class MediaObject < ActiveFedora::Base
   
   def to_solr(solr_doc = Hash.new, opts = {})
     super(solr_doc, opts)
-    solr_doc[:created_by_facet] = self.DC.creator
-    solr_doc[:hidden_b] = hidden?
-    solr_doc[:duration_display] = self.duration
-    solr_doc[:workflow_published_facet] = published? ? 'Published' : 'Unpublished'
+    solr_doc[Solrizer.default_field_mapper.solr_name("created_by", :facetable, type: :string)] = self.DC.creator
+    solr_doc[Solrizer.default_field_mapper.solr_name("hidden", type: :boolean)] = hidden?
+    solr_doc[Solrizer.default_field_mapper.solr_name("duration", :displayable, type: :string)] = self.duration
+    solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
+    solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
+    solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
     return solr_doc
   end
 

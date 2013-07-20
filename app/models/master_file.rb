@@ -112,16 +112,15 @@ class MasterFile < ActiveFedora::Base
 
     derivatives_deleted = true
     self.derivatives.each do |d|
-      if d.delete
-        @derivatives.delete(d) # I don't like this, but there's a better fix in HH6 - MBK
-      else
+      if !d.delete
         derivatives_deleted = false
       end
     end
     if !derivatives_deleted 
       #flash[:error] << "Some derivatives could not be deleted."
     end 
-
+    clear_association_cache
+    
     super
 
     #Only save the media object if the master file was successfully deleted
