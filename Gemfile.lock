@@ -462,7 +462,7 @@ GEM
       rack
       unicorn
     validates_email_format_of (1.5.3)
-    warden (1.2.2)
+    warden (1.2.3)
       rack (>= 1.0)
     whenever (0.8.3)
       activesupport (>= 2.3.4)
