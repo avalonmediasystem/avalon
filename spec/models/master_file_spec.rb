@@ -72,10 +72,20 @@ describe MasterFile do
   end
 
   describe "delete" do
-    subject(:masterfile) { MasterFile.create }
-    it "should delete when parent is nil (VOV-1357)" do
+    subject(:masterfile) { derivative.masterfile }
+    let(:derivative) {FactoryGirl.create(:derivative)}
+    it "should delete (VOV-1805)" do
+      Rubyhorn.stub_chain(:client,:delete_track).and_return("http://test.com/retract_rtmp.xml")
+      Rubyhorn.stub_chain(:client,:delete_hls_track).and_return("http://test.com/retract_hls.xml")
+      masterfile
+      expect { masterfile.delete }.to change { MasterFile.all.count }.by(-1)
+    end
+
+    it "should delete with a nil parent (VOV-1357)" do
       pending "bugfix"      
-      expect { masterfile.delete }.to change(MasterFile.all.count).by(-1)
+      masterfile.mediaobject = nil
+      masterfile.save
+      expect { masterfile.delete }.to change { MasterFile.all.count }.by(-1)
     end
   end
 end

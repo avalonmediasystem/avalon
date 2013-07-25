@@ -96,9 +96,9 @@ describe Admin::Collection do
 
   describe "#to_solr" do
     it "should solrize important information" do
-     map = Solrizer::FieldMapper::Default.new
+     map = Solrizer.default_field_mapper
      collection.name = "Herman B. Wells Collection"
-     collection.to_solr[ map.solr_name(:name, :string, :searchable).to_sym ].should == "Herman B. Wells Collection"
+     collection.to_solr[ map.solr_name(:name, :stored_searchable, type: :string).to_sym ].should == "Herman B. Wells Collection"
     end
   end
 

@@ -19,7 +19,7 @@ class MediaObjectsController < ApplicationController
   include Avalon::Controller::ControllerBehavior
   include Hydra::AccessControlsEnforcement
 
-  before_filter :enforce_access_controls
+#  before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
   before_filter :load_player_context, only: [:show, :show_progress, :remove]
 
@@ -29,10 +29,27 @@ class MediaObjectsController < ApplicationController
   rescue_from ActiveFedora::ObjectNotFoundError do |exception|
     render '/errors/unknown_pid', status: 404
   end
-  
+ 
+  rescue_from CanCan::AccessDenied do |exception|
+    if current_user.nil?
+      flash[:notice] = 'You are not authorized to perform this action. Try logging in.'
+      redirect_to new_user_session_path
+    else
+      case params[:action]
+      when 'edit'
+        flash[:notice] = 'You are not authorized to edit this document.  You have been redirected to a read-only view.'
+        redirect_to :action => :show
+      else
+        flash[:notice] = 'You are not authorized to perform this action.'
+        redirect_to root_path
+      end
+    end
+  end
+
   def new
     logger.debug "<< NEW >>"
     collection = Admin::Collection.find(params[:collection_id])
+    authorize! :read, collection
 
     @mediaobject = MediaObjectsController.initialize_media_object(user_key)
     @mediaobject.workflow.origin = 'web'
@@ -43,6 +60,7 @@ class MediaObjectsController < ApplicationController
   end
 
   def custom_edit
+    authorize! :update, @mediaobject
     if ['preview', 'structure', 'file-upload'].include? @active_step
       @masterFiles = load_master_files
     end
@@ -74,10 +92,12 @@ class MediaObjectsController < ApplicationController
   end
 
   def custom_update
+    authorize! :update, @mediaobject
     flash[:notice] = @notice
   end
 
   def show
+    authorize! :read, @mediaobject
     respond_to do |format|
       # The flash notice is only set if you are returning HTML since it makes no
       # sense in an AJAX context (yet)
@@ -95,6 +115,7 @@ class MediaObjectsController < ApplicationController
   end
 
   def show_progress
+    authorize! :read, @mediaobject
     overall = { :success => 0, :error => 0 }
 
     result = Hash[
@@ -139,6 +160,7 @@ class MediaObjectsController < ApplicationController
   # you can't delete an object if you do not have permission, if it does not exist, or
   # (most likely) if the 'Yes' button was accidentally submitted twice
   def destroy
+    authorize! :manage, @mediaobject
     logger.debug "<< DESTROY >>"
     logger.debug "<< Media object => #{params[:id]} >>"
     logger.debug "<< Exists? #{MediaObject.exists? params[:id]} >>"

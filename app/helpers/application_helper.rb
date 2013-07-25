@@ -17,6 +17,10 @@ module ApplicationHelper
     'Avalon'
   end
   
+  def release_text
+    "#{application_name} #{t(:release_label)} #{Avalon::VERSION}"
+  end
+
   def image_for(item_id)
     #TODO index the thumbnail url to avoid having to hit fedora to get it
     media_object = MediaObject.find(item_id)
@@ -85,12 +89,12 @@ module ApplicationHelper
   #This helper should be used by blacklight to display the "Title" field in search results
   def search_result_label item
     label = item.id
-    unless item["title_display"].blank?
-      label = truncate(item["title_display"], length: 100)
+    unless item["title_sim"].blank?
+      label = truncate(item["title_sim"], length: 100)
     end
     
-    if ! item['duration_t'].nil? && ! item['duration_t'].empty? 
-      item_duration = item['duration_t'].first
+    if ! item['duration_tesim'].nil? && ! item['duration_tesim'].empty? 
+      item_duration = item['duration_tesim'].first
       if item_duration.respond_to?(:to_i)
         formatted_duration = milliseconds_to_formatted_time(item_duration.to_i)
         label += " (#{formatted_duration})"

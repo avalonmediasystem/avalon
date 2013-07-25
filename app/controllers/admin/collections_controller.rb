@@ -16,7 +16,7 @@ class Admin::CollectionsController < ApplicationController
     if can? :manage, Admin::Collection
       @collections = Admin::Collection.all
     else
-      @collections = Admin::Collection.where(inheritable_edit_access_person_t: user_key).all
+      @collections = Admin::Collection.where("#{ActiveFedora::SolrService.solr_name("inheritable_edit_access_person", Hydra::Datastream::RightsMetadata.indexer)}" => user_key).all
     end
   end
 

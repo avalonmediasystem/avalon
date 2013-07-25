@@ -49,10 +49,7 @@ describe MasterFilesController do
           original: 'any', 
           container_id: media_object.pid 
 
-        mopid = media_object.pid
-        media_object = MediaObject.find(mopid)
-
-        master_file = media_object.parts.first
+        master_file = media_object.reload.parts.first
         master_file.file_format.should eq "Moving image" 
              
         flash[:errors].should be_nil
@@ -65,10 +62,7 @@ describe MasterFilesController do
          original: 'any', 
          container_id: media_object.pid 
 
-       mopid = media_object.pid
-       media_object = MediaObject.find(mopid)
-
-       master_file = media_object.parts.first
+       master_file = media_object.reload.parts.first
        master_file.file_format.should eq "Sound" 
      end
        
@@ -109,9 +103,7 @@ describe MasterFilesController do
         post :create, Filedata: [@file], original: 'any', container_id: media_object.pid
          
         master_file = MasterFile.all.last
-        mopid = media_object.pid
-        media_object = MediaObject.find(mopid)
-        media_object.parts.should include master_file
+        media_object.reload.parts.should include master_file
         master_file.mediaobject.pid.should eq(media_object.pid)
          
         flash[:errors].should be_nil        

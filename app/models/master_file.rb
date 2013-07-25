@@ -119,7 +119,8 @@ class MasterFile < ActiveFedora::Base
     if !derivatives_deleted 
       #flash[:error] << "Some derivatives could not be deleted."
     end 
-
+    clear_association_cache
+    
     super
 
     #Only save the media object if the master file was successfully deleted
