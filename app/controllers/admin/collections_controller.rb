@@ -132,6 +132,12 @@ class Admin::CollectionsController < ApplicationController
 
   end
 
+  def destroy
+    @media_objects = MediaObject.find(params[:media_objects_ids])
+    @collection = Collection.find(params[:collection_id])
+    Admin::Collection.reassign_media_objects( @media_objects, @collection)
+  end
+
   # DELETE /collections/1
   def destroy
     @collection = Admin::Collection.find(params[:id])

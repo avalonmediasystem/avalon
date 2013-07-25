@@ -292,5 +292,20 @@ describe Admin::Collection do
   end
   describe "#inherited_edit_users=" do
   end
+
+
+  describe "#reassign_media_objects" do
+    before do
+      @media_objects = (1..10).map{ FactoryGirl.create(:media_object)}
+      @collection = FactoryGirl.create(:collection, media_objects: @media_objects)
+    end
+
+    it 'should have a proper relationship' do
+      debugger
+      print 1
+    end
+
+
+  end
 end
 
