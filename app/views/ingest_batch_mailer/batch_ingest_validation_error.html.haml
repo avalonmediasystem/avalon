@@ -14,14 +14,30 @@
   ---  END LICENSE_HEADER BLOCK  ---
 
 %p Initial processing of your batch ingest failed:
-- number_of_errors, errors = @package.errors.first
 
-- errors.messages.each_pair do |field, errors|
-  %h5 Row: #{field}
-  %p.text-error= errors.join(' ')
-
-
-.alert.alert-error
-  - @authentication_errors.each do |message|
-    = message
+-@package.entries.each do |entry|
+  -if entry.errors.present?
+    %b= entry.fields[:main_title].try(:first) || "(Untitled)"
     %br
+    - entry.errors.messages.each_pair do |field, errors|
+      #{field.to_s.titleize} - #{errors.join(', ')}
+      %br
+
+
+
+
+
+
+/ - number_of_errors, errors = @package.errors.first
+
+
+/ - errors.messages.each_pair do |field, errors|
+/   %h5 Row: #{field}
+/   %p.text-error= errors.join(' ')
+
+
+-if @base_errors.present?
+  .alert.alert-error
+    - @base_errors.uniq.each do |message|
+      = message
+      %br

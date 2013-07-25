@@ -26,13 +26,19 @@ module Avalon
       fields = entry.fields.dup
       ability = Ability.new( User.where(email: email_address).first )
       collection_name = fields.delete :collection
-
       media_object = MediaObject.new
       media_object.workflow.origin = 'batch'
-      media_object.collection = Admin::Collection.where( name: collection_name ).first if collection_name
+      media_object.collection = Avalon::Batch.find_collection_from_fields( fields )
       media_object.update_datastream(:descMetadata, fields)
       media_object
     end
+    
+    def self.find_collection_from_fields( fields )
+      collection_name = fields.delete :collection
+      return nil unless collection_name
+      Admin::Collection.where( name: collection_name ).first
+    end
+
 
     def self.ingest
       # Scans dropbox for new batch packages
@@ -49,19 +55,21 @@ module Avalon
           logger.debug "<< Processing package #{index} >>"
 
           media_objects = []
-          authentication_errors = []
+          base_errors = []
           email_address = package.manifest.email || Avalon::Configuration['email']['notification']
           ability = Ability.new( User.where(email: email_address).first )
 
           package.validate do |entry|
             media_object = Avalon::Batch.initialize_media_object_from_package( entry, email_address )
             if media_object.collection && ! ability.can?(:read, media_object.collection)
-              authentication_errors << "You do not have permission to add items to collection: #{media_object.collection.name}."
+              base_errors << "You do not have permission to add items to collection: #{media_object.collection.name}."
+            elsif ! media_object.collection && entry.fields[:collection].present?
+              base_errors << "There is not a collection in the system with the name: #{entry.fields[:collection].first}."
             end
             media_object
           end
 
-          if package.valid? && authentication_errors.empty?
+          if package.valid? && base_errors.empty?
 
             package.process do |fields, files, opts, entry|
               media_object = Avalon::Batch.initialize_media_object_from_package( entry, email_address )
@@ -99,7 +107,7 @@ module Avalon
             IngestBatchMailer.batch_ingest_validation_success( package ).deliver
           else
             package.manifest.error!
-            IngestBatchMailer.batch_ingest_validation_error( package, authentication_errors ).deliver
+            IngestBatchMailer.batch_ingest_validation_error( package, base_errors ).deliver
           end
 
           # Create an ingest batch object for 

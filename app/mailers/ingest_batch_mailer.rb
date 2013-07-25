@@ -26,9 +26,9 @@ class IngestBatchMailer < ActionMailer::Base
     )
   end
 
-  def batch_ingest_validation_error( package, authentication_errors )
+  def batch_ingest_validation_error( package, base_errors )
     @package = package
-    @authentication_errors = authentication_errors
+    @base_errors = base_errors
     email = package.manifest.email || Avalon::Configuration['email']['notification']
     mail(
       to: email,
