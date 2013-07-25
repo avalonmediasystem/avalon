@@ -174,11 +174,16 @@ class MasterFile < ActiveFedora::Base
     # Returns the hash
     {
       label: label,
+      is_video: is_video?,
       poster_image: poster_path,
       mediapackage_id: mediapackage_id,
       stream_flash: flash, 
       stream_hls: hls 
     }
+  end
+
+  def is_video?
+    self.file_format != "Sound"
   end
 
   def sort_streams array

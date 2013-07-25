@@ -4,15 +4,26 @@
       <% if @currentStream.present? and @currentStream.succeeded? %>
         <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
         <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>   
-
-        <video controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] %>" preload="true">
-          <% @currentStreamInfo[:stream_flash].each do |flash| %>
-            <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
-          <% end %>
-          <% @currentStreamInfo[:stream_hls].each do |hls| %>
-            <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
-          <% end %>
-        </video>
+        
+        <% if @currentStreamInfo[:is_video] %>
+          <video controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] %>" preload="true">
+            <% @currentStreamInfo[:stream_flash].each do |flash| %>
+              <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
+            <% end %>
+            <% @currentStreamInfo[:stream_hls].each do |hls| %>
+              <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
+            <% end %>
+          </video>
+        <% else %>
+          <audio controls style="width: 100%;" id="video-tag">
+            <% @currentStreamInfo[:stream_flash].each do |flash| %>
+              <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
+            <% end %>
+            <% @currentStreamInfo[:stream_hls].each do |hls| %>
+              <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
+            <% end %>
+          </audio>
+        <% end %>
       <% end %>
     </section>
     <%= render 'video_player' %>

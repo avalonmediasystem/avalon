@@ -46,7 +46,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: ebd1c9bdf209ae53751efc2cc72659d2a3f324c7
+  revision: 7e2220e7ffbaec6da13770a08b1bc9ba5cd06bc9
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
