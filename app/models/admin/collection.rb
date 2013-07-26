@@ -124,23 +124,20 @@ class Admin::Collection < ActiveFedora::Base
     inheritedRights.update_permissions('person'=>p)
   end
 
-  def self.reassign_media_objects( media_objects, collection)
+  def self.reassign_media_objects( media_objects, source_collection, target_collection)
     media_objects.each do |media_object|
       
-      # remove media object from previous collection
-      previous_collection = media_object.collection
-      previous_collection.remove_relationship(:is_member_of_collection, "info:fedora/#{media_object.pid}")
-      previous_collection.media_objects.delete media_object
+      source_collection.remove_relationship(:is_member_of_collection, "info:fedora/#{media_object.pid}")
+      source_collection.media_objects.delete media_object
 
-      # update collection with new media object
-      collection.add_relationship(:is_member_of_collection, "info:fedora/#{media_object.pid}")
-      collection.media_objects << media_object
-      media_object.collection = collection
-      
-      previous_collection.save!
+      target_collection.add_relationship(:is_member_of_collection, "info:fedora/#{media_object.pid}")
+      target_collection.media_objects << media_object
+
+      media_object.collection = target_collection
       media_object.save!
-      collection.save!
     end
+    source_collection.save!
+    target_collection.save!
   end
 
 end

@@ -137,10 +137,11 @@ class Admin::CollectionsController < ApplicationController
 
   # DELETE /collections/1
   def destroy
-    @media_objects = MediaObject.find(params[:media_objects_ids])
-    @collection = Collection.find(params[:collection_id])
-    Admin::Collection.reassign_media_objects( @media_objects, @collection)
-    redirect_to collections_url
+    @source_collection = Admin::Collection.find!(params[:id])
+    @target_collection = Admin::Collection.find!(params[:target_collection_id])
+    Admin::Collection.reassign_media_objects( @source_collection.media_objects, @source_collection, @target_collection )
+	@source_collection.destroy
+    redirect_to @target_collection
   end
 
 end
