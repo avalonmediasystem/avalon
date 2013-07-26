@@ -10,6 +10,13 @@
           <td> <%= pluralize(collection.media_objects.size, 'item') %> </td>
           <td> <%= pluralize(collection.managers.size, 'manager') %> </td>
           <td> <%= collection.description %> </td>
+          <td>
+            <% if can?(:destroy, collection) %>
+              <%= link_to('Delete', remove_admin_collection_path(collection), class: 'btn btn-mini btn-danger') %>
+            <% else %>
+              &nbsp;
+            <% end %>
+          </td>
         </tr>
       <% end %>
       </tbody>

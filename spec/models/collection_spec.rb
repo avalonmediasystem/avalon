@@ -1,3 +1,17 @@
+# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+#   University.  Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+# 
+# You may obtain a copy of the License at
+# 
+# http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software distributed 
+#   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   specific language governing permissions and limitations under the License.
+# ---  END LICENSE_HEADER BLOCK  ---
+
 require 'spec_helper'
 require 'cancan/matchers'
 
@@ -311,5 +325,28 @@ describe Admin::Collection do
   end
   describe "#inherited_edit_users=" do
   end
-end
 
+
+  describe "#reassign_media_objects" do
+    before do
+      @media_objects = (1..3).map{ FactoryGirl.create(:media_object)}
+      @source_collection = FactoryGirl.create(:collection, media_objects: @media_objects)
+      @target_collection = FactoryGirl.create(:collection)
+      Admin::Collection.reassign_media_objects(@media_objects, @source_collection, @target_collection)
+    end
+
+    it 'sets the new collection on media_object' do
+      @media_objects.each{|m| m.collection.should eql @target_collection }
+    end
+
+    it 'removes the media object from the source collection' do
+      @source_collection.media_objects.should_not eql @media_objects
+    end
+
+    it 'adds the media object to the target collection' do
+      @target_collection.media_objects.should eql @media_objects
+    end
+
+
+  end
+end
