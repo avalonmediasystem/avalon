@@ -16,7 +16,7 @@
             delete it, you must select a new collection to move <%=@objects.length > 1 ? 'them' : 'it'%> 
             into.
           </p>
-          <%= select_tag "target_collection_id", options_from_collection_for_select(@candidates, "pid", "name") %>
+          <%= select_tag :target_collection_id, options_from_collection_for_select(@candidates, "pid", "name") %>
         </fieldset>
         </div>
       </div>

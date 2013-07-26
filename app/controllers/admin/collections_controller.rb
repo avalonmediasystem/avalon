@@ -140,8 +140,13 @@ class Admin::CollectionsController < ApplicationController
     @source_collection = Admin::Collection.find(params[:id])
     @target_collection = Admin::Collection.find(params[:target_collection_id])
     Admin::Collection.reassign_media_objects( @source_collection.media_objects, @source_collection, @target_collection )
-	@source_collection.destroy
-    redirect_to admin_collection_path(@target_collection)
+    if @source_collection.media_objects.length == 0
+      @source_collection.destroy
+      redirect_to admin_collection_path(@target_collection)
+    else
+      flash[:notice] = "Something went wrong. #{@source_collection.name} is not empty."
+      redirect_to admin_collection_path(@source_collection)
+    end
   end
 
 end
