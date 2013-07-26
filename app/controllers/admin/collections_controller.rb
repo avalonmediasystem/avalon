@@ -137,6 +137,10 @@ class Admin::CollectionsController < ApplicationController
 
   # DELETE /collections/1
   def destroy
-    render xml: params
+    @media_objects = MediaObject.find(params[:media_objects_ids])
+    @collection = Collection.find(params[:collection_id])
+    Admin::Collection.reassign_media_objects( @media_objects, @collection)
+    redirect_to collections_url
   end
+
 end
