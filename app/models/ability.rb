@@ -77,8 +77,7 @@ class Ability
       end
 
       cannot :destroy, Admin::Collection do |collection, other_user_collections=[]|
-        (!collection.managers.include?(@user.username)) or
-          (collection.media_objects.length > 0 and other_user_collections.length == 0)
+        !collection.managers.include?(@user.username)
       end
 
       can :update, Admin::Collection do |collection|
