@@ -138,11 +138,15 @@ class Admin::CollectionsController < ApplicationController
   # DELETE /collections/1
   def destroy
     @source_collection = Admin::Collection.find(params[:id])
-    @target_collection = Admin::Collection.find(params[:target_collection_id])
-    Admin::Collection.reassign_media_objects( @source_collection.media_objects, @source_collection, @target_collection )
+    target_path = admin_collections_path
+    if @source_collection.media_objects.length > 0
+      @target_collection = Admin::Collection.find(params[:target_collection_id])
+      Admin::Collection.reassign_media_objects( @source_collection.media_objects, @source_collection, @target_collection )
+      target_path = admin_collection_path(@target_collection)
+    end
     if @source_collection.media_objects.length == 0
       @source_collection.destroy
-      redirect_to admin_collection_path(@target_collection)
+      redirect_to target_path
     else
       flash[:notice] = "Something went wrong. #{@source_collection.name} is not empty."
       redirect_to admin_collection_path(@source_collection)
