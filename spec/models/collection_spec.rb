@@ -20,6 +20,7 @@ describe Admin::Collection do
       let(:ability){ Ability.new(user) }
       let(:user){ User.where(username: collection.managers.first).first }
       
+      it{ should be_able_to(:read, Admin::Collection) }
       it{ should be_able_to(:update, collection) }
       it{ should be_able_to(:read, collection) }
       it{ should be_able_to(:update_unit, collection) }
@@ -35,6 +36,7 @@ describe Admin::Collection do
       let(:user){ User.where(username: collection.editors.first).first }
 
       #Will need to define new action that covers just the things that an editor is allowed to edit
+      it{ should be_able_to(:read, Admin::Collection) }
       it{ should be_able_to(:read, collection) }
       it{ should be_able_to(:update, collection) }
       it{ should_not be_able_to(:update_unit, collection) }
@@ -50,7 +52,24 @@ describe Admin::Collection do
       let(:ability){ Ability.new(user) }
       let(:user){ User.where(username: collection.depositors.first).first }
 
+      it{ should be_able_to(:read, Admin::Collection) }
       it{ should be_able_to(:read, collection) }
+      it{ should_not be_able_to(:update_unit, collection) }
+      it{ should_not be_able_to(:update_managers, collection) }
+      it{ should_not be_able_to(:update_editors, collection) }
+      it{ should_not be_able_to(:update_depositors, collection) }
+      it{ should_not be_able_to(:create, collection) }
+      it{ should_not be_able_to(:update, collection) }
+      it{ should_not be_able_to(:destroy, collection) }
+    end
+
+    context 'when end user' do
+      subject{ ability}
+      let(:ability){ Ability.new(user) }
+      let(:user){ FactoryGirl.create(:user) }
+
+      it{ should_not be_able_to(:read, Admin::Collection) }
+      it{ should_not be_able_to(:read, collection) }
       it{ should_not be_able_to(:update_unit, collection) }
       it{ should_not be_able_to(:update_managers, collection) }
       it{ should_not be_able_to(:update_editors, collection) }
