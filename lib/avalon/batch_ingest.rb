@@ -24,7 +24,6 @@ module Avalon
 
     def self.initialize_media_object_from_package( entry, email_address)
       fields = entry.fields.dup
-      ability = Ability.new( User.where(email: email_address).first )
       media_object = MediaObject.new
       media_object.workflow.origin = 'batch'
       media_object.collection = Avalon::Batch.find_collection_from_fields( fields )
@@ -34,7 +33,7 @@ module Avalon
     
     def self.find_collection_from_fields( fields )
       collection_name = fields[:collection]
-      return nil unless collection_name
+      return nil unless collection_name.present?
       Admin::Collection.where( name: collection_name ).first
     end
 
@@ -56,8 +55,9 @@ module Avalon
           media_objects = []
           base_errors = []
           email_address = package.manifest.email || Avalon::Configuration['email']['notification']
-          ability = Ability.new( User.where(email: email_address).first )
-          ability.instance_variable_set("@user", User.first)
+          current_user = User.where(email: email_address).first
+          ability = Ability.new current_user
+          ability.instance_variable_set("@user", current_user)
           package.validate do |entry|
             media_object = Avalon::Batch.initialize_media_object_from_package( entry, email_address )
             if media_object.collection && ! ability.can?(:read, media_object.collection)
