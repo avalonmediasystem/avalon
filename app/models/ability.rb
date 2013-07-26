@@ -80,7 +80,9 @@ class Ability
         mediaobject.collection.managers.include?(@user.username) 
       end
 
-      cannot :destroy, Admin::Collection
+      cannot :destroy, Admin::Collection do |collection, other_user_collections=[]|
+        !collection.managers.include?(@user.username)
+      end
 
       can :update, Admin::Collection do |collection|
         is_editor_of?(collection) 
