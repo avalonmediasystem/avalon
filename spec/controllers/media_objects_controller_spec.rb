@@ -166,7 +166,7 @@ describe MediaObjectsController, type: :controller do
     
     it "should remove the MediaObject from the system" do
       delete :destroy, id: media_object.pid
-      MediaObject.exists?('avalon:electronic-resource').should == false
+      MediaObject.exists?(media_object.pid).should == false
     end
 
     it "should not be accessible through the search interface" do
