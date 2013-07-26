@@ -128,7 +128,7 @@ class Admin::CollectionsController < ApplicationController
 
   end
 
-  # GET /collections/1/reassign
+  # GET /collections/1/remove
   def remove
     @collection = Admin::Collection.find(params[:id])
     @objects    = @collection.media_objects
@@ -137,6 +137,9 @@ class Admin::CollectionsController < ApplicationController
 
   # DELETE /collections/1
   def destroy
-    render xml: params
+    @source_collection = Admin::Collection.find!(params[:id])
+    @target_collection = Admin::Collection.find!(params[:target_collection_id])
+    Admin::Collection.reassign_media_objects( @source_collection.media_objects, @source_collection, @target_collection )
+    redirect_to @target_collection
   end
 end
