@@ -31,7 +31,7 @@ class Ability
       can :manage, Admin::Group
     end
 
-    if @user.id.present? and Admin::Collection.where("#{ActiveFedora::SolrService.solr_name("inheritable_edit_access_person", Hydra::Datastream::RightsMetadata.indexer)}" => @user.username).first.present?
+    if is_member_of_any_collection?
       can :create, MediaObject
     end
 
@@ -48,6 +48,10 @@ class Ability
 
       can :read, Admin::Collection do |collection|
         is_member_of?(collection)
+      end
+
+      if !is_member_of_any_collection?
+        cannot :read, Admin::Collection
       end
     
       can :read, MasterFile do |master_file|
@@ -115,5 +119,9 @@ class Ability
      @user_groups.include?("administrator") || 
        collection.managers.include?(@user.username) ||
        collection.editors.include?(@user.username)
+  end
+
+  def is_member_of_any_collection?
+    @user.id.present? and Admin::Collection.where("#{ActiveFedora::SolrService.solr_name("inheritable_edit_access_person", Hydra::Datastream::RightsMetadata.indexer)}" => @user.username).first.present?
   end
 end
