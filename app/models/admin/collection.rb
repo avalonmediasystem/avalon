@@ -125,7 +125,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def self.reassign_media_objects( media_objects, source_collection, target_collection)
-    media_objects.each do |media_object|
+    media_objects.dup.each do |media_object|
       
       source_collection.remove_relationship(:is_member_of_collection, "info:fedora/#{media_object.pid}")
       source_collection.media_objects.delete media_object
