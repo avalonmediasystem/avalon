@@ -160,7 +160,8 @@ class MediaObjectsController < ApplicationController
   # you can't delete an object if you do not have permission, if it does not exist, or
   # (most likely) if the 'Yes' button was accidentally submitted twice
   def destroy
-    authorize! :manage, @mediaobject
+    @mediaobject = MediaObject.find(params[:id])
+    authorize! :destroy, @mediaobject
     logger.debug "<< DESTROY >>"
     logger.debug "<< Media object => #{params[:id]} >>"
     logger.debug "<< Exists? #{MediaObject.exists? params[:id]} >>"
