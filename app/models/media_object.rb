@@ -85,7 +85,7 @@ class MediaObject < ActiveFedora::Base
     :related_item => :related_item_id,
     :geographic_subject => :geographic_subject,
     :temporal_subject => :temporal_subject,
-    :topical_subject => :topical_subject
+    :topical_subject => :topical_subject,
     }
   end
 
