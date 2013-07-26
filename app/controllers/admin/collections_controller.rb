@@ -1,6 +1,6 @@
 class Admin::CollectionsController < ApplicationController
   before_filter :authenticate_user!
-  load_and_authorize_resource
+  load_and_authorize_resource except: :remove
   respond_to :html
   rescue_from Exception do |e|
     if e.message == "UserIsEditor"
@@ -13,26 +13,22 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections
   def index
-    if can? :manage, Admin::Collection
-      @collections = Admin::Collection.all
-    else
-      @collections = Admin::Collection.where("#{ActiveFedora::SolrService.solr_name("inheritable_edit_access_person", Hydra::Datastream::RightsMetadata.indexer)}" => user_key).all
-    end
+    @collections = get_user_collections
   end
 
   # GET /collections/1
   def show
-      @group_exceptions = []
-      if @collection.default_access == "limited"
-        # When access is limited, group_exceptions content is stored in read_groups
-        @collection.default_read_groups.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
-        @user_exceptions = @collection.default_read_users 
-       else
-        @collection.default_group_exceptions.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
-        @user_exceptions = @collection.default_user_exceptions 
-      end
+    @group_exceptions = []
+    if @collection.default_access == "limited"
+      # When access is limited, group_exceptions content is stored in read_groups
+      @collection.default_read_groups.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
+      @user_exceptions = @collection.default_read_users 
+     else
+      @collection.default_group_exceptions.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
+      @user_exceptions = @collection.default_user_exceptions 
+    end
 
-      @addable_groups = Admin::Group.non_system_groups.reject { |g| @group_exceptions.include? g.name }
+    @addable_groups = Admin::Group.non_system_groups.reject { |g| @group_exceptions.include? g.name }
   end
 
   # GET /collections/new
@@ -132,10 +128,15 @@ class Admin::CollectionsController < ApplicationController
 
   end
 
+  # GET /collections/1/reassign
+  def remove
+    @collection = Admin::Collection.find(params[:id])
+    @objects    = @collection.media_objects
+    @candidates = get_user_collections.reject { |c| c == @collection }
+  end
+
   # DELETE /collections/1
   def destroy
-    @collection = Admin::Collection.find(params[:id])
-    @collection.destroy
-    redirect_to collections_url
+    render xml: params
   end
 end

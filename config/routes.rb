@@ -54,6 +54,7 @@ Avalon::Application.routes.draw do
     resources :collections do
       member do
         get 'edit'
+        get 'remove'
       end
     end
   end

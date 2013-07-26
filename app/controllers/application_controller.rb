@@ -38,4 +38,12 @@ class ApplicationController < ActionController::Base
     logger.debug "<< CURRENT SESSION INFORMATION >>"
     logger.debug session.inspect
   end
+
+  def get_user_collections
+    if can? :manage, Admin::Collection
+      Admin::Collection.all
+    else
+      Admin::Collection.where("#{ActiveFedora::SolrService.solr_name("inheritable_edit_access_person", Hydra::Datastream::RightsMetadata.indexer)}" => user_key).all
+    end
+  end
 end
