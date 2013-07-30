@@ -122,6 +122,7 @@ describe Admin::Collection do
 
   describe "Admin::Collection.units" do
     it "should return an array of units" do
+      Admin::Collection.stub(:units).and_return ["University Archives", "Black Film Center/Archive"]
       Admin::Collection.units.should be_an_instance_of Array
       Admin::Collection.units.should == ["University Archives", "Black Film Center/Archive"]
     end

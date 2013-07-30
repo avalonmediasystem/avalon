@@ -1,6 +1,7 @@
 require 'hydra/datastream/non_indexed_rights_metadata'
 require 'hydra/model_mixins/hybrid_delegator'
 require 'role_controls'
+require 'avalon/controlled_vocabulary'
 
 class Admin::Collection < ActiveFedora::Base
   include Hydra::ModelMixins::CommonMetadata
@@ -18,7 +19,7 @@ class Admin::Collection < ActiveFedora::Base
   has_metadata name: 'defaultRights', type: Hydra::Datastream::NonIndexedRightsMetadata, autocreate: true
 
   validates :name, :uniqueness => { :solr_name => 'name_tesim'}, presence: true
-  validates :unit, presence: true, inclusion: {in: proc{Admin::Collection.units}}
+  validates :unit, presence: true, inclusion: { in: Proc.new{ Admin::Collection.units } }
   validates :managers, length: {minimum: 1, message: 'Collection requires at least 1 manager'} 
 
   delegate :name, to: :descMetadata, unique: true
@@ -28,7 +29,7 @@ class Admin::Collection < ActiveFedora::Base
            :group_exceptions=, :user_exceptions, :user_exceptions=, to: :defaultRights, prefix: :default
 
   def self.units
-    ["University Archives", "Black Film Center/Archive"]
+    Avalon::ControlledVocabulary.find_by_name(:units)
   end
 
   def created_at
