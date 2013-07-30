@@ -14,7 +14,13 @@
 
 module AboutPage
   class Matterhorn < AboutPage::Configuration::Node
+    attr_reader :rubyhorn
     delegate :each_pair, :to_json, :to_xml, :to => :to_h
+    validates_each :ping do |record, attr, value|
+      unless value == 'OK'
+        record.errors.add attr, ": unable to ping Matterhorn at #{record.rubyhorn.config_for_environment[:url]}"
+      end
+    end
     validates_each :services do |record, attr, value|
       record.services.each { |s| 
         if s['service_state'].to_s != 'NORMAL'
@@ -23,8 +29,14 @@ module AboutPage
       }
     end
 
-    def initialize(connection)
-      @connection = connection
+    def initialize(rubyhorn)
+      @rubyhorn = rubyhorn
+    end
+
+    def ping
+      rubyhorn.client.me.has_key?('username') ? 'OK' : nil
+    rescue
+      nil
     end
 
     def services
@@ -32,7 +44,9 @@ module AboutPage
     end
 
     def to_h
-      @connection.services['services']
+      rubyhorn.client.services['services']
+    rescue
+      {'service'=>[]}
     end
 
     def self.complete_status(service)
