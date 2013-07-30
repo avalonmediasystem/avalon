@@ -61,6 +61,7 @@ RSpec.configure do |config|
     Rails.cache.clear
     DatabaseCleaner.start
     RoleMap.reset!
+    Admin::Collection.stub(:units).and_return ['University Archives']
   end
 
   config.after(:each) do
