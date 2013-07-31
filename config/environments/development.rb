@@ -1,5 +1,11 @@
 Avalon::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
+  config.autoload_paths += ["#{Rails.root}/lib"]
+  config.autoload_paths += Bundler.load.current_dependencies.map { |dep| 
+    if dep.source.is_a?(Bundler::Source::Path) and dep.source.options.has_key?('path')
+      dep.to_spec.load_paths#.collect { |path| Dir[File.join(path,'**','*.rb')] }
+    end
+  }.flatten.compact
 
   config.log_level = :debug
 

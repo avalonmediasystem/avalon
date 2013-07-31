@@ -27,6 +27,9 @@
     gem 'therubyracer', '= 0.10.2'
   end
 
+  gem 'about_page', '>= 0.2.1'
+  gem 'avalon-about', :git => "https://github.com/avalonmediasystem/avalon-about.git"
+
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise'
   #gem 'devise-guests'
