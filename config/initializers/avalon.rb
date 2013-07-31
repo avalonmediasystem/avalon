@@ -17,7 +17,8 @@ module Avalon
       "rtmp_base"=>"rtmp://localhost/avalon/",
       "http_base"=>"http://localhost:3000/streams/",
       "stream_token_ttl"=>20
-    }
+    },
+    'controlled_vocabulary' => {'path'=>''}
    }
 
   env = ENV['RAILS_ENV'] || 'development'
