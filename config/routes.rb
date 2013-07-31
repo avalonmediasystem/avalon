@@ -65,7 +65,8 @@ Avalon::Application.routes.draw do
     end
   end
 
-
+  mount AboutPage::Engine => '/about(.:format)'
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
