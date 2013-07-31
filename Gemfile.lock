@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
-  revision: 0652ca23681dbdf34f219880fe3a23d7199673ea
+  revision: 53b5cb970a3589f9b29de611b46bcc9f9700e9cf
   specs:
     avalon-about (0.1.0)
       about_page
