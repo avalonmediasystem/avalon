@@ -23,28 +23,29 @@ after "deploy:update_code", "deploy:migrate"
 after "deploy:create_symlink", "deploy:trust_rvmrc"
 
 set(:shared_children) { 
-	%{
-		config/authentication.yml 
-		config/avalon.yml 
-		config/database.yml 
-		config/environments
-		config/fedora.yml 
-		config/matterhorn.yml 
-		config/role_map_#{fetch(:rails_env)}.yml 
-		config/solr.yml
+  %{
+    config/authentication.yml 
+    config/avalon.yml 
+    config/controlled_vocabulary.yml
+    config/database.yml 
+    config/environments
+    config/fedora.yml 
+    config/matterhorn.yml 
+    config/role_map_#{fetch(:rails_env)}.yml 
+    config/solr.yml
     Gemfile.local 
-		log 
-		tmp/pids
-	}.split
+    log 
+    tmp/pids
+  }.split
 }
 
 namespace :deploy do
-	task :remove_symlink_targets do
-		shared_children.each do |target|
-			t = File.join(latest_release,target)
-			run "if [ -f #{t} ]; then rm #{t}; fi"
-		end
-	end
+  task :remove_symlink_targets do
+    shared_children.each do |target|
+      t = File.join(latest_release,target)
+      run "if [ -f #{t} ]; then rm #{t}; fi"
+    end
+  end
 
   task :symlink_dirs do
     run "cd #{current_release}; ln -s #{hls_dir} #{latest_release}/public/streams"
@@ -59,9 +60,9 @@ namespace :deploy do
     link_shared_file "user_auth_cas.rb", "config/initializers/user_auth_cas.rb"
   end
 
-	task :trust_rvmrc do
-	  run "/usr/local/rvm/bin/rvm rvmrc trust #{latest_release}"
-	end
+  task :trust_rvmrc do
+    run "/usr/local/rvm/bin/rvm rvmrc trust #{latest_release}"
+  end
 
   task :start do
     run "cd #{current_release} && #{rake} RAILS_ENV=#{rails_env} delayed_job:start"
