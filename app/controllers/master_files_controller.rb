@@ -166,8 +166,8 @@ class MasterFilesController < ApplicationController
         io = master_file.set_still_image(opts)
         render :text => io.read, :content_type => 'image/jpeg'
       end
-      format.any do
-        MasterFile.set_still_image(opts)
+      format.all do
+        MasterFile.set_still_image(params[:id], opts)
         redirect_to edit_media_object_path(parent.pid, step: "file-upload")
       end
     end
