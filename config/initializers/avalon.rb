@@ -10,6 +10,7 @@ module Avalon
     "dropbox"=>{},
     "fedora"=>{"namespace"=>"avalon"},
     "matterhorn"=>{},
+    "ffmpeg"=>{"path"=>"/usr/local/bin/ffmpeg"},
     "mediainfo"=>{"path"=>"/usr/local/bin/mediainfo"},
     "email"=>{},
     "streaming"=>{
@@ -18,7 +19,7 @@ module Avalon
       "http_base"=>"http://localhost:3000/streams/",
       "stream_token_ttl"=>20
     },
-    'controlled_vocabulary' => {'path'=>''}
+    'controlled_vocabulary' => {'path'=>'config/controlled_vocabulary.yml'}
    }
 
   env = ENV['RAILS_ENV'] || 'development'
@@ -28,9 +29,7 @@ module Avalon
   
   begin
     mipath = Avalon::Configuration['mediainfo']['path']
-    unless mipath.blank? 
-      Mediainfo.path = Avalon::Configuration['mediainfo']['path']
-    end
+    Mediainfo.path = mipath unless mipath.blank? 
   rescue Exception => e
     logger.fatal "Initialization failed"
     logger.fatal e.backtrace

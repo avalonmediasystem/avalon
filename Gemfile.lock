@@ -116,7 +116,7 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.2.1)
-    active-fedora (6.4.3)
+    active-fedora (6.4.4)
       activesupport (>= 3.0.0)
       deprecation
       mediashelf-loggable
@@ -143,11 +143,11 @@ GEM
     addressable (2.3.5)
     arel (3.0.2)
     bcrypt-ruby (3.0.1)
-    blacklight (4.2.2)
+    blacklight (4.3.0)
       bootstrap-sass (>= 2.2.0, < 2.4)
       kaminari (~> 0.13)
       marc (>= 0.4.3, < 1.1)
-      nokogiri (~> 1.5)
+      nokogiri (~> 1.6)
       rails (>= 3.2.6, < 5)
       rsolr (~> 1.0.6)
       sass-rails
@@ -266,6 +266,7 @@ GEM
       hydra-core (= 6.3.2)
       rails (>= 3.2.6)
     i18n (0.6.4)
+    iconv (1.0.3)
     jettywrapper (1.4.1)
       activesupport (>= 3.0.0)
       childprocess
@@ -515,6 +516,7 @@ DEPENDENCIES
   handlebars_assets
   headless
   hydra-head (~> 6.0)
+  iconv
   jdbc-sqlite3
   jettywrapper
   jquery-rails (~> 2.1.4)

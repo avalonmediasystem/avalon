@@ -1,5 +1,6 @@
   source 'http://rubygems.org'
 
+  gem 'iconv'
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
 
