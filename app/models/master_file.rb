@@ -274,36 +274,39 @@ class MasterFile < ActiveFedora::Base
 
   end
 
-  def set_still_image(type='both', offset=nil)
+  def set_still_image(options={})
+    result = nil
+    type = options[:type] || 'both'
     if is_video?
       if type == 'both'
-        self.set_still_image('poster',offset)
-        self.set_still_image('thumbnail',offset)
+        result = self.set_still_image(options.merge(:type => 'poster'))
+        self.set_still_image(options.merge(:type => 'thumbnail'))
       else
         frame_size = type == 'thumbnail' ? '160x120' : nil
         ds = self.datastreams[type]
-        ds.content = extract_frame(offset, frame_size)
+        result = ds.content = extract_frame(options.merge(:size => frame_size))
         ds.mimeType = 'image/jpeg'
       end
       save
     end
+    result
   end
 
   class << self
-    def set_still_image(pid, *args)
+    def set_still_image(pid, options={})
       obj = self.find(pid)
-      obj.set_still_image(*args)
+      obj.set_still_image(options)
     end
     handle_asynchronously :set_still_image
   end
 
-  def extract_frame(offset=nil, frame_size=nil)
+  def extract_frame(options={})
     if is_video?
       ffmpeg = Avalon::Configuration['ffmpeg']['path']
       info = Mediainfo.new file_location
       seconds = info.duration / 1000.0
-      frame_size ||= info.video.streams.first.frame_size
-      offset ||= (seconds * 2).floor / 10.0
+      frame_size = options[:size] || info.video.streams.first.frame_size
+      offset = options[:offset] || (seconds * 2).floor / 10.0
       if offset > seconds
         raise RangeError, "Offset #{offset} not in range 0..#{movie.duration}"
       end

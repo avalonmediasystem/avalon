@@ -31,6 +31,10 @@ Avalon::Application.routes.draw do
     member do
       get 'thumbnail'
       get 'poster'
+
+      post 'thumbnail', :to => 'master_files#set_frame', :defaults => { :type => 'thumbnail' }
+      post 'poster',    :to => 'master_files#set_frame', :defaults => { :type => 'poster' }
+      post 'still',     :to => 'master_files#set_frame'
     end
   end
   resources :derivatives, only: [:create]

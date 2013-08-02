@@ -154,6 +154,25 @@ class MasterFilesController < ApplicationController
     redirect_to edit_media_object_path(parent.pid, step: "file-upload")
   end
  
+  def set_frame
+    master_file = MasterFile.find(params[:id])
+    parent = master_file.mediaobject
+    
+    authorize! :edit, parent, message: "You do not have sufficient privileges to edit this file"
+
+    opts = { :type => params[:type], :offset => params[:offset].to_f }
+    respond_to do |format|
+      format.jpeg do
+        io = master_file.set_still_image(opts)
+        render :text => io.read, :content_type => 'image/jpeg'
+      end
+      format.any do
+        MasterFile.set_still_image(opts)
+        redirect_to edit_media_object_path(parent.pid, step: "file-upload")
+      end
+    end
+  end
+
   def thumbnail
     master_file = MasterFile.find(params[:id])
     parent = master_file.mediaobject
