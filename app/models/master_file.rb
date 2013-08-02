@@ -274,12 +274,17 @@ class MasterFile < ActiveFedora::Base
 
   end
 
-  def set_still_image(type='poster', offset=nil)
+  def set_still_image(type='both', offset=nil)
     if is_video?
-      frame_size = type == 'thumbnail' ? '160x120' : nil
-      ds = self.datastreams[type]
-      ds.content = extract_frame(offset, frame_size)
-      ds.mimeType = 'image/jpeg'
+      if type == 'both'
+        self.set_still_image('poster',offset)
+        self.set_still_image('thumbnail',offset)
+      else
+        frame_size = type == 'thumbnail' ? '160x120' : nil
+        ds = self.datastreams[type]
+        ds.content = extract_frame(offset, frame_size)
+        ds.mimeType = 'image/jpeg'
+      end
       save
     end
   end
