@@ -253,7 +253,7 @@ class MasterFile < ActiveFedora::Base
 
     # TODO : Since these are the same write a method to DRY up updating an
     #        image datastream
-    unless thumbnail.empty?
+    if thumbnail.present? and self.thumbnail.content.blank?
       thumbnailURI = URI.parse(thumbnail.url.first)
       # Rubyhorn fails if you don't provide a leading / in the provided path
       self.thumbnail.content = Rubyhorn.client.get(thumbnailURI.path[1..-1]) 
@@ -264,7 +264,7 @@ class MasterFile < ActiveFedora::Base
     # for being located at player+preview and not search+preview
     poster = matterhorn_response.poster_images(0)
 
-    unless poster.empty?
+    if poster.present? and self.poster.content.blank?
       poster_uri = URI.parse(poster.url.first)
       self.poster.content = Rubyhorn.client.get(poster_uri.path[1..-1])
       self.poster.mimeType = poster.mimetype.first
@@ -272,6 +272,56 @@ class MasterFile < ActiveFedora::Base
 
     save
 
+  end
+
+  def set_still_image(type='poster', offset=nil)
+    if is_video?
+      frame_size = type == 'thumbnail' ? '160x120' : nil
+      ds = self.datastreams[type]
+      ds.content = extract_frame(offset, frame_size)
+      ds.mimeType = 'image/jpeg'
+      save
+    end
+  end
+
+  def extract_frame(offset=nil, frame_size=nil)
+    if is_video?
+      ffmpeg = Avalon::Configuration['ffmpeg']['path']
+      info = Mediainfo.new file_location
+      seconds = info.duration / 1000.0
+      frame_size ||= info.video.streams.first.frame_size
+      offset ||= (seconds * 2).floor / 10.0
+      if offset > seconds
+        raise RangeError, "Offset #{offset} not in range 0..#{movie.duration}"
+      end
+      base = pid.gsub(/:/,'_')
+
+      (original_width,original_height) = info.video.streams.first.display_aspect_ratio.split(/:/).collect &:to_f
+      (new_width,new_height) = frame_size.split(/x/).collect &:to_f
+      new_height = (new_width/(original_width/original_height)).floor
+      new_height += 1 if new_height.odd?
+      aspect = new_width/new_height
+
+      jpeg = Tempfile.open([base,'.jpg']) do |jpeg|
+        options = [
+          '-ss',      offset.to_s,
+          '-i',       file_location,
+          '-s',       "#{new_width}x#{new_height}",
+          '-vframes', '1',
+          '-aspect',  aspect.to_s,
+          '-f',       'image2',
+          '-y',       jpeg.path
+        ]
+        Kernel.system(ffmpeg, *options)
+        jpeg.rewind
+        result = StringIO.new
+        IO.copy_stream(jpeg,result)
+        result.rewind
+        result
+      end
+    else
+      nil
+    end
   end
 
   protected
