@@ -284,6 +284,14 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
+  class << self
+    def set_still_image(pid, *args)
+      obj = self.find(pid)
+      obj.set_still_image(*args)
+    end
+    handle_asynchronously :set_still_image
+  end
+
   def extract_frame(offset=nil, frame_size=nil)
     if is_video?
       ffmpeg = Avalon::Configuration['ffmpeg']['path']
@@ -306,7 +314,7 @@ class MasterFile < ActiveFedora::Base
         options = [
           '-ss',      offset.to_s,
           '-i',       file_location,
-          '-s',       "#{new_width}x#{new_height}",
+          '-s',       "#{new_width.to_i}x#{new_height.to_i}",
           '-vframes', '1',
           '-aspect',  aspect.to_s,
           '-f',       'image2',
