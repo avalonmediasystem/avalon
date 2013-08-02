@@ -284,8 +284,11 @@ class MasterFile < ActiveFedora::Base
       else
         frame_size = type == 'thumbnail' ? '160x120' : nil
         ds = self.datastreams[type]
-        result = ds.content = extract_frame(options.merge(:size => frame_size))
-        ds.mimeType = 'image/jpeg'
+        result = extract_frame(options.merge(:size => frame_size))
+        unless options[:preview]
+          ds.mimeType = 'image/jpeg'
+          ds.content = result
+        end
       end
       save
     end

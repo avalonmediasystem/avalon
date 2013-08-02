@@ -160,7 +160,7 @@ class MasterFilesController < ApplicationController
     
     authorize! :edit, parent, message: "You do not have sufficient privileges to edit this file"
 
-    opts = { :type => params[:type], :offset => params[:offset].to_f }
+    opts = { :type => params[:type], :offset => params[:offset].to_f, :preview => params[:preview] }
     respond_to do |format|
       format.jpeg do
         io = master_file.set_still_image(opts)
