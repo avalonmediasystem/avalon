@@ -13,6 +13,13 @@ GIT
     database_cleaner (1.0.1)
 
 GIT
+  remote: https://github.com/atomical/media-element-thumbnail-selector
+  revision: 868176d93085c43aa7b5d879eaffc23b7e956279
+  specs:
+    media_element_thumbnail_selector (0.0.1)
+      rails (~> 3.2.3)
+
+GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
   revision: 53b5cb970a3589f9b29de611b46bcc9f9700e9cf
   specs:
@@ -97,12 +104,6 @@ GIT
   revision: 05bb80d7268ba054c235a310d6e5db9bf288a640
   specs:
     mediaelement-qualityselector (0.0.1)
-
-PATH
-  remote: ../workspace/media_element_thumbnail_selector
-  specs:
-    media_element_thumbnail_selector (0.0.1)
-      rails (~> 3.2.3)
 
 GEM
   remote: http://rubygems.org/
