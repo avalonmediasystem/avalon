@@ -274,13 +274,13 @@ class MasterFile < ActiveFedora::Base
 
   end
 
-  def set_still_image(options={})
+  def extract_still(options={})
     result = nil
     type = options[:type] || 'both'
     if is_video?
       if type == 'both'
-        result = self.set_still_image(options.merge(:type => 'poster'))
-        self.set_still_image(options.merge(:type => 'thumbnail'))
+        result = self.extract_still(options.merge(:type => 'poster'))
+        self.extract_still(options.merge(:type => 'thumbnail'))
       else
         frame_size = type == 'thumbnail' ? '160x120' : nil
         ds = self.datastreams[type]
@@ -296,11 +296,11 @@ class MasterFile < ActiveFedora::Base
   end
 
   class << self
-    def set_still_image(pid, options={})
+    def extract_still(pid, options={})
       obj = self.find(pid)
-      obj.set_still_image(options)
+      obj.extract_still(options)
     end
-    handle_asynchronously :set_still_image
+    handle_asynchronously :extract_still
   end
 
   def extract_frame(options={})
@@ -321,7 +321,7 @@ class MasterFile < ActiveFedora::Base
       new_height += 1 if new_height.odd?
       aspect = new_width/new_height
 
-      jpeg = Tempfile.open([base,'.jpg']) do |jpeg|
+      Tempfile.open([base,'.jpg']) do |jpeg|
         options = [
           '-ss',      offset.to_s,
           '-i',       file_location,
@@ -333,10 +333,7 @@ class MasterFile < ActiveFedora::Base
         ]
         Kernel.system(ffmpeg, *options)
         jpeg.rewind
-        result = StringIO.new
-        IO.copy_stream(jpeg,result)
-        result.rewind
-        result
+        jpeg.read
       end
     else
       nil

@@ -158,33 +158,35 @@ class MasterFilesController < ApplicationController
     master_file = MasterFile.find(params[:id])
     parent = master_file.mediaobject
     
-    authorize! :edit, parent, message: "You do not have sufficient privileges to edit this file"
-
+    authorize! :read, parent, message: "You do not have sufficient privileges to edit this file"
     opts = { :type => params[:type], :offset => params[:offset].to_f, :preview => params[:preview] }
     respond_to do |format|
       format.jpeg do
-        io = master_file.set_still_image(opts)
-        render :text => io.read, :content_type => 'image/jpeg'
+        data = master_file.extract_still(opts)
+        send_data data, :filename => "#{opts[:type]}-#{master_file.pid.split(':')[1]}", :disposition => :inline, :type => 'image/jpeg'
       end
       format.all do
-        MasterFile.set_still_image(params[:id], opts)
+        MasterFile.extract_still(params[:id], opts)
         redirect_to edit_media_object_path(parent.pid, step: "file-upload")
       end
     end
   end
 
-  def thumbnail
+  def get_frame
     master_file = MasterFile.find(params[:id])
     parent = master_file.mediaobject
-    authorize! :read, parent, message: "You do not have sufficient privileges to view this file"
-    send_data master_file.thumbnail.content, :filename => "thumbnail-#{master_file.pid.split(':')[1]}", :type => master_file.thumbnail.mimeType
-  end
- 
-  def poster
-    master_file = MasterFile.find(params[:id])
-    parent = master_file.mediaobject
-    authorize! :read, parent, message: "You do not have sufficient privileges to view this file"
-    send_data master_file.poster.content, :filename => "poster-#{master_file.pid.split(':')[1]}", :type => master_file.poster.mimeType
+    mimeType = "image/jpeg"
+    content = if params[:offset]
+      authorize! :edit, parent, message: "You do not have sufficient privileges to view this file"
+      opts = { :type => params[:type], :offset => params[:offset].to_f, :preview => true }
+      master_file.extract_still(opts)
+    else
+      authorize! :read, parent, message: "You do not have sufficient privileges to view this file"
+      ds = master_file.datastreams[params[:type]]
+      mimeType = ds.mimeType
+      ds.content
+    end
+    send_data content, :filename => "#{params[:type]}-#{master_file.pid.split(':')[1]}", :disposition => :inline, :type => mimeType
   end
 
 protected
