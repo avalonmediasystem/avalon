@@ -162,11 +162,11 @@ class MasterFilesController < ApplicationController
     opts = { :type => params[:type], :offset => params[:offset].to_f, :preview => params[:preview] }
     respond_to do |format|
       format.jpeg do
-        io = master_file.set_still_image(opts)
-        send_data io.read, :filename => "#{opts[:type]}-#{master_file.pid.split(':')[1]}", :type => 'image/jpeg'
+        data = master_file.extract_still(opts)
+        send_data data, :filename => "#{opts[:type]}-#{master_file.pid.split(':')[1]}", :disposition => :inline, :type => 'image/jpeg'
       end
       format.all do
-        MasterFile.set_still_image(params[:id], opts)
+        MasterFile.extract_still(params[:id], opts)
         redirect_to edit_media_object_path(parent.pid, step: "file-upload")
       end
     end
@@ -179,14 +179,14 @@ class MasterFilesController < ApplicationController
     content = if params[:offset]
       authorize! :edit, parent, message: "You do not have sufficient privileges to view this file"
       opts = { :type => params[:type], :offset => params[:offset].to_f, :preview => true }
-      master_file.set_still_image(opts).read
+      master_file.extract_still(opts)
     else
       authorize! :read, parent, message: "You do not have sufficient privileges to view this file"
       ds = master_file.datastreams[params[:type]]
       mimeType = ds.mimeType
       ds.content
     end
-    send_data content, :filename => "#{params[:type]}-#{master_file.pid.split(':')[1]}", :type => mimeType
+    send_data content, :filename => "#{params[:type]}-#{master_file.pid.split(':')[1]}", :disposition => :inline, :type => mimeType
   end
 
 protected
