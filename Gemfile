@@ -12,6 +12,7 @@
   gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git"
   gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git' 
   gem 'mediaelement-qualityselector', git: 'https://github.com/cjcolvar/mediaelement-qualityselector.git' 
+  gem 'media_element_thumbnail_selector', path: '../workspace/media_element_thumbnail_selector'
 
   gem 'modal_logic'
 

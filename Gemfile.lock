@@ -98,6 +98,12 @@ GIT
   specs:
     mediaelement-qualityselector (0.0.1)
 
+PATH
+  remote: ../workspace/media_element_thumbnail_selector
+  specs:
+    media_element_thumbnail_selector (0.0.1)
+      rails (~> 3.2.3)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -524,6 +530,7 @@ DEPENDENCIES
   letter_opener
   license_header
   loofah
+  media_element_thumbnail_selector!
   mediaelement-qualityselector!
   mediaelement_rails!
   mediainfo
