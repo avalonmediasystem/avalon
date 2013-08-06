@@ -70,6 +70,7 @@ require 'avalon/dropbox'
             selected_part.destroy
           else
             selected_part.label = part[:label]
+            selected_part.poster_offset = part[:poster_offset]
             selected_part.save
           end
         end

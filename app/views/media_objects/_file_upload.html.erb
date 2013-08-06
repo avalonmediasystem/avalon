@@ -20,6 +20,7 @@
           <th></th>
           <th>Type</th>
           <th>Display label</th>
+          <th>Poster offset</th>
           <th>File name</th>
           <th>Size</th>
           <th>Delete</th>
@@ -42,6 +43,9 @@
   		        <td>
       		      <%= text_field_tag "parts[#{i}][label]", part.label, size: 30 %>
   		        </td>
+              <td>
+                <%= text_field_tag "parts[#{i}][poster_offset]", to_hms(part.poster_offset), size: 8, class: 'input-small' %>
+              </td>
   		        <td>
   		          <%= truncate(File.basename(part.file_location), length: 25) %>
       	  	  </td>
