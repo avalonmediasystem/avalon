@@ -10,9 +10,9 @@
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git'
   gem 'avalon-engage', git: "https://github.com/avalonmediasystem/avalon-engage.git"
   gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git"
-  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git' 
-  gem 'mediaelement-qualityselector', git: 'https://github.com/cjcolvar/mediaelement-qualityselector.git' 
-  gem 'media_element_thumbnail_selector', git: 'https://github.com/atomical/media-element-thumbnail-selector'
+  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git'
+  gem 'mediaelement-qualityselector', git: 'https://github.com/cjcolvar/mediaelement-qualityselector.git'
+  gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector'
 
   gem 'modal_logic'
 
@@ -51,7 +51,7 @@
   gem 'whenever', :require => false
 
   gem 'equivalent-xml'
-  
+
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
     gem 'uglifier', '>= 1.0.3'
@@ -70,7 +70,7 @@
   end
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
-  group :development, :test do 
+  group :development, :test do
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano'
     gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm'
@@ -96,7 +96,7 @@
     gem "rspec_junit_formatter"
     gem 'simplecov'
     gem 'email_spec'
-    gem 'capybara'   
+    gem 'capybara'
     gem 'shoulda-matchers'
     gem 'faker'
   end

@@ -13,13 +13,6 @@ GIT
     database_cleaner (1.0.1)
 
 GIT
-  remote: https://github.com/atomical/media-element-thumbnail-selector
-  revision: 868176d93085c43aa7b5d879eaffc23b7e956279
-  specs:
-    media_element_thumbnail_selector (0.0.1)
-      rails (~> 3.2.3)
-
-GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
   revision: 53b5cb970a3589f9b29de611b46bcc9f9700e9cf
   specs:
@@ -58,6 +51,13 @@ GIT
       i18n
       logger
       mediashelf-loggable
+
+GIT
+  remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector
+  revision: 1d9e3efe377d74a8f98ac99eb20d91e4fdcab606
+  specs:
+    media_element_thumbnail_selector (0.0.1)
+      rails (~> 3.2.3)
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
@@ -316,7 +316,7 @@ GEM
     modal_logic (0.0.2)
       handlebars_assets (= 0.14.1)
       rails (~> 3.2.13)
-    multi_json (1.7.7)
+    multi_json (1.7.8)
     multipart-post (1.2.0)
     net-http-digest_auth (1.4)
     net-scp (1.1.2)

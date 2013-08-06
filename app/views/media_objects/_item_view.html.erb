@@ -58,6 +58,10 @@
   <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %> 
   <%= javascript_include_tag 'me-thumb-selector' %>
   <%= stylesheet_link_tag 'me-thumb-selector' %>
+  <%
+    features = ['playpause','current','progress','duration','qualities','volume','fullscreen']
+    features << 'thumbnailSelector' if can? :edit, @mediaobject
+  %>
 
   <script>
     currentPlayer = new MediaElementPlayer('#video-tag', 
@@ -65,7 +69,7 @@
           usePluginFullScreen: false,
           thumbnailSelectorUpdateURL: '/update-url',
           thumbnailSelectorEnabled: true,
-          features: ['playpause','current','progress','duration','qualities','volume','fullscreen', 'thumbnailSelector']
+          features: <%=features.inspect.html_safe%>
         });
   </script>
 <% end %>
