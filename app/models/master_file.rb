@@ -296,7 +296,7 @@ class MasterFile < ActiveFedora::Base
     elsif value.is_a?(String)
       result = 0
       segments = value.split(/:/).reverse
-      segments.each_with_index { |v,i| result += i > 0 ? v.to_f * (60000**i) : (v.to_f * 1000) }
+      segments.each_with_index { |v,i| result += i > 0 ? v.to_f * (60**i) * 1000 : (v.to_f * 1000) }
       result.to_i
     else
       value.to_i
