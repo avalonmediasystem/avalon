@@ -51,6 +51,12 @@ class MasterFile < ActiveFedora::Base
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
 
+  validates_each :poster_offset, :thumbnail_offset do |record, attr, value|
+    unless value.nil? or value.to_i.between?(0,record.duration.to_i)
+      record.errors.add attr, "must be between 0 and #{record.duration}"
+    end
+  end
+
   before_save 'update_stills_from_offset!'
 
   # First and simplest test - make sure that the uploaded file does not exceed the
@@ -304,9 +310,6 @@ class MasterFile < ActiveFedora::Base
     
     return milliseconds if milliseconds == self.send("#{type}_offset").to_i
 
-    unless milliseconds.between?(0,self.duration.to_i)
-      raise RangeError, "Value out of range"
-    end
     @stills_to_update ||= []
     @stills_to_update << type
     self.send("_#{type}_offset=".to_sym,milliseconds.to_s)
@@ -328,6 +331,11 @@ class MasterFile < ActiveFedora::Base
   end
 
   def extract_still(options={})
+    default_frame_sizes = {
+      'poster'    => '1024x768',
+      'thumbnail' => '160x120'
+    }
+
     result = nil
     type = options[:type] || 'both'
     if is_video?
@@ -335,12 +343,12 @@ class MasterFile < ActiveFedora::Base
         result = self.extract_still(options.merge(:type => 'poster'))
         self.extract_still(options.merge(:type => 'thumbnail'))
       else
-        frame_size = type == 'thumbnail' ? '160x120' : nil
+        frame_size = options[:size] || default_frame_sizes[options[:type]]
         ds = self.datastreams[type]
         result = extract_frame(options.merge(:size => frame_size))
         unless options[:preview]
           ds.mimeType = 'image/jpeg'
-          ds.content = result
+          ds.content = StringIO.new(result)
         end
       end
       save
@@ -356,11 +364,14 @@ class MasterFile < ActiveFedora::Base
     handle_asynchronously :extract_still
   end
 
+  protected
+
   def extract_frame(options={})
     if is_video?
       ffmpeg = Avalon::Configuration['ffmpeg']['path']
       info = Mediainfo.new file_location
-      frame_size = options[:size] || info.video.streams.first.frame_size
+      frame_size = (options[:size].nil? or options[:size] == 'auto') ? info.video.streams.first.frame_size : options[:size]
+
       options[:offset] ||= 2000
       offset = options[:offset].to_i
       unless offset.between?(0,self.duration.to_i)
@@ -392,8 +403,6 @@ class MasterFile < ActiveFedora::Base
       nil
     end
   end
-
-  protected
 
   def calculate_percent_complete matterhorn_response
     totals = {
