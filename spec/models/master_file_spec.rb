@@ -88,4 +88,43 @@ describe MasterFile do
       expect { masterfile.delete }.to change { MasterFile.all.count }.by(-1)
     end
   end
+
+  describe "image_offset" do
+    let(:master_file) {FactoryGirl.create(:master_file, duration: ((1.hour+27.minutes+13.seconds+0.258)*1000).floor.to_s )}
+
+    describe "milliseconds" do
+      it "should accept a value" do
+        master_file.poster_offset = 12345
+        master_file.poster_offset.should == "12345"
+      end
+
+      it "should complain if the value < 0" do
+        lambda { master_file.poster_offset = -1 }.should raise_error(RangeError)
+      end
+
+      it "should complain if the value > duration" do
+        lambda { master_file.poster_offset = 10000000 }.should raise_error(RangeError)
+      end
+    end
+
+    describe "hh:mm:ss.sss" do
+      it "should accept a value" do
+        master_file.poster_offset = "1:17:08.200"
+        master_file.poster_offset.should == "4628200"
+      end
+
+      it "should complain if the value > duration" do
+        lambda { master_file.poster_offset = "1:30:00" }.should raise_error(RangeError)
+      end
+    end
+
+    describe "update images" do
+      it "should update on save" do
+        MasterFile.should_receive(:extract_still).with(master_file.pid,{type:'both',offset:'12345'})
+        master_file.poster_offset = 12345
+        master_file.save
+      end
+    end
+  end
+
 end
