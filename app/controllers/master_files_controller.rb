@@ -159,7 +159,7 @@ class MasterFilesController < ApplicationController
     parent = master_file.mediaobject
     
     authorize! :read, parent, message: "You do not have sufficient privileges to edit this file"
-    opts = { :type => params[:type], :offset => params[:offset].to_f*1000, :preview => params[:preview] }
+    opts = { :type => params[:type], :size => params[:size], :offset => params[:offset].to_f*1000, :preview => params[:preview] }
     respond_to do |format|
       format.jpeg do
         data = master_file.extract_still(opts)
@@ -179,7 +179,7 @@ class MasterFilesController < ApplicationController
     mimeType = "image/jpeg"
     content = if params[:offset]
       authorize! :edit, parent, message: "You do not have sufficient privileges to view this file"
-      opts = { :type => params[:type], :offset => params[:offset].to_f*1000, :preview => true }
+      opts = { :type => params[:type], :size => params[:size], :offset => params[:offset].to_f*1000, :preview => true }
       master_file.extract_still(opts)
     else
       authorize! :read, parent, message: "You do not have sufficient privileges to view this file"
