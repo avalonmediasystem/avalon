@@ -59,6 +59,9 @@
   <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %> 
 
   <script>
+    if (mejs.plugins.flash[0].types.indexOf('audio/rtmp') == -1) {
+      mejs.plugins.flash[0].types.push('audio/rtmp')
+    }
     currentPlayer = new MediaElementPlayer('#video-tag', 
         { mode: 'auto_plugin',
           usePluginFullScreen: false,
