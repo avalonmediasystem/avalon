@@ -405,6 +405,15 @@ class MediaObject < ActiveFedora::Base
     solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
     solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
     solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
+    #Add all searchable fields to the all_text_timv field
+    all_text_values = []
+    all_text_values << solr_doc["title_tesim"]
+    all_text_values << solr_doc["creator_ssim"]
+    all_text_values << solr_doc["contributor_sim"]
+    all_text_values << solr_doc["unit_ssim"]
+    all_text_values << solr_doc["collection_ssim"]
+    all_text_values << solr_doc["summary_ssim"]
+    solr_doc["all_text_timv"] = all_text_values.flatten
     return solr_doc
   end
 
