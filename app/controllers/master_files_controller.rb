@@ -167,7 +167,9 @@ class MasterFilesController < ApplicationController
       end
       format.all do
         master_file.poster_offset = opts[:offset]
-        master_file.save
+        unless master_file.save
+          flash[:notice] = master_file.errors.to_a.join('<br/>')
+        end
         redirect_to edit_media_object_path(parent.pid, step: "file-upload")
       end
     end
