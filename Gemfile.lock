@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
-  revision: 53b5cb970a3589f9b29de611b46bcc9f9700e9cf
+  revision: 07adb923f21f9d6c28fa8459883abbd1bc813ca9
   specs:
     avalon-about (0.1.0)
       about_page
@@ -108,7 +108,7 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
-    about_page (0.2.1)
+    about_page (0.2.4)
       rails (~> 3.2)
     actionmailer (3.2.14)
       actionpack (= 3.2.14)
