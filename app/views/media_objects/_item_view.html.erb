@@ -53,10 +53,15 @@
 <% end %>
 
 <% content_for :page_scripts do %>
-  <%= javascript_include_tag :jquery =%>
   <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
   <%= javascript_include_tag 'switch_streams' %> 
   <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %> 
+  <%= javascript_include_tag 'me-thumb-selector' %>
+  <%= stylesheet_link_tag 'me-thumb-selector' %>
+  <%
+    features = ['playpause','current','progress','duration','qualities','volume','fullscreen']
+    features << 'thumbnailSelector' if can? :edit, @mediaobject
+  %>
 
   <script>
     if (mejs.plugins.flash[0].types.indexOf('audio/rtmp') == -1) {
@@ -65,7 +70,9 @@
     currentPlayer = new MediaElementPlayer('#video-tag', 
         { mode: 'auto_plugin',
           usePluginFullScreen: false,
-          features: ['playpause','current','progress','duration','qualities','volume','fullscreen']
+          thumbnailSelectorUpdateURL: '/update-url',
+          thumbnailSelectorEnabled: true,
+          features: <%=features.inspect.html_safe%>
         });
   </script>
 <% end %>

@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
-  revision: 53b5cb970a3589f9b29de611b46bcc9f9700e9cf
+  revision: 07adb923f21f9d6c28fa8459883abbd1bc813ca9
   specs:
     avalon-about (0.1.0)
       about_page
@@ -37,9 +37,9 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
-  revision: 31adf5c063aa87e4385bda80b887759d21b93370
+  revision: 091acd3cd8034b4f80e3960acea3c1e13288c212
   specs:
-    avalon-workflow (0.0.2a)
+    avalon-workflow (0.0.3)
 
 GIT
   remote: https://github.com/avalonmediasystem/felixwrapper.git
@@ -51,6 +51,13 @@ GIT
       i18n
       logger
       mediashelf-loggable
+
+GIT
+  remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector
+  revision: 1d9e3efe377d74a8f98ac99eb20d91e4fdcab606
+  specs:
+    media_element_thumbnail_selector (0.0.1)
+      rails (~> 3.2.3)
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
@@ -101,7 +108,7 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
-    about_page (0.2.1)
+    about_page (0.2.4)
       rails (~> 3.2)
     actionmailer (3.2.14)
       actionpack (= 3.2.14)
@@ -116,7 +123,7 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.2.1)
-    active-fedora (6.4.3)
+    active-fedora (6.4.4)
       activesupport (>= 3.0.0)
       deprecation
       mediashelf-loggable
@@ -143,11 +150,16 @@ GEM
     addressable (2.3.5)
     arel (3.0.2)
     bcrypt-ruby (3.0.1)
-    blacklight (4.2.2)
+    better_errors (0.9.0)
+      coderay (>= 1.0.0)
+      erubis (>= 2.6.6)
+    binding_of_caller (0.7.2)
+      debug_inspector (>= 0.0.1)
+    blacklight (4.3.0)
       bootstrap-sass (>= 2.2.0, < 2.4)
       kaminari (~> 0.13)
       marc (>= 0.4.3, < 1.1)
-      nokogiri (~> 1.5)
+      nokogiri (~> 1.6)
       rails (>= 3.2.6, < 5)
       rsolr (~> 1.0.6)
       sass-rails
@@ -156,6 +168,7 @@ GEM
     bootstrap-sass (2.3.2.1)
       sass (~> 3.2)
     builder (3.0.4)
+    callsite (0.0.11)
     cancan (1.6.10)
     capistrano (2.12.0)
       highline
@@ -192,6 +205,7 @@ GEM
     compass-susy-plugin (0.9)
       compass (>= 0.11.1)
     daemons (1.1.9)
+    debug_inspector (0.0.2)
     debugger (1.6.1)
       columnize (>= 0.3.1)
       debugger-linecache (~> 1.2.0)
@@ -266,6 +280,7 @@ GEM
       hydra-core (= 6.3.2)
       rails (>= 3.2.6)
     i18n (0.6.4)
+    iconv (1.0.3)
     jettywrapper (1.4.1)
       activesupport (>= 3.0.0)
       childprocess
@@ -302,6 +317,10 @@ GEM
     marc (0.5.1)
     mediainfo (0.7.2)
     mediashelf-loggable (0.4.9)
+    meta_request (0.2.8)
+      callsite
+      rack-contrib
+      railties
     method_source (0.8.2)
     mime-types (1.23)
     mini_portile (0.5.1)
@@ -352,6 +371,8 @@ GEM
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
+    rack-contrib (1.1.0)
+      rack (>= 0.9.1)
     rack-ssl (1.3.3)
       rack
     rack-test (0.6.2)
@@ -492,6 +513,8 @@ DEPENDENCIES
   avalon-engage!
   avalon-workflow!
   bcrypt-ruby (~> 3.0.0)
+  better_errors
+  binding_of_caller
   builder (~> 3.0.0)
   capistrano (~> 2.12.0)
   capistrano-unicorn!
@@ -515,6 +538,7 @@ DEPENDENCIES
   handlebars_assets
   headless
   hydra-head (~> 6.0)
+  iconv
   jdbc-sqlite3
   jettywrapper
   jquery-rails (~> 2.1.4)
@@ -522,9 +546,11 @@ DEPENDENCIES
   letter_opener
   license_header
   loofah
+  media_element_thumbnail_selector!
   mediaelement-qualityselector!
   mediaelement_rails!
   mediainfo
+  meta_request
   mime-types (>= 1.1)
   modal_logic
   omniauth-identity

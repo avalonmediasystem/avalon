@@ -50,7 +50,7 @@ class Ability
         is_member_of?(collection)
       end
 
-      if !is_member_of_any_collection?
+      unless (is_member_of_any_collection? or @user_groups.include? 'manager')
         cannot :read, Admin::Collection
       end
     

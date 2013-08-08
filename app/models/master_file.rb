@@ -29,6 +29,8 @@ class MasterFile < ActiveFedora::Base
     d.field :file_size, :string
     d.field :duration, :string
     d.field :file_format, :string
+    d.field :poster_offset, :string
+    d.field :thumbnail_offset, :string
   end
 
   has_metadata name: 'mhMetadata', :type => ActiveFedora::SimpleDatastream do |d|
@@ -43,11 +45,19 @@ class MasterFile < ActiveFedora::Base
     d.field :failures, :string
   end
 
-  delegate_to 'descMetadata', [:file_location, :file_checksum, :file_size, :duration, :file_format], unique: true
+  delegate_to 'descMetadata', [:file_location, :file_checksum, :file_size, :duration, :file_format, :poster_offset, :thumbnail_offset], unique: true
   delegate_to 'mhMetadata', [:workflow_id, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures], unique:true
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
+
+  validates_each :poster_offset, :thumbnail_offset do |record, attr, value|
+    unless value.nil? or value.to_i.between?(0,record.duration.to_i)
+      record.errors.add attr, "must be between 0 and #{record.duration}"
+    end
+  end
+
+  before_save 'update_stills_from_offset!'
 
   # First and simplest test - make sure that the uploaded file does not exceed the
   # limits of the system. For now this is hard coded but should probably eventually
@@ -253,7 +263,7 @@ class MasterFile < ActiveFedora::Base
 
     # TODO : Since these are the same write a method to DRY up updating an
     #        image datastream
-    unless thumbnail.empty?
+    if thumbnail.present? and self.thumbnail.content.blank?
       thumbnailURI = URI.parse(thumbnail.url.first)
       # Rubyhorn fails if you don't provide a leading / in the provided path
       self.thumbnail.content = Rubyhorn.client.get(thumbnailURI.path[1..-1]) 
@@ -264,7 +274,7 @@ class MasterFile < ActiveFedora::Base
     # for being located at player+preview and not search+preview
     poster = matterhorn_response.poster_images(0)
 
-    unless poster.empty?
+    if poster.present? and self.poster.content.blank?
       poster_uri = URI.parse(poster.url.first)
       self.poster.content = Rubyhorn.client.get(poster_uri.path[1..-1])
       self.poster.mimeType = poster.mimetype.first
@@ -274,7 +284,125 @@ class MasterFile < ActiveFedora::Base
 
   end
 
+  alias_method :'_poster_offset=', :'poster_offset='
+  def poster_offset=(value)
+    set_image_offset(:poster,value)
+    set_image_offset(:thumbnail,value) # Keep stills in sync
+  end
+
+  alias_method :'_thumbnail_offset=', :'thumbnail_offset='
+  def thumbnail_offset=(value)
+    set_image_offset(:thumbnail,value)
+    set_image_offset(:poster,value)  # Keep stills in sync
+  end
+
+  def set_image_offset(type, value)
+    milliseconds = if value.is_a?(Numeric)
+      value.floor
+    elsif value.is_a?(String)
+      result = 0
+      segments = value.split(/:/).reverse
+      segments.each_with_index { |v,i| result += i > 0 ? v.to_f * (60**i) * 1000 : (v.to_f * 1000) }
+      result.to_i
+    else
+      value.to_i
+    end
+    
+    return milliseconds if milliseconds == self.send("#{type}_offset").to_i
+
+    @stills_to_update ||= []
+    @stills_to_update << type
+    self.send("_#{type}_offset=".to_sym,milliseconds.to_s)
+    milliseconds
+  end
+
+  def update_stills_from_offset!
+    if @stills_to_update.present?
+      # Update stills together
+      self.class.extract_still(self.pid, :type => 'both', :offset => self.poster_offset)
+
+      # Update stills independently
+      # @stills_to_update.each do |type|
+      #   self.class.extract_still(self.pid, :type => type, :offset => self.send("#{type}_offset"))
+      # end
+      @stills_to_update = []
+    end
+    true
+  end
+
+  def extract_still(options={})
+    default_frame_sizes = {
+      'poster'    => '1024x768',
+      'thumbnail' => '160x120'
+    }
+
+    result = nil
+    type = options[:type] || 'both'
+    if is_video?
+      if type == 'both'
+        result = self.extract_still(options.merge(:type => 'poster'))
+        self.extract_still(options.merge(:type => 'thumbnail'))
+      else
+        frame_size = options[:size] || default_frame_sizes[options[:type]]
+        ds = self.datastreams[type]
+        result = extract_frame(options.merge(:size => frame_size))
+        unless options[:preview]
+          ds.mimeType = 'image/jpeg'
+          ds.content = StringIO.new(result)
+        end
+      end
+      save
+    end
+    result
+  end
+
+  class << self
+    def extract_still(pid, options={})
+      obj = self.find(pid)
+      obj.extract_still(options)
+    end
+    handle_asynchronously :extract_still
+  end
+
   protected
+
+  def extract_frame(options={})
+    if is_video?
+      ffmpeg = Avalon::Configuration['ffmpeg']['path']
+      info = Mediainfo.new file_location
+      frame_size = (options[:size].nil? or options[:size] == 'auto') ? info.video.streams.first.frame_size : options[:size]
+
+      options[:offset] ||= 2000
+      offset = options[:offset].to_i
+      unless offset.between?(0,self.duration.to_i)
+        raise RangeError, "Offset #{offset} not in range 0..#{self.duration}"
+      end
+      base = pid.gsub(/:/,'_')
+
+      (original_width,original_height) = info.video.streams.first.display_aspect_ratio.split(/:/).collect &:to_f
+      (new_width,new_height) = frame_size.split(/x/).collect &:to_f
+      new_height = (new_width/(original_width/original_height)).floor
+      new_height += 1 if new_height.odd?
+      aspect = new_width/new_height
+
+      Tempfile.open([base,'.jpg']) do |jpeg|
+        options = [
+          '-ss',      (offset / 1000.0).to_s,
+          '-i',       file_location,
+          '-s',       "#{new_width.to_i}x#{new_height.to_i}",
+          '-vframes', '1',
+          '-aspect',  aspect.to_s,
+          '-f',       'image2',
+          '-y',       jpeg.path
+        ]
+        Kernel.system(ffmpeg, *options)
+        jpeg.rewind
+        jpeg.read
+      end
+    else
+      nil
+    end
+  end
 
   def calculate_percent_complete matterhorn_response
     totals = {
