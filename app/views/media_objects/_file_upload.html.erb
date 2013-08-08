@@ -1,3 +1,9 @@
+<% if flash[:error].present? %>
+  <ul class='unstyled alert alert-error' style='display: inline-table;'>
+    <%= Array(flash[:error]).collect { |error| content_tag(:li,error) }.join('').html_safe %>
+  </ul>
+<% end %>
+
 <% unless @masterFiles.empty? %>
 <section id="associated_files">
       <legend>Associated files</legend>
@@ -20,13 +26,14 @@
           <th></th>
           <th>Type</th>
           <th>Display label</th>
+          <th>Poster offset</th>
           <th>File name</th>
           <th>Size</th>
           <th>Delete</th>
         </thead>
 		    <tbody>
-		    <% @masterFiles.each do |part, i| %>
-      		  <%= hidden_field_tag "parts[#{i}][pid]", part.pid  %>
+		    <% @masterFiles.each do |part| %>
+      		  <%= hidden_field_tag "parts[#{part.pid}][pid]", part.pid  %>
   		      <tr>
                         <td>&nbsp;</td>
   		        <td>
@@ -40,8 +47,15 @@
   		          <% end %>
   		        </td>
   		        <td>
-      		      <%= text_field_tag "parts[#{i}][label]", part.label, size: 30 %>
+      		      <%= text_field_tag "parts[#{part.pid}][label]", part.label, size: 30 %>
   		        </td>
+              <td>
+                <% if part.is_video? %>
+                  <%= text_field_tag "parts[#{part.pid}][poster_offset]", part.poster_offset.to_i.to_hms, size: 8, class: "input-small" %>
+                <% else %>
+                  <%= content_tag(:span, part.poster_offset.to_i.to_hms, size: 8, class: "input-small uneditable-input") %>
+                <% end %>
+              </td>
   		        <td>
   		          <%= truncate(File.basename(part.file_location), length: 25) %>
       	  	  </td>
@@ -54,7 +68,7 @@
           	 		 <%# On a Rails level this needs to be folded into the masterfiles
           	 		   # controller's destroy method to help remove more vestiges of the
           	 		   # catalog controller %>
-         	         <%= check_box_tag "parts[#{i}][remove]", true %>
+         	         <%= check_box_tag "parts[#{part.pid}][remove]", true %>
         	 	    <% end %>
       	 	    </td>
     	 	    </tr>
