@@ -71,8 +71,8 @@
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do
-    gem 'better_errors'
-    gem 'binding_of_caller'
+    #gem 'better_errors'
+    #gem 'binding_of_caller'
     gem 'meta_request'
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano'

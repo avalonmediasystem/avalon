@@ -22,9 +22,10 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
-  revision: 07827047904ac8142adca3d98ee2c4a004baae2f
+  revision: 7c57b135e553c391433931663850612563c8b7d3
   specs:
-    avalon-batch (0.0.1)
+    avalon-batch (0.1.0)
+      activemodel
       activesupport
       roo
 
@@ -150,11 +151,6 @@ GEM
     addressable (2.3.5)
     arel (3.0.2)
     bcrypt-ruby (3.0.1)
-    better_errors (0.9.0)
-      coderay (>= 1.0.0)
-      erubis (>= 2.6.6)
-    binding_of_caller (0.7.2)
-      debug_inspector (>= 0.0.1)
     blacklight (4.3.0)
       bootstrap-sass (>= 2.2.0, < 2.4)
       kaminari (~> 0.13)
@@ -205,7 +201,6 @@ GEM
     compass-susy-plugin (0.9)
       compass (>= 0.11.1)
     daemons (1.1.9)
-    debug_inspector (0.0.2)
     debugger (1.6.1)
       columnize (>= 0.3.1)
       debugger-linecache (~> 1.2.0)
@@ -465,7 +460,7 @@ GEM
       nokogiri
       stomp
       xml-simple
-    spreadsheet (0.8.7)
+    spreadsheet (0.8.8)
       ruby-ole (>= 1.0)
     sprockets (2.2.2)
       hike (~> 1.2)
@@ -513,8 +508,6 @@ DEPENDENCIES
   avalon-engage!
   avalon-workflow!
   bcrypt-ruby (~> 3.0.0)
-  better_errors
-  binding_of_caller
   builder (~> 3.0.0)
   capistrano (~> 2.12.0)
   capistrano-unicorn!
