@@ -9,9 +9,9 @@
   gem 'rubydora', '< 1.0.0'
   gem 'active-fedora', '~> 5.0.0'
 
-  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git'
-  gem 'avalon-engage', git: "https://github.com/avalonmediasystem/avalon-engage.git"
-  gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git"
+  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'avalon-r1'
+  gem 'avalon-engage', git: "https://github.com/avalonmediasystem/avalon-engage.git", tag: 'avalon-r1'
+  gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git", tag: 'avalon-r1'
  
   platforms :jruby do
     gem 'jruby-openssl'
@@ -32,7 +32,7 @@
   gem 'haml'
 
   gem "jettywrapper"
-  gem 'rubyhorn', :git => "https://github.com/avalonmediasystem/rubyhorn.git"
+  gem 'rubyhorn', :git => "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r1'
   gem 'felixwrapper', :git => "https://github.com/avalonmediasystem/felixwrapper.git"
   gem 'red5wrapper', :git => "https://github.com/avalonmediasystem/red5wrapper.git"
 
