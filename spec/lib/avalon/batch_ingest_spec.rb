@@ -34,6 +34,8 @@ describe Avalon::Batch do
 
   after :each do
     Dir['spec/fixtures/**/*.xlsx.process*','spec/fixtures/**/*.xlsx.error'].each { |file| File.delete(file) }
+    RoleControls.remove_user_role('frances.dickens@reichel.com','manager')
+    RoleControls.remove_user_role('jay@krajcik.org','manager')
     
     # this is a test environment, we don't want to kick off
     # generation jobs if possible
