@@ -366,11 +366,14 @@ class MasterFile < ActiveFedora::Base
 
   protected
 
+  def mediainfo
+    @mediainfo ||= Mediainfo.new file_location
+  end
+
   def extract_frame(options={})
     if is_video?
       ffmpeg = Avalon::Configuration['ffmpeg']['path']
-      info = Mediainfo.new file_location
-      frame_size = (options[:size].nil? or options[:size] == 'auto') ? info.video.streams.first.frame_size : options[:size]
+      frame_size = (options[:size].nil? or options[:size] == 'auto') ? mediainfo.video.streams.first.frame_size : options[:size]
 
       options[:offset] ||= 2000
       offset = options[:offset].to_i
@@ -379,7 +382,7 @@ class MasterFile < ActiveFedora::Base
       end
       base = pid.gsub(/:/,'_')
 
-      (original_width,original_height) = info.video.streams.first.display_aspect_ratio.split(/:/).collect &:to_f
+      (original_width,original_height) = mediainfo.video.streams.first.display_aspect_ratio.split(/:/).collect &:to_f
       (new_width,new_height) = frame_size.split(/x/).collect &:to_f
       new_height = (new_width/(original_width/original_height)).floor
       new_height += 1 if new_height.odd?
@@ -452,6 +455,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def saveOriginal(file, original_name)
+    @mediainfo = nil
     realpath = File.realpath(file.path)
     if !original_name.nil?
       config_path = Avalon::Configuration['matterhorn']['media_path']
@@ -467,6 +471,14 @@ class MasterFile < ActiveFedora::Base
     else 
       self.file_location = realpath
     end
+
+    self.duration = begin
+      mediainfo.duration.to_s
+    rescue
+      nil
+    end
+
+    self.poster_offset = [2000,mediainfo.duration.to_i].min
 
     self.file_size = file.size.to_s
 

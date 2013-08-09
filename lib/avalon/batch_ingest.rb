@@ -74,10 +74,12 @@ module Avalon
               media_object = Avalon::Batch.initialize_media_object_from_package( entry, email_address )
               media_object.save( validate: false)
 
-              files.each do |file_path|
+              files.each do |file_spec|
                 mf = MasterFile.create
                 mf.mediaobject = media_object
-                mf.setContent(File.open(file_path, 'rb'))
+                mf.setContent(File.open(file_spec[:file], 'rb'))
+                mf.label = file_spec[:label] if file_spec[:label].present?
+                mf.poster_offset = file_spec[:offset] if file_spec[:offset].present?
                 if mf.save
                   media_object.save(validate: false)
                   mf.process

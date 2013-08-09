@@ -22,9 +22,10 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
-  revision: 07827047904ac8142adca3d98ee2c4a004baae2f
+  revision: 7c57b135e553c391433931663850612563c8b7d3
   specs:
-    avalon-batch (0.0.1)
+    avalon-batch (0.1.0)
+      activemodel
       activesupport
       roo
 
@@ -465,7 +466,7 @@ GEM
       nokogiri
       stomp
       xml-simple
-    spreadsheet (0.8.7)
+    spreadsheet (0.8.8)
       ruby-ole (>= 1.0)
     sprockets (2.2.2)
       hike (~> 1.2)
