@@ -109,7 +109,7 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
-    about_page (0.2.4)
+    about_page (0.2.5)
       rails (~> 3.2)
     actionmailer (3.2.14)
       actionpack (= 3.2.14)

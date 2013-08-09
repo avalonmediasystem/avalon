@@ -1,7 +1,7 @@
 AboutPage.configure do |config|
   config.app          = { :name => Avalon.name, :version => Avalon::VERSION }
   config.environment  = AboutPage::Environment.new({ 
-    'Ruby' => /^(RUBY|GEM_|rvm)/
+    'Ruby/Rails' => /^(RUBY|RAILS|RACK|GEM_|rvm)/
   })
   config.request = AboutPage::RequestEnvironment.new({
     'HTTP Server' => /^(SERVER_|POW_)/
