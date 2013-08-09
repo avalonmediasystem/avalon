@@ -24,10 +24,6 @@ describe RoleMap do
       RoleMap.all.each &:destroy
     end
 
-    after :all do
-      RoleMap.reset!
-    end
-
     it "should properly initialize the map" do
       RoleMapper.map.should == YAML.load(File.read(File.join(Rails.root, "config/role_map_#{Rails.env}.yml")))
     end
