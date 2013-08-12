@@ -51,14 +51,13 @@ class Admin::CollectionsController < ApplicationController
   # POST /collections
   def create
     @collection = Admin::Collection.create(params[:admin_collection].merge(managers: [user_key]))
-
-    respond_to do |format|
-      format.js do
-        render json: modal_form_response(@collection, redirect_location: admin_collection_path(@collection))
-      end
+    if @collection.save
+      render json: modal_form_response(@collection, redirect_location: admin_collection_path(@collection))
+    else
+      render json: modal_form_response(@collection)
     end
   end
-
+  
   # PUT /collections/1
   def update
     @collection = Admin::Collection.find(params[:id])
@@ -114,9 +113,9 @@ class Admin::CollectionsController < ApplicationController
 
     @collection.save
 
-        if @collection.errors.any?
-          flash[:notice] = "Collection requires at least 1 manager" 
-        end
+    if @collection.managers.count == 0
+      flash[:notice] = "Collection requires at least 1 manager" 
+    end
 
     respond_to do |format|
       format.html { redirect_to @collection }
