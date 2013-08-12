@@ -6,3 +6,4 @@ en:
   errors:
     messages:
       blank: "field is required."
+      taken: "is taken."
