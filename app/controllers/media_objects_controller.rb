@@ -171,6 +171,7 @@ class MediaObjectsController < ApplicationController
 
       # attempt to stop the matterhorn processing job
       media.parts.each(&:destroy)
+      media.parts.clear
       
       flash[:notice] = "#{media.title} (#{params[:id]}) has been successfuly deleted"
       media.delete
