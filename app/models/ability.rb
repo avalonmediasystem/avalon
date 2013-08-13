@@ -107,6 +107,10 @@ class Ability
       can :update_depositors, Admin::Collection do |collection|
         is_editor_of?(collection) 
       end
+      
+      can :inspect, MediaObject do |mediaobject| 
+       is_member_of?(mediaobject.collection) 
+      end 
     end
   end
 

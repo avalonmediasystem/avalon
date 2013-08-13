@@ -54,6 +54,7 @@ describe MediaObject do
       it{ should be_able_to(:read, media_object) }
       it{ should be_able_to(:update, media_object) }
       it{ should be_able_to(:destroy, media_object) }
+      it{ should be_able_to(:inspect, media_object) }
       it "should be able to destroy and unpublish published item" do
         media_object.avalon_publisher = "someone"
         media_object.save(validate: false)
