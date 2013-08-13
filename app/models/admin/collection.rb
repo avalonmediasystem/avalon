@@ -29,7 +29,7 @@ class Admin::Collection < ActiveFedora::Base
            :group_exceptions=, :user_exceptions, :user_exceptions=, to: :defaultRights, prefix: :default
 
   def self.units
-    Avalon::ControlledVocabulary.find_by_name(:units) || []
+    Avalon::ControlledVocabulary.find_by_name(:units)
   end
 
   def created_at
