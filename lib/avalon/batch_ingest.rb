@@ -22,7 +22,7 @@ module Avalon
 
     include Avalon::Controller::ControllerBehavior
 
-    def self.initialize_media_object_from_package( entry, email_address)
+    def self.initialize_media_object_from_package( entry )
       fields = entry.fields.dup
       media_object = MediaObject.new
       media_object.workflow.origin = 'batch'
@@ -55,23 +55,25 @@ module Avalon
           media_objects = []
           base_errors = []
           email_address = package.manifest.email || Avalon::Configuration['email']['notification']
-          current_user = User.where(email: email_address).first
-          ability = Ability.new current_user
-          ability.instance_variable_set("@user", current_user)
-          package.validate do |entry|
-            media_object = Avalon::Batch.initialize_media_object_from_package( entry, email_address )
-            if media_object.collection && ! ability.can?(:read, media_object.collection)
-              base_errors << "You do not have permission to add items to collection: #{media_object.collection.name}."
-            elsif ! media_object.collection && entry.fields[:collection].present?
-              base_errors << "There is not a collection in the system with the name: #{entry.fields[:collection].first}."
+          current_user = User.where(username: email_address).first || User.where(email: email_address).first
+          if current_user.nil?
+            base_errors << "User does not exist in the system: #{email_address}."
+          else
+            package.validate do |entry|
+              media_object = Avalon::Batch.initialize_media_object_from_package( entry )
+              if media_object.collection && ! current_user.can?(:read, media_object.collection)
+                base_errors << "You do not have permission to add items to collection: #{media_object.collection.name}."
+              elsif ! media_object.collection && entry.fields[:collection].present?
+                base_errors << "There is not a collection in the system with the name: #{entry.fields[:collection].first}."
+              end
+              media_object
             end
-            media_object
           end
 
-          if package.valid? && base_errors.empty?
+          if base_errors.empty? && package.valid?
 
             package.process do |fields, files, opts, entry|
-              media_object = Avalon::Batch.initialize_media_object_from_package( entry, email_address )
+              media_object = Avalon::Batch.initialize_media_object_from_package( entry )
               media_object.save( validate: false)
 
               files.each do |file_spec|
@@ -86,13 +88,13 @@ module Avalon
                 end
               end
 
-              context = {media_object: { pid: media_object.pid, hidden: opts[:hidden] ? '1' : nil, access: 'private' }, mediaobject: media_object, user: email_address }
+              context = {media_object: { pid: media_object.pid, hidden: opts[:hidden] ? '1' : nil, access: 'private' }, mediaobject: media_object, user: current_user.username }
               context = HYDRANT_STEPS.get_step('access-control').execute context
 
               media_object.workflow.last_completed_step = 'access-control'
 
               if opts[:publish]
-                media_object.publish!(email_address)
+                media_object.publish!(current_user.username)
                 media_object.workflow.publish
               end
 
@@ -117,7 +119,7 @@ module Avalon
           IngestBatch.create( 
             media_object_ids: media_objects.map(&:id), 
             name:  package.manifest.name,
-            email: email_address,
+            email: current_user.email,
           ) if media_objects.length > 0
 
         end

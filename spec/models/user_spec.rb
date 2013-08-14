@@ -18,6 +18,13 @@ describe User do
   subject {user}
   let!(:user) {FactoryGirl.build(:user)}
 
+  describe "validations" do
+    it {should validate_presence_of(:username)}
+    it {should validate_uniqueness_of(:username)}
+    it {should validate_presence_of(:email)}
+    it {should validate_uniqueness_of(:email)}
+  end
+
   describe "Ability" do
     its(:ability) {should_not be_nil}
 
