@@ -23,6 +23,9 @@ class User < ActiveRecord::Base
 
   attr_accessible :username, :uid, :provider
   attr_accessible :email, :guest
+
+  validates :username, presence: true, uniqueness: true
+  validates :email, presence: true, uniqueness: true
   
   delegate :can?, :cannot?, :to => :ability
 
@@ -38,7 +41,7 @@ class User < ActiveRecord::Base
     user = User.where(:username => username).first
 
     unless user
-      user = User.create(username: username)
+      user = User.create(username: username, email: username)
     end
     user
   end
