@@ -58,6 +58,7 @@ namespace :deploy do
   task :link_local_files do
     link_shared_file "Gemfile.local", "Gemfile.local"
     link_shared_file "user_auth_cas.rb", "config/initializers/user_auth_cas.rb"
+    link_shared_file "iu-ldap.rb", "config/initializers/iu-ldap.rb"
   end
 
   task :trust_rvmrc do
