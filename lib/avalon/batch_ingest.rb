@@ -56,19 +56,21 @@ module Avalon
           base_errors = []
           email_address = package.manifest.email || Avalon::Configuration['email']['notification']
           current_user = User.where(username: email_address).first || User.where(email: email_address).first
-          ability = Ability.new current_user
-          ability.instance_variable_set("@user", current_user)
-          package.validate do |entry|
-            media_object = Avalon::Batch.initialize_media_object_from_package( entry )
-            if media_object.collection && ! ability.can?(:read, media_object.collection)
-              base_errors << "You do not have permission to add items to collection: #{media_object.collection.name}."
-            elsif ! media_object.collection && entry.fields[:collection].present?
-              base_errors << "There is not a collection in the system with the name: #{entry.fields[:collection].first}."
+          if current_user.nil?
+            base_errors << "User does not exist in the system: #{email_address}."
+          else
+            package.validate do |entry|
+              media_object = Avalon::Batch.initialize_media_object_from_package( entry )
+              if media_object.collection && ! current_user.can?(:read, media_object.collection)
+                base_errors << "You do not have permission to add items to collection: #{media_object.collection.name}."
+              elsif ! media_object.collection && entry.fields[:collection].present?
+                base_errors << "There is not a collection in the system with the name: #{entry.fields[:collection].first}."
+              end
+              media_object
             end
-            media_object
           end
 
-          if package.valid? && base_errors.empty?
+          if base_errors.empty? && package.valid?
 
             package.process do |fields, files, opts, entry|
               media_object = Avalon::Batch.initialize_media_object_from_package( entry )
