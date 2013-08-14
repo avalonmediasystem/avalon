@@ -54,7 +54,12 @@ class User < ActiveRecord::Base
     list.flatten.any? { |entry| [username,email].include?(entry) }
   end
 
+  # Hydra::User overrides
   def groups
     (RoleMapper.roles(username) + RoleMapper.roles(email)).uniq
+  end
+
+  def user_key
+    self.email || super
   end
 end
