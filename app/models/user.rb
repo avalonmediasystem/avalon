@@ -53,4 +53,8 @@ class User < ActiveRecord::Base
   def in?(*list)
     list.flatten.any? { |entry| [username,email].include?(entry) }
   end
+
+  def groups
+    (RoleMapper.roles(username) + RoleMapper.roles(email)).uniq
+  end
 end
