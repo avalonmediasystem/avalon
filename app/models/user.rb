@@ -38,12 +38,16 @@ class User < ActiveRecord::Base
     user = User.where(:username => username).first
 
     unless user
-      user = User.create(username: username)
+      user = User.create(username: username, email: username)
     end
     user
   end
 
   def ability
     @ability ||= Ability.new(self)
+  end
+
+  def in?(*list)
+    list.flatten.any? { |entry| [username,email].include?(entry) }
   end
 end

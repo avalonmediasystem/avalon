@@ -17,11 +17,28 @@ require 'spec_helper'
 describe User do
   subject {user}
   let!(:user) {FactoryGirl.build(:user)}
+  let!(:list) {0.upto(rand(5)).collect { Faker::Internet.email }}
 
   describe "Ability" do
     its(:ability) {should_not be_nil}
 
     pending "should create a new Ability if missing"
     pending "should delegate can? and cannot?"
+  end
+
+  describe "Membership" do
+    it "should be a member if its username is in the list" do
+      user.should be_in(list,[user.username])
+      user.should be_in(list+[user.username])
+    end
+
+    it "should be a member if its email address is in the list" do
+      user.should be_in(list,[user.email])
+      user.should be_in(list+[user.email])
+    end
+
+    it "should not be a member if neither its username or its email address is in the list" do
+      user.should_not be_in(list)
+    end
   end
 end
