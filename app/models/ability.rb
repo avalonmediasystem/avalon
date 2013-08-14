@@ -69,7 +69,7 @@ class Ability
       cannot :destroy, MediaObject do |mediaobject|
         # non-managers can only destroy mediaobject if it's unpublished 
         (!is_member_of?(mediaobject.collection)) || 
-          ( mediaobject.published? && !mediaobject.collection.managers.include?(@user.username) )
+          ( mediaobject.published? && !@user.in?(mediaobject.collection.managers) )
       end
 
       can :update_access_control, MediaObject do |mediaobject|
@@ -77,11 +77,11 @@ class Ability
       end
 
       can :unpublish, MediaObject do |mediaobject|
-        mediaobject.collection.managers.include?(@user.username) 
+        @user.in?(mediaobject.collection.managers) 
       end
 
       cannot :destroy, Admin::Collection do |collection, other_user_collections=[]|
-        !collection.managers.include?(@user.username)
+        !@user.in?(collection.managers)
       end
 
       can :update, Admin::Collection do |collection|
@@ -89,19 +89,19 @@ class Ability
       end
 
       can :update_unit, Admin::Collection do |collection|
-        collection.managers.include?(@user.username)
+        @user.in?(collection.managers)
       end
 
       can :update_access_control, Admin::Collection do |collection|
-        collection.managers.include?(@user.username)
+        @user.in?(collection.managers)
       end
 
       can :update_managers, Admin::Collection do |collection|
-        collection.managers.include?(@user.username)
+        @user.in?(collection.managers)
       end
 
       can :update_editors, Admin::Collection do |collection|
-        collection.managers.include?(@user.username)
+        @user.in?(collection.managers)
       end
 
       can :update_depositors, Admin::Collection do |collection|
@@ -116,15 +116,12 @@ class Ability
 
   def is_member_of?(collection)
      @user_groups.include?("administrator") || 
-       collection.managers.include?(@user.username) ||
-       collection.editors.include?(@user.username) ||
-       collection.depositors.include?(@user.username)
+       @user.in?(collection.managers, collection.editors, collection.depositors)
   end
 
   def is_editor_of?(collection) 
      @user_groups.include?("administrator") || 
-       collection.managers.include?(@user.username) ||
-       collection.editors.include?(@user.username)
+       @user.in?(collection.managers, collection.editors)
   end
 
   def is_member_of_any_collection?

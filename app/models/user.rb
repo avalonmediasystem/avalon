@@ -49,4 +49,8 @@ class User < ActiveRecord::Base
   def ability
     @ability ||= Ability.new(self)
   end
+
+  def in?(*list)
+    list.flatten.any? { |entry| [username,email].include?(entry) }
+  end
 end
