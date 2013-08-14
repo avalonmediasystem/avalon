@@ -38,12 +38,9 @@ class User < ActiveRecord::Base
 
   def self.find_for_identity(access_token, signed_in_resource=nil)
     username = access_token.info['email']
-    user = User.where(:username => username).first
-
-    unless user
-      user = User.create(username: username, email: username)
+    User.find_or_create_by_username(username) do |u|
+      u.email = username
     end
-    user
   end
 
   def ability
