@@ -5,19 +5,21 @@
 <% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
 
 <%= twitter_bootstrap_form_for @group, html: { :class => 'form-inline'}  do |f| %>
+   <fieldset class="whitespace">
     <h3>Group</h3>
     <%= text_field_tag :group_name, "Group name", value: @group.name %>
     <%= submit_tag "Save", class: "btn" %>
     <%= link_to "Delete Group", admin_group_path(@group.name), 
         :method => :delete, confirm: "Deleted group cannot be recovered. Are you sure?", class: "btn btn-danger inline" %>
+  </fieldset>
 
-    <h3 style="margin-top: 35px">Group Members</h3>
-    <%= text_field_tag :new_user, nil, placeholder: 'Enter a username here' %>
+    <h3>Group Members</h3>
+    <%= text_field_tag :new_user, nil, placeholder: 'Enter a username' %>
     <%= f.submit "Add user", class: "btn" %>
 <% end %>
 
 <%= form_tag update_users_admin_group_path, method: :put do %>
-    <div style="line-height: 22px">
+  <div> 
       <table class="table table-striped">
         <thead>
           <tr>
