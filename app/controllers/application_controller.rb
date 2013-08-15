@@ -46,4 +46,18 @@ class ApplicationController < ActionController::Base
       Admin::Collection.where("#{ActiveFedora::SolrService.solr_name("inheritable_edit_access_person", Hydra::Datastream::RightsMetadata.indexer)}" => user_key).all
     end
   end
+
+  rescue_from CanCan::AccessDenied do |exception|
+    if current_user
+      klass_instance = exception.subject
+      if klass_instance.class == MediaObject && exception.action == :update
+        redirect_to klass_instance, flash: { notice: 'You are not authorized to edit this document.  You have been redirected to a read-only view.' }
+      else
+        redirect_to root_path, flash: { notice: 'You are not authorized to perform this action.' }
+      end
+    else
+      session[:previous_url] = request.fullpath unless request.xhr?
+      redirect_to new_user_session_path, flash: { notice: 'You are not authorized to perform this action. Try logging in.' }
+    end
+  end
 end
