@@ -2,6 +2,8 @@ class Admin::CollectionsController < ApplicationController
   before_filter :authenticate_user!
   load_and_authorize_resource except: :remove
   respond_to :html
+  
+  # Catching a global exception seems like a bad idea here
   rescue_from Exception do |e|
     if e.message == "UserIsEditor"
       flash[:notice] = "User #{params[:new_depositor]} needs to be removed from manager or editor role first"
