@@ -15,7 +15,7 @@
 FactoryGirl.define do
   factory :user do
     email { Faker::Internet.email }
-    username { |u| u.email }
+    username { |u| u.email.split(/@/).first }
 
     factory :administrator do
       after(:create) do |user|

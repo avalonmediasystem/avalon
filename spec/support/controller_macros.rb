@@ -21,7 +21,8 @@ module ControllerMacros
     user
   end 
   def login_user(username)
-    user = User.where(username: username).first
+    key = username =~ /@/ ? :email : :username
+    user = User.where(key => username).first
     @request.env["devise.mapping"] = Devise.mappings[:user]
     logger.debug "Attempting to sign in user: #{user}"
     sign_in user
