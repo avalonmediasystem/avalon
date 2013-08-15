@@ -365,6 +365,7 @@ describe Admin::Collection do
       end
 
       it "should persist empty #default_read_users" do
+        pending "awaiting update to hydra-access-controls"
         collection.default_read_users = []
         collection.save
         Admin::Collection.find(collection.pid).default_read_users.should == []
@@ -384,6 +385,7 @@ describe Admin::Collection do
       end
 
       it "should persist empty #default_read_groups" do
+        pending "awaiting update to hydra-access-controls"
         collection.default_read_groups = []
         collection.save
         Admin::Collection.find(collection.pid).default_read_groups.should == []
