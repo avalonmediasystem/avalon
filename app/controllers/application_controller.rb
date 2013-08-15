@@ -49,9 +49,8 @@ class ApplicationController < ActionController::Base
 
   rescue_from CanCan::AccessDenied do |exception|
     if current_user
-      klass_instance = exception.subject
-      if klass_instance.class == MediaObject && exception.action == :update
-        redirect_to klass_instance, flash: { notice: 'You are not authorized to edit this document.  You have been redirected to a read-only view.' }
+      if exception.subject.class == MediaObject && exception.action == :update
+        redirect_to exception.subject, flash: { notice: 'You are not authorized to edit this document.  You have been redirected to a read-only view.' }
       else
         redirect_to root_path, flash: { notice: 'You are not authorized to perform this action.' }
       end
