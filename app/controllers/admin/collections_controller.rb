@@ -62,18 +62,22 @@ class Admin::CollectionsController < ApplicationController
   def update
     @collection = Admin::Collection.find(params[:id])
 
-    # If one of the Add (manager, editor, depositor) buttons has been clicked
     ["manager", "editor", "depositor"].each do |title|
-      if params["add_#{title}".to_sym].present? && can?("update_#{title}s".to_sym, @collection)
-        @collection.send "add_#{title}".to_sym, params["new_#{title}".to_sym]
+      attribute_accessor_name = "add_#{title}"
+      if params[attribute_accessor_name].present? && can?("update_#{title.pluralize}", @collection)
+        if params["new_#{title}"].present?
+          @collection.send attribute_accessor_name, params["new_#{title}"]
+        else
+          flash[:notice] = "#{title.titleize} can't be blank."
+        end
       end
     end
 
     # If one of the "x" (remove manager, editor, depositor) buttons has been clicked
     ["manager", "editor", "depositor"].each do |title|
-      sym = "remove_#{title}".to_sym
-      if params[sym].present? && can?("update_#{title}s".to_sym, @collection)
-        @collection.send sym, params[sym]
+      attribute_accessor_name = "remove_#{title}"
+      if params[attribute_accessor_name].present? && can?("update_#{title.pluralize}", @collection)
+        @collection.send attribute_accessor_name, params[attribute_accessor_name]
       end
     end
 
