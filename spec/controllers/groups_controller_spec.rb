@@ -99,7 +99,7 @@ describe Admin::GroupsController do
       end
       
       it "should not be able to rename system groups" do
-        login_as('policy_editor')
+        login_as('administrator')
         post 'update', group_name: 'renamed_managers', new_user: "", id: 'manager'
         
         flash[:error].should_not be_nil
