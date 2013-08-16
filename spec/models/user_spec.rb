@@ -34,17 +34,12 @@ describe User do
   end
 
   describe "Membership" do
-    it "should be a member if its username is in the list" do
-      user.should be_in(list,[user.username])
-      user.should be_in(list+[user.username])
+    it "should be a member if its key is in the list" do
+      user.should be_in(list,[user.user_key])
+      user.should be_in(list+[user.user_key])
     end
 
-    it "should be a member if its email address is in the list" do
-      user.should be_in(list,[user.email])
-      user.should be_in(list+[user.email])
-    end
-
-    it "should not be a member if neither its username or its email address is in the list" do
+    it "should not be a member if its key is not in the list" do
       user.should_not be_in(list)
     end
   end
