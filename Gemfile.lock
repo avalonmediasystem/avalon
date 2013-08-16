@@ -22,7 +22,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
-  revision: 7c57b135e553c391433931663850612563c8b7d3
+  revision: 6182b17e621f8bf2b645daf09842c313d0b4c04a
   specs:
     avalon-batch (0.1.0)
       activemodel

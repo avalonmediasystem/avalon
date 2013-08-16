@@ -72,6 +72,13 @@ describe Avalon::Batch do
       IngestBatch.count.should == 0
     end
 
+    it 'does not create an ingest batch object when there are no files' do
+      fileless_batch = Avalon::Batch::Package.new('spec/fixtures/batch_manifest.xlsx')
+      Avalon::DropboxService.stub(:find_new_packages).and_return [fileless_batch]
+      Avalon::Batch.ingest
+      IngestBatch.count.should == 0
+    end
+
     it 'should fail if the manifest specified a non-manager user' do
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
