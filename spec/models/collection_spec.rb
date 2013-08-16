@@ -347,7 +347,48 @@ describe Admin::Collection do
     it 'adds the media object to the target collection' do
       @target_collection.media_objects.should eql @media_objects
     end
-
-
   end
+
+  describe "default rights delegators" do
+    let(:collection) {FactoryGirl.create(:collection)}
+
+    describe "users" do
+      let(:users) {(1..3).map {Faker::Internet.email}}
+
+      before :each do
+        collection.default_read_users = users
+        collection.save
+      end
+
+      it "should persist assigned #default_read_users" do
+        Admin::Collection.find(collection.pid).default_read_users.should == users
+      end
+
+      it "should persist empty #default_read_users" do
+        collection.default_read_users = []
+        collection.save
+        Admin::Collection.find(collection.pid).default_read_users.should == []
+      end
+    end
+
+    describe "groups" do
+      let(:groups) {(1..3).map {Faker::Lorem.sentence(4)}}
+
+      before :each do
+        collection.default_read_groups = groups
+        collection.save
+      end
+
+      it "should persist assigned #default_read_groups" do
+        Admin::Collection.find(collection.pid).default_read_groups.should == groups
+      end
+
+      it "should persist empty #default_read_groups" do
+        collection.default_read_groups = []
+        collection.save
+        Admin::Collection.find(collection.pid).default_read_groups.should == []
+      end
+    end
+  end
+
 end

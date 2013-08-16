@@ -25,8 +25,10 @@ class Admin::Collection < ActiveFedora::Base
   delegate :name, to: :descMetadata, unique: true
   delegate :unit, to: :descMetadata, unique: true
   delegate :description, to: :descMetadata, unique: true
-  delegate :read_groups, :read_users, :access, :access=, :hidden?, :hidden=, :group_exceptions,
-           :group_exceptions=, :user_exceptions, :user_exceptions=, to: :defaultRights, prefix: :default
+  delegate :read_groups, :read_groups=, :read_users, :read_users=,
+           :access, :access=, :hidden?, :hidden=, 
+           :group_exceptions, :group_exceptions=, :user_exceptions, :user_exceptions=, 
+           to: :defaultRights, prefix: :default
 
   def self.units
     Avalon::ControlledVocabulary.find_by_name(:units)
