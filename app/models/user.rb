@@ -33,7 +33,7 @@ class User < ActiveRecord::Base
   # user class to get a user-displayable login/identifier for
   # the account. 
   def to_s
-    username
+    user_key
   end
 
   def self.find_for_identity(access_token, signed_in_resource=nil)
@@ -48,10 +48,10 @@ class User < ActiveRecord::Base
   end
 
   def in?(*list)
-    list.flatten.any? { |entry| [username,email].include?(entry) }
+    list.flatten.include? user_key
   end
 
   def groups
-    (RoleMapper.roles(username) + RoleMapper.roles(email)).uniq
+    RoleMapper.roles(user_key)
   end
 end
