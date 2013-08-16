@@ -66,7 +66,8 @@ class Admin::GroupsController < ApplicationController
     #TODO: move RoleControls to Group model
     
    new_user = params["new_user"]
-
+   new_group_name = params["group_name"]
+   
     @group = Admin::Group.find(params["id"])
 
     # Make sure that the group is not part of the list of special system
