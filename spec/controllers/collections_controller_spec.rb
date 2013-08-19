@@ -23,6 +23,22 @@ describe Admin::CollectionsController, type: :controller do
       request.env["HTTP_REFERER"] = '/'
     end
 
+    it "should add users to roles" do
+      login_as(:administrator)
+      depositor = FactoryGirl.build(:user)
+      put 'update', id: collection.id, add_depositor: 'Add', new_depositor: depositor.username
+      collection.reload
+      depositor.should be_in(collection.depositors)
+    end
+
+    it "should remove users from roles" do
+      login_as(:administrator)
+      depositor = User.where(username: collection.depositors.first).first
+      put 'update', id: collection.id, remove_depositor: depositor.username
+      collection.reload
+      depositor.should_not be_in(collection.depositors)
+    end
+
     it "should redirects to collections index page when user removed from managers" 
     it "should shows an error when attempts to remove the last manager" 
     it "should shows an error when attempts to add an editor/manager to depositors list" 

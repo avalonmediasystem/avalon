@@ -66,9 +66,9 @@ class Admin::CollectionsController < ApplicationController
 
     ["manager", "editor", "depositor"].each do |title|
       attribute_accessor_name = "add_#{title}"
-      if params[attribute_accessor_name].present? && can?("update_#{title.pluralize}", @collection)
+      if params[attribute_accessor_name].present? && can?("update_#{title.pluralize}".to_sym, @collection)
         if params["new_#{title}"].present?
-          @collection.send attribute_accessor_name, params["new_#{title}"]
+          @collection.send attribute_accessor_name.to_sym, params["new_#{title}"]
         else
           flash[:notice] = "#{title.titleize} can't be blank."
         end
@@ -78,8 +78,8 @@ class Admin::CollectionsController < ApplicationController
     # If one of the "x" (remove manager, editor, depositor) buttons has been clicked
     ["manager", "editor", "depositor"].each do |title|
       attribute_accessor_name = "remove_#{title}"
-      if params[attribute_accessor_name].present? && can?("update_#{title.pluralize}", @collection)
-        @collection.send attribute_accessor_name, params[attribute_accessor_name]
+      if params[attribute_accessor_name].present? && can?("update_#{title.pluralize}".to_sym, @collection)
+        @collection.send attribute_accessor_name.to_sym, params[attribute_accessor_name]
       end
     end
 
