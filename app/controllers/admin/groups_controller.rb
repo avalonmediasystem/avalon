@@ -64,11 +64,28 @@ class Admin::GroupsController < ApplicationController
   
   def update
     #TODO: move RoleControls to Group model
-    new_group_name = params["group_name"]
-    new_user = params["new_user"]
-
+    
+   new_user = params["new_user"]
+   new_group_name = params["group_name"]
+   
     @group = Admin::Group.find(params["id"])
-    @group.name = new_group_name unless new_group_name.blank?
+
+    # Make sure that the group is not part of the list of special system
+    # groups. If it is then do not allow the name to be changed and cause
+    # other things to break in the system
+    #
+    # It is not pretty but this gets the job done. Even though the view
+    # prevents the name being changed this is a safeguard against somebody
+    # posting it anyways
+    if (Admin::Group.name_is_static?(@group.name) and 
+        (not @group.name.eql?(params["group_name"])))
+      flash[:error] = "Cannot change the name of a system group"
+      redirect_to edit_admin_group_path(@group)
+
+      return
+    else
+      @group.name = params["group_name"] unless new_group_name.blank?
+    end
     @group.users += [new_user] unless new_user.blank?
     
     if @group.save

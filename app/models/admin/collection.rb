@@ -20,7 +20,7 @@ class Admin::Collection < ActiveFedora::Base
 
   validates :name, :uniqueness => { :solr_name => 'name_tesim'}, presence: true
   validates :unit, presence: true, inclusion: { in: Proc.new{ Admin::Collection.units } }
-  validates :managers, length: {minimum: 1, message: 'Collection requires at least 1 manager'} 
+  validates :managers, length: {minimum: 1, message: 'Collection requires at least one manager'} 
 
   delegate :name, to: :descMetadata, unique: true
   delegate :unit, to: :descMetadata, unique: true

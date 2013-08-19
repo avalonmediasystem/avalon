@@ -191,4 +191,10 @@ class Admin::Group
     @saved = val
   end
 
+  # Check to see if the name is static based on its inclusion in the system
+  # group. This is a workaround for the bug that breaks the system whenever
+  # a system group is renamed.
+  def self.name_is_static? group_name
+    Avalon::Configuration['groups']['system_groups'].include? group_name
+  end
 end
