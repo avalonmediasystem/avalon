@@ -16,6 +16,7 @@
 require "role_controls"
 class Admin::GroupsController < ApplicationController  
   before_filter :auth
+  before_filter :collection_has_manager, only: :update 
   
   # Currently assumes that to do anything you have to be able to manage Group
   # TODO: finer controls
@@ -78,13 +79,16 @@ class Admin::GroupsController < ApplicationController
     # prevents the name being changed this is a safeguard against somebody
     # posting it anyways
     if (Admin::Group.name_is_static?(@group.name) and 
-        (not @group.name.eql?(params["group_name"])))
-      flash[:error] = "Cannot change the name of a system group"
+        (not (@group.name.eql?(params["group_name"]) or 
+              params[:group_name].blank?)))
+      flash[:error] = "Cannot change the name of a system group [#{new_group_name}]"
       redirect_to edit_admin_group_path(@group)
 
       return
     else
-      @group.name = params["group_name"] unless new_group_name.blank?
+      # This logic makes sure that role is never blank even if the form
+      # does not provide a value
+      @group.name = new_group_name.blank? ? params["id"] : params["group_name"]
     end
     @group.users += [new_user] unless new_user.blank?
     
@@ -116,5 +120,12 @@ class Admin::GroupsController < ApplicationController
     
     flash[:notice] = "Successfully deleted groups: #{params[:group_ids].join(", ")}"
     redirect_to admin_groups_path
+  end
+
+  def collection_has_manager
+    return true if not params[:id].eql?('manager')
+
+    # Fail automatically for now
+    return false
   end
 end 
