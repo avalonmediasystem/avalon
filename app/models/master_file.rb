@@ -24,6 +24,7 @@ class MasterFile < ActiveFedora::Base
   has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
 
   has_metadata name: 'descMetadata', :type => ActiveFedora::SimpleDatastream do |d|
+    d.field :file_label, :string
     d.field :file_location, :string
     d.field :file_checksum, :string
     d.field :file_size, :string
@@ -45,7 +46,7 @@ class MasterFile < ActiveFedora::Base
     d.field :failures, :string
   end
 
-  delegate_to 'descMetadata', [:file_location, :file_checksum, :file_size, :duration, :file_format, :poster_offset, :thumbnail_offset], unique: true
+  delegate_to 'descMetadata', [:file_label, :file_location, :file_checksum, :file_size, :duration, :file_format, :poster_offset, :thumbnail_offset], unique: true
   delegate_to 'mhMetadata', [:workflow_id, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures], unique:true
 
   has_file_datastream name: 'thumbnail'
@@ -183,7 +184,7 @@ class MasterFile < ActiveFedora::Base
 
     # Returns the hash
     {
-      label: label,
+      label: file_label,
       is_video: is_video?,
       poster_image: poster_path,
       mediapackage_id: mediapackage_id,

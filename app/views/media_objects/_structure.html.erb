@@ -9,7 +9,7 @@
 	<thead>
 	  <th>&nbsp;</th>
 	  <th>Type</th>
-	  <th>Title</th>
+	  <th>Display label</th>
 	  <th>File name</th>
 	  <th>Size</th>
 	</thead>
@@ -30,7 +30,7 @@
                           <% end %>
         </td>
         <td>
-          <%= masterfile.label.blank? ? '&#8212;'.html_safe : masterfile.label %>
+          <%= masterfile.file_label.blank? ? '&#8212;'.html_safe : masterfile.file_label %>
         </td>
         <td>
 	  	    <%= truncate(File.basename(masterfile.file_location), length: 25) %>

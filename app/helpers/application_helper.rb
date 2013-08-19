@@ -56,12 +56,12 @@ module ApplicationHelper
   # different value
   def file_download_label(masterfile)
     # Check to see if the file name is longer than 25 characters
-    if 20 > masterfile.descMetadata.title[0].length 
-      label_display = masterfile.descMetadata.title[0]
+    if 20 > masterfile.file_label.length 
+      label_display = masterfile.file_label
     else
-      label_display = truncate(masterfile.descMetadata.title[0], length: 15)
+      label_display = truncate(masterfile.file_label, length: 15)
       label_display << "."
-      label_display << masterfile.descMetadata.title[0].split('.').last
+      label_display << masterfile.file_label.split('.').last
     end
   end
 
@@ -108,10 +108,10 @@ module ApplicationHelper
     label = ''
     
     unless resource.nil?
-      if resource.label.blank?
+      if resource.file_label.blank?
         label = File.basename(resource.file_location)
       else
-        label = resource.label
+        label = resource.file_label
       end
     end
     label

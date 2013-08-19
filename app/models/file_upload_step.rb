@@ -71,7 +71,7 @@ require 'avalon/dropbox'
             deleted_parts << selected_part
             selected_part.destroy
           else
-            selected_part.label = part[:label]
+            selected_part.file_label = part[:file_label]
             selected_part.poster_offset = part[:poster_offset]
             unless selected_part.save
               context[:error] ||= []
