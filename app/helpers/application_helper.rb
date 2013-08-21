@@ -144,12 +144,13 @@ module ApplicationHelper
     link_to name, '#', opts
   end
 
-  def git_commit_info pattern="%s %s"
+  def git_commit_info pattern="%s %s [%s]"
     begin
       repo = Grit::Repo.new(Rails.root)
       branch = repo.head.name
       commit = repo.head.commit.sha[0..5]
-      pattern % [branch,commit]
+      time = repo.head.commit.committed_date.strftime('%d %b %Y %H:%M:%S')
+      pattern % [branch,commit,time]
     rescue
       ""
     end
