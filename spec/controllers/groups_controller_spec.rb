@@ -81,7 +81,7 @@ describe Admin::GroupsController do
         response.should redirect_to(edit_admin_group_path(Admin::Group.find(group.name)))
       end
     
-      it "should be able to change group name when authenticated and authorized" do
+      xit "should be able to change group name when authenticated and authorized" do
         login_as('policy_editor')
         new_group_name = Faker::Lorem.word
 
