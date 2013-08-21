@@ -31,5 +31,7 @@ class MediaObjectMigration < Hydra::Migrate::Migration
     dispatcher.migrate!(obj.parts)
     collection_name = obj.descMetadata.collection.last || 'NO COLLECTION'
     obj.collection = Admin::Collection.find_by_name(collection_name)
+    obj.descMetadata.collection = []
+    obj.descMetadata.remove_empty_nodes!
   end
 end
