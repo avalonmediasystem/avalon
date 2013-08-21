@@ -16,7 +16,6 @@
 require "role_controls"
 class Admin::GroupsController < ApplicationController  
   before_filter :auth
-  before_filter :collection_has_manager, only: :update 
   
   # Currently assumes that to do anything you have to be able to manage Group
   # TODO: finer controls
@@ -105,9 +104,14 @@ class Admin::GroupsController < ApplicationController
 
   def update_users 
     group_name = params[:id]
-    users = RoleControls.users(group_name) - params[:user_ids] 
-    RoleControls.assign_users(users, group_name)
-    RoleControls.save_changes
+    sole_managers = check_for_sole_managers if group_name == "manager"
+    if !sole_managers.blank?
+      flash[:error] = "Cannot remove users #{sole_managers.join(",")} because they are sole managers of collections."
+    else
+      users = RoleControls.users(group_name) - params[:user_ids] 
+      RoleControls.assign_users(users, group_name)
+      RoleControls.save_changes
+    end
     redirect_to :back
   end
 
@@ -122,10 +126,11 @@ class Admin::GroupsController < ApplicationController
     redirect_to admin_groups_path
   end
 
-  def collection_has_manager
-    return true if not params[:id].eql?('manager')
-
-    # Fail automatically for now
-    return false
+  def check_for_sole_managers
+    sole_managers = []
+    params["user_ids"].each do |manager|
+      sole_managers << manager if Admin::Collection.all.any? {|c| c.managers == [manager]}
+    end
+    sole_managers
   end
 end 

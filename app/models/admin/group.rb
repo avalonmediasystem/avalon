@@ -172,6 +172,8 @@ class Admin::Group
     @saved
   end
 
+  alias_method :save!, :save
+
   def delete 
     RoleControls.remove_role(name)
     RoleControls.save_changes
