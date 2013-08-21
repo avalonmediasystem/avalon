@@ -19,6 +19,7 @@ class MasterFile < ActiveFedora::Base
   include Hydra::ModelMethods
   include Hydra::ModelMixins::CommonMetadata
   include Hydra::ModelMixins::RightsMetadata
+  include Hydra::ModelMixins::Migratable
 
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
   has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
@@ -57,6 +58,7 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
+  before_save { |obj| obj.current_migration = 'R2' }
   before_save 'update_stills_from_offset!'
 
   # First and simplest test - make sure that the uploaded file does not exceed the

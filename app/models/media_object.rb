@@ -20,6 +20,7 @@ class MediaObject < ActiveFedora::Base
   include ActiveFedora::Associations
   include Hydra::ModelMixins::RightsMetadata
   include Avalon::Workflow::WorkflowModelMixin
+  include Hydra::ModelMixins::Migratable
 
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
@@ -38,6 +39,7 @@ class MediaObject < ActiveFedora::Base
   before_save 'descMetadata.update_change_date!'
   before_save 'descMetadata.reorder_elements!'
   before_save 'descMetadata.remove_empty_nodes!'
+#  before_save { |obj| obj.current_migration = 'R2' }
   
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
