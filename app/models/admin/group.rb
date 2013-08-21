@@ -146,6 +146,7 @@ class Admin::Group
   end
   
   # Necessary hack so that form_for works with both :new and :edit
+  # FIXME This method is gnarly and doesn't allow everything that it should
   def save
     if new_record? && valid? && !self.class.exists?(name) 
       RoleControls.add_role(name)
@@ -171,6 +172,8 @@ class Admin::Group
     changed.clear if @saved 
     @saved
   end
+
+  alias_method :save!, :save
 
   def delete 
     RoleControls.remove_role(name)

@@ -78,13 +78,16 @@ class Admin::GroupsController < ApplicationController
     # prevents the name being changed this is a safeguard against somebody
     # posting it anyways
     if (Admin::Group.name_is_static?(@group.name) and 
-        (not @group.name.eql?(params["group_name"])))
-      flash[:error] = "Cannot change the name of a system group"
+        (not (@group.name.eql?(params["group_name"]) or 
+              params[:group_name].blank?)))
+      flash[:error] = "Cannot change the name of a system group [#{new_group_name}]"
       redirect_to edit_admin_group_path(@group)
 
       return
     else
-      @group.name = params["group_name"] unless new_group_name.blank?
+      # This logic makes sure that role is never blank even if the form
+      # does not provide a value
+      @group.name = new_group_name.blank? ? params["id"] : params["group_name"]
     end
     @group.users += [new_user] unless new_user.blank?
     
@@ -101,9 +104,14 @@ class Admin::GroupsController < ApplicationController
 
   def update_users 
     group_name = params[:id]
-    users = RoleControls.users(group_name) - params[:user_ids] 
-    RoleControls.assign_users(users, group_name)
-    RoleControls.save_changes
+    sole_managers = check_for_sole_managers if group_name == "manager"
+    if !sole_managers.blank?
+      flash[:error] = "Cannot remove users #{sole_managers.join(",")} because they are sole managers of collections."
+    else
+      users = RoleControls.users(group_name) - params[:user_ids] 
+      RoleControls.assign_users(users, group_name)
+      RoleControls.save_changes
+    end
     redirect_to :back
   end
 
@@ -116,5 +124,13 @@ class Admin::GroupsController < ApplicationController
     
     flash[:notice] = "Successfully deleted groups: #{params[:group_ids].join(", ")}"
     redirect_to admin_groups_path
+  end
+
+  def check_for_sole_managers
+    sole_managers = []
+    params["user_ids"].each do |manager|
+      sole_managers << manager if Admin::Collection.all.any? {|c| c.managers == [manager]}
+    end
+    sole_managers
   end
 end 
