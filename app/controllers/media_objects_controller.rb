@@ -30,22 +30,6 @@ class MediaObjectsController < ApplicationController
     render '/errors/unknown_pid', status: 404
   end
  
-  rescue_from CanCan::AccessDenied do |exception|
-    if current_user.nil?
-      flash[:notice] = 'You are not authorized to perform this action. Try logging in.'
-      redirect_to new_user_session_path
-    else
-      case params[:action]
-      when 'edit'
-        flash[:notice] = 'You are not authorized to edit this document.  You have been redirected to a read-only view.'
-        redirect_to :action => :show
-      else
-        flash[:notice] = 'You are not authorized to perform this action.'
-        redirect_to root_path
-      end
-    end
-  end
-
   def new
     logger.debug "<< NEW >>"
     collection = Admin::Collection.find(params[:collection_id])
@@ -99,8 +83,6 @@ class MediaObjectsController < ApplicationController
   def show
     authorize! :read, @mediaobject
     respond_to do |format|
-      # The flash notice is only set if you are returning HTML since it makes no
-      # sense in an AJAX context (yet)
       format.html do
        	if (not @masterFiles.empty? and @currentStream.blank?)
           @currentStream = @masterFiles.first
