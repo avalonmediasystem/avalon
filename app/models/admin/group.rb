@@ -129,8 +129,9 @@ class Admin::Group
   end
 
   def users=(value)
-    attribute_will_change!('users') if users != value
-    @users = value
+    sorted_value = value.sort
+    attribute_will_change!('users') if users != sorted_value
+    @users = sorted_value
   end
 
   def users_changed?
@@ -196,5 +197,9 @@ class Admin::Group
   # a system group is renamed.
   def self.name_is_static? group_name
     Avalon::Configuration['groups']['system_groups'].include? group_name
+  end
+
+  def <=> x
+    self.name <=> x.name
   end
 end
