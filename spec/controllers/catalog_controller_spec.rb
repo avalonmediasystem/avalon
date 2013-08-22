@@ -44,9 +44,6 @@ describe CatalogController do
       before do
         login_as :user
       end
-      after do
-        #TODO logout
-      end
       it "should show results for items that are published and available to registered users" do
         mo = FactoryGirl.create(:published_media_object, access: 'restricted')
         get 'index', :q => ""

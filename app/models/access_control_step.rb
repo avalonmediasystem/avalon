@@ -26,7 +26,8 @@
       # TO DO: Implement me
       logger.debug "<< Access flag = #{context[:access]} >>"
 
-      unless User.where(username: context[:user]).first.ability.can? :update_access_control, mediaobject
+      user = User.where({ Devise.authentication_keys.first => context[:user]}).first
+      unless user.ability.can? :update_access_control, mediaobject
         logger.debug "<<< No permission to update access control, forwarding to next step >>>"
         return context
       end

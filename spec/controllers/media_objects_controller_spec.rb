@@ -140,6 +140,28 @@ describe MediaObjectsController, type: :controller do
         }
       end
     end
+
+    describe 'Redirect back to media object after sign in' do
+      let(:media_object){ FactoryGirl.create(:media_object, access: 'private') }
+
+      context 'Before sign in' do
+        it 'persists the current url on the session' do
+          get 'show', id: media_object.pid
+          session[:previous_url].should eql media_object_path(media_object)
+        end
+      end
+
+      context 'After sign in' do
+        before do 
+          @user = FactoryGirl.create(:user)
+          @media_object = FactoryGirl.create(:media_object, access: 'private', read_users: [@user.username] )
+        end
+        it 'redirects to the previous url' do
+        end
+        it 'removes the previous url from the session' do
+        end
+      end
+    end
     
     context "Items should not be available to unauthorized users" do
       it "should redirect to sign in when not logged in and item is unpublished" do
@@ -148,6 +170,7 @@ describe MediaObjectsController, type: :controller do
         get 'show', id: media_object.pid
         response.should redirect_to new_user_session_path
       end
+
       it "should redirect to home page when logged in and item is unpublished" do
         media_object.publish!(nil)
         media_object.should_not be_published
