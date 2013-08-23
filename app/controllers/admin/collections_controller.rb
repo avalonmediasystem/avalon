@@ -93,7 +93,6 @@ class Admin::CollectionsController < ApplicationController
       end 
       if params[:delete_user].present?
         users = @collection.default_read_users
-        logger.debug "<< DELETE USER #{users} >>"
         users.delete params[:delete_user]
         @collection.default_read_users = users
       end 
@@ -110,11 +109,7 @@ class Admin::CollectionsController < ApplicationController
 
       @collection.default_access = params[:access] unless params[:access].blank? 
 
-      logger.debug "<< Hidden = #{params[:hidden]} >>"
       @collection.default_hidden = params[:hidden] == "1"
-
-      logger.debug "<< Groups : #{@collection.default_read_groups} >>"
-      logger.debug "<< Users : #{@collection.default_read_users} >>"
     end
 
     @collection.save
