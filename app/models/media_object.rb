@@ -169,9 +169,6 @@ class MediaObject < ActiveFedora::Base
   def publish!(user_key)
     self.avalon_publisher = user_key.blank? ? nil : user_key 
     self.save(validate: false)
-    
-    logger.debug "<< User key is #{user_key} >>"
-    logger.debug "<< Avalon publisher is now #{avalon_publisher} >>"
   end
 
   def finished_processing?
@@ -183,8 +180,6 @@ class MediaObject < ActiveFedora::Base
   end
 
   def access
-    logger.debug "<< ACCESS >>"
-    logger.debug "<< #{self.read_groups} >>"
     if self.read_users.present?
       "limited"
     elsif self.read_groups.empty?
@@ -305,8 +300,6 @@ class MediaObject < ActiveFedora::Base
     values.each do |k, v|
       # First remove all blank attributes in arrays
       v.keep_if { |item| not item.blank? } if v.instance_of?(Array)
-      logger.debug "<< Updating #{k} >>"
-      logger.debug "<< #{v} >>"
 
       # Peek at the first value in the array. If it is a Hash then unpack it into two
       # arrays before you pass everything off to the update_attributes method so that
@@ -319,7 +312,6 @@ class MediaObject < ActiveFedora::Base
         attrs = []
         
         v.each do |entry|
-          logger.debug "<< Entry : #{entry} >>"
           vals << entry[:value]
           attrs << entry[:attributes]
         end
@@ -335,27 +327,22 @@ class MediaObject < ActiveFedora::Base
   def update_attribute_in_metadata(attribute, value = [], attributes = [])
     # class attributes should be decoupled from metadata attributes
     # class attributes are displayed in the view and posted to the server
-    logger.debug "Updating #{attribute.inspect} with value #{value.inspect} and attributes #{attributes.inspect}"
     metadata_attribute = find_metadata_attribute(attribute)
     metadata_attribute_value = value
 
     if metadata_attribute.nil?
       missing_attributes[attribute] = "Metadata attribute `#{attribute}' not found"
-      logger.debug "Metadata attribute was nil, attribute is: #{attribute}"
       return false
     else
       values = Array(value).select { |v| not v.blank? }
       descMetadata.find_by_terms( metadata_attribute ).each &:remove
       if descMetadata.template_registry.has_node_type?( metadata_attribute )
         values.each_with_index do |val, i|
-          logger.debug "<< Adding node #{metadata_attribute}[#{i}] >>"
-          logger.debug("descMetadata.add_child_node(descMetadata.ng_xml.root, #{metadata_attribute.to_sym.inspect}, #{val.inspect}, #{(attributes[i]||{}).inspect})")
           descMetadata.add_child_node(descMetadata.ng_xml.root, metadata_attribute, val, (attributes[i]||{}))
         end
         #end
       elsif descMetadata.respond_to?("add_#{metadata_attribute}")
         values.each_with_index do |val, i|
-          logger.debug("descMetadata.add_#{metadata_attribute}(#{val.inspect}, #{attributes[i].inspect})")
           descMetadata.send("add_#{metadata_attribute}", val, (attributes[i] || {}))
         end;
       else
@@ -363,10 +350,8 @@ class MediaObject < ActiveFedora::Base
         # document. Afterwards take it out again - unless it does not have a template
         # in which case this is all that needs to be done
         if self.respond_to?("#{metadata_attribute}=")
-          logger.debug "<< Calling delegated method #{metadata_attribute} >>"
           self.send("#{metadata_attribute}=", values)
         else
-          logger.debug "<< Calling descMetadata method #{metadata_attribute} >>"
           descMetadata.send("#{metadata_attribute}=", values)
         end
       end

@@ -29,10 +29,6 @@ module MediaObjectsHelper
       #
       # The context here is the media_object you are working with.
       def class_for_step(context, step)  
-        logger.debug "<< Current step test is #{step} >>"
-        logger.debug "<< Current? #{context.workflow.current?(step)} >>"
-        logger.debug "<< Completed? #{context.workflow.completed?(step)} >>"
-
         css_class = case 
           # when context.workflow.current?(step)
           #   'nav-info'
