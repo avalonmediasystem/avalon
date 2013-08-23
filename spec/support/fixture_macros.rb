@@ -20,7 +20,6 @@ module FixtureMacros
 #    @ingest_status = FactoryGirl.build(:new_status, pid: pid)
 #    @ingest_status.save
 #    logger.debug "Refreshed #{pid} with status #{@ingest_status.inspect}"
-    logger.debug "Refreshed #{pid}"
   end
 
 	def remove_fixture(pid)
@@ -28,7 +27,6 @@ module FixtureMacros
         mediaobject = MediaObject.find(pid)
         mediaobject.parts.each do |part|
         ActiveFedora::FixtureLoader.delete(part.pid)
-        logger.debug "Deleted #{part.pid}"
         end
     end
   end

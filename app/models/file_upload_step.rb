@@ -36,7 +36,6 @@ require 'avalon/dropbox'
     end
 
     def execute context
-         logger.debug "<< Processing FILE-UPLOAD step >>"
        deleted_parts = update_master_files context
        context[:notice] = "Several clean up jobs have been sent out. Their statuses can be viewed by your sysadmin at #{ Avalon::Configuration['matterhorn']['cleanup_log'] }" unless deleted_parts.empty?
        
@@ -62,12 +61,10 @@ require 'avalon/dropbox'
     deleted_parts = []
     if not files.blank?
       files.each_pair do |pid,part|
-        logger.debug "<< #{pid} >>"
         selected_part = mediaobject.parts.find{|p| p.pid == pid}
 
         if selected_part
           if part[:remove]
-            logger.info "<< Deleting master file #{selected_part.pid} from the system >>"
             deleted_parts << selected_part
             selected_part.destroy
           else

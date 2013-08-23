@@ -35,7 +35,6 @@ module ApplicationHelper
       audio_count = audio_count + 1 if "Sound" == part.file_format
     end
 
-    logger.debug "<< Object has #{video_count} videos and #{audio_count} audios >>"
     imageurl ||= case
                  when (video_count > 0 and 0 == audio_count)
                    "video_icon.png"
