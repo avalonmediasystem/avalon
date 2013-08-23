@@ -22,9 +22,9 @@ module Avalon
 
     include Avalon::Controller::ControllerBehavior
 
-    def self.initialize_media_object_from_package( entry )
+    def self.initialize_media_object_from_package( entry, user )
       fields = entry.fields.dup
-      media_object = MediaObject.new
+      media_object = MediaObject.new(avalon_uploader: user)
       media_object.workflow.origin = 'batch'
       media_object.collection = Avalon::Batch.find_collection_from_fields( fields )
       media_object.update_datastream(:descMetadata, fields)
@@ -60,7 +60,7 @@ module Avalon
             base_errors << "User does not exist in the system: #{email_address}."
           else
             package.validate do |entry|
-              media_object = Avalon::Batch.initialize_media_object_from_package( entry )
+              media_object = Avalon::Batch.initialize_media_object_from_package( entry, current_user.user_key )
               if media_object.collection && ! current_user.can?(:read, media_object.collection)
                 base_errors << "You do not have permission to add items to collection: #{media_object.collection.name}."
               elsif ! media_object.collection && entry.fields[:collection].present?
@@ -73,7 +73,7 @@ module Avalon
           if base_errors.empty? && package.valid?
 
             package.process do |fields, files, opts, entry|
-              media_object = Avalon::Batch.initialize_media_object_from_package( entry )
+              media_object = Avalon::Batch.initialize_media_object_from_package( entry, current_user.user_key )
               media_object.save( validate: false)
 
               files.each do |file_spec|
