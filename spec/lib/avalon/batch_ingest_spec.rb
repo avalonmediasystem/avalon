@@ -59,6 +59,13 @@ describe Avalon::Batch do
       master_file.label.should == 'Quis quo'
       master_file.poster_offset.to_i.should == 500
     end
+
+    it 'should set avalon_uploader' do
+      Avalon::Batch.ingest
+      ingest_batch = IngestBatch.find(:first)
+      media_object = MediaObject.find(ingest_batch.media_object_ids.first)
+      media_object.avalon_uploader.should == 'frances.dickens@reichel.com'
+    end
   end
 
   describe 'invalid manifest' do
