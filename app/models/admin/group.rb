@@ -43,6 +43,11 @@ class Admin::Group
   end
 
   def self.find(name)
+    # Support agnostic look ups by either a string *or* a symbol
+    # This is a short term hack until the entire group management logic is
+    # retooled to be less crazy
+    name = name.to_s if name.class.eql?(Symbol)
+
     if RoleControls.roles.include? name
       # Creates a new object that looks like an old object
       # Note that there's an issue: all attributes will appear changed

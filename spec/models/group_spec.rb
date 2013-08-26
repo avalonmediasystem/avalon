@@ -24,4 +24,14 @@ describe Admin::Group do
     end
   end
 
+  it "should support lookup by string" do
+     manager_group = Admin::Group.find('manager')
+     manager_group.should_not be_nil
+  end
+
+   it "should support lookup by symbol" do
+     manager_group = Admin::Group.find(:manager)
+     manager_group.should_not be_nil
+  end
+ 
 end
