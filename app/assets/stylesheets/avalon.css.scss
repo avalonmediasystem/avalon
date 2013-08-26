@@ -568,6 +568,10 @@ button.close {
   margin-bottom: 0px;
 }
 
-.mejs-poster, .mejs-poster img { 
-  width: 100%;
+.mejs-poster { 
+  overflow: hidden;
+  img {
+    width: 100%;
+    height: auto;
+  }
 }
