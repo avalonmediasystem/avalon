@@ -1,7 +1,7 @@
 class R2AvalonConfig < ActiveRecord::Migration
   def up
-    avalon_yml = File.read(File.join(Rails.root,'config/avalon.yml'))
-    raw_config = YAML.load(avalon_yml)
+    avalon_yml = File.join(Rails.root,'config/avalon.yml')
+    raw_config = YAML.load(File.read(avalon_yml))
     raw_config.values.each do |config|
       config['ffmpeg'] ||= { 'path'=>'/usr/bin/ffmpeg' }
       config['groups'] ||= { 'system_groups'=>[] }
