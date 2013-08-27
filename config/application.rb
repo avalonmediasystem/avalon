@@ -11,7 +11,7 @@ if defined?(Bundler)
 end
 
 module Avalon
-  VERSION = '1.0.1'
+  VERSION = '2.0.0pre'
   
   class Application < Rails::Application
     require 'rubyhorn/rest_client/ingest'

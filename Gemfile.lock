@@ -274,7 +274,7 @@ GEM
       hydra-access-controls (= 6.3.3)
       hydra-core (= 6.3.3)
       rails (>= 3.2.6)
-    hydra-migrate (0.1.0)
+    hydra-migrate (0.2.0)
       active-fedora
       activesupport
     i18n (0.6.5)
@@ -534,7 +534,7 @@ DEPENDENCIES
   handlebars_assets
   headless
   hydra-head (~> 6.0)
-  hydra-migrate
+  hydra-migrate (>= 0.2.0)
   iconv
   jdbc-sqlite3
   jettywrapper
