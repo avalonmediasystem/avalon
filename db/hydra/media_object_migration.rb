@@ -1,9 +1,8 @@
 class MediaObjectMigration < Hydra::Migrate::Migration
   def self.find_or_create_collection(name, managers)
     # Make sure all managers are in the global manager group
-    manager_group = Admin::Group.find('manager') || Admin::Group.find('collection_manager')
-    if manager_group.name == 'collection_manager' or managers.any? { |m| ! manager_group.users.include? m }
-      manager_group.name = 'manager'
+    manager_group = Admin::Group.find('manager')
+    unless managers.all? { |m| manager_group.users.include? m }
       manager_group.users = (manager_group.users + managers).uniq
       manager_group.save
     end
