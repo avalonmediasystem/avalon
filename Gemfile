@@ -13,7 +13,7 @@
   gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git'
   gem 'mediaelement-qualityselector', git: 'https://github.com/cjcolvar/mediaelement-qualityselector.git'
   gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector'
-  gem 'hydra-migrate'
+  gem 'hydra-migrate', '>=0.2.0'
   
   gem 'modal_logic'
 
