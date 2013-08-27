@@ -22,18 +22,19 @@ after "deploy:update_code", "deploy:migrate"
 after "deploy:create_symlink", "deploy:trust_rvmrc"
 
 set(:shared_children) { 
-	%{
-		config/authentication.yml 
-		config/avalon.yml 
-		config/database.yml 
-		config/environments 
-		config/fedora.yml 
-		config/matterhorn.yml 
-		config/role_map_#{fetch(:rails_env)}.yml 
-		config/solr.yml
-		log 
-		tmp/pids
-	}.split
+  %{
+    config/authentication.yml 
+    config/avalon.yml 
+    config/controlled_vocabulary.yml 
+    config/database.yml 
+    config/environments 
+    config/fedora.yml 
+    config/matterhorn.yml 
+    config/role_map_#{fetch(:rails_env)}.yml 
+    config/solr.yml
+    log 
+    tmp/pids
+  }.split
 }
 
 set :scm, :git
@@ -49,20 +50,20 @@ namespace :deploy do
     logger.info "Deploying to #{fetch(:rails_env)}"
   end
 
-	task :remove_symlink_targets do
-		shared_children.each do |target|
-			t = File.join(latest_release,target)
-			run "if [ -f #{t} ]; then rm #{t}; fi"
-		end
-	end
+  task :remove_symlink_targets do
+    shared_children.each do |target|
+      t = File.join(latest_release,target)
+      run "if [ -f #{t} ]; then rm #{t}; fi"
+    end
+  end
 
-	task :link_local_gemfile do
-		run "if [ -f #{shared_path}/Gemfile.local ]; then rm -f #{latest_release}/Gemfile.local; ln -s #{shared_path}/Gemfile.local #{latest_release}/Gemfile.local; fi"
-	end
+  task :link_local_gemfile do
+    run "if [ -f #{shared_path}/Gemfile.local ]; then rm -f #{latest_release}/Gemfile.local; ln -s #{shared_path}/Gemfile.local #{latest_release}/Gemfile.local; fi"
+  end
 
-	task :trust_rvmrc do
-	  run "/usr/local/rvm/bin/rvm rvmrc trust #{latest_release}"
-	end
+  task :trust_rvmrc do
+    run "/usr/local/rvm/bin/rvm rvmrc trust #{latest_release}"
+  end
 
   task :start do
     run "cd #{current_release} && #{rake} RAILS_ENV=#{rails_env} delayed_job:start"
