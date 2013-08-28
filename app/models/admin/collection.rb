@@ -30,6 +30,8 @@ class Admin::Collection < ActiveFedora::Base
            :group_exceptions, :group_exceptions=, :user_exceptions, :user_exceptions=, 
            to: :defaultRights, prefix: :default
 
+  around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
+
   def self.units
     Avalon::ControlledVocabulary.find_by_name(:units)
   end
@@ -143,4 +145,8 @@ class Admin::Collection < ActiveFedora::Base
     target_collection.save!
   end
 
+  def reindex_members
+    yield
+    media_objects.each{|mo| mo.update_index}
+  end
 end
