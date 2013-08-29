@@ -162,7 +162,9 @@ class MediaObject < ActiveFedora::Base
 
     self._collection= co
     self.governing_policy = co
-    self.rightsMetadata.content = co.defaultRights.content unless co.nil?
+    if (self.read_groups + self.read_users + self.discover_groups + self.discover_users).empty? 
+      self.rightsMetadata.content = co.defaultRights.content unless co.nil?
+    end
   end
 
   # Sets the publication status. To unpublish an object set it to nil or
