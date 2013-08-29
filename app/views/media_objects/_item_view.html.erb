@@ -66,6 +66,7 @@
   <script>
     currentPlayer = new MediaElementPlayer('#video-tag', 
         { mode: 'auto_plugin',
+          pluginPath: <%= asset_path('mediaelement_rails/').inspect.html_safe %>,
           usePluginFullScreen: false,
           thumbnailSelectorUpdateURL: '/update-url',
           thumbnailSelectorEnabled: true,
