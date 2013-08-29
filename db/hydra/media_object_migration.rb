@@ -1,11 +1,7 @@
 class MediaObjectMigration < Hydra::Migrate::Migration
   def self.find_or_create_collection(name, managers)
     # Make sure all managers are in the global manager group
-    manager_group = Admin::Group.find('manager')
-    unless managers.all? { |m| manager_group.users.include? m }
-      manager_group.users = (manager_group.users + managers).uniq
-      manager_group.save
-    end
+    RoleControls.assign_users(RoleControls.users('manager')|managers, 'manager')
 
     # Find or create the collection with the specified name
     name ||= 'NO COLLECTION'
@@ -13,7 +9,7 @@ class MediaObjectMigration < Hydra::Migrate::Migration
     if collection.nil?
       collection = Admin::Collection.create(name: name, managers: managers, unit: Admin::Collection.units.first)
     end
-    collection.managers = (collection.managers + managers).uniq
+    collection.managers = collection.managers | managers
     collection.save
     collection
   end
