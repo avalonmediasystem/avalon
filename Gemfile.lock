@@ -274,7 +274,7 @@ GEM
       hydra-access-controls (= 6.3.3)
       hydra-core (= 6.3.3)
       rails (>= 3.2.6)
-    hydra-migrate (0.2.0)
+    hydra-migrate (0.2.1)
       active-fedora
       activesupport
     i18n (0.6.5)

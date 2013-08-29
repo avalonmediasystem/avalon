@@ -4,7 +4,7 @@ class MediaObjectMigration < Hydra::Migrate::Migration
     RoleControls.assign_users(RoleControls.users('manager')|managers, 'manager')
 
     # Find or create the collection with the specified name
-    name ||= 'NO COLLECTION'
+    name ||= 'Default Collection'
     collection = Admin::Collection.find(:name_tesim => name).first
     if collection.nil?
       collection = Admin::Collection.create(name: name, managers: managers, unit: Admin::Collection.units.first)
@@ -20,5 +20,12 @@ class MediaObjectMigration < Hydra::Migrate::Migration
     obj.collection = collection
     obj.descMetadata.collection = []
     obj.descMetadata.remove_empty_nodes!
+    [:read_groups,:discover_groups,:edit_groups].each do |attr|
+      groups = obj.send(attr)
+      if groups.include?('collection_manager')
+        groups[groups.index('collection_manager')] = 'manager'
+        obj.send(:"#{attr}=",groups)
+      end
+    end
   end
 end
