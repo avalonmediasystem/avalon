@@ -31,7 +31,6 @@ class MediaObjectsController < ApplicationController
   end
  
   def new
-    logger.debug "<< NEW >>"
     collection = Admin::Collection.find(params[:collection_id])
     authorize! :read, collection
 
@@ -144,11 +143,7 @@ class MediaObjectsController < ApplicationController
   def destroy
     @mediaobject = MediaObject.find(params[:id])
     authorize! :destroy, @mediaobject
-    logger.debug "<< DESTROY >>"
-    logger.debug "<< Media object => #{params[:id]} >>"
-    logger.debug "<< Exists? #{MediaObject.exists? params[:id]} >>"
     unless params[:id].nil? or (not MediaObject.exists?(params[:id]))
-      logger.debug "<< Removing PID from system >>"
       media = MediaObject.find(params[:id])
 
       # attempt to stop the matterhorn processing job
@@ -158,7 +153,6 @@ class MediaObjectsController < ApplicationController
       flash[:notice] = "#{media.title} (#{params[:id]}) has been successfuly deleted"
       media.delete
     end
-    logger.debug "<< Exists? #{MediaObject.exists? params[:id]} >>"
     redirect_to root_path
   end
 
@@ -169,16 +163,12 @@ class MediaObjectsController < ApplicationController
     media_object = MediaObject.find(params[:id])
     authorize! :update, media_object
     
-    logger.debug "<< Status flag is #{params[:status]} >>"
     case params[:status]
       when 'publish'
-        logger.debug "<< Setting user key to #{user_key} >>"
         media_object.publish!(user_key)
       when 'unpublish'
-        logger.debug "<< Setting user key to nil >>"
         media_object.publish!(nil)
       when nil
-        logger.debug "<< Toggling user key >>"
         new_state = media_object.published? ? nil : user_key
         media_object.publish!(new_state)        
     end
@@ -192,16 +182,12 @@ class MediaObjectsController < ApplicationController
     media_object = MediaObject.find(params[:id])
     authorize! :manage, media_object
     
-    logger.debug "<< Visibility flag is #{params[:status]} >>"
     case params[:status]
       when 'show'
-        logger.debug "<< Setting hidden to false >>"
         media_object.hidden = false
       when 'hide'
-        logger.debug "<< Setting hidden to true >>"
         media_object.hidden = true
       when nil
-        logger.debug "<< Toggling visibility >>"
         new_state = media_object.hidden? ? false : true
         media_object.hidden = new_state        
     end
@@ -226,15 +212,11 @@ class MediaObjectsController < ApplicationController
   protected
 
   def load_master_files
-    logger.debug "<< LOAD MASTER FILES >>"
-    logger.debug "<< #{@mediaobject.parts_with_order} >>"
-
     @mediaobject.parts_with_order
   end
 
   def load_player_context
     @mediaobject = MediaObject.find(params[:id])
-    logger.debug "<< Preparing media object #{@mediaobject} >>"
 
     @masterFiles = load_master_files
     @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first

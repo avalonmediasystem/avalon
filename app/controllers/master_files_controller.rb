@@ -43,15 +43,11 @@ class MasterFilesController < ApplicationController
     if params.has_key?(:Filedata) and params.has_key?(:original)
       @master_files = []
       params[:Filedata].each do |file|
-        logger.debug "<< MIME type is #{file.content_type} >>"
-        
         if (file.size > MasterFile::MAXIMUM_UPLOAD_SIZE)
           # Use the errors key to signal that it should be a red notice box rather
           # than the default
           flash[:errors] = "The file you have uploaded is too large"
           redirect_to :back
-  
-          logger.debug "<< Redirecting - file size is too large >>"
           return
         end
 

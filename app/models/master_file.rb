@@ -487,10 +487,8 @@ class MasterFile < ActiveFedora::Base
     self.poster_offset = [2000,mediainfo.duration.to_i].min
 
     self.file_size = file.size.to_s
-    file.close
 
-    logger.debug "<< File location #{ file_location } >>"
-    logger.debug "<< Filesize #{ file_size } >>"
+    file.close
   end
 
 
