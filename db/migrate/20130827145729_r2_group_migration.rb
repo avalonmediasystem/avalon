@@ -16,6 +16,15 @@ class R2GroupMigration < ActiveRecord::Migration
 
     # Finally if all goes well we delete the collection_manager group
     r1_managers.delete
+
+    # Now test for the existance of the administrator group. If it does not
+    # exist we assume that the first user in the group_manager list should
+    # be promoted
+    unless Admin::Group.exists?('administrator')
+      admins = Admin::Group.create(name: 'administrator')
+      default_admin = Admin::Group.find('group_manager').users.first
+      admins.users += [default_admin]
+    end
   end
 
   def down
