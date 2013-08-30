@@ -19,9 +19,7 @@ class ResourceDescriptionStep < Avalon::Workflow::BasicStep
 
   def execute context
     mediaobject = context[:mediaobject]
-    logger.debug "<< Populating required metadata fields >>"
     mediaobject.update_datastream(:descMetadata, context[:media_object])
-    logger.debug "<< Updating descriptive metadata >>"
     mediaobject.save
     context
   end

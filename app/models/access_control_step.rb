@@ -21,14 +21,11 @@
 		end
 
 		def execute context
-      logger.debug "<<< In access control step: #{context.inspect} >>>"
 		  mediaobject = context[:mediaobject]
       # TO DO: Implement me
-      logger.debug "<< Access flag = #{context[:access]} >>"
 
       user = User.where({ Devise.authentication_keys.first => context[:user]}).first
       unless user.ability.can? :update_access_control, mediaobject
-        logger.debug "<<< No permission to update access control, forwarding to next step >>>"
         return context
       end
 
@@ -57,12 +54,9 @@
 
       mediaobject.access = context[:access] unless context[:access].blank? 
 
-      logger.debug "<< Hidden = #{context[:hidden]} >>"
       mediaobject.hidden = context[:hidden] == "1"
 
       mediaobject.save
-      logger.debug "<< Groups : #{mediaobject.read_groups} >>"
-      logger.debug "<< Users : #{mediaobject.read_users} >>"
 		  context
 		end
 	end

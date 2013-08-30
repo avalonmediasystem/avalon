@@ -82,7 +82,6 @@ class Admin::Collection < ActiveFedora::Base
 
   def add_editor user
     self.edit_users += [user]
-    logger.debug "EDIT USERS #{self.edit_users}"
     self.inherited_edit_users += [user]
   end
 

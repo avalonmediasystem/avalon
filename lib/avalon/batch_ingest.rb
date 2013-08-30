@@ -40,18 +40,15 @@ module Avalon
 
     def self.ingest
       # Scans dropbox for new batch packages
-      logger.debug "============================================"
-      logger.debug "<< Starts scanning for new batch packages >>"
+      logger.info "<< Starts scanning for new batch packages >>"
       
       new_packages = Avalon::DropboxService.find_new_packages
-      logger.debug "<< Found #{new_packages.count} new packages >>"
+      logger.info "<< Found #{new_packages.count} new packages >>"
 
 
       if new_packages.length > 0
         # Extracts package and process
         new_packages.each_with_index do |package, index|
-          logger.debug "<< Processing package #{index} >>"
-
           media_objects = []
           base_errors = []
           email_address = package.manifest.email || Avalon::Configuration['email']['notification']
