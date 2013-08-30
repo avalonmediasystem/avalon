@@ -138,7 +138,7 @@ class Admin::Collection < ActiveFedora::Base
       target_collection.media_objects << media_object
 
       media_object.collection = target_collection
-      media_object.save!
+      media_object.save(validate: false)
     end
     source_collection.save!
     target_collection.save!

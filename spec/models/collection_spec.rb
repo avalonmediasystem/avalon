@@ -331,6 +331,9 @@ describe Admin::Collection do
   describe "#reassign_media_objects" do
     before do
       @media_objects = (1..3).map{ FactoryGirl.create(:media_object)}
+      incomplete_object = MediaObject.new
+      incomplete_object.save(validate: false)
+      @media_objects << incomplete_object
       @source_collection = FactoryGirl.create(:collection, media_objects: @media_objects)
       @target_collection = FactoryGirl.create(:collection)
       Admin::Collection.reassign_media_objects(@media_objects, @source_collection, @target_collection)
