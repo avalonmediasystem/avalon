@@ -24,6 +24,7 @@ class R2GroupMigration < ActiveRecord::Migration
       admins = Admin::Group.create(name: 'administrator')
       default_admin = Admin::Group.find('group_manager').users.first
       admins.users += [default_admin]
+      admins.save!
     end
   end
 
