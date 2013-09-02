@@ -16,6 +16,7 @@ require 'spec_helper'
 
 describe Admin::Group do
   it {should validate_presence_of(:name)}
+  it {should validate_uniqueness_of(:name)}
   describe "non system groups" do
     it "should not have system groups" do
       groups = Admin::Group.non_system_groups

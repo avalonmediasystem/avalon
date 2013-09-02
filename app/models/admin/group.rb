@@ -24,6 +24,10 @@ class Admin::Group
   # as more thought is put into the process of providing a comment
   attr_accessor :name, :users
   validates :name, :presence => true 
+  validate do |group|
+   found_group = Admin::Group.find(group.name)
+   self.errors.add(:name, :taken, value: group.name) if !found_group.nil? && found_group != group
+  end
 
   def self.non_system_groups
     groups = all
@@ -82,6 +86,10 @@ class Admin::Group
     g = super
     g.new_record = true
     g
+  end
+
+  def self.first
+    Admin::Group.find(RoleControls.roles.first)
   end
 
   def self.abstract_class?
@@ -192,6 +200,10 @@ class Admin::Group
 
   def saved= val 
     @saved = val
+  end
+
+  def == g2
+    !g2.nil? && (self.name == g2.name) && (self.users == g2.users)
   end
 
   # Check to see if the name is static based on its inclusion in the system
