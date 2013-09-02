@@ -87,6 +87,11 @@ class Admin::GroupsController < ApplicationController
     else
       # This logic makes sure that role is never blank even if the form
       # does not provide a value
+      if Admin::Group.exists?(params["group_name"])
+        flash[:error] = "Group name #{params["group_name"]} is taken."
+        redirect_to edit_admin_group_path(@group)
+        return
+      end
       @group.name = new_group_name.blank? ? params["id"] : params["group_name"]
     end
     @group.users += [new_user] unless new_user.blank?
