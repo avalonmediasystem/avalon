@@ -564,10 +564,10 @@ button.close {
   top: 10%;
 }
 
-# Override the override. This is sort of a ugly solution as we now have three
-# declarations for the exact same element but it is quick and dirty
+// Override the override. This is sort of a ugly solution as we now have three
+// declarations for the exact same element but it is quick and dirty
 .modal.fade.in {
-  top: 10%;
+  @include translate(0, -50%);
 }
 
 .dl-horizontal dl {
