@@ -42,6 +42,8 @@ class Admin::GroupsController < ApplicationController
         @groups << group
       end
     end
+    @default_groups.sort
+    @groups.sort
   end
   
   def new
