@@ -17,6 +17,8 @@
   
   gem 'modal_logic'
 
+  gem 'rubyzip', '0.9.9'
+
   platforms :jruby do
     gem 'jruby-openssl'
     gem 'activerecord-jdbcsqlite3-adapter'
