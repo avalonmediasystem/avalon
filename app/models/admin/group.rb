@@ -45,12 +45,13 @@ class Admin::Group
   def self.find(name)
     if RoleControls.roles.include? name
       # Creates a new object that looks like an old object
-      # Note that there's an issue: all attributes will appear changed
       group = self.new
-      group.name = name
-      group.users = RoleControls.users(name)
-      group.new_record = false
-      group.saved = true
+      group.ignoring_changes do
+        group.name = name
+        group.users = RoleControls.users(name)
+        group.new_record = false
+        group.saved = true
+      end
       group
     else
       nil
@@ -115,7 +116,7 @@ class Admin::Group
   end
 
   def name=(value)
-    attribute_will_change!('name') if name != value
+    attribute_will_change!('name') if name != value and !@ignoring_changes
     @previous_name = name
     @name = value
   end
@@ -129,7 +130,7 @@ class Admin::Group
   end
 
   def users=(value)
-    attribute_will_change!('users') if users != value
+    attribute_will_change!('users') if users != value and !@ignoring_changes
     @users = value
   end
 
@@ -180,6 +181,16 @@ class Admin::Group
     RoleControls.save_changes
   end
   
+  def ignoring_changes
+    begin
+      @ignoring_changes = true
+      yield self
+    ensure
+      @ignoring_changes = false
+    end
+    return self
+  end
+
   # Stub this method out so that form_for functions as expected for edit vs new
   # even though there is no database backing the Group model
   def persisted?
@@ -200,4 +211,5 @@ class Admin::Group
   def self.name_is_static? group_name
     Avalon::Configuration['groups']['system_groups'].include? group_name
   end
+
 end

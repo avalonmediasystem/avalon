@@ -72,7 +72,7 @@ describe Admin::GroupsController do
         login_as('policy_editor')
         new_user = FactoryGirl.build(:user).username
 
-        put 'update', :id => group.name, group_name: group.name, new_user: new_user
+        put 'update', id: group.name, new_user: new_user
 
         group_name = group.name
         group = Admin::Group.find(group_name)
