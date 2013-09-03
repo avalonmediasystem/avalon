@@ -31,6 +31,7 @@ class Admin::Collection < ActiveFedora::Base
            :group_exceptions, :group_exceptions=, :user_exceptions, :user_exceptions=, 
            to: :defaultRights, prefix: :default
 
+  around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
   before_save { |obj| obj.current_migration = 'R2' }
 
   def self.units
