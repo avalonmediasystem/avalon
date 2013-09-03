@@ -382,7 +382,13 @@ class MasterFile < ActiveFedora::Base
       end
       base = pid.gsub(/:/,'_')
 
-      (original_width,original_height) = mediainfo.video.streams.first.display_aspect_ratio.split(/:/).collect &:to_f
+      display_aspect_ratio = mediainfo.video.streams.first.display_aspect_ratio
+      if ':'.in? display_aspect_ratio
+        (original_width,original_height) = display_aspect_ratio.split(/:/).collect &:to_f
+      else
+        (original_width,original_height) = [display_aspect_ratio.to_f, display_aspect_ratio.to_f]
+      end
+
       (new_width,new_height) = frame_size.split(/x/).collect &:to_f
       new_height = (new_width/(original_width/original_height)).floor
       new_height += 1 if new_height.odd?
@@ -481,10 +487,8 @@ class MasterFile < ActiveFedora::Base
     self.poster_offset = [2000,mediainfo.duration.to_i].min
 
     self.file_size = file.size.to_s
-    file.close
 
-    logger.debug "<< File location #{ file_location } >>"
-    logger.debug "<< Filesize #{ file_size } >>"
+    file.close
   end
 
 

@@ -35,8 +35,6 @@ module Hydra
       # Default access for new items 
       # Copied from MediaObject, would be nice to dry this out
       def access
-        logger.debug "<< ACCESS >>"
-        logger.debug "<< #{self.read_groups} >>"
         if self.read_users.present?
           "limited"
         elsif self.read_groups.empty?

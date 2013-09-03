@@ -43,9 +43,6 @@ describe MasterFile do
 
       mf.derivatives += [derivative]
 
-      logger.debug "#{mf.pid}: #{mf.relationships.to_a.to_s}"
-      logger.debug "#{derivative.pid}: #{derivative.relationships.to_a.to_s}"
-
       derivative.relationships(:is_derivation_of).size.should == 1
       derivative.relationships(:is_derivation_of).first.should == mf.internal_uri
 

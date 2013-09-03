@@ -73,7 +73,6 @@ describe MasterFilesController do
         Rubyhorn.stub_chain(:client,:stop).and_return(true)
 
        lambda { post :create, Filedata: [@file], original: 'any', container_id: media_object.pid }.should_not change { MasterFile.count }
-       logger.debug "<< Flash errors is present? #{flash[:errors]} >>"
      
        flash[:errors].should_not be_nil
      end

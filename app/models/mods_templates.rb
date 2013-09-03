@@ -72,7 +72,6 @@ module ModsTemplates
       # Name Templates
       define_template :name do |xml, name, attributes|
         opts = { type: 'personal', role_code: 'ctb', role_text: 'Contributor', primary: false }.merge(attributes)
-        logger.debug([name, opts].inspect)
         attrs = { :type => opts[:type] }
         attrs['usage']="primary" if opts[:primary]
         xml.name(attrs) {
@@ -84,7 +83,6 @@ module ModsTemplates
             }
           end
         }
-        logger.debug(xml.parent.to_xml)
       end
       def add_creator(name, attrs={})
         add_child_node(ng_xml.root, :name, name, (attrs).merge(role_code: 'cre', role_text: 'Creator', primary: true))

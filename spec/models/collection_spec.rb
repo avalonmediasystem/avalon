@@ -331,6 +331,9 @@ describe Admin::Collection do
   describe "#reassign_media_objects" do
     before do
       @media_objects = (1..3).map{ FactoryGirl.create(:media_object)}
+      incomplete_object = MediaObject.new
+      incomplete_object.save(validate: false)
+      @media_objects << incomplete_object
       @source_collection = FactoryGirl.create(:collection, media_objects: @media_objects)
       @target_collection = FactoryGirl.create(:collection)
       Admin::Collection.reassign_media_objects(@media_objects, @source_collection, @target_collection)
@@ -388,6 +391,44 @@ describe Admin::Collection do
         collection.save
         Admin::Collection.find(collection.pid).default_read_groups.should == []
       end
+    end
+  end
+
+  describe "callbacks" do
+    describe "after_save reindex if name or unit has changed" do
+      let!(:collection) {FactoryGirl.create(:collection)}
+      it 'should call reindex_members if name has changed' do
+        collection.name = "New name"
+        collection.should be_name_changed
+        collection.should_receive("reindex_members").and_return(nil)
+        collection.save
+      end
+      
+      it 'should call reindex_members if unit has changed' do
+        collection.unit = Admin::Collection.units.last
+        collection.should be_unit_changed
+        collection.should_receive("reindex_members").and_return(nil)
+        collection.save
+      end
+
+      it 'should not call reindex_members if name or unit has not been changed' do
+        collection.description = "A different description"
+        collection.should_not be_name_changed
+        collection.should_not be_unit_changed
+        collection.should_not_receive("reindex_members")
+        collection.save
+      end
+    end
+  end
+
+  describe "reindex_members" do
+    before do
+      @media_objects = (1..3).map{ FactoryGirl.create(:media_object)}
+      @collection = FactoryGirl.create(:collection, media_objects: @media_objects)
+    end
+    it 'should call save on all member objects' do
+      @media_objects.each {|mo| mo.should_receive("update_index").and_return(true)}
+      @collection.reindex_members {}
     end
   end
 
