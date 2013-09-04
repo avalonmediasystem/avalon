@@ -18,6 +18,7 @@ require 'avalon/batch_ingest'
 
 describe Avalon::Batch do
   before :each do
+    Avalon.send(:remove_const, :DropboxService) if Avalon.const_defined?(:DropboxService)
     Avalon::DropboxService = Avalon::Dropbox.new 'spec/fixtures/dropbox'
     # Dirty hack is to remove the .processed files both before and after the
     # test. Need to look closer into the ideal timing for where this should take
@@ -91,6 +92,17 @@ describe Avalon::Batch do
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
       mailer.should_receive(:deliver)
       Avalon::Batch.ingest
+      IngestBatch.count.should == 0
+    end
+
+    it 'should fail if a bad offset is specified' do
+      bad_offset_batch = Avalon::Batch::Package.new('spec/fixtures/batch_manifest_r2.xlsx')
+      Avalon::DropboxService.stub(:find_new_packages).and_return [bad_offset_batch]
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
+      mailer.should_receive(:deliver)
+      Avalon::Batch.ingest
+      IngestBatch.count.should == 0
     end
   end
 
@@ -100,5 +112,19 @@ describe Avalon::Batch do
 
   it "should be able to default to specific groups" do
     pending "[VOV-1348] Wait until implemented"
+  end
+
+  describe "#offset_valid?" do
+    it {expect(Avalon::Batch.offset_valid?("33.12345")).to be_true}
+    it {expect(Avalon::Batch.offset_valid?("21:33.12345")).to be_true}
+    it {expect(Avalon::Batch.offset_valid?("125:21:33.12345")).to be_true}
+    it {expect(Avalon::Batch.offset_valid?("63.12345")).to be_false}
+    it {expect(Avalon::Batch.offset_valid?("66:33.12345")).to be_false}
+    it {expect(Avalon::Batch.offset_valid?(".12345")).to be_false}
+    it {expect(Avalon::Batch.offset_valid?(":.12345")).to be_false}
+    it {expect(Avalon::Batch.offset_valid?(":33.12345")).to be_false}
+    it {expect(Avalon::Batch.offset_valid?(":66:33.12345")).to be_false}
+    it {expect(Avalon::Batch.offset_valid?("5:000")).to be_false}
+    it {expect(Avalon::Batch.offset_valid?("`5.000")).to be_false}
   end
 end

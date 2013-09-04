@@ -564,6 +564,12 @@ button.close {
   top: 10%;
 }
 
+// Override the override. This is sort of a ugly solution as we now have three
+// declarations for the exact same element but it is quick and dirty
+.modal.fade.in {
+  @include translate(0, -50%);
+}
+
 .dl-horizontal dl {
   margin-bottom: 0px;
 }
@@ -573,5 +579,20 @@ button.close {
   img {
     width: 100%;
     height: auto;
+  }
+}
+
+// For mobile devices and smaller viewports disable the transform because it
+// does not render correctly. Overriding the override may not be the best idea
+// but should be a quick route to a functioning solution 
+@media (max-width: $navbarCollapseWidth) {
+  .modal.fade.in {
+    @include translate(0, 0);
+    max-height: 93%;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    .modal-body {
+      overflow-y: none;
+    }
   }
 }
