@@ -20,9 +20,9 @@ class CatalogController < ApplicationController
   # Extend Blacklight::Catalog with Hydra behaviors (primarily editing).
   include Hydra::Controller::ControllerBehavior
   include Hydra::PolicyAwareAccessControlsEnforcement
-
-  # This applies appropriate access controls to all solr queries
-  self.solr_search_params_logic += [:add_access_controls_to_solr_params]
+  
+	# This applies appropriate access controls to all solr queries
+  self.solr_search_params_logic += [:add_access_controls_to_solr_params_if_not_admin]
   
   # This filters out objects that you want to exclude from search results, like FileAssets
   self.solr_search_params_logic += [:exclude_unwanted_models]
@@ -196,4 +196,9 @@ class CatalogController < ApplicationController
     end
   end
 
+	def add_access_controls_to_solr_params_if_not_admin(solr_parameters, user_parameters)
+		if cannot? :discover_everything, MediaObject
+			send(:add_access_controls_to_solr_params, solr_parameters, user_parameters)
+		end
+	end
 end 
