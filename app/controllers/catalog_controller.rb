@@ -198,7 +198,7 @@ class CatalogController < ApplicationController
 
 	def add_access_controls_to_solr_params_if_not_admin(solr_parameters, user_parameters)
 		if cannot? :discover_everything, MediaObject
-			send(:add_access_controls_to_solr_params, solr_parameters, user_parameters)
+			add_access_controls_to_solr_params(solr_parameters, user_parameters)
 		end
 	end
 end 
