@@ -181,7 +181,7 @@ describe Admin::Collection do
       end
       it "should not add users who do not have the manager role" do
         not_manager = FactoryGirl.create(:user)
-        collection.add_manager(not_manager.username)
+        expect {collection.add_manager(not_manager.username)}.to raise_error(ArgumentError)
         collection.managers.should_not include(not_manager.username)
       end
     end
