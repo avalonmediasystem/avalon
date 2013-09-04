@@ -169,7 +169,7 @@ describe Admin::Collection do
       it "should call remove_manager" do
         collection.managers = [user.username]
         collection.should_receive("remove_manager").with(user.username)
-        collection.managers = [FactoryGirl.create(:manager)]
+        collection.managers = [FactoryGirl.create(:manager).username]
       end
     end
     describe "#add_manager" do
