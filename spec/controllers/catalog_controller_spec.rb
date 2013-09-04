@@ -87,5 +87,17 @@ describe CatalogController do
         assigns(:document_list).count.should eql(0)
       end
     end
+		describe "as an administrator" do
+			let!(:administrator) {login_as(:administrator)}
+
+			it "should show results for all items" do
+        mo = FactoryGirl.create(:media_object, access: 'private')
+        get 'index', :q => ""
+        response.should be_success
+        response.should render_template('catalog/index')
+        assigns(:document_list).count.should eql(1)
+        assigns(:document_list).map(&:id).should == [mo.id]
+      end
+		end
   end
 end
