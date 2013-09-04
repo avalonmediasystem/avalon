@@ -31,4 +31,13 @@ describe ApplicationHelper do
       helper.active_for_controller('groups').should == ''
     end
   end
+
+  describe "#stream_label_for" do
+    let!(:master_file) {FactoryGirl.build(:master_file, file_location: nil, label: nil)}
+    it "should handle empty file_locations and labels" do
+      master_file.file_location.should be_nil
+      master_file.label.should be_nil
+      helper.stream_label_for(master_file).should == ''
+    end
+  end
 end
