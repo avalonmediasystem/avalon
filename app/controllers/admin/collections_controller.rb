@@ -68,7 +68,11 @@ class Admin::CollectionsController < ApplicationController
       attribute_accessor_name = "add_#{title}"
       if params[attribute_accessor_name].present? && can?("update_#{title.pluralize}".to_sym, @collection)
         if params["new_#{title}"].present?
-          @collection.send attribute_accessor_name.to_sym, params["new_#{title}"]
+          begin
+            @collection.send attribute_accessor_name.to_sym, params["new_#{title}"]
+          rescue ArgumentError => e
+            flash[:notice] = e.message
+          end
         else
           flash[:notice] = "#{title.titleize} can't be blank."
         end
