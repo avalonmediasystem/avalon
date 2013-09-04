@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class EncodingProfileDocument < ActiveFedora::NokogiriDatastream
+class EncodingProfileDocument < ActiveFedora::OmDatastream
   set_terminology do |t|
     t.root(:path=>"encodingProfile", 
            #:xmlns => 'avalon/encoding', 

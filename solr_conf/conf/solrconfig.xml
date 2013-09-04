@@ -108,7 +108,6 @@
   <requestHandler name="standard" class="solr.SearchHandler">
      <lst name="defaults">
        <str name="echoParams">explicit</str>
-       <str name="defType">lucene</str>
      </lst>
   </requestHandler>
 

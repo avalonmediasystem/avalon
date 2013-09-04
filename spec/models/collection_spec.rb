@@ -160,9 +160,10 @@ describe Admin::Collection do
         collection.managers = manager_list
       end
       it "should remove managers from the collection" do
-        collection.managers = [user.username]
-        collection.managers.should == [user.username]
-        collection.managers -= [user.username]
+        manager_list = [FactoryGirl.create(:manager).username, FactoryGirl.create(:manager).username]
+        collection.managers = manager_list
+        collection.managers.should == manager_list
+        collection.managers -= manager_list
         collection.managers.should == []
       end
       it "should call remove_manager" do
