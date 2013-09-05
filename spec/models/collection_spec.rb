@@ -103,6 +103,10 @@ describe Admin::Collection do
 
     it {should validate_presence_of(:name)}
     it {should validate_uniqueness_of(:name)}
+    it "shouldn't complain about partial name matches" do
+      FactoryGirl.create(:collection, name: "This little piggy went to market")
+      expect { FactoryGirl.create(:collection, name: "This little piggy") }.not_to raise_error
+    end
     it {should validate_presence_of(:unit)}
     it {should ensure_inclusion_of(:unit).in_array(Admin::Collection.units)}
     it "should ensure length of :managers is_at_least(1)"
