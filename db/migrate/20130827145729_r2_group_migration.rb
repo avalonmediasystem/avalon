@@ -11,7 +11,8 @@ class R2GroupMigration < ActiveRecord::Migration
       # Get the list of collection managers and create a new manager group
       # for them to exist under
       r1_managers = Admin::Group.find("collection_manager")
-      r2_managers = Admin::Group.create(name: 'manager')
+      Admin::Group.create(name: 'manager')
+      r2_managers = Admin::Group.find('manager')
       r2_managers.users += r1_managers.users 
       r2_managers.save
 
@@ -23,7 +24,8 @@ class R2GroupMigration < ActiveRecord::Migration
     # exist we assume that the first user in the group_manager list should
     # be promoted
     unless Admin::Group.exists?('administrator')
-      admins = Admin::Group.create(name: 'administrator')
+      Admin::Group.create(name: 'administrator')
+      admins = Admin::Group.find('administrator') 
       default_admin = Admin::Group.find('group_manager').users.first
       admins.users += [default_admin]
       admins.save!
