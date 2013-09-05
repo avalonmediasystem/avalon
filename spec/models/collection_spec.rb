@@ -136,7 +136,7 @@ describe Admin::Collection do
     it "should solrize important information" do
      map = Solrizer.default_field_mapper
      collection.name = "Herman B. Wells Collection"
-     collection.to_solr[ map.solr_name(:name, :stored_searchable, type: :string).to_sym ].should == "Herman B. Wells Collection"
+     collection.to_solr[ map.solr_name(:name, :stored_searchable, type: :string) ].should == "Herman B. Wells Collection"
     end
   end
 
