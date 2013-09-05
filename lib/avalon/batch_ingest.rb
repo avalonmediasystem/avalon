@@ -37,6 +37,23 @@ module Avalon
       Admin::Collection.where( name: collection_name ).first
     end
 
+    def self.offset_valid?( offset )
+      tokens = offset.split(':')
+      return false unless (1...4).include? tokens.size
+      seconds = tokens.pop
+      return false unless /^\d{1,2}([.]\d*)?$/ =~ seconds
+      return false unless seconds.to_f < 60
+      unless tokens.empty?
+        minutes = tokens.pop
+        return false unless /^\d{1,2}$/ =~ minutes
+        return false unless minutes.to_i < 60
+        unless tokens.empty?
+          hours = tokens.pop
+          return false unless /^\d{1,}$/ =~ hours
+        end
+      end
+      true
+    end
 
     def self.ingest
       # Scans dropbox for new batch packages
@@ -59,10 +76,12 @@ module Avalon
             package.validate do |entry|
               media_object = Avalon::Batch.initialize_media_object_from_package( entry, current_user.user_key )
               if media_object.collection && ! current_user.can?(:read, media_object.collection)
-                base_errors << "You do not have permission to add items to collection: #{media_object.collection.name}."
+                entry.errors.add(:collection, "You do not have permission to add items to collection: #{media_object.collection.name}.")
               elsif ! media_object.collection && entry.fields[:collection].present?
-                base_errors << "There is not a collection in the system with the name: #{entry.fields[:collection].first}."
+                entry.errors.add(:collection, "There is not a collection in the system with the name: #{entry.fields[:collection].first}.")
               end
+              entry.files.each {|file_spec| entry.errors.add(:offset, "Invalid offset: #{file_spec[:offset]}") if file_spec[:offset].present? && !offset_valid?(file_spec[:offset])}
+
               media_object
             end
           end

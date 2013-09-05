@@ -169,7 +169,7 @@ describe Admin::Collection do
       it "should call remove_manager" do
         collection.managers = [user.username]
         collection.should_receive("remove_manager").with(user.username)
-        collection.managers = [FactoryGirl.create(:manager)]
+        collection.managers = [FactoryGirl.create(:manager).username]
       end
     end
     describe "#add_manager" do
@@ -181,7 +181,7 @@ describe Admin::Collection do
       end
       it "should not add users who do not have the manager role" do
         not_manager = FactoryGirl.create(:user)
-        collection.add_manager(not_manager.username)
+        expect {collection.add_manager(not_manager.username)}.to raise_error(ArgumentError)
         collection.managers.should_not include(not_manager.username)
       end
     end
