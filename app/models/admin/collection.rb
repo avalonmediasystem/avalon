@@ -19,7 +19,7 @@ class Admin::Collection < ActiveFedora::Base
   has_metadata name: 'inheritedRights', type: Hydra::Datastream::InheritableRightsMetadata
   has_metadata name: 'defaultRights', type: Hydra::Datastream::NonIndexedRightsMetadata, autocreate: true
 
-  validates :name, :uniqueness => { :solr_name => 'name_tesim'}, presence: true
+  validates :name, :uniqueness => { :solr_name => 'name_sim'}, presence: true
   validates :unit, presence: true, inclusion: { in: Proc.new{ Admin::Collection.units } }
   validates :managers, length: {minimum: 1, message: 'Collection requires at least one manager'} 
 
@@ -149,5 +149,11 @@ class Admin::Collection < ActiveFedora::Base
   def reindex_members
     yield
     media_objects.each{|mo| mo.update_index}
+  end
+
+  def to_solr(solr_doc=Hash.new, *args)
+    super
+    solr_doc[Solrizer.default_field_mapper.solr_name("name", :facetable, type: :string)] = self.name
+    solr_doc
   end
 end
