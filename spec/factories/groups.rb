@@ -16,8 +16,9 @@ FactoryGirl.define do
   factory :group, class: Admin::Group do
     name {Faker::Lorem.word}
     after(:create) do |g|
-      g.users = [FactoryGirl.build(:user).username]
-      g.save
+      group = Admin::Group.find(g.name)
+      group.users = [FactoryGirl.build(:user).username]
+      group.save
     end
   end 
 end
