@@ -21,6 +21,7 @@ before "deploy:finalize_update", "deploy:remove_symlink_targets"
 after "deploy:update_code", "deploy:symlink_dirs"
 after "deploy:update_code", "deploy:migrate"
 after "deploy:create_symlink", "deploy:trust_rvmrc"
+after "deploy:create_symlink", "deploy:reindex_everything"
 
 set(:shared_children) { 
   %{
@@ -76,6 +77,10 @@ namespace :deploy do
   task :restart, :roles => :app, :except => { :no_release => true } do
     run "cd #{current_release} && #{rake} RAILS_ENV=#{rails_env} delayed_job:restart"
     run "touch #{File.join(current_path,'tmp','restart.txt')}"
+  end
+
+  task :reindex_everything do
+    run "cd #{current_release} && RAILS_ENV=#{rails_env} bundle exec rails runner 'ActiveFedora::Base.reindex_everything'"
   end
 end
 
