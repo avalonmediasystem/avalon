@@ -106,7 +106,7 @@ describe Admin::GroupsController do
         login_as('policy_editor')
         request.env["HTTP_REFERER"] = '/admin/groups/manager/edit'
         
-        post 'update_users', id: group.name, user_ids: group.users
+        post 'update_users', id: group.name, user_ids: Admin::Group.find(group.name).users
 
         Admin::Group.find(group.name).users.should be_empty
         flash[:error].should be_nil
