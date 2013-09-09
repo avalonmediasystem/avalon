@@ -225,4 +225,31 @@ describe MediaObjectsController, type: :controller do
       MediaObject.find(media_object.pid).published?.should be_false
     end
   end
+
+  describe "#remove_part" do
+    
+    before(:each) do 
+      @stub_media_object = FactoryGirl.create(:media_object)
+      @stub_master_file = FactoryGirl.create(:master_file)
+      @stub_media_object.parts = [@stub_master_file]
+      @stub_media_object.save!
+    end
+    
+    it "should remove a section if it exists" do
+      request.env["HTTP_REFERER"] = media_object_path(id: @stub_media_object)
+      put 'remove_part', id: @stub_media_object, section: @stub_master_file
+
+      expect { @stub_media_object.parts.empty? }.to be_true
+      expect { @stub_master_file.nil? }.to be_true
+    end
+  
+    xit "should throw an error if the Media Object does not exist" 
+    xit "should throw an error if the part exists but does not belong to that Media Object" 
+    xit "should throw an error if the part does not exist" 
+
+    # Test that the delete button only appears with the right permissions and that a
+    # general user cannot hit the method with an HTTP request
+    xit "should not allow somebody without permission to delete a part" 
+    xit "should not affect the order of the rest of the parts" 
+  end
 end
