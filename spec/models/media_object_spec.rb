@@ -56,10 +56,9 @@ describe MediaObject do
       it{ should be_able_to(:destroy, media_object) }
       it{ should be_able_to(:inspect, media_object) }
       it "should be able to destroy and unpublish published item" do
-        media_object.avalon_publisher = "someone"
-        media_object.save(validate: false)
+        media_object.publish! "someone"
         subject.should be_able_to(:destroy, media_object)
-        subject.can(:unpublish, media_object).should be_true
+        subject.should be_able_to(:unpublish, media_object)
       end
     end
 
@@ -72,10 +71,11 @@ describe MediaObject do
       it{ should be_able_to(:update, media_object) }
       it{ should be_able_to(:destroy, media_object) }
       it "should not be able to destroy and unpublish published item" do
-        media_object.avalon_publisher = "someone"
-        media_object.save(validate: false)
+        media_object.publish! "someone"
         subject.should_not be_able_to(:destroy, media_object)
-        subject.cannot(:unpublish, media_object).should be_true
+        subject.should_not be_able_to(:update, media_object)
+        subject.should_not be_able_to(:update_access_control, media_object)
+        subject.should_not be_able_to(:unpublish, media_object)
       end
     end
 
@@ -88,14 +88,11 @@ describe MediaObject do
       it{ should be_able_to(:update, media_object) }
       it{ should be_able_to(:destroy, media_object) }
       it "should not be able to destroy and unpublish published item" do
-        media_object.avalon_publisher = "someone"
-        media_object.save(validate: false)
+        media_object.publish! "someone"
         subject.should_not be_able_to(:destroy, media_object)
-        subject.cannot(:unpublish, media_object).should be_true
+        subject.should_not be_able_to(:unpublish, media_object)
       end
-      it "should not be able to change access control" do
-        subject.cannot(:update_access_control, media_object).should be_true
-      end
+      it{ should_not be_able_to(:update_access_control, media_object) }
     end
 
     context 'when end-user' do
@@ -117,8 +114,7 @@ describe MediaObject do
 
       it "should be able to read authorized, published MediaObject" do
         media_object.read_users += [user.user_key]
-        media_object.avalon_publisher = "random"
-        media_object.save
+        media_object.publish! "random"
         subject.can(:read, media_object).should be_true
       end
     end
