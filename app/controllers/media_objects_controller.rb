@@ -208,26 +208,25 @@ class MediaObjectsController < ApplicationController
     media_object = MediaObject.find(params[:id])
 
     if media_object.blank?
-      # Throw an error with a flash notice here if the media_object does not 
-      # exist
-      # ...
+      redirect_to root_path, 
+       :flash => {:error => "Could not locate the media object"}
     end
 
     target_section = MasterFile.find(params[:section])
     unless media_object.parts.include? target_section 
-      # Throw an error here if the part does not exist in the sections for this given
-      # media object
-      # ...
+      redirect_to media_object_path(media_object), 
+        notice: "Could not find that section associated with this media object"
     end
 
     if media_object.present? and media_object.parts.include?(target_section)
       media_object.parts.delete(target_section)
       target_section.delete
       media_object.save!
+      redirect_to media_object_path(media_object),
+        notice: "Section has been removed from the resource"
     end
 
-    # No matter what kick back to the REFERER page ... for now
-    redirect_to :back
+    # If we reach this point something has gone wrong
   end
 
   def self.initialize_media_object( user_key )
