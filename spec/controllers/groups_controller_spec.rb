@@ -34,6 +34,14 @@ describe Admin::GroupsController do
       response.should redirect_to(root_path)
     end
 
+    it "should redirect to group index page with a notice when group name is already taken" do
+      group = FactoryGirl.create(:group)
+      login_as('policy_editor')
+      lambda { post 'create', admin_group: group.name }.should_not change {Admin::Group.all.count }
+      flash[:error].should_not be_nil
+      response.should redirect_to(admin_groups_path)
+    end
+
     context "Default permissions should be applied" do
       it "should be create-able by the policy_editor" do
         login_as('policy_editor')
