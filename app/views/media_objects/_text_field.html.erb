@@ -14,7 +14,7 @@
 
    <% if options[:tooltip] %>
       <div class="collapse form-tooltip span8" id="<%= default_label %>_tooltip">
-        <%= render "media_objects/tooltips/#{default_label}_field" %>
+        <p><%= t("metadata_tip.#{default_label}").html_safe %></p>
       </div>
     <% end %>
 
