@@ -40,7 +40,7 @@ class MediaObject < ActiveFedora::Base
   before_save 'descMetadata.reorder_elements!'
   before_save 'descMetadata.remove_empty_nodes!'
   before_save { |obj| obj.current_migration = 'R2' }
-  before_save { |obj| obj.populate_duration! unless self.duration.present? }
+  before_save { |obj| obj.populate_duration! }
   
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
