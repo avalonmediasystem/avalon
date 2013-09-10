@@ -21,3 +21,12 @@ Blacklight.do_search_context_behavior = function() {}
 
 $('.btn-stateful-loading').live('click', function() { $(this).button('loading'); });    
 
+$('.popover-target').popover({
+  placement: 'top',
+  html: true,
+  trigger: 'hover',
+  delay: { show: 250, hide: 500 },
+  content: function() { 
+    return $(this).next('.po-body').html() 
+  }
+});

@@ -47,6 +47,8 @@
 //= require bootstrap-modal
 //= require bootstrap-typeahead
 //= require bootstrap-button
+//= require bootstrap-tooltip
+//= require bootstrap-popover
 
 
 /* requirements for handling modals with modal logic gem */

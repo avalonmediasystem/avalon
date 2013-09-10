@@ -7,3 +7,25 @@ en:
     messages:
       blank: "field is required."
       taken: "is taken."
+  role_help:
+    manager: |
+      Managers have overall accountability for the collection. Managers can 
+      create collections and assign editor and depositor roles for those 
+      collections. They set the default access controls for items added to 
+      the collection, and they also step in when a published item needs 
+      revising or deleting. Managers can also do anything an editor or 
+      depositor can do.
+      <br/><br/>
+      <i><b>NOTE:</b> To assign someone the Manager 
+      role, you must first ask your administrator to add that user to the 
+      Manager group.</i>
+    editor: |
+      Editors have supervisory responsibility for the collection building — the 
+      ingest and description process. They can assign depositor roles, change 
+      the name or description of the collection, and can modify the access 
+      controls for individual items in the collection. Editors can also do 
+      anything a depositor can do.
+    depositor: |
+      Depositors add media to the collection and describe it with metadata. 
+      They can publish items but not unpublish. They can only modify or 
+      delete unpublished items.

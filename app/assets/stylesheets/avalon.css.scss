@@ -596,3 +596,20 @@ button.close {
     }
   }
 }
+
+.popover-target {
+  span {
+    border-bottom: 1px dashed;
+  }
+  &+.popover .arrow {
+    left: 10%;
+  }
+}
+
+.toggle-popover {
+  cursor: help
+}
+
+.po-body {
+  display: none;
+}
