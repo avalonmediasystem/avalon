@@ -33,8 +33,20 @@ describe ApplicationHelper do
   end
 
   describe "#stream_label_for" do
-    let!(:master_file) {FactoryGirl.build(:master_file, file_location: nil, label: nil)}
+    it "should return the label first if it is available" do
+      master_file = FactoryGirl.build(:master_file, label: 'Label')
+      master_file.file_location.should_not be_nil
+      master_file.label.should_not be_nil
+      helper.stream_label_for(master_file).should == 'Label'
+    end
+    it "should return the filename second if it is available" do
+      master_file = FactoryGirl.build(:master_file, label: nil)
+      master_file.file_location.should_not be_nil
+      master_file.label.should be_nil
+      helper.stream_label_for(master_file).should == File.basename(master_file.file_location)
+    end
     it "should handle empty file_locations and labels" do
+      master_file = FactoryGirl.build(:master_file, file_location: nil, label: nil)
       master_file.file_location.should be_nil
       master_file.label.should be_nil
       helper.stream_label_for(master_file).should == ''
