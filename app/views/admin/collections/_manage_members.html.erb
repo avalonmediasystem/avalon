@@ -1,6 +1,6 @@
           <% if can? "update_#{title}s".to_sym, @collection %>
-            <%= text_field_tag "new_#{title}", nil, class: "span9" %>
-            <%= submit_tag "Add", name: "add_#{title}", class: "btn" %>
+            <%= text_field_tag "new_#{title}", nil, class: "span9", onkeydown: "if (event.keyCode == 13) {event.preventDefault(); document.getElementById('add_#{title}').click()}" %>
+            <%= submit_tag "Add", name: "add_#{title}", id: "add_#{title}", class: "btn" %>
           <% end %>
 
           <table class="table table-striped">
