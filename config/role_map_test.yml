@@ -1,7 +1,6 @@
 administrator:
-- admin1
+  -
 manager:
-- manager1
+  -
 group_manager:
-  - archivist1
-  - archivist1@example.com
+  -
