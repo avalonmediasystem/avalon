@@ -36,17 +36,19 @@ FactoryGirl.define do
   end 
 
   factory :cataloger, class: User  do
-    username 'archivist1'
-    email 'archivist1@example.com'
-    #password 'archivist1'
-    #password_confirmation 'archivist1'
+    sequence(:username) {|n| "archivist#{n}" }
+    sequence(:email)    {|n| "archivist#{n}@example.com" }
   end
 
   factory :policy_editor, class: User  do
-    username 'archivist1'
-    email 'archivist1@example.com'
-    #password 'archivist1'
-    #password_confirmation 'archivist1'
+    sequence(:username) {|n| "archivist#{n}" }
+    sequence(:email)    {|n| "archivist#{n}@example.com" }
+    after(:create) do |user|
+      begin
+        RoleControls.add_user_role(user.username, 'group_manager')
+      rescue
+      end
+    end
   end
 
   factory :content_provider, class: User  do
@@ -61,16 +63,12 @@ FactoryGirl.define do
   end
 
   factory :student, class: User  do
-    username 'ann.e.student'
-    email 'student@example.com'
-    #password 'archivist1'
-    #password_confirmation 'archivist1'
+    sequence(:username) {|n| "ann.e.student#{n}" }
+    sequence(:email) {|n| "student#{n}@example.com" }
   end
 
   factory :public, class: User  do
-    username 'average.joe'
-    #email 'public.user@example.com'
-    #password 'archivist1'
-    #password_confirmation 'archivist1'
+    sequence(:username) {|n| "average.joe#{n}" }
+    sequence(:email) {|n| "average.joe#{n}@example.com" }
   end
 end
