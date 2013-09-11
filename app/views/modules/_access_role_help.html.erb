@@ -1,0 +1,9 @@
+          <p class="tooltip-help" data-title="<%= role.titleize %>" data-tooltip=<%="##{role}_tooltip"%>>
+            <a href="https://wiki.dlib.indiana.edu/display/VarVideo/Collection+Member+Role+Help#<%=role%>" target="_help">
+              <%= role.pluralize.titleize %>
+            </a>
+          </p>
+          <div class="collapse form-tooltip equal-height" id=<%="#{role}_tooltip"%>>
+            <button class="close">&times;</button>
+            <p><%= t("role_help.#{role}").html_safe %></p>
+          </div>
