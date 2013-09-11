@@ -62,8 +62,9 @@ class Ability
         can? :read, derivative.masterfile.mediaobject
       end
 
-      can :update, MediaObject do |mediaobject|
-        is_member_of?(mediaobject.collection)
+      cannot :update, MediaObject do |mediaobject|
+        (!is_member_of?(mediaobject.collection)) || 
+          ( mediaobject.published? && !@user.in?(mediaobject.collection.managers) )
       end
 
       cannot :destroy, MediaObject do |mediaobject|
@@ -73,7 +74,8 @@ class Ability
       end
 
       can :update_access_control, MediaObject do |mediaobject|
-        is_editor_of?(mediaobject.collection) 
+        @user.in?(mediaobject.collection.managers) || 
+          (is_editor_of?(mediaobject.collection) && !mediaobject.published?)
       end
 
       can :unpublish, MediaObject do |mediaobject|

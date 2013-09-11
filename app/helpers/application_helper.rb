@@ -75,28 +75,17 @@ module ApplicationHelper
     }
   end
 
-  # def display_metadata(label, value, default=nil)
-  #   return if value.blank? and default.nil?
-  #   value ||= default
-  #   sanitized_values = Array(value).collect { |v| sanitize(v.to_s.strip) }.delete_if(&:empty?)
-  #   label = label.pluralize(sanitized_values.size)
-  #   label_value_pair = label + ': ' + sanitized_values.join('; ')
-  #   result = content_tag(:li, label_value_pair)
-  # end
-
-  #FIXME
-  #This helper should be used by blacklight to display the "Title" field in search results
   def search_result_label item
-    label = item.id
-    unless item["title_sim"].blank?
-      label = truncate(item["title_sim"], length: 100)
+    if item['title_tesim'].present?
+      label = truncate(item['title_tesim'].first, length: 100)
+    else
+      label = item.id
     end
     
-    if ! item['duration_tesim'].nil? && ! item['duration_tesim'].empty? 
-      item_duration = item['duration_tesim'].first
-      if item_duration.respond_to?(:to_i)
-        formatted_duration = milliseconds_to_formatted_time(item_duration.to_i)
-        label += " (#{formatted_duration})"
+    if item['duration_tesim'].present?
+      duration = item['duration_tesim'].first
+      if duration.respond_to? :to_i
+        label += " (#{milliseconds_to_formatted_time(duration.to_i)})"
       end
     end
 
@@ -104,16 +93,14 @@ module ApplicationHelper
   end
 
   def stream_label_for(resource)
-    label = ''
-    
-    if !resource.nil? && !resource.label.blank?
-      if !resource.file_location.blank?
-        label = File.basename(resource.file_location)
-      else
-        label = resource.label
-      end
+    if resource.label.present?
+      resource.label
+    elsif resource.file_location.present?
+      File.basename(resource.file_location)
+    else
+      logger.debug("Cannot derive section label from resource: #{resource}")
+      resource.pid
     end
-    label
   end
 
   #Taken from Hydra::Controller::ControllerBehavior
