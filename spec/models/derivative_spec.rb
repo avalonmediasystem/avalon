@@ -84,7 +84,9 @@ describe Derivative do
 
     before :each do
       @d = Derivative.new
-      @d.location_url = "rtmp://localhost/avalon/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4"
+      @rtmp_base = Avalon::Configuration['streaming']["rtmp_base"]
+      @http_base = Avalon::Configuration['streaming']["http_base"]
+      @d.location_url = "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4"
     end
 
     describe "generic" do
@@ -94,22 +96,22 @@ describe Derivative do
 
       it "should properly create an RTMP video streaming URL" do
         @d.encoding.video = 'true'
-        @d.streaming_url(false).should == "rtmp://localhost/avalon/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+        @d.streaming_url(false).should == "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
       end
 
       it "should properly create an RTMP audio streaming URL" do
         @d.encoding.audio = 'true'
-        @d.streaming_url(false).should == "rtmp://localhost/avalon/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+        @d.streaming_url(false).should == "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
       end
 
       it "should properly create an HTTP video streaming URL" do
         @d.encoding.video = 'true'
-        @d.streaming_url(true).should == "http://localhost:3000/streams/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+        @d.streaming_url(true).should == "#{@http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
       end
 
       it "should properly create an HTTP audio streaming URL" do
         @d.encoding.audio = 'true'
-        @d.streaming_url(true).should == "http://localhost:3000/streams/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+        @d.streaming_url(true).should == "#{@http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
       end
     end
 
@@ -120,22 +122,22 @@ describe Derivative do
 
       it "should properly create an RTMP video streaming URL" do
         @d.encoding.video = 'true'
-        @d.streaming_url(false).should == "rtmp://localhost/avalon/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+        @d.streaming_url(false).should == "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
       end
 
       it "should properly create an RTMP audio streaming URL" do
         @d.encoding.audio = 'true'
-        @d.streaming_url(false).should == "rtmp://localhost/avalon/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+        @d.streaming_url(false).should == "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
       end
 
       it "should properly create an HTTP video streaming URL" do
         @d.encoding.video = 'true'
-        @d.streaming_url(true).should == "http://localhost:3000/streams/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+        @d.streaming_url(true).should == "#{@http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
       end
 
       it "should properly create an HTTP audio streaming URL" do
         @d.encoding.audio = 'true'
-        @d.streaming_url(true).should == "http://localhost:3000/streams/audio-only/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+        @d.streaming_url(true).should == "#{@http_base}/audio-only/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
       end
     end
   end
