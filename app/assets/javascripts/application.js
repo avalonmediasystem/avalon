@@ -47,8 +47,8 @@
 //= require bootstrap-modal
 //= require bootstrap-typeahead
 //= require bootstrap-button
-//= require bootstrap-tooltip
-//= require bootstrap-popover
+/*/= require bootstrap-tooltip*/
+/*/= require bootstrap-popover*/
 
 
 /* requirements for handling modals with modal logic gem */
@@ -63,4 +63,5 @@
  * etc) 
  */
 //= require avalon
+//= require pop_help
 //= require_self

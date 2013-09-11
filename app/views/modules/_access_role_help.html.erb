@@ -1,8 +1,9 @@
-          <p class="popover-target toggle-popover" data-title="<%= role.titleize %>">
-            <span>
+          <p class="tooltip-help" data-title="<%= role.titleize %>" data-tooltip=<%="##{role}_tooltip"%>>
+            <a href="https://wiki.dlib.indiana.edu/display/VarVideo/Collection+Member+Role+Help#<%=role%>" target="_help">
               <%= role.pluralize.titleize %>
-            </span>
+            </a>
           </p>
-          <div class="po-body">
+          <div class="collapse form-tooltip" id=<%="#{role}_tooltip"%>>
+            <button class="close">&times;</button>
             <p><%= t("role_help.#{role}").html_safe %></p>
           </div>
