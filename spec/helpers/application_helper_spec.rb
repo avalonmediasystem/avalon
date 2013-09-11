@@ -49,7 +49,7 @@ describe ApplicationHelper do
       master_file = FactoryGirl.build(:master_file, file_location: nil, label: nil)
       master_file.file_location.should be_nil
       master_file.label.should be_nil
-      helper.stream_label_for(master_file).should == ''
+      helper.stream_label_for(master_file).should == master_file.pid
     end
   end
 end
