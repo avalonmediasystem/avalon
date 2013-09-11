@@ -77,3 +77,4 @@ lib/tasks/cucumber.rake
 cucumber-results/
 
 /dropbox
+public/source_maps

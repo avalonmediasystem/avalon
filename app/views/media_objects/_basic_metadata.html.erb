@@ -74,21 +74,6 @@
 <script>
   $().ready(function() {
     DynamicFields.initialize();
-
-    /* 
-     * Disable the default action for tooltips if the Javascript for the
-     * inline tip is able to work. Since we know that these will have additional
-     * data attributes there is no need for another class hook
-     */
-     $('a[data-tooltip]').each(function() {
-       $(this).removeAttr('href').removeAttr('target').append(' <i class="icon-question-sign" />');
-     });
-
-     $('a[data-tooltip]').click(function(event) {
-       event.preventDefault();
-       targetNode = $(this).data('tooltip');
-       $(targetNode).toggleClass('in');
-     });
   });
 </script>
 <% end %>

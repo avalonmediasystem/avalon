@@ -1,21 +1,12 @@
 <% default_label = field.to_s %>
 <% text_label ||= default_label.humanize %>
+<% display_label = text_label || default_label.humanize %>
 <% options ||= {} %>
 
 <!-- <%= default_label.humanize %> field -->
   <div class="control-group">
-    <%= media.label field do %>
-      <% if options[:tooltip] %>
-      <a href='https://wiki.dlib.indiana.edu/display/VarVideo/Resource+Description+Help#<%= default_label %>' target='_help' data-tooltip="#<%= default_label %>_tooltip"><%= text_label %><% if options[:required] %> *<% end %></a> 
-      <% else %>
-        <%= text_label || default_label.humanize %><% if options[:required] %> *<% end %>
-      <% end %>
-   <% end %>
-   <% if options[:tooltip] %>
-      <div class="collapse form-tooltip span8" id="<%= default_label %>_tooltip">
-        <%= render "media_objects/tooltips/#{default_label}_field" %>
-      </div>
-    <% end %>
+    <%= render partial: "modules/tooltip", locals: { media: media, field: field, default_label: default_label, text_label: text_label, display_label: display_label, options: options } %>
+
     <div class="controls">
       <%= media.text_area field, rows: 10, class: 'span8' %>
     </div>

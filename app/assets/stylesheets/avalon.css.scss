@@ -596,3 +596,13 @@ button.close {
     }
   }
 }
+
+.role-popover-help *, .popover-help *, .tooltip-help * {
+  cursor: pointer;
+}
+
+.role-popover-help {
+  &+.popover .arrow {
+    left: 10%;
+  }
+}
