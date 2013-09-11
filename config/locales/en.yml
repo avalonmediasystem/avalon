@@ -85,10 +85,6 @@ en:
       the collection, and they also step in when a published item needs 
       revising or deleting. Managers can also do anything an editor or 
       depositor can do.
-      <br/><br/>
-      <i><b>NOTE:</b> To assign someone the Manager 
-      role, you must first ask your administrator to add that user to the 
-      Manager group.</i>
     editor: |
       Editors have supervisory responsibility for the collection building — the 
       ingest and description process. They can assign depositor roles, change 
