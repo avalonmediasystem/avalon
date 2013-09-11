@@ -196,39 +196,6 @@ class MediaObjectsController < ApplicationController
     redirect_to :back
   end
   
-  # This is not the most RESTful approach but as a quick way to get to a working 
-  # solution it should do. Be sure to add some tests to make sure that it 
-  # functions as expected with no major side effects
-  #
-  # A good solution would be robust enough to detect problems like a bad part 
-  # PID, a missing
-  # ID (that is not in the system), or trouble with permissions. This is still 
-  # just a first pass so all of that can wait for the next iteration
-  def remove_part
-    media_object = MediaObject.find(params[:id])
-
-    if media_object.blank?
-      redirect_to root_path, 
-       :flash => {:error => "Could not locate the media object"}
-    end
-
-    target_section = MasterFile.find(params[:section])
-    unless media_object.parts.include? target_section 
-      redirect_to media_object_path(media_object), 
-        notice: "Could not find that section associated with this media object"
-    end
-
-    if media_object.present? and media_object.parts.include?(target_section)
-      media_object.parts.delete(target_section)
-      target_section.delete
-      media_object.save!
-      redirect_to media_object_path(media_object),
-        notice: "Section has been removed from the resource"
-    end
-
-    # If we reach this point something has gone wrong
-  end
-
   def self.initialize_media_object( user_key )
     mediaobject = MediaObject.new( avalon_uploader: user_key )
     set_default_item_permissions( mediaobject, user_key )

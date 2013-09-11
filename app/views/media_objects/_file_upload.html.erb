@@ -65,10 +65,10 @@
           	 		 <%# On a Rails level this needs to be folded into the masterfiles
           	 		   # controller's destroy method to help remove more vestiges of the
           	 		   # catalog controller %>
-            <%# Make this link to a new remove_part route until the URLs are
-              # made more user friendly - ie no more media_objects or
-              # PIDs hard coded into URLs %>
-            <%= link_to 'Delete', root_path, class: 'btn btn-mini btn-danger' %>
+              <%= link_to 'Delete', 
+                 master_file_path(part.pid),
+                 class: 'btn btn-mini btn-danger',
+                 method: :delete %>
           <% end %>
       	  </td>
         </tr>
@@ -124,10 +124,11 @@
   <%= render partial: 'dropbox' %>
 </section>
 
-
+<section class="span10">
 <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
   <%= render "workflow_buttons", form: media %>
 <% end %>		
+</section>
 
 <% content_for :page_styles do %>
   <%= stylesheet_link_tag "jasny-bootstrap.min", media: "all" %>
