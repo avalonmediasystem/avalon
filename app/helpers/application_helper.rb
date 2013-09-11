@@ -93,16 +93,14 @@ module ApplicationHelper
   end
 
   def stream_label_for(resource)
-    label = ''
-    
-    if !resource.nil? && !resource.label.blank?
-      if !resource.file_location.blank?
-        label = File.basename(resource.file_location)
-      else
-        label = resource.label
-      end
+    if resource.label.present?
+      resource.label
+    elsif resource.file_location.present?
+      File.basename(resource.file_location)
+    else
+      logger.debug("Cannot derive section label from resource: #{resource}")
+      resource.pid
     end
-    label
   end
 
   #Taken from Hydra::Controller::ControllerBehavior
