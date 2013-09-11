@@ -1,0 +1,14 @@
+    <%= media.label field do %>
+      <%= 
+        link_to_if(options[:tooltip], display_label + (options[:required] ? " *" : ""), 
+          "https://wiki.dlib.indiana.edu/display/VarVideo/Resource+Description+Help##{default_label}", 
+          :target => '_help', :class => 'tooltip-help', :'data-title' => display_label, :'data-tooltip' => "##{default_label}_tooltip")
+      %>
+    <% end %>
+    
+    <% if options[:tooltip] %>
+      <div class="collapse form-tooltip span8" id="<%= default_label %>_tooltip">
+        <button class="close">&times;</button>
+        <p><%= t("metadata_tip.#{default_label}").html_safe %></p>
+      </div>
+    <% end %>

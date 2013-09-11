@@ -21,17 +21,17 @@
           <% end %>
 
         <div class="span3">
-          <p>Managers</p>
+          <%= render "modules/access_role_help", role: "manager" %>
           <%= render "manage_members", title: "manager" %>
         </div>
 
         <div class="span3">
-          <p>Editors</p>
+          <%= render "modules/access_role_help", role: "editor" %>
           <%= render "manage_members", title: "editor" %>
         </div>
 
         <div class="span3">
-          <p>Depositors</p>
+          <%= render "modules/access_role_help", role: "depositor" %>
           <%= render "manage_members", title: "depositor" %>
         </div>
 
