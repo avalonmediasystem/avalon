@@ -62,7 +62,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: 887730650578b1bcf4f375955d011528360e326c
+  revision: f7772ee54d54b6f19143a3c1743d892629202cff
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
@@ -324,7 +324,7 @@ GEM
     modal_logic (0.0.3)
       handlebars_assets (= 0.14.1)
       rails (~> 3.2.13)
-    multi_json (1.7.9)
+    multi_json (1.8.0)
     multipart-post (1.2.0)
     net-http-digest_auth (1.4)
     net-scp (1.1.2)

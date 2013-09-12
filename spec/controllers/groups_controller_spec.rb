@@ -22,22 +22,30 @@ describe Admin::GroupsController do
 
   describe "creating a new group" do
   	it "should redirect to sign in page with a notice when unauthenticated" do
-  	  lambda { get 'new' }.should_not change { Admin::Group.all.count }
+  	  expect { get 'new' }.not_to change { Admin::Group.all.count }
   	  flash[:notice].should_not be_nil
   	  response.should redirect_to(new_user_session_path)
   	end
 	
     it "should redirect to home page with a notice when authenticated but unauthorized" do
       login_as('student')
-      lambda { get 'new' }.should_not change {Admin::Group.all.count }
+      expect { get 'new' }.not_to change {Admin::Group.all.count }
       flash[:notice].should_not be_nil
       response.should redirect_to(root_path)
+    end
+
+    it "should redirect to group index page with a notice when group name is already taken" do
+      group = FactoryGirl.create(:group)
+      login_as('policy_editor')
+      expect { post 'create', admin_group: group.name }.not_to change {Admin::Group.all.count }
+      flash[:error].should_not be_nil
+      response.should redirect_to(admin_groups_path)
     end
 
     context "Default permissions should be applied" do
       it "should be create-able by the policy_editor" do
         login_as('policy_editor')
-        lambda { post 'create', admin_group: test_group }.should change { Admin::Group.all.count }
+        expect { post 'create', admin_group: test_group }.to change { Admin::Group.all.count }
         g = Admin::Group.find(test_group)
         g.should_not be_nil
         response.should redirect_to(edit_admin_group_path(g))
@@ -128,7 +136,7 @@ describe Admin::GroupsController do
     context "Deleting a group" do
       it "should redirect to sign in page with a notice on when unauthenticated" do    
         
-        lambda { put 'update_multiple', group_ids: [group.name] }.should_not change { RoleControls.users(group.name) }
+        expect { put 'update_multiple', group_ids: [group.name] }.not_to change { RoleControls.users(group.name) }
         flash[:notice].should_not be_nil
         response.should redirect_to(new_user_session_path)
       end
@@ -136,7 +144,7 @@ describe Admin::GroupsController do
       it "should redirect to home page with a notice when authenticated but unauthorized" do
         login_as('student')
       
-        lambda { put 'update_multiple', group_ids: [group.name] }.should_not change { RoleControls.users(group.name) }
+        expect { put 'update_multiple', group_ids: [group.name] }.not_to change { RoleControls.users(group.name) }
         flash[:notice].should_not be_nil
         response.should redirect_to(root_path)
       end
@@ -144,7 +152,7 @@ describe Admin::GroupsController do
       it "should be able to change group users when authenticated and authorized" do
         login_as('policy_editor')
       
-        lambda { put 'update_multiple', group_ids: [group.name] }.should change { RoleControls.users(group.name) }
+        expect { put 'update_multiple', group_ids: [group.name] }.to change { RoleControls.users(group.name) }
         flash[:notice].should_not be_nil
         response.should redirect_to(admin_groups_path)
       end
