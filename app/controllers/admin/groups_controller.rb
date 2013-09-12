@@ -49,6 +49,12 @@ class Admin::GroupsController < ApplicationController
   end
   
   def create
+    if Admin::Group.exists?(params["admin_group"])
+      flash[:error] = "Group name #{params["admin_group"]} is taken."
+      redirect_to admin_groups_path
+      return
+    end
+
     @group = Admin::Group.new
     @group.name = params["admin_group"]
     if @group.save

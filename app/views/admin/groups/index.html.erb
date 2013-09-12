@@ -1,4 +1,6 @@
 <div class="row span7">
+  <% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
+
   <h3>System Groups</h3>
     <table class="table table-striped ">
       <thead>
