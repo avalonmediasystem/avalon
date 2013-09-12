@@ -80,7 +80,7 @@ describe Admin::GroupsController do
         login_as('policy_editor')
         new_user = FactoryGirl.build(:user).username
 
-        put 'update', id: group.name, new_user: new_user
+        put 'update', group_name: group.name, id: group.name, new_user: new_user
 
         group_name = group.name
         group = Admin::Group.find(group_name)
@@ -89,7 +89,7 @@ describe Admin::GroupsController do
         response.should redirect_to(edit_admin_group_path(Admin::Group.find(group.name)))
       end
     
-      xit "should be able to change group name when authenticated and authorized" do
+      it "should be able to change group name when authenticated and authorized" do
         login_as('policy_editor')
         new_group_name = Faker::Lorem.word
 
