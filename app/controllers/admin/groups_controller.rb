@@ -77,22 +77,21 @@ class Admin::GroupsController < ApplicationController
     # It is not pretty but this gets the job done. Even though the view
     # prevents the name being changed this is a safeguard against somebody
     # posting it anyways
-    if (Admin::Group.name_is_static?(@group.name) and 
-        (not (@group.name.eql?(params["group_name"]) or 
-              params[:group_name].blank?)))
-      flash[:error] = "Cannot change the name of a system group [#{new_group_name}]"
-      redirect_to edit_admin_group_path(@group)
-
-      return
-    else
-      # This logic makes sure that role is never blank even if the form
-      # does not provide a value
-      if Admin::Group.exists?(params["group_name"])
-        flash[:error] = "Group name #{params["group_name"]} is taken."
+    if params["group_name"].present? and !@group.name.eql?(params["group_name"])
+      if Admin::Group.name_is_static?(@group.name)
+        flash[:error] = "Cannot change the name of a system group [#{new_group_name}]"
         redirect_to edit_admin_group_path(@group)
         return
+      else
+        # This logic makes sure that role is never blank even if the form
+        # does not provide a value
+        if Admin::Group.exists?(params["group_name"])
+          flash[:error] = "Group name #{params["group_name"]} is taken."
+          redirect_to edit_admin_group_path(@group)
+          return
+        end
+        @group.name = new_group_name.blank? ? params["id"] : params["group_name"]
       end
-      @group.name = new_group_name.blank? ? params["id"] : params["group_name"]
     end
     @group.users += [new_user] unless new_user.blank?
     
