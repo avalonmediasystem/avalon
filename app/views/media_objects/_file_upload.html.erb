@@ -142,18 +142,21 @@
   </script>
 
   <script>
-    $('#associated_files form input[type=text]').each(function() {
-      $(this).change(function() {
-        var doubleId = $(this).attr('id')+'_double'
-        var double = $('#workflow_buttons form input[id="'+doubleId+'"]')
-        if (double.length == 0) {
-          var doubleHtml = '<input type="hidden" id="'+doubleId+'" name="'+$(this).attr('name')+'" value="'+$(this).val()+'"/>';
-          $('#workflow_buttons form').append(doubleHtml)
-          double = $('#workflow_buttons form input[id="'+doubleId+'"]')
-        }
-        double.val($(this).val());
+    (function() {
+      var sectionForm = $('#associated_files form');
+      var buttonForm = $('#workflow_buttons form');
+      $('input[type=text]',sectionForm).each(function() {
+        $(this).change(function() {
+          var doubleId = $(this).attr('id')+'_double'
+          var double = $('input[id="'+doubleId+'"]',buttonForm)
+          if (double.length == 0) {
+            double = $('<input type="hidden" id="'+doubleId+'" name="'+$(this).attr('name')+'" value="'+$(this).val()+'"/>')
+            double.appendTo(buttonForm)
+          }
+          double.val($(this).val());
+        })
       })
-    })
-    $('#associated_files input[type=submit]').hide();
+      $('input[type=submit]',sectionForm).hide();
+    })();
   </script>
 <% end %>
