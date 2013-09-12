@@ -2,6 +2,7 @@
   <div class='alert alert-error' style='display: inline-table;'><%= flash[:error] %></div>
 <% end %>
 
+<p>Fields followed by an asterisk (*) are required.</p>
 <%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
   <%= hidden_field_tag :step, @active_step %>
   
