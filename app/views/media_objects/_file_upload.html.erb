@@ -124,7 +124,7 @@
   <%= render partial: 'dropbox' %>
 </section>
 
-<section class="span10">
+<section id="workflow_buttons" class="span10">
 <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
   <%= render "workflow_buttons", form: media %>
 <% end %>		
@@ -139,5 +139,21 @@
   <script>
     /* Hide the alert dialog on the page loading if Javascript is enabled */
     <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
+  </script>
+
+  <script>
+    $('#associated_files form input[type=text]').each(function() {
+      $(this).change(function() {
+        var doubleId = $(this).attr('id')+'_double'
+        var double = $('#workflow_buttons form input[id="'+doubleId+'"]')
+        if (double.length == 0) {
+          var doubleHtml = '<input type="hidden" id="'+doubleId+'" name="'+$(this).attr('name')+'" value="'+$(this).val()+'"/>';
+          $('#workflow_buttons form').append(doubleHtml)
+          double = $('#workflow_buttons form input[id="'+doubleId+'"]')
+        }
+        double.val($(this).val());
+      })
+    })
+    $('#associated_files input[type=submit]').hide();
   </script>
 <% end %>
