@@ -28,7 +28,9 @@ class Ability
     end
     
     if @user_groups.include? "group_manager"
-      can :manage, Admin::Group
+      can :manage, Admin::Group do |group|
+        group.nil? or !['administrator','group_manager'].include?(group.name)
+      end
     end
 
     if is_member_of_any_collection?
