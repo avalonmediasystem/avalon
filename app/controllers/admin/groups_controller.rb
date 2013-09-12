@@ -26,6 +26,12 @@ class Admin::GroupsController < ApplicationController
     elsif cannot? :manage, Admin::Group
       flash[:notice] = "You do not have permission to manage groups"
       redirect_to root_path
+    elsif params['id'].present?
+      g = Admin::Group.find(params['id'])
+      if cannot? :manage, g
+        flash[:error] = "You must be an administrator to manage the '#{g.name}' group"
+        redirect_to admin_groups_path
+      end
     end
   end
   

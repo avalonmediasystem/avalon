@@ -14,7 +14,7 @@
       <tbody>
         <% @default_groups.each do |group|%>
           <tr>
-            <td><%= link_to group.name, edit_admin_group_path(group) %></td>
+            <td><%= link_to_if can?(:manage, group), group.name, edit_admin_group_path(group) %></td>
             <td><%= group.users.count %></td>
           </tr>
         <% end %>
