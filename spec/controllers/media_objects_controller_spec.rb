@@ -24,14 +24,14 @@ describe MediaObjectsController, type: :controller do
     end
 
     it "should redirect to sign in page with a notice when unauthenticated" do
-      lambda { get 'new', collection_id: collection.pid }.should_not change { MediaObject.count }
+      expect { get 'new', collection_id: collection.pid }.not_to change { MediaObject.count }
       flash[:notice].should_not be_nil
       response.should redirect_to(new_user_session_path)
     end
   
     it "should redirect to home page with a notice when authenticated but unauthorized" do
       login_as :user
-      lambda { get 'new', collection_id: collection.pid }.should_not change { MediaObject.count }
+      expect { get 'new', collection_id: collection.pid }.not_to change { MediaObject.count }
       flash[:notice].should_not be_nil
       response.should redirect_to(root_path)
     end
@@ -43,7 +43,7 @@ describe MediaObjectsController, type: :controller do
     context "Default permissions should be applied" do
       it "should be editable by the creator" do
         login_user collection.managers.first
-        lambda { get 'new', collection_id: collection.pid }.should change { MediaObject.count }
+        expect { get 'new', collection_id: collection.pid }.to change { MediaObject.count }
         pid = MediaObject.find(:all).last.pid
         response.should redirect_to(edit_media_object_path(id: pid))
       end

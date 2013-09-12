@@ -24,7 +24,7 @@ describe MasterFilesController do
         request.env["HTTP_REFERER"] = "/"
         @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
              
-        lambda { post :create, Filedata: [@file], original: 'any'}.should_not change { MasterFile.count }
+        expect { post :create, Filedata: [@file], original: 'any'}.not_to change { MasterFile.count }
       end
     end
      
@@ -35,7 +35,7 @@ describe MasterFilesController do
       @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
       @file.stub(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2^21)  
      
-      lambda { post :create, Filedata: [@file], original: 'any', container_id: media_object.pid}.should_not change { MasterFile.count }
+      expect { post :create, Filedata: [@file], original: 'any', container_id: media_object.pid}.not_to change { MasterFile.count }
      
       flash[:errors].should_not be_nil
      end
@@ -72,7 +72,7 @@ describe MasterFilesController do
        @file = fixture_file_upload('/public-domain-book.txt', 'application/json')
         Rubyhorn.stub_chain(:client,:stop).and_return(true)
 
-       lambda { post :create, Filedata: [@file], original: 'any', container_id: media_object.pid }.should_not change { MasterFile.count }
+       expect { post :create, Filedata: [@file], original: 'any', container_id: media_object.pid }.not_to change { MasterFile.count }
      
        flash[:errors].should_not be_nil
      end
@@ -160,17 +160,13 @@ describe MasterFilesController do
 
     context "should be deleted" do
       it "should no longer exist" do
-        lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }.by(-1)
+        expect { post :destroy, id: master_file.pid }.to change { MasterFile.count }.by(-1)
       end
-    end
-    
-    context "should stop processing in Matterhorn" do
-      it "should no longer be in the Matterhorn pipeline"
     end
     
     context "should no longer be associated with its parent object" do
       it "should create then remove a file from a video object" do
-        lambda { post :destroy, id: master_file.pid }.should change { MasterFile.count }.by(-1)
+        expect { post :destroy, id: master_file.pid }.to change { MasterFile.count }.by(-1)
         master_file.mediaobject.reload.parts.should_not include master_file         
       end
     end
