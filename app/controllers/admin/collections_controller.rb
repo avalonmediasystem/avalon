@@ -1,6 +1,6 @@
 class Admin::CollectionsController < ApplicationController
   before_filter :authenticate_user!
-  load_and_authorize_resource except: :remove
+  load_and_authorize_resource except: [:remove, :show]
   respond_to :html
   
   # Catching a global exception seems like a bad idea here
@@ -20,6 +20,8 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1
   def show
+    @collection = Admin::Collection.find(params[:id])
+    redirect_to admin_collections_path unless can? :read, @collection
     @group_exceptions = []
     if @collection.default_access == "limited"
       # When access is limited, group_exceptions content is stored in read_groups
