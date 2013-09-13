@@ -39,8 +39,23 @@ describe Admin::CollectionsController, type: :controller do
       depositor.should_not be_in(collection.depositors)
     end
 
-    it "should redirects to collections index page when user removed from managers" 
-    it "should shows an error when attempts to remove the last manager" 
-    it "should shows an error when attempts to add an editor/manager to depositors list" 
+    it "should display an error when attempts to remove the last manager" 
+    it "should display an error when attempts to add an editor/manager to depositors list" 
+  end
+
+  describe "#show" do
+    let!(:collection) { FactoryGirl.create(:collection) }
+
+    it "should allow access to managers" do
+      login_user(collection.managers.first)
+      get 'show', id: collection.id
+      response.should be_ok
+    end
+
+    it "should redirect to collections index when manager doesn't have access" do
+      login_as(:manager)
+      get 'show', id: collection.id
+      response.should redirect_to(admin_collections_path)
+    end
   end
 end
