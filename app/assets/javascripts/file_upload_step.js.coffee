@@ -11,15 +11,23 @@ $('input[type=text]',section_form).each () ->
     double.val($(this).val())
 $('input[type=submit]',section_form).hide()
 
-$('#delete_confirm .btn-cancel').click () ->
-  $('#delete_confirm').modal('hide')
+$('.btn-confirmation+.popover .btn').live 'click', () ->
+  $('.btn-confirmation').popover('hide')
+  return true
 
-$('.btn-confirmation').click (event) ->
-  modal = $('#delete_confirm')
-  row = $(this).closest('tr')
-  label = row.find('.section-label').val()
-  label = if label? and (label != '') then "\"#{label.trim()}\"" else "this section"
-  modal.find('#confirm_section_name').html(label)
-  modal.find('.btn-confirm').attr('href',$(this).attr('href'))
-  modal.modal('show')
-  return false
+$('.btn-confirmation')
+  .popover
+    trigger: 'manual',
+    html: true,
+    content: () ->
+      "<p>Are you sure?</p>
+      <a href='#{$(this).attr('href')}' class='btn btn-mini btn-danger btn-confirm' data-method='delete' rel='nofollow'>Yes, Delete</a>
+      <a href='#' class='btn btn-mini btn-primary btn-cancel'>No, Cancel</a>"
+    placement: 'left'
+  .click () -> 
+    t = this
+    $('.btn-confirmation')
+      .filter(() -> this isnt t)
+      .popover('hide')
+    $(this).popover('show')
+    return false
