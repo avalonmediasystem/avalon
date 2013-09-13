@@ -606,9 +606,3 @@ button.close {
     left: 10%;
   }
 }
-
-// Make the "Upload" button on the file management page a different color than the
-// default using some CSS overrides
-button[name='upload_file'] {
-  background: $green;
-}
