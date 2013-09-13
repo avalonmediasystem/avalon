@@ -44,7 +44,7 @@
   	        <% end %>
   	      </td>
   	      <td>
-      	        <%= text_field_tag "parts[#{part.pid}][label]", part.label, size: 30 %>
+      	        <%= text_field_tag "parts[#{part.pid}][label]", part.label, size: 30, class: 'section-label' %>
   	      </td>
               <td>
                 <% if part.is_video? %>
@@ -53,7 +53,7 @@
                   <%= content_tag(:span, part.poster_offset.to_i.to_hms, size: 8, class: "input-small uneditable-input") %>
                 <% end %>
               </td>
-  	      <td>
+  	      <td class="section-filename">
   	        <%= truncate(File.basename(part.file_location), length: 25) %>
       	      </td>
       	      <td>
@@ -67,7 +67,7 @@
           	 		   # catalog controller %>
               <%= link_to 'Delete', 
                  master_file_path(part.pid),
-                 class: 'btn btn-mini btn-danger',
+                 class: 'btn btn-mini btn-danger btn-confirmation',
                  method: :delete %>
           <% end %>
       	  </td>
@@ -130,33 +130,29 @@
 <% end %>		
 </section>
 
+<div class="modal hide fade" id="delete_confirm">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Confirm Delete</h3>
+  </div>
+  <div class="modal-body">
+    <p>Are you certain you want to remove <span id="confirm_section_name">this section</span>?</p>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn btn-danger btn-confirm" data-method="delete" rel="nofollow">Yes, Delete</a>
+    <a href="#" class="btn btn-primary btn-cancel" id="btn_cancel_delete">No, Cancel</a>
+  </div>
+</div>
+
 <% content_for :page_styles do %>
   <%= stylesheet_link_tag "jasny-bootstrap.min", media: "all" %>
 <% end %>
 
 <% content_for :page_scripts do %>
+  <%= javascript_include_tag "file_upload_step" %>
   <%= javascript_include_tag "bootstrap-fileupload" %>
   <script>
     /* Hide the alert dialog on the page loading if Javascript is enabled */
     <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
-  </script>
-
-  <script>
-    (function() {
-      var sectionForm = $('#associated_files form');
-      var buttonForm = $('#workflow_buttons form');
-      $('input[type=text]',sectionForm).each(function() {
-        $(this).change(function() {
-          var doubleId = $(this).attr('id')+'_double'
-          var double = $('input[id="'+doubleId+'"]',buttonForm)
-          if (double.length == 0) {
-            double = $('<input type="hidden" id="'+doubleId+'" name="'+$(this).attr('name')+'" value="'+$(this).val()+'"/>')
-            double.appendTo(buttonForm)
-          }
-          double.val($(this).val());
-        })
-      })
-      $('input[type=submit]',sectionForm).hide();
-    })();
   </script>
 <% end %>
