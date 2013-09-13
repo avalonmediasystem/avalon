@@ -25,12 +25,12 @@
 
       <%= label_tag :access do %>
       <%= radio_button_tag :access, 'private', (access == 'private') %>
-        Collection members only
+        Collection staff only
       <% end %>
     
       <%= label_tag :access do %>
       <%= radio_button_tag :access, 'limited', (access == 'limited') %>
-        Limit access to
+        Limit access to specified users and/or groups
       <% end %>
  
       <div id="groups-ex" class="span5">

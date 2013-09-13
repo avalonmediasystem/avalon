@@ -80,7 +80,7 @@ describe Admin::GroupsController do
         login_as('policy_editor')
         new_user = FactoryGirl.build(:user).username
 
-        put 'update', id: group.name, new_user: new_user
+        put 'update', group_name: group.name, id: group.name, new_user: new_user
 
         group_name = group.name
         group = Admin::Group.find(group_name)
@@ -89,7 +89,7 @@ describe Admin::GroupsController do
         response.should redirect_to(edit_admin_group_path(Admin::Group.find(group.name)))
       end
     
-      xit "should be able to change group name when authenticated and authorized" do
+      it "should be able to change group name when authenticated and authorized" do
         login_as('policy_editor')
         new_group_name = Faker::Lorem.word
 
@@ -130,6 +130,30 @@ describe Admin::GroupsController do
 
         expect(Admin::Group.find('manager').users).to include(manager_name)
         flash[:error].should_not be_nil
+      end
+
+      ['administrator','group_manager'].each do |g|
+        it "should be able to manage #{g} group as an administrator" do
+          login_as('administrator')
+          new_user = FactoryGirl.build(:user).username
+
+          post 'update', id: g, new_user: new_user
+          group = Admin::Group.find(g)
+          group.users.should include(new_user)
+          flash[:notice].should_not be_nil
+          response.should redirect_to(edit_admin_group_path(Admin::Group.find(group.name)))
+        end
+
+        it "should not be able to manage #{g} group as a group_manager" do
+          login_as('policy_editor')
+          new_user = FactoryGirl.build(:user).username
+
+          post 'update', id: g, new_user: new_user
+          group = Admin::Group.find(g)
+          group.users.should_not include(new_user)
+          flash[:error].should_not be_nil
+          response.should redirect_to(admin_groups_path)
+        end
       end
     end
     
