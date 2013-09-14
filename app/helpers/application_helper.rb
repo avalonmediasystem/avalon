@@ -84,7 +84,7 @@ module ApplicationHelper
     
     if item['duration_tesim'].present?
       duration = item['duration_tesim'].first
-      if duration.respond_to? :to_i
+      if duration.respond_to?(:to_i) && duration.to_i > 0
         label += " (#{milliseconds_to_formatted_time(duration.to_i)})"
       end
     end
