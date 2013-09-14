@@ -52,4 +52,11 @@ describe ApplicationHelper do
       helper.stream_label_for(master_file).should == master_file.pid
     end
   end
+
+  describe "#search_result_label" do
+    it "should not include a duration string if it would be 0" do
+      media_object = FactoryGirl.create(:media_object)
+      helper.search_result_label(media_object.to_solr).should_not include("(00:00)")
+    end
+  end
 end
