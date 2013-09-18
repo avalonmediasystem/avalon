@@ -157,6 +157,7 @@ class Admin::Group
       if name_changed? && !@previous_name.eql?(name)
         RoleControls.remove_role @previous_name
         RoleControls.add_role name
+        RoleControls.assign_users(users, name)
       end
       if users_changed?
         RoleControls.assign_users(users, name)

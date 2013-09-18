@@ -59,7 +59,7 @@ describe Admin::GroupsController do
   end
 
   describe "Modifying a group: " do
-    let!(:group) {FactoryGirl.create(:group)}
+    let!(:group) {Admin::Group.find(FactoryGirl.create(:group).name)}
     
     context "editing a group" do
       it "should redirect to sign in page with a notice on when unauthenticated" do    
@@ -93,7 +93,7 @@ describe Admin::GroupsController do
         login_as('policy_editor')
         new_group_name = Faker::Lorem.word
 
-        post 'update', group_name: new_group_name, new_user: "", id: group.name
+        put 'update', group_name: new_group_name, new_user: "", id: group.name
     
         new_group = Admin::Group.find(new_group_name)
         new_group.should_not be_nil
@@ -104,7 +104,7 @@ describe Admin::GroupsController do
       
       it "should not be able to rename system groups" do
         login_as('administrator')
-        post 'update', group_name: Faker::Lorem.word, new_user: "", id: 'manager'
+        put 'update', group_name: Faker::Lorem.word, new_user: "", id: 'manager'
         
         Admin::Group.find('manager').should_not be_nil
         flash[:error].should_not be_nil
@@ -114,7 +114,7 @@ describe Admin::GroupsController do
         login_as('policy_editor')
         request.env["HTTP_REFERER"] = '/admin/groups/manager/edit'
         
-        post 'update_users', id: group.name, user_ids: Admin::Group.find(group.name).users
+        put 'update_users', id: group.name, user_ids: Admin::Group.find(group.name).users
 
         Admin::Group.find(group.name).users.should be_empty
         flash[:error].should be_nil
@@ -126,7 +126,7 @@ describe Admin::GroupsController do
 
         collection = FactoryGirl.create(:collection)
         manager_name = collection.managers.first
-        post 'update_users', id: 'manager', user_ids: [manager_name]
+        put 'update_users', id: 'manager', user_ids: [manager_name]
 
         expect(Admin::Group.find('manager').users).to include(manager_name)
         flash[:error].should_not be_nil
@@ -137,7 +137,7 @@ describe Admin::GroupsController do
           login_as('administrator')
           new_user = FactoryGirl.build(:user).username
 
-          post 'update', id: g, new_user: new_user
+          put 'update', id: g, new_user: new_user
           group = Admin::Group.find(g)
           group.users.should include(new_user)
           flash[:notice].should_not be_nil
@@ -148,7 +148,7 @@ describe Admin::GroupsController do
           login_as('policy_editor')
           new_user = FactoryGirl.build(:user).username
 
-          post 'update', id: g, new_user: new_user
+          put 'update', id: g, new_user: new_user
           group = Admin::Group.find(g)
           group.users.should_not include(new_user)
           flash[:error].should_not be_nil
