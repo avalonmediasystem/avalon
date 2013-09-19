@@ -4,7 +4,7 @@
 For more information and regular project updates visit the [Avalon blog](http://www.avalonmediasystem.org/blog).
 
 # Installing Avalon Media System
-Instructions on how to get a local installation of Avalon Media System installed on your system are available for [Linux](https://wiki.dlib.indiana.edu/display/VarVideo/Getting+Started+(Linux)) and [OS X](https://wiki.dlib.indiana.edu/display/VarVideo/Getting+Started+(OS+X)).
+Instructions on how to get a local installation of Avalon Media System installed on your system are available for [Linux](https://wiki.dlib.indiana.edu/display/VarVideo/Getting+Started+(Linux\)) and [OS X](https://wiki.dlib.indiana.edu/display/VarVideo/Getting+Started+(OS+X\)).
 
 # Getting started
 * ```git submodule init```
