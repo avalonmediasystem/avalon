@@ -61,6 +61,12 @@ GIT
       rails (~> 3.2.3)
 
 GIT
+  remote: https://github.com/avalonmediasystem/mediaelement-qualityselector.git
+  revision: 05bb80d7268ba054c235a310d6e5db9bf288a640
+  specs:
+    mediaelement-qualityselector (0.0.1)
+
+GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
   revision: d482d35a71e30f9c858e8924715421326bf97495
   specs:
@@ -99,12 +105,6 @@ GIT
     twitter_bootstrap_form_for (2.0.1.0.rc2)
       actionpack (~> 3)
       railties (~> 3)
-
-GIT
-  remote: https://github.com/cjcolvar/mediaelement-qualityselector.git
-  revision: 05bb80d7268ba054c235a310d6e5db9bf288a640
-  specs:
-    mediaelement-qualityselector (0.0.1)
 
 GEM
   remote: http://rubygems.org/

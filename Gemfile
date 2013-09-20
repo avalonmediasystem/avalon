@@ -11,7 +11,7 @@
   gem 'avalon-engage', git: "https://github.com/avalonmediasystem/avalon-engage.git"
   gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git"
   gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git'
-  gem 'mediaelement-qualityselector', git: 'https://github.com/cjcolvar/mediaelement-qualityselector.git'
+  gem 'mediaelement-qualityselector', git: 'https://github.com/avalonmediasystem/mediaelement-qualityselector.git'
   gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector'
   gem 'hydra-migrate', '>=0.2.0'
   
