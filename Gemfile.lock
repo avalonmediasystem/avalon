@@ -15,6 +15,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
   revision: 07adb923f21f9d6c28fa8459883abbd1bc813ca9
+  tag: avalon-r2
   specs:
     avalon-about (0.1.0)
       about_page
@@ -23,6 +24,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
   revision: 6182b17e621f8bf2b645daf09842c313d0b4c04a
+  tag: avalon-r2
   specs:
     avalon-batch (0.1.0)
       activemodel
@@ -32,6 +34,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-engage.git
   revision: f19ca230eafda68e230ef2d869727c67d875fc60
+  tag: avalon-r2
   specs:
     avalon-engage (0.0.1)
       less-rails (~> 2.2.3)
@@ -39,12 +42,14 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
   revision: 46300b8a3275067425a7e427c4dce6043edba5e9
+  tag: avalon-r2
   specs:
     avalon-workflow (0.0.3)
 
 GIT
   remote: https://github.com/avalonmediasystem/felixwrapper.git
   revision: 9659be23666fff7c201e6cd5930d9c7d3bc145cd
+  tag: avalon-r2
   specs:
     felixwrapper (0.0.1)
       activesupport (~> 3.2.3)
@@ -55,14 +60,23 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector
-  revision: 1d9e3efe377d74a8f98ac99eb20d91e4fdcab606
+  revision: 44bb63c0bcd94a22b89718dfb1a4e1f05b0d7e8b
+  tag: avalon-r2
   specs:
     media_element_thumbnail_selector (0.0.1)
       rails (~> 3.2.3)
 
 GIT
+  remote: https://github.com/avalonmediasystem/mediaelement-qualityselector.git
+  revision: 05bb80d7268ba054c235a310d6e5db9bf288a640
+  tag: avalon-r2
+  specs:
+    mediaelement-qualityselector (0.0.1)
+
+GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
   revision: d482d35a71e30f9c858e8924715421326bf97495
+  tag: avalon-r2
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
@@ -71,6 +85,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/red5wrapper.git
   revision: 3cfad64b4a9d43c2d63cc754765110e87a2f55c9
+  tag: avalon-r2
   specs:
     red5wrapper (0.0.1)
       activesupport (~> 3.2.3)
@@ -82,6 +97,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
   revision: acda6fae4b9d1e196cd0534c2401565dcc5c464b
+  tag: avalon-r2
   specs:
     rubyhorn (0.0.5)
       activesupport
@@ -99,12 +115,6 @@ GIT
     twitter_bootstrap_form_for (2.0.1.0.rc2)
       actionpack (~> 3)
       railties (~> 3)
-
-GIT
-  remote: https://github.com/cjcolvar/mediaelement-qualityselector.git
-  revision: 05bb80d7268ba054c235a310d6e5db9bf288a640
-  specs:
-    mediaelement-qualityselector (0.0.1)
 
 GEM
   remote: http://rubygems.org/
@@ -191,7 +201,7 @@ GEM
       execjs
     coffee-script-source (1.6.3)
     columnize (0.3.6)
-    commonjs (0.2.6)
+    commonjs (0.2.7)
     compass (0.12.2)
       chunky_png (~> 1.2)
       fssm (>= 0.2.7)
@@ -404,7 +414,7 @@ GEM
       json (~> 1.4)
     rest-client (1.6.7)
       mime-types (>= 1.16)
-    roo (1.12.1)
+    roo (1.12.2)
       nokogiri
       rubyzip
       spreadsheet (> 0.6.4)
@@ -462,7 +472,7 @@ GEM
       nokogiri
       stomp
       xml-simple
-    spreadsheet (0.8.9)
+    spreadsheet (0.9.0)
       ruby-ole (>= 1.0)
     sprockets (2.2.2)
       hike (~> 1.2)
