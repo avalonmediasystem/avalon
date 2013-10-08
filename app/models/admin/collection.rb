@@ -73,7 +73,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def add_manager user
-    raise ArgumentError, "User #{user} does not belong to the manager group." unless RoleControls.users("manager").include?(user)
+    raise ArgumentError, "User #{user} does not belong to the manager group." unless (RoleControls.users("manager") + RoleControls.users("administrator")).include?(user)
     self.edit_users += [user]
     self.inherited_edit_users += [user]
   end
