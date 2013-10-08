@@ -148,6 +148,7 @@ describe Admin::Collection do
       it "should return the intersection of edit_users and managers role" do
         collection.edit_users = [user.username, "pdinh"]
         RoleControls.should_receive("users").with("manager").and_return([user.username, "atomical"])
+        RoleControls.should_receive("users").with("administrator").and_return([])
         collection.managers.should == [user.username]  #collection.edit_users & RoleControls.users("manager")
       end
     end
