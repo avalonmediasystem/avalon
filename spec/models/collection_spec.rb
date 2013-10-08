@@ -148,6 +148,7 @@ describe Admin::Collection do
       it "should return the intersection of edit_users and managers role" do
         collection.edit_users = [user.username, "pdinh"]
         RoleControls.should_receive("users").with("manager").and_return([user.username, "atomical"])
+        RoleControls.should_receive("users").with("administrator").and_return([])
         collection.managers.should == [user.username]  #collection.edit_users & RoleControls.users("manager")
       end
     end
@@ -182,6 +183,13 @@ describe Admin::Collection do
         collection.edit_users.should include(user.username)
         collection.inherited_edit_users.should include(user.username)
         collection.managers.should include(user.username)
+      end
+      it "should add users who have the administrator role" do
+        administrator = FactoryGirl.create(:administrator)
+        collection.add_manager(administrator.username)
+        collection.edit_users.should include(administrator.username)
+        collection.inherited_edit_users.should include(administrator.username)
+        collection.managers.should include(administrator.username)
       end
       it "should not add users who do not have the manager role" do
         not_manager = FactoryGirl.create(:user)
