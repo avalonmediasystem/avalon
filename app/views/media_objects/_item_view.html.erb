@@ -83,6 +83,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         { mode: 'auto_plugin',
           pluginPath: <%= asset_path('mediaelement_rails/').inspect.html_safe %>,
           usePluginFullScreen: false,
+          iPhoneUseNativeControls: true,
           thumbnailSelectorUpdateURL: '/update-url',
           thumbnailSelectorEnabled: true,
           features: <%=features.inspect.html_safe%>
