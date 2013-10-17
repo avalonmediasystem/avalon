@@ -1,3 +1,6 @@
+v1.0.2 (2013-08-09)
+  - Add 'avalon-r1' tags to git-based gems to prevent updates to incompatible versions
+
 v1.0.1 (2013-06-17)
   - Hotfix for VOV-1677 Video playback can fail the first time if you start at an item page 
     in a new browser.
