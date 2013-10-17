@@ -17,12 +17,11 @@ require 'avalon/controller/controller_behavior'
 class MediaObjectsController < ApplicationController 
   include Avalon::Workflow::WorkflowControllerBehavior
   include Avalon::Controller::ControllerBehavior
+  include Hydra::AccessControlsEnforcement
 
-  before_filter :enforce_access_controls
+#  before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
   before_filter :load_player_context, only: [:show, :show_progress, :remove]
-
-  layout 'avalon'
 
   # Catch exceptions when you try to reference an object that doesn't exist.
   # Attempt to resolve it to a close match if one exists and offer a link to
@@ -30,17 +29,21 @@ class MediaObjectsController < ApplicationController
   rescue_from ActiveFedora::ObjectNotFoundError do |exception|
     render '/errors/unknown_pid', status: 404
   end
-  
+ 
   def new
-    logger.debug "<< NEW >>"
+    collection = Admin::Collection.find(params[:collection_id])
+    authorize! :read, collection
+
     @mediaobject = MediaObjectsController.initialize_media_object(user_key)
     @mediaobject.workflow.origin = 'web'
+    @mediaobject.collection = collection
     @mediaobject.save(:validate => false)
 
     redirect_to edit_media_object_path(@mediaobject)
   end
 
   def custom_edit
+    authorize! :update, @mediaobject
     if ['preview', 'structure', 'file-upload'].include? @active_step
       @masterFiles = load_master_files
     end
@@ -72,13 +75,13 @@ class MediaObjectsController < ApplicationController
   end
 
   def custom_update
+    authorize! :update, @mediaobject
     flash[:notice] = @notice
   end
 
   def show
+    authorize! :read, @mediaobject
     respond_to do |format|
-      # The flash notice is only set if you are returning HTML since it makes no
-      # sense in an AJAX context (yet)
       format.html do
        	if (not @masterFiles.empty? and @currentStream.blank?)
           @currentStream = @masterFiles.first
@@ -93,6 +96,7 @@ class MediaObjectsController < ApplicationController
   end
 
   def show_progress
+    authorize! :read, @mediaobject
     overall = { :success => 0, :error => 0 }
 
     result = Hash[
@@ -137,20 +141,18 @@ class MediaObjectsController < ApplicationController
   # you can't delete an object if you do not have permission, if it does not exist, or
   # (most likely) if the 'Yes' button was accidentally submitted twice
   def destroy
-    logger.debug "<< DESTROY >>"
-    logger.debug "<< Media object => #{params[:id]} >>"
-    logger.debug "<< Exists? #{MediaObject.exists? params[:id]} >>"
+    @mediaobject = MediaObject.find(params[:id])
+    authorize! :destroy, @mediaobject
     unless params[:id].nil? or (not MediaObject.exists?(params[:id]))
-      logger.debug "<< Removing PID from system >>"
       media = MediaObject.find(params[:id])
 
       # attempt to stop the matterhorn processing job
       media.parts.each(&:destroy)
+      media.parts.clear
       
       flash[:notice] = "#{media.title} (#{params[:id]}) has been successfuly deleted"
       media.delete
     end
-    logger.debug "<< Exists? #{MediaObject.exists? params[:id]} >>"
     redirect_to root_path
   end
 
@@ -159,18 +161,14 @@ class MediaObjectsController < ApplicationController
   # it will just toggle the state.
   def update_status
     media_object = MediaObject.find(params[:id])
-    authorize! :manage, media_object
+    authorize! :update, media_object
     
-    logger.debug "<< Status flag is #{params[:status]} >>"
     case params[:status]
       when 'publish'
-        logger.debug "<< Setting user key to #{user_key} >>"
         media_object.publish!(user_key)
       when 'unpublish'
-        logger.debug "<< Setting user key to nil >>"
         media_object.publish!(nil)
       when nil
-        logger.debug "<< Toggling user key >>"
         new_state = media_object.published? ? nil : user_key
         media_object.publish!(new_state)        
     end
@@ -184,16 +182,12 @@ class MediaObjectsController < ApplicationController
     media_object = MediaObject.find(params[:id])
     authorize! :manage, media_object
     
-    logger.debug "<< Visibility flag is #{params[:status]} >>"
     case params[:status]
       when 'show'
-        logger.debug "<< Setting hidden to false >>"
         media_object.hidden = false
       when 'hide'
-        logger.debug "<< Setting hidden to true >>"
         media_object.hidden = true
       when nil
-        logger.debug "<< Toggling visibility >>"
         new_state = media_object.hidden? ? false : true
         media_object.hidden = new_state        
     end
@@ -218,15 +212,11 @@ class MediaObjectsController < ApplicationController
   protected
 
   def load_master_files
-    logger.debug "<< LOAD MASTER FILES >>"
-    logger.debug "<< #{@mediaobject.parts_with_order} >>"
-
     @mediaobject.parts_with_order
   end
 
   def load_player_context
     @mediaobject = MediaObject.find(params[:id])
-    logger.debug "<< Preparing media object #{@mediaobject} >>"
 
     @masterFiles = load_master_files
     @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
@@ -254,5 +244,5 @@ class MediaObjectsController < ApplicationController
 
     # If you haven't dropped out by this point return an empty item
     nil
-  end  
+  end 
 end

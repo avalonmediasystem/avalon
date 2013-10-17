@@ -19,6 +19,7 @@ class MasterFile < ActiveFedora::Base
   include Hydra::ModelMethods
   include Hydra::ModelMixins::CommonMetadata
   include Hydra::ModelMixins::RightsMetadata
+  include Hydra::ModelMixins::Migratable
 
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
   has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
@@ -29,6 +30,8 @@ class MasterFile < ActiveFedora::Base
     d.field :file_size, :string
     d.field :duration, :string
     d.field :file_format, :string
+    d.field :poster_offset, :string
+    d.field :thumbnail_offset, :string
   end
 
   has_metadata name: 'mhMetadata', :type => ActiveFedora::SimpleDatastream do |d|
@@ -43,11 +46,20 @@ class MasterFile < ActiveFedora::Base
     d.field :failures, :string
   end
 
-  delegate_to 'descMetadata', [:file_location, :file_checksum, :file_size, :duration, :file_format], unique: true
+  delegate_to 'descMetadata', [:file_location, :file_checksum, :file_size, :duration, :file_format, :poster_offset, :thumbnail_offset], unique: true
   delegate_to 'mhMetadata', [:workflow_id, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures], unique:true
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
+
+  validates_each :poster_offset, :thumbnail_offset do |record, attr, value|
+    unless value.nil? or value.to_i.between?(0,record.duration.to_i)
+      record.errors.add attr, "must be between 0 and #{record.duration}"
+    end
+  end
+
+  before_save { |obj| obj.current_migration = 'R2' }
+  before_save 'update_stills_from_offset!'
 
   # First and simplest test - make sure that the uploaded file does not exceed the
   # limits of the system. For now this is hard coded but should probably eventually
@@ -91,11 +103,13 @@ class MasterFile < ActiveFedora::Base
     # Removes existing association
     if self.mediaobject.present?
       self.mediaobject.parts_with_order_remove self
+      self.mediaobject.parts -= [self]
     end
 
     self._mediaobject=(mo)
-    unless mo.nil?
-      mo.parts_with_order += [self]
+    unless self.mediaobject.nil?
+      self.mediaobject.parts_with_order += [self]
+      self.mediaobject.parts += [self]
     end
   end
 
@@ -105,12 +119,8 @@ class MasterFile < ActiveFedora::Base
       Rubyhorn.client.stop(workflow_id)
     end
 
-    parent = mediaobject
-    parent.save(validate: false)
-
     mo = self.mediaobject
     self.mediaobject = nil
-    mo.parts -= [self]
 
     derivatives_deleted = true
     self.derivatives.each do |d|
@@ -121,9 +131,11 @@ class MasterFile < ActiveFedora::Base
     if !derivatives_deleted 
       #flash[:error] << "Some derivatives could not be deleted."
     end 
-
+    clear_association_cache
+    
     super
 
+    #Only save the media object if the master file was successfully deleted
     mo.save(validate: false)
   end
 
@@ -143,30 +155,8 @@ class MasterFile < ActiveFedora::Base
     m.send_request args
   end
 
-  def status_description
-    case status_code
-      when "INSTANTIATED"
-        "Preparing file for conversion"
-      when "RUNNING"
-        "Creating derivatives"
-      when "SUCCEEDED"
-        s = self.failures.to_i > 0 ? " (#{failures} failed steps)" : ""
-        "Processing is complete#{s}"
-      when "FAILED"
-        "File(s) could not be processed"
-      when "STOPPED"
-        "Processing has been stopped"
-      else
-        "Waiting for conversion to begin"
-      end
-  end
-
   def status?(value)
     status_code == value
-  end
-
-  def running?
-    status?('RUNNING')
   end
 
   def failed?
@@ -196,11 +186,16 @@ class MasterFile < ActiveFedora::Base
     # Returns the hash
     {
       label: label,
+      is_video: is_video?,
       poster_image: poster_path,
       mediapackage_id: mediapackage_id,
       stream_flash: flash, 
       stream_hls: hls 
     }
+  end
+
+  def is_video?
+    self.file_format != "Sound"
   end
 
   def sort_streams array
@@ -209,16 +204,6 @@ class MasterFile < ActiveFedora::Base
 
   def finished_processing?
     END_STATES.include?(status_code)
-  end
-
-  def poster_url
-    #poster.url yeilds something like "objects/changeme%3A314/datastreams/poster/content" which needs fedora's base added on to it
-    poster.new? ? nil : ActiveFedora.fedora.config[:url] + "/" + poster.url
-  end
-
-  def thumbnail_url
-    #thumbnail.url yeilds something like "objects/changeme%3A314/datastreams/thumbnail/content" which needs fedora's base added on to it
-    thumbnail.new? ? nil : ActiveFedora.fedora.config[:url] + "/" + thumbnail.url
   end
 
   def update_progress!( params, matterhorn_response )
@@ -280,7 +265,7 @@ class MasterFile < ActiveFedora::Base
 
     # TODO : Since these are the same write a method to DRY up updating an
     #        image datastream
-    unless thumbnail.empty?
+    if thumbnail.present? and self.thumbnail.content.blank?
       thumbnailURI = URI.parse(thumbnail.url.first)
       # Rubyhorn fails if you don't provide a leading / in the provided path
       self.thumbnail.content = Rubyhorn.client.get(thumbnailURI.path[1..-1]) 
@@ -291,7 +276,7 @@ class MasterFile < ActiveFedora::Base
     # for being located at player+preview and not search+preview
     poster = matterhorn_response.poster_images(0)
 
-    unless poster.empty?
+    if poster.present? and self.poster.content.blank?
       poster_uri = URI.parse(poster.url.first)
       self.poster.content = Rubyhorn.client.get(poster_uri.path[1..-1])
       self.poster.mimeType = poster.mimetype.first
@@ -301,7 +286,134 @@ class MasterFile < ActiveFedora::Base
 
   end
 
+  alias_method :'_poster_offset=', :'poster_offset='
+  def poster_offset=(value)
+    set_image_offset(:poster,value)
+    set_image_offset(:thumbnail,value) # Keep stills in sync
+  end
+
+  alias_method :'_thumbnail_offset=', :'thumbnail_offset='
+  def thumbnail_offset=(value)
+    set_image_offset(:thumbnail,value)
+    set_image_offset(:poster,value)  # Keep stills in sync
+  end
+
+  def set_image_offset(type, value)
+    milliseconds = if value.is_a?(Numeric)
+      value.floor
+    elsif value.is_a?(String)
+      result = 0
+      segments = value.split(/:/).reverse
+      segments.each_with_index { |v,i| result += i > 0 ? v.to_f * (60**i) * 1000 : (v.to_f * 1000) }
+      result.to_i
+    else
+      value.to_i
+    end
+    
+    return milliseconds if milliseconds == self.send("#{type}_offset").to_i
+
+    @stills_to_update ||= []
+    @stills_to_update << type
+    self.send("_#{type}_offset=".to_sym,milliseconds.to_s)
+    milliseconds
+  end
+
+  def update_stills_from_offset!
+    if @stills_to_update.present?
+      # Update stills together
+      self.class.extract_still(self.pid, :type => 'both', :offset => self.poster_offset)
+
+      # Update stills independently
+      # @stills_to_update.each do |type|
+      #   self.class.extract_still(self.pid, :type => type, :offset => self.send("#{type}_offset"))
+      # end
+      @stills_to_update = []
+    end
+    true
+  end
+
+  def extract_still(options={})
+    default_frame_sizes = {
+      'poster'    => '1024x768',
+      'thumbnail' => '160x120'
+    }
+
+    result = nil
+    type = options[:type] || 'both'
+    if is_video?
+      if type == 'both'
+        result = self.extract_still(options.merge(:type => 'poster'))
+        self.extract_still(options.merge(:type => 'thumbnail'))
+      else
+        frame_size = options[:size] || default_frame_sizes[options[:type]]
+        ds = self.datastreams[type]
+        result = extract_frame(options.merge(:size => frame_size))
+        unless options[:preview]
+          ds.mimeType = 'image/jpeg'
+          ds.content = StringIO.new(result)
+        end
+      end
+      save
+    end
+    result
+  end
+
+  class << self
+    def extract_still(pid, options={})
+      obj = self.find(pid)
+      obj.extract_still(options)
+    end
+    handle_asynchronously :extract_still
+  end
+
   protected
+
+  def mediainfo
+    @mediainfo ||= Mediainfo.new file_location
+  end
+
+  def extract_frame(options={})
+    if is_video?
+      ffmpeg = Avalon::Configuration['ffmpeg']['path']
+      frame_size = (options[:size].nil? or options[:size] == 'auto') ? mediainfo.video.streams.first.frame_size : options[:size]
+
+      options[:offset] ||= 2000
+      offset = options[:offset].to_i
+      unless offset.between?(0,self.duration.to_i)
+        raise RangeError, "Offset #{offset} not in range 0..#{self.duration}"
+      end
+      base = pid.gsub(/:/,'_')
+
+      display_aspect_ratio = mediainfo.video.streams.first.display_aspect_ratio
+      if ':'.in? display_aspect_ratio
+        (original_width,original_height) = display_aspect_ratio.split(/:/).collect &:to_f
+      else
+        (original_width,original_height) = [display_aspect_ratio.to_f, display_aspect_ratio.to_f]
+      end
+
+      (new_width,new_height) = frame_size.split(/x/).collect &:to_f
+      new_height = (new_width/(original_width/original_height)).floor
+      new_height += 1 if new_height.odd?
+      aspect = new_width/new_height
+
+      Tempfile.open([base,'.jpg']) do |jpeg|
+        options = [
+          '-ss',      (offset / 1000.0).to_s,
+          '-i',       file_location,
+          '-s',       "#{new_width.to_i}x#{new_height.to_i}",
+          '-vframes', '1',
+          '-aspect',  aspect.to_s,
+          '-f',       'image2',
+          '-y',       jpeg.path
+        ]
+        Kernel.system(ffmpeg, *options)
+        jpeg.rewind
+        jpeg.read
+      end
+    else
+      nil
+    end
+  end
 
   def calculate_percent_complete matterhorn_response
     totals = {
@@ -351,6 +463,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def saveOriginal(file, original_name)
+    @mediainfo = nil
     realpath = File.realpath(file.path)
     if !original_name.nil?
       config_path = Avalon::Configuration['matterhorn']['media_path']
@@ -367,10 +480,17 @@ class MasterFile < ActiveFedora::Base
       self.file_location = realpath
     end
 
+    self.duration = begin
+      mediainfo.duration.to_s
+    rescue
+      nil
+    end
+
+    self.poster_offset = [2000,mediainfo.duration.to_i].min
+
     self.file_size = file.size.to_s
 
-    logger.debug "<< File location #{ file_location } >>"
-    logger.debug "<< Filesize #{ file_size } >>"
+    file.close
   end
 
 

@@ -35,6 +35,11 @@
 
 // Let's be selective on which modules we include instead of going down the 
 // kitchen sink route. Even some of these may not be needed down the road.
+//
+// Required by Blacklight
+//= require jquery-ui
+//= require jquery.ui.nestedSortable
+
 //= require bootstrap-alert
 //= require bootstrap-dropdown
 //= require bootstrap-transition
@@ -42,14 +47,21 @@
 //= require bootstrap-modal
 //= require bootstrap-typeahead
 //= require bootstrap-button
-//
-// Required by Blacklight
-//= require jquery-ui
-//= require jquery.ui.nestedSortable
+//= require bootstrap-tooltip
+//= require bootstrap-popover
+
+
+/* requirements for handling modals with modal logic gem */
+//= require modal_logic
+//= require handlebars.runtime
+//= require templates/modal/crud
+
+
 
 /*
  * Place any local overrides in avalon.js (for Blacklight, Hydra, jQuery,
  * etc) 
  */
 //= require avalon
+//= require pop_help
 //= require_self

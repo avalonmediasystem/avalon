@@ -1,9 +1,6 @@
-collection_manager:
-  - archivist1
-  - archivist2
-  - archivist1@example.com
-  - archivist2@example.com
-  - leland_himself@example.com
+administrator:
+  -
+manager:
+  -
 group_manager:
-  - archivist1
-  - archivist1@example.com
+  -

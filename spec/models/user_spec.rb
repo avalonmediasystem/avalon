@@ -15,32 +15,32 @@
 require 'spec_helper'
 
 describe User do
+  subject {user}
+  let!(:user) {FactoryGirl.build(:user)}
+  let!(:list) {0.upto(rand(5)).collect { Faker::Internet.email }}
+
+  describe "validations" do
+    it {should validate_presence_of(:username)}
+    it {should validate_uniqueness_of(:username)}
+    it {should validate_presence_of(:email)}
+    it {should validate_uniqueness_of(:email)}
+  end
+
   describe "Ability" do
-    before (:each) do
-      @user = User.new
-      @user.username = "test"
-      @mo = MediaObject.new
-      @mo.save(:validate=>false)
+    its(:ability) {should_not be_nil}
+
+    pending "should create a new Ability if missing"
+    pending "should delegate can? and cannot?"
+  end
+
+  describe "Membership" do
+    it "should be a member if its key is in the list" do
+      user.should be_in(list,[user.user_key])
+      user.should be_in(list+[user.user_key])
     end
 
-    it "should have an ability" do
-      @user.ability.should_not be_nil
-    end
-
-    it "should not be able to read any MediaObject" do
-      assert @user.cannot?(:read, @mo)
-    end
-
-    it "should not be able to read authorized, unpublished MediaObject" do
-      @mo.read_users = [@user.user_key]
-      assert @user.cannot?(:read, @mo)
-    end
-
-    it "should be able to read authorized, published MediaObject" do
-      @mo.read_users += [@user.user_key]
-      @mo.avalon_publisher = ["random"]
-      @mo.save(:validate=>false)
-      assert @user.can?(:read, @mo)
+    it "should not be a member if its key is not in the list" do
+      user.should_not be_in(list)
     end
   end
 end

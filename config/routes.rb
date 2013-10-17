@@ -29,8 +29,12 @@ Avalon::Application.routes.draw do
   end
   resources :master_files, except: [:show, :new, :index] do
     member do
-      get 'thumbnail'
-      get 'poster'
+      get  'thumbnail', :to => 'master_files#get_frame', :defaults => { :type => 'thumbnail' }
+      get  'poster',    :to => 'master_files#get_frame', :defaults => { :type => 'poster' }
+
+      post 'thumbnail', :to => 'master_files#set_frame', :defaults => { :type => 'thumbnail', :format => 'html' }
+      post 'poster',    :to => 'master_files#set_frame', :defaults => { :type => 'poster', :format => 'html' }
+      post 'still',     :to => 'master_files#set_frame', :defaults => { :format => 'html' }
     end
   end
   resources :derivatives, only: [:create]
@@ -42,7 +46,6 @@ Avalon::Application.routes.draw do
   #match 'search/index' => 'search#index'
   #match 'search/facet/:id' => 'search#facet'
 
-  resources :admin, only: [:index]
   namespace :admin do
     resources :groups, except: [:show] do 
       collection do 
@@ -50,6 +53,12 @@ Avalon::Application.routes.draw do
       end
       member do
         put 'update_users'
+      end
+    end
+    resources :collections do
+      member do
+        get 'edit'
+        get 'remove'
       end
     end
   end
@@ -60,7 +69,8 @@ Avalon::Application.routes.draw do
     end
   end
 
-
+  mount AboutPage::Engine => '/about(.:format)'
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

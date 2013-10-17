@@ -17,6 +17,10 @@ module ApplicationHelper
     'Avalon'
   end
   
+  def release_text
+    "#{application_name} #{t(:release_label)} #{Avalon::VERSION}"
+  end
+
   def image_for(item_id)
     #TODO index the thumbnail url to avoid having to hit fedora to get it
     media_object = MediaObject.find(item_id)
@@ -31,7 +35,6 @@ module ApplicationHelper
       audio_count = audio_count + 1 if "Sound" == part.file_format
     end
 
-    logger.debug "<< Object has #{video_count} videos and #{audio_count} audios >>"
     imageurl ||= case
                  when (video_count > 0 and 0 == audio_count)
                    "video_icon.png"
@@ -61,16 +64,6 @@ module ApplicationHelper
     end
   end
 
-  
-  # Not the best way to do this but it works for the time being
-  def wrap_text(content)
-    unless content.nil? or content.empty?
-      content.gsub(/\n/, '<br />').html_safe
-    else
-      "<em>Not provided</em>".html_safe
-    end
-  end
-
   def display_metadata(label, value, default=nil)
     return if value.blank? and default.nil?
     value ||= default
@@ -82,56 +75,32 @@ module ApplicationHelper
     }
   end
 
-  # def display_metadata(label, value, default=nil)
-  #   return if value.blank? and default.nil?
-  #   value ||= default
-  #   sanitized_values = Array(value).collect { |v| sanitize(v.to_s.strip) }.delete_if(&:empty?)
-  #   label = label.pluralize(sanitized_values.size)
-  #   label_value_pair = label + ': ' + sanitized_values.join('; ')
-  #   result = content_tag(:li, label_value_pair)
-  # end
-
-  #FIXME
-  #This helper should be used by blacklight to display the "Title" field in search results
   def search_result_label item
-    label = item.id
-    unless item["title_display"].blank?
-      label = truncate(item["title_display"], length: 100)
+    if item['title_tesim'].present?
+      label = truncate(item['title_tesim'].first, length: 100)
+    else
+      label = item.id
     end
     
-    if ! item['duration_t'].nil? && ! item['duration_t'].empty? 
-      item_duration = item['duration_t'].first
-      if item_duration.respond_to?(:to_i)
-        formatted_duration = milliseconds_to_formatted_time(item_duration.to_i)
-        label += " (#{formatted_duration})"
+    if item['duration_tesim'].present?
+      duration = item['duration_tesim'].first
+      if duration.respond_to?(:to_i) && duration.to_i > 0
+        label += " (#{milliseconds_to_formatted_time(duration.to_i)})"
       end
     end
 
     label
   end
 
-  # Retrieve the current status of processing and display a concise version
-  # for use in the interface
-  def conversion_status_for(mediaobject)
-    unless mediaobject.parts.empty?
-      masterfile = mediaobject.parts.first.pid
-      masterfile.status
-    else
-      "No files have been selected"
-    end
-  end   
-  
   def stream_label_for(resource)
-    label = ''
-    
-    unless resource.nil?
-      if resource.label.blank?
-        label = File.basename(resource.file_location)
-      else
-        label = resource.label
-      end
+    if resource.label.present?
+      resource.label
+    elsif resource.file_location.present?
+      File.basename(resource.file_location)
+    else
+      logger.debug("Cannot derive section label from resource: #{resource}")
+      resource.pid
     end
-    label
   end
 
   #Taken from Hydra::Controller::ControllerBehavior
@@ -161,14 +130,26 @@ module ApplicationHelper
     link_to name, '#', opts
   end
 
-  def git_commit_info pattern="%s %s"
+  def git_commit_info pattern="%s %s [%s]"
     begin
       repo = Grit::Repo.new(Rails.root)
       branch = repo.head.name
       commit = repo.head.commit.sha[0..5]
-      pattern % [branch,commit]
+      time = repo.head.commit.committed_date.strftime('%d %b %Y %H:%M:%S')
+      pattern % [branch,commit,time]
     rescue
       ""
     end
+  end
+
+  def active_for_controller controller_name
+    params[:controller] == controller_name.to_s ? 'active' : ''
+  end
+
+  def build_solr_request_from_response
+    qs = @response['responseHeader']['params'].reject { |k,v| k == 'wt' }.collect do |k,v|
+      v.is_a?(Array) ? v.collect { |v1| [k,URI.encode(v1.to_s)].join('=') } : [k,URI.encode(v.to_s)].join('=')
+    end.flatten.join('&')
+    ActiveFedora.solr.conn.uri.merge("select?#{qs}").to_s.html_safe
   end
 end

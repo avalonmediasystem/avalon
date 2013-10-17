@@ -20,9 +20,12 @@ class MediaObject < ActiveFedora::Base
   include ActiveFedora::Associations
   include Hydra::ModelMixins::RightsMetadata
   include Avalon::Workflow::WorkflowModelMixin
+  include Hydra::ModelMixins::Migratable
 
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
+  belongs_to :governing_policy, :class_name=>'Admin::Collection', :property=>:is_governed_by
+  belongs_to :collection, :class_name=>'Admin::Collection', :property=>:is_member_of_collection
 
   has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: ModsDocument	
@@ -36,6 +39,8 @@ class MediaObject < ActiveFedora::Base
   before_save 'descMetadata.update_change_date!'
   before_save 'descMetadata.reorder_elements!'
   before_save 'descMetadata.remove_empty_nodes!'
+  before_save { |obj| obj.current_migration = 'R2' }
+  before_save { |obj| obj.populate_duration! }
   
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
@@ -45,10 +50,18 @@ class MediaObject < ActiveFedora::Base
   # blank. Since identifier is set automatically we only need to worry about creator,
   # title, and date of creation.
 
-  validates :title, :presence_with_full_error_message => true
-  validates :creator, :presence_with_full_error_message => true
-  validates :date_issued, :presence_with_full_error_message => true
+  validates :title, :presence => true
+  validate  :validate_creator
+  validates :date_issued, :presence => true
   validate  :report_missing_attributes
+  validates :collection, presence: true
+  validates :governing_policy, presence: true
+
+  def validate_creator
+    if Array(creator).select { |c| c.present? }.empty?
+      errors.add(:creator, I18n.t("errors.messages.blank"))
+    end
+  end
 
   # this method returns a hash: class attribute -> metadata attribute
   # this is useful for decoupling the metdata from the view
@@ -73,11 +86,9 @@ class MediaObject < ActiveFedora::Base
     :genre => :genre,
     :subject => :topical_subject,
     :related_item => :related_item_id,
-    :collection => :collection,
     :geographic_subject => :geographic_subject,
     :temporal_subject => :temporal_subject,
     :topical_subject => :topical_subject,
-    :collection => :collection
     }
   end
 
@@ -103,7 +114,6 @@ class MediaObject < ActiveFedora::Base
   delegate :genre, to: :descMetadata, at: [:genre]
   delegate :subject, to: :descMetadata, at: [:topical_subject]
   delegate :related_item, to: :descMetadata, at: [:related_item_id]
-  delegate :collection, to: :descMetadata, at: [:collection]
 
   delegate :geographic_subject, to: :descMetadata, at: [:geographic_subject]
   delegate :temporal_subject, to: :descMetadata, at: [:temporal_subject]
@@ -145,15 +155,25 @@ class MediaObject < ActiveFedora::Base
     self.save( validate: false )
   end
 
+  alias_method :'_collection=', :'collection='
+
+  # This requires the MediaObject having an actual pid
+  def collection= co
+    # TODO: Removes existing association
+
+    self._collection= co
+    self.governing_policy = co
+    if (self.read_groups + self.read_users + self.discover_groups + self.discover_users).empty? 
+      self.rightsMetadata.content = co.defaultRights.content unless co.nil?
+    end
+  end
+
   # Sets the publication status. To unpublish an object set it to nil or
   # omit the status which will default to unpublished. This makes the act
   # of publishing _explicit_ instead of an accidental side effect.
   def publish!(user_key)
     self.avalon_publisher = user_key.blank? ? nil : user_key 
     self.save(validate: false)
-    
-    logger.debug "<< User key is #{user_key} >>"
-    logger.debug "<< Avalon publisher is now #{avalon_publisher} >>"
   end
 
   def finished_processing?
@@ -165,8 +185,6 @@ class MediaObject < ActiveFedora::Base
   end
 
   def access
-    logger.debug "<< ACCESS >>"
-    logger.debug "<< #{self.read_groups} >>"
     if self.read_users.present?
       "limited"
     elsif self.read_groups.empty?
@@ -287,8 +305,6 @@ class MediaObject < ActiveFedora::Base
     values.each do |k, v|
       # First remove all blank attributes in arrays
       v.keep_if { |item| not item.blank? } if v.instance_of?(Array)
-      logger.debug "<< Updating #{k} >>"
-      logger.debug "<< #{v} >>"
 
       # Peek at the first value in the array. If it is a Hash then unpack it into two
       # arrays before you pass everything off to the update_attributes method so that
@@ -301,7 +317,6 @@ class MediaObject < ActiveFedora::Base
         attrs = []
         
         v.each do |entry|
-          logger.debug "<< Entry : #{entry} >>"
           vals << entry[:value]
           attrs << entry[:attributes]
         end
@@ -317,27 +332,22 @@ class MediaObject < ActiveFedora::Base
   def update_attribute_in_metadata(attribute, value = [], attributes = [])
     # class attributes should be decoupled from metadata attributes
     # class attributes are displayed in the view and posted to the server
-    logger.debug "Updating #{attribute.inspect} with value #{value.inspect} and attributes #{attributes.inspect}"
     metadata_attribute = find_metadata_attribute(attribute)
     metadata_attribute_value = value
 
     if metadata_attribute.nil?
       missing_attributes[attribute] = "Metadata attribute `#{attribute}' not found"
-      logger.debug "Metadata attribute was nil, attribute is: #{attribute}"
       return false
     else
       values = Array(value).select { |v| not v.blank? }
       descMetadata.find_by_terms( metadata_attribute ).each &:remove
       if descMetadata.template_registry.has_node_type?( metadata_attribute )
         values.each_with_index do |val, i|
-          logger.debug "<< Adding node #{metadata_attribute}[#{i}] >>"
-          logger.debug("descMetadata.add_child_node(descMetadata.ng_xml.root, #{metadata_attribute.to_sym.inspect}, #{val.inspect}, #{(attributes[i]||{}).inspect})")
           descMetadata.add_child_node(descMetadata.ng_xml.root, metadata_attribute, val, (attributes[i]||{}))
         end
         #end
       elsif descMetadata.respond_to?("add_#{metadata_attribute}")
         values.each_with_index do |val, i|
-          logger.debug("descMetadata.add_#{metadata_attribute}(#{val.inspect}, #{attributes[i].inspect})")
           descMetadata.send("add_#{metadata_attribute}", val, (attributes[i] || {}))
         end;
       else
@@ -345,10 +355,8 @@ class MediaObject < ActiveFedora::Base
         # document. Afterwards take it out again - unless it does not have a template
         # in which case this is all that needs to be done
         if self.respond_to?("#{metadata_attribute}=")
-          logger.debug "<< Calling delegated method #{metadata_attribute} >>"
           self.send("#{metadata_attribute}=", values)
         else
-          logger.debug "<< Calling descMetadata method #{metadata_attribute} >>"
           descMetadata.send("#{metadata_attribute}=", values)
         end
       end
@@ -381,10 +389,21 @@ class MediaObject < ActiveFedora::Base
   
   def to_solr(solr_doc = Hash.new, opts = {})
     super(solr_doc, opts)
-    solr_doc[:created_by_facet] = self.DC.creator
-    solr_doc[:hidden_b] = hidden?
-    solr_doc[:duration_display] = self.duration
-    solr_doc[:workflow_published_facet] = published? ? 'Published' : 'Unpublished'
+    solr_doc[Solrizer.default_field_mapper.solr_name("created_by", :facetable, type: :string)] = self.DC.creator
+    solr_doc[Solrizer.default_field_mapper.solr_name("hidden", type: :boolean)] = hidden?
+    solr_doc[Solrizer.default_field_mapper.solr_name("duration", :displayable, type: :string)] = self.duration
+    solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
+    solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
+    solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
+    #Add all searchable fields to the all_text_timv field
+    all_text_values = []
+    all_text_values << solr_doc["title_tesim"]
+    all_text_values << solr_doc["creator_ssim"]
+    all_text_values << solr_doc["contributor_sim"]
+    all_text_values << solr_doc["unit_ssim"]
+    all_text_values << solr_doc["collection_ssim"]
+    all_text_values << solr_doc["summary_ssim"]
+    solr_doc["all_text_timv"] = all_text_values.flatten
     return solr_doc
   end
 

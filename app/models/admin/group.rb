@@ -23,7 +23,7 @@ class Admin::Group
   # For now this list is a hardcoded constant. Eventually it might be more flexible
   # as more thought is put into the process of providing a comment
   attr_accessor :name, :users
-  validates :name, presence: {message: "Name is a required field"}
+  validates :name, :presence => true 
 
   def self.non_system_groups
     groups = all
@@ -45,12 +45,13 @@ class Admin::Group
   def self.find(name)
     if RoleControls.roles.include? name
       # Creates a new object that looks like an old object
-      # Note that there's an issue: all attributes will appear changed
       group = self.new
-      group.name = name
-      group.users = RoleControls.users(name)
-      group.new_record = false
-      group.saved = true
+      group.ignoring_changes do
+        group.name = name
+        group.users = RoleControls.users(name)
+        group.new_record = false
+        group.saved = true
+      end
       group
     else
       nil
@@ -115,7 +116,7 @@ class Admin::Group
   end
 
   def name=(value)
-    attribute_will_change!('name') if name != value
+    attribute_will_change!('name') if name != value and !@ignoring_changes
     @previous_name = name
     @name = value
   end
@@ -129,7 +130,7 @@ class Admin::Group
   end
 
   def users=(value)
-    attribute_will_change!('users') if users != value
+    attribute_will_change!('users') if users != value and !@ignoring_changes
     @users = value
   end
 
@@ -146,6 +147,7 @@ class Admin::Group
   end
   
   # Necessary hack so that form_for works with both :new and :edit
+  # FIXME This method is gnarly and doesn't allow everything that it should
   def save
     if new_record? && valid? && !self.class.exists?(name) 
       RoleControls.add_role(name)
@@ -155,6 +157,7 @@ class Admin::Group
       if name_changed? && !@previous_name.eql?(name)
         RoleControls.remove_role @previous_name
         RoleControls.add_role name
+        RoleControls.assign_users(users, name)
       end
       if users_changed?
         RoleControls.assign_users(users, name)
@@ -172,11 +175,23 @@ class Admin::Group
     @saved
   end
 
+  alias_method :save!, :save
+
   def delete 
     RoleControls.remove_role(name)
     RoleControls.save_changes
   end
   
+  def ignoring_changes
+    begin
+      @ignoring_changes = true
+      yield self
+    ensure
+      @ignoring_changes = false
+    end
+    return self
+  end
+
   # Stub this method out so that form_for functions as expected for edit vs new
   # even though there is no database backing the Group model
   def persisted?
@@ -189,6 +204,13 @@ class Admin::Group
 
   def saved= val 
     @saved = val
+  end
+
+  # Check to see if the name is static based on its inclusion in the system
+  # group. This is a workaround for the bug that breaks the system whenever
+  # a system group is renamed.
+  def self.name_is_static? group_name
+    Avalon::Configuration['groups']['system_groups'].include? group_name
   end
 
 end

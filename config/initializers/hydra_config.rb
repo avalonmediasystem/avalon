@@ -20,12 +20,20 @@ if Hydra.respond_to?(:configure)
     # You only need to change these values if you've indexed permissions by some means other than the Hydra's built-in tooling.
     # If you change these, you must also update the permissions request handler in your solrconfig.xml to return those values
     config[:permissions] = {
-      :catchall => "access_t",
-      :discover => {:group =>"discover_access_group_t", :individual=>"discover_access_person_t"},
-      :read => {:group =>"read_access_group_t", :individual=>"read_access_person_t"},
-      :edit => {:group =>"edit_access_group_t", :individual=>"edit_access_person_t"},
-      :owner => "depositor_t",
-      :embargo_release_date => "embargo_release_date_dt"
+      :catchall => "access_ssim",
+      :discover => {:group =>"discover_access_group_ssim", :individual=>"discover_access_person_ssim"},
+      :read => {:group =>"read_access_group_ssim", :individual=>"read_access_person_ssim"},
+      :edit => {:group =>"edit_access_group_ssim", :individual=>"edit_access_person_ssim"},
+      :owner => "depositor_ssim",
+      :embargo_release_date => "embargo_release_date_dtsi"
     }
+    config[:permissions][:inheritable] = {
+      :discover => {:group =>"inheritable_discover_access_group_ssim", :individual=>"inheritable_discover_access_person_ssim"},
+      :read => {:group =>"inheritable_read_access_group_ssim", :individual=>"inheritable_read_access_person_ssim"},
+      :edit => {:group =>"inheritable_edit_access_group_ssim", :individual=>"inheritable_edit_access_person_ssim"},
+      :owner => "inheritable_depositor_ssim",
+      :embargo_release_date => "inheritable_embargo_release_date_dtsi"
+    }
+    config[:permissions][:policy_class] = Admin::Collection
   end
 end

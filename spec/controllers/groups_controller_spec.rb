@@ -22,22 +22,30 @@ describe Admin::GroupsController do
 
   describe "creating a new group" do
   	it "should redirect to sign in page with a notice when unauthenticated" do
-  	  lambda { get 'new' }.should_not change { Admin::Group.all.count }
+  	  expect { get 'new' }.not_to change { Admin::Group.all.count }
   	  flash[:notice].should_not be_nil
   	  response.should redirect_to(new_user_session_path)
   	end
 	
     it "should redirect to home page with a notice when authenticated but unauthorized" do
       login_as('student')
-      lambda { get 'new' }.should_not change {Admin::Group.all.count }
+      expect { get 'new' }.not_to change {Admin::Group.all.count }
       flash[:notice].should_not be_nil
       response.should redirect_to(root_path)
+    end
+
+    it "should redirect to group index page with a notice when group name is already taken" do
+      group = FactoryGirl.create(:group)
+      login_as('policy_editor')
+      expect { post 'create', admin_group: group.name }.not_to change {Admin::Group.all.count }
+      flash[:error].should_not be_nil
+      response.should redirect_to(admin_groups_path)
     end
 
     context "Default permissions should be applied" do
       it "should be create-able by the policy_editor" do
         login_as('policy_editor')
-        lambda { post 'create', admin_group: test_group }.should change { Admin::Group.all.count }
+        expect { post 'create', admin_group: test_group }.to change { Admin::Group.all.count }
         g = Admin::Group.find(test_group)
         g.should_not be_nil
         response.should redirect_to(edit_admin_group_path(g))
@@ -51,21 +59,11 @@ describe Admin::GroupsController do
   end
 
   describe "Modifying a group: " do
-    before(:each) do
-      clean_groups [test_group, test_group_new]
-      
-      g = Admin::Group.new
-      g.name = test_group       
-      g.save
-    end 
-    
-    after(:each) do
-      clean_groups [test_group, test_group_new]
-    end 
+    let!(:group) {Admin::Group.find(FactoryGirl.create(:group).name)}
     
     context "editing a group" do
       it "should redirect to sign in page with a notice on when unauthenticated" do    
-        get 'edit', id: test_group
+        get 'edit', id: group.name
         flash[:notice].should_not be_nil
         response.should redirect_to(new_user_session_path)
       end
@@ -73,36 +71,96 @@ describe Admin::GroupsController do
       it "should redirect to home page with a notice when authenticated but unauthorized" do
         login_as('student')
       
-        get 'edit', id: test_group
+        get 'edit', id: group.name
         flash[:notice].should_not be_nil
         response.should redirect_to(root_path)
       end
     
       it "should be able to change group users when authenticated and authorized" do
         login_as('policy_editor')
+        new_user = FactoryGirl.build(:user).username
 
-        lambda { put 'update', :id => test_group, group_name: test_group, new_user: "test_change_user"}.should change { Admin::Group.find(test_group).users }
+        put 'update', group_name: group.name, id: group.name, new_user: new_user
+
+        group_name = group.name
+        group = Admin::Group.find(group_name)
+        group.users.should include(new_user)
         flash[:notice].should_not be_nil
-        response.should redirect_to(edit_admin_group_path Admin::Group.find(test_group))
+        response.should redirect_to(edit_admin_group_path(Admin::Group.find(group.name)))
       end
     
       it "should be able to change group name when authenticated and authorized" do
         login_as('policy_editor')
-      
-        post 'update', group_name: test_group_new, new_user: "", id: test_group
-      
-        Admin::Group.find(test_group).should be_nil
-        Admin::Group.find(test_group_new).should_not be_nil
-        flash[:notice].should_not be_nil
+        new_group_name = Faker::Lorem.word
 
-        response.should redirect_to(edit_admin_group_path Admin::Group.find(test_group_new))
+        put 'update', group_name: new_group_name, new_user: "", id: group.name
+    
+        new_group = Admin::Group.find(new_group_name)
+        new_group.should_not be_nil
+        new_group.users.should == group.users
+        flash[:notice].should_not be_nil
+        response.should redirect_to(edit_admin_group_path(new_group))
+      end
+      
+      it "should not be able to rename system groups" do
+        login_as('administrator')
+        put 'update', group_name: Faker::Lorem.word, new_user: "", id: 'manager'
+        
+        Admin::Group.find('manager').should_not be_nil
+        flash[:error].should_not be_nil
+      end
+
+      it "should be able to remove users from a group" do
+        login_as('policy_editor')
+        request.env["HTTP_REFERER"] = '/admin/groups/manager/edit'
+        
+        put 'update_users', id: group.name, user_ids: Admin::Group.find(group.name).users
+
+        Admin::Group.find(group.name).users.should be_empty
+        flash[:error].should be_nil
+      end
+
+      it "should not remove users from the manager group if they are sole managers of a collection" do
+        login_as('policy_editor')
+        request.env["HTTP_REFERER"] = '/admin/groups/manager/edit'
+
+        collection = FactoryGirl.create(:collection)
+        manager_name = collection.managers.first
+        put 'update_users', id: 'manager', user_ids: [manager_name]
+
+        expect(Admin::Group.find('manager').users).to include(manager_name)
+        flash[:error].should_not be_nil
+      end
+
+      ['administrator','group_manager'].each do |g|
+        it "should be able to manage #{g} group as an administrator" do
+          login_as('administrator')
+          new_user = FactoryGirl.build(:user).username
+
+          put 'update', id: g, new_user: new_user
+          group = Admin::Group.find(g)
+          group.users.should include(new_user)
+          flash[:notice].should_not be_nil
+          response.should redirect_to(edit_admin_group_path(Admin::Group.find(group.name)))
+        end
+
+        it "should not be able to manage #{g} group as a group_manager" do
+          login_as('policy_editor')
+          new_user = FactoryGirl.build(:user).username
+
+          put 'update', id: g, new_user: new_user
+          group = Admin::Group.find(g)
+          group.users.should_not include(new_user)
+          flash[:error].should_not be_nil
+          response.should redirect_to(admin_groups_path)
+        end
       end
     end
     
     context "Deleting a group" do
       it "should redirect to sign in page with a notice on when unauthenticated" do    
         
-        lambda { put 'update_multiple', group_ids: [test_group] }.should_not change { RoleControls.users(test_group) }
+        expect { put 'update_multiple', group_ids: [group.name] }.not_to change { RoleControls.users(group.name) }
         flash[:notice].should_not be_nil
         response.should redirect_to(new_user_session_path)
       end
@@ -110,7 +168,7 @@ describe Admin::GroupsController do
       it "should redirect to home page with a notice when authenticated but unauthorized" do
         login_as('student')
       
-        lambda { put 'update_multiple', group_ids: [test_group] }.should_not change { RoleControls.users(test_group) }
+        expect { put 'update_multiple', group_ids: [group.name] }.not_to change { RoleControls.users(group.name) }
         flash[:notice].should_not be_nil
         response.should redirect_to(root_path)
       end
@@ -118,7 +176,7 @@ describe Admin::GroupsController do
       it "should be able to change group users when authenticated and authorized" do
         login_as('policy_editor')
       
-        lambda { put 'update_multiple', group_ids: [test_group] }.should change { RoleControls.users(test_group) }
+        expect { put 'update_multiple', group_ids: [group.name] }.to change { RoleControls.users(group.name) }
         flash[:notice].should_not be_nil
         response.should redirect_to(admin_groups_path)
       end

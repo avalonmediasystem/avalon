@@ -16,7 +16,6 @@
 require "role_controls"
 class Admin::GroupsController < ApplicationController  
   before_filter :auth
-  layout "avalon"
   
   # Currently assumes that to do anything you have to be able to manage Group
   # TODO: finer controls
@@ -27,11 +26,17 @@ class Admin::GroupsController < ApplicationController
     elsif cannot? :manage, Admin::Group
       flash[:notice] = "You do not have permission to manage groups"
       redirect_to root_path
+    elsif params['id'].present?
+      g = Admin::Group.find(params['id'])
+      if cannot? :manage, g
+        flash[:error] = "You must be an administrator to manage the '#{g.name}' group"
+        redirect_to admin_groups_path
+      end
     end
   end
   
   def index
-    default_groups = ["collection_manager", "group_manager"]
+    default_groups = Avalon::Configuration['groups']['system_groups']
     @default_groups = []
     @groups = []
 
@@ -50,6 +55,12 @@ class Admin::GroupsController < ApplicationController
   end
   
   def create
+    if Admin::Group.exists?(params["admin_group"])
+      flash[:error] = "Group name #{params["admin_group"]} is taken."
+      redirect_to admin_groups_path
+      return
+    end
+
     @group = Admin::Group.new
     @group.name = params["admin_group"]
     if @group.save
@@ -65,11 +76,35 @@ class Admin::GroupsController < ApplicationController
   
   def update
     #TODO: move RoleControls to Group model
-    new_group_name = params["group_name"]
-    new_user = params["new_user"]
-
+    
+   new_user = params["new_user"]
+   new_group_name = params["group_name"]
+   
     @group = Admin::Group.find(params["id"])
-    @group.name = new_group_name unless new_group_name.blank?
+
+    # Make sure that the group is not part of the list of special system
+    # groups. If it is then do not allow the name to be changed and cause
+    # other things to break in the system
+    #
+    # It is not pretty but this gets the job done. Even though the view
+    # prevents the name being changed this is a safeguard against somebody
+    # posting it anyways
+    if params["group_name"].present? and !@group.name.eql?(params["group_name"])
+      if Admin::Group.name_is_static?(@group.name)
+        flash[:error] = "Cannot change the name of a system group [#{new_group_name}]"
+        redirect_to edit_admin_group_path(@group)
+        return
+      else
+        # This logic makes sure that role is never blank even if the form
+        # does not provide a value
+        if Admin::Group.exists?(params["group_name"])
+          flash[:error] = "Group name #{params["group_name"]} is taken."
+          redirect_to edit_admin_group_path(@group)
+          return
+        end
+        @group.name = new_group_name.blank? ? params["id"] : params["group_name"]
+      end
+    end
     @group.users += [new_user] unless new_user.blank?
     
     if @group.save
@@ -85,9 +120,14 @@ class Admin::GroupsController < ApplicationController
 
   def update_users 
     group_name = params[:id]
-    users = RoleControls.users(group_name) - params[:user_ids] 
-    RoleControls.assign_users(users, group_name)
-    RoleControls.save_changes
+    sole_managers = check_for_sole_managers if group_name == "manager"
+    if !sole_managers.blank?
+      flash[:error] = "Cannot remove users #{sole_managers.join(",")} because they are sole managers of collections."
+    else
+      users = RoleControls.users(group_name) - params[:user_ids] 
+      RoleControls.assign_users(users, group_name)
+      RoleControls.save_changes
+    end
     redirect_to :back
   end
 
@@ -100,5 +140,13 @@ class Admin::GroupsController < ApplicationController
     
     flash[:notice] = "Successfully deleted groups: #{params[:group_ids].join(", ")}"
     redirect_to admin_groups_path
+  end
+
+  def check_for_sole_managers
+    sole_managers = []
+    params["user_ids"].each do |manager|
+      sole_managers << manager if Admin::Collection.all.any? {|c| c.managers == [manager]}
+    end
+    sole_managers
   end
 end 

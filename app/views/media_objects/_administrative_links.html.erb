@@ -1,4 +1,19 @@
-<% if can? :manage, @mediaobject %>
+<%#
+Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<% if can? :update, @mediaobject %>
   <div class="row-fluid">
       <p>
         <ul class="unstyled hidden">
@@ -21,9 +36,15 @@
         <%# If no status flag is set then the call to update_status will simply
             toggle the value. This keeps the view much cleaner by avoiding lots
             of if/then logic %>
-        <% label = @mediaobject.published? ? 'Unpublish' : 'Publish' %>  
-        <%= link_to label, update_status_media_object_path(@mediaobject), method: :put, 
-            class: 'btn' %>
+        <% if @mediaobject.published? && can?(:unpublish, @mediaobject) %>
+          <% label = 'Unpublish' %>  
+          <%= link_to label, update_status_media_object_path(@mediaobject), method: :put, 
+              class: 'btn' %>
+        <% elsif !@mediaobject.published? %>
+          <% label = 'Publish' %>  
+          <%= link_to label, update_status_media_object_path(@mediaobject), method: :put, 
+              class: 'btn' %>
+        <% end %>
 
         <% #label = @mediaobject.discover_groups.include?("nobody") ? 'Unhide' : 'Hide' %>  
         <%#= link_to label, update_visibility_media_object_path(@mediaobject), method: :put, class: 'btn' %>
@@ -32,7 +53,10 @@
         <%# This might not be the best approach because it makes accidental 
             deletion possible just by following a link. Need to revisit when
             extra cycles are available %>
-        <%= link_to 'Delete', remove_media_object_path(@mediaobject), class: 'btn btn-danger' %>
+
+        <% if can? :destroy, @mediaobject %>
+          <%= link_to 'Delete', remove_media_object_path(@mediaobject), class: 'btn btn-danger' %>
+        <% end %>
       </div>
   </div>
 <% end %>

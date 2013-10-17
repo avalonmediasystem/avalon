@@ -13,38 +13,62 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 FactoryGirl.define do
+  factory :user do
+    email { Faker::Internet.email }
+    username { [Faker::Name.last_name,Faker::Name.first_name].join('.').downcase }
+
+    factory :administrator do
+      after(:create) do |user|
+        begin
+          RoleControls.add_user_role(user.username, 'administrator')
+        rescue
+        end
+      end 
+    end
+    factory :manager do
+      after(:create) do |user|
+        begin
+          RoleControls.add_user_role(user.username, 'manager')
+        rescue
+        end
+      end 
+    end
+  end 
+
   factory :cataloger, class: User  do
-    username 'archivist1@example.com'
-    email 'archivist1@example.com'
-    #password 'archivist1'
-    #password_confirmation 'archivist1'
+    sequence(:username) {|n| "archivist#{n}" }
+    sequence(:email)    {|n| "archivist#{n}@example.com" }
   end
 
   factory :policy_editor, class: User  do
-    username 'archivist1@example.com'
-    email 'archivist1@example.com'
-    #password 'archivist1'
-    #password_confirmation 'archivist1'
+    sequence(:username) {|n| "archivist#{n}" }
+    sequence(:email)    {|n| "archivist#{n}@example.com" }
+    after(:create) do |user|
+      begin
+        RoleControls.add_user_role(user.username, 'group_manager')
+      rescue
+      end
+    end
   end
 
   factory :content_provider, class: User  do
-    username 'archivist2'
-    email 'archivist2@example.com'
-    #password 'archivist1'
-    #password_confirmation 'archivist1'
+    sequence(:username) {|n| "archivist#{n}" }
+    sequence(:email) {|n| "archivist#{n}@example.com" }
+    after(:create) do |user|
+      begin
+        RoleControls.add_user_role(user.username, 'manager')
+      rescue
+      end
+    end 
   end
 
   factory :student, class: User  do
-    username 'ann.e.student'
-    email 'student@example.com'
-    #password 'archivist1'
-    #password_confirmation 'archivist1'
+    sequence(:username) {|n| "ann.e.student#{n}" }
+    sequence(:email) {|n| "student#{n}@example.com" }
   end
 
   factory :public, class: User  do
-    username 'average.joe'
-    #email 'public.user@example.com'
-    #password 'archivist1'
-    #password_confirmation 'archivist1'
+    sequence(:username) {|n| "average.joe#{n}" }
+    sequence(:email) {|n| "average.joe#{n}@example.com" }
   end
 end

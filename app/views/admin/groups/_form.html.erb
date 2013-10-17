@@ -1,3 +1,18 @@
+<%#
+Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
 <style>
   .inline-children > div { display: inline }
 </style>
@@ -5,19 +20,25 @@
 <% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
 
 <%= twitter_bootstrap_form_for @group, html: { :class => 'form-inline'}  do |f| %>
+   <fieldset class="whitespace">
     <h3>Group</h3>
-    <%= text_field_tag :group_name, "Group name", value: @group.name %>
+    <% if @group.class.name_is_static? @group.name %>
+      <em><%= @group.name %></em>
+    <% else %>
+      <%= text_field_tag :group_name, "Group name", value: @group.name %>
     <%= submit_tag "Save", class: "btn" %>
     <%= link_to "Delete Group", admin_group_path(@group.name), 
         :method => :delete, confirm: "Deleted group cannot be recovered. Are you sure?", class: "btn btn-danger inline" %>
+    <% end %>
+  </fieldset>
 
-    <h3 style="margin-top: 35px">Group Members</h3>
-    <%= text_field_tag :new_user, nil, placeholder: 'Enter a username here' %>
+    <h3>Group Members</h3>
+    <%= text_field_tag :new_user, nil, placeholder: 'Enter a username' %>
     <%= f.submit "Add user", class: "btn" %>
 <% end %>
 
 <%= form_tag update_users_admin_group_path, method: :put do %>
-    <div style="line-height: 22px">
+  <div> 
       <table class="table table-striped">
         <thead>
           <tr>

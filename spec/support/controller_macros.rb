@@ -13,13 +13,19 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 module ControllerMacros
-  def login_as(role = 'student')
-    @request.env["devise.mapping"] = Devise.mappings[role]
-    user = FactoryGirl.create(role)
-    
-    logger.debug "<< USER INFORMATION >>"
-    logger.debug user
-    
+  def login_as(factory_model = 'student', options = {})
+    user = FactoryGirl.create(factory_model, options)
+    @request.env["devise.mapping"] = Devise.mappings[:user]
+    logger.debug "Attempting to sign in user: #{user}"
     sign_in user
+    user
+  end 
+  def login_user(username)
+    key = username =~ /@/ ? :email : :username
+    user = User.where(key => username).first
+    @request.env["devise.mapping"] = Devise.mappings[:user]
+    logger.debug "Attempting to sign in user: #{user}"
+    sign_in user
+    user
   end
 end

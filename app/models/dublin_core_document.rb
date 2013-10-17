@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class DublinCoreDocument < ActiveFedora::NokogiriDatastream
+class DublinCoreDocument < ActiveFedora::OmDatastream
   set_terminology do |t|
     t.root(:path=>"dc", :namespace_prefix=>"oai_dc", "xmlns:oai_dc"=>"http://www.openarchives.org/OAI/2.0/oai_dc/", "xmlns:dc"=>"http://purl.org/dc/elements/1.1/", :schema=>"http://www.openarchives.org/OAI/2.0/oai_dc.xsd")
     t.title(:namespace_prefix=>"dc")
@@ -54,8 +54,8 @@ class DublinCoreDocument < ActiveFedora::NokogiriDatastream
 
     def to_solr(solr_doc = {})
       super(solr_doc)
-      solr_doc["dc_creator_t"] = self.creator
-      solr_doc["dc_publisher_t"] = self.publisher
+      solr_doc["dc_creator_tesim"] = self.creator
+      solr_doc["dc_publisher_tesim"] = self.publisher
       return solr_doc
     end
 

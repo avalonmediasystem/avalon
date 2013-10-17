@@ -43,9 +43,6 @@ describe MasterFile do
 
       mf.derivatives += [derivative]
 
-      logger.debug "#{mf.pid}: #{mf.relationships.to_a.to_s}"
-      logger.debug "#{derivative.pid}: #{derivative.relationships.to_a.to_s}"
-
       derivative.relationships(:is_derivation_of).size.should == 1
       derivative.relationships(:is_derivation_of).first.should == mf.internal_uri
 
@@ -72,10 +69,71 @@ describe MasterFile do
   end
 
   describe "delete" do
-    subject(:masterfile) { MasterFile.create }
-    it "should delete when parent is nil (VOV-1357)" do
+    subject(:masterfile) { derivative.masterfile }
+    let(:derivative) {FactoryGirl.create(:derivative)}
+    it "should delete (VOV-1805)" do
+      Rubyhorn.stub_chain(:client,:delete_track).and_return("http://test.com/retract_rtmp.xml")
+      Rubyhorn.stub_chain(:client,:delete_hls_track).and_return("http://test.com/retract_hls.xml")
+      masterfile
+      expect { masterfile.delete }.to change { MasterFile.all.count }.by(-1)
+    end
+
+    it "should delete with a nil parent (VOV-1357)" do
       pending "bugfix"      
-      expect { masterfile.delete }.to change(MasterFile.all.count).by(-1)
+      masterfile.mediaobject = nil
+      masterfile.save
+      expect { masterfile.delete }.to change { MasterFile.all.count }.by(-1)
     end
   end
+
+  describe "image_offset" do
+    subject(:master_file) {FactoryGirl.create(:master_file, duration: (rand(21600000)+60000).to_s )}
+
+    describe "milliseconds" do
+      it "should accept a value" do
+        offset = master_file.duration.to_i / 2
+        master_file.poster_offset = offset
+        master_file.poster_offset.should == offset.to_s
+        master_file.should be_valid
+      end
+
+      it "should complain if value < 0" do
+        master_file.poster_offset = -1
+        master_file.should_not be_valid
+        master_file.errors[:poster_offset].first.should == "must be between 0 and #{master_file.duration}"
+      end
+
+      it "should complain if value > duration" do
+        offset = master_file.duration.to_i + rand(32514) + 500
+        master_file.poster_offset = offset
+        master_file.should_not be_valid
+        master_file.errors[:poster_offset].first.should == "must be between 0 and #{master_file.duration}"
+      end
+    end
+
+    describe "hh:mm:ss.sss" do
+      it "should accept a value" do
+        offset = master_file.duration.to_i / 2
+        master_file.poster_offset = offset.to_hms
+        master_file.poster_offset.should == offset.to_s
+        master_file.should be_valid
+      end
+
+      it "should complain if value > duration" do
+        offset = master_file.duration.to_i + rand(32514) + 500
+        master_file.poster_offset = offset.to_hms
+        master_file.should_not be_valid
+        master_file.errors[:poster_offset].first.should == "must be between 0 and #{master_file.duration}"
+      end
+    end
+
+    describe "update images" do
+      it "should update on save" do
+        MasterFile.should_receive(:extract_still).with(master_file.pid,{type:'both',offset:'12345'})
+        master_file.poster_offset = 12345
+        master_file.save
+      end
+    end
+  end
+
 end

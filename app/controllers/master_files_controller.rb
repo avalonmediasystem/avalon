@@ -43,15 +43,11 @@ class MasterFilesController < ApplicationController
     if params.has_key?(:Filedata) and params.has_key?(:original)
       @master_files = []
       params[:Filedata].each do |file|
-        logger.debug "<< MIME type is #{file.content_type} >>"
-        
         if (file.size > MasterFile::MAXIMUM_UPLOAD_SIZE)
           # Use the errors key to signal that it should be a red notice box rather
           # than the default
           flash[:errors] = "The file you have uploaded is too large"
           redirect_to :back
-  
-          logger.debug "<< Redirecting - file size is too large >>"
           return
         end
 
@@ -146,7 +142,7 @@ class MasterFilesController < ApplicationController
     
     authorize! :edit, parent, message: "You do not have sufficient privileges to delete files"
 
-    filename = master_file.label
+    filename = File.basename(master_file.file_location)
     master_file.destroy
     
     flash[:upload] = "#{filename} has been deleted from the system"
@@ -154,18 +150,42 @@ class MasterFilesController < ApplicationController
     redirect_to edit_media_object_path(parent.pid, step: "file-upload")
   end
  
-  def thumbnail
+  def set_frame
     master_file = MasterFile.find(params[:id])
     parent = master_file.mediaobject
-    authorize! :read, parent, message: "You do not have sufficient privileges to view this file"
-    send_data master_file.thumbnail.content, :filename => "thumbnail-#{master_file.pid.split(':')[1]}", :type => master_file.thumbnail.mimeType
+    
+    authorize! :read, parent, message: "You do not have sufficient privileges to edit this file"
+    opts = { :type => params[:type], :size => params[:size], :offset => params[:offset].to_f*1000, :preview => params[:preview] }
+    respond_to do |format|
+      format.jpeg do
+        data = master_file.extract_still(opts)
+        send_data data, :filename => "#{opts[:type]}-#{master_file.pid.split(':')[1]}", :disposition => :inline, :type => 'image/jpeg'
+      end
+      format.all do
+        master_file.poster_offset = opts[:offset]
+        unless master_file.save
+          flash[:notice] = master_file.errors.to_a.join('<br/>')
+        end
+        redirect_to edit_media_object_path(parent.pid, step: "file-upload")
+      end
+    end
   end
- 
-  def poster
+
+  def get_frame
     master_file = MasterFile.find(params[:id])
     parent = master_file.mediaobject
-    authorize! :read, parent, message: "You do not have sufficient privileges to view this file"
-    send_data master_file.poster.content, :filename => "poster-#{master_file.pid.split(':')[1]}", :type => master_file.poster.mimeType
+    mimeType = "image/jpeg"
+    content = if params[:offset]
+      authorize! :edit, parent, message: "You do not have sufficient privileges to view this file"
+      opts = { :type => params[:type], :size => params[:size], :offset => params[:offset].to_f*1000, :preview => true }
+      master_file.extract_still(opts)
+    else
+      authorize! :read, parent, message: "You do not have sufficient privileges to view this file"
+      ds = master_file.datastreams[params[:type]]
+      mimeType = ds.mimeType
+      ds.content
+    end
+    send_data content, :filename => "#{params[:type]}-#{master_file.pid.split(':')[1]}", :disposition => :inline, :type => mimeType
   end
 
 protected

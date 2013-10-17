@@ -15,12 +15,13 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] = 'test'
 require 'simplecov'
-SimpleCov.start
+SimpleCov.start 'rails'
 
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'rspec/autorun'
 require 'capybara/rspec'
+require 'database_cleaner'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
@@ -41,7 +42,7 @@ RSpec.configure do |config|
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
   # instead of true.
-  config.use_transactional_fixtures = true
+  config.use_transactional_fixtures = false
 
   # If true, the base class of anonymous controllers will be inferred
   # automatically. This will be the default behavior in future versions of
@@ -49,34 +50,25 @@ RSpec.configure do |config|
   config.infer_base_class_for_anonymous_controllers = false
 
   config.before(:suite) do
+    DatabaseCleaner[:active_record].strategy = :deletion
+    DatabaseCleaner[:active_fedora].strategy = :deletion
+    DatabaseCleaner.clean
+    Rails.cache.clear 
     Deprecation.default_deprecation_behavior = :silence
-    require 'headless'
-
-    headless = Headless.new
-    headless.start
-
-    logger.debug "<< headless now running on #{headless.display} >>"
   end
 
-
-  config.after(:suite) do
-    if ENV["USE_HEADLESS"] == "true" and headless.present?
-      logger.debug "<< headless now running on #{headless.display} >>"
-      headless.destroy
-    end
-    
-    # Put named fixtures from the fixtures directory here so they are cleaned
-    # up if they exist
-    test_fixtures = ['avalon:video-segment', 
-      'avalon:electronic-resource',
-      'avalon:musical-performance',
-      'avalon:print-publication']
-    test_fixtures.each do |fixture|
-      logger.debug "Removing test object #{fixture} if present" 
-      MediaObject.find(fixture).delete if MediaObject.exists?(fixture) 
-    end
+  config.before(:each) do
+    Rails.cache.clear
+    DatabaseCleaner.start
+    RoleMap.reset!
+    Admin::Collection.stub(:units).and_return ['University Archives']
   end
-  
+
+  config.after(:each) do
+    Rails.cache.clear
+    DatabaseCleaner.clean
+   end 
+
   config.include Devise::TestHelpers, :type => :controller
   config.include ControllerMacros, :type => :controller
   config.include FixtureMacros

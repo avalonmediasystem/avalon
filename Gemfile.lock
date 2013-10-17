@@ -1,34 +1,55 @@
 GIT
   remote: git://github.com/sosedoff/capistrano-unicorn.git
-  revision: dc49187df68e92bc04b7b0fa42da1e24f70d69f5
+  revision: e81d720b9808a9c2ff237699aa5086fc2119dbde
   specs:
-    capistrano-unicorn (0.1.7)
+    capistrano-unicorn (0.1.10)
       capistrano
 
 GIT
-  remote: https://github.com/avalonmediasystem/avalon-batch.git
-  revision: 7ea0ae79b1db1f8301e5251c1d65fc0ee7404186
+  remote: https://github.com/atomical/database_cleaner
+  revision: 3e6cba18b6cfb2b241a04db6a41cf5c70a07d0df
+  branch: adding_support_for_active_fedora_orm
   specs:
-    avalon-batch (0.0.1)
+    database_cleaner (1.0.1)
+
+GIT
+  remote: https://github.com/avalonmediasystem/avalon-about.git
+  revision: 12525de275ecf0be0fdb08d24b0aa3b629de2f8f
+  tag: avalon-r2
+  specs:
+    avalon-about (0.1.0)
+      about_page
+      mediainfo
+
+GIT
+  remote: https://github.com/avalonmediasystem/avalon-batch.git
+  revision: 6182b17e621f8bf2b645daf09842c313d0b4c04a
+  tag: avalon-r2
+  specs:
+    avalon-batch (0.1.0)
+      activemodel
       activesupport
       roo
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-engage.git
-  revision: a918c790c179040e9a8ec95018db0333fda1eaa8
+  revision: f19ca230eafda68e230ef2d869727c67d875fc60
+  tag: avalon-r2
   specs:
     avalon-engage (0.0.1)
       less-rails (~> 2.2.3)
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
-  revision: 9ff702d3c25382e5a53a23b938a1a8ecbb0d595b
+  revision: 46300b8a3275067425a7e427c4dce6043edba5e9
+  tag: avalon-r2
   specs:
-    avalon-workflow (0.0.2a)
+    avalon-workflow (0.0.3)
 
 GIT
   remote: https://github.com/avalonmediasystem/felixwrapper.git
-  revision: 4bf68e742910157de8e82291aaf34c9764085a79
+  revision: 9659be23666fff7c201e6cd5930d9c7d3bc145cd
+  tag: avalon-r2
   specs:
     felixwrapper (0.0.1)
       activesupport (~> 3.2.3)
@@ -38,8 +59,33 @@ GIT
       mediashelf-loggable
 
 GIT
+  remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector
+  revision: 44bb63c0bcd94a22b89718dfb1a4e1f05b0d7e8b
+  tag: avalon-r2
+  specs:
+    media_element_thumbnail_selector (0.0.1)
+      rails (~> 3.2.3)
+
+GIT
+  remote: https://github.com/avalonmediasystem/mediaelement-qualityselector.git
+  revision: 05bb80d7268ba054c235a310d6e5db9bf288a640
+  tag: avalon-r2
+  specs:
+    mediaelement-qualityselector (0.0.1)
+
+GIT
+  remote: https://github.com/avalonmediasystem/mediaelement_rails.git
+  revision: d482d35a71e30f9c858e8924715421326bf97495
+  tag: avalon-r2
+  specs:
+    mediaelement_rails (0.5.1)
+      jquery-rails (>= 1.0)
+      railties (>= 3.1)
+
+GIT
   remote: https://github.com/avalonmediasystem/red5wrapper.git
-  revision: baaa7f9c9c0808b737991ba74908f08b254b4879
+  revision: 3cfad64b4a9d43c2d63cc754765110e87a2f55c9
+  tag: avalon-r2
   specs:
     red5wrapper (0.0.1)
       activesupport (~> 3.2.3)
@@ -50,9 +96,10 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
-  revision: 89a011242735b15b459527db993a295f84ba2234
+  revision: acda6fae4b9d1e196cd0534c2401565dcc5c464b
+  tag: avalon-r2
   specs:
-    rubyhorn (0.0.4)
+    rubyhorn (0.0.5)
       activesupport
       json
       mime-types
@@ -72,13 +119,14 @@ GIT
 GEM
   remote: http://rubygems.org/
   specs:
-    RedCloth (4.2.9)
-    actionmailer (3.2.13)
-      actionpack (= 3.2.13)
-      mail (~> 2.5.3)
-    actionpack (3.2.13)
-      activemodel (= 3.2.13)
-      activesupport (= 3.2.13)
+    about_page (0.2.6)
+      rails (~> 3.2)
+    actionmailer (3.2.15)
+      actionpack (= 3.2.15)
+      mail (~> 2.5.4)
+    actionpack (3.2.15)
+      activemodel (= 3.2.15)
+      activesupport (= 3.2.15)
       builder (~> 3.0.0)
       erubis (~> 2.7.0)
       journey (~> 1.0.4)
@@ -86,70 +134,64 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.2.1)
-    active-fedora (5.0.0)
-      activeresource (>= 3.0.0)
+    active-fedora (6.5.0)
       activesupport (>= 3.0.0)
-      builder (~> 3.0.0)
       deprecation
       mediashelf-loggable
-      om (~> 1.8.0.rc1)
+      nom-xml (>= 0.5.1)
+      om (~> 3.0.0)
       rdf
-      rdf-rdfxml (~> 0.3.8)
+      rdf-rdfxml (= 1.0.1)
       rsolr
-      rubydora (~> 0.5.13)
-      solrizer (~> 2.0.0)
-    activemodel (3.2.13)
-      activesupport (= 3.2.13)
+      rubydora (~> 1.6, >= 1.6.5)
+    activemodel (3.2.15)
+      activesupport (= 3.2.15)
       builder (~> 3.0.0)
-    activerecord (3.2.13)
-      activemodel (= 3.2.13)
-      activesupport (= 3.2.13)
+    activerecord (3.2.15)
+      activemodel (= 3.2.15)
+      activesupport (= 3.2.15)
       arel (~> 3.0.2)
       tzinfo (~> 0.3.29)
-    activeresource (3.2.13)
-      activemodel (= 3.2.13)
-      activesupport (= 3.2.13)
-    activesupport (3.2.13)
-      i18n (= 0.6.1)
+    activeresource (3.2.15)
+      activemodel (= 3.2.15)
+      activesupport (= 3.2.15)
+    activesupport (3.2.15)
+      i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
-    addressable (2.3.3)
-    akami (1.2.0)
-      gyoku (>= 0.4.0)
-      nokogiri (>= 1.4.0)
+    addressable (2.3.5)
     arel (3.0.2)
-    backports (3.1.1)
     bcrypt-ruby (3.0.1)
-    blacklight (4.0.1)
-      bootstrap-sass (~> 2.2.0)
+    blacklight (4.3.0)
+      bootstrap-sass (>= 2.2.0, < 2.4)
       kaminari (~> 0.13)
       marc (>= 0.4.3, < 1.1)
-      nokogiri (~> 1.5)
-      rails (~> 3.2)
+      nokogiri (~> 1.6)
+      rails (>= 3.2.6, < 5)
       rsolr (~> 1.0.6)
       sass-rails
     block_helpers (0.3.3)
       activesupport (>= 2.0)
-    bootstrap-sass (2.2.2.0)
+    bootstrap-sass (2.3.2.2)
       sass (~> 3.2)
     builder (3.0.4)
-    cancan (1.6.9)
+    callsite (0.0.11)
+    cancan (1.6.10)
     capistrano (2.12.0)
       highline
       net-scp (>= 1.0.0)
       net-sftp (>= 2.0.0)
       net-ssh (>= 2.0.14)
       net-ssh-gateway (>= 1.1.0)
-    capybara (2.0.3)
+    capybara (2.1.0)
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
-      selenium-webdriver (~> 2.0)
-      xpath (~> 1.0.0)
+      xpath (~> 2.0)
     childprocess (0.3.9)
       ffi (~> 1.0, >= 1.0.11)
-    chronic (0.9.1)
-    chunky_png (1.2.7)
+    chronic (0.10.1)
+    chunky_png (1.2.8)
     coderay (1.0.9)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
@@ -157,9 +199,9 @@ GEM
     coffee-script (2.2.0)
       coffee-script-source
       execjs
-    coffee-script-source (1.6.2)
+    coffee-script-source (1.6.3)
     columnize (0.3.6)
-    commonjs (0.2.6)
+    commonjs (0.2.7)
     compass (0.12.2)
       chunky_png (~> 1.2)
       fssm (>= 0.2.7)
@@ -169,41 +211,41 @@ GEM
     compass-susy-plugin (0.9)
       compass (>= 0.11.1)
     daemons (1.1.9)
-    database_cleaner (0.9.1)
-    debugger (1.5.0)
+    debugger (1.6.1)
       columnize (>= 0.3.1)
       debugger-linecache (~> 1.2.0)
-      debugger-ruby_core_source (~> 1.2.0)
+      debugger-ruby_core_source (~> 1.2.3)
     debugger-linecache (1.2.0)
-    debugger-ruby_core_source (1.2.0)
-    delayed_job (3.0.5)
-      activesupport (~> 3.0)
-    delayed_job_active_record (0.4.3)
-      activerecord (>= 2.1.0, < 4)
-      delayed_job (~> 3.0)
+    debugger-ruby_core_source (1.2.3)
+    delayed_job (4.0.0)
+      activesupport (>= 3.0, < 4.1)
+    delayed_job_active_record (4.0.0)
+      activerecord (>= 3.0, < 4.1)
+      delayed_job (>= 3.0, < 4.1)
     deprecation (0.0.5)
       activesupport
-    devise (2.2.3)
+    devise (3.0.3)
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.1)
-      railties (~> 3.1)
-      warden (~> 1.2.1)
-    diff-lcs (1.2.1)
-    email_spec (1.4.0)
+      railties (>= 3.2.6, < 5)
+      warden (~> 1.2.3)
+    diff-lcs (1.2.4)
+    email_spec (1.5.0)
       launchy (~> 2.1)
       mail (~> 2.2)
     equivalent-xml (0.3.0)
       nokogiri (>= 1.4.3)
     erubis (2.7.0)
-    execjs (1.4.0)
-      multi_json (~> 1.0)
+    execjs (2.0.1)
     factory_girl (4.2.0)
       activesupport (>= 3.0.0)
     factory_girl_rails (4.2.1)
       factory_girl (~> 4.2.0)
       railties (>= 3.0.0)
+    faker (1.2.0)
+      i18n (~> 0.5)
     fastercsv (1.5.5)
-    ffi (1.6.0)
+    ffi (1.9.0)
     font-awesome-sass-rails (3.0.2.2)
       railties (>= 3.1.1)
       sass-rails (>= 3.1.1)
@@ -212,42 +254,40 @@ GEM
       diff-lcs (~> 1.1)
       mime-types (~> 1.15)
       posix-spawn (~> 0.3.6)
-    gyoku (1.0.0)
-      builder (>= 2.1.2)
-    haml (4.0.1)
+    haml (4.0.3)
       tilt
-    hashie (1.2.0)
+    handlebars_assets (0.14.1)
+      execjs (>= 1.2.9)
+      sprockets (>= 2.0.3)
+      tilt
+    hashie (2.0.5)
     headless (1.0.1)
-    highline (1.6.16)
-    hike (1.2.2)
-    hooks (0.2.2)
-    httpi (2.0.2)
-      rack
-    hydra-access-controls (5.0.1)
-      active-fedora
+    highline (1.6.19)
+    hike (1.2.3)
+    hooks (0.3.1)
+    hydra-access-controls (6.3.4)
+      active-fedora (~> 6.1)
       activesupport
-      blacklight
+      blacklight (~> 4.0)
       cancan
       deprecation
-    hydra-core (5.0.1)
-      RedCloth (= 4.2.9)
-      active-fedora (~> 5.0)
+    hydra-core (6.3.4)
+      active-fedora
       blacklight (~> 4.0)
       block_helpers
       deprecation (>= 0.0.5)
-      devise
-      hydra-access-controls (= 5.0.1)
-      hydra-mods (>= 0.0.6)
-      jquery-rails
-      rails (~> 3.2.3)
-      sanitize
-    hydra-head (5.0.1)
-      hydra-access-controls (= 5.0.1)
-      hydra-core (= 5.0.1)
+      hydra-access-controls (= 6.3.4)
+      jettywrapper (>= 1.4.1)
+      rails (>= 3.2.3, < 5)
+    hydra-head (6.3.4)
+      hydra-access-controls (= 6.3.4)
+      hydra-core (= 6.3.4)
       rails (>= 3.2.6)
-    hydra-mods (0.0.6)
-      active-fedora (> 4.1)
-    i18n (0.6.1)
+    hydra-migrate (0.2.1)
+      active-fedora
+      activesupport
+    i18n (0.6.5)
+    iconv (1.0.3)
     jettywrapper (1.4.1)
       activesupport (>= 3.0.0)
       childprocess
@@ -258,228 +298,228 @@ GEM
     jquery-rails (2.1.4)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
-    json (1.7.7)
+    json (1.8.0)
     kaminari (0.14.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
     kgio (2.8.0)
-    launchy (2.2.0)
+    launchy (2.3.0)
       addressable (~> 2.3)
     less (2.2.2)
       commonjs (~> 0.2.6)
     less-rails (2.2.6)
       actionpack (>= 3.1)
       less (~> 2.2.0)
-    letter_opener (1.1.0)
-      launchy (~> 2.2.0)
+    letter_opener (1.1.2)
+      launchy (~> 2.2)
     libv8 (3.3.10.4)
     license_header (0.0.4)
       highline
     logger (1.2.8)
     loofah (1.2.1)
       nokogiri (>= 1.4.4)
-    mail (2.5.3)
-      i18n (>= 0.4.0)
+    mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-    marc (0.5.0)
+    marc (0.6.0)
     mediainfo (0.7.2)
     mediashelf-loggable (0.4.9)
-    method_source (0.8.1)
-    mime-types (1.21)
-    multi_json (1.7.2)
+    meta_request (0.2.8)
+      callsite
+      rack-contrib
+      railties
+    method_source (0.8.2)
+    mime-types (1.25)
+    mini_portile (0.5.1)
+    modal_logic (0.0.5)
+      handlebars_assets (= 0.14.1)
+      rails (~> 3.2.13)
+    multi_json (1.8.2)
     multipart-post (1.2.0)
-    net-http-digest_auth (1.3)
-    net-scp (1.1.0)
+    net-http-digest_auth (1.4)
+    net-scp (1.1.2)
       net-ssh (>= 2.6.5)
-    net-sftp (2.1.1)
+    net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
-    net-ssh (2.6.6)
+    net-ssh (2.6.8)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
-    nokogiri (1.5.9)
-    nori (2.0.4)
-    om (1.8.0)
+    nokogiri (1.6.0)
+      mini_portile (~> 0.5.0)
+    nom-xml (0.5.1)
+      activesupport
+      i18n
+      nokogiri
+    om (3.0.3)
       activemodel
       activesupport
       deprecation
       mediashelf-loggable
       nokogiri (>= 1.4.2)
-    omniauth (1.1.3)
-      hashie (~> 1.2)
+      solrizer (~> 3.1.0)
+    omniauth (1.1.4)
+      hashie (>= 1.2, < 3)
       rack
-    omniauth-identity (1.1.0)
+    omniauth-identity (1.1.1)
       bcrypt-ruby (~> 3.0)
       omniauth (~> 1.0)
     orm_adapter (0.4.0)
     polyglot (0.3.3)
     posix-spawn (0.3.6)
-    pry (0.9.12)
+    pry (0.9.12.2)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
       slop (~> 3.4)
-    pry-rails (0.2.2)
+    pry-debugger (0.2.2)
+      debugger (~> 1.3)
+      pry (~> 0.9.10)
+    pry-rails (0.3.2)
       pry (>= 0.9.10)
     rack (1.4.5)
     rack-cache (1.2)
       rack (>= 0.4)
+    rack-contrib (1.1.0)
+      rack (>= 0.9.1)
     rack-ssl (1.3.3)
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
-    rails (3.2.13)
-      actionmailer (= 3.2.13)
-      actionpack (= 3.2.13)
-      activerecord (= 3.2.13)
-      activeresource (= 3.2.13)
-      activesupport (= 3.2.13)
+    rails (3.2.15)
+      actionmailer (= 3.2.15)
+      actionpack (= 3.2.15)
+      activerecord (= 3.2.15)
+      activeresource (= 3.2.15)
+      activesupport (= 3.2.15)
       bundler (~> 1.0)
-      railties (= 3.2.13)
-    railties (3.2.13)
-      actionpack (= 3.2.13)
-      activesupport (= 3.2.13)
+      railties (= 3.2.15)
+    railties (3.2.15)
+      actionpack (= 3.2.15)
+      activesupport (= 3.2.15)
       rack-ssl (~> 1.3.2)
       rake (>= 0.8.7)
       rdoc (~> 3.4)
       thor (>= 0.14.6, < 2.0)
-    raindrops (0.10.0)
-    rake (10.0.4)
+    raindrops (0.11.0)
+    rake (10.1.0)
     rb-fsevent (0.9.3)
-    rdf (1.0.4)
+    rdf (1.0.7)
       addressable (>= 2.2)
-    rdf-rdfxml (0.3.9)
-      rdf (>= 0.3.11)
-      rdf-xsd (>= 0.3.8)
-    rdf-xsd (1.0.0)
-      backports
+    rdf-rdfxml (1.0.1)
+      rdf (>= 1.0)
+      rdf-xsd (>= 1.0)
+    rdf-xsd (1.0.2.1)
       nokogiri (>= 1.5.0)
       rdf (>= 0.3.4)
     rdoc (3.12.2)
       json (~> 1.4)
     rest-client (1.6.7)
       mime-types (>= 1.16)
-    roo (1.11.1)
+    roo (1.12.2)
       nokogiri
       rubyzip
       spreadsheet (> 0.6.4)
-    rsolr (1.0.8)
+    rsolr (1.0.9)
       builder (>= 2.1.2)
-    rspec (2.13.0)
-      rspec-core (~> 2.13.0)
-      rspec-expectations (~> 2.13.0)
-      rspec-mocks (~> 2.13.0)
-    rspec-core (2.13.1)
-    rspec-expectations (2.13.0)
+    rspec (2.14.1)
+      rspec-core (~> 2.14.0)
+      rspec-expectations (~> 2.14.0)
+      rspec-mocks (~> 2.14.0)
+    rspec-core (2.14.5)
+    rspec-expectations (2.14.2)
       diff-lcs (>= 1.1.3, < 2.0)
-    rspec-mocks (2.13.0)
-    rspec-rails (2.13.0)
+    rspec-mocks (2.14.3)
+    rspec-rails (2.14.0)
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       railties (>= 3.0)
-      rspec-core (~> 2.13.0)
-      rspec-expectations (~> 2.13.0)
-      rspec-mocks (~> 2.13.0)
+      rspec-core (~> 2.14.0)
+      rspec-expectations (~> 2.14.0)
+      rspec-mocks (~> 2.14.0)
     rspec_junit_formatter (0.1.6)
       builder
       rspec (~> 2.0)
       rspec-core (!= 2.12.0)
-    ruby-ole (1.2.11.6)
-    rubydora (0.5.13)
+    ruby-ole (1.2.11.7)
+    rubydora (1.6.5)
       activemodel
       activesupport
       deprecation
+      equivalent-xml
       fastercsv
-      hooks
+      hooks (~> 0.3.0)
       mime-types
       nokogiri
       rest-client
-      savon
     rubyzip (0.9.9)
-    rvm-capistrano (1.2.7)
+    rvm-capistrano (1.4.1)
       capistrano (>= 2.0.0)
-    sanitize (2.0.3)
-      nokogiri (>= 1.4.4, < 1.6)
-    sass (3.2.7)
+    sass (3.2.10)
     sass-rails (3.2.6)
       railties (~> 3.2.0)
       sass (>= 3.1.10)
       tilt (~> 1.3)
-    savon (2.1.0)
-      akami (~> 1.2.0)
-      builder (>= 2.1.2)
-      gyoku (~> 1.0.0)
-      httpi (~> 2.0.2)
-      nokogiri (>= 1.4.0)
-      nori (~> 2.0.3)
-      wasabi (~> 3.0.0)
-    selenium-webdriver (2.31.0)
-      childprocess (>= 0.2.5)
-      multi_json (~> 1.0)
-      rubyzip
-      websocket (~> 1.0.4)
+    shoulda-matchers (2.3.0)
+      activesupport (>= 3.0.0)
     simplecov (0.7.1)
       multi_json (~> 1.0)
       simplecov-html (~> 0.7.1)
     simplecov-html (0.7.1)
-    slop (3.4.4)
-    solrizer (2.0.0)
+    slop (3.4.6)
+    solrizer (3.1.1)
+      activesupport
       daemons
       mediashelf-loggable (~> 0.4.7)
       nokogiri
-      om (>= 1.5.0)
       stomp
       xml-simple
-    spreadsheet (0.8.3)
+    spreadsheet (0.9.0)
       ruby-ole (>= 1.0)
     sprockets (2.2.2)
       hike (~> 1.2)
       multi_json (~> 1.0)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
-    sqlite3 (1.3.7)
-    stomp (1.2.9)
+    sqlite3 (1.3.8)
+    stomp (1.2.14)
     therubyracer (0.10.2)
       libv8 (~> 3.3.10)
-    thor (0.18.0)
-    tilt (1.3.7)
-    treetop (1.4.12)
+    thor (0.18.1)
+    tilt (1.4.1)
+    treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
-    tzinfo (0.3.37)
-    uglifier (1.3.0)
+    tzinfo (0.3.38)
+    uglifier (2.2.1)
       execjs (>= 0.3.0)
       multi_json (~> 1.0, >= 1.0.2)
-    unicorn (4.6.2)
+    unicorn (4.6.3)
       kgio (~> 2.6)
       rack
       raindrops (~> 0.7)
-    unicorn-rails (1.0.0)
+    unicorn-rails (1.1.0)
       rack
       unicorn
     validates_email_format_of (1.5.3)
-    warden (1.2.1)
+    warden (1.2.3)
       rack (>= 1.0)
-    wasabi (3.0.0)
-      httpi (~> 2.0)
-      nokogiri (>= 1.4.0)
-    websocket (1.0.7)
-    whenever (0.8.2)
+    whenever (0.8.4)
       activesupport (>= 2.3.4)
       chronic (>= 0.6.3)
     xml-simple (1.1.2)
-    xpath (1.0.0)
+    xpath (2.0.0)
       nokogiri (~> 1.3)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  active-fedora (~> 5.0.0)
+  about_page (>= 0.2.1)
   activerecord-jdbcsqlite3-adapter
+  avalon-about!
   avalon-batch!
   avalon-engage!
   avalon-workflow!
-  blacklight (~> 4.0.0)
+  bcrypt-ruby (~> 3.0.0)
   builder (~> 3.0.0)
   capistrano (~> 2.12.0)
   capistrano-unicorn!
@@ -487,7 +527,7 @@ DEPENDENCIES
   coffee-rails (~> 3.2.1)
   compass-rails (~> 1.0.0)
   compass-susy-plugin (~> 0.9.0)
-  database_cleaner
+  database_cleaner!
   debugger
   delayed_job_active_record
   devise
@@ -495,12 +535,16 @@ DEPENDENCIES
   equivalent-xml
   execjs
   factory_girl_rails
+  faker
   felixwrapper!
   font-awesome-sass-rails
   grit
   haml
+  handlebars_assets
   headless
-  hydra-head (~> 5.0.0)
+  hydra-head (~> 6.0)
+  hydra-migrate (>= 0.2.0)
+  iconv
   jdbc-sqlite3
   jettywrapper
   jquery-rails (~> 2.1.4)
@@ -508,21 +552,27 @@ DEPENDENCIES
   letter_opener
   license_header
   loofah
+  media_element_thumbnail_selector!
+  mediaelement-qualityselector!
+  mediaelement_rails!
   mediainfo
+  meta_request
   mime-types (>= 1.1)
-  om (~> 1.8.0)
+  modal_logic
   omniauth-identity
   pry
+  pry-debugger
   pry-rails
   rails (~> 3.2.3)
   rb-fsevent (~> 0.9.1)
   red5wrapper!
   rspec-rails (>= 2.9.0)
   rspec_junit_formatter
-  rubydora (< 1.0.0)
   rubyhorn!
+  rubyzip (= 0.9.9)
   rvm-capistrano
   sass-rails (~> 3.2.3)
+  shoulda-matchers
   simplecov
   sqlite3
   therubyracer (= 0.10.2)

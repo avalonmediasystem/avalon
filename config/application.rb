@@ -11,6 +11,8 @@ if defined?(Bundler)
 end
 
 module Avalon
+  VERSION = '2.0.0'
+  
   class Application < Rails::Application
     require 'rubyhorn/rest_client/ingest'
     # Settings in config/environments/* take precedence over those specified here.

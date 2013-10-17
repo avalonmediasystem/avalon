@@ -14,10 +14,13 @@
 
 class Derivative < ActiveFedora::Base
   include ActiveFedora::Associations
+  include Hydra::ModelMixins::Migratable
 
   class_attribute :url_handler
 
   belongs_to :masterfile, :class_name=>'MasterFile', :property=>:is_derivation_of
+
+  before_save { |obj| obj.current_migration = 'R2' }
 
   # These fields do not fit neatly into the Dublin Core so until a long
   # term solution is found they are stored in a simple datastream in a
@@ -86,12 +89,6 @@ class Derivative < ActiveFedora::Base
     derivative.save
     
     derivative
-  end
-
-  def url_hash
-    h = Digest::MD5.new
-    h << location_url
-    h.hexdigest
   end
 
   def tokenized_url(token, mobile=false)

@@ -1,0 +1,57 @@
+<%#
+Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<% 
+  item_count = "#{@objects.length} #{'item'.pluralize(@objects.length)}" 
+  content_pronoun = @objects.length > 1 ? 'them' : 'it'
+%>
+<% if @collection.media_objects.length == 0 or @candidates.length > 0 %>
+  <div class="row-fluid">
+    <div class="alert alert-error">
+      Are you certain you want to remove the collection <b><%=@collection.name%></b>?
+    </div>
+  </div>
+  <%= twitter_bootstrap_form_for @collection, method: :delete do |f| %>
+    <% if @objects.length > 0 %>
+      <div class="row-fluid">
+        <div class="alert">
+        <fieldset>
+          <legend>Reassign Existing Media Objects</legend>
+          <p>
+            <b><%=@collection.name%></b> currently contains <%=item_count%>. Before you can 
+            delete it, you must select a new collection to move <%=content_pronoun%> 
+            into.
+          </p>
+          <%= select_tag :target_collection_id, options_from_collection_for_select(@candidates, "pid", "name") %>
+        </fieldset>
+        </div>
+      </div>
+    <% end %>
+    <div class="row-fluid">
+      <div class="btn-options">
+        <%= f.submit 'Yes, I am sure', class: 'btn btn-danger' %>
+        <%= link_to 'No, go back', admin_collections_path, class: 'btn' %> 
+      </div>
+    </div>
+  <% end %>
+<% else %>
+  <div class="row-fluid">
+    <div class="alert alert-error">
+      The collection "<%=@collection.name%>" cannot be deleted. It contains <%=item_count%>, 
+      but you do not have sufficient rights to any other collections to reassign <%=content_pronoun%>.
+    </div>
+    <%= link_to 'Go back', :back, class: 'btn' %> 
+  </div>
+<% end %>

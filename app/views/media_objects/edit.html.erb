@@ -1,3 +1,18 @@
+<%#
+Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
 <div class="row-fluid">
   <div class="span2" id="left_column">
     <%= render "ingest_steps" %>
@@ -33,7 +48,8 @@
     </div>
   <% end %>
 
-  <h3><%= HYDRANT_STEPS.get_step(@active_step).title %>: <span class="muted"><%= @mediaobject.title.present? ? truncate(@mediaobject.title, length: 30) : '[Untitled]' %></span></h3>  
+  <h5><span class="muted"><%= @mediaobject.collection.name.present? ? @mediaobject.collection.name : 'Untitled collection' %> > <%= @mediaobject.title.present? ? @mediaobject.title : 'Untitled item' %></span></h5>
+  <h3><%= HYDRANT_STEPS.get_step(@active_step).title %></h3>  
   <%= render current_step_for @active_step %>
   </div>
 </div>

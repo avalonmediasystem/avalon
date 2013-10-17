@@ -1,0 +1,74 @@
+<%#
+Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<div class="row-fluid">
+  <div class="span12">
+    <div class="well">
+    <h3><%= @collection.name %></h3>
+    <p> <strong>Description:</strong> <%= @collection.description %> </p>
+    <p> <strong>Unit:</strong> <%= @collection.unit %> </p>
+    <%= link_to('Create An Item', new_media_object_path(collection_id: @collection.pid), class: 'btn btn-primary') if can? :create, MediaObject %>
+    <%= link_to('List All Items', catalog_index_path('f[collection_ssim][]' => @collection.name), class: 'btn') %>
+    <%= link_to('Edit Collection Info', edit_admin_collection_path(@collection), class: 'btn', remote: true, modal: true) if can? :update, @collection %>
+    </div>
+
+    <%= twitter_bootstrap_form_for @collection, html: { class: "form-horizontal", id: 'access_control_form'}  do |co| %>
+
+      <%= co.fieldset 'Assign Staff Roles' do %>
+
+          <% if flash[:notice] %>
+            <div class="alert alert-error span9">
+              <a href="#" class="close" data-dismiss="alert">&times;</a>
+              <%= flash[:notice] %>
+            </div>
+          <% end %>
+
+        <div class="span3">
+          <%= render "modules/access_role_help", role: "manager" %>
+          <%= render "manage_members", title: "manager" %>
+        </div>
+
+        <div class="span3">
+          <%= render "modules/access_role_help", role: "editor" %>
+          <%= render "manage_members", title: "editor" %>
+        </div>
+
+        <div class="span3">
+          <%= render "modules/access_role_help", role: "depositor" %>
+          <%= render "manage_members", title: "depositor" %>
+        </div>
+
+      <% end %>
+
+      <div class="whitespace"></div>
+
+      <%= co.fieldset 'Set Default Access Control for New Items' do %>
+        <div class="span10">
+          <%= render "modules/access_control", { form: co, object: @collection, access: @collection.default_access, hidden: @collection.default_hidden? } %>	
+					<% if can? :update_access_control, @collection %>
+						<%= submit_tag "Save Access Settings", name: "save_access", class: "btn" %>
+					<% end %>
+        </div>
+      <% end %>
+      
+    <% end %>
+  </div>
+</div>
+
+<% content_for :page_scripts do %>
+  <script>
+    new ModalLogic()
+  </script>
+<% end %>

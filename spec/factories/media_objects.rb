@@ -13,6 +13,17 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 FactoryGirl.define do
+  factory :media_object do
+    title {Faker::Lorem.sentence}
+    creator {FactoryGirl.create(:user).username}
+    date_issued {"#{Time.now}"}
+    collection {FactoryGirl.create(:collection)}
+
+    factory :published_media_object do
+      avalon_publisher {'publisher'}
+    end
+  end
+
   factory :minimal_record, class: MediaObject do
     title 'Minimal test record'
     creator 'RSpec'

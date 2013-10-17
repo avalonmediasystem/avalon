@@ -1,15 +1,30 @@
+<%#
+Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
     <div class="container-fluid custom-header">
       <div class="row-fluid whitespace-half">
       <header class="span12">
         <div class="logo span2">
         <%= link_to root_path do %>
-          <%= image_tag "Home.png", alt: "Avalon Media System - #{t(:avalon_release)}" %>
+          <%= image_tag "Home.png", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
         <% end %>
         </div>
         
         <!-- <div class="span6">
           <h1>Avalon Media System</h1>
-          <p class="lead"><%=t(:avalon_release)%></p>
+          <p class="lead"><%=release_text%></p>
         </div>    -->
 
         <%# By default shift log in / log out to the header %>

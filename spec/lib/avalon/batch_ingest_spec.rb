@@ -17,52 +17,93 @@ require 'avalon/dropbox'
 require 'avalon/batch_ingest'
 
 describe Avalon::Batch do
-  before :all do
-    # TODO : Locate all .processing files and delete them from the spec
-    #        dropbox    
-  end
-
   before :each do
+    Avalon.send(:remove_const, :DropboxService) if Avalon.const_defined?(:DropboxService)
     Avalon::DropboxService = Avalon::Dropbox.new 'spec/fixtures/dropbox'
     # Dirty hack is to remove the .processed files both before and after the
     # test. Need to look closer into the ideal timing for where this should take
     # place
     # this file is created to signify that the file has been processed
     # we need to remove it so can re-run the tests
-    processed_status_file = 'spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx.processed'
-    error_status_file = 'spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx.error'
+    Dir['spec/fixtures/**/*.xlsx.process*','spec/fixtures/**/*.xlsx.error'].each { |file| File.delete(file) }
 
-    File.delete(processed_status_file) if File.exists?(processed_status_file)
-    File.delete(error_status_file) if File.exists?(error_status_file)    
+    User.create(:username => 'frances.dickens@reichel.com', :email => 'frances.dickens@reichel.com')
+    User.create(:username => 'jay@krajcik.org', :email => 'jay@krajcik.org')
+    RoleControls.add_user_role('frances.dickens@reichel.com','manager')
+    RoleControls.add_user_role('jay@krajcik.org','manager')
   end
 
   after :each do
-    # this file is created to signify that the file has been processed
-    # we need to remove it so can re-run the tests
-    processed_status_file = 'spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx.processed'
-    error_status_file = 'spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx.error'
-
-    File.delete(processed_status_file) if File.exists?(processed_status_file)
-    File.delete(error_status_file) if File.exists?(error_status_file)
+    Dir['spec/fixtures/**/*.xlsx.process*','spec/fixtures/**/*.xlsx.error'].each { |file| File.delete(file) }
+    RoleControls.remove_user_role('frances.dickens@reichel.com','manager')
+    RoleControls.remove_user_role('jay@krajcik.org','manager')
     
     # this is a test environment, we don't want to kick off
     # generation jobs if possible
     MasterFile.any_instance.stub(:save).and_return(true)
-   end
-
-  it 'creates an ingest batch object' do
-    Avalon::Batch.ingest
-    IngestBatch.count.should == 1
   end
 
-  it 'does not create an ingest batch object when there are zero packages' do
-    Avalon::DropboxService.stub(:find_new_packages).and_return []
-    Avalon::Batch.ingest
-    IngestBatch.count.should == 0
+  describe 'valid manifest' do
+    before :each do
+      FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com'])
+    end
+
+    it 'creates an ingest batch object' do
+      Avalon::Batch.ingest
+      IngestBatch.count.should == 1
+    end
+
+    it 'should set MasterFile details' do
+      Avalon::Batch.ingest
+      ingest_batch = IngestBatch.find(:first)
+      master_file = MediaObject.find(ingest_batch.media_object_ids.first).parts.first
+      master_file.label.should == 'Quis quo'
+      master_file.poster_offset.to_i.should == 500
+    end
+
+    it 'should set avalon_uploader' do
+      Avalon::Batch.ingest
+      ingest_batch = IngestBatch.find(:first)
+      media_object = MediaObject.find(ingest_batch.media_object_ids.first)
+      media_object.avalon_uploader.should == 'frances.dickens@reichel.com'
+    end
   end
 
-  it 'should have a column for file labels' do
-    pending "[VOV-1347] Wait until implemented" 
+  describe 'invalid manifest' do
+    before :each do
+      FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['jay@krajcik.org'])
+    end
+
+    it 'does not create an ingest batch object when there are zero packages' do
+      Avalon::DropboxService.stub(:find_new_packages).and_return []
+      Avalon::Batch.ingest
+      IngestBatch.count.should == 0
+    end
+
+    it 'does not create an ingest batch object when there are no files' do
+      fileless_batch = Avalon::Batch::Package.new('spec/fixtures/batch_manifest.xlsx')
+      Avalon::DropboxService.stub(:find_new_packages).and_return [fileless_batch]
+      Avalon::Batch.ingest
+      IngestBatch.count.should == 0
+    end
+
+    it 'should fail if the manifest specified a non-manager user' do
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
+      mailer.should_receive(:deliver)
+      Avalon::Batch.ingest
+      IngestBatch.count.should == 0
+    end
+
+    it 'should fail if a bad offset is specified' do
+      bad_offset_batch = Avalon::Batch::Package.new('spec/fixtures/batch_manifest_r2.xlsx')
+      Avalon::DropboxService.stub(:find_new_packages).and_return [bad_offset_batch]
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
+      mailer.should_receive(:deliver)
+      Avalon::Batch.ingest
+      IngestBatch.count.should == 0
+    end
   end
 
   it "should be able to default to public access" do
@@ -71,5 +112,19 @@ describe Avalon::Batch do
 
   it "should be able to default to specific groups" do
     pending "[VOV-1348] Wait until implemented"
+  end
+
+  describe "#offset_valid?" do
+    it {expect(Avalon::Batch.offset_valid?("33.12345")).to be_true}
+    it {expect(Avalon::Batch.offset_valid?("21:33.12345")).to be_true}
+    it {expect(Avalon::Batch.offset_valid?("125:21:33.12345")).to be_true}
+    it {expect(Avalon::Batch.offset_valid?("63.12345")).to be_false}
+    it {expect(Avalon::Batch.offset_valid?("66:33.12345")).to be_false}
+    it {expect(Avalon::Batch.offset_valid?(".12345")).to be_false}
+    it {expect(Avalon::Batch.offset_valid?(":.12345")).to be_false}
+    it {expect(Avalon::Batch.offset_valid?(":33.12345")).to be_false}
+    it {expect(Avalon::Batch.offset_valid?(":66:33.12345")).to be_false}
+    it {expect(Avalon::Batch.offset_valid?("5:000")).to be_false}
+    it {expect(Avalon::Batch.offset_valid?("`5.000")).to be_false}
   end
 end

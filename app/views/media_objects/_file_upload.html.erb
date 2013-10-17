@@ -1,8 +1,28 @@
+<%#
+Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<% if flash[:error].present? %>
+  <ul class='unstyled alert alert-error' style='display: inline-table;'>
+    <%= Array(flash[:error]).collect { |error| content_tag(:li,error) }.join('').html_safe %>
+  </ul>
+<% end %>
+
 <% unless @masterFiles.empty? %>
-<section id="associated_files">
+<section id="associated_files" class="span10">
       <legend>Associated files</legend>
-      <p class="muted">For items with multiple files, provide display labels for each file. Changes will be saved when you select Update.</p>
-	  <hr />
+      <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
       <%= twitter_bootstrap_form_for @mediaobject do |file_list| %>
       <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
@@ -17,57 +37,66 @@
 	    </colgroup>
 	    
         <thead>
-          <th></th>
           <th>Type</th>
-          <th>Display label</th>
+          <th>Section label</th>
+          <th>Thumbnail (seconds)</th>
           <th>File name</th>
           <th>Size</th>
-          <th>Delete</th>
+          <th>&nbsp;</th>
         </thead>
-		    <tbody>
-		    <% @masterFiles.each do |part, i| %>
-      		  <%= hidden_field_tag "parts[#{i}][pid]", part.pid  %>
-  		      <tr>
-                        <td>&nbsp;</td>
-  		        <td>
-  		          <% case part.file_format
-  		             when 'Sound' %>
-	    		       <i class="icon-volume-up"></i>
-  		          <% when 'Moving image' %>
-	    		       <i class="icon-film"></i>
-	    		  <% else %>
-			       <i class="icon-question-sign"></i>
-  		          <% end %>
-  		        </td>
-  		        <td>
-      		      <%= text_field_tag "parts[#{i}][label]", part.label, size: 30 %>
-  		        </td>
-  		        <td>
-  		          <%= truncate(File.basename(part.file_location), length: 25) %>
-      	  	  </td>
-      	  	  <td>
-      	  	    <strong><%= number_to_human_size(part.file_size) %></strong>
-      	  	  </td>
-      	  	  <td>
-      	  	   <% if can? :edit, @mediaobject %>
+	<tbody>
+	  <% @masterFiles.each do |part| %>
+      	  <%= hidden_field_tag "parts[#{part.pid}][pid]", part.pid  %>
+  	      <tr>
+  		<td>
+  		<% case part.file_format
+  		   when 'Sound' %>
+	    	  <i class="icon-volume-up"></i>
+  		<% when 'Moving image' %>
+	    	  <i class="icon-film"></i>
+	    	<% else %>
+		  <i class="icon-question-sign"></i>
+  	        <% end %>
+  	      </td>
+  	      <td>
+      	        <%= text_field_tag "parts[#{part.pid}][label]", part.label, size: 30, class: 'section-label' %>
+  	      </td>
+              <td>
+                <% if part.is_video? %>
+                  <%= text_field_tag "parts[#{part.pid}][poster_offset]", part.poster_offset.to_i.to_hms, size: 8, class: "input-small" %>
+                <% else %>
+                  <%= content_tag(:span, part.poster_offset.to_i.to_hms, size: 8, class: "input-small uneditable-input") %>
+                <% end %>
+              </td>
+  	      <td class="section-filename">
+  	        <%= truncate(File.basename(part.file_location), length: 25) %>
+      	      </td>
+      	      <td>
+      	        <strong><%= number_to_human_size(part.file_size) %></strong>
+      	      </td>
+      	      <td>
+      	      <% if can? :edit, @mediaobject %>
       	 	     <!-- This should be refactored to act more in line with the typical Twitter bootstrap code at some point -->
           	 		 <%# On a Rails level this needs to be folded into the masterfiles
           	 		   # controller's destroy method to help remove more vestiges of the
           	 		   # catalog controller %>
-         	         <%= check_box_tag "parts[#{i}][remove]", true %>
-        	 	    <% end %>
-      	 	    </td>
-    	 	    </tr>
-    	 	    <% end %>
-  	 	  </tbody>
-  	 	</table>
-  <%= submit_tag "Update", class: "btn", donot_advance: true %>
+              <%= link_to 'Delete', 
+                 master_file_path(part.pid),
+                 class: 'btn btn-mini btn-danger btn-confirmation',
+                 method: :delete %>
+          <% end %>
+      	  </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+    <%= submit_tag "Update", class: "btn clearfix", donot_advance: true %>
 <% end %>
   </section>
 <% end %>
 
-<section id="web_upload">
-  <fieldset id='uploader'>
+<section id="web_upload" class="span10">
+ <fieldset id='uploader'>
     <legend>Upload through the web</legend>
     <p class="muted">Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
 
@@ -85,7 +114,7 @@
               <i class="icon-file fileupload-exists"></i>
               <span class="fileupload-preview"></span>
             </div>
-            <%= button_tag "Upload", name: "upload_file", class: "btn fileupload-exists" %>
+            <%= button_tag "Upload", name: "upload_file", class: "btn btn-primary fileupload-exists" %>
             <span class="btn btn-file">
               <span class="fileupload-new">Select</span>
               <span class="fileupload-exists">Change</span>
@@ -102,7 +131,7 @@
   </fieldset>
 </section>
 
-<section id="dropbox_upload">
+<section id="dropbox_upload" class="span10">
   <legend id="dropbox_modal_label">Import from a dropbox</legend>
   <p class="muted">Use the dropbox to import large files. Attach selected files after uploading. Files will be begin processing when you click Save and continue.</p>
   <p><a class="btn dropbox-trigger" href="#">Open Dropbox</a></p>
@@ -110,16 +139,18 @@
   <%= render partial: 'dropbox' %>
 </section>
 
-
+<section id="workflow_buttons" class="span10">
 <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
   <%= render "workflow_buttons", form: media %>
 <% end %>		
+</section>
 
 <% content_for :page_styles do %>
   <%= stylesheet_link_tag "jasny-bootstrap.min", media: "all" %>
 <% end %>
 
 <% content_for :page_scripts do %>
+  <%= javascript_include_tag "file_upload_step" %>
   <%= javascript_include_tag "bootstrap-fileupload" %>
   <script>
     /* Hide the alert dialog on the page loading if Javascript is enabled */

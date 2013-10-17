@@ -48,33 +48,33 @@ tmp/test_app/
 *~
 *.swp
 
-vendor/plugins/haml/init.rb
-vendor/plugins/blacklight/.git
-
-public/plugin_assets
-public/plugin_assets/
-
+tmp/*
 tmp/**/*
-tmp/performance
 
 db/schema.rb
 
 .project
 .buildpath
 .rvmrc
+.idea
+.rspec
 
 /.bundle
 /.yardoc
 /doc
+
 ## PROJECT::SPECIFIC
+config/authentication.yml
+config/avalon.yml
+config/matterhorn.yml
 config/role_map_development.yml
 config/initializers/rubyhorn.rb
-.rspec
+
+public/media_objects
+public/streams
+
 lib/tasks/cucumber.rake
 cucumber-results/
-.idea
-public/media_objects
-config/avalon.yml
+
 /dropbox
-public/streams
-config/authentication.yml
+public/source_maps
