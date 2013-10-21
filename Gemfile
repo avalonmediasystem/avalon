@@ -4,7 +4,7 @@
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
 
-  gem 'hydra-head', '~> 6.0'
+  gem 'hydra-head', '~> 6.3.0'
   gem 'bcrypt-ruby', '~> 3.0.0'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'avalon-r2'
@@ -36,7 +36,7 @@
   gem 'avalon-about', :git => "https://github.com/avalonmediasystem/avalon-about.git", tag: 'avalon-r2'
 
   # You are free to implement your own User/Authentication solution in its place.
-  gem 'devise'
+  gem 'devise', '~>3.0.3'
   #gem 'devise-guests'
   gem 'haml'
 
