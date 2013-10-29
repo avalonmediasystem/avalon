@@ -108,8 +108,8 @@ class Derivative < ActiveFedora::Base
     regex = %r{^
       /(.+)             # application (avalon)
       /(?:(.+):)?       # prefix      (mp4:)
-      ([0-9a-f-]{36})   # media_id    (98285a5b-603a-4a14-acc0-20e37a3514bb)
-      /([0-9a-f-]{36})  # stream_id   (b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3)
+      ([^\/]+)          # media_id    (98285a5b-603a-4a14-acc0-20e37a3514bb)
+      /([^\/]+)         # stream_id   (b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3)
       /(.+?)            # filename    (MVI_0057)
       (?:\.(.+))?$      # extension   (mp4)
     }x
