@@ -548,6 +548,7 @@ DEPENDENCIES
   haml
   handlebars_assets
   headless
+  hooks
   hydra-head (~> 6.3.0)
   hydra-migrate (>= 0.2.0)
   iconv

@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'fileutils'
+require 'hooks'
 
 class MasterFile < ActiveFedora::Base
   include ActiveFedora::Associations
@@ -20,6 +21,7 @@ class MasterFile < ActiveFedora::Base
   include Hydra::ModelMixins::CommonMetadata
   include Hydra::ModelMixins::RightsMetadata
   include Hydra::ModelMixins::Migratable
+  include Hooks
 
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
   has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
@@ -60,6 +62,11 @@ class MasterFile < ActiveFedora::Base
 
   before_save { |obj| obj.current_migration = 'R2' }
   before_save 'update_stills_from_offset!'
+
+  define_hooks :after_processing
+  after_processing do
+    logger.debug "Finished processing"
+  end
 
   # First and simplest test - make sure that the uploaded file does not exceed the
   # limits of the system. For now this is hard coded but should probably eventually
@@ -283,7 +290,8 @@ class MasterFile < ActiveFedora::Base
     end
 
     save
-
+    
+    run_hook :after_processing
   end
 
   alias_method :'_poster_offset=', :'poster_offset='
