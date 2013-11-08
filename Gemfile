@@ -107,6 +107,7 @@
     gem 'capybara'
     gem 'shoulda-matchers'
     gem 'faker'
+    gem 'fakefs', :require => "fakefs/safe"
   end
 
   extra_gems = File.expand_path("../Gemfile.local",__FILE__)
