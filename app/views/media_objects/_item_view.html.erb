@@ -29,7 +29,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% end %>
           </video>
         <% else %>
-          <audio controls style="width: 100%;" id="video-tag">
+          <audio class="mejs-avalon" controls style="width: 100%;" id="video-tag">
             <% @currentStreamInfo[:stream_flash].each do |flash| %>
               <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
             <% end %>
@@ -90,7 +90,8 @@ Unless required by applicable law or agreed to in writing, software distributed
           usePluginFullScreen: false,
           thumbnailSelectorUpdateURL: '/update-url',
           thumbnailSelectorEnabled: true,
-          features: <%=features.inspect.html_safe%>
+          features: <%=features.inspect.html_safe%>,
+          audioHeight: 50
         });
   </script>
 <% end %>

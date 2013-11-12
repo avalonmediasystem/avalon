@@ -60,29 +60,26 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector
-  revision: 44bb63c0bcd94a22b89718dfb1a4e1f05b0d7e8b
-  tag: avalon-r2
+  revision: d15557fc4c20f836377ede3d1bc02cb6d59a18a4
   specs:
     media_element_thumbnail_selector (0.0.1)
       rails (~> 3.2.3)
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-qualityselector.git
-  revision: 05bb80d7268ba054c235a310d6e5db9bf288a640
-  tag: avalon-r2
+  revision: daf98e90bf728f2342a810553d45939bf603cbd4
   specs:
     mediaelement-qualityselector (0.0.1)
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-skin-avalon
-  revision: 22924ecc0365cffad2fcef75a58eb7d08100b921
+  revision: cd837549b1c2f8ebcdedc6d4e3b86775ec3ff462
   specs:
     mediaelement-skin-avalon (0.0.1)
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: d482d35a71e30f9c858e8924715421326bf97495
-  tag: avalon-r2
+  revision: ce84fcca8861a6782a74af3aede4d1789e4ec38e
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
@@ -304,7 +301,7 @@ GEM
     jquery-rails (2.1.4)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
-    json (1.8.0)
+    json (1.8.1)
     kaminari (0.14.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
