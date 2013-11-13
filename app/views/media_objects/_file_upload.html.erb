@@ -123,7 +123,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
             <span class="checkbox inline fileupload-exists">
               <%# FIXME the style on the checkbox should be handled by css classes but it is getting bad values from bootstrap responsive %>
-              <%= check_box_tag(:skip_transcoding, "skip_transcoding", false, :style => "margin-top: 4px; margin-left: -15px;")%>
+              <%= check_box_tag(:custom_workflow, "avalon-skip-transcoding", false, :style => "margin-top: 4px; margin-left: -15px;")%>
               <%= label_tag(:skip_transcoding, "Skip transcoding")%>
             </span>
           </div>
