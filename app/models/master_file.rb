@@ -48,7 +48,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   delegate_to 'descMetadata', [:file_location, :file_checksum, :file_size, :duration, :file_format, :poster_offset, :thumbnail_offset], unique: true
-  delegate_to 'mhMetadata', [:workflow_id, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures], unique:true
+  delegate_to 'mhMetadata', [:workflow_id, :workflow_name, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures], unique:true
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
@@ -106,8 +106,7 @@ class MasterFile < ActiveFedora::Base
     else
       logger.warn "Could not find workflow for: #{self}"
     end
-    debugger
-    self.mhMetadata.workflow_name = workflow
+    self.workflow_name = workflow
   end
 
   alias_method :'_mediaobject=', :'mediaobject='
@@ -158,7 +157,7 @@ class MasterFile < ActiveFedora::Base
                 "title" => pid,
                 "flavor" => "presenter/source",
                 "filename" => File.basename(file_location),
-                'workflow' => self.mhMetadata.workflow_name,
+                'workflow' => self.workflow_name,
             }
 
     m = MatterhornJobs.new
