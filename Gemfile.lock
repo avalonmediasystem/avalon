@@ -15,7 +15,6 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
   revision: 12525de275ecf0be0fdb08d24b0aa3b629de2f8f
-  tag: avalon-r2
   specs:
     avalon-about (0.1.0)
       about_page
@@ -23,33 +22,22 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
-  revision: 6182b17e621f8bf2b645daf09842c313d0b4c04a
-  tag: avalon-r2
+  revision: 7919db23c5d37419a4dea6d3c22a931e26aec737
   specs:
-    avalon-batch (0.1.0)
+    avalon-batch (0.2.0)
       activemodel
       activesupport
       roo
 
 GIT
-  remote: https://github.com/avalonmediasystem/avalon-engage.git
-  revision: f19ca230eafda68e230ef2d869727c67d875fc60
-  tag: avalon-r2
-  specs:
-    avalon-engage (0.0.1)
-      less-rails (~> 2.2.3)
-
-GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
   revision: 46300b8a3275067425a7e427c4dce6043edba5e9
-  tag: avalon-r2
   specs:
     avalon-workflow (0.0.3)
 
 GIT
   remote: https://github.com/avalonmediasystem/felixwrapper.git
   revision: 9659be23666fff7c201e6cd5930d9c7d3bc145cd
-  tag: avalon-r2
   specs:
     felixwrapper (0.0.1)
       activesupport (~> 3.2.3)
@@ -88,7 +76,6 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/red5wrapper.git
   revision: 3cfad64b4a9d43c2d63cc754765110e87a2f55c9
-  tag: avalon-r2
   specs:
     red5wrapper (0.0.1)
       activesupport (~> 3.2.3)
@@ -100,7 +87,6 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
   revision: acda6fae4b9d1e196cd0534c2401565dcc5c464b
-  tag: avalon-r2
   specs:
     rubyhorn (0.0.5)
       activesupport
@@ -204,7 +190,6 @@ GEM
       execjs
     coffee-script-source (1.6.3)
     columnize (0.3.6)
-    commonjs (0.2.7)
     compass (0.12.2)
       chunky_png (~> 1.2)
       fssm (>= 0.2.7)
@@ -308,11 +293,6 @@ GEM
     kgio (2.8.0)
     launchy (2.3.0)
       addressable (~> 2.3)
-    less (2.2.2)
-      commonjs (~> 0.2.6)
-    less-rails (2.2.6)
-      actionpack (>= 3.1)
-      less (~> 2.2.0)
     letter_opener (1.1.2)
       launchy (~> 2.2)
     libv8 (3.3.10.4)
@@ -333,7 +313,7 @@ GEM
       railties
     method_source (0.8.2)
     mime-types (1.25)
-    mini_portile (0.5.1)
+    mini_portile (0.5.2)
     modal_logic (0.0.5)
       handlebars_assets (= 0.14.1)
       rails (~> 3.2.13)
@@ -475,7 +455,7 @@ GEM
       nokogiri
       stomp
       xml-simple
-    spreadsheet (0.9.0)
+    spreadsheet (0.9.4)
       ruby-ole (>= 1.0)
     sprockets (2.2.2)
       hike (~> 1.2)
@@ -520,7 +500,6 @@ DEPENDENCIES
   activerecord-jdbcsqlite3-adapter
   avalon-about!
   avalon-batch!
-  avalon-engage!
   avalon-workflow!
   bcrypt-ruby (~> 3.0.0)
   builder (~> 3.0.0)
