@@ -96,6 +96,7 @@ module Avalon
                 mf = MasterFile.create
                 mf.mediaobject = media_object
                 mf.setContent(File.open(file_spec[:file], 'rb'))
+                mf.set_workflow('avalon-skip-transcoding') if file_spec[:skip_transcoding]
                 mf.label = file_spec[:label] if file_spec[:label].present?
                 mf.poster_offset = file_spec[:offset] if file_spec[:offset].present?
                 if mf.save

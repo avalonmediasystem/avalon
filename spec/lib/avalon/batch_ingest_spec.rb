@@ -56,9 +56,16 @@ describe Avalon::Batch do
     it 'should set MasterFile details' do
       Avalon::Batch.ingest
       ingest_batch = IngestBatch.find(:first)
-      master_file = MediaObject.find(ingest_batch.media_object_ids.first).parts.first
+      media_object = MediaObject.find(ingest_batch.media_object_ids.first) 
+      master_file = media_object.parts.first
       master_file.label.should == 'Quis quo'
       master_file.poster_offset.to_i.should == 500
+      master_file.workflow_name.should be_nil
+
+      master_file = media_object.parts[1]
+      master_file.label.should == 'Unde aliquid'
+      master_file.poster_offset.to_i.should == 500
+      master_file.workflow_name.should == 'avalon-skip-transcoding'
     end
 
     it 'should set avalon_uploader' do
