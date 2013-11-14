@@ -47,7 +47,7 @@ Avalon::Application.routes.draw do
   #match 'search/facet/:id' => 'search#facet'
 
   namespace :admin do
-    resources :groups, except: [:show] do 
+    resources :groups, except: [:show], constraints: { id: /[^\/]+/ } do 
       collection do 
         put 'update_multiple'
       end
