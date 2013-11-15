@@ -136,4 +136,40 @@ describe MasterFile do
     end
   end
 
+  describe "#set_workflow" do
+    let (:master_file) {MasterFile.new}
+    describe "custom workflow" do
+      it "should not use the passed workflow if it is not in the WORKFLOWS list" do
+        master_file.file_format = 'Moving image'
+        master_file.set_workflow('bad-workflow')
+        master_file.workflow_name.should == 'avalon'
+      end 
+      it "should use the passed workflow if it is in the WORKFLOWS list" do
+        master_file.file_format = 'Moving image'
+        master_file.set_workflow(MasterFile::WORKFLOWS.first)
+        master_file.workflow_name.should == MasterFile::WORKFLOWS.first
+      end 
+    end
+    describe "video" do
+      it "should use the avalon workflow" do
+        master_file.file_format = 'Moving image'
+        master_file.set_workflow
+        master_file.workflow_name.should == 'avalon'
+      end 
+    end
+    describe "audio" do
+      it "should use the fullaudio workflow" do
+        master_file.file_format = 'Sound'
+        master_file.set_workflow
+        master_file.workflow_name.should == 'fullaudio'
+      end
+    end
+    describe "unknown format" do
+      it "should set workflow_name to nil" do
+        master_file.file_format = 'Unknown'
+        master_file.set_workflow
+        master_file.workflow_name.should == nil
+      end
+    end
+  end
 end

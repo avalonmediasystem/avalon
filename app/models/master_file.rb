@@ -36,6 +36,7 @@ class MasterFile < ActiveFedora::Base
 
   has_metadata name: 'mhMetadata', :type => ActiveFedora::SimpleDatastream do |d|
     d.field :workflow_id, :string
+    d.field :workflow_name, :string
     d.field :mediapackage_id, :string
     d.field :percent_complete, :string
     d.field :percent_succeeded, :string
@@ -47,7 +48,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   delegate_to 'descMetadata', [:file_location, :file_checksum, :file_size, :duration, :file_format, :poster_offset, :thumbnail_offset], unique: true
-  delegate_to 'mhMetadata', [:workflow_id, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures], unique:true
+  delegate_to 'mhMetadata', [:workflow_id, :workflow_name, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures], unique:true
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
@@ -71,11 +72,10 @@ class MasterFile < ActiveFedora::Base
   AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav", "audio/x-wav"]
   VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
   UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
-
   QUALITY_ORDER = { "low" => 1, "medium" => 2, "high" => 3 }
-
   END_STATES = ['STOPPED', 'SUCCEEDED', 'FAILED', 'SKIPPED']
-
+  WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding']
+  
   def save_parent
     unless mediaobject.nil?
       mediaobject.save(validate: false)  
@@ -94,6 +94,19 @@ class MasterFile < ActiveFedora::Base
       self.file_format = determine_format(file, content_type)
       saveOriginal(file, nil)
     end
+  end
+
+  def set_workflow( custom_workflow = nil )
+    if custom_workflow && custom_workflow.in?(WORKFLOWS)
+      workflow = custom_workflow
+    elsif self.file_format == 'Sound'
+      workflow = 'fullaudio'
+    elsif self.file_format == 'Moving image'
+      workflow = 'avalon'
+    else
+      logger.warn "Could not find workflow for: #{self}"
+    end
+    self.workflow_name = workflow
   end
 
   alias_method :'_mediaobject=', :'mediaobject='
@@ -140,17 +153,13 @@ class MasterFile < ActiveFedora::Base
   end
 
   def process
-    args = {"url" => "file://" + URI.escape(file_location),
+    args = {    "url" => "file://" + URI.escape(file_location),
                 "title" => pid,
                 "flavor" => "presenter/source",
-                "filename" => File.basename(file_location)}
+                "filename" => File.basename(file_location),
+                'workflow' => self.workflow_name,
+            }
 
-    if file_format == 'Sound'
-      args['workflow'] = "fullaudio"
-    elsif file_format == 'Moving image'
-      args['workflow'] = "avalon"
-    end
-    
     m = MatterhornJobs.new
     m.send_request args
   end

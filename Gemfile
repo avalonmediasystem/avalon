@@ -8,13 +8,12 @@
   gem 'hydra-migrate', '>=0.2.0'
   gem 'bcrypt-ruby', '~> 3.0.0'
 
-  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'avalon-r2'
-  gem 'avalon-engage', git: "https://github.com/avalonmediasystem/avalon-engage.git", tag: 'avalon-r2'
-  gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git", tag: 'avalon-r2'
-  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git'
-  gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git'
-  gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector'
-  gem 'mediaelement-skin-avalon', git: 'https://github.com/avalonmediasystem/mediaelement-skin-avalon'
+  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git' # HEAD , tag: 'avalon-r2'
+  gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git" # HEAD , tag: 'avalon-r2'
+  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git' # HEAD , tag: 'avalon-r2'
+  gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git' # HEAD , tag: 'avalon-r2'
+  gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector' # HEAD , tag: 'avalon-r2'
+  gem 'hydra-migrate', '>=0.2.0'
   
   gem 'modal_logic'
 
@@ -34,7 +33,7 @@
   end
 
   gem 'about_page', '>= 0.2.1'
-  gem 'avalon-about', :git => "https://github.com/avalonmediasystem/avalon-about.git", tag: 'avalon-r2'
+  gem 'avalon-about', :git => "https://github.com/avalonmediasystem/avalon-about.git" # HEAD , tag: 'avalon-r2'
 
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise', '~>3.0.3'
@@ -42,9 +41,9 @@
   gem 'haml'
 
   gem "jettywrapper"
-  gem 'rubyhorn', :git => "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r2'
-  gem 'felixwrapper', :git => "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'avalon-r2'
-  gem 'red5wrapper', :git => "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'avalon-r2'
+  gem 'rubyhorn', :git => "https://github.com/avalonmediasystem/rubyhorn.git" # HEAD , tag: 'avalon-r2'
+  gem 'felixwrapper', :git => "https://github.com/avalonmediasystem/felixwrapper.git" # HEAD , tag: 'avalon-r2'
+  gem 'red5wrapper', :git => "https://github.com/avalonmediasystem/red5wrapper.git" # HEAD , tag: 'avalon-r2'
 
   gem 'validates_email_format_of'
   gem 'loofah'
@@ -80,7 +79,7 @@
     gem 'meta_request'
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano'
-    gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm', tag: 'avalon-r2'
+    gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm' # HEAD , tag: 'avalon-r2'
     gem 'factory_girl_rails'
     gem 'rspec-rails', '>=2.9.0'
     gem 'pry'

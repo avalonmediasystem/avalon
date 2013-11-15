@@ -54,6 +54,8 @@ class MasterFilesController < ApplicationController
         master_file = MasterFile.create
         master_file.mediaobject = media_object
         master_file.setContent(file)
+        master_file.set_workflow(params[:custom_workflow])
+
         MasterFilesController.set_default_item_permissions(master_file, user_key)
  
         if 'Unknown' == master_file.file_format
