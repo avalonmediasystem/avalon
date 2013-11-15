@@ -86,6 +86,7 @@ class MasterFilesController < ApplicationController
         master_file = MasterFile.create
         master_file.mediaobject = media_object
         master_file.setContent(File.open(file_path, 'rb'))
+        master_file.set_workflow(params[:custom_workflow])
         MasterFilesController.set_default_item_permissions(master_file, user_key)
         
         unless master_file.save
