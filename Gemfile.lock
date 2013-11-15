@@ -60,8 +60,8 @@ GIT
     mediaelement-qualityselector (0.0.1)
 
 GIT
-  remote: https://github.com/avalonmediasystem/mediaelement-skin-avalon
-  revision: cd837549b1c2f8ebcdedc6d4e3b86775ec3ff462
+  remote: https://github.com/avalonmediasystem/mediaelement-skin-avalon.git
+  revision: b1acbd60754b573a132035373eb1722c8b586bb9
   specs:
     mediaelement-skin-avalon (0.0.1)
 
