@@ -230,6 +230,7 @@ GEM
     factory_girl_rails (4.2.1)
       factory_girl (~> 4.2.0)
       railties (>= 3.0.0)
+    fakefs (0.4.3)
     faker (1.2.0)
       i18n (~> 0.5)
     fastercsv (1.5.5)
@@ -517,6 +518,7 @@ DEPENDENCIES
   equivalent-xml
   execjs
   factory_girl_rails
+  fakefs
   faker
   felixwrapper!
   font-awesome-sass-rails
@@ -524,6 +526,7 @@ DEPENDENCIES
   haml
   handlebars_assets
   headless
+  hooks
   hydra-head (~> 6.3.0)
   hydra-migrate (>= 0.2.0)
   iconv

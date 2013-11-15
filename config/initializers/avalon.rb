@@ -19,7 +19,8 @@ module Avalon
       "http_base"=>"http://localhost:3000/streams/",
       "stream_token_ttl"=>20
     },
-    'controlled_vocabulary' => {'path'=>'config/controlled_vocabulary.yml'}
+    'controlled_vocabulary' => {'path'=>'config/controlled_vocabulary.yml'},
+    'master_file_management' => {'strategy'=>'none'}
    }
 
   env = ENV['RAILS_ENV'] || 'development'

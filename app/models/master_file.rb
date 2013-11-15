@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'fileutils'
+require 'hooks'
 
 class MasterFile < ActiveFedora::Base
   include ActiveFedora::Associations
@@ -20,6 +21,7 @@ class MasterFile < ActiveFedora::Base
   include Hydra::ModelMixins::CommonMetadata
   include Hydra::ModelMixins::RightsMetadata
   include Hydra::ModelMixins::Migratable
+  include Hooks
 
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
   has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
@@ -61,6 +63,9 @@ class MasterFile < ActiveFedora::Base
 
   before_save { |obj| obj.current_migration = 'R2' }
   before_save 'update_stills_from_offset!'
+
+  define_hooks :after_processing
+  after_processing :post_processing_file_management
 
   # First and simplest test - make sure that the uploaded file does not exceed the
   # limits of the system. For now this is hard coded but should probably eventually
@@ -292,7 +297,8 @@ class MasterFile < ActiveFedora::Base
     end
 
     save
-
+    
+    run_hook :after_processing
   end
 
   alias_method :'_poster_offset=', :'poster_offset='
@@ -474,16 +480,9 @@ class MasterFile < ActiveFedora::Base
   def saveOriginal(file, original_name)
     @mediainfo = nil
     realpath = File.realpath(file.path)
-    if !original_name.nil?
-      config_path = Avalon::Configuration['matterhorn']['media_path']
-      newpath = nil
-      if !config_path.nil? and File.directory?(config_path)
-        newpath = File.join(Avalon::Configuration['matterhorn']['media_path'], original_name)
-        FileUtils.cp(realpath, newpath)
-      else
-        newpath = File.join(File.dirname(realpath), original_name)
-        File.rename(realpath, newpath)
-      end
+    if original_name.present?
+      newpath = File.join(File.dirname(realpath), original_name)
+      File.rename(realpath, newpath)
       self.file_location = newpath
     else 
       self.file_location = realpath
@@ -502,5 +501,25 @@ class MasterFile < ActiveFedora::Base
     file.close
   end
 
+  def post_processing_file_management
+    logger.debug "Finished processing"
+
+    case Avalon::Configuration['master_file_management']['strategy']
+    when 'delete'
+      AvalonJobs.delete_masterfile self.pid
+    when 'move'
+      move_path = Avalon::Configuration['master_file_management']['path']
+      raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?
+      newpath = File.join(move_path, post_processing_move_filename(file_location, pid: self.pid))
+      AvalonJobs.move_masterfile self.pid, newpath
+    else
+      # Do nothing
+    end
+  end
+
+  def post_processing_move_filename(oldpath, options={})
+    "#{options[:pid].gsub(":","_")}-#{File.basename(oldpath)}"
+  end
 
 end
+

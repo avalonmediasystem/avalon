@@ -18,6 +18,7 @@
   gem 'modal_logic'
 
   gem 'rubyzip', '0.9.9'
+  gem 'hooks'
 
   platforms :jruby do
     gem 'jruby-openssl'
@@ -105,6 +106,7 @@
     gem 'capybara'
     gem 'shoulda-matchers'
     gem 'faker'
+    gem 'fakefs', :require => "fakefs/safe"
   end
 
   extra_gems = File.expand_path("../Gemfile.local",__FILE__)
