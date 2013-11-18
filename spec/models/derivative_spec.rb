@@ -18,7 +18,7 @@ describe Derivative do
   describe "masterfile" do
     it "should set relationships on self and masterfile" do
       derivative = Derivative.new
-      mf = MasterFile.new
+      mf = FactoryGirl.build(:master_file)
       mf.save
       derivative.save
 

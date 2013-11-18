@@ -60,7 +60,10 @@ describe Avalon::Batch do
       master_file = media_object.parts.first
       master_file.label.should == 'Quis quo'
       master_file.poster_offset.to_i.should == 500
-      master_file.workflow_name.should be_nil
+
+      # if a master file is saved on a media object 
+      # it should have workflow name set
+      # master_file.workflow_name.should be_nil
 
       master_file = media_object.parts[1]
       master_file.label.should == 'Unde aliquid'

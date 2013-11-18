@@ -41,7 +41,7 @@ describe MasterFile do
   describe "masterfiles=" do
     it "should set hasDerivation relationships on self" do
       derivative = Derivative.new
-      mf = MasterFile.new
+      mf = FactoryGirl.build(:master_file)
       mf.save
       derivative.save
 
