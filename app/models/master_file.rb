@@ -14,6 +14,7 @@
 
 require 'fileutils'
 require 'hooks'
+require 'avalon/file_locator'
 
 class MasterFile < ActiveFedora::Base
   include ActiveFedora::Associations
@@ -381,6 +382,10 @@ class MasterFile < ActiveFedora::Base
       obj.extract_still(options)
     end
     handle_asynchronously :extract_still
+  end
+
+  def absolute_location
+    Avalon::FileLocator.path_to(file_location)
   end
 
   protected
