@@ -77,7 +77,7 @@ class MasterFile < ActiveFedora::Base
   AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav", "audio/x-wav"]
   VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
   UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
-  QUALITY_ORDER = { "low" => 1, "medium" => 2, "high" => 3 }
+  QUALITY_ORDER = { "high" => 1, "medium" => 2, "low" => 3 }
   END_STATES = ['STOPPED', 'SUCCEEDED', 'FAILED', 'SKIPPED']
   WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding']
   
