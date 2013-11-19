@@ -4,3 +4,9 @@
   :params:
     :fields:
     - :email
+#Use only below for experimental LTI auth
+#- :name: Avalon LTI Oath
+#  :provider: :lti
+#  :params:
+#    :oauth_credentials:
+#      key: 'secret'

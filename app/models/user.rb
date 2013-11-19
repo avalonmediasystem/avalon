@@ -43,6 +43,11 @@ class User < ActiveRecord::Base
     end
   end
 
+  def self.find_for_lti(auth_hash, signed_in_resource=nil)
+    logger.debug "In find_for_lti: #{auth_hash}"
+    User.find_or_create_by_username auth_hash['uid'], email: auth_hash.info.email
+  end
+
   def ability
     @ability ||= Ability.new(self)
   end
