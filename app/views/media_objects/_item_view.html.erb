@@ -29,7 +29,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% end %>
           </video>
         <% else %>
-          <audio class="mejs-avalon" controls style="width: 100%;" id="video-tag">
+          <audio class="mejs-avalon" controls style="width: 100%;" id="video-tag" preload="true">
             <% @currentStreamInfo[:stream_flash].each do |flash| %>
               <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
             <% end %>
