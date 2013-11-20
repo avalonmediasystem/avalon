@@ -21,7 +21,7 @@ describe AvalonJobs do
 
     before :each do
       @oldpath = "/path/to/old/file.mp4"
-      @mf = MasterFile.new
+      @mf = FactoryGirl.build(:master_file)
       @mf.file_location = @oldpath
       @mf.save
       FakeFS.activate!

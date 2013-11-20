@@ -32,10 +32,16 @@ describe MasterFile do
 #    end
 #  end
 
+  describe "validations" do
+    subject {MasterFile.new}
+    it {should validate_presence_of(:workflow_name)}
+    it {should ensure_inclusion_of(:workflow_name).in_array(MasterFile::WORKFLOWS)}
+  end
+
   describe "masterfiles=" do
     it "should set hasDerivation relationships on self" do
       derivative = Derivative.new
-      mf = MasterFile.new
+      mf = FactoryGirl.build(:master_file)
       mf.save
       derivative.save
 

@@ -23,6 +23,8 @@ class MasterFile < ActiveFedora::Base
   include Hydra::ModelMixins::Migratable
   include Hooks
 
+  WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding']
+
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
   has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
 
@@ -55,6 +57,7 @@ class MasterFile < ActiveFedora::Base
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
 
+  validates :workflow_name, presence: true, inclusion: { in: Proc.new{ WORKFLOWS } }
   validates_each :poster_offset, :thumbnail_offset do |record, attr, value|
     unless value.nil? or value.to_i.between?(0,record.duration.to_i)
       record.errors.add attr, "must be between 0 and #{record.duration}"
@@ -79,7 +82,6 @@ class MasterFile < ActiveFedora::Base
   UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
   QUALITY_ORDER = { "high" => 1, "medium" => 2, "low" => 3 }
   END_STATES = ['STOPPED', 'SUCCEEDED', 'FAILED', 'SKIPPED']
-  WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding']
   
   def save_parent
     unless mediaobject.nil?
