@@ -73,7 +73,6 @@ describe Avalon::Batch do
 
       master_file = media_object.parts[2]
       master_file.label.should == 'Audio'
-      master_file.poster_offset.to_i.should == 500
       master_file.workflow_name.should == 'fullaudio'
     end
 
