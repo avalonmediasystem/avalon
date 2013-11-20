@@ -238,9 +238,10 @@ describe Admin::Collection do
         collection.editors = editor_list
       end
       it "should remove editors from the collection" do
-        collection.editors = [user.username]
-        collection.editors.should == [user.username]
-        collection.editors -= [user.username]
+        name = user.username
+        collection.editors = [name]
+        collection.editors.should == [name]
+        collection.editors -= [name]
         collection.editors.should == []
       end
       it "should call remove_editor" do
@@ -300,9 +301,10 @@ describe Admin::Collection do
         collection.depositors = depositor_list
       end
       it "should remove depositors from the collection" do
-        collection.depositors = [user.username]
-        collection.depositors.should == [user.username]
-        collection.depositors -= [user.username]
+        name = user.username
+        collection.depositors = [name]
+        collection.depositors.should == [name]
+        collection.depositors -= [name]
         collection.depositors.should == []
       end
       it "should call remove_depositor" do
