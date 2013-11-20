@@ -100,7 +100,7 @@ module Avalon
                 if file_spec[:skip_transcoding]
                   mf.set_workflow('avalon-skip-transcoding')
                 else
-                  mf.set_workflow('avalon')
+                  mf.set_workflow
                 end
                 mf.label = file_spec[:label] if file_spec[:label].present?
                 mf.poster_offset = file_spec[:offset] if file_spec[:offset].present?
