@@ -38,6 +38,57 @@ describe MasterFile do
     it {should ensure_inclusion_of(:workflow_name).in_array(MasterFile::WORKFLOWS)}
   end
 
+  describe "locations" do
+    subject { 
+      mf = MasterFile.new 
+      mf.file_location = '/foo/bar/baz/quux.mp4'
+      mf.save
+      mf
+    }
+
+    it "should know where its (local) masterfile is" do
+      subject.file_location.should == '/foo/bar/baz/quux.mp4'
+      subject.absolute_location.should == 'file:///foo/bar/baz/quux.mp4'
+    end
+
+    it "should know where its (Samba remote) masterfile is" do
+      Avalon::FileResolver.any_instance.stub(:mounts) { 
+        ["//user@some.server.at.an.example.edu/stuff on /foo/bar (smbfs, nodev, nosuid, mounted by user)"]
+      }
+
+      subject.absolute_location.should == 'smb://some.server.at.an.example.edu/stuff/baz/quux.mp4'
+    end
+
+    it "should know where its (CIFS remote) masterfile is" do
+      Avalon::FileResolver.any_instance.stub(:mounts) { 
+        ["//user@some.server.at.an.example.edu/stuff on /foo/bar (cifs, nodev, nosuid, mounted by user)"]
+      }
+
+      subject.absolute_location.should == 'cifs://some.server.at.an.example.edu/stuff/baz/quux.mp4'
+    end
+
+    it "should know where its (NFS remote) masterfile is" do
+      Avalon::FileResolver.any_instance.stub(:mounts) { 
+        ["some.server.at.an.example.edu:/stuff on /foo/bar (nfs, nodev, nosuid, mounted by user)"]
+      }
+
+      subject.absolute_location.should == 'nfs://some.server.at.an.example.edu/stuff/baz/quux.mp4'
+    end
+
+    it "should follow the file to a new location" do
+      subject.absolute_location.should == 'file:///foo/bar/baz/quux.mp4'
+      subject.file_location = "/tmp/baz/quux.mp4"
+      subject.absolute_location.should == 'file:///tmp/baz/quux.mp4'
+    end
+
+    it "should accept configurable overrides" do
+      Avalon::FileResolver.any_instance.stub(:overrides) {
+        { '/foo/bar/' => 'http://repository.example.edu/foothings/' }
+      }
+      subject.absolute_location.should == 'http://repository.example.edu/foothings/baz/quux.mp4'
+    end
+  end
+
   describe "masterfiles=" do
     it "should set hasDerivation relationships on self" do
       derivative = Derivative.new
