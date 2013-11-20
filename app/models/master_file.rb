@@ -14,6 +14,7 @@
 
 require 'fileutils'
 require 'hooks'
+require 'avalon/file_resolver'
 
 class MasterFile < ActiveFedora::Base
   include ActiveFedora::Associations
@@ -29,6 +30,7 @@ class MasterFile < ActiveFedora::Base
   has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
 
   has_metadata name: 'descMetadata', :type => ActiveFedora::SimpleDatastream do |d|
+    d.field :absolute_location, :string
     d.field :file_location, :string
     d.field :file_checksum, :string
     d.field :file_size, :string
@@ -51,7 +53,7 @@ class MasterFile < ActiveFedora::Base
     d.field :failures, :string
   end
 
-  delegate_to 'descMetadata', [:file_location, :file_checksum, :file_size, :duration, :file_format, :poster_offset, :thumbnail_offset], unique: true
+  delegate_to 'descMetadata', [:absolute_location, :file_checksum, :file_size, :duration, :file_format, :poster_offset, :thumbnail_offset], unique: true
   delegate_to 'mhMetadata', [:workflow_id, :workflow_name, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures], unique:true
 
   has_file_datastream name: 'thumbnail'
@@ -381,6 +383,15 @@ class MasterFile < ActiveFedora::Base
       obj.extract_still(options)
     end
     handle_asynchronously :extract_still
+  end
+
+  def file_location
+    descMetadata.file_location.first
+  end
+
+  def file_location=(value)
+    descMetadata.file_location = value
+    descMetadata.absolute_location = Avalon::FileResolver.new.path_to(value) rescue nil
   end
 
   protected
