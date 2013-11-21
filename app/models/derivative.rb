@@ -106,7 +106,7 @@ class Derivative < ActiveFedora::Base
       (application, prefix, media_id, stream_id, filename, extension) = parse_location
       path = "STREAM_BASE/#{media_id}/#{stream_id}/#{filename}.#{prefix||extension}"
       resolver = Avalon::FileResolver.new
-      resolver.overrides['STREAM_BASE'] ||= "file://" + File.join(Rails.root,'red5/webapps/avalon/streams')
+      resolver.overrides['STREAM_BASE'] ||= Rubyhorn.client.me['org']['properties']['avalon.stream_base'].to_s
       descMetadata.absolute_location = resolver.path_to(path) rescue nil
     end
     descMetadata.absolute_location.first
