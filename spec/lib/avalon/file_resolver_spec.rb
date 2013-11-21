@@ -8,6 +8,10 @@ describe Avalon::FileResolver do
     end
     it 'returns path with schema' do
       resolver.stub(:mount_map).and_return({'/Volumes/dropbox/'=> 'smb://example.edu/dropbox'})
+      resolver.path_to('/Volumes/dropbox/master_files/').should == 'smb://example.edu/dropbox/master_files'
+    end
+    it 'returns path with file schema when no mounts match' do
+      resolver.stub(:mount_map).and_return({})
       resolver.path_to('/storage/master_files/').should == 'file:///storage/master_files/'
     end
   end
