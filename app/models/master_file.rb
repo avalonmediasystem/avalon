@@ -497,8 +497,15 @@ class MasterFile < ActiveFedora::Base
     @mediainfo = nil
     realpath = File.realpath(file.path)
     if original_name.present?
-      newpath = File.join(File.dirname(realpath), original_name)
-      File.rename(realpath, newpath)
+      config_path = Avalon::Configuration['matterhorn']['media_path']
+      newpath = nil
+      if config_path.present? and File.directory?(config_path)
+        newpath = File.join(config_path, original_name)
+        FileUtils.cp(realpath, newpath)
+      else
+        newpath = File.join(File.dirname(realpath), original_name)
+        File.rename(realpath, newpath)
+      end
       self.file_location = newpath
     else 
       self.file_location = realpath
