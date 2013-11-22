@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
-  revision: 3374c89608838b7cb932015f70dd66850603ac0f
+  revision: ecbb3a961666768845fbc50b151ff0fbbfad6527
   specs:
     avalon-about (0.1.0)
       about_page
@@ -497,7 +497,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  about_page (>= 0.2.1)
   activerecord-jdbcsqlite3-adapter
   avalon-about!
   avalon-batch!

@@ -34,8 +34,7 @@
     gem 'therubyracer', '= 0.10.2'
   end
 
-  gem 'about_page', '>= 0.2.1'
-  gem 'avalon-about', :git => "https://github.com/avalonmediasystem/avalon-about.git" # HEAD , tag: 'avalon-r2'
+  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git" # HEAD , tag: 'avalon-r2'
 
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise', '~>3.0.3'
@@ -43,9 +42,9 @@
   gem 'haml'
 
   gem "jettywrapper"
-  gem 'rubyhorn', :git => "https://github.com/avalonmediasystem/rubyhorn.git" # HEAD , tag: 'avalon-r2'
-  gem 'felixwrapper', :git => "https://github.com/avalonmediasystem/felixwrapper.git" # HEAD , tag: 'avalon-r2'
-  gem 'red5wrapper', :git => "https://github.com/avalonmediasystem/red5wrapper.git" # HEAD , tag: 'avalon-r2'
+  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git" # HEAD , tag: 'avalon-r2'
+  gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git" # HEAD , tag: 'avalon-r2'
+  gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git" # HEAD , tag: 'avalon-r2'
 
   gem 'validates_email_format_of'
   gem 'loofah'
@@ -53,7 +52,7 @@
 
   gem 'mediainfo'
   gem 'delayed_job_active_record'
-  gem 'whenever', :require => false
+  gem 'whenever', require: false
 
   gem 'equivalent-xml'
 
@@ -62,7 +61,7 @@
     gem 'uglifier', '>= 1.0.3'
     gem 'jquery-rails', "~> 2.1.4"
     gem 'compass-rails', '~> 1.0.0'
-    gem 'compass-susy-plugin', '~> 0.9.0', :require => 'susy'
+    gem 'compass-susy-plugin', '~> 0.9.0', require: 'susy'
 
     # For overriding the default interface with Twitter Bootstrap
     # This is now inherited from Blacklight
@@ -88,7 +87,7 @@
     gem 'pry-rails'
     gem 'pry-debugger'
     gem 'unicorn-rails'
-    #gem 'capistrano-unicorn', :require => false
+    #gem 'capistrano-unicorn', require: false
     gem 'capistrano-unicorn',
       git: "git://github.com/sosedoff/capistrano-unicorn.git"
     gem 'rb-fsevent', '~> 0.9.1'
@@ -107,7 +106,7 @@
     gem 'capybara'
     gem 'shoulda-matchers'
     gem 'faker'
-    gem 'fakefs', :require => "fakefs/safe"
+    gem 'fakefs', require: "fakefs/safe"
   end
 
   extra_gems = File.expand_path("../Gemfile.local",__FILE__)
