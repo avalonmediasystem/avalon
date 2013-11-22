@@ -425,9 +425,11 @@ class MasterFile < ActiveFedora::Base
       aspect = new_width/new_height
 
       Tempfile.open([base,'.jpg']) do |jpeg|
+        file_source = File.join(File.dirname(jpeg.path),"#{File.basename(jpeg.path,File.extname(jpeg.path))}.#{File.extname(file_location)}")
+        File.symlink(file_location, file_source)
         options = [
           '-ss',      (offset / 1000.0).to_s,
-          '-i',       file_location,
+          '-i',       file_source,
           '-s',       "#{new_width.to_i}x#{new_height.to_i}",
           '-vframes', '1',
           '-aspect',  aspect.to_s,
@@ -435,6 +437,7 @@ class MasterFile < ActiveFedora::Base
           '-y',       jpeg.path
         ]
         Kernel.system(ffmpeg, *options)
+        File.unlink(file_source)
         jpeg.rewind
         jpeg.read
       end
