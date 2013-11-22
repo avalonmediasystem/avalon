@@ -24,7 +24,7 @@ module ApplicationHelper
   def image_for(item_id)
     #TODO index the thumbnail url to avoid having to hit fedora to get it
     media_object = MediaObject.find(item_id)
-    masterfile = media_object.parts.first 
+    masterfile = media_object.parts_with_order.first 
 
     imageurl = thumbnail_master_file_path(masterfile) unless masterfile.nil? or masterfile.thumbnail.new?
 
