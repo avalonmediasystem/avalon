@@ -37,7 +37,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/felixwrapper.git
-  revision: 9659be23666fff7c201e6cd5930d9c7d3bc145cd
+  revision: 1fdbdb822daf5a8b8e5818f98ec74da235e1d91d
   specs:
     felixwrapper (0.0.1)
       activesupport (~> 3.2.3)
@@ -234,7 +234,7 @@ GEM
     faker (1.2.0)
       i18n (~> 0.5)
     fastercsv (1.5.5)
-    ffi (1.9.0)
+    ffi (1.9.3)
     font-awesome-sass-rails (3.0.2.2)
       railties (>= 3.1.1)
       sass-rails (>= 3.1.1)
