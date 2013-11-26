@@ -15,6 +15,30 @@
 require 'spec_helper'
 
 describe Derivative do
+
+  describe "#stream_base_path" do
+    let(:derivative) { Derivative.new } 
+    it 'calls rubyhorn' do
+      Rubyhorn.client.should_receive(:me).once
+      derivative.stream_base_path
+    end
+
+    it 'memoizes the call to rubyhorn' do
+      Rubyhorn.client.should_receive(:me).twice
+      (0..1).each{ derivative.stream_base_path }
+    end
+  end
+
+  describe "#set_absolute_location" do
+    it''do
+    end
+
+  end
+
+
+
+
+
   describe "masterfile" do
     it "should set relationships on self and masterfile" do
       derivative = Derivative.new
