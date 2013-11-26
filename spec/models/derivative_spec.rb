@@ -15,24 +15,16 @@
 require 'spec_helper'
 
 describe Derivative do
-
-  describe "#stream_base_path" do
-    let(:derivative) { Derivative.new } 
-    it 'calls rubyhorn' do
-      Rubyhorn.client.should_receive(:me).once
-      derivative.stream_base_path
-    end
-
-    it 'memoizes the call to rubyhorn' do
-      Rubyhorn.client.should_receive(:me).twice
-      (0..1).each{ derivative.stream_base_path }
-    end
-  end
-
   describe "#set_absolute_location" do
-    it''do
+    let(:derivative){ FactoryGirl.build(:derivative)}
+    it 'sets absolute location' do
+      derivative.set_absolute_location('/files/something')
+      parts = derivative.send :parse_streaming_url
+      derivative.absolute_location.should == "/files/something/#{parts[:media_id]}/#{parts[:stream_id]}/#{parts[:filename]}"
     end
-
+    it 'does not set absolute location when stream_base_path is nil' do
+      derivative.absolute_location.should be_nil
+    end
   end
 
 

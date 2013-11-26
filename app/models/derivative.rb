@@ -46,8 +46,8 @@ class Derivative < ActiveFedora::Base
 
   def set_absolute_location( stream_base_path )
     return unless stream_base_path.present?
-    parts = parse_streaming_url(location_url)
-    descMetadata.absolute_location = File.join(stream_base_path, "#{parts[:media_id]}/#{parts[:stream_id]}/#{parts[:filename]}.#{parts[:extension]}")
+    parts = parse_streaming_url
+    descMetadata.absolute_location = File.join(stream_base_path, "#{parts[:media_id]}/#{parts[:stream_id]}/#{parts[:filename]}")
   end
   
   def self.url_handler
@@ -57,7 +57,7 @@ class Derivative < ActiveFedora::Base
 
   # Getting the track ID from the fragment is not great but it does reduce the number
   # of calls to Matterhorn 
-  def self.create_from_master_file(masterfile, markup)
+  def self.create_from_master_file(masterfile, markup, opts = {})
     
     # Looks for an existing derivative of the same quality
     # and adds the track URL to it
@@ -94,7 +94,7 @@ class Derivative < ActiveFedora::Base
       derivative.location_url = markup.url.first
     end
 
-    derivative.set_absolute_location(derivative.stream_base)
+    derivative.set_absolute_location(opts[:stream_base])
 
     derivative.masterfile = masterfile
     derivative.save
@@ -115,40 +115,14 @@ class Derivative < ActiveFedora::Base
 
     protocol = is_mobile ? 'http' : 'rtmp'
 
-    # Example input: /avalon/mp4:98285a5b-603a-4a14-acc0-20e37a3514bb/b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3/MVI_0057.mp4
-    regex = %r{^
-      /(.+)             # application (avalon)
-      /(?:(.+):)?       # prefix      (mp4:)
-      ([^\/]+)          # media_id    (98285a5b-603a-4a14-acc0-20e37a3514bb)
-      /([^\/]+)         # stream_id   (b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3)
-      /(.+?)            # filename    (MVI_0057)
-      (?:\.(.+))?$      # extension   (mp4)
-    }x
-
-    uri = URI.parse(location_url)
-    (application, prefix, media_id, stream_id, filename, extension) = uri.path.scan(regex).flatten
+    (application, prefix, media_id, stream_id, filename, extension) = parse_streaming_url.values
+    
     if extension.nil? or prefix.nil?
       prefix = extension = [extension,prefix].find { |thing| not thing.nil? }
     end
 
     template = ERB.new(self.class.url_handler.patterns[protocol][format])
     result = File.join(Avalon::Configuration['streaming']["#{protocol}_base"],template.result(binding))
-  end
-
-  def parse_streaming_url(url)
-    # Example input: /avalon/mp4:98285a5b-603a-4a14-acc0-20e37a3514bb/b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3/MVI_0057.mp4
-    regex = %r{^
-      /(.+)             # application (avalon)
-      /(?:(.+):)?       # prefix      (mp4:)
-      ([^\/]+)          # media_id    (98285a5b-603a-4a14-acc0-20e37a3514bb)
-      /([^\/]+)         # stream_id   (b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3)
-      /(.+?)            # filename    (MVI_0057)
-      (?:\.(.+))?$      # extension   (mp4)
-    }x
-
-    uri = URI.parse(location_url)
-    (application, prefix, media_id, stream_id, filename, extension) = uri.path.scan(regex).flatten
-    {application: application, prefix: prefix, media_id: media_id, stream_id: stream_id, filename:filename, extension: extension}
   end
 
   def format
@@ -171,5 +145,25 @@ class Derivative < ActiveFedora::Base
     File.open(Avalon::Configuration['matterhorn']['cleanup_log'], "a+") { |f| f << job_urls.join("\n") + "\n" }
 
     super
+  end
+
+  private
+    def parse_streaming_url
+    # Example input: /avalon/mp4:98285a5b-603a-4a14-acc0-20e37a3514bb/b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3/MVI_0057.mp4
+    regex = %r{^
+      /(.+)             # application (avalon)
+      /(?:(.+):)?       # prefix      (mp4:)
+      ([^\/]+)          # media_id    (98285a5b-603a-4a14-acc0-20e37a3514bb)
+      /([^\/]+)         # stream_id   (b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3)
+      /(.+?)            # filename    (MVI_0057)
+      (?:\.(.+))?$      # extension   (mp4)
+    }x
+
+    uri = URI.parse(location_url)
+    (application, prefix, media_id, stream_id, filename, extension) = uri.path.scan(regex).flatten
+    if extension.nil? or prefix.nil?
+      prefix = extension = [extension,prefix].find { |thing| not thing.nil? }
+    end
+    {application: application, prefix: prefix, media_id: media_id, stream_id: stream_id, filename:filename, extension: extension}
   end
 end 
