@@ -229,4 +229,43 @@ describe MasterFile do
       end
     end
   end
+
+  describe '#setContent' do
+    describe "uploaded file" do
+      let(:fixture)    { File.expand_path('../../fixtures/videoshort.mp4',__FILE__) }
+      let(:original)   { File.basename(fixture) }
+      let(:tempdir)    { File.realpath('/tmp') }
+      let(:tempfile)   { File.join(tempdir, 'RackMultipart20130816-2519-y2wzc7') }
+      let(:media_path) { File.expand_path("../../masterfiles-#{SecureRandom.uuid}",__FILE__)}
+      let(:upload)     { ActionDispatch::Http::UploadedFile.new :tempfile => File.open(tempfile), :filename => original, :type => 'video/mp4' }
+      subject { 
+        mf = MasterFile.new
+        mf.setContent(upload)
+        mf
+      }
+
+      before(:each) do
+        @old_media_path = Avalon::Configuration['matterhorn']['media_path']
+        FileUtils.mkdir_p media_path
+        FileUtils.cp fixture, tempfile
+      end
+
+      after(:each) do
+        Avalon::Configuration['matterhorn']['media_path'] = @old_media_path
+        File.unlink subject.file_location
+        FileUtils.rm_rf media_path
+      end
+
+      it "should rename an uploaded file in place" do
+        Avalon::Configuration['matterhorn'].delete('media_path')
+        subject.file_location.should == File.join(tempdir,original)
+      end
+
+      it "should copy an uploaded file to the Matterhorn media path" do
+        Avalon::Configuration['matterhorn']['media_path'] = media_path
+        subject.file_location.should == File.join(media_path,original)
+      end
+    end
+  end
+  
 end
