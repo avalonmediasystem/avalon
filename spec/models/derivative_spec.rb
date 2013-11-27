@@ -20,7 +20,8 @@ describe Derivative do
     let(:derivative){ FactoryGirl.build(:derivative)}
     it 'sets absolute location' do
       (application, prefix, media_id, stream_id, filename, extension) = derivative.parse_location
-      derivative.absolute_location.should == "/files/something/#{parts[:media_id]}/#{parts[:stream_id]}/#{parts[:filename]}"
+      derivative.absolute_location = '/storage/derivatives/'
+      derivative.absolute_location.should == "/storage/derivatives/#{media_id}/#{stream_id}/#{filename}.#{prefix||extension}"
     end
     it 'does not set absolute location when stream_base_path is nil' do
       derivative.absolute_location.should be_nil

@@ -86,10 +86,9 @@ class Derivative < ActiveFedora::Base
     else
       derivative.track_id = markup.track_id
       derivative.location_url = markup.url.first
-      derivative.absolute_location
     end
     
-    derivative.absolute_location = build_absolute_path(opts[:stream_base]) if opts[:stream_base]
+    derivative.absolute_location = opts[:stream_base] if opts[:stream_base]
     derivative.masterfile = masterfile
     derivative.save
     
@@ -100,22 +99,12 @@ class Derivative < ActiveFedora::Base
     #uri = URI.parse(url.first)
     uri = streaming_url(mobile)
     "#{uri.to_s}?token=#{masterfile.mediapackage_id}-#{token}".html_safe
-  end      
+  end
 
-  # def set_location
-  #   if descMetadata.absolute_location.blank?
-  #     (application, prefix, media_id, stream_id, filename, extension) = parse_location
-  #     path = "STREAM_BASE/#{media_id}/#{stream_id}/#{filename}.#{prefix||extension}"
-  #     resolver = Avalon::FileResolver.new
-  #     resolver.overrides['STREAM_BASE'] ||= Rubyhorn.client.me['org']['properties']['avalon.stream_base'].to_s
-  #     descMetadata.absolute_location = resolver.path_to(path) rescue nil
-  #   end
-  #   descMetadata.absolute_location.first
-  # end
-
-  # def absolute_location=(stream_base)
-  #   descMetadata.absolute_location = value
-  # end
+  def absolute_location=( stream_base )
+    (application, prefix, media_id, stream_id, filename, extension) = parse_location
+    descMetadata.absolute_location = File.join(stream_base, media_id, stream_id, "#{filename}.#{prefix||extension}")
+  end
 
   def streaming_url(is_mobile=false)
     # We need to tweak the RTMP stream to reflect the right format for AMS.
@@ -168,10 +157,5 @@ class Derivative < ActiveFedora::Base
 
     uri = URI.parse(location_url)
     uri.path.scan(regex).flatten
-  end
-
-  def build_absolute_path( stream_base )
-    (application, prefix, media_id, stream_id, filename, extension) = derivative.parse_location
-    derivative.absolute_location = "#{stream_base}/#{media_id}/#{stream_id}/#{filename}.#{prefix||extension}"
   end
 end 
