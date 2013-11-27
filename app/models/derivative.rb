@@ -40,7 +40,7 @@ class Derivative < ActiveFedora::Base
     d.field :hls_track_id, :string
   end
 
-  delegate_to 'descMetadata', [:location_url, :hls_url, :duration, :track_id, :hls_track_id], unique: true
+  delegate_to 'descMetadata', [:absolute_location, :location_url, :hls_url, :duration, :track_id, :hls_track_id], unique: true
 
   has_metadata name: 'encoding', type: EncodingProfileDocument
 
@@ -51,7 +51,7 @@ class Derivative < ActiveFedora::Base
 
   # Getting the track ID from the fragment is not great but it does reduce the number
   # of calls to Matterhorn 
-  def self.create_from_master_file(masterfile, markup)
+  def self.create_from_master_file(masterfile, markup, opts = {})
     
     # Looks for an existing derivative of the same quality
     # and adds the track URL to it
@@ -64,7 +64,7 @@ class Derivative < ActiveFedora::Base
 
     # If same quality derivative doesn't exist, create one
     if derivative.blank?
-      derivative = Derivative.create 
+      derivative = Derivative.new 
       
       derivative.duration = markup.duration.first
       derivative.encoding.mime_type = markup.mimetype.first
@@ -88,7 +88,8 @@ class Derivative < ActiveFedora::Base
       derivative.location_url = markup.url.first
       derivative.absolute_location
     end
-
+    
+    derivative.absolute_location = build_absolute_path(opts[:stream_base]) if opts[:stream_base]
     derivative.masterfile = masterfile
     derivative.save
     
@@ -101,20 +102,20 @@ class Derivative < ActiveFedora::Base
     "#{uri.to_s}?token=#{masterfile.mediapackage_id}-#{token}".html_safe
   end      
 
-  def absolute_location
-    if descMetadata.absolute_location.blank?
-      (application, prefix, media_id, stream_id, filename, extension) = parse_location
-      path = "STREAM_BASE/#{media_id}/#{stream_id}/#{filename}.#{prefix||extension}"
-      resolver = Avalon::FileResolver.new
-      resolver.overrides['STREAM_BASE'] ||= Rubyhorn.client.me['org']['properties']['avalon.stream_base'].to_s
-      descMetadata.absolute_location = resolver.path_to(path) rescue nil
-    end
-    descMetadata.absolute_location.first
-  end
+  # def set_location
+  #   if descMetadata.absolute_location.blank?
+  #     (application, prefix, media_id, stream_id, filename, extension) = parse_location
+  #     path = "STREAM_BASE/#{media_id}/#{stream_id}/#{filename}.#{prefix||extension}"
+  #     resolver = Avalon::FileResolver.new
+  #     resolver.overrides['STREAM_BASE'] ||= Rubyhorn.client.me['org']['properties']['avalon.stream_base'].to_s
+  #     descMetadata.absolute_location = resolver.path_to(path) rescue nil
+  #   end
+  #   descMetadata.absolute_location.first
+  # end
 
-  def absolute_location=(value)
-    descMetadata.absolute_location = value
-  end
+  # def absolute_location=(stream_base)
+  #   descMetadata.absolute_location = value
+  # end
 
   def streaming_url(is_mobile=false)
     # We need to tweak the RTMP stream to reflect the right format for AMS.
@@ -167,5 +168,10 @@ class Derivative < ActiveFedora::Base
 
     uri = URI.parse(location_url)
     uri.path.scan(regex).flatten
+  end
+
+  def build_absolute_path( stream_base )
+    (application, prefix, media_id, stream_id, filename, extension) = derivative.parse_location
+    derivative.absolute_location = "#{stream_base}/#{media_id}/#{stream_id}/#{filename}.#{prefix||extension}"
   end
 end 
