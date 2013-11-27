@@ -86,7 +86,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
-  revision: bd9e54f90c3d1d1cac0290895aef7a24610f68a0
+  revision: a4c1f877f0305803d35caf08e554dce62f9af911
   specs:
     rubyhorn (0.0.5)
       activesupport
@@ -313,7 +313,7 @@ GEM
       rack-contrib
       railties
     method_source (0.8.2)
-    mime-types (1.25)
+    mime-types (1.25.1)
     mini_portile (0.5.2)
     modal_logic (0.0.5)
       handlebars_assets (= 0.14.1)
