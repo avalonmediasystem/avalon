@@ -16,18 +16,6 @@ require 'spec_helper'
 
 describe Derivative do
 
-  describe "#set_absolute_location" do
-    let(:derivative){ FactoryGirl.build(:derivative)}
-    it 'sets absolute location' do
-      (application, prefix, media_id, stream_id, filename, extension) = derivative.parse_location
-      derivative.absolute_location = '/storage/derivatives/'
-      derivative.absolute_location.should == "/storage/derivatives/#{media_id}/#{stream_id}/#{filename}.#{prefix||extension}"
-    end
-    it 'does not set absolute location when stream_base_path is nil' do
-      derivative.absolute_location.should be_nil
-    end
-  end
-
   describe "masterfile" do
     it "should set relationships on self and masterfile" do
       derivative = Derivative.new

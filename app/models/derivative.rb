@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-require 'avalon/file_resolver'
+require 'avalon/matterhorn_rtmp_url'
 
 class Derivative < ActiveFedora::Base
   include ActiveFedora::Associations
@@ -88,7 +88,7 @@ class Derivative < ActiveFedora::Base
       derivative.location_url = markup.url.first
     end
     
-    derivative.absolute_location = opts[:stream_base] if opts[:stream_base]
+    derivative.absolute_location = File.join(opts[:stream_base], Avalon::MatterhornRtmpUrl.parse(location_url).to_path) if opts[:stream_base]
     derivative.masterfile = masterfile
     derivative.save
     
@@ -101,11 +101,6 @@ class Derivative < ActiveFedora::Base
     "#{uri.to_s}?token=#{masterfile.mediapackage_id}-#{token}".html_safe
   end
 
-  def absolute_location=( stream_base )
-    (application, prefix, media_id, stream_id, filename, extension) = parse_location
-    descMetadata.absolute_location = File.join(stream_base, media_id, stream_id, "#{filename}.#{prefix||extension}")
-  end
-
   def streaming_url(is_mobile=false)
     # We need to tweak the RTMP stream to reflect the right format for AMS.
     # That means extracting the extension from the end and placing it just
@@ -113,13 +108,13 @@ class Derivative < ActiveFedora::Base
 
     protocol = is_mobile ? 'http' : 'rtmp'
 
-    (application, prefix, media_id, stream_id, filename, extension) = parse_location
-    if extension.nil? or prefix.nil?
-      prefix = extension = [extension,prefix].find { |thing| not thing.nil? }
+    rtmp_url = Avalon::MatterhornRtmpUrl.parse location_url
+    if rtmp_url.extension.nil? or rtmp_url.prefix.nil?
+      rtmp_url.prefix = rtmp_url.extension = [rtmp_url.extension,rtmp_url.prefix].find { |thing| not thing.nil? }
     end
 
     template = ERB.new(self.class.url_handler.patterns[protocol][format])
-    result = File.join(Avalon::Configuration['streaming']["#{protocol}_base"],template.result(binding))
+    result = File.join(Avalon::Configuration['streaming']["#{protocol}_base"],template.result(rtmp_url.binding))
   end
 
   def format
@@ -142,20 +137,5 @@ class Derivative < ActiveFedora::Base
     File.open(Avalon::Configuration['matterhorn']['cleanup_log'], "a+") { |f| f << job_urls.join("\n") + "\n" }
 
     super
-  end
-
-  def parse_location
-    # Example input: /avalon/mp4:98285a5b-603a-4a14-acc0-20e37a3514bb/b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3/MVI_0057.mp4
-    regex = %r{^
-      /(.+)             # application (avalon)
-      /(?:(.+):)?       # prefix      (mp4:)
-      ([^\/]+)          # media_id    (98285a5b-603a-4a14-acc0-20e37a3514bb)
-      /([^\/]+)         # stream_id   (b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3)
-      /(.+?)            # filename    (MVI_0057)
-      (?:\.(.+))?$      # extension   (mp4)
-    }x
-
-    uri = URI.parse(location_url)
-    uri.path.scan(regex).flatten
   end
 end 
