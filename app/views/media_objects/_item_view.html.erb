@@ -92,7 +92,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           thumbnailSelectorEnabled: true,
           features: <%=features.inspect.html_safe%>,
           audioHeight: 50,
-          iOSDisplayedDuration: <%= @currentStream.duration.to_i / 1000 %>,
+          iOSDisplayedDuration: <%= @currentStream ? @currentStream.duration.to_i / 1000 : -1 %>,
           startQuality: 'high'
         });
   </script>
