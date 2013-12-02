@@ -1,6 +1,6 @@
 # These are the configurable bits
 set(:rails_env, "development")
-set(:deployment_host) { "avalonwebdev.library.northwestern.edu" }  # Host(s) to deploiy to
+set(:deployment_host) { "avalonwebdev.library.northwestern.edu" }  # Host(s) to deploy to
 set(:deploy_to) { "/var/www/avalon" }                              # Directory to deploy into
 set(:user) { 'avalon' }                                            # User to deploy as
 set(:repository) { "git://github.com/nulib/avalon.git" }           # If not using the default avalon repo
