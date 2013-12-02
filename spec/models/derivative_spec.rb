@@ -15,6 +15,7 @@
 require 'spec_helper'
 
 describe Derivative do
+
   describe "masterfile" do
     it "should set relationships on self and masterfile" do
       derivative = Derivative.new

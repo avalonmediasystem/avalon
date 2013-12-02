@@ -262,7 +262,7 @@ class MasterFile < ActiveFedora::Base
     # Why do it this way? It will create a dynamic node that can be
     # passed to the helper without any extra work
     matterhorn_response.streaming_tracks.size.times do |i|
-      Derivative.create_from_master_file(self, matterhorn_response.streaming_tracks(i))
+      Derivative.create_from_master_file(self, matterhorn_response.streaming_tracks(i),{ stream_base: matterhorn_response.stream_base.first })
     end
 
     # Some elements of the original file need to be stored as well even 

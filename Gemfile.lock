@@ -37,7 +37,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/felixwrapper.git
-  revision: 9659be23666fff7c201e6cd5930d9c7d3bc145cd
+  revision: 1fdbdb822daf5a8b8e5818f98ec74da235e1d91d
   specs:
     felixwrapper (0.0.1)
       activesupport (~> 3.2.3)
@@ -86,7 +86,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
-  revision: bd9e54f90c3d1d1cac0290895aef7a24610f68a0
+  revision: a4c1f877f0305803d35caf08e554dce62f9af911
   specs:
     rubyhorn (0.0.5)
       activesupport
@@ -234,7 +234,7 @@ GEM
     faker (1.2.0)
       i18n (~> 0.5)
     fastercsv (1.5.5)
-    ffi (1.9.0)
+    ffi (1.9.3)
     font-awesome-sass-rails (3.0.2.2)
       railties (>= 3.1.1)
       sass-rails (>= 3.1.1)
@@ -313,7 +313,7 @@ GEM
       rack-contrib
       railties
     method_source (0.8.2)
-    mime-types (1.25)
+    mime-types (1.25.1)
     mini_portile (0.5.2)
     modal_logic (0.0.5)
       handlebars_assets (= 0.14.1)
