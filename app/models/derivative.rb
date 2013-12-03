@@ -86,9 +86,9 @@ class Derivative < ActiveFedora::Base
     else
       derivative.track_id = markup.track_id
       derivative.location_url = markup.url.first
+      derivative.absolute_location = File.join(opts[:stream_base], Avalon::MatterhornRtmpUrl.parse(location_url).to_path) if opts[:stream_base]
     end
     
-    derivative.absolute_location = File.join(opts[:stream_base], Avalon::MatterhornRtmpUrl.parse(location_url).to_path) if opts[:stream_base]
     derivative.masterfile = masterfile
     derivative.save
     
