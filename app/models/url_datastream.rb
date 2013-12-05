@@ -17,11 +17,11 @@ class UrlDatastream < ActiveFedora::Datastream
     super.merge(:controlGroup => 'M', :mimeType => 'text/url', :label => 'URL')
   end
 
-  def url
+  def location
     self.content
   end
 
-  def url=(value)
+  def location=(value)
     URI.parse(value) unless value.nil?
     self.content = value
   end

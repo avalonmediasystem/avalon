@@ -26,7 +26,7 @@ describe UrlDatastream do
     it "should have default properties" do 
       expect(subject.mimeType).to eq('text/url')
       expect(subject.controlGroup).to eq('M')
-      expect(subject.url).to be_nil
+      expect(subject.location).to be_nil
     end
   end
 
@@ -36,29 +36,29 @@ describe UrlDatastream do
      'nfs://nfs.example.edu/share/foo/bar/baz.jpg',
      'smb://samba.example.edu/share/foo/bar/baz.jpg'].each do |loc|
       it "should accept #{loc}" do
-        subject.url = loc
-        expect(subject.url).to eq(loc)
+        subject.location = loc
+        expect(subject.location).to eq(loc)
       end
     end
 
     it "should require a valid URL" do
-      expect { subject.url = 'blah blah blah' }.to raise_error(URI::InvalidURIError)
+      expect { subject.location = 'blah blah blah' }.to raise_error(URI::InvalidURIError)
     end
   end
 
   describe "initialized" do
     before :each do
-      subject.url = 'file:///path/to/foo/bar/baz.jpg'
+      subject.location = 'file:///path/to/foo/bar/baz.jpg'
       test_object.save
     end
 
     it "should be initialized" do
-      expect(subject.url).to eq('file:///path/to/foo/bar/baz.jpg')
+      expect(subject.location).to eq('file:///path/to/foo/bar/baz.jpg')
     end
 
     it "should be nillable" do
-      subject.url = nil
-      expect(subject.url).to be_nil
+      subject.location = nil
+      expect(subject.location).to be_nil
     end
   end
 end

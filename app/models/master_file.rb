@@ -387,11 +387,11 @@ class MasterFile < ActiveFedora::Base
   end
 
   def absolute_location
-    masterFile.url
+    masterFile.location
   end
 
   def absolute_location=(value)
-    masterFile.url = value
+    masterFile.location = value
   end
 
   def file_location

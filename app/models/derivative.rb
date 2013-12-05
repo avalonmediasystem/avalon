@@ -97,11 +97,11 @@ class Derivative < ActiveFedora::Base
   end
 
   def absolute_location
-    derivativeFile.url
+    derivativeFile.location
   end
 
   def absolute_location=(value)
-    derivativeFile.url = value
+    derivativeFile.location = value
   end
 
   def tokenized_url(token, mobile=false)
