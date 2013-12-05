@@ -72,7 +72,7 @@ class Admin::CollectionsController < ApplicationController
     if @collection.save
 
       User.where(email: [RoleControls.users('administrator')].flatten).each do |admin_user|
-        NotifierMailer.delay.new_collection( 
+        NotificationsMailer.delay.new_collection( 
           creator_id: current_user.id, 
           collection_id: @collection.id, 
           user_id: admin_user.id, 

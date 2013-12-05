@@ -1,4 +1,4 @@
-class NotifierMailer < ActionMailer::Base
+class NotificationsMailer < ActionMailer::Base
   default :to => Avalon::Configuration['email']['comments']
 
   def new_collection( args = {} )

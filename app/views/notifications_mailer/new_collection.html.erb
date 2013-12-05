@@ -1,0 +1,16 @@
+<%= stylesheet_link_tag 'http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css' %>
+<h3> New Collection Notification </h3>
+
+<%= link_to(@collection.name, @collection) %>
+<hr/>
+<dl class="dl-horizontal">
+  
+  <dt>Created by:</dt>
+  <dd><%= mail_to(@creator.email, @creator.username) %></dd>
+  
+  <dt>Description:</dt>
+  <dd><%= @collection.description.present? ? @collection.description : '(empty)'%></dd>
+  
+  <dt>Unit:</dt>
+  <dd><%= @collection.unit %></dd>
+</dl>
