@@ -32,7 +32,6 @@ class Derivative < ActiveFedora::Base
   # the stream location. The other two are just stored until a migration
   # strategy is required.
   has_metadata name: "descMetadata", :type => ActiveFedora::SimpleDatastream do |d|
-    d.field :absolute_location, :string
     d.field :location_url, :string
     d.field :hls_url, :string
     d.field :duration, :string
@@ -40,7 +39,9 @@ class Derivative < ActiveFedora::Base
     d.field :hls_track_id, :string
   end
 
-  delegate_to 'descMetadata', [:absolute_location, :location_url, :hls_url, :duration, :track_id, :hls_track_id], unique: true
+  has_metadata name: 'derivativeFile', type: UrlDatastream
+
+  delegate_to 'descMetadata', [:location_url, :hls_url, :duration, :track_id, :hls_track_id], unique: true
 
   has_metadata name: 'encoding', type: EncodingProfileDocument
 
@@ -93,6 +94,14 @@ class Derivative < ActiveFedora::Base
     derivative.save
     
     derivative
+  end
+
+  def absolute_location
+    derivativeFile.url
+  end
+
+  def absolute_location=(value)
+    derivativeFile.url = value
   end
 
   def tokenized_url(token, mobile=false)
