@@ -22,7 +22,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
-  revision: 7919db23c5d37419a4dea6d3c22a931e26aec737
+  revision: c1742b6734b589f248d582cb05b3379385fc5711
   specs:
     avalon-batch (0.2.0)
       activemodel
@@ -275,7 +275,7 @@ GEM
     hydra-migrate (0.2.1)
       active-fedora
       activesupport
-    i18n (0.6.5)
+    i18n (0.6.9)
     iconv (1.0.3)
     jettywrapper (1.4.1)
       activesupport (>= 3.0.0)
@@ -398,7 +398,7 @@ GEM
       json (~> 1.4)
     rest-client (1.6.7)
       mime-types (>= 1.16)
-    roo (1.12.2)
+    roo (1.13.0)
       nokogiri
       rubyzip
       spreadsheet (> 0.6.4)
@@ -456,7 +456,7 @@ GEM
       nokogiri
       stomp
       xml-simple
-    spreadsheet (0.9.4)
+    spreadsheet (0.9.6)
       ruby-ole (>= 1.0)
     sprockets (2.2.2)
       hike (~> 1.2)
