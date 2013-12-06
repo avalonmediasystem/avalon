@@ -56,6 +56,11 @@ describe UrlDatastream do
       expect(subject.location).to eq('file:///path/to/foo/bar/baz.jpg')
     end
 
+    it "should be blankable" do
+      subject.location = ''
+      expect(subject.location).to be_empty
+    end
+
     it "should be nillable" do
       subject.location = nil
       expect(subject.location).to be_nil

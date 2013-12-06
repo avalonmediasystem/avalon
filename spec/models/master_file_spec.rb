@@ -87,6 +87,16 @@ describe MasterFile do
       }
       subject.absolute_location.should == 'http://repository.example.edu/foothings/baz/quux.mp4'
     end
+
+    it "should accept an empty file location" do
+      subject.file_location = ""
+      subject.absolute_location.should be_empty
+    end
+
+    it "should accept a nil file location" do
+      subject.file_location = nil
+      subject.absolute_location.should be_nil
+    end
   end
 
   describe "masterfiles=" do

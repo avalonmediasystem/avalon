@@ -400,7 +400,11 @@ class MasterFile < ActiveFedora::Base
 
   def file_location=(value)
     descMetadata.file_location = value
-    self.absolute_location = Avalon::FileResolver.new.path_to(value) rescue nil
+    if value.blank?
+      self.absolute_location = value
+    else
+      self.absolute_location = Avalon::FileResolver.new.path_to(value) rescue nil
+    end
   end
 
   protected
