@@ -34,7 +34,7 @@ describe AvalonJobs do
         AvalonJobs.delete_masterfile @mf.pid
         Delayed::Worker.new.work_off 
         expect(File.exists? @oldpath).to be false
-        expect(MasterFile.find(@mf.pid).file_location).to be_empty
+        expect(MasterFile.find(@mf.pid).file_location).to be_blank
       end
     end
 
