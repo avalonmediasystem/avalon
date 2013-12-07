@@ -41,7 +41,7 @@ class Derivative < ActiveFedora::Base
 
   has_metadata name: 'derivativeFile', type: UrlDatastream
 
-  delegate_to 'descMetadata', [:location_url, :hls_url, :duration, :track_id, :hls_track_id], unique: true
+  has_attributes :location_url, :hls_url, :duration, :track_id, :hls_track_id, datastream: :descMetadata, multiple: false
 
   has_metadata name: 'encoding', type: EncodingProfileDocument
 

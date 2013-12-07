@@ -37,10 +37,10 @@ class Admin::Collection < ActiveFedora::Base
   validates :unit, presence: true, inclusion: { in: Proc.new{ Admin::Collection.units } }
   validates :managers, length: {minimum: 1, message: 'Collection requires at least one manager'} 
 
-  delegate :name, to: :descMetadata, unique: true
-  delegate :unit, to: :descMetadata, unique: true
-  delegate :description, to: :descMetadata, unique: true
-  delegate :read_groups, :read_groups=, :read_users, :read_users=,
+  has_attributes :name, datastream: :descMetadata, multiple: false
+  has_attributes :unit, datastream: :descMetadata, multiple: false
+  has_attributes :description, datastream: :descMetadata, multiple: false
+  _delegate :read_groups, :read_groups=, :read_users, :read_users=,
            :access, :access=, :hidden?, :hidden=, 
            :group_exceptions, :group_exceptions=, :user_exceptions, :user_exceptions=, 
            to: :defaultRights, prefix: :default
