@@ -7,7 +7,7 @@ GIT
 
 GIT
   remote: https://github.com/atomical/database_cleaner
-  revision: 3e6cba18b6cfb2b241a04db6a41cf5c70a07d0df
+  revision: 5d6c5956cb78668d3b4df3edfd3678dda7f5838a
   branch: adding_support_for_active_fedora_orm
   specs:
     database_cleaner (1.0.1)
