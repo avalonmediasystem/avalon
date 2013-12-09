@@ -34,11 +34,11 @@ describe 'NotificationsMailer' do
     
     context 'body' do
       it 'has collection name' do
-        @email.should have_body_text(/#{@collection.name}/)
+        @email.should have_body_text(@collection.name)
       end
       
       it 'has creator e-mail' do
-        @email.should have_body_text(/#{@creator.email}/)
+        @email.should have_body_text(@creator.email)
       end
 
       it 'has collection description' do
