@@ -93,31 +93,31 @@ class MediaObject < ActiveFedora::Base
   end
 
   
-  delegate :avalon_uploader, to: :DC, at: [:creator], unique: true
-  delegate :avalon_publisher, to: :DC, at: [:publisher], unique: true
+  has_attributes :avalon_uploader, datastream: :DC, at: [:creator], multiple: false
+  has_attributes :avalon_publisher, datastream: :DC, at: [:publisher], multiple: false
   # Delegate variables to expose them for the forms
-  delegate :title, to: :descMetadata, at: [:main_title], unique: true
-  delegate :alternative_title, to: :descMetadata, at: [:alternative_title]
-  delegate :translated_title, to: :descMetadata, at: [:translated_title]
-  delegate :uniform_title, to: :descMetadata, at: [:uniform_title]
-  delegate :statement_of_responsibility, to: :descMetadata, at: [:statement_of_responsibility], unique: true
-  delegate :creator, to: :descMetadata, at: [:creator]
-  delegate :date_created, to: :descMetadata, at: [:date_created], unique: true
-  delegate :date_issued, to: :descMetadata, at: [:date_issued], unique: true
-  delegate :copyright_date, to: :descMetadata, at: [:copyright_date], unique: true
-  delegate :abstract, to: :descMetadata, at: [:abstract], unique: true
-  delegate :note, to: :descMetadata, at: [:note]
-  delegate :format, to: :descMetadata, at: [:media_type], unique: true
+  has_attributes :title, datastream: :descMetadata, at: [:main_title], multiple: false
+  has_attributes :alternative_title, datastream: :descMetadata, at: [:alternative_title], multiple: true
+  has_attributes :translated_title, datastream: :descMetadata, at: [:translated_title], multiple: true
+  has_attributes :uniform_title, datastream: :descMetadata, at: [:uniform_title], multiple: true
+  has_attributes :statement_of_responsibility, datastream: :descMetadata, at: [:statement_of_responsibility], multiple: false
+  has_attributes :creator, datastream: :descMetadata, at: [:creator], multiple: true
+  has_attributes :date_created, datastream: :descMetadata, at: [:date_created], multiple: false
+  has_attributes :date_issued, datastream: :descMetadata, at: [:date_issued], multiple: false
+  has_attributes :copyright_date, datastream: :descMetadata, at: [:copyright_date], multiple: false
+  has_attributes :abstract, datastream: :descMetadata, at: [:abstract], multiple: false
+  has_attributes :note, datastream: :descMetadata, at: [:note], multiple: true
+  has_attributes :format, datastream: :descMetadata, at: [:media_type], multiple: false
   # Additional descriptive metadata
-  delegate :contributor, to: :descMetadata, at: [:contributor]
-  delegate :publisher, to: :descMetadata, at: [:publisher]
-  delegate :genre, to: :descMetadata, at: [:genre]
-  delegate :subject, to: :descMetadata, at: [:topical_subject]
-  delegate :related_item, to: :descMetadata, at: [:related_item_id]
+  has_attributes :contributor, datastream: :descMetadata, at: [:contributor], multiple: true
+  has_attributes :publisher, datastream: :descMetadata, at: [:publisher], multiple: true
+  has_attributes :genre, datastream: :descMetadata, at: [:genre], multiple: true
+  has_attributes :subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
+  has_attributes :related_item, datastream: :descMetadata, at: [:related_item_id], multiple: true
 
-  delegate :geographic_subject, to: :descMetadata, at: [:geographic_subject]
-  delegate :temporal_subject, to: :descMetadata, at: [:temporal_subject]
-  delegate :topical_subject, to: :descMetadata, at: [:topical_subject]
+  has_attributes :geographic_subject, datastream: :descMetadata, at: [:geographic_subject], multiple: true
+  has_attributes :temporal_subject, datastream: :descMetadata, at: [:temporal_subject], multiple: true
+  has_attributes :topical_subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
   
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
     sds.field :duration, :string
@@ -127,8 +127,8 @@ class MediaObject < ActiveFedora::Base
     sds.field :section_pid, :string
   end
 
-  delegate_to 'displayMetadata', [:duration], unique: true
-  delegate_to 'sectionsMetadata', [:section_pid]
+  has_attributes :duration, datastream: :displayMetadata, multiple: false
+  has_attributes :section_pid, datastream: :sectionsMetadata, multiple: true
 
   accepts_nested_attributes_for :parts, :allow_destroy => true
 
