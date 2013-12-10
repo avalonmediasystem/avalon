@@ -61,6 +61,7 @@ describe Avalon::Batch do
       master_file.label.should == 'Quis quo'
       master_file.poster_offset.to_i.should == 500
       master_file.workflow_name.should == 'avalon'
+      master_file.absolute_location.should == Avalon::FileResolver.new.path_to(master_file.file_location) 
 
       # if a master file is saved on a media object 
       # it should have workflow name set
@@ -70,10 +71,12 @@ describe Avalon::Batch do
       master_file.label.should == 'Unde aliquid'
       master_file.poster_offset.to_i.should == 500
       master_file.workflow_name.should == 'avalon-skip-transcoding'
+      master_file.absolute_location.should == 'file:///tmp/sheephead_mountain_master.mov'
 
       master_file = media_object.parts[2]
       master_file.label.should == 'Audio'
       master_file.workflow_name.should == 'fullaudio'
+      master_file.absolute_location.should == Avalon::FileResolver.new.path_to(master_file.file_location)
     end
 
     it 'should set avalon_uploader' do
