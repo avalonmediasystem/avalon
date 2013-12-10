@@ -19,8 +19,13 @@ module Hydra
       extend ActiveSupport::Concern
 
       module ClassMethods
-        def _delegate(*methods)
-          Module.method(:delegate).unbind.bind(self).call(*methods)
+        if ActiveFedora.const_defined?(:Delegating)
+          def delegate(*methods)
+            Module.method(:delegate).unbind.bind(self).call(*methods)
+          end
+          def af_delegate(*methods)
+            ActiveFedora::Base.method(:delegate).unbind.bind(self).call(*methods)
+          end
         end
       end
     end

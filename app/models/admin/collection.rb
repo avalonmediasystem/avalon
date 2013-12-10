@@ -40,7 +40,7 @@ class Admin::Collection < ActiveFedora::Base
   has_attributes :name, datastream: :descMetadata, multiple: false
   has_attributes :unit, datastream: :descMetadata, multiple: false
   has_attributes :description, datastream: :descMetadata, multiple: false
-  _delegate :read_groups, :read_groups=, :read_users, :read_users=,
+  delegate :read_groups, :read_groups=, :read_users, :read_users=,
            :access, :access=, :hidden?, :hidden=, 
            :group_exceptions, :group_exceptions=, :user_exceptions, :user_exceptions=, 
            to: :defaultRights, prefix: :default
