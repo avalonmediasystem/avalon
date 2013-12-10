@@ -65,11 +65,21 @@ class Admin::CollectionsController < ApplicationController
       format.js   { render json: modal_form_response(@collection) }
     end
   end
-
+ 
   # POST /collections
   def create
     @collection = Admin::Collection.create(params[:admin_collection].merge(managers: [user_key]))
     if @collection.save
+
+      User.where(email: [RoleControls.users('administrator')].flatten).each do |admin_user|
+        NotificationsMailer.delay.new_collection( 
+          creator_id: current_user.id, 
+          collection_id: @collection.id, 
+          user_id: admin_user.id, 
+          subject: "New collection: #{@collection.name}",
+        )
+      end
+
       render json: modal_form_response(@collection, redirect_location: admin_collection_path(@collection))
     else
       render json: modal_form_response(@collection)
