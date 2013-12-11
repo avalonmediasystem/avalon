@@ -177,26 +177,28 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def dropbox
-    Avalon::Dropbox.new build_dropbox_directory_absolute_path(dropbox_directory_name)
+    Avalon::Dropbox.new dropbox_absolute_path
+  end
+
+  def dropbox_absolute_path( name = nil )
+    name = dropbox_directory_name unless name
+    File.join(Avalon::Configuration['dropbox']['path'], name)
   end
 
   private
 
-    def build_dropbox_directory_absolute_path( name )
-      File.join(Avalon::Configuration['dropbox']['path'], name)
-    end
 
     def create_dropbox_directory!
       name = Avalon::Sanitizer.sanitize(self.name)
       iter = 2
       original_name = name.dup.freeze
 
-      while File.exist? build_dropbox_directory_absolute_path(name)
+      while File.exist? dropbox_absolute_path(name)
         name = "#{original_name}_#{iter}"
         iter += 1
       end
 
-      absolute_path = build_dropbox_directory_absolute_path(name)
+      absolute_path = dropbox_absolute_path(name)
       
       begin
         Dir.mkdir(absolute_path)
