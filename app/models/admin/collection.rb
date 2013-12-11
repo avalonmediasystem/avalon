@@ -183,7 +183,7 @@ class Admin::Collection < ActiveFedora::Base
   private
 
     def build_dropbox_directory_absolute_path( name )
-      File.join(Avalon::Configuration['dropbox']['path'], name)
+      File.join(Avalon::Configuration['dropbox']['path'], self.name)
     end
 
     def create_dropbox_directory!
