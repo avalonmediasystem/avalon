@@ -447,4 +447,28 @@ describe Admin::Collection do
     end
   end
 
+  describe '#create_dropbox_directory!' do
+    it 'removes bad characters from collection name' do
+      collection.name = '../../secret.rb'
+      Dir.should_receive(:mkdir).with( File.join(Avalon::Configuration['dropbox']['path'], '______secret_rb') )
+      Dir.stub(:mkdir) # stubbing this out in a before(:each) block will effect where mkdir is used elsewhere (i.e. factories)
+      collection.send(:create_dropbox_directory!)
+    end
+    it 'sets dropbox_directory_name on collection' do
+      collection.name = 'african art'
+      Dir.stub(:mkdir)
+      collection.send(:create_dropbox_directory!)
+      collection.dropbox_directory_name.should == 'african_art'
+    end
+    it 'uses a different directory name if the directory exists' do
+      collection.name = 'african art'
+      FakeFS.activate!
+      FileUtils.mkdir_p(File.join(Avalon::Configuration['dropbox']['path'], 'african_art'))
+      FileUtils.mkdir_p(File.join(Avalon::Configuration['dropbox']['path'], 'african_art_2'))
+      Dir.should_receive(:mkdir).with(File.join(Avalon::Configuration['dropbox']['path'], 'african_art_3'))
+      collection.send(:create_dropbox_directory!)
+      FakeFS.deactivate!
+    end
+  end
+
 end

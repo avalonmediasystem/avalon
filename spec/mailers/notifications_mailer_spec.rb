@@ -48,6 +48,10 @@ describe 'NotificationsMailer' do
       it 'has unit name' do
         @email.should have_body_text(@collection.unit)
       end
+
+      it 'has dropbox absolute path' do
+        pending
+      end
     end
   end
 end

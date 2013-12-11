@@ -22,6 +22,8 @@ require 'rspec/rails'
 require 'rspec/autorun'
 require 'capybara/rspec'
 require 'database_cleaner'
+require 'fakefs/safe'
+require 'fileutils'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.

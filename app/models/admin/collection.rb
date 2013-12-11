@@ -42,7 +42,7 @@ class Admin::Collection < ActiveFedora::Base
   has_attributes :name, datastream: :descMetadata, multiple: false
   has_attributes :unit, datastream: :descMetadata, multiple: false
   has_attributes :description, datastream: :descMetadata, multiple: false
-  delegate :dropbox_directory_name, to: :descMetadata, multiple: false
+  has_attributes :dropbox_directory_name, datastream: :descMetadata, multiple: false
   
   delegate :read_groups, :read_groups=, :read_users, :read_users=,
            :access, :access=, :hidden?, :hidden=, 
@@ -183,25 +183,28 @@ class Admin::Collection < ActiveFedora::Base
   private
 
     def build_dropbox_directory_absolute_path( name )
-      File.join(Avalon::Configuration['dropbox']['path'], self.name)
+      File.join(Avalon::Configuration['dropbox']['path'], name)
     end
 
     def create_dropbox_directory!
       name = Avalon::Sanitizer.sanitize(self.name)
-      iter = 0
-      
-      _name = name.dup
-      while File.exist?(build_dropbox_directory_absolute_path(name))
-        name = _name + (iter += 1).to_s
+      iter = 2
+      original_name = name.dup.freeze
+
+      while File.exist? build_dropbox_directory_absolute_path(name)
+        name = "#{original_name}_#{iter}"
+        iter += 1
       end
+
       absolute_path = build_dropbox_directory_absolute_path(name)
       
       begin
         Dir.mkdir(absolute_path)
-        self.dropbox_directory_name = name
       rescue Exception => e
         Rails.logger.error "Could not create directory (#{absolute_path}): #{e.inspect}"
       end
+
+      self.dropbox_directory_name = name
     end
 
 end
