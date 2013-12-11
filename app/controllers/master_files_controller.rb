@@ -83,7 +83,7 @@ class MasterFilesController < ApplicationController
     elsif params.has_key?(:dropbox)
       @master_files = []
       params[:dropbox].each do |file|
-        file_path = Avalon::DropboxService.find(file[:id])
+        file_path = media_object.collection.dropbox.dropbox.find(file[:id])
         master_file = MasterFile.new
         master_file.save( validate: false )
         master_file.mediaobject = media_object

@@ -26,7 +26,6 @@ module Avalon
   env = ENV['RAILS_ENV'] || 'development'
   Configuration = DEFAULT_CONFIGURATION.deep_merge(YAML::load(File.read(Rails.root.join('config', 'avalon.yml')))[env])
   ['dropbox','matterhorn','mediainfo','email','streaming'].each { |key| Configuration[key] ||= {} }
-  DropboxService = Dropbox.new Avalon::Configuration['dropbox']['path']
   
   begin
     mipath = Avalon::Configuration['mediainfo']['path']

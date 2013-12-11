@@ -24,11 +24,13 @@ describe DropboxController do
 
     login_as :administrator 
     @temp_files = (0..20).map{|index| { name: "a_movie_#{index}.mov" } }
-    Avalon::DropboxService.stub(:all).and_return @temp_files
+    @dropbox = double(Avalon::Dropbox)
+    @dropbox.stub(:all).and_return @temp_files
+    Avalon::Dropbox.stub(:new).and_return(@dropbox)
   end
 
   it 'deletes video/audio files' do
-    Avalon::DropboxService.should_receive(:delete).exactly(@temp_files.count).times
+    @dropbox.should_receive(:delete).exactly(@temp_files.count).times
     delete :bulk_delete, { :filenames => @temp_files.map{|f| f[:name] } }
   end
 

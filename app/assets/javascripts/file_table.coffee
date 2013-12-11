@@ -99,7 +99,7 @@ window.dropBoxDataTable =
       type: 'delete'
       _method: 'delete'
       url: url
-      data: { filenames: filenames }
+      data: { filenames: filenames, collection_id: $('#collection_id').val() }
       success: (response) ->
         deleted_filenames = response.deleted_filenames
         if deleted_filenames.length > 0

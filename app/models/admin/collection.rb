@@ -176,6 +176,10 @@ class Admin::Collection < ActiveFedora::Base
     solr_doc
   end
 
+  def dropbox
+    Avalon::Dropbox.new build_dropbox_directory_absolute_path(dropbox_directory_name)
+  end
+
   private
 
     def build_dropbox_directory_absolute_path( name )

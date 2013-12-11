@@ -18,8 +18,8 @@ require 'avalon/batch_ingest'
 
 describe Avalon::Batch do
   before :each do
-    Avalon.send(:remove_const, :DropboxService) if Avalon.const_defined?(:DropboxService)
-    Avalon::DropboxService = Avalon::Dropbox.new 'spec/fixtures/dropbox'
+    @saved_dropbox_path = Avalon::Configuration['dropbox']['path']
+    Avalon::Configuration['dropbox']['path'] = 'spec/fixtures/dropbox'
     # Dirty hack is to remove the .processed files both before and after the
     # test. Need to look closer into the ideal timing for where this should take
     # place
@@ -34,6 +34,7 @@ describe Avalon::Batch do
   end
 
   after :each do
+    Avalon::Configuration['dropbox']['path'] = @saved_dropbox_path
     Dir['spec/fixtures/**/*.xlsx.process*','spec/fixtures/**/*.xlsx.error'].each { |file| File.delete(file) }
     RoleControls.remove_user_role('frances.dickens@reichel.com','manager')
     RoleControls.remove_user_role('jay@krajcik.org','manager')
@@ -88,19 +89,21 @@ describe Avalon::Batch do
   end
 
   describe 'invalid manifest' do
+    let(:dropbox) { Avalon::Dropbox.new Avalon::Configuration['dropbox']['path'] }
+
     before :each do
       FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['jay@krajcik.org'])
     end
 
     it 'does not create an ingest batch object when there are zero packages' do
-      Avalon::DropboxService.stub(:find_new_packages).and_return []
+      dropbox.stub(:find_new_packages).and_return []
       Avalon::Batch.ingest
       IngestBatch.count.should == 0
     end
 
     it 'does not create an ingest batch object when there are no files' do
       fileless_batch = Avalon::Batch::Package.new('spec/fixtures/batch_manifest.xlsx')
-      Avalon::DropboxService.stub(:find_new_packages).and_return [fileless_batch]
+      dropbox.stub(:find_new_packages).and_return [fileless_batch]
       Avalon::Batch.ingest
       IngestBatch.count.should == 0
     end
@@ -115,7 +118,7 @@ describe Avalon::Batch do
 
     it 'should fail if a bad offset is specified' do
       bad_offset_batch = Avalon::Batch::Package.new('spec/fixtures/batch_manifest_r2.xlsx')
-      Avalon::DropboxService.stub(:find_new_packages).and_return [bad_offset_batch]
+      dropbox.stub(:find_new_packages).and_return [bad_offset_batch]
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
       mailer.should_receive(:deliver)
