@@ -23,6 +23,7 @@ after "deploy:create_symlink", "deploy:trust_rvmrc"
 
 set(:shared_children) { 
   %{
+    .ruby-version
     config/authentication.yml 
     config/avalon.yml 
     config/controlled_vocabulary.yml 
