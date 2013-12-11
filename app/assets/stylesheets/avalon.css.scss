@@ -550,7 +550,7 @@ button.close {
  * where the navbar collapses
  */
 @media (max-width: $navbarCollapseWidth) {
-  .custom-header {
+  .custom-header .container-fluid {
     display: none;
   }
 }
