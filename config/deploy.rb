@@ -12,18 +12,16 @@ require 'capistrano/ext/multistage'
 
 set(:whenever_command) { "bundle exec whenever" }
 set(:bundle_flags) { "--quiet --path=#{deploy_to}/shared/gems" }
-set :rvm_ruby_string, "ruby-1.9.3-p429"
 set :rvm_type, :system
 
 before "deploy", "deploy:log_environment"
-before "bundle:install", "deploy:link_local_gemfile"
+before "bundle:install", "deploy:link_local_overrides"
 before "deploy:finalize_update", "deploy:remove_symlink_targets"
 after "deploy:update_code", "deploy:migrate"
 after "deploy:create_symlink", "deploy:trust_rvmrc"
 
 set(:shared_children) { 
   %{
-    .ruby-version
     config/authentication.yml 
     config/avalon.yml 
     config/controlled_vocabulary.yml 
@@ -58,8 +56,10 @@ namespace :deploy do
     end
   end
 
-  task :link_local_gemfile do
-    run "if [ -f #{shared_path}/Gemfile.local ]; then rm -f #{latest_release}/Gemfile.local; ln -s #{shared_path}/Gemfile.local #{latest_release}/Gemfile.local; fi"
+  task :link_local_overrides do
+    ['.ruby-version','Gemfile.local'].each do |f|
+      run "if [ -f #{shared_path}/#{f} ]; then rm -f #{latest_release}/#{f}; ln -s #{shared_path}/#{f} #{latest_release}/#{f}; fi"
+    end
   end
 
   task :trust_rvmrc do
