@@ -173,6 +173,7 @@ class Admin::Collection < ActiveFedora::Base
   def to_solr(solr_doc=Hash.new, *args)
     super
     solr_doc[Solrizer.default_field_mapper.solr_name("name", :facetable, type: :string)] = self.name
+    solr_doc[Solrizer.default_field_mapper.solr_name("dropbox_directory_name", :facetable, type: :string)] = self.dropbox_directory_name
     solr_doc
   end
 
@@ -189,23 +190,26 @@ class Admin::Collection < ActiveFedora::Base
 
 
     def create_dropbox_directory!
-      name = Avalon::Sanitizer.sanitize(self.name)
-      iter = 2
-      original_name = name.dup.freeze
+      name = self.dropbox_directory_name
+      if name.blank?
+        name = Avalon::Sanitizer.sanitize(self.name)
+        iter = 2
+        original_name = name.dup.freeze
 
-      while File.exist? dropbox_absolute_path(name)
-        name = "#{original_name}_#{iter}"
-        iter += 1
+        while File.exist? dropbox_absolute_path(name)
+          name = "#{original_name}_#{iter}"
+          iter += 1
+        end
       end
-
       absolute_path = dropbox_absolute_path(name)
       
-      begin
-        Dir.mkdir(absolute_path)
-      rescue Exception => e
-        Rails.logger.error "Could not create directory (#{absolute_path}): #{e.inspect}"
+      unless File.directory?(absolute_path)
+        begin
+          Dir.mkdir(absolute_path)
+        rescue Exception => e
+          Rails.logger.error "Could not create directory (#{absolute_path}): #{e.inspect}"
+        end
       end
-
       self.dropbox_directory_name = name
     end
 

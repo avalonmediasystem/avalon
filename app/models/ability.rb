@@ -22,7 +22,6 @@ class Ability
       can :manage, MediaObject
       can :manage, MasterFile
       can :inspect, MediaObject
-      can :manage, Dropbox
       can :manage, Admin::Group
       can :manage, Admin::Collection
     end
