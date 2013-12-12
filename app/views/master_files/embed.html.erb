@@ -1,0 +1,56 @@
+    <section id="player" style="width: 100%">
+      <% if @masterfile.present? and @masterfile.succeeded? %>
+        <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
+        
+        <% if @stream_info[:is_video] %>
+          <video class="mejs-avalon" controls id="video-tag" poster="<%= @stream_info[:poster_image] %>" preload="true">
+            <% @stream_info[:stream_flash].each do |flash| %>
+              <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
+            <% end %>
+            <% @stream_info[:stream_hls].each do |hls| %>
+              <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
+            <% end %>
+          </video>
+        <% else %>
+          <audio class="mejs-avalon" controls style="width: 100%;" id="video-tag" preload="true">
+            <% @stream_info[:stream_flash].each do |flash| %>
+              <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
+            <% end %>
+            <% @stream_info[:stream_hls].each do |hls| %>
+              <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
+            <% end %>
+          </audio>
+        <% end %>
+      <% end %>
+    </section>
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'jquery' %>
+  <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
+  <%= javascript_include_tag 'switch_streams' %>
+  <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %>
+  <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
+
+  <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
+  <%= stylesheet_link_tag 'me-thumb-selector' %>
+  <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
+
+  <%
+    features = ['playpause','current','progress','duration','volume','qualities','fullscreen','responsive']
+  %>
+
+  <script>
+    currentPlayer = new MediaElementPlayer('#video-tag', 
+        { mode: 'auto_plugin',
+          pluginPath: <%= asset_path('mediaelement_rails/').inspect.html_safe %>,
+          usePluginFullScreen: false,
+  videoWidth: '100%',
+  videoHeight: '100%',
+  enableAutosize: true,
+          features: <%=features.inspect.html_safe%>,
+          audioHeight: 50,
+          iOSDisplayedDuration: <%= @masterfile ? @masterfile.duration.to_i / 1000 : -1 %>,
+          startQuality: 'high'
+        });
+  </script>
+<% end %>

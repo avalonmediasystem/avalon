@@ -35,6 +35,7 @@ Avalon::Application.routes.draw do
       post 'thumbnail', :to => 'master_files#set_frame', :defaults => { :type => 'thumbnail', :format => 'html' }
       post 'poster',    :to => 'master_files#set_frame', :defaults => { :type => 'poster', :format => 'html' }
       post 'still',     :to => 'master_files#set_frame', :defaults => { :format => 'html' }
+      get :embed
     end
   end
   resources :derivatives, only: [:create]

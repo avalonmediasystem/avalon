@@ -34,6 +34,9 @@ class MasterFile < ActiveFedora::Base
     d.field :file_checksum, :string
     d.field :file_size, :string
     d.field :duration, :string
+    d.field :original_width, :string
+    d.field :original_height, :string
+    d.field :original_frame_size, :string
     d.field :file_format, :string
     d.field :poster_offset, :string
     d.field :thumbnail_offset, :string
@@ -54,7 +57,7 @@ class MasterFile < ActiveFedora::Base
 
   has_metadata name: 'masterFile', type: UrlDatastream
 
-  has_attributes :file_checksum, :file_size, :duration, :file_format, :poster_offset, :thumbnail_offset, datastream: :descMetadata, multiple: false
+  has_attributes :file_checksum, :file_size, :duration, :original_width, :original_height, :original_frame_size, :file_format, :poster_offset, :thumbnail_offset, datastream: :descMetadata, multiple: false
   has_attributes :workflow_id, :workflow_name, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures, datastream: :mhMetadata, multiple: false
 
   has_file_datastream name: 'thumbnail'
@@ -417,7 +420,7 @@ class MasterFile < ActiveFedora::Base
   def extract_frame(options={})
     if is_video?
       ffmpeg = Avalon::Configuration['ffmpeg']['path']
-      frame_size = (options[:size].nil? or options[:size] == 'auto') ? mediainfo.video.streams.first.frame_size : options[:size]
+      frame_size = (options[:size].nil? or options[:size] == 'auto') ? self.original_frame_size : options[:size]
 
       options[:offset] ||= 2000
       offset = options[:offset].to_i
@@ -426,15 +429,8 @@ class MasterFile < ActiveFedora::Base
       end
       base = pid.gsub(/:/,'_')
 
-      display_aspect_ratio = mediainfo.video.streams.first.display_aspect_ratio
-      if ':'.in? display_aspect_ratio
-        (original_width,original_height) = display_aspect_ratio.split(/:/).collect &:to_f
-      else
-        (original_width,original_height) = [display_aspect_ratio.to_f, display_aspect_ratio.to_f]
-      end
-
       (new_width,new_height) = frame_size.split(/x/).collect &:to_f
-      new_height = (new_width/(original_width/original_height)).floor
+      new_height = (new_width/(self.original_width.to_f/self.original_height.to_f)).floor
       new_height += 1 if new_height.odd?
       aspect = new_width/new_height
 
@@ -530,7 +526,15 @@ class MasterFile < ActiveFedora::Base
     rescue
       nil
     end
+    
+    display_aspect_ratio = mediainfo.video.streams.first.display_aspect_ratio
+    if ':'.in? display_aspect_ratio
+      (self.original_width,self.original_height) = display_aspect_ratio.split(/:/).collect
+    else
+      (self.original_width,self.original_height) = [display_aspect_ratio, display_aspect_ratio]
+    end
 
+    self.original_frame_size = mediainfo.video.streams.first.frame_size
     self.poster_offset = [2000,mediainfo.duration.to_i].min
 
     self.file_size = file.size.to_s
