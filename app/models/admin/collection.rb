@@ -191,6 +191,7 @@ class Admin::Collection < ActiveFedora::Base
 
     def create_dropbox_directory!
       name = self.dropbox_directory_name
+      
       if name.blank?
         name = Avalon::Sanitizer.sanitize(self.name)
         iter = 2
@@ -201,6 +202,7 @@ class Admin::Collection < ActiveFedora::Base
           iter += 1
         end
       end
+
       absolute_path = dropbox_absolute_path(name)
       
       unless File.directory?(absolute_path)
