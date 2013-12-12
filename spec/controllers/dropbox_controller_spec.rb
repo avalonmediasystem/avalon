@@ -35,4 +35,18 @@ describe DropboxController do
     delete :bulk_delete, { :collection_id => @collection.pid, :filenames => @temp_files.map{|f| f[:name] } }
   end
 
+  it "should allow the collection manager to delete" do
+    login_user @collection.managers.first
+    @dropbox.should_receive(:delete).exactly(@temp_files.count).times
+    delete :bulk_delete, {:collection_id => @collection.pid, :filenames => @temp_files.map{|f| f[:name]}}
+    expect(response.status).to be(200)
+  end
+
+  [:policy_editor, :student].each do |group|
+    it "should not allow #{group} to delete" do
+      login_as group
+      delete :bulk_delete, {:collection_id => @collection.pid, :filenames => @temp_files.map{|f| f[:name]}}
+      expect(response.status).to redirect_to(root_path)
+    end
+  end
 end

@@ -42,6 +42,7 @@ describe Admin::Collection do
       it{ should be_able_to(:update_editors, collection) }
       it{ should be_able_to(:update_depositors, collection) }
       it{ should be_able_to(:create, Admin::Collection) }
+      it{ should be_able_to(:destroy, collection) }
     end
 
     context 'when editor' do
