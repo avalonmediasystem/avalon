@@ -448,6 +448,8 @@ describe Admin::Collection do
   end
 
   describe '#create_dropbox_directory!' do
+    let(:collection){ FactoryGirl.build(:collection) }
+
     it 'removes bad characters from collection name' do
       collection.name = '../../secret.rb'
       Dir.should_receive(:mkdir).with( File.join(Avalon::Configuration['dropbox']['path'], '______secret_rb') )
