@@ -221,7 +221,11 @@ class MasterFile < ActiveFedora::Base
   end
 
   def embed_code(width, host)
-    "<iframe src=\"#{embed_master_file_path(pid, only_path: false, host: host)}\" width=\"#{width}\" height=\"#{(600/display_aspect_ratio.to_f).floor}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
+    begin
+      "<iframe src=\"#{embed_master_file_path(pid, only_path: false, host: host)}\" width=\"#{width}\" height=\"#{(600/display_aspect_ratio.to_f).floor}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
+    rescue 
+      ""
+    end
   end
 
   def is_video?
@@ -536,16 +540,16 @@ class MasterFile < ActiveFedora::Base
     rescue
       nil
     end
-    
-    display_aspect_ratio_s = mediainfo.video.streams.first.display_aspect_ratio
-    if ':'.in? display_aspect_ratio_s
-      self.display_aspect_ratio = display_aspect_ratio_s.split(/:/).collect(&:to_f).reduce(:/).to_s
-    else
-      self.display_aspect_ratio = display_aspect_ratio_s
+  
+    unless mediainfo.video.streams.empty?
+      display_aspect_ratio_s = mediainfo.video.streams.first.display_aspect_ratio
+      if ':'.in? display_aspect_ratio_s
+        self.display_aspect_ratio = display_aspect_ratio_s.split(/:/).collect(&:to_f).reduce(:/).to_s
+      else
+        self.display_aspect_ratio = display_aspect_ratio_s
+      end
+      self.poster_offset = [2000,mediainfo.duration.to_i].min
     end
-
-    self.original_frame_size = mediainfo.video.streams.first.frame_size
-    self.poster_offset = [2000,mediainfo.duration.to_i].min
 
     self.file_size = file.size.to_s
 
