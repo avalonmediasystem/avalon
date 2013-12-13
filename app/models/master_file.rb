@@ -23,6 +23,7 @@ class MasterFile < ActiveFedora::Base
   include Hydra::ModelMixins::RightsMetadata
   include Hydra::ModelMixins::Migratable
   include Hooks
+  include Rails.application.routes.url_helpers
 
   WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding']
 
@@ -34,8 +35,7 @@ class MasterFile < ActiveFedora::Base
     d.field :file_checksum, :string
     d.field :file_size, :string
     d.field :duration, :string
-    d.field :original_width, :string
-    d.field :original_height, :string
+    d.field :display_aspect_ratio, :string
     d.field :original_frame_size, :string
     d.field :file_format, :string
     d.field :poster_offset, :string
@@ -57,7 +57,7 @@ class MasterFile < ActiveFedora::Base
 
   has_metadata name: 'masterFile', type: UrlDatastream
 
-  has_attributes :file_checksum, :file_size, :duration, :original_width, :original_height, :original_frame_size, :file_format, :poster_offset, :thumbnail_offset, datastream: :descMetadata, multiple: false
+  has_attributes :file_checksum, :file_size, :duration, :display_aspect_ratio, :original_frame_size, :file_format, :poster_offset, :thumbnail_offset, datastream: :descMetadata, multiple: false
   has_attributes :workflow_id, :workflow_name, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures, datastream: :mhMetadata, multiple: false
 
   has_file_datastream name: 'thumbnail'
@@ -90,6 +90,8 @@ class MasterFile < ActiveFedora::Base
   QUALITY_ORDER = { "high" => 1, "medium" => 2, "low" => 3 }
   END_STATES = ['STOPPED', 'SUCCEEDED', 'FAILED', 'SKIPPED']
   
+  EMBED_SIZE = {:medium => 600}
+
   def save_parent
     unless mediaobject.nil?
       mediaobject.save(validate: false)  
@@ -212,9 +214,14 @@ class MasterFile < ActiveFedora::Base
       is_video: is_video?,
       poster_image: poster_path,
       mediapackage_id: mediapackage_id,
+      embed_code: embed_code(EMBED_SIZE[:medium], host), 
       stream_flash: flash, 
       stream_hls: hls 
     }
+  end
+
+  def embed_code(width, host)
+    "<iframe src=\"#{embed_master_file_path(pid, only_path: false, host: host)}\" width=\"#{width}\" height=\"#{(600/display_aspect_ratio.to_f).floor}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
   end
 
   def is_video?
@@ -433,7 +440,7 @@ class MasterFile < ActiveFedora::Base
       base = pid.gsub(/:/,'_')
 
       (new_width,new_height) = frame_size.split(/x/).collect &:to_f
-      new_height = (new_width/(self.original_width.to_f/self.original_height.to_f)).floor
+      new_height = (new_width/self.display_aspect_ratio.to_f).floor
       new_height += 1 if new_height.odd?
       aspect = new_width/new_height
 
@@ -530,11 +537,11 @@ class MasterFile < ActiveFedora::Base
       nil
     end
     
-    display_aspect_ratio = mediainfo.video.streams.first.display_aspect_ratio
-    if ':'.in? display_aspect_ratio
-      (self.original_width,self.original_height) = display_aspect_ratio.split(/:/).collect
+    display_aspect_ratio_s = mediainfo.video.streams.first.display_aspect_ratio
+    if ':'.in? display_aspect_ratio_s
+      self.display_aspect_ratio = display_aspect_ratio_s.split(/:/).collect(&:to_f).reduce(:/).to_s
     else
-      (self.original_width,self.original_height) = [display_aspect_ratio, display_aspect_ratio]
+      self.display_aspect_ratio = display_aspect_ratio_s
     end
 
     self.original_frame_size = mediainfo.video.streams.first.frame_size

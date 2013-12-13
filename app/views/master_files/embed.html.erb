@@ -27,12 +27,10 @@
 <% content_for :page_scripts do %>
   <%= javascript_include_tag 'jquery' %>
   <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
-  <%= javascript_include_tag 'switch_streams' %>
   <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %>
   <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
 
   <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
-  <%= stylesheet_link_tag 'me-thumb-selector' %>
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
 
   <%
@@ -44,13 +42,24 @@
         { mode: 'auto_plugin',
           pluginPath: <%= asset_path('mediaelement_rails/').inspect.html_safe %>,
           usePluginFullScreen: false,
-  videoWidth: '100%',
-  videoHeight: '100%',
-  enableAutosize: true,
+          videoWidth: '100%',
+          videoHeight: '100%',
+          enableAutosize: true,
           features: <%=features.inspect.html_safe%>,
           audioHeight: 50,
           iOSDisplayedDuration: <%= @masterfile ? @masterfile.duration.to_i / 1000 : -1 %>,
           startQuality: 'high'
         });
+
+    // Needs to move into a plugin
+    $('<div class="mejs-overlay" style="width: 100%; z-index: 999">'+
+        '<a href="<%= media_object_url(@masterfile.mediaobject) %>" style="color: white; display: block; font-weight: bold; font-size: 16pt; margin: 10px 15px; text-shadow: 0px 0px 2px rgb(0, 0, 0);"><%= @masterfile.label %></a>'+
+     '</div>').appendTo(currentPlayer.layers)
+    
   </script>
+
+  <style>
+    a { text-decoration: none; } 
+    a:hover { text-decoration: underline } 
+  </style>
 <% end %>

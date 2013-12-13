@@ -13,34 +13,34 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<br/>
-<!-- Nav tabs -->
-<ul id="myTab" class="nav nav-tabs">
-  <li><a href="#home" data-toggle="tab">Share</a></li>
-  <li><a href="#profile" data-toggle="tab">Embed</a></li>
+<ul class="nav nav-tabs share-tabs">
+  <li class="active"><a href="#link-tab" data-toggle="tab">Share this resource</a></li>
+  <li><a href="#embed-tab" data-toggle="tab">Embed</a></li>
 </ul>
 
-<!-- Tab panes -->
 <div class="tab-content">
-  <div class="tab-pane active" id="home">
-    <label class="muted">This video</label>
-    <input type="text" class="span5" value="<%= media_object_url(@mediaobject.pid) %>" onClick="this.select();">
-    <label class="muted">This item</label>
-    <input type="text" class="span5"  value="<%= master_file_url(@currentStream.pid) %>" onClick="this.select();">
+  <div class="tab-pane active" id="link-tab">
+    <input type="text" class="span5" id="link-item" value="<%= media_object_url(@mediaobject.pid) %>" onClick="this.select();">
   </div>
-  <div class="tab-pane" id="profile">
-    <textarea class="span6" rows="3" onClick="this.select();"> 
-      <iframe src="//player.vimeo.com/video/81413290" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-    </textarea>
+  <div class="tab-pane" id="embed-tab">
+    <textarea class="span6" rows="3" id="embed-part" onClick="this.select();"><%= @currentStream.embed_code(MasterFile::EMBED_SIZE[:medium], request.host) %></textarea>
   </div>
 </div>
 
+<% content_for :page_scripts do %>
+
 <script>
-  $(document).ready(
-    $('#myTab a').click(function (e) {
+  $(document).ready(function() {
+    $(document).on('streamswitch', function(e, stream_info){
+      if (stream_info != null) {
+        $('#embed-part').text(stream_info.embed_code);
+      }
+    });
+    $('.share-tabs a').click(function (e) {
       e.preventDefault();
       $(this).tab('show');
-    })
-    $('#myTab a:first').tab('show');
-  )
+    });
+  })
 </script>
+
+<% end %>
