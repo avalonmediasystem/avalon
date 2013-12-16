@@ -44,12 +44,14 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
   <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %>
   <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
+  <%= javascript_include_tag 'mediaelement-title/mep-feature-title' %>
 
   <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
+  <%= stylesheet_link_tag "mediaelement-title/mejs-title" =%>
 
   <%
-    features = ['playpause','current','progress','duration','volume','qualities','fullscreen','responsive']
+    features = ['playpause','current','progress','duration','volume','qualities','fullscreen','responsive', 'title']
   %>
 
   <script>
@@ -63,14 +65,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           features: <%=features.inspect.html_safe%>,
           audioHeight: 50,
           iOSDisplayedDuration: <%= @masterfile ? @masterfile.duration.to_i / 1000 : -1 %>,
-          startQuality: 'high'
+          startQuality: 'high',
+          title: '<%= @masterfile.label %>',
+          titleLink: '<%= media_object_url(@masterfile.mediaobject) %>'
         });
-
-    // Needs to move into a plugin
-    $('<div class="mejs-overlay" style="width: 100%; z-index: 999">'+
-        '<a href="<%= media_object_url(@masterfile.mediaobject) %>" style="color: white; display: block; font-weight: bold; font-size: 16pt; margin: 10px 15px; text-shadow: 0px 0px 2px rgb(0, 0, 0);"><%= @masterfile.label %></a>'+
-     '</div>').appendTo(currentPlayer.layers)
-    
   </script>
 
   <style>
