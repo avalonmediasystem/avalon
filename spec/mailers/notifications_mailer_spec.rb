@@ -7,7 +7,60 @@ describe 'NotificationsMailer' do
   include EmailSpec::Helpers
   include EmailSpec::Matchers
 
-  describe '#new_collection' do
+  describe '#update_collection' do
+    let(:collection){ FactoryGirl.create(:collection) }
+    before(:each) do
+      @updater    = FactoryGirl.create(:user)
+      @admin_user = FactoryGirl.create(:user) 
+      @collection = FactoryGirl.create(:collection)
+      @old_name = "Previous name"
+
+      @email = NotificationsMailer.update_collection(
+              updater_id: @updater.id,
+              collection_id: @collection.id,
+              user_id: @admin_user.id,
+              old_name: @old_name,
+              subject: "Notification: collection #{@old_name} changed to #{@collection.name}"
+      )
+    end
+    
+    it 'has correct e-mail address' do
+      @email.should deliver_to(@admin_user.email)
+    end
+
+    context 'subject' do
+      it 'has collection name' do
+        @email.should have_subject(/#{@collection.name}/)
+      end
+    end
+    
+    context 'body' do
+      it 'has collection name' do
+        @email.should have_body_text(@collection.name)
+      end
+      
+      it 'has old collection name' do
+        @email.should have_body_text(@old_name)
+      end
+
+      it 'has updater e-mail' do
+        @email.should have_body_text(@updater.email)
+      end
+
+      it 'has collection description' do
+        @email.should have_body_text(@collection.description)
+      end
+
+      it 'has unit name' do
+        @email.should have_body_text(@collection.unit)
+      end
+
+      it 'has dropbox absolute path' do
+        pending
+      end
+    end
+   end
+   describe '#new_collection' do
     let(:collection){ FactoryGirl.create(:collection) }
     before(:each) do
       @creator    = FactoryGirl.create(:user)
@@ -47,6 +100,10 @@ describe 'NotificationsMailer' do
 
       it 'has unit name' do
         @email.should have_body_text(@collection.unit)
+      end
+
+      it 'has dropbox absolute path' do
+        pending
       end
     end
   end

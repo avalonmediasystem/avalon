@@ -108,7 +108,7 @@ describe MasterFilesController do
         flash[:errors].should be_nil        
       end
       it "should associate a dropbox file" do
-        Avalon::DropboxService.stub(:find).and_return "spec/fixtures/videoshort.mp4"
+        Avalon::Dropbox.any_instance.stub(:find).and_return "spec/fixtures/videoshort.mp4"
         post :create, dropbox: [{id: 1}], original: 'any', container_id: media_object.pid
 
         master_file = MasterFile.all.last

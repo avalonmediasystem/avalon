@@ -16,6 +16,7 @@ require 'hydra/datastream/non_indexed_rights_metadata'
 require 'hydra/model_mixins/hybrid_delegator'
 require 'role_controls'
 require 'avalon/controlled_vocabulary'
+require 'avalon/sanitizer'
 
 class Admin::Collection < ActiveFedora::Base
   include Hydra::ModelMixins::CommonMetadata
@@ -29,6 +30,7 @@ class Admin::Collection < ActiveFedora::Base
     sds.field :name, :string
     sds.field :unit, :string
     sds.field :description, :string
+    sds.field :dropbox_directory_name
   end
   has_metadata name: 'inheritedRights', type: Hydra::Datastream::InheritableRightsMetadata
   has_metadata name: 'defaultRights', type: Hydra::Datastream::NonIndexedRightsMetadata, autocreate: true
@@ -40,6 +42,8 @@ class Admin::Collection < ActiveFedora::Base
   has_attributes :name, datastream: :descMetadata, multiple: false
   has_attributes :unit, datastream: :descMetadata, multiple: false
   has_attributes :description, datastream: :descMetadata, multiple: false
+  has_attributes :dropbox_directory_name, datastream: :descMetadata, multiple: false
+  
   delegate :read_groups, :read_groups=, :read_users, :read_users=,
            :access, :access=, :hidden?, :hidden=, 
            :group_exceptions, :group_exceptions=, :user_exceptions, :user_exceptions=, 
@@ -47,6 +51,7 @@ class Admin::Collection < ActiveFedora::Base
 
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
   before_save { |obj| obj.current_migration = 'R2' }
+  after_validation :create_dropbox_directory!, :on => :create
 
   def self.units
     Avalon::ControlledVocabulary.find_by_name(:units)
@@ -168,6 +173,45 @@ class Admin::Collection < ActiveFedora::Base
   def to_solr(solr_doc=Hash.new, *args)
     super
     solr_doc[Solrizer.default_field_mapper.solr_name("name", :facetable, type: :string)] = self.name
+    solr_doc[Solrizer.default_field_mapper.solr_name("dropbox_directory_name", :facetable, type: :string)] = self.dropbox_directory_name
     solr_doc
   end
+
+  def dropbox
+    Avalon::Dropbox.new dropbox_absolute_path
+  end
+
+  def dropbox_absolute_path( name = nil )
+    File.join(Avalon::Configuration['dropbox']['path'], name || dropbox_directory_name)
+  end
+
+  private
+
+
+    def create_dropbox_directory!
+      name = self.dropbox_directory_name
+      
+      if name.blank?
+        name = Avalon::Sanitizer.sanitize(self.name)
+        iter = 2
+        original_name = name.dup.freeze
+
+        while File.exist? dropbox_absolute_path(name)
+          name = "#{original_name}_#{iter}"
+          iter += 1
+        end
+      end
+
+      absolute_path = dropbox_absolute_path(name)
+      
+      unless File.directory?(absolute_path)
+        begin
+          Dir.mkdir(absolute_path)
+        rescue Exception => e
+          Rails.logger.error "Could not create directory (#{absolute_path}): #{e.inspect}"
+        end
+      end
+      self.dropbox_directory_name = name
+    end
+
 end

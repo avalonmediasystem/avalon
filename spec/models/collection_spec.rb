@@ -42,6 +42,7 @@ describe Admin::Collection do
       it{ should be_able_to(:update_editors, collection) }
       it{ should be_able_to(:update_depositors, collection) }
       it{ should be_able_to(:create, Admin::Collection) }
+      it{ should be_able_to(:destroy, collection) }
     end
 
     context 'when editor' do
@@ -444,6 +445,32 @@ describe Admin::Collection do
     it 'should call save on all member objects' do
       @media_objects.each {|mo| mo.should_receive("update_index").and_return(true)}
       @collection.reindex_members {}
+    end
+  end
+
+  describe '#create_dropbox_directory!' do
+    let(:collection){ FactoryGirl.build(:collection) }
+
+    it 'removes bad characters from collection name' do
+      collection.name = '../../secret.rb'
+      Dir.should_receive(:mkdir).with( File.join(Avalon::Configuration['dropbox']['path'], '______secret_rb') )
+      Dir.stub(:mkdir) # stubbing this out in a before(:each) block will effect where mkdir is used elsewhere (i.e. factories)
+      collection.send(:create_dropbox_directory!)
+    end
+    it 'sets dropbox_directory_name on collection' do
+      collection.name = 'african art'
+      Dir.stub(:mkdir)
+      collection.send(:create_dropbox_directory!)
+      collection.dropbox_directory_name.should == 'african_art'
+    end
+    it 'uses a different directory name if the directory exists' do
+      collection.name = 'african art'
+      FakeFS.activate!
+      FileUtils.mkdir_p(File.join(Avalon::Configuration['dropbox']['path'], 'african_art'))
+      FileUtils.mkdir_p(File.join(Avalon::Configuration['dropbox']['path'], 'african_art_2'))
+      Dir.should_receive(:mkdir).with(File.join(Avalon::Configuration['dropbox']['path'], 'african_art_3'))
+      collection.send(:create_dropbox_directory!)
+      FakeFS.deactivate!
     end
   end
 

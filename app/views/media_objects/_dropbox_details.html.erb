@@ -14,6 +14,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div class="well well-info muted">
-  Dropbox location: <em><%= Avalon::Configuration['dropbox']['upload_uri'] %></em> Contact your system administrator for more information.<br>
+  Dropbox location: <em><%= URI.join(Avalon::Configuration['dropbox']['upload_uri'], @mediaobject.collection.dropbox_directory_name) %></em> Contact your system administrator for more information.<br>
   See <a href="https://wiki.dlib.indiana.edu/x/R5OfHg">Batch Ingest Package Format</a> for instructions and templates.
 </div>

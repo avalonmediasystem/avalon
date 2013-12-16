@@ -69,14 +69,13 @@ class Admin::CollectionsController < ApplicationController
   # POST /collections
   def create
     @collection = Admin::Collection.create(params[:admin_collection].merge(managers: [user_key]))
-    if @collection.save
-
-      User.where(email: [RoleControls.users('administrator')].flatten).each do |admin_user|
+    if @collection.persisted?
+      User.where(username: [RoleControls.users('administrator')].flatten).each do |admin_user|
         NotificationsMailer.delay.new_collection( 
           creator_id: current_user.id, 
           collection_id: @collection.id, 
           user_id: admin_user.id, 
-          subject: "New collection: #{@collection.name}",
+          subject: "New collection: #{@collection.name}"
         )
       end
 
@@ -89,6 +88,24 @@ class Admin::CollectionsController < ApplicationController
   # PUT /collections/1
   def update
     @collection = Admin::Collection.find(params[:id])
+
+    if params[:admin_collection].present?
+      if params[:admin_collection][:name] != @collection.name && can?('update_name', @collection)
+        @old_name = @collection.name
+        @collection.name = params[:admin_collection][:name]
+        if @collection.save
+          User.where(username: [RoleControls.users('administrator')].flatten).each do |admin_user|
+            NotificationsMailer.delay.update_collection( 
+              updater_id: current_user.id, 
+              collection_id: @collection.id, 
+              user_id: admin_user.id,
+              old_name: @old_name,
+              subject: "Notification: collection #{@old_name} changed to #{@collection.name}"
+            ).deliver!
+          end
+        end
+      end
+    end
 
     ["manager", "editor", "depositor"].each do |title|
       attribute_accessor_name = "add_#{title}"

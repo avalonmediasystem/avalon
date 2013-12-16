@@ -58,4 +58,26 @@ describe Admin::CollectionsController, type: :controller do
       response.should redirect_to(admin_collections_path)
     end
   end
+
+  describe "#create" do
+    it "should notify administrators" do
+      login_as(:administrator) #Login as admin so there will be at least one administrator to get an email
+      mock_delay = double('mock_delay').as_null_object 
+      NotificationsMailer.stub(:delay).and_return(mock_delay)
+      mock_delay.should_receive(:new_collection)
+      @collection = FactoryGirl.build(:collection)
+      post 'create', admin_collection: {name: @collection.name, description: @collection.description, unit: @collection.unit}
+    end
+  end
+
+  describe "#update" do
+    it "should notify administrators if name changed" do
+      login_as(:administrator) #Login as admin so there will be at least one administrator to get an email
+      mock_delay = double('mock_delay').as_null_object 
+      NotificationsMailer.stub(:delay).and_return(mock_delay)
+      mock_delay.should_receive(:update_collection)
+      @collection = FactoryGirl.create(:collection)
+      put 'update', id: @collection.pid, admin_collection: {name: "#{@collection.name}-new", description: @collection.description, unit: @collection.unit}
+    end
+  end
 end

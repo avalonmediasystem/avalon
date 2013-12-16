@@ -44,7 +44,9 @@ namespace :avalon do
     task :ingest => :environment do
       # Starts the ingest process
       require 'avalon/batch_ingest'
-      Avalon::Batch.ingest
+      Admin::Collection.all.each do |collection|
+        Avalon::Batch::Ingest.new(collection).ingest
+      end
     end
   end  
   namespace :user do

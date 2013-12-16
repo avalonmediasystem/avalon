@@ -26,7 +26,7 @@ require 'avalon/dropbox'
     # just need to ask the dropbox if there are any files. If so load
     # them into a variable that can be referred to later
     def before_step context
-       dropbox_files = Avalon::DropboxService.all
+       dropbox_files = context[:mediaobject].collection.dropbox.all
        context[:dropbox_files] = dropbox_files 
        context
     end

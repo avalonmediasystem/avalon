@@ -16,19 +16,21 @@ class DropboxController < ApplicationController
   before_filter :authenticate_user!
 
   def bulk_delete
-    unless can? :manage, Dropbox
+    @collection = Admin::Collection.find(params[:collection_id])
+    unless can? :destroy, @collection
       raise CanCan::AccessDenied
     end
 
     # failsafe for spaces that might be attached to string
     filenames = params[:filenames].map(&:strip)
 
-    dropbox_filenames = Avalon::DropboxService.all.map{|f| f[:name] }
+    dropbox = @collection.dropbox
+    dropbox_filenames = dropbox.all.map{|f| f[:name] }
     deleted_filenames = []
 
     filenames.each do |filename|
       if dropbox_filenames.include?( filename )
-        if Avalon::DropboxService.delete( filename ) 
+        if dropbox.delete( filename ) 
           deleted_filenames << filename
           logger.info "The user #{current_user.username} deleted #{filename} from the dropbox."
         end
