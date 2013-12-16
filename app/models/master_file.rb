@@ -548,6 +548,7 @@ class MasterFile < ActiveFedora::Base
       else
         self.display_aspect_ratio = display_aspect_ratio_s
       end
+      self.original_frame_size = mediainfo.video.streams.first.frame_size
       self.poster_offset = [2000,mediainfo.duration.to_i].min
     end
 
