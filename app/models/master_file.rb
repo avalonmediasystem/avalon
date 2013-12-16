@@ -62,7 +62,7 @@ class MasterFile < ActiveFedora::Base
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
-  has_metadata name: 'mediainfoMetadata', type: ActiveFedora::Datastream
+
 
   validates :workflow_name, presence: true, inclusion: { in: Proc.new{ WORKFLOWS } }
   validates_each :poster_offset, :thumbnail_offset do |record, attr, value|
@@ -426,9 +426,6 @@ class MasterFile < ActiveFedora::Base
 
   def mediainfo
     @mediainfo ||= Mediainfo.new file_location
-    mediainfoMetadata.content ||= @mediainfo.raw_response
-    mediainfoMetadata.mimeType ||= 'text/xml'
-    @mediainfo 
   end
 
   def extract_frame(options={})
