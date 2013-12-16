@@ -67,6 +67,12 @@ GIT
     mediaelement-skin-avalon (0.0.1)
 
 GIT
+  remote: https://github.com/avalonmediasystem/mediaelement-title.git
+  revision: e43a0c6a9b3cd9e35b5987a05eff70c476ab4796
+  specs:
+    mediaelement-title (0.0.1)
+
+GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
   revision: aed193f131934e8474a22d4b820db721b9d1c6c4
   specs:
@@ -547,6 +553,7 @@ DEPENDENCIES
   media_element_thumbnail_selector!
   mediaelement-qualityselector!
   mediaelement-skin-avalon!
+  mediaelement-title!
   mediaelement_rails!
   mediainfo
   meta_request

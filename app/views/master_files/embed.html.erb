@@ -13,74 +13,45 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div class="row">
-  <div class="span8" id="left_column">
     <section id="player" style="width: 100%">
-      <% if @currentStream.present? and @currentStream.succeeded? %>
+      <% if @masterfile.present? and @masterfile.succeeded? %>
         <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
         
-        <% if @currentStreamInfo[:is_video] %>
-          <video class="mejs-avalon" controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] %>" preload="true">
-            <% @currentStreamInfo[:stream_flash].each do |flash| %>
+        <% if @stream_info[:is_video] %>
+          <video class="mejs-avalon" controls id="video-tag" poster="<%= @stream_info[:poster_image] %>" preload="true">
+            <% @stream_info[:stream_flash].each do |flash| %>
               <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
             <% end %>
-            <% @currentStreamInfo[:stream_hls].each do |hls| %>
+            <% @stream_info[:stream_hls].each do |hls| %>
               <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
             <% end %>
           </video>
         <% else %>
           <audio class="mejs-avalon" controls style="width: 100%;" id="video-tag" preload="true">
-            <% @currentStreamInfo[:stream_flash].each do |flash| %>
+            <% @stream_info[:stream_flash].each do |flash| %>
               <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
             <% end %>
-            <% @currentStreamInfo[:stream_hls].each do |hls| %>
+            <% @stream_info[:stream_hls].each do |hls| %>
               <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
             <% end %>
           </audio>
         <% end %>
       <% end %>
     </section>
-    <%= render 'video_player' %>
-    <%= render partial: 'sections', 
-        locals: {mediaobject: @mediaobject,
-                 sections: @masterFiles,
-                 activeStream: @currentStream} %>
-
-    <%= render 'share' %>
-  </div>
-
-  <div class="span4" id="right-column">
-    <div id="metadata_container" class="">
-      <section id="metadata"><%= render "metadata_display" %></section>
-    </div>
-  </div>
-
-</div>
-
-<% content_for :title do %>
-  Preview -
-  <% unless @mediaobject.title.blank? %>
-    <%= @mediaobject.title %> (<%= @mediaobject.pid %>)
-  <% else %>
-    <%= @mediaobject.pid %>
-  <% end %>
-<% end %>
 
 <% content_for :page_scripts do %>
+  <%= javascript_include_tag 'jquery' %>
   <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
-  <%= javascript_include_tag 'switch_streams' %> 
-  <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %> 
-  <%= javascript_include_tag 'me-thumb-selector' %>
+  <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %>
   <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
+  <%= javascript_include_tag 'mediaelement-title/mep-feature-title' %>
 
-  <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>   
-  <%= stylesheet_link_tag 'me-thumb-selector' %>
+  <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
+  <%= stylesheet_link_tag "mediaelement-title/mejs-title" =%>
 
   <%
-    features = ['playpause','current','progress','duration','volume','qualities']
-    features << 'thumbnailSelector' if can? :edit, @mediaobject
-    features.concat ['fullscreen','responsive']
+    features = ['playpause','current','progress','duration','volume','qualities','fullscreen','responsive', 'title']
   %>
 
   <script>
@@ -88,12 +59,20 @@ Unless required by applicable law or agreed to in writing, software distributed
         { mode: 'auto_plugin',
           pluginPath: <%= asset_path('mediaelement_rails/').inspect.html_safe %>,
           usePluginFullScreen: false,
-          thumbnailSelectorUpdateURL: '/update-url',
-          thumbnailSelectorEnabled: true,
+          videoWidth: '100%',
+          videoHeight: '100%',
+          enableAutosize: true,
           features: <%=features.inspect.html_safe%>,
           audioHeight: 50,
-          iOSDisplayedDuration: <%= @currentStream ? @currentStream.duration.to_i / 1000 : -1 %>,
-          startQuality: 'high'
+          iOSDisplayedDuration: <%= @masterfile ? @masterfile.duration.to_i / 1000 : -1 %>,
+          startQuality: 'high',
+          title: '<%= @masterfile.label %>',
+          titleLink: '<%= media_object_url(@masterfile.mediaobject) %>'
         });
   </script>
+
+  <style>
+    a { text-decoration: none; } 
+    a:hover { text-decoration: underline } 
+  </style>
 <% end %>

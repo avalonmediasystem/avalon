@@ -15,13 +15,13 @@
 */
 
 window.AvalonStreams = {
-    setActiveSection: function(activeSegment) {
+    setActiveSection: function(activeSegment, stream_info) {
       /* Start by resetting the state of all sections */
       $('a.current-stream ~ i').remove();
       $('a[data-segment]').removeClass('current-stream');
 
       $("a[data-segment='" + activeSegment + "']").addClass('current-stream');
-      $('a.current-stream').trigger('streamswitch').parent().append(AvalonStreams.nowPlaying);
+      $('a.current-stream').trigger('streamswitch', [stream_info]).parent().append(AvalonStreams.nowPlaying);
     },
 
     setActiveLabel: function(title) {
@@ -74,7 +74,7 @@ window.AvalonStreams = {
 
 $().ready(function() {
     /* Initialize the extra eye candy on page load */
-    AvalonStreams.setActiveSection($('a.current-stream').data('segment'));
+    AvalonStreams.setActiveSection($('a.current-stream').data('segment'), null);
     
     $('a[data-segment]').click(function(event) {
 
@@ -91,7 +91,7 @@ $().ready(function() {
         var segment = $(this).data('segment');
 
         $.getJSON(uri, 'content=' + segment, function(data) {
-          AvalonStreams.setActiveSection(segment);
+          AvalonStreams.setActiveSection(segment, data);
           AvalonStreams.refreshStream(data);
         });
       }
