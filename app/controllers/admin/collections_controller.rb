@@ -90,6 +90,19 @@ class Admin::CollectionsController < ApplicationController
   def update
     @collection = Admin::Collection.find(params[:id])
 
+    if params[:admin_collection][:name] != @collection.name && can?('update_name', @collection)
+      User.where(email: [RoleControls.users('administrator')].flatten).each do |admin_user|
+        NotificationsMailer.update_collection( 
+          updater_id: current_user.id, 
+          collection_id: @collection.id, 
+          user_id: admin_user.id, 
+          subject: "Notification: collection #{@collection.name} changed to #{params[:admin_collection][:name]}",
+        ).deliver!
+      end
+      @collection.name = params[:admin_collection][:name]
+      @collection.save
+    end
+
     ["manager", "editor", "depositor"].each do |title|
       attribute_accessor_name = "add_#{title}"
       if params[attribute_accessor_name].present? && can?("update_#{title.pluralize}".to_sym, @collection)
