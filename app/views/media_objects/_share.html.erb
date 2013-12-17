@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="tab-content">
   <div class="tab-pane active" id="link-tab">
-    <input type="text" class="span5" id="link-item" value="<%= media_object_url(@mediaobject.pid) %>" onClick="this.select();">
+    <input type="text" class="span5" id="link-item" value="<%= pid_section_media_object_url(@mediaobject.pid, @currentStream.pid) %>" onClick="this.select();">
   </div>
   <% unless @currentStream.blank? %>
   <div class="tab-pane" id="embed-tab">
@@ -34,6 +34,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <script>
   $(document).ready(function() {
     $(document).on('streamswitch', function(e, stream_info){
+      $('#link-item').val($('a.current-stream').prop('href'));
       if (stream_info != null) {
         $('#embed-part').text(stream_info.embed_code);
       }

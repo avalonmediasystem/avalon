@@ -218,6 +218,14 @@ class MediaObjectsController < ApplicationController
   def load_player_context
     @mediaobject = MediaObject.find(params[:id])
 
+    if params[:part]
+      index = params[:part].to_i-1
+      if index < 0 or index > @mediaobject.section_pid.length
+        raise ActiveFedora::ObjectNotFoundError
+      end
+      params[:content] = @mediaobject.section_pid[index]
+    end
+
     @masterFiles = load_master_files
     @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
     @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
