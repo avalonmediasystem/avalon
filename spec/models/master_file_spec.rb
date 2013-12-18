@@ -255,7 +255,7 @@ describe MasterFile do
       }
 
       before(:each) do
-        @old_media_path = Avalon::Configuration['matterhorn']['media_path']
+        @old_media_path = Avalon::Configuration.lookup('matterhorn.media_path')
         FileUtils.mkdir_p media_path
         FileUtils.cp fixture, tempfile
       end

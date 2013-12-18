@@ -18,10 +18,10 @@ class IngestBatchMailer < ActionMailer::Base
   def status_email( ingest_batch_id )
     @ingest_batch = IngestBatch.find(ingest_batch_id)
     @media_objects = @ingest_batch.media_objects
-    @email = @ingest_batch.email || Avalon::Configuration['email']['notification']
+    @email = @ingest_batch.email || Avalon::Configuration.lookup('email.notification')
     mail(
       to: @email, 
-      from: Avalon::Configuration['email']['notification'], 
+      from: Avalon::Configuration.lookup('email.notification'), 
       subject: "Batch ingest status for: #{@ingest_batch.name}"
     )
   end
@@ -29,20 +29,20 @@ class IngestBatchMailer < ActionMailer::Base
   def batch_ingest_validation_error( package, base_errors )
     @package = package
     @base_errors = base_errors
-    email = package.manifest.email || Avalon::Configuration['email']['notification']
+    email = package.manifest.email || Avalon::Configuration.lookup('email.notification')
     mail(
       to: email,
-      from: Avalon::Configuration['email']['notification'],
+      from: Avalon::Configuration.lookup('email.notification'),
       subject: "Failed batch ingest processing errors for: #{package.manifest.name}",
     )
   end
 
   def batch_ingest_validation_success( package )
     @package = package
-    email = package.manifest.email || Avalon::Configuration['email']['notification']
+    email = package.manifest.email || Avalon::Configuration.lookup('email.notification')
     mail(
       to: email,
-      from: Avalon::Configuration['email']['notification'],
+      from: Avalon::Configuration.lookup('email.notification'),
       subject: "Successfully processed batch ingest: #{package.manifest.name}",
     )
   end

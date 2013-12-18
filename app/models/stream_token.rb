@@ -50,6 +50,6 @@ class StreamToken < ActiveRecord::Base
   end
 
   def renew!
-    self.update_attribute :expires, ( Time.now + Avalon::Configuration['streaming']['stream_token_ttl'].minutes )
+    self.update_attribute :expires, ( Time.now + Avalon::Configuration.lookup('streaming.stream_token_ttl').minutes )
   end
 end

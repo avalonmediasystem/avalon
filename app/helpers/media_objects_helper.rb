@@ -43,7 +43,7 @@ module MediaObjectsHelper
      def dropbox_url collection
         ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
         path = URI::Parser.new.escape(collection.dropbox_directory_name, %r{[/\\%& #]})
-        url = File.join(Avalon::Configuration['dropbox']['upload_uri'], path)
+        url = File.join(Avalon::Configuration.lookup('dropbox.upload_uri'), path)
         ic.iconv(url)
      end
 end

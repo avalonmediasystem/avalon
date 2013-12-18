@@ -430,7 +430,7 @@ class MasterFile < ActiveFedora::Base
 
   def extract_frame(options={})
     if is_video?
-      ffmpeg = Avalon::Configuration['ffmpeg']['path']
+      ffmpeg = Avalon::Configuration.lookup('ffmpeg.path')
       frame_size = (options[:size].nil? or options[:size] == 'auto') ? self.original_frame_size : options[:size]
 
       options[:offset] ||= 2000
@@ -518,7 +518,7 @@ class MasterFile < ActiveFedora::Base
     @mediainfo = nil
     realpath = File.realpath(file.path)
     if original_name.present?
-      config_path = Avalon::Configuration['matterhorn']['media_path']
+      config_path = Avalon::Configuration.lookup('matterhorn.media_path')
       newpath = nil
       if config_path.present? and File.directory?(config_path)
         newpath = File.join(config_path, original_name)
@@ -557,11 +557,11 @@ class MasterFile < ActiveFedora::Base
   def post_processing_file_management
     logger.debug "Finished processing"
 
-    case Avalon::Configuration['master_file_management']['strategy']
+    case Avalon::Configuration.lookup('master_file_management.strategy')
     when 'delete'
       AvalonJobs.delete_masterfile self.pid
     when 'move'
-      move_path = Avalon::Configuration['master_file_management']['path']
+      move_path = Avalon::Configuration.lookup('master_file_management.path')
       raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?
       newpath = File.join(move_path, post_processing_move_filename(file_location, pid: self.pid))
       AvalonJobs.move_masterfile self.pid, newpath

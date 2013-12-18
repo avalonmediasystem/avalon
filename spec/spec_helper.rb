@@ -61,16 +61,16 @@ RSpec.configure do |config|
 
     # Stub the entire dropbox
     Avalon::Configuration['spec'] = {
-      'real_dropbox' => Avalon::Configuration['dropbox']['path'],
+      'real_dropbox' => Avalon::Configuration.lookup('dropbox.path'),
       'fake_dropbox' => Dir.mktmpdir
     }
-    Avalon::Configuration['dropbox']['path'] = Avalon::Configuration['spec']['fake_dropbox']
+    Avalon::Configuration['dropbox']['path'] = Avalon::Configuration.lookup('spec.fake_dropbox')
   end
 
   config.after(:suite) do
     if Avalon::Configuration.lookup('spec.fake_dropbox')
-      FileUtils.remove_dir Avalon::Configuration['spec']['fake_dropbox'], true
-      Avalon::Configuration['dropbox']['path'] = Avalon::Configuration['spec']['real_dropbox']
+      FileUtils.remove_dir Avalon::Configuration.lookup('spec.fake_dropbox'), true
+      Avalon::Configuration['dropbox']['path'] = Avalon::Configuration.lookup('spec.real_dropbox')
       Avalon::Configuration.delete('spec')
     end
   end

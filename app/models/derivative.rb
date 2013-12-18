@@ -46,7 +46,7 @@ class Derivative < ActiveFedora::Base
   has_metadata name: 'encoding', type: EncodingProfileDocument
 
   def self.url_handler
-    url_handler_class = Avalon::Configuration['streaming']['server'].to_s.classify
+    url_handler_class = Avalon::Configuration.lookup('streaming.server').to_s.classify
     @url_handler ||= UrlHandler.const_get(url_handler_class.to_sym)
   end
 
@@ -123,7 +123,7 @@ class Derivative < ActiveFedora::Base
     end
 
     template = ERB.new(self.class.url_handler.patterns[protocol][format])
-    result = File.join(Avalon::Configuration['streaming']["#{protocol}_base"],template.result(rtmp_url.binding))
+    result = File.join(Avalon::Configuration.lookup("streaming.#{protocol}_base"),template.result(rtmp_url.binding))
   end
 
   def format
@@ -143,7 +143,7 @@ class Derivative < ActiveFedora::Base
     job_urls << Rubyhorn.client.delete_hls_track(masterfile.workflow_id, hls_track_id) if hls_track_id.present? 
 
     # Logs retraction jobs for sysadmin 
-    File.open(Avalon::Configuration['matterhorn']['cleanup_log'], "a+") { |f| f << job_urls.join("\n") + "\n" }
+    File.open(Avalon::Configuration.lookup('matterhorn.cleanup_log'), "a+") { |f| f << job_urls.join("\n") + "\n" }
 
     super
   end
