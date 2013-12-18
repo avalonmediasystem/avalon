@@ -68,7 +68,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-title.git
-  revision: e43a0c6a9b3cd9e35b5987a05eff70c476ab4796
+  revision: a2e67d24217f06a0a7d46c0175cc64fc178cf1fc
   specs:
     mediaelement-title (0.0.1)
 
