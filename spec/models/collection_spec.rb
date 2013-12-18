@@ -21,7 +21,7 @@ describe Admin::Collection do
 
   describe 'abilities' do
 
-    context 'when administator' do
+    context 'when administrator' do
       subject{ ability }
       let(:ability){ Ability.new(user) }
       let(:user){ FactoryGirl.create(:administrator) }
@@ -474,4 +474,15 @@ describe Admin::Collection do
     end
   end
 
+  describe 'Unicode' do
+    let(:content)    {YAML.load(File.read(File.expand_path('../../fixtures/unicode_collection.yml',__FILE__)))}
+    let(:collection) {FactoryGirl.build(:collection)}
+
+    it 'handles Unicode collection names correctly' do
+      collection.name = content['input']
+      Dir.should_receive(:mkdir).with( File.join(Avalon::Configuration['dropbox']['path'], content['output']) )
+      Dir.stub(:mkdir)
+      collection.send(:create_dropbox_directory!)
+    end
+  end
 end
