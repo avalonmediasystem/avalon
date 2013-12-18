@@ -61,6 +61,7 @@ class MediaObjectsController < ApplicationController
 
     if 'access-control' == @active_step 
       @group_exceptions = []
+      @class_exceptions = []
       if @mediaobject.access == "limited"
         # When access is limited, group_exceptions content is stored in read_groups
         @mediaobject.read_groups.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
