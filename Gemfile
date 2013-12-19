@@ -4,7 +4,7 @@
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
 
-  gem 'hydra-head', '~> 6.3.0'
+  gem 'hydra', "~> 6.1.0"
   gem 'hydra-migrate', '>=0.2.0'
   gem 'bcrypt-ruby', '~> 3.0.0'
 
@@ -15,7 +15,6 @@
   gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector' # HEAD , tag: 'avalon-r2'
   gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git' # HEAD , tag: 'avalon-r2'
   gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git' # HEAD
-  gem 'hydra-migrate', '>=0.2.0'
   
   gem 'modal_logic'
 

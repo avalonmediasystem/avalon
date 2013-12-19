@@ -12,13 +12,11 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-#require 'hydra/rights_metadata'
 
 class MediaObject < ActiveFedora::Base
-  include Hydra::ModelMixins::CommonMetadata
+  include Hydra::AccessControls::Permissions
   include Hydra::ModelMethods
   include ActiveFedora::Associations
-  include Hydra::ModelMixins::RightsMetadata
   include Avalon::Workflow::WorkflowModelMixin
   include Hydra::ModelMixins::Migratable
 
