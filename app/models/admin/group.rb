@@ -27,8 +27,7 @@ class Admin::Group
 
   def self.non_system_groups
     groups = all
-    if Avalon::Configuration['groups'] && Avalon::Configuration['groups']['system_groups']
-      system_groups = Avalon::Configuration['groups']['system_groups']
+    if system_groups = Avalon::Configuration.lookup('groups.system_groups')
       groups.reject! { |g| system_groups.include? g.name }
     end
     groups
@@ -210,7 +209,7 @@ class Admin::Group
   # group. This is a workaround for the bug that breaks the system whenever
   # a system group is renamed.
   def self.name_is_static? group_name
-    Avalon::Configuration['groups']['system_groups'].include? group_name
+    Avalon::Configuration.lookup('groups.system_groups').include? group_name
   end
 
 end

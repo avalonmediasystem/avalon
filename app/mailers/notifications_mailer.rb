@@ -1,5 +1,5 @@
 class NotificationsMailer < ActionMailer::Base
-  default from: Avalon::Configuration['email']['notification']
+  default from: Avalon::Configuration.lookup('email.notification')
 
   def new_collection( args = {} )
     @collection = Admin::Collection.find(args.delete(:collection_id))

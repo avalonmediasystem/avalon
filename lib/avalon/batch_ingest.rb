@@ -73,7 +73,7 @@ module Avalon
           new_packages.each_with_index do |package, index|
             media_objects = []
             base_errors = []
-            email_address = package.manifest.email || Avalon::Configuration['email']['notification']
+            email_address = package.manifest.email || Avalon::Configuration.lookup('email.notification')
             current_user = User.where(username: email_address).first || User.where(email: email_address).first
             if current_user.nil?
               base_errors << "User does not exist in the system: #{email_address}."

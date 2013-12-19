@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class CommentsMailer < ActionMailer::Base
-  default :to => Avalon::Configuration['email']['comments']
+  default :to => Avalon::Configuration.lookup('email.comments')
   
   def contact_email(comment)
     @comment = comment

@@ -182,7 +182,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def dropbox_absolute_path( name = nil )
-    File.join(Avalon::Configuration['dropbox']['path'], name || dropbox_directory_name)
+    File.join(Avalon::Configuration.lookup('dropbox.path'), name || dropbox_directory_name)
   end
 
   private

@@ -26,9 +26,16 @@ module Avalon
   env = ENV['RAILS_ENV'] || 'development'
   Configuration = DEFAULT_CONFIGURATION.deep_merge(YAML::load(File.read(Rails.root.join('config', 'avalon.yml')))[env])
   ['dropbox','matterhorn','mediainfo','email','streaming'].each { |key| Configuration[key] ||= {} }
+  def Configuration.lookup(*path)
+    path = path.first.split(/\./) if path.length == 1
+    path.inject(self) do |location, key|
+      location.respond_to?(:keys) ? location[key] : nil
+    end
+  end
+
   
   begin
-    mipath = Avalon::Configuration['mediainfo']['path']
+    mipath = Avalon::Configuration.lookup('mediainfo.path')
     Mediainfo.path = mipath unless mipath.blank? 
   rescue Exception => e
     logger.fatal "Initialization failed"

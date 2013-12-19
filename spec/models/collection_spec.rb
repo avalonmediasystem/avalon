@@ -21,7 +21,7 @@ describe Admin::Collection do
 
   describe 'abilities' do
 
-    context 'when administator' do
+    context 'when administrator' do
       subject{ ability }
       let(:ability){ Ability.new(user) }
       let(:user){ FactoryGirl.create(:administrator) }
@@ -453,7 +453,7 @@ describe Admin::Collection do
 
     it 'removes bad characters from collection name' do
       collection.name = '../../secret.rb'
-      Dir.should_receive(:mkdir).with( File.join(Avalon::Configuration['dropbox']['path'], '______secret_rb') )
+      Dir.should_receive(:mkdir).with( File.join(Avalon::Configuration.lookup('dropbox.path'), '______secret_rb') )
       Dir.stub(:mkdir) # stubbing this out in a before(:each) block will effect where mkdir is used elsewhere (i.e. factories)
       collection.send(:create_dropbox_directory!)
     end
@@ -466,12 +466,24 @@ describe Admin::Collection do
     it 'uses a different directory name if the directory exists' do
       collection.name = 'african art'
       FakeFS.activate!
-      FileUtils.mkdir_p(File.join(Avalon::Configuration['dropbox']['path'], 'african_art'))
-      FileUtils.mkdir_p(File.join(Avalon::Configuration['dropbox']['path'], 'african_art_2'))
-      Dir.should_receive(:mkdir).with(File.join(Avalon::Configuration['dropbox']['path'], 'african_art_3'))
+      FileUtils.mkdir_p(File.join(Avalon::Configuration.lookup('dropbox.path'), 'african_art'))
+      FileUtils.mkdir_p(File.join(Avalon::Configuration.lookup('dropbox.path'), 'african_art_2'))
+      Dir.should_receive(:mkdir).with(File.join(Avalon::Configuration.lookup('dropbox.path'), 'african_art_3'))
       collection.send(:create_dropbox_directory!)
       FakeFS.deactivate!
     end
   end
 
+  describe 'Unicode' do
+    let(:collection_name) { "Collections & Favorites / \u6211\u7684\u6536\u85cf / \u03a4\u03b1 \u03b1\u03b3\u03b1\u03c0\u03b7\u03bc\u03ad\u03bd\u03b1 \u03bc\u03bf\u03c5" }
+    let(:collection_dir)  { "Collections___Favorites___\u6211\u7684\u6536\u85cf___\u03a4\u03b1_\u03b1\u03b3\u03b1\u03c0\u03b7\u03bc\u03ad\u03bd\u03b1_\u03bc\u03bf\u03c5" }
+    let(:collection)      { FactoryGirl.build(:collection) }
+
+    it 'handles Unicode collection names correctly' do
+      collection.name = collection_name
+      Dir.should_receive(:mkdir).with( File.join(Avalon::Configuration.lookup('dropbox.path'), collection_dir) )
+      Dir.stub(:mkdir)
+      collection.send(:create_dropbox_directory!)
+    end
+  end
 end
