@@ -475,12 +475,13 @@ describe Admin::Collection do
   end
 
   describe 'Unicode' do
-    let(:content)    {YAML.load(File.read(File.expand_path('../../fixtures/unicode_collection.yml',__FILE__)))}
-    let(:collection) {FactoryGirl.build(:collection)}
+    let(:collection_name) { "Collections & Favorites / \u6211\u7684\u6536\u85cf / \u03a4\u03b1 \u03b1\u03b3\u03b1\u03c0\u03b7\u03bc\u03ad\u03bd\u03b1 \u03bc\u03bf\u03c5" }
+    let(:collection_dir)  { "Collections___Favorites___\u6211\u7684\u6536\u85cf___\u03a4\u03b1_\u03b1\u03b3\u03b1\u03c0\u03b7\u03bc\u03ad\u03bd\u03b1_\u03bc\u03bf\u03c5" }
+    let(:collection)      { FactoryGirl.build(:collection) }
 
     it 'handles Unicode collection names correctly' do
-      collection.name = content['input']
-      Dir.should_receive(:mkdir).with( File.join(Avalon::Configuration.lookup('dropbox.path'), content['output']) )
+      collection.name = collection_name
+      Dir.should_receive(:mkdir).with( File.join(Avalon::Configuration.lookup('dropbox.path'), collection_dir) )
       Dir.stub(:mkdir)
       collection.send(:create_dropbox_directory!)
     end
