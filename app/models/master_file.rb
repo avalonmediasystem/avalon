@@ -19,8 +19,7 @@ require 'avalon/file_resolver'
 class MasterFile < ActiveFedora::Base
   include ActiveFedora::Associations
   include Hydra::ModelMethods
-  include Hydra::ModelMixins::CommonMetadata
-  include Hydra::ModelMixins::RightsMetadata
+  include Hydra::AccessControls::Permissions
   include Hydra::ModelMixins::Migratable
   include Hooks
   include Rails.application.routes.url_helpers

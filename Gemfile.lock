@@ -231,7 +231,7 @@ GEM
       launchy (~> 2.1)
       mail (~> 2.2)
     ensure_valid_encoding (0.5.3)
-    equivalent-xml (0.3.0)
+    equivalent-xml (0.4.0)
       nokogiri (>= 1.4.3)
     erubis (2.7.0)
     execjs (2.0.2)
@@ -264,23 +264,35 @@ GEM
     highline (1.6.20)
     hike (1.2.3)
     hooks (0.3.3)
-    hydra-access-controls (6.3.4)
-      active-fedora (~> 6.1)
+    hydra (6.1.0)
+      active-fedora (~> 6.7.0)
+      blacklight (~> 4.5.0)
+      hydra-head (~> 6.4.0)
+      jettywrapper (~> 1.5.0)
+      nokogiri (~> 1.6.0)
+      nom-xml (~> 0.5.1)
+      om (~> 3.0.3)
+      rails (>= 3.2.15, < 5.0)
+      rsolr (~> 1.0.9)
+      rubydora (~> 1.6.5)
+      solrizer (~> 3.1.0)
+    hydra-access-controls (6.4.1)
+      active-fedora (~> 6.6)
       activesupport
       blacklight (~> 4.0)
       cancan
       deprecation
-    hydra-core (6.3.4)
+    hydra-core (6.4.1)
       active-fedora
       blacklight (~> 4.0)
       block_helpers
       deprecation (>= 0.0.5)
-      hydra-access-controls (= 6.3.4)
+      hydra-access-controls (= 6.4.1)
       jettywrapper (>= 1.4.1)
       rails (>= 3.2.3, < 5)
-    hydra-head (6.3.4)
-      hydra-access-controls (= 6.3.4)
-      hydra-core (= 6.3.4)
+    hydra-head (6.4.1)
+      hydra-access-controls (= 6.4.1)
+      hydra-core (= 6.4.1)
       rails (>= 3.2.6)
     hydra-migrate (0.3.0)
       active-fedora (>= 6.0)
@@ -340,7 +352,7 @@ GEM
     net-ssh (2.7.0)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
-    nokogiri (1.6.0)
+    nokogiri (1.6.1)
       mini_portile (~> 0.5.0)
     nom-xml (0.5.1)
       activesupport
@@ -398,7 +410,7 @@ GEM
     raindrops (0.12.0)
     rake (10.1.0)
     rb-fsevent (0.9.3)
-    rdf (1.1.0)
+    rdf (1.1.0.1)
     rdf-rdfxml (1.0.1)
       rdf (>= 1.0)
       rdf-xsd (>= 1.0)
@@ -540,7 +552,7 @@ DEPENDENCIES
   handlebars_assets
   headless
   hooks
-  hydra-head (~> 6.3.0)
+  hydra (~> 6.1.0)
   hydra-migrate (>= 0.2.0)
   iconv
   jdbc-sqlite3

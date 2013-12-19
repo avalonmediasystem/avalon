@@ -19,9 +19,8 @@ require 'avalon/controlled_vocabulary'
 require 'avalon/sanitizer'
 
 class Admin::Collection < ActiveFedora::Base
-  include Hydra::ModelMixins::CommonMetadata
+  include Hydra::AccessControls::Permissions
   include ActiveFedora::Associations
-  include Hydra::ModelMixins::RightsMetadata
   include Hydra::ModelMixins::HybridDelegator
   include Hydra::ModelMixins::Migratable
 

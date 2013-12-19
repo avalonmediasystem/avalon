@@ -1,4 +1,4 @@
-require "hydra"
+require 'hydra/head' unless defined? Hydra
 
 # The following lines determine which user attributes your hydrangea app will use
 # This configuration allows you to use the out of the box ActiveRecord associations between users and user_attributes
