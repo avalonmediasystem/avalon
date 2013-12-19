@@ -41,7 +41,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   	@user = User.send(find_method,request.env["omniauth.auth"], current_user)
 
     if @user.persisted? 
-      flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => auth_type
       sign_in @user, :event => :authentication
     end
 
