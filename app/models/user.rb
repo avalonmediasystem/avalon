@@ -45,7 +45,9 @@ class User < ActiveRecord::Base
 
   def self.find_for_lti(auth_hash, signed_in_resource=nil)
     logger.debug "In find_for_lti: #{auth_hash}"
-    User.find_or_create_by_username auth_hash['uid'], email: auth_hash.info.email
+    u = User.find_or_create_by_username auth_hash['uid'], email: auth_hash.info.email
+    u.virtual_groups << auth_hash.extra.raw_info.context_id
+    u
   end
 
   def ability
@@ -57,6 +59,15 @@ class User < ActiveRecord::Base
   end
 
   def groups
-    RoleMapper.roles(user_key)
+    RoleMapper.roles(user_key) + virtual_groups 
   end
+
+  def virtual_groups= groups 
+    @vgroups = groups
+  end
+
+  def virtual_groups
+    @vgroups ||= []
+  end
+    
 end
