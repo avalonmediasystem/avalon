@@ -91,7 +91,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           thumbnailSelectorUpdateURL: '/update-url',
           thumbnailSelectorEnabled: true,
           features: <%=features.inspect.html_safe%>,
-          audioHeight: 50,
+          audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
           iOSDisplayedDuration: <%= @currentStream ? @currentStream.duration.to_i / 1000 : -1 %>,
           startQuality: 'high'
         });

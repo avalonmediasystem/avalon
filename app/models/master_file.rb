@@ -91,6 +91,7 @@ class MasterFile < ActiveFedora::Base
   END_STATES = ['STOPPED', 'SUCCEEDED', 'FAILED', 'SKIPPED']
   
   EMBED_SIZE = {:medium => 600}
+  AUDIO_HEIGHT = 50
 
   def save_parent
     unless mediaobject.nil?
@@ -222,7 +223,9 @@ class MasterFile < ActiveFedora::Base
 
   def embed_code(width, host)
     begin
-      "<iframe src=\"#{embed_master_file_path(pid, only_path: false, host: host)}\" width=\"#{width}\" height=\"#{(600/display_aspect_ratio.to_f).floor}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
+      height = is_video? ? (width/display_aspect_ratio.to_f).floor : AUDIO_HEIGHT
+      path = embed_master_file_path(pid, only_path: false, host: host)
+      "<iframe src=\"#{path}\" width=\"#{width}\" height=\"#{height}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
     rescue 
       ""
     end
