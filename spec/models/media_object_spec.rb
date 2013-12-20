@@ -198,7 +198,7 @@ describe MediaObject do
   describe "access" do
     it "should set access level to public" do
       media_object.access = "public"
-      media_object.read_groups.should =~ ["public", "registered"]
+      media_object.read_groups.should =~ ["public"]
     end
     it "should set access level to restricted" do
       media_object.access = "restricted"
@@ -208,8 +208,13 @@ describe MediaObject do
       media_object.access = "private"
       media_object.read_groups.should =~ []
     end
+    it "should set access level to limited" do
+      media_object.group_exceptions = ["class101"]
+      media_object.access = "limited"
+      media_object.read_groups.should =~ ["class101"]
+    end
     it "should return public" do
-      media_object.read_groups = ["public", "registered"]
+      media_object.read_groups = ["public"]
       media_object.access.should eq "public"
     end
     it "should return restricted" do
@@ -219,6 +224,16 @@ describe MediaObject do
     it "should return private" do
       media_object.read_groups = []
       media_object.access.should eq "private"
+    end
+    it "should return limited" do
+      media_object.read_groups = ["class101"]
+      media_object.access.should eq "limited"
+    end
+    it "should remove exceptions when access is switch from limited" do
+      media_object.group_exceptions = ["class101"]
+      media_object.access = 'limited'
+      media_object.access = 'private'
+      media_object.read_groups.should =~ []
     end
   end
 
@@ -258,9 +273,7 @@ describe MediaObject do
     end
   end
 
-  describe 'change additional read permisions' do 
-    it "should be able to have limited access" 
-
+  describe '#group_exceptions' do 
     it "should not add duplicated group" do
       media_object.access = "public"
       test_groups = ["group1", "group1", media_object.read_groups.first]

@@ -36,15 +36,10 @@ class Admin::CollectionsController < ApplicationController
   def show
     @collection = Admin::Collection.find(params[:id])
     redirect_to admin_collections_path unless can? :read, @collection
-    @group_exceptions = []
-    if @collection.default_access == "limited"
-      # When access is limited, group_exceptions content is stored in read_groups
-      @collection.default_read_groups.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
-      @user_exceptions = @collection.default_read_users 
-     else
-      @collection.default_group_exceptions.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
-      @user_exceptions = @collection.default_user_exceptions 
-    end
+    @group_exceptions = @collection.default_local_group_exceptions
+    @user_exceptions = @collection.default_user_exceptions
+    @virtual_group_exceptions = @collection.default_virtual_group_exceptions
+    @access = @collection.default_access
 
     @addable_groups = Admin::Group.non_system_groups.reject { |g| @group_exceptions.include? g.name }
   end
@@ -88,8 +83,7 @@ class Admin::CollectionsController < ApplicationController
   # PUT /collections/1
   def update
     @collection = Admin::Collection.find(params[:id])
-
-    if params[:admin_collection].present?
+    if params[:admin_collection].present? && params[:admin_collection][:name].present?
       if params[:admin_collection][:name] != @collection.name && can?('update_name', @collection)
         @old_name = @collection.name
         @collection.name = params[:admin_collection][:name]
@@ -133,26 +127,13 @@ class Admin::CollectionsController < ApplicationController
     # If Save Access Setting button or Add/Remove User/Group button has been clicked
     if can?(:update_access_control, @collection)
       # Limited access stuff
-      if params[:delete_group].present?
-        groups = @collection.default_read_groups
-        groups.delete params[:delete_group]
-        @collection.default_read_groups = groups
-      end 
-      if params[:delete_user].present?
-        users = @collection.default_read_users
-        users.delete params[:delete_user]
-        @collection.default_read_users = users
-      end 
+      @collection.default_group_exceptions -= [params[:delete_group]] if params[:delete_group].present?
+      @collection.default_user_exceptions -= [params[:delete_user]] if params[:delete_user].present?
+      @collection.default_group_exceptions -= [params[:delete_virtual_group]] if params[:delete_virtual_group].present?
+      @collection.default_group_exceptions += [params[:new_group]] if params[:new_group].present?
+      @collection.default_user_exceptions += [params[:new_user]] if params[:new_user].present?
+      @collection.default_group_exceptions += [params[:new_virtual_group]] if params[:new_virtual_group].present?
 
-      if params[:commit] == "Add Group"
-        groups = @collection.default_group_exceptions
-        groups << params[:new_group] unless params[:new_group].blank?
-        @collection.default_group_exceptions = groups
-      elsif params[:commit] == "Add User"
-        users = @collection.default_user_exceptions
-        users << params[:new_user] unless params[:new_user].blank?
-        @collection.default_user_exceptions = users
-      end
 
       @collection.default_access = params[:access] unless params[:access].blank? 
 

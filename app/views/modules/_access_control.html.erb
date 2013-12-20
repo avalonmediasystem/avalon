@@ -29,22 +29,22 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= form.hidden_field :pid %>
 
       <%= label_tag :access do %>
-      <%= radio_button_tag :access, 'public', (access == 'public') %>
+      <%= radio_button_tag :access, 'public', (@access == 'public') %>
         Available to the general public
       <% end %>
 
       <%= label_tag :access do %>
-      <%= radio_button_tag :access, 'restricted', (access == 'restricted') %>
+      <%= radio_button_tag :access, 'restricted', (@access == 'restricted') %>
         Logged in users only
       <% end %>
 
       <%= label_tag :access do %>
-      <%= radio_button_tag :access, 'private', (access == 'private') %>
+      <%= radio_button_tag :access, 'private', (@access == 'private') %>
         Collection staff only
       <% end %>
     
       <%= label_tag :access do %>
-      <%= radio_button_tag :access, 'limited', (access == 'limited') %>
+      <%= radio_button_tag :access, 'limited', (@access == 'limited') %>
         Limit access to specified users and/or groups
       <% end %>
       
@@ -110,17 +110,17 @@ Unless required by applicable law or agreed to in writing, software distributed
         </div>
 
         <div id="class-exceptions">
-          <%= text_field_tag "new_class" %>
+          <%= text_field_tag "new_virtual_group" %>
           <%= submit_tag "Add Class" %>
 
           <table class="table table-striped table-hover">
-            <% unless @class_exceptions.empty? %>
+            <% unless @virtual_group_exceptions.empty? %>
             <thead>
               <th class="info">Class ID</th>
               <th/>
             </thead>
             <tbody>
-              <% @class_exceptions.each do |classid| %>
+              <% @virtual_group_exceptions.each do |classid| %>
               <tr>
                 <td>
                   <%= label_tag do %>
@@ -129,7 +129,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 </td>
                 <td>
                   <%= link_to "×", 
-                              polymorphic_path(object, delete_class: classid, step: @active_step, donot_advance: true),
+                              polymorphic_path(object, delete_virtual_group: classid, step: @active_step, donot_advance: true),
                               method: :put, class: "close" %>
                 </td>
               </tr>

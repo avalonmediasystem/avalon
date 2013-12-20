@@ -131,6 +131,8 @@ class MediaObject < ActiveFedora::Base
   has_attributes :duration, datastream: :displayMetadata, multiple: false
   has_attributes :section_pid, datastream: :sectionsMetadata, multiple: true
 
+  has_attributes :user_exceptions, :group_exceptions, datastream: :rightsMetadata, multiple: true
+
   accepts_nested_attributes_for :parts, :allow_destroy => true
 
   def published?
@@ -185,90 +187,47 @@ class MediaObject < ActiveFedora::Base
     self.duration = calculate_duration.to_s
   end
 
+  def group_exceptions= groups
+    if access == 'limited'
+      self.read_groups = groups
+    end
+    rightsMetadata.group_exceptions = groups
+  end
+
+  def user_exceptions= users
+    if access == 'limited'
+      self.read_users = users
+    end
+    rightsMetadata.user_exceptions = users
+  end
+
   def access
-    if self.read_users.present?
-      "limited"
-    elsif self.read_groups.empty?
-      "private"
-    elsif self.read_groups.include? "public"
-      "public"
-    elsif self.read_groups.include? "registered"
-      "restricted" 
-    else 
-      "limited"
+    if self.visibility == 'private' && (self.read_groups.any? || self.read_users.any?)
+      'limited'
+    else
+      self.visibility
     end
   end
 
   def access= access_level
-    # Preserves group_exceptions when access_level changes to be not limited
-    # This is a work-around for the limitation in Hydra: 1 group can't belong to both :read and :exceptions
-    if access == "limited" && access_level != access
-      self.group_exceptions = read_groups
-      self.user_exceptions = read_users
+    return if access_level == access
+    if access_level == 'limited'
+      self.visibility = 'private'
+      self.read_users = user_exceptions
+      self.read_groups = group_exceptions
+    else
       self.read_users = []
-    end
-
-    if access_level == "public"
-      self.read_groups = ['public', 'registered'] 
-    elsif access_level == "restricted"
-      self.read_groups = ['registered'] 
-    elsif access_level == "private"
       self.read_groups = []
-    else #limited
-      # Setting access to "limited" will copy group_exceptions to read_groups
-      if access != "limited"
-        self.read_groups = group_exceptions
-        self.read_users = user_exceptions
-      else
-        self.read_groups = (read_groups + group_exceptions).uniq
-        self.read_users = (read_users + user_exceptions).uniq
-      end 
+      self.visibility = access_level
     end
   end
 
-  # user_exceptions and group_exceptions are used to store exceptions info
-  # They aren't activated until access is set to limited
-  def user_exceptions
-    rightsMetadata.individuals.map {|k, v| k if v == 'exceptions'}.compact  
+  def local_group_exceptions
+    group_exceptions.select {|g| Admin::Group.exists? g}
   end
 
-  def user_exceptions= users
-    set_entities(:exceptions, :person, users, user_exceptions)
-  end
-
-  # Return a list of groups that have exceptions permission
-  def group_exceptions
-    rightsMetadata.groups.map {|k, v| k if v == 'exceptions'}.compact
-  end
-
-  # Grant read permissions to the groups specified. Revokes read permission for all other groups.
-  # @param[Array] groups a list of group names
-  # @example
-  #  r.read_groups= ['one', 'two', 'three']
-  #  r.read_groups 
-  #  => ['one', 'two', 'three']
-  #
-  def group_exceptions= groups
-    set_entities(:exceptions, :group, groups, group_exceptions)
-  end
-
-  # Get those permissions we don't want to change
-  # Overrides the one in hydra-access-controls/lib/hydra/model_mixins/rights_metadata.rb
-  # to support group_exceptions
-  def preserved(type, permission)
-    # Always preserves exceptions
-    g = Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'exceptions'}] || {} 
-
-    case permission
-    when :exceptions
-      # Preserves edit groups/users 
-      g.merge! Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'edit'}]
-    when :read
-      g.merge! Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'edit'}]
-    when :discover
-      g.merge! Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'discover'}]
-    end
-    g
+  def virtual_group_exceptions
+    group_exceptions - local_group_exceptions
   end
 
   def hidden= value
