@@ -355,6 +355,8 @@ class MediaObject < ActiveFedora::Base
     solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
     solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
     solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
+    indexer = Solrizer::Descriptor.new(:string, :stored, :indexed, :multivalued)
+    solr_doc[Solrizer.default_field_mapper.solr_name("read_access_virtual_group", indexer)] = read_groups & virtual_group_exceptions
     #Add all searchable fields to the all_text_timv field
     all_text_values = []
     all_text_values << solr_doc["title_tesim"]
