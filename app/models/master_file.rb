@@ -23,6 +23,7 @@ class MasterFile < ActiveFedora::Base
   include Hydra::ModelMixins::Migratable
   include Hooks
   include Rails.application.routes.url_helpers
+  include Permalink
 
   WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding']
 
@@ -574,6 +575,16 @@ class MasterFile < ActiveFedora::Base
 
   def post_processing_move_filename(oldpath, options={})
     "#{options[:pid].gsub(":","_")}-#{File.basename(oldpath)}"
+  end
+
+  def update_permalink
+    if self.persisted? && self.media_object.published?
+      create_or_update_permalink(self) 
+    
+      unless self.descMetadata.permalink.include? self.permalink 
+        self.descMetadata.permalink = self.permalink
+      end
+    end
   end
 
 end
