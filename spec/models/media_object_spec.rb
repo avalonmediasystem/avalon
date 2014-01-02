@@ -329,4 +329,12 @@ describe MediaObject do
       media_object.to_solr.keys.reject { |k| k.is_a?(String) }.should == [:id]
     end
   end
+
+  describe 'permalink' do
+    it_should_behave_like 'a permalinked object', :media_object
+    it 'updates master files with a permalink' do
+      
+    end
+  end
+
 end

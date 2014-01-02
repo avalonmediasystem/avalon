@@ -29,6 +29,7 @@ require 'tmpdir'
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
+Dir[Rails.root.join("spec/models/shared_examples/**/*.rb")].each {|f| require f}
 
 RSpec.configure do |config|
   # ## Mock Framework
@@ -80,6 +81,9 @@ RSpec.configure do |config|
     DatabaseCleaner.start
     RoleMap.reset!
     Admin::Collection.stub(:units).and_return ['University Archives']
+
+    # stub permalink service
+    Permalink.on_generate{ 'http://www.example.com/perma-url' }
   end
 
   config.after(:each) do

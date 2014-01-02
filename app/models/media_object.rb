@@ -19,7 +19,7 @@ class MediaObject < ActiveFedora::Base
   include ActiveFedora::Associations
   include Avalon::Workflow::WorkflowModelMixin
   include Hydra::ModelMixins::Migratable
-  include Avalon::Permalink
+  include Permalink
 
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
@@ -40,6 +40,8 @@ class MediaObject < ActiveFedora::Base
   before_save 'descMetadata.remove_empty_nodes!'
   before_save { |obj| obj.current_migration = 'R2' }
   before_save { |obj| obj.populate_duration! }
+
+  before_save :update_permalink_and_depenedents
   
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
@@ -420,4 +422,12 @@ class MediaObject < ActiveFedora::Base
     def calculate_duration
       self.parts.map{|mf| mf.duration.to_i }.compact.sum
     end
+
+    def update_permalink_and_depenedents
+      updated = create_or_update_permalink( self )
+      if updated 
+        self.parts.each{|master_file| create_or_update_permalink(master_file) }
+      end
+    end
+
 end
