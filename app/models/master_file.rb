@@ -425,6 +425,12 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
+  def update_permalink
+    if self.persisted? && self.mediaobject.published?
+      create_or_update_permalink(self)
+    end
+  end
+
   protected
 
   def mediainfo
@@ -575,16 +581,6 @@ class MasterFile < ActiveFedora::Base
 
   def post_processing_move_filename(oldpath, options={})
     "#{options[:pid].gsub(":","_")}-#{File.basename(oldpath)}"
-  end
-
-  def update_permalink
-    if self.persisted? && self.media_object.published?
-      create_or_update_permalink(self) 
-    
-      unless self.descMetadata.permalink.include? self.permalink 
-        self.descMetadata.permalink = self.permalink
-      end
-    end
   end
 
 end

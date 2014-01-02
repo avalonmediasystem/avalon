@@ -431,8 +431,12 @@ class MediaObject < ActiveFedora::Base
           master_file.update_permalink
           master_file.save( validate: false )
         end
+
+        unless self.descMetadata.permalink.include? self.permalink 
+          self.descMetadata.permalink = self.permalink
+        end
       end
-      
+
       true
     end
 
