@@ -19,6 +19,7 @@ class MediaObject < ActiveFedora::Base
   include ActiveFedora::Associations
   include Avalon::Workflow::WorkflowModelMixin
   include Hydra::ModelMixins::Migratable
+  include Avalon::Permalink
 
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
