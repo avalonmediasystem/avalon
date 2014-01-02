@@ -1,5 +1,5 @@
 require 'spec_helper'
 
-describe Avalon::Permalink do
+describe Permalink do
   
 end
