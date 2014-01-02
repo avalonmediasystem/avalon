@@ -55,7 +55,7 @@ Avalon::Application.configure do
     :remote_ip,
     Proc.new { Time.now.strftime('%Y.%m.%d %H:%M:%S.%L')}]
    
-  config.action_mailer.delivery_method = :letter_opener if ENV['LETTER_OPENER']
+  config.action_mailer.delivery_method = :letter_opener
 
   #config.middleware.insert_before Rails::Rack::Logger, DisableAssetsLogger
 end
