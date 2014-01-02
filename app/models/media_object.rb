@@ -41,8 +41,8 @@ class MediaObject < ActiveFedora::Base
   before_save { |obj| obj.current_migration = 'R2' }
   before_save { |obj| obj.populate_duration! }
 
-  before_save :update_permalink_and_depenedents
-  
+  before_save :update_permalink_and_dependents
+
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
   
@@ -423,10 +423,13 @@ class MediaObject < ActiveFedora::Base
       self.parts.map{|mf| mf.duration.to_i }.compact.sum
     end
 
-    def update_permalink_and_depenedents
+    def update_permalink_and_dependents
       updated = create_or_update_permalink( self )
       if updated 
         self.parts.each{|master_file| create_or_update_permalink(master_file) }
+        unless obj.descMetadata.permalink.include? self.permalink 
+          obj.descMetadata.permalink = self.permalink 
+        end
       end
     end
 

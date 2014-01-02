@@ -157,6 +157,21 @@ module ModsTemplates
         add_child_node(get_origin_info, :place, place_term)
       end
 
+      define_template :url do |xml,url,attrs={}|
+        xml.location {
+          xml.url(attrs) { 
+            xml.text(url) 
+          }
+        }
+      end
+
+      def add_location_url(url, attrs={})
+        add_child_node(ng_xml.root, :url, url)
+      end
+
+      def add_permalink(url)
+        add_location_url(url, { :access => 'object in context' })
+      end
     end
   end
 
