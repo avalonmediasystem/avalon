@@ -23,6 +23,7 @@ class MasterFile < ActiveFedora::Base
   include Hydra::ModelMixins::Migratable
   include Hooks
   include Rails.application.routes.url_helpers
+  include Permalink
 
   WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding']
 
@@ -421,6 +422,12 @@ class MasterFile < ActiveFedora::Base
       self.absolute_location = value
     else
       self.absolute_location = Avalon::FileResolver.new.path_to(value) rescue nil
+    end
+  end
+
+  def update_permalink(force=false)
+    if self.persisted? && (self.mediaobject.published? or force)
+      create_or_update_permalink(self)
     end
   end
 

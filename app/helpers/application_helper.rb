@@ -21,6 +21,19 @@ module ApplicationHelper
     "#{application_name} #{t(:release_label)} #{Avalon::VERSION}"
   end
 
+  def share_link_for(obj)
+    if obj.nil?
+      I18n.t('media_object.empty_share_link')
+    elsif obj.permalink.present?
+      obj.permalink
+    else
+      case obj
+      when MediaObject then media_object_url(obj)
+      when MasterFile  then pid_section_media_object_url(obj.mediaobject.pid, obj.pid)
+      end
+    end
+  end
+
   def image_for(item_id)
     #TODO index the thumbnail url to avoid having to hit fedora to get it
     media_object = MediaObject.find(item_id)

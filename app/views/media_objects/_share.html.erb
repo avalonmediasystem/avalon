@@ -20,7 +20,16 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="tab-content">
   <div class="tab-pane active" id="link-tab">
-    <input type="text" class="span5" id="link-item" value="<%= media_object_url(@mediaobject.pid) %>" onClick="this.select();">
+    <form role="form">
+    <div class="form-group">
+    <label for="link-object">Object</label>
+    <input type="text" class="span5 form-control" id="link-object" value="<%= share_link_for(@mediaobject) %>" onClick="this.select();">
+    </div>
+    <div class="form-group">
+    <label for="link-section">Section</label>
+    <input type="text" class="span5 form-control" id="link-section" value="<%= share_link_for(@currentStream) %>" onClick="this.select();">
+    </div>
+    </form>
   </div>
   <% unless @currentStream.blank? %>
   <div class="tab-pane" id="embed-tab">
@@ -34,6 +43,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 <script>
   $(document).ready(function() {
     $(document).on('streamswitch', function(e, stream_info){
+      var shareLink = $('a.current-stream').data('share-link')
+      $('#link-section').val(shareLink);
       if (stream_info != null) {
         $('#embed-part').text(stream_info.embed_code);
       }

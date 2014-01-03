@@ -25,6 +25,8 @@ Avalon::Application.routes.draw do
       get :remove
       get :progress, :action => :show_progress
       get 'content/:datastream', :action => :deliver_content, :as => :inspect
+      get 'track/:part', :action => :show, :as => :indexed_section
+      get 'section/:content', :action => :show, :as => :pid_section
     end
   end
   resources :master_files, except: [:show, :new, :index] do

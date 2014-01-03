@@ -7,6 +7,8 @@ en:
     messages:
       blank: "field is required."
       taken: "is taken."
+  media_object:
+    empty_share_link: ""
   metadata_tip:
     abstract: |
       Summary provides a space for describing the contents of the item. Examples 
