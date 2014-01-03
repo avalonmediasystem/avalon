@@ -32,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <%=
                   link_to stream_label_for(section),
                     pid_section_media_object_path(mediaobject, section.pid),
-                    data: {segment: section.pid, is_video: section.is_video?},
+                    data: {segment: section.pid, is_video: section.is_video?, share_link: share_link_for(section)},
                     class: (section.pid == activeStream.pid ? 'current-stream' : nil)
                 %>
                 <% unless section.duration.blank? %>
