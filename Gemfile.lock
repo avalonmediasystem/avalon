@@ -93,15 +93,15 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
-  revision: a4c1f877f0305803d35caf08e554dce62f9af911
+  revision: 46425a41d0730c739d60b2f25c192847dda31d8c
   specs:
     rubyhorn (0.0.5)
       activesupport
       json
       mime-types
-      multipart-post
       net-http-digest_auth
       om
+      rest-client
 
 GIT
   remote: https://github.com/avalonmediasystem/twitter_bootstrap_form_for.git
@@ -343,7 +343,7 @@ GEM
       handlebars_assets (= 0.14.1)
       rails (~> 3.2.13)
     multi_json (1.8.2)
-    multipart-post (1.2.0)
+    multipart-post (2.0.0)
     net-http-digest_auth (1.4)
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
@@ -515,7 +515,7 @@ GEM
     whenever (0.8.4)
       activesupport (>= 2.3.4)
       chronic (>= 0.6.3)
-    xml-simple (1.1.2)
+    xml-simple (1.1.3)
     xpath (2.0.0)
       nokogiri (~> 1.3)
 
@@ -571,6 +571,7 @@ DEPENDENCIES
   meta_request
   mime-types (>= 1.1)
   modal_logic
+  multipart-post
   omniauth-identity
   pry
   pry-debugger
