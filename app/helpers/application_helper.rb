@@ -22,7 +22,9 @@ module ApplicationHelper
   end
 
   def share_link_for(obj)
-    if obj.permalink.present?
+    if obj.nil?
+      I18n.t('media_object.empty_share_link')
+    elsif obj.permalink.present?
       obj.permalink
     else
       case obj
