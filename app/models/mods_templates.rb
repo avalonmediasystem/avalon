@@ -166,7 +166,7 @@ module ModsTemplates
       end
 
       def add_location_url(url, attrs={})
-        add_child_node(ng_xml.root, :url, url)
+        add_child_node(ng_xml.root, :url, url, attrs)
       end
 
       def add_permalink(url)

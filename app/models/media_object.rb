@@ -38,10 +38,10 @@ class MediaObject < ActiveFedora::Base
   before_save 'descMetadata.update_change_date!'
   before_save 'descMetadata.reorder_elements!'
   before_save 'descMetadata.remove_empty_nodes!'
-  before_save { |obj| obj.current_migration = 'R2' }
-  before_save { |obj| obj.populate_duration! }
+  before_save 'populate_duration!'
+  before_save 'update_permalink_and_dependents'
 
-  before_save :update_permalink_and_dependents
+  before_save { |obj| obj.current_migration = 'R2' }
 
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
@@ -428,7 +428,7 @@ class MediaObject < ActiveFedora::Base
       if self.persisted? && self.published?
         create_or_update_permalink( self )
         self.parts.each do |master_file| 
-          master_file.update_permalink
+          master_file.update_permalink(true)
           master_file.save( validate: false )
         end
 

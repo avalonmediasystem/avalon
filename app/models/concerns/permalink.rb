@@ -17,12 +17,13 @@ module Permalink
   
 
   included do
-    belongs_to :permalink, property: :has_permalink
-
-    attr_reader :permalink
-
     def permalink
       self.relationships(:has_permalink).first.to_s
+    end
+
+    def permalink=(value)
+      self.remove_relationship(:has_permalink, nil)
+      self.add_relationship(:has_permalink, value, true)
     end
 
     # wrap this method; do not use this method as a callback
@@ -41,17 +42,12 @@ module Permalink
       if permalink
         current_permalink = object.relationships(:has_permalink)
         if ! current_permalink || current_permalink.empty? || current_permalink.try(:first) != permalink
-          create_or_update_permalink!(object, permalink)
+          object.permalink = permalink
           updated = true
         end
       end
       
       updated
-    end
-
-    def create_or_update_permalink!( object, permalink )
-      object.remove_relationship(:has_permalink, nil)
-      object.add_relationship(:has_permalink, permalink, true)
     end
   end
 
