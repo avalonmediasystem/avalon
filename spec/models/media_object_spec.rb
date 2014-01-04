@@ -334,9 +334,13 @@ describe MediaObject do
 
     let(:media_object){ FactoryGirl.build(:media_object) }
 
+    before(:each) {
+      Permalink.on_generate{ 'http://www.example.com/perma-url' }
+    }
+
     context 'unpublished' do
       it 'is empty when unpublished' do
-        media_object.permalink.should be_empty
+        media_object.permalink.should be_blank
       end
     end
 
@@ -362,31 +366,35 @@ describe MediaObject do
         media_object.permalink.should == 'http://www.example.com/perma-url'
       end
 
+    end
+
+    context 'error handling' do
+
       it 'logs an error when the permalink service returns an exception' do
         Permalink.on_generate{ 1 / 0 }
         Rails.logger.should_receive(:error)
-        media_object.save( validate: false )
+        media_object.ensure_permalink!
       end
 
     end
 
-    describe "#create_or_update_permalink" do
+    describe "#ensure_permalink!" do
       it 'is not called when the object is not persisted' do
-        media_object.should_not_receive(:create_or_update_permalink)
+        media_object.should_not_receive(:ensure_permalink!)
         media_object.save
       end
     end
 
 
-    describe '#create_or_update_permalink' do
+    describe '#ensure_permalink!' do
       it 'returns true when updated' do
-        media_object.should_receive(:create_or_update_permalink).at_least(1).times.and_return{ true }
+        media_object.should_receive(:ensure_permalink!).at_least(1).times.and_return{ true }
         media_object.publish!('C.S. Lewis')
       end 
 
       it 'returns false when not updated' do
         media_object.publish!('C.S. Lewis')
-        media_object.should_receive(:create_or_update_permalink).and_return{ false }
+        media_object.should_receive(:ensure_permalink!).and_return{ false }
         media_object.save( validate: false )
       end
     end

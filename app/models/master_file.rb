@@ -425,12 +425,6 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def update_permalink(force=false)
-    if self.persisted? && (self.mediaobject.published? or force)
-      create_or_update_permalink(self)
-    end
-  end
-
   protected
 
   def mediainfo

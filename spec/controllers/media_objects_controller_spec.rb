@@ -211,11 +211,14 @@ describe MediaObjectsController, type: :controller do
     before(:each) do
       login_user media_object.collection.managers.first
       request.env["HTTP_REFERER"] = '/'
+      Permalink.on_generate { |obj| "http://example.edu/permalink" }
     end
 
     it 'publishes media object' do
       get 'update_status', :id => media_object.pid, :status => 'publish'
-      MediaObject.find(media_object.pid).published?.should be_true
+      mo = MediaObject.find(media_object.pid)
+      mo.published?.should be_true
+      mo.permalink.should be_present
     end
 
     it 'unpublishes media object' do
