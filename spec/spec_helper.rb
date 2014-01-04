@@ -81,9 +81,6 @@ RSpec.configure do |config|
     DatabaseCleaner.start
     RoleMap.reset!
     Admin::Collection.stub(:units).and_return ['University Archives']
-
-    # stub permalink service
-    Permalink.on_generate{ 'http://www.example.com/perma-url' }
   end
 
   config.after(:each) do

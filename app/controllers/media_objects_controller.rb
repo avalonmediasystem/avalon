@@ -172,6 +172,7 @@ class MediaObjectsController < ApplicationController
         new_state = media_object.published? ? nil : user_key
         media_object.publish!(new_state)        
     end
+    media_object.save
 
     redirect_to :back
   end

@@ -426,9 +426,9 @@ class MediaObject < ActiveFedora::Base
     def update_permalink_and_dependents
 
       if self.persisted? && self.published?
-        create_or_update_permalink( self )
+        ensure_permalink!
         self.parts.each do |master_file| 
-          master_file.update_permalink(true)
+          master_file.ensure_permalink!
           master_file.save( validate: false )
         end
 
