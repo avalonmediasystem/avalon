@@ -26,7 +26,6 @@ class MasterFilesController < ApplicationController
 
   def embed
     @masterfile = MasterFile.find(params[:id])
-    authorize! :read, @masterfile.mediaobject
     @token = @masterfile.nil? ? "" : StreamToken.find_or_create_session_token(session, @masterfile.mediapackage_id)
     @stream_info = @masterfile.stream_details(@token,request.host)
     respond_to do |format|
