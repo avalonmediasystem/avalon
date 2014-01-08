@@ -2,9 +2,27 @@ module Permalink
 
   extend ActiveSupport::Concern
 
-  @@generator = Proc.new { |obj| nil }
+  class Generator
+    include Rails.application.routes.url_helpers
+    attr_accessor :proc
+
+    def initialize
+      @proc = Proc.new { |obj, target| nil }
+    end
+
+    def permalink_for(obj)
+      url = case obj
+      when MediaObject then media_object_url(obj.pid)
+      when MasterFile  then pid_section_media_object_url(obj.mediaobject.pid, obj.pid)
+      else raise ArgumentError("Cannot make permalink for #{obj.class}")
+      end
+      @proc.call(obj, url)
+    end
+  end
+
+  @@generator = Generator.new
   def self.permalink_for(obj)
-    @@generator.call(obj)
+    @@generator.permalink_for(obj)
   end
     
   # Avalon::Permalink.on_generate do |obj|
@@ -12,9 +30,16 @@ module Permalink
   #   return permalink
   # end
   def self.on_generate(&block)
-    @@generator = block
+    @@generator.proc = block
   end 
   
+  def self.default_host
+    @@generator.default_url_options[:host]
+  end
+
+  def self.default_host=(value)
+    @@generator.default_url_options[:host] = value
+  end
 
   def permalink
     val = self.relationships(:has_permalink).first
