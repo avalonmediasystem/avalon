@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class ApplicationController < ActionController::Base
+  before_filter :store_location
+
   # Adds a few additional behaviors into the application controller 
   include Blacklight::Controller  
   # Adds Hydra behaviors into the application controller 
@@ -45,6 +47,16 @@ class ApplicationController < ActionController::Base
     else
       Admin::Collection.where("#{ActiveFedora::SolrService.solr_name("inheritable_edit_access_person", Hydra::Datastream::RightsMetadata.indexer)}" => user_key).all
     end
+  end
+
+  def store_location
+    if cookies[:login_popup]
+      session[:previous_url] = root_path + "self_closing.html"
+    end
+  end
+
+  def after_sign_in_path_for(resource)
+    session[:previous_url] || root_path
   end
 
   rescue_from CanCan::AccessDenied do |exception|

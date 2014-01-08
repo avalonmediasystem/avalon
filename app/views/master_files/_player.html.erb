@@ -1,0 +1,80 @@
+<%#
+Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+    <section id="player" style="width: 100%">
+      <% if @masterfile.present? and @masterfile.succeeded? %>
+        <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
+        
+        <% if @stream_info[:is_video] %>
+          <video class="mejs-avalon" controls id="video-tag" poster="<%= @stream_info[:poster_image] %>" preload="true">
+            <% @stream_info[:stream_flash].each do |flash| %>
+              <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
+            <% end %>
+            <% @stream_info[:stream_hls].each do |hls| %>
+              <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
+            <% end %>
+          </video>
+        <% else %>
+          <audio class="mejs-avalon" controls style="width: 100%;" id="video-tag" preload="true">
+            <% @stream_info[:stream_flash].each do |flash| %>
+              <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
+            <% end %>
+            <% @stream_info[:stream_hls].each do |hls| %>
+              <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
+            <% end %>
+          </audio>
+        <% end %>
+      <% end %>
+    </section>
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'jquery' %>
+  <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
+  <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %>
+  <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
+  <%= javascript_include_tag 'mediaelement-title/mep-feature-title' %>
+
+  <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
+  <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
+  <%= stylesheet_link_tag "mediaelement-title/mejs-title" =%>
+
+  <%
+    features = ['playpause','current','progress','duration','volume','qualities','fullscreen','responsive', 'title']
+  %>
+
+  <script>
+    currentPlayer = new MediaElementPlayer('#video-tag', 
+        { mode: 'auto_plugin',
+          pluginPath: <%= asset_path('mediaelement_rails/').inspect.html_safe %>,
+          usePluginFullScreen: false,
+          videoWidth: '100%',
+          videoHeight: '100%',
+          enableAutosize: true,
+          features: <%=features.inspect.html_safe%>,
+          audioHeight: 50,
+          iOSDisplayedDuration: <%= @masterfile ? @masterfile.duration.to_i / 1000 : -1 %>,
+          startQuality: 'high',
+          title: '<%= @masterfile.label %>',
+          titleLink: '<%= media_object_url(@masterfile.mediaobject) %>'
+        });
+  </script>
+
+  <style>
+    a { text-decoration: none; } 
+    a:hover { text-decoration: underline } 
+  </style>
+<% end %>
+
+
