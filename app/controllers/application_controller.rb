@@ -27,6 +27,7 @@ class ApplicationController < ActionController::Base
   # these methods in order to perform user specific actions. 
   protect_from_forgery
   
+  before_filter :set_permalink_host
 #  before_filter :trap_session_information if 
 #    (Rails.env.development? or Rails.env.test?)
   after_filter :set_access_control_headers
@@ -36,6 +37,10 @@ class ApplicationController < ActionController::Base
     headers['Access-Control-Request-Method'] = '*'
   end
   
+  def set_permalink_host
+    Permalink.default_host = request.host_with_port
+  end
+
   def trap_session_information
     logger.debug "<< CURRENT SESSION INFORMATION >>"
     logger.debug session.inspect

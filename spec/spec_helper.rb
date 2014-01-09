@@ -81,6 +81,7 @@ RSpec.configure do |config|
     DatabaseCleaner.start
     RoleMap.reset!
     Admin::Collection.stub(:units).and_return ['University Archives']
+    Permalink.default_host = 'avalon.example.edu'
   end
 
   config.after(:each) do

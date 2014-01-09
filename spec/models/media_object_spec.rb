@@ -335,7 +335,7 @@ describe MediaObject do
     let(:media_object){ FactoryGirl.build(:media_object) }
 
     before(:each) {
-      Permalink.on_generate{ 'http://www.example.com/perma-url' }
+      Permalink.on_generate{ |obj,target| 'http://www.example.com/perma-url' }
     }
 
     context 'unpublished' do
@@ -363,6 +363,22 @@ describe MediaObject do
       it 'does not remove the permalink if the permalink service returns nil' do
         Permalink.on_generate{ nil }
         media_object.save( validate: false )
+        media_object.permalink.should == 'http://www.example.com/perma-url'
+      end
+
+    end
+
+    context 'correct target' do
+
+      it 'should link to the correct target' do
+        media_object.save(validate: false)
+        t = nil
+        Permalink.on_generate { |obj, target|
+          t = target
+          'http://www.example.com/perma-url'
+        }
+        media_object.ensure_permalink!
+        t.should == "http://avalon.example.edu/media_objects/#{media_object.pid}"
         media_object.permalink.should == 'http://www.example.com/perma-url'
       end
 
