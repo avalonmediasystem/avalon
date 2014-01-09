@@ -112,6 +112,15 @@ GIT
       actionpack (~> 3)
       railties (~> 3)
 
+GIT
+  remote: https://github.com/mbklein/roo.git
+  revision: 268adb5fdfa02b8bf7afbe6ac881d4720a1e7e8c
+  specs:
+    roo (1.13.2)
+      nokogiri
+      rubyzip
+      spreadsheet (> 0.6.4)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -420,10 +429,6 @@ GEM
       json (~> 1.4)
     rest-client (1.6.7)
       mime-types (>= 1.16)
-    roo (1.13.0)
-      nokogiri
-      rubyzip
-      spreadsheet (> 0.6.4)
     rsolr (1.0.9)
       builder (>= 2.1.2)
     rspec (2.14.1)
@@ -579,6 +584,7 @@ DEPENDENCIES
   rails (~> 3.2.3)
   rb-fsevent (~> 0.9.1)
   red5wrapper!
+  roo!
   rspec-rails (>= 2.9.0)
   rspec_junit_formatter
   rubyhorn!
