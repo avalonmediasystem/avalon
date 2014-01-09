@@ -36,11 +36,11 @@ class ApplicationController < ActionController::Base
   after_filter :remember_virtual_groups
 
   def set_virtual_groups
-    current_user.virtual_groups = session[:virtual_groups]
+    current_user.virtual_groups = session[:virtual_groups] if current_user
   end
 
   def remember_virtual_groups
-    session[:virtual_groups] ||= current_user.virtual_groups
+    session[:virtual_groups] ||= current_user.virtual_groups if current_user
   end
   
   def set_access_control_headers
