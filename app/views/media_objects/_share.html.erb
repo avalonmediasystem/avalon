@@ -20,6 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div class="tab-content">
   <div class="tab-pane active" id="link-tab">
+    <p class="muted">Copy the link below to share this resource</p>
     <form role="form">
     <div class="form-group">
     <label for="link-object">Object</label>
@@ -33,6 +34,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <% unless @currentStream.blank? %>
   <div class="tab-pane" id="embed-tab">
+    <p class="muted">Copy the text below to embed this resource</p>
     <textarea class="span6" rows="3" id="embed-part" onClick="this.select();"><%= @currentStream.embed_code(MasterFile::EMBED_SIZE[:medium], request.host) %></textarea>
   </div>
   <% end %>
