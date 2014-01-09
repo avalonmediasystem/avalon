@@ -31,6 +31,17 @@ class ApplicationController < ActionController::Base
 #  before_filter :trap_session_information if 
 #    (Rails.env.development? or Rails.env.test?)
   after_filter :set_access_control_headers
+
+  before_filter :set_virtual_groups
+  after_filter :remember_virtual_groups
+
+  def set_virtual_groups
+    current_user.virtual_groups = session[:virtual_groups]
+  end
+
+  def remember_virtual_groups
+    session[:virtual_groups] ||= current_user.virtual_groups
+  end
   
   def set_access_control_headers
     headers['Access-Control-Allow-Origin'] = '*'

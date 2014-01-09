@@ -40,7 +40,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     logger.debug "#{auth_type} :: #{current_user.inspect}"
   	@user = User.send(find_method,request.env["omniauth.auth"], current_user)
 
-    if @user.persisted? 
+    if @user.persisted?
+      session[:virtual_groups] = @user.virtual_groups 
+      flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => auth_type
       sign_in @user, :event => :authentication
     end
 
