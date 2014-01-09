@@ -48,6 +48,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     if session[:previous_url] 
       redirect_to session.delete :previous_url
+    elsif session[:virtual_groups].any?
+      redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => session[:virtual_groups].first)
     else
       redirect_to root_url
     end
