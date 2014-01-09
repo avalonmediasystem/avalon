@@ -37,6 +37,9 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% if can? :manage, Admin::Group %>
             <li class=<%= active_for_controller('admin/groups') %>><%= link_to 'Manage Groups', admin_groups_path, target: '_admin' %></li>
           <% end %>
+          <% @current_user.virtual_groups.each do |vgroup| %>
+            <li><%= link_to(vgroup, catalog_index_path('f[read_access_virtual_group_ssim][]' => vgroup)) %></li>
+          <% end %>
        </ul>        
       <form action="/" method="get" class="navbar-search pull-right">
         <input type="text" class="search-query" name="q" placeholder="Search">
