@@ -16,6 +16,10 @@
   gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git' # HEAD , tag: 'avalon-r2'
   gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git' # HEAD
 
+  # TODO: Remove following line after roo merges and releases
+  #       https://github.com/Empact/roo/pull/94
+  gem 'roo', git: 'https://github.com/mbklein/roo.git'
+
   gem 'multipart-post'  
   gem 'modal_logic'
 
