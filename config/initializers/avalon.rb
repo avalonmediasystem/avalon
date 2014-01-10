@@ -5,6 +5,8 @@
 # out what is available. See lib/avalon/dropbox.rb for details on the API 
 require 'avalon/dropbox'
 
+I18n.config.enforce_available_locales = true
+
 module Avalon
   DEFAULT_CONFIGURATION = {
     "dropbox"=>{},

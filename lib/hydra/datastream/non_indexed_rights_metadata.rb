@@ -14,7 +14,8 @@
 
 module Hydra
   module Datastream
-    class NonIndexedRightsMetadata < Hydra::Datastream::RightsMetadata    
+    class NonIndexedRightsMetadata < Hydra::Datastream::RightsMetadata   
+      include Hydra::AccessControls::Visibility 
 
       ACTIONS = ["edit", "read", "discover"]
       TYPES = ["groups", "users"]
@@ -46,48 +47,48 @@ module Hydra
         return solr_doc
       end
 
-      # Default access for new items 
-      # Copied from MediaObject, would be nice to dry this out
-      def access
-        if self.read_users.present?
-          "limited"
-        elsif self.read_groups.empty?
-          "private"
-        elsif self.read_groups.include? "public"
-          "public"
-        elsif self.read_groups.include? "registered"
-          "restricted" 
-        else 
-          "limited"
-        end
-      end
+  def group_exceptions= excepts
+    if access == 'limited'
+      self.read_groups = excepts
+    end
+    self.method_missing(:group_exceptions=, excepts)
+  end
 
-      def access= access_level
-        # Preserves group_exceptions when access_level changes to be not limited
-        # This is a work-around for the limitation in Hydra: 1 group can't belong to both :read and :exceptions
-        if self.access == "limited" && access_level != self.access
-          self.group_exceptions = self.read_groups
-          self.user_exceptions = self.read_users
-          self.read_users = []
-        end
+  def user_exceptions= excepts
+    if access == 'limited'
+      self.read_users = excepts
+    end
+    self.method_missing(:user_exceptions=, excepts)
+  end
 
-        if access_level == "public"
-          self.read_groups = ['public', 'registered'] 
-        elsif access_level == "restricted"
-          self.read_groups = ['registered'] 
-        elsif access_level == "private"
-          self.read_groups = []
-        else #limited
-          # Setting access to "limited" will copy group_exceptions to read_groups
-          if self.access != "limited"
-            self.read_groups = self.group_exceptions
-            self.read_users = self.user_exceptions
-          else
-            self.read_groups = (self.read_groups + self.group_exceptions).uniq
-            self.read_users = (self.read_users + self.user_exceptions).uniq
-          end 
-        end
-      end
+  def access
+    if self.visibility == 'private' && (self.read_groups.any? || self.read_users.any?)
+      'limited'
+    else
+      self.visibility
+    end
+  end
+
+  def access= access_level
+    return if access_level == access
+    if access_level == 'limited'
+      self.visibility = 'private'
+      self.read_users = user_exceptions
+      self.read_groups = group_exceptions
+    else
+      self.read_users = []
+      self.read_groups = []
+      self.visibility = access_level
+    end
+  end
+
+  def local_group_exceptions
+    group_exceptions.select {|g| Admin::Group.exists? g}
+  end
+
+  def virtual_group_exceptions
+    group_exceptions - local_group_exceptions
+  end
 
       def hidden= value
         groups = self.discover_groups
@@ -137,33 +138,25 @@ module Hydra
           individuals.map {|x| {:type=>'user', :access=>x[1], :name=>x[0]}})
 
       end
-    
-      # user_exceptions and group_exceptions are used to store exceptions info
-      # They aren't activated until access is set to limited
-      def user_exceptions
-        individuals.map {|k, v| k if v == 'exceptions'}.compact  
-      end
-    
-      def user_exceptions= users
-        set_entities(:exceptions, :person, users, user_exceptions)
-      end
-    
-      # Return a list of groups that have exceptions permission
-      def group_exceptions
-        groups.map {|k, v| k if v == 'exceptions'}.compact
+   
+ #TODO add visibility and associated methods
+      def public_visibility!
+        visibility_will_change! unless visibility == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
+        permissions({:group=>Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC}, "read")
       end
 
-      # Grant read permissions to the groups specified. Revokes read permission for all other groups.
-      # @param[Array] groups a list of group names
-      # @example
-      #  r.read_groups= ['one', 'two', 'three']
-      #  r.read_groups 
-      #  => ['one', 'two', 'three']
-      #
-      def group_exceptions= groups
-        set_entities(:exceptions, :group, groups, group_exceptions)
+      def registered_visibility!
+        visibility_will_change! unless visibility == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_AUTHENTICATED
+        permissions({:group=>Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED}, "read")
+        permissions({:group=>Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC}, "none")
       end
 
+      def private_visibility!
+        visibility_will_change! unless visibility == Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
+        permissions({:group=>Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_AUTHENTICATED}, "none")
+        permissions({:group=>Hydra::AccessControls::AccessRight::PERMISSION_TEXT_VALUE_PUBLIC}, "none")
+      end
+ 
 private 
 
       # @param  permission either :discover, :read or :edit
@@ -181,22 +174,15 @@ private
       end
 
       # Get those permissions we don't want to change
-      # Overrides the one in hydra-access-controls/lib/hydra/model_mixins/rights_metadata.rb
-      # to support group_exceptions
       def preserved(type, permission)
-        # Always preserves exceptions
-        g = Hash[quick_search_by_type(type).select {|k, v| v == 'exceptions'}] || {} 
-    
         case permission
-        when :exceptions
-          # Preserves edit groups/users 
-          g.merge! Hash[quick_search_by_type(type).select {|k, v| v == 'edit'}]
+        when :edit
+          g = {}
         when :read
-          g.merge! Hash[quick_search_by_type(type).select {|k, v| v == 'edit'}] #Should this be read?!?
+          Hash[quick_search_by_type(type).select {|k, v| v == 'edit'}]
         when :discover
-          g.merge! Hash[quick_search_by_type(type).select {|k, v| v == 'discover'}]
+          Hash[quick_search_by_type(type).select {|k, v| v == 'discover'}]
         end
-        g
       end
     end
   end

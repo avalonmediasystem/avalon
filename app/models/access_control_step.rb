@@ -12,51 +12,35 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-	class AccessControlStep < Avalon::Workflow::BasicStep
-		def initialize(step = 'access-control', 
-                   title = "Access Control", 
-                   summary = "Who can access the item", 
-                   template = 'access_control')
-		  super
-		end
+class AccessControlStep < Avalon::Workflow::BasicStep
+  def initialize(step = 'access-control', 
+                 title = "Access Control", 
+                 summary = "Who can access the item", 
+                 template = 'access_control')
+    super
+  end
 
-		def execute context
-		  mediaobject = context[:mediaobject]
-      # TO DO: Implement me
+  def execute context
+    mediaobject = context[:mediaobject]
 
-      user = User.where({ Devise.authentication_keys.first => context[:user]}).first
-      unless user.ability.can? :update_access_control, mediaobject
-        return context
-      end
+    user = User.where({ Devise.authentication_keys.first => context[:user]}).first
+    unless user.ability.can? :update_access_control, mediaobject
+      return context
+    end
 
-      # Limited access stuff
-      if context[:delete_group].present?
-        groups = mediaobject.read_groups
-        groups.delete context[:delete_group]
-        mediaobject.read_groups = groups
-      end 
-      if context[:delete_user].present?
-        users = mediaobject.read_users
-        users.delete context[:delete_user]
-        mediaobject.read_users = users
-      end 
+    # Limited access stuff
+    mediaobject.group_exceptions -= [context[:delete_group]] if context[:delete_group].present?
+    mediaobject.user_exceptions -= [context[:delete_user]] if context[:delete_user].present?
+    mediaobject.group_exceptions -= [context[:delete_virtual_group]] if context[:delete_virtual_group].present?
+    mediaobject.group_exceptions += [context[:new_group]] if context[:new_group].present?
+    mediaobject.user_exceptions += [context[:new_user]] if context[:new_user].present?
+    mediaobject.group_exceptions += [context[:new_virtual_group]] if context[:new_virtual_group].present?
 
-      if context[:commit] == "Add Group"
-        groups = mediaobject.group_exceptions
-        groups << context[:new_group] unless context[:new_group].blank?
-        mediaobject.group_exceptions = groups
-      elsif context[:commit] == "Add User"
-        users = mediaobject.user_exceptions
-        users << context[:new_user] unless context[:new_user].blank?
-        mediaobject.user_exceptions = users
-        puts "EXCEPTIONS #{MediaObject.find(mediaobject.pid).group_exceptions.inspect}"
-      end
+    mediaobject.access = context[:access] unless context[:access].blank? 
 
-      mediaobject.access = context[:access] unless context[:access].blank? 
+    mediaobject.hidden = context[:hidden] == "1"
 
-      mediaobject.hidden = context[:hidden] == "1"
-
-      mediaobject.save
-		  context
-		end
-	end
+    mediaobject.save
+    context
+  end
+end

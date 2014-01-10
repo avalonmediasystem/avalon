@@ -299,8 +299,24 @@ label {
   opacity: 0.5;
 }
       
-#groups-ex, #users-ex { 
-  position: relative 
+.limit-access { 
+  position: relative; 
+  input[type=submit] {
+    @extend .btn;
+    @extend .inline;
+    width: 7em;
+  }
+  input[type=text] {
+  }
+  @media screen and (min-width: 1250px) {
+    > div {
+      display: inline-block;
+     }
+     input[type=submit] {
+      width: auto;
+      margin-right: .6em;
+    }
+  }
 }
 
 /**
