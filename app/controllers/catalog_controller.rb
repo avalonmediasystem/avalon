@@ -72,12 +72,12 @@ class CatalogController < ApplicationController
     config.add_facet_field 'genre_sim', :label => 'Genres', :limit => 5
     config.add_facet_field 'collection_ssim', :label => 'Collection', :limit => 5
     config.add_facet_field 'unit_ssim', :label => 'Unit', :limit => 5
-    config.add_facet_field 'read_access_virtual_group_ssim', :label => 'Class', :limit => 5
 
 
     # Hide these facets if not a Collection Manager
     config.add_facet_field 'workflow_published_sim', :label => 'Published', :limit => 5, :if_user_can => [:create, MediaObject], :group=>"workflow"
     config.add_facet_field 'created_by_sim', :label => 'Created by', :limit => 5, :if_user_can => [:create, MediaObject], :group=>"workflow"
+    config.add_facet_field 'read_access_virtual_group_ssim', :label => 'Class', :limit => 5, :if_user_can => [:create, MediaObject], :group=>"workflow"
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
