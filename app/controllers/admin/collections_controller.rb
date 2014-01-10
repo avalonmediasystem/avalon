@@ -89,7 +89,7 @@ class Admin::CollectionsController < ApplicationController
   def update
     @collection = Admin::Collection.find(params[:id])
 
-    if params[:admin_collection].present?
+    if params[:admin_collection][:name].present?
       if params[:admin_collection][:name] != @collection.name && can?('update_name', @collection)
         @old_name = @collection.name
         @collection.name = params[:admin_collection][:name]
