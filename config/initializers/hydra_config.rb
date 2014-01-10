@@ -12,9 +12,11 @@ require 'hydra/head' unless defined? Hydra
 if Hydra.respond_to?(:configure)
   Hydra.configure(:shared) do |config|
 
-  Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC = 'public'.freeze
-  Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_AUTHENTICATED = 'restricted'.freeze
-  Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE = 'private'.freeze
+  silence_warnings do
+    Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC = 'public'.freeze
+    Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_AUTHENTICATED = 'restricted'.freeze
+    Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE = 'private'.freeze
+  end
  
     # Empty since we aren't actually using this piece. Maybe it can fit in later if the
     # user interface can be retooled
