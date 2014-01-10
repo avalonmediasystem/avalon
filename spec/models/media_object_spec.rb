@@ -283,6 +283,26 @@ describe MediaObject do
     end
   end
 
+  describe 'virtual groups' do
+    let!(:local_groups) {[FactoryGirl.create(:group).name, FactoryGirl.create(:group).name]}
+    let(:virtual_groups) {["vgroup1", "vgroup2"]}
+    before(:each) do
+      media_object.group_exceptions = local_groups + virtual_groups
+    end
+
+    describe '#local_group_exceptions' do
+      it 'should have only local groups' do
+        expect(media_object.local_group_exceptions).to eq(local_groups)
+      end
+    end
+
+    describe '#virtual_group_exceptions' do
+      it 'should have only non-local groups' do
+        expect(media_object.virtual_group_exceptions).to eq(virtual_groups)
+      end
+    end
+  end
+
   describe '#finished_processing?' do
     it 'returns true if the statuses indicate processing is finished' do
       media_object.parts << MasterFile.new(status_code: ['STOPPED'])

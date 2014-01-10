@@ -43,4 +43,24 @@ describe User do
       user.should_not be_in(list)
     end
   end
+
+  describe "#groups" do
+    it "should return only virtual groups if there are any" do
+      vgroups = ["foo", "bar"]
+      user.virtual_groups = vgroups
+      RoleMapper.should_not_receive(:roles)
+      expect(user.groups).to eq(vgroups)
+    end
+    it "should return groups from the role map" do
+      groups = ["foorole"]
+      RoleMapper.should_receive(:roles).and_return(groups)
+      expect(user.groups).to eq(groups)
+    end
+  end
+
+  describe "Virtual groups" do
+    its(:virtual_groups) {should_not be_nil}
+    its(:virtual_groups) {should be_a Array}
+    its(:virtual_groups) {should be_empty}
+  end
 end
