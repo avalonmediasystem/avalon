@@ -12,13 +12,15 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-require 'concerns/access_exceptions'
+require 'concerns/hidden'
+require 'concerns/virtual_groups'
 
 module Hydra
   module Datastream
     class NonIndexedRightsMetadata < Hydra::Datastream::RightsMetadata   
       include Hydra::AccessControls::Visibility 
-      include Avalon::AccessControls::AccessExceptions
+      include Avalon::AccessControls::Hidden
+      include Avalon::AccessControls::VirtualGroups
 
       def to_solr(solr_doc=Hash.new)
         return solr_doc

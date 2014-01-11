@@ -4,7 +4,6 @@
 # This makes a Dropbox object accessible in the controllers to query and find
 # out what is available. See lib/avalon/dropbox.rb for details on the API 
 require 'avalon/dropbox'
-require 'concerns/hydra/access_controls/visibility'
 
 I18n.config.enforce_available_locales = true
 

@@ -60,12 +60,12 @@ class MediaObjectsController < ApplicationController
     end
 
     if 'access-control' == @active_step 
-      @group_exceptions = @mediaobject.local_group_exceptions
-      @user_exceptions = @mediaobject.user_exceptions
-      @virtual_group_exceptions = @mediaobject.virtual_group_exceptions
-      @access = @mediaobject.access
+      @groups = @mediaobject.local_read_groups
+      @users = @mediaobject.read_users
+      @virtual_groups = @mediaobject.virtual_read_groups
+      @visibility = @mediaobject.visibility
 
-      @addable_groups = Admin::Group.non_system_groups.reject { |g| @group_exceptions.include? g.name }
+      @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }
     end
   end
 
