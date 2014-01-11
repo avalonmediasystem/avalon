@@ -105,7 +105,7 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#show" do
-    let!(:media_object) { FactoryGirl.create(:published_media_object, access: 'public') }
+    let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
 
     context "Known items should be retrievable" do
       it "should be accesible by its PID" do
@@ -142,7 +142,7 @@ describe MediaObjectsController, type: :controller do
     end
 
     describe 'Redirect back to media object after sign in' do
-      let(:media_object){ FactoryGirl.create(:media_object, access: 'private') }
+      let(:media_object){ FactoryGirl.create(:media_object, visibility: 'private') }
 
       context 'Before sign in' do
         it 'persists the current url on the session' do
@@ -154,7 +154,7 @@ describe MediaObjectsController, type: :controller do
       context 'After sign in' do
         before do 
           @user = FactoryGirl.create(:user)
-          @media_object = FactoryGirl.create(:media_object, access: 'private', read_users: [@user.username] )
+          @media_object = FactoryGirl.create(:media_object, visibility: 'private', read_users: [@user.username] )
         end
         it 'redirects to the previous url' do
         end

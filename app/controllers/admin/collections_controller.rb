@@ -36,12 +36,12 @@ class Admin::CollectionsController < ApplicationController
   def show
     @collection = Admin::Collection.find(params[:id])
     redirect_to admin_collections_path unless can? :read, @collection
-    @group_exceptions = @collection.default_local_group_exceptions
-    @user_exceptions = @collection.default_user_exceptions
-    @virtual_group_exceptions = @collection.default_virtual_group_exceptions
-    @access = @collection.default_access
+    @groups = @collection.default_local_read_groups
+    @users = @collection.default_read_users
+    @virtual_groups = @collection.default_virtual_read_groups
+    @visibility = @collection.default_visibility
 
-    @addable_groups = Admin::Group.non_system_groups.reject { |g| @group_exceptions.include? g.name }
+    @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }
   end
 
   # GET /collections/new
@@ -127,15 +127,15 @@ class Admin::CollectionsController < ApplicationController
     # If Save Access Setting button or Add/Remove User/Group button has been clicked
     if can?(:update_access_control, @collection)
       # Limited access stuff
-      @collection.default_group_exceptions -= [params[:delete_group]] if params[:delete_group].present?
-      @collection.default_user_exceptions -= [params[:delete_user]] if params[:delete_user].present?
-      @collection.default_group_exceptions -= [params[:delete_virtual_group]] if params[:delete_virtual_group].present?
-      @collection.default_group_exceptions += [params[:new_group]] if params[:new_group].present?
-      @collection.default_user_exceptions += [params[:new_user]] if params[:new_user].present?
-      @collection.default_group_exceptions += [params[:new_virtual_group]] if params[:new_virtual_group].present?
+      @collection.default_read_groups -= [params[:delete_group]] if params[:delete_group].present?
+      @collection.default_read_users -= [params[:delete_user]] if params[:delete_user].present?
+      @collection.default_read_groups -= [params[:delete_virtual_group]] if params[:delete_virtual_group].present?
+      @collection.default_read_groups += [params[:new_group]] if params[:new_group].present?
+      @collection.default_read_users += [params[:new_user]] if params[:new_user].present?
+      @collection.default_read_groups += [params[:new_virtual_group]] if params[:new_virtual_group].present?
 
 
-      @collection.default_access = params[:access] unless params[:access].blank? 
+      @collection.default_visibility = params[:visibility] unless params[:visibility].blank? 
 
       @collection.default_hidden = params[:hidden] == "1"
     end

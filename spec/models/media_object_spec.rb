@@ -195,48 +195,6 @@ describe MediaObject do
     it "should only accept ISO formatted dates"
   end
   
-  describe "access" do
-    it "should set access level to public" do
-      media_object.access = "public"
-      media_object.read_groups.should =~ ["public"]
-    end
-    it "should set access level to restricted" do
-      media_object.access = "restricted"
-      media_object.read_groups.should =~ ["registered"]
-    end
-    it "should set access level to private" do
-      media_object.access = "private"
-      media_object.read_groups.should =~ []
-    end
-    it "should set access level to limited" do
-      media_object.group_exceptions = ["class101"]
-      media_object.access = "limited"
-      media_object.read_groups.should =~ ["class101"]
-    end
-    it "should return public" do
-      media_object.read_groups = ["public"]
-      media_object.access.should eq "public"
-    end
-    it "should return restricted" do
-      media_object.read_groups = ["registered"]
-      media_object.access.should eq "restricted"
-    end
-    it "should return private" do
-      media_object.read_groups = []
-      media_object.access.should eq "private"
-    end
-    it "should return limited" do
-      media_object.read_groups = ["class101"]
-      media_object.access.should eq "limited"
-    end
-    it "should remove exceptions when access is switch from limited" do
-      media_object.group_exceptions = ["class101"]
-      media_object.access = 'limited'
-      media_object.access = 'private'
-      media_object.read_groups.should =~ []
-    end
-  end
-
   describe "discovery" do
     it "should default to discoverable" do
       media_object.hidden?.should be_false
@@ -273,32 +231,22 @@ describe MediaObject do
     end
   end
 
-  describe '#group_exceptions' do 
-    it "should not add duplicated group" do
-      media_object.access = "public"
-      test_groups = ["group1", "group1", media_object.read_groups.first]
-      media_object.group_exceptions = test_groups
-      
-      media_object.read_groups.should eql media_object.read_groups.uniq
-    end
-  end
-
   describe 'virtual groups' do
     let!(:local_groups) {[FactoryGirl.create(:group).name, FactoryGirl.create(:group).name]}
     let(:virtual_groups) {["vgroup1", "vgroup2"]}
     before(:each) do
-      media_object.group_exceptions = local_groups + virtual_groups
+      media_object.read_groups = local_groups + virtual_groups
     end
 
     describe '#local_group_exceptions' do
       it 'should have only local groups' do
-        expect(media_object.local_group_exceptions).to eq(local_groups)
+        expect(media_object.local_read_groups).to eq(local_groups)
       end
     end
 
     describe '#virtual_group_exceptions' do
       it 'should have only non-local groups' do
-        expect(media_object.virtual_group_exceptions).to eq(virtual_groups)
+        expect(media_object.virtual_read_groups).to eq(virtual_groups)
       end
     end
   end

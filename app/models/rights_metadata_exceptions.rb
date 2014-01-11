@@ -26,8 +26,6 @@ module RightsMetadataExceptions
         t.read_users(:proxy=>[:read_access, :machine, :person])
         t.edit_groups(:proxy=>[:edit_access, :machine, :group])
         t.edit_users(:proxy=>[:edit_access, :machine, :person])
-        t.group_exceptions
-        t.user_exceptions
       end
 
       ["edit", "read", "discover"].each do |action|

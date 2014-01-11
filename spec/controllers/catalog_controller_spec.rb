@@ -18,7 +18,7 @@ describe CatalogController do
   describe "#index" do
     describe "as an un-authenticated user" do
       it "should show results for items that are public and published" do
-        mo = FactoryGirl.create(:published_media_object, access: 'public')
+        mo = FactoryGirl.create(:published_media_object, visibility: 'public')
         get 'index', :q => ""
         response.should be_success
         response.should render_template('catalog/index')
@@ -26,14 +26,14 @@ describe CatalogController do
         assigns(:document_list).map(&:id).should == [mo.id]
       end
       it "should not show results for items that are not public" do
-        mo = FactoryGirl.create(:published_media_object, access: 'restricted')
+        mo = FactoryGirl.create(:published_media_object, visibility: 'restricted')
         get 'index', :q => ""
         response.should be_success
         response.should render_template('catalog/index')
         assigns(:document_list).count.should eql(0)
       end
       it "should not show results for items that are not published" do
-        mo = FactoryGirl.create(:media_object, access: 'public')
+        mo = FactoryGirl.create(:media_object, visibility: 'public')
         get 'index', :q => ""
         response.should be_success
         response.should render_template('catalog/index')
@@ -45,7 +45,7 @@ describe CatalogController do
         login_as :user
       end
       it "should show results for items that are published and available to registered users" do
-        mo = FactoryGirl.create(:published_media_object, access: 'restricted')
+        mo = FactoryGirl.create(:published_media_object, visibility: 'restricted')
         get 'index', :q => ""
         response.should be_success
         response.should render_template('catalog/index')
@@ -53,14 +53,14 @@ describe CatalogController do
         assigns(:document_list).map(&:id).should == [mo.id]
       end
       it "should not show results for items that are not public or available to registered users" do
-        mo = FactoryGirl.create(:published_media_object, access: 'private')
+        mo = FactoryGirl.create(:published_media_object, visibility: 'private')
         get 'index', :q => ""
         response.should be_success
         response.should render_template('catalog/index')
         assigns(:document_list).count.should eql(0)
       end
       it "should not show results for items that are not published" do
-        mo = FactoryGirl.create(:media_object, access: 'public')
+        mo = FactoryGirl.create(:media_object, visibility: 'public')
         get 'index', :q => ""
         response.should be_success
         response.should render_template('catalog/index')
@@ -72,7 +72,7 @@ describe CatalogController do
       let!(:manager) {login_user(collection.managers.first)}
 
       it "should show results for items that are unpublished, private, and belong to one of my collections" do
-        mo = FactoryGirl.create(:media_object, access: 'private', collection: collection)
+        mo = FactoryGirl.create(:media_object, visibility: 'private', collection: collection)
         get 'index', :q => ""
         response.should be_success
         response.should render_template('catalog/index')
@@ -80,7 +80,7 @@ describe CatalogController do
         assigns(:document_list).map(&:id).should == [mo.id]
       end
       it "should not show results for items that do not belong to one of my collections" do
-        mo = FactoryGirl.create(:media_object, access: 'private')
+        mo = FactoryGirl.create(:media_object, visibility: 'private')
         get 'index', :q => ""
         response.should be_success
         response.should render_template('catalog/index')
@@ -91,7 +91,7 @@ describe CatalogController do
 			let!(:administrator) {login_as(:administrator)}
 
 			it "should show results for all items" do
-        mo = FactoryGirl.create(:media_object, access: 'private')
+        mo = FactoryGirl.create(:media_object, visibility: 'private')
         get 'index', :q => ""
         response.should be_success
         response.should render_template('catalog/index')
