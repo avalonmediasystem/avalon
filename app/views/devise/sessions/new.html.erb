@@ -4,7 +4,7 @@
 
 <h2 style="text-align: center">Select an Authentication Provider</h2>
 <ul class="login">
-  <% Avalon::Authentication::Providers.each do |provider| %>
+  <% Avalon::Authentication::VisibleProviders.each do |provider| %>
   <li class="btn btn-large">
     <% provider_logo = provider[:logo] || 'signin_local.png' %>
     <%= link_to image_tag(provider_logo, :title => provider[:name], :class => 'logo') + " #{provider[:name]}", user_omniauth_authorize_path(provider[:provider]) %>

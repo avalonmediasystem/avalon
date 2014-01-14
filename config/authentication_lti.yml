@@ -1,5 +1,0 @@
-- :name: Avalon LTI Oauth
-  :provider: :lti
-  :params:
-    :oauth_credentials:
-#      key: 'secret'

@@ -4,3 +4,10 @@
   :params:
     :fields:
     - :email
+
+#- :name: Avalon Lti OAuth
+#  :provider: :lti
+#  :hidden: true
+#  :params:
+#    :oauth_credentials:
+#      key: 'secret'
