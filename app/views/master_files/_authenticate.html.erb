@@ -52,6 +52,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       var interval = window.setInterval((function() {
         if (popup_window.closed) {
           window.clearInterval(interval);
+          document.cookie = "login_popup=deleted; expires=" + new Date(0).toUTCString();
           location.reload();
         }
       }), 1000);

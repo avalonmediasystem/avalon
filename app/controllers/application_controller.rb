@@ -68,6 +68,7 @@ class ApplicationController < ActionController::Base
   def store_location
     if cookies[:login_popup]
       session[:previous_url] = root_path + "self_closing.html"
+      cookies.delete :login_popup
     end
   end
 
