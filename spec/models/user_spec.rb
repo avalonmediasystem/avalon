@@ -45,22 +45,23 @@ describe User do
   end
 
   describe "#groups" do
+    let(:groups)  { ["foorole"] }
+    let(:vgroups) { ["foo", "bar"] }
     it "should return only virtual groups if there are any" do
-      vgroups = ["foo", "bar"]
+      RoleMapper.should_receive(:roles).and_return(groups)
       user.virtual_groups = vgroups
       RoleMapper.should_not_receive(:roles)
-      expect(user.groups).to eq(vgroups)
+      expect(user.groups).to eq(groups+vgroups)
     end
     it "should return groups from the role map" do
-      groups = ["foorole"]
       RoleMapper.should_receive(:roles).and_return(groups)
       expect(user.groups).to eq(groups)
     end
   end
 
   describe "Virtual groups" do
-    its(:virtual_groups) {should_not be_nil}
-    its(:virtual_groups) {should be_a Array}
-    its(:virtual_groups) {should be_empty}
+    its(:virtual_groups) { should_not be_nil }
+    its(:virtual_groups) { should be_a Array }
+    its(:virtual_groups) { should be_empty   }
   end
 end

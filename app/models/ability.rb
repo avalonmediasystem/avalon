@@ -18,7 +18,7 @@ class Ability
   include Hydra::PolicyAwareAbility
 
   def create_permissions(user=nil, session=nil)
-    if @user_groups.include? "administrator"
+    if @user.full_login? and @user_groups.include? "administrator"
       can :manage, MediaObject
       can :manage, MasterFile
       can :inspect, MediaObject
@@ -26,23 +26,23 @@ class Ability
       can :manage, Admin::Collection
     end
     
-    if @user_groups.include? "group_manager"
+    if @user.full_login? and @user_groups.include? "group_manager"
       can :manage, Admin::Group do |group|
         group.nil? or !['administrator','group_manager'].include?(group.name)
       end
     end
 
-    if is_member_of_any_collection?
+    if @user.full_login? and is_member_of_any_collection?
       can :create, MediaObject
     end
 
-    if @user_groups.include? "manager"
+    if @user.full_login? and @user_groups.include? "manager"
       can :create, Admin::Collection
     end
   end
 
   def custom_permissions(user=nil, session=nil)
-    unless @user_groups.include? "administrator"
+    unless @user.full_login? and @user_groups.include? "administrator"
       cannot :read, MediaObject do |mediaobject|
         !mediaobject.published? && !test_edit(mediaobject.pid)
       end

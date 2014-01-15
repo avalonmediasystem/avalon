@@ -47,6 +47,7 @@ class User < ActiveRecord::Base
     logger.debug "In find_for_lti: #{auth_hash}"
     u = User.find_or_create_by_username auth_hash['uid'], email: auth_hash.info.email
     u.virtual_groups += [auth_hash.extra.raw_info.context_id]
+    u.full_login = false
     u
   end
 
@@ -59,11 +60,18 @@ class User < ActiveRecord::Base
   end
 
   def groups
-    if virtual_groups.any?
-      virtual_groups
-    else
-      RoleMapper.roles(user_key)
+    RoleMapper.roles(user_key) + virtual_groups
+  end
+
+  def full_login=(value)
+    @full_login = value ? true : false
+  end
+
+  def full_login?
+    if @full_login.nil?
+      @full_login = true
     end
+    @full_login
   end
 
   def virtual_groups= groups
