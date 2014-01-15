@@ -195,19 +195,6 @@ describe MediaObject do
     it "should only accept ISO formatted dates"
   end
   
-  describe "discovery" do
-    it "should default to discoverable" do
-      media_object.hidden?.should be_false
-      media_object.to_solr["hidden_bsi"].should be_false
-    end
-
-    it "should set hidden?" do
-      media_object.hidden = true
-      media_object.hidden?.should be_true
-      media_object.to_solr["hidden_bsi"].should be_true
-    end
-  end
-
   describe "Ingest status" do
     it "should default to unpublished" do
       media_object.workflow.published.first.should eq "false"
@@ -228,26 +215,6 @@ describe MediaObject do
 
     it "should default to the first workflow step" do
       media_object.workflow.last_completed_step.should == ['']
-    end
-  end
-
-  describe 'virtual groups' do
-    let!(:local_groups) {[FactoryGirl.create(:group).name, FactoryGirl.create(:group).name]}
-    let(:virtual_groups) {["vgroup1", "vgroup2"]}
-    before(:each) do
-      media_object.read_groups = local_groups + virtual_groups
-    end
-
-    describe '#local_group_exceptions' do
-      it 'should have only local groups' do
-        expect(media_object.local_read_groups).to eq(local_groups)
-      end
-    end
-
-    describe '#virtual_group_exceptions' do
-      it 'should have only non-local groups' do
-        expect(media_object.virtual_read_groups).to eq(virtual_groups)
-      end
     end
   end
 
