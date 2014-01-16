@@ -115,6 +115,11 @@ class Ability
        is_member_of?(mediaobject.collection) 
       end 
     end
+
+    # Users logged in through LTI cannot share
+    if @user.virtual_groups.nil? || @user.virtual_groups.empty?
+      can :share, MediaObject 
+    end
   end
 
   def is_member_of?(collection)
