@@ -15,6 +15,8 @@
 
 class MediaObject < ActiveFedora::Base
   include Hydra::AccessControls::Permissions
+  include Avalon::AccessControls::Hidden
+  include Avalon::AccessControls::VirtualGroups
   include Hydra::ModelMethods
   include ActiveFedora::Associations
   include Avalon::Workflow::WorkflowModelMixin
@@ -131,8 +133,6 @@ class MediaObject < ActiveFedora::Base
   has_attributes :duration, datastream: :displayMetadata, multiple: false
   has_attributes :section_pid, datastream: :sectionsMetadata, multiple: true
 
-  has_attributes :user_exceptions, :group_exceptions, datastream: :rightsMetadata, multiple: true
-
   accepts_nested_attributes_for :parts, :allow_destroy => true
 
   def published?
@@ -185,63 +185,6 @@ class MediaObject < ActiveFedora::Base
 
   def populate_duration!
     self.duration = calculate_duration.to_s
-  end
-
-  def group_exceptions= groups
-    if access == 'limited'
-      self.read_groups = groups
-    end
-    rightsMetadata.group_exceptions = groups
-  end
-
-  def user_exceptions= users
-    if access == 'limited'
-      self.read_users = users
-    end
-    rightsMetadata.user_exceptions = users
-  end
-
-  def access
-    if self.visibility == 'private' && (self.read_groups.any? || self.read_users.any?)
-      'limited'
-    else
-      self.visibility
-    end
-  end
-
-  def access= access_level
-    return if access_level == access
-    if access_level == 'limited'
-      self.visibility = 'private'
-      self.read_users = user_exceptions
-      self.read_groups = group_exceptions
-    else
-      self.read_users = []
-      self.read_groups = []
-      self.visibility = access_level
-    end
-  end
-
-  def local_group_exceptions
-    group_exceptions.select {|g| Admin::Group.exists? g}
-  end
-
-  def virtual_group_exceptions
-    group_exceptions - local_group_exceptions
-  end
-
-  def hidden= value
-    groups = self.discover_groups
-    if value
-      groups << "nobody"
-    else
-      groups.delete "nobody"
-    end
-    self.discover_groups = groups.uniq
-  end
-
-  def hidden?
-    self.discover_groups.include? "nobody"
   end
 
   def missing_attributes
@@ -350,13 +293,12 @@ class MediaObject < ActiveFedora::Base
   def to_solr(solr_doc = Hash.new, opts = {})
     super(solr_doc, opts)
     solr_doc[Solrizer.default_field_mapper.solr_name("created_by", :facetable, type: :string)] = self.DC.creator
-    solr_doc[Solrizer.default_field_mapper.solr_name("hidden", type: :boolean)] = hidden?
     solr_doc[Solrizer.default_field_mapper.solr_name("duration", :displayable, type: :string)] = self.duration
     solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
     solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
     solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
     indexer = Solrizer::Descriptor.new(:string, :stored, :indexed, :multivalued)
-    solr_doc[Solrizer.default_field_mapper.solr_name("read_access_virtual_group", indexer)] = read_groups & virtual_group_exceptions
+    solr_doc[Solrizer.default_field_mapper.solr_name("read_access_virtual_group", indexer)] = virtual_read_groups
     #Add all searchable fields to the all_text_timv field
     all_text_values = []
     all_text_values << solr_doc["title_tesim"]

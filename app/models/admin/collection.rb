@@ -44,9 +44,8 @@ class Admin::Collection < ActiveFedora::Base
   has_attributes :dropbox_directory_name, datastream: :descMetadata, multiple: false
   
   delegate :read_groups, :read_groups=, :read_users, :read_users=,
-           :access, :access=, :hidden?, :hidden=, 
-           :group_exceptions, :group_exceptions=, :user_exceptions, :user_exceptions=,
-           :local_group_exceptions, :virtual_group_exceptions, 
+           :visibility, :visibility=, :hidden?, :hidden=, 
+           :local_read_groups, :virtual_read_groups, 
            to: :defaultRights, prefix: :default
 
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }

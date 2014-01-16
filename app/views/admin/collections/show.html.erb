@@ -56,7 +56,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
       <%= co.fieldset 'Set Default Access Control for New Items' do %>
         <div class="span10">
-          <%= render "modules/access_control", { form: co, object: @collection, access: @collection.default_access, hidden: @collection.default_hidden? } %>	
+          <%= render "modules/access_control", { form: co, object: @collection, visibility: @collection.default_visibility, hidden: @collection.default_hidden? } %>	
 					<% if can? :update_access_control, @collection %>
 						<%= submit_tag "Save Access Settings", name: "save_access", class: "btn" %>
 					<% end %>
