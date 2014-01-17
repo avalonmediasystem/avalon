@@ -117,7 +117,7 @@ class Ability
     end
 
     # Users logged in through LTI cannot share
-    if @user.virtual_groups.nil? || @user.virtual_groups.empty?
+    if @user.full_login?
       can :share, MediaObject 
     end
   end
