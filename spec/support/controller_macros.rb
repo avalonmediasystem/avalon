@@ -28,4 +28,12 @@ module ControllerMacros
     sign_in user
     user
   end
+  def login_lti(factory_model = 'student', options = {virtual_groups: [Faker::Lorem.word]})
+    user = FactoryGirl.create(factory_model, options)
+    @request.env["devise.mapping"] = Devise.mappings[:user]
+    logger.debug "Attempting to sign in user: #{user}"
+    sign_in user
+    @request.session[:virtual_groups] = user.virtual_groups
+    user
+  end
 end

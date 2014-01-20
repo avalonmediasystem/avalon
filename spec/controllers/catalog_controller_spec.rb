@@ -99,5 +99,17 @@ describe CatalogController do
         assigns(:document_list).map(&:id).should == [mo.id]
       end
 		end
+    describe "as an lti user" do
+      let(:user) { login_lti 'student' }
+      let(:lti_group) { user.virtual_groups.first }
+      it "should show results for items visible to the lti virtual group" do
+        mo = FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
+        get 'index', :q => "read_access_virtual_group_ssim:#{lti_group}"
+        response.should be_success
+        response.should render_template('catalog/index')
+        assigns(:document_list).count.should eql(1)
+        assigns(:document_list).map(&:id).should == [mo.id]
+      end
+    end
   end
 end

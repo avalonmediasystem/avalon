@@ -33,6 +33,9 @@ FactoryGirl.define do
         end
       end 
     end
+    factory :user_lti do
+        virtual_groups { [Faker::Lorem.word] }
+    end
   end 
 
   factory :cataloger, class: User  do
