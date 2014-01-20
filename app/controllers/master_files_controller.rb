@@ -24,6 +24,11 @@ class MasterFilesController < ApplicationController
   before_filter :authenticate_user!, :only => [:create]
   before_filter :ensure_readable_filedata, :only => [:create]
 
+  def show
+    masterfile = MasterFile.find(params[:id])
+    redirect_to pid_section_media_object_path(masterfile.mediaobject.pid, masterfile.pid)
+  end
+
   def embed
     @masterfile = MasterFile.find(params[:id])
     if can? :read, @masterfile.mediaobject

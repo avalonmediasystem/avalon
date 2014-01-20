@@ -17,6 +17,7 @@ Avalon::Application.routes.draw do
 
   # My routes go here
   # Routes for subjects and pbcore controller
+  match "object/:id", to: 'object#show'
   resources :media_objects, except: [:create] do
     member do
       put :update_status
@@ -29,7 +30,7 @@ Avalon::Application.routes.draw do
       get 'section/:content', :action => :show, :as => :pid_section
     end
   end
-  resources :master_files, except: [:show, :new, :index] do
+  resources :master_files, except: [:new, :index] do
     member do
       get  'thumbnail', :to => 'master_files#get_frame', :defaults => { :type => 'thumbnail' }
       get  'poster',    :to => 'master_files#get_frame', :defaults => { :type => 'poster' }
