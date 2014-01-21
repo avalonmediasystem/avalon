@@ -122,7 +122,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def add_depositor user
-    # Do not add an edit_user to read_users or they will be removed from edit_users
+    # Do not add an edit_user to read_users or the edit_user will be removed from edit_users
     unless self.edit_users.include? user
       self.read_users += [user]
       self.inherited_edit_users += [user]
