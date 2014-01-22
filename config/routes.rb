@@ -44,8 +44,6 @@ Avalon::Application.routes.draw do
   
   resources :comments, only: [:index, :create]
 
-  match '/engage/ui/json/servicedata.:format' => 'media_objects#matterhorn_service_config'
-
   #match 'search/index' => 'search#index'
   #match 'search/facet/:id' => 'search#facet'
 
