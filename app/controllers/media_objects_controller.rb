@@ -199,12 +199,6 @@ class MediaObjectsController < ApplicationController
     mediaobject
   end
 
-  def matterhorn_service_config
-    respond_to do |format|
-      format.any(:xml, :json) { render request.format.to_sym => Avalon.matterhorn_config(request.host) }
-    end
-  end
-
   protected
 
   def load_master_files
