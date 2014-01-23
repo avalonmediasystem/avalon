@@ -224,7 +224,7 @@ class MasterFile < ActiveFedora::Base
   def embed_code(width, host)
     begin
       height = is_video? ? (width/display_aspect_ratio.to_f).floor : AUDIO_HEIGHT
-      path = embed_master_file_path(pid, only_path: false, host: host)
+      path = embed_master_file_path(pid, only_path: false, host: host, protocol: '//')
       "<iframe src=\"#{path}\" width=\"#{width}\" height=\"#{height}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
     rescue 
       ""
