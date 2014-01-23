@@ -46,7 +46,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                  sections: @masterFiles,
                  activeStream: @currentStream} %>
 
-    <%= render 'share' %>
+    <%= render('share') if can?(:share, MediaObject) %>
   </div>
 
   <div class="span4" id="right-column">
