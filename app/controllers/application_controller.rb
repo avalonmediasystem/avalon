@@ -76,6 +76,14 @@ class ApplicationController < ActionController::Base
     session[:previous_url] || root_path
   end
 
+  Warden::Manager.after_authentication do |user,auth,opts|
+    auth.cookies[:signed_in] = 1
+  end
+
+  Warden::Manager.before_logout do |user,auth,opts|
+    auth.cookies.delete :signed_in
+  end
+
   rescue_from CanCan::AccessDenied do |exception|
     if current_user
       if exception.subject.class == MediaObject && exception.action == :update
