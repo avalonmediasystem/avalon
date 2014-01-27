@@ -13,6 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+
 <ul class="nav nav-tabs share-tabs">
   <li class="active"><a href="#link-tab" data-toggle="tab">Share this resource</a></li>
   <li><a href="#embed-tab" data-toggle="tab">Embed</a></li>
@@ -35,7 +36,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% unless @currentStream.blank? %>
   <div class="tab-pane" id="embed-tab">
     <p class="muted">Copy the text below to embed this resource</p>
-    <textarea class="span6" rows="3" id="embed-part" onClick="this.select();"><%= @currentStream.embed_code(MasterFile::EMBED_SIZE[:medium], request.host) %></textarea>
+    <textarea class="span6" rows="3" id="embed-part" onClick="this.select();"><%= @currentStream.embed_code(MasterFile::EMBED_SIZE[:medium], request.host_with_port) %></textarea>
   </div>
   <% end %>
 </div>
