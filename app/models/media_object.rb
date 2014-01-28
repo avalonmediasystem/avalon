@@ -28,7 +28,6 @@ class MediaObject < ActiveFedora::Base
   belongs_to :governing_policy, :class_name=>'Admin::Collection', :property=>:is_governed_by
   belongs_to :collection, :class_name=>'Admin::Collection', :property=>:is_member_of_collection
 
-  has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: ModsDocument	
 
   after_create :after_create
@@ -299,6 +298,8 @@ class MediaObject < ActiveFedora::Base
     solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
     indexer = Solrizer::Descriptor.new(:string, :stored, :indexed, :multivalued)
     solr_doc[Solrizer.default_field_mapper.solr_name("read_access_virtual_group", indexer)] = virtual_read_groups
+    solr_doc["dc_creator_tesim"] = self.creator
+    solr_doc["dc_publisher_tesim"] = self.publisher
     #Add all searchable fields to the all_text_timv field
     all_text_values = []
     all_text_values << solr_doc["title_tesim"]
@@ -327,7 +328,6 @@ class MediaObject < ActiveFedora::Base
     end
 
     def update_permalink_and_dependents
-
       if self.persisted? && self.published?
         ensure_permalink!
         self.parts.each do |master_file| 

@@ -181,5 +181,13 @@ describe MasterFilesController do
       end
     end
   end
+
+  describe "#show" do
+    let!(:master_file) {FactoryGirl.create(:master_file)}
+    it "should redirect you to the media object page with the correct section" do
+      get :show, id: master_file.pid 
+      response.should redirect_to(pid_section_media_object_path(master_file.mediaobject.pid, master_file.pid)) 
+    end
+  end
   
 end
