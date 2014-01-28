@@ -50,9 +50,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
   <%= stylesheet_link_tag "mediaelement-title/mejs-title" =%>
 
-  <%
-    features = ['playpause','current','progress','duration','volume','qualities','fullscreen','responsive', 'title']
-  %>
+  <% if @masterfile.is_video? %>
+    <% features = ['playpause','current','progress','duration','volume','qualities','fullscreen','responsive', 'title'] %>
+  <% else %>
+    <%= javascript_include_tag 'mediaelement-hd-toggle/mep-feature-hdtoggle' %>
+    <%= stylesheet_link_tag "mediaelement-hd-toggle/mejs-hdtoggle" =%>
+    <% features = ['playpause','current','progress','duration','volume','hdtoggle','fullscreen','responsive', 'title'] %>
+  <% end %>
 
   <script>
     currentPlayer = new MediaElementPlayer('#video-tag', 

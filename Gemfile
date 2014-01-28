@@ -15,6 +15,7 @@
   gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector' # HEAD , tag: 'avalon-r2'
   gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git' # HEAD , tag: 'avalon-r2'
   gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git' # HEAD
+  gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git'
 
   # TODO: Remove following line after roo merges and releases
   #       https://github.com/Empact/roo/pull/94
