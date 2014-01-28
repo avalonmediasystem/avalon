@@ -298,24 +298,20 @@ label {
   filter: alpha(opacity=50);
   opacity: 0.5;
 }
-      
-.limit-access { 
-  position: relative; 
-  input[type=submit] {
-    @extend .btn;
-    @extend .inline;
-    width: 7em;
-  }
+
+.row-no-margin {
+  @extend .row;
+  margin-left: 0px;
+}
+
+.access-block {
+  padding-bottom: 4px;
   input[type=text] {
+    @extend .span9;
   }
-  @media screen and (min-width: 1250px) {
-    > div {
-      display: inline-block;
-     }
-     input[type=submit] {
-      width: auto;
-      margin-right: .6em;
-    }
+  input[type=submit] {
+    @extend .span3;
+    @extend .btn;
   }
 }
 

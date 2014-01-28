@@ -79,7 +79,6 @@ en:
       target="_blank">Library of Congress Subject Headings</a>. For temporal
       subjects, use the Time period(s) field and for geographic subjects, use
       the Location(s) field in this form. See below.
-  role_help:
     manager: |
       Managers have overall accountability for the collection. Managers can 
       create collections and assign editor and depositor roles for those 
@@ -97,3 +96,9 @@ en:
       Depositors add media to the collection and describe it with metadata. 
       They can publish items but not unpublish. They can only modify or 
       delete unpublished items.
+    user: |
+      Enter a username to assign them access to an item or collection.
+    group: |
+      Select a group from the dropdown list below to assign it access to an item or collection.
+    class: |
+      To assign access to an item or collection to a class you will need to enter the course context_label.
