@@ -13,41 +13,43 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-  <style>
-    body {
-      background: rgba(10,10,10,0.95); 
-      font-family: Arial,Helvetica,sans-serif;
-      font-size: 14px;
-      text-align: center;
-      color: white
-    }
-    .centered {
-      margin: auto;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 50px;
-      width: 50%
-    }
-  </style>
-
-  <div>
-    <div class="centered">
-      <% if current_user %>
-        <p>You are not authorized to view this item</p>
-      <% else %>
-        <p>You must be logged in and authorized to view this item</p>
+      <% if @masterfile.is_video? %>
+        <p>You must be logged in and authorized to watch this video</p>
         Please <%= link_to "sign in", new_user_session_path, :onclick=>"openPopup(this);return false;" %>
+      <% else %>
+        <p>Please <%= link_to "sign in", new_user_session_path, :onclick=>"openPopup(this);return false;" %> to play this audio item</p>
       <% end %>
-    </div>
-  </div>
 
 <% content_for :page_scripts do %>
   <script>
-    function openPopup(thiz) {
-      var popup_window = window.open(thiz.href,'Avalon Login', 'height=600, width=600');
+    
+    window.onload = function(){
+      window["authterval"] = window.setInterval(function(){
+        if (getCookie("signed_in") != null) {
+          location.reload();
+        }
+      }, 1000)
+    }
+
+    function getCookie(name) {
+      var dc = document.cookie;
+      var prefix = name + "=";
+      var begin = dc.indexOf("; " + prefix);
+      if (begin == -1) {
+        begin = dc.indexOf(prefix);
+        if (begin != 0) return null;
+      } else {
+        begin += 2;
+        var end = document.cookie.indexOf(";", begin);
+        if (end == -1) {
+          end = dc.length;
+        }
+      }
+      return unescape(dc.substring(begin + prefix.length, end));
+    }
+
+    function openPopup(link) {
+      var popup_window = window.open(link.href,'Avalon Login', 'height=600, width=600');
       document.cookie = 'login_popup=1; path=/';
       var interval = window.setInterval((function() {
         if (popup_window.closed) {
@@ -57,6 +59,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         }
       }), 1000);
     }
+
   </script>
 <% end %>
 
