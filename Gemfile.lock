@@ -14,7 +14,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
-  revision: ecbb3a961666768845fbc50b151ff0fbbfad6527
+  revision: 4da42ab601c8ced5b3bd7dd983151ebe6acfd285
   specs:
     avalon-about (0.1.0)
       about_page
@@ -363,7 +363,7 @@ GEM
     modal_logic (0.0.5)
       handlebars_assets (= 0.14.1)
       rails (~> 3.2.13)
-    multi_json (1.8.2)
+    multi_json (1.8.4)
     multipart-post (2.0.0)
     net-http-digest_auth (1.4)
     net-scp (1.1.2)
@@ -433,7 +433,7 @@ GEM
       rdoc (~> 3.4)
       thor (>= 0.14.6, < 2.0)
     raindrops (0.12.0)
-    rake (10.1.0)
+    rake (10.1.1)
     rb-fsevent (0.9.3)
     rdf (1.1.0.1)
     rdf-rdfxml (1.0.1)
