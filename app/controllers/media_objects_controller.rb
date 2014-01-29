@@ -162,11 +162,9 @@ class MediaObjectsController < ApplicationController
       when 'publish'
         media_object.publish!(user_key)
       when 'unpublish'
-        media_object.publish!(nil)
-      when nil
-        new_state = media_object.published? ? nil : user_key
-        media_object.publish!(new_state)        
+        media_object.publish!(nil) if can?(:unpublish, media_object)   
     end
+
     media_object.save
 
     redirect_to :back

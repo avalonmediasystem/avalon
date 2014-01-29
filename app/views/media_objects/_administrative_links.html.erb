@@ -33,21 +33,15 @@ Unless required by applicable law or agreed to in writing, software distributed
       </p>
 
       <div id="administrative_options" style="margin-bottom:1em;">
-        <%# If no status flag is set then the call to update_status will simply
-            toggle the value. This keeps the view much cleaner by avoiding lots
-            of if/then logic %>
-        <% if @mediaobject.published? && can?(:unpublish, @mediaobject) %>
-          <% label = 'Unpublish' %>  
-          <%= link_to label, update_status_media_object_path(@mediaobject), method: :put, 
-              class: 'btn' %>
-        <% elsif !@mediaobject.published? %>
-          <% label = 'Publish' %>  
-          <%= link_to label, update_status_media_object_path(@mediaobject), method: :put, 
-              class: 'btn' %>
-        <% end %>
 
-        <% #label = @mediaobject.discover_groups.include?("nobody") ? 'Unhide' : 'Hide' %>  
-        <%#= link_to label, update_visibility_media_object_path(@mediaobject), method: :put, class: 'btn' %>
+      <% if @mediaobject.published? %>
+        <% if can?(:unpublish, @mediaobject) %>
+          <%= link_to 'Unpublish', update_status_media_object_path(@mediaobject, :status => 'unpublish'), method: :put, class: 'btn' %>
+        <% end %>
+      <% else %>
+        <%= link_to 'Publish', update_status_media_object_path(@mediaobject, :status => 'publish'), method: :put, class: 'btn' %>
+      <% end %>
+
 
         <%= link_to 'Edit', edit_media_object_path(@mediaobject), class: 'btn' %>
         <%# This might not be the best approach because it makes accidental 
