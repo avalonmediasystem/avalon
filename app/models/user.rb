@@ -27,8 +27,6 @@ class User < ActiveRecord::Base
   validates :username, presence: true, uniqueness: true
   validates :email, presence: true, uniqueness: true
   
-  delegate :can?, :cannot?, :to => :ability
-
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
   # the account. 
@@ -45,19 +43,12 @@ class User < ActiveRecord::Base
 
   def self.find_for_lti(auth_hash, signed_in_resource=nil)
     logger.debug "In find_for_lti: #{auth_hash}"
-    u = User.find_or_create_by_username(auth_hash.uid, auth_hash.info.email)
     class_id = auth_hash.extra.context_id
     if Course.find_by_guid(class_id).nil?
       class_name = auth_hash.extra.context_name
       Course.create :guid => class_id, :label => class_name unless class_name.nil?
     end
-    u.virtual_groups += [class_id]
-    u.full_login = false
-    u
-  end
-
-  def ability
-    @ability ||= Ability.new(self)
+    User.find_or_create_by_username auth_hash['uid'], email: auth_hash.info.email
   end
 
   def in?(*list)
@@ -65,26 +56,7 @@ class User < ActiveRecord::Base
   end
 
   def groups
-    RoleMapper.roles(user_key) + virtual_groups
-  end
-
-  def full_login=(value)
-    @full_login = value ? true : false
-  end
-
-  def full_login?
-    if @full_login.nil?
-      @full_login = true
-    end
-    @full_login
-  end
-
-  def virtual_groups= groups
-    @vgroups = groups
-  end
-
-  def virtual_groups
-    @vgroups ||= []
+    RoleMapper.roles(user_key)
   end
 
 end

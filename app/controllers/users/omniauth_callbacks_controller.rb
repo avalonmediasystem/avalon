@@ -38,20 +38,24 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     auth_type.downcase!
     find_method = "find_for_#{auth_type}".to_sym
     logger.debug "#{auth_type} :: #{current_user.inspect}"
-  	@user = User.send(find_method,request.env["omniauth.auth"], current_user)
+    @user = User.send(find_method,request.env["omniauth.auth"], current_user)
 
     if @user.persisted?
-      session[:virtual_groups] = @user.virtual_groups 
       flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => auth_type
       sign_in @user, :event => :authentication
+
+      if auth_type == 'lti'
+        user_session[:virtual_groups] = [request.env["omniauth.auth"].extra.raw_info.context_id]
+        user_session[:full_login] = false
+      end
     end
 
     if request['media_object_id']
       redirect_to media_object_path(request['media_object_id'])
     elsif session[:previous_url] 
       redirect_to session.delete :previous_url
-    elsif session[:virtual_groups].any?
-      redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => session[:virtual_groups].first)
+    elsif user_session[:virtual_groups].present?
+      redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => user_session[:virtual_groups].first)
     else
       redirect_to root_url
     end

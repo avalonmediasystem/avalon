@@ -75,12 +75,13 @@ module Avalon
             base_errors = []
             email_address = package.manifest.email || Avalon::Configuration.lookup('email.notification')
             current_user = User.where(username: email_address).first || User.where(email: email_address).first
+            current_ability = Ability.new(current_user)
             if current_user.nil?
               base_errors << "User does not exist in the system: #{email_address}."
             else
               package.validate do |entry|
                 media_object = initialize_media_object_from_package( entry, current_user.user_key )
-                if media_object.collection && ! current_user.can?(:read, media_object.collection)
+                if media_object.collection && ! current_ability.can?(:read, media_object.collection)
                   entry.errors.add(:collection, "You do not have permission to add items to collection: #{collection.name}.")
                 elsif ! media_object.collection && entry.fields[:collection].present?
                   entry.errors.add(:collection, "There is not a collection in the system with the name: #{entry.fields[:collection].first}.")

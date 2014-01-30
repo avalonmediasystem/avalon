@@ -17,8 +17,18 @@ class Ability
   include Hydra::Ability
   include Hydra::PolicyAwareAbility
 
+  def user_groups
+    return @user_groups if @user_groups
+      
+    @user_groups = default_user_groups
+    @user_groups |= current_user.groups if current_user and current_user.respond_to? :groups
+    @user_groups |= ['registered'] unless current_user.new_record?
+    @user_groups |= @session[:virtual_groups] unless @session.blank?
+    @user_groups
+  end
+
   def create_permissions(user=nil, session=nil)
-    if @user.full_login? and @user_groups.include? "administrator"
+    if full_login? and @user_groups.include? "administrator"
       can :manage, MediaObject
       can :manage, MasterFile
       can :inspect, MediaObject
@@ -26,23 +36,23 @@ class Ability
       can :manage, Admin::Collection
     end
     
-    if @user.full_login? and @user_groups.include? "group_manager"
+    if full_login? and @user_groups.include? "group_manager"
       can :manage, Admin::Group do |group|
         group.nil? or !['administrator','group_manager'].include?(group.name)
       end
     end
 
-    if @user.full_login? and is_member_of_any_collection?
+    if full_login? and is_member_of_any_collection?
       can :create, MediaObject
     end
 
-    if @user.full_login? and @user_groups.include? "manager"
+    if full_login? and @user_groups.include? "manager"
       can :create, Admin::Collection
     end
   end
 
   def custom_permissions(user=nil, session=nil)
-    unless @user.full_login? and @user_groups.include? "administrator"
+    unless full_login? and @user_groups.include? "administrator"
       cannot :read, MediaObject do |mediaobject|
         !mediaobject.published? && !test_edit(mediaobject.pid)
       end
@@ -117,9 +127,7 @@ class Ability
     end
 
     # Users logged in through LTI cannot share
-    if @user.full_login?
-      can :share, MediaObject 
-    end
+    can :share, MediaObject if full_login?
   end
 
   def is_member_of?(collection)
@@ -134,5 +142,12 @@ class Ability
 
   def is_member_of_any_collection?
     @user.id.present? and Admin::Collection.where("#{ActiveFedora::SolrService.solr_name("inheritable_edit_access_person", Hydra::Datastream::RightsMetadata.indexer)}" => @user.user_key).first.present?
+  end
+
+  def full_login?
+    return @full_login unless @full_login.nil?
+
+    @full_login = @session.present? ? @session[:full_login] : true
+    @full_login
   end
 end

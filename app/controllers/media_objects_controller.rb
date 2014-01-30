@@ -217,6 +217,10 @@ class MediaObjectsController < ApplicationController
     mediaobject
   end
 
+  def build_context
+    params.merge!({mediaobject: model_object, user: user_key, ability: current_ability})
+  end
+
   protected
 
   def load_master_files

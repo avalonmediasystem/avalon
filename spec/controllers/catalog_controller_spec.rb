@@ -100,8 +100,8 @@ describe CatalogController do
       end
 		end
     describe "as an lti user" do
-      let(:user) { login_lti 'student' }
-      let(:lti_group) { user.virtual_groups.first }
+      let!(:user) { login_lti 'student' }
+      let!(:lti_group) { @controller.user_session[:virtual_groups].first }
       it "should show results for items visible to the lti virtual group" do
         mo = FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
         get 'index', :q => "read_access_virtual_group_ssim:#{lti_group}"
