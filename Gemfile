@@ -93,10 +93,7 @@
     gem 'pry'
     gem 'pry-rails'
     gem 'pry-debugger'
-    gem 'unicorn-rails'
-    #gem 'capistrano-unicorn', require: false
-    gem 'capistrano-unicorn',
-      git: "git://github.com/sosedoff/capistrano-unicorn.git"
+    gem 'puma'
     gem 'rb-fsevent', '~> 0.9.1'
     gem 'debugger'
     gem 'letter_opener'
