@@ -98,6 +98,7 @@
     gem 'debugger'
     gem 'letter_opener'
     gem 'grit'
+    gem 'vine'
     gem 'license_header'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
