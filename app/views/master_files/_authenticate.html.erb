@@ -26,6 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     window.onload = function(){
       window["authterval"] = window.setInterval(function(){
         if (getCookie("signed_in") != null) {
+          window.clearInterval(authterval);
           location.reload();
         }
       }, 1000)
@@ -49,6 +50,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     }
 
     function openPopup(link) {
+      window.clearInterval(authterval);
       var popup_window = window.open(link.href,'Avalon Login', 'height=600, width=600');
       document.cookie = 'login_popup=1; path=/';
       var interval = window.setInterval((function() {
