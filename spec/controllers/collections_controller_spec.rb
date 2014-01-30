@@ -17,30 +17,76 @@ require 'spec_helper'
 describe Admin::CollectionsController, type: :controller do
   render_views
 
+  describe "#manage" do
+    let!(:collection) { FactoryGirl.create(:collection) }
+    before(:each) do
+      request.env["HTTP_REFERER"] = '/'
+    end
+
+    it "should add users to manager role" do
+      login_as(:administrator)
+      manager = FactoryGirl.create(:manager)
+      put 'update', id: collection.id, submit_add_manager: 'Add', add_manager: manager.username
+      collection.reload
+      manager.should be_in(collection.managers)
+    end
+
+    it "should remove users from manager role" do
+      login_as(:administrator)
+      #initial_manager = FactoryGirl.create(:manager).username
+      collection.managers += [FactoryGirl.create(:manager).username]
+      collection.save!
+      manager = User.where(username: collection.managers.first).first
+      put 'update', id: collection.id, remove_manager: manager.username
+      collection.reload
+      manager.should_not be_in(collection.managers)
+    end
+  end
+
   describe "#edit" do
     let!(:collection) { FactoryGirl.create(:collection) }
     before(:each) do
       request.env["HTTP_REFERER"] = '/'
     end
 
-    it "should add users to roles" do
+    it "should add users to editor role" do
+      login_as(:administrator)
+      editor = FactoryGirl.build(:user)
+      put 'update', id: collection.id, submit_add_editor: 'Add', add_editor: editor.username
+      collection.reload
+      editor.should be_in(collection.editors)
+    end
+
+    it "should remove users from editor role" do
+      login_as(:administrator)
+      editor = User.where(username: collection.editors.first).first
+      put 'update', id: collection.id, remove_editor: editor.username
+      collection.reload
+      editor.should_not be_in(collection.editors)
+    end
+  end
+
+  describe "#deposit" do
+    let!(:collection) { FactoryGirl.create(:collection) }
+    before(:each) do
+      request.env["HTTP_REFERER"] = '/'
+    end
+
+    it "should add users to depositor role" do
       login_as(:administrator)
       depositor = FactoryGirl.build(:user)
-      put 'update', id: collection.id, add_depositor: 'Add', new_depositor: depositor.username
+      put 'update', id: collection.id, submit_add_depositor: 'Add', add_depositor: depositor.username
       collection.reload
       depositor.should be_in(collection.depositors)
     end
 
-    it "should remove users from roles" do
+    it "should remove users from depositor role" do
       login_as(:administrator)
       depositor = User.where(username: collection.depositors.first).first
       put 'update', id: collection.id, remove_depositor: depositor.username
       collection.reload
       depositor.should_not be_in(collection.depositors)
     end
-
-    it "should display an error when attempts to remove the last manager" 
-    it "should display an error when attempts to add an editor/manager to depositors list" 
   end
 
   describe "#show" do
