@@ -43,4 +43,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 </dl>
 <% if can? :inspect, @mediaobject %>
   <%= link_to 'View Raw Metadata', inspect_media_object_path(@mediaobject.pid, 'descMetadata'), :target => 'blank', :class => "btn btn-small" %>
+  <a class="btn btn-small" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+    Toggle Object Tree
+  </a>
+  <div id="collapseOne" class="collapse">
+    <%= render :partial => 'tree' %>
+  </div>
 <% end %>
