@@ -25,7 +25,7 @@ class MasterFile < ActiveFedora::Base
   include Rails.application.routes.url_helpers
   include Permalink
 
-  WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding']
+  WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio']
 
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
   has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
@@ -113,9 +113,9 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def set_workflow( custom_workflow = nil )
-    if custom_workflow && custom_workflow.in?(WORKFLOWS)
-      workflow = custom_workflow
+  def set_workflow( opts = {} )
+    if opts[:workflow] == 'skip-transcoding'
+      workflow = self.file_format == 'Moving image' ? 'avalon-skip-transcoding' : 'avalon-skip-transcoding-audio'
     elsif self.file_format == 'Sound'
       workflow = 'fullaudio'
     elsif self.file_format == 'Moving image'

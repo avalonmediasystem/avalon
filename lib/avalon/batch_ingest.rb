@@ -103,7 +103,7 @@ module Avalon
                   mf.setContent(File.open(file_spec[:file], 'rb'))
                   mf.absolute_location = file_spec[:absolute_location] if file_spec[:absolute_location].present?
                   if file_spec[:skip_transcoding]
-                    mf.set_workflow('avalon-skip-transcoding')
+                    mf.set_workflow({workflow: 'skip-transcoding'})
                   else
                     mf.set_workflow
                   end

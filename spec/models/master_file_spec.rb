@@ -190,16 +190,32 @@ describe MasterFile do
   describe "#set_workflow" do
     let (:master_file) {MasterFile.new}
     describe "custom workflow" do
-      it "should not use the passed workflow if it is not in the WORKFLOWS list" do
-        master_file.file_format = 'Moving image'
-        master_file.set_workflow('bad-workflow')
-        master_file.workflow_name.should == 'avalon'
-      end 
-      it "should use the passed workflow if it is in the WORKFLOWS list" do
-        master_file.file_format = 'Moving image'
-        master_file.set_workflow(MasterFile::WORKFLOWS.first)
-        master_file.workflow_name.should == MasterFile::WORKFLOWS.first
-      end 
+
+      describe "video" do
+        it "should not use the skipped transcoding workflow" do
+          master_file.file_format = 'Moving image'
+          master_file.set_workflow
+          master_file.workflow_name.should == 'avalon'
+        end 
+        it "should use the skipped transcoding workflow for video" do
+          master_file.file_format = 'Moving image'
+          master_file.set_workflow({ workflow: 'skip-transcoding'})
+          master_file.workflow_name.should == 'avalon-skip-transcoding'
+        end
+      end
+
+      describe "audio" do
+        it "should not use the skipped transcoding workflow" do
+          master_file.file_format = 'Sound'
+          master_file.set_workflow
+          master_file.workflow_name.should == 'fullaudio'
+        end 
+        it "should use the skipped transcoding workflow for video" do
+          master_file.file_format = 'Sound'
+          master_file.set_workflow({ workflow: 'skip-transcoding' })
+          master_file.workflow_name.should == 'avalon-skip-transcoding-audio'
+        end
+      end
     end
     describe "video" do
       it "should use the avalon workflow" do
