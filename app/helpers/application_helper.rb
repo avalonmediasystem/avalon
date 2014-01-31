@@ -35,15 +35,18 @@ module ApplicationHelper
   end
 
   def image_for(document)
-
     master_file_id = document[:section_pid_tesim].try :first
+    
+    video_count = document[:mods_tesim].count{|m| m.start_with?('moving image') }
+    audio_count = document[:mods_tesim].count{|m| m.start_with?('sound recording') }
 
     if master_file_id
-      thumbnail_master_file_path(master_file_id)
+      if video_count > 0
+        thumbnail_master_file_path(master_file_id)
+      else
+        asset_path('audio_icon.png')
+      end
     else
-      video_count = document[:mods_tesim].count{|m| m.start_with?('video') }
-      audio_count = document[:mods_tesim].count{|m| m.start_with?('audio') }
-
       if video_count > 0 && audio_count > 0
         asset_path('hybrid_icon.png')
       elsif video_count > audio_count
