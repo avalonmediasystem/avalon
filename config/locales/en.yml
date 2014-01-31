@@ -9,6 +9,7 @@ en:
       taken: "is taken."
   media_object:
     empty_share_link: ""
+    empty_share_link_notice: "After processing has started the embedded link will be available."
   metadata_tip:
     abstract: |
       Summary provides a space for describing the contents of the item. Examples 

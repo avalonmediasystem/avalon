@@ -33,12 +33,15 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
     </form>
   </div>
-  <% unless @currentStream.blank? %>
+  
   <div class="tab-pane" id="embed-tab">
-    <p class="muted">Copy the text below to embed this resource</p>
-    <textarea class="span6" rows="3" id="embed-part" onClick="this.select();"><%= @currentStream.embed_code(MasterFile::EMBED_SIZE[:medium], request.host_with_port) %></textarea>
+    <% if @currentStream.present? %>
+      <p class="muted">Copy the text below to embed this resource</p>
+      <textarea class="span6" rows="3" id="embed-part" onClick="this.select();"><%= @currentStream.embed_code(MasterFile::EMBED_SIZE[:medium], request.host_with_port) %></textarea>
+    <% else %>
+      <p class="muted"> <%= I18n.t('media_object.empty_share_link_notice') %> </p>
+    <% end %>
   </div>
-  <% end %>
 </div>
 
 <% content_for :page_scripts do %>
