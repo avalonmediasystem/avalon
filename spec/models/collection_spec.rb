@@ -93,6 +93,22 @@ describe Admin::Collection do
       it{ should_not be_able_to(:update, collection) }
       it{ should_not be_able_to(:destroy, collection) }
     end
+
+    context 'when lti user' do
+      subject { ability }
+      let(:ability){ Ability.new(user) }
+      let(:user){ FactoryGirl.create(:user_lti) }
+
+      it{ should_not be_able_to(:read, Admin::Collection) }
+      it{ should_not be_able_to(:read, collection) }
+      it{ should_not be_able_to(:update_unit, collection) }
+      it{ should_not be_able_to(:update_managers, collection) }
+      it{ should_not be_able_to(:update_editors, collection) }
+      it{ should_not be_able_to(:update_depositors, collection) }
+      it{ should_not be_able_to(:create, collection) }
+      it{ should_not be_able_to(:update, collection) }
+      it{ should_not be_able_to(:destroy, collection) }
+    end
   end
 
   describe 'validations' do

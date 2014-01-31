@@ -102,50 +102,37 @@ class Admin::CollectionsController < ApplicationController
     end
 
     ["manager", "editor", "depositor"].each do |title|
-      attribute_accessor_name = "add_#{title}"
-      if params[attribute_accessor_name].present? && can?("update_#{title.pluralize}".to_sym, @collection)
-        if params["new_#{title}"].present?
-          begin
-            @collection.send attribute_accessor_name.to_sym, params["new_#{title}"]
-          rescue ArgumentError => e
-            flash[:notice] = e.message
-          end
+      if params["submit_add_#{title}"].present? 
+        if params["add_#{title}"].present? && can?("update_#{title.pluralize}".to_sym, @collection)
+          @collection.send "add_#{title}".to_sym, params["add_#{title}"]
         else
           flash[:notice] = "#{title.titleize} can't be blank."
         end
       end
-    end
-
-    # If one of the "x" (remove manager, editor, depositor) buttons has been clicked
-    ["manager", "editor", "depositor"].each do |title|
-      attribute_accessor_name = "remove_#{title}"
-      if params[attribute_accessor_name].present? && can?("update_#{title.pluralize}".to_sym, @collection)
-        @collection.send attribute_accessor_name.to_sym, params[attribute_accessor_name]
+      
+      remove_access = "remove_#{title}"
+      if params[remove_access].present? && can?("update_#{title.pluralize}".to_sym, @collection)
+          @collection.send remove_access.to_sym, params[remove_access]
       end
     end
 
     # If Save Access Setting button or Add/Remove User/Group button has been clicked
     if can?(:update_access_control, @collection)
       # Limited access stuff
-      @collection.default_read_groups -= [params[:delete_group]] if params[:delete_group].present?
-      @collection.default_read_users -= [params[:delete_user]] if params[:delete_user].present?
-      @collection.default_read_groups -= [params[:delete_virtual_group]] if params[:delete_virtual_group].present?
-      @collection.default_read_groups += [params[:new_group]] if params[:new_group].present?
-      @collection.default_read_users += [params[:new_user]] if params[:new_user].present?
-      @collection.default_read_groups += [params[:new_virtual_group]] if params[:new_virtual_group].present?
+      @collection.default_read_groups -= [params[:remove_group]] if params[:remove_group].present?
+      @collection.default_read_users -= [params[:remove_user]] if params[:remove_user].present?
+      @collection.default_read_groups -= [params[:remove_virtual_group]] if params[:remove_virtual_group].present?
+      @collection.default_read_groups += [params[:add_group]] if params[:submit_add_group].present?
+      @collection.default_read_users += [params[:add_user]] if params[:submit_add_user].present?
+      @collection.default_read_groups += [params[:add_virtual_group]] if params[:submit_add_virtual_group].present?
 
 
       @collection.default_visibility = params[:visibility] unless params[:visibility].blank? 
 
       @collection.default_hidden = params[:hidden] == "1"
     end
-
+    
     @collection.save
-
-    if @collection.managers.count == 0
-      flash[:notice] = "Collection requires at least 1 manager" 
-    end
-
     respond_to do |format|
       format.html { redirect_to @collection }
       format.js do 
@@ -153,7 +140,6 @@ class Admin::CollectionsController < ApplicationController
         render json: modal_form_response(@collection)
       end
     end
-
   end
 
   # GET /collections/1/reassign
