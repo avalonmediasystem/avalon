@@ -34,33 +34,27 @@ module ApplicationHelper
     end
   end
 
-  def image_for(item_id)
-    #TODO index the thumbnail url to avoid having to hit fedora to get it
-    media_object = MediaObject.find(item_id)
-    masterfile = media_object.parts_with_order.first 
+  def image_for(document)
 
-    imageurl = thumbnail_master_file_path(masterfile) unless masterfile.nil? or masterfile.thumbnail.new?
+    master_file_id = document[:section_pid_tesim].try :first
 
-    video_count = 0
-    audio_count = 0
-    media_object.parts.each do |part|
-      video_count = video_count + 1 if "Moving image" == part.file_format
-      audio_count = audio_count + 1 if "Sound" == part.file_format
+    if master_file_id
+      thumbnail_master_file_path(master_file_id)
+    else
+      video_count = document[:mods_tesim].count{|m| m.start_with?('video') }
+      audio_count = document[:mods_tesim].count{|m| m.start_with?('audio') }
+
+      if video_count > 0 && audio_count > 0
+        asset_path('hybrid_icon.png')
+      elsif video_count > audio_count
+        asset_path('video_icon.png')
+      elsif audio_count > video_count
+        asset_path('audio_icon.png')
+      else
+        nil
+      end
     end
 
-    imageurl ||= case
-                 when (video_count > 0 and 0 == audio_count)
-                   "video_icon.png"
-                 when (audio_count > 0 and 0 == video_count)
-                   "audio_icon.png"
-                 when (video_count > 0 and audio_count > 0)
-                   # TODO
-                   # We need to test if both audio and video are present
-                   # instead of assuming when there is more than one part
-                   "hybrid_icon.png" 
-                 else
-                   nil
-                 end
   end
 
   # Creates a hot link to the downloadable file if it is available. File names longer

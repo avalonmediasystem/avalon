@@ -1,25 +1,21 @@
 <div class="result clearfix">
   <div class="span2">
-    <% if can?(:read, document) then %>
-      <% unless image_for(document[:id]).nil? %>
-        <%= link_to(media_object_path(document[:id]), {class: 'result-thumbnail'}) do
-              image_tag image_for(document[:id])
-            end %>
-      <% else %>
-        <%= image_tag 'no_icon.png', class: 'result-thumbnail' %>
-      <% end %> 
-      <% else %>
-        <%= image_tag image_for(document[:id]), class: 'result-thumbnail' %>
+    <% if image_url = image_for(document) %>
+      <%= link_to(media_object_path(document[:id]), {class: 'result-thumbnail'}) do %>
+        <%= image_tag( image_url ) %>
+      <% end %>
+    <% else %>
+      <%= image_tag 'no_icon.png', class: 'result-thumbnail' %>
     <% end %>
   </div>
 
-<ul class="span6 result-list">
-<% index_fields.each do |solr_fname, field| -%>
-  <% if should_render_index_field? document, field %>
-          <li class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_label :field => solr_fname %>
-            <span class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_value :document => document, :field => solr_fname %></span>
-          </li>
-  <% end -%>
-<% end -%>
-</ul>
+  <ul class="span6 result-list">
+    <% index_fields.each do |solr_fname, field| -%>
+      <% if should_render_index_field? document, field %>
+              <li class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_label :field => solr_fname %>
+                <span class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_value :document => document, :field => solr_fname %></span>
+              </li>
+      <% end -%>
+    <% end -%>
+  </ul>
 </div>
