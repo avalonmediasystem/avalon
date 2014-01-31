@@ -162,4 +162,9 @@ module ApplicationHelper
     end.flatten.join('&')
     ActiveFedora.solr.conn.uri.merge("select?#{qs}").to_s.html_safe
   end
+
+  def vgroup_display value
+    c = Course.find_by_guid(value)
+    c.nil? ? value : c.label
+  end
 end

@@ -59,6 +59,10 @@ class User < ActiveRecord::Base
     end
     u = User.find_or_create_by_username auth_hash.vine(lti_config[:user_id]), email: auth_hash.vine(lti_config[:user_email])
     class_id = auth_hash.vine(lti_config[:class_id])
+    if Course.find_by_guid(class_id).nil?
+      class_name = auth_hash.vine(lti_config[:class_label])
+      Course.create :guid => class_id, :label => class_name unless class_name.nil?
+    end
     u.virtual_groups += [class_id]
     u.full_login = false
     u

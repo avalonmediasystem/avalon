@@ -39,7 +39,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% end %>
           <% if @current_user %>
             <% @current_user.virtual_groups.each do |vgroup| %>
-              <li><%= link_to(vgroup, catalog_index_path('f[read_access_virtual_group_ssim][]' => vgroup)) %></li>
+              <li><%= link_to(vgroup_display(vgroup), catalog_index_path('f[read_access_virtual_group_ssim][]' => vgroup)) %></li>
             <% end %>
           <% end %>
        </ul>        
