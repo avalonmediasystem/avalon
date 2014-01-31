@@ -43,4 +43,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 </dl>
 <% if can? :inspect, @mediaobject %>
   <%= link_to 'View Raw Metadata', inspect_media_object_path(@mediaobject.pid, 'descMetadata'), :target => 'blank', :class => "btn btn-small" %>
+  <%= link_to 'Load Object Tree', tree_media_object_path(@mediaobject.pid), :id => 'show_object_tree', :target => 'blank', :class => "btn btn-small" %>
+  <div id="object_tree" data-src="<%=tree_media_object_path(@mediaobject.pid)%>">
+  </div>
 <% end %>

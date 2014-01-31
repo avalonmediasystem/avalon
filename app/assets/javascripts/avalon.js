@@ -30,3 +30,9 @@ $('.popover-target').popover({
     return $(this).next('.po-body').html() 
   }
 });
+
+$('#show_object_tree').on('click', function() {
+  var ot = $('#object_tree')
+  ot.load(ot.data('src'));
+  return false;
+})

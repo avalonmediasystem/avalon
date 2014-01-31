@@ -28,6 +28,7 @@ Avalon::Application.routes.draw do
       get 'content/:datastream', :action => :deliver_content, :as => :inspect
       get 'track/:part', :action => :show, :as => :indexed_section
       get 'section/:content', :action => :show, :as => :pid_section
+      get 'tree', :action => :tree, :as => :tree
     end
   end
   resources :master_files, except: [:new, :index] do

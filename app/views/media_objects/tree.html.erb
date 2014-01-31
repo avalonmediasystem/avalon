@@ -1,0 +1,16 @@
+<h4>Object Tree</h4>
+<ul>
+  <li><%=@mediaobject.title%> (<%=@mediaobject.pid%>)
+    <ul>
+      <% @mediaobject.parts_with_order.each do |mf| %>
+        <li><%=stream_label_for(mf)%> (<%=mf.pid%>)
+          <ul>
+            <% mf.derivatives.each do |d| %>
+              <li><%=d.encoding.quality.first%> (<%=d.pid%>)</li>
+            <% end %>
+          </ul>
+        </li>
+      <% end %>
+    </ul>
+  </li>
+</ul>
