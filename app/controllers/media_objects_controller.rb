@@ -192,6 +192,24 @@ class MediaObjectsController < ApplicationController
     redirect_to :back
   end
   
+  def tree
+    @mediaobject = MediaObject.find(params[:id])
+    authorize! :inspect, @mediaobject
+
+    respond_to do |format|
+      format.html { 
+        render 'tree', :layout => !request.xhr?
+      }
+      format.json { 
+        result = { @mediaobject.pid => {} }
+        @mediaobject.parts_with_order.each do |mf|
+          result[@mediaobject.pid][mf.pid] = mf.derivatives.collect(&:pid)
+        end
+        render :json => result 
+      }
+    end
+  end
+
   def self.initialize_media_object( user_key )
     mediaobject = MediaObject.new( avalon_uploader: user_key )
     set_default_item_permissions( mediaobject, user_key )

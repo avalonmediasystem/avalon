@@ -46,12 +46,4 @@ module MediaObjectsHelper
         url = File.join(Avalon::Configuration.lookup('dropbox.upload_uri'), path)
         ic.iconv(url)
      end
-
-     def object_tree media_object
-        tree = { media_object.pid => {} }
-        media_object.parts_with_order.each do |mf|
-          tree[media_object.pid][mf.pid] = mf.derivatives.collect(&:pid)
-        end
-        tree
-     end
 end
