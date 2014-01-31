@@ -14,13 +14,38 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
       <% if @masterfile.is_video? %>
-        <p>You must be logged in and authorized to watch this video</p>
-        Please <%= link_to "sign in", new_user_session_path, :onclick=>"openPopup(this);return false;" %>
+        <p>This video content is restricted<p>
+        <p>You must be logged in and authorized to view it</p>
+        <%= link_to "Login", new_user_session_path, :onclick=>"openPopup(this);return false;", :class=>"btn" %>
       <% else %>
-        <p>Please <%= link_to "sign in", new_user_session_path, :onclick=>"openPopup(this);return false;" %> to play this audio item</p>
+        This audio content is restricted <%= link_to "Login", new_user_session_path, :onclick=>"openPopup(this);return false;", :class=>"btn" %>
       <% end %>
 
 <% content_for :page_scripts do %>
+  <style>
+    .btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 14px;
+      font-weight: normal;
+      line-height: 1.428571429;
+      text-align: center;
+      text-decoration: none;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      color: #333;
+      background-color: #fff;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -o-user-select: none;
+      user-select: none;
+    }
+  </style>
+
   <script>
     
     window.onload = function(){
