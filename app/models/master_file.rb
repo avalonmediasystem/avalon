@@ -115,7 +115,14 @@ class MasterFile < ActiveFedora::Base
 
   def set_workflow( opts = {} )
     if opts[:workflow] == 'skip-transcoding'
-      workflow = self.file_format == 'Moving image' ? 'avalon-skip-transcoding' : 'avalon-skip-transcoding-audio'
+      workflow = case self.file_format
+                 when 'Moving image'
+                  'avalon-skip-transcoding'
+                 when 'Sound' 
+                  'avalon-skip-transcoding-audio'
+                 else
+                  nil
+                 end
     elsif self.file_format == 'Sound'
       workflow = 'fullaudio'
     elsif self.file_format == 'Moving image'
