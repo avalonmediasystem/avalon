@@ -2,6 +2,11 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
+  auth:
+    sign_in: "Sign in"
+    sign_out: "Sign out"
+    embedded_video: <p>This video content is restricted</p><p>You must be logged in and authorized to view it</p>
+    embedded_audio: This audio content is restricted
   release_label: "Release"
   errors:
     messages:
