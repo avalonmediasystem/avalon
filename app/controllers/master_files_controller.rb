@@ -14,7 +14,6 @@
 
 require 'net/http/digest_auth'
 require 'net/http/post/multipart'
-require 'digest/md5'
 require 'rubyhorn'
 require 'avalon/controller/controller_behavior'
 
@@ -74,7 +73,7 @@ class MasterFilesController < ApplicationController
         master_file.save( validate: false )
         master_file.mediaobject = media_object
         master_file.setContent(file)
-        master_file.set_workflow(params[:skip_transcoding])
+        master_file.set_workflow(params[:workflow])
 
         MasterFilesController.set_default_item_permissions(master_file, user_key)
  
@@ -107,7 +106,7 @@ class MasterFilesController < ApplicationController
         master_file.save( validate: false )
         master_file.mediaobject = media_object
         master_file.setContent(File.open(file_path, 'rb'))
-        master_file.set_workflow(params[:skip_transcoding])
+        master_file.set_workflow(params[:workflow])
         MasterFilesController.set_default_item_permissions(master_file, user_key)
         
         unless master_file.save

@@ -199,7 +199,7 @@ describe MasterFile do
         end 
         it "should use the skipped transcoding workflow for video" do
           master_file.file_format = 'Moving image'
-          master_file.set_workflow({ workflow: 'skip-transcoding'})
+          master_file.set_workflow('skip_transcoding')
           master_file.workflow_name.should == 'avalon-skip-transcoding'
         end
       end
@@ -212,7 +212,7 @@ describe MasterFile do
         end 
         it "should use the skipped transcoding workflow for video" do
           master_file.file_format = 'Sound'
-          master_file.set_workflow({ workflow: 'skip-transcoding' })
+          master_file.set_workflow('skip_transcoding')
           master_file.workflow_name.should == 'avalon-skip-transcoding-audio'
         end
       end

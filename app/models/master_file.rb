@@ -113,8 +113,8 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def set_workflow( skip_transcoding = false )
-    if skip_transcoding
+  def set_workflow( workflow  = nil )
+    if workflow == 'skip_transcoding'
       workflow = case self.file_format
                  when 'Moving image'
                   'avalon-skip-transcoding'
