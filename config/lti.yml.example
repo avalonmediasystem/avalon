@@ -1,8 +1,6 @@
 ---
 #<lms guid>:
-#  :name: <lms identifier>
-#  :class_id: extra.raw_info.context_id
-#  :user_id: extra.raw_info.user_id
-#  :user_email: info.email
-#  :lms_id: extra.raw_info.tool_consumer_instance_guid
-
+#  :uid: :user_id
+#  :email: :lis_person_contact_email_primary
+#  :context_id: :context_id
+#  :context_name: :context_label

@@ -45,22 +45,10 @@ class User < ActiveRecord::Base
 
   def self.find_for_lti(auth_hash, signed_in_resource=nil)
     logger.debug "In find_for_lti: #{auth_hash}"
-    lti_config = ""
-    #find field configuration for lti
-    Avalon::Lti::Configuration.each do |lms|
-      guid_path = lms.last[:lms_id]
-      if guid_path.present?
-        guid = auth_hash.vine(guid_path)
-        if guid.present?
-          lti_config = Avalon::Lti::Configuration[guid]
-          break
-        end
-      end
-    end
-    u = User.find_or_create_by_username auth_hash.vine(lti_config[:user_id]), email: auth_hash.vine(lti_config[:user_email])
-    class_id = auth_hash.vine(lti_config[:class_id])
+    u = User.find_or_create_by_username(auth_hash.uid, auth_hash.info.email)
+    class_id = auth_hash.extra.context_id
     if Course.find_by_guid(class_id).nil?
-      class_name = auth_hash.vine(lti_config[:class_label])
+      class_name = auth_hash.extra.context_name
       Course.create :guid => class_id, :label => class_name unless class_name.nil?
     end
     u.virtual_groups += [class_id]
