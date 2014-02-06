@@ -46,7 +46,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       sign_in @user, :event => :authentication
     end
 
-    if session[:previous_url] 
+    if request['media_object_id']
+      redirect_to media_object_path(request['media_object_id'])
+    elsif session[:previous_url] 
       redirect_to session.delete :previous_url
     elsif session[:virtual_groups].any?
       redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => session[:virtual_groups].first)
