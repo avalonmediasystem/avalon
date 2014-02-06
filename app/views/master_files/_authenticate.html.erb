@@ -15,9 +15,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
       <% if @masterfile.is_video? %>
         <%=t('auth.embedded_video').html_safe%>
-        <%= link_to t('auth.sign_in'), new_user_session_path, :onclick=>"openPopup(this);return false;", :class=>"btn" %>
+        <%= link_to t('auth.sign_in'), new_user_session_path(:login_popup=>"1"), :onclick=>"openPopup(this);return false;", :class=>"btn" %>
       <% else %>
-        <%=t('auth.embedded_audio').html_safe%> <%= link_to t('auth.sign_in'), new_user_session_path, :onclick=>"openPopup(this);return false;", :class=>"btn" %>
+        <%=t('auth.embedded_audio').html_safe%> <%= link_to t('auth.sign_in'), new_user_session_path(:login_popup=>"1"), :onclick=>"openPopup(this);return false;", :class=>"btn" %>
       <% end %>
 
 <% content_for :page_scripts do %>
@@ -76,11 +76,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     function openPopup(link) {
       window.clearInterval(authterval);
       var popup_window = window.open(link.href,'Avalon Login', 'height=600, width=600');
-      document.cookie = 'login_popup=1; path=/';
       var interval = window.setInterval((function() {
         if (popup_window.closed) {
           window.clearInterval(interval);
-          document.cookie = "login_popup=deleted; expires=" + new Date(0).toUTCString();
           location.reload();
         }
       }), 1000);

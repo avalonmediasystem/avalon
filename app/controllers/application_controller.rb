@@ -66,9 +66,8 @@ class ApplicationController < ActionController::Base
   end
 
   def store_location
-    if cookies[:login_popup]
+    if request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?
       session[:previous_url] = root_path + "self_closing.html"
-      cookies.delete :login_popup
     end
   end
 
