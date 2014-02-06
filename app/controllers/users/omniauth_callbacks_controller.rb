@@ -29,7 +29,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     new_user_session_path(scope)
   end
 
-  def method_missing(sym, *args, &block)
+  def action_missing(sym, *args, &block)
     logger.debug "Attempting to find user with #{sym.to_s} strategy"
     find_user(sym.to_s)
   end
