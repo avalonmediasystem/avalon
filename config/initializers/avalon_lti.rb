@@ -6,7 +6,7 @@ module Avalon
     begin
       Configuration = YAML.load(File.read(File.expand_path('../../lti.yml',__FILE__)))
     rescue
-      Configuration ||= {}
+      Configuration = {}
     end
   end
 end
