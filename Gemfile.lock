@@ -80,6 +80,14 @@ GIT
       railties (>= 3.1)
 
 GIT
+  remote: https://github.com/avalonmediasystem/omniauth-lti.git
+  revision: 950f9c2b48b7effc54f8c9042b4f6503ba3a1d6c
+  specs:
+    omniauth-lti (0.0.2)
+      ims-lti
+      omniauth
+
+GIT
   remote: https://github.com/avalonmediasystem/red5wrapper.git
   revision: ee6eeed1422493dbd90a93c6634436016759f1f4
   specs:
@@ -385,9 +393,6 @@ GEM
     omniauth-identity (1.1.1)
       bcrypt-ruby (~> 3.0)
       omniauth (~> 1.0)
-    omniauth-lti (0.0.2)
-      ims-lti
-      omniauth
     orm_adapter (0.5.0)
     polyglot (0.3.3)
     posix-spawn (0.3.8)
@@ -521,7 +526,6 @@ GEM
     uuid (2.3.7)
       macaddr (~> 1.0)
     validates_email_format_of (1.5.3)
-    vine (0.0.2)
     warden (1.2.3)
       rack (>= 1.0)
     whenever (0.9.0)
@@ -585,7 +589,7 @@ DEPENDENCIES
   modal_logic
   multipart-post
   omniauth-identity
-  omniauth-lti
+  omniauth-lti!
   pry
   pry-debugger
   pry-rails
@@ -608,5 +612,4 @@ DEPENDENCIES
   twitter_bootstrap_form_for!
   uglifier (>= 1.0.3)
   validates_email_format_of
-  vine
   whenever
