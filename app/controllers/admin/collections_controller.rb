@@ -121,10 +121,10 @@ class Admin::CollectionsController < ApplicationController
       # Limited access stuff
       @collection.default_read_groups -= [params[:remove_group]] if params[:remove_group].present?
       @collection.default_read_users -= [params[:remove_user]] if params[:remove_user].present?
-      @collection.default_read_groups -= [params[:remove_virtual_group]] if params[:remove_virtual_group].present?
+      @collection.default_read_groups -= [params[:remove_class]] if params[:remove_class].present?
       @collection.default_read_groups += [params[:add_group]] if params[:submit_add_group].present?
       @collection.default_read_users += [params[:add_user]] if params[:submit_add_user].present?
-      @collection.default_read_groups += [params[:add_virtual_group]] if params[:submit_add_virtual_group].present?
+      @collection.default_read_groups += [params[:add_class]] if params[:submit_add_class].present?
 
 
       @collection.default_visibility = params[:visibility] unless params[:visibility].blank? 

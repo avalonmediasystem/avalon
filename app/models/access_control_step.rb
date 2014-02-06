@@ -29,12 +29,12 @@ class AccessControlStep < Avalon::Workflow::BasicStep
     end
 
     # Limited access stuff
-    mediaobject.read_groups -= [context[:delete_group]] if context[:delete_group].present?
-    mediaobject.read_users -= [context[:delete_user]] if context[:delete_user].present?
-    mediaobject.read_groups -= [context[:delete_virtual_group]] if context[:delete_virtual_group].present?
-    mediaobject.read_groups += [context[:new_group]] if context[:new_group].present?
-    mediaobject.read_users += [context[:new_user]] if context[:new_user].present?
-    mediaobject.read_groups += [context[:new_virtual_group]] if context[:new_virtual_group].present?
+    mediaobject.read_groups -= [context[:remove_group]] if context[:remove_group].present?
+    mediaobject.read_users -= [context[:remove_user]] if context[:remove_user].present?
+    mediaobject.read_groups -= [context[:remove_class]] if context[:remove_class].present?
+    mediaobject.read_groups += [context[:add_group]] if context[:submit_add_group].present?
+    mediaobject.read_users += [context[:add_user]] if context[:submit_add_user].present?
+    mediaobject.read_groups += [context[:add_class]] if context[:submit_add_class].present?
 
     mediaobject.visibility = context[:visibility] unless context[:visibility].blank? 
 
