@@ -35,6 +35,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def find_user(auth_type)
+    binding.pry
     auth_type.downcase!
     find_method = "find_for_#{auth_type}".to_sym
     logger.debug "#{auth_type} :: #{current_user.inspect}"
@@ -45,7 +46,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       sign_in @user, :event => :authentication
 
       if auth_type == 'lti'
-        user_session[:virtual_groups] = [request.env["omniauth.auth"].extra.raw_info.context_id]
+        user_session[:virtual_groups] = [request.env["omniauth.auth"].extra.context_id]
         user_session[:full_login] = false
       end
     end
