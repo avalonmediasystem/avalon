@@ -81,7 +81,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/omniauth-lti.git
-  revision: 950f9c2b48b7effc54f8c9042b4f6503ba3a1d6c
+  revision: 62d6a55afcd686c0e0bb3a98ecdf8a44caeeb460
   specs:
     omniauth-lti (0.0.2)
       ims-lti

@@ -43,12 +43,15 @@ class User < ActiveRecord::Base
 
   def self.find_for_lti(auth_hash, signed_in_resource=nil)
     logger.debug "In find_for_lti: #{auth_hash}"
-    class_id = auth_hash.extra.context_id
-    if Course.find_by_guid(class_id).nil?
-      class_name = auth_hash.extra.context_name
-      Course.create :guid => class_id, :label => class_name unless class_name.nil?
+
+    class_id = auth_hash.extra.consumer.class_id
+    if Course.find_by_context_id(class_id).nil?
+      class_name = auth_hash.extra.consumer.class_label
+      Course.create :context_id => class_id, :label => class_name unless class_name.nil?
     end
-    User.find_or_create_by_username auth_hash['uid'], email: auth_hash.info.email
+    User.find_or_create_by_username(auth_hash.extra.consumer.user_id) do |u|
+      u.email = auth_hash.extra.consumer.user_email
+    end
   end
 
   def in?(*list)
