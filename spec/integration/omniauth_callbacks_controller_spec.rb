@@ -5,7 +5,6 @@ describe Users::OmniauthCallbacksController do
   let(:lti_config)   { lti_fixtures[:config] }
 
   before :each do
-#    request.env["devise.mapping"] = Devise.mappings[:user]
     IMS::LTI::ToolProvider.any_instance.stub(:valid_request!) { true }
     @old_config = Devise.omniauth_configs[:lti].options[:consumers]
     Devise.omniauth_configs[:lti].options[:consumers] = Devise.omniauth_configs[:lti].strategy[:consumers] = lti_config
@@ -17,11 +16,6 @@ describe Users::OmniauthCallbacksController do
 
   context 'foo' do
     let(:foo_hash) { OmniAuth::AuthHash.new(lti_fixtures[:foo]) }
-    #let(:raw)      { foo_hash.extra.raw_info }
-    
-#    before :each do
-#      request.env["omniauth.auth"] = foo_hash
-#    end
 
     it 'should create the user if necessary' do
       expect { post '/users/auth/lti/callback', foo_hash }.to change { User.all.count }
@@ -38,18 +32,25 @@ describe Users::OmniauthCallbacksController do
     end
 
     it 'should use an existing course if possible' do
-      FactoryGirl.build(:course, guid: foo_hash[:context_id], label: foo_hash[:context_title]).save
+      FactoryGirl.build(:course, context_id: foo_hash[:context_id], label: foo_hash[:context_title]).save
       expect { post '/users/auth/lti/callback', foo_hash }.not_to change { Course.all.count }
     end
 
-    it "should have virtual_groups" do
-      pending
-      expect(subject.user_session[:virtual_groups]).not_to be_empty
-    end
+    context 'user session' do
+      subject { Hash.new }
 
-    it "should not be a full login" do
-      pending
-      expect(subject.user_session[:full_login]).to be_false
+      before :each do
+        Users::OmniauthCallbacksController.any_instance.stub(:user_session) { subject }
+        post '/users/auth/lti/callback', foo_hash
+      end
+
+      it "should have virtual_groups" do
+        expect(subject[:virtual_groups]).not_to be_empty
+      end
+
+      it "should not be a full login" do
+        expect(subject[:full_login]).to be_false
+      end
     end
   end
 end

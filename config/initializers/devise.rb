@@ -234,4 +234,5 @@ Devise.setup do |config|
   # require user records to already exist locally before they can authenticate via
   # CAS, uncomment the following line.
   # config.cas_create_user = false  
+  OmniAuth.config.logger = Rails.logger
 end
