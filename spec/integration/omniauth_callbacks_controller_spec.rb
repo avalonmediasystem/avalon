@@ -1,21 +1,21 @@
 require 'spec_helper'
 
 describe Users::OmniauthCallbacksController do
-  let(:lti_fixtures) { YAML.load(File.read(File.expand_path('../../fixtures/lti_params.yml', __FILE__))) }
-  let(:lti_config)   { lti_fixtures[:config] }
 
-  before :each do
-    IMS::LTI::ToolProvider.any_instance.stub(:valid_request!) { true }
-    @old_config = Devise.omniauth_configs[:lti].options[:consumers]
-    Devise.omniauth_configs[:lti].options[:consumers] = Devise.omniauth_configs[:lti].strategy[:consumers] = lti_config
-  end
-
-  after :each do
-    Devise.omniauth_configs[:lti].options[:consumers] = Devise.omniauth_configs[:lti].strategy[:consumers] = @old_config
-  end
-
-  context 'foo' do
+  context 'lti' do
+    let(:lti_fixtures) { YAML.load(File.read(File.expand_path('../../fixtures/lti_params.yml', __FILE__))) }
+    let(:lti_config)   { lti_fixtures[:config] }
     let(:foo_hash) { OmniAuth::AuthHash.new(lti_fixtures[:foo]) }
+
+    before :each do
+      IMS::LTI::ToolProvider.any_instance.stub(:valid_request!) { true }
+      @old_config = Devise.omniauth_configs[:lti].options[:consumers]
+      Devise.omniauth_configs[:lti].options[:consumers] = Devise.omniauth_configs[:lti].strategy[:consumers] = lti_config
+    end
+
+    after :each do
+      Devise.omniauth_configs[:lti].options[:consumers] = Devise.omniauth_configs[:lti].strategy[:consumers] = @old_config
+    end
 
     it 'should create the user if necessary' do
       expect { post '/users/auth/lti/callback', foo_hash }.to change { User.all.count }
