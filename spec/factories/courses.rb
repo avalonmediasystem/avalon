@@ -2,7 +2,7 @@
 
 FactoryGirl.define do
   factory :course do
-    guid 'abcdef0123456789'
+    context_id 'abcdef0123456789'
     label 'Existing Test Course'
   end
 end

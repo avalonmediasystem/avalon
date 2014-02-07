@@ -1,3 +1,3 @@
 class Course < ActiveRecord::Base
-  attr_accessible :guid, :label
+  attr_accessible :context_id, :label
 end

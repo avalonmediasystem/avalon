@@ -23,7 +23,7 @@ ActiveRecord::Schema.define(:version => 20140131223814) do
   end
 
   create_table "courses", :force => true do |t|
-    t.string   "guid"
+    t.string   "context_id"
     t.text     "label"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
