@@ -1,12 +1,10 @@
 ---
 :config:
   foo-provider.example.edu:
-    :name: Foo
-    :class_id: extra.raw_info.context_id
-    :class_label: extra.raw_info.context_title
-    :user_id: extra.raw_info.lis_person_contact_email_primary
-    :user_email: info.email
-    :lms_id: extra.raw_info.tool_consumer_instance_guid
+    :class_id: :context_id
+    :class_label: :context_title
+    :user_id: :lis_person_sourcedid
+    :user_email: :lis_person_contact_email_primary
 :foo:
   oauth_consumer_key: canvas
   oauth_signature_method: HMAC-SHA1
