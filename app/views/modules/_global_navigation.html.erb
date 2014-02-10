@@ -37,9 +37,9 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% if can? :manage, Admin::Group %>
             <li class=<%= active_for_controller('admin/groups') %>><%= link_to 'Manage Groups', admin_groups_path, target: '_admin' %></li>
           <% end %>
-          <% if @current_user %>
-            <% @current_user.virtual_groups.each do |vgroup| %>
-              <li><%= link_to(vgroup, catalog_index_path('f[read_access_virtual_group_ssim][]' => vgroup)) %></li>
+          <% if user_session && user_session[:virtual_groups].present? %>
+            <% user_session[:virtual_groups].each do |vgroup| %>
+              <li><%= link_to(vgroup_display(vgroup), catalog_index_path('f[read_access_virtual_group_ssim][]' => vgroup)) %></li>
             <% end %>
           <% end %>
        </ul>        

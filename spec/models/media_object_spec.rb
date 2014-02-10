@@ -80,7 +80,7 @@ describe MediaObject do
     end
 
     context 'when depositor' do
-      subject{ ability}
+      subject{ ability }
       let(:ability){ Ability.new(User.where(username: collection.depositors.first).first) }
 
       it{ should be_able_to(:create, MediaObject) }
@@ -96,10 +96,11 @@ describe MediaObject do
     end
 
     context 'when end-user' do
-      subject{ ability}
+      subject{ ability }
       let(:ability){ Ability.new(user) }
       let(:user){FactoryGirl.create(:user)}
 
+      it{ should be_able_to(:share, MediaObject) }
       it "should not be able to read unauthorized, published MediaObject" do
         media_object.avalon_publisher = "random"
         media_object.save
@@ -117,6 +118,14 @@ describe MediaObject do
         media_object.publish! "random"
         subject.can(:read, media_object).should be_true
       end
+    end
+
+    context 'when lti user' do
+      subject{ ability }
+      let(:user){ FactoryGirl.create(:user_lti) }
+      let(:ability){ Ability.new(user, {full_login: false, virtual_groups: [Faker::Lorem.word]}) }
+
+      it{ should_not be_able_to(:share, MediaObject) }
     end
   end
 

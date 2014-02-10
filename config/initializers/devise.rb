@@ -199,10 +199,9 @@ Devise.setup do |config|
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', :scope => 'user,public_repo'
 
   Avalon::Authentication::Providers.each do |provider|
-    config.omniauth provider[:provider], provider[:params]
-  end
-
-  Avalon::Authentication::LtiProviders.each do |provider|
+    if provider[:provider] == :lti
+      provider[:params].merge!({consumers: Avalon::Lti::Configuration})
+    end
     config.omniauth provider[:provider], provider[:params]
   end
 
@@ -235,4 +234,5 @@ Devise.setup do |config|
   # require user records to already exist locally before they can authenticate via
   # CAS, uncomment the following line.
   # config.cas_create_user = false  
+  OmniAuth.config.logger = Rails.logger
 end

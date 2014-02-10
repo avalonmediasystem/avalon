@@ -16,36 +16,4 @@ require 'spec_helper'
 
 describe ApplicationController do
 
-  describe 'virtual groups' do
-    let(:vgroups) {['vgroup1', 'vgroup2']}
-    before do
-      login_as 'student'
-    end
-
-    describe '#set_virtual_groups' do
-      before do
-        request.session[:virtual_groups] = vgroups
-      end
-      it "should set the current user's virtual groups" do
-        controller.set_virtual_groups
-        expect(controller.current_user.virtual_groups).to eq(vgroups)
-      end
-    end
-
-    describe '#remember_virtual_groups' do
-      before do
-        controller.current_user.virtual_groups = vgroups
-      end
-      it "should store the current user's virtual groups in the session" do
-        controller.remember_virtual_groups
-        expect(request.session[:virtual_groups]).to eq(vgroups)
-      end
-      it "should not overwrite the value of virtual groups in the session" do
-        new_vgroups = ["foo", "bar"]
-        request.session[:virtual_groups] = new_vgroups
-        controller.remember_virtual_groups
-        expect(request.session[:virtual_groups]).to eq(new_vgroups)
-      end
-    end
-  end
 end

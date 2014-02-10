@@ -32,17 +32,6 @@ class ApplicationController < ActionController::Base
 #    (Rails.env.development? or Rails.env.test?)
   after_filter :set_access_control_headers
 
-  before_filter :set_virtual_groups
-  after_filter :remember_virtual_groups
-
-  def set_virtual_groups
-    current_user.virtual_groups = session[:virtual_groups] if current_user
-  end
-
-  def remember_virtual_groups
-    session[:virtual_groups] ||= current_user.virtual_groups if current_user
-  end
-  
   def set_access_control_headers
     headers['Access-Control-Allow-Origin'] = '*'
     headers['Access-Control-Request-Method'] = '*'
@@ -63,6 +52,10 @@ class ApplicationController < ActionController::Base
     else
       Admin::Collection.where("#{ActiveFedora::SolrService.solr_name("inheritable_edit_access_person", Hydra::Datastream::RightsMetadata.indexer)}" => user_key).all
     end
+  end
+
+  def current_ability
+    @current_ability ||= Ability.new(current_user, user_session)
   end
 
   def store_location

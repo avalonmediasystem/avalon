@@ -80,6 +80,14 @@ GIT
       railties (>= 3.1)
 
 GIT
+  remote: https://github.com/avalonmediasystem/omniauth-lti.git
+  revision: 62d6a55afcd686c0e0bb3a98ecdf8a44caeeb460
+  specs:
+    omniauth-lti (0.0.2)
+      ims-lti
+      omniauth
+
+GIT
   remote: https://github.com/avalonmediasystem/red5wrapper.git
   revision: ee6eeed1422493dbd90a93c6634436016759f1f4
   specs:
@@ -385,9 +393,6 @@ GEM
     omniauth-identity (1.1.1)
       bcrypt-ruby (~> 3.0)
       omniauth (~> 1.0)
-    omniauth-lti (0.0.2)
-      ims-lti
-      omniauth
     orm_adapter (0.5.0)
     polyglot (0.3.3)
     posix-spawn (0.3.8)
@@ -584,7 +589,7 @@ DEPENDENCIES
   modal_logic
   multipart-post
   omniauth-identity
-  omniauth-lti
+  omniauth-lti!
   pry
   pry-debugger
   pry-rails

@@ -1,0 +1,43 @@
+---
+:config:
+  foo-provider.example.edu:
+    :uid: lis_person_sourcedid
+    :name: lis_person_name_full
+    :email: lis_person_contact_email_primary
+    :context_id: context_id
+    :context_name: context_title
+:foo:
+  oauth_consumer_key: canvas
+  oauth_signature_method: HMAC-SHA1
+  oauth_timestamp: '1391623152'
+  oauth_nonce: niTaY8lgXhQi4h24pYZjCH07NfcfHb1VrhtfQ0Vnl4
+  oauth_version: '1.0'
+  context_id: cbaaa423be6749479b21275ad5b762b3
+  context_label: foo-course-001
+  context_title: Foo Course
+  custom_canvas_api_domain: king.net
+  custom_canvas_course_id: '1'
+  custom_canvas_enrollment_state: active
+  custom_canvas_user_id: '107'
+  custom_canvas_user_login_id: jom321
+  launch_presentation_document_target: iframe
+  launch_presentation_locale: en
+  launch_presentation_return_url: http://king.net/roslyn/courses/1/external_tools/89/finished
+  lis_person_contact_email_primary: savannah@hegmann.com
+  lis_person_name_family: Pollich
+  lis_person_name_full: Jerrod Pollich
+  lis_person_name_given: Jerrod
+  lis_person_sourcedid: jom321
+  lti_message_type: basic-lti-launch-request
+  lti_version: LTI-1p0
+  oauth_callback: about:blank
+  resource_link_id: 44202e47db6f53475df7d244905036df7f687437
+  resource_link_title: Avalon LTI Foo
+  roles: Instructor
+  tool_consumer_info_product_family_code: canvas
+  tool_consumer_info_version: cloud
+  tool_consumer_instance_contact_email: jerrod@donnellyhettinger.info
+  tool_consumer_instance_guid: foo-provider.example.edu
+  tool_consumer_instance_name: 'Von, Ernser and Blick'
+  user_id: 78765b553e8d84ba6a4cb4f6e055f8d8394753e7
+  oauth_signature: +sOOJGa0ZvMwFUcJPsZKnxJlmi8=

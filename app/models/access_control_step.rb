@@ -24,7 +24,9 @@ class AccessControlStep < Avalon::Workflow::BasicStep
     mediaobject = context[:mediaobject]
 
     user = User.where({ Devise.authentication_keys.first => context[:user]}).first
-    unless user.ability.can? :update_access_control, mediaobject
+    ability = context[:ability]
+    ability ||= Ability.new(user)
+    unless ability.can? :update_access_control, mediaobject
       return context
     end
 

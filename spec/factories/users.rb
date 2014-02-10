@@ -34,7 +34,6 @@ FactoryGirl.define do
       end 
     end
     factory :user_lti do
-        virtual_groups { [Faker::Lorem.word] }
     end
   end 
 

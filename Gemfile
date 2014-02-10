@@ -55,7 +55,7 @@
   gem 'validates_email_format_of'
   gem 'loofah'
   gem 'omniauth-identity'
-  gem 'omniauth-lti'
+  gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 
   gem 'mediainfo'
   gem 'delayed_job_active_record'
