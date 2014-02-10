@@ -44,8 +44,11 @@ namespace :avalon do
     task :ingest => :environment do
       # Starts the ingest process
       require 'avalon/batch_ingest'
-      Admin::Collection.all.each do |collection|
-        Avalon::Batch::Ingest.new(collection).ingest
+
+      WithLocking.run(name: 'batch_ingest') do
+        Admin::Collection.all.each do |collection|
+          Avalon::Batch::Ingest.new(collection).ingest
+        end
       end
     end
   end  
