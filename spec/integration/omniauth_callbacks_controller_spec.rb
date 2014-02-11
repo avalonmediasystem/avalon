@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Users::OmniauthCallbacksController do
 
   context 'lti' do
-    let(:lti_fixtures) { YAML.load(File.read(File.expand_path('../../fixtures/lti_params.yml', __FILE__))) }
+    let(:lti_fixtures) { YAML.load(File.read(File.expand_path('../../config/lti_params.yml', __FILE__))) }
     let(:lti_config)   { lti_fixtures[:config]                               }
     let(:foo_hash)     { lti_fixtures[:foo]                                  }
     let(:foo_config)   { lti_config[foo_hash['tool_consumer_instance_guid']] }
