@@ -25,7 +25,7 @@ class AvalonJobs
       FileUtils.mv oldpath, newpath
       masterfile.file_location = newpath
       masterfile.save
-      logger.debug "#{oldpath} has been moved to #{newpath}"
+      logger.info "#{oldpath} has been moved to #{newpath}"
     else 
       logger.error "MasterFile #{oldpath} does not exist"
     end
@@ -40,7 +40,7 @@ class AvalonJobs
       File.delete(oldpath) 
       masterfile.file_location = ""
       masterfile.save
-      logger.debug "#{oldpath} has been deleted"
+      logger.info "#{oldpath} has been deleted"
     else
       unless masterfile.file_location.empty?
         masterfile.file_location = ""

@@ -125,7 +125,7 @@ module Avalon
                 if media_object.save
                   logger.debug "Done processing package #{index}"
                 else
-                  logger.debug "Problem saving MediaObject: #{media_object}"
+                  logger.error "Problem saving MediaObject: #{media_object}"
                 end
 
                 media_objects << media_object
