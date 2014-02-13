@@ -1,0 +1,8 @@
+#!/bin/sh
+LOCKFILE=tmp/pids/${1//:/_}
+shift
+if [ ! -e $LOCKFILE ]; then
+    echo "$$" > $LOCKFILE
+    "$@" #run the command
+    rm $LOCKFILE
+fi
