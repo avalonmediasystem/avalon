@@ -16,11 +16,11 @@ class AddDisplayAspectRatioToMasterFile < ActiveRecord::Migration
           end
         ensure
           if ratio.nil? 
-            logger.warn("#{masterfile.pid} aspect ratio not found")
-          else
-            masterfile.display_aspect_ratio = ratio.split(/[x:]/).collect(&:to_f).reduce(:/).to_s 
-            masterfile.save(validate: false)
+            ratio = "4:3"
+            logger.warn("#{masterfile.pid} aspect ratio not found - setting to default 4:3")
           end
+          masterfile.display_aspect_ratio = ratio.split(/[x:]/).collect(&:to_f).reduce(:/).to_s 
+          masterfile.save(validate: false)
         end
       end
     end
