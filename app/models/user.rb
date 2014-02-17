@@ -49,9 +49,11 @@ class User < ActiveRecord::Base
       class_name = auth_hash.extra.context_name
       Course.create :context_id => class_id, :label => class_name unless class_name.nil?
     end
-    User.find_or_create_by_username(auth_hash.uid) do |u|
-      u.email = auth_hash.info.email
+    result = User.where('username = ? OR email = ?', auth_hash.uid, auth_hash.info.email).first
+    if result.nil?
+      result = User.create :username => auth_hash.uid, :email => auth_hash.info.email
     end
+    result
   end
 
   def in?(*list)
