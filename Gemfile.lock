@@ -81,7 +81,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/omniauth-lti.git
-  revision: 62d6a55afcd686c0e0bb3a98ecdf8a44caeeb460
+  revision: c4d84c238fff3c81486558fd6831d3a8e47e455b
   specs:
     omniauth-lti (0.0.2)
       ims-lti
@@ -343,8 +343,7 @@ GEM
     logger (1.2.8)
     loofah (1.2.1)
       nokogiri (>= 1.4.4)
-    macaddr (1.6.1)
-      systemu (~> 2.5.0)
+    macaddr (1.6.2)
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
@@ -608,6 +607,7 @@ DEPENDENCIES
   shoulda-matchers
   simplecov
   sqlite3
+  systemu (~> 2.5.0)
   therubyracer (= 0.10.2)
   therubyrhino
   twitter_bootstrap_form_for!

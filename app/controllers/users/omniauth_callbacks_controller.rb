@@ -26,12 +26,11 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def after_omniauth_failure_path_for(scope)
-    case request.env['omniauth.error.strategy'].name
+    case failed_strategy.name
     when 'lti'
-      error_type = request.env['omniauth.error.type']
-      default_msg = I18n.t 'devise.omniauth_callbacks.failure', reason: error_type
+      default_msg = I18n.t 'devise.omniauth_callbacks.failure', reason: failure_message
       msg = I18n.t 'devise.omniauth_callbacks.lti.failure', default: default_msg
-      uri = URI.parse request.env['lti.launch_params']['launch_presentation_return_url']
+      uri = URI.parse request['launch_presentation_return_url']
       uri.query = {lti_errormsg: msg}.to_query
       uri.to_s
     else
