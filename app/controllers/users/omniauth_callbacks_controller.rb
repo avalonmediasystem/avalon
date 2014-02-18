@@ -26,7 +26,16 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def after_omniauth_failure_path_for(scope)
-    new_user_session_path(scope)
+    case failed_strategy.name
+    when 'lti'
+      default_msg = I18n.t 'devise.omniauth_callbacks.failure', reason: failure_message
+      msg = I18n.t 'devise.omniauth_callbacks.lti.failure', default: default_msg
+      uri = URI.parse request['launch_presentation_return_url']
+      uri.query = {lti_errormsg: msg}.to_query
+      uri.to_s
+    else
+      new_user_session_path(scope)
+    end
   end
 
   def action_missing(sym, *args, &block)

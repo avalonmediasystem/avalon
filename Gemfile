@@ -63,6 +63,7 @@
   gem 'with_locking'
 
   gem 'equivalent-xml'
+  gem 'systemu', '~> 2.5.0' #added because macaddr 1.6.2 missed this dependency in its gemspec
 
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
