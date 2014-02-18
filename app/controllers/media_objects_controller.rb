@@ -66,6 +66,7 @@ class MediaObjectsController < ApplicationController
       @visibility = @mediaobject.visibility
 
       @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }
+      @addable_courses = Course.all.reject { |c| @virtual_groups.include? c.context_id }
     end
   end
 

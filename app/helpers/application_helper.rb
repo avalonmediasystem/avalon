@@ -165,6 +165,6 @@ module ApplicationHelper
 
   def vgroup_display value
     c = Course.find_by_context_id(value)
-    c.nil? ? value : c.label
+    c.nil? ? value : (c.title || c.label || value)
   end
 end

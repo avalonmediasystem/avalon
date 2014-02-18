@@ -50,9 +50,9 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= render "modules/access_object", object: object,
         access_object: "user", members: @users%>
       <%= render "modules/access_object", object: object,
-        access_object: "group", members: @groups, dropdown_values: @addable_groups %>
+        access_object: "group", members: @groups, dropdown_values: [@addable_groups, 'name', 'name'] %>
       <%= render "modules/access_object", object: object,
-        access_object: "class", members: @virtual_groups %>
+        access_object: "class", members: @virtual_groups, dropdown_values: [@addable_courses, 'context_id', 'title'], display_helper: :vgroup_display %>
     </div>
   <% end %>
 <% end %>
