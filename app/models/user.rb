@@ -55,6 +55,12 @@ class User < ActiveRecord::Base
       User.create(:username => auth_hash.uid, :email => auth_hash.info.email)
   end
 
+  def self.autocomplete(query)
+    self.where("username LIKE :q OR email LIKE :q", q: "%#{query}%").collect { |user|
+      { id: user.email, display: user.email }
+    }
+  end
+
   def in?(*list)
     list.flatten.include? user_key
   end

@@ -65,4 +65,5 @@
  */
 //= require avalon
 //= require pop_help
+//= require access_autocomplete
 //= require_self

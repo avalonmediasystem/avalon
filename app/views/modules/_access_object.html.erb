@@ -27,6 +27,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%#------------ Add and display access_object_members ------------ %>
     <% if defined?(dropdown_values) && dropdown_values.present? %>
       <%= select_tag "add_#{access_object}", options_from_collection_for_select(*dropdown_values), { include_blank: true, class: "span9" }%>
+    <% elsif defined?(autocomplete_model) && autocomplete_model.present? %>
+      <%= hidden_field_tag "add_#{access_object}" %>
+      <%= text_field_tag "add_#{access_object}_display", nil, class: "span10 access-control typeahead", data: { model: autocomplete_model, target: "add_#{access_object}" } %>
     <% else %>
       <%= text_field_tag "add_#{access_object}", nil, class: "span10"  %>
     <% end %>

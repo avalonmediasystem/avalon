@@ -14,6 +14,7 @@ Avalon::Application.routes.draw do
     match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session
   end
   match "/authorize", to: 'derivatives#authorize'
+  match "/autocomplete", to: 'object#autocomplete'
 
   # My routes go here
   # Routes for subjects and pbcore controller

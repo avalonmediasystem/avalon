@@ -29,7 +29,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= yield :additional_head_content %>
   </head>
 
-  <body>
+  <body data-mountpoint="<%=root_path%>">
     <%= render 'modules/header' %>
 
     <div class="container-fluid">

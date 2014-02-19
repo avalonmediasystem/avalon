@@ -8,4 +8,10 @@ class ObjectController < ApplicationController
       redirect_to polymorphic_path(obj, params.except(:controller, :action))
     end
   end
+
+  def autocomplete
+    model = Module.const_get(params[:t].to_s.classify)
+    query = params[:q]
+    render json: model.send(:autocomplete, query)
+  end
 end

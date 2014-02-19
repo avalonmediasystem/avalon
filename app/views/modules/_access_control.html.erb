@@ -48,11 +48,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= form.fieldset 'Assign special access' do %>
     <div class="row-no-margin">
       <%= render "modules/access_object", object: object,
-        access_object: "user", members: @users%>
+        access_object: "user", members: @users, autocomplete_model: 'user' %>
       <%= render "modules/access_object", object: object,
         access_object: "group", members: @groups, dropdown_values: [@addable_groups, 'name', 'name'] %>
       <%= render "modules/access_object", object: object,
-        access_object: "class", members: @virtual_groups, dropdown_values: [@addable_courses, 'context_id', 'title'], display_helper: :vgroup_display %>
+        access_object: "class", members: @virtual_groups, autocomplete_model: 'course', display_helper: :vgroup_display %>
     </div>
   <% end %>
 <% end %>
