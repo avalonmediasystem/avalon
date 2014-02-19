@@ -21,6 +21,7 @@ $('.access-control.typeahead').each ->
     if $target.val() == '' or $t.val() == ''
       $target.val($t.val())
   $t.typeahead
+    minLength: 2
     source: (query, process) ->
       $target.val('')
       $.get "#{$('body').data('mountpoint')}autocomplete",
