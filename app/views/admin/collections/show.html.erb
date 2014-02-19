@@ -22,6 +22,8 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= link_to('Create An Item', new_media_object_path(collection_id: @collection.pid), class: 'btn btn-primary') if can? :create, MediaObject %>
     <%= link_to('List All Items', catalog_index_path('f[collection_ssim][]' => @collection.name), class: 'btn') %>
     <%= link_to('Edit Collection Info', edit_admin_collection_path(@collection), class: 'btn', remote: true, modal: true) if can? :update, @collection %>
+    <br/><br>
+    Or <a href='https://wiki.dlib.indiana.edu/display/VarVideo/Avalon+Collections+Guide#AvalonCollectionsGuide-UploadingviaBatch'><b>learn how to</b></a> create items using batch upload.
     </div>
 
     <%= twitter_bootstrap_form_for @collection, html: { class: "form-horizontal", id: 'access_control_form'}  do |co| %>
