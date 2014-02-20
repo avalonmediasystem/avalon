@@ -47,12 +47,18 @@ class User < ActiveRecord::Base
     class_id = auth_hash.extra.context_id
     if Course.find_by_context_id(class_id).nil?
       class_name = auth_hash.extra.context_name
-      Course.create :context_id => class_id, :label => class_name unless class_name.nil?
+      Course.create :context_id => class_id, :label => auth_hash.extra.consumer.context_label, :title => class_name unless class_name.nil?
     end
     result = 
       User.find_by_username(auth_hash.uid) ||
       User.find_by_email(auth_hash.info.email) ||
       User.create(:username => auth_hash.uid, :email => auth_hash.info.email)
+  end
+
+  def self.autocomplete(query)
+    self.where("username LIKE :q OR email LIKE :q", q: "%#{query}%").collect { |user|
+      { id: user.email, display: user.email }
+    }
   end
 
   def in?(*list)

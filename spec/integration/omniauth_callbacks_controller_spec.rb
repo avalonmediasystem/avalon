@@ -33,7 +33,7 @@ describe Users::OmniauthCallbacksController do
       expect { post '/users/auth/lti/callback', foo_hash }.to change { Course.all.count }
       new_course = Course.last
       expect(new_course.context_id).to eq(course_id)
-      expect(new_course.label).to eq(course_name)
+      expect(new_course.title).to eq(course_name)
     end
 
     it 'should use an existing user if possible' do
