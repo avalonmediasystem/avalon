@@ -228,11 +228,15 @@ class MasterFile < ActiveFedora::Base
     }
   end
 
-  def embed_code(width, host)
+  def embed_code(host, width, permalink_opts = {})
     begin
+      if self.permalink
+        url = self.permalink(permalink_opts)
+      else
+        url = embed_master_file_path(self.pid, only_path: false, host: host, protocol: '//')
+      end
       height = is_video? ? (width/display_aspect_ratio.to_f).floor : AUDIO_HEIGHT
-      path = embed_master_file_path(pid, only_path: false, host: host, protocol: '//')
-      "<iframe src=\"#{path}\" width=\"#{width}\" height=\"#{height}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
+      "<iframe src=\"#{url}\" width=\"#{width}\" height=\"#{height}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
     rescue 
       ""
     end
