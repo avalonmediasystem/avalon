@@ -1,5 +1,3 @@
-require 'uri'
-
 module Permalink
 
   extend ActiveSupport::Concern
