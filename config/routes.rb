@@ -42,6 +42,9 @@ Avalon::Application.routes.draw do
       get :embed
     end
   end
+
+  match '/media_objects/:media_object_id/section/:id/embed' => 'master_file#embed'
+
   resources :derivatives, only: [:create]
   
   resources :comments, only: [:index, :create]
