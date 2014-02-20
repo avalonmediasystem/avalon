@@ -48,7 +48,7 @@ module Permalink
     if val && query_vars.present?
       val = "#{val}?#{query_vars.to_query}"
     end
-    val
+    val ? val.to_s : nil
   end
 
   def permalink=(value)
