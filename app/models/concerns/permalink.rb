@@ -1,3 +1,5 @@
+require 'uri'
+
 module Permalink
 
   extend ActiveSupport::Concern
@@ -41,9 +43,12 @@ module Permalink
     @@generator.default_url_options[:host] = value
   end
 
-  def permalink
+  def permalink(query_vars = {})
     val = self.relationships(:has_permalink).first
-    val.nil? ? nil : val.value
+    if val && query_vars.present?
+      val = "#{val}?#{query_vars.to_query}"
+    end
+    val
   end
 
   def permalink=(value)
