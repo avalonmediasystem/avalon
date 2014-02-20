@@ -5,7 +5,12 @@ class ObjectController < ApplicationController
     if obj.blank?
       redirect_to root_path
     else
-      url = URI.join(polymorphic_url(obj)+'/', params[:urlappend].sub(/^[\/]/,''))
+      if params[:urlappend]
+        url = URI.join(polymorphic_url(obj)+'/', params[:urlappend].sub(/^[\/]/,''))
+      else
+        url = URI(polymorphic_url(obj))
+      end
+
       newparams = params.except(:controller, :action, :id, :urlappend)
       url.query = newparams.to_query if newparams.present?
       redirect_to url.to_s
