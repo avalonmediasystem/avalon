@@ -43,7 +43,7 @@ Avalon::Application.routes.draw do
     end
   end
 
-  match '/media_objects/:media_object_id/section/:id/embed' => 'master_file#embed'
+  match '/media_objects/:media_object_id/section/:id/embed' => 'master_files#embed'
 
   resources :derivatives, only: [:create]
   
