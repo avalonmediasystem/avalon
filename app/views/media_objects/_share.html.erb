@@ -42,14 +42,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% if @currentStream.present? %>
       <p class="muted">Copy the text below to embed this resource</p>
       <textarea class="span6" rows="3" id="embed-part" onClick="this.select();">
-        <%= 
-          if @currentStream.permalink
-            @currentStream.embed_code(@currentStream.permalink({ urlappend: '/embed' }), MasterFile::EMBED_SIZE[:medium])
-          else      
-            url = embed_master_file_path(pid, only_path: false, host: host, protocol: '//')
-            @currentStream.embed_code(url, MasterFile::EMBED_SIZE[:medium])
-          end
-        %>
+        <%= @currentStream.embed_code(request.host_with_port, MasterFile::EMBED_SIZE[:medium], { urlappend: '/embed' }) %>
       </textarea>
     <% else %>
       <p class="muted"> <%= I18n.t('media_object.empty_share_link_notice') %> </p>
