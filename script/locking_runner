@@ -10,5 +10,5 @@ shift
 trap "{ rm -f $LOCKFILE ; exit 255; }" EXIT
 if [ ! -e $LOCKFILE ]; then
     echo "$$" > $LOCKFILE
-    "$@ || true" #run the command
+    "$@" || true #run the command
 fi
