@@ -48,7 +48,7 @@ en:
       success: 'Successfully logged into the system'
       failure: 'Unable to authorize because "%{reason}"'
       lti:
-        failure: 'Unable to authorize.  Check the key/secret pair in your external tool settings.  Contact a system administrator for more help.'
+        failure: 'Contact a system administrator for more help or check the key/secret pair in your external tool settings.'
     mailer:
       confirmation_instructions:
         subject: 'Confirmation instructions'
