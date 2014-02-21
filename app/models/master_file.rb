@@ -222,7 +222,7 @@ class MasterFile < ActiveFedora::Base
       is_video: is_video?,
       poster_image: poster_path,
       mediapackage_id: mediapackage_id,
-      embed_code: embed_code(EMBED_SIZE[:medium], host), 
+      embed_code: embed_code(host, EMBED_SIZE[:medium]), 
       stream_flash: flash, 
       stream_hls: hls 
     }
