@@ -24,7 +24,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
-  revision: ba96ef3873be6270c0d73174b01b570400979b83
+  revision: 46300b8a3275067425a7e427c4dce6043edba5e9
   specs:
     avalon-workflow (0.0.3)
 
@@ -73,7 +73,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: 0b6f16fccbe871965c0000877ab7a9938e18e7e1
+  revision: ce768d0955eee9b5ad2bac7bb6f315e975b91052
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
