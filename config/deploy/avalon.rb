@@ -31,7 +31,7 @@ set(:shared_children) {
     config/avalon.yml 
     config/controlled_vocabulary.yml
     config/database.yml 
-    config/environments
+    config/environments/development.rb
     config/fedora.yml 
     config/matterhorn.yml 
     config/role_map_#{fetch(:rails_env)}.yml 
