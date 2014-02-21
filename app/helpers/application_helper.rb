@@ -108,7 +108,6 @@ module ApplicationHelper
     elsif resource.file_location.present?
       File.basename(resource.file_location)
     else
-      logger.debug("Cannot derive section label from resource: #{resource}")
       resource.pid
     end
   end

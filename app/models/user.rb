@@ -42,8 +42,6 @@ class User < ActiveRecord::Base
   end
 
   def self.find_for_lti(auth_hash, signed_in_resource=nil)
-    logger.debug "In find_for_lti: #{auth_hash}"
-
     class_id = auth_hash.extra.context_id
     if Course.find_by_context_id(class_id).nil?
       class_name = auth_hash.extra.context_name

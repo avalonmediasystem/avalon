@@ -32,7 +32,6 @@ module AccessControlsHelper
   # Controller "before" filter for enforcing access controls on edit actions
   # @param [Hash] opts (optional, not currently used)
   def enforce_edit_permissions(opts={})
-    logger.debug("Enforcing edit permissions")
     #load_permissions_from_solr
     if current_user.nil? 
       flash[:notice] = "You need to login to edit resources"
@@ -50,7 +49,6 @@ module AccessControlsHelper
   # @param [Hash] opts (optional, not currently used)
   def enforce_show_permissions(opts={})
     return if not MediaObject.exists?(params[:id])
-    logger.debug("Enforcing show permissions")
     if cannot? :read, MediaObject.find(params[:id])
       if current_user.nil?
         flash[:notice] = "You do not have sufficient privileges to read this document. Try logging in."

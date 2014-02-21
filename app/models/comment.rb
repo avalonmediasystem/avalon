@@ -52,8 +52,7 @@ class Comment
     # supported by Loofah (see https://github.com/flavorjones/loofah)
     @comment = Loofah.scrub_fragment(new_comment, :prune).to_s
     
-    logger.debug("Comment has been cleaned and now is")
-    logger.debug(@comment)
+    logger.debug("Comment has been cleaned and now is: \n #{@comment}")
   end
   
   def initialize(attributes = {})
