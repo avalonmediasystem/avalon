@@ -208,6 +208,11 @@ describe Admin::Collection do
         collection.inherited_edit_users.should include(administrator.username)
         collection.managers.should include(administrator.username)
       end
+      it "should not add administrators to editors role" do
+        administrator = FactoryGirl.create(:administrator)
+        collection.add_manager(administrator.username)
+        collection.editors.should_not include(administrator.username)
+      end
       it "should not add users who do not have the manager role" do
         not_manager = FactoryGirl.create(:user)
         expect {collection.add_manager(not_manager.username)}.to raise_error(ArgumentError)
