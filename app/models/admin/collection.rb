@@ -91,7 +91,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def editors
-    edit_users - RoleControls.users("manager")
+    edit_users - managers
   end
 
   def editors= users
