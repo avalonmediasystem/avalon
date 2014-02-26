@@ -31,6 +31,15 @@ describe Admin::CollectionsController, type: :controller do
       manager.should be_in(collection.managers)
     end
 
+    it "should not add users to manager role" do
+      login_as(:administrator)
+      user = FactoryGirl.create(:user)
+      put 'update', id: collection.id, submit_add_manager: 'Add', add_manager: user.username
+      collection.reload
+      user.should_not be_in(collection.managers)
+      flash[:notice].should_not be_empty
+    end
+
     it "should remove users from manager role" do
       login_as(:administrator)
       #initial_manager = FactoryGirl.create(:manager).username
