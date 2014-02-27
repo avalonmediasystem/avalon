@@ -105,7 +105,11 @@ class Admin::CollectionsController < ApplicationController
     ["manager", "editor", "depositor"].each do |title|
       if params["submit_add_#{title}"].present? 
         if params["add_#{title}"].present? && can?("update_#{title.pluralize}".to_sym, @collection)
-          @collection.send "add_#{title}".to_sym, params["add_#{title}"]
+          begin
+            @collection.send "add_#{title}".to_sym, params["add_#{title}"]
+          rescue ArgumentError => e
+            flash[:notice] = e.message
+          end
         else
           flash[:notice] = "#{title.titleize} can't be blank."
         end
