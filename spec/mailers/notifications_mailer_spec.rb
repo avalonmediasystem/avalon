@@ -14,13 +14,15 @@ describe 'NotificationsMailer' do
       @admin_user = FactoryGirl.create(:user) 
       @collection = FactoryGirl.create(:collection)
       @old_name = "Previous name"
+      @host_with_port = 'localhost:3000'
 
       @email = NotificationsMailer.update_collection(
               updater_id: @updater.id,
               collection_id: @collection.id,
               user_id: @admin_user.id,
               old_name: @old_name,
-              subject: "Notification: collection #{@old_name} changed to #{@collection.name}"
+              subject: "Notification: collection #{@old_name} changed to #{@collection.name}",
+              host: @host_with_port
       )
     end
     
@@ -35,6 +37,10 @@ describe 'NotificationsMailer' do
     end
     
     context 'body' do
+      it 'has link to collection' do
+        @email.should have_body_text(admin_collection_url(@collection, host: @host_with_port))
+      end
+
       it 'has collection name' do
         @email.should have_body_text(@collection.name)
       end

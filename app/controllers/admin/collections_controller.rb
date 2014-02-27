@@ -71,7 +71,8 @@ class Admin::CollectionsController < ApplicationController
           creator_id: current_user.id, 
           collection_id: @collection.id, 
           user_id: admin_user.id, 
-          subject: "New collection: #{@collection.name}"
+          subject: "New collection: #{@collection.name}",
+          host: request.host_with_port
         )
       end
 
@@ -95,7 +96,8 @@ class Admin::CollectionsController < ApplicationController
               collection_id: @collection.id, 
               user_id: admin_user.id,
               old_name: @old_name,
-              subject: "Notification: collection #{@old_name} changed to #{@collection.name}"
+              subject: "Notification: collection #{@old_name} changed to #{@collection.name}",
+              host: request.host_with_port
             ).deliver!
           end
         end
