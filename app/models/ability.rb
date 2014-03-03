@@ -117,21 +117,21 @@ class Ability
 
         # Users logged in through LTI cannot share
         can :share, MediaObject
+      end
 
-        cannot :update, MediaObject do |mediaobject|
-          (!is_member_of?(mediaobject.collection)) || 
-            ( mediaobject.published? && !@user.in?(mediaobject.collection.managers) )
-        end
+      cannot :update, MediaObject do |mediaobject|
+        (not full_login?) || (!is_member_of?(mediaobject.collection)) || 
+          ( mediaobject.published? && !@user.in?(mediaobject.collection.managers) )
+      end
 
-        cannot :destroy, MediaObject do |mediaobject|
-          # non-managers can only destroy mediaobject if it's unpublished 
-          (!is_member_of?(mediaobject.collection)) || 
-            ( mediaobject.published? && !@user.in?(mediaobject.collection.managers) )
-        end
+      cannot :destroy, MediaObject do |mediaobject|
+        # non-managers can only destroy mediaobject if it's unpublished 
+        (not full_login?) || (!is_member_of?(mediaobject.collection)) || 
+          ( mediaobject.published? && !@user.in?(mediaobject.collection.managers) )
+      end
 
-        cannot :destroy, Admin::Collection do |collection, other_user_collections=[]|
-          !@user.in?(collection.managers)
-        end
+      cannot :destroy, Admin::Collection do |collection, other_user_collections=[]|
+        (not full_login?) || !@user.in?(collection.managers)
       end
     end
   end
