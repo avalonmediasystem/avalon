@@ -22,6 +22,7 @@ $('.typeahead.from-model').each ->
     $t.on 'change', ->
       if $target.val() == '' or $t.val() == ''
         $target.val($t.val())
+  $t.attr('autocomplete','off')
   $t.typeahead
     minLength: 2
     source: (query, process) ->
