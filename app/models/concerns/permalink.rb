@@ -31,14 +31,6 @@ module Permalink
   # end
   def self.on_generate(&block)
     @@generator.proc = block
-  end 
-  
-  def self.default_host
-    @@generator.default_url_options[:host]
-  end
-
-  def self.default_host=(value)
-    @@generator.default_url_options[:host] = value
   end
 
   def permalink(query_vars = {})
