@@ -33,7 +33,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </fieldset>
 
     <h3>Group Members</h3>
-    <%= text_field_tag :new_user, nil, placeholder: 'Enter a username' %>
+    <%= text_field_tag :new_user, nil, class: 'typeahead from-model', data: { model: 'user' }, placeholder: 'Enter a username' %>
     <%= f.submit "Add user", class: "btn" %>
 <% end %>
 

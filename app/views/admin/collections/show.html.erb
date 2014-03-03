@@ -40,14 +40,17 @@ Unless required by applicable law or agreed to in writing, software distributed
           <%= render "modules/access_object",
             access_object: "manager",
             members: @collection.managers,
+            autocomplete_model: 'user',
             object: @collection %>
           <%= render "modules/access_object",
             access_object: "editor",
             members: @collection.editors,
+            autocomplete_model: 'user',
             object: @collection %>
           <%= render "modules/access_object",
             access_object: "depositor",
             members: @collection.depositors,
+            autocomplete_model: 'user',
             object: @collection %>
         </div>
       <% end %>

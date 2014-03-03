@@ -13,17 +13,20 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 
-$('.access-control.typeahead').each ->
+$('.typeahead.from-model').each ->
   $current_data = []
   $t = $(this)
-  $target = $("input[name='#{$t.data('target')}']")
-  $t.on 'change', ->
-    if $target.val() == '' or $t.val() == ''
-      $target.val($t.val())
+  $target_id = $t.data('target')
+  $target = $("input[name='#{$target_id}']")
+  if $target_id
+    $t.on 'change', ->
+      if $target.val() == '' or $t.val() == ''
+        $target.val($t.val())
   $t.typeahead
     minLength: 2
     source: (query, process) ->
-      $target.val('')
+      if $target_id
+        $target.val('')
       $.get "#{$('body').data('mountpoint')}autocomplete",
         t: $t.data('model')
         q: query
@@ -32,7 +35,8 @@ $('.access-control.typeahead').each ->
           display_values = $(data).map -> this.display
           process(display_values)
     updater: (item) ->
-      result = $.grep $current_data, (v) -> v.display == item
-      result = if result.length > 0 then result[0].id else item
-      $target.val(result)
+      if $target_id
+        result = $.grep $current_data, (v) -> v.display == item
+        result = if result.length > 0 then result[0].id else item
+        $target.val(result)
       return item
