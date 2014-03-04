@@ -1,7 +1,11 @@
 module Permalink
 
   extend ActiveSupport::Concern
-
+  
+  ActionDispatch::Reloader.to_prepare do
+    ::Permalink.class_variable_set(:@@generator, @@generator) if @@generator
+  end
+  
   class Generator
     include Rails.application.routes.url_helpers
     attr_accessor :proc
@@ -25,7 +29,7 @@ module Permalink
     @@generator.permalink_for(obj)
   end
     
-  # Avalon::Permalink.on_generate do |obj|
+  # Permalink.on_generate do |obj|
   #   permalink = (... generate permalink ...)
   #   return permalink
   # end
@@ -55,17 +59,17 @@ module Permalink
     updated = false
 
     begin
-      permalink = self.permalink
-      if permalink.blank?
-        permalink = Permalink.permalink_for(self)
+      link = self.permalink
+      if link.blank?
+        link = Permalink.permalink_for(self)
       end
     rescue Exception => e
-      permalink = nil
+      link = nil
       logger.error "Permalink.permalink_for() raised an exception for #{self.inspect}: #{e}"
     end
     
-    if permalink.present? and not (self.permalink == permalink)
-      self.permalink = permalink
+    if link.present? and not (self.permalink == link)
+      self.permalink = link
       updated = true
     end
     
