@@ -64,7 +64,7 @@ class MasterFilesController < ApplicationController
         if (file.size > MasterFile::MAXIMUM_UPLOAD_SIZE)
           # Use the errors key to signal that it should be a red notice box rather
           # than the default
-          flash[:errors] = "The file you have uploaded is too large"
+          flash[:error] = "The file you have uploaded is too large"
           redirect_to :back
           return
         end
@@ -78,11 +78,11 @@ class MasterFilesController < ApplicationController
         MasterFilesController.set_default_item_permissions(master_file, user_key)
  
         if 'Unknown' == master_file.file_format
-          flash[:errors] = [] if flash[:errors].nil?
+          flash[:error] = [] if flash[:error].nil?
           error = format_errors
           error << file.original_filename
           error << " (" << file.content_type << ")"
-          flash[:errors].push error
+          flash[:error].push error
           master_file.destroy
           next
         else
@@ -90,7 +90,7 @@ class MasterFilesController < ApplicationController
         end
 	
         unless master_file.save
-          flash[:errors] = "There was a problem storing the file"
+          flash[:error] = "There was a problem storing the file"
         else
           media_object.save(validate: false)
           master_file.process
@@ -110,7 +110,7 @@ class MasterFilesController < ApplicationController
         MasterFilesController.set_default_item_permissions(master_file, user_key)
         
         unless master_file.save
-          flash[:errors] = "There was a problem storing the file"
+          flash[:error] = "There was a problem storing the file"
         else
           media_object.save(validate: false)
           master_file.process

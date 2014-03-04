@@ -105,11 +105,7 @@ class Admin::CollectionsController < ApplicationController
     ["manager", "editor", "depositor"].each do |title|
       if params["submit_add_#{title}"].present? 
         if params["add_#{title}"].present? && can?("update_#{title.pluralize}".to_sym, @collection)
-          begin
-            @collection.send "add_#{title}".to_sym, params["add_#{title}"]
-          rescue ArgumentError => e
-            flash[:notice] = e.message
-          end
+          @collection.send "add_#{title}".to_sym, params["add_#{title}"]
         else
           flash[:notice] = "#{title.titleize} can't be blank."
         end
@@ -123,14 +119,27 @@ class Admin::CollectionsController < ApplicationController
 
     # If Save Access Setting button or Add/Remove User/Group button has been clicked
     if can?(:update_access_control, @collection)
-      # Limited access stuff
-      @collection.default_read_groups -= [params[:remove_group]] if params[:remove_group].present?
-      @collection.default_read_users -= [params[:remove_user]] if params[:remove_user].present?
-      @collection.default_read_groups -= [params[:remove_class]] if params[:remove_class].present?
-      @collection.default_read_groups += [params[:add_group]] if params[:submit_add_group].present?
-      @collection.default_read_users += [params[:add_user]] if params[:submit_add_user].present?
-      @collection.default_read_groups += [params[:add_class]] if params[:submit_add_class].present?
-
+      ["group", "class", "user"].each do |title|
+        if params["submit_add_#{title}"].present?
+          if params["add_#{title}"].present?
+            if ["group", "class"].include? title
+              @collection.default_read_groups += [params["add_#{title}"]]
+            else
+              @collection.default_read_users += [params["add_#{title}"]]
+            end
+          else
+            flash[:notice] = "#{title.titleize} can't be blank."
+          end
+        end
+        
+        if params["remove_#{title}"].present?
+          if ["group", "class"].include? title
+            @collection.default_read_groups -= [params["remove_#{title}"]]
+          else
+            @collection.default_read_users -= [params["remove_#{title}"]]
+          end
+        end
+    end
 
       @collection.default_visibility = params[:visibility] unless params[:visibility].blank? 
 

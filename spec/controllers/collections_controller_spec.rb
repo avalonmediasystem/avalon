@@ -134,5 +134,22 @@ describe Admin::CollectionsController, type: :controller do
       @collection = FactoryGirl.create(:collection)
       put 'update', id: @collection.pid, admin_collection: {name: "#{@collection.name}-new", description: @collection.description, unit: @collection.unit}
     end
+
+    context "access controls" do
+      let!(:collection) { FactoryGirl.create(:collection)}
+
+      before(:each) do
+        login_as(:administrator)
+      end 
+
+      it "should not allow empty user" do
+        expect{ put 'update', id: collection.pid, submit_add_user: "Add", add_user: "", add_user_display: ""}.not_to change{ collection.reload.default_read_users.size }
+      end
+
+      it "should not allow empty class" do
+        expect{ put 'update', id: collection.pid, submit_add_class: "Add", add_class: "", add_class_display: ""}.not_to change{ collection.reload.default_read_groups.size }
+      end
+
+    end
   end
 end
