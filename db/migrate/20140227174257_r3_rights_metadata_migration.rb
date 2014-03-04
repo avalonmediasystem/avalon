@@ -3,7 +3,8 @@ class R3RightsMetadataMigration < ActiveRecord::Migration
     MediaObject.find_each({},{batch_size:5}) do |mo|
       mo.read_users += find_user_exceptions(mo.rightsMetadata.ng_xml)
       mo.read_groups += find_group_exceptions(mo.rightsMetadata.ng_xml)
-      remove_exceptions_node!(mo.rightsMetadata.ng_xml)
+      exceptions = find_exceptions_node(mo.rightsMetadata.ng_xml)
+      exceptions.remove if exceptions
       mo.save(validate: false)
     end
   end
@@ -20,7 +21,7 @@ class R3RightsMetadataMigration < ActiveRecord::Migration
     xml.xpath("//rm:access[@type='exceptions']/rm:machine/rm:group", {'rm' => 'http://hydra-collab.stanford.edu/schemas/rightsMetadata/v1'}).map {|n| n.text }
   end
 
-  def remove_exceptions_node!(xml)
-    xml.xpath("//rm:access[@type='exceptions']", {'rm' => 'http://hydra-collab.stanford.edu/schemas/rightsMetadata/v1'}).first.remove
+  def find_exceptions_node(xml)
+    xml.xpath("//rm:access[@type='exceptions']", {'rm' => 'http://hydra-collab.stanford.edu/schemas/rightsMetadata/v1'}).first
   end
 end

@@ -44,5 +44,10 @@ describe R3RightsMetadataMigration do
     it "should remove exceptions access node" do
       expect(mediaobject.rightsMetadata.ng_xml.xpath("//rm:access[@type='exceptions']", {'rm' => 'http://hydra-collab.stanford.edu/schemas/rightsMetadata/v1'}).empty?).to be true
     end
+
+    it "should not attempt to remove exceptions if node does not exist" do
+      @mediaobject = FactoryGirl.create(:media_object)
+      expect{R3RightsMetadataMigration.new.up}.not_to raise_error NoMethodError
+    end
   end
 end
