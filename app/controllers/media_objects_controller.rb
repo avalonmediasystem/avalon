@@ -51,7 +51,7 @@ class MediaObjectsController < ApplicationController
     if 'preview' == @active_step 
       @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
       @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
-      @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token,request.host)
+      @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
 
       if (not @masterFiles.empty? and @currentStream.blank?)
         @currentStream = @masterFiles.first
@@ -243,7 +243,7 @@ class MediaObjectsController < ApplicationController
     # This rescue statement seems a bit dodgy because it catches *all*
     # exceptions. It might be worth refactoring when there are some extra
     # cycles available.
-    @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token,request.host)
+    @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
  end
 
   # The goal of this method is to determine which stream to provide to the interface

@@ -26,8 +26,7 @@ class ApplicationController < ActionController::Base
   # Please be sure to implement current_user and user_session. Blacklight depends on 
   # these methods in order to perform user specific actions. 
   protect_from_forgery
-  
-  before_filter :set_permalink_host
+
   after_filter :set_access_control_headers
 
   def set_access_control_headers
@@ -35,10 +34,6 @@ class ApplicationController < ActionController::Base
     headers['Access-Control-Request-Method'] = '*'
   end
   
-  def set_permalink_host
-    Permalink.default_host = request.host_with_port
-  end
-
   def get_user_collections
     if can? :manage, Admin::Collection
       Admin::Collection.all
