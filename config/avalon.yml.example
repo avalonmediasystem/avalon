@@ -31,9 +31,6 @@ development:
     #path: '/path/to/move/to'
 
 test:
-  domain:
-    host: localhost
-    port: 3000
   dropbox:
     path: '/srv/avalon/dropbox/'
     upload_uri: 'sftp://localhost/srv/avalon/dropbox'
