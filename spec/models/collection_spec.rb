@@ -43,6 +43,7 @@ describe Admin::Collection do
       it{ should be_able_to(:update_depositors, collection) }
       it{ should be_able_to(:create, Admin::Collection) }
       it{ should be_able_to(:destroy, collection) }
+      it{ should be_able_to(:update_access_control, collection) }
     end
 
     context 'when editor' do
@@ -60,6 +61,7 @@ describe Admin::Collection do
       it{ should be_able_to(:update_depositors, collection) }
       it{ should_not be_able_to(:create, Admin::Collection) }
       it{ should_not be_able_to(:destroy, collection) }
+      it{ should_not be_able_to(:update_access_control, collection) }
     end
 
     context 'when depositor' do
@@ -76,6 +78,7 @@ describe Admin::Collection do
       it{ should_not be_able_to(:create, collection) }
       it{ should_not be_able_to(:update, collection) }
       it{ should_not be_able_to(:destroy, collection) }
+      it{ should_not be_able_to(:update_access_control, collection) }
     end
 
     context 'when end user' do
@@ -92,6 +95,7 @@ describe Admin::Collection do
       it{ should_not be_able_to(:create, collection) }
       it{ should_not be_able_to(:update, collection) }
       it{ should_not be_able_to(:destroy, collection) }
+      it{ should_not be_able_to(:update_access_control, collection) }
     end
 
     context 'when lti user' do
@@ -108,6 +112,7 @@ describe Admin::Collection do
       it{ should_not be_able_to(:create, collection) }
       it{ should_not be_able_to(:update, collection) }
       it{ should_not be_able_to(:destroy, collection) }
+      it{ should_not be_able_to(:update_access_control, collection) }
     end
   end
 

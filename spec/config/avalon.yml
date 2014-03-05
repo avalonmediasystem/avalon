@@ -1,4 +1,9 @@
 development: 
+  fedora:
+    namespace: avalon
+  domain:
+    host: localhost
+    port: 3000
   dropbox:
     path: '/srv/avalon/dropbox/'
     upload_uri: 'sftp://localhost/srv/avalon/dropbox'
@@ -26,7 +31,13 @@ development:
   master_file_management:
     strategy: 'none' #'delete', or 'move' (for move uncomment and configure next line)
     #path: '/path/to/move/to'
+
 test:
+  fedora:
+    namespace: avalon
+  domain:
+    host: localhost
+    port: 3000
   dropbox:
     path: '/srv/avalon/dropbox/'
     upload_uri: 'sftp://localhost/srv/avalon/dropbox'

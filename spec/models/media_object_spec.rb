@@ -60,6 +60,14 @@ describe MediaObject do
         subject.should be_able_to(:destroy, media_object)
         subject.should be_able_to(:unpublish, media_object)
       end
+
+      context 'and logged in through LTI' do
+        let(:ability){ Ability.new(User.where(username: collection.managers.first).first, {full_login: false, virtual_groups: [Faker::Lorem.word]}) }
+
+        it{ should_not be_able_to(:share, MediaObject) }
+        it{ should_not be_able_to(:update, media_object) }
+        it{ should_not be_able_to(:destroy, media_object) }
+      end
     end
 
     context 'when editor' do
@@ -70,6 +78,7 @@ describe MediaObject do
       it{ should be_able_to(:read, media_object) }
       it{ should be_able_to(:update, media_object) }
       it{ should be_able_to(:destroy, media_object) }
+      it{ should be_able_to(:update_access_control, media_object) }
       it "should not be able to destroy and unpublish published item" do
         media_object.publish! "someone"
         subject.should_not be_able_to(:destroy, media_object)

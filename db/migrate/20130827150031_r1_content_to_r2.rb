@@ -14,7 +14,8 @@
 
 class R1ContentToR2 < ActiveRecord::Migration
   def up
-    ActiveFedora::Base.reindex_everything
+    prefix = Avalon::Configuration.lookup('fedora.namespace')
+    ActiveFedora::Base.reindex_everything("pid~#{prefix}:*")
     if MediaObject.count > 0
       migration_path = File.join(Rails.root,'db/hydra')
       Hydra::Migrate::Dispatcher.migrate_all!(MediaObject, to: 'R2', path: migration_path) do |o,m,d|
