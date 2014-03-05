@@ -41,17 +41,20 @@ Unless required by applicable law or agreed to in writing, software distributed
             access_object: "manager",
             members: @collection.managers,
             autocomplete_model: 'user',
-            object: @collection %>
+            object: @collection,
+            input_disabled: cannot?( :update_managers, @collection ) %>
           <%= render "modules/access_object",
             access_object: "editor",
             members: @collection.editors,
             autocomplete_model: 'user',
-            object: @collection %>
+            object: @collection,
+            input_disabled: cannot?( :update_editors, @collection ) %>
           <%= render "modules/access_object",
             access_object: "depositor",
             members: @collection.depositors,
             autocomplete_model: 'user',
-            object: @collection %>
+            object: @collection,
+            input_disabled: cannot?( :update_depositors, @collection ) %>
         </div>
       <% end %>
 

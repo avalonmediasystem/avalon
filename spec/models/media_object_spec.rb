@@ -78,6 +78,7 @@ describe MediaObject do
       it{ should be_able_to(:read, media_object) }
       it{ should be_able_to(:update, media_object) }
       it{ should be_able_to(:destroy, media_object) }
+      it{ should be_able_to(:update_access_control, media_object) }
       it "should not be able to destroy and unpublish published item" do
         media_object.publish! "someone"
         subject.should_not be_able_to(:destroy, media_object)
