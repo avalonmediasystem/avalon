@@ -83,7 +83,7 @@ namespace :deploy do
   end
 
   task :reindex_everything do
-    run "cd #{current_release} && RAILS_ENV=#{rails_env} bundle exec rails runner 'ActiveFedora::Base.reindex_everything'"
+    run "cd #{current_release} && RAILS_ENV=#{rails_env} bundle exec rake avalon:reindex"
   end
 end
 

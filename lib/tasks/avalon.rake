@@ -67,7 +67,7 @@ namespace :avalon do
       Identity.create(email: username, password: password)
       User.create(username: username)
       groups.each do |group|
-	RoleControls.add_role(group) unless RoleControls.role_exists? group
+        RoleControls.add_role(group) unless RoleControls.role_exists? group
         RoleControls.add_user_role(username, group)
       end
 
@@ -103,5 +103,11 @@ namespace :avalon do
 
       puts "Updated password for user #{username}"
     end
+  end
+
+  desc "Reindex all Avalon objects"
+  task :reindex => :environment do
+    prefix = Avalon::Configuration.lookup('fedora.namespace')
+    ActiveFedora::Base.reindex_everything("pid~#{prefix}:*")
   end
 end
