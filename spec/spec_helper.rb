@@ -66,6 +66,11 @@ RSpec.configure do |config|
       'fake_dropbox' => Dir.mktmpdir
     }
     Avalon::Configuration['dropbox']['path'] = Avalon::Configuration.lookup('spec.fake_dropbox')
+    
+    server_options = {host: 'test.host'}
+    Rails.application.routes.default_url_options.merge!( server_options )
+    ActionMailer::Base.default_url_options.merge!( server_options )
+    ApplicationController.default_url_options = server_options
   end
 
   config.after(:suite) do
