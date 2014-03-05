@@ -1,4 +1,6 @@
-development:
+development: 
+  fedora:
+    namespace: avalon
   domain:
     host: localhost
     port: 3000
@@ -31,9 +33,8 @@ development:
     #path: '/path/to/move/to'
 
 test:
-  domain:
-    host: localhost
-    port: 3000
+  fedora:
+    namespace: avalon
   dropbox:
     path: '/srv/avalon/dropbox/'
     upload_uri: 'sftp://localhost/srv/avalon/dropbox'
