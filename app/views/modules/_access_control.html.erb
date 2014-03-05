@@ -13,8 +13,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+  <% can_update = can?( :update_access_control, object) %>
   <%= form.fieldset 'Item discovery' do %>
-    <% if can? :update_access_control, object %>
+    <% if can_update %>
       <%= label_tag :hidden do %>
         <%= check_box_tag 'hidden', '1', hidden %>
         Hide this item from search results 
@@ -26,7 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% end %>
     
   <%= form.fieldset 'Item access' do %>
-    <% if can? :update_access_control, object %>
+    <% if can_update %>
       <%= form.hidden_field :pid %>
 
       <%= label_tag :visibility do %>
@@ -48,11 +49,16 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= form.fieldset 'Assign special access' do %>
     <div class="row-no-margin">
       <%= render "modules/access_object", object: object,
-        access_object: "user", members: @users, autocomplete_model: 'user' %>
+        access_object: "user", members: @users, autocomplete_model: 'user',
+        input_disabled: !can_update %>
       <%= render "modules/access_object", object: object,
-        access_object: "group", members: @groups, dropdown_values: [@addable_groups, 'name', 'name'] %>
+        access_object: "group", members: @groups, 
+        dropdown_values: [@addable_groups, 'name', 'name'],
+        input_disabled: !can_update %>
       <%= render "modules/access_object", object: object,
-        access_object: "class", members: @virtual_groups, autocomplete_model: 'course', display_helper: :vgroup_display %>
+        access_object: "class", members: @virtual_groups, 
+        autocomplete_model: 'course', display_helper: :vgroup_display,
+        input_disabled: !can_update %>
     </div>
   <% end %>
 <% end %>
