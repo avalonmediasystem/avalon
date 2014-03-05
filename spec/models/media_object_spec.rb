@@ -344,7 +344,6 @@ describe MediaObject do
           'http://www.example.com/perma-url'
         }
         media_object.ensure_permalink!
-        default_url_options =  Rails.application.routes.default_url_options
         t.should == "http://test.host/media_objects/#{media_object.pid}"
         media_object.permalink.should == 'http://www.example.com/perma-url'
       end
