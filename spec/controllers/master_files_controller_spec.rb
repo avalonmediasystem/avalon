@@ -37,7 +37,7 @@ describe MasterFilesController do
      
       expect { post :create, Filedata: [@file], original: 'any', container_id: media_object.pid}.not_to change { MasterFile.count }
      
-      flash[:errors].should_not be_nil
+      flash[:error].should_not be_nil
      end
     end
      
@@ -74,7 +74,7 @@ describe MasterFilesController do
 
        expect { post :create, Filedata: [@file], original: 'any', container_id: media_object.pid }.not_to change { MasterFile.count }
      
-       flash[:errors].should_not be_nil
+       flash[:error].should_not be_nil
      end
     
      it "should recognize audio/video based on extension when MIMETYPE is of unknown format" do
