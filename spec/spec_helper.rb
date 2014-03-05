@@ -67,7 +67,7 @@ RSpec.configure do |config|
     }
     Avalon::Configuration['dropbox']['path'] = Avalon::Configuration.lookup('spec.fake_dropbox')
     
-    server_options = {host: 'test.host'}
+    server_options = { host: 'test.host', port: nil }
     Rails.application.routes.default_url_options.merge!( server_options )
     ActionMailer::Base.default_url_options.merge!( server_options )
     ApplicationController.default_url_options = server_options
