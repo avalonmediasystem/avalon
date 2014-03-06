@@ -31,12 +31,27 @@ class AccessControlStep < Avalon::Workflow::BasicStep
     end
 
     # Limited access stuff
-    mediaobject.read_groups -= [context[:remove_group]] if context[:remove_group].present?
-    mediaobject.read_users -= [context[:remove_user]] if context[:remove_user].present?
-    mediaobject.read_groups -= [context[:remove_class]] if context[:remove_class].present?
-    mediaobject.read_groups += [context[:add_group]] if context[:submit_add_group].present?
-    mediaobject.read_users += [context[:add_user]] if context[:submit_add_user].present?
-    mediaobject.read_groups += [context[:add_class]] if context[:submit_add_class].present?
+    ["group", "class", "user"].each do |title|
+      if context["submit_add_#{title}"].present?
+        if context["add_#{title}"].present?
+          if ["group", "class"].include? title
+            mediaobject.read_groups += [context["add_#{title}"]]
+          else
+            mediaobject.read_users += [context["add_#{title}"]]
+          end
+        else
+          context[:error] = "#{title.titleize} can't be blank."
+        end
+      end
+      
+      if context["remove_#{title}"].present?
+        if ["group", "class"].include? title
+          mediaobject.read_groups -= [context["remove_#{title}"]]
+        else
+          mediaobject.read_users -= [context["remove_#{title}"]]
+        end
+      end
+    end
 
     mediaobject.visibility = context[:visibility] unless context[:visibility].blank? 
 

@@ -21,15 +21,15 @@ Unless required by applicable law or agreed to in writing, software distributed
   
   <div id="main_body" class="span10">
 
-  <% if flash[:errors] %>
+  <% if flash[:error] %>
     <div id="errors_information" class="alert alert-error active">
      <button type="button" class="close" data-dismiss="alert">&times;</button>
-     <% if flash[:errors].is_a?(Array) 
-       flash[:errors].each do |err| %>
+     <% if flash[:error].is_a?(Array) 
+       flash[:error].each do |err| %>
        <p class="notice"><%= err %></p>
      <% end %>
      <% else %>
-       <p> class="notice"><%= flash[:errors] %></p>
+       <p class="notice"><%= flash[:error] %></p>
      <% end %>
   </div>
   <% end %>
@@ -41,7 +41,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   <% end %>
 
-  <% if flash[:upload] and not flash[:errors] %>
+  <% if flash[:upload] and not flash[:error] %>
     <div id="upload_format" class="alert active">
       <button type="button" class="close" data-dismiss="alert">&times;</button>
       <p class="notice"><%= flash[:upload] %></p>
