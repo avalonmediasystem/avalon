@@ -1,6 +1,6 @@
 <%= stylesheet_link_tag 'http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css' %>
 <h3> New Collection Notification </h3>
-<%= link_to(@collection.name, @collection) %>
+<%= link_to @collection.name, admin_collection_url(@collection) %>
 <hr/>
 
 <dl class="dl-horizontal">  
