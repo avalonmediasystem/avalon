@@ -22,7 +22,7 @@ class Admin::Collection < ActiveFedora::Base
   include Hydra::AccessControls::Permissions
   include ActiveFedora::Associations
   include Hydra::ModelMixins::HybridDelegator
-  include Hydra::ModelMixins::Migratable
+  include VersionableModel
 
   has_many :media_objects, property: :is_member_of_collection 
   has_metadata name: 'descMetadata', type: ActiveFedora::SimpleDatastream do |sds|
@@ -49,7 +49,7 @@ class Admin::Collection < ActiveFedora::Base
            to: :defaultRights, prefix: :default
 
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
-  before_save { |obj| obj.current_migration = 'R2' }
+  has_model_version 'R3'
   after_validation :create_dropbox_directory!, :on => :create
 
   def self.units

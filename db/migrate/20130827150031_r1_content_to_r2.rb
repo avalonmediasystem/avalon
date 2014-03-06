@@ -16,16 +16,49 @@ class R1ContentToR2 < ActiveRecord::Migration
   def up
     prefix = Avalon::Configuration.lookup('fedora.namespace')
     ActiveFedora::Base.reindex_everything("pid~#{prefix}:*")
-    if MediaObject.count > 0
-      migration_path = File.join(Rails.root,'db/hydra')
-      Hydra::Migrate::Dispatcher.migrate_all!(MediaObject, to: 'R2', path: migration_path) do |o,m,d|
-        current = o.current_migration.blank? ? 'unknown version' : o.current_migration
-        Rails.logger.info "Migrating #{o.class} #{o.pid} from #{current} to #{m[:to]}"
-      end
+    MediaObject.find_each({},{batch_size:5}) do |mo|
+      mediaobject_to_r2(mo) if mo.current_migration.nil?
     end
   end
 
   def down
     raise ActiveRecord::IrreversibleMigration
+  end
+
+  def mediaobject_to_r2(mo)
+    mo.parts_with_order.each { |mf| masterfile_to_r2(mf) }
+    collection = MediaObjectMigration.find_or_create_collection(mo.descMetadata.collection.last, mo.edit_users)
+    mo.collection = collection
+    mo.descMetadata.collection = []
+    mo.descMetadata.remove_empty_nodes!
+    [:read_groups,:discover_groups,:edit_groups].each do |attr|
+      groups = mo.send(attr)
+      if groups.include?('collection_manager')
+        groups[groups.index('collection_manager')] = 'manager'
+        mo.send(:"#{attr}=",groups)
+      end
+    end
+    mo.save_as_version('R2', validate: false)
+  end
+
+  def masterfile_to_r2(mf)
+    mf.duration = mf.derivatives.empty? ? '0' : mf.derivatives.first.duration.to_s
+    mf.descMetadata.poster_offset = mf.descMetadata.thumbnail_offset = [mf.duration.to_i,2000].min.to_s
+    mf.save_as_version('R2', validate: false)
+  end
+
+  def self.find_or_create_collection(name, managers)
+    # Make sure all managers are in the global manager group
+    RoleControls.assign_users(RoleControls.users('manager')|managers, 'manager')
+
+    # Find or create the collection with the specified name
+    name ||= 'Default Collection'
+    collection = Admin::Collection.find(:name_tesim => name).first
+    if collection.nil?
+      collection = Admin::Collection.create(name: name, managers: managers, unit: Admin::Collection.units.first)
+    end
+    collection.managers = collection.managers | managers
+    collection.save
+    collection
   end
 end
