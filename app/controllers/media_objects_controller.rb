@@ -159,6 +159,9 @@ class MediaObjectsController < ApplicationController
       when 'unpublish'
         media_object.publish!(nil) if can?(:unpublish, media_object)   
     end
+
+    # additional save to set permalink
+    media_object.save( validate: false )
     
     redirect_to :back
   end
