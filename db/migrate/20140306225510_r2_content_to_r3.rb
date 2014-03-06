@@ -13,8 +13,9 @@ class R2ContentToR3 < ActiveRecord::Migration
 
   def mediaobject_to_r3(mo)
     mo.parts_with_order.each { |mf| masterfile_to_r3(mf) }
-    mo.populate_duration!
-    mo.update_permalink_and_dependents
+    # The following two operations are handled by before_save callbacks
+    # mo.populate_duration!
+    # mo.update_permalink_and_dependents
     mo.save_as_version('R3', validate: false)
   end
 
