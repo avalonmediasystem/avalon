@@ -331,8 +331,13 @@ class MediaObject < ActiveFedora::Base
       if self.persisted? && self.published?
         ensure_permalink!
         self.parts.each do |master_file| 
-          master_file.ensure_permalink!
-          master_file.save( validate: false )
+          begin
+            master_file.ensure_permalink!
+            master_file.save( validate: false )
+          rescue
+          	# no-op
+          	# Save is called (uncharacteristically) during a destroy.
+          end
         end
 
         unless self.descMetadata.permalink.include? self.permalink 
