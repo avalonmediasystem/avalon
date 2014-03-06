@@ -35,6 +35,10 @@ describe 'NotificationsMailer' do
     end
     
     context 'body' do
+      it 'has link to collection' do
+        @email.should have_body_text(admin_collection_url(@collection))
+      end
+
       it 'has collection name' do
         @email.should have_body_text(@collection.name)
       end
