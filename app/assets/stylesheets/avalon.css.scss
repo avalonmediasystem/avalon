@@ -299,7 +299,12 @@ label {
   opacity: 0.5;
 }
 
-.row-no-margin {
+.row-indent {
+  @extend .row;
+  margin-left: 25px;
+}
+
+.row-no-indent {
   @extend .row;
   margin-left: 0px;
 }

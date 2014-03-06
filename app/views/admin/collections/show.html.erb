@@ -36,7 +36,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= flash[:notice] %>
           </div>
         <% end %>
-        <div class="row-no-margin">
+        <div class="row-indent">
           <%= render "modules/access_object",
             access_object: "manager",
             members: @collection.managers,
@@ -61,10 +61,16 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="whitespace"></div>
 
       <%= co.fieldset 'Set Default Access Control for New Items' do %>
-          <%= render "modules/access_control", { form: co, object: @collection, visibility: @collection.default_visibility, hidden: @collection.default_hidden? } %>	
-					<% if can? :update_access_control, @collection %>
-						<%= submit_tag "Save Access Settings", name: "save_access", class: "btn" %>
-					<% end %>
+        <div class="row-indent">
+          <%= render "modules/access_control", 
+            { form: co, object: @collection, 
+              visibility: @collection.default_visibility, 
+              hidden: @collection.default_hidden? } %>	
+        </div>
+        <% if can? :update_access_control, @collection %>
+          <%= submit_tag "Save Access Settings", 
+            name: "save_access", class: "btn" %>
+        <% end %>
       <% end %>
       
     <% end %>
