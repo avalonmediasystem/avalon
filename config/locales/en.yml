@@ -109,3 +109,7 @@ en:
       Select a group from the dropdown list below to assign it access to an item or collection.
     class: |
       To assign access to an item or collection to a class you will need to enter the course context_label.
+  file_upload_tip:
+    skip_transcoding: |
+      For best results, use AAC-encoded mp4 files for audio and H.264 mp4 files for video. Some file types, such as mp3, will not work with the Adobe Media Server.
+
