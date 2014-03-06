@@ -59,7 +59,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% end %> 
 
   <%= form.fieldset 'Assign special access' do %>
-    <div class="row-no-margin">
+    <div class="row-no-indent">
       <%= render "modules/access_object", object: object,
         access_object: "user", members: @users, autocomplete_model: 'user',
         input_disabled: !can_update %>
