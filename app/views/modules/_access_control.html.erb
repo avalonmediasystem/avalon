@@ -14,6 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
   <% can_update = can?( :update_access_control, object) %>
+
   <%= form.fieldset 'Item discovery' do %>
     <% if can_update %>
       <%= label_tag :hidden do %>
@@ -44,8 +45,19 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
         Collection staff only
       <% end %>
-    
+    <% else %>
+      Item is viewable by
+      <%= case @visibility
+          when "public"
+            "the general public"
+          when "restricted"
+            "logged in users only"
+          when "private"
+            "collection staff only"
+          end %>
+    <% end %>
   <% end %> 
+
   <%= form.fieldset 'Assign special access' do %>
     <div class="row-no-margin">
       <%= render "modules/access_object", object: object,
@@ -61,4 +73,3 @@ Unless required by applicable law or agreed to in writing, software distributed
         input_disabled: !can_update %>
     </div>
   <% end %>
-<% end %>
