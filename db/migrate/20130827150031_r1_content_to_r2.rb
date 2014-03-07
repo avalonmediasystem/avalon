@@ -14,10 +14,12 @@
 
 class R1ContentToR2 < ActiveRecord::Migration
   def up
-    prefix = Avalon::Configuration.lookup('fedora.namespace')
-    ActiveFedora::Base.reindex_everything("pid~#{prefix}:*")
-    MediaObject.find_each({},{batch_size:5}) do |mo|
-      mediaobject_to_r2(mo) if mo.current_migration.nil?
+    say_with_time("R1->R2") do
+      prefix = Avalon::Configuration.lookup('fedora.namespace')
+      ActiveFedora::Base.reindex_everything("pid~#{prefix}:*")
+      MediaObject.find_each({},{batch_size:5}) do |mo|
+        mediaobject_to_r2(mo) if mo.current_migration.nil?
+      end
     end
   end
 
@@ -26,6 +28,7 @@ class R1ContentToR2 < ActiveRecord::Migration
   end
 
   def mediaobject_to_r2(mo)
+    say("MediaObject #{mo.pid} #{mo.current_migration}->R2", :subitem)
     mo.parts_with_order.each { |mf| masterfile_to_r2(mf) }
     collection = MediaObjectMigration.find_or_create_collection(mo.descMetadata.collection.last, mo.edit_users)
     mo.collection = collection
@@ -42,9 +45,16 @@ class R1ContentToR2 < ActiveRecord::Migration
   end
 
   def masterfile_to_r2(mf)
+    say("MasterFile #{mf.pid} #{mf.current_migration}->R2", :subitem)
+    mf.derivatives.each { |d| derivative_to_r3(d) }
     mf.duration = mf.derivatives.empty? ? '0' : mf.derivatives.first.duration.to_s
     mf.descMetadata.poster_offset = mf.descMetadata.thumbnail_offset = [mf.duration.to_i,2000].min.to_s
     mf.save_as_version('R2', validate: false)
+  end
+
+  def derivative_to_r2(d)
+    say("Derivative #{d.pid} #{d.current_migration}->R2", :subitem)
+    d.save_as_version('R2', validate: false)
   end
 
   def self.find_or_create_collection(name, managers)
