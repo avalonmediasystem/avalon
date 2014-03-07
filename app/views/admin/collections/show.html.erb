@@ -36,7 +36,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= flash[:notice] %>
           </div>
         <% end %>
-        <div class="row-no-margin">
+        <div class='staff-roles-section'>
           <%= render "modules/access_object",
             access_object: "manager",
             members: @collection.managers,
@@ -72,10 +72,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <style>
-  fieldset input { padding-left: 20px;}
-  fieldset label { padding-left: 20px;}
-  .row-no-margin { padding-left: 20px;}
-  [name='save_access'] { margin-left: 20px; }
+  fieldset .staff-roles-section { margin-left: 20px; }
+  fieldset.item-access { margin-left: 20px;  }
+  fieldset.item-discovery { margin-left: 20px; }
+  fieldset.special-access { margin-left: 20px; }
+  [name='save_access'] { margin-left: 20px;  }
 </style>
 
 <% content_for :page_scripts do %>
