@@ -124,7 +124,11 @@ Unless required by applicable law or agreed to in writing, software distributed
             <span class="checkbox inline fileupload-exists">
               <%# FIXME the style on the checkbox should be handled by css classes but it is getting bad values from bootstrap responsive %>
               <%= check_box_tag(:workflow, 'skip_transcoding', false, :style => "margin-top: 4px; margin-left: -15px;")%>
-              <%= label_tag(:skip_transcoding, "Skip transcoding")%>
+              <%= label_tag(:skip_transcoding) do %>
+                <div style="font-size: inherit;" class="tooltip-help" data-title="<%= "something" %>" data-tooltip="#skip-transcoding-tooltip">
+                  Skip transcoding                    
+                </div>
+              <% end %>
             </span>
           </div>
         </div>
@@ -134,6 +138,11 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
       <% end %>
   </fieldset>
+  
+  <div class="collapse form-tooltip equal-height" id="skip-transcoding-tooltip">
+    <button class="close">&times;</button>
+    <p><%= t("file_upload_tip.skip_transcoding").html_safe %></p>
+  </div>
 </section>
 
 <section id="dropbox_upload" class="span10">
