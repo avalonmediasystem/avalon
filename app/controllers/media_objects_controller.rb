@@ -133,25 +133,19 @@ class MediaObjectsController < ApplicationController
     #@previous_view = media_object_path(@mediaobject)
   end
 
-  # Deletes a media object from the system. This needs to be somewhat robust so that
-  # you can't delete an object if you do not have permission, if it does not exist, or
-  # (most likely) if the 'Yes' button was accidentally submitted twice
   def destroy
-    @mediaobject = MediaObject.find(params[:id])
-    authorize! :destroy, @mediaobject
-    unless params[:id].nil? or (not MediaObject.exists?(params[:id]))
-      media = MediaObject.find(params[:id])
+    media_object = MediaObject.find(params[:id])
+    authorize! :destroy, media_object
+    message = "#{media_object.title} (#{params[:id]}) has been successfuly deleted"
 
-      # attempt to stop the matterhorn processing job
-      media.parts.each(&:destroy)
-      media.parts.clear
-      
-      flash[:notice] = "#{media.title} (#{params[:id]}) has been successfuly deleted"
-      media.delete
-    end
-    redirect_to root_path
+    # attempt to stop the matterhorn processing job
+    media_object.parts.each(&:destroy)
+    media_object.parts.clear
+    
+    media_object.destroy
+    
+    redirect_to root_path, flash: { notice: message }
   end
-
 
   # Sets the published status for the object. If no argument is given then
   # it will just toggle the state.
@@ -166,8 +160,9 @@ class MediaObjectsController < ApplicationController
         media_object.publish!(nil) if can?(:unpublish, media_object)   
     end
 
-    media_object.save
-
+    # additional save to set permalink
+    media_object.save( validate: false )
+    
     redirect_to :back
   end
 
