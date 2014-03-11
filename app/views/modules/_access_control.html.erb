@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
   <% can_update = can?( :update_access_control, object) %>
 
-  <%= form.fieldset 'Item discovery' do %>
+  <%= form.fieldset 'Item discovery', class: 'item-discovery' do %>
     <% if can_update %>
       <%= label_tag :hidden do %>
         <%= check_box_tag 'hidden', '1', hidden %>
@@ -27,7 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
   <% end %>
     
-  <%= form.fieldset 'Item access' do %>
+  <%= form.fieldset 'Item access', class: 'item-access' do %>
     <% if can_update %>
       <%= form.hidden_field :pid %>
 
@@ -58,7 +58,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
   <% end %> 
 
-  <%= form.fieldset 'Assign special access' do %>
+  <%= form.fieldset 'Assign special access', class: 'special-access' do %>
     <div class="row-no-margin">
       <%= render "modules/access_object", object: object,
         access_object: "user", members: @users, autocomplete_model: 'user',
