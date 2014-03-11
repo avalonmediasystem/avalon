@@ -9,7 +9,7 @@
   gem 'bcrypt-ruby', '~> 3.0.0'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git' # HEAD , tag: 'avalon-r2'
-  gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git" # HEAD , tag: 'avalon-r2'
+  gem 'avalon-batch', '~> 0.2.2', git: "https://github.com/avalonmediasystem/avalon-batch.git" # HEAD , tag: 'avalon-r2'
   gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git' # HEAD , tag: 'avalon-r2'
   gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git' # HEAD , tag: 'avalon-r2'
   gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector' # HEAD , tag: 'avalon-r2'
@@ -17,9 +17,7 @@
   gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git' # HEAD
   gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git'
 
-  # TODO: Remove following line after roo merges and releases
-  #       https://github.com/Empact/roo/pull/94
-  gem 'roo', git: 'https://github.com/mbklein/roo.git'
+  gem 'roo'
 
   gem 'multipart-post'  
   gem 'modal_logic'

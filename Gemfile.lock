@@ -15,9 +15,9 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
-  revision: c1742b6734b589f248d582cb05b3379385fc5711
+  revision: d10ac19d7ea131a30673bf2846897d1cfcc65098
   specs:
-    avalon-batch (0.2.0)
+    avalon-batch (0.2.2)
       activemodel
       activesupport
       roo
@@ -119,15 +119,6 @@ GIT
       actionpack (~> 3)
       railties (~> 3)
 
-GIT
-  remote: https://github.com/mbklein/roo.git
-  revision: 268adb5fdfa02b8bf7afbe6ac881d4720a1e7e8c
-  specs:
-    roo (1.13.2)
-      nokogiri
-      rubyzip
-      spreadsheet (> 0.6.4)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -200,10 +191,10 @@ GEM
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
       xpath (~> 2.0)
-    childprocess (0.4.0)
+    childprocess (0.5.1)
       ffi (~> 1.0, >= 1.0.11)
     chronic (0.10.2)
-    chunky_png (1.2.9)
+    chunky_png (1.3.0)
     coderay (1.1.0)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
@@ -213,27 +204,27 @@ GEM
       execjs
     coffee-script-source (1.7.0)
     columnize (0.3.6)
-    compass (0.12.2)
+    compass (0.12.3)
       chunky_png (~> 1.2)
       fssm (>= 0.2.7)
-      sass (~> 3.1)
+      sass (= 3.2.14)
     compass-rails (1.0.3)
       compass (>= 0.12.2, < 0.14)
     compass-susy-plugin (0.9)
       compass (>= 0.11.1)
     daemons (1.1.9)
-    debugger (1.6.5)
+    debugger (1.6.6)
       columnize (>= 0.3.1)
       debugger-linecache (~> 1.2.0)
-      debugger-ruby_core_source (~> 1.3.1)
+      debugger-ruby_core_source (~> 1.3.2)
     debugger-linecache (1.2.0)
-    debugger-ruby_core_source (1.3.1)
+    debugger-ruby_core_source (1.3.2)
     delayed_job (4.0.0)
       activesupport (>= 3.0, < 4.1)
     delayed_job_active_record (4.0.0)
       activerecord (>= 3.0, < 4.1)
       delayed_job (>= 3.0, < 4.1)
-    deprecation (0.0.5)
+    deprecation (0.1.0)
       activesupport
     devise (3.0.4)
       bcrypt-ruby (~> 3.0)
@@ -241,7 +232,7 @@ GEM
       railties (>= 3.2.6, < 5)
       warden (~> 1.2.3)
     diff-lcs (1.2.5)
-    docile (1.1.2)
+    docile (1.1.3)
     dot-properties (0.1.2)
     email_spec (1.5.0)
       launchy (~> 2.1)
@@ -251,13 +242,13 @@ GEM
       nokogiri (>= 1.4.3)
     erubis (2.7.0)
     execjs (2.0.2)
-    factory_girl (4.3.0)
+    factory_girl (4.4.0)
       activesupport (>= 3.0.0)
-    factory_girl_rails (4.3.0)
-      factory_girl (~> 4.3.0)
+    factory_girl_rails (4.4.1)
+      factory_girl (~> 4.4.0)
       railties (>= 3.0.0)
-    fakefs (0.5.0)
-    faker (1.2.0)
+    fakefs (0.5.1)
+    faker (1.3.0)
       i18n (~> 0.5)
     fastercsv (1.5.5)
     ffi (1.9.3)
@@ -277,9 +268,10 @@ GEM
       tilt
     hashie (2.0.5)
     headless (1.0.1)
-    highline (1.6.20)
+    highline (1.6.21)
     hike (1.2.3)
-    hooks (0.3.3)
+    hooks (0.3.6)
+      uber (~> 0.0.4)
     hydra (6.1.0)
       active-fedora (~> 6.7.0)
       blacklight (~> 4.5.0)
@@ -343,7 +335,7 @@ GEM
     logger (1.2.8)
     loofah (1.2.1)
       nokogiri (>= 1.4.4)
-    macaddr (1.6.5)
+    macaddr (1.6.7)
       systemu (~> 2.6.2)
     mail (2.5.4)
       mime-types (~> 1.16)
@@ -363,14 +355,14 @@ GEM
     modal_logic (0.0.5)
       handlebars_assets (= 0.14.1)
       rails (~> 3.2.13)
-    multi_json (1.8.4)
+    multi_json (1.9.0)
     multipart-post (2.0.0)
     net-http-digest_auth (1.4)
     net-scp (1.1.2)
       net-ssh (>= 2.6.5)
     net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
-    net-ssh (2.7.0)
+    net-ssh (2.8.0)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
     nokogiri (1.6.1)
@@ -405,7 +397,7 @@ GEM
       pry (~> 0.9.10)
     pry-rails (0.3.2)
       pry (>= 0.9.10)
-    puma (2.7.1)
+    puma (2.8.1)
       rack (>= 1.1, < 2.0)
     rack (1.4.5)
     rack-cache (1.2)
@@ -443,16 +435,20 @@ GEM
       json (~> 1.4)
     rest-client (1.6.7)
       mime-types (>= 1.16)
+    roo (1.13.2)
+      nokogiri
+      rubyzip
+      spreadsheet (> 0.6.4)
     rsolr (1.0.9)
       builder (>= 2.1.2)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
       rspec-expectations (~> 2.14.0)
       rspec-mocks (~> 2.14.0)
-    rspec-core (2.14.7)
-    rspec-expectations (2.14.4)
+    rspec-core (2.14.8)
+    rspec-expectations (2.14.5)
       diff-lcs (>= 1.1.3, < 2.0)
-    rspec-mocks (2.14.4)
+    rspec-mocks (2.14.6)
     rspec-rails (2.14.1)
       actionpack (>= 3.0)
       activemodel (>= 3.0)
@@ -499,16 +495,16 @@ GEM
       nokogiri
       stomp
       xml-simple
-    spreadsheet (0.9.6)
+    spreadsheet (0.9.7)
       ruby-ole (>= 1.0)
     sprockets (2.2.2)
       hike (~> 1.2)
       multi_json (~> 1.0)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
-    sqlite3 (1.3.8)
+    sqlite3 (1.3.9)
     stomp (1.3.2)
-    systemu (2.6.3)
+    systemu (2.6.4)
     therubyracer (0.10.2)
       libv8 (~> 3.3.10)
     thor (0.18.1)
@@ -516,7 +512,8 @@ GEM
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
-    tzinfo (0.3.38)
+    tzinfo (0.3.39)
+    uber (0.0.4)
     uglifier (2.4.0)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
@@ -528,7 +525,7 @@ GEM
     validates_email_format_of (1.5.3)
     warden (1.2.3)
       rack (>= 1.0)
-    whenever (0.9.0)
+    whenever (0.9.2)
       activesupport (>= 2.3.4)
       chronic (>= 0.6.3)
     with_locking (1.0.2)
@@ -542,7 +539,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord-jdbcsqlite3-adapter
   avalon-about!
-  avalon-batch!
+  avalon-batch (~> 0.2.2)!
   avalon-workflow!
   bcrypt-ruby (~> 3.0.0)
   builder (~> 3.0.0)
@@ -598,7 +595,7 @@ DEPENDENCIES
   rails (~> 3.2.3)
   rb-fsevent (~> 0.9.1)
   red5wrapper!
-  roo!
+  roo
   rspec-rails (>= 2.9.0)
   rspec_junit_formatter
   rubyhorn!
