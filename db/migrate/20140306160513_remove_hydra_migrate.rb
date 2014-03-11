@@ -9,7 +9,7 @@ class RemoveHydraMigrate < ActiveRecord::Migration
             migration_info = Nokogiri::XML(datastream.content)
             version = migration_info.xpath('//mi:current',{ 'mi' => "http://hydra-collab.stanford.edu/schemas/migrationInfo/v1" }).first
             version = version.text unless version.nil?
-            say("#{obj.class} #{obj.pid} (#{version})", :subitem)
+            say("#{obj.class} #{obj.pid}", :subitem)
             datastream.delete
           end
           obj.save_as_version(version, validate: false) unless version.nil?
