@@ -88,6 +88,7 @@ class R2ContentToR3 < ActiveRecord::Migration
 
   def add_display_aspect_ratio_to_masterfile(masterfile)
     if masterfile.is_video? && masterfile.display_aspect_ratio.blank? 
+      ratio = nil
       begin
         workflow = Rubyhorn.client.instance_xml(masterfile.workflow_id)
         if workflow && (resolutions = workflow.streaming_resolution).any?
@@ -96,7 +97,7 @@ class R2ContentToR3 < ActiveRecord::Migration
       rescue
         # no workflow available, resort to using mediainfo on a derivative
         d = masterfile.derivatives.first
-        if !d.nil? 
+        if !d.nil? and File.exists?(d.absolute_location)
           d_info = Mediainfo.new d.absolute_location
           ratio = d_info.video_display_aspect_ratio
         end
