@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<foxml:digitalObject VERSION="1.1" PID="avalon:1207"
+xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
+<foxml:objectProperties>
+<foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="Active"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE=""/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#ownerId" VALUE="fedoraAdmin"/>
+<foxml:property NAME="info:fedora/fedora-system:def/model#createdDate" VALUE="2014-03-06T21:26:01.788Z"/>
+<foxml:property NAME="info:fedora/fedora-system:def/view#lastModifiedDate" VALUE="2014-03-06T21:26:03.247Z"/>
+</foxml:objectProperties>
+<foxml:datastream ID="AUDIT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="false">
+<foxml:datastreamVersion ID="AUDIT.0" LABEL="Audit Trail for this object" CREATED="2014-03-06T21:26:01.788Z" MIMETYPE="text/xml" FORMAT_URI="info:fedora/fedora-system:format/xml.fedora.audit">
+<foxml:xmlContent>
+<audit:auditTrail xmlns:audit="info:fedora/fedora-system:def/audit#">
+<audit:record ID="AUDREC1">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>RELS-EXT</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2014-03-06T21:26:01.844Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC2">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>migrationInfo</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2014-03-06T21:26:01.866Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC3">
+<audit:process type="Fedora API-M"/>
+<audit:action>modifyDatastreamByValue</audit:action>
+<audit:componentID>RELS-EXT</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2014-03-06T21:26:01.928Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC4">
+<audit:process type="Fedora API-M"/>
+<audit:action>modifyDatastreamByReference</audit:action>
+<audit:componentID>migrationInfo</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2014-03-06T21:26:01.948Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC5">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>descMetadata</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2014-03-06T21:26:01.967Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC6">
+<audit:process type="Fedora API-M"/>
+<audit:action>addDatastream</audit:action>
+<audit:componentID>encoding</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2014-03-06T21:26:01.987Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC7">
+<audit:process type="Fedora API-M"/>
+<audit:action>modifyDatastreamByValue</audit:action>
+<audit:componentID>RELS-EXT</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2014-03-06T21:26:03.196Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC8">
+<audit:process type="Fedora API-M"/>
+<audit:action>modifyDatastreamByReference</audit:action>
+<audit:componentID>migrationInfo</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2014-03-06T21:26:03.223Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+<audit:record ID="AUDREC9">
+<audit:process type="Fedora API-M"/>
+<audit:action>modifyDatastreamByReference</audit:action>
+<audit:componentID>descMetadata</audit:componentID>
+<audit:responsibility>fedoraAdmin</audit:responsibility>
+<audit:date>2014-03-06T21:26:03.247Z</audit:date>
+<audit:justification></audit:justification>
+</audit:record>
+</audit:auditTrail>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="DC" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+<foxml:datastreamVersion ID="DC1.0" LABEL="Dublin Core Record for this object" CREATED="2014-03-06T21:26:01.788Z" MIMETYPE="text/xml" FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="337">
+<foxml:xmlContent>
+<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+  <dc:identifier>avalon:7</dc:identifier>
+</oai_dc:dc>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="RELS-EXT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+<foxml:datastreamVersion ID="RELS-EXT.0" LABEL="Fedora Object-to-Object Relationship Metadata" CREATED="2014-03-06T21:26:01.844Z" MIMETYPE="application/rdf+xml" SIZE="281">
+<foxml:xmlContent>
+<rdf:RDF xmlns:ns0="info:fedora/fedora-system:def/model#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="info:fedora/avalon:1207">
+    <ns0:hasModel rdf:resource="info:fedora/afmodel:Derivative"></ns0:hasModel>
+  </rdf:Description>
+</rdf:RDF>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+<foxml:datastreamVersion ID="RELS-EXT.1" LABEL="Fedora Object-to-Object Relationship Metadata" CREATED="2014-03-06T21:26:01.928Z" MIMETYPE="application/rdf+xml" SIZE="425">
+<foxml:xmlContent>
+<rdf:RDF xmlns:ns0="info:fedora/fedora-system:def/model#" xmlns:ns1="info:fedora/fedora-system:def/relations-external#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="info:fedora/avalon:1207">
+    <ns0:hasModel rdf:resource="info:fedora/afmodel:Derivative"></ns0:hasModel>
+    <ns1:isDerivationOf rdf:resource="info:fedora/avalon:1204"></ns1:isDerivationOf>
+  </rdf:Description>
+</rdf:RDF>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+<foxml:datastreamVersion ID="RELS-EXT.2" LABEL="Fedora Object-to-Object Relationship Metadata" CREATED="2014-03-06T21:26:03.196Z" MIMETYPE="application/rdf+xml" SIZE="425">
+<foxml:xmlContent>
+<rdf:RDF xmlns:ns0="info:fedora/fedora-system:def/model#" xmlns:ns1="info:fedora/fedora-system:def/relations-external#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="info:fedora/avalon:1207">
+    <ns0:hasModel rdf:resource="info:fedora/afmodel:Derivative"></ns0:hasModel>
+    <ns1:isDerivationOf rdf:resource="info:fedora/avalon:1204"></ns1:isDerivationOf>
+  </rdf:Description>
+</rdf:RDF>
+</foxml:xmlContent>
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="migrationInfo" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+<foxml:datastreamVersion ID="migrationInfo.0" LABEL="" CREATED="2014-03-06T21:26:01.866Z" MIMETYPE="text/xml" SIZE="135">
+<foxml:binaryContent> 
+              PG1pZ3JhdGlvbkluZm8geG1sbnM9Imh0dHA6Ly9oeWRyYS1jb2xsYWIuc3RhbmZvcmQuZWR1L3NjaGVt
+              YXMvbWlncmF0aW9uSW5mby92MSI+CiAgPGN1cnJlbnQ+UjI8L2N1cnJlbnQ+CiAgPGhpc3RvcnkvPgo8
+              L21pZ3JhdGlvbkluZm8+
+</foxml:binaryContent> 
+</foxml:datastreamVersion>
+<foxml:datastreamVersion ID="migrationInfo.1" LABEL="" CREATED="2014-03-06T21:26:01.948Z" MIMETYPE="text/xml" SIZE="135">
+<foxml:binaryContent> 
+              PG1pZ3JhdGlvbkluZm8geG1sbnM9Imh0dHA6Ly9oeWRyYS1jb2xsYWIuc3RhbmZvcmQuZWR1L3NjaGVt
+              YXMvbWlncmF0aW9uSW5mby92MSI+CiAgPGN1cnJlbnQ+UjI8L2N1cnJlbnQ+CiAgPGhpc3RvcnkvPgo8
+              L21pZ3JhdGlvbkluZm8+
+</foxml:binaryContent> 
+</foxml:datastreamVersion>
+<foxml:datastreamVersion ID="migrationInfo.2" LABEL="" CREATED="2014-03-06T21:26:03.223Z" MIMETYPE="text/xml" SIZE="135">
+<foxml:binaryContent> 
+              PG1pZ3JhdGlvbkluZm8geG1sbnM9Imh0dHA6Ly9oeWRyYS1jb2xsYWIuc3RhbmZvcmQuZWR1L3NjaGVt
+              YXMvbWlncmF0aW9uSW5mby92MSI+CiAgPGN1cnJlbnQ+UjI8L2N1cnJlbnQ+CiAgPGhpc3RvcnkvPgo8
+              L21pZ3JhdGlvbkluZm8+
+</foxml:binaryContent> 
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="descMetadata" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+<foxml:datastreamVersion ID="descMetadata.0" LABEL="" CREATED="2014-03-06T21:26:01.967Z" MIMETYPE="text/xml" SIZE="227">
+<foxml:binaryContent> 
+              PGZpZWxkcz4KICA8ZHVyYXRpb24+MzMwMjQ8L2R1cmF0aW9uPgogIDx0cmFja19pZD50cmFjay05PC90
+              cmFja19pZD4KICA8bG9jYXRpb25fdXJsPnJ0bXA6Ly9sb2NhbGhvc3Qvdm9kL21wNDpjOWU5YWYyNS0z
+              YmExLTRkMzMtYjZmNS05NmFkN2Y5M2NhOGMvN2Q2YjdiZmQtNzBmNi00ZjA3LThjY2ItNDQ2ODAwMTE3
+              ZTI3L2J1bm55X3RyYWlsZXIxMDgwcDwvbG9jYXRpb25fdXJsPgo8L2ZpZWxkcz4=
+</foxml:binaryContent> 
+</foxml:datastreamVersion>
+<foxml:datastreamVersion ID="descMetadata.1" LABEL="" CREATED="2014-03-06T21:26:03.247Z" MIMETYPE="text/xml" SIZE="406">
+<foxml:binaryContent> 
+              PGZpZWxkcz4KICA8ZHVyYXRpb24+MzMwMjQ8L2R1cmF0aW9uPgogIDx0cmFja19pZD50cmFjay05PC90
+              cmFja19pZD4KICA8bG9jYXRpb25fdXJsPnJ0bXA6Ly9sb2NhbGhvc3Qvdm9kL21wNDpjOWU5YWYyNS0z
+              YmExLTRkMzMtYjZmNS05NmFkN2Y5M2NhOGMvN2Q2YjdiZmQtNzBmNi00ZjA3LThjY2ItNDQ2ODAwMTE3
+              ZTI3L2J1bm55X3RyYWlsZXIxMDgwcDwvbG9jYXRpb25fdXJsPgo8aGxzX3RyYWNrX2lkPnRyYWNrLTEy
+              PC9obHNfdHJhY2tfaWQ+PGhsc191cmw+aHR0cDovL2xvY2FsaG9zdDozMDAwL2M5ZTlhZjI1LTNiYTEt
+              NGQzMy1iNmY1LTk2YWQ3ZjkzY2E4Yy83ZDZiN2JmZC03MGY2LTRmMDctOGNjYi00NDY4MDAxMTdlMjcv
+              YnVubnlfdHJhaWxlcjEwODBwLm1wNC5tM3U4PC9obHNfdXJsPjwvZmllbGRzPg==
+</foxml:binaryContent> 
+</foxml:datastreamVersion>
+</foxml:datastream>
+<foxml:datastream ID="encoding" STATE="A" CONTROL_GROUP="M" VERSIONABLE="true">
+<foxml:datastreamVersion ID="encoding.0" LABEL="" CREATED="2014-03-06T21:26:01.987Z" MIMETYPE="text/xml" SIZE="289">
+<foxml:binaryContent> 
+              PGVuY29kaW5nUHJvZmlsZT4KICA8cXVhbGl0eT5tZWRpdW08L3F1YWxpdHk+CiAgPG1pbWVfdHlwZT52
+              aWRlby9tcDQ8L21pbWVfdHlwZT4KICA8YXVkaW8+CiAgICA8Yml0cmF0ZT4xOTIwMDAuMDwvYml0cmF0
+              ZT4KICAgIDxjb2RlYz5BQUM8L2NvZGVjPgogIDwvYXVkaW8+CiAgPHZpZGVvPgogICAgPGJpdHJhdGU+
+              MjAwMDAwMC4wPC9iaXRyYXRlPgogICAgPGNvZGVjPkFWQzwvY29kZWM+CiAgICA8cmVzb2x1dGlvbj44
+              NTJ4NDgwPC9yZXNvbHV0aW9uPgogIDwvdmlkZW8+CjwvZW5jb2RpbmdQcm9maWxlPg==
+</foxml:binaryContent> 
+</foxml:datastreamVersion>
+</foxml:datastream>
+</foxml:digitalObject>

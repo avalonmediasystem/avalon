@@ -13,9 +13,10 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'spec_helper'
-require File.join(Rails.root, 'db', 'migrate', '20140227174257_r3_rights_metadata_migration')
+require File.join(Rails.root, 'db', 'migrate', '20140306160513_remove_hydra_migrate.rb')
+require File.join(Rails.root, 'db', 'migrate', '20140306225510_r2_content_to_r3.rb')
  
-describe R3RightsMetadataMigration do
+describe R2ContentToR3 do
   before(:each) do
     #load fixture
     ActiveFedora::FixtureLoader.new(File.join(Rails.root, 'spec', 'fixtures', 'r2')).import_and_index('avalon:1134')
@@ -29,25 +30,27 @@ describe R3RightsMetadataMigration do
   describe '#up' do
     subject(:mediaobject) {MediaObject.find('avalon:1134')}
     before(:each) do
-      R3RightsMetadataMigration.new.up
+      ActiveRecord::Migration.verbose = false
+      RemoveHydraMigrate.new.up
+      R2ContentToR3.new.up
     end
 
     it "should add user exceptions to read access" do
-      expect(mediaobject.read_users.include? "cjcolvar").to be true
+      expect(mediaobject.read_users.include? "cjcolvar").to be_true
     end
 
     it "should add group exceptions to read access" do
-      expect(mediaobject.read_groups.include? "TestGroup").to be true
+      expect(mediaobject.read_groups.include? "TestGroup").to be_true
       expect(mediaobject.read_groups.size).to eq 3
     end
 
     it "should remove exceptions access node" do
-      expect(mediaobject.rightsMetadata.ng_xml.xpath("//rm:access[@type='exceptions']", {'rm' => 'http://hydra-collab.stanford.edu/schemas/rightsMetadata/v1'}).empty?).to be true
+      expect(mediaobject.rightsMetadata.ng_xml.xpath("//rm:access[@type='exceptions']", {'rm' => 'http://hydra-collab.stanford.edu/schemas/rightsMetadata/v1'}).empty?).to be_true
     end
 
     it "should not attempt to remove exceptions if node does not exist" do
       @mediaobject = FactoryGirl.create(:media_object)
-      expect{R3RightsMetadataMigration.new.up}.not_to raise_error NoMethodError
+      expect{R2ContentToR3.new.up}.not_to raise_error
     end
   end
 end
