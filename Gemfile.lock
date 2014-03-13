@@ -302,9 +302,6 @@ GEM
       hydra-access-controls (= 6.4.1)
       hydra-core (= 6.4.1)
       rails (>= 3.2.6)
-    hydra-migrate (0.3.0)
-      active-fedora (>= 6.0)
-      activesupport
     i18n (0.6.9)
     iconv (1.0.4)
     ims-lti (1.1.4)
@@ -566,7 +563,6 @@ DEPENDENCIES
   headless
   hooks
   hydra (~> 6.1.0)
-  hydra-migrate (>= 0.2.0)
   iconv
   jdbc-sqlite3
   jettywrapper

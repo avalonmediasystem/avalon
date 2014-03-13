@@ -50,3 +50,4 @@
   http://projecthydra.org/ns/relations#:
     :is_governed_by: isGovernedBy
     :has_permalink: hasPermalink
+    :has_model_version: hasModelVersion

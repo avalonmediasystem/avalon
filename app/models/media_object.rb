@@ -20,9 +20,9 @@ class MediaObject < ActiveFedora::Base
   include Hydra::ModelMethods
   include ActiveFedora::Associations
   include Avalon::Workflow::WorkflowModelMixin
-  include Hydra::ModelMixins::Migratable
+  include VersionableModel
   include Permalink
-
+  
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
   belongs_to :governing_policy, :class_name=>'Admin::Collection', :property=>:is_governed_by
@@ -42,7 +42,7 @@ class MediaObject < ActiveFedora::Base
   before_save 'populate_duration!'
   before_save 'update_permalink_and_dependents'
 
-  before_save { |obj| obj.current_migration = 'R2' }
+  has_model_version 'R3'
 
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used

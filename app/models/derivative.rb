@@ -16,13 +16,13 @@ require 'avalon/matterhorn_rtmp_url'
 
 class Derivative < ActiveFedora::Base
   include ActiveFedora::Associations
-  include Hydra::ModelMixins::Migratable
+  include VersionableModel
 
   class_attribute :url_handler
 
   belongs_to :masterfile, :class_name=>'MasterFile', :property=>:is_derivation_of
 
-  before_save { |obj| obj.current_migration = 'R2' }
+  has_model_version 'R3'
 
   # These fields do not fit neatly into the Dublin Core so until a long
   # term solution is found they are stored in a simple datastream in a

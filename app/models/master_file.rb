@@ -20,11 +20,11 @@ class MasterFile < ActiveFedora::Base
   include ActiveFedora::Associations
   include Hydra::ModelMethods
   include Hydra::AccessControls::Permissions
-  include Hydra::ModelMixins::Migratable
   include Hooks
   include Rails.application.routes.url_helpers
   include Permalink
-
+  include VersionableModel
+  
   WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio']
 
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
@@ -71,7 +71,7 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  before_save { |obj| obj.current_migration = 'R2' }
+  has_model_version 'R3'
   before_save 'update_stills_from_offset!'
 
   define_hooks :after_processing
