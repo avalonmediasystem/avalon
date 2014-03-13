@@ -39,8 +39,12 @@ class R2ContentToR3 < ActiveRecord::Migration
 
   def masterfile_to_r3(mf)
     say("MasterFile #{mf.pid}", :subitem)
-    workflow = Rubyhorn.client.instance_xml(mf.workflow_id)
-    stream_base = workflow.stream_base.first rescue nil
+    stream_base = begin
+      workflow = Rubyhorn.client.instance_xml(mf.workflow_id)
+      workflow.stream_base.first
+    rescue 
+      nil
+    end
     stream_base ||= Rubyhorn.client.me['org']['properties']['avalon.stream_base']
     raise 'Error: stream base must be set in the Matterhorn configuration' unless stream_base.present?
 
