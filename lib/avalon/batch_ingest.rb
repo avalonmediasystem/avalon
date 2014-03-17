@@ -112,7 +112,7 @@ module Avalon
                   end
                 end
 
-                context = {media_object: { pid: media_object.pid, hidden: opts[:hidden] ? '1' : nil, access: 'private' }, mediaobject: media_object, user: current_user.user_key }
+                context = {media_object: { pid: media_object.pid, access: 'private' }, mediaobject: media_object, user: current_user.user_key, hidden: opts[:hidden] ? '1' : nil }
                 context = HYDRANT_STEPS.get_step('access-control').execute context
 
                 media_object.workflow.last_completed_step = 'access-control'
