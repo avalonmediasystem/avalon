@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
         
         <% if @currentStreamInfo[:is_video] %>
-          <video class="mejs-avalon" controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] %>" preload="true">
+          <video class="mejs-avalon" controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] %>" preload="auto">
             <% @currentStreamInfo[:stream_flash].each do |flash| %>
               <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
             <% end %>
