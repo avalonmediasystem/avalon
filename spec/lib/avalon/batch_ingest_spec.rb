@@ -104,6 +104,16 @@ describe Avalon::Batch::Ingest do
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
       media_object.avalon_uploader.should == 'frances.dickens@reichel.com'
     end
+
+    it 'should set hidden' do
+      batch_ingest.ingest
+      ingest_batch = IngestBatch.find(:first)
+      media_object = MediaObject.find(ingest_batch.media_object_ids.first)
+      media_object.should_not be_hidden
+
+      media_object = MediaObject.find(ingest_batch.media_object_ids[1])
+      media_object.should be_hidden
+    end
   end
 
   describe 'invalid manifest' do
