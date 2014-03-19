@@ -5,7 +5,6 @@ class R2ContentToR3 < ActiveRecord::Migration
     say_with_time("R2->R3") do
       prefix = Avalon::Configuration.lookup('fedora.namespace')
       ActiveFedora::Base.reindex_everything("pid~#{prefix}:*")
-#      Derivative.find_each({'has_model_version_ssim' => 'R2'},{batch_size:5}) { |obj| derivative_to_r3(obj) }
       MasterFile.find_each({'has_model_version_ssim' => 'R2'},{batch_size:5}) { |obj| masterfile_to_r3(obj) }
       MediaObject.find_each({'has_model_version_ssim' => 'R2'},{batch_size:5}) { |obj| mediaobject_to_r3(obj) }
       Admin::Collection.find_each({'has_model_version_ssim' => 'R2'},{batch_size:5}) { |obj| collection_to_r3(obj) }
@@ -21,18 +20,26 @@ class R2ContentToR3 < ActiveRecord::Migration
     if ! collection.dropbox_directory_name
       collection.send(:create_dropbox_directory!)
     end
-#    collection.media_objects.each { |mo| mediaobject_to_r3(mo) }
+
+    collection.default_read_users += find_user_exceptions(collection.defaultRights.ng_xml)
+    collection.default_read_groups += find_group_exceptions(collection.defaultRights.ng_xml)
+    exceptions = find_exceptions_node(collection.defaultRights.ng_xml)
+    exceptions.remove if exceptions
+
     collection.save_as_version('R3', validate: false)
   end
 
   def mediaobject_to_r3(mo)
     say("MediaObject #{mo.pid}", :subitem)
-#    mo.parts_with_order.each { |mf| masterfile_to_r3(mf) }
+
     # The following two operations are handled by before_save callbacks
     # mo.populate_duration!
     # mo.update_permalink_and_dependents
 
-    migrate_rights_metadata(mo)
+    mo.read_users += find_user_exceptions(mo.rightsMetadata.ng_xml)
+    mo.read_groups += find_group_exceptions(mo.rightsMetadata.ng_xml)
+    exceptions = find_exceptions_node(mo.rightsMetadata.ng_xml)
+    exceptions.remove if exceptions
 
     mo.save_as_version('R3', validate: false)
   end
@@ -65,13 +72,6 @@ class R2ContentToR3 < ActiveRecord::Migration
       d.absolute_location = File.join(stream_base, Avalon::MatterhornRtmpUrl.parse(d.location_url).to_path) if stream_base
       d.save_as_version('R3', validate: false)
     end
-  end
-
-  def migrate_rights_metadata(mo)
-    mo.read_users += find_user_exceptions(mo.rightsMetadata.ng_xml)
-    mo.read_groups += find_group_exceptions(mo.rightsMetadata.ng_xml)
-    exceptions = find_exceptions_node(mo.rightsMetadata.ng_xml)
-    exceptions.remove if exceptions
   end
 
   def find_user_exceptions(xml)
