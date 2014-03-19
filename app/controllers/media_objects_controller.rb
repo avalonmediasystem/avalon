@@ -190,6 +190,15 @@ class MediaObjectsController < ApplicationController
     media_object.save
     redirect_to :back
   end
+
+  def reorder_sections
+    media_object = MediaObject.find(params[:id])
+    authorize! :update, media_object
+    media_object.section_pid = params[:masterfile_ids] & media_object.section_pid
+    media_object.skip_permalink_check!
+    media_object.save(validate: false)
+    render nothing: true
+  end
   
   def tree
     @mediaobject = MediaObject.find(params[:id])

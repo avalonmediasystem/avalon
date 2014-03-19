@@ -161,16 +161,20 @@ class MasterFilesController < ApplicationController
   # When destroying a file asset be sure to stop it first
   def destroy
     master_file = MasterFile.find(params[:id])
-    parent = master_file.mediaobject
+    media_object = master_file.mediaobject
     
-    authorize! :edit, parent, message: "You do not have sufficient privileges to delete files"
+    authorize! :edit, media_object, message: "You do not have sufficient privileges to delete files"
 
     filename = File.basename(master_file.file_location)
     master_file.destroy
+
+    media_object.set_media_types!
+    media_object.set_duration!
+    media_object.save( validate: false )
     
     flash[:upload] = "#{filename} has been deleted from the system"
 
-    redirect_to edit_media_object_path(parent.pid, step: "file-upload")
+    redirect_to edit_media_object_path(media_object.pid, step: "file-upload")
   end
  
   def set_frame

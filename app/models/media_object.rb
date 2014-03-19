@@ -34,13 +34,11 @@ class MediaObject < ActiveFedora::Base
   
   # Before saving put the pieces into the right order and validate to make sure that
   # there are no syntactic errors
-  before_save 'set_media_types!'
   before_save 'descMetadata.ensure_identifier_exists!'
   before_save 'descMetadata.update_change_date!'
   before_save 'descMetadata.reorder_elements!'
   before_save 'descMetadata.remove_empty_nodes!'
-  before_save 'populate_duration!'
-  before_save 'update_permalink_and_dependents'
+  before_save 'update_permalink_and_dependents', unless: 'skip_permalink_check?'
 
   before_save { |obj| obj.current_migration = 'R2' }
 
@@ -154,7 +152,6 @@ class MediaObject < ActiveFedora::Base
   def section_pid=( pids )
     self.sectionsMetadata.find_by_terms(:section_pid).each &:remove
     self.sectionsMetadata.update_values(['section_pid'] => pids)
-    self.save( validate: false )
   end
 
   alias_method :'_collection=', :'collection='
@@ -182,7 +179,7 @@ class MediaObject < ActiveFedora::Base
     self.parts.all?{ |master_file| master_file.finished_processing? }
   end
 
-  def populate_duration!
+  def set_duration!
     self.duration = calculate_duration.to_s
   end
 
@@ -317,6 +314,14 @@ class MediaObject < ActiveFedora::Base
   # and research as opposed to being able to just throw something together in an ad hoc
   # manner
   
+  def skip_permalink_check!
+    @skip_permalink_check = true
+  end
+
+  def skip_permalink_check?
+    !!@skip_permalink_check
+  end
+
   private
     def after_create
       self.DC.identifier = pid
