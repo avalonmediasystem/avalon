@@ -166,4 +166,10 @@ module ApplicationHelper
     c = Course.find_by_context_id(value)
     c.nil? ? value : (c.title || c.label || value)
   end
+
+  def truncate_center label, output_label_length, end_length = 0
+    end_length = start_length / 2 if end_length == 0
+    truncate(label , length: output_label_length, 
+      omission: "...#{label.last(end_length)}")
+  end
 end

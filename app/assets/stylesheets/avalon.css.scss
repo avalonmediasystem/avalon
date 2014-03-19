@@ -238,10 +238,14 @@ div#dropbox_modal {
   }
 }
 
-.fileupload .uneditable-input {
-  white-space: normal;
+// Custom file preview field for Jasny bootstrap
+.uneditable-input-exists {
+  @extend .uneditable-input;
+  width: 45%;
+  i {
+    padding-left:.5em;
+  }
 }
-
 
 /* 
  * Modal tooltips for the form should be visually distinct from the label or form
