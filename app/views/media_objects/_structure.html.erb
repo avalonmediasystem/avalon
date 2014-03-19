@@ -20,47 +20,47 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% if @masterFiles.blank? %>
   <div class="well">There are no media files</div>
 <% else %>
-	<table class="table table-striped" id="streams">
-	<thead>
-	  <th>&nbsp;</th>
-	  <th>Type</th>
-	  <th>Title</th>
-	  <th>File name</th>
-	  <th>Size</th>
-	</thead>
-	<tbody class="sortable">
-		<% @masterFiles.each do |masterfile| %>
-      <tr data-segment="<%= masterfile.pid %>">
-		<td>
-				<i class="icon-reorder"></i>
-		</td>
-        <td>
-                          <% case masterfile.file_format
-                             when 'Sound' %>
-                               <i class="icon-volume-up"></i>
-                          <% when 'Moving image' %>
-                               <i class="icon-film"></i>
-                          <% else %>
-                               <i class="icon-question-sign"></i>
-                          <% end %>
-        </td>
-        <td>
-          <%= masterfile.label.blank? ? '&#8212;'.html_safe : masterfile.label %>
-        </td>
-        <td>
-	  	    <%= truncate(File.basename(masterfile.file_location), length: 25) %>
-	  	  </td>
-	  	  <td><%= number_to_human_size(masterfile.file_size) %></td>
-        </tr>
-	 	<% end %>
-	  </tbody>
-	</table>
+  <table class="table table-striped" id="streams">
+  <thead>
+    <th>&nbsp;</th>
+    <th>Type</th>
+    <th>Title</th>
+    <th>File name</th>
+    <th>Size</th>
+  </thead>
+  <tbody class="sortable">
+    <% @masterFiles.each do |masterfile| %>
+    <tr data-segment="<%= masterfile.pid %>">
+      <td>
+        <i class="icon-reorder"></i>
+      </td>
+      <td>
+        <% case masterfile.file_format
+           when 'Sound' %>
+             <i class="icon-volume-up"></i>
+        <% when 'Moving image' %>
+             <i class="icon-film"></i>
+        <% else %>
+             <i class="icon-question-sign"></i>
+        <% end %>
+      </td>
+      <td>
+        <%= masterfile.label.blank? ? '&#8212;'.html_safe : masterfile.label %>
+      </td>
+      <td>
+        <%= truncate_center(File.basename(masterfile.file_location), 50, 20) %>
+      </td>
+      <td><%= number_to_human_size(masterfile.file_size) %></td>
+    </tr>
+    <% end %>
+    </tbody>
+  </table>
 <% end %>
 
 
 <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
   <%= render "workflow_buttons", form: media %>
-<% end %>	
+<% end %>
 
 <% content_for :page_scripts do %>
   <script>
