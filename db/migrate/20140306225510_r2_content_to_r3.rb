@@ -24,7 +24,10 @@ class R2ContentToR3 < ActiveRecord::Migration
     collection.default_read_users += find_user_exceptions(collection.defaultRights.ng_xml)
     collection.default_read_groups += find_group_exceptions(collection.defaultRights.ng_xml)
     exceptions = find_exceptions_node(collection.defaultRights.ng_xml)
-    exceptions.remove if exceptions
+    if exceptions
+      collection.defaultRights.ng_xml_will_change!
+      exceptions.remove
+    end
 
     collection.save_as_version('R3', validate: false)
   end
@@ -39,7 +42,10 @@ class R2ContentToR3 < ActiveRecord::Migration
     mo.read_users += find_user_exceptions(mo.rightsMetadata.ng_xml)
     mo.read_groups += find_group_exceptions(mo.rightsMetadata.ng_xml)
     exceptions = find_exceptions_node(mo.rightsMetadata.ng_xml)
-    exceptions.remove if exceptions
+    if exceptions
+      mo.rightsMetadata.ng_xml_will_change!
+      exceptions.remove
+    end
 
     mo.save_as_version('R3', validate: false)
   end
