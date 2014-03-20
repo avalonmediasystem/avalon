@@ -63,12 +63,5 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>	
 
 <% content_for :page_scripts do %>
-  <script>
-     /**
-      * When using sortable we need to tell it which path to post the file list back to
-      * until that is known by wrapping everything in a form
-      */
-     var post_path = "<%= reorder_sections_media_object_path(@mediaobject) %>";
-   </script>
   <%= javascript_include_tag 'sort_streams' %>
 <% end %>
