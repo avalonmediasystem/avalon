@@ -30,7 +30,6 @@ Avalon::Application.routes.draw do
       get 'track/:part', :action => :show, :as => :indexed_section
       get 'section/:content', :action => :show, :as => :pid_section
       get 'tree', :action => :tree, :as => :tree
-      put :reorder_sections
     end
   end
   resources :master_files, except: [:new, :index] do
