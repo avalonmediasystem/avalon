@@ -229,7 +229,7 @@ describe MediaObjectsController, type: :controller do
     end
   end
 
-  describe "#reorder_sections" do
+  describe "#update" do
     it 'updates the order' do
 
       media_object = FactoryGirl.create(:media_object)
@@ -241,7 +241,7 @@ describe MediaObjectsController, type: :controller do
 
       login_user media_object.collection.managers.first
       
-      put 'reorder_sections', :id => media_object.pid, :masterfile_ids => master_file_pids.reverse
+      put 'update', :id => media_object.pid, :masterfile_ids => master_file_pids.reverse, :step => 'structure'
       media_object.reload
       media_object.section_pid.should eq master_file_pids.reverse
     end

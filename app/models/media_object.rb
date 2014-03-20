@@ -38,7 +38,7 @@ class MediaObject < ActiveFedora::Base
   before_save 'descMetadata.update_change_date!'
   before_save 'descMetadata.reorder_elements!'
   before_save 'descMetadata.remove_empty_nodes!'
-  before_save 'update_permalink_and_dependents', unless: 'skip_permalink_check?'
+  before_save 'update_permalink_and_dependents'
 
   before_save { |obj| obj.current_migration = 'R2' }
 
@@ -313,14 +313,6 @@ class MediaObject < ActiveFedora::Base
   # validate against a known controlled vocabulary. This one will take some thought
   # and research as opposed to being able to just throw something together in an ad hoc
   # manner
-  
-  def skip_permalink_check!
-    @skip_permalink_check = true
-  end
-
-  def skip_permalink_check?
-    !!@skip_permalink_check
-  end
 
   private
     def after_create
