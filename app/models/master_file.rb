@@ -76,6 +76,13 @@ class MasterFile < ActiveFedora::Base
 
   define_hooks :after_processing
   after_processing :post_processing_file_management
+  
+  after_processing do
+    media_object = self.mediaobject
+    media_object.set_media_types!
+    media_object.set_duration!
+    media_object.save(validate: false)
+  end
 
   # First and simplest test - make sure that the uploaded file does not exceed the
   # limits of the system. For now this is hard coded but should probably eventually
@@ -273,12 +280,6 @@ class MasterFile < ActiveFedora::Base
     # so we can update it along with the media object.
     if response_duration && response_duration !=  self.duration
       self.duration = response_duration
-      save
-      
-      # The media object has a duration that is the sum of all master files.
-      media_object = self.mediaobject
-      media_object.populate_duration!
-      media_object.save( validate: false )
     end
 
     save

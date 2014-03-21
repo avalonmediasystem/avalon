@@ -272,7 +272,7 @@ describe MediaObject do
 
   describe '#populate_duration!' do
     it 'sets duration on the model' do
-      media_object.populate_duration!
+      media_object.set_duration!
       media_object.duration.should == '0'
     end
   end

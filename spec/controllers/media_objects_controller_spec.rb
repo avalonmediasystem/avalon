@@ -228,4 +228,22 @@ describe MediaObjectsController, type: :controller do
       MediaObject.find(media_object.pid).published?.should be_false
     end
   end
+
+  describe "#update" do
+    it 'updates the order' do
+
+      media_object = FactoryGirl.create(:media_object)
+      media_object.parts << FactoryGirl.create(:master_file)
+      media_object.parts << FactoryGirl.create(:master_file)
+      master_file_pids = media_object.parts.select(&:id).map(&:id)
+      media_object.section_pid = master_file_pids
+      media_object.save( validate: false )
+
+      login_user media_object.collection.managers.first
+      
+      put 'update', :id => media_object.pid, :masterfile_ids => master_file_pids.reverse, :step => 'structure'
+      media_object.reload
+      media_object.section_pid.should eq master_file_pids.reverse
+    end
+  end
 end
