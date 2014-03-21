@@ -8,6 +8,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
   revision: 4da42ab601c8ced5b3bd7dd983151ebe6acfd285
+  tag: avalon-r3
   specs:
     avalon-about (0.1.0)
       about_page
@@ -16,6 +17,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
   revision: d10ac19d7ea131a30673bf2846897d1cfcc65098
+  tag: avalon-r3
   specs:
     avalon-batch (0.2.2)
       activemodel
@@ -25,12 +27,14 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
   revision: ba96ef3873be6270c0d73174b01b570400979b83
+  tag: avalon-r3
   specs:
     avalon-workflow (0.0.3)
 
 GIT
   remote: https://github.com/avalonmediasystem/felixwrapper.git
   revision: a08be98f445a9c29470742989e1d895431ba5322
+  tag: avalon-r3
   specs:
     felixwrapper (0.0.1)
       activesupport (~> 3.2.3)
@@ -43,6 +47,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector
   revision: d15557fc4c20f836377ede3d1bc02cb6d59a18a4
+  tag: avalon-r3
   specs:
     media_element_thumbnail_selector (0.0.1)
       rails (~> 3.2.3)
@@ -50,30 +55,35 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-hd-toggle.git
   revision: 102ad74ef5baef7b15983a9a49586da461fe1d32
+  tag: avalon-r3
   specs:
     mediaelement-hd-toggle (0.0.1)
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-qualityselector.git
   revision: fb5f36e24bc6309ace5d382bc533e83dc0ba5dd1
+  tag: avalon-r3
   specs:
     mediaelement-qualityselector (0.0.1)
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-skin-avalon.git
   revision: 04bacf10aa13f6f363e40cc03feda417c395ee8a
+  tag: avalon-r3
   specs:
     mediaelement-skin-avalon (0.0.1)
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-title.git
   revision: a2e67d24217f06a0a7d46c0175cc64fc178cf1fc
+  tag: avalon-r3
   specs:
     mediaelement-title (0.0.1)
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
   revision: 23445273243d91c6be1b7bbaa982a3dfdaecc2a2
+  tag: avalon-r3
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
@@ -82,6 +92,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/omniauth-lti.git
   revision: c4d84c238fff3c81486558fd6831d3a8e47e455b
+  tag: avalon-r3
   specs:
     omniauth-lti (0.0.2)
       ims-lti
@@ -90,6 +101,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/red5wrapper.git
   revision: ee6eeed1422493dbd90a93c6634436016759f1f4
+  tag: avalon-r3
   specs:
     red5wrapper (0.0.1)
       activesupport (~> 3.2.3)
@@ -101,6 +113,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
   revision: 46425a41d0730c739d60b2f25c192847dda31d8c
+  tag: avalon-r3
   specs:
     rubyhorn (0.0.5)
       activesupport
