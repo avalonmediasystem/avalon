@@ -70,6 +70,17 @@ describe Derivative do
       log_count.should == 2
     end 
 
+    it "should not throw error when workflow_id is missing" do
+      @derivative.masterfile.workflow_id = nil
+      @derivative.delete
+      Derivative.all.count.should == 0
+    end
+
+    it "should not throw error when workflow doesn't exist in Matterhorn" do
+      @derivative.delete
+      Derivative.all.count.should == 0
+    end
+
     it "should delete even if retraction fails (VOV-1356)" do
       pending "Do not test until VOV-1356 is fixed"
       pid = @derivative.pid
