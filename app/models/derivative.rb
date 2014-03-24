@@ -138,12 +138,20 @@ class Derivative < ActiveFedora::Base
   end
 
   def delete
-    job_urls = []
-    job_urls << Rubyhorn.client.delete_track(masterfile.workflow_id, track_id) 
-    job_urls << Rubyhorn.client.delete_hls_track(masterfile.workflow_id, hls_track_id) if hls_track_id.present? 
+    #catch exceptions and log them but don't stop the deletion of the derivative object!
+    #TODO move this into a before_destroy callback
+    if masterfile.workflow_id.present?
+      job_urls = []
+      begin
+        job_urls << Rubyhorn.client.delete_track(masterfile.workflow_id, track_id) 
+        job_urls << Rubyhorn.client.delete_hls_track(masterfile.workflow_id, hls_track_id) if hls_track_id.present?
+      rescue Exception => e
+        logger.warn "Error deleting derivatives: #{e.message}"
+      end
 
-    # Logs retraction jobs for sysadmin 
-    File.open(Avalon::Configuration.lookup('matterhorn.cleanup_log'), "a+") { |f| f << job_urls.join("\n") + "\n" }
+      # Logs retraction jobs for sysadmin 
+      File.open(Avalon::Configuration.lookup('matterhorn.cleanup_log'), "a+") { |f| f << job_urls.join("\n") + "\n" }
+    end
 
     super
   end
