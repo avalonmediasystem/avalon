@@ -5,7 +5,7 @@ set :repository,  "https://github.com/avalonmediasystem/avalon-felix/archive"
 set(:deployment_host) { "lancelot.dlib.indiana.edu" }  # Host(s) to deploy to
 set(:deploy_to) { ENV['DEPLOY_DIR'] || "/srv/avalon/matterhorn" }  # Directory to deploy into
 set(:user) { 'vov' }                # User to deploy as
-set(:branch) { "release/1.0.0" }       # Git branch to deploy
+set(:branch) { "release/3.0.0" }       # Git branch to deploy
 set :branch, ENV['SCM_BRANCH'] if ENV['SCM_BRANCH']
 
 ssh_options[:keys] = ["/opt/staging/avalon/vov_deployment_key"]

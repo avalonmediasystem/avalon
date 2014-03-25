@@ -5,7 +5,7 @@ set :rails_env, ENV['RAILS_ENV'] || "development"
 set(:deployment_host) { "lancelot.dlib.indiana.edu" }  # Host(s) to deploy to
 set(:deploy_to) { "/var/www/avalon" }  # Directory to deploy into
 set(:user) { 'avalon' }                # User to deploy as
-set :branch, ENV['SCM_BRANCH'] || "release/1.0.0"       # Git branch to deploy
+set :branch, ENV['SCM_BRANCH'] || "release/3.0.0"       # Git branch to deploy
 
 set :hls_dir, "/var/avalon/hls_streams"
 ssh_options[:keys] = ["/opt/staging/avalon/vov_deployment_key"]
