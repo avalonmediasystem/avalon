@@ -72,6 +72,7 @@
   gem 'loofah'
   gem 'omniauth-identity'
   gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'v3.1'
+  gem 'omniauth-netbadge'
 
   gem 'mediainfo'
   gem 'delayed_job_active_record'
