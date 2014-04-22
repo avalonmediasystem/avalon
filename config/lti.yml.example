@@ -1,0 +1,6 @@
+---
+#<lms guid>:
+#  :uid: :user_id
+#  :email: :lis_person_contact_email_primary
+#  :context_id: :context_id
+#  :context_name: :context_label

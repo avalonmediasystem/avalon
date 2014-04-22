@@ -20,23 +20,56 @@ module RightsMetadataExceptions
         use_terminology(Hydra::Datastream::RightsMetadata) 
       end
       extend_terminology do |t|
-        t.exceptions_access(:ref=>[:access], :attributes=>{:type=>"exceptions"})
+        t.discover_groups(:proxy=>[:discover_access, :machine, :group])
+        t.discover_users(:proxy=>[:discover_access, :machine, :person])
+        t.read_groups(:proxy=>[:read_access, :machine, :group])
+        t.read_users(:proxy=>[:read_access, :machine, :person])
+        t.edit_groups(:proxy=>[:edit_access, :machine, :group])
+        t.edit_users(:proxy=>[:edit_access, :machine, :person])
       end
 
-      # @param [Symbol] type (either :group or :person)
-      # @return 
-      # This method limits the response to known access levels.  Probably runs a bit faster than .permissions().
-      def quick_search_by_type(type)
-        result = {}
-        [{:discover_access=>"discover"},{:read_access=>"read"},{:edit_access=>"edit"},{:exceptions_access=>"exceptions"}].each do |access_levels_hash|
-          access_level = access_levels_hash.keys.first
-          access_level_name = access_levels_hash.values.first
-          self.find_by_terms(*[access_level, type]).each do |entry|
-            result[entry.text] = access_level_name
+      ["edit", "read", "discover"].each do |action|
+        ["groups", "users"].each do |type|
+          define_method("#{action}_#{type}=") do |arg|
+            send("set_#{action}_#{type}", arg, send("#{action}_#{type}"))
+          end
+          define_method("#{action}_#{type}_string") do
+            send("#{action}_#{type}").join(', ')
+          end
+          define_method("#{action}_#{type}_string=") do |arg|
+            send("#{action}_#{type}=", arg.split(/[\s,]+/))
+          end
+          define_method("set_#{action}_#{type}") do |arg1, arg2|
+            type_sym = :person if type == "users"
+            type_sym ||= type.singularize.to_sym
+            send("set_entities", action.to_sym, type_sym, arg1, arg2)
           end
         end
-        return result
       end
+
+      private
+
+      def set_entities(permission, type, values, changeable)
+        g = preserved(type, permission)
+        (changeable - values).each do |entity|
+          #Strip permissions from users not provided
+          g[entity] = 'none'
+        end
+        values.each { |name| g[name] = permission.to_s}
+        update_permissions(type.to_s=>g)
+      end
+
+      def preserved(type, permission)
+        case permission
+        when :edit
+          g = {}
+        when :read
+          Hash[quick_search_by_type(type).select {|k, v| v == 'edit'}]
+        when :discover
+          Hash[quick_search_by_type(type).select {|k, v| v == 'discover'}]
+        end
+      end
+
     end
   end
 end

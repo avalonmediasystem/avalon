@@ -21,7 +21,7 @@ describe Admin::Collection do
 
   describe 'abilities' do
 
-    context 'when administator' do
+    context 'when administrator' do
       subject{ ability }
       let(:ability){ Ability.new(user) }
       let(:user){ FactoryGirl.create(:administrator) }
@@ -42,6 +42,8 @@ describe Admin::Collection do
       it{ should be_able_to(:update_editors, collection) }
       it{ should be_able_to(:update_depositors, collection) }
       it{ should be_able_to(:create, Admin::Collection) }
+      it{ should be_able_to(:destroy, collection) }
+      it{ should be_able_to(:update_access_control, collection) }
     end
 
     context 'when editor' do
@@ -59,6 +61,7 @@ describe Admin::Collection do
       it{ should be_able_to(:update_depositors, collection) }
       it{ should_not be_able_to(:create, Admin::Collection) }
       it{ should_not be_able_to(:destroy, collection) }
+      it{ should_not be_able_to(:update_access_control, collection) }
     end
 
     context 'when depositor' do
@@ -75,6 +78,7 @@ describe Admin::Collection do
       it{ should_not be_able_to(:create, collection) }
       it{ should_not be_able_to(:update, collection) }
       it{ should_not be_able_to(:destroy, collection) }
+      it{ should_not be_able_to(:update_access_control, collection) }
     end
 
     context 'when end user' do
@@ -91,6 +95,24 @@ describe Admin::Collection do
       it{ should_not be_able_to(:create, collection) }
       it{ should_not be_able_to(:update, collection) }
       it{ should_not be_able_to(:destroy, collection) }
+      it{ should_not be_able_to(:update_access_control, collection) }
+    end
+
+    context 'when lti user' do
+      subject { ability }
+      let(:ability){ Ability.new(user) }
+      let(:user){ FactoryGirl.create(:user_lti) }
+
+      it{ should_not be_able_to(:read, Admin::Collection) }
+      it{ should_not be_able_to(:read, collection) }
+      it{ should_not be_able_to(:update_unit, collection) }
+      it{ should_not be_able_to(:update_managers, collection) }
+      it{ should_not be_able_to(:update_editors, collection) }
+      it{ should_not be_able_to(:update_depositors, collection) }
+      it{ should_not be_able_to(:create, collection) }
+      it{ should_not be_able_to(:update, collection) }
+      it{ should_not be_able_to(:destroy, collection) }
+      it{ should_not be_able_to(:update_access_control, collection) }
     end
   end
 
@@ -191,6 +213,11 @@ describe Admin::Collection do
         collection.inherited_edit_users.should include(administrator.username)
         collection.managers.should include(administrator.username)
       end
+      it "should not add administrators to editors role" do
+        administrator = FactoryGirl.create(:administrator)
+        collection.add_manager(administrator.username)
+        collection.editors.should_not include(administrator.username)
+      end
       it "should not add users who do not have the manager role" do
         not_manager = FactoryGirl.create(:user)
         expect {collection.add_manager(not_manager.username)}.to raise_error(ArgumentError)
@@ -238,9 +265,10 @@ describe Admin::Collection do
         collection.editors = editor_list
       end
       it "should remove editors from the collection" do
-        collection.editors = [user.username]
-        collection.editors.should == [user.username]
-        collection.editors -= [user.username]
+        name = user.username
+        collection.editors = [name]
+        collection.editors.should == [name]
+        collection.editors -= [name]
         collection.editors.should == []
       end
       it "should call remove_editor" do
@@ -300,9 +328,10 @@ describe Admin::Collection do
         collection.depositors = depositor_list
       end
       it "should remove depositors from the collection" do
-        collection.depositors = [user.username]
-        collection.depositors.should == [user.username]
-        collection.depositors -= [user.username]
+        name = user.username
+        collection.depositors = [name]
+        collection.depositors.should == [name]
+        collection.depositors -= [name]
         collection.depositors.should == []
       end
       it "should call remove_depositor" do
@@ -445,4 +474,42 @@ describe Admin::Collection do
     end
   end
 
+  describe '#create_dropbox_directory!' do
+    let(:collection){ FactoryGirl.build(:collection) }
+
+    it 'removes bad characters from collection name' do
+      collection.name = '../../secret.rb'
+      Dir.should_receive(:mkdir).with( File.join(Avalon::Configuration.lookup('dropbox.path'), '______secret_rb') )
+      Dir.stub(:mkdir) # stubbing this out in a before(:each) block will effect where mkdir is used elsewhere (i.e. factories)
+      collection.send(:create_dropbox_directory!)
+    end
+    it 'sets dropbox_directory_name on collection' do
+      collection.name = 'african art'
+      Dir.stub(:mkdir)
+      collection.send(:create_dropbox_directory!)
+      collection.dropbox_directory_name.should == 'african_art'
+    end
+    it 'uses a different directory name if the directory exists' do
+      collection.name = 'african art'
+      FakeFS.activate!
+      FileUtils.mkdir_p(File.join(Avalon::Configuration.lookup('dropbox.path'), 'african_art'))
+      FileUtils.mkdir_p(File.join(Avalon::Configuration.lookup('dropbox.path'), 'african_art_2'))
+      Dir.should_receive(:mkdir).with(File.join(Avalon::Configuration.lookup('dropbox.path'), 'african_art_3'))
+      collection.send(:create_dropbox_directory!)
+      FakeFS.deactivate!
+    end
+  end
+
+  describe 'Unicode' do
+    let(:collection_name) { "Collections & Favorites / \u6211\u7684\u6536\u85cf / \u03a4\u03b1 \u03b1\u03b3\u03b1\u03c0\u03b7\u03bc\u03ad\u03bd\u03b1 \u03bc\u03bf\u03c5" }
+    let(:collection_dir)  { "Collections___Favorites___\u6211\u7684\u6536\u85cf___\u03a4\u03b1_\u03b1\u03b3\u03b1\u03c0\u03b7\u03bc\u03ad\u03bd\u03b1_\u03bc\u03bf\u03c5" }
+    let(:collection)      { FactoryGirl.build(:collection) }
+
+    it 'handles Unicode collection names correctly' do
+      collection.name = collection_name
+      Dir.should_receive(:mkdir).with( File.join(Avalon::Configuration.lookup('dropbox.path'), collection_dir) )
+      Dir.stub(:mkdir)
+      collection.send(:create_dropbox_directory!)
+    end
+  end
 end

@@ -12,10 +12,10 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class MasterFileMigration < Hydra::Migrate::Migration
-  migrate nil => 'R2' do |obj,ver,dispatcher|
-    dispatcher.migrate!(obj.derivatives)
-    obj.duration = obj.derivatives.empty? ? '0' : obj.derivatives.first.duration.to_s
-    obj.descMetadata.poster_offset = obj.descMetadata.thumbnail_offset = [obj.duration.to_i,2000].min.to_s
+module Avalon
+  module Sanitizer
+    def self.sanitize(name, translations=['\\/ &:.','______'])
+      name.tr *translations
+    end
   end
 end

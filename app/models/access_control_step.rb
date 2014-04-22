@@ -12,51 +12,52 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-	class AccessControlStep < Avalon::Workflow::BasicStep
-		def initialize(step = 'access-control', 
-                   title = "Access Control", 
-                   summary = "Who can access the item", 
-                   template = 'access_control')
-		  super
-		end
+class AccessControlStep < Avalon::Workflow::BasicStep
+  def initialize(step = 'access-control', 
+                 title = "Access Control", 
+                 summary = "Who can access the item", 
+                 template = 'access_control')
+    super
+  end
 
-		def execute context
-		  mediaobject = context[:mediaobject]
-      # TO DO: Implement me
+  def execute context
+    mediaobject = context[:mediaobject]
 
-      user = User.where({ Devise.authentication_keys.first => context[:user]}).first
-      unless user.ability.can? :update_access_control, mediaobject
-        return context
+    user = User.where({ Devise.authentication_keys.first => context[:user]}).first
+    ability = context[:ability]
+    ability ||= Ability.new(user)
+    unless ability.can? :update_access_control, mediaobject
+      return context
+    end
+
+    # Limited access stuff
+    ["group", "class", "user"].each do |title|
+      if context["submit_add_#{title}"].present?
+        if context["add_#{title}"].present?
+          if ["group", "class"].include? title
+            mediaobject.read_groups += [context["add_#{title}"]]
+          else
+            mediaobject.read_users += [context["add_#{title}"]]
+          end
+        else
+          context[:error] = "#{title.titleize} can't be blank."
+        end
       end
-
-      # Limited access stuff
-      if context[:delete_group].present?
-        groups = mediaobject.read_groups
-        groups.delete context[:delete_group]
-        mediaobject.read_groups = groups
-      end 
-      if context[:delete_user].present?
-        users = mediaobject.read_users
-        users.delete context[:delete_user]
-        mediaobject.read_users = users
-      end 
-
-      if context[:commit] == "Add Group"
-        groups = mediaobject.group_exceptions
-        groups << context[:new_group] unless context[:new_group].blank?
-        mediaobject.group_exceptions = groups
-      elsif context[:commit] == "Add User"
-        users = mediaobject.user_exceptions
-        users << context[:new_user] unless context[:new_user].blank?
-        mediaobject.user_exceptions = users
-        puts "EXCEPTIONS #{MediaObject.find(mediaobject.pid).group_exceptions.inspect}"
+      
+      if context["remove_#{title}"].present?
+        if ["group", "class"].include? title
+          mediaobject.read_groups -= [context["remove_#{title}"]]
+        else
+          mediaobject.read_users -= [context["remove_#{title}"]]
+        end
       end
+    end
 
-      mediaobject.access = context[:access] unless context[:access].blank? 
+    mediaobject.visibility = context[:visibility] unless context[:visibility].blank? 
 
-      mediaobject.hidden = context[:hidden] == "1"
+    mediaobject.hidden = context[:hidden] == "1"
 
-      mediaobject.save
-		  context
-		end
-	end
+    mediaobject.save
+    context
+  end
+end

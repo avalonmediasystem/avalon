@@ -37,7 +37,7 @@ describe MasterFilesController do
      
       expect { post :create, Filedata: [@file], original: 'any', container_id: media_object.pid}.not_to change { MasterFile.count }
      
-      flash[:errors].should_not be_nil
+      flash[:error].should_not be_nil
      end
     end
      
@@ -74,7 +74,7 @@ describe MasterFilesController do
 
        expect { post :create, Filedata: [@file], original: 'any', container_id: media_object.pid }.not_to change { MasterFile.count }
      
-       flash[:errors].should_not be_nil
+       flash[:error].should_not be_nil
      end
     
      it "should recognize audio/video based on extension when MIMETYPE is of unknown format" do
@@ -106,6 +106,16 @@ describe MasterFilesController do
         master_file.mediaobject.pid.should eq(media_object.pid)
          
         flash[:errors].should be_nil        
+      end
+      it "should associate a dropbox file" do
+        Avalon::Dropbox.any_instance.stub(:find).and_return "spec/fixtures/videoshort.mp4"
+        post :create, dropbox: [{id: 1}], original: 'any', container_id: media_object.pid
+
+        master_file = MasterFile.all.last
+        media_object.reload.parts.should include master_file
+        master_file.mediaobject.pid.should eq(media_object.pid)
+
+        flash[:errors].should be_nil
       end
     end
 
@@ -169,6 +179,14 @@ describe MasterFilesController do
         expect { post :destroy, id: master_file.pid }.to change { MasterFile.count }.by(-1)
         master_file.mediaobject.reload.parts.should_not include master_file         
       end
+    end
+  end
+
+  describe "#show" do
+    let!(:master_file) {FactoryGirl.create(:master_file)}
+    it "should redirect you to the media object page with the correct section" do
+      get :show, id: master_file.pid 
+      response.should redirect_to(pid_section_media_object_path(master_file.mediaobject.pid, master_file.pid)) 
     end
   end
   

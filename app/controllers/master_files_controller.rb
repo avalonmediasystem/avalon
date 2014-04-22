@@ -24,6 +24,24 @@ class MasterFilesController < ApplicationController
   before_filter :authenticate_user!, :only => [:create]
   before_filter :ensure_readable_filedata, :only => [:create]
 
+  def show
+    masterfile = MasterFile.find(params[:id])
+    redirect_to pid_section_media_object_path(masterfile.mediaobject.pid, masterfile.pid)
+  end
+
+  def embed
+    @masterfile = MasterFile.find(params[:id])
+    if can? :read, @masterfile.mediaobject
+      @token = @masterfile.nil? ? "" : StreamToken.find_or_create_session_token(session, @masterfile.mediapackage_id)
+      @stream_info = @masterfile.stream_details(@token, default_url_options[:host])
+    end
+    respond_to do |format|
+      format.html do
+        render :layout => 'embed' 
+      end
+    end
+  end
+
   # Creates and Saves a File Asset to contain the the Uploaded file 
   # If container_id is provided:
   # * the File Asset will use RELS-EXT to assert that it's a part of the specified container
@@ -46,22 +64,25 @@ class MasterFilesController < ApplicationController
         if (file.size > MasterFile::MAXIMUM_UPLOAD_SIZE)
           # Use the errors key to signal that it should be a red notice box rather
           # than the default
-          flash[:errors] = "The file you have uploaded is too large"
+          flash[:error] = "The file you have uploaded is too large"
           redirect_to :back
           return
         end
 
-        master_file = MasterFile.create
+        master_file = MasterFile.new
+        master_file.save( validate: false )
         master_file.mediaobject = media_object
         master_file.setContent(file)
+        master_file.set_workflow(params[:workflow])
+
         MasterFilesController.set_default_item_permissions(master_file, user_key)
  
         if 'Unknown' == master_file.file_format
-          flash[:errors] = [] if flash[:errors].nil?
+          flash[:error] = [] if flash[:error].nil?
           error = format_errors
           error << file.original_filename
           error << " (" << file.content_type << ")"
-          flash[:errors].push error
+          flash[:error].push error
           master_file.destroy
           next
         else
@@ -69,7 +90,7 @@ class MasterFilesController < ApplicationController
         end
 	
         unless master_file.save
-          flash[:errors] = "There was a problem storing the file"
+          flash[:error] = "There was a problem storing the file"
         else
           media_object.save(validate: false)
           master_file.process
@@ -80,14 +101,16 @@ class MasterFilesController < ApplicationController
     elsif params.has_key?(:dropbox)
       @master_files = []
       params[:dropbox].each do |file|
-        file_path = Avalon::DropboxService.find(file[:id])
-        master_file = MasterFile.create
+        file_path = media_object.collection.dropbox.find(file[:id])
+        master_file = MasterFile.new
+        master_file.save( validate: false )
         master_file.mediaobject = media_object
         master_file.setContent(File.open(file_path, 'rb'))
+        master_file.set_workflow(params[:workflow])
         MasterFilesController.set_default_item_permissions(master_file, user_key)
         
         unless master_file.save
-          flash[:errors] = "There was a problem storing the file"
+          flash[:error] = "There was a problem storing the file"
         else
           media_object.save(validate: false)
           master_file.process
@@ -138,16 +161,20 @@ class MasterFilesController < ApplicationController
   # When destroying a file asset be sure to stop it first
   def destroy
     master_file = MasterFile.find(params[:id])
-    parent = master_file.mediaobject
+    media_object = master_file.mediaobject
     
-    authorize! :edit, parent, message: "You do not have sufficient privileges to delete files"
+    authorize! :edit, media_object, message: "You do not have sufficient privileges to delete files"
 
     filename = File.basename(master_file.file_location)
     master_file.destroy
+
+    media_object.set_media_types!
+    media_object.set_duration!
+    media_object.save( validate: false )
     
     flash[:upload] = "#{filename} has been deleted from the system"
 
-    redirect_to edit_media_object_path(parent.pid, step: "file-upload")
+    redirect_to edit_media_object_path(media_object.pid, step: "file-upload")
   end
  
   def set_frame

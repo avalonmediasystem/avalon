@@ -2,11 +2,20 @@
 # See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
+  auth:
+    sign_in: "Sign in"
+    sign_out: "Sign out"
+    embedded_video: <p>This video content is restricted</p><p>You must be logged in and authorized to view it</p>
+    embedded_audio: This audio content is restricted
   release_label: "Release"
   errors:
     messages:
       blank: "field is required."
       taken: "is taken."
+  media_object:
+    empty_share_link: ""
+    empty_share_link_notice: "After processing has started the embedded link will be available."
+    empty_share_section_permalink_notice: "After processing has started the section link will be available."
   metadata_tip:
     abstract: |
       Summary provides a space for describing the contents of the item. Examples 
@@ -77,7 +86,6 @@ en:
       target="_blank">Library of Congress Subject Headings</a>. For temporal
       subjects, use the Time period(s) field and for geographic subjects, use
       the Location(s) field in this form. See below.
-  role_help:
     manager: |
       Managers have overall accountability for the collection. Managers can 
       create collections and assign editor and depositor roles for those 
@@ -95,3 +103,13 @@ en:
       Depositors add media to the collection and describe it with metadata. 
       They can publish items but not unpublish. They can only modify or 
       delete unpublished items.
+    user: |
+      Enter a username to assign them access to an item or collection.
+    group: |
+      Select a group from the dropdown list below to assign it access to an item or collection.
+    class: |
+      To assign access to an item or collection to a class you will need to enter the course context_label.
+  file_upload_tip:
+    skip_transcoding: |
+      For best results, use AAC-encoded mp4 files for audio and H.264 mp4 files for video. Some file types, such as mp3, will not work with the Adobe Media Server.
+

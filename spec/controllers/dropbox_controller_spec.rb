@@ -23,13 +23,30 @@ describe DropboxController do
     # a database backed model SOON so testing of permissions/abilities is more granular
 
     login_as :administrator 
+    @collection = FactoryGirl.create(:collection)
     @temp_files = (0..20).map{|index| { name: "a_movie_#{index}.mov" } }
-    Avalon::DropboxService.stub(:all).and_return @temp_files
+    @dropbox = double(Avalon::Dropbox)
+    @dropbox.stub(:all).and_return @temp_files
+    Avalon::Dropbox.stub(:new).and_return(@dropbox)
   end
 
   it 'deletes video/audio files' do
-    Avalon::DropboxService.should_receive(:delete).exactly(@temp_files.count).times
-    delete :bulk_delete, { :filenames => @temp_files.map{|f| f[:name] } }
+    @dropbox.should_receive(:delete).exactly(@temp_files.count).times
+    delete :bulk_delete, { :collection_id => @collection.pid, :filenames => @temp_files.map{|f| f[:name] } }
   end
 
+  it "should allow the collection manager to delete" do
+    login_user @collection.managers.first
+    @dropbox.should_receive(:delete).exactly(@temp_files.count).times
+    delete :bulk_delete, {:collection_id => @collection.pid, :filenames => @temp_files.map{|f| f[:name]}}
+    expect(response.status).to be(200)
+  end
+
+  [:policy_editor, :student].each do |group|
+    it "should not allow #{group} to delete" do
+      login_as group
+      delete :bulk_delete, {:collection_id => @collection.pid, :filenames => @temp_files.map{|f| f[:name]}}
+      expect(response.status).to redirect_to(root_path)
+    end
+  end
 end

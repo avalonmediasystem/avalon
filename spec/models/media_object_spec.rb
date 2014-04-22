@@ -60,6 +60,14 @@ describe MediaObject do
         subject.should be_able_to(:destroy, media_object)
         subject.should be_able_to(:unpublish, media_object)
       end
+
+      context 'and logged in through LTI' do
+        let(:ability){ Ability.new(User.where(username: collection.managers.first).first, {full_login: false, virtual_groups: [Faker::Lorem.word]}) }
+
+        it{ should_not be_able_to(:share, MediaObject) }
+        it{ should_not be_able_to(:update, media_object) }
+        it{ should_not be_able_to(:destroy, media_object) }
+      end
     end
 
     context 'when editor' do
@@ -70,6 +78,7 @@ describe MediaObject do
       it{ should be_able_to(:read, media_object) }
       it{ should be_able_to(:update, media_object) }
       it{ should be_able_to(:destroy, media_object) }
+      it{ should be_able_to(:update_access_control, media_object) }
       it "should not be able to destroy and unpublish published item" do
         media_object.publish! "someone"
         subject.should_not be_able_to(:destroy, media_object)
@@ -80,7 +89,7 @@ describe MediaObject do
     end
 
     context 'when depositor' do
-      subject{ ability}
+      subject{ ability }
       let(:ability){ Ability.new(User.where(username: collection.depositors.first).first) }
 
       it{ should be_able_to(:create, MediaObject) }
@@ -96,10 +105,11 @@ describe MediaObject do
     end
 
     context 'when end-user' do
-      subject{ ability}
+      subject{ ability }
       let(:ability){ Ability.new(user) }
       let(:user){FactoryGirl.create(:user)}
 
+      it{ should be_able_to(:share, MediaObject) }
       it "should not be able to read unauthorized, published MediaObject" do
         media_object.avalon_publisher = "random"
         media_object.save
@@ -117,6 +127,14 @@ describe MediaObject do
         media_object.publish! "random"
         subject.can(:read, media_object).should be_true
       end
+    end
+
+    context 'when lti user' do
+      subject{ ability }
+      let(:user){ FactoryGirl.create(:user_lti) }
+      let(:ability){ Ability.new(user, {full_login: false, virtual_groups: [Faker::Lorem.word]}) }
+
+      it{ should_not be_able_to(:share, MediaObject) }
     end
   end
 
@@ -195,46 +213,6 @@ describe MediaObject do
     it "should only accept ISO formatted dates"
   end
   
-  describe "access" do
-    it "should set access level to public" do
-      media_object.access = "public"
-      media_object.read_groups.should =~ ["public", "registered"]
-    end
-    it "should set access level to restricted" do
-      media_object.access = "restricted"
-      media_object.read_groups.should =~ ["registered"]
-    end
-    it "should set access level to private" do
-      media_object.access = "private"
-      media_object.read_groups.should =~ []
-    end
-    it "should return public" do
-      media_object.read_groups = ["public", "registered"]
-      media_object.access.should eq "public"
-    end
-    it "should return restricted" do
-      media_object.read_groups = ["registered"]
-      media_object.access.should eq "restricted"
-    end
-    it "should return private" do
-      media_object.read_groups = []
-      media_object.access.should eq "private"
-    end
-  end
-
-  describe "discovery" do
-    it "should default to discoverable" do
-      media_object.hidden?.should be_false
-      media_object.to_solr["hidden_bsi"].should be_false
-    end
-
-    it "should set hidden?" do
-      media_object.hidden = true
-      media_object.hidden?.should be_true
-      media_object.to_solr["hidden_bsi"].should be_true
-    end
-  end
-
   describe "Ingest status" do
     it "should default to unpublished" do
       media_object.workflow.published.first.should eq "false"
@@ -255,18 +233,6 @@ describe MediaObject do
 
     it "should default to the first workflow step" do
       media_object.workflow.last_completed_step.should == ['']
-    end
-  end
-
-  describe 'change additional read permisions' do 
-    it "should be able to have limited access" 
-
-    it "should not add duplicated group" do
-      media_object.access = "public"
-      test_groups = ["group1", "group1", media_object.read_groups.first]
-      media_object.group_exceptions = test_groups
-      
-      media_object.read_groups.should eql media_object.read_groups.uniq
     end
   end
 
@@ -306,7 +272,7 @@ describe MediaObject do
 
   describe '#populate_duration!' do
     it 'sets duration on the model' do
-      media_object.populate_duration!
+      media_object.set_duration!
       media_object.duration.should == '0'
     end
   end
@@ -327,6 +293,92 @@ describe MediaObject do
   describe 'indexing' do
     it 'uses stringified keys for everything except :id' do
       media_object.to_solr.keys.reject { |k| k.is_a?(String) }.should == [:id]
+    end
+  end
+
+  describe 'permalink' do
+
+    let(:media_object){ FactoryGirl.build(:media_object) }
+
+    before(:each) {
+      Permalink.on_generate{ |obj,target| 'http://www.example.com/perma-url' }
+    }
+
+    context 'unpublished' do
+      it 'is empty when unpublished' do
+        media_object.permalink.should be_blank
+      end
+    end
+
+    context 'published' do
+      
+      before(:each){ media_object.publish!('C.S. Lewis') } # saves the object
+
+      it 'responds to permalink' do
+        media_object.respond_to?(:permalink).should be_true
+      end
+
+      it 'sets the permalink on the object' do
+        media_object.permalink.should_not be_nil
+      end
+
+      it 'sets the correct permalink' do
+        media_object.permalink.should == 'http://www.example.com/perma-url'
+      end
+
+      it 'does not remove the permalink if the permalink service returns nil' do
+        Permalink.on_generate{ nil }
+        media_object.save( validate: false )
+        media_object.permalink.should == 'http://www.example.com/perma-url'
+      end
+
+    end
+
+    context 'correct target' do
+
+      it 'should link to the correct target' do
+        media_object.save(validate: false)
+        t = nil
+        Permalink.on_generate { |obj, target|
+          t = target
+          'http://www.example.com/perma-url'
+        }
+        media_object.ensure_permalink!
+        t.should == "http://test.host/media_objects/#{media_object.pid}"
+        media_object.permalink.should == 'http://www.example.com/perma-url'
+      end
+
+    end
+
+    context 'error handling' do
+
+      it 'logs an error when the permalink service returns an exception' do
+        Permalink.on_generate{ 1 / 0 }
+        Rails.logger.should_receive(:error)
+        media_object.ensure_permalink!
+      end
+
+    end
+
+    describe "#ensure_permalink!" do
+      it 'is not called when the object is not persisted' do
+        media_object.should_not_receive(:ensure_permalink!)
+        media_object.save
+      end
+    end
+
+
+    describe '#ensure_permalink!' do
+      it 'returns true when updated' do
+        media_object.should_receive(:ensure_permalink!).at_least(1).times.and_return{ true }
+        media_object.publish!('C.S. Lewis')
+      end 
+
+      it 'returns false when not updated' do
+        media_object.publish!('C.S. Lewis')
+        media_object.should_receive(:ensure_permalink!).and_return{ false }
+        media_object.save( validate: false )
+      end
     end
   end
 end

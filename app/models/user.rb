@@ -27,8 +27,6 @@ class User < ActiveRecord::Base
   validates :username, presence: true, uniqueness: true
   validates :email, presence: true, uniqueness: true
   
-  delegate :can?, :cannot?, :to => :ability
-
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for
   # the account. 
@@ -43,8 +41,22 @@ class User < ActiveRecord::Base
     end
   end
 
-  def ability
-    @ability ||= Ability.new(self)
+  def self.find_for_lti(auth_hash, signed_in_resource=nil)
+    class_id = auth_hash.extra.context_id
+    if Course.find_by_context_id(class_id).nil?
+      class_name = auth_hash.extra.context_name
+      Course.create :context_id => class_id, :label => auth_hash.extra.consumer.context_label, :title => class_name unless class_name.nil?
+    end
+    result = 
+      User.find_by_username(auth_hash.uid) ||
+      User.find_by_email(auth_hash.info.email) ||
+      User.create(:username => auth_hash.uid, :email => auth_hash.info.email)
+  end
+
+  def self.autocomplete(query)
+    self.where("username LIKE :q OR email LIKE :q", q: "%#{query}%").collect { |user|
+      { id: user.email, display: user.email }
+    }
   end
 
   def in?(*list)
@@ -54,4 +66,5 @@ class User < ActiveRecord::Base
   def groups
     RoleMapper.roles(user_key)
   end
+
 end

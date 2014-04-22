@@ -173,6 +173,18 @@ tr.active-false td {
 .navbar .brand {
   height: $navbarHeight;
   padding: 0 $gridGutterWidth;
+  /**
+   *  Copied in from blacklight due to this commit https://github.com/projectblacklight/blacklight/commit/43b49ede7072b95cd2f9d1e09cd8e5312670c7b1
+   */
+  width: 87px;
+  background:transparent asset_url($logo_image,image) no-repeat top left;
+  display: inline-block;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  padding-right:0;
+  margin-right:20px;
+  padding-left: 0;
 }
 
 /**
@@ -226,10 +238,14 @@ div#dropbox_modal {
   }
 }
 
-.fileupload .uneditable-input {
-  white-space: normal;
+// Custom file preview field for Jasny bootstrap
+.uneditable-input-exists {
+  @extend .uneditable-input;
+  width: 45%;
+  i {
+    padding-left:.5em;
+  }
 }
-
 
 /* 
  * Modal tooltips for the form should be visually distinct from the label or form
@@ -286,9 +302,21 @@ label {
   filter: alpha(opacity=50);
   opacity: 0.5;
 }
-      
-#groups-ex, #users-ex { 
-  position: relative 
+
+.row-no-margin {
+  @extend .row;
+  margin-left: 0px;
+}
+
+.access-block {
+  padding-bottom: 4px;
+  input[type=text] {
+    @extend .span9;
+  }
+  input[type=submit] {
+    @extend .span3;
+    @extend .btn;
+  }
 }
 
 /**
@@ -538,18 +566,9 @@ button.close {
  * where the navbar collapses
  */
 @media (max-width: $navbarCollapseWidth) {
-  .custom-header {
+  .custom-header .container-fluid {
     display: none;
   }
-
-  /**
-   * Override the default since the Avalon logo is larger. If you do not
-   * need the space it can be dialed back or removed completely without
-   * any negative effects
-   */
-  .navbar .brand {
-    width: 50px;
-  } 
 }
 
 .control-group .controls {

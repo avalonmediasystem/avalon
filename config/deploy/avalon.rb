@@ -5,7 +5,7 @@ set :rails_env, ENV['RAILS_ENV'] || "development"
 set(:deployment_host) { "lancelot.dlib.indiana.edu" }  # Host(s) to deploy to
 set(:deploy_to) { "/var/www/avalon" }  # Directory to deploy into
 set(:user) { 'avalon' }                # User to deploy as
-set :branch, ENV['SCM_BRANCH'] || "release/1.0.0"       # Git branch to deploy
+set :branch, ENV['SCM_BRANCH'] || "release/3.0.0"       # Git branch to deploy
 
 set :hls_dir, "/var/avalon/hls_streams"
 ssh_options[:keys] = ["/opt/staging/avalon/vov_deployment_key"]
@@ -31,9 +31,10 @@ set(:shared_children) {
     config/avalon.yml 
     config/controlled_vocabulary.yml
     config/database.yml 
-    config/environments
+    config/environments/development.rb
     config/fedora.yml 
     config/matterhorn.yml 
+    config/minter_state.yml
     config/role_map_#{fetch(:rails_env)}.yml 
     config/solr.yml
     Gemfile.local 
@@ -62,6 +63,7 @@ namespace :deploy do
     link_shared_file "Gemfile.local", "Gemfile.local"
     link_shared_file "user_auth_cas.rb", "config/initializers/user_auth_cas.rb"
     link_shared_file "iu-ldap.rb", "config/initializers/iu-ldap.rb"
+    link_shared_file "permalink.rb", "config/initializers/permalink.rb"
   end
 
   task :trust_rvmrc do
@@ -82,7 +84,7 @@ namespace :deploy do
   end
 
   task :reindex_everything do
-    run "cd #{current_release} && RAILS_ENV=#{rails_env} bundle exec rails runner 'ActiveFedora::Base.reindex_everything'"
+    run "cd #{current_release} && RAILS_ENV=#{rails_env} bundle exec rake avalon:reindex"
   end
 end
 

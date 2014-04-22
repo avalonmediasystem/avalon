@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class ApplicationController < ActionController::Base
+  before_filter :store_location
+
   # Adds a few additional behaviors into the application controller 
   include Blacklight::Controller  
   # Adds Hydra behaviors into the application controller 
@@ -24,27 +26,42 @@ class ApplicationController < ActionController::Base
   # Please be sure to implement current_user and user_session. Blacklight depends on 
   # these methods in order to perform user specific actions. 
   protect_from_forgery
-  
-#  before_filter :trap_session_information if 
-#    (Rails.env.development? or Rails.env.test?)
+
   after_filter :set_access_control_headers
-  
+
   def set_access_control_headers
     headers['Access-Control-Allow-Origin'] = '*'
     headers['Access-Control-Request-Method'] = '*'
   end
   
-  def trap_session_information
-    logger.debug "<< CURRENT SESSION INFORMATION >>"
-    logger.debug session.inspect
-  end
-
   def get_user_collections
     if can? :manage, Admin::Collection
       Admin::Collection.all
     else
       Admin::Collection.where("#{ActiveFedora::SolrService.solr_name("inheritable_edit_access_person", Hydra::Datastream::RightsMetadata.indexer)}" => user_key).all
     end
+  end
+
+  def current_ability
+    @current_ability ||= Ability.new(current_user, user_session)
+  end
+
+  def store_location
+    if request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?
+      session[:previous_url] = root_path + "self_closing.html"
+    end
+  end
+
+  def after_sign_in_path_for(resource)
+    session[:previous_url] || root_path
+  end
+
+  Warden::Manager.after_authentication do |user,auth,opts|
+    auth.cookies[:signed_in] = 1
+  end
+
+  Warden::Manager.before_logout do |user,auth,opts|
+    auth.cookies.delete :signed_in
   end
 
   rescue_from CanCan::AccessDenied do |exception|

@@ -36,17 +36,13 @@ class Admin::CollectionsController < ApplicationController
   def show
     @collection = Admin::Collection.find(params[:id])
     redirect_to admin_collections_path unless can? :read, @collection
-    @group_exceptions = []
-    if @collection.default_access == "limited"
-      # When access is limited, group_exceptions content is stored in read_groups
-      @collection.default_read_groups.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
-      @user_exceptions = @collection.default_read_users 
-     else
-      @collection.default_group_exceptions.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
-      @user_exceptions = @collection.default_user_exceptions 
-    end
+    @groups = @collection.default_local_read_groups
+    @users = @collection.default_read_users
+    @virtual_groups = @collection.default_virtual_read_groups
+    @visibility = @collection.default_visibility
 
-    @addable_groups = Admin::Group.non_system_groups.reject { |g| @group_exceptions.include? g.name }
+    @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }
+    @addable_courses = Course.all.reject { |c| @virtual_groups.include? c.context_id }
   end
 
   # GET /collections/new
@@ -65,11 +61,20 @@ class Admin::CollectionsController < ApplicationController
       format.js   { render json: modal_form_response(@collection) }
     end
   end
-
+ 
   # POST /collections
   def create
     @collection = Admin::Collection.create(params[:admin_collection].merge(managers: [user_key]))
-    if @collection.save
+    if @collection.persisted?
+      User.where(username: [RoleControls.users('administrator')].flatten).each do |admin_user|
+        NotificationsMailer.delay.new_collection( 
+          creator_id: current_user.id, 
+          collection_id: @collection.id, 
+          user_id: admin_user.id, 
+          subject: "New collection: #{@collection.name}"
+        )
+      end
+
       render json: modal_form_response(@collection, redirect_location: admin_collection_path(@collection))
     else
       render json: modal_form_response(@collection)
@@ -79,13 +84,29 @@ class Admin::CollectionsController < ApplicationController
   # PUT /collections/1
   def update
     @collection = Admin::Collection.find(params[:id])
+    if params[:admin_collection].present? && params[:admin_collection][:name].present?
+      if params[:admin_collection][:name] != @collection.name && can?('update_name', @collection)
+        @old_name = @collection.name
+        @collection.name = params[:admin_collection][:name]
+        if @collection.save
+          User.where(username: [RoleControls.users('administrator')].flatten).each do |admin_user|
+            NotificationsMailer.delay.update_collection( 
+              updater_id: current_user.id, 
+              collection_id: @collection.id, 
+              user_id: admin_user.id,
+              old_name: @old_name,
+              subject: "Notification: collection #{@old_name} changed to #{@collection.name}"
+            ).deliver!
+          end
+        end
+      end
+    end
 
     ["manager", "editor", "depositor"].each do |title|
-      attribute_accessor_name = "add_#{title}"
-      if params[attribute_accessor_name].present? && can?("update_#{title.pluralize}".to_sym, @collection)
-        if params["new_#{title}"].present?
+      if params["submit_add_#{title}"].present? 
+        if params["add_#{title}"].present? && can?("update_#{title.pluralize}".to_sym, @collection)
           begin
-            @collection.send attribute_accessor_name.to_sym, params["new_#{title}"]
+            @collection.send "add_#{title}".to_sym, params["add_#{title}"]
           rescue ArgumentError => e
             flash[:notice] = e.message
           end
@@ -93,51 +114,43 @@ class Admin::CollectionsController < ApplicationController
           flash[:notice] = "#{title.titleize} can't be blank."
         end
       end
-    end
-
-    # If one of the "x" (remove manager, editor, depositor) buttons has been clicked
-    ["manager", "editor", "depositor"].each do |title|
-      attribute_accessor_name = "remove_#{title}"
-      if params[attribute_accessor_name].present? && can?("update_#{title.pluralize}".to_sym, @collection)
-        @collection.send attribute_accessor_name.to_sym, params[attribute_accessor_name]
+      
+      remove_access = "remove_#{title}"
+      if params[remove_access].present? && can?("update_#{title.pluralize}".to_sym, @collection)
+          @collection.send remove_access.to_sym, params[remove_access]
       end
     end
 
     # If Save Access Setting button or Add/Remove User/Group button has been clicked
     if can?(:update_access_control, @collection)
-      # Limited access stuff
-      if params[:delete_group].present?
-        groups = @collection.default_read_groups
-        groups.delete params[:delete_group]
-        @collection.default_read_groups = groups
-      end 
-      if params[:delete_user].present?
-        users = @collection.default_read_users
-        users.delete params[:delete_user]
-        @collection.default_read_users = users
-      end 
+      ["group", "class", "user"].each do |title|
+        if params["submit_add_#{title}"].present?
+          if params["add_#{title}"].present?
+            if ["group", "class"].include? title
+              @collection.default_read_groups += [params["add_#{title}"]]
+            else
+              @collection.default_read_users += [params["add_#{title}"]]
+            end
+          else
+            flash[:notice] = "#{title.titleize} can't be blank."
+          end
+        end
+        
+        if params["remove_#{title}"].present?
+          if ["group", "class"].include? title
+            @collection.default_read_groups -= [params["remove_#{title}"]]
+          else
+            @collection.default_read_users -= [params["remove_#{title}"]]
+          end
+        end
+    end
 
-      if params[:commit] == "Add Group"
-        groups = @collection.default_group_exceptions
-        groups << params[:new_group] unless params[:new_group].blank?
-        @collection.default_group_exceptions = groups
-      elsif params[:commit] == "Add User"
-        users = @collection.default_user_exceptions
-        users << params[:new_user] unless params[:new_user].blank?
-        @collection.default_user_exceptions = users
-      end
-
-      @collection.default_access = params[:access] unless params[:access].blank? 
+      @collection.default_visibility = params[:visibility] unless params[:visibility].blank? 
 
       @collection.default_hidden = params[:hidden] == "1"
     end
-
+    
     @collection.save
-
-    if @collection.managers.count == 0
-      flash[:notice] = "Collection requires at least 1 manager" 
-    end
-
     respond_to do |format|
       format.html { redirect_to @collection }
       format.js do 
@@ -145,7 +158,6 @@ class Admin::CollectionsController < ApplicationController
         render json: modal_form_response(@collection)
       end
     end
-
   end
 
   # GET /collections/1/reassign

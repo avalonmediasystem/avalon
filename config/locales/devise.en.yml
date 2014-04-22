@@ -47,6 +47,8 @@ en:
     omniauth_callbacks:
       success: 'Successfully logged into the system'
       failure: 'Unable to authorize because "%{reason}"'
+      lti:
+        failure: 'Contact a system administrator for more help or check the key/secret pair in your external tool settings.'
     mailer:
       confirmation_instructions:
         subject: 'Confirmation instructions'

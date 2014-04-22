@@ -8,15 +8,17 @@ Avalon::Application.routes.draw do
 
   root :to => "catalog#index"
 
-  devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }
+  devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }, format: false
   devise_scope :user do 
     match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session
     match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session
   end
   match "/authorize", to: 'derivatives#authorize'
+  match "/autocomplete", to: 'object#autocomplete'
 
   # My routes go here
   # Routes for subjects and pbcore controller
+  match "object/:id", to: 'object#show'
   resources :media_objects, except: [:create] do
     member do
       put :update_status
@@ -25,9 +27,12 @@ Avalon::Application.routes.draw do
       get :remove
       get :progress, :action => :show_progress
       get 'content/:datastream', :action => :deliver_content, :as => :inspect
+      get 'track/:part', :action => :show, :as => :indexed_section
+      get 'section/:content', :action => :show, :as => :pid_section
+      get 'tree', :action => :tree, :as => :tree
     end
   end
-  resources :master_files, except: [:show, :new, :index] do
+  resources :master_files, except: [:new, :index] do
     member do
       get  'thumbnail', :to => 'master_files#get_frame', :defaults => { :type => 'thumbnail' }
       get  'poster',    :to => 'master_files#get_frame', :defaults => { :type => 'poster' }
@@ -35,13 +40,15 @@ Avalon::Application.routes.draw do
       post 'thumbnail', :to => 'master_files#set_frame', :defaults => { :type => 'thumbnail', :format => 'html' }
       post 'poster',    :to => 'master_files#set_frame', :defaults => { :type => 'poster', :format => 'html' }
       post 'still',     :to => 'master_files#set_frame', :defaults => { :format => 'html' }
+      get :embed
     end
   end
+
+  match '/media_objects/:media_object_id/section/:id/embed' => 'master_files#embed'
+
   resources :derivatives, only: [:create]
   
   resources :comments, only: [:index, :create]
-
-  match '/engage/ui/json/servicedata.:format' => 'media_objects#matterhorn_service_config'
 
   #match 'search/index' => 'search#index'
   #match 'search/facet/:id' => 'search#facet'

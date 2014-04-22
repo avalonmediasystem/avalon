@@ -12,36 +12,36 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-#require 'hydra/rights_metadata'
 
 class MediaObject < ActiveFedora::Base
-  include Hydra::ModelMixins::CommonMetadata
+  include Hydra::AccessControls::Permissions
+  include Avalon::AccessControls::Hidden
+  include Avalon::AccessControls::VirtualGroups
   include Hydra::ModelMethods
   include ActiveFedora::Associations
-  include Hydra::ModelMixins::RightsMetadata
   include Avalon::Workflow::WorkflowModelMixin
-  include Hydra::ModelMixins::Migratable
-
+  include VersionableModel
+  include Permalink
+  
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
   belongs_to :governing_policy, :class_name=>'Admin::Collection', :property=>:is_governed_by
   belongs_to :collection, :class_name=>'Admin::Collection', :property=>:is_member_of_collection
 
-  has_metadata name: "DC", type: DublinCoreDocument
   has_metadata name: "descMetadata", type: ModsDocument	
 
   after_create :after_create
   
   # Before saving put the pieces into the right order and validate to make sure that
   # there are no syntactic errors
-  before_save 'set_media_types!'
   before_save 'descMetadata.ensure_identifier_exists!'
   before_save 'descMetadata.update_change_date!'
   before_save 'descMetadata.reorder_elements!'
   before_save 'descMetadata.remove_empty_nodes!'
-  before_save { |obj| obj.current_migration = 'R2' }
-  before_save { |obj| obj.populate_duration! }
-  
+  before_save 'update_permalink_and_dependents'
+
+  has_model_version 'R3'
+
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
   
@@ -93,31 +93,31 @@ class MediaObject < ActiveFedora::Base
   end
 
   
-  delegate :avalon_uploader, to: :DC, at: [:creator], unique: true
-  delegate :avalon_publisher, to: :DC, at: [:publisher], unique: true
+  has_attributes :avalon_uploader, datastream: :DC, at: [:creator], multiple: false
+  has_attributes :avalon_publisher, datastream: :DC, at: [:publisher], multiple: false
   # Delegate variables to expose them for the forms
-  delegate :title, to: :descMetadata, at: [:main_title], unique: true
-  delegate :alternative_title, to: :descMetadata, at: [:alternative_title]
-  delegate :translated_title, to: :descMetadata, at: [:translated_title]
-  delegate :uniform_title, to: :descMetadata, at: [:uniform_title]
-  delegate :statement_of_responsibility, to: :descMetadata, at: [:statement_of_responsibility], unique: true
-  delegate :creator, to: :descMetadata, at: [:creator]
-  delegate :date_created, to: :descMetadata, at: [:date_created], unique: true
-  delegate :date_issued, to: :descMetadata, at: [:date_issued], unique: true
-  delegate :copyright_date, to: :descMetadata, at: [:copyright_date], unique: true
-  delegate :abstract, to: :descMetadata, at: [:abstract], unique: true
-  delegate :note, to: :descMetadata, at: [:note]
-  delegate :format, to: :descMetadata, at: [:media_type], unique: true
+  has_attributes :title, datastream: :descMetadata, at: [:main_title], multiple: false
+  has_attributes :alternative_title, datastream: :descMetadata, at: [:alternative_title], multiple: true
+  has_attributes :translated_title, datastream: :descMetadata, at: [:translated_title], multiple: true
+  has_attributes :uniform_title, datastream: :descMetadata, at: [:uniform_title], multiple: true
+  has_attributes :statement_of_responsibility, datastream: :descMetadata, at: [:statement_of_responsibility], multiple: false
+  has_attributes :creator, datastream: :descMetadata, at: [:creator], multiple: true
+  has_attributes :date_created, datastream: :descMetadata, at: [:date_created], multiple: false
+  has_attributes :date_issued, datastream: :descMetadata, at: [:date_issued], multiple: false
+  has_attributes :copyright_date, datastream: :descMetadata, at: [:copyright_date], multiple: false
+  has_attributes :abstract, datastream: :descMetadata, at: [:abstract], multiple: false
+  has_attributes :note, datastream: :descMetadata, at: [:note], multiple: true
+  has_attributes :format, datastream: :descMetadata, at: [:media_type], multiple: false
   # Additional descriptive metadata
-  delegate :contributor, to: :descMetadata, at: [:contributor]
-  delegate :publisher, to: :descMetadata, at: [:publisher]
-  delegate :genre, to: :descMetadata, at: [:genre]
-  delegate :subject, to: :descMetadata, at: [:topical_subject]
-  delegate :related_item, to: :descMetadata, at: [:related_item_id]
+  has_attributes :contributor, datastream: :descMetadata, at: [:contributor], multiple: true
+  has_attributes :publisher, datastream: :descMetadata, at: [:publisher], multiple: true
+  has_attributes :genre, datastream: :descMetadata, at: [:genre], multiple: true
+  has_attributes :subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
+  has_attributes :related_item, datastream: :descMetadata, at: [:related_item_id], multiple: true
 
-  delegate :geographic_subject, to: :descMetadata, at: [:geographic_subject]
-  delegate :temporal_subject, to: :descMetadata, at: [:temporal_subject]
-  delegate :topical_subject, to: :descMetadata, at: [:topical_subject]
+  has_attributes :geographic_subject, datastream: :descMetadata, at: [:geographic_subject], multiple: true
+  has_attributes :temporal_subject, datastream: :descMetadata, at: [:temporal_subject], multiple: true
+  has_attributes :topical_subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
   
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
     sds.field :duration, :string
@@ -127,8 +127,8 @@ class MediaObject < ActiveFedora::Base
     sds.field :section_pid, :string
   end
 
-  delegate_to 'displayMetadata', [:duration], unique: true
-  delegate_to 'sectionsMetadata', [:section_pid]
+  has_attributes :duration, datastream: :displayMetadata, multiple: false
+  has_attributes :section_pid, datastream: :sectionsMetadata, multiple: true
 
   accepts_nested_attributes_for :parts, :allow_destroy => true
 
@@ -152,7 +152,6 @@ class MediaObject < ActiveFedora::Base
   def section_pid=( pids )
     self.sectionsMetadata.find_by_terms(:section_pid).each &:remove
     self.sectionsMetadata.update_values(['section_pid'] => pids)
-    self.save( validate: false )
   end
 
   alias_method :'_collection=', :'collection='
@@ -180,108 +179,8 @@ class MediaObject < ActiveFedora::Base
     self.parts.all?{ |master_file| master_file.finished_processing? }
   end
 
-  def populate_duration!
+  def set_duration!
     self.duration = calculate_duration.to_s
-  end
-
-  def access
-    if self.read_users.present?
-      "limited"
-    elsif self.read_groups.empty?
-      "private"
-    elsif self.read_groups.include? "public"
-      "public"
-    elsif self.read_groups.include? "registered"
-      "restricted" 
-    else 
-      "limited"
-    end
-  end
-
-  def access= access_level
-    # Preserves group_exceptions when access_level changes to be not limited
-    # This is a work-around for the limitation in Hydra: 1 group can't belong to both :read and :exceptions
-    if access == "limited" && access_level != access
-      self.group_exceptions = read_groups
-      self.user_exceptions = read_users
-      self.read_users = []
-    end
-
-    if access_level == "public"
-      self.read_groups = ['public', 'registered'] 
-    elsif access_level == "restricted"
-      self.read_groups = ['registered'] 
-    elsif access_level == "private"
-      self.read_groups = []
-    else #limited
-      # Setting access to "limited" will copy group_exceptions to read_groups
-      if access != "limited"
-        self.read_groups = group_exceptions
-        self.read_users = user_exceptions
-      else
-        self.read_groups = (read_groups + group_exceptions).uniq
-        self.read_users = (read_users + user_exceptions).uniq
-      end 
-    end
-  end
-
-  # user_exceptions and group_exceptions are used to store exceptions info
-  # They aren't activated until access is set to limited
-  def user_exceptions
-    rightsMetadata.individuals.map {|k, v| k if v == 'exceptions'}.compact  
-  end
-
-  def user_exceptions= users
-    set_entities(:exceptions, :person, users, user_exceptions)
-  end
-
-  # Return a list of groups that have exceptions permission
-  def group_exceptions
-    rightsMetadata.groups.map {|k, v| k if v == 'exceptions'}.compact
-  end
-
-  # Grant read permissions to the groups specified. Revokes read permission for all other groups.
-  # @param[Array] groups a list of group names
-  # @example
-  #  r.read_groups= ['one', 'two', 'three']
-  #  r.read_groups 
-  #  => ['one', 'two', 'three']
-  #
-  def group_exceptions= groups
-    set_entities(:exceptions, :group, groups, group_exceptions)
-  end
-
-  # Get those permissions we don't want to change
-  # Overrides the one in hydra-access-controls/lib/hydra/model_mixins/rights_metadata.rb
-  # to support group_exceptions
-  def preserved(type, permission)
-    # Always preserves exceptions
-    g = Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'exceptions'}] || {} 
-
-    case permission
-    when :exceptions
-      # Preserves edit groups/users 
-      g.merge! Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'edit'}]
-    when :read
-      g.merge! Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'edit'}]
-    when :discover
-      g.merge! Hash[rightsMetadata.quick_search_by_type(type).select {|k, v| v == 'discover'}]
-    end
-    g
-  end
-
-  def hidden= value
-    groups = self.discover_groups
-    if value
-      groups << "nobody"
-    else
-      groups.delete "nobody"
-    end
-    self.discover_groups = groups.uniq
-  end
-
-  def hidden?
-    self.discover_groups.include? "nobody"
   end
 
   def missing_attributes
@@ -390,11 +289,14 @@ class MediaObject < ActiveFedora::Base
   def to_solr(solr_doc = Hash.new, opts = {})
     super(solr_doc, opts)
     solr_doc[Solrizer.default_field_mapper.solr_name("created_by", :facetable, type: :string)] = self.DC.creator
-    solr_doc[Solrizer.default_field_mapper.solr_name("hidden", type: :boolean)] = hidden?
     solr_doc[Solrizer.default_field_mapper.solr_name("duration", :displayable, type: :string)] = self.duration
     solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
     solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
     solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
+    indexer = Solrizer::Descriptor.new(:string, :stored, :indexed, :multivalued)
+    solr_doc[Solrizer.default_field_mapper.solr_name("read_access_virtual_group", indexer)] = virtual_read_groups
+    solr_doc["dc_creator_tesim"] = self.creator
+    solr_doc["dc_publisher_tesim"] = self.publisher
     #Add all searchable fields to the all_text_timv field
     all_text_values = []
     all_text_values << solr_doc["title_tesim"]
@@ -411,7 +313,7 @@ class MediaObject < ActiveFedora::Base
   # validate against a known controlled vocabulary. This one will take some thought
   # and research as opposed to being able to just throw something together in an ad hoc
   # manner
-  
+
   private
     def after_create
       self.DC.identifier = pid
@@ -421,4 +323,26 @@ class MediaObject < ActiveFedora::Base
     def calculate_duration
       self.parts.map{|mf| mf.duration.to_i }.compact.sum
     end
+
+    def update_permalink_and_dependents
+      if self.persisted? && self.published?
+        ensure_permalink!
+        self.parts.each do |master_file| 
+          begin
+            master_file.ensure_permalink!
+            master_file.save( validate: false )
+          rescue
+          	# no-op
+          	# Save is called (uncharacteristically) during a destroy.
+          end
+        end
+
+        unless self.descMetadata.permalink.include? self.permalink 
+          self.descMetadata.permalink = self.permalink
+        end
+      end
+
+      true
+    end
+
 end

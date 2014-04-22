@@ -5,6 +5,8 @@
 # out what is available. See lib/avalon/dropbox.rb for details on the API 
 require 'avalon/dropbox'
 
+I18n.config.enforce_available_locales = true
+
 module Avalon
   DEFAULT_CONFIGURATION = {
     "dropbox"=>{},
@@ -19,16 +21,23 @@ module Avalon
       "http_base"=>"http://localhost:3000/streams/",
       "stream_token_ttl"=>20
     },
-    'controlled_vocabulary' => {'path'=>'config/controlled_vocabulary.yml'}
+    'controlled_vocabulary' => {'path'=>'config/controlled_vocabulary.yml'},
+    'master_file_management' => {'strategy'=>'none'}
    }
 
   env = ENV['RAILS_ENV'] || 'development'
   Configuration = DEFAULT_CONFIGURATION.deep_merge(YAML::load(File.read(Rails.root.join('config', 'avalon.yml')))[env])
   ['dropbox','matterhorn','mediainfo','email','streaming'].each { |key| Configuration[key] ||= {} }
-  DropboxService = Dropbox.new Avalon::Configuration['dropbox']['path']
+  def Configuration.lookup(*path)
+    path = path.first.split(/\./) if path.length == 1
+    path.inject(self) do |location, key|
+      location.respond_to?(:keys) ? location[key] : nil
+    end
+  end
+
   
   begin
-    mipath = Avalon::Configuration['mediainfo']['path']
+    mipath = Avalon::Configuration.lookup('mediainfo.path')
     Mediainfo.path = mipath unless mipath.blank? 
   rescue Exception => e
     logger.fatal "Initialization failed"

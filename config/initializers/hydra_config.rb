@@ -1,4 +1,4 @@
-require "hydra"
+require 'hydra/head' unless defined? Hydra
 
 # The following lines determine which user attributes your hydrangea app will use
 # This configuration allows you to use the out of the box ActiveRecord associations between users and user_attributes
@@ -11,6 +11,12 @@ require "hydra"
 
 if Hydra.respond_to?(:configure)
   Hydra.configure(:shared) do |config|
+
+  silence_warnings do
+    Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC = 'public'.freeze
+    Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_AUTHENTICATED = 'restricted'.freeze
+    Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE = 'private'.freeze
+  end
  
     # Empty since we aren't actually using this piece. Maybe it can fit in later if the
     # user interface can be retooled

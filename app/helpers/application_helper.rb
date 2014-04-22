@@ -21,33 +21,43 @@ module ApplicationHelper
     "#{application_name} #{t(:release_label)} #{Avalon::VERSION}"
   end
 
-  def image_for(item_id)
-    #TODO index the thumbnail url to avoid having to hit fedora to get it
-    media_object = MediaObject.find(item_id)
-    masterfile = media_object.parts.first 
+  def share_link_for(obj)
+    if obj.nil?
+      I18n.t('media_object.empty_share_link')
+    elsif obj.permalink.present?
+      obj.permalink
+    else
+      case obj
+      when MediaObject then media_object_url(obj)
+      when MasterFile  then pid_section_media_object_url(obj.mediaobject.pid, obj.pid)
+      end
+    end
+  end
 
-    imageurl = thumbnail_master_file_path(masterfile) unless masterfile.nil? or masterfile.thumbnail.new?
+  def image_for(document)
+    master_file_id = document[:section_pid_tesim].try :first
+    
+    video_count = document[:mods_tesim].count{|m| m.start_with?('moving image') }
+    audio_count = document[:mods_tesim].count{|m| m.start_with?('sound recording') }
 
-    video_count = 0
-    audio_count = 0
-    media_object.parts.each do |part|
-      video_count = video_count + 1 if "Moving image" == part.file_format
-      audio_count = audio_count + 1 if "Sound" == part.file_format
+    if master_file_id
+      if video_count > 0
+        thumbnail_master_file_path(master_file_id)
+      else
+        asset_path('audio_icon.png')
+      end
+    else
+      if video_count > 0 && audio_count > 0
+        asset_path('hybrid_icon.png')
+      elsif video_count > audio_count
+        asset_path('video_icon.png')
+      elsif audio_count > video_count
+        asset_path('audio_icon.png')
+      else
+        nil
+      end
     end
 
-    imageurl ||= case
-                 when (video_count > 0 and 0 == audio_count)
-                   "video_icon.png"
-                 when (audio_count > 0 and 0 == video_count)
-                   "audio_icon.png"
-                 when (video_count > 0 and audio_count > 0)
-                   # TODO
-                   # We need to test if both audio and video are present
-                   # instead of assuming when there is more than one part
-                   "hybrid_icon.png" 
-                 else
-                   nil
-                 end
   end
 
   # Creates a hot link to the downloadable file if it is available. File names longer
@@ -98,7 +108,6 @@ module ApplicationHelper
     elsif resource.file_location.present?
       File.basename(resource.file_location)
     else
-      logger.debug("Cannot derive section label from resource: #{resource}")
       resource.pid
     end
   end
@@ -151,5 +160,16 @@ module ApplicationHelper
       v.is_a?(Array) ? v.collect { |v1| [k,URI.encode(v1.to_s)].join('=') } : [k,URI.encode(v.to_s)].join('=')
     end.flatten.join('&')
     ActiveFedora.solr.conn.uri.merge("select?#{qs}").to_s.html_safe
+  end
+
+  def vgroup_display value
+    c = Course.find_by_context_id(value)
+    c.nil? ? value : (c.title || c.label || value)
+  end
+
+  def truncate_center label, output_label_length, end_length = 0
+    end_length = start_length / 2 if end_length == 0
+    truncate(label , length: output_label_length, 
+      omission: "...#{label.last(end_length)}")
   end
 end

@@ -127,9 +127,11 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.identifier
 
     t.location do
-      t.url
+      t.url(:attributes => { :access => nil })
+      t.url_with_context(:path => 'url', :attributes => { :access => 'object in context' })
     end
-    t.location_url(:proxy => [:location, :url])
+    t.location_url(:ref => [:location, :url])
+    t.permalink(:ref => [:location, :url_with_context])
 
     t.usage(:path => 'accessCondition')
     t.reproduction_notes(:path => 'accessCondition', :attributes => { :type => 'use and reproduction' })

@@ -15,7 +15,7 @@
 FactoryGirl.define do
   factory :user do
     email { Faker::Internet.email }
-    username { [Faker::Name.last_name,Faker::Name.first_name].join('.').downcase }
+    username { [Faker::Name.last_name.gsub("'",""),Faker::Name.first_name.gsub("'","")].join('.').downcase }
 
     factory :administrator do
       after(:create) do |user|
@@ -32,6 +32,8 @@ FactoryGirl.define do
         rescue
         end
       end 
+    end
+    factory :user_lti do
     end
   end 
 

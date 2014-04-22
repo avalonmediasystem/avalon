@@ -26,10 +26,19 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def after_omniauth_failure_path_for(scope)
-    new_user_session_path(scope)
+    case failed_strategy.name
+    when 'lti'
+      default_msg = I18n.t 'devise.omniauth_callbacks.failure', reason: failure_message
+      msg = I18n.t 'devise.omniauth_callbacks.lti.failure', default: default_msg
+      uri = URI.parse request['launch_presentation_return_url']
+      uri.query = {lti_errormsg: msg}.to_query
+      uri.to_s
+    else
+      new_user_session_path(scope)
+    end
   end
 
-  def method_missing(sym, *args, &block)
+  def action_missing(sym, *args, &block)
     logger.debug "Attempting to find user with #{sym.to_s} strategy"
     find_user(sym.to_s)
   end
@@ -38,15 +47,24 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     auth_type.downcase!
     find_method = "find_for_#{auth_type}".to_sym
     logger.debug "#{auth_type} :: #{current_user.inspect}"
-  	@user = User.send(find_method,request.env["omniauth.auth"], current_user)
+    @user = User.send(find_method,request.env["omniauth.auth"], current_user)
 
-    if @user.persisted? 
+    if @user.persisted?
       flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => auth_type
       sign_in @user, :event => :authentication
+
+      if auth_type == 'lti'
+        user_session[:virtual_groups] = [request.env["omniauth.auth"].extra.context_id]
+        user_session[:full_login] = false
+      end
     end
 
-    if session[:previous_url] 
+    if request['media_object_id']
+      redirect_to media_object_path(request['media_object_id'])
+    elsif session[:previous_url] 
       redirect_to session.delete :previous_url
+    elsif user_session[:virtual_groups].present?
+      redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => user_session[:virtual_groups].first)
     else
       redirect_to root_url
     end

@@ -13,6 +13,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-        <div id="permalink">
-          <address data-type="permalink"><i class="icon-share"></i> Share this resource: <%= media_object_url(@mediaobject.pid) %></address>
-        </div>
+<% if cannot? :read, @masterfile.mediaobject %>
+  <%= render 'authorize' %>
+<% else %>
+  <%= render 'player' %>
+<% end %>

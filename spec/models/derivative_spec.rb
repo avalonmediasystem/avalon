@@ -15,10 +15,11 @@
 require 'spec_helper'
 
 describe Derivative do
+
   describe "masterfile" do
     it "should set relationships on self and masterfile" do
       derivative = Derivative.new
-      mf = MasterFile.new
+      mf = FactoryGirl.build(:master_file)
       mf.save
       derivative.save
 
@@ -49,7 +50,7 @@ describe Derivative do
 
       @derivative.save
 
-      File.open(Avalon::Configuration['matterhorn']['cleanup_log'], "w+") {}
+      File.open(Avalon::Configuration.lookup('matterhorn.cleanup_log'), "w+") {}
     end
 
     it "should delete and start retraction jobs" do
@@ -64,10 +65,21 @@ describe Derivative do
 
       Derivative.all.count.should == prev_count - 1
       log_count = 0
-      file = File.new(Avalon::Configuration['matterhorn']['cleanup_log'])
+      file = File.new(Avalon::Configuration.lookup('matterhorn.cleanup_log'))
       file.each { |line| log_count += 1 if line.start_with?(job_urls[0]) || line.start_with?(job_urls[1]) }
       log_count.should == 2
     end 
+
+    it "should not throw error when workflow_id is missing" do
+      @derivative.masterfile.workflow_id = nil
+      @derivative.delete
+      Derivative.all.count.should == 0
+    end
+
+    it "should not throw error when workflow doesn't exist in Matterhorn" do
+      @derivative.delete
+      Derivative.all.count.should == 0
+    end
 
     it "should delete even if retraction fails (VOV-1356)" do
       pending "Do not test until VOV-1356 is fixed"
@@ -84,8 +96,8 @@ describe Derivative do
 
     before :each do
       @d = Derivative.new
-      @rtmp_base = Avalon::Configuration['streaming']["rtmp_base"]
-      @http_base = Avalon::Configuration['streaming']["http_base"]
+      @rtmp_base = Avalon::Configuration.lookup('streaming.rtmp_base')
+      @http_base = Avalon::Configuration.lookup('streaming.http_base')
       @d.location_url = "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4"
     end
 

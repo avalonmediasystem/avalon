@@ -49,6 +49,7 @@
 //= require bootstrap-button
 //= require bootstrap-tooltip
 //= require bootstrap-popover
+//= require bootstrap-tab
 
 
 /* requirements for handling modals with modal logic gem */
@@ -64,4 +65,5 @@
  */
 //= require avalon
 //= require pop_help
+//= require access_autocomplete
 //= require_self

@@ -17,7 +17,7 @@ module Avalon
 
     def self.vocabulary
       vocabulary = {}
-      path = Rails.root.join(Avalon::Configuration['controlled_vocabulary']['path'])
+      path = Rails.root.join(Avalon::Configuration.lookup('controlled_vocabulary.path'))
       if File.file?(path)
         yaml = YAML::load(File.read(path))
         vocabulary = yaml.symbolize_keys if yaml.present?

@@ -36,7 +36,7 @@ class Admin::GroupsController < ApplicationController
   end
   
   def index
-    default_groups = Avalon::Configuration['groups']['system_groups']
+    default_groups = Avalon::Configuration.lookup('groups.system_groups')
     @default_groups = []
     @groups = []
 

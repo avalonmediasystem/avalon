@@ -12,9 +12,17 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class Dropbox
-  # Empty model used for authorization right now
-  # However, in the future dropbox files should be:
-  # 1) Stored in a model for performance reasons
-  # 2) Processed by a cron script and inserted into the model
+class UrlDatastream < ActiveFedora::Datastream
+  def self.default_attributes
+    super.merge(:controlGroup => 'M', :mimeType => 'text/url', :label => 'URL')
+  end
+
+  def location
+    self.content
+  end
+
+  def location=(value)
+    URI.parse(value) unless value.nil?
+    self.content = value
+  end
 end

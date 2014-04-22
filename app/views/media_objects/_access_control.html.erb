@@ -16,17 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
   <%= hidden_field_tag :step, @active_step %>
 
-  <%= render "modules/access_control", {form: vid, object: @mediaobject, access: @mediaobject.access, hidden: @mediaobject.hidden?} %>	
+  <%= render "modules/access_control", {form: vid, object: @mediaobject, visibility: @mediaobject.visibility, hidden: @mediaobject.hidden?} %>	
 
   <%= render "workflow_buttons", form: vid %>	
 <% end #form_for %>		
-
-<% content_for :page_scripts do %>
-  <script>
-    $("#access_limited").change(function() { 
-      $(".overlay").hide(); 
-    });
-    
-    $("#access_public, #access_restricted, #access_private").change(function() { $(".overlay").show(); });
-  </script>
-<% end %>

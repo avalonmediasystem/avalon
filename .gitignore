@@ -72,6 +72,8 @@ config/initializers/rubyhorn.rb
 
 public/media_objects
 public/streams
+public/**/*.m3u8
+public/**/*.ts
 
 lib/tasks/cucumber.rake
 cucumber-results/

@@ -54,8 +54,7 @@ class DublinCoreDocument < ActiveFedora::OmDatastream
 
     def to_solr(solr_doc = {})
       super(solr_doc)
-      solr_doc["dc_creator_tesim"] = self.creator
-      solr_doc["dc_publisher_tesim"] = self.publisher
+      solr_doc["dc_identifier_tesim"] = self.identifier
       return solr_doc
     end
 

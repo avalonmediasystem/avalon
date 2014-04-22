@@ -28,4 +28,13 @@ module ControllerMacros
     sign_in user
     user
   end
+  def login_lti(factory_model = 'student', lti_class = Faker::Lorem.word, options = {})
+    user = FactoryGirl.create(factory_model, options)
+    @request.env["devise.mapping"] = Devise.mappings[:user]
+    logger.debug "Attempting to sign in user: #{user}"
+    sign_in user
+    @controller.user_session[:virtual_groups] = [lti_class]
+    @controller.user_session[:full_login] = false
+    user
+  end
 end

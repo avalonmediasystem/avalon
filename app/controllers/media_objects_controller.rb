@@ -51,7 +51,7 @@ class MediaObjectsController < ApplicationController
     if 'preview' == @active_step 
       @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
       @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
-      @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token,request.host)
+      @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
 
       if (not @masterFiles.empty? and @currentStream.blank?)
         @currentStream = @masterFiles.first
@@ -60,17 +60,13 @@ class MediaObjectsController < ApplicationController
     end
 
     if 'access-control' == @active_step 
-      @group_exceptions = []
-      if @mediaobject.access == "limited"
-        # When access is limited, group_exceptions content is stored in read_groups
-        @mediaobject.read_groups.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
-        @user_exceptions = @mediaobject.read_users 
-       else
-        @mediaobject.group_exceptions.each { |g| @group_exceptions << Admin::Group.find(g).name if Admin::Group.exists?(g)}
-        @user_exceptions = @mediaobject.user_exceptions 
-      end
+      @groups = @mediaobject.local_read_groups
+      @users = @mediaobject.read_users
+      @virtual_groups = @mediaobject.virtual_read_groups
+      @visibility = @mediaobject.visibility
 
-      @addable_groups = Admin::Group.non_system_groups.reject { |g| @group_exceptions.include? g.name }
+      @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }
+      @addable_courses = Course.all.reject { |c| @virtual_groups.include? c.context_id }
     end
   end
 
@@ -137,25 +133,19 @@ class MediaObjectsController < ApplicationController
     #@previous_view = media_object_path(@mediaobject)
   end
 
-  # Deletes a media object from the system. This needs to be somewhat robust so that
-  # you can't delete an object if you do not have permission, if it does not exist, or
-  # (most likely) if the 'Yes' button was accidentally submitted twice
   def destroy
-    @mediaobject = MediaObject.find(params[:id])
-    authorize! :destroy, @mediaobject
-    unless params[:id].nil? or (not MediaObject.exists?(params[:id]))
-      media = MediaObject.find(params[:id])
+    media_object = MediaObject.find(params[:id])
+    authorize! :destroy, media_object
+    message = "#{media_object.title} (#{params[:id]}) has been successfuly deleted"
 
-      # attempt to stop the matterhorn processing job
-      media.parts.each(&:destroy)
-      media.parts.clear
-      
-      flash[:notice] = "#{media.title} (#{params[:id]}) has been successfuly deleted"
-      media.delete
-    end
-    redirect_to root_path
+    # attempt to stop the matterhorn processing job
+    media_object.parts.each(&:destroy)
+    media_object.parts.clear
+    
+    media_object.destroy
+    
+    redirect_to root_path, flash: { notice: message }
   end
-
 
   # Sets the published status for the object. If no argument is given then
   # it will just toggle the state.
@@ -167,12 +157,12 @@ class MediaObjectsController < ApplicationController
       when 'publish'
         media_object.publish!(user_key)
       when 'unpublish'
-        media_object.publish!(nil)
-      when nil
-        new_state = media_object.published? ? nil : user_key
-        media_object.publish!(new_state)        
+        media_object.publish!(nil) if can?(:unpublish, media_object)   
     end
 
+    # additional save to set permalink
+    media_object.save( validate: false )
+    
     redirect_to :back
   end
 
@@ -196,6 +186,24 @@ class MediaObjectsController < ApplicationController
     redirect_to :back
   end
   
+  def tree
+    @mediaobject = MediaObject.find(params[:id])
+    authorize! :inspect, @mediaobject
+
+    respond_to do |format|
+      format.html { 
+        render 'tree', :layout => !request.xhr?
+      }
+      format.json { 
+        result = { @mediaobject.pid => {} }
+        @mediaobject.parts_with_order.each do |mf|
+          result[@mediaobject.pid][mf.pid] = mf.derivatives.collect(&:pid)
+        end
+        render :json => result 
+      }
+    end
+  end
+
   def self.initialize_media_object( user_key )
     mediaobject = MediaObject.new( avalon_uploader: user_key )
     set_default_item_permissions( mediaobject, user_key )
@@ -203,10 +211,8 @@ class MediaObjectsController < ApplicationController
     mediaobject
   end
 
-  def matterhorn_service_config
-    respond_to do |format|
-      format.any(:xml, :json) { render request.format.to_sym => Avalon.matterhorn_config(request.host) }
-    end
+  def build_context
+    params.merge!({mediaobject: model_object, user: user_key, ability: current_ability})
   end
 
   protected
@@ -218,13 +224,21 @@ class MediaObjectsController < ApplicationController
   def load_player_context
     @mediaobject = MediaObject.find(params[:id])
 
+    if params[:part]
+      index = params[:part].to_i-1
+      if index < 0 or index > @mediaobject.section_pid.length
+        raise ActiveFedora::ObjectNotFoundError
+      end
+      params[:content] = @mediaobject.section_pid[index]
+    end
+
     @masterFiles = load_master_files
     @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
     @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
     # This rescue statement seems a bit dodgy because it catches *all*
     # exceptions. It might be worth refactoring when there are some extra
     # cycles available.
-    @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token,request.host)
+    @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
  end
 
   # The goal of this method is to determine which stream to provide to the interface

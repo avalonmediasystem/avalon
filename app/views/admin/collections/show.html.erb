@@ -22,50 +22,62 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= link_to('Create An Item', new_media_object_path(collection_id: @collection.pid), class: 'btn btn-primary') if can? :create, MediaObject %>
     <%= link_to('List All Items', catalog_index_path('f[collection_ssim][]' => @collection.name), class: 'btn') %>
     <%= link_to('Edit Collection Info', edit_admin_collection_path(@collection), class: 'btn', remote: true, modal: true) if can? :update, @collection %>
+    <br/><br>
+    Or <a href='https://wiki.dlib.indiana.edu/display/VarVideo/Avalon+Collections+Guide#AvalonCollectionsGuide-UploadingviaBatch'><b>learn how to</b></a> create items using batch upload.
     </div>
 
     <%= twitter_bootstrap_form_for @collection, html: { class: "form-horizontal", id: 'access_control_form'}  do |co| %>
 
       <%= co.fieldset 'Assign Staff Roles' do %>
 
-          <% if flash[:notice] %>
-            <div class="alert alert-error span9">
-              <a href="#" class="close" data-dismiss="alert">&times;</a>
-              <%= flash[:notice] %>
-            </div>
-          <% end %>
-
-        <div class="span3">
-          <%= render "modules/access_role_help", role: "manager" %>
-          <%= render "manage_members", title: "manager" %>
+        <% if flash[:notice] %>
+          <div class="alert alert-error span9">
+            <a href="#" class="close" data-dismiss="alert">&times;</a>
+            <%= flash[:notice] %>
+          </div>
+        <% end %>
+        <div class='staff-roles-section'>
+          <%= render "modules/access_object",
+            access_object: "manager",
+            members: @collection.managers,
+            autocomplete_model: 'user',
+            object: @collection,
+            input_disabled: cannot?( :update_managers, @collection ) %>
+          <%= render "modules/access_object",
+            access_object: "editor",
+            members: @collection.editors,
+            autocomplete_model: 'user',
+            object: @collection,
+            input_disabled: cannot?( :update_editors, @collection ) %>
+          <%= render "modules/access_object",
+            access_object: "depositor",
+            members: @collection.depositors,
+            autocomplete_model: 'user',
+            object: @collection,
+            input_disabled: cannot?( :update_depositors, @collection ) %>
         </div>
-
-        <div class="span3">
-          <%= render "modules/access_role_help", role: "editor" %>
-          <%= render "manage_members", title: "editor" %>
-        </div>
-
-        <div class="span3">
-          <%= render "modules/access_role_help", role: "depositor" %>
-          <%= render "manage_members", title: "depositor" %>
-        </div>
-
       <% end %>
 
       <div class="whitespace"></div>
 
       <%= co.fieldset 'Set Default Access Control for New Items' do %>
-        <div class="span10">
-          <%= render "modules/access_control", { form: co, object: @collection, access: @collection.default_access, hidden: @collection.default_hidden? } %>	
+          <%= render "modules/access_control", { form: co, object: @collection, visibility: @collection.default_visibility, hidden: @collection.default_hidden? } %>	
 					<% if can? :update_access_control, @collection %>
 						<%= submit_tag "Save Access Settings", name: "save_access", class: "btn" %>
 					<% end %>
-        </div>
       <% end %>
       
     <% end %>
   </div>
 </div>
+
+<style>
+  fieldset .staff-roles-section { margin-left: 20px; }
+  fieldset.item-access { margin-left: 20px;  }
+  fieldset.item-discovery { margin-left: 20px; }
+  fieldset.special-access { margin-left: 20px; }
+  [name='save_access'] { margin-left: 20px;  }
+</style>
 
 <% content_for :page_scripts do %>
   <script>

@@ -155,6 +155,14 @@ module ModsBehaviors
     serialize!
   end
 
+  def permalink=(url)
+    if node_exists? :permalink
+      update_values([:permalink]=>{0=>url})
+    else
+      add_permalink(url)
+    end
+  end
+
   private
 
   def gather_terms(terms)

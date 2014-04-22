@@ -4,20 +4,25 @@
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
 
-  gem 'hydra-head', '~> 6.3.0'
+  gem 'hydra', "~> 6.1.0"
   gem 'bcrypt-ruby', '~> 3.0.0'
 
-  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'avalon-r2'
-  gem 'avalon-engage', git: "https://github.com/avalonmediasystem/avalon-engage.git", tag: 'avalon-r2'
-  gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git", tag: 'avalon-r2'
-  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r2'
-  gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r2'
-  gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r2'
-  gem 'hydra-migrate', '>=0.2.0'
-  
+  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'avalon-r3'
+  gem 'avalon-batch', '~> 0.2.2', git: "https://github.com/avalonmediasystem/avalon-batch.git", tag: 'avalon-r3'
+  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r3'
+  gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r3'
+  gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r3'
+  gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'avalon-r3'
+  gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r3'
+  gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r3'
+
+  gem 'roo'
+
+  gem 'multipart-post'  
   gem 'modal_logic'
 
   gem 'rubyzip', '0.9.9'
+  gem 'hooks'
 
   platforms :jruby do
     gem 'jruby-openssl'
@@ -32,8 +37,7 @@
     gem 'therubyracer', '= 0.10.2'
   end
 
-  gem 'about_page', '>= 0.2.1'
-  gem 'avalon-about', :git => "https://github.com/avalonmediasystem/avalon-about.git", tag: 'avalon-r2'
+  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git", tag: 'avalon-r3'
 
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise', '~>3.0.3'
@@ -41,17 +45,19 @@
   gem 'haml'
 
   gem "jettywrapper"
-  gem 'rubyhorn', :git => "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r2'
-  gem 'felixwrapper', :git => "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'avalon-r2'
-  gem 'red5wrapper', :git => "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'avalon-r2'
+  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r3'
+  gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'avalon-r3'
+  gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'avalon-r3'
 
   gem 'validates_email_format_of'
   gem 'loofah'
   gem 'omniauth-identity'
+  gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r3'
 
   gem 'mediainfo'
   gem 'delayed_job_active_record'
-  gem 'whenever', :require => false
+  gem 'whenever', require: false
+  gem 'with_locking'
 
   gem 'equivalent-xml'
 
@@ -60,7 +66,7 @@
     gem 'uglifier', '>= 1.0.3'
     gem 'jquery-rails', "~> 2.1.4"
     gem 'compass-rails', '~> 1.0.0'
-    gem 'compass-susy-plugin', '~> 0.9.0', :require => 'susy'
+    gem 'compass-susy-plugin', '~> 0.9.0', require: 'susy'
 
     # For overriding the default interface with Twitter Bootstrap
     # This is now inherited from Blacklight
@@ -79,16 +85,13 @@
     gem 'meta_request'
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano'
-    gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm', tag: 'avalon-r2'
+    gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm', tag: 'avalon-r3'
     gem 'factory_girl_rails'
     gem 'rspec-rails', '>=2.9.0'
     gem 'pry'
     gem 'pry-rails'
     gem 'pry-debugger'
-    gem 'unicorn-rails'
-    #gem 'capistrano-unicorn', :require => false
-    gem 'capistrano-unicorn',
-      git: "git://github.com/sosedoff/capistrano-unicorn.git"
+    gem 'puma'
     gem 'rb-fsevent', '~> 0.9.1'
     gem 'debugger'
     gem 'letter_opener'
@@ -105,6 +108,7 @@
     gem 'capybara'
     gem 'shoulda-matchers'
     gem 'faker'
+    gem 'fakefs', require: "fakefs/safe"
   end
 
   extra_gems = File.expand_path("../Gemfile.local",__FILE__)

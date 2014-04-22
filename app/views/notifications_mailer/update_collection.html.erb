@@ -13,12 +13,24 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-          <p class="tooltip-help" data-title="<%= role.titleize %>" data-tooltip=<%="##{role}_tooltip"%>>
-            <a href="https://wiki.dlib.indiana.edu/display/VarVideo/Collection+Member+Role+Help#<%=role%>" target="_help">
-              <%= role.pluralize.titleize %>
-            </a>
-          </p>
-          <div class="collapse form-tooltip equal-height" id=<%="#{role}_tooltip"%>>
-            <button class="close">&times;</button>
-            <p><%= t("role_help.#{role}").html_safe %></p>
-          </div>
+<%= stylesheet_link_tag 'http://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css' %>
+<h3> Collection Name Changed Notification </h3>
+<%= link_to @collection.name, admin_collection_url(@collection) %>
+<hr/>
+
+<dl class="dl-horizontal">
+  <dt>Old name:</dt>
+  <dd><%= @old_name %></dd>
+  
+  <dt>Updated by:</dt>
+  <dd><%= mail_to(@updater.email, @updater.username) %></dd>
+  
+  <dt>Description:</dt>
+  <dd><%= @collection.description.present? ? @collection.description : '(empty)'%></dd>
+  
+  <dt>Unit:</dt>
+  <dd><%= @collection.unit %></dd>
+
+  <dt>Dropbox Path:</dt>
+  <dd><%= @collection.dropbox_absolute_path %></dd>
+</dl>

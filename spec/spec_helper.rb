@@ -22,10 +22,14 @@ require 'rspec/rails'
 require 'rspec/autorun'
 require 'capybara/rspec'
 require 'database_cleaner'
+require 'fakefs/safe'
+require 'fileutils'
+require 'tmpdir'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
+Dir[Rails.root.join("spec/models/shared_examples/**/*.rb")].each {|f| require f}
 
 RSpec.configure do |config|
   # ## Mock Framework
@@ -55,6 +59,26 @@ RSpec.configure do |config|
     DatabaseCleaner.clean
     Rails.cache.clear 
     Deprecation.default_deprecation_behavior = :silence
+
+    # Stub the entire dropbox
+    Avalon::Configuration['spec'] = {
+      'real_dropbox' => Avalon::Configuration.lookup('dropbox.path'),
+      'fake_dropbox' => Dir.mktmpdir
+    }
+    Avalon::Configuration['dropbox']['path'] = Avalon::Configuration.lookup('spec.fake_dropbox')
+    
+    server_options = { host: 'test.host', port: nil }
+    Rails.application.routes.default_url_options.merge!( server_options )
+    ActionMailer::Base.default_url_options.merge!( server_options )
+    ApplicationController.default_url_options = server_options
+  end
+
+  config.after(:suite) do
+    if Avalon::Configuration.lookup('spec.fake_dropbox')
+      FileUtils.remove_dir Avalon::Configuration.lookup('spec.fake_dropbox'), true
+      Avalon::Configuration['dropbox']['path'] = Avalon::Configuration.lookup('spec.real_dropbox')
+      Avalon::Configuration.delete('spec')
+    end
   end
 
   config.before(:each) do

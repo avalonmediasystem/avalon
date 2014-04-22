@@ -26,13 +26,6 @@ describe User do
     it {should validate_uniqueness_of(:email)}
   end
 
-  describe "Ability" do
-    its(:ability) {should_not be_nil}
-
-    pending "should create a new Ability if missing"
-    pending "should delegate can? and cannot?"
-  end
-
   describe "Membership" do
     it "should be a member if its key is in the list" do
       user.should be_in(list,[user.user_key])
@@ -43,4 +36,13 @@ describe User do
       user.should_not be_in(list)
     end
   end
+
+  describe "#groups" do
+    let(:groups)  { ["foorole"] }
+    it "should return groups from the role map" do
+      RoleMapper.should_receive(:roles).and_return(groups)
+      expect(user.groups).to eq(groups)
+    end
+  end
+
 end

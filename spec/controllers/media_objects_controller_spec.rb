@@ -105,7 +105,7 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#show" do
-    let!(:media_object) { FactoryGirl.create(:published_media_object, access: 'public') }
+    let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
 
     context "Known items should be retrievable" do
       it "should be accesible by its PID" do
@@ -142,7 +142,7 @@ describe MediaObjectsController, type: :controller do
     end
 
     describe 'Redirect back to media object after sign in' do
-      let(:media_object){ FactoryGirl.create(:media_object, access: 'private') }
+      let(:media_object){ FactoryGirl.create(:media_object, visibility: 'private') }
 
       context 'Before sign in' do
         it 'persists the current url on the session' do
@@ -154,7 +154,7 @@ describe MediaObjectsController, type: :controller do
       context 'After sign in' do
         before do 
           @user = FactoryGirl.create(:user)
-          @media_object = FactoryGirl.create(:media_object, access: 'private', read_users: [@user.username] )
+          @media_object = FactoryGirl.create(:media_object, visibility: 'private', read_users: [@user.username] )
         end
         it 'redirects to the previous url' do
         end
@@ -211,11 +211,14 @@ describe MediaObjectsController, type: :controller do
     before(:each) do
       login_user media_object.collection.managers.first
       request.env["HTTP_REFERER"] = '/'
+      Permalink.on_generate { |obj| "http://example.edu/permalink" }
     end
 
     it 'publishes media object' do
       get 'update_status', :id => media_object.pid, :status => 'publish'
-      MediaObject.find(media_object.pid).published?.should be_true
+      mo = MediaObject.find(media_object.pid)
+      mo.published?.should be_true
+      mo.permalink.should be_present
     end
 
     it 'unpublishes media object' do
@@ -223,6 +226,24 @@ describe MediaObjectsController, type: :controller do
       media_object.save
       get 'update_status', :id => media_object.pid, :status => 'unpublish' 
       MediaObject.find(media_object.pid).published?.should be_false
+    end
+  end
+
+  describe "#update" do
+    it 'updates the order' do
+
+      media_object = FactoryGirl.create(:media_object)
+      media_object.parts << FactoryGirl.create(:master_file)
+      media_object.parts << FactoryGirl.create(:master_file)
+      master_file_pids = media_object.parts.select(&:id).map(&:id)
+      media_object.section_pid = master_file_pids
+      media_object.save( validate: false )
+
+      login_user media_object.collection.managers.first
+      
+      put 'update', :id => media_object.pid, :masterfile_ids => master_file_pids.reverse, :step => 'structure'
+      media_object.reload
+      media_object.section_pid.should eq master_file_pids.reverse
     end
   end
 end

@@ -17,11 +17,14 @@ FactoryGirl.define do
     status_code {Faker::Lorem.word}
     file_location {'/path/to/video.mp4'}
     percent_complete {"#{rand(100)}"}
+    workflow_name 'avalon'
     after(:create) do |mf|
       mf.mediaobject = FactoryGirl.create(:media_object)
       mf.save
     end
+
     factory :master_file_with_derivative do
+      workflow_name 'avalon'
       after(:create) do |mf|
         mf.derivatives += [FactoryGirl.create(:derivative)]
         mf.save

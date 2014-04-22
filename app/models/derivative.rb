@@ -12,15 +12,17 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+require 'avalon/matterhorn_rtmp_url'
+
 class Derivative < ActiveFedora::Base
   include ActiveFedora::Associations
-  include Hydra::ModelMixins::Migratable
+  include VersionableModel
 
   class_attribute :url_handler
 
   belongs_to :masterfile, :class_name=>'MasterFile', :property=>:is_derivation_of
 
-  before_save { |obj| obj.current_migration = 'R2' }
+  has_model_version 'R3'
 
   # These fields do not fit neatly into the Dublin Core so until a long
   # term solution is found they are stored in a simple datastream in a
@@ -37,18 +39,20 @@ class Derivative < ActiveFedora::Base
     d.field :hls_track_id, :string
   end
 
-  delegate_to 'descMetadata', [:location_url, :hls_url, :duration, :track_id, :hls_track_id], unique: true
+  has_metadata name: 'derivativeFile', type: UrlDatastream
+
+  has_attributes :location_url, :hls_url, :duration, :track_id, :hls_track_id, datastream: :descMetadata, multiple: false
 
   has_metadata name: 'encoding', type: EncodingProfileDocument
 
   def self.url_handler
-    url_handler_class = Avalon::Configuration['streaming']['server'].to_s.classify
+    url_handler_class = Avalon::Configuration.lookup('streaming.server').to_s.classify
     @url_handler ||= UrlHandler.const_get(url_handler_class.to_sym)
   end
 
   # Getting the track ID from the fragment is not great but it does reduce the number
   # of calls to Matterhorn 
-  def self.create_from_master_file(masterfile, markup)
+  def self.create_from_master_file(masterfile, markup, opts = {})
     
     # Looks for an existing derivative of the same quality
     # and adds the track URL to it
@@ -61,7 +65,7 @@ class Derivative < ActiveFedora::Base
 
     # If same quality derivative doesn't exist, create one
     if derivative.blank?
-      derivative = Derivative.create 
+      derivative = Derivative.new 
       
       derivative.duration = markup.duration.first
       derivative.encoding.mime_type = markup.mimetype.first
@@ -83,19 +87,28 @@ class Derivative < ActiveFedora::Base
     else
       derivative.track_id = markup.track_id
       derivative.location_url = markup.url.first
+      derivative.absolute_location = File.join(opts[:stream_base], Avalon::MatterhornRtmpUrl.parse(derivative.location_url).to_path) if opts[:stream_base]
     end
-
+    
     derivative.masterfile = masterfile
     derivative.save
     
     derivative
   end
 
+  def absolute_location
+    derivativeFile.location
+  end
+
+  def absolute_location=(value)
+    derivativeFile.location = value
+  end
+
   def tokenized_url(token, mobile=false)
     #uri = URI.parse(url.first)
     uri = streaming_url(mobile)
     "#{uri.to_s}?token=#{masterfile.mediapackage_id}-#{token}".html_safe
-  end      
+  end
 
   def streaming_url(is_mobile=false)
     # We need to tweak the RTMP stream to reflect the right format for AMS.
@@ -104,24 +117,13 @@ class Derivative < ActiveFedora::Base
 
     protocol = is_mobile ? 'http' : 'rtmp'
 
-    # Example input: /avalon/mp4:98285a5b-603a-4a14-acc0-20e37a3514bb/b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3/MVI_0057.mp4
-    regex = %r{^
-      /(.+)             # application (avalon)
-      /(?:(.+):)?       # prefix      (mp4:)
-      ([0-9a-f-]{36})   # media_id    (98285a5b-603a-4a14-acc0-20e37a3514bb)
-      /([0-9a-f-]{36})  # stream_id   (b3d5663d-53f1-4f7d-b7be-b52fd5ca50a3)
-      /(.+?)            # filename    (MVI_0057)
-      (?:\.(.+))?$      # extension   (mp4)
-    }x
-
-    uri = URI.parse(location_url)
-    (application, prefix, media_id, stream_id, filename, extension) = uri.path.scan(regex).flatten
-    if extension.nil? or prefix.nil?
-      prefix = extension = [extension,prefix].find { |thing| not thing.nil? }
+    rtmp_url = Avalon::MatterhornRtmpUrl.parse location_url
+    if rtmp_url.extension.nil? or rtmp_url.prefix.nil?
+      rtmp_url.prefix = rtmp_url.extension = [rtmp_url.extension,rtmp_url.prefix].find { |thing| not thing.nil? }
     end
 
     template = ERB.new(self.class.url_handler.patterns[protocol][format])
-    result = File.join(Avalon::Configuration['streaming']["#{protocol}_base"],template.result(binding))
+    result = File.join(Avalon::Configuration.lookup("streaming.#{protocol}_base"),template.result(rtmp_url.binding))
   end
 
   def format
@@ -136,12 +138,20 @@ class Derivative < ActiveFedora::Base
   end
 
   def delete
-    job_urls = []
-    job_urls << Rubyhorn.client.delete_track(masterfile.workflow_id, track_id) 
-    job_urls << Rubyhorn.client.delete_hls_track(masterfile.workflow_id, hls_track_id) if hls_track_id.present? 
+    #catch exceptions and log them but don't stop the deletion of the derivative object!
+    #TODO move this into a before_destroy callback
+    if masterfile.workflow_id.present?
+      job_urls = []
+      begin
+        job_urls << Rubyhorn.client.delete_track(masterfile.workflow_id, track_id) 
+        job_urls << Rubyhorn.client.delete_hls_track(masterfile.workflow_id, hls_track_id) if hls_track_id.present?
+      rescue Exception => e
+        logger.warn "Error deleting derivatives: #{e.message}"
+      end
 
-    # Logs retraction jobs for sysadmin 
-    File.open(Avalon::Configuration['matterhorn']['cleanup_log'], "a+") { |f| f << job_urls.join("\n") + "\n" }
+      # Logs retraction jobs for sysadmin 
+      File.open(Avalon::Configuration.lookup('matterhorn.cleanup_log'), "a+") { |f| f << job_urls.join("\n") + "\n" }
+    end
 
     super
   end

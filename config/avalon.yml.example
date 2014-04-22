@@ -1,4 +1,9 @@
 development: 
+  fedora:
+    namespace: avalon
+  domain:
+    host: localhost
+    port: 3000
   dropbox:
     path: '/srv/avalon/dropbox/'
     upload_uri: 'sftp://localhost/srv/avalon/dropbox'
@@ -22,8 +27,14 @@ development:
     rtmp_base: 'rtmp://localhost/avalon'
     http_base: 'http://localhost:3000/streams'
   groups:
-    system_groups: [administrator, manager, collection_manager, group_manager]
+    system_groups: [administrator, group_manager, manager]
+  master_file_management:
+    strategy: 'none' #'delete', or 'move' (for move uncomment and configure next line)
+    #path: '/path/to/move/to'
+
 test:
+  fedora:
+    namespace: avalon
   dropbox:
     path: '/srv/avalon/dropbox/'
     upload_uri: 'sftp://localhost/srv/avalon/dropbox'
@@ -47,4 +58,7 @@ test:
     rtmp_base: 'rtmp://localhost/avalon'
     http_base: 'http://localhost:3000/streams'
   groups:
-    system_groups: [administator, manager, collection_manager, group_manager]
+    system_groups: [administator, group_manager, manager]
+  master_file_management:
+    strategy: 'none' #'delete', or 'move' (for move uncomment and configure next line)
+    #path: '/path/to/move/to'

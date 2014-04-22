@@ -26,7 +26,7 @@ require 'avalon/dropbox'
     # just need to ask the dropbox if there are any files. If so load
     # them into a variable that can be referred to later
     def before_step context
-       dropbox_files = Avalon::DropboxService.all
+       dropbox_files = context[:mediaobject].collection.dropbox.all
        context[:dropbox_files] = dropbox_files 
        context
     end
@@ -37,7 +37,7 @@ require 'avalon/dropbox'
 
     def execute context
        deleted_parts = update_master_files context
-       context[:notice] = "Several clean up jobs have been sent out. Their statuses can be viewed by your sysadmin at #{ Avalon::Configuration['matterhorn']['cleanup_log'] }" unless deleted_parts.empty?
+       context[:notice] = "Several clean up jobs have been sent out. Their statuses can be viewed by your sysadmin at #{ Avalon::Configuration.lookup('matterhorn.cleanup_log') }" unless deleted_parts.empty?
        
        # Reloads mediaobject.parts, should use .reload when we update hydra-head 
        media = MediaObject.find(context[:mediaobject].pid)
