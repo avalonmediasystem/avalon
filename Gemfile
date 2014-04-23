@@ -3,10 +3,8 @@
   gem 'iconv'
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
-  
-  gem 'hydra', "~> 6.2.0"
-  gem 'active-fedora', "~> 6.7.8"
-  gem 'rubydora', "~> 1.7.5"
+
+  gem 'hydra-head', '~>7.0'
   gem 'bcrypt-ruby', '~> 3.0.0'
   gem 'kaminari', '~> 0.15.0'
 
