@@ -5,7 +5,7 @@ module ActiveFedora
     	if ns = Avalon::Configuration.lookup('fedora.namespace')
     		pid_opts[:namespace] = ns
     	end
-      @pid ||= Nokogiri::XML(ActiveFedora::Base.connection_for_pid(0).next_pid(pid_opts)).at_xpath('//xmlns:pid').text
+      @pid ||= ActiveFedora::Base.connection_for_pid('0').mint
     end
   end
 end
