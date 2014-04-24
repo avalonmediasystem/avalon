@@ -15,7 +15,7 @@
 module ModsBehaviors
 
   def to_solr(solr_doc=SolrDocument.new)
-    super(solr_doc)
+    solr_doc = super(solr_doc)
 
     solr_doc['title_tesim'] = self.find_by_terms(:main_title).text
 
