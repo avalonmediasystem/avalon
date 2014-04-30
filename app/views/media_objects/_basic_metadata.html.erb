@@ -81,6 +81,10 @@ Unless required by applicable law or agreed to in writing, software distributed
                       count: [3, @mediaobject.geographic_subject.length].max,
                       text_label: 'Location(s)', 
                       options: {tooltip: true, dynamic: true}} %>
+  <%= render partial: 'text_field',
+             locals: {media: media, field: :permalink,
+                      text_label: 'Permalink', 
+                      options: {tooltip: true}} %>
 
   <%= render 'workflow_buttons', form: media %>
 <% end %>

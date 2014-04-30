@@ -71,7 +71,6 @@ module Permalink
 
   def ensure_permalink!
     updated = false
-
     begin
       link = self.permalink
       if link.blank?
@@ -81,12 +80,10 @@ module Permalink
       link = nil
       logger.error "Permalink.permalink_for() raised an exception for #{self.inspect}: #{e}"
     end
-    
     if link.present? and not (self.permalink == link)
       self.permalink = link
       updated = true
     end
-    
     updated
   end
 
