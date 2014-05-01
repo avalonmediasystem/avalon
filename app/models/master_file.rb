@@ -14,7 +14,9 @@
 
 require 'fileutils'
 require 'hooks'
+require 'open-uri'
 require 'avalon/file_resolver'
+require 'avalon/m3u8_reader'
 
 class MasterFile < ActiveFedora::Base
   include ActiveFedora::Associations
@@ -443,39 +445,63 @@ class MasterFile < ActiveFedora::Base
     @mediainfo ||= Mediainfo.new file_location
   end
 
+  def find_frame_source(options={})
+    options[:offset] ||= 2000
+
+    response = { source: file_location, offset: options[:offset] }
+    unless File.exists?(response[:source])
+      Rails.logger.info("Masterfile `#{file_location}` not found. Extracting via HLS.")
+      begin
+        token = StreamToken.find_or_create_session_token({media_token:nil}, self.mediapackage_id)
+        playlist_url = self.stream_details(token)[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
+        playlist = Avalon::M3U8Reader.read(playlist_url)
+        details = playlist.at(options[:offset])
+        target = File.join(Dir.tmpdir,File.basename(details[:location]))
+        File.open(target,'wb') { |f| open(details[:location]) { |io| f.write(io.read) } }
+        response = { source: target, offset: details[:offset] }
+      ensure
+        StreamToken.find_by_token(token).destroy
+      end
+    end
+    return response
+  end
+
   def extract_frame(options={})
     if is_video?
-      ffmpeg = Avalon::Configuration.lookup('ffmpeg.path')
-      frame_size = (options[:size].nil? or options[:size] == 'auto') ? self.original_frame_size : options[:size]
-
-      options[:offset] ||= 2000
+      base = pid.gsub(/:/,'_')
       offset = options[:offset].to_i
       unless offset.between?(0,self.duration.to_i)
         raise RangeError, "Offset #{offset} not in range 0..#{self.duration}"
       end
-      base = pid.gsub(/:/,'_')
+
+      ffmpeg = Avalon::Configuration.lookup('ffmpeg.path')
+      frame_size = (options[:size].nil? or options[:size] == 'auto') ? self.original_frame_size : options[:size]
 
       (new_width,new_height) = frame_size.split(/x/).collect &:to_f
       new_height = (new_width/self.display_aspect_ratio.to_f).floor
       new_height += 1 if new_height.odd?
       aspect = new_width/new_height
 
+      frame_source = find_frame_source(options)
       Tempfile.open([base,'.jpg']) do |jpeg|
-        file_source = File.join(File.dirname(jpeg.path),"#{File.basename(jpeg.path,File.extname(jpeg.path))}.#{File.extname(file_location)}")
-        File.symlink(file_location, file_source)
-        options = [
-          '-ss',      (offset / 1000.0).to_s,
-          '-i',       file_source,
-          '-s',       "#{new_width.to_i}x#{new_height.to_i}",
-          '-vframes', '1',
-          '-aspect',  aspect.to_s,
-          '-f',       'image2',
-          '-y',       jpeg.path
-        ]
-        Kernel.system(ffmpeg, *options)
-        File.unlink(file_source)
-        jpeg.rewind
-        jpeg.read
+        file_source = File.join(File.dirname(jpeg.path),"#{File.basename(jpeg.path,File.extname(jpeg.path))}#{File.extname(frame_source[:source])}")
+        File.link(frame_source[:source],file_source)
+        begin
+          options = [
+            '-ss',      (frame_source[:offset] / 1000.0).to_s,
+            '-i',       file_source,
+            '-s',       "#{new_width.to_i}x#{new_height.to_i}",
+            '-vframes', '1',
+            '-aspect',  aspect.to_s,
+            '-f',       'image2',
+            '-y',       jpeg.path
+          ]
+          Kernel.system(ffmpeg, *options)
+          jpeg.rewind
+          jpeg.read
+        ensure
+          File.unlink(file_source)
+        end
       end
     else
       nil
