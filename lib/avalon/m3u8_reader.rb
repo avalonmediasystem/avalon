@@ -5,7 +5,6 @@ module Avalon
   class M3U8Reader
 
     def self.read(io)
-      $stderr.puts(io.inspect)
       if io.is_a?(IO)
         self.new(io.read)
       elsif io.is_a?(String)
