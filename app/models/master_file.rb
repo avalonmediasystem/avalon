@@ -450,7 +450,7 @@ class MasterFile < ActiveFedora::Base
 
     response = { source: file_location, offset: options[:offset] }
     unless File.exists?(response[:source])
-      Rails.logger.info("Masterfile `#{file_location}` not found. Extracting via HLS.")
+      Rails.logger.warn("Masterfile `#{file_location}` not found. Extracting via HLS.")
       begin
         token = StreamToken.find_or_create_session_token({media_token:nil}, self.mediapackage_id)
         playlist_url = self.stream_details(token)[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
@@ -485,7 +485,7 @@ class MasterFile < ActiveFedora::Base
       frame_source = find_frame_source(options)
       Tempfile.open([base,'.jpg']) do |jpeg|
         file_source = File.join(File.dirname(jpeg.path),"#{File.basename(jpeg.path,File.extname(jpeg.path))}#{File.extname(frame_source[:source])}")
-        File.link(frame_source[:source],file_source)
+        File.symlink(frame_source[:source],file_source)
         begin
           options = [
             '-ss',      (frame_source[:offset] / 1000.0).to_s,
@@ -498,7 +498,18 @@ class MasterFile < ActiveFedora::Base
           ]
           Kernel.system(ffmpeg, *options)
           jpeg.rewind
-          jpeg.read
+          data = jpeg.read
+          Rails.logger.debug("Generated #{data.length} bytes of data")
+          if data.length == 0
+            # -ss before -i is faster, but fails on some files.
+            Rails.logger.warn("No data received. Swapping -ss and -i options")
+            options[0],options[1],options[2],options[3] = options[2],options[3],options[0],options[1]
+            Kernel.system(ffmpeg, *options)
+            jpeg.rewind
+            data = jpeg.read
+            Rails.logger.debug("Generated #{data.length} bytes of data")
+          end
+          data
         ensure
           File.unlink(file_source)
         end
