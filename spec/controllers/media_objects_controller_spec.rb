@@ -102,6 +102,48 @@ describe MediaObjectsController, type: :controller do
         response.response_code.should == 200
       end
     end
+
+    context "Persisting Permalinks" do
+      before(:each) { login_user mo.collection.managers.first }
+      context "Persisting Permalinks on unpublished mediaobject" do
+        subject(:mo) { media_object }
+        it "should persist new permalink on unpublished media_object" do 
+          expect { put 'update', id: mo.pid, step: 'resource-description', 
+                   media_object: { permalink: 'newpermalink', title: 'newtitle', 
+                                   creator: 'newcreator', date_issued: 'newdateissued' }}
+            .to change { MediaObject.find(mo.pid).permalink } 
+            .to('newpermalink')
+        end
+        it "should persist new permalink on unpublished media_object part" do 
+          part1 = FactoryGirl.create(:master_file)
+          mo.parts << part1
+          mo.save( validate: false )
+          expect {put 'update', id: mo.pid, step: 'file-upload', 
+                  parts: { part1.pid => { permalink: 'newpermalinkpart' }}}
+            .to change { MasterFile.find(part1.pid).permalink }
+            .to('newpermalinkpart')
+        end
+      end
+      context "Persisting Permalinks on published mediaobject" do
+        subject(:mo) { FactoryGirl.create(:published_media_object, permalink: 'oldpermalink') }
+        it "should persist updated permalink on published media_object" do
+          expect { put 'update', id: mo.pid, step: 'resource-description', 
+                   media_object: { permalink: 'newpermalink', title: mo.title, 
+                                   creator: mo.creator, date_issued: mo.date_issued }}
+            .to change { MediaObject.find(mo.pid).permalink }
+            .to('newpermalink')
+        end
+        it "should persist updated permalink on published media_object part" do
+          part1 = FactoryGirl.create(:master_file, permalink: 'oldpermalinkpart1')
+          mo.parts << part1
+          mo.save( validate: false )
+          expect { put 'update', id: mo.pid, step: 'file-upload', 
+                   parts: { part1.pid => { permalink: 'newpermalinkpart' }}}
+            .to change { MasterFile.find(part1.pid).permalink }
+            .to('newpermalinkpart')
+        end
+      end
+    end
   end
 
   describe "#show" do

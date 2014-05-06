@@ -31,6 +31,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <colgroup>
         <col class="span1">
         <col class="span4">
+        <col class="span4">
         <col class="span1">
         <col class="span4">
         <col class="span1">
@@ -39,6 +40,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <thead>
         <th>Type</th>
         <th>Section label</th>
+        <th>Permalink</th>
         <th>Thumbnail</th>
         <th>File name</th>
         <th>Size</th>
@@ -63,6 +65,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           <%= text_field_tag "parts[#{part.pid}][label]", part.label,
             size: 30, class: 'section-label' %>
         </td>
+	<td>
+          <%= text_field_tag "parts[#{part.pid}][permalink]", part.permalink,
+            size: 30, class: 'section-label' %>
+	</td>
         <td>
           <% if part.is_video? %>
             <%= text_field_tag "parts[#{part.pid}][poster_offset]",

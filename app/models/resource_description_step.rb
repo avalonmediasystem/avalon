@@ -19,6 +19,7 @@ class ResourceDescriptionStep < Avalon::Workflow::BasicStep
 
   def execute context
     mediaobject = context[:mediaobject]
+    mediaobject.permalink = context[:media_object].delete(:permalink)
     mediaobject.update_datastream(:descMetadata, context[:media_object])
     mediaobject.save
     context
