@@ -200,11 +200,15 @@ GEM
       multi_json (>= 1.0.0)
     bcrypt-ruby (3.0.1)
 <<<<<<< HEAD
+<<<<<<< HEAD
     blacklight (4.7.0)
       bootstrap-sass (>= 2.2.0, < 2.4)
       deprecation (~> 0.1)
 =======
     blacklight (5.3.0)
+=======
+    blacklight (5.4.0)
+>>>>>>> Use hydra gem instead of hydra-head
       bootstrap-sass (~> 3.0)
       deprecation
 >>>>>>> Bump hydra-head to 7.0
@@ -396,22 +400,40 @@ GEM
       hydra-core (= 6.5.2)
 =======
     htmlentities (4.3.1)
-    hydra-access-controls (7.0.1)
+    hydra (7.0.0)
+      active-fedora (~> 7.0.2)
+      blacklight (~> 5.4.0)
+      hydra-head (~> 7.0.1)
+      jettywrapper (~> 1.7.0)
+      nokogiri (~> 1.6.0)
+      nom-xml (~> 0.5.1)
+      om (~> 3.0.4)
+      rails (>= 3.2.15, < 5.0)
+      rsolr (~> 1.0.10)
+      rubydora (~> 1.7.4)
+      solrizer (~> 3.1.1)
+    hydra-access-controls (7.0.2)
       active-fedora (~> 7.0.0)
       activesupport
       blacklight (~> 5.3)
       cancancan
       deprecation
       sass-rails
-    hydra-core (7.0.1)
+    hydra-core (7.0.2)
       block_helpers
-      hydra-access-controls (= 7.0.1)
+      hydra-access-controls (= 7.0.2)
       jettywrapper (>= 1.4.1)
       rails (>= 3.2.3, < 5)
+<<<<<<< HEAD
     hydra-head (7.0.1)
       hydra-access-controls (= 7.0.1)
       hydra-core (= 7.0.1)
 >>>>>>> Bump hydra-head to 7.0
+=======
+    hydra-head (7.0.2)
+      hydra-access-controls (= 7.0.2)
+      hydra-core (= 7.0.2)
+>>>>>>> Use hydra gem instead of hydra-head
       rails (>= 3.2.6)
     i18n (0.6.11)
     iconv (1.0.4)
@@ -419,8 +441,12 @@ GEM
       builder
       oauth (~> 0.4.5)
       uuid
+<<<<<<< HEAD
     iso8601 (0.5.0)
     jettywrapper (1.5.2)
+=======
+    jettywrapper (1.7.0)
+>>>>>>> Use hydra gem instead of hydra-head
       activesupport (>= 3.0.0)
       childprocess
       i18n
@@ -432,9 +458,13 @@ GEM
       thor (>= 0.14, < 2.0)
     json (1.8.1)
 <<<<<<< HEAD
+<<<<<<< HEAD
     jwt (1.0.0)
 =======
     json-ld (1.1.3)
+=======
+    json-ld (1.1.3.1)
+>>>>>>> Use hydra gem instead of hydra-head
       rdf (~> 1.1)
 >>>>>>> Bump hydra-head to 7.0
     kaminari (0.15.1)
@@ -492,9 +522,14 @@ GEM
     mini_portile (0.6.0)
     modal_logic (0.0.6)
       handlebars_assets (= 0.14.1)
+<<<<<<< HEAD
       rails (>= 3)
     multi_json (1.10.1)
     multi_xml (0.5.5)
+=======
+      rails (~> 3.2.13)
+    multi_json (1.10.0)
+>>>>>>> Use hydra gem instead of hydra-head
     multipart-post (2.0.0)
     net-http-digest_auth (1.4)
 <<<<<<< HEAD
@@ -603,31 +638,31 @@ GEM
       rdf (>= 1.1)
     rdf-json (1.1.0)
       rdf (>= 1.1.0)
-    rdf-microdata (1.1.1)
-      htmlentities (>= 4.3.0)
-      nokogiri (>= 1.6.1)
-      rdf (>= 1.1.0)
-      rdf-xsd (>= 1.1.0)
-    rdf-n3 (1.1.0)
-      rdf (>= 1.1)
-    rdf-rdfa (1.1.3)
+    rdf-microdata (1.1.1.1)
+      htmlentities (~> 4.3)
+      nokogiri (~> 1.6)
+      rdf (~> 1.1)
+      rdf-xsd (~> 1.1)
+    rdf-n3 (1.1.0.1)
+      rdf (~> 1.1)
+    rdf-rdfa (1.1.3.1)
       haml (~> 4.0)
       htmlentities (~> 4.3)
       rdf (~> 1.1)
       rdf-xsd (~> 1.1)
-    rdf-rdfxml (1.1.0)
-      rdf (>= 1.1)
-      rdf-rdfa (>= 1.1)
-      rdf-xsd (>= 1.1)
-    rdf-trig (1.1.3)
-      ebnf (>= 0.3.5)
+    rdf-rdfxml (1.1.0.1)
+      rdf (~> 1.1)
+      rdf-rdfa (~> 1.1)
+      rdf-xsd (~> 1.1)
+    rdf-trig (1.1.3.1)
+      ebnf (~> 0.3, >= 0.3.5)
       rdf (~> 1.1, >= 1.1.2.1)
       rdf-turtle (~> 1.1, >= 1.1.3)
     rdf-trix (1.1.0)
       rdf (>= 1.1)
-    rdf-turtle (1.1.3)
-      ebnf (>= 0.3.5)
-      rdf (~> 1.1, >= 1.1.2.1)
+    rdf-turtle (1.1.3.1)
+      ebnf (~> 0.3, >= 0.3.6)
+      rdf (~> 1.1, >= 1.1.3)
     rdf-xsd (1.1.0)
       rdf (>= 1.1)
     rdoc (3.12.2)
@@ -816,10 +851,14 @@ DEPENDENCIES
   headless
   hooks
 <<<<<<< HEAD
+<<<<<<< HEAD
   hydra (~> 6.2.0)
 =======
   hydra-head (~> 7.0)
 >>>>>>> Bump hydra-head to 7.0
+=======
+  hydra (~> 7.0.0)
+>>>>>>> Use hydra gem instead of hydra-head
   iconv
   jdbc-sqlite3
   jettywrapper

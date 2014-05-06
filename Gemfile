@@ -4,7 +4,7 @@
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
 
-  gem 'hydra-head', '~>7.0'
+  gem 'hydra', '~>7.0.0'
   gem 'bcrypt-ruby', '~> 3.0.0'
   gem 'kaminari', '~> 0.15.0'
 
