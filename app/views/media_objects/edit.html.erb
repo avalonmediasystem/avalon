@@ -14,12 +14,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div class="row-fluid">
-  <div class="span2" id="left_column">
+  <div class="col-sm-2" id="left_column">
     <%= render "ingest_steps" %>
     <%= render "remove_item" %>
   </div>
   
-  <div id="main_body" class="span10">
+  <div id="main_body" class="col-sm-10">
 
   <% if flash[:notice] %>
     <div class="alert alert-info">

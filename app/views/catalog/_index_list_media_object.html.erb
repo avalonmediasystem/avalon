@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div class="result clearfix">
-  <div class="span2">
+  <div class="col-md-3">
     <% if image_url = image_for(document) %>
       <%= link_to(media_object_path(document[:id]), {class: 'result-thumbnail'}) do %>
         <%= image_tag( image_url ) %>
@@ -24,7 +24,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
   </div>
 
-  <ul class="span6 result-list">
+  <ul class="col-md-8 result-list">
     <% index_fields.each do |solr_fname, field| -%>
       <% if should_render_index_field? document, field %>
               <li class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_label :field => solr_fname %>
