@@ -6,21 +6,6 @@ GIT
     database_cleaner (1.0.1)
 
 GIT
-  remote: https://github.com/avalonmediasystem/about_page.git
-  revision: 1fb165be50f913a7940b1c6256b85900ce23a41b
-  specs:
-    about_page (0.2.6)
-      rails (>= 3.2)
-
-GIT
-  remote: https://github.com/avalonmediasystem/avalon-about.git
-  revision: 4da42ab601c8ced5b3bd7dd983151ebe6acfd285
-  specs:
-    avalon-about (0.1.0)
-      about_page
-      mediainfo
-
-GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
   revision: d10ac19d7ea131a30673bf2846897d1cfcc65098
   specs:
@@ -591,10 +576,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  about_page!
   active-fedora!
   activerecord-jdbcsqlite3-adapter
-  avalon-about!
   avalon-batch (~> 0.2.2)!
   avalon-workflow!
   bcrypt-ruby (~> 3.0.0)
