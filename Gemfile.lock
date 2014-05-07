@@ -16,6 +16,7 @@ GIT
     database_cleaner (1.0.1)
 
 GIT
+<<<<<<< HEAD
   remote: https://github.com/avalonmediasystem/about_page.git
   revision: 1fb165be50f913a7940b1c6256b85900ce23a41b
   specs:
@@ -32,6 +33,8 @@ GIT
       mediainfo
 
 GIT
+=======
+>>>>>>> Routes no longer complain
   remote: https://github.com/avalonmediasystem/avalon-batch.git
   revision: 2737cac71d2e6a990ea6b937e6181f02c471b00f
   tag: v3.1
@@ -1007,16 +1010,23 @@ PLATFORMS
 DEPENDENCIES
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   active-fedora (~> 6.7.8)
 =======
 =======
   about_page!
 >>>>>>> First pass at updating to rails 4
+=======
+>>>>>>> Routes no longer complain
   active-fedora!
 >>>>>>> Use active-fedora master to get latest bugfixes
   activerecord-jdbcsqlite3-adapter
+<<<<<<< HEAD
   avalon-about!
   avalon-batch!
+=======
+  avalon-batch (~> 0.2.2)!
+>>>>>>> Routes no longer complain
   avalon-workflow!
   bcrypt-ruby (~> 3.0.0)
 <<<<<<< HEAD
