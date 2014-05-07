@@ -23,11 +23,7 @@ describe IngestBatch do
   end
   describe '#finished?' do
     it 'returns true when all the master files are finished' do
-      media_object = MediaObject.new
-      media_object.parts << MasterFile.new(status_code: ['STOPPED'])
-      media_object.parts << MasterFile.new(status_code: ['SUCCEEDED'])
-      media_object.save(validate: false)
-
+      media_object = FactoryGirl.create(:media_object, parts: [FactoryGirl.create(:master_file, status_code: ['STOPPED']), FactoryGirl.create(:master_file, status_code: ['SUCCEEDED'])])
       ingest_batch = IngestBatch.new(media_object_ids: [media_object.id], email: 'email@something.com')
       ingest_batch.finished?.should be_true
     end
