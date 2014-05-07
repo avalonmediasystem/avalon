@@ -55,9 +55,14 @@ GIT
       mediashelf-loggable
 
 GIT
+<<<<<<< HEAD
   remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector
   revision: f5a107b6553894ebed6d87eba1b6f50f8c1a480c
   tag: v3.1
+=======
+  remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector.git
+  revision: d15557fc4c20f836377ede3d1bc02cb6d59a18a4
+>>>>>>> Use active-fedora master to get latest bugfixes
   specs:
     media_element_thumbnail_selector (0.0.1)
       rails (>= 3.2.3)
@@ -137,6 +142,21 @@ GIT
       actionpack (~> 3)
       railties (~> 3)
 
+GIT
+  remote: https://github.com/projecthydra/active_fedora.git
+  revision: fed5ec944ceb7d643a9831de620e1771804e8f16
+  specs:
+    active-fedora (7.0.2)
+      activesupport (>= 3.0.0)
+      deprecation
+      linkeddata
+      mediashelf-loggable
+      nom-xml (>= 0.5.1)
+      om (~> 3.0.0)
+      rdf-rdfxml (~> 1.1.0)
+      rsolr (~> 1.0.10.pre1)
+      rubydora (~> 1.7.4)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -155,6 +175,7 @@ GEM
       rack-cache (~> 1.2)
       rack-test (~> 0.6.1)
       sprockets (~> 2.2.1)
+<<<<<<< HEAD
 <<<<<<< HEAD
     active-fedora (6.7.8)
 =======
@@ -177,6 +198,8 @@ GEM
       rdf-rdfxml (~> 1.1.0)
       rsolr (~> 1.0.10.pre1)
       rubydora (~> 1.7.4)
+=======
+>>>>>>> Use active-fedora master to get latest bugfixes
     activemodel (3.2.17)
       activesupport (= 3.2.17)
 >>>>>>> Bump hydra-head to 7.0
@@ -820,7 +843,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+<<<<<<< HEAD
   active-fedora (~> 6.7.8)
+=======
+  active-fedora!
+>>>>>>> Use active-fedora master to get latest bugfixes
   activerecord-jdbcsqlite3-adapter
   avalon-about!
   avalon-batch!

@@ -5,6 +5,7 @@
   gem 'builder', '~>3.0.0'
 
   gem 'hydra', '~>7.0.0'
+  gem 'active-fedora', git: 'https://github.com/projecthydra/active_fedora.git'
   gem 'bcrypt-ruby', '~> 3.0.0'
   gem 'kaminari', '~> 0.15.0'
 
