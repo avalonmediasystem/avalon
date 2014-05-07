@@ -5,13 +5,14 @@
   gem 'builder', '~>3.0.0'
 
   gem 'hydra', '~>7.0.0'
+  gem 'active-fedora', git: 'https://github.com/projecthydra/active_fedora.git'
   gem 'bcrypt-ruby', '~> 3.0.0'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git' # HEAD , tag: 'avalon-r3'
   gem 'avalon-batch', '~> 0.2.2', git: "https://github.com/avalonmediasystem/avalon-batch.git" # HEAD , tag: 'avalon-r3'
   gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git' # HEAD , tag: 'avalon-r3'
   gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git' # HEAD , tag: 'avalon-r3'
-  gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector' # HEAD , tag: 'avalon-r3'
+  gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector.git' # HEAD , tag: 'avalon-r3'
   gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git' # HEAD , tag: 'avalon-r3'
   gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git' # HEAD , tag: 'avalon-r3'
   gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git' # HEAD , tag: 'avalon-r3'
