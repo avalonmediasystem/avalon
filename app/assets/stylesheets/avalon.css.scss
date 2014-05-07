@@ -449,9 +449,11 @@ footer .release {
 }
 
 #featured_content {
-  figcaption {
+  h5 {
     font-weight: bold;
-    font-size: $font-size-large;
+  }
+  img {
+    @extend .img-thumbnail;
   }
 }
 
@@ -522,6 +524,7 @@ span.constraints-label {
     word-wrap: normal;
     word-break: normal;
     overflow-wrap: normal;
+    white-space: inherit;
   }
 }
 
