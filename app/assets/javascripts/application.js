@@ -40,16 +40,16 @@
 //= require jquery-ui
 //= require jquery.ui.nestedSortable
 
-//= require bootstrap-alert
-//= require bootstrap-dropdown
-//= require bootstrap-transition
-//= require bootstrap-collapse
-//= require bootstrap-modal
-//= require bootstrap-typeahead
-//= require bootstrap-button
-//= require bootstrap-tooltip
-//= require bootstrap-popover
-//= require bootstrap-tab
+//= require bootstrap/alert
+//= require bootstrap/dropdown
+//= require bootstrap/transition
+//= require bootstrap/collapse
+//= require bootstrap/modal
+/*  require bootstrap/typeahead  deprecated, use twitter/typeahead.js */
+//= require bootstrap/button
+//= require bootstrap/tooltip
+//= require bootstrap/popover
+//= require bootstrap/tab
 
 
 /* requirements for handling modals with modal logic gem */
