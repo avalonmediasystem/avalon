@@ -1,8 +1,8 @@
   source 'http://rubygems.org'
 
   gem 'iconv'
-  gem 'rails', '~>3.2.3'
-  gem 'builder', '~>3.0.0'
+  gem 'rails', '~>4.0.3'
+  gem 'builder', '~>3.1.0'
 
   gem 'hydra', '~>7.0.0'
   gem 'active-fedora', git: 'https://github.com/projecthydra/active_fedora.git'
@@ -24,7 +24,7 @@
   gem 'roo', git: 'https://github.com/Empact/roo', ref: '9e1b969762cbb80b1c52cfddd848e489f22f468f'
 
   gem 'multipart-post'  
-  gem 'modal_logic'
+  gem 'modal_logic', '~>0.0.6'
 
   gem 'rubyzip', '0.9.9'
   gem 'hooks'
@@ -46,9 +46,10 @@
   end
 
   gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git", tag: 'v3.1'
+  gem 'about_page', git: "https://github.com/avalonmediasystem/about_page.git"
 
   # You are free to implement your own User/Authentication solution in its place.
-  gem 'devise', '~>3.0.3'
+  gem 'devise', '~>3.2.0'
   #gem 'devise-guests'
   gem 'haml'
 
@@ -71,7 +72,7 @@
   gem 'net-ldap'
 
   group :assets, :production do
-    gem 'coffee-rails', "~> 3.2.1"
+    gem 'coffee-rails'
     gem 'uglifier', '>= 1.0.3'
     gem 'jquery-rails', "~> 2.1.4"
     gem 'compass-rails', '~> 1.0.0'
@@ -79,11 +80,11 @@
 
     # For overriding the default interface with Twitter Bootstrap
     # This is now inherited from Blacklight
-    gem 'sass-rails', '~> 3.2.3'
+    gem 'sass-rails', '>= 3.2.3'
     gem 'font-awesome-sass-rails'
-    gem 'twitter_bootstrap_form_for',
-      git: "https://github.com/avalonmediasystem/twitter_bootstrap_form_for.git",
-      branch: "bootstrap-2.0"
+#    gem 'twitter_bootstrap_form_for',
+#      git: "https://github.com/avalonmediasystem/twitter_bootstrap_form_for.git",
+#      branch: "bootstrap-2.0"
     gem 'handlebars_assets'
   end
 
