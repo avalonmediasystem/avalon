@@ -20,7 +20,8 @@ describe Comment do
       email: "john.smith@example.com",
       email_confirmation: "john.smith@example.com",
       subject: Comment::SUBJECTS[2],
-      comment: "This is an RSpec test") 
+      comment: "This is an RSpec test",
+      nickname: "") 
   end
   
   it "should validate if all fields are entered correctly" do
