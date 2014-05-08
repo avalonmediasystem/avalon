@@ -57,6 +57,8 @@ Avalon::Application.configure do
    
   config.action_mailer.delivery_method = :letter_opener
 
+  config.eager_load = false
+
   #config.middleware.insert_before Rails::Rack::Logger, DisableAssetsLogger
   config.eager_load = false
 end
