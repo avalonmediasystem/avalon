@@ -39,8 +39,7 @@
     gem 'therubyracer', '= 0.10.2'
   end
 
-  #gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git" # HEAD , tag: 'avalon-r3'
-  #gem 'about_page', git: "https://github.com/avalonmediasystem/about_page.git"
+  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git" # HEAD , tag: 'avalon-r3'
 
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise', '~>3.2.0'
