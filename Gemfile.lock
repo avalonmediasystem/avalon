@@ -17,6 +17,7 @@ GIT
 
 GIT
 <<<<<<< HEAD
+<<<<<<< HEAD
   remote: https://github.com/avalonmediasystem/about_page.git
   revision: 1fb165be50f913a7940b1c6256b85900ce23a41b
   specs:
@@ -27,14 +28,21 @@ GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
   revision: ecbb3a961666768845fbc50b151ff0fbbfad6527
   tag: v3.1
+=======
+  remote: https://github.com/avalonmediasystem/avalon-about.git
+  revision: 4da42ab601c8ced5b3bd7dd983151ebe6acfd285
+>>>>>>> Use upstream about_page now that it works with rails 4
   specs:
     avalon-about (0.1.0)
       about_page
       mediainfo
 
 GIT
+<<<<<<< HEAD
 =======
 >>>>>>> Routes no longer complain
+=======
+>>>>>>> Use upstream about_page now that it works with rails 4
   remote: https://github.com/avalonmediasystem/avalon-batch.git
   revision: 2737cac71d2e6a990ea6b937e6181f02c471b00f
   tag: v3.1
@@ -172,6 +180,7 @@ GEM
   remote: http://rubygems.org/
   specs:
 <<<<<<< HEAD
+<<<<<<< HEAD
     about_page (0.2.7)
       rails (>= 3.2)
     actionmailer (3.2.19)
@@ -234,6 +243,10 @@ GEM
       extlib (>= 0.9.15)
       multi_json (>= 1.0.0)
 =======
+=======
+    about_page (0.2.7)
+      rails (>= 3.2)
+>>>>>>> Use upstream about_page now that it works with rails 4
     actionmailer (4.0.5)
       actionpack (= 4.0.5)
       mail (~> 2.5.4)
@@ -1022,9 +1035,13 @@ DEPENDENCIES
 >>>>>>> Use active-fedora master to get latest bugfixes
   activerecord-jdbcsqlite3-adapter
 <<<<<<< HEAD
+<<<<<<< HEAD
   avalon-about!
   avalon-batch!
 =======
+=======
+  avalon-about!
+>>>>>>> Use upstream about_page now that it works with rails 4
   avalon-batch (~> 0.2.2)!
 >>>>>>> Routes no longer complain
   avalon-workflow!
