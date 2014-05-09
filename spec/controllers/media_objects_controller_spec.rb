@@ -82,7 +82,7 @@ describe MediaObjectsController, type: :controller do
 
        get 'edit', id: media_object.pid
        response.should be_success
-       response.should render_template HYDRANT_STEPS.first.template
+       response.should render_template "_#{HYDRANT_STEPS.first.template}"
      end
     
     it "should not default to the Access Control page" do

@@ -25,8 +25,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 <p>Interested in learning more about the Avalon Media System? Request a temporary account to explore the features that it provides.</p>
 <p><strong>All fields are required</strong></p>
 
-<%= twitter_bootstrap_form_for @comment, class: 'form-vertical' do |comment| %>
-  <%= comment.fieldset do %>    
+<%= bootstrap_form_for @comment, class: 'form-vertical' do |comment| %>
+      <fieldset>
+
     <%= comment.label :name, "Name" do |controls| %>
       <%= controls.text_field :name, class: 'span4' %>
     <% end %>
@@ -44,5 +45,5 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= comment.text_area :comment, "Comment", rows: 10, class: 'span4' %>
     
     <%= comment.submit "Submit comments" %>
-  <% end %>
+</fieldset>
 <% end %>

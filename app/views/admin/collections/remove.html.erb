@@ -23,7 +23,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       Are you certain you want to remove the collection <b><%=@collection.name%></b>?
     </div>
   </div>
-  <%= twitter_bootstrap_form_for @collection, method: :delete do |f| %>
+  <%= bootstrap_form_for @collection, method: :delete do |f| %>
     <% if @objects.length > 0 %>
       <div class="row-fluid">
         <div class="alert">
