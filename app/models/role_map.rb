@@ -15,7 +15,7 @@
 class RoleMap < ActiveRecord::Base
   belongs_to :role, class_name: "RoleMap", foreign_key: "parent_id"
   has_many :entries, class_name: "RoleMap", foreign_key: "parent_id"
-  attr_accessible :entry, :role, :parent_id
+  #attr_accessible :entry, :role, :parent_id
 
   def self.reset!
     self.replace_with! YAML.load(File.read(File.join(Rails.root, "config/role_map_#{Rails.env}.yml")))

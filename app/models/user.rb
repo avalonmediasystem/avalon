@@ -21,8 +21,8 @@ class User < ActiveRecord::Base
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
   devise :omniauthable
 
-  attr_accessible :username, :uid, :provider
-  attr_accessible :email, :guest
+#  attr_accessible :username, :uid, :provider
+#  attr_accessible :email, :guest
 
   validates :username, presence: true, uniqueness: true
   validates :email, presence: true, uniqueness: true
