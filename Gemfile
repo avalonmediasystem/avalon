@@ -74,6 +74,7 @@
     # This is now inherited from Blacklight
     gem 'sass-rails', '>= 3.2.3'
     gem 'font-awesome-sass-rails'
+    gem 'bootstrap_form'
 #    gem 'twitter_bootstrap_form_for',
 #      git: "https://github.com/avalonmediasystem/twitter_bootstrap_form_for.git",
 #      branch: "bootstrap-2.0"

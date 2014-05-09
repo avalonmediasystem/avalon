@@ -26,9 +26,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     Or <a href='https://wiki.dlib.indiana.edu/display/VarVideo/Avalon+Collections+Guide#AvalonCollectionsGuide-UploadingviaBatch'><b>learn how to</b></a> create items using batch upload.
     </div>
 
-    <%= twitter_bootstrap_form_for @collection, html: { class: "form-horizontal", id: 'access_control_form'}  do |co| %>
-
-      <%= co.fieldset 'Assign Staff Roles' do %>
+    <%= bootstrap_form_for @collection, html: { class: "form-horizontal", id: 'access_control_form'}  do |co| %>
+ 
+      <fieldset>
+        <legend>Assign Staff Roles</legend>
 
         <% if flash[:notice] %>
           <div class="alert alert-error span9">
@@ -56,16 +57,17 @@ Unless required by applicable law or agreed to in writing, software distributed
             object: @collection,
             input_disabled: cannot?( :update_depositors, @collection ) %>
         </div>
-      <% end %>
+      </fieldset>
 
       <div class="whitespace"></div>
 
-      <%= co.fieldset 'Set Default Access Control for New Items' do %>
+      <fieldset>
+         <legend>Set Default Access Control for New Items</legend>
           <%= render "modules/access_control", { form: co, object: @collection, visibility: @collection.default_visibility, hidden: @collection.default_hidden? } %>	
 					<% if can? :update_access_control, @collection %>
 						<%= submit_tag "Save Access Settings", name: "save_access", class: "btn" %>
 					<% end %>
-      <% end %>
+      </fieldset>
       
     <% end %>
   </div>
