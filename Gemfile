@@ -2,7 +2,7 @@
 
   gem 'iconv'
   gem 'rails', '~>4.0.3'
-  gem 'protected_attributes'
+  #gem 'protected_attributes'
   gem 'builder', '~>3.1.0'
 
   gem 'hydra', '~>7.0.0'

@@ -15,7 +15,7 @@
 class StreamToken < ActiveRecord::Base
   class Unauthorized < Exception; end
 
-  attr_accessible :token, :target, :expires
+#  attr_accessible :token, :target, :expires
 
   def self.media_token(session)
     session[:media_token] ||= SecureRandom.hex(16)
