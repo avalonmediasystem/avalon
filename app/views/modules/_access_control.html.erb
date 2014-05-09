@@ -15,7 +15,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
   <% can_update = can?( :update_access_control, object) %>
 
-  <%= form.fieldset 'Item discovery', class: 'item-discovery' do %>
+  <fieldset class='item-discovery'>
+    <legend>Item discovery</legend>
     <% if can_update %>
       <%= label_tag :hidden do %>
         <%= check_box_tag 'hidden', '1', hidden %>
@@ -25,9 +26,10 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= hidden ? "Item is hidden from search results" : 
         "Item is not hidden from search results" %>
     <% end %>
-  <% end %>
+  </fieldset>
     
-  <%= form.fieldset 'Item access', class: 'item-access' do %>
+  <fieldset class='item-access'>
+    <legend>Item access</legend>
     <% if can_update %>
       <%= form.hidden_field :pid %>
 
@@ -56,9 +58,10 @@ Unless required by applicable law or agreed to in writing, software distributed
             "collection staff only"
           end %>
     <% end %>
-  <% end %> 
+  </fieldset> 
 
-  <%= form.fieldset 'Assign special access', class: 'special-access' do %>
+  <fieldset class='special-access'>
+    <legend>Assign special access</legend>
     <% if flash[:error] %>
       <div id="errors_information" class="alert alert-error active">
        <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -85,4 +88,4 @@ Unless required by applicable law or agreed to in writing, software distributed
         autocomplete_model: 'externalGroup', display_helper: :vgroup_display,
         input_disabled: !can_update %>
     </div>
-  <% end %>
+  </fieldset>

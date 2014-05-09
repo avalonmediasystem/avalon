@@ -298,6 +298,7 @@ GEM
     bootstrap-sass (3.1.1.1)
       sass (~> 3.2)
 <<<<<<< HEAD
+<<<<<<< HEAD
     browse-everything (0.6.0)
       bootstrap-sass
       dropbox-sdk (>= 1.6.2)
@@ -310,10 +311,13 @@ GEM
       skydrive
     builder (3.0.4)
 =======
+=======
+    bootstrap_form (2.1.1)
+>>>>>>> Start switchover to bootstrap_form from twitter_bootstrap_form_for
     builder (3.1.4)
 >>>>>>> First pass at updating to rails 4
     callsite (0.0.11)
-    cancancan (1.7.1)
+    cancancan (1.8.0)
     capistrano (2.12.0)
       highline
       net-scp (>= 1.0.0)
@@ -364,6 +368,7 @@ GEM
       debugger-ruby_core_source (~> 1.3.5)
     debugger-linecache (1.2.0)
 <<<<<<< HEAD
+<<<<<<< HEAD
     debugger-ruby_core_source (1.3.5)
     delayed_job (3.0.5)
       activesupport (~> 3.0)
@@ -372,6 +377,9 @@ GEM
       delayed_job (~> 3.0)
 =======
     debugger-ruby_core_source (1.3.2)
+=======
+    debugger-ruby_core_source (1.3.4)
+>>>>>>> Start switchover to bootstrap_form from twitter_bootstrap_form_for
     delayed_job (4.0.1)
       activesupport (>= 3.0, < 4.2)
     delayed_job_active_record (4.0.1)
@@ -992,7 +1000,7 @@ GEM
     uglifier (2.5.3)
 =======
     tzinfo (0.3.39)
-    uber (0.0.4)
+    uber (0.0.6)
     uglifier (2.5.0)
 >>>>>>> First pass at updating to rails 4
       execjs (>= 0.3.0)
@@ -1050,9 +1058,13 @@ DEPENDENCIES
   avalon-workflow!
   bcrypt-ruby (~> 3.0.0)
 <<<<<<< HEAD
+<<<<<<< HEAD
   browse-everything (>= 0.6.0)
   builder (~> 3.0.0)
 =======
+=======
+  bootstrap_form
+>>>>>>> Start switchover to bootstrap_form from twitter_bootstrap_form_for
   builder (~> 3.1.0)
 >>>>>>> First pass at updating to rails 4
   capistrano (~> 2.12.0)
