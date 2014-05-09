@@ -26,24 +26,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 <p><strong>All fields are required</strong></p>
 
 <%= bootstrap_form_for @comment, class: 'form-vertical' do |comment| %>
-      <fieldset>
-
-    <%= comment.label :name, "Name" do |controls| %>
-      <%= controls.text_field :name, class: 'span4' %>
-    <% end %>
-
-    <%= comment.label :email, "Email address" do |controls| %> 
-      <%= controls.email_field :email, class: 'span4' %>
-    <% end %>
-    <%= comment.label :email_confirmation, "Confirm email address" do |controls| %>
-      <%= controls.email_field :email_confirmation, class: 'span4' %> 
-    <% end %>
-    
-    <%= comment.select :subject, "Subject", @subjects, prompt: 'Select one', 
-        class: 'span4' %>
-    
-    <%= comment.text_area :comment, "Comment", rows: 10, class: 'span4' %>
-    
-    <%= comment.submit "Submit comments" %>
+<fieldset>
+      <%= comment.text_field :name, class: 'span4', label: 'Name' %>
+      <%= comment.email_field :email, class: 'span4', label: 'Email address' %>
+      <%= comment.email_field :email_confirmation, class: 'span4', label: 'Confirm email address' %> 
+      <%= comment.select :subject, @subjects, prompt: 'Select one',  class: 'span4' %>    
+      <%= comment.text_area :comment, rows: 10, class: 'span4' %>
+      <%= comment.submit "Submit comments" %>
 </fieldset>
 <% end %>
