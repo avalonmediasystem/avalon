@@ -60,5 +60,4 @@ Avalon::Application.configure do
   config.eager_load = false
 
   #config.middleware.insert_before Rails::Rack::Logger, DisableAssetsLogger
-  config.eager_load = false
 end
