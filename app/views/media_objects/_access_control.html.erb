@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
+<%= bootstrap_form_for @mediaobject, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
   <%= hidden_field_tag :step, @active_step %>
 
   <%= render "modules/access_control", {form: vid, object: @mediaobject, visibility: @mediaobject.visibility, hidden: @mediaobject.hidden?} %>	

@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<%= twitter_bootstrap_form_for @collection, remote: true, html: { modal: true } do |f| %>
+<%= bootstrap_form_for @collection, remote: true, html: { modal: true } do |f| %>
   <%= f.text_field :name, class: 'span5' %>
   <%= f.text_area :description, rows: 3, class: 'span5'  %>
 	<% if @collection.new? || can?(:update_unit, @collection)%>

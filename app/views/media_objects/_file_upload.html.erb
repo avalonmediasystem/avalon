@@ -24,7 +24,6 @@ Unless required by applicable law or agreed to in writing, software distributed
       <legend>Associated files</legend>
       <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
 <%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
-
       <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
   <div class="collapse form-tooltip" id="label-tooltip">
@@ -187,7 +186,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 </section>
 
 <section id="workflow_buttons" class="span11">
-<%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
+<%= bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
   <%= render "workflow_buttons", form: media %>
 <% end %>
 </section>
