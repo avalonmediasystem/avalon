@@ -25,7 +25,7 @@
 
 class IngestBatch < ActiveRecord::Base
 
-  attr_accessible :media_object_ids, :name, :email, :email_sent
+#  attr_accessible :media_object_ids, :name, :email, :email_sent
   serialize :media_object_ids
 
   attr_reader :media_objects
