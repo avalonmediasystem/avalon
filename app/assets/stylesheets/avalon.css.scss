@@ -177,7 +177,7 @@ tr.active-false td {
    *  Copied in from blacklight due to this commit https://github.com/projectblacklight/blacklight/commit/43b49ede7072b95cd2f9d1e09cd8e5312670c7b1
    */
   width: 87px;
-  background:transparent asset_url($logo_image,image) no-repeat top left;
+  background:transparent asset_url($logo_image) no-repeat top left;
   display: inline-block;
   text-indent: 100%;
   white-space: nowrap;
