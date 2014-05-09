@@ -36,4 +36,5 @@ Avalon::Application.configure do
   config.logger = Logger.new(Rails.root.join(
     "log", 
     Rails.env + ".log"), 5, 5* (2**20)) 
+  config.eager_load = false
 end
