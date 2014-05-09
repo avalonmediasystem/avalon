@@ -86,7 +86,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <script>
     currentPlayer = new MediaElementPlayer('#video-tag', 
         { mode: 'auto_plugin',
-          pluginPath: <%= asset_path('mediaelement_rails/').inspect.html_safe %>,
+          pluginPath: '/assets/mediaelement_rails/',
           usePluginFullScreen: false,
           thumbnailSelectorUpdateURL: '/update-url',
           thumbnailSelectorEnabled: true,
