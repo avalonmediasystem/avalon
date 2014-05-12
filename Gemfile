@@ -76,7 +76,7 @@
     gem 'coffee-rails'
     gem 'uglifier', '>= 1.0.3'
     gem 'jquery-rails', "~> 2.1.4"
-    gem 'compass-rails', '~> 1.0.0'
+    gem 'compass-rails', '1.1.7' #git: 'https://github.com/Compass/compass-rails', branch: '2-0-stable'
     gem 'compass-susy-plugin', '~> 0.9.0', require: 'susy'
 
     # For overriding the default interface with Twitter Bootstrap

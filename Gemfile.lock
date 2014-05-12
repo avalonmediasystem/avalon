@@ -357,8 +357,9 @@ GEM
       chunky_png (~> 1.2)
       fssm (>= 0.2.7)
       sass (~> 3.2.19)
-    compass-rails (1.0.3)
-      compass (>= 0.12.2, < 0.14)
+    compass-rails (1.1.7)
+      compass (>= 0.12.2)
+      sprockets (<= 2.11.0)
     compass-susy-plugin (0.9)
       compass (>= 0.11.1)
     daemons (1.1.9)
@@ -1070,7 +1071,7 @@ DEPENDENCIES
   capistrano (~> 2.12.0)
   capybara
   coffee-rails
-  compass-rails (~> 1.0.0)
+  compass-rails (= 1.1.7)
   compass-susy-plugin (~> 0.9.0)
   database_cleaner!
   debugger
