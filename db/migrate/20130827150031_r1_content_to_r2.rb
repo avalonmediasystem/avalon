@@ -46,7 +46,7 @@ class R1ContentToR2 < ActiveRecord::Migration
 
   def masterfile_to_r2(mf)
     say("MasterFile #{mf.pid} #{mf.current_migration}->R2", :subitem)
-    mf.derivatives.each { |d| derivative_to_r3(d) }
+    mf.derivatives.each { |d| derivative_to_r2(d) }
     mf.duration = mf.derivatives.empty? ? '0' : mf.derivatives.first.duration.to_s
     mf.descMetadata.poster_offset = mf.descMetadata.thumbnail_offset = [mf.duration.to_i,2000].min.to_s
     mf.save_as_version('R2', validate: false)
