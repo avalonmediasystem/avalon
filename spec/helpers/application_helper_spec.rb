@@ -83,4 +83,16 @@ describe ApplicationHelper do
       expect(helper.truncate_center("This string is short", 20)).to eq "This string is short"
     end
   end
+
+  describe "#milliseconds_to_formatted_time" do
+    it "should return correct values" do
+      expect(helper.milliseconds_to_formatted_time(0)).to eq("00:00")
+      expect(helper.milliseconds_to_formatted_time(1000)).to eq("00:01")
+      expect(helper.milliseconds_to_formatted_time(60000)).to eq("01:00")
+      expect(helper.milliseconds_to_formatted_time(3600000)).to eq("1:00:00")
+    end
+  end
+end
+
+
 end
