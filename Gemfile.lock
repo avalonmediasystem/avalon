@@ -694,9 +694,14 @@ GEM
 >>>>>>> First pass at updating to rails 4
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
+<<<<<<< HEAD
     netrc (0.7.7)
     nokogiri (1.6.3.1)
       mini_portile (= 0.6.0)
+=======
+    nokogiri (1.6.2)
+      mini_portile (~> 0.5.2)
+>>>>>>> Bump nokogiri to 1.6.2
     nom-xml (0.5.1)
       activesupport
       i18n
