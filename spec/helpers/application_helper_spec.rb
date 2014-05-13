@@ -59,4 +59,19 @@ describe ApplicationHelper do
       helper.search_result_label(media_object.to_solr).should_not include("(00:00)")
     end
   end
+
+  describe "#truncate_center" do
+    it "should return empty string if empty string received" do
+      helper.truncate_center("", 5).should == ""
+    end
+    it "should truncate with no end length provided" do
+      helper.truncate_center("This is my very long test string", 16).should == "This is ...tring" 
+    end
+    it "should truncate with end length" do
+      helper.truncate_center("This is my very long test string", 20, 6).should == "This is my ...string"
+    end
+    it "shouldn't truncate if not needed" do
+      helper.truncate_center("This string is short", 20).should == "This string is short"
+    end
+  end
 end
