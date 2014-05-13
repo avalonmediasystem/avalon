@@ -55,23 +55,32 @@ describe ApplicationHelper do
 
   describe "#search_result_label" do
     it "should not include a duration string if it would be 0" do
-      media_object = FactoryGirl.create(:media_object)
-      helper.search_result_label(media_object.to_solr).should_not include("(00:00)")
+      mo_solr_doc = {"title_tesim" => "my_title"}
+      expect(helper.search_result_label(mo_solr_doc)).not_to include("(00:00)")
+    end
+    it "should return formatted title if duration is present" do
+      mo_solr_doc = {"title_tesim" => ["my_title"], "duration_tesim" => ["1000"]}
+      expect(helper.search_result_label(mo_solr_doc)).to eq("my_title (00:01)")
+    end
+    it "should return pid when no title" do
+      mo_solr_doc = {}
+      allow(mo_solr_doc).to receive(:id) {"avalon:123"}
+      expect(helper.search_result_label(mo_solr_doc)).to eq("avalon:123")
     end
   end
 
   describe "#truncate_center" do
     it "should return empty string if empty string received" do
-      helper.truncate_center("", 5).should == ""
+      expect(helper.truncate_center("", 5)).to eq ""
     end
     it "should truncate with no end length provided" do
-      helper.truncate_center("This is my very long test string", 16).should == "This is ...tring" 
+      expect(helper.truncate_center("This is my very long test string", 16)).to eq "This is ...tring" 
     end
     it "should truncate with end length" do
-      helper.truncate_center("This is my very long test string", 20, 6).should == "This is my ...string"
+      expect(helper.truncate_center("This is my very long test string", 20, 6)).to eq "This is my ...string"
     end
     it "shouldn't truncate if not needed" do
-      helper.truncate_center("This string is short", 20).should == "This string is short"
+      expect(helper.truncate_center("This string is short", 20)).to eq "This string is short"
     end
   end
 end
