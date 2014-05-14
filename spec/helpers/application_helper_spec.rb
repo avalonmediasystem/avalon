@@ -9,7 +9,7 @@
 # Unless required by applicable law or agreed to in writing, software distributed 
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
-#   specific language governing permissions and limitations under the License.
+#   specific language governing permissions and limitations under the License
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'spec_helper'
@@ -92,7 +92,32 @@ describe ApplicationHelper do
       expect(helper.milliseconds_to_formatted_time(3600000)).to eq("1:00:00")
     end
   end
-end
 
+  describe "#git_commit_info" do
+    it "should return commit info in specified pattern" do
+      #expect(helper.git_commit_info()).to eq("x")
+      pending "Grit gem is abandoned and thowing errors. Replace with libgit2/rugged"
 
+    end
+  end
+
+  describe "#image_for" do
+    # image_for expects hash keys as labels, not strings
+    it "should return audio icon" do
+      doc = {"mods_tesim" => ['sound recording 2', 'sound recording 1'] }
+      expect(helper.image_for(doc)).to eq('/assets/audio_icon.png')
+    end
+    it "should return video icon" do
+      doc = {"mods_tesim" => ['moving image 1'] }
+      expect(helper.image_for(doc)).to eq('/assets/video_icon.png')
+    end
+    it "should return hybrid icon" do
+      doc = {"mods_tesim" => ['moving image 1', 'sound recording 1'] }
+      expect(helper.image_for(doc)).to eq('/assets/hybrid_icon.png')
+    end
+    it "should return thumbnail" do
+      doc = {"section_pid_tesim" => ['1'], "mods_tesim" => ['moving image 1'] }
+      expect(helper.image_for(doc)).to eq('/master_files/1/thumbnail')
+    end
+  end
 end

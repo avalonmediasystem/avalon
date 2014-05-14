@@ -182,6 +182,20 @@ describe MediaObjectsController, type: :controller do
         }
       end
     end
+    context "currentStream is blank" do
+      before { 
+        master_file = FactoryGirl.create(:master_file)
+        master_file.mediaobject = media_object
+        master_file.save
+        media_object.parts += [master_file]
+        media_object.save(validate: false)
+        get 'show', id: media_object.pid, content: 'foo'
+      }
+      it "flash message when currentStream is blank" do
+        expect(flash[:notice]).to be_present
+        expect(assigns(:currentStream)).to eq(media_object.parts.first)
+      end
+    end
 
     describe 'Redirect back to media object after sign in' do
       let(:media_object){ FactoryGirl.create(:media_object, visibility: 'private') }

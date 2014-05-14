@@ -134,11 +134,6 @@ module ApplicationHelper
     output
   end
   
-  def link_to_add_dynamic_field( name, opts = {} )
-    opts.merge!( class: 'add-dynamic-field btn btn-mini' )
-    link_to name, '#', opts
-  end
-
   def git_commit_info pattern="%s %s [%s]"
     begin
       repo = Grit::Repo.new(Rails.root)
