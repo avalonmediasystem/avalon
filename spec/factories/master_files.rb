@@ -30,5 +30,12 @@ FactoryGirl.define do
         mf.save
       end
     end
+    factory :master_file_with_thumbnail do
+      after(:create) do |mf|
+        mf.thumbnail.mimeType = 'image/jpeg'
+        mf.thumbnail.content = 'fake image content'
+        mf.save
+      end
+    end
   end
 end

@@ -79,7 +79,11 @@ class MediaObjectsController < ApplicationController
     authorize! :read, @mediaobject
     respond_to do |format|
       format.html do
-        render
+	if (not @masterFiles.empty? and @currentStream.blank?) then
+          redirect_to media_object_path(@mediaobject.pid), flash: { notice: 'That stream was not recognized. Defaulting to the first available stream for the resource' }
+        else 
+          render
+        end
       end
       format.json do
         render :json => @currentStreamInfo 
@@ -164,24 +168,6 @@ class MediaObjectsController < ApplicationController
 
   # Sets the published status for the object. If no argument is given then
   # it will just toggle the state.
-  def update_visibility
-    media_object = MediaObject.find(params[:id])
-    authorize! :manage, media_object
-    
-    case params[:status]
-      when 'show'
-        media_object.hidden = false
-      when 'hide'
-        media_object.hidden = true
-      when nil
-        new_state = media_object.hidden? ? false : true
-        media_object.hidden = new_state        
-    end
-
-    media_object.save
-    redirect_to :back
-  end
-  
   def tree
     @mediaobject = MediaObject.find(params[:id])
     authorize! :inspect, @mediaobject
@@ -226,11 +212,8 @@ class MediaObjectsController < ApplicationController
       end
       params[:content] = @mediaobject.section_pid[index]
     end
-
     @masterFiles = load_master_files
-    @currentStream = set_active_file(params[:content]) if params[:content]
-    flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource" if @currentStream.nil? and params[:content]
-    @currentStream ||= @masterFiles.first
+    @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
     @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
     # This rescue statement seems a bit dodgy because it catches *all*
     # exceptions. It might be worth refactoring when there are some extra

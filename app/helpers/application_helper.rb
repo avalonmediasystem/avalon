@@ -57,21 +57,6 @@ module ApplicationHelper
         nil
       end
     end
-
-  end
-
-  # Creates a hot link to the downloadable file if it is available. File names longer
-  # than 25 characters are truncated although this can be overridden by passing in a
-  # different value
-  def file_download_label(masterfile)
-    # Check to see if the file name is longer than 25 characters
-    if 20 > masterfile.descMetadata.title[0].length 
-      label_display = masterfile.descMetadata.title[0]
-    else
-      label_display = truncate(masterfile.descMetadata.title[0], length: 15)
-      label_display << "."
-      label_display << masterfile.descMetadata.title[0].split('.').last
-    end
   end
 
   def display_metadata(label, value, default=nil)
