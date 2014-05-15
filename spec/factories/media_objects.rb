@@ -22,6 +22,16 @@ FactoryGirl.define do
     factory :published_media_object do
       avalon_publisher {'publisher'}
     end
+    factory :media_object_with_master_file do
+      after(:create) do |mo|
+        mf = FactoryGirl.create(:master_file)
+        mf.mediaobject = mo
+        mf.save
+        mo.parts += [mf]
+        mo.save
+      end
+    end
+
   end
 
   factory :minimal_record, class: MediaObject do
