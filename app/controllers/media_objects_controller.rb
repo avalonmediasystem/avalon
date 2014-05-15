@@ -213,7 +213,7 @@ class MediaObjectsController < ApplicationController
       params[:content] = @mediaobject.section_pid[index]
     end
     @masterFiles = load_master_files
-    @currentStream = set_active_file(params[:content]) if params[:content]
+    @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
     @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
     # This rescue statement seems a bit dodgy because it catches *all*
     # exceptions. It might be worth refactoring when there are some extra
