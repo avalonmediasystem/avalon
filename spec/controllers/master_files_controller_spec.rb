@@ -118,21 +118,6 @@ describe MasterFilesController do
         flash[:errors].should be_nil
       end
     end
-
-    context "should have default permissions" do
-      it "should set edit_user and edit_group" do
-        @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-        #Work-around for a Rails bug
-        class << @file
-          attr_reader :tempfile
-        end
-   
-        post :create, Filedata: [@file], original: 'any', container_id: media_object.pid
-        master_file = MasterFile.all.last
-        master_file.edit_groups.should include "collection_manager"
-        master_file.edit_users.should include content_provider.username
-      end
-    end
   end
   
   describe "#update" do
