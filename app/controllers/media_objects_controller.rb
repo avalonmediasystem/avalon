@@ -164,24 +164,6 @@ class MediaObjectsController < ApplicationController
 
   # Sets the published status for the object. If no argument is given then
   # it will just toggle the state.
-  def update_visibility
-    media_object = MediaObject.find(params[:id])
-    authorize! :manage, media_object
-    
-    case params[:status]
-      when 'show'
-        media_object.hidden = false
-      when 'hide'
-        media_object.hidden = true
-      when nil
-        new_state = media_object.hidden? ? false : true
-        media_object.hidden = new_state        
-    end
-
-    media_object.save
-    redirect_to :back
-  end
-  
   def tree
     @mediaobject = MediaObject.find(params[:id])
     authorize! :inspect, @mediaobject
