@@ -174,5 +174,63 @@ describe MasterFilesController do
       response.should redirect_to(pid_section_media_object_path(master_file.mediaobject.pid, master_file.pid)) 
     end
   end
+
+  describe "#embed" do
+    subject(:mf){FactoryGirl.create(:master_file)}
+    it "should render embed layout" do
+      login_user mf.mediaobject.collection.managers.first
+      expect(get :embed, id: mf.pid ).to render_template(layout: 'embed')
+    end
+  end
+
+  describe "#set_frame" do
+    subject(:mf){FactoryGirl.create(:master_file_with_thumbnail)}
+    it "should redirect to sign in when not logged in" do
+      expect(get :set_frame, id: mf.pid ).to redirect_to new_user_session_path
+    end
+    it "should redirect to home when logged in and not authorized" do
+      login_as :user
+      expect(get :set_frame, id: mf.pid ).to redirect_to root_path
+    end
+    it "should redirect to edit_media_object" do
+      mo = mf.mediaobject
+      login_user mo.collection.managers.first
+      expect(get :set_frame, id: mf.pid, type: 'thumbnail', offset: '10').to redirect_to edit_media_object_path(mo.pid, step: 'file-upload')
+    end
+    it "should return thumbnail" do
+      expect_any_instance_of(MasterFile).to receive(:extract_still) {'fake image content'}
+      login_user mf.mediaobject.collection.managers.first
+      get :set_frame, format: 'jpeg', id: mf.pid, type: 'thumbnail', offset: '10'
+      expect(response.body).to eq('fake image content')
+      expect(response.headers['Content-Type']).to eq('image/jpeg')
+    end
+  end
+
+  describe "#get_frame" do
+    subject(:mf){FactoryGirl.create(:master_file_with_thumbnail)}
+    context "not authorized" do
+      it "should redirect to sign in when not logged in" do
+        expect(get :get_frame, id: mf.pid ).to redirect_to new_user_session_path
+      end
+      it "should redirect to home when logged in and not authorized" do
+        login_as :user
+        expect(get :get_frame, id: mf.pid ).to redirect_to root_path
+      end
+    end
+    context "authorized" do
+      before(:each) { login_user mf.mediaobject.collection.managers.first }
+      it "should return thumbnail" do
+        get :get_frame, id: mf.pid, type: 'thumbnail', size: 'bar'
+        expect(response.body).to eq('fake image content')
+        expect(response.headers['Content-Type']).to eq('image/jpeg')
+      end
+      it "should return offset thumbnail" do
+        expect_any_instance_of(MasterFile).to receive(:extract_still) {'fake image content'}
+        get :get_frame, id: mf.pid, type: 'thumbnail', size: 'bar', offset: '1'
+        expect(response.body).to eq('fake image content')
+        expect(response.headers['Content-Type']).to eq('image/jpeg')
+      end
+    end
+  end
   
 end
