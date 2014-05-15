@@ -79,10 +79,6 @@ class MediaObjectsController < ApplicationController
     authorize! :read, @mediaobject
     respond_to do |format|
       format.html do
-       	if (not @masterFiles.empty? and @currentStream.blank?)
-          @currentStream = @masterFiles.first
-          flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
-        end
         render
       end
       format.json do
@@ -206,7 +202,6 @@ class MediaObjectsController < ApplicationController
 
   def self.initialize_media_object( user_key )
     mediaobject = MediaObject.new( avalon_uploader: user_key )
-    set_default_item_permissions( mediaobject, user_key )
 
     mediaobject
   end
@@ -233,7 +228,9 @@ class MediaObjectsController < ApplicationController
     end
 
     @masterFiles = load_master_files
-    @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
+    @currentStream = set_active_file(params[:content]) if params[:content]
+    flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource" if @currentStream.nil? and params[:content]
+    @currentStream ||= @masterFiles.first
     @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
     # This rescue statement seems a bit dodgy because it catches *all*
     # exceptions. It might be worth refactoring when there are some extra

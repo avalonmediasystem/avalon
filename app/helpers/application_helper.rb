@@ -35,7 +35,6 @@ module ApplicationHelper
   end
 
   def image_for(document)
-binding.pry
     master_file_id = document["section_pid_tesim"].try :first
     
     video_count = document["mods_tesim"].count{|m| m.start_with?('moving image') }
