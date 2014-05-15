@@ -13,12 +13,14 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'hydra/datastream/non_indexed_rights_metadata'
+require 'hydra/model_mixins/hybrid_delegator'
 require 'role_controls'
 require 'avalon/controlled_vocabulary'
 require 'avalon/sanitizer'
 
 class Admin::Collection < ActiveFedora::Base
   include Hydra::AccessControls::Permissions
+  include Hydra::ModelMixins::HybridDelegator
   include ActiveFedora::Associations
   include VersionableModel
 
