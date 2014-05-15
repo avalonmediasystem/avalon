@@ -63,92 +63,119 @@ module Avalon
       end
 
       def ingest
-
         # Scans dropbox for new batch packages
         new_packages = collection.dropbox.find_new_packages
+        return unless new_packages.length > 0
+        
         logger.info "<< Found #{new_packages.count} new packages for collection #{collection.name} >>"
 
-        if new_packages.length > 0
-          # Extracts package and process
-          new_packages.each_with_index do |package, index|
-            media_objects = []
-            base_errors = []
-            email_address = package.manifest.email || Avalon::Configuration.lookup('email.notification')
-            current_user = User.where(username: email_address).first || User.where(email: email_address).first
-            current_ability = Ability.new(current_user)
-            if current_user.nil?
-              base_errors << "User does not exist in the system: #{email_address}."
-            else
-              package.validate do |entry|
-                media_object = initialize_media_object_from_package( entry, current_user.user_key )
-                if media_object.collection && ! current_ability.can?(:read, media_object.collection)
-                  entry.errors.add(:collection, "You do not have permission to add items to collection: #{collection.name}.")
-                elsif ! media_object.collection && entry.fields[:collection].present?
-                  entry.errors.add(:collection, "There is not a collection in the system with the name: #{entry.fields[:collection].first}.")
-                end
-                entry.files.each {|file_spec| entry.errors.add(:offset, "Invalid offset: #{file_spec[:offset]}") if file_spec[:offset].present? && !offset_valid?(file_spec[:offset])}
-
-                media_object
-              end
-            end
-            if base_errors.empty? && package.valid?
-
-              package.process do |fields, files, opts, entry|
-                media_object = initialize_media_object_from_package( entry, current_user.user_key )
-                media_object.save( validate: false)
-
-                files.each do |file_spec|
-                  mf = MasterFile.new
-                  mf.save( validate: false )
-                  mf.mediaobject = media_object
-                  mf.setContent(File.open(file_spec[:file], 'rb'))
-                  mf.absolute_location = file_spec[:absolute_location] if file_spec[:absolute_location].present?
-                  mf.set_workflow(file_spec[:skip_transcoding] ? 'skip_transcoding' : false)
-                  mf.label = file_spec[:label] if file_spec[:label].present?
-                  mf.poster_offset = file_spec[:offset] if file_spec[:offset].present?
-                  if mf.save
-                    media_object.save(validate: false)
-                    mf.process
-                  end
-                end
-
-                context = {media_object: { pid: media_object.pid, access: 'private' }, mediaobject: media_object, user: current_user.user_key, hidden: opts[:hidden] ? '1' : nil }
-                context = HYDRANT_STEPS.get_step('access-control').execute context
-
-                media_object.workflow.last_completed_step = 'access-control'
-
-                if opts[:publish]
-                  media_object.publish!(current_user.user_key)
-                  media_object.workflow.publish
-                end
-
-                if media_object.save
-                  logger.debug "Done processing package #{index}"
-                else
-                  logger.error "Problem saving MediaObject: #{media_object}"
-                end
-
-                media_objects << media_object
-              end
-              # send email confirming kickoff of batch
-              IngestBatchMailer.batch_ingest_validation_success( package ).deliver
-            else
-              package.manifest.error!
-              IngestBatchMailer.batch_ingest_validation_error( package, base_errors ).deliver
-            end
-
-            # Create an ingest batch object for 
-            # all of the media objects associated with this 
-            # particular package
-            IngestBatch.create( 
-              media_object_ids: media_objects.map(&:id), 
-              name:  package.manifest.name,
-              email: current_user.email,
-            ) if media_objects.length > 0
-
+        new_packages.each do |package|
+          begin
+            process_package(package)
+          rescue Exception => e
+            message = "#{e.inspect}" + e.backtrace.join("/n")
+            package.manifest.error!(message)
+            IngestBatchMailer.batch_ingest_validation_error(package, [message]).deliver
           end
         end
       end
+      
+      def process_package ( package )
+        media_objects = []
+        current_user = package_user( package )
+        if validate_package(package, current_user)
+          package.process do |fields, files, opts, entry|
+            media_object = initialize_media_object_from_package( entry, current_user.user_key )
+            media_object.save( validate: false)
+            # Create masterfile for each file
+            files.each {|file_spec| create_masterfile(file_spec, media_object)}
+            context = {media_object: { pid: media_object.pid, access: 'private' }, mediaobject: media_object, user: current_user.user_key, hidden: opts[:hidden] ? '1' : nil }
+            context = HYDRANT_STEPS.get_step('access-control').execute context
+
+            media_object.workflow.last_completed_step = 'access-control'
+
+            if opts[:publish]
+              media_object.publish!(current_user.user_key)
+              media_object.workflow.publish
+            end
+
+            if media_object.save
+              logger.debug "Done processing package #{package.manifest.file}"
+            else
+              logger.error "Problem saving MediaObject: #{media_object}"
+            end
+            media_objects << media_object
+          end
+          # send email confirming kickoff of batch
+          IngestBatchMailer.batch_ingest_validation_success( package ).deliver
+        end
+
+        # Create an ingest batch object for 
+        # all of the media objects associated with this 
+        # particular package
+        IngestBatch.create( 
+          media_object_ids: media_objects.map(&:id), 
+          name:  package.manifest.name,
+          email: current_user.email,
+        ) if media_objects.length > 0
+   
+      end
+ 
+      def validate_package ( package, current_user )
+        base_errors = []
+        if current_user.nil?
+          base_errors << "User does not exist in the system: #{package_email(package)}." 
+        else
+          package.validate do |entry|
+            mo = validate_entry!(entry, current_user)
+            base_errors += entry.errors.messages.to_a
+            mo
+          end 
+        end
+        if base_errors.count > 0
+          package.manifest.error!
+          IngestBatchMailer.batch_ingest_validation_error( package, base_errors ).deliver
+          return false
+        end
+        package.valid?
+      end
+
+      def validate_entry! ( entry, current_user )
+        current_ability = Ability.new(current_user)
+        media_object = initialize_media_object_from_package(entry, current_user.user_key )
+        if media_object.collection && ! current_ability.can?(:read, media_object.collection)
+          entry.errors.add(:collection, "You do not have permission to add items to collection: #{collection.name}.")
+        elsif ! media_object.collection && entry.fields[:collection].present?
+          entry.errors.add(:collection, "There is not a collection in the system with the name: #{entry.fields[:collection].first}.")
+        end
+        entry.files.each {|file_spec| entry.errors.add(:offset, "Invalid offset: #{file_spec[:offset]}") if file_spec[:offset].present? && !offset_valid?(file_spec[:offset])}
+        media_object
+      end
+
+      def package_user ( package )
+        User.where(username: package_email(package)).first || User.where(email: package_email(package)).first
+      end
+  
+      def package_email ( package )
+        package.manifest.email || Avalon::Configuration.lookup('email.notification')
+      end
+
+
+      def create_masterfile ( file_spec, media_object )
+        mf = MasterFile.new
+        mf.save( validate: false )
+        mf.mediaobject = media_object
+        mf.setContent(File.open(file_spec[:file], 'rb'))
+        mf.absolute_location = file_spec[:absolute_location] if file_spec[:absolute_location].present?
+        mf.set_workflow(file_spec[:skip_transcoding] ? 'skip_transcoding' : false)
+        mf.label = file_spec[:label] if file_spec[:label].present?
+        mf.poster_offset = file_spec[:offset] if file_spec[:offset].present?
+        if mf.save
+          media_object.save(validate: false)
+          mf.process
+        end
+      end
+
     end
   end
 end
