@@ -28,10 +28,16 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
   <div class="collapse form-tooltip equal-height" id="label-tooltip">
-    <button class="close">&times;</button> <p><%= t("file_upload_tip.label").html_safe %></p>
+    <button class="close">&times;</button>
+    <p><%= t("file_upload_tip.label").html_safe %></p>
   </div>
   <div class="collapse form-tooltip equal-height" id="permalink-tooltip">
-    <button class="close">&times;</button> <p><%= t("file_upload_tip.permalink").html_safe %></p>
+    <button class="close">&times;</button>
+    <p><%= t("file_upload_tip.permalink").html_safe %></p>
+  </div>
+  <div class="collapse form-tooltip equal-height" id="thumbnail-tooltip">
+    <button class="close">&times;</button>
+    <p><%= t("file_upload_tip.thumbnail").html_safe %></p>
   </div>
       
     <table class="table table-striped">
@@ -56,7 +62,11 @@ Unless required by applicable law or agreed to in writing, software distributed
             <div class="tooltip-help" data-title="<%= "something" %>" data-tooltip="#permalink-tooltip">Permalink</div>
           <% end %>
 	</th>
-        <th>Thumbnail</th>
+	<th>    
+          <%= label_tag(:permalink, style:'margin-bottom:0;font-weight:bold;font-size:inherit;min-width:7em') do %>
+            <div class="tooltip-help" data-title="<%= "something" %>" data-tooltip="#thumbnail-tooltip">Thumbnail</div>
+          <% end %>
+	</th>
         <th>File name</th>
         <th>Size</th>
         <th>&nbsp;</th>
