@@ -173,6 +173,25 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_styles do %>
   <%= stylesheet_link_tag "jasny-bootstrap.min", media: "all" %>
+
+  <style>
+    
+    .modal-header .close {
+      margin-top: 11px;
+      margin-right: 14px;
+    }
+
+    .modal-header {
+      height: 37px;
+      padding: 0px 0px 0px 0px;
+    }
+
+    form {
+      margin: 0 0 0px;
+    }
+
+  </style>
+
 <% end %>
 
 <% content_for :page_scripts do %>
