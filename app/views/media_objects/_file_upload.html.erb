@@ -23,9 +23,16 @@ Unless required by applicable law or agreed to in writing, software distributed
 <section id="associated_files" class="span11">
       <legend>Associated files</legend>
       <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
-      <%= twitter_bootstrap_form_for @mediaobject do |file_list| %>
+<%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
+
       <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
+  <div class="collapse form-tooltip equal-height" id="permalink-tooltip">
+    <button class="close">&times;</button> <p><%= t("file_upload_tip.permalink").html_safe %></p>
+  </div>
+  <div class="collapse form-tooltip equal-height" id="label-tooltip">
+    <button class="close">&times;</button> <p><%= t("file_upload_tip.label").html_safe %></p>
+  </div>
       
     <table class="table table-striped">
       <colgroup>
@@ -39,8 +46,16 @@ Unless required by applicable law or agreed to in writing, software distributed
       
       <thead>
         <th>Type</th>
-        <th>Section label</th>
-        <th>Permalink</th>
+        <th>
+          <%= label_tag(:permalink, style:'margin-bottom:0;font-weight:bold;font-size:inherit') do %>
+            <div class="tooltip-help" data-title="<%= "something" %>" data-tooltip="#label-tooltip">Section label</div>
+          <% end %>
+	</th>
+	<th>    
+          <%= label_tag(:permalink, style:'margin-bottom:0;font-weight:bold;font-size:inherit') do %>
+            <div class="tooltip-help" data-title="<%= "something" %>" data-tooltip="#permalink-tooltip">Permalink</div>
+          <% end %>
+	</th>
         <th>Thumbnail</th>
         <th>File name</th>
         <th>Size</th>
