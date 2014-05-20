@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/Empact/roo
+  revision: a46611c8d783b00e000aca460a8473c83c83f52d
+  specs:
+    roo (1.13.2)
+      nokogiri
+      rubyzip
+      spreadsheet (> 0.6.4)
+
+GIT
   remote: https://github.com/atomical/database_cleaner
   revision: 5d6c5956cb78668d3b4df3edfd3678dda7f5838a
   branch: adding_support_for_active_fedora_orm
@@ -432,10 +441,6 @@ GEM
       json (~> 1.4)
     rest-client (1.6.7)
       mime-types (>= 1.16)
-    roo (1.13.2)
-      nokogiri
-      rubyzip
-      spreadsheet (> 0.6.4)
     rsolr (1.0.9)
       builder (>= 2.1.2)
     rspec (2.14.1)
@@ -591,7 +596,7 @@ DEPENDENCIES
   rails (~> 3.2.3)
   rb-fsevent (~> 0.9.1)
   red5wrapper!
-  roo
+  roo!
   rspec-rails (>= 2.9.0)
   rspec_junit_formatter
   rubyhorn!

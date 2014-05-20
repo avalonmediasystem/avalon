@@ -16,7 +16,7 @@
   gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git' # HEAD , tag: 'avalon-r3'
   gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git' # HEAD , tag: 'avalon-r3'
 
-  gem 'roo'
+  gem 'roo', git: 'https://github.com/Empact/roo'
 
   gem 'multipart-post'  
   gem 'modal_logic'

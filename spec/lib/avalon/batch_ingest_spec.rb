@@ -66,6 +66,14 @@ describe Avalon::Batch::Ingest do
       File.exists?(error_file).should be_true
       File.read(error_file).should =~ /^Invalid manifest/
     end
+    
+    it 'should ingest batch with spaces in name' do
+      space_batch_path = File.join('spec/fixtures/dropbox/example batch ingest', 'batch manifest with spaces.xlsx')
+      space_batch = Avalon::Batch::Package.new(space_batch_path)
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [space_batch]
+      batch_ingest.ingest
+      IngestBatch.count.should == 1
+    end
 
     it 'creates an ingest batch object' do
       batch_ingest.ingest
