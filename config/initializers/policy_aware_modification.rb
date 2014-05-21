@@ -1,3 +1,5 @@
+require 'active-fedora'
+
 # https://github.com/projecthydra/hydra-head/blob/master/hydra-access-controls/lib/hydra/policy_aware_access_controls_enforcement.rb#L30
 module Hydra::PolicyAwareAccessControlsEnforcement
   def policies_with_access
@@ -13,17 +15,18 @@ module Hydra::PolicyAwareAccessControlsEnforcement
   end
 end
 
-module ActiveFedora
-  class SolrService
-    def query(query, args={})
-binding.pry
+ActiveFedora::SolrService.instance_eval do
+    def self.query(query, args={})
       raw = args.delete(:raw)
-      method = args.delete(:method)
+      method = args.delete(:method) || default_http_method
       args = args.merge(:q=>query, :qt=>'standard')
-      key =  method == :post ? :data : :params
-      result = SolrService.instance.conn.get('select', key=>args, method: method)
+      key = method == :post ? :data : :params
+      result = ActiveFedora::SolrService.instance.conn.send_and_receive('select', key=>args, method: method)
       return result if raw
       result['response']['docs']
     end
+
+  def self.default_http_method
+    ActiveFedora.solr_config.fetch(:http_method, :get).to_sym
   end
 end
