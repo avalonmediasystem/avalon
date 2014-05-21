@@ -19,7 +19,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <p class="tooltip-help" data-title="<%= access_object.titleize %>" data-tooltip=<%="##{access_object}_tooltip"%>>
       <%= t("access_control.#{access_object}label").html_safe %>
     </p>
-    <div class="collapse form-tooltip equal-height" id=<%="#{access_object}_tooltip"%>>
+    <div class="collapse form-tooltip" id=<%="#{access_object}_tooltip"%>>
       <button class="close">&times;</button>
       <p><%= t("access_control.#{access_object}").html_safe %></p>
     </div>
