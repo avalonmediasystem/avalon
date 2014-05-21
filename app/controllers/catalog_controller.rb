@@ -31,6 +31,7 @@ class CatalogController < ApplicationController
   self.solr_search_params_logic += [:limit_to_non_hidden_items]
 
   configure_blacklight do |config|
+    config.http_method = :post
     config.default_solr_params = { 
       :qt => 'search',
       :rows => 10

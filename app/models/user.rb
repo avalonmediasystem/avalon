@@ -36,9 +36,7 @@ class User < ActiveRecord::Base
 
   def self.find_for_identity(access_token, signed_in_resource=nil)
     username = access_token.info['email']
-    User.find_or_create_by_username(username) do |u|
-      u.email = username
-    end
+    User.find_by_username(username) || User.find_by_email(username) || User.create(username: username, email: username)
   end
 
   def self.find_for_lti(auth_hash, signed_in_resource=nil)

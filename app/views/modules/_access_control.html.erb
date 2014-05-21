@@ -82,7 +82,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         input_disabled: !can_update %>
       <%= render "modules/access_object", object: object,
         access_object: "class", members: @virtual_groups, 
-        autocomplete_model: 'course', display_helper: :vgroup_display,
+        autocomplete_model: 'Admin::Group', display_helper: :vgroup_display,
         input_disabled: !can_update %>
     </div>
   <% end %>
