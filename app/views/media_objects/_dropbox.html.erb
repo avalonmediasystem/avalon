@@ -31,7 +31,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= button_tag "Attach Selected Files", class: "btn", donot_advance: true %>
       </p>
       <span class="checkbox inline fileupload-exists">
-        <%= check_box_tag(:workflow, 'skip_transcoding', false, :style => "margin-top: 4px; margin-left: -15px;") %>
+        <%= check_box_tag(:workflow, 'skip_transcoding', false ) %>
         <%= label_tag(:skip_transcoding) do %>
           <div style="font-size: inherit;" class="tooltip-help" 
             data-title="<%= "something" %>" data-tooltip="#skip-transcoding-dropbox-tooltip">

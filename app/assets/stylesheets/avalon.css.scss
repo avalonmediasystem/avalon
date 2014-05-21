@@ -625,3 +625,10 @@ button.close {
     left: 10%;
   }
 }
+
+.fileupload-exists {
+  input[type='checkbox'] {
+    margin-top: 4px;
+    margin-left: -15px;
+  }
+}
