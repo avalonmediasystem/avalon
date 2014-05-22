@@ -29,9 +29,9 @@ describe Admin::GroupsController do
 	
     it "should redirect to home page with a notice when authenticated but unauthorized" do
       login_as('student')
-      expect { get 'new' }.not_to change {Admin::Group.all.count }
-      flash[:notice].should_not be_nil
-      response.should redirect_to(root_path)
+      expect { get 'new' }.not_to change {Admin::Group.all.count}
+      expect(response).to redirect_to(root_path)
+      expect(flash[:notice]).not_to be_nil
     end
 
     it "should redirect to group index page with a notice when group name is already taken" do

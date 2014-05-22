@@ -35,10 +35,10 @@ module ApplicationHelper
   end
 
   def image_for(document)
-    master_file_id = document[:section_pid_tesim].try :first
+    master_file_id = document["section_pid_tesim"].try :first
     
-    video_count = document[:mods_tesim].count{|m| m.start_with?('moving image') }
-    audio_count = document[:mods_tesim].count{|m| m.start_with?('sound recording') }
+    video_count = document["mods_tesim"].count{|m| m.start_with?('moving image') }
+    audio_count = document["mods_tesim"].count{|m| m.start_with?('sound recording') }
 
     if master_file_id
       if video_count > 0
@@ -56,21 +56,6 @@ module ApplicationHelper
       else
         nil
       end
-    end
-
-  end
-
-  # Creates a hot link to the downloadable file if it is available. File names longer
-  # than 25 characters are truncated although this can be overridden by passing in a
-  # different value
-  def file_download_label(masterfile)
-    # Check to see if the file name is longer than 25 characters
-    if 20 > masterfile.descMetadata.title[0].length 
-      label_display = masterfile.descMetadata.title[0]
-    else
-      label_display = truncate(masterfile.descMetadata.title[0], length: 15)
-      label_display << "."
-      label_display << masterfile.descMetadata.title[0].split('.').last
     end
   end
 
@@ -134,11 +119,6 @@ module ApplicationHelper
     output
   end
   
-  def link_to_add_dynamic_field( name, opts = {} )
-    opts.merge!( class: 'add-dynamic-field btn btn-mini' )
-    link_to name, '#', opts
-  end
-
   def git_commit_info pattern="%s %s [%s]"
     begin
       repo = Grit::Repo.new(Rails.root)
@@ -168,8 +148,8 @@ module ApplicationHelper
   end
 
   def truncate_center label, output_label_length, end_length = 0
-    end_length = start_length / 2 if end_length == 0
-    truncate(label , length: output_label_length, 
+    end_length = output_label_length / 2 - 3 if end_length == 0
+    truncate(label, length: output_label_length,
       omission: "...#{label.last(end_length)}")
   end
 end

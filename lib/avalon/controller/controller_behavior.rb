@@ -19,15 +19,6 @@ module Avalon
         base.extend(ClassMethods)
       end
 
-      module ClassMethods
-        def set_default_item_permissions( item, user_key )
-          unless item.rightsMetadata.nil?
-            item.edit_groups = ["collection_manager"]
-            item.apply_depositor_metadata user_key
-          end
-        end
-      end
-
       def deliver_content
         @obj = ActiveFedora::Base.find(params[:id], :cast => true)
         if can? :inspect, @obj

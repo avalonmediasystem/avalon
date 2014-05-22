@@ -32,7 +32,7 @@ module Permalink
       url = case obj
       when MediaObject then media_object_url(obj.pid)
       when MasterFile  then pid_section_media_object_url(obj.mediaobject.pid, obj.pid)
-      else raise ArgumentError("Cannot make permalink for #{obj.class}")
+      else raise ArgumentError, "Cannot make permalink for #{obj.class}"
       end
       @proc.call(obj, url)
     end
@@ -76,6 +76,7 @@ module Permalink
       if link.blank?
         link = Permalink.permalink_for(self)
       end
+
     rescue Exception => e
       link = nil
       logger.error "Permalink.permalink_for() raised an exception for #{self.inspect}: #{e}"

@@ -34,5 +34,11 @@ describe Permalink do
       end
     end
 
+    context 'creating permalink' do
+      it 'permalink_for raises ArgumentError if not passed mediaobject or masterfile' do
+        expect{Permalink.permalink_for(Object.new)}.to raise_error(ArgumentError)
+      end      
+    end
+
   end
 end

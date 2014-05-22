@@ -75,8 +75,6 @@ class MasterFilesController < ApplicationController
         master_file.setContent(file)
         master_file.set_workflow(params[:workflow])
 
-        MasterFilesController.set_default_item_permissions(master_file, user_key)
- 
         if 'Unknown' == master_file.file_format
           flash[:error] = [] if flash[:error].nil?
           error = format_errors
@@ -107,7 +105,6 @@ class MasterFilesController < ApplicationController
         master_file.mediaobject = media_object
         master_file.setContent(File.open(file_path, 'rb'))
         master_file.set_workflow(params[:workflow])
-        MasterFilesController.set_default_item_permissions(master_file, user_key)
         
         unless master_file.save
           flash[:error] = "There was a problem storing the file"

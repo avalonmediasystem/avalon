@@ -183,6 +183,21 @@ describe MediaObjectsController, type: :controller do
       end
     end
 
+    context "correctly handle unfound streams/sections" do
+      subject(:mo){FactoryGirl.create(:media_object_with_master_file)}
+      before do 
+        mo.save(validate: false)
+        login_user mo.collection.managers.first        
+      end
+      it "redirects to first stream when currentStream is nil" do
+        expect(get 'show', id: mo.pid, content: 'foo').to redirect_to(media_object_path(id: mo.pid))        
+      end
+      it "responds with 404 when non-existant section is requested" do
+        get 'show', id: mo.pid, part: 100
+        expect(response.code).to eq('404')  
+      end
+    end
+
     describe 'Redirect back to media object after sign in' do
       let(:media_object){ FactoryGirl.create(:media_object, visibility: 'private') }
 

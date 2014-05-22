@@ -30,7 +30,7 @@ class R1ContentToR2 < ActiveRecord::Migration
   def mediaobject_to_r2(mo)
     say("MediaObject #{mo.pid} #{mo.current_migration}->R2", :subitem)
     mo.parts_with_order.each { |mf| masterfile_to_r2(mf) }
-    collection = MediaObjectMigration.find_or_create_collection(mo.descMetadata.collection.last, mo.edit_users)
+    collection = R1ContentToR2.find_or_create_collection(mo.descMetadata.collection.last, mo.edit_users)
     mo.collection = collection
     mo.descMetadata.collection = []
     mo.descMetadata.remove_empty_nodes!

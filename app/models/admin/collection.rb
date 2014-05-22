@@ -20,8 +20,8 @@ require 'avalon/sanitizer'
 
 class Admin::Collection < ActiveFedora::Base
   include Hydra::AccessControls::Permissions
-  include ActiveFedora::Associations
   include Hydra::ModelMixins::HybridDelegator
+  include ActiveFedora::Associations
   include VersionableModel
 
   has_many :media_objects, property: :is_member_of_collection 
