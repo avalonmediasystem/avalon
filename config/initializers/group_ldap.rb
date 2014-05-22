@@ -15,7 +15,7 @@ Admin::Group.instance_eval do
   end
 
   def self.autocomplete(query)
-    self.ldap_lookup("#{query}*", size: 10)
+    self.ldap_lookup("*#{query}*", size: 10)
   end
 end
 
