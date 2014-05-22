@@ -6,7 +6,7 @@ IU_LDAP_TREE = "dc=ads,dc=iu,dc=edu"
 
 Admin::Group.instance_eval do
   def self.ldap_lookup(groupname, opts={})
-    filter = Net::LDAP::Filter.eq("cn", "#{groupname}") & Net::LDAP::Filter.eq("objectType", "group")
+    filter = Net::LDAP::Filter.eq("cn", "#{groupname}") & Net::LDAP::Filter.eq("objectclass", "group")
     result = IU_LDAP.search(:base => IU_LDAP_TREE, :filter => filter, :attributes => ["cn"]) #, :size => opts[:limit])
     result.collect do |r|
       name = r['cn'].first
