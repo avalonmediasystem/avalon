@@ -55,7 +55,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       user_session[:full_login] = true
 
       if auth_type == 'lti'
-        user_session[:virtual_groups] = [request.env["omniauth.auth"].extra.context_id]
+        user_session[:lti_group] = request.env["omniauth.auth"].extra.context_id
+        user_session[:virtual_groups] += [user_session[:lti_group]]
         user_session[:full_login] = false
       end
 
