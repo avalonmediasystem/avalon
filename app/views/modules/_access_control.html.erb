@@ -81,7 +81,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         dropdown_values: [@addable_groups, 'name', 'name'],
         input_disabled: !can_update %>
       <%= render "modules/access_object", object: object,
-        access_object: "class", members: @virtual_groups, 
+        access_object: "externalGroup", members: @virtual_groups, 
         autocomplete_model: 'externalGroup', display_helper: :vgroup_display,
         input_disabled: !can_update %>
     </div>

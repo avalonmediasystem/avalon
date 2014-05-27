@@ -11,6 +11,7 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
+require 'net/ldap'
 
 class User < ActiveRecord::Base
 # Connects this user object to Hydra behaviors. 
@@ -65,4 +66,22 @@ class User < ActiveRecord::Base
     RoleMapper.roles(user_key)
   end
 
+  def ldap_groups
+    User.walk_ldap_groups(User.ldap_member_of(user_key), []).sort
+  end
+
+  def self.ldap_member_of(cn)
+    return [] unless defined? GROUP_LDAP
+    group_cns = GROUP_LDAP.search(:base => "dc=ads,dc=iu,dc=edu", :filter => Net::LDAP::Filter.eq("cn", cn), :attributes => ["memberof"]).first["memberof"]
+    group_cns.collect {|mo| mo.split(',').first.split('=').second}
+  end
+
+  def self.walk_ldap_groups(groups, seen)
+    groups.each do |g|
+      next if seen.include? g
+      seen << g
+      User.walk_ldap_groups(User.ldap_member_of(g), seen)
+    end
+    seen
+  end
 end

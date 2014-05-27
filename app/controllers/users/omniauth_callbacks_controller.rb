@@ -51,7 +51,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     if @user.persisted?
       flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => auth_type
       sign_in @user, :event => :authentication
-      user_session[:virtual_groups] = User.find_ldap_groups(@user.username)
+      user_session[:virtual_groups] = @user.ldap_groups
       user_session[:full_login] = true
 
       if auth_type == 'lti'
