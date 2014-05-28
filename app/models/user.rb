@@ -72,8 +72,8 @@ class User < ActiveRecord::Base
 
   def self.ldap_member_of(cn)
     return [] unless defined? GROUP_LDAP
-    group_cns = GROUP_LDAP.search(:base => GROUP_LDAP_TREE, :filter => Net::LDAP::Filter.eq("cn", cn), :attributes => ["memberof"]).first["memberof"]
-    group_cns.collect {|mo| mo.split(',').first.split('=').second}
+    group_cns = GROUP_LDAP.search(:base => GROUP_LDAP_TREE, :filter => Net::LDAP::Filter.eq("cn", cn), :attributes => ["memberof"]).first
+    group_cns.nil?? []: group_cns["member_of"].collect {|mo| mo.split(',').first.split('=').second}
   end
 
   def self.walk_ldap_groups(groups, seen)
