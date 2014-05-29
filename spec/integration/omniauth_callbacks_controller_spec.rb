@@ -54,8 +54,8 @@ describe Users::OmniauthCallbacksController do
         post '/users/auth/lti/callback', foo_hash
       end
 
-      it "should have virtual_groups" do
-        expect(subject[:virtual_groups]).not_to be_empty
+      it "should have lti_group" do
+        expect(subject[:lti_group]).not_to be_empty
       end
 
       it "should not be a full login" do
