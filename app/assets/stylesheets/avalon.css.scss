@@ -236,6 +236,20 @@ div#dropbox_modal {
     float: none;
     text-align: left;
   }
+
+  .modal-header .close {
+    margin-top: 11px;
+    margin-right: 14px;
+  }
+
+  .modal-header {
+    height: 37px;
+    padding: 0px 0px 0px 0px;
+  }
+
+  form {
+    margin: 0 0 0px;
+  }
 }
 
 // Custom file preview field for Jasny bootstrap
