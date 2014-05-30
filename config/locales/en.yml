@@ -104,14 +104,14 @@ en:
       They can publish items but not unpublish. They can only modify or 
       delete unpublished items.
     permalink: |
-      Permalink is the PURL or handle to be used as a URL for this item. Each section also has a distinct permalink which is assigned during the Manage File(s) step. If configured to do so, Avalon will automatically generate a permalink if this field is left blank. 
+      The item Permalink is a URL that is assigned to the Item as a whole. In addition, seach section of an item will have a distinct permalink assigned in the File Upload page. If configured to do so, Avalon will automatically generate a permalink if this field is left blank.
   file_upload_tip:
     label: |
-      Section label will be used in an item's listing to identify each file associated with the item.
+      The Section Label will be used in an item's listing to identify each file associated with the item.
     permalink: |
-      Permalink is a PURL or handle to be used as a URL for each section of this Item. The item as a whole also has a permalink that is distinct from those listed here and is assigned during the Resource Description step. If configured to do so, Avalon will automatically generate a permalink if this field is left blank. 
+      The section Permalink is a URL that is assigned to each section of an Item. In addition, the entire item will have a distinct permalink that can be assigned in the Resource Description page. If configured to do so, Avalon will automatically generate a permalink if this field is left blank.
     thumbnail: |
-      Thumbnail is the still image that will be used to represent a video in search results. This can be set during playback by clicking the 'Create thumbnail' button in the player or by entering a value here in the format 'hh/mm/ss.sss'.
+      The Thumbnail is a still image that will be displayed in search results. Thumbnails can be grabbed from a video during playback by clicking the 'Create thumbnail' button in the player or by entering a time offset value here in the format 'hh:mm:ss.sss'.
     skip_transcoding: |
       For best results, use AAC-encoded mp4 files for audio and H.264 mp4 files for video. Some file types, such as mp3, will not work with the Adobe Media Server.
   access_control:
