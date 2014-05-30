@@ -123,4 +123,4 @@ en:
     group: |
       Select an Avalon group from the dropdown list below to grant it access to an item or collection.
     class: |
-      Select an external group from the dropdown list below to grant it access to an item or collection. This group might represent students in a course or members of an institution-specific group.
+      Enter an external group to grant it access to an item or collection. This group might represent students in a course or members of an institution-specific group.
