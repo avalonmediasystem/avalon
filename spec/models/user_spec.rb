@@ -45,4 +45,17 @@ describe User do
     end
   end
 
+  describe "#ldap_groups" do
+    it "should return [] if LDAP is not configured" do
+      hide_const("GROUP_LDAP")
+      expect(user.send(:ldap_groups)).to eq([])
+    end
+    it "user should belong to Group1 and Group2 in mock LDAP" do
+      entry = Net::LDAP::Entry.new("cn=user,dc=ads,dc=example,dc=edu")
+      entry["member_of"] = ['CN=Group1,DC=ads,DC=example,DC=edu"','CN=Group2,DC=ads,DC=example,DC=edu"']
+      allow_any_instance_of(Net::LDAP).to receive(:search).and_return([entry])
+      expect(user.send(:ldap_groups)).to eq(['Group1','Group2'])
+    end
+  end
+
 end
