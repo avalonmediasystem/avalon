@@ -115,6 +115,9 @@ en:
     skip_transcoding: |
       For best results, use AAC-encoded mp4 files for audio and H.264 mp4 files for video. Some file types, such as mp3, will not work with the Adobe Media Server.
   access_control:
+    depositorlabel: "Depositor"
+    editorlabel: "Editor"
+    managerlabel: "Manager"
     userlabel: "Avalon User"
     grouplabel: "Avalon Group"
     classlabel: "External Group"
