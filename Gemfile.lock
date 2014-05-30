@@ -443,10 +443,6 @@ GEM
       json (~> 1.4)
     rest-client (1.6.7)
       mime-types (>= 1.16)
-    roo (1.13.2)
-      nokogiri
-      rubyzip
-      spreadsheet (> 0.6.4)
     rsolr (1.0.10)
       builder (>= 2.1.2)
     rspec (2.14.1)
