@@ -3,10 +3,10 @@ require 'net/ldap'
 class ExternalGroup
 
   def self.ldap_lookup(groupname, opts={})
-    return [] unless defined? GROUP_LDAP
+    return [] unless defined? Avalon::GROUP_LDAP
     filter = Net::LDAP::Filter.eq("cn", "#{groupname}") & Net::LDAP::Filter.eq("objectclass", "group")
     #Do not pass size to search since it always returns nil unless size is 0 for IU's AD
-    result = GROUP_LDAP.search(:base => GROUP_LDAP_TREE, :filter => filter, :attributes => ["cn"]) #, :
+    result = Avalon::GROUP_LDAP.search(:base => Avalon::GROUP_LDAP_TREE, :filter => filter, :attributes => ["cn"]) #, :
     result.collect do |r|
       name = r['cn'].first
       { id: name, display: name }

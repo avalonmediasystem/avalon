@@ -16,7 +16,7 @@ require 'spec_helper'
 
 describe ExternalGroup do
   it "ldap_lookup should return [] if LDAP is not configured" do
-    hide_const("GROUP_LDAP")
+    hide_const("Avalon::GROUP_LDAP")
     expect( ExternalGroup.ldap_lookup('foo') ).to eq([])
   end
   it "ldap_lookup should return ['Group1','Group2'] for mock LDAP" do

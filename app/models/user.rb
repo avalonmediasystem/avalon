@@ -71,8 +71,8 @@ class User < ActiveRecord::Base
   end
 
   def self.ldap_member_of(cn)
-    return [] unless defined? GROUP_LDAP
-    entry = GROUP_LDAP.search(:base => GROUP_LDAP_TREE, :filter => Net::LDAP::Filter.eq("cn", cn), :attributes => ["memberof"]).first
+    return [] unless defined? Avalon::GROUP_LDAP
+    entry = Avalon::GROUP_LDAP.search(:base => Avalon::GROUP_LDAP_TREE, :filter => Net::LDAP::Filter.eq("cn", cn), :attributes => ["memberof"]).first
     entry.nil? ? [] : entry["member_of"].collect {|mo| mo.split(',').first.split('=').second}
   end
 

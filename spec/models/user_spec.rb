@@ -47,7 +47,7 @@ describe User do
 
   describe "#ldap_groups" do
     it "should return [] if LDAP is not configured" do
-      hide_const("GROUP_LDAP")
+      hide_const("Avalon::GROUP_LDAP")
       expect(user.send(:ldap_groups)).to eq([])
     end
     it "user should belong to Group1 and Group2 in mock LDAP" do
