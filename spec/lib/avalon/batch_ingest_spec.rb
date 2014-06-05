@@ -141,8 +141,16 @@ describe Avalon::Batch::Ingest do
 
     it 'does not create an ingest batch object when there are zero packages' do
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return []
+      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(anything(), include("Expected error message"))
       batch_ingest.ingest
       IngestBatch.count.should == 0
+    end
+
+    it 'should result in an error if a file is not found' do
+      wrong_filename_batch = Avalon::Batch::Package.new('spec/fixtures/wrong_filename_manifest.xlsx')
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [wrong_filename_batch]
+      batch_ingest.ingest
+      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(anything(), include("Expected error message"))
     end
 
     it 'does not create an ingest batch object when there are no files' do

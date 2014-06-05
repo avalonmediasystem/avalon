@@ -26,6 +26,7 @@ module Avalon
       attr_reader :collection
 
       def initialize(collection)
+        @errors = []
         @collection = collection
       end
 
@@ -72,72 +73,80 @@ module Avalon
         new_packages.each do |package|
           begin
             process_package(package)
+            IngestBatchMailer.batch_ingest_validation_success( package ).deliver
           rescue Exception => e
-            message = "#{e.inspect}" + e.backtrace.join("/n")
-            package.manifest.error!(message)
-            IngestBatchMailer.batch_ingest_validation_error(package, [message]).deliver
+            add_error("#{e.inspect}" + e.backtrace.join("/n"))
           end
+          send_error_report(package) if @errors.count > 0
         end
       end
       
+      def add_error (error)
+        @errors+=[error]        
+      end
+
+      def send_error_report(package)
+        package.manifest.error!
+        IngestBatchMailer.batch_ingest_validation_error( package, @errors ).deliver
+      end
+
       def process_package ( package )
         media_objects = []
         current_user = package_user( package )
         if validate_package(package, current_user)
           package.process do |fields, files, opts, entry|
-            media_object = initialize_media_object_from_package( entry, current_user.user_key )
-            media_object.save( validate: false)
-            # Create masterfile for each file
-            files.each {|file_spec| create_masterfile(file_spec, media_object)}
-            context = {media_object: { pid: media_object.pid, access: 'private' }, mediaobject: media_object, user: current_user.user_key, hidden: opts[:hidden] ? '1' : nil }
-            context = HYDRANT_STEPS.get_step('access-control').execute context
-
-            media_object.workflow.last_completed_step = 'access-control'
-
-            if opts[:publish]
-              media_object.publish!(current_user.user_key)
-              media_object.workflow.publish
-            end
-
-            if media_object.save
-              logger.debug "Done processing package #{package.manifest.file}"
-            else
-              logger.error "Problem saving MediaObject: #{media_object}"
-            end
-            media_objects << media_object
+            media_objects << initialize_mo(fields, files, opts, entry, current_user, package)    
           end
-          # send email confirming kickoff of batch
-          IngestBatchMailer.batch_ingest_validation_success( package ).deliver
         end
-
+        
         # Create an ingest batch object for 
         # all of the media objects associated with this 
         # particular package
-        IngestBatch.create( 
-          media_object_ids: media_objects.map(&:id), 
-          name:  package.manifest.name,
-          email: current_user.email,
-        ) if media_objects.length > 0
-   
+        if media_objects.length > 0
+          IngestBatch.create( 
+            media_object_ids: media_objects.map(&:id), 
+            name:  package.manifest.name,
+            email: current_user.email,
+          ) if media_objects.length > 0
+        else
+          message = "No valid media objects in batch"
+        end 
+      end
+      
+      def initialize_mo (fields, files, opts, entry, current_user, package)
+        media_object = initialize_media_object_from_package( entry, current_user.user_key )
+        media_object.save( validate: false)
+        # Create masterfile for each file
+        files.each {|file_spec| create_masterfile(file_spec, media_object)}
+        context = {media_object: { pid: media_object.pid, access: 'private' }, mediaobject: media_object, user: current_user.user_key, hidden: opts[:hidden] ? '1' : nil }
+        context = HYDRANT_STEPS.get_step('access-control').execute context
+
+        media_object.workflow.last_completed_step = 'access-control'
+
+        if opts[:publish]
+          media_object.publish!(current_user.user_key)
+          media_object.workflow.publish
+        end
+
+        if media_object.save
+          logger.debug "Done processing package #{package.manifest.file}"
+        else
+          logger.error "Problem saving MediaObject: #{media_object}"
+        end
+        media_object
       end
  
       def validate_package ( package, current_user )
-        base_errors = []
         if current_user.nil?
-          base_errors << "User does not exist in the system: #{package_email(package)}." 
+          add_error("User does not exist in the system: #{package_email(package)}.") 
         else
           package.validate do |entry|
             mo = validate_entry!(entry, current_user)
-            base_errors += entry.errors.messages.to_a
+            add_error(entry.errors.messages[:collection].first) if entry.errors.messages.count > 0
             mo
           end 
         end
-        if base_errors.count > 0
-          package.manifest.error!
-          IngestBatchMailer.batch_ingest_validation_error( package, base_errors ).deliver
-          return false
-        end
-        package.valid?
+        @errors.count == 0 && package.valid?
       end
 
       def validate_entry! ( entry, current_user )
