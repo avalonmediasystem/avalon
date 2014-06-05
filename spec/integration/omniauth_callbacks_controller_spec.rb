@@ -13,6 +13,7 @@ describe Users::OmniauthCallbacksController do
     let(:course_name)  { foo_hash[foo_config[:context_name]]                 }
 
     before :each do
+      hide_const("Avalon::GROUP_LDAP")
       IMS::LTI::ToolProvider.any_instance.stub(:valid_request!) { true }
       @old_config = Devise.omniauth_configs[:lti].options[:consumers]
       Devise.omniauth_configs[:lti].options[:consumers] = Devise.omniauth_configs[:lti].strategy[:consumers] = lti_config
@@ -54,8 +55,8 @@ describe Users::OmniauthCallbacksController do
         post '/users/auth/lti/callback', foo_hash
       end
 
-      it "should have virtual_groups" do
-        expect(subject[:virtual_groups]).not_to be_empty
+      it "should have lti_group" do
+        expect(subject[:lti_group]).not_to be_empty
       end
 
       it "should not be a full login" do

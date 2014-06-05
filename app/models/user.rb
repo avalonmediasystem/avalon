@@ -11,6 +11,7 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
+require 'net/ldap'
 
 class User < ActiveRecord::Base
 # Connects this user object to Hydra behaviors. 
@@ -36,9 +37,7 @@ class User < ActiveRecord::Base
 
   def self.find_for_identity(access_token, signed_in_resource=nil)
     username = access_token.info['email']
-    User.find_or_create_by_username(username) do |u|
-      u.email = username
-    end
+    User.find_by_username(username) || User.find_by_email(username) || User.create(username: username, email: username)
   end
 
   def self.find_for_lti(auth_hash, signed_in_resource=nil)
@@ -67,4 +66,22 @@ class User < ActiveRecord::Base
     RoleMapper.roles(user_key)
   end
 
+  def ldap_groups
+    User.walk_ldap_groups(User.ldap_member_of(user_key), []).sort
+  end
+
+  def self.ldap_member_of(cn)
+    return [] unless defined? Avalon::GROUP_LDAP
+    entry = Avalon::GROUP_LDAP.search(:base => Avalon::GROUP_LDAP_TREE, :filter => Net::LDAP::Filter.eq("cn", cn), :attributes => ["memberof"]).first
+    entry.nil? ? [] : entry["member_of"].collect {|mo| mo.split(',').first.split('=').second}
+  end
+
+  def self.walk_ldap_groups(groups, seen)
+    groups.each do |g|
+      next if seen.include? g
+      seen << g
+      User.walk_ldap_groups(User.ldap_member_of(g), seen)
+    end
+    seen
+  end
 end
