@@ -82,12 +82,13 @@ module Avalon
       end
       
       def add_error (error)
-        @errors+=[error]        
+        @errors += Array(error)        
       end
 
       def send_error_report(package)
         package.manifest.error!
-        IngestBatchMailer.batch_ingest_validation_error( package, @errors ).deliver
+        mail = IngestBatchMailer.batch_ingest_validation_error( package, @errors )
+        mail.deliver if mail
       end
 
       def process_package ( package )
@@ -109,7 +110,7 @@ module Avalon
             email: current_user.email,
           ) if media_objects.length > 0
         else
-          message = "No valid media objects in batch"
+          add_error("No valid media objects in batch")
         end 
       end
       
@@ -142,7 +143,7 @@ module Avalon
         else
           package.validate do |entry|
             mo = validate_entry!(entry, current_user)
-            add_error(entry.errors.messages[:collection].first) if entry.errors.messages.count > 0
+            add_error(entry.errors.messages[:collection]) if entry.errors.messages.count > 0
             mo
           end 
         end
