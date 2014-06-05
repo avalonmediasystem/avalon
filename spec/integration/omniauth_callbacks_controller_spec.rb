@@ -13,6 +13,7 @@ describe Users::OmniauthCallbacksController do
     let(:course_name)  { foo_hash[foo_config[:context_name]]                 }
 
     before :each do
+      hide_const("Avalon::GROUP_LDAP")
       IMS::LTI::ToolProvider.any_instance.stub(:valid_request!) { true }
       @old_config = Devise.omniauth_configs[:lti].options[:consumers]
       Devise.omniauth_configs[:lti].options[:consumers] = Devise.omniauth_configs[:lti].strategy[:consumers] = lti_config

@@ -68,18 +68,6 @@ ActiveRecord::Schema.define(:version => 20140521132807) do
     t.integer "parent_id"
   end
 
-  create_table "roles", :force => true do |t|
-    t.string "name"
-  end
-
-  create_table "roles_users", :id => false, :force => true do |t|
-    t.integer "role_id"
-    t.integer "user_id"
-  end
-
-  add_index "roles_users", ["role_id", "user_id"], :name => "index_roles_users_on_role_id_and_user_id"
-  add_index "roles_users", ["user_id", "role_id"], :name => "index_roles_users_on_user_id_and_role_id"
-
   create_table "searches", :force => true do |t|
     t.text     "query_params"
     t.integer  "user_id"
