@@ -60,6 +60,7 @@
   gem 'with_locking'
 
   gem 'equivalent-xml'
+  gem 'net-ldap'
 
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
