@@ -96,7 +96,7 @@ class Admin::CollectionsController < ApplicationController
               user_id: admin_user.id,
               old_name: @old_name,
               subject: "Notification: collection #{@old_name} changed to #{@collection.name}"
-            ).deliver!
+            )
           end
         end
       end
