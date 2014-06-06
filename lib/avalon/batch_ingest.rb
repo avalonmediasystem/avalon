@@ -83,7 +83,6 @@ module Avalon
                 media_object.valid?
                 if entry.fields[:collection].present? && entry.fields[:collection].first != collection.name
                   entry.errors.add(:collection, "The listed collection (#{entry.fields[:collection].first}) does not match the ingest folder name (#{collection.name}).")
-                  #logger.error "The listed collection (#{entry.fields[:collection].first}) does not match the ingest folder name (#{collection.name})."
                 end
                 entry.files.each {|file_spec| entry.errors.add(:offset, "Invalid offset: #{file_spec[:offset]}") if file_spec[:offset].present? && !offset_valid?(file_spec[:offset])}
                 files = entry.files.collect { |f| File.join( package.dir, f[:file]) }
