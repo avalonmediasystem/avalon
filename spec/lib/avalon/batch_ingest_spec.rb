@@ -31,7 +31,6 @@ describe Avalon::Batch::Ingest do
 
     User.create(:username => 'frances.dickens@reichel.com', :email => 'frances.dickens@reichel.com')
     User.create(:username => 'jay@krajcik.org', :email => 'jay@krajcik.org')
-    User.create(:username => 'nonmanager@example.edu', :email => 'nonmanager@example.edu')
     RoleControls.add_user_role('frances.dickens@reichel.com','manager')
     RoleControls.add_user_role('jay@krajcik.org','manager')
   end
@@ -170,7 +169,7 @@ describe Avalon::Batch::Ingest do
       non_manager_batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/non_manager_manifest.xlsx')
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [non_manager_batch]
       mailer = double('mailer').as_null_object
-      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(anything(), include("User nonmanager@example.edu does not have permission to add items to collection: Ut minus ut accusantium odio autem odit..")).and_return(mailer)
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(anything(), include("User jay@krajcik.org does not have permission to add items to collection: Ut minus ut accusantium odio autem odit..")).and_return(mailer)
       mailer.should_receive(:deliver)
       batch_ingest.ingest
       IngestBatch.count.should == 0
