@@ -63,13 +63,14 @@ module Avalon
         logger.info "<< Found #{new_packages.count} new packages for collection #{collection.name} >>"
 
         if new_packages.length > 0
-          # Extracts package and process
+          # Extract package and process
           new_packages.each_with_index do |package, index|
             media_objects = []
             base_errors = []
             email_address = package.manifest.email || Avalon::Configuration.lookup('email.notification')
             current_user = User.where(username: email_address).first || User.where(email: email_address).first
             current_ability = Ability.new(current_user)
+            # Validate base package attributes: user, collection, and authorization
             if current_user.nil?
               base_errors << "User does not exist in the system: #{email_address}."
             elsif !collection
@@ -78,19 +79,28 @@ module Avalon
               base_errors << "User #{email_address} does not have permission to add items to collection: #{collection.name}."
             end
             if base_errors.empty?
-              package.validate do |entry|
+              # Validate package entries
+              package.manifest.each do |entry|
+                entry.errors.clear
                 media_object = initialize_media_object_from_package( entry, current_user.user_key )
+                # Set errors if does not validate against media_object model
                 media_object.valid?
+                media_object.errors.messages.each_pair { |field,errs|
+                  errs.each { |err| entry.errors.add(field, err) }
+                }
+                # Sanity check to ensure manifest is not in incorrect collection folder
                 if entry.fields[:collection].present? && entry.fields[:collection].first != collection.name
                   entry.errors.add(:collection, "The listed collection (#{entry.fields[:collection].first}) does not match the ingest folder name (#{collection.name}).")
                 end
+                # Check file offsets for valid format
                 entry.files.each {|file_spec| entry.errors.add(:offset, "Invalid offset: #{file_spec[:offset]}") if file_spec[:offset].present? && !offset_valid?(file_spec[:offset])}
+                # Ensure files are listed
                 files = entry.files.collect { |f| File.join( package.dir, f[:file]) }
                 entry.errors.add(:content, "No files listed") if files.empty?
+                # Ensure listed files exist
                 files.each_with_index do |f,i| 
-                  media_object.errors.add(:content, "File not found: #{entry.files[i]}") unless File.file?(f)
+                  entry.errors.add(:content, "File not found: #{entry.files[i]}") unless File.file?(f)
                 end
-                media_object
               end
             end
             if base_errors.empty? && package.valid?
