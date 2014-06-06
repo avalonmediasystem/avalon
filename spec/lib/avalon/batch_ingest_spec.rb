@@ -21,6 +21,7 @@ describe Avalon::Batch::Ingest do
   before :each do
     @saved_dropbox_path = Avalon::Configuration.lookup('dropbox.path')
     Avalon::Configuration['dropbox']['path'] = 'spec/fixtures/dropbox'
+    Avalon::Configuration['email']['notification'] = 'frances.dickens@reichel.com'
     # Dirty hack is to remove the .processed files both before and after the
     # test. Need to look closer into the ideal timing for where this should take
     # place
@@ -30,7 +31,7 @@ describe Avalon::Batch::Ingest do
 
     User.create(:username => 'frances.dickens@reichel.com', :email => 'frances.dickens@reichel.com')
     User.create(:username => 'jay@krajcik.org', :email => 'jay@krajcik.org')
-    User.create(:username => 'avalon-notifications@example.edu', :email => 'avalon-notifications@example.edu')
+    User.create(:username => 'nonmanager@example.edu', :email => 'nonmanager@example.edu')
     RoleControls.add_user_role('frances.dickens@reichel.com','manager')
     RoleControls.add_user_role('jay@krajcik.org','manager')
   end
@@ -148,10 +149,14 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'should result in an error if a file is not found' do
-      wrong_filename_batch = Avalon::Batch::Package.new('spec/fixtures/wrong_filename_manifest.xlsx')
+      wrong_filename_batch = Avalon::Batch::Package.new( 'spec/fixtures/dropbox/example_batch_ingest/wrong_filename_manifest.xlsx' )
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [wrong_filename_batch]
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(anything(), include("No valid media objects in batch"))
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
+      mailer.should_receive(:deliver)
       batch_ingest.ingest
+      IngestBatch.count.should == 0
+      wrong_filename_batch.errors[3].messages.should have_key(:content)
     end
 
     it 'does not create an ingest batch object when there are no files' do
@@ -162,25 +167,24 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'should fail if the manifest specified a non-manager user' do
-      non_manager_batch = Avalon::Batch::Package.new('spec/fixtures/batch_manifest_r2.xlsx')
+      non_manager_batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/non_manager_manifest.xlsx')
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [non_manager_batch]
       mailer = double('mailer').as_null_object
-      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(anything(), include("User nonmanager@example.edu does not have permission to add items to collection: Ut minus ut accusantium odio autem odit..")).and_return(mailer)
       mailer.should_receive(:deliver)
       batch_ingest.ingest
       IngestBatch.count.should == 0
-      non_manager_batch.errors[3].messages.should have_key(:collection)
     end
 
     it 'should fail if a bad offset is specified' do
-      bad_offset_batch = Avalon::Batch::Package.new('spec/fixtures/batch_manifest_r2.xlsx')
+      bad_offset_batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/bad_offset_manifest.xlsx')
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [bad_offset_batch]
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
       mailer.should_receive(:deliver)
       batch_ingest.ingest
       IngestBatch.count.should == 0
-      bad_offset_batch.errors[4].messages.should have_key(:offset)
+      bad_offset_batch.errors[3].messages.should have_key(:offset)
     end
   end
 

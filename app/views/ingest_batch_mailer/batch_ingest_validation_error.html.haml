@@ -15,6 +15,12 @@
 
 %p Initial processing of your batch ingest failed:
 
+-if @base_errors.present?
+  .alert.alert-error
+    - @base_errors.uniq.each do |message|
+      = message
+      %br
+
 -@package.entries.each do |entry|
   -if entry.errors.present?
     %b= entry.fields[:main_title].try(:first) || "(Untitled)"
@@ -35,9 +41,3 @@
 /   %h5 Row: #{field}
 /   %p.text-error= errors.join(' ')
 
-
--if @base_errors.present?
-  .alert.alert-error
-    - @base_errors.uniq.each do |message|
-      = message
-      %br
