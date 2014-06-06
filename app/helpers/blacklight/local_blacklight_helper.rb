@@ -60,7 +60,7 @@ module Blacklight::LocalBlacklightHelper
 
   def description_index_display args
     field = args[:document][args[:field]]
-    truncate(field.first, length: 200) unless (field.blank? or field.first.blank?)
+    truncate(field, length: 200) unless field.blank?
   end
 
   # Determine whether to expand the facet or not based on the settings in

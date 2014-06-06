@@ -17,13 +17,11 @@ module ModsBehaviors
   def to_solr(solr_doc=SolrDocument.new)
     super(solr_doc)
 
-    solr_doc['title_tesim'] = self.find_by_terms(:main_title).text
+    solr_doc['title_tesi'] = self.find_by_terms(:main_title).text
 
     # Specific fields for Blacklight export
 
     # Title fields
-    solr_doc['title_sim'] = self.find_by_terms(:main_title).text
-    solr_doc['title_ssi'] = self.find_by_terms(:main_title).text
     addl_titles = [[:main_title_info, :subtitle], 
         :alternative_title, [:alternative_title_info, :subtitle], 
         :translated_title, [:translated_title_info, :subtitle], 
@@ -37,7 +35,7 @@ module ModsBehaviors
     solr_doc['creator_ssim'] = gather_terms(self.find_by_terms(:creator))
 #    solr_doc['creator_ssi'] = self.find_by_terms(:creator).text
     # Individual fields
-    solr_doc['summary_ssim'] = self.find_by_terms(:abstract).text
+    solr_doc['summary_ssi'] = self.find_by_terms(:abstract).text
     solr_doc['publisher_sim'] = gather_terms(self.find_by_terms(:publisher))
     solr_doc['contributor_sim'] = gather_terms(self.find_by_terms(:contributor))
     solr_doc['subject_sim'] = gather_terms(self.find_by_terms(:subject))
@@ -53,10 +51,6 @@ module ModsBehaviors
     # Blacklight facets - these are the same facet fields used in our Blacklight app
     # for consistency and so they'll show up when we export records from Hydra into BL:
     solr_doc['material_sim'] = "Digital"
-    solr_doc['genre_sim'] = gather_terms(self.find_by_terms(:genre))
-    solr_doc['contributor_sim'] = gather_terms(self.find_by_terms(:contributor))
-    solr_doc['creator_sim'] = gather_terms(self.find_by_terms(:creator))
-    solr_doc['publisher_sim'] = gather_terms(self.find_by_terms(:publisher))
     solr_doc['subject_topic_sim'] = gather_terms(self.find_by_terms(:topical_subject))
     solr_doc['subject_geographic_sim'] = gather_terms(self.find_by_terms(:geographic_subject))
     solr_doc['subject_temporal_sim'] = gather_terms(self.find_by_terms(:temporal_subject))
@@ -65,22 +59,14 @@ module ModsBehaviors
     solr_doc['subject_corporate_sim'] = gather_terms(self.find_by_terms(:corporate_subject))
     solr_doc['subject_family_sim'] = gather_terms(self.find_by_terms(:family_subject))
     solr_doc['subject_title_sim'] = gather_terms(self.find_by_terms(:title_subject))
-    solr_doc['format_sim'] = gather_terms(self.find_by_terms(:resource_type)).collect(&:titleize)
-    solr_doc['location_sim'] = gather_terms(self.find_by_terms(:geographic_subject))
     solr_doc['time_sim'] = gather_terms(self.find_by_terms(:temporal_subject))
 
     # TODO: map PBcore's three-letter language codes to full language names
     # Right now, everything's English.
     solr_doc['language_sim'] = self.find_by_terms(:language_text).text
-    solr_doc['language_sim'] = self.find_by_terms(:language_text).text
 
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
-    issue_date = self.find_by_terms(:date_issued).text.strip
-    unless issue_date.nil? or issue_date.empty?
-      solr_doc['date_sim'] = get_year(issue_date)
-      solr_doc['date_sim'] = get_year(issue_date)
-      solr_doc['date_ssi'] = get_year(issue_date)
-    end
+    solr_doc['date_ssi'] = self.find_by_terms(:date_issued).text
 
     # For full text, we stuff it into the mods_tesim field which is already configured for Mods doucments
     solr_doc['mods_tesim'] = self.ng_xml.xpath('//text()').collect { |t| t.text }
