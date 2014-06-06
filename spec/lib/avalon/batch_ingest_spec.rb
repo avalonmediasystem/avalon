@@ -196,9 +196,7 @@ describe Avalon::Batch::Ingest do
   end
 
   describe "#offset_valid?" do
-    subject { Avalon::Batch::Ingest.new(nil) }
-    it {expect(subject.offset_valid?("33.12345")).to be_true}
-    it {expect(subject.offset_valid?("21:33.12345")).to be_true}
+    subject { Avalon::Batch::Package.new("") }
     it {expect(subject.offset_valid?("125:21:33.12345")).to be_true}
     it {expect(subject.offset_valid?("63.12345")).to be_false}
     it {expect(subject.offset_valid?("66:33.12345")).to be_false}
