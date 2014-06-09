@@ -14,7 +14,8 @@
   ---  END LICENSE_HEADER BLOCK  ---
 
 %p Initial processing of your batch ingest failed:
-%p Manifest file: @package.manifest.file
+-if @package.manifest.file.present?
+  %p= "Manifest file: #{@package.manifest.file}"
 
 -if @base_errors.present?
   .alert.alert-error

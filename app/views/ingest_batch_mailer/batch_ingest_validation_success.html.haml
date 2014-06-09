@@ -15,5 +15,7 @@
 
 %p Your metadata package was validated and no errors were found. Your batch is now processing.
 
-%p= "Manifest file: #{@package.manifest.file}"
+-if @package.manifest.file.present?
+  %p= "Manifest file: #{@package.manifest.file}"
+
 
