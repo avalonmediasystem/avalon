@@ -51,14 +51,8 @@ module Avalon
             elsif !current_ability.can?(:read, collection)
               base_errors << "User #{email_address} does not have permission to add items to collection: #{collection.name}."
             end
-            if base_errors.empty?
-              # Validate package entries
-              package.validate!(current_user,collection)
-            end
-            if base_errors.empty? && package.valid?
-
-              media_objects = package.process!(current_user, collection)
-
+            if base_errors.empty? && package.valid?(current_user,collection)
+              media_objects = package.process(current_user, collection)
               # send email confirming kickoff of batch
               IngestBatchMailer.batch_ingest_validation_success( package ).deliver
             else
