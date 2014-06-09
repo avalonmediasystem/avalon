@@ -148,26 +148,27 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'should result in an error if a file is not found' do
-      wrong_filename_batch = Avalon::Batch::Package.new( 'spec/fixtures/dropbox/example_batch_ingest/wrong_filename_manifest.xlsx' )
-      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [wrong_filename_batch]
+      batch = Avalon::Batch::Package.new( 'spec/fixtures/dropbox/example_batch_ingest/wrong_filename_manifest.xlsx' )
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
       mailer.should_receive(:deliver)
       batch_ingest.ingest
       IngestBatch.count.should == 0
-      wrong_filename_batch.errors[3].messages.should have_key(:content)
+      batch.errors[3].messages.should have_key(:content)
+      batch.errors[3].messages[:content].should eq(["File not found: assets/sheephead_mountain_wrong.mov"])
     end
 
     it 'does not create an ingest batch object when there are no files' do
-      fileless_batch = Avalon::Batch::Package.new('spec/fixtures/batch_manifest.xlsx')
-      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [fileless_batch]
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/no_files.xlsx')
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
       batch_ingest.ingest
       IngestBatch.count.should == 0
     end
 
     it 'should fail if the manifest specified a non-manager user' do
-      non_manager_batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/non_manager_manifest.xlsx')
-      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [non_manager_batch]
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/non_manager_manifest.xlsx')
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(anything(), include("User jay@krajcik.org does not have permission to add items to collection: Ut minus ut accusantium odio autem odit..")).and_return(mailer)
       mailer.should_receive(:deliver)
@@ -176,14 +177,39 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'should fail if a bad offset is specified' do
-      bad_offset_batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/bad_offset_manifest.xlsx')
-      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [bad_offset_batch]
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/bad_offset_manifest.xlsx')
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
       mailer.should_receive(:deliver)
       batch_ingest.ingest
       IngestBatch.count.should == 0
-      bad_offset_batch.errors[3].messages.should have_key(:offset)
+      batch.errors[4].messages.should have_key(:offset)
+      batch.errors[4].messages[:offset].should eq(['Invalid offset: 5:000'])
+    end
+
+    it 'should fail if missing required field' do
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/missing_required_field.xlsx')
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
+      mailer.should_receive(:deliver)
+      batch_ingest.ingest
+      IngestBatch.count.should == 0
+      batch.errors[4].messages.should have_key(:creator)
+      batch.errors[4].messages[:creator].should eq(['field is required.'])
+    end
+
+    it 'should fail if field is not in accepted metadata field list' do
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/badColumnName_nonRequired.xlsx')
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
+      #mailer = double('mailer').as_null_object
+      #IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
+      #mailer.should_receive(:deliver)
+      batch_ingest.ingest
+      IngestBatch.count.should == 0
+      batch.errors[4].messages.should have_key(:contributator)
+      batch.errors[4].messages[:contributator].should eq(["Metadata attribute `contributator' not found"])
     end
   end
 

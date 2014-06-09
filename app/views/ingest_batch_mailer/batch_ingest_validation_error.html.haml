@@ -13,9 +13,10 @@
     specific language governing permissions and limitations under the License.
   ---  END LICENSE_HEADER BLOCK  ---
 
-%p Initial processing of your batch ingest failed:
+%p Initial processing of your batch ingest failed. Details are below. Please see the <a href="https://wiki.dlib.indiana.edu/display/VarVideo/Batch+Ingest+Package+Format">Batch Ingest Package Format</a> for further help.
 -if @package.manifest.file.present?
   %p= "Manifest file: #{@package.manifest.file}"
+
 
 -if @base_errors.present?
   .alert.alert-error
@@ -23,13 +24,14 @@
       = message
       %br
 
--@package.entries.each do |entry|
+-@package.entries.each.with_index(2) do |entry,index|
   -if entry.errors.present?
-    %b= entry.fields[:main_title].try(:first) || "(Untitled)"
-    %br
-    - entry.errors.messages.each_pair do |field, errors|
-      #{field.to_s.titleize} - #{errors.join(', ')}
+    .alert.alert-error
+      %b= "Row #{index}: #{entry.fields[:main_title].try(:first) || 'Untitled' }"
       %br
+      - entry.errors.messages.each_pair do |field, errors|
+        #{field.to_s.titleize} - #{errors.join(', ')}
+        %br
 
 
 
