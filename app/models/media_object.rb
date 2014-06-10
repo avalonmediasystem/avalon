@@ -235,7 +235,7 @@ class MediaObject < ActiveFedora::Base
     metadata_attribute_value = value
 
     if metadata_attribute.nil?
-      missing_attributes[attribute] = "Metadata attribute `#{attribute}' not found"
+      missing_attributes[attribute] = "Metadata attribute '#{attribute}' not found"
       return false
     else
       values = Array(value).select { |v| not v.blank? }

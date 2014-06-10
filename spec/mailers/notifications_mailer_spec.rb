@@ -22,7 +22,6 @@ describe 'NotificationsMailer' do
               old_name: @old_name,
               subject: "Notification: collection #{@old_name} changed to #{@collection.name}"
       )
-      binding.pry
     end
     
     it 'has correct e-mail address' do

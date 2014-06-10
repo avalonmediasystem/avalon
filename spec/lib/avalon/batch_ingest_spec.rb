@@ -209,7 +209,7 @@ describe Avalon::Batch::Ingest do
       batch_ingest.ingest
       IngestBatch.count.should == 0
       batch.errors[4].messages.should have_key(:contributator)
-      batch.errors[4].messages[:contributator].should eq(["Metadata attribute `contributator' not found"])
+      batch.errors[4].messages[:contributator].should eq(["Metadata attribute 'contributator' not found"])
     end
   end
 
