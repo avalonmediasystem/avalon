@@ -40,27 +40,25 @@ module Avalon
       end
 
       def ingest_package(package)
-        media_objects = []
         base_errors = []
-        email_address = package.manifest.email || Avalon::Configuration.lookup('email.notification')
-        current_user = User.where(username: email_address).first || User.where(email: email_address).first
+        current_user = package.user
         current_ability = Ability.new(current_user)
         # Validate base package attributes: user, collection, and authorization
         if current_user.nil?
-          base_errors << "User does not exist in the system: #{email_address}."
-        elsif !collection
+          base_errors << "User does not exist in the system: #{package.manifest.email}."
+        elsif !collection #TODO test in separate block if entries match the current collection and add errors if not
           base_errors << "There is not a collection in the system with the name: #{collection.name}."
         elsif !current_ability.can?(:read, collection)
-          base_errors << "User #{email_address} does not have permission to add items to collection: #{collection.name}."
+          base_errors << "User #{current_user.user_key} does not have permission to add items to collection: #{collection.name}."
         elsif package.manifest.count==0
           base_errors << "There are no entries in the manifest file."
         end
-        if !base_errors.empty? || !package.valid?(current_user,collection)
+        if !base_errors.empty? || !package.valid?
           package.manifest.error!
           IngestBatchMailer.batch_ingest_validation_error( package, base_errors ).deliver
           return nil
         end
-        media_objects = package.process(current_user, collection)
+        media_objects = package.process!
         # send email confirming kickoff of batch
         IngestBatchMailer.batch_ingest_validation_success( package ).deliver
         # Create an ingest batch object for all of the media objects associated with this particular package
