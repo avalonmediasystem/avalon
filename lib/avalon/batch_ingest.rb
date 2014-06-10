@@ -46,12 +46,15 @@ module Avalon
         # Validate base package attributes: user, collection, and authorization
         if current_user.nil?
           base_errors << "User does not exist in the system: #{package.manifest.email}."
-        elsif !collection #TODO test in separate block if entries match the current collection and add errors if not
-          base_errors << "There is not a collection in the system with the name: #{collection.name}."
         elsif !current_ability.can?(:read, collection)
           base_errors << "User #{current_user.user_key} does not have permission to add items to collection: #{collection.name}."
         elsif package.manifest.count==0
           base_errors << "There are no entries in the manifest file."
+        end
+        package.entries.each do |entry| 
+          if entry.fields.has_key?(:collection) && entry.fields[:collection].first!=collection.name
+            entry.errors.add(:collection, "Collection '#{entry.fields[:collection].first}' does not match ingest folder '#{collection.name}'") 
+          end
         end
         if !base_errors.empty? || !package.valid?
           package.manifest.error!

@@ -156,7 +156,7 @@ describe Avalon::Batch::Ingest do
       batch_ingest.ingest
       IngestBatch.count.should == 0
       batch.errors[3].messages.should have_key(:content)
-      batch.errors[3].messages[:content].should eq(["File not found: assets/sheephead_mountain_wrong.mov"])
+      batch.errors[3].messages[:content].should eq(["File not found: spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain_wrong.mov"])
     end
 
     it 'does not create an ingest batch object when there are no files' do
@@ -203,13 +203,38 @@ describe Avalon::Batch::Ingest do
     it 'should fail if field is not in accepted metadata field list' do
       batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/badColumnName_nonRequired.xlsx')
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
-      #mailer = double('mailer').as_null_object
-      #IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      #mailer.should_receive(:deliver)
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
+      mailer.should_receive(:deliver)
       batch_ingest.ingest
       IngestBatch.count.should == 0
       batch.errors[4].messages.should have_key(:contributator)
       batch.errors[4].messages[:contributator].should eq(["Metadata attribute 'contributator' not found"])
+    end
+
+    it 'should fail if collection column in manifest does not match an existing collection' do
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/wrong_collection.xlsx')
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
+      mailer.should_receive(:deliver)
+      batch_ingest.ingest
+      IngestBatch.count.should == 0
+      batch.errors[3].messages.should have_key(:collection)
+      batch.errors[3].messages[:collection].should eq(["Collection not found: Bad Collection Name"])
+    end
+
+    it 'should fail if collection column in manifest does not match ingest collection folder' do
+      FactoryGirl.create(:collection, name: 'Bad Collection Name', managers: ['frances.dickens@reichel.com'])
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/wrong_collection.xlsx')
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
+      mailer.should_receive(:deliver)
+      batch_ingest.ingest
+      IngestBatch.count.should == 0
+      batch.errors[3].messages.should have_key(:collection)
+      batch.errors[3].messages[:collection].should eq(["Collection 'Bad Collection Name' does not match ingest folder 'Ut minus ut accusantium odio autem odit.'"])
     end
   end
 
