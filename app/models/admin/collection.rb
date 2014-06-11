@@ -166,8 +166,13 @@ class Admin::Collection < ActiveFedora::Base
 
   def reindex_members
     yield
+    reindex_media_objects
+  end
+
+  def reindex_media_objects
     media_objects.each{|mo| mo.update_index}
   end
+  handle_asynchronously :reindex_media_objects
 
   def to_solr(solr_doc=Hash.new, *args)
     super
