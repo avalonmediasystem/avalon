@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/Empact/roo
-  revision: a46611c8d783b00e000aca460a8473c83c83f52d
+  revision: 9e1b969762cbb80b1c52cfddd848e489f22f468f
   specs:
     roo (1.13.2)
       nokogiri
@@ -24,7 +24,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
-  revision: d10ac19d7ea131a30673bf2846897d1cfcc65098
+  revision: 97568338c5f9a29e255211312151f3b64cb256d8
   specs:
     avalon-batch (0.2.2)
       activemodel
@@ -357,11 +357,11 @@ GEM
       railties
     method_source (0.8.2)
     mime-types (1.25.1)
-    mini_portile (0.5.2)
+    mini_portile (0.6.0)
     modal_logic (0.0.5)
       handlebars_assets (= 0.14.1)
       rails (~> 3.2.13)
-    multi_json (1.9.0)
+    multi_json (1.10.1)
     multipart-post (2.0.0)
     net-http-digest_auth (1.4)
     net-scp (1.1.2)
@@ -371,8 +371,8 @@ GEM
     net-ssh (2.8.0)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
-    nokogiri (1.6.1)
-      mini_portile (~> 0.5.0)
+    nokogiri (1.6.2.1)
+      mini_portile (= 0.6.0)
     nom-xml (0.5.1)
       activesupport
       i18n
