@@ -68,7 +68,7 @@ class CatalogController < ApplicationController
     # Eventually these need to be merged into a single facet
     config.add_facet_field 'creator_sim', :label => 'Main contributor', :limit => 5
     #TODO add "Date" facet that points to issue date in mediaobject
-    config.add_facet_field 'date_ssi', :label => 'Date', :limit => 5
+    config.add_facet_field 'date_sim', :label => 'Date', :limit => 5
     config.add_facet_field 'genre_sim', :label => 'Genres', :limit => 5
     config.add_facet_field 'collection_ssim', :label => 'Collection', :limit => 5
     config.add_facet_field 'unit_ssim', :label => 'Unit', :limit => 5

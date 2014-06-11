@@ -67,6 +67,7 @@ module ModsBehaviors
 
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
     solr_doc['date_ssi'] = self.find_by_terms(:date_issued).text
+    solr_doc['date_sim'] = get_year(solr_doc['date_ssi'])
 
     # For full text, we stuff it into the mods_tesim field which is already configured for Mods doucments
     solr_doc['mods_tesim'] = self.ng_xml.xpath('//text()').collect { |t| t.text }
@@ -156,17 +157,24 @@ module ModsBehaviors
   end
 
   def get_year(s)
-    begin
-      DateTime.parse(s).year.to_s
-    rescue
-      if s.match(/^\d{4}$/)
-        return s.to_s
-      elsif s.match(/^(\d{4})-\d{2}$/)
-        return $1.to_s
-      else
-        return nil
-      end
+    if s.match(/^[\du]{4}$/)
+      return gather_years(s)
+    elsif s.match(/^\d{4}$/)
+      return [s.to_s]
+    elsif s.match(/^(\d{4})-\d{2}$/)
+      return [$1.to_s]
+    else
+      return [DateTime.parse(s).year.to_s] rescue nil
     end
+  end
+
+  def gather_years(s)
+    return nil unless s.match(/^[\du]{4}$/)
+    result = [s]
+    s.scan(/u/).size.times do
+      result = result.collect{|d| (0...10).collect {|i| d.sub(/u/, i.to_s) } }.flatten
+    end
+    result
   end
 
   # Override NokogiriDatastream#update_term_values to use the explicit 
