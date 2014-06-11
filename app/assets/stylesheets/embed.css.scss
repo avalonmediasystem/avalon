@@ -21,3 +21,7 @@ body {
     margin: 0;
     overflow: hidden;
 }
+
+.mejs-layers {
+    pointer-events: none !important;
+}
