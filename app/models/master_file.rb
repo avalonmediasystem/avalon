@@ -312,27 +312,6 @@ class MasterFile < ActiveFedora::Base
       self.file_checksum = matterhorn_response.source_tracks(0).checksum
     end
 
-    thumbnail = matterhorn_response.thumbnail_images(0)      
-
-    # TODO : Since these are the same write a method to DRY up updating an
-    #        image datastream
-    if thumbnail.present? and self.thumbnail.content.blank?
-      thumbnailURI = URI.parse(thumbnail.url.first)
-      # Rubyhorn fails if you don't provide a leading / in the provided path
-      self.thumbnail.content = Rubyhorn.client.get(thumbnailURI.path[1..-1]) 
-      self.thumbnail.mimeType = thumbnail.mimetype.first
-    end
-    
-    # The poster element needs the same treatment as the thumbnail except 
-    # for being located at player+preview and not search+preview
-    poster = matterhorn_response.poster_images(0)
-
-    if poster.present? and self.poster.content.blank?
-      poster_uri = URI.parse(poster.url.first)
-      self.poster.content = Rubyhorn.client.get(poster_uri.path[1..-1])
-      self.poster.mimeType = poster.mimetype.first
-    end
-
     save
     
     run_hook :after_processing

@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/Empact/roo
-  revision: a46611c8d783b00e000aca460a8473c83c83f52d
+  revision: 9e1b969762cbb80b1c52cfddd848e489f22f468f
   specs:
     roo (1.13.2)
       nokogiri
@@ -24,7 +24,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
-  revision: d10ac19d7ea131a30673bf2846897d1cfcc65098
+  revision: 97568338c5f9a29e255211312151f3b64cb256d8
   specs:
     avalon-batch (0.2.2)
       activemodel
