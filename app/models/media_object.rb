@@ -299,7 +299,7 @@ class MediaObject < ActiveFedora::Base
     solr_doc["dc_publisher_tesim"] = self.publisher
     #Add all searchable fields to the all_text_timv field
     all_text_values = []
-    all_text_values << solr_doc["title_tesim"]
+    all_text_values << solr_doc["title_tesi"]
     all_text_values << solr_doc["creator_ssim"]
     all_text_values << solr_doc["contributor_sim"]
     all_text_values << solr_doc["unit_ssim"]

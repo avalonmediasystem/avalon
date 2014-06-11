@@ -71,8 +71,8 @@ module ApplicationHelper
   end
 
   def search_result_label item
-    if item['title_tesim'].present?
-      label = truncate(item['title_tesim'].first, length: 100)
+    if item['title_tesi'].present?
+      label = truncate(item['title_tesi'], length: 100)
     else
       label = item.id
     end

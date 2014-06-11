@@ -38,12 +38,12 @@ class CatalogController < ApplicationController
     }
 
     # solr field configuration for search results/index views
-    config.index.show_link = 'title_tesim'
+    config.index.show_link = 'title_tesi'
     config.index.record_display_type = 'has_model_ssim'
 
     # solr field configuration for document/show views
-    config.show.html_title = 'title_tesim'
-    config.show.heading = 'title_tesim'
+    config.show.html_title = 'title_tesi'
+    config.show.heading = 'title_tesi'
     config.show.display_type = 'has_model_ssim'
 
     # solr fields that will be treated as facets by the blacklight application
@@ -92,15 +92,15 @@ class CatalogController < ApplicationController
     #   The ordering of the field names is the order of the display 
     config.add_index_field 'creator_ssim', :label => 'Main contributors:', :helper_method => :contributor_index_display 
     config.add_index_field 'date_ssi', :label => 'Date:' 
-    config.add_index_field 'summary_ssim', label: 'Summary:', :helper_method => :description_index_display
+    config.add_index_field 'summary_ssi', label: 'Summary:', :helper_method => :description_index_display
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display 
-    config.add_show_field 'title_sim', :label => 'Title' 
+    config.add_show_field 'title_tesi', :label => 'Title' 
     config.add_show_field 'format_sim', :label => 'Format' 
     config.add_show_field 'creator_sim', :label => 'Creator' 
     config.add_show_field 'language_sim', :label => 'Language'
-    config.add_show_field 'date_sim', label: 'Date'
+    config.add_show_field 'date_ssi', label: 'Date'
     config.add_show_field 'abstract_sim', label: 'Abstract'
     config.add_show_field 'location_sim', label: 'Locations'
     config.add_show_field 'time_period_sim', label: 'Time periods'
@@ -170,10 +170,10 @@ class CatalogController < ApplicationController
     # label in pulldown is followed by the name of the SOLR field to sort by and
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
-    config.add_sort_field 'score desc, title_ssi asc, date_ssi desc', :label => 'Relevance'
-    config.add_sort_field 'date_ssi desc, title_ssi asc', :label => 'Year'
-    config.add_sort_field 'creator_ssi asc, title_ssi asc', :label => 'Main contributor'
-    config.add_sort_field 'title_ssi asc, date_ssi desc', :label => 'Title'
+    config.add_sort_field 'score desc, title_tesi asc, date_ssi desc', :label => 'Relevance'
+    config.add_sort_field 'date_ssi desc, title_tesi asc', :label => 'Year'
+    config.add_sort_field 'creator_ssi asc, title_tesi asc', :label => 'Main contributor'
+    config.add_sort_field 'title_tesi asc, date_ssi desc', :label => 'Title'
 
     # If there are more than this many search results, no spelling ("did you 
     # mean") suggestion is offered.
