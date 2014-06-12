@@ -55,11 +55,11 @@ describe ApplicationHelper do
 
   describe "#search_result_label" do
     it "should not include a duration string if it would be 0" do
-      mo_solr_doc = {"title_tesim" => "my_title"}
+      mo_solr_doc = {"title_tesi" => "my_title"}
       expect(helper.search_result_label(mo_solr_doc)).not_to include("(00:00)")
     end
     it "should return formatted title if duration is present" do
-      mo_solr_doc = {"title_tesim" => ["my_title"], "duration_tesim" => ["1000"]}
+      mo_solr_doc = {"title_tesi" => "my_title", "duration_tesim" => ["1000"]}
       expect(helper.search_result_label(mo_solr_doc)).to eq("my_title (00:01)")
     end
     it "should return pid when no title" do
