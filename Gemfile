@@ -24,6 +24,9 @@
   gem 'rubyzip', '0.9.9'
   gem 'hooks'
 
+  # microdata
+  gem 'ruby-duration'
+
   platforms :jruby do
     gem 'jruby-openssl'
     gem 'activerecord-jdbcsqlite3-adapter'
