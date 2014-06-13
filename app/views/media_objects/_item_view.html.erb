@@ -62,7 +62,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <% content_for :title do %>
-  Preview -
   <% unless @mediaobject.title.blank? %>
     <%= @mediaobject.title %>
   <% else %>
@@ -89,7 +88,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <script>
     currentPlayer = new MediaElementPlayer('#video-tag', 
-        { mode: 'auto_plugin',
+        { mode: 'native',
           pluginPath: <%= asset_path('mediaelement_rails/').inspect.html_safe %>,
           usePluginFullScreen: false,
           thumbnailSelectorUpdateURL: '/update-url',
