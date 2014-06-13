@@ -70,7 +70,7 @@ describe Avalon::Batch::Ingest do
     
     it 'should ingest batch with spaces in name' do
       space_batch_path = File.join('spec/fixtures/dropbox/example batch ingest', 'batch manifest with spaces.xlsx')
-      space_batch = Avalon::Batch::Package.new(space_batch_path)
+      space_batch = Avalon::Batch::Package.new(space_batch_path, collection)
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [space_batch]
       batch_ingest.ingest
       IngestBatch.count.should == 1
@@ -148,7 +148,7 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'should result in an error if a file is not found' do
-      batch = Avalon::Batch::Package.new( 'spec/fixtures/dropbox/example_batch_ingest/wrong_filename_manifest.xlsx' )
+      batch = Avalon::Batch::Package.new( 'spec/fixtures/dropbox/example_batch_ingest/wrong_filename_manifest.xlsx', collection )
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
@@ -160,14 +160,14 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'does not create an ingest batch object when there are no files' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/no_files.xlsx')
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/no_files.xlsx', collection)
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
       batch_ingest.ingest
       IngestBatch.count.should == 0
     end
 
     it 'should fail if the manifest specified a non-manager user' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/non_manager_manifest.xlsx')
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/non_manager_manifest.xlsx', collection)
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(anything(), include("User jay@krajcik.org does not have permission to add items to collection: Ut minus ut accusantium odio autem odit..")).and_return(mailer)
@@ -177,7 +177,7 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'should fail if a bad offset is specified' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/bad_offset_manifest.xlsx')
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/bad_offset_manifest.xlsx', collection)
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
@@ -189,7 +189,7 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'should fail if missing required field' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/missing_required_field.xlsx')
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/missing_required_field.xlsx', collection)
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
@@ -201,7 +201,7 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'should fail if field is not in accepted metadata field list' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/badColumnName_nonRequired.xlsx')
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/badColumnName_nonRequired.xlsx', collection)
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
@@ -210,31 +210,6 @@ describe Avalon::Batch::Ingest do
       IngestBatch.count.should == 0
       batch.errors[4].messages.should have_key(:contributator)
       batch.errors[4].messages[:contributator].should eq(["Metadata attribute 'contributator' not found"])
-    end
-
-    it 'should fail if collection column in manifest does not match an existing collection' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/wrong_collection.xlsx')
-      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
-      mailer = double('mailer').as_null_object
-      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      mailer.should_receive(:deliver)
-      batch_ingest.ingest
-      IngestBatch.count.should == 0
-      batch.errors[3].messages.should have_key(:collection)
-      batch.errors[3].messages[:collection].should eq(["Collection not found: Bad Collection Name"])
-    end
-
-    it 'should fail if collection column in manifest does not match ingest collection folder' do
-      FactoryGirl.create(:collection, name: 'Bad Collection Name', managers: ['frances.dickens@reichel.com'])
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/wrong_collection.xlsx')
-      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
-      mailer = double('mailer').as_null_object
-      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      mailer.should_receive(:deliver)
-      batch_ingest.ingest
-      IngestBatch.count.should == 0
-      batch.errors[3].messages.should have_key(:collection)
-      batch.errors[3].messages[:collection].should eq(["Collection 'Bad Collection Name' does not match ingest folder 'Ut minus ut accusantium odio autem odit.'"])
     end
   end
 

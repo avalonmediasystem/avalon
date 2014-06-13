@@ -177,7 +177,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def dropbox
-    Avalon::Dropbox.new dropbox_absolute_path
+    Avalon::Dropbox.new( dropbox_absolute_path, self )
   end
 
   def dropbox_absolute_path( name = nil )
