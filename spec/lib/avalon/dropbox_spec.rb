@@ -19,7 +19,12 @@ require 'avalon/dropbox'
 describe Avalon::Dropbox do
 
   describe "#delete" do
-    subject { Avalon::Dropbox.new Avalon::Configuration.lookup('dropbox.path') }
+    before :each do
+      User.create(:username => 'frances.dickens@reichel.com', :email => 'frances.dickens@reichel.com')
+      RoleControls.add_user_role('frances.dickens@reichel.com','manager')
+    end
+    let(:collection) { FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
+    subject { Avalon::Dropbox.new(Avalon::Configuration.lookup('dropbox.path'),collection) }
     it 'returns true if the file is found' do
       File.stub(:delete).and_return true
       subject.delete('some_file.mov')
