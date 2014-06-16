@@ -18,8 +18,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title><%= yield :title %>
-       <% if content_for? :title %>- <% end %><%=release_text%>
+    <title>
+      <%= yield :title %>
+      <% if ! content_for? :title %>
+        <%= release_text %>
+      <% end %>
     </title>
 
    <%= csrf_meta_tags %>
