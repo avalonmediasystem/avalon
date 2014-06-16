@@ -8,7 +8,7 @@
   gem 'bcrypt-ruby', '~> 3.0.0'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git' # HEAD , tag: 'avalon-r3'
-  gem 'avalon-batch', '~> 0.2.2', git: "https://github.com/avalonmediasystem/avalon-batch.git" # HEAD , tag: 'avalon-r3'
+  gem 'avalon-batch', '~> 0.3.0', git: "https://github.com/avalonmediasystem/avalon-batch.git" # HEAD , tag: 'avalon-r3'
   gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git' # HEAD , tag: 'avalon-r3'
   gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git' # HEAD , tag: 'avalon-r3'
   gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector' # HEAD , tag: 'avalon-r3'
