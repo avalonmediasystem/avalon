@@ -15,7 +15,7 @@ require 'ruby-duration'
 
 module ApplicationHelper
   def application_name
-    'Avalon'
+    Avalon::Configuration.lookup('name')
   end
   
   def release_text

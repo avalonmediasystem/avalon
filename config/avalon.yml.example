@@ -1,11 +1,12 @@
 development: 
+  name: 'Avalon' # used in page titles
   fedora:
     namespace: avalon
   domain:
     host: localhost
     port: 3000
   dropbox:
-    path: '/srv/avalon/dropbox/'
+    path: '/Users/ath326/avalon/dropbox/'
     upload_uri: 'sftp://localhost/srv/avalon/dropbox'
   matterhorn:
     root: 'http://localhost:8080/'
