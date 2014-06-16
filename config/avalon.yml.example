@@ -1,4 +1,5 @@
 development: 
+  name: 'Avalon' # used in page titles
   fedora:
     namespace: avalon
   domain:
