@@ -129,8 +129,17 @@ class MasterFilesController < ApplicationController
 
     if params[:workflow_id].present?
       master_file.workflow_id ||= params[:workflow_id]
-      workflow = Rubyhorn.client.instance_xml(params[:workflow_id])
-      master_file.update_progress!(params, workflow) 
+      workflow = begin
+        Rubyhorn.client.instance_xml(params[:workflow_id])
+      rescue Rubyhorn::RestClient::Exceptions::HTTPNotFound
+        nil
+      end
+      if workflow
+        master_file.update_progress!(params, workflow)
+      else
+        master_file.status_code = 'STOPPED'
+        master_file.save
+      end
 
       # If Matterhorn reports that the processing is complete then we need
       # to prepare Fedora by pulling several important values closer to the

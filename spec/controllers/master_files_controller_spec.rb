@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'spec_helper'
+require 'rubyhorn/rest_client/exceptions'
 
 describe MasterFilesController do
   describe "#create" do
@@ -122,9 +123,7 @@ describe MasterFilesController do
   
   describe "#update" do
     let!(:master_file) {FactoryGirl.create(:master_file)}
-
-    context "should handle Matterhorn pingbacks" do
-      it "should create Derivatives when processing succeeded" do
+    before do
         #stub Rubyhorn call and return a workflow fixture and check that Derivative.create_from_master_file is called
         xml = File.new("spec/fixtures/matterhorn_workflow_doc.xml")
         doc = Rubyhorn::Workflow.from_xml(xml)
@@ -137,10 +136,28 @@ describe MasterFilesController do
         master_file.poster.mimeType = 'image/png'
         master_file.poster.content = 'PNG'
         master_file.save 
-        put :update, id: master_file.pid, workflow_id: 1103
+    end
 
-        master_file.reload 
+    context "should handle Matterhorn pingbacks" do
+      it "should create Derivatives when processing succeeded" do
+        put :update, id: master_file.pid, workflow_id: 1103
+        master_file.reload
         master_file.derivatives.count.should == 3
+      end
+      it "should send success email" do
+        allow(IngestBatch).to receive(:all) {[IngestBatch.new(media_object_ids: [master_file.mediaobject.id], name: "Batch #1", email: "test@test.com" )]}
+        mailer = double('mailer').as_null_object
+        IngestBatchMailer.should_receive(:status_email).and_return(mailer)
+        mailer.should_receive(:deliver)
+        put :update, id: master_file.pid, workflow_id: 1103
+      end
+      it "should handle stopped workflows" do
+        Rubyhorn.stub_chain(:client, :instance_xml).and_raise Rubyhorn::RestClient::Exceptions::HTTPNotFound
+        allow(IngestBatch).to receive(:all) {[IngestBatch.new(media_object_ids: [master_file.mediaobject.id], name: "Batch #1", email: "test@test.com" )]}
+        mailer = double('mailer').as_null_object
+        IngestBatchMailer.should_receive(:status_email).and_return(mailer)
+        mailer.should_receive(:deliver)
+        put :update, id: master_file.pid, workflow_id: 1103
       end
     end
   end

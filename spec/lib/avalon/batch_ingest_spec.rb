@@ -61,6 +61,11 @@ describe Avalon::Batch::Ingest do
       end
     end
 
+    it 'should send email when batch finishes processing' do
+      IngestBatchMailer.should_receive(:batch_ingest_validation_success)
+      batch_ingest.ingest
+    end
+    
     it 'should skip the corrupt manifest' do
       lambda { batch_ingest.ingest }.should_not raise_error
       error_file = File.join(@dropbox_dir,'example_batch_ingest','bad_manifest.xlsx.error')
