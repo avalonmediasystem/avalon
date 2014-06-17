@@ -62,7 +62,9 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'should send email when batch finishes processing' do
-      IngestBatchMailer.should_receive(:batch_ingest_validation_success)
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_success).with(duck_type(:each)).and_return(mailer)
+      mailer.should_receive(:deliver)
       batch_ingest.ingest
     end
     

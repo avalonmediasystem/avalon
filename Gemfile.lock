@@ -24,9 +24,9 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
-  revision: 97568338c5f9a29e255211312151f3b64cb256d8
+  revision: 2737cac71d2e6a990ea6b937e6181f02c471b00f
   specs:
-    avalon-batch (0.2.2)
+    avalon-batch (0.3.0)
       activemodel
       activesupport
       roo
@@ -543,7 +543,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord-jdbcsqlite3-adapter
   avalon-about!
-  avalon-batch (~> 0.2.2)!
+  avalon-batch (~> 0.3.0)!
   avalon-workflow!
   bcrypt-ruby (~> 3.0.0)
   builder (~> 3.0.0)
