@@ -13,11 +13,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-
-<% content_for :title do %>
-  <%= params[:q] %> - <%= application_name %> Search Results
-<% end %>
-
 <div class="result clearfix">
   <div class="span2">
     <% if image_url = image_for(document) %>
