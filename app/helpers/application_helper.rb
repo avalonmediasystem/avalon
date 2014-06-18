@@ -11,10 +11,11 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
+require 'ruby-duration'
 
 module ApplicationHelper
   def application_name
-    'Avalon'
+    Avalon::Configuration.lookup('name') || 'Avalon'
   end
   
   def release_text
@@ -151,5 +152,22 @@ module ApplicationHelper
     end_length = output_label_length / 2 - 3 if end_length == 0
     truncate(label, length: output_label_length,
       omission: "...#{label.last(end_length)}")
+  end
+
+  def master_file_meta_properties( m )
+    formatted_duration = m.duration ? Duration.new(m.duration.to_i / 1000).iso8601 : ''
+    item_type = m.is_video? ? 'http://schema.org/VideoObject' : 'http://schema.org/AudioObject'
+
+    content_tag(:div, itemscope: '', itemprop:  m.is_video? ? 'video' : 'audio',  itemtype: item_type ) do
+      concat tag(:meta, itemprop: 'name', content: m.mediaobject.title )
+      concat tag(:meta, itemprop: 'duration', content: formatted_duration )
+      concat tag(:meta, itemprop: 'thumbnail', content: Rails.application.routes.url_helpers.thumbnail_master_file_url(m))
+      concat tag(:meta, itemprop: 'image', content: Rails.application.routes.url_helpers.poster_master_file_url(m))
+      concat tag(:meta, itemprop: 'sameAs', content: m.permalink ) if m.permalink.present?
+      concat tag(:meta, itemprop: 'genre', content: m.mediaobject.genre.join(' ')) unless m.mediaobject.genre.empty?
+      concat tag(:meta, itemprop: 'about', content: m.mediaobject.subject.join(' ')) unless m.mediaobject.subject.empty?
+      concat tag(:meta, itemprop: 'description', content: m.mediaobject.abstract) if m.mediaobject.abstract.present?
+      yield
+    end
   end
 end

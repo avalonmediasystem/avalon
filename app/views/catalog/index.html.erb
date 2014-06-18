@@ -13,6 +13,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<% content_for :title do %>
+  <% if params[:q].present? %> 
+    <%= params[:q] %> - Search Results <%= application_name %> 
+  <% end %>
+<% end %>
+
+
 <% content_for :additional_head_content do %>
   <link rel="alternate" type="application/xml" title="Solr" href="<%=build_solr_request_from_response%>">
 <% end %>
