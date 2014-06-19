@@ -218,6 +218,16 @@ describe Avalon::Batch::Ingest do
       batch.errors[4].messages.should have_key(:contributator)
       batch.errors[4].messages[:contributator].should eq(["Metadata attribute 'contributator' not found"])
     end
+    
+    it 'should fail if an unknown error occurs' do
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/badColumnName_nonRequired.xlsx', collection)
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(batch ,['RuntimeError: Foo']).and_return(mailer)
+      mailer.should_receive(:deliver)
+      batch_ingest.should_receive(:ingest_package) { raise "Foo" }
+      expect { batch_ingest.ingest }.to_not raise_error
+    end
   end
 
   it "should be able to default to public access" do
