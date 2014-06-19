@@ -20,8 +20,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <title>
       <%= yield :title %>
-      <% if ! content_for? :title %>
-        <%= release_text %>
+      <% if content_for? :title %>
+         - <%= application_name %>
+      <% else %>
+        Avalon Media System
       <% end %>
     </title>
 
