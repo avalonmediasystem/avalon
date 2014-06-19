@@ -35,7 +35,15 @@ module Avalon
         logger.info "<< Found #{new_packages.count} new packages for collection #{collection.name} >>"
         # Extract package and process
         new_packages.each do |package|
-          ingest_batch = ingest_package(package)
+          begin
+            ingest_batch = ingest_package(package)
+          rescue Exception => ex
+            begin
+              package.manifest.error!
+            ensure
+              IngestBatchMailer.batch_ingest_validation_error( package, ["#{ex.class.name}: #{ex.message}"] ).deliver
+            end
+          end
         end
       end
 
