@@ -13,8 +13,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<% content_for :title do %>
+  <%= @group.name %>
+<% end %>
+
 <div class="span7">
   <%= render "form"%>
 </div>
-
-<% content_for :title do %>Edit group<% end %>

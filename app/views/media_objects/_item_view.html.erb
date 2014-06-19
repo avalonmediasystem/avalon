@@ -61,14 +61,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 </div>
 
-<% content_for :title do %>
-  <% unless @mediaobject.title.blank? %>
-    <%= @mediaobject.title %>
-  <% else %>
-    <%= @mediaobject.pid %>
-  <% end %>
-<% end %>
-
 <% content_for :page_scripts do %>
   <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
   <%= javascript_include_tag 'switch_streams' %> 

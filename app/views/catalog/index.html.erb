@@ -14,8 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% content_for :title do %>
-  <% if params[:q].present? %> 
-    <%= params[:q] %> - Search Results <%= application_name %> 
+  <% if has_search_parameters? %>
+    <% if params[:q].present? %><%= params[:q] %> - <% end %> Search Results
   <% end %>
 <% end %>
 

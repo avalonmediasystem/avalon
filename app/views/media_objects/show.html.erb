@@ -13,6 +13,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<% content_for :title do %>
+  <%= @mediaobject.title || @mediaobject.pid %>
+<% end %>
+
 <% if flash[:notice].present? %>
   <div class="clearfix" id="alerts">
     <div class="alert alert-success">

@@ -13,6 +13,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<% content_for :title do %>
+  Groups
+<% end %>
+
 <div class="row span7">
   <% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
 
@@ -102,8 +106,4 @@ Unless required by applicable law or agreed to in writing, software distributed
       $('.delete').attr('disabled', 'disabled');
     }
   </script>
-<% end %>
-
-<% content_for :title do %>
-  Policy Managers - <%= application_name %> 
 <% end %>

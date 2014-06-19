@@ -13,6 +13,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<% content_for :title do %>
+  <%= @mediaobject.title || @mediaobject.pid %> - <%= HYDRANT_STEPS.get_step(@active_step).title %>
+<% end %>
+
 <div class="row-fluid">
   <div class="span2" id="left_column">
     <%= render "ingest_steps" %>
@@ -40,11 +44,3 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render current_step_for @active_step %>
   </div>
 </div>
-
-<% content_for :title do %>
-  <%# This might be a bit brittle but it is the fastest patch for the problem
-     and since we are all about efficiency right now it will work until there
-     is time to revisit the workflow %>
-  <%= HYDRANT_STEPS.get_step(@active_step).title %> -
-  <%= @mediaobject.title.present? ? truncate(@mediaobject.title, length: 50) : '[Untitled]' %> (<%= @mediaobject.pid %>)
-<% end %>
