@@ -104,7 +104,7 @@ en:
       They can publish items but not unpublish. They can only modify or 
       delete unpublished items.
     permalink: |
-      The item Permalink is a URL that links to the Item as a whole. In addition, seach section of an item will have a distinct permalink assigned in the File Upload page. If configured to do so, Avalon will automatically generate a permalink if this field is left blank.
+      The item Permalink is a URL that links to the Item as a whole. In addition, each section of an item will have a distinct permalink assigned in the File Upload page. If configured to do so, Avalon will automatically generate a permalink if this field is left blank.
   file_upload_tip:
     label: |
       The Section Label will be used in an item's listing to identify each file associated with the item.
