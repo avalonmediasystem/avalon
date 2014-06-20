@@ -60,9 +60,10 @@ window.AvalonStreams = {
           
           // Rebuilds the quality selector
           //currentPlayer.setSrc(newSrc);
-          currentPlayer.setPoster(stream_info.poster_image);
+          if (stream_info.poster_image != "undefined" && stream_info.poster_image != null)
+            currentPlayer.setPoster(stream_info.poster_image);
           currentPlayer.buildqualities(currentPlayer, currentPlayer.controls, currentPlayer.layers, currentPlayer.media);
-          //currentPlayer.load(); 
+          currentPlayer.load(); 
         } else {
           //currentPlayer = AvalonPlayer.init($('#player'), opts);
         }
