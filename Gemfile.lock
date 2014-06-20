@@ -580,6 +580,7 @@ DEPENDENCIES
   jettywrapper
   jquery-rails (~> 2.1.4)
   jruby-openssl
+  kaminari (~> 0.15.0)
   letter_opener
   license_header
   loofah
