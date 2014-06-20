@@ -6,6 +6,7 @@
 
   gem 'hydra', "~> 6.2.0"
   gem 'bcrypt-ruby', '~> 3.0.0'
+  gem 'kaminari', '~> 0.15.0'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git' # HEAD , tag: 'avalon-r3'
   gem 'avalon-batch', '~> 0.3.0', git: "https://github.com/avalonmediasystem/avalon-batch.git" # HEAD , tag: 'avalon-r3'
