@@ -461,7 +461,7 @@ class MasterFile < ActiveFedora::Base
       new_height += 1 if new_height.odd?
       aspect = new_width/new_height
 
-      frame_source = find_frame_source(options)
+      frame_source = find_frame_source(offset: offset)
       Tempfile.open([base,'.jpg']) do |jpeg|
         file_source = File.join(File.dirname(jpeg.path),"#{File.basename(jpeg.path,File.extname(jpeg.path))}#{File.extname(frame_source[:source])}")
         File.symlink(frame_source[:source],file_source)
