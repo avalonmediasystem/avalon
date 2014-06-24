@@ -57,6 +57,7 @@
 //= require handlebars.runtime
 //= require templates/modal/crud
 
+//= require browse_everything
 
 
 /*

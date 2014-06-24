@@ -17,22 +17,28 @@
 // Empty file for future js
 /* Override the search_context so it stops POSTing links which confuses
  * Rails and causes it to redirect to the wrong place. */
-Blacklight.do_search_context_behavior = function() {}
+$(document).ready(function() {
+  Blacklight.do_search_context_behavior = function() {}
 
-$('.btn-stateful-loading').live('click', function() { $(this).button('loading'); });    
+  $('.btn-stateful-loading').live('click', function() { $(this).button('loading'); });    
 
-$('.popover-target').popover({
-  placement: 'top',
-  html: true,
-  trigger: 'hover',
-  delay: { show: 250, hide: 500 },
-  content: function() { 
-    return $(this).next('.po-body').html() 
-  }
+  $('.popover-target').popover({
+    placement: 'top',
+    html: true,
+    trigger: 'hover',
+    delay: { show: 250, hide: 500 },
+    content: function() { 
+      return $(this).next('.po-body').html() 
+    }
+  });
+
+  $('#show_object_tree').on('click', function() {
+    var ot = $('#object_tree')
+    ot.load(ot.data('src'));
+    return false;
+  })
+
+  $('#browse-btn').browseEverything().done(function(data) { 
+    console.dir(data);
+  })
 });
-
-$('#show_object_tree').on('click', function() {
-  var ot = $('#object_tree')
-  ot.load(ot.data('src'));
-  return false;
-})
