@@ -3,8 +3,9 @@
   gem 'iconv'
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
-
+  
   gem 'hydra', "~> 6.2.0"
+  gem 'active-fedora', "~> 6.7.8"
   gem 'bcrypt-ruby', '~> 3.0.0'
   gem 'kaminari', '~> 0.15.0'
 
@@ -38,7 +39,7 @@
   platforms :ruby do
     gem 'sqlite3'
     gem 'execjs'
-    gem 'therubyracer', '= 0.10.2'
+    gem 'therubyracer', '>= 0.12.0'
   end
 
   gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git" # HEAD , tag: 'avalon-r3'
@@ -92,7 +93,7 @@
     gem 'rvm-capistrano'
     gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm' # HEAD , tag: 'avalon-r3'
     gem 'factory_girl_rails'
-    gem 'rspec-rails', '>=2.9.0'
+    gem 'rspec-rails', '~>2.9'
     gem 'pry'
     gem 'pry-rails'
     gem 'pry-debugger'
