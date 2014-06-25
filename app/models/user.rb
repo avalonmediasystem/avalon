@@ -57,7 +57,7 @@ class User < ActiveRecord::Base
       User.create(:username => auth_hash.uid, :email => auth_hash.info.email)
   end
 
-  def self.find_for_netbadge(auth_hash, signed_in_resource=nil)
+  def self.find_for_shibboleth(auth_hash, signed_in_resource=nil)
     logger.debug "In find_for_netbadge: #{auth_hash}"
     u = User.find_or_create_by_username auth_hash['uid'], email: auth_hash['uid']
     u
