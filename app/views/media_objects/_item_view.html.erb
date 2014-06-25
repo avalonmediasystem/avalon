@@ -66,11 +66,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= javascript_include_tag 'switch_streams' %> 
   <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %> 
   <%= javascript_include_tag 'me-thumb-selector' %>
-  <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
 
+  <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
   <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>   
   <%= stylesheet_link_tag 'me-thumb-selector' %>
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
+
 
   <%
     features = ['playpause','current','progress','duration','volume','qualities']
@@ -83,8 +84,15 @@ Unless required by applicable law or agreed to in writing, software distributed
         { mode: 'auto_plugin',
           pluginPath: <%= asset_path('mediaelement_rails/').inspect.html_safe %>,
           usePluginFullScreen: false,
+          
+          logoEnabled: true,
+          logoAction: 'popup',
+          logoURL: 'http://localhost:3000',
+
           thumbnailSelectorUpdateURL: '/update-url',
           thumbnailSelectorEnabled: true,
+
+
           features: <%=features.inspect.html_safe%>,
           audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
           mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,

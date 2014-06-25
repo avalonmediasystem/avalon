@@ -15,6 +15,13 @@ GIT
     database_cleaner (1.0.1)
 
 GIT
+  remote: https://github.com/atomical/mediaelement-logo-plugin
+  revision: 212f42efb3b34346579bb56339b512bcc33a0db0
+  specs:
+    media_element_logo_plugin (0.0.1)
+      rails (~> 3.2.3)
+
+GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
   revision: 4da42ab601c8ced5b3bd7dd983151ebe6acfd285
   specs:
@@ -584,6 +591,7 @@ DEPENDENCIES
   letter_opener
   license_header
   loofah
+  media_element_logo_plugin!
   media_element_thumbnail_selector!
   mediaelement-hd-toggle!
   mediaelement-qualityselector!
