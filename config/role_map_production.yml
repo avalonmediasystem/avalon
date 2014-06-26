@@ -1,4 +1,4 @@
-collection_manager:
-  - archivist1@example.com
-group_manager:
-  - archivist1@example.com
+administrator:
+  - md5wz@virginia.edu
+manager:
+  - srv3f@virginia.edu
