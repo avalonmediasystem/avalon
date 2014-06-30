@@ -475,7 +475,7 @@ GEM
       i18n
       iso8601
     ruby-ole (1.2.11.7)
-    rubydora (1.7.4)
+    rubydora (1.7.5)
       activemodel
       activesupport
       deprecation
@@ -615,6 +615,7 @@ DEPENDENCIES
   rspec-rails (~> 2.9)
   rspec_junit_formatter
   ruby-duration
+  rubydora (~> 1.7.5)
   rubyhorn!
   rubyzip (= 0.9.9)
   rvm-capistrano
