@@ -63,5 +63,24 @@ describe Users::OmniauthCallbacksController do
         expect(subject[:full_login]).to be_false
       end
     end
+
+    context 'redirect' do
+      subject { post '/users/auth/lti/callback', foo_hash }
+      let(:user_session) { Hash.new }
+      before :each do
+        Users::OmniauthCallbacksController.any_instance.stub(:user_session) { user_session }
+      end
+      it "should redirect to the external group facet applied for the lti group" do
+        expect(subject).to redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])
+      end
+      context 'when there are other external groups' do
+        before do
+          User.any_instance.stub(:ldap_groups) { [Faker::Lorem.word] }
+        end
+        it "should redirect to the external group facet applied for the lti group" do
+          expect(subject).to redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])
+        end
+      end
+    end
   end
 end

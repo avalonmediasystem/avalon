@@ -30,7 +30,7 @@
           - master_files.each do |master_file|
             - status_code = master_file.status_code.downcase
             %tr
-              %td.master-file= link_to File.basename(master_file.file_location), master_file_path(master_file)
+              %td.master-file= link_to File.basename(master_file.file_location), master_file_url(master_file)
               %td.percent-complete= "#{master_file.percent_complete}%"
               %td.status-code{ :class => "status-#{status_code}" }= status_code.titleize
     - else

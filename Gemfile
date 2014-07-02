@@ -3,8 +3,10 @@
   gem 'iconv'
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
-
+  
   gem 'hydra', "~> 6.2.0"
+  gem 'active-fedora', "~> 6.7.8"
+  gem 'rubydora', "~> 1.7.5"
   gem 'bcrypt-ruby', '~> 3.0.0'
   gem 'kaminari', '~> 0.15.0'
 
@@ -92,7 +94,7 @@
     gem 'rvm-capistrano'
     gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm' # HEAD , tag: 'avalon-r3'
     gem 'factory_girl_rails'
-    gem 'rspec-rails', '>=2.9.0'
+    gem 'rspec-rails', '~>2.9'
     gem 'pry'
     gem 'pry-rails'
     gem 'pry-debugger'
