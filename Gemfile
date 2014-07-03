@@ -40,7 +40,7 @@
   platforms :ruby do
     gem 'sqlite3'
     gem 'execjs'
-    gem 'therubyracer', '>= 0.12.0'
+    gem 'therubyracer'
   end
 
   gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git" # HEAD , tag: 'avalon-r3'

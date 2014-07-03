@@ -623,7 +623,7 @@ DEPENDENCIES
   shoulda-matchers
   simplecov
   sqlite3
-  therubyracer (>= 0.12.0)
+  therubyracer
   therubyrhino
   twitter_bootstrap_form_for!
   uglifier (>= 1.0.3)
