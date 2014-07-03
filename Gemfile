@@ -40,7 +40,7 @@
   platforms :ruby do
     gem 'sqlite3'
     gem 'execjs'
-    gem 'therubyracer'
+    gem 'therubyracer', '>= 0.12.0'
   end
 
   gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git" # HEAD , tag: 'avalon-r3'
@@ -61,7 +61,7 @@
   gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git" # HEAD , tag: 'avalon-r3'
 
   gem 'mediainfo'
-  gem 'delayed_job_active_record'
+  gem 'delayed_job_active_record', '~> 0.3.3'
   gem 'whenever', require: false
   gem 'with_locking'
 
