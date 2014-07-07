@@ -33,7 +33,6 @@ class ObjectController < ApplicationController
 
   def autocomplete
     model = Module.const_get(params[:t].to_s.classify)
-    query = params[:q]
-    render json: model.send(:autocomplete, query)
+    render json: model.send(:autocomplete, params[:q].strip)
   end
 end
