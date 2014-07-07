@@ -44,8 +44,10 @@ module ApplicationHelper
     if master_file_id
       if video_count > 0
         thumbnail_master_file_path(master_file_id)
-      else
+      elsif audio_count > 0
         asset_path('audio_icon.png')
+      else
+        nil
       end
     else
       if video_count > 0 && audio_count > 0
