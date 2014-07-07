@@ -58,4 +58,11 @@ describe User do
     end
   end
 
+  describe "#autocomplete" do
+    it "should return results of same type as user_key (email xor username)" do
+      user.save(validate: false)
+      expect(User.autocomplete(user.user_key)).to eq([{id: user.user_key, display: user.user_key}])
+    end
+  end
+
 end
