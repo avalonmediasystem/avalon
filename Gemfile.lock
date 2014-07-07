@@ -25,6 +25,8 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
   revision: 2737cac71d2e6a990ea6b937e6181f02c471b00f
+  branch: master
+  tag: v3.1rc1
   specs:
     avalon-batch (0.3.0)
       activemodel
@@ -554,7 +556,7 @@ DEPENDENCIES
   active-fedora (~> 6.7.8)
   activerecord-jdbcsqlite3-adapter
   avalon-about!
-  avalon-batch (~> 0.3.0)!
+  avalon-batch!
   avalon-workflow!
   bcrypt-ruby (~> 3.0.0)
   builder (~> 3.0.0)
