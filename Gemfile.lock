@@ -1,6 +1,7 @@
 GIT
   remote: https://github.com/Empact/roo
   revision: 9e1b969762cbb80b1c52cfddd848e489f22f468f
+  ref: 9e1b969762cbb80b1c52cfddd848e489f22f468f
   specs:
     roo (1.13.2)
       nokogiri
@@ -17,6 +18,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
   revision: affe214fb452a098f093bccd2758931124ea1181
+  tag: v3.1.rc1
   specs:
     avalon-about (0.1.0)
       about_page
@@ -25,6 +27,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
   revision: 2737cac71d2e6a990ea6b937e6181f02c471b00f
+  tag: v3.1.rc1
   specs:
     avalon-batch (0.3.0)
       activemodel
@@ -34,6 +37,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
   revision: ba96ef3873be6270c0d73174b01b570400979b83
+  tag: avalon-r3
   specs:
     avalon-workflow (0.0.3)
 
@@ -51,7 +55,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector
-  revision: 2b565dc4626eaf31b0611fe85e6513b91c09e819
+  revision: f5a107b6553894ebed6d87eba1b6f50f8c1a480c
+  tag: v3.1
   specs:
     media_element_thumbnail_selector (0.0.1)
       rails (>= 3.2.3)
@@ -554,7 +559,7 @@ DEPENDENCIES
   active-fedora (~> 6.7.8)
   activerecord-jdbcsqlite3-adapter
   avalon-about!
-  avalon-batch (~> 0.3.0)!
+  avalon-batch!
   avalon-workflow!
   bcrypt-ruby (~> 3.0.0)
   builder (~> 3.0.0)
