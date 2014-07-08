@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -11,7 +11,7 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
-require 'ruby-duration'
+
 
 module ApplicationHelper
   def application_name
@@ -44,8 +44,10 @@ module ApplicationHelper
     if master_file_id
       if video_count > 0
         thumbnail_master_file_path(master_file_id)
-      else
+      elsif audio_count > 0
         asset_path('audio_icon.png')
+      else
+        nil
       end
     else
       if video_count > 0 && audio_count > 0

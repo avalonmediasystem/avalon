@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -11,7 +11,7 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
-require 'net/ldap'
+
 
 class User < ActiveRecord::Base
 # Connects this user object to Hydra behaviors. 
@@ -54,7 +54,7 @@ class User < ActiveRecord::Base
 
   def self.autocomplete(query)
     self.where("username LIKE :q OR email LIKE :q", q: "%#{query}%").collect { |user|
-      { id: user.email, display: user.email }
+      { id: user.user_key, display: user.user_key }
     }
   end
 

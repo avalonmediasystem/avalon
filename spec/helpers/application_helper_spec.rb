@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -9,7 +9,7 @@
 # Unless required by applicable law or agreed to in writing, software distributed 
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
-#   specific language governing permissions and limitations under the License
+#   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'spec_helper'
@@ -103,6 +103,10 @@ describe ApplicationHelper do
 
   describe "#image_for" do
     # image_for expects hash keys as labels, not strings
+    it "should return nil" do
+      doc = {"mods_tesim" => [] }
+      expect(helper.image_for(doc)).to eq(nil)
+    end
     it "should return audio icon" do
       doc = {"mods_tesim" => ['sound recording 2', 'sound recording 1'] }
       expect(helper.image_for(doc)).to eq('/assets/audio_icon.png')
@@ -114,6 +118,10 @@ describe ApplicationHelper do
     it "should return hybrid icon" do
       doc = {"mods_tesim" => ['moving image 1', 'sound recording 1'] }
       expect(helper.image_for(doc)).to eq('/assets/hybrid_icon.png')
+    end
+    it "should return nil when only unprocessed video" do
+      doc = {"section_pid_tesim" => ['1'], "mods_tesim" => [] }
+      expect(helper.image_for(doc)).to eq(nil)
     end
     it "should return thumbnail" do
       doc = {"section_pid_tesim" => ['1'], "mods_tesim" => ['moving image 1'] }

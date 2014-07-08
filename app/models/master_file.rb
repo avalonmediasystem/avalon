@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -606,4 +606,3 @@ class MasterFile < ActiveFedora::Base
   end
 
 end
-
