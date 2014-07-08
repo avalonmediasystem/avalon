@@ -17,6 +17,8 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
   revision: affe214fb452a098f093bccd2758931124ea1181
+  branch: master
+  tag: v3.1rc1
   specs:
     avalon-about (0.1.0)
       about_page
@@ -36,6 +38,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
   revision: ba96ef3873be6270c0d73174b01b570400979b83
+  tag: avalon-r3
   specs:
     avalon-workflow (0.0.3)
 

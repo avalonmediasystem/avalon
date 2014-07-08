@@ -10,7 +10,7 @@
   gem 'bcrypt-ruby', '~> 3.0.0'
   gem 'kaminari', '~> 0.15.0'
 
-  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git' # HEAD , tag: 'avalon-r3'
+  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'avalon-r3'
   gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git", branch: 'master', tag: 'v3.1rc1'
   gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git' # HEAD , tag: 'avalon-r3'
   gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git' # HEAD , tag: 'avalon-r3'
@@ -43,7 +43,7 @@
     gem 'therubyracer', '>= 0.12.0'
   end
 
-  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git" # HEAD , tag: 'avalon-r3'
+  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git", branch: 'master', tag: 'v3.1rc1'
 
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise', '~>3.0.3'
