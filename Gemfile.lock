@@ -40,6 +40,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/felixwrapper.git
   revision: 2ae939d4811bc245d9f80c6a3f6cf6cc70d8c5b4
+  tag: v3.1
   specs:
     felixwrapper (0.0.1)
       activesupport (>= 3.2.3)
@@ -83,6 +84,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
   revision: de27be5f4355886aee0e39711c1dd3db8aac698a
+  tag: v3.1
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
@@ -91,6 +93,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/omniauth-lti.git
   revision: 7534c44fc5a3c927aec57bbd3a15cbad37feec74
+  tag: v3.1
   specs:
     omniauth-lti (0.0.2)
       ims-lti
@@ -99,6 +102,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/red5wrapper.git
   revision: 0975db8c8664730734c54cc5683bc75400e4143e
+  tag: v3.1
   specs:
     red5wrapper (0.0.1)
       activesupport (>= 3.2.3)

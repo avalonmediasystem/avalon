@@ -10,9 +10,9 @@
   gem 'bcrypt-ruby', '~> 3.0.0'
   gem 'kaminari', '~> 0.15.0'
 
-  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git' # HEAD , tag: 'avalon-r3'
-  gem 'avalon-batch', '~> 0.3.0', git: "https://github.com/avalonmediasystem/avalon-batch.git" # HEAD , tag: 'avalon-r3'
-  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git' # HEAD , tag: 'avalon-r3'
+  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'avalon-r3'
+  gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git", tag: 'v3.1.rc1'
+  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'v3.1' # HEAD , tag: 'avalon-r3'
   gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git' # HEAD , tag: 'avalon-r3'
   gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector' # HEAD , tag: 'avalon-r3'
   gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git' # HEAD , tag: 'avalon-r3'
@@ -52,13 +52,13 @@
 
   gem "jettywrapper"
   gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git" # HEAD , tag: 'avalon-r3'
-  gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git" # HEAD , tag: 'avalon-r3'
-  gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git" # HEAD , tag: 'avalon-r3'
+  gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
+  gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
 
   gem 'validates_email_format_of'
   gem 'loofah'
   gem 'omniauth-identity'
-  gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git" # HEAD , tag: 'avalon-r3'
+  gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
 
   gem 'mediainfo'
   gem 'delayed_job_active_record', '~> 0.3.3'
