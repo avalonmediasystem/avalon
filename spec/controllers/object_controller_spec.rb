@@ -28,9 +28,9 @@ describe ObjectController do
 
   describe "#autocomplete" do
     it "should call autocomplete on the specified model" do
-      FactoryGirl.create(:user, email: "test@example.com")
+      user = FactoryGirl.create(:user, email: "test@example.com")
       get :autocomplete, t: 'user', q: 'test'
-      expect(response.body).to include "test@example.com" 
+      expect(response.body).to include user.user_key 
     end
   end
 end
