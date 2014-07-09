@@ -189,7 +189,7 @@ class MasterFile < ActiveFedora::Base
     if mo.nil?
       logger.warn "MasterFile has no owning MediaObject to update upon deletion"
     else
-      mo.save(validate: false) unless mo.nil?
+      mo.save(validate: false)
     end
   end
 
