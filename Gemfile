@@ -48,13 +48,10 @@
 
   platforms :jruby do
     gem 'jruby-openssl'
-    gem 'activerecord-jdbcsqlite3-adapter'
-    gem 'jdbc-sqlite3'
     gem 'therubyrhino'
   end
 
   platforms :ruby do
-    gem 'sqlite3'
     gem 'execjs'
     gem 'therubyracer', '>= 0.12.0'
   end
@@ -71,8 +68,13 @@
   gem 'validates_email_format_of'
   gem 'loofah'
   gem 'omniauth-identity'
+<<<<<<< HEAD
   gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'v3.1'
   gem 'uva-omniauth-shibboleth'
+=======
+  gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
+  gem 'omniauth-shibboleth', git: "https://github.com/uvalib/omniauth-shibboleth.git", tag: 'v0.1.0'
+>>>>>>> e828d50... Updated Gemfile and config/setup_load_paths.rb to support building in development and production.
 
   gem 'mediainfo'
   gem 'delayed_job_active_record'
@@ -84,6 +86,7 @@
 
   group :assets, :production do
     gem 'coffee-rails'
+    gem 'mysql2', '~>0.3.11'
     gem 'uglifier', '>= 1.0.3'
     gem 'jquery-rails', '3.1.1'
     gem 'jquery-ui-rails', '5.0.0'
@@ -113,6 +116,7 @@
     gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'v3.1'
     gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'v3.1'
     gem 'daemons'
+    gem 'sqlite3'
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano'
     gem 'rspec-rails', '~>2.9'
