@@ -137,13 +137,7 @@ class MediaObjectsController < ApplicationController
     media_object = MediaObject.find(params[:id])
     authorize! :destroy, media_object
     message = "#{media_object.title} (#{params[:id]}) has been successfuly deleted"
-
-    # attempt to stop the matterhorn processing job
-    media_object.parts.each(&:destroy)
-    media_object.parts.clear
-    
     media_object.destroy
-    
     redirect_to root_path, flash: { notice: message }
   end
 
