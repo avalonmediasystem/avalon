@@ -186,7 +186,11 @@ class MasterFile < ActiveFedora::Base
     super
 
     #Only save the media object if the master file was successfully deleted
-    mo.save(validate: false) unless mo.nil?
+    if mo.nil?
+      logger.warn "MasterFile has no owning MediaObject to update upon deletion"
+    else
+      mo.save(validate: false) unless mo.nil?
+    end
   end
 
   def process
