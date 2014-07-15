@@ -2,11 +2,14 @@
 
   gem 'iconv'
   gem 'rails', '~>4.0.3'
+  gem 'sprockets', '~>2.11.0'
   #gem 'protected_attributes'
   gem 'builder', '~>3.1.0'
 
-  gem 'hydra', '~>7.0.0'
-  gem 'active-fedora', git: 'https://github.com/projecthydra/active_fedora.git'
+  gem 'hydra', '~>7.0'
+  gem 'active-fedora'
+  gem 'activesupport', '~> 4.0.3'
+  gem 'activerecord-session_store'
   gem 'bcrypt-ruby', '~> 3.0.0'
   gem 'kaminari', '~> 0.15.0'
 
@@ -65,7 +68,7 @@
   gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
 
   gem 'mediainfo'
-  gem 'delayed_job_active_record', '~> 0.3.3'
+  gem 'delayed_job_active_record'
   gem 'whenever', require: false
   gem 'with_locking'
 
@@ -76,17 +79,14 @@
     gem 'coffee-rails'
     gem 'uglifier', '>= 1.0.3'
     gem 'jquery-rails', "~> 2.1.4"
-    gem 'compass-rails', '1.1.7' #git: 'https://github.com/Compass/compass-rails', branch: '2-0-stable'
+    gem 'compass-rails'
     gem 'compass-susy-plugin', '~> 0.9.0', require: 'susy'
 
     # For overriding the default interface with Twitter Bootstrap
     # This is now inherited from Blacklight
-    gem 'sass-rails', '>= 3.2.3'
+    gem 'sass-rails', '=4.0.2'
     gem 'font-awesome-sass-rails'
     gem 'bootstrap_form'
-#    gem 'twitter_bootstrap_form_for',
-#      git: "https://github.com/avalonmediasystem/twitter_bootstrap_form_for.git",
-#      branch: "bootstrap-2.0"
     gem 'handlebars_assets'
   end
 

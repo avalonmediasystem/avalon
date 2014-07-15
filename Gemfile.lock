@@ -161,6 +161,7 @@ GIT
       om
       rest-client
 
+<<<<<<< HEAD
 GIT
   remote: https://github.com/projecthydra/active_fedora.git
   revision: fed5ec944ceb7d643a9831de620e1771804e8f16
@@ -176,6 +177,8 @@ GIT
       rsolr (~> 1.0.10.pre1)
       rubydora (~> 1.7.4)
 
+=======
+>>>>>>> Update Gemfile
 GEM
   remote: http://rubygems.org/
   specs:
@@ -183,14 +186,14 @@ GEM
 <<<<<<< HEAD
     about_page (0.2.7)
       rails (>= 3.2)
-    actionmailer (3.2.19)
-      actionpack (= 3.2.19)
+    actionmailer (4.0.8)
+      actionpack (= 4.0.8)
       mail (~> 2.5.4)
-    actionpack (3.2.19)
-      activemodel (= 3.2.19)
-      activesupport (= 3.2.19)
-      builder (~> 3.0.0)
+    actionpack (4.0.8)
+      activesupport (= 4.0.8)
+      builder (~> 3.1.0)
       erubis (~> 2.7.0)
+<<<<<<< HEAD
       journey (~> 1.0.4)
       rack (~> 1.4.5)
       rack-cache (~> 1.2)
@@ -202,12 +205,18 @@ GEM
 =======
     active-fedora (7.0.2)
 >>>>>>> Bump hydra-head to 7.0
+=======
+      rack (~> 1.5.2)
+      rack-test (~> 0.6.2)
+    active-fedora (7.0.4)
+>>>>>>> Update Gemfile
       activesupport (>= 3.0.0)
       deprecation
       linkeddata
       mediashelf-loggable
       nom-xml (>= 0.5.1)
       om (~> 3.0.0)
+<<<<<<< HEAD
 <<<<<<< HEAD
       rdf (~> 1.1.1.1)
       rdf-rdfxml (= 1.0.1)
@@ -289,12 +298,44 @@ GEM
       bootstrap-sass (~> 3.0)
       deprecation
 >>>>>>> Bump hydra-head to 7.0
+=======
+      rdf-rdfxml (~> 1.1.0)
+      rsolr (~> 1.0.10.pre1)
+      rubydora (~> 1.7.4)
+    activemodel (4.0.8)
+      activesupport (= 4.0.8)
+      builder (~> 3.1.0)
+    activerecord (4.0.8)
+      activemodel (= 4.0.8)
+      activerecord-deprecated_finders (~> 1.0.2)
+      activesupport (= 4.0.8)
+      arel (~> 4.0.0)
+    activerecord-deprecated_finders (1.0.3)
+    activerecord-session_store (0.1.0)
+      actionpack (>= 4.0.0, < 5)
+      activerecord (>= 4.0.0, < 5)
+      railties (>= 4.0.0, < 5)
+    activesupport (4.0.8)
+      i18n (~> 0.6, >= 0.6.9)
+      minitest (~> 4.2)
+      multi_json (~> 1.3)
+      thread_safe (~> 0.1)
+      tzinfo (~> 0.3.37)
+    addressable (2.3.6)
+    arel (4.0.2)
+    bcrypt (3.1.7)
+    bcrypt-ruby (3.0.1)
+    blacklight (5.4.0)
+      bootstrap-sass (~> 3.0)
+      deprecation
+>>>>>>> Update Gemfile
       kaminari (~> 0.13)
       nokogiri (~> 1.6)
       rails (>= 3.2.6, < 5)
       rsolr (~> 1.0.6)
     block_helpers (0.3.3)
       activesupport (>= 2.0)
+<<<<<<< HEAD
     bootstrap-sass (3.1.1.1)
       sass (~> 3.2)
 <<<<<<< HEAD
@@ -318,6 +359,14 @@ GEM
 >>>>>>> First pass at updating to rails 4
     callsite (0.0.11)
     cancancan (1.8.0)
+=======
+    bootstrap-sass (3.2.0.0)
+      sass (~> 3.2)
+    bootstrap_form (2.1.1)
+    builder (3.1.4)
+    callsite (0.0.11)
+    cancancan (1.9.0)
+>>>>>>> Update Gemfile
     capistrano (2.12.0)
       highline
       net-scp (>= 1.0.0)
@@ -338,6 +387,7 @@ GEM
     coffee-rails (4.0.1)
       coffee-script (>= 2.2.0)
 <<<<<<< HEAD
+<<<<<<< HEAD
       railties (~> 3.2.0)
     coffee-script (2.3.0)
       coffee-script-source
@@ -348,10 +398,15 @@ GEM
 =======
       railties (>= 4.0.0, < 5.0)
     coffee-script (2.2.0)
+=======
+      railties (>= 4.0.0, < 5.0)
+    coffee-script (2.3.0)
+>>>>>>> Update Gemfile
       coffee-script-source
       execjs
-    coffee-script-source (1.7.0)
+    coffee-script-source (1.7.1)
     columnize (0.8.9)
+<<<<<<< HEAD
     compass (0.12.6)
 >>>>>>> First pass at updating to rails 4
       chunky_png (~> 1.2)
@@ -360,6 +415,14 @@ GEM
     compass-rails (1.1.7)
       compass (>= 0.12.2)
       sprockets (<= 2.11.0)
+=======
+    compass (0.12.7)
+      chunky_png (~> 1.2)
+      fssm (>= 0.2.7)
+      sass (~> 3.2.19)
+    compass-rails (2.0.0)
+      compass (>= 0.12.2)
+>>>>>>> Update Gemfile
     compass-susy-plugin (0.9)
       compass (>= 0.11.1)
     daemons (1.1.9)
@@ -371,6 +434,7 @@ GEM
 <<<<<<< HEAD
 <<<<<<< HEAD
     debugger-ruby_core_source (1.3.5)
+<<<<<<< HEAD
     delayed_job (3.0.5)
       activesupport (~> 3.0)
     delayed_job_active_record (0.3.3)
@@ -382,11 +446,17 @@ GEM
     debugger-ruby_core_source (1.3.4)
 >>>>>>> Start switchover to bootstrap_form from twitter_bootstrap_form_for
     delayed_job (4.0.1)
+=======
+    delayed_job (4.0.2)
+>>>>>>> Update Gemfile
       activesupport (>= 3.0, < 4.2)
     delayed_job_active_record (4.0.1)
       activerecord (>= 3.0, < 4.2)
       delayed_job (>= 3.0, < 4.1)
+<<<<<<< HEAD
 >>>>>>> First pass at updating to rails 4
+=======
+>>>>>>> Update Gemfile
     deprecation (0.1.0)
       activesupport
     devise (3.2.4)
@@ -399,6 +469,7 @@ GEM
 <<<<<<< HEAD
     docile (1.1.5)
     dot-properties (0.1.3)
+<<<<<<< HEAD
     dropbox-sdk (1.6.4)
       json
     email_spec (1.6.0)
@@ -422,6 +493,16 @@ GEM
 =======
     equivalent-xml (0.4.2)
 >>>>>>> First pass at updating to rails 4
+=======
+    ebnf (0.3.6)
+      haml (~> 4.0)
+      rdf (~> 1.1)
+      sxp (~> 0.1, >= 0.1.3)
+    email_spec (1.6.0)
+      launchy (~> 2.1)
+      mail (~> 2.2)
+    equivalent-xml (0.5.1)
+>>>>>>> Update Gemfile
       nokogiri (>= 1.4.3)
     erubis (2.7.0)
     execjs (2.2.1)
@@ -433,10 +514,14 @@ GEM
       railties (>= 3.0.0)
     fakefs (0.5.2)
 <<<<<<< HEAD
+<<<<<<< HEAD
     faker (1.4.2)
 =======
     faker (1.3.0)
 >>>>>>> First pass at updating to rails 4
+=======
+    faker (1.4.2)
+>>>>>>> Update Gemfile
       i18n (~> 0.5)
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
@@ -474,6 +559,9 @@ GEM
       sprockets (>= 2.0.3)
       tilt
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Update Gemfile
     hashie (3.2.0)
     headless (1.0.2)
 =======
@@ -484,6 +572,7 @@ GEM
     hike (1.2.3)
     hooks (0.3.6)
       uber (~> 0.0.4)
+<<<<<<< HEAD
 <<<<<<< HEAD
     httmultiparty (0.3.15)
       httparty (>= 0.7.3)
@@ -497,27 +586,34 @@ GEM
       blacklight (~> 4.7.0)
       hydra-head (~> 6.5.0)
       jettywrapper (~> 1.5.0)
+=======
+    htmlentities (4.3.2)
+    hydra (7.0.0)
+      active-fedora (~> 7.0.2)
+      blacklight (~> 5.4.0)
+      hydra-head (~> 7.0.1)
+      jettywrapper (~> 1.7.0)
+>>>>>>> Update Gemfile
       nokogiri (~> 1.6.0)
       nom-xml (~> 0.5.1)
-      om (~> 3.0.3)
+      om (~> 3.0.4)
       rails (>= 3.2.15, < 5.0)
-      rsolr (~> 1.0.9)
+      rsolr (~> 1.0.10)
       rubydora (~> 1.7.4)
-      solrizer (~> 3.1.0)
-    hydra-access-controls (6.5.2)
-      active-fedora (~> 6.7)
+      solrizer (~> 3.1.1)
+    hydra-access-controls (7.0.2)
+      active-fedora (~> 7.0.0)
       activesupport
-      blacklight (~> 4.7)
-      cancan
+      blacklight (~> 5.3)
+      cancancan
       deprecation
-    hydra-core (6.5.2)
-      active-fedora (~> 6.7)
-      blacklight (~> 4.7)
+      sass-rails
+    hydra-core (7.0.2)
       block_helpers
-      deprecation (>= 0.0.5)
-      hydra-access-controls (= 6.5.2)
+      hydra-access-controls (= 7.0.2)
       jettywrapper (>= 1.4.1)
       rails (>= 3.2.3, < 5)
+<<<<<<< HEAD
     hydra-head (6.5.2)
       hydra-access-controls (= 6.5.2)
       hydra-core (= 6.5.2)
@@ -557,6 +653,11 @@ GEM
       hydra-access-controls (= 7.0.2)
       hydra-core (= 7.0.2)
 >>>>>>> Use hydra gem instead of hydra-head
+=======
+    hydra-head (7.0.2)
+      hydra-access-controls (= 7.0.2)
+      hydra-core (= 7.0.2)
+>>>>>>> Update Gemfile
       rails (>= 3.2.6)
     i18n (0.6.11)
     iconv (1.0.4)
@@ -566,10 +667,14 @@ GEM
       uuid
 <<<<<<< HEAD
     iso8601 (0.5.0)
+<<<<<<< HEAD
     jettywrapper (1.5.2)
 =======
     jettywrapper (1.7.0)
 >>>>>>> Use hydra gem instead of hydra-head
+=======
+    jettywrapper (1.7.0)
+>>>>>>> Update Gemfile
       activesupport (>= 3.0.0)
       childprocess
       i18n
@@ -579,6 +684,7 @@ GEM
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
     json (1.8.1)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -593,6 +699,10 @@ GEM
 >>>>>>> First pass at updating to rails 4
       rdf (~> 1.1)
 >>>>>>> Bump hydra-head to 7.0
+=======
+    json-ld (1.1.5)
+      rdf (~> 1.1, >= 1.1.4)
+>>>>>>> Update Gemfile
     kaminari (0.15.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -629,6 +739,7 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
 <<<<<<< HEAD
+<<<<<<< HEAD
     marc (0.8.1)
       ensure_valid_encoding
       unf
@@ -638,11 +749,15 @@ GEM
 >>>>>>> Bump hydra-head to 7.0
     mediainfo (0.7.2)
 <<<<<<< HEAD
+=======
+    mediainfo (0.7.2)
+>>>>>>> Update Gemfile
     mediashelf-loggable (0.4.10)
     meta_request (0.3.3)
       callsite (~> 0.0, >= 0.0.11)
       rack-contrib (~> 1.1)
       railties (>= 3.0.0, < 5.0.0)
+<<<<<<< HEAD
     method_source (0.8.2)
     mime-types (1.25.1)
     mimemagic (0.2.1)
@@ -664,6 +779,11 @@ GEM
     method_source (0.8.2)
     mime-types (1.25.1)
     mini_portile (0.5.3)
+=======
+    method_source (0.8.2)
+    mime-types (1.25.1)
+    mini_portile (0.6.0)
+>>>>>>> Update Gemfile
     minitest (4.7.5)
     modal_logic (0.0.6)
       handlebars_assets (= 0.14.1)
@@ -674,6 +794,10 @@ GEM
     multipart-post (2.0.0)
     net-http-digest_auth (1.4)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+    net-http-persistent (1.9)
+>>>>>>> Update Gemfile
     net-ldap (0.6.1)
     net-scp (1.2.1)
 =======
@@ -695,8 +819,13 @@ GEM
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
 <<<<<<< HEAD
+<<<<<<< HEAD
     netrc (0.7.7)
     nokogiri (1.6.3.1)
+=======
+    netrc (0.7.7)
+    nokogiri (1.6.3)
+>>>>>>> Update Gemfile
       mini_portile (= 0.6.0)
 =======
     nokogiri (1.6.2)
@@ -750,35 +879,45 @@ GEM
     pry-rails (0.3.2)
       pry (>= 0.9.10)
 <<<<<<< HEAD
+<<<<<<< HEAD
     puma (2.9.0)
 =======
     puma (2.8.2)
 >>>>>>> First pass at updating to rails 4
+=======
+    puma (2.9.0)
+>>>>>>> Update Gemfile
       rack (>= 1.1, < 2.0)
     rack (1.5.2)
     rack-contrib (1.1.0)
       rack (>= 0.9.1)
 <<<<<<< HEAD
+<<<<<<< HEAD
     rack-ssl (1.3.4)
       rack
+=======
+>>>>>>> Update Gemfile
     rack-test (0.6.2)
       rack (>= 1.0)
-    rails (3.2.19)
-      actionmailer (= 3.2.19)
-      actionpack (= 3.2.19)
-      activerecord (= 3.2.19)
-      activeresource (= 3.2.19)
-      activesupport (= 3.2.19)
-      bundler (~> 1.0)
-      railties (= 3.2.19)
-    railties (3.2.19)
-      actionpack (= 3.2.19)
-      activesupport (= 3.2.19)
-      rack-ssl (~> 1.3.2)
+    rails (4.0.8)
+      actionmailer (= 4.0.8)
+      actionpack (= 4.0.8)
+      activerecord (= 4.0.8)
+      activesupport (= 4.0.8)
+      bundler (>= 1.3.0, < 2.0)
+      railties (= 4.0.8)
+      sprockets-rails (~> 2.0)
+    railties (4.0.8)
+      actionpack (= 4.0.8)
+      activesupport (= 4.0.8)
       rake (>= 0.8.7)
+<<<<<<< HEAD
       rdoc (~> 3.4)
       thor (>= 0.14.6, < 2.0)
 <<<<<<< HEAD
+=======
+      thor (>= 0.18.1, < 2.0)
+>>>>>>> Update Gemfile
     rake (10.3.2)
 =======
 =======
@@ -802,18 +941,52 @@ GEM
 >>>>>>> Bump rake version
     rb-fsevent (0.9.4)
 <<<<<<< HEAD
+<<<<<<< HEAD
     rdf (1.1.1.1)
     rdf-rdfxml (1.0.1)
       rdf (>= 1.0)
       rdf-xsd (>= 1.0)
+=======
+    rdf (1.1.4.2)
+    rdf-aggregate-repo (1.1.0)
+      rdf (>= 1.1)
+    rdf-isomorphic (1.1.0)
+      rdf (>= 1.1)
+    rdf-json (1.1.0)
+      rdf (>= 1.1.0)
+    rdf-microdata (1.1.1.3)
+      htmlentities (~> 4.3)
+      nokogiri (~> 1.6)
+      rdf (~> 1.1)
+      rdf-xsd (~> 1.1)
+    rdf-n3 (1.1.1)
+      rdf (~> 1.1, >= 1.1.4)
+    rdf-rdfa (1.1.3.2)
+      haml (~> 4.0)
+      htmlentities (~> 4.3)
+      rdf (~> 1.1)
+      rdf-xsd (~> 1.1)
+    rdf-rdfxml (1.1.0.1)
+      rdf (~> 1.1)
+      rdf-rdfa (~> 1.1)
+      rdf-xsd (~> 1.1)
+    rdf-trig (1.1.3.1)
+      ebnf (~> 0.3, >= 0.3.5)
+      rdf (~> 1.1, >= 1.1.2.1)
+      rdf-turtle (~> 1.1, >= 1.1.3)
+    rdf-trix (1.1.0)
+      rdf (>= 1.1)
+    rdf-turtle (1.1.4)
+      ebnf (~> 0.3, >= 0.3.6)
+      rdf (~> 1.1, >= 1.1.4)
+>>>>>>> Update Gemfile
     rdf-xsd (1.1.1)
       rdf (~> 1.1)
-    rdoc (3.12.2)
-      json (~> 1.4)
     ref (1.0.5)
     rest-client (1.7.2)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
+<<<<<<< HEAD
     retriable (1.4.1)
 =======
     rdf (1.1.3)
@@ -857,6 +1030,8 @@ GEM
       rubyzip
       spreadsheet (> 0.6.4)
 >>>>>>> Bump hydra-head to 7.0
+=======
+>>>>>>> Update Gemfile
     rsolr (1.0.10)
       builder (>= 2.1.2)
     rspec (2.99.0)
@@ -916,6 +1091,7 @@ GEM
       capistrano (>= 2.0.0)
     sass (3.2.19)
 <<<<<<< HEAD
+<<<<<<< HEAD
     sass-rails (3.2.6)
       railties (~> 3.2.0)
       sass (>= 3.1.10)
@@ -935,11 +1111,21 @@ GEM
       faraday (>= 0.9.0.rc5)
       jwt (>= 0.1.5)
       multi_json (>= 1.0.0)
+=======
+    sass-rails (4.0.2)
+      railties (>= 4.0.0, < 5.0)
+      sass (~> 3.2.0)
+      sprockets (~> 2.8, <= 2.11.0)
+      sprockets-rails (~> 2.0.0)
+    shoulda-matchers (2.6.2)
+      activesupport (>= 3.0.0)
+>>>>>>> Update Gemfile
     simplecov (0.9.0)
       docile (~> 1.1.0)
       multi_json
       simplecov-html (~> 0.8.0)
     simplecov-html (0.8.0)
+<<<<<<< HEAD
 <<<<<<< HEAD
     skydrive (0.1.5)
       activesupport
@@ -950,6 +1136,9 @@ GEM
 =======
     slop (3.5.0)
 >>>>>>> First pass at updating to rails 4
+=======
+    slop (3.6.0)
+>>>>>>> Update Gemfile
     solrizer (3.1.1)
       activesupport
       daemons
@@ -957,6 +1146,7 @@ GEM
       nokogiri
       stomp
       xml-simple
+<<<<<<< HEAD
     sparql (1.1.2.1)
       builder (>= 3.0)
       ebnf (>= 0.3.2)
@@ -970,6 +1160,19 @@ GEM
       json (>= 1.8)
       net-http-persistent (>= 1.4)
       rdf (>= 1.1)
+=======
+    sparql (1.1.3)
+      builder (~> 3.0)
+      ebnf (~> 0.3, >= 0.3.5)
+      rdf (~> 1.1, >= 1.1.4)
+      rdf-aggregate-repo (~> 1.1, >= 1.1.0)
+      rdf-xsd (~> 1.1)
+      sparql-client (~> 1.1)
+      sxp (~> 0.1)
+    sparql-client (1.1.2)
+      net-http-persistent (~> 1.4)
+      rdf (~> 1.1)
+>>>>>>> Update Gemfile
     spreadsheet (0.9.7)
       ruby-ole (>= 1.0)
     sprockets (2.11.0)
@@ -990,16 +1193,21 @@ GEM
       libv8 (~> 3.16.14.0)
       ref
     thor (0.19.1)
+<<<<<<< HEAD
 =======
     therubyracer (0.10.2)
       libv8 (~> 3.3.10)
     thor (0.19.1)
     thread_safe (0.3.3)
 >>>>>>> First pass at updating to rails 4
+=======
+    thread_safe (0.3.4)
+>>>>>>> Update Gemfile
     tilt (1.4.1)
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
+<<<<<<< HEAD
 <<<<<<< HEAD
     tzinfo (0.3.40)
     uber (0.0.7)
@@ -1017,6 +1225,13 @@ GEM
     unf_ext (0.0.6)
 =======
 >>>>>>> Bump hydra-head to 7.0
+=======
+    tzinfo (0.3.40)
+    uber (0.0.7)
+    uglifier (2.5.3)
+      execjs (>= 0.3.0)
+      json (>= 1.8.0)
+>>>>>>> Update Gemfile
     uuid (2.3.7)
       macaddr (~> 1.0)
     uuidtools (2.1.4)
@@ -1041,6 +1256,7 @@ DEPENDENCIES
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   active-fedora (~> 6.7.8)
 =======
 =======
@@ -1053,6 +1269,12 @@ DEPENDENCIES
   activerecord-jdbcsqlite3-adapter
 <<<<<<< HEAD
 <<<<<<< HEAD
+=======
+  active-fedora
+  activerecord-jdbcsqlite3-adapter
+  activerecord-session_store
+  activesupport (~> 4.0.3)
+>>>>>>> Update Gemfile
   avalon-about!
   avalon-batch!
 =======
@@ -1063,6 +1285,7 @@ DEPENDENCIES
 >>>>>>> Routes no longer complain
   avalon-workflow!
   bcrypt-ruby (~> 3.0.0)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
   browse-everything (>= 0.6.0)
@@ -1087,6 +1310,19 @@ DEPENDENCIES
   delayed_job_active_record
   devise (~> 3.2.0)
 >>>>>>> First pass at updating to rails 4
+=======
+  bootstrap_form
+  builder (~> 3.1.0)
+  capistrano (~> 2.12.0)
+  capybara
+  coffee-rails
+  compass-rails
+  compass-susy-plugin (~> 0.9.0)
+  database_cleaner!
+  debugger
+  delayed_job_active_record
+  devise (~> 3.2.0)
+>>>>>>> Update Gemfile
   email_spec
   equivalent-xml
   execjs
@@ -1102,6 +1338,7 @@ DEPENDENCIES
   hooks
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   hydra (~> 6.2.0)
 =======
   hydra-head (~> 7.0)
@@ -1109,6 +1346,9 @@ DEPENDENCIES
 =======
   hydra (~> 7.0.0)
 >>>>>>> Use hydra gem instead of hydra-head
+=======
+  hydra (~> 7.0)
+>>>>>>> Update Gemfile
   iconv
   jdbc-sqlite3
   jettywrapper
@@ -1144,13 +1384,17 @@ DEPENDENCIES
   rspec-rails (~> 2.9)
   rspec_junit_formatter
   ruby-duration
-  rubydora (~> 1.7.5)
   rubyhorn!
   rubyzip (= 0.9.9)
   rvm-capistrano
+<<<<<<< HEAD
   sass-rails (>= 3.2.3)
+=======
+  sass-rails (= 4.0.2)
+>>>>>>> Update Gemfile
   shoulda-matchers
   simplecov
+  sprockets (~> 2.11.0)
   sqlite3
   therubyracer (>= 0.12.0)
   therubyrhino
