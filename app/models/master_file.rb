@@ -309,7 +309,7 @@ class MasterFile < ActiveFedora::Base
     self.mediapackage_id = matterhorn_response.mediapackage.id.first
     
     unless matterhorn_response.source_tracks(0).nil?
-      self.file_checksum = matterhorn_response.source_tracks(0).checksum
+      self.file_checksum = matterhorn_response.source_tracks(0).checksum.first
     end
 
     save

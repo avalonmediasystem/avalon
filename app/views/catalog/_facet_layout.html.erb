@@ -14,6 +14,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div class="facet_limit blacklight-<%= facet_field.field.parameterize %>">
-  <h5 data-toggle="collapse" data-target="ul#<%= solr_fname.parameterize %>"><%= facet_field.label -%> <i class="icon-chevron"></i></h5>
+  <h5 data-toggle="collapse" data-target="ul#<%= solr_field.parameterize %>"><%= facet_field.label -%> <i class="icon-chevron"></i></h5>
   <%= yield %>
 </div>

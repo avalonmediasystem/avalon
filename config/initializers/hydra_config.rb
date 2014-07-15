@@ -25,21 +25,30 @@ if Hydra.respond_to?(:configure)
     # This specifies the solr field names of permissions-related fields.
     # You only need to change these values if you've indexed permissions by some means other than the Hydra's built-in tooling.
     # If you change these, you must also update the permissions request handler in your solrconfig.xml to return those values
-    config[:permissions] = {
-      :catchall => "access_ssim",
-      :discover => {:group =>"discover_access_group_ssim", :individual=>"discover_access_person_ssim"},
-      :read => {:group =>"read_access_group_ssim", :individual=>"read_access_person_ssim"},
-      :edit => {:group =>"edit_access_group_ssim", :individual=>"edit_access_person_ssim"},
-      :owner => "depositor_ssim",
-      :embargo_release_date => "embargo_release_date_dtsi"
-    }
-    config[:permissions][:inheritable] = {
-      :discover => {:group =>"inheritable_discover_access_group_ssim", :individual=>"inheritable_discover_access_person_ssim"},
-      :read => {:group =>"inheritable_read_access_group_ssim", :individual=>"inheritable_read_access_person_ssim"},
-      :edit => {:group =>"inheritable_edit_access_group_ssim", :individual=>"inheritable_edit_access_person_ssim"},
-      :owner => "inheritable_depositor_ssim",
-      :embargo_release_date => "inheritable_embargo_release_date_dtsi"
-    }
-    config[:permissions][:policy_class] = Admin::Collection
+    #config[:permissions] = {
+    #  :catchall => "access_ssim",
+    #  :discover => {:group =>"discover_access_group_ssim", :individual=>"discover_access_person_ssim"},
+    #  :read => {:group =>"read_access_group_ssim", :individual=>"read_access_person_ssim"},
+    #  :edit => {:group =>"edit_access_group_ssim", :individual=>"edit_access_person_ssim"},
+    #  :owner => "depositor_ssim",
+    #  :embargo_release_date => "embargo_release_date_dtsi"
+    #}
+    config.permissions.inheritable.discover.group = ActiveFedora::SolrService.solr_name("inheritable_discover_access_group", :symbol)
+    config.permissions.inheritable.discover.individual = ActiveFedora::SolrService.solr_name("inheritable_discover_access_person", :symbol)
+    config.permissions.inheritable.read.group = ActiveFedora::SolrService.solr_name("inheritable_read_access_group", :symbol)
+    config.permissions.inheritable.read.individual = ActiveFedora::SolrService.solr_name("inheritable_read_access_person", :symbol)
+    config.permissions.inheritable.edit.group = ActiveFedora::SolrService.solr_name("inheritable_edit_access_group", :symbol)
+    config.permissions.inheritable.edit.individual = ActiveFedora::SolrService.solr_name("inheritable_edit_access_person", :symbol)
+    config.permissions.inheritable.embargo_release_date = ActiveFedora::SolrService.solr_name("inheritable_embargo_release_date", Solrizer::Descriptor.new(:date, :stored, :indexed))
+    config.permissions.policy_class = Admin::Collection
+ 
+    # config[:permissions][:inheritable] = {
+    #  :discover => {:group =>"inheritable_discover_access_group_ssim", :individual=>"inheritable_discover_access_person_ssim"},
+    #  :read => {:group =>"inheritable_read_access_group_ssim", :individual=>"inheritable_read_access_person_ssim"},
+    #  :edit => {:group =>"inheritable_edit_access_group_ssim", :individual=>"inheritable_edit_access_person_ssim"},
+    #  :owner => "inheritable_depositor_ssim",
+    #  :embargo_release_date => "inheritable_embargo_release_date_dtsi"
+    #}
+    #config[:permissions][:policy_class] = Admin::Collection
   end
 end

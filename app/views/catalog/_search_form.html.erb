@@ -13,9 +13,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
- <div class="span12">
+ <div class="col-md-12">
   <%= form_tag catalog_index_path, :method => :get, :class => 'search-query-form form-search' do %>
-    <%= search_as_hidden_fields(:omit_keys => [:q, :search_field, :qt, :page]).html_safe %> 
+    <%= render_hash_as_hidden_fields(params_for_search.except(:q, :search_field, :qt, :page)).html_safe %> 
 
 	<%= hidden_field_tag "search_field", "all_fields" %>
     <div>

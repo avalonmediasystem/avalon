@@ -41,7 +41,7 @@ module Blacklight::LocalBlacklightHelper
 
   # Renders a count value for facet limits. Can be over-ridden locally
   # to change style. And can be called by plugins to get consistent display. 
-  def render_facet_count(num)
+  def render_facet_count(num, options = {})
     content_tag("span", t('blacklight.search.facets.count', :number => num), :class => "badge") 
   end
 

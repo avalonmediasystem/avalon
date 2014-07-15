@@ -1,12 +1,12 @@
   source 'http://rubygems.org'
 
   gem 'iconv'
-  gem 'rails', '~>3.2.3'
-  gem 'builder', '~>3.0.0'
-  
-  gem 'hydra', "~> 6.2.0"
-  gem 'active-fedora', "~> 6.7.8"
-  gem 'rubydora', "~> 1.7.5"
+  gem 'rails', '~>4.0.3'
+  #gem 'protected_attributes'
+  gem 'builder', '~>3.1.0'
+
+  gem 'hydra', '~>7.0.0'
+  gem 'active-fedora', git: 'https://github.com/projecthydra/active_fedora.git'
   gem 'bcrypt-ruby', '~> 3.0.0'
   gem 'kaminari', '~> 0.15.0'
 
@@ -46,7 +46,7 @@
   gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git", tag: 'v3.1.rc1'
 
   # You are free to implement your own User/Authentication solution in its place.
-  gem 'devise', '~>3.0.3'
+  gem 'devise', '~>3.2.0'
   #gem 'devise-guests'
   gem 'haml'
 
@@ -72,7 +72,7 @@
     gem 'coffee-rails', "~> 3.2.1"
     gem 'uglifier', '>= 1.0.3'
     gem 'jquery-rails', "~> 2.1.4"
-    gem 'compass-rails', '~> 1.0.0'
+    gem 'compass-rails', '1.1.7' #git: 'https://github.com/Compass/compass-rails', branch: '2-0-stable'
     gem 'compass-susy-plugin', '~> 0.9.0', require: 'susy'
 
     # For overriding the default interface with Twitter Bootstrap

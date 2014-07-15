@@ -20,6 +20,7 @@ FactoryGirl.define do
     managers {[FactoryGirl.create(:manager).username]}
     editors {[FactoryGirl.create(:user).username]}
     depositors {[FactoryGirl.create(:user).username]}
+    media_objects {[]}
 
     ignore { items 0 }
     after(:create) do |c, env|

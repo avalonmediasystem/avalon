@@ -1,24 +1,23 @@
 Avalon::Application.routes.draw do
-  Blacklight.add_routes(self, except: [:bookmarks, :feedback, :catalog])
+  #Blacklight.add_routes(self, except: [:bookmarks, :feedback, :catalog])
 #  HydraHead.add_routes(self)
 
   #Blacklight catalog routes
-  match "catalog/facet/:id", :to => 'catalog#facet', :as => 'catalog_facet'
-  match "catalog", :to => 'catalog#index', :as => 'catalog_index'
+  blacklight_for :catalog
+  #match "catalog/facet/:id", :to => 'catalog#facet', :as => 'catalog_facet', via: [:get]
+  #match "catalog", :to => 'catalog#index', :as => 'catalog_index', via: [:get]
 
   root :to => "catalog#index"
 
   devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }, format: false
   devise_scope :user do 
-    match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session
-    match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session
+    match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session, via: [:get]
+    match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:delete]
   end
-  match "/authorize", to: 'derivatives#authorize'
-  match "/autocomplete", to: 'object#autocomplete'
+  match "/authorize", to: 'derivatives#authorize', via: [:post]
+  match "/autocomplete", to: 'object#autocomplete', via: [:get]
 
-  # My routes go here
-  # Routes for subjects and pbcore controller
-  match "object/:id", to: 'object#show'
+  match "object/:id", to: 'object#show', via: [:get]
   resources :media_objects, except: [:create] do
     member do
       put :update_status
@@ -43,7 +42,7 @@ Avalon::Application.routes.draw do
     end
   end
 
-  match '/media_objects/:media_object_id/section/:id/embed' => 'master_files#embed'
+  match '/media_objects/:media_object_id/section/:id/embed' => 'master_files#embed', via: [:get]
 
   resources :derivatives, only: [:create]
   
@@ -75,7 +74,7 @@ Avalon::Application.routes.draw do
     end
   end
 
-  mount AboutPage::Engine => '/about(.:format)'
+#  mount AboutPage::Engine => '/about(.:format)'
   
   # The priority is based upon order of creation:
   # first created -> highest priority.

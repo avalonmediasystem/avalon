@@ -17,7 +17,7 @@ require 'spec_helper'
 describe "UniquenessValidator" do
 
   let(:solr_field) {"title_tesim"}
-  let(:validator) {UniquenessValidator.new({:attributes => {}, :solr_name => solr_field})}
+  let(:validator) {UniquenessValidator.new({:attributes => [:title], :solr_name => solr_field})}
 
   before(:each) do
     @record = double(pid:"avalon:1")
@@ -25,7 +25,7 @@ describe "UniquenessValidator" do
   end
 
   it "should raise an exception if solr_name option is missing" do
-     expect{UniquenessValidator.new({attributes: {}})}.to raise_error ArgumentError
+     expect{UniquenessValidator.new({attributes: [:title]})}.to raise_error ArgumentError
   end
 
   it "should not return errors when field is unique" do

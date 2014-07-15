@@ -44,7 +44,7 @@ describe MediaObjectsController, type: :controller do
       it "should be editable by the creator" do
         login_user collection.managers.first
         expect { get 'new', collection_id: collection.pid }.to change { MediaObject.count }
-        pid = MediaObject.find(:all).last.pid
+        pid = MediaObject.all.last.pid
         response.should redirect_to(edit_media_object_path(id: pid))
       end
 
@@ -82,7 +82,7 @@ describe MediaObjectsController, type: :controller do
 
        get 'edit', id: media_object.pid
        response.should be_success
-       response.should render_template HYDRANT_STEPS.first.template
+       response.should render_template "_#{HYDRANT_STEPS.first.template}"
      end
     
     it "should not default to the Access Control page" do
@@ -292,7 +292,7 @@ describe MediaObjectsController, type: :controller do
       media_object = FactoryGirl.create(:media_object)
       media_object.parts << FactoryGirl.create(:master_file)
       media_object.parts << FactoryGirl.create(:master_file)
-      master_file_pids = media_object.parts.select(&:id).map(&:id)
+      master_file_pids = media_object.parts.to_a.select(&:id).map(&:id)
       media_object.section_pid = master_file_pids
       media_object.save( validate: false )
 
