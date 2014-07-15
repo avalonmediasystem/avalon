@@ -25,7 +25,6 @@ class CatalogController < ApplicationController
   self.solr_search_params_logic += [:add_access_controls_to_solr_params_if_not_admin]
   
   # This filters out objects that you want to exclude from search results, like FileAssets
-  self.solr_search_params_logic += [:exclude_unwanted_models]
   self.solr_search_params_logic += [:only_wanted_models]
   self.solr_search_params_logic += [:only_published_items]
   self.solr_search_params_logic += [:limit_to_non_hidden_items]
