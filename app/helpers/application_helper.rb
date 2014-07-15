@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -12,9 +12,10 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+
 module ApplicationHelper
   def application_name
-    'Avalon'
+    Avalon::Configuration.lookup('name') || 'Avalon'
   end
   
   def release_text
@@ -35,16 +36,18 @@ module ApplicationHelper
   end
 
   def image_for(document)
-    master_file_id = document[:section_pid_tesim].try :first
+    master_file_id = document["section_pid_tesim"].try :first
     
-    video_count = document[:mods_tesim].count{|m| m.start_with?('moving image') }
-    audio_count = document[:mods_tesim].count{|m| m.start_with?('sound recording') }
+    video_count = document["mods_tesim"].count{|m| m.start_with?('moving image') }
+    audio_count = document["mods_tesim"].count{|m| m.start_with?('sound recording') }
 
     if master_file_id
       if video_count > 0
         thumbnail_master_file_path(master_file_id)
-      else
+      elsif audio_count > 0
         asset_path('audio_icon.png')
+      else
+        nil
       end
     else
       if video_count > 0 && audio_count > 0
@@ -56,21 +59,6 @@ module ApplicationHelper
       else
         nil
       end
-    end
-
-  end
-
-  # Creates a hot link to the downloadable file if it is available. File names longer
-  # than 25 characters are truncated although this can be overridden by passing in a
-  # different value
-  def file_download_label(masterfile)
-    # Check to see if the file name is longer than 25 characters
-    if 20 > masterfile.descMetadata.title[0].length 
-      label_display = masterfile.descMetadata.title[0]
-    else
-      label_display = truncate(masterfile.descMetadata.title[0], length: 15)
-      label_display << "."
-      label_display << masterfile.descMetadata.title[0].split('.').last
     end
   end
 
@@ -86,8 +74,8 @@ module ApplicationHelper
   end
 
   def search_result_label item
-    if item['title_tesim'].present?
-      label = truncate(item['title_tesim'].first, length: 100)
+    if item['title_tesi'].present?
+      label = truncate(item['title_tesi'], length: 100)
     else
       label = item.id
     end
@@ -134,11 +122,6 @@ module ApplicationHelper
     output
   end
   
-  def link_to_add_dynamic_field( name, opts = {} )
-    opts.merge!( class: 'add-dynamic-field btn btn-mini' )
-    link_to name, '#', opts
-  end
-
   def git_commit_info pattern="%s %s [%s]"
     begin
       repo = Grit::Repo.new(Rails.root)
@@ -168,8 +151,25 @@ module ApplicationHelper
   end
 
   def truncate_center label, output_label_length, end_length = 0
-    end_length = start_length / 2 if end_length == 0
-    truncate(label , length: output_label_length, 
+    end_length = output_label_length / 2 - 3 if end_length == 0
+    truncate(label, length: output_label_length,
       omission: "...#{label.last(end_length)}")
+  end
+
+  def master_file_meta_properties( m )
+    formatted_duration = m.duration ? Duration.new(m.duration.to_i / 1000).iso8601 : ''
+    item_type = m.is_video? ? 'http://schema.org/VideoObject' : 'http://schema.org/AudioObject'
+
+    content_tag(:div, itemscope: '', itemprop:  m.is_video? ? 'video' : 'audio',  itemtype: item_type ) do
+      concat tag(:meta, itemprop: 'name', content: m.mediaobject.title )
+      concat tag(:meta, itemprop: 'duration', content: formatted_duration )
+      concat tag(:meta, itemprop: 'thumbnail', content: Rails.application.routes.url_helpers.thumbnail_master_file_url(m))
+      concat tag(:meta, itemprop: 'image', content: Rails.application.routes.url_helpers.poster_master_file_url(m))
+      concat tag(:meta, itemprop: 'sameAs', content: m.permalink ) if m.permalink.present?
+      concat tag(:meta, itemprop: 'genre', content: m.mediaobject.genre.join(' ')) unless m.mediaobject.genre.empty?
+      concat tag(:meta, itemprop: 'about', content: m.mediaobject.subject.join(' ')) unless m.mediaobject.subject.empty?
+      concat tag(:meta, itemprop: 'description', content: m.mediaobject.abstract) if m.mediaobject.abstract.present?
+      yield
+    end
   end
 end

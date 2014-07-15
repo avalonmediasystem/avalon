@@ -1,5 +1,5 @@
 /* 
- * Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2014, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  * 
@@ -235,6 +235,20 @@ div#dropbox_modal {
   div.dataTables_paginate {
     float: none;
     text-align: left;
+  }
+
+  .modal-header .close {
+    margin-top: 11px;
+    margin-right: 14px;
+  }
+
+  .modal-header {
+    height: 37px;
+    padding: 0px 0px 0px 0px;
+  }
+
+  form {
+    margin: 0 0 0px;
   }
 }
 
@@ -623,5 +637,12 @@ button.close {
 .role-popover-help {
   &+.popover .arrow {
     left: 10%;
+  }
+}
+
+.fileupload-exists {
+  input[type='checkbox'] {
+    margin-top: 4px;
+    margin-left: -15px;
   }
 }

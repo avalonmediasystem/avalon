@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -55,8 +55,77 @@ describe ApplicationHelper do
 
   describe "#search_result_label" do
     it "should not include a duration string if it would be 0" do
-      media_object = FactoryGirl.create(:media_object)
-      helper.search_result_label(media_object.to_solr).should_not include("(00:00)")
+      mo_solr_doc = {"title_tesi" => "my_title"}
+      expect(helper.search_result_label(mo_solr_doc)).not_to include("(00:00)")
+    end
+    it "should return formatted title if duration is present" do
+      mo_solr_doc = {"title_tesi" => "my_title", "duration_tesim" => ["1000"]}
+      expect(helper.search_result_label(mo_solr_doc)).to eq("my_title (00:01)")
+    end
+    it "should return pid when no title" do
+      mo_solr_doc = {}
+      allow(mo_solr_doc).to receive(:id) {"avalon:123"}
+      expect(helper.search_result_label(mo_solr_doc)).to eq("avalon:123")
+    end
+  end
+
+  describe "#truncate_center" do
+    it "should return empty string if empty string received" do
+      expect(helper.truncate_center("", 5)).to eq ""
+    end
+    it "should truncate with no end length provided" do
+      expect(helper.truncate_center("This is my very long test string", 16)).to eq "This is ...tring" 
+    end
+    it "should truncate with end length" do
+      expect(helper.truncate_center("This is my very long test string", 20, 6)).to eq "This is my ...string"
+    end
+    it "shouldn't truncate if not needed" do
+      expect(helper.truncate_center("This string is short", 20)).to eq "This string is short"
+    end
+  end
+
+  describe "#milliseconds_to_formatted_time" do
+    it "should return correct values" do
+      expect(helper.milliseconds_to_formatted_time(0)).to eq("00:00")
+      expect(helper.milliseconds_to_formatted_time(1000)).to eq("00:01")
+      expect(helper.milliseconds_to_formatted_time(60000)).to eq("01:00")
+      expect(helper.milliseconds_to_formatted_time(3600000)).to eq("1:00:00")
+    end
+  end
+
+  describe "#git_commit_info" do
+    it "should return commit info in specified pattern" do
+      #expect(helper.git_commit_info()).to eq("x")
+      pending "Grit gem is abandoned and thowing errors. Replace with libgit2/rugged"
+
+    end
+  end
+
+  describe "#image_for" do
+    # image_for expects hash keys as labels, not strings
+    it "should return nil" do
+      doc = {"mods_tesim" => [] }
+      expect(helper.image_for(doc)).to eq(nil)
+    end
+    it "should return audio icon" do
+      doc = {"mods_tesim" => ['sound recording 2', 'sound recording 1'] }
+      expect(helper.image_for(doc)).to eq('/assets/audio_icon.png')
+    end
+    it "should return video icon" do
+      doc = {"mods_tesim" => ['moving image 1'] }
+      expect(helper.image_for(doc)).to eq('/assets/video_icon.png')
+    end
+    it "should return hybrid icon" do
+      doc = {"mods_tesim" => ['moving image 1', 'sound recording 1'] }
+      expect(helper.image_for(doc)).to eq('/assets/hybrid_icon.png')
+    end
+    it "should return nil when only unprocessed video" do
+      doc = {"section_pid_tesim" => ['1'], "mods_tesim" => [] }
+      expect(helper.image_for(doc)).to eq(nil)
+    end
+    it "should return thumbnail" do
+      doc = {"section_pid_tesim" => ['1'], "mods_tesim" => ['moving image 1'] }
+      expect(helper.image_for(doc)).to eq('/master_files/1/thumbnail')
     end
   end
 end

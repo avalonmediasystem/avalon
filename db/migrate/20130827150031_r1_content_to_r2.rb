@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -30,7 +30,7 @@ class R1ContentToR2 < ActiveRecord::Migration
   def mediaobject_to_r2(mo)
     say("MediaObject #{mo.pid} #{mo.current_migration}->R2", :subitem)
     mo.parts_with_order.each { |mf| masterfile_to_r2(mf) }
-    collection = MediaObjectMigration.find_or_create_collection(mo.descMetadata.collection.last, mo.edit_users)
+    collection = R1ContentToR2.find_or_create_collection(mo.descMetadata.collection.last, mo.edit_users)
     mo.collection = collection
     mo.descMetadata.collection = []
     mo.descMetadata.remove_empty_nodes!
@@ -46,7 +46,7 @@ class R1ContentToR2 < ActiveRecord::Migration
 
   def masterfile_to_r2(mf)
     say("MasterFile #{mf.pid} #{mf.current_migration}->R2", :subitem)
-    mf.derivatives.each { |d| derivative_to_r3(d) }
+    mf.derivatives.each { |d| derivative_to_r2(d) }
     mf.duration = mf.derivatives.empty? ? '0' : mf.derivatives.first.duration.to_s
     mf.descMetadata.poster_offset = mf.descMetadata.thumbnail_offset = [mf.duration.to_i,2000].min.to_s
     mf.save_as_version('R2', validate: false)

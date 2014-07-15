@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+Copyright 2011-2014, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -20,23 +20,27 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
         
         <% if @currentStreamInfo[:is_video] %>
-          <video class="mejs-avalon" controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] %>" preload="auto">
-            <% @currentStreamInfo[:stream_flash].each do |flash| %>
-              <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
-            <% end %>
-            <% @currentStreamInfo[:stream_hls].each do |hls| %>
-              <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
-            <% end %>
-          </video>
+          <%= master_file_meta_properties(@currentStream) do %>
+            <video class="mejs-avalon" controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] %>" preload="auto">
+              <% @currentStreamInfo[:stream_flash].each do |flash| %>
+                <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
+              <% end %>
+              <% @currentStreamInfo[:stream_hls].each do |hls| %>
+                <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
+              <% end %>
+            </video>
+          <% end %>
         <% else %>
-          <audio class="mejs-avalon" controls style="width: 100%;" id="video-tag" preload="true">
-            <% @currentStreamInfo[:stream_flash].each do |flash| %>
-              <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
-            <% end %>
-            <% @currentStreamInfo[:stream_hls].each do |hls| %>
-              <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
-            <% end %>
-          </audio>
+          <%= master_file_meta_properties(@currentStream) do %>
+            <audio class="mejs-avalon" controls style="width: 100%;" id="video-tag" preload="true">
+              <% @currentStreamInfo[:stream_flash].each do |flash| %>
+                <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
+              <% end %>
+              <% @currentStreamInfo[:stream_hls].each do |hls| %>
+                <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
+              <% end %>
+            </audio>
+          <% end %>
         <% end %>
       <% end %>
     </section>
@@ -56,15 +60,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 
 </div>
-
-<% content_for :title do %>
-  Preview -
-  <% unless @mediaobject.title.blank? %>
-    <%= @mediaobject.title %> (<%= @mediaobject.pid %>)
-  <% else %>
-    <%= @mediaobject.pid %>
-  <% end %>
-<% end %>
 
 <% content_for :page_scripts do %>
   <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>

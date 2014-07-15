@@ -1,5 +1,5 @@
 -#
-  Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+  Copyright 2011-2014, The Trustees of Indiana University and Northwestern
     University.  Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
   
@@ -13,15 +13,25 @@
     specific language governing permissions and limitations under the License.
   ---  END LICENSE_HEADER BLOCK  ---
 
-%p Initial processing of your batch ingest failed:
+%p Initial processing of your batch ingest failed. Details are below. Please see the <a href="https://wiki.dlib.indiana.edu/display/VarVideo/Batch+Ingest+Package+Format">Batch Ingest Package Format</a> for further help.
+-if @package.manifest.file.present?
+  %p= "Manifest file: #{@package.manifest.file}"
 
--@package.entries.each do |entry|
-  -if entry.errors.present?
-    %b= entry.fields[:main_title].try(:first) || "(Untitled)"
-    %br
-    - entry.errors.messages.each_pair do |field, errors|
-      #{field.to_s.titleize} - #{errors.join(', ')}
+
+-if @base_errors.present?
+  .alert.alert-error
+    - @base_errors.uniq.each do |message|
+      = message
       %br
+
+-@package.entries.each.with_index(2) do |entry,index|
+  -if entry.errors.present?
+    .alert.alert-error
+      %b= "Row #{index}: #{entry.fields[:main_title].try(:first) || 'Untitled' }"
+      %br
+      - entry.errors.messages.each_pair do |field, errors|
+        #{field.to_s.titleize} - #{errors.join(', ')}
+        %br
 
 
 
@@ -34,10 +44,3 @@
 / - errors.messages.each_pair do |field, errors|
 /   %h5 Row: #{field}
 /   %p.text-error= errors.join(' ')
-
-
--if @base_errors.present?
-  .alert.alert-error
-    - @base_errors.uniq.each do |message|
-      = message
-      %br

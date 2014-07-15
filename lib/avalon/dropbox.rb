@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -15,10 +15,11 @@
 require 'digest/md5'
 module Avalon
   class Dropbox
-    attr_reader :base_directory 
+    attr_reader :base_directory, :collection 
     
-    def initialize(root)
+    def initialize(root, collection)
       @base_directory = root
+      @collection = collection
     end
 
     # Returns available files in the dropbox
@@ -77,7 +78,7 @@ module Avalon
     
     # Gets completed, uningested batch packages
     def find_new_packages()
-      Avalon::Batch::Package.locate(@base_directory)
+      Avalon::Batch::Package.locate(@base_directory, @collection)
     end
 
   #  protected

@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+Copyright 2011-2014, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -13,6 +13,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<% content_for :title do %>
+  <%= @collection.name %>
+<% end %>
+
 <div class="row-fluid">
   <div class="span12">
     <div class="well">

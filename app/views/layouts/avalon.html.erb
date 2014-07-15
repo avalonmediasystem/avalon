@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+Copyright 2011-2014, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -18,8 +18,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title><%= yield :title %>
-       <% if content_for? :title %>- <% end %><%=release_text%>
+    <title>
+      <%= yield :title %>
+      <% if content_for? :title %>
+         - <%= application_name %>
+      <% else %>
+        Avalon Media System
+      <% end %>
     </title>
 
    <%= csrf_meta_tags %>

@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -75,8 +75,6 @@ class MasterFilesController < ApplicationController
         master_file.setContent(file)
         master_file.set_workflow(params[:workflow])
 
-        MasterFilesController.set_default_item_permissions(master_file, user_key)
- 
         if 'Unknown' == master_file.file_format
           flash[:error] = [] if flash[:error].nil?
           error = format_errors
@@ -107,7 +105,6 @@ class MasterFilesController < ApplicationController
         master_file.mediaobject = media_object
         master_file.setContent(File.open(file_path, 'rb'))
         master_file.set_workflow(params[:workflow])
-        MasterFilesController.set_default_item_permissions(master_file, user_key)
         
         unless master_file.save
           flash[:error] = "There was a problem storing the file"
@@ -132,8 +129,17 @@ class MasterFilesController < ApplicationController
 
     if params[:workflow_id].present?
       master_file.workflow_id ||= params[:workflow_id]
-      workflow = Rubyhorn.client.instance_xml(params[:workflow_id])
-      master_file.update_progress!(params, workflow) 
+      workflow = begin
+        Rubyhorn.client.instance_xml(params[:workflow_id])
+      rescue Rubyhorn::RestClient::Exceptions::HTTPNotFound
+        nil
+      end
+      if workflow
+        master_file.update_progress!(params, workflow)
+      else
+        master_file.status_code = 'STOPPED'
+        master_file.save
+      end
 
       # If Matterhorn reports that the processing is complete then we need
       # to prepare Fedora by pulling several important values closer to the

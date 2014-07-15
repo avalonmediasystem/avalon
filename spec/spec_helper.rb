@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -30,6 +30,9 @@ require 'tmpdir'
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 Dir[Rails.root.join("spec/models/shared_examples/**/*.rb")].each {|f| require f}
+
+Avalon::GROUP_LDAP = Net::LDAP.new unless defined?(Avalon::GROUP_LDAP)
+Avalon::GROUP_LDAP_TREE = 'ou=Test,dc=avalonmediasystem,dc=org' unless defined?(Avalon::GROUP_LDAP_TREE)
 
 RSpec.configure do |config|
   # ## Mock Framework

@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -20,8 +20,8 @@ require 'avalon/sanitizer'
 
 class Admin::Collection < ActiveFedora::Base
   include Hydra::AccessControls::Permissions
-  include ActiveFedora::Associations
   include Hydra::ModelMixins::HybridDelegator
+  include ActiveFedora::Associations
   include VersionableModel
 
   has_many :media_objects, property: :is_member_of_collection 
@@ -166,8 +166,13 @@ class Admin::Collection < ActiveFedora::Base
 
   def reindex_members
     yield
+    reindex_media_objects
+  end
+
+  def reindex_media_objects
     media_objects.each{|mo| mo.update_index}
   end
+  handle_asynchronously :reindex_media_objects
 
   def to_solr(solr_doc=Hash.new, *args)
     super
@@ -177,7 +182,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def dropbox
-    Avalon::Dropbox.new dropbox_absolute_path
+    Avalon::Dropbox.new( dropbox_absolute_path, self )
   end
 
   def dropbox_absolute_path( name = nil )

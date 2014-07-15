@@ -3,26 +3,32 @@
   gem 'iconv'
   gem 'rails', '~>3.2.3'
   gem 'builder', '~>3.0.0'
-
-  gem 'hydra', "~> 6.1.0"
+  
+  gem 'hydra', "~> 6.2.0"
+  gem 'active-fedora', "~> 6.7.8"
+  gem 'rubydora', "~> 1.7.5"
   gem 'bcrypt-ruby', '~> 3.0.0'
+  gem 'kaminari', '~> 0.15.0'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'avalon-r3'
-  gem 'avalon-batch', '~> 0.2.2', git: "https://github.com/avalonmediasystem/avalon-batch.git", tag: 'avalon-r3'
-  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r3'
-  gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r3'
-  gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r3'
-  gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'avalon-r3'
-  gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r3'
-  gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r3'
+  gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git", tag: 'v3.1'
+  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'v3.1' # HEAD , tag: 'avalon-r3'
+  gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git' # HEAD , tag: 'avalon-r3'
+  gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'v3.1'
+  gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git' # HEAD , tag: 'avalon-r3'
+  gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git' # HEAD , tag: 'avalon-r3'
+  gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git' # HEAD , tag: 'avalon-r3'
 
-  gem 'roo'
+  gem 'roo', git: 'https://github.com/Empact/roo', ref: '9e1b969762cbb80b1c52cfddd848e489f22f468f'
 
   gem 'multipart-post'  
   gem 'modal_logic'
 
   gem 'rubyzip', '0.9.9'
   gem 'hooks'
+
+  # microdata
+  gem 'ruby-duration'
 
   platforms :jruby do
     gem 'jruby-openssl'
@@ -34,10 +40,10 @@
   platforms :ruby do
     gem 'sqlite3'
     gem 'execjs'
-    gem 'therubyracer', '= 0.10.2'
+    gem 'therubyracer', '>= 0.12.0'
   end
 
-  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git", tag: 'avalon-r3'
+  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git", tag: 'v3.1'
 
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise', '~>3.0.3'
@@ -45,21 +51,22 @@
   gem 'haml'
 
   gem "jettywrapper"
-  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r3'
-  gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'avalon-r3'
-  gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'avalon-r3'
+  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git" # HEAD , tag: 'avalon-r3'
+  gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
+  gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
 
   gem 'validates_email_format_of'
   gem 'loofah'
   gem 'omniauth-identity'
-  gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r3'
+  gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
 
   gem 'mediainfo'
-  gem 'delayed_job_active_record'
+  gem 'delayed_job_active_record', '~> 0.3.3'
   gem 'whenever', require: false
   gem 'with_locking'
 
   gem 'equivalent-xml'
+  gem 'net-ldap'
 
   group :assets, :production do
     gem 'coffee-rails', "~> 3.2.1"
@@ -85,9 +92,9 @@
     gem 'meta_request'
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano'
-    gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm', tag: 'avalon-r3'
+    gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm' # HEAD , tag: 'avalon-r3'
     gem 'factory_girl_rails'
-    gem 'rspec-rails', '>=2.9.0'
+    gem 'rspec-rails', '~>2.9'
     gem 'pry'
     gem 'pry-rails'
     gem 'pry-debugger'

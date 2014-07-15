@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+Copyright 2011-2014, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -82,7 +82,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         input_disabled: !can_update %>
       <%= render "modules/access_object", object: object,
         access_object: "class", members: @virtual_groups, 
-        autocomplete_model: 'course', display_helper: :vgroup_display,
+        autocomplete_model: 'externalGroup', display_helper: :vgroup_display,
         input_disabled: !can_update %>
     </div>
   <% end %>

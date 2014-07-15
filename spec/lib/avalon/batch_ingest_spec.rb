@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -21,6 +21,7 @@ describe Avalon::Batch::Ingest do
   before :each do
     @saved_dropbox_path = Avalon::Configuration.lookup('dropbox.path')
     Avalon::Configuration['dropbox']['path'] = 'spec/fixtures/dropbox'
+    Avalon::Configuration['email']['notification'] = 'frances.dickens@reichel.com'
     # Dirty hack is to remove the .processed files both before and after the
     # test. Need to look closer into the ideal timing for where this should take
     # place
@@ -60,11 +61,26 @@ describe Avalon::Batch::Ingest do
       end
     end
 
+    it 'should send email when batch finishes processing' do
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_success).with(duck_type(:each)).and_return(mailer)
+      mailer.should_receive(:deliver)
+      batch_ingest.ingest
+    end
+    
     it 'should skip the corrupt manifest' do
       lambda { batch_ingest.ingest }.should_not raise_error
       error_file = File.join(@dropbox_dir,'example_batch_ingest','bad_manifest.xlsx.error')
       File.exists?(error_file).should be_true
       File.read(error_file).should =~ /^Invalid manifest/
+    end
+    
+    it 'should ingest batch with spaces in name' do
+      space_batch_path = File.join('spec/fixtures/dropbox/example batch ingest', 'batch manifest with spaces.xlsx')
+      space_batch = Avalon::Batch::Package.new(space_batch_path, collection)
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [space_batch]
+      batch_ingest.ingest
+      IngestBatch.count.should == 1
     end
 
     it 'creates an ingest batch object' do
@@ -133,37 +149,84 @@ describe Avalon::Batch::Ingest do
 
     it 'does not create an ingest batch object when there are zero packages' do
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return []
+      #expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(anything(), include("Expected error message"))
       batch_ingest.ingest
       IngestBatch.count.should == 0
     end
 
+    it 'should result in an error if a file is not found' do
+      batch = Avalon::Batch::Package.new( 'spec/fixtures/dropbox/example_batch_ingest/wrong_filename_manifest.xlsx', collection )
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
+      mailer.should_receive(:deliver)
+      batch_ingest.ingest
+      IngestBatch.count.should == 0
+      batch.errors[3].messages.should have_key(:content)
+      batch.errors[3].messages[:content].should eq(["File not found: spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain_wrong.mov"])
+    end
+
     it 'does not create an ingest batch object when there are no files' do
-      fileless_batch = Avalon::Batch::Package.new('spec/fixtures/batch_manifest.xlsx')
-      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [fileless_batch]
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/no_files.xlsx', collection)
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
       batch_ingest.ingest
       IngestBatch.count.should == 0
     end
 
     it 'should fail if the manifest specified a non-manager user' do
-      non_manager_batch = Avalon::Batch::Package.new('spec/fixtures/batch_manifest_r2.xlsx')
-      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [non_manager_batch]
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/non_manager_manifest.xlsx', collection)
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
-      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(anything(), include("User jay@krajcik.org does not have permission to add items to collection: Ut minus ut accusantium odio autem odit..")).and_return(mailer)
       mailer.should_receive(:deliver)
       batch_ingest.ingest
       IngestBatch.count.should == 0
-      non_manager_batch.errors[3].messages.should have_key(:collection)
     end
 
     it 'should fail if a bad offset is specified' do
-      bad_offset_batch = Avalon::Batch::Package.new('spec/fixtures/batch_manifest_r2.xlsx')
-      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [bad_offset_batch]
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/bad_offset_manifest.xlsx', collection)
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
       mailer.should_receive(:deliver)
       batch_ingest.ingest
       IngestBatch.count.should == 0
-      bad_offset_batch.errors[4].messages.should have_key(:offset)
+      batch.errors[4].messages.should have_key(:offset)
+      batch.errors[4].messages[:offset].should eq(['Invalid offset: 5:000'])
+    end
+
+    it 'should fail if missing required field' do
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/missing_required_field.xlsx', collection)
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
+      mailer.should_receive(:deliver)
+      batch_ingest.ingest
+      IngestBatch.count.should == 0
+      batch.errors[4].messages.should have_key(:creator)
+      batch.errors[4].messages[:creator].should eq(['field is required.'])
+    end
+
+    it 'should fail if field is not in accepted metadata field list' do
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/badColumnName_nonRequired.xlsx', collection)
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
+      mailer.should_receive(:deliver)
+      batch_ingest.ingest
+      IngestBatch.count.should == 0
+      batch.errors[4].messages.should have_key(:contributator)
+      batch.errors[4].messages[:contributator].should eq(["Metadata attribute 'contributator' not found"])
+    end
+    
+    it 'should fail if an unknown error occurs' do
+      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/badColumnName_nonRequired.xlsx', collection)
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
+      mailer = double('mailer').as_null_object
+      IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(batch ,['RuntimeError: Foo']).and_return(mailer)
+      mailer.should_receive(:deliver)
+      batch_ingest.should_receive(:ingest_package) { raise "Foo" }
+      expect { batch_ingest.ingest }.to_not raise_error
     end
   end
 
@@ -176,17 +239,16 @@ describe Avalon::Batch::Ingest do
   end
 
   describe "#offset_valid?" do
-    subject { Avalon::Batch::Ingest.new(nil) }
-    it {expect(subject.offset_valid?("33.12345")).to be_true}
-    it {expect(subject.offset_valid?("21:33.12345")).to be_true}
-    it {expect(subject.offset_valid?("125:21:33.12345")).to be_true}
-    it {expect(subject.offset_valid?("63.12345")).to be_false}
-    it {expect(subject.offset_valid?("66:33.12345")).to be_false}
-    it {expect(subject.offset_valid?(".12345")).to be_false}
-    it {expect(subject.offset_valid?(":.12345")).to be_false}
-    it {expect(subject.offset_valid?(":33.12345")).to be_false}
-    it {expect(subject.offset_valid?(":66:33.12345")).to be_false}
-    it {expect(subject.offset_valid?("5:000")).to be_false}
-    it {expect(subject.offset_valid?("`5.000")).to be_false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("33.12345")).to be_true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("21:33.12345")).to be_true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("125:21:33.12345")).to be_true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("63.12345")).to be_false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("66:33.12345")).to be_false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(".12345")).to be_false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":.12345")).to be_false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":33.12345")).to be_false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":66:33.12345")).to be_false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("5:000")).to be_false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("`5.000")).to be_false}
   end
 end

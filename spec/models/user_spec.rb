@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -42,6 +42,26 @@ describe User do
     it "should return groups from the role map" do
       RoleMapper.should_receive(:roles).and_return(groups)
       expect(user.groups).to eq(groups)
+    end
+  end
+
+  describe "#ldap_groups" do
+    it "should return [] if LDAP is not configured" do
+      hide_const("Avalon::GROUP_LDAP")
+      expect(user.send(:ldap_groups)).to eq([])
+    end
+    it "user should belong to Group1 and Group2 in mock LDAP" do
+      entry = Net::LDAP::Entry.new("cn=user,dc=ads,dc=example,dc=edu")
+      entry["memberof"] = ['CN=Group1,DC=ads,DC=example,DC=edu"','CN=Group2,DC=ads,DC=example,DC=edu"']
+      allow_any_instance_of(Net::LDAP).to receive(:search).and_return([entry])
+      expect(user.send(:ldap_groups)).to eq(['Group1','Group2'])
+    end
+  end
+
+  describe "#autocomplete" do
+    it "should return results of same type as user_key (email xor username)" do
+      user.save(validate: false)
+      expect(User.autocomplete(user.user_key)).to eq([{id: user.user_key, display: user.user_key}])
     end
   end
 

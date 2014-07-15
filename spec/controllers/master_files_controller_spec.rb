@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'spec_helper'
+require 'rubyhorn/rest_client/exceptions'
 
 describe MasterFilesController do
   describe "#create" do
@@ -118,28 +119,11 @@ describe MasterFilesController do
         flash[:errors].should be_nil
       end
     end
-
-    context "should have default permissions" do
-      it "should set edit_user and edit_group" do
-        @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-        #Work-around for a Rails bug
-        class << @file
-          attr_reader :tempfile
-        end
-   
-        post :create, Filedata: [@file], original: 'any', container_id: media_object.pid
-        master_file = MasterFile.all.last
-        master_file.edit_groups.should include "collection_manager"
-        master_file.edit_users.should include content_provider.username
-      end
-    end
   end
   
   describe "#update" do
     let!(:master_file) {FactoryGirl.create(:master_file)}
-
-    context "should handle Matterhorn pingbacks" do
-      it "should create Derivatives when processing succeeded" do
+    before do
         #stub Rubyhorn call and return a workflow fixture and check that Derivative.create_from_master_file is called
         xml = File.new("spec/fixtures/matterhorn_workflow_doc.xml")
         doc = Rubyhorn::Workflow.from_xml(xml)
@@ -152,10 +136,28 @@ describe MasterFilesController do
         master_file.poster.mimeType = 'image/png'
         master_file.poster.content = 'PNG'
         master_file.save 
-        put :update, id: master_file.pid, workflow_id: 1103
+    end
 
-        master_file.reload 
+    context "should handle Matterhorn pingbacks" do
+      it "should create Derivatives when processing succeeded" do
+        put :update, id: master_file.pid, workflow_id: 1103
+        master_file.reload
         master_file.derivatives.count.should == 3
+      end
+      it "should send success email" do
+        allow(IngestBatch).to receive(:all) {[IngestBatch.new(media_object_ids: [master_file.mediaobject.id], name: "Batch #1", email: "test@test.com" )]}
+        mailer = double('mailer').as_null_object
+        IngestBatchMailer.should_receive(:status_email).and_return(mailer)
+        mailer.should_receive(:deliver)
+        put :update, id: master_file.pid, workflow_id: 1103
+      end
+      it "should handle stopped workflows" do
+        Rubyhorn.stub_chain(:client, :instance_xml).and_raise Rubyhorn::RestClient::Exceptions::HTTPNotFound
+        allow(IngestBatch).to receive(:all) {[IngestBatch.new(media_object_ids: [master_file.mediaobject.id], name: "Batch #1", email: "test@test.com" )]}
+        mailer = double('mailer').as_null_object
+        IngestBatchMailer.should_receive(:status_email).and_return(mailer)
+        mailer.should_receive(:deliver)
+        put :update, id: master_file.pid, workflow_id: 1103
       end
     end
   end
@@ -187,6 +189,64 @@ describe MasterFilesController do
     it "should redirect you to the media object page with the correct section" do
       get :show, id: master_file.pid 
       response.should redirect_to(pid_section_media_object_path(master_file.mediaobject.pid, master_file.pid)) 
+    end
+  end
+
+  describe "#embed" do
+    subject(:mf){FactoryGirl.create(:master_file)}
+    it "should render embed layout" do
+      login_user mf.mediaobject.collection.managers.first
+      expect(get :embed, id: mf.pid ).to render_template(layout: 'embed')
+    end
+  end
+
+  describe "#set_frame" do
+    subject(:mf){FactoryGirl.create(:master_file_with_thumbnail)}
+    it "should redirect to sign in when not logged in" do
+      expect(get :set_frame, id: mf.pid ).to redirect_to new_user_session_path
+    end
+    it "should redirect to home when logged in and not authorized" do
+      login_as :user
+      expect(get :set_frame, id: mf.pid ).to redirect_to root_path
+    end
+    it "should redirect to edit_media_object" do
+      mo = mf.mediaobject
+      login_user mo.collection.managers.first
+      expect(get :set_frame, id: mf.pid, type: 'thumbnail', offset: '10').to redirect_to edit_media_object_path(mo.pid, step: 'file-upload')
+    end
+    it "should return thumbnail" do
+      expect_any_instance_of(MasterFile).to receive(:extract_still) {'fake image content'}
+      login_user mf.mediaobject.collection.managers.first
+      get :set_frame, format: 'jpeg', id: mf.pid, type: 'thumbnail', offset: '10'
+      expect(response.body).to eq('fake image content')
+      expect(response.headers['Content-Type']).to eq('image/jpeg')
+    end
+  end
+
+  describe "#get_frame" do
+    subject(:mf){FactoryGirl.create(:master_file_with_thumbnail)}
+    context "not authorized" do
+      it "should redirect to sign in when not logged in" do
+        expect(get :get_frame, id: mf.pid ).to redirect_to new_user_session_path
+      end
+      it "should redirect to home when logged in and not authorized" do
+        login_as :user
+        expect(get :get_frame, id: mf.pid ).to redirect_to root_path
+      end
+    end
+    context "authorized" do
+      before(:each) { login_user mf.mediaobject.collection.managers.first }
+      it "should return thumbnail" do
+        get :get_frame, id: mf.pid, type: 'thumbnail', size: 'bar'
+        expect(response.body).to eq('fake image content')
+        expect(response.headers['Content-Type']).to eq('image/jpeg')
+      end
+      it "should return offset thumbnail" do
+        expect_any_instance_of(MasterFile).to receive(:extract_still) {'fake image content'}
+        get :get_frame, id: mf.pid, type: 'thumbnail', size: 'bar', offset: '1'
+        expect(response.body).to eq('fake image content')
+        expect(response.headers['Content-Type']).to eq('image/jpeg')
+      end
     end
   end
   

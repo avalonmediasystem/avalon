@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -152,7 +152,6 @@ class Ability
 
   def full_login?
     return @full_login unless @full_login.nil?
-
     @full_login = @session.present? ? @session[:full_login] : true
     @full_login
   end

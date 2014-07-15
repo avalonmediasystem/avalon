@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -69,6 +69,7 @@ require 'avalon/dropbox'
             selected_part.destroy
           else
             selected_part.label = part[:label]
+            selected_part.permalink = part[:permalink]
             selected_part.poster_offset = part[:poster_offset]
             unless selected_part.save
               context[:error] ||= []

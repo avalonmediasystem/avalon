@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -29,9 +29,9 @@ describe Admin::GroupsController do
 	
     it "should redirect to home page with a notice when authenticated but unauthorized" do
       login_as('student')
-      expect { get 'new' }.not_to change {Admin::Group.all.count }
-      flash[:notice].should_not be_nil
-      response.should redirect_to(root_path)
+      expect { get 'new' }.not_to change {Admin::Group.all.count}
+      expect(response).to redirect_to(root_path)
+      expect(flash[:notice]).not_to be_nil
     end
 
     it "should redirect to group index page with a notice when group name is already taken" do

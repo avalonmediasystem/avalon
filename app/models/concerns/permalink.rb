@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -27,14 +27,17 @@ module Permalink
     def initialize
       @proc = Proc.new { |obj, target| nil }
     end
-
-    def permalink_for(obj)
-      url = case obj
+  
+    def avalon_url_for(obj)
+      case obj
       when MediaObject then media_object_url(obj.pid)
       when MasterFile  then pid_section_media_object_url(obj.mediaobject.pid, obj.pid)
-      else raise ArgumentError("Cannot make permalink for #{obj.class}")
+      else raise ArgumentError, "Cannot make permalink for #{obj.class}"
       end
-      @proc.call(obj, url)
+    end
+    
+    def permalink_for(obj)
+      @proc.call(obj, avalon_url_for(obj))
     end
   end
 
@@ -42,7 +45,11 @@ module Permalink
   def self.permalink_for(obj)
     @@generator.permalink_for(obj)
   end
-    
+  
+  def self.url_for(obj)
+    @@generator.avalon_url_for(obj)
+  end
+  
   # Permalink.on_generate do |obj|
   #   permalink = (... generate permalink ...)
   #   return permalink
@@ -71,22 +78,20 @@ module Permalink
 
   def ensure_permalink!
     updated = false
-
     begin
       link = self.permalink
       if link.blank?
         link = Permalink.permalink_for(self)
       end
+
     rescue Exception => e
       link = nil
       logger.error "Permalink.permalink_for() raised an exception for #{self.inspect}: #{e}"
     end
-    
     if link.present? and not (self.permalink == link)
       self.permalink = link
       updated = true
     end
-    
     updated
   end
 

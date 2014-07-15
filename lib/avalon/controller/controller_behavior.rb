@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -17,15 +17,6 @@ module Avalon
     module ControllerBehavior
       def self.included(base)
         base.extend(ClassMethods)
-      end
-
-      module ClassMethods
-        def set_default_item_permissions( item, user_key )
-          unless item.rightsMetadata.nil?
-            item.edit_groups = ["collection_manager"]
-            item.apply_depositor_metadata user_key
-          end
-        end
       end
 
       def deliver_content

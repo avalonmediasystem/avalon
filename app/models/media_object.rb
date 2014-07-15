@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -235,7 +235,7 @@ class MediaObject < ActiveFedora::Base
     metadata_attribute_value = value
 
     if metadata_attribute.nil?
-      missing_attributes[attribute] = "Metadata attribute `#{attribute}' not found"
+      missing_attributes[attribute] = "Metadata attribute '#{attribute}' not found"
       return false
     else
       values = Array(value).select { |v| not v.blank? }
@@ -299,7 +299,7 @@ class MediaObject < ActiveFedora::Base
     solr_doc["dc_publisher_tesim"] = self.publisher
     #Add all searchable fields to the all_text_timv field
     all_text_values = []
-    all_text_values << solr_doc["title_tesim"]
+    all_text_values << solr_doc["title_tesi"]
     all_text_values << solr_doc["creator_ssim"]
     all_text_values << solr_doc["contributor_sim"]
     all_text_values << solr_doc["unit_ssim"]

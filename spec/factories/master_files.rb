@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -27,6 +27,13 @@ FactoryGirl.define do
       workflow_name 'avalon'
       after(:create) do |mf|
         mf.derivatives += [FactoryGirl.create(:derivative)]
+        mf.save
+      end
+    end
+    factory :master_file_with_thumbnail do
+      after(:create) do |mf|
+        mf.thumbnail.mimeType = 'image/jpeg'
+        mf.thumbnail.content = 'fake image content'
         mf.save
       end
     end

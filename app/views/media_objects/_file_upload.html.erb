@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+Copyright 2011-2014, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -23,13 +23,24 @@ Unless required by applicable law or agreed to in writing, software distributed
 <section id="associated_files" class="span11">
       <legend>Associated files</legend>
       <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
-      <%= twitter_bootstrap_form_for @mediaobject do |file_list| %>
+<%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
+
       <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
+  <div class="collapse form-tooltip" id="label-tooltip">
+    <button class="close">&times;</button> <p><%= t("file_upload_tip.label").html_safe %></p>
+  </div>
+  <div class="collapse form-tooltip" id="permalink-tooltip">
+    <button class="close">&times;</button> <p><%= t("file_upload_tip.permalink").html_safe %></p>
+  </div>
+  <div class="collapse form-tooltip" id="thumbnail-tooltip">
+    <button class="close">&times;</button  <p><%= t("file_upload_tip.thumbnail").html_safe %></p>
+  </div>
       
     <table class="table table-striped">
       <colgroup>
         <col class="span1">
+        <col class="span4">
         <col class="span4">
         <col class="span1">
         <col class="span4">
@@ -38,8 +49,9 @@ Unless required by applicable law or agreed to in writing, software distributed
       
       <thead>
         <th>Type</th>
-        <th>Section label</th>
-        <th>Thumbnail</th>
+        <th><div class="tooltip-help" data-tooltip="#label-tooltip">Section label</div></th>
+	<th><div class="tooltip-help" data-tooltip="#permalink-tooltip">Permalink</div></th>
+	<th><div class="tooltip-help" data-tooltip="#thumbnail-tooltip" style='min-width:7em;'>Thumbnail</div></th>
         <th>File name</th>
         <th>Size</th>
         <th>&nbsp;</th>
@@ -63,6 +75,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           <%= text_field_tag "parts[#{part.pid}][label]", part.label,
             size: 30, class: 'section-label' %>
         </td>
+	<td>
+          <%= text_field_tag "parts[#{part.pid}][permalink]", part.permalink,
+            size: 30, class: 'section-label' %>
+	</td>
         <td>
           <% if part.is_video? %>
             <%= text_field_tag "parts[#{part.pid}][poster_offset]",
@@ -153,7 +169,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <section id="dropbox_upload" class="span11">
   <legend id="dropbox_modal_label">Import from a dropbox</legend>
-  <p class="muted">Use the dropbox to import large files. Attach selected files after uploading. Files will be begin processing when you click Save and continue.</p>
+  <p class="muted">Use the dropbox to import large files. Attach selected files after uploading. Files will be begin
+ processing when you click Save and continue.</p>
   <p><a class="btn dropbox-trigger" href="#">Open Dropbox</a></p>
   <%= render partial: "dropbox_details" %>
   <%= render partial: 'dropbox' %>

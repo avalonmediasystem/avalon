@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+Copyright 2011-2014, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -13,6 +13,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<% content_for :title do %>
+  <% if has_search_parameters? %>
+    <% if params[:q].present? %><%= params[:q] %> - <% end %> Search Results
+  <% end %>
+<% end %>
+
+
 <% content_for :additional_head_content do %>
   <link rel="alternate" type="application/xml" title="Solr" href="<%=build_solr_request_from_response%>">
 <% end %>

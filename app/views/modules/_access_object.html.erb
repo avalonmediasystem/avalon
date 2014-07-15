@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+Copyright 2011-2014, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -17,11 +17,11 @@ Unless required by applicable law or agreed to in writing, software distributed
     
     <%# ----------- Title and tooltip ---------------------------------%>
     <p class="tooltip-help" data-title="<%= access_object.titleize %>" data-tooltip=<%="##{access_object}_tooltip"%>>
-        <%= access_object.titleize %>
+      <%= t("access_control.#{access_object}label").html_safe %>
     </p>
-    <div class="collapse form-tooltip equal-height" id=<%="#{access_object}_tooltip"%>>
+    <div class="collapse form-tooltip" id=<%="#{access_object}_tooltip"%>>
       <button class="close">&times;</button>
-      <p><%= t("metadata_tip.#{access_object}").html_safe %></p>
+      <p><%= t("access_control.#{access_object}").html_safe %></p>
     </div>
 
     <%#------------ Add access item text field and submit button ------------ %>

@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -12,18 +12,17 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-# -*- encoding : utf-8 -*-
-class AdminController < ApplicationController  
+require 'spec_helper'
 
-  def index
-    if current_user.nil?
-      flash[:notice] = "You need to be signed in to access group policies"
-      redirect_to new_user_session_path
-    elsif cannot? :manage, Admin::Group 
-      flash[:notice] = "You do not have sufficient privileges to access group policies"
-      redirect_to root_path
-    else
-      redirect_to admin_groups_path 
-    end
+describe 'PID Assignment' do
+  let(:repo)      { ActiveFedora::Base.connection_for_pid(0) }
+  let(:namespace) { Avalon::Configuration.lookup('fedora.namespace') }
+  let(:pid)       { "#{namespace}:12345" }
+  
+  it "should assign a PID in the correct namespace" do
+    expect(repo).to receive(:mint).with({ namespace: namespace }).and_return(pid)
+    mo = MediaObject.new
+    mo.send(:assign_pid)
+    expect(mo.pid).to eq(pid)
   end
-end 
+end

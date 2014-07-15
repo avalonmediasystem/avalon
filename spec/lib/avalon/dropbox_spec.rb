@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -19,7 +19,12 @@ require 'avalon/dropbox'
 describe Avalon::Dropbox do
 
   describe "#delete" do
-    subject { Avalon::Dropbox.new Avalon::Configuration.lookup('dropbox.path') }
+    before :each do
+      User.create(:username => 'frances.dickens@reichel.com', :email => 'frances.dickens@reichel.com')
+      RoleControls.add_user_role('frances.dickens@reichel.com','manager')
+    end
+    let(:collection) { FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
+    subject { Avalon::Dropbox.new(Avalon::Configuration.lookup('dropbox.path'),collection) }
     it 'returns true if the file is found' do
       File.stub(:delete).and_return true
       subject.delete('some_file.mov')

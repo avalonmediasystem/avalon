@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+Copyright 2011-2014, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -37,10 +37,8 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% if can? :manage, Admin::Group %>
             <li class=<%= active_for_controller('admin/groups') %>><%= link_to 'Manage Groups', admin_groups_path, target: '_admin' %></li>
           <% end %>
-          <% if user_session && user_session[:virtual_groups].present? %>
-            <% user_session[:virtual_groups].each do |vgroup| %>
-              <li><%= link_to(vgroup_display(vgroup), catalog_index_path('f[read_access_virtual_group_ssim][]' => vgroup)) %></li>
-            <% end %>
+          <% if user_session && user_session[:lti_group] %>
+            <li><%= link_to(vgroup_display(user_session[:lti_group]), catalog_index_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])) %></li>
           <% end %>
        </ul>        
       <form action="/" method="get" class="navbar-search pull-right">

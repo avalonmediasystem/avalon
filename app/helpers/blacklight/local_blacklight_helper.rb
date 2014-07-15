@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -60,7 +60,7 @@ module Blacklight::LocalBlacklightHelper
 
   def description_index_display args
     field = args[:document][args[:field]]
-    truncate(field.first, length: 200) unless (field.blank? or field.first.blank?)
+    truncate(field, length: 200) unless field.blank?
   end
 
   # Determine whether to expand the facet or not based on the settings in

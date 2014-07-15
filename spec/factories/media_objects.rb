@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -22,6 +22,16 @@ FactoryGirl.define do
     factory :published_media_object do
       avalon_publisher {'publisher'}
     end
+    factory :media_object_with_master_file do
+      after(:create) do |mo|
+        mf = FactoryGirl.create(:master_file)
+        mf.mediaobject = mo
+        mf.save
+        mo.parts += [mf]
+        mo.save
+      end
+    end
+
   end
 
   factory :minimal_record, class: MediaObject do

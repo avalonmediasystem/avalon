@@ -1,5 +1,5 @@
 /* 
- * Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+ * Copyright 2011-2014, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  * 
@@ -60,9 +60,10 @@ window.AvalonStreams = {
           
           // Rebuilds the quality selector
           //currentPlayer.setSrc(newSrc);
-          currentPlayer.setPoster(stream_info.poster_image);
+          if (stream_info.poster_image != "undefined" && stream_info.poster_image != null)
+            currentPlayer.setPoster(stream_info.poster_image);
           currentPlayer.buildqualities(currentPlayer, currentPlayer.controls, currentPlayer.layers, currentPlayer.media);
-          //currentPlayer.load(); 
+          currentPlayer.load(); 
         } else {
           //currentPlayer = AvalonPlayer.init($('#player'), opts);
         }

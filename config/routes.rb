@@ -22,7 +22,6 @@ Avalon::Application.routes.draw do
   resources :media_objects, except: [:create] do
     member do
       put :update_status
-      put :update_visibility
       # 'delete' has special signifigance so use 'remove' for now
       get :remove
       get :progress, :action => :show_progress
