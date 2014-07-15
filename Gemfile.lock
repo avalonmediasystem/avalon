@@ -17,8 +17,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
-  revision: affe214fb452a098f093bccd2758931124ea1181
-  tag: v3.1.rc1
+  revision: ecbb3a961666768845fbc50b151ff0fbbfad6527
+  tag: v3.1
   specs:
     avalon-about (0.1.0)
       about_page
@@ -27,7 +27,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-batch.git
   revision: 2737cac71d2e6a990ea6b937e6181f02c471b00f
-  tag: v3.1.rc1
+  tag: v3.1
   specs:
     avalon-batch (0.3.0)
       activemodel
