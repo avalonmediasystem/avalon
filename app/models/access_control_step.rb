@@ -35,9 +35,9 @@ class AccessControlStep < Avalon::Workflow::BasicStep
       if context["submit_add_#{title}"].present?
         if context["add_#{title}"].present?
           if ["group", "class"].include? title
-            mediaobject.read_groups += [context["add_#{title}"]]
+            mediaobject.read_groups += [context["add_#{title}"].strip]
           else
-            mediaobject.read_users += [context["add_#{title}"]]
+            mediaobject.read_users += [context["add_#{title}"].strip]
           end
         else
           context[:error] = "#{title.titleize} can't be blank."
