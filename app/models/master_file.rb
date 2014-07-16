@@ -162,7 +162,11 @@ class MasterFile < ActiveFedora::Base
   def delete 
     # Stops all processing and deletes the workflow
     unless workflow_id.blank? || new_object? || finished_processing?
-      Rubyhorn.client.stop(workflow_id)
+      begin
+        Rubyhorn.client.stop(workflow_id)
+      rescue Exception => e
+        logger.warn "Error stopping workflow: #{e.message}"
+      end
     end
 
     mo = self.mediaobject
@@ -182,7 +186,11 @@ class MasterFile < ActiveFedora::Base
     super
 
     #Only save the media object if the master file was successfully deleted
-    mo.save(validate: false)
+    if mo.nil?
+      logger.warn "MasterFile has no owning MediaObject to update upon deletion"
+    else
+      mo.save(validate: false)
+    end
   end
 
   def process

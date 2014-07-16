@@ -136,6 +136,13 @@ class MediaObject < ActiveFedora::Base
     not self.avalon_publisher.blank?
   end
 
+  def destroy
+    # attempt to stop the matterhorn processing job
+    self.parts.each(&:destroy)
+    self.parts.clear
+    super
+  end
+
   # Removes one or many MasterFiles from parts_with_order
   def parts_with_order_remove part
     self.parts_with_order = self.parts_with_order.reject{|master_file| master_file.pid == part.pid }
