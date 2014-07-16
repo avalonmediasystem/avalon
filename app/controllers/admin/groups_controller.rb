@@ -78,7 +78,7 @@ class Admin::GroupsController < ApplicationController
   def update
     #TODO: move RoleControls to Group model
     
-   new_user = params["new_user"]
+   new_user = params["new_user"].strip
    new_group_name = params["group_name"]
    
     @group = Admin::Group.find(params["id"])
