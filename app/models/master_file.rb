@@ -282,7 +282,9 @@ class MasterFile < ActiveFedora::Base
 
     self.status_code = matterhorn_response.state[0]
     self.failures = matterhorn_response.operations.operation.operation_state.select { |state| state == 'FAILED' }.length.to_s
-    self.operation = matterhorn_response.find_by_terms(:operations,:operation).select { |n| ['RUNNING','FAILED','SUCCEEDED'].include?n['state'] }.last.try(:[],'description')
+    current_operation = matterhorn_response.find_by_terms(:operations,:operation).select { |n| n['state'] == 'INSTANTIATED' }.first.try(:[],'description')
+    current_operation ||= matterhorn_response.find_by_terms(:operations,:operation).select { |n| ['RUNNING','FAILED','SUCCEEDED'].include?n['state'] }.last.try(:[],'description')
+    self.operation = current_operation
     self.error = matterhorn_response.errors.last
 
     # Because there is no attribute_changed? in AF
@@ -525,13 +527,13 @@ class MasterFile < ActiveFedora::Base
 
     result = Hash.new { |h,k| h[k] = 0 }
     operations.each { |op|
-      op[:pct] = (totals[op[:type]].to_f / operations.select { |o| o[:type] == op[:type] }.count.to_f).ceil
+      op[:pct] = (totals[op[:type]].to_f / operations.select { |o| o[:type] == op[:type] }.count.to_f)
       state = op[:state].downcase.to_sym 
       result[state] += op[:pct]
       result[:complete] += op[:pct] if END_STATES.include?(op[:state])
     }
-    result[:succeeded] += result.delete(:skipped).to_i
-    result.each { |k,v| result[k] = 100 if v > 100 }
+    result[:succeeded] += result.delete(:skipped) unless result[:skipped].nil?
+    result.each {|k,v| result[k] = result[k].round }
     result
   end
 

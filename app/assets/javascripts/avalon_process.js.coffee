@@ -46,6 +46,8 @@ class AvalonProgress
         setActive(bar, info.complete < 100 and (info.status == 'RUNNING' or info.status == 'WAITING'))
 
         info_box.html(info.operation) if info.operation?
+        if info.complete == 100
+          info_box.html(info.status)
         updateBar(bar, {success: info.success, danger: info.error})
         if info.status == 'FAILED'
           info_box.html("ERROR: #{info.message}")
@@ -60,6 +62,9 @@ class AvalonProgress
 
     updateBar($('#overall'), {success: info.success, danger: info.error})
     $('#overall').data('status',info)
+    if info.success == 100
+      location.reload()
+
     return info.success + info.error < 100
 
   click_section: (section_id) ->
