@@ -106,7 +106,7 @@ class Admin::CollectionsController < ApplicationController
       if params["submit_add_#{title}"].present? 
         if params["add_#{title}"].present? && can?("update_#{title.pluralize}".to_sym, @collection)
           begin
-            @collection.send "add_#{title}".to_sym, params["add_#{title}"]
+            @collection.send "add_#{title}".to_sym, params["add_#{title}"].strip
           rescue ArgumentError => e
             flash[:notice] = e.message
           end
@@ -127,9 +127,9 @@ class Admin::CollectionsController < ApplicationController
         if params["submit_add_#{title}"].present?
           if params["add_#{title}"].present?
             if ["group", "class"].include? title
-              @collection.default_read_groups += [params["add_#{title}"]]
+              @collection.default_read_groups += [params["add_#{title}"].strip]
             else
-              @collection.default_read_users += [params["add_#{title}"]]
+              @collection.default_read_users += [params["add_#{title}"].strip]
             end
           else
             flash[:notice] = "#{title.titleize} can't be blank."
