@@ -114,7 +114,7 @@ class MediaObjectsController < ApplicationController
         [mf.pid, mf_status]
       }
     ]
-    overall.each { |k,v| overall[k] = [0,[100,v.to_f/@masterFiles.length.to_f].min].max.round }
+    overall.each { |k,v| overall[k] = [0,[100,v.to_f/@masterFiles.length.to_f].min].max.floor }
 
     if overall[:success]+overall[:error] > 100
       overall[:error] = 100-overall[:success]

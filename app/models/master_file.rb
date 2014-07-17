@@ -519,13 +519,13 @@ class MasterFile < ActiveFedora::Base
 
     result = Hash.new { |h,k| h[k] = 0 }
     operations.each { |op|
-      op[:pct] = (totals[op[:type]].to_f / operations.select { |o| o[:type] == op[:type] }.count.to_f).ceil
+      op[:pct] = (totals[op[:type]].to_f / operations.select { |o| o[:type] == op[:type] }.count.to_f)
       state = op[:state].downcase.to_sym 
       result[state] += op[:pct]
       result[:complete] += op[:pct] if END_STATES.include?(op[:state])
     }
-    result[:succeeded] += result.delete(:skipped).to_i
-    result.each { |k,v| result[k] = 100 if v > 100 }
+    result[:succeeded] += result.delete(:skipped) unless result[:skipped].nil?
+    result.each {|k,v| result[k] = result[k].round }
     result
   end
 
