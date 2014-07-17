@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -35,9 +35,9 @@ class AccessControlStep < Avalon::Workflow::BasicStep
       if context["submit_add_#{title}"].present?
         if context["add_#{title}"].present?
           if ["group", "class"].include? title
-            mediaobject.read_groups += [context["add_#{title}"]]
+            mediaobject.read_groups += [context["add_#{title}"].strip]
           else
-            mediaobject.read_users += [context["add_#{title}"]]
+            mediaobject.read_users += [context["add_#{title}"].strip]
           end
         else
           context[:error] = "#{title.titleize} can't be blank."

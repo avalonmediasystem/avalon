@@ -1,3 +1,17 @@
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+#   University.  Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+# 
+# You may obtain a copy of the License at
+# 
+# http://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software distributed 
+#   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   specific language governing permissions and limitations under the License.
+# ---  END LICENSE_HEADER BLOCK  ---
+
 require 'spec_helper'
 
 describe Users::OmniauthCallbacksController do
@@ -61,6 +75,25 @@ describe Users::OmniauthCallbacksController do
 
       it "should not be a full login" do
         expect(subject[:full_login]).to be_false
+      end
+    end
+
+    context 'redirect' do
+      subject { post '/users/auth/lti/callback', foo_hash }
+      let(:user_session) { Hash.new }
+      before :each do
+        Users::OmniauthCallbacksController.any_instance.stub(:user_session) { user_session }
+      end
+      it "should redirect to the external group facet applied for the lti group" do
+        expect(subject).to redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])
+      end
+      context 'when there are other external groups' do
+        before do
+          User.any_instance.stub(:ldap_groups) { [Faker::Lorem.word] }
+        end
+        it "should redirect to the external group facet applied for the lti group" do
+          expect(subject).to redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])
+        end
       end
     end
   end

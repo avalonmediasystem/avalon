@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -244,9 +244,14 @@ describe MediaObjectsController, type: :controller do
       login_user media_object.collection.managers.first
     end
     
-    it "should remove the MediaObject from the system" do
+    it "should remove the MediaObject and MasterFiles from the system" do
+      media_object.parts << FactoryGirl.create(:master_file)
+      master_file_pids = media_object.parts.select(&:id).map(&:id)
+      media_object.section_pid = master_file_pids
+      media_object.save( validate: false )
       delete :destroy, id: media_object.pid
       MediaObject.exists?(media_object.pid).should == false
+      MasterFile.exists?(master_file_pids.first).should == false
     end
 
     it "should not be accessible through the search interface" do

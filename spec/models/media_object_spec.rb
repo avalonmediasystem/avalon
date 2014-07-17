@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -267,7 +267,17 @@ describe MediaObject do
       media_object.parts << MasterFile.new(duration:nil)
       media_object.send(:calculate_duration).should == 0   
     end
+  end
 
+  describe '#destroy' do
+    it 'destroys related masterfiles' do
+      media_object.parts << FactoryGirl.create(:master_file)
+      master_file_pids = media_object.parts.select(&:id).map(&:id)
+      media_object.section_pid = master_file_pids
+      media_object.save( validate: false )
+      media_object.destroy
+      MasterFile.exists?(master_file_pids.first).should == false
+    end
   end
 
   describe '#populate_duration!' do

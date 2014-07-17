@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -55,14 +55,15 @@ class Admin::GroupsController < ApplicationController
   end
   
   def create
-    if Admin::Group.exists?(params["admin_group"])
-      flash[:error] = "Group name #{params["admin_group"]} is taken."
+    name = params['admin_group'].strip
+    if Admin::Group.exists?(name)
+      flash[:error] = "Group name #{name} is taken."
       redirect_to admin_groups_path
       return
     end
 
     @group = Admin::Group.new
-    @group.name = params["admin_group"]
+    @group.name = name
     if @group.save
       redirect_to edit_admin_group_path(@group)
     else
@@ -77,7 +78,7 @@ class Admin::GroupsController < ApplicationController
   def update
     #TODO: move RoleControls to Group model
     
-   new_user = params["new_user"]
+   new_user = params["new_user"].strip
    new_group_name = params["group_name"]
    
     @group = Admin::Group.find(params["id"])

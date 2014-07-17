@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -33,7 +33,6 @@ class ObjectController < ApplicationController
 
   def autocomplete
     model = Module.const_get(params[:t].to_s.classify)
-    query = params[:q]
-    render json: model.send(:autocomplete, query)
+    render json: model.send(:autocomplete, params[:q].strip)
   end
 end

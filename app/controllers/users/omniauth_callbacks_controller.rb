@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -67,7 +67,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     elsif session[:previous_url] 
       redirect_to session.delete :previous_url
     elsif auth_type == 'lti' && user_session[:virtual_groups].present?
-      redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => user_session[:virtual_groups].first)
+      redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])
     else
       redirect_to root_url
     end

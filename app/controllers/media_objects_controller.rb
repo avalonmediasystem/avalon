@@ -1,4 +1,4 @@
-# Copyright 2011-2013, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -114,7 +114,7 @@ class MediaObjectsController < ApplicationController
         [mf.pid, mf_status]
       }
     ]
-    overall.each { |k,v| overall[k] = [0,[100,v.to_f/@masterFiles.length.to_f].min].max.round }
+    overall.each { |k,v| overall[k] = [0,[100,v.to_f/@masterFiles.length.to_f].min].max.floor }
 
     if overall[:success]+overall[:error] > 100
       overall[:error] = 100-overall[:success]
@@ -137,13 +137,7 @@ class MediaObjectsController < ApplicationController
     media_object = MediaObject.find(params[:id])
     authorize! :destroy, media_object
     message = "#{media_object.title} (#{params[:id]}) has been successfuly deleted"
-
-    # attempt to stop the matterhorn processing job
-    media_object.parts.each(&:destroy)
-    media_object.parts.clear
-    
     media_object.destroy
-    
     redirect_to root_path, flash: { notice: message }
   end
 
