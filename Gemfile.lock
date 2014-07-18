@@ -360,6 +360,8 @@ GEM
     marc (0.8.1)
       ensure_valid_encoding
       unf
+    media-element-logo-plugin (0.0.1)
+      rails (~> 3.2.3)
     mediainfo (0.7.2)
     mediashelf-loggable (0.4.9)
     meta_request (0.3.0)
@@ -599,6 +601,7 @@ DEPENDENCIES
   letter_opener
   license_header
   loofah
+  media-element-logo-plugin
   media_element_thumbnail_selector!
   mediaelement-hd-toggle!
   mediaelement-qualityselector!
