@@ -77,7 +77,8 @@ Unless required by applicable law or agreed to in writing, software distributed
           title: '<%= @masterfile.label %>',
           titleLink: '<%= media_object_url(@masterfile.mediaobject) %>',
           logoAction: 'popup',
-          logoURL: '<%= media_object_url(@masterfile.mediaobject).html_safe %>'
+          logoURL: '<%= pid_section_media_object_url(@masterfile.mediaobject.pid, @masterfile.pid).html_safe %>',
+          logoTitle: 'View in repository'
         });
   </script>
 
