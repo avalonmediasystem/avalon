@@ -52,7 +52,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= stylesheet_link_tag "mediaelement-title/mejs-title" =%>
   <%= stylesheet_link_tag "me-logo" %>
 
-  <% features = ['playpause','current','progress','duration','volume','fullscreen','responsive', 'title','logo'] %>
+  <% features = ['playpause','current','progress','duration','volume','responsive', 'title'] %>
   
   <% if @masterfile.is_video? %>
     <% features << 'qualities' %>
@@ -62,6 +62,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% features << 'hdtoggle' %>
   <% end %>
 
+  <% features += ['logo', 'fullscreen'] %>
   <script>
     currentPlayer = new MediaElementPlayer('#video-tag', 
         { mode: 'auto_plugin',
