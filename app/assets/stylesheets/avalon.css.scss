@@ -186,6 +186,20 @@ tr.active-false td {
   margin-right:20px;
   padding-left: 0;
 }
+.navbar {
+  background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
+  background-repeat: repeat-x;
+  border: 1px solid $navbar-inverse-border;
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
+
+ .icon-bar {
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+ }
+}	
+.navbar-toggle {
+  background-color: #EDEDED;
+}
 
 /**
  * Until media-object works right in bootstrap add some custom overrides
