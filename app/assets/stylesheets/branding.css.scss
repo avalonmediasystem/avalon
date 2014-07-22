@@ -75,3 +75,8 @@ $constraint_border_color: scale-color($greenBG, $lightness: -20%);
 
 /* Change default breakpoint for the navigation bar */
 $navCollapseWidth: 650px;
+
+/* Bootstrap navbar styles */
+$navbar-inverse-color:                      #777;
+$navbar-inverse-bg:                         #F9F9F9;
+$navbar-inverse-border:                     #D4D4D4;
