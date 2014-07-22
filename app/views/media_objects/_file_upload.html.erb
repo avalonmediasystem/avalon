@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <% unless @masterFiles.empty? %>
-<section id="associated_files" class="span11">
+<section id="associated_files" class="col-md-11">
       <legend>Associated files</legend>
       <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
 <%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
@@ -39,12 +39,12 @@ Unless required by applicable law or agreed to in writing, software distributed
       
     <table class="table table-striped">
       <colgroup>
-        <col class="span1">
-        <col class="span4">
-        <col class="span4">
-        <col class="span1">
-        <col class="span4">
-        <col class="span1">
+        <col class="col-md-1">
+        <col class="col-md-4">
+        <col class="col-md-4">
+        <col class="col-md-1">
+        <col class="col-md-4">
+        <col class="col-md-1">
       </colgroup>
       
       <thead>
@@ -114,7 +114,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </section>
 <% end %>
 
-<section id="web_upload" class="span11">
+<section id="web_upload" class="col-md-11">
  <legend>Upload through the web</legend>
   <p class="muted">Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
 
@@ -167,7 +167,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </section>
 
-<section id="dropbox_upload" class="span11">
+<section id="dropbox_upload" class="col-md-11">
   <legend id="dropbox_modal_label">Import from a dropbox</legend>
   <p class="muted">Use the dropbox to import large files. Attach selected files after uploading. Files will be begin
  processing when you click Save and continue.</p>
@@ -176,7 +176,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render partial: 'dropbox' %>
 </section>
 
-<section id="workflow_buttons" class="span11">
+<section id="workflow_buttons" class="col-md-11">
 <%= bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
   <%= render "workflow_buttons", form: media %>
 <% end %>

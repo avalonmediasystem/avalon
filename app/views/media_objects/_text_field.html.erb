@@ -23,6 +23,6 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= render partial: "modules/tooltip", locals: { media: media, field: field, default_label: default_label, text_label: text_label, display_label: display_label, options: options } %>
 
     <div class="controls <% if options[:dynamic] %>dynamic<% end %>">
-      <%= media.text_field field, class: 'span8' %>
+      <%= media.text_field field, class: 'col-md-8' %>
     </div>
   </div>

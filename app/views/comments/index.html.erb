@@ -31,11 +31,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <%= bootstrap_form_for @comment, class: 'form-vertical' do |comment| %>
 <fieldset>
-      <%= comment.text_field :name, class: 'span4', label: 'Name' %>
-      <%= comment.email_field :email, class: 'span4', label: 'Email address' %>
-      <%= comment.email_field :email_confirmation, class: 'span4', label: 'Confirm email address' %> 
-      <%= comment.select :subject, @subjects, prompt: 'Select one',  class: 'span4' %>    
-      <%= comment.text_area :comment, rows: 10, class: 'span4' %>
+      <%= comment.text_field :name, class: 'col-md-4', label: 'Name' %>
+      <%= comment.email_field :email, class: 'col-md-4', label: 'Email address' %>
+      <%= comment.email_field :email_confirmation, class: 'col-md-4', label: 'Confirm email address' %> 
+      <%= comment.select :subject, @subjects, prompt: 'Select one',  class: 'col-md-4' %>    
+      <%= comment.text_area :comment, rows: 10, class: 'col-md-4' %>
       <%= comment.submit "Submit comments" %>
 </fieldset>
 <% end %>
