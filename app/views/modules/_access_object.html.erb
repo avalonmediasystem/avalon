@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-  <div class="span4 access-block" id="<%= access_object %>_management">
+  <div class="col-md-4 access-block" id="<%= access_object %>_management">
     
     <%# ----------- Title and tooltip ---------------------------------%>
     <p class="tooltip-help" data-title="<%= access_object.titleize %>" data-tooltip=<%="##{access_object}_tooltip"%>>
@@ -28,15 +28,15 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% if defined?(dropdown_values) && dropdown_values.present? %>
       <%= select_tag "add_#{access_object}", 
         options_from_collection_for_select(*dropdown_values), 
-        { include_blank: true, class: "span9", disabled: input_disabled}%>
+        { include_blank: true, class: "col-md-9", disabled: input_disabled}%>
     <% elsif defined?(autocomplete_model) && autocomplete_model.present? %>
       <%= hidden_field_tag "add_#{access_object}" %>
       <%= text_field_tag "add_#{access_object}_display", nil, 
-        class: "span10 typeahead from-model", 
+        class: "col-md-10 typeahead from-model", 
         data: { model: autocomplete_model, target: "add_#{access_object}" },
         disabled: input_disabled %>
     <% else %>
-      <%= text_field_tag "add_#{access_object}", nil, class: "span10",
+      <%= text_field_tag "add_#{access_object}", nil, class: "col-md-10",
         disabled: input_disabled  %>
     <% end %>
     <%= submit_tag "Add", name: "submit_add_#{access_object}",
