@@ -1273,8 +1273,11 @@ DEPENDENCIES
   active-fedora
   activerecord-jdbcsqlite3-adapter
   activerecord-session_store
+<<<<<<< HEAD
   activesupport (~> 4.0.3)
 >>>>>>> Update Gemfile
+=======
+>>>>>>> Fix failing tests
   avalon-about!
   avalon-batch!
 =======

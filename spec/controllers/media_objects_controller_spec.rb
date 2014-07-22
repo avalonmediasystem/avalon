@@ -115,9 +115,7 @@ describe MediaObjectsController, type: :controller do
             .to('newpermalink')
         end
         it "should persist new permalink on unpublished media_object part" do 
-          part1 = FactoryGirl.create(:master_file)
-          mo.parts << part1
-          mo.save( validate: false )
+          part1 = FactoryGirl.create(:master_file, mediaobject: mo)
           expect {put 'update', id: mo.pid, step: 'file-upload', 
                   parts: { part1.pid => { permalink: 'newpermalinkpart' }}}
             .to change { MasterFile.find(part1.pid).permalink }
@@ -134,9 +132,7 @@ describe MediaObjectsController, type: :controller do
             .to('newpermalink')
         end
         it "should persist updated permalink on published media_object part" do
-          part1 = FactoryGirl.create(:master_file, permalink: 'oldpermalinkpart1')
-          mo.parts << part1
-          mo.save( validate: false )
+          part1 = FactoryGirl.create(:master_file, permalink: 'oldpermalinkpart1', mediaobject: mo)
           expect { put 'update', id: mo.pid, step: 'file-upload', 
                    parts: { part1.pid => { permalink: 'newpermalinkpart' }}}
             .to change { MasterFile.find(part1.pid).permalink }
