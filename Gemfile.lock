@@ -612,7 +612,6 @@ DEPENDENCIES
   active-fedora
   activerecord-jdbcsqlite3-adapter
   activerecord-session_store
-  activesupport (~> 4.0.3)
   avalon-about!
   avalon-batch!
   avalon-workflow!

@@ -61,7 +61,7 @@ require 'avalon/dropbox'
     deleted_parts = []
     if not files.blank?
       files.each_pair do |pid,part|
-        selected_part = mediaobject.parts.find{|p| p.pid == pid}
+        selected_part = mediaobject.parts.to_a.find{|p| p.pid == pid}
 
         if selected_part
           if part[:remove]

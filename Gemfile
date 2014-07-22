@@ -8,7 +8,6 @@
 
   gem 'hydra', '~>7.0'
   gem 'active-fedora'
-  gem 'activesupport', '~> 4.0.3'
   gem 'activerecord-session_store'
   gem 'bcrypt-ruby', '~> 3.0.0'
   gem 'kaminari', '~> 0.15.0'
