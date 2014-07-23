@@ -13,15 +13,15 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
- <div class="col-md-12">
+ <div class="navbar-right">
   <%= form_tag catalog_index_path, :method => :get, :class => 'search-query-form form-search' do %>
     <%= render_hash_as_hidden_fields(params_for_search.except(:q, :search_field, :qt, :page)).html_safe %> 
 
 	<%= hidden_field_tag "search_field", "all_fields" %>
     <div>
-      <%= text_field_tag :q, params[:q], class: "search_q q", 
+      <%= text_field_tag :q, params[:q], class: "search-query q", placeholder: "Search",  
         id: "appendedInputButtons" %>
-      <button type="submit" class="btn btn-primary">
+      <button type="submit" class="btn btn-primary hidden">
         <span class="submit-search-text">Search</span>
         <i class="icon-search icon-white"></i>
       </button>
