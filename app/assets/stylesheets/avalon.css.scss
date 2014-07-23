@@ -170,22 +170,12 @@ tr.active-false td {
 /**
  *  Overridding Blacklight's brand logo
  */
-.navbar .brand {
-  height: $navbar-height;
-  padding: 0 $grid-gutter-width;
-  /**
-   *  Copied in from blacklight due to this commit https://github.com/projectblacklight/blacklight/commit/43b49ede7072b95cd2f9d1e09cd8e5312670c7b1
-   */
-  width: 87px;
-  background:transparent asset_url($logo_image) no-repeat top left;
-  display: inline-block;
-  text-indent: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  padding-right:0;
-  margin-right:20px;
-  padding-left: 0;
+#header-navbar .navbar-brand {
+  @media (min-width: $grid-float-breakpoint) {
+    display: none;
+  }
 }
+
 .navbar {
   background-image: linear-gradient(to bottom, #ffffff, #f2f2f2);
   background-repeat: repeat-x;
@@ -199,6 +189,9 @@ tr.active-false td {
 }	
 .navbar-toggle {
   background-color: #EDEDED;
+}
+.navbar-right {
+  padding: 8px 0;
 }
 
 /**
@@ -396,6 +389,38 @@ header div, .logo {
 
 .navbar-inner {
   padding-right: 12px;
+}
+
+.nav > li.desktop-hidden{
+  @media (min-width: $grid-float-breakpoint) {
+    display: none;
+  }
+}
+
+.container {
+  width: 100%;
+}
+
+.search-query-form .search-query {
+    border-radius: 15px;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 1;
+    margin-bottom: 0;
+    padding: 4px 14px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+    height: 33px;
+    vertical-align: middle;
+}
+
+.desktop-hidden{
+  @media (min-width: $grid-float-breakpoint) {
+    display: none;
+  }
 }
 
 /* Sidebar */
