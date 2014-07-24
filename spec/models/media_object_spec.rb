@@ -113,19 +113,19 @@ describe MediaObject do
       it "should not be able to read unauthorized, published MediaObject" do
         media_object.avalon_publisher = "random"
         media_object.save
-        subject.cannot(:read, media_object).should be_true
+        subject.can?(:read, media_object).should be false
       end
 
       it "should not be able to read authorized, unpublished MediaObject" do
         media_object.read_users += [user.user_key]
         media_object.should_not be_published
-        subject.cannot(:read, media_object).should be_true
+        subject.can?(:read, media_object).should be false
       end
 
       it "should be able to read authorized, published MediaObject" do
         media_object.read_users += [user.user_key]
         media_object.publish! "random"
-        subject.can(:read, media_object).should be_true
+        subject.can?(:read, media_object).should be true
       end
     end
 
@@ -240,12 +240,12 @@ describe MediaObject do
     it 'returns true if the statuses indicate processing is finished' do
       media_object.parts << MasterFile.new(status_code: ['STOPPED'])
       media_object.parts << MasterFile.new(status_code: ['SUCCEEDED'])
-      media_object.finished_processing?.should be_true
+      media_object.finished_processing?.should be true
     end
     it 'returns true if the statuses indicate processing is not finished' do
       media_object.parts << MasterFile.new(status_code: ['STOPPED'])
       media_object.parts << MasterFile.new(status_code: ['RUNNING'])
-      media_object.finished_processing?.should be_false
+      media_object.finished_processing?.should be false
     end
   end
 
@@ -325,7 +325,7 @@ describe MediaObject do
       before(:each){ media_object.publish!('C.S. Lewis') } # saves the object
 
       it 'responds to permalink' do
-        media_object.respond_to?(:permalink).should be_true
+        media_object.respond_to?(:permalink).should be true
       end
 
       it 'sets the permalink on the object' do

@@ -106,15 +106,15 @@ describe MasterFile do
       let(:master_file){ MasterFile.new }
       it 'returns true for stopped' do
         master_file.status_code = ['STOPPED']
-        master_file.finished_processing?.should be_true
+        master_file.finished_processing?.should be true
       end
       it 'returns true for succeeded' do
         master_file.status_code = ['SUCCEEDED']
-        master_file.finished_processing?.should be_true
+        master_file.finished_processing?.should be true
       end
       it 'returns true for failed' do
         master_file.status_code = ['FAILED']
-        master_file.finished_processing?.should be_true
+        master_file.finished_processing?.should be true
       end
     end
   end
