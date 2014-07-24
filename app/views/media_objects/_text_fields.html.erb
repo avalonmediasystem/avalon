@@ -28,7 +28,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="controls <% if options[:dynamic] %>dynamic<% end %> <% if @mediaobject.errors.keys.include?(field.to_sym) %> error <% end %>" data-inputs="<%= count %>">
       <% count.times do |i| %>
         <% contents = values[i] || '' %>
-        <%= text_field_tag "media_object[#{default_label}][]", contents, class: 'col-md-8' %>
+        <%= text_field_tag "media_object[#{default_label}][]", contents %>
       <% end %>
     </div>
   </div>
