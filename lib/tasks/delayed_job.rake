@@ -31,7 +31,7 @@ namespace :delayed_job do
   end
 
   desc "Reloads Avalon's delayed_job worker"
-  task :restart => :environment do
+  task :reload => :environment do
     Delayed::Command.new(["reload"]).daemonize
   end
 
