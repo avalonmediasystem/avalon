@@ -74,7 +74,7 @@ describe Users::OmniauthCallbacksController do
       end
 
       it "should not be a full login" do
-        expect(subject[:full_login]).to be_false
+        expect(subject[:full_login]).to be_falsey
       end
     end
 

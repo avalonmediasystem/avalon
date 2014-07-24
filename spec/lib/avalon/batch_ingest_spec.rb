@@ -71,7 +71,7 @@ describe Avalon::Batch::Ingest do
     it 'should skip the corrupt manifest' do
       lambda { batch_ingest.ingest }.should_not raise_error
       error_file = File.join(@dropbox_dir,'example_batch_ingest','bad_manifest.xlsx.error')
-      File.exists?(error_file).should be_true
+      File.exists?(error_file).should be true
       File.read(error_file).should =~ /^Invalid manifest/
     end
     

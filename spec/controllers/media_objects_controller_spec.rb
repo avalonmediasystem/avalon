@@ -270,7 +270,7 @@ describe MediaObjectsController, type: :controller do
     it 'publishes media object' do
       get 'update_status', :id => media_object.pid, :status => 'publish'
       mo = MediaObject.find(media_object.pid)
-      mo.published?.should be_true
+      mo.published?.should be true
       mo.permalink.should be_present
     end
 
