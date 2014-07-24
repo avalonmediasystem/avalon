@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= @mediaobject.title || @mediaobject.pid %> - <%= HYDRANT_STEPS.get_step(@active_step).title %>
 <% end %>
 
-<div class="row-fluid">
+<div class="row">
   <div class="col-sm-2" id="left_column">
     <%= render "ingest_steps" %>
     <%= render "remove_item" %>

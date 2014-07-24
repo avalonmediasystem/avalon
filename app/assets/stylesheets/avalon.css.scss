@@ -141,6 +141,9 @@ tr.active-false td {
     a:hover {
       background: transparent;
     }
+    p {
+      margin-left: 1em;
+    }
   } 
 
   li.nav-success {
@@ -327,6 +330,14 @@ label {
 .row-no-margin {
   @extend .row;
   margin-left: 0px;
+}
+
+.item-access label {
+  display: block;
+}
+
+.form-horizontal label {
+  font-weight: normal;
 }
 
 .access-block {
