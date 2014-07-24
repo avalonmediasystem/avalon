@@ -278,7 +278,7 @@ describe MediaObjectsController, type: :controller do
       media_object.avalon_publisher = media_object.collection.managers.first
       media_object.save
       get 'update_status', :id => media_object.pid, :status => 'unpublish' 
-      MediaObject.find(media_object.pid).published?.should be_false
+      MediaObject.find(media_object.pid).published?.should be false
     end
   end
 

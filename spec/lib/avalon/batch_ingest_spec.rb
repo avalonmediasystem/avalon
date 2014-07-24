@@ -239,16 +239,16 @@ describe Avalon::Batch::Ingest do
   end
 
   describe "#offset_valid?" do
-    it {expect(Avalon::Batch::Entry.offset_valid?("33.12345")).to be_true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("21:33.12345")).to be_true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("125:21:33.12345")).to be_true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("63.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("66:33.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(".12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":33.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":66:33.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("5:000")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("`5.000")).to be_false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("33.12345")).to be true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("21:33.12345")).to be true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("125:21:33.12345")).to be true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("63.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("66:33.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(".12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":33.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":66:33.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("5:000")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("`5.000")).to be false}
   end
 end
