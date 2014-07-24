@@ -642,7 +642,15 @@ button.close {
   &.error {
     input:first-child{ border-color: $state-danger-text; }
   }
-  .field_with_errors input { border-color: $state-danger-text; }
+  .field_with_errors input { border-color: $state-danger-text;} 
+  input, textarea{
+    @extend .col-md-8;
+    float: none;
+    margin-bottom: 10px;
+  }
+  label {
+    display: block;
+  }
 }
 
 .dl-horizontal dl {
