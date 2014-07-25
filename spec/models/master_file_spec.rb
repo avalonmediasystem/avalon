@@ -130,7 +130,7 @@ describe MasterFile do
     end
 
     it "should delete with a nil parent (VOV-1357)" do
-      pending "bugfix"      
+      skip "bugfix"      
       masterfile.mediaobject = nil
       masterfile.save
       expect { masterfile.delete }.to change { MasterFile.all.count }.by(-1)

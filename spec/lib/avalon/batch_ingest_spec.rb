@@ -231,11 +231,11 @@ describe Avalon::Batch::Ingest do
   end
 
   it "should be able to default to public access" do
-    pending "[VOV-1348] Wait until implemented"
+    skip "[VOV-1348] Wait until implemented"
   end
 
   it "should be able to default to specific groups" do
-    pending "[VOV-1348] Wait until implemented"
+    skip "[VOV-1348] Wait until implemented"
   end
 
   describe "#offset_valid?" do
