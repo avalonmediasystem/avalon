@@ -155,12 +155,13 @@ describe MediaObject do
   describe "Unknown metadata generates error" do
     it "should have an error on an unknown attribute" do
       media_object.update_attribute_in_metadata :foo, 'bar'
-      media_object.should have(1).errors_on(:foo)
+      media_object.valid?
+      expect(media_object.errors[:foo].size).to eq(1)
     end
   end
 
   describe "Field persistence" do
-    pending "setters should work"
+    skip "setters should work"
     xit "should reject unknown fields"
     xit "should update the contributors field" do
       contributor =  'Nathan Rogers'
@@ -380,13 +381,13 @@ describe MediaObject do
 
     describe '#ensure_permalink!' do
       it 'returns true when updated' do
-        media_object.should_receive(:ensure_permalink!).at_least(1).times.and_return{ true }
+        media_object.should_receive(:ensure_permalink!).at_least(1).times.and_return(false)
         media_object.publish!('C.S. Lewis')
       end 
 
       it 'returns false when not updated' do
         media_object.publish!('C.S. Lewis')
-        media_object.should_receive(:ensure_permalink!).and_return{ false }
+        media_object.should_receive(:ensure_permalink!).and_return(false)
         media_object.save( validate: false )
       end
     end

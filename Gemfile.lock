@@ -1055,8 +1055,14 @@ GEM
       diff-lcs (>= 1.1.3, < 2.0)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> CSS changes and jquery update
+=======
+    rspec-its (1.0.1)
+      rspec-core (>= 2.99.0.beta1)
+      rspec-expectations (>= 2.99.0.beta1)
+>>>>>>> deprecation fixing
     rspec-mocks (2.99.2)
     rspec-rails (2.99.0)
 =======
@@ -1398,6 +1404,7 @@ DEPENDENCIES
   rb-fsevent (~> 0.9.1)
   red5wrapper!
   roo!
+  rspec-its
   rspec-rails (~> 2.9)
   rspec_junit_formatter
   ruby-duration

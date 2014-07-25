@@ -96,7 +96,7 @@ describe ApplicationHelper do
   describe "#git_commit_info" do
     it "should return commit info in specified pattern" do
       #expect(helper.git_commit_info()).to eq("x")
-      pending "Grit gem is abandoned and thowing errors. Replace with libgit2/rugged"
+      skip "Grit gem is abandoned and thowing errors. Replace with libgit2/rugged"
 
     end
   end

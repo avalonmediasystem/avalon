@@ -37,7 +37,7 @@ describe MediaObjectsController, type: :controller do
     end
 
     it "should not let manager of other collections create an item in this collection" do
-      pending
+      skip
     end
 
     context "Default permissions should be applied" do
@@ -86,7 +86,7 @@ describe MediaObjectsController, type: :controller do
      end
     
     it "should not default to the Access Control page" do
-      pending "[VOV-1165] Wait for product owner feedback on which step to default to"
+      skip "[VOV-1165] Wait for product owner feedback on which step to default to"
     end
 
     context "Updating the metadata should result in valid input" do
@@ -251,14 +251,13 @@ describe MediaObjectsController, type: :controller do
     end
 
     it "should not be accessible through the search interface" do
-      delete :destroy, id: media_object.pid
-      pending "Figure out how to make the right query against Solr"
+      skip "Figure out how to make the right query against Solr"
     end
 
     # This test may need to be more robust to catch errors but is just a first cut
     # for the time being
     it "should not be possible to delete an object which does not exist" do
-      pending "Fix access controls to stop throwing exception"
+      skip "Fix access controls to stop throwing exception"
       delete :destroy, id: 'avalon:this-pid-is-fake'
       response.should redirect_to root_path
     end
