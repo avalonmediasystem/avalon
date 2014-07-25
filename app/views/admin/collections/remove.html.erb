@@ -14,17 +14,17 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% 
-  item_count = "#{@objects.length} #{'item'.pluralize(@objects.length)}" 
-  content_pronoun = @objects.length > 1 ? 'them' : 'it'
+  item_count = "#{@objects.count} #{'item'.pluralize(@objects.count)}" 
+  content_pronoun = @objects.count > 1 ? 'them' : 'it'
 %>
-<% if @collection.media_objects.length == 0 or @candidates.length > 0 %>
+<% if @collection.media_objects.count == 0 or @candidates.count > 0 %>
   <div class="row-fluid">
     <div class="alert alert-error">
       Are you certain you want to remove the collection <b><%=@collection.name%></b>?
     </div>
   </div>
   <%= bootstrap_form_for @collection, method: :delete do |f| %>
-    <% if @objects.length > 0 %>
+    <% if @objects.count > 0 %>
       <div class="row-fluid">
         <div class="alert">
         <fieldset>
