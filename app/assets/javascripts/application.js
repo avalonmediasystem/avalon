@@ -65,6 +65,7 @@
  * etc) 
  */
 //= require avalon
+//= require file_browse
 //= require pop_help
 //= require access_autocomplete
 //= require_self
