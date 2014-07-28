@@ -64,8 +64,8 @@ namespace :avalon do
       password = ENV['avalon_password']
       groups = ENV['avalon_groups'].split(",")
      
-      Identity.create(email: username, password: password)
-      User.create(username: username)
+      Identity.create!(email: username, password: password, password_confirmation: password)
+      User.create!(username: username, email: username)
       groups.each do |group|
         RoleControls.add_role(group) unless RoleControls.role_exists? group
         RoleControls.add_user_role(username, group)
