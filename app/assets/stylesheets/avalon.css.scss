@@ -373,7 +373,7 @@ label {
 }
 
 .access-block {
-  padding-bottom: 4px;
+  padding: 0 0 0 4px;
   input[type=text] {
     @extend .span9;
   }
@@ -734,7 +734,6 @@ button.close {
   }
 }
 
-<<<<<<< HEAD
 .ev-browser {
   background-color: white;
 }
@@ -742,33 +741,30 @@ button.close {
 .remove:hover, .remove:active {
   @extend .btn-danger;
 }
-=======
+
 /**
  * Twitter-typeahead classes
  */
+
+.twitter-typeahead {
+    width: 80%;
+}
 .tt-suggestions {
     border-radius: 4px;
-    margin-top: 2px 0 0;
+    margin: 2px 0 0 0;
     z-index: 1051;
-    background-clip: padding-box;
     background-color: #fff;
     border: 1px solid rgba(0, 0, 0, 0.2);
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-    display: none;
-    float: left;
-    left: 0;
-    list-style: none outside none;
     min-width: 160px;
-    padding: 5px 0;
     position: absolute;
 }
 .tt-suggestion {
     clear: both;
     color: #333;
     display: block;
-    font-weight: normal;
     line-height: 20px;
-    padding: 3px;
+    padding: 3px 6px;
     white-space: nowrap;
 }
 .tt-suggestion p {
@@ -783,4 +779,28 @@ button.close {
     outline: 0 none;
     text-decoration: none;
 }
->>>>>>> Change from bootstrap.typeahead to twitter.typeahead
+.tt-input, .tt-hint {
+    width: 95%;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+    border-radius: 4px;
+    color: #333;
+    line-height: 20px;
+    padding: 4px 6px;
+}
+.tt-input {
+    position:relative;
+    z-index: 1051;
+}
+.tt-hint {
+    position:absolute;
+    z-index: 1050;
+    color:#BBB;
+}
+.tt-input:focus {
+    border-color: rgba(82, 168, 236, 0.8);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+    outline: 0 none;
+}
