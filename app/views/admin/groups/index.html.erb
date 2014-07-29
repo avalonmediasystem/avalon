@@ -44,7 +44,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <%= form_tag(admin_groups_path) do -%>
     <%= text_field_tag 'admin_group', nil, :placeholder => 'Enter group name here...' %> 
-    <%= submit_tag 'Create Group', class: "btn" %>
+    <%= button_tag 'Create Group', type: "submit", class: "btn btn-default" %>
   <% end -%>
 
   <%= form_tag update_multiple_admin_groups_path, method: :put do %>

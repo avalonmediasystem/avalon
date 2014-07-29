@@ -700,3 +700,7 @@ button.close {
 .ev-browser {
   background-color: white;
 }
+
+.remove:hover, .remove:active {
+  @extend .btn-danger;
+}
