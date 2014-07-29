@@ -19,6 +19,21 @@
 //@import "bootstrap-responsive";
 
 /**
+ * Snippets to extend
+ */ 
+.mobile-hidden {
+ @media (max-width: $screen-sm-min) {
+    display: none;
+  }
+}
+
+.desktop-hidden {
+  @media (min-width: $screen-sm-min) {
+    display: none;
+  }
+}
+
+/**
  * Override the default behaviour in Bootstrap so that the container is not 
  * pushed down the page
  */
@@ -174,8 +189,11 @@ tr.active-false td {
  *  Overridding Blacklight's brand logo
  */
 #header-navbar .navbar-brand {
-  @media (min-width: $grid-float-breakpoint) {
-    display: none;
+  @extend .desktop-hidden;
+  padding: 0px 10px;
+  height: 35px;
+  #container {
+    padding-left: 30px;
   }
 }
 
@@ -185,16 +203,32 @@ tr.active-false td {
   border: 1px solid $navbar-inverse-border;
   border-radius: 4px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
-
- .icon-bar {
+  margin: 10px 15px;
+  min-height: 0px; 
+  
+  .icon-bar {
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
- }
+  }
+}
+
+.navbar-nav {
+  li {
+    a {
+      padding: 7px 10px;
+    }
+  } 
 }	
+
 .navbar-toggle {
   background-color: #EDEDED;
+  padding: 7px 10px;
+  margin: 5px 10px;
 }
 .navbar-right {
-  padding: 8px 0;
+  padding: 5px 0;
+}
+.navbar-header {
+  height: 25px;
 }
 
 /**
@@ -329,7 +363,7 @@ label {
 
 .row-no-margin {
   @extend .row;
-  margin-left: 0px;
+  margin: 0;
 }
 
 .item-access label {
@@ -381,12 +415,15 @@ input[type="text"]#admin_group {
 .custom-header {
   background-color: #e9e9e9;
   color: #333;
-  margin-bottom: 1.2em;
+  margin-bottom: 0em;
   font-size: .8em;
+  @extend .mobile-hidden;
 }
 
-header div, .logo {
-  padding-top: 1em;
+
+header div{
+  padding: 1em;
+  @extend .mobile-hidden;
 }
 
 .log-in-out a {
@@ -424,7 +461,7 @@ header div, .logo {
     border: 1px solid #ccc;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
     transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
-    height: 33px;
+    height: 25px;
     vertical-align: middle;
 }
 
@@ -436,13 +473,17 @@ header div, .logo {
 
 /* Sidebar */
 
-.sidenav a {
-  color: $gray-dark;
-}
-
-.sidenav h4 {
-  background-color: $sidenavHeaderBackgroundColor;
-  @include border-top-radius(6px);
+.sidenav { 
+  a {
+    color: $gray-dark;
+  }
+  h4 {
+    background-color: $sidenavHeaderBackgroundColor;
+    @include border-top-radius(6px);
+  }
+  h5 {
+    font-weight: bold;
+  }
 }
 
 .badge {
@@ -469,6 +510,7 @@ footer a {
 }
 
 footer ul {
+  margin: 10px;
   float: left;
   @media all and (max-width: 475px) { 
     float: none;
@@ -600,17 +642,18 @@ span.constraints-label {
  */
 #facets .collapse,
 .facet_limit .collapse {
-  padding-top: 0;
-  padding-bottom: 0;
   margin-top: 0;
   margin-bottom:0 ;
   height: 0;
   @include transition(all 0.35s ease);
 
   &.in {
-    padding-top: 0.5em;
-    padding-bottom: 1em;
+    padding: 0.5em 0em 1em 0em;
     height: auto;
+  }
+  
+  li {
+    padding-right: 0px;
   }
 }
 
@@ -626,16 +669,6 @@ h2.muted {
 
 button.close {
   display: block;
-}
-
-/**
- * Set the breakpoint for hiding the header based on the responsive point
- * where the navbar collapses
- */
-@media (max-width: $grid-float-breakpoint-max) {
-  .custom-header .container-fluid {
-    display: none;
-  }
 }
 
 .control-group .controls {
