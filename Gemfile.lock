@@ -137,22 +137,6 @@ GIT
       actionpack (~> 3)
       railties (~> 3)
 
-GIT
-  remote: https://github.com/projecthydra/browse-everything.git
-  revision: 6f749be69319e50c3273e4eb285d59205933962e
-  branch: feature/postback-context
-  specs:
-    browse-everything (0.4.5)
-      bootstrap-sass
-      dropbox-sdk (>= 1.6.2)
-      font-awesome-rails
-      google-api-client
-      google_drive
-      rails (>= 3.1)
-      ruby-box
-      sass-rails
-      skydrive
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -215,6 +199,16 @@ GEM
       activesupport (>= 2.0)
     bootstrap-sass (2.3.2.2)
       sass (~> 3.2)
+    browse-everything (0.5.2)
+      bootstrap-sass
+      dropbox-sdk (>= 1.6.2)
+      font-awesome-rails
+      google-api-client
+      google_drive
+      rails (>= 3.1)
+      ruby-box
+      sass-rails
+      skydrive
     builder (3.0.4)
     callsite (0.0.11)
     cancan (1.6.10)
@@ -645,7 +639,7 @@ DEPENDENCIES
   avalon-batch!
   avalon-workflow!
   bcrypt-ruby (~> 3.0.0)
-  browse-everything!
+  browse-everything (>= 0.5.2)
   builder (~> 3.0.0)
   capistrano (~> 2.12.0)
   capybara
