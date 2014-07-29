@@ -39,8 +39,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= text_field_tag "add_#{access_object}", nil, class: "col-md-10",
         disabled: input_disabled  %>
     <% end %>
-    <%= submit_tag "Add", name: "submit_add_#{access_object}",
-        disabled: input_disabled %>
+    <%= button_tag "Add", name: "submit_add_#{access_object}", type: "submit",
+          class: "btn btn-default", disabled: input_disabled %>
     <%#----------- Access item list --------------- %>
     <table class="table table-striped table-hover" style="margin-top:6px;">
       <% unless members.empty? %>
@@ -58,11 +58,11 @@ Unless required by applicable law or agreed to in writing, software distributed
           </td>
           <% if !input_disabled %>
           <td>
-            <%= link_to "×", 
+            <%= link_to "×",
               polymorphic_path(object, 
                 "remove_#{access_object}".to_sym => member_object, 
-                step: @active_step, donot_advance: true),
-              method: :put, class: "close" %>
+                step: @active_step, donot_advance: true), method: "put",
+              class: "btn btn-sm close remove" %>
           </td>
           <% end %>
         </tr>

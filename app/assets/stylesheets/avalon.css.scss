@@ -707,3 +707,7 @@ button.close {
     margin-left: -15px;
   }
 }
+
+.remove:hover, .remove:active {
+  @extend .btn-danger;
+}
