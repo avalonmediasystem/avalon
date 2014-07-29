@@ -375,11 +375,23 @@ label {
 .access-block {
   padding: 0 0 0 4px;
   input[type=text] {
-    @extend .span9;
+    padding: 4px 6px;
+    width:100%;
   }
   input[type=submit] {
-    @extend .span3;
     @extend .btn;
+  }
+  select {
+    @extend .col-md-9;
+    min-height:30px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+  }
+  button {
+    padding: 4px 12px;
   }
 }
 
@@ -754,7 +766,8 @@ button.close {
  */
 
 .twitter-typeahead {
-    width: 80%;
+    @extend .col-md-9;
+    padding: 0;
 }
 .tt-suggestions {
     border-radius: 4px;
@@ -787,7 +800,6 @@ button.close {
     text-decoration: none;
 }
 .tt-input, .tt-hint {
-    width: 95%;
     background-color: #fff;
     border: 1px solid #ccc;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
@@ -795,7 +807,6 @@ button.close {
     border-radius: 4px;
     color: #333;
     line-height: 20px;
-    padding: 4px 6px;
 }
 .tt-input {
     position:relative;
