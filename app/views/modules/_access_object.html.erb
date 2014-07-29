@@ -40,7 +40,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         disabled: input_disabled  %>
     <% end %>
     <%= button_tag "Add", name: "submit_add_#{access_object}", type: "submit",
-          class: "btn btn-default", disabled: input_disabled %>
+        class: "btn btn-default", disabled: input_disabled, value: "Add" %>
     <%#----------- Access item list --------------- %>
     <table class="table table-striped table-hover" style="margin-top:6px;">
       <% unless members.empty? %>
