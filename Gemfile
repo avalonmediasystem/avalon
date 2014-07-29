@@ -25,7 +25,7 @@
 
   gem 'multipart-post'  
   gem 'modal_logic'
-
+  
   gem 'rubyzip', '0.9.9'
   gem 'hooks'
 
@@ -112,6 +112,7 @@
     gem 'mime-types', ">=1.1"
     gem "headless"
     gem "rspec_junit_formatter"
+    gem 'rspec-its'
     gem 'simplecov'
     gem 'email_spec'
     gem 'capybara'

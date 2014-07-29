@@ -136,11 +136,11 @@ Unless required by applicable law or agreed to in writing, software distributed
             </div>
             <%= button_tag "Upload", name: "upload_file", class: "btn btn-primary fileupload-exists" %>
             <span class="btn btn-file">
-              <span class="fileupload-new">Select</span>
-              <span class="fileupload-exists">Change</span>
+              <span class="btn btn-default fileupload-new">Select</span>
+              <span class="btn btn-default fileupload-exists">Change</span>
               <%= file_field_tag "", field_tag_options %>
             </span>
-            <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+            <a href="#" class="btn btn-default fileupload-exists" data-dismiss="fileupload">Remove</a>
             <span class="checkbox inline fileupload-exists">
               <%# FIXME the style on the checkbox should be handled by css classes but it is getting bad values from bootstrap responsive %>
               <%= check_box_tag(:workflow, 'skip_transcoding', false, 
@@ -171,7 +171,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <legend id="dropbox_modal_label">Import from a dropbox</legend>
   <p class="muted">Use the dropbox to import large files. Attach selected files after uploading. Files will be begin
  processing when you click Save and continue.</p>
-  <p><a class="btn dropbox-trigger" href="#">Open Dropbox</a></p>
+  <p><a class="btn btn-default dropbox-trigger" href="#">Open Dropbox</a></p>
   <%= render partial: "dropbox_details" %>
   <%= render partial: 'dropbox' %>
 </section>

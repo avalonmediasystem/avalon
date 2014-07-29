@@ -708,6 +708,10 @@ button.close {
   }
 }
 
+.remove:hover, .remove:active {
+  @extend .btn-danger;
+}
+
 /**
  * Twitter-typeahead classes
  */
@@ -748,3 +752,5 @@ button.close {
     outline: 0 none;
     text-decoration: none;
 }
+
+

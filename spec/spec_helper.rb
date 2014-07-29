@@ -56,6 +56,8 @@ RSpec.configure do |config|
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
 
+  config.infer_spec_type_from_file_location!
+
   config.before(:suite) do
     DatabaseCleaner[:active_record].strategy = :deletion
     DatabaseCleaner[:active_fedora].strategy = :deletion

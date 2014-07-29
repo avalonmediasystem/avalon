@@ -74,7 +74,7 @@ describe 'NotificationsMailer' do
       end
 
       it 'has dropbox absolute path' do
-        pending
+        skip
       end
     end
    end
@@ -121,7 +121,7 @@ describe 'NotificationsMailer' do
       end
 
       it 'has dropbox absolute path' do
-        pending
+        skip
       end
     end
   end
