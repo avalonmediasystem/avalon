@@ -190,11 +190,9 @@ tr.active-false td {
  */
 #header-navbar .navbar-brand {
   @extend .desktop-hidden;
-  padding: 0px 10px;
+  padding: 0px 0px;
   height: 35px;
-  #container {
-    padding-left: 30px;
-  }
+  margin-left: 0px;
 }
 
 .navbar {
@@ -462,6 +460,7 @@ header div{
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
     transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
     height: 25px;
+    width: 300px;
     vertical-align: middle;
 }
 
@@ -505,13 +504,18 @@ header div{
 
 /* Footer */
 
+footer {
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
 footer a {
   color: #333;
 }
 
 footer ul {
-  margin: 10px;
   float: left;
+  margin-left: -40px;
   @media all and (max-width: 475px) { 
     float: none;
   }
