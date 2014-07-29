@@ -59,6 +59,8 @@
 
 //= require browse_everything
 
+/* bootstrap 3 eliminated typeahead. use twitter-typeahead-rails instead */
+//= require twitter/typeahead
 
 /*
  * Place any local overrides in avalon.js (for Blacklight, Hydra, jQuery,

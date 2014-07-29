@@ -1235,6 +1235,7 @@ GEM
       polyglot (>= 0.3.1)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     tzinfo (0.3.40)
     uber (0.0.7)
     uglifier (2.5.3)
@@ -1252,6 +1253,12 @@ GEM
 =======
 >>>>>>> Bump hydra-head to 7.0
 =======
+=======
+    twitter-typeahead-rails (0.10.2)
+      actionpack (>= 3.1)
+      jquery-rails
+      railties (>= 3.1)
+>>>>>>> Change from bootstrap.typeahead to twitter.typeahead
     tzinfo (0.3.40)
     uber (0.0.7)
     uglifier (2.5.3)
@@ -1429,6 +1436,7 @@ DEPENDENCIES
   sqlite3
   therubyracer (>= 0.12.0)
   therubyrhino
+  twitter-typeahead-rails
   uglifier (>= 1.0.3)
   validates_email_format_of
   whenever

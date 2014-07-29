@@ -70,4 +70,4 @@
 */
 //Blacklight.do_facet_expand_contract_behavior.selector = '.facets h5';
 // Use a bogus ID here instead of nil or the function will go down in flames
-Blacklight.do_facet_expand_contract_behavior.selector = '#nosuchid';
+// Blacklight.do_facet_expand_contract_behavior.selector = '#nosuchid';
