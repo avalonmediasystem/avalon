@@ -19,7 +19,7 @@
  * Rails and causes it to redirect to the wrong place. */
 Blacklight.do_search_context_behavior = function() {}
 
-$('.btn-stateful-loading').live('click', function() { $(this).button('loading'); });    
+    $( document ).on('click', '.btn-stateful-loading', function() { $(this).button('loading'); });    
 
 $('.popover-target').popover({
   placement: 'top',

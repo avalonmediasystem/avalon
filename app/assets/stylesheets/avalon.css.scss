@@ -707,3 +707,44 @@ button.close {
     margin-left: -15px;
   }
 }
+
+/**
+ * Twitter-typeahead classes
+ */
+.tt-suggestions {
+    border-radius: 4px;
+    margin-top: 2px 0 0;
+    z-index: 1051;
+    background-clip: padding-box;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    display: none;
+    float: left;
+    left: 0;
+    list-style: none outside none;
+    min-width: 160px;
+    padding: 5px 0;
+    position: absolute;
+}
+.tt-suggestion {
+    clear: both;
+    color: #333;
+    display: block;
+    font-weight: normal;
+    line-height: 20px;
+    padding: 3px;
+    white-space: nowrap;
+}
+.tt-suggestion p {
+    padding: 0;
+    margin: 0;
+}
+.tt-cursor {
+    background-color: #264d52;
+    background-image: linear-gradient(to bottom, #2a5459, #224448);
+    background-repeat: repeat-x;
+    color: #fff;
+    outline: 0 none;
+    text-decoration: none;
+}

@@ -84,6 +84,7 @@
     gem 'font-awesome-sass-rails'
     gem 'bootstrap_form'
     gem 'handlebars_assets'
+    gem 'twitter-typeahead-rails'
   end
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
