@@ -374,14 +374,7 @@ label {
 
 .access-block {
   padding: 0 0 0 4px;
-  input[type=text] {
-    padding: 4px 6px;
-    width:100%;
-  }
-  input[type=submit] {
-    @extend .btn;
-  }
-  select {
+  input, select {
     @extend .col-md-9;
     min-height:30px;
     padding: 4px 6px;
@@ -390,8 +383,65 @@ label {
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
     transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
   }
+  input[type=text] {
+    padding: 4px 6px;
+    width:100%;
+  }
+  input[type=submit] {
+    @extend .btn;
+  }
   button {
     padding: 4px 12px;
+  }
+
+  // Twitter-typeahead classes
+  .twitter-typeahead {
+    @extend .col-md-9;
+    padding: 0;
+  }
+  .tt-input {
+    position:relative;
+    z-index: 1051;
+  }
+  .tt-input:focus {
+    border-color: rgba(82, 168, 236, 0.8);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+    outline: 0 none;
+  }
+  .tt-hint {
+    position:absolute;
+    z-index: 1050;
+    color:#BBB;
+  }
+  .tt-suggestions {
+    border-radius: 4px;
+    margin: 2px 0 0 0;
+    z-index: 1051;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    min-width: 160px;
+    position: absolute;
+  }
+  .tt-suggestion {
+    clear: both;
+    color: #333;
+    display: block;
+    line-height: 20px;
+    padding: 3px 6px;
+    white-space: nowrap;
+  }
+  .tt-suggestion p {
+    padding: 0;
+    margin: 0;
+  }
+  .tt-cursor {
+    background-color: #264d52;
+    background-image: linear-gradient(to bottom, #2a5459, #224448);
+    background-repeat: repeat-x;
+    color: #fff;
+    outline: 0 none;
+    text-decoration: none;
   }
 }
 
@@ -754,9 +804,6 @@ button.close {
   @extend .btn-danger;
 }
 
-/**
- * Twitter-typeahead classes
- */
 
 .twitter-typeahead {
     @extend .col-md-9;
