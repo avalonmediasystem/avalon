@@ -6,10 +6,10 @@
   #gem 'protected_attributes'
   gem 'builder', '~>3.1.0'
 
-  gem 'hydra', '~>7.0'
+  gem 'hydra', git: 'https://github.com/projecthydra/hydra.git' #'~>7.0'
   gem 'active-fedora'
   gem 'activerecord-session_store'
-  gem 'bcrypt-ruby', '~> 3.0.0'
+  gem 'bcrypt-ruby', '~> 3.1.0'
   gem 'kaminari', '~> 0.15.0'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'avalon-r3'

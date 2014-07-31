@@ -25,7 +25,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     
     <%# This is NOT a good approach at all but it works for prototyping %>
     <% values = @mediaobject.send(field) %>
-  <div class="controls <% if options[:dynamic] %>dynamic<% end %> <% if @mediaobject.errors.keys.include?(field.to_sym) %> error <% end %>" data-inputs="<%= count %>">
+  <div class="controls <% if options[:dynamic] %>dynamic<% end %> <% if @mediaobject.errors[field].present? %> error <% end %>" data-inputs="<%= count %>">
       <% count.times do |i| %>
         <% contents = values[i] || '' %>
         <%= text_field_tag "media_object[#{default_label}][]", contents %>
