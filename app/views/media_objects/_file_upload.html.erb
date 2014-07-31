@@ -141,7 +141,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               <%= file_field_tag "", field_tag_options %>
             </span>
             <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
-            <span class="checkbox inline fileupload-exists">
+            <span id="workflow_checkbox" class="checkbox inline fileupload-exists">
               <%# FIXME the style on the checkbox should be handled by css classes but it is getting bad values from bootstrap responsive %>
               <%= check_box_tag(:workflow, 'skip_transcoding', false, 
                 :style => "margin-top: 4px; margin-left: -15px;")%>
@@ -171,9 +171,18 @@ Unless required by applicable law or agreed to in writing, software distributed
   <legend id="dropbox_modal_label">Import from a dropbox</legend>
   <p class="muted">Use the dropbox to import large files. Attach selected files after uploading. Files will be begin
  processing when you click Save and continue.</p>
-  <p><a class="btn dropbox-trigger" href="#">Open Dropbox</a></p>
+
+  <%= form_tag(master_files_path, id: 'dropbox_form', method: 'post') do %>
+    <input type="hidden" name="container_id" value="<%=h @mediaobject.pid %>"/>
+    <input type="hidden" name="step" value="file_upload"/>
+    <input type="hidden" name="workflow" value=""/>
+    <div id="open_dropbox">
+      <%= button_tag("Open Dropbox", type: 'button', class: 'btn', id: "browse-btn",
+        'data-toggle' => 'browse-everything', 'data-route' => browse_everything_engine.root_path,
+        'data-target' => '#dropbox_form', 'data-context' => @mediaobject.collection.pid ) %>
+    </div>
+  <% end %>
   <%= render partial: "dropbox_details" %>
-  <%= render partial: 'dropbox' %>
 </section>
 
 <section id="workflow_buttons" class="span11">
@@ -183,6 +192,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 </section>
 
 <% content_for :page_styles do %>
+  <%= stylesheet_link_tag "browse_everything", media: "all" %>
   <%= stylesheet_link_tag "jasny-bootstrap.min", media: "all" %>
 <% end %>
 

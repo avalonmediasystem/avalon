@@ -592,17 +592,6 @@ button.close {
   .field_with_errors input { border-color: $errorText; }
 }
 
-.modal {
-  position: fixed;
-  top: 10%;
-}
-
-// Override the override. This is sort of a ugly solution as we now have three
-// declarations for the exact same element but it is quick and dirty
-.modal.fade.in {
-  @include translate(0, -50%);
-}
-
 .dl-horizontal dl {
   margin-bottom: 0px;
 }
@@ -645,4 +634,8 @@ button.close {
     margin-top: 4px;
     margin-left: -15px;
   }
+}
+
+.ev-browser {
+  background-color: white;
 }

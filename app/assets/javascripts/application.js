@@ -57,6 +57,7 @@
 //= require handlebars.runtime
 //= require templates/modal/crud
 
+//= require browse_everything
 
 
 /*
@@ -64,6 +65,7 @@
  * etc) 
  */
 //= require avalon
+//= require file_browse
 //= require pop_help
 //= require access_autocomplete
 //= require_self

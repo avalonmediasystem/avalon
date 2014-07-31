@@ -1,4 +1,5 @@
 Avalon::Application.routes.draw do
+  mount BrowseEverything::Engine => '/browse'
   Blacklight.add_routes(self, except: [:bookmarks, :feedback, :catalog])
 #  HydraHead.add_routes(self)
 

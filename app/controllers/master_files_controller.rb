@@ -96,10 +96,10 @@ class MasterFilesController < ApplicationController
         end
         
       end
-    elsif params.has_key?(:dropbox)
+    elsif params.has_key?(:selected_files)
       @master_files = []
-      params[:dropbox].each do |file|
-        file_path = media_object.collection.dropbox.find(file[:id])
+      params[:selected_files].each_value do |entry|
+        file_path = URI.parse(entry[:url]).path.gsub(/\+/,' ')
         master_file = MasterFile.new
         master_file.save( validate: false )
         master_file.mediaobject = media_object

@@ -20,6 +20,8 @@
   gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git' # HEAD , tag: 'avalon-r3'
   gem 'media-element-logo-plugin'
 
+  gem 'browse-everything', '>= 0.5.2'
+  
   gem 'roo', git: 'https://github.com/Empact/roo', ref: '9e1b969762cbb80b1c52cfddd848e489f22f468f'
 
   gem 'multipart-post'  
