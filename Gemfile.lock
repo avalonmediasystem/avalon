@@ -199,7 +199,7 @@ GEM
       activesupport (>= 2.0)
     bootstrap-sass (2.3.2.2)
       sass (~> 3.2)
-    browse-everything (0.5.2)
+    browse-everything (0.6.0)
       bootstrap-sass
       dropbox-sdk (>= 1.6.2)
       font-awesome-rails
@@ -628,6 +628,9 @@ GEM
     xml-simple (1.1.4)
     xpath (2.0.0)
       nokogiri (~> 1.3)
+    xray-rails (0.1.14)
+      coffee-rails
+      rails (>= 3.1.0)
 
 PLATFORMS
   ruby
@@ -639,7 +642,7 @@ DEPENDENCIES
   avalon-batch!
   avalon-workflow!
   bcrypt-ruby (~> 3.0.0)
-  browse-everything (>= 0.5.2)
+  browse-everything (>= 0.6.0)
   builder (~> 3.0.0)
   capistrano (~> 2.12.0)
   capybara
@@ -714,3 +717,4 @@ DEPENDENCIES
   validates_email_format_of
   whenever
   with_locking
+  xray-rails

@@ -179,7 +179,8 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div id="open_dropbox">
       <%= button_tag("Open Dropbox", type: 'button', class: 'btn', id: "browse-btn",
         'data-toggle' => 'browse-everything', 'data-route' => browse_everything_engine.root_path,
-        'data-target' => '#dropbox_form', 'data-context' => @mediaobject.collection.pid ) %>
+        'data-target' => '#dropbox_form', 'data-context' => @mediaobject.collection.pid,
+        'data-accept' => 'audio/*,video/*') %>
     </div>
   <% end %>
   <%= render partial: "dropbox_details" %>

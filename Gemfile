@@ -20,7 +20,7 @@
   gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git' # HEAD , tag: 'avalon-r3'
   gem 'media-element-logo-plugin'
 
-  gem 'browse-everything', '>= 0.5.2'
+  gem 'browse-everything', '>= 0.6.0'
   
   gem 'roo', git: 'https://github.com/Empact/roo', ref: '9e1b969762cbb80b1c52cfddd848e489f22f468f'
 
@@ -90,8 +90,6 @@
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do
-    #gem 'better_errors'
-    #gem 'binding_of_caller'
     gem 'meta_request'
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano'
@@ -108,6 +106,12 @@
     gem 'grit'
     gem 'license_header'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
+
+  group :development do
+    #gem 'better_errors'
+    #gem 'binding_of_caller'
+    gem 'xray-rails'
+  end
 
   group :test do
     gem 'mime-types', ">=1.1"
