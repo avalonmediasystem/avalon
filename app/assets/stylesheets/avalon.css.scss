@@ -632,30 +632,6 @@ span.constraints-label {
   font-size: 14px;
 }
 
-.appliedFilter {
-  margin: .4em 0;
-  padding: 3px 40px 3px 0.8em;
-  border-radius: 6px;
-}
-
-.appliedFilter .queryName, .appliedFilter .filterName {
-  /* ">" image */ 
-  background:none;
-  position: relative;
-  &:after {
-    content: "\003e";
-    position: absolute;
-    top: -2px;
-    right: 0px; 
-  }
-}
-
-.appliedFilter .btnRemove:active, .appliedFilter .btnRemove:focus {
-  border: 1px dotted #FFD27A;
-}
-
-#facets span.selected, .facets span.selected {color: #2A5459;}
-
 #creation_metadata {
   // Make <pre> formatted text look like normal output instead of
   // bounded in gray
