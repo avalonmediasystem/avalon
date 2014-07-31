@@ -39,12 +39,6 @@ module Blacklight::LocalBlacklightHelper
     content_tag("div", content.join("\n").html_safe, :class=> wrapping_class)
   end
 
-  # Renders a count value for facet limits. Can be over-ridden locally
-  # to change style. And can be called by plugins to get consistent display. 
-  def render_facet_count(num, options = {})
-    content_tag("span", t('blacklight.search.facets.count', :number => num), :class => "badge") 
-  end
-
   #Why are we overriding link_to_document?
   def link_to_document(doc, opts={:label=>nil, :counter => nil, :results_view => true})
     opts[:label] ||= blacklight_config.index.show_link.to_sym
