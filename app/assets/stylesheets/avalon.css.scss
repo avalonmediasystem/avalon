@@ -144,8 +144,11 @@ tr.active-false td {
  */
 .nav-wizard {
   li {
-    padding: $line-height-base/2;
-    margin-bottom: $line-height-base;
+    padding-top: $line-height-computed/3;
+    padding-right: $line-height-base;
+    padding-bottom: $line-height-computed/2;
+    padding-left:  $line-height-base;
+    margin-bottom: $line-height-computed/4;
     text-align: left;
     @include border-radius($border-radius-base);
 
@@ -158,6 +161,7 @@ tr.active-false td {
     }
     p {
       margin-left: 1em;
+      margin-right: 1em;
     }
   } 
 
@@ -394,8 +398,55 @@ label {
     margin-left: 5px;
     width: 20%;
   }
-  table {
-    margin-top: 10px;
+
+  // Twitter-typeahead classes
+  .twitter-typeahead {
+    @extend .col-md-9;
+    padding: 0;
+  }
+  .tt-input {
+    position:relative;
+    z-index: 1051;
+  }
+  .tt-input:focus, select:focus {
+    border-color: rgba(82, 168, 236, 0.8);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);
+    outline: 0 none;
+  }
+  .tt-hint {
+    position:absolute;
+    z-index: 1050;
+    color:#BBB;
+  }
+  .tt-suggestions {
+    border-radius: 4px;
+    margin: 2px 0 0 0;
+    z-index: 1051;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    min-width: 160px;
+    position: absolute;
+  }
+  .tt-suggestion {
+    clear: both;
+    color: #333;
+    display: block;
+    line-height: 20px;
+    padding: 3px 6px;
+    white-space: nowrap;
+  }
+  .tt-suggestion p {
+    padding: 0;
+    margin: 0;
+  }
+  .tt-cursor {
+    background-color: #264d52;
+    background-image: linear-gradient(to bottom, #2a5459, #224448);
+    background-repeat: repeat-x;
+    color: #fff;
+    outline: 0 none;
+    text-decoration: none;
   }
 }
 
@@ -483,20 +534,7 @@ header div{
   }
   h5 {
     font-weight: bold;
-    border-top: none;
   }
-}
-
-.sidenav .top-panel-heading {
-  background-color: #cfd8d3;
-}
-
-.facets .panel-group .panel {
-margin-top: 0px;
-}
-
-#sidebar, #facets {
-  padding-bottom: 0px;
 }
 
 .badge {
@@ -569,7 +607,7 @@ footer .release {
 
 /* Search Filters & Facets */
 
-.suggest {
+g.suggest {
   font-weight: normal;
 }
 
@@ -734,66 +772,4 @@ button.close {
 
 .remove:hover, .remove:active {
   @extend .btn-danger;
-}
-
-/**
- * Twitter-typeahead classes
- */
-
-.twitter-typeahead {
-    @extend .col-md-9;
-    padding: 0;
-}
-.tt-suggestions {
-    border-radius: 4px;
-    margin: 2px 0 0 0;
-    z-index: 1051;
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-    min-width: 160px;
-    position: absolute;
-}
-.tt-suggestion {
-    clear: both;
-    color: #333;
-    display: block;
-    line-height: 20px;
-    padding: 3px 6px;
-    white-space: nowrap;
-}
-.tt-suggestion p {
-    padding: 0;
-    margin: 0;
-}
-.tt-cursor {
-    background-color: #264d52;
-    background-image: linear-gradient(to bottom, #2a5459, #224448);
-    background-repeat: repeat-x;
-    color: #fff;
-    outline: 0 none;
-    text-decoration: none;
-}
-.tt-input, .tt-hint {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
-    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
-    border-radius: 4px;
-    color: #333;
-    line-height: 20px;
-}
-.tt-input {
-    position:relative;
-    z-index: 1051;
-}
-.tt-hint {
-    position:absolute;
-    z-index: 1050;
-    color:#BBB;
-}
-.tt-input:focus {
-    border-color: rgba(82, 168, 236, 0.8);
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);
-    outline: 0 none;
 }
