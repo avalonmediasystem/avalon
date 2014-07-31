@@ -20,23 +20,16 @@ module Blacklight::LocalBlacklightHelper
     }.keys
   end
 
-  # There might be a better way to do this but the goal is to retrieve the
-  # name of the first facet group. This will be used as the link so that
-  # when the page goes responsive it collapses _all_ groups into a single
-  # dropdown to save screen real estate
-  def facet_header 
-    t('blacklight.search.facets.title')
-  end
-
   def facet_group_names
     blacklight_config.facet_fields.map {|facet,opts| opts[:group]}.uniq
   end
 
   def render_index_doc_actions(document, options={})   
-    wrapping_class = options.delete(:wrapping_class) || "documentFunctions" 
+    wrapping_class = options.delete(:wrapping_class) || "documentFunctions"
 
     content = []
-    content_tag("div", content.join("\n").html_safe, :class=> wrapping_class)
+
+    content_tag("div", safe_join(content, "\n"), :class=> wrapping_class)
   end
 
   #Why are we overriding link_to_document?
@@ -57,19 +50,4 @@ module Blacklight::LocalBlacklightHelper
     truncate(field, length: 200) unless field.blank?
   end
 
-  # Determine whether to expand the facet or not based on the settings in
-  # the catalog controller and the (lack of) presence in the params hash
-  #
-  # This is a new method that doesn't currently exist in the Blacklight
-  # module
-  def expand_facet? facet
-    expand = facet.expanded || false
-    # If the controller doesn't not expand it by default we need to do some
-    # extra work and check the params hash
-    if params[:f].present?
-      expand = expand || params[:f][facet.field].present?
-    end
-
-    expand
-  end
 end

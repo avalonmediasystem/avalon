@@ -91,6 +91,12 @@
     gem 'twitter-typeahead-rails'
   end
 
+  group :development do
+    gem 'xray-rails'
+    gem 'better_errors'
+    gem 'binding_of_caller'
+  end
+
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do
     gem 'meta_request'

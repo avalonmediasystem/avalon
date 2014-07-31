@@ -359,6 +359,11 @@ GEM
     bcrypt (3.1.7)
     bcrypt-ruby (3.1.5)
       bcrypt (>= 3.1.3)
+    better_errors (1.1.0)
+      coderay (>= 1.0.0)
+      erubis (>= 2.6.6)
+    binding_of_caller (0.7.2)
+      debug_inspector (>= 0.0.1)
     blacklight (5.5.2)
       bootstrap-sass (~> 3.0)
       deprecation
@@ -468,6 +473,7 @@ GEM
     compass-susy-plugin (0.9)
       compass (>= 0.11.1)
     daemons (1.1.9)
+    debug_inspector (0.0.2)
     debugger (1.6.8)
       columnize (>= 0.3.1)
       debugger-linecache (~> 1.2.0)
@@ -1424,7 +1430,12 @@ DEPENDENCIES
 =======
 =======
   bcrypt-ruby (~> 3.1.0)
+<<<<<<< HEAD
 >>>>>>> Facet cleanup; basic metadata cleanup
+=======
+  better_errors
+  binding_of_caller
+>>>>>>> Death to overrides; viva la developers
   bootstrap_form
   builder (~> 3.1.0)
   capistrano (~> 2.12.0)
