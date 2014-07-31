@@ -296,7 +296,7 @@ div#dropbox_modal {
 
 // Custom file preview field for Jasny bootstrap
 .uneditable-input-exists {
-  @extend .uneditable-input;
+  //@extend .uneditable-input;
   width: 45%;
   i {
     padding-left:.5em;
@@ -486,7 +486,20 @@ header div{
   }
   h5 {
     font-weight: bold;
+    border-top: none;
   }
+}
+
+.sidenav .top-panel-heading {
+  background-color: #cfd8d3;
+}
+
+.facets .panel-group .panel {
+margin-top: 0px;
+}
+
+#sidebar, #facets {
+  padding-bottom: 0px;
 }
 
 .badge {
@@ -643,23 +656,6 @@ span.constraints-label {
     margin-right: 2pt;
     margin-bottom: 0;
     cursor: pointer;
-}
-
-/**
- * Fix some stuff relating to the facets so that they hide properly
- */
-#facets .collapse,
-.facet_limit .collapse {
-  @include transition(all 0.25s ease);
-  
-  &.in {
-    padding: 0.5em 0 0 0;
-  }
-}
-
-.more_facets {
-  text-align: right;
-  padding-right: 0 !important;
 }
 
 /**

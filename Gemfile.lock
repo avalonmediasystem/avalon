@@ -162,6 +162,7 @@ GIT
       rest-client
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 GIT
   remote: https://github.com/projecthydra/active_fedora.git
   revision: fed5ec944ceb7d643a9831de620e1771804e8f16
@@ -179,6 +180,25 @@ GIT
 
 =======
 >>>>>>> Update Gemfile
+=======
+GIT
+  remote: https://github.com/projecthydra/hydra.git
+  revision: e423d85181757fba90cd32b7030cdee4e93e053e
+  specs:
+    hydra (7.1.0)
+      active-fedora (~> 7.1.0)
+      blacklight (~> 5.5.1)
+      hydra-head (~> 7.2.0)
+      jettywrapper (~> 1.8.2)
+      nokogiri (~> 1.6.0)
+      nom-xml (~> 0.5.1)
+      om (~> 3.1.0)
+      rails (>= 3.2.15, < 5.0)
+      rsolr (~> 1.0.10)
+      rubydora (~> 1.8.0)
+      solrizer (~> 3.3.0)
+
+>>>>>>> Facet cleanup; basic metadata cleanup
 GEM
   remote: http://rubygems.org/
   specs:
@@ -208,13 +228,17 @@ GEM
 =======
       rack (~> 1.5.2)
       rack-test (~> 0.6.2)
+<<<<<<< HEAD
     active-fedora (7.0.4)
 >>>>>>> Update Gemfile
+=======
+    active-fedora (7.1.0)
+      active-triples (~> 0.2.2)
+>>>>>>> Facet cleanup; basic metadata cleanup
       activesupport (>= 3.0.0)
       deprecation
-      linkeddata
-      mediashelf-loggable
       nom-xml (>= 0.5.1)
+<<<<<<< HEAD
       om (~> 3.0.0)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -299,9 +323,18 @@ GEM
       deprecation
 >>>>>>> Bump hydra-head to 7.0
 =======
+=======
+      om (~> 3.1)
+>>>>>>> Facet cleanup; basic metadata cleanup
       rdf-rdfxml (~> 1.1.0)
-      rsolr (~> 1.0.10.pre1)
-      rubydora (~> 1.7.4)
+      rsolr (~> 1.0.10)
+      rubydora (~> 1.8)
+    active-triples (0.2.2)
+      activemodel (>= 3.0.0)
+      activesupport (>= 3.0.0)
+      deprecation (~> 0.1)
+      linkeddata (~> 1.1)
+      rdf (~> 1.1)
     activemodel (4.0.8)
       activesupport (= 4.0.8)
       builder (~> 3.1.0)
@@ -324,8 +357,9 @@ GEM
     addressable (2.3.6)
     arel (4.0.2)
     bcrypt (3.1.7)
-    bcrypt-ruby (3.0.1)
-    blacklight (5.4.0)
+    bcrypt-ruby (3.1.5)
+      bcrypt (>= 3.1.3)
+    blacklight (5.5.2)
       bootstrap-sass (~> 3.0)
       deprecation
 >>>>>>> Update Gemfile
@@ -335,6 +369,7 @@ GEM
       rsolr (~> 1.0.6)
     block_helpers (0.3.3)
       activesupport (>= 2.0)
+<<<<<<< HEAD
 <<<<<<< HEAD
     bootstrap-sass (3.1.1.1)
       sass (~> 3.2)
@@ -361,6 +396,9 @@ GEM
     cancancan (1.8.0)
 =======
     bootstrap-sass (3.2.0.0)
+=======
+    bootstrap-sass (3.2.0.1)
+>>>>>>> Facet cleanup; basic metadata cleanup
       sass (~> 3.2)
     bootstrap_form (2.1.1)
     builder (3.1.4)
@@ -592,6 +630,7 @@ GEM
       jettywrapper (~> 1.5.0)
 =======
     htmlentities (4.3.2)
+<<<<<<< HEAD
     hydra (7.0.0)
       active-fedora (~> 7.0.2)
       blacklight (~> 5.4.0)
@@ -637,16 +676,22 @@ GEM
       solrizer (~> 3.1.1)
     hydra-access-controls (7.0.2)
       active-fedora (~> 7.0.0)
+=======
+    hydra-access-controls (7.2.0)
+      active-fedora (~> 7.0)
+>>>>>>> Facet cleanup; basic metadata cleanup
       activesupport
       blacklight (~> 5.3)
       cancancan
       deprecation
+      om (~> 3.0, >= 3.0.7)
       sass-rails
-    hydra-core (7.0.2)
+    hydra-core (7.2.0)
       block_helpers
-      hydra-access-controls (= 7.0.2)
+      hydra-access-controls (= 7.2.0)
       jettywrapper (>= 1.4.1)
       rails (>= 3.2.3, < 5)
+<<<<<<< HEAD
 <<<<<<< HEAD
     hydra-head (7.0.1)
       hydra-access-controls (= 7.0.1)
@@ -662,6 +707,11 @@ GEM
       hydra-access-controls (= 7.0.2)
       hydra-core (= 7.0.2)
 >>>>>>> Update Gemfile
+=======
+    hydra-head (7.2.0)
+      hydra-access-controls (= 7.2.0)
+      hydra-core (= 7.2.0)
+>>>>>>> Facet cleanup; basic metadata cleanup
       rails (>= 3.2.6)
     i18n (0.6.11)
     iconv (1.0.4)
@@ -672,6 +722,7 @@ GEM
 <<<<<<< HEAD
     iso8601 (0.5.0)
 <<<<<<< HEAD
+<<<<<<< HEAD
     jettywrapper (1.5.2)
 =======
     jettywrapper (1.7.0)
@@ -679,17 +730,20 @@ GEM
 =======
     jettywrapper (1.7.0)
 >>>>>>> Update Gemfile
+=======
+    jettywrapper (1.8.2)
+>>>>>>> Facet cleanup; basic metadata cleanup
       activesupport (>= 3.0.0)
       childprocess
       i18n
       logger
-      mediashelf-loggable
     jquery-rails (3.1.1)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (5.0.0)
       railties (>= 3.2.16)
     json (1.8.1)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -707,6 +761,9 @@ GEM
 >>>>>>> Bump hydra-head to 7.0
 =======
     json-ld (1.1.5)
+=======
+    json-ld (1.1.6)
+>>>>>>> Facet cleanup; basic metadata cleanup
       rdf (~> 1.1, >= 1.1.4)
 >>>>>>> Update Gemfile
     kaminari (0.15.1)
@@ -853,6 +910,7 @@ GEM
       i18n
       nokogiri
     oauth (0.4.7)
+<<<<<<< HEAD
     oauth2 (1.0.0)
       faraday (>= 0.8, < 0.10)
       jwt (~> 1.0)
@@ -860,12 +918,13 @@ GEM
       multi_xml (~> 0.5)
       rack (~> 1.2)
     om (3.0.7)
+=======
+    om (3.1.0)
+>>>>>>> Facet cleanup; basic metadata cleanup
       activemodel
       activesupport
-      deprecation
-      mediashelf-loggable
       nokogiri (>= 1.4.2)
-      solrizer (~> 3.1.0)
+      solrizer (~> 3.3)
     omniauth (1.2.2)
       hashie (>= 1.2, < 4)
       rack (~> 1.0)
@@ -959,12 +1018,16 @@ GEM
     rb-fsevent (0.9.4)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     rdf (1.1.1.1)
     rdf-rdfxml (1.0.1)
       rdf (>= 1.0)
       rdf-xsd (>= 1.0)
 =======
     rdf (1.1.4.2)
+=======
+    rdf (1.1.4.3)
+>>>>>>> Facet cleanup; basic metadata cleanup
     rdf-aggregate-repo (1.1.0)
       rdf (>= 1.1)
     rdf-isomorphic (1.1.0)
@@ -1099,10 +1162,14 @@ GEM
       iso8601
     ruby-ole (1.2.11.7)
 <<<<<<< HEAD
+<<<<<<< HEAD
     rubydora (1.7.5)
 =======
     rubydora (1.7.4)
 >>>>>>> Bump hydra-head to 7.0
+=======
+    rubydora (1.8.0)
+>>>>>>> Facet cleanup; basic metadata cleanup
       activemodel
       activesupport
       deprecation
@@ -1164,14 +1231,18 @@ GEM
 >>>>>>> First pass at updating to rails 4
 =======
     slop (3.6.0)
+<<<<<<< HEAD
 >>>>>>> Update Gemfile
     solrizer (3.1.1)
+=======
+    solrizer (3.3.0)
+>>>>>>> Facet cleanup; basic metadata cleanup
       activesupport
       daemons
-      mediashelf-loggable (~> 0.4.7)
       nokogiri
       stomp
       xml-simple
+<<<<<<< HEAD
 <<<<<<< HEAD
     sparql (1.1.2.1)
       builder (>= 3.0)
@@ -1188,6 +1259,9 @@ GEM
       rdf (>= 1.1)
 =======
     sparql (1.1.3)
+=======
+    sparql (1.1.4)
+>>>>>>> Facet cleanup; basic metadata cleanup
       builder (~> 3.0)
       ebnf (~> 0.3, >= 0.3.5)
       rdf (~> 1.1, >= 1.1.4)
@@ -1320,6 +1394,7 @@ DEPENDENCIES
   avalon-batch (~> 0.2.2)!
 >>>>>>> Routes no longer complain
   avalon-workflow!
+<<<<<<< HEAD
   bcrypt-ruby (~> 3.0.0)
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1347,6 +1422,9 @@ DEPENDENCIES
   devise (~> 3.2.0)
 >>>>>>> First pass at updating to rails 4
 =======
+=======
+  bcrypt-ruby (~> 3.1.0)
+>>>>>>> Facet cleanup; basic metadata cleanup
   bootstrap_form
   builder (~> 3.1.0)
   capistrano (~> 2.12.0)
@@ -1375,6 +1453,7 @@ DEPENDENCIES
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
   hydra (~> 6.2.0)
 =======
   hydra-head (~> 7.0)
@@ -1385,6 +1464,9 @@ DEPENDENCIES
 =======
   hydra (~> 7.0)
 >>>>>>> Update Gemfile
+=======
+  hydra!
+>>>>>>> Facet cleanup; basic metadata cleanup
   iconv
   jdbc-sqlite3
   jettywrapper

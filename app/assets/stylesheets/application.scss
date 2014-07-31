@@ -15,12 +15,10 @@
 */
 
 @import "branding";
+@import "bootstrap-sprockets";
 @import "bootstrap";
-// @import "bootstrap-responsive";
 @import "font-awesome";
 @import "blacklight_themes/avalon";
-@import "blacklight_themes/_facets";
-@import "blacklight_themes/_facets_responsive";
 @import "blacklight/blacklight";
 @import "about_page";
 
