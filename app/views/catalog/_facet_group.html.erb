@@ -26,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </button>
 
   <h4>
-  	<%= groupname.blank? ? t('blacklight.search.facets.title') : t("blacklight.search.facets-#{groupname}.title") %>
+  	<%= groupname.blank? ? t('blacklight.search.facets.title') : t("blacklight.search.facets-#{groupname}.title", default: groupname.titleize) %>
   </h4>
     </div>
 
