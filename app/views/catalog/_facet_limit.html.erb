@@ -30,7 +30,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% end %>
 
   <% if(paginator.has_next?)  %>
-    <li class="more_facets_link"><%= link_to(t('blacklight.search.facets.more'), params.merge(:id => solr_field, :action=>"facet", :page => nil), :class => "more_facets_link") %></li>
+    <li class="more_facets"><%= link_to(t('blacklight.search.facets.more'), params.merge(:id => solr_field, :action=>"facet", :page => nil) ) %></li>
   <% end %>
 
 </ul>
