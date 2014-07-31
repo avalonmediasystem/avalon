@@ -477,9 +477,6 @@ header div{
 /* Sidebar */
 
 .sidenav { 
-  a {
-    color: $gray-dark;
-  }
   h4 {
     background-color: $sidenavHeaderBackgroundColor;
     @include border-top-radius(6px);
