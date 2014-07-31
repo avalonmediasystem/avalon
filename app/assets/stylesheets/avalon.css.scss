@@ -33,62 +33,6 @@
   }
 }
 
-/**
- * Override the default behaviour in Bootstrap so that the container is not 
- * pushed down the page
- */
-.whitespace {
-  margin-bottom: $line-height-base;
-}
-
-/** Use half of a line height for a more subtle offset */
-.whitespace-half {
-  margin-bottom: $line-height-base/2;
-}
-
-dd {
-  margin-bottom: $line-height-base;
-}
-
-.label .label-tall { 
-  height: 2.5em; 
-  line-height: 1.2em; 
-}
-
-#global_tools {
-  margin-bottom: $line-height-base;
-}
-
-#authentication {
-  ul {
-    list-style-type: none;
-    text-align: right;
-   
-    li {
-      display: inline;  
-    }
-  }
-}
-
-.logo img {
-  @include border-radius($line-height-base/3);
-  max-width: 100%;
-}
-
-ul.login {
-  text-align: center;
-  list-style: none;
-
-  li a, li a:hover {
-    text-decoration: none;
-  }
-
-  img.logo {
-    height: $line-height-base * 2;
-    vertical-align: middle;
-  }
-}
-
 footer {
   margin-top: $line-height-base/2;
   padding-top: $line-height-base;
@@ -127,11 +71,6 @@ footer {
   &:hover { @hidden-disabled-link }
   &:active { @hidden-disabled-link }
   &:visited { @hidden-disabled-link }
-}
-
-/* Shift the metadata shown for search results by half a column */
-.item-preview-container {
-  padding-left: $grid-gutter-width/2;
 }
 
 tr.active-false td {
@@ -233,43 +172,6 @@ tr.active-false td {
   height: 25px;
 }
 
-/**
- * Until media-object works right in bootstrap add some custom overrides
- */
-.result {
-  width: 100%;
- 
-/**
- * Result thumbnails should be no larger than the two columns allocated in
- * the user interface
- */
-  img.result-thumbnail {
-    max-width: $grid-gutter-width*2;
-    overflow: hidden;
-  }
-
-  .result-heading {
-    font-weight: bold;
-  }
-  
-  .result-body {
-    color: $gray;
-  }
-
-  ul {
-    list-style-type: none;
-    
-    li {
-      color: #777;
-    }
-
-    span {
-      color: #333;
-      padding-left: .8em;
-    }
-  }
-}
-
 .big-modal {
   width: 80%;
   margin-left: -40%;
@@ -344,23 +246,6 @@ label {
   a[data-tooltip] {
     text-decoration: none;
   }
-}
-
-/*
- * Pulling this out of the page so it is easier to maintain. Inline CSS is 
- * *bad*!
- */
-.overlay {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  top: 0;
-  z-index: 2;
-  background-color: white;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
-  filter: alpha(opacity=50);
-  opacity: 0.5;
 }
 
 .row-no-margin {
@@ -472,10 +357,6 @@ body {
   padding-top: 0;
 }
 
-input[type="radio"], input[type="checkbox"]{
-  margin-top:-4px;
-}
-
 input[type="text"]#admin_group {
   margin-bottom: 0;
 }
@@ -512,7 +393,7 @@ header div{
   width: 100%;
 }
 
-.search-query-form .search-query {
+.avalon-search-query-form .search-query {
     border-radius: 15px;
     font-family: Arial,Helvetica,sans-serif;
     font-size: 13px;
@@ -551,7 +432,12 @@ header div{
 
 #sidebar, #facets {
   padding-bottom: 0px;
+  .panel {
+    border-radius: 0px;
+  }
 }
+
+
 
 /* Footer */
 
@@ -606,30 +492,13 @@ footer .release {
 
 /* Search Filters & Facets */
 
-g.suggest {
-  font-weight: normal;
-}
-
-#sortAndPerPage {
-  padding: 0.4em;
-}
-
-.css-dropdown li {
-  padding: 1px 10px;
-}
-
 .constraints-container {
   padding: 0.4em;
   margin-bottom: .8em;
 }
 
 span.constraints-label {
-  font-weight: normal;
-  margin-right: .4em;
-}
-
-.appliedParams {
-  font-size: 14px;
+  margin-left: .4em;
 }
 
 #creation_metadata {
@@ -668,16 +537,6 @@ span.constraints-label {
     cursor: pointer;
 }
 
-/**
- * When H2s are muted reduced not only the color contrast but the
- * font size as well
- */
-h2.muted {
-  font-size: 150%;
-  padding: 0;
-  margin: 0;
-}
-
 button.close {
   display: block;
 }
@@ -706,21 +565,6 @@ button.close {
   img {
     width: 100%;
     height: auto;
-  }
-}
-
-// For mobile devices and smaller viewports disable the transform because it
-// does not render correctly. Overriding the override may not be the best idea
-// but should be a quick route to a functioning solution 
-@media (max-width: $grid-float-breakpoint-max) {
-  .modal.fade.in {
-    @include translate(0, 0);
-    max-height: 93%;
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
-    .modal-body {
-      overflow-y: none;
-    }
   }
 }
 
