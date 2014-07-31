@@ -382,6 +382,7 @@ label {
   input[type=text] {
     width:100%;
     padding: 4px 6px;
+    border-radius: 4px;
   }
   select {
     width: 75%;
@@ -397,6 +398,9 @@ label {
     padding: 4px 12px;
     margin-left: 5px;
     width: 20%;
+  }
+  span {
+    width: 75%;
   }
 
   // Twitter-typeahead classes
