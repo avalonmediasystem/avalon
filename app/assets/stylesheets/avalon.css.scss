@@ -23,13 +23,13 @@
  */ 
 .mobile-hidden {
  @media (max-width: $screen-sm-min) {
-    display: none;
+    display: none !important;
   }
 }
 
 .desktop-hidden {
   @media (min-width: $screen-sm-min) {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -144,11 +144,8 @@ tr.active-false td {
  */
 .nav-wizard {
   li {
-    padding-top: $line-height-computed/3;
-    padding-right: $line-height-base;
-    padding-bottom: $line-height-computed/2;
-    padding-left:  $line-height-base;
-    margin-bottom: $line-height-computed/4;
+    padding: $line-height-base/2;
+    margin-bottom: $line-height-base;
     text-align: left;
     @include border-radius($border-radius-base);
 
@@ -161,7 +158,6 @@ tr.active-false td {
     }
     p {
       margin-left: 1em;
-      margin-right: 1em;
     }
   } 
 
@@ -377,9 +373,14 @@ label {
 }
 
 .access-block {
-  padding: 0 0 0 4px;
-  input, select {
-    @extend .col-md-9;
+  @extend .col-lg-4;
+  @extend .col-md-12;
+  input[type=text] {
+    width:100%;
+    padding: 4px 6px;
+  }
+  select {
+    width: 75%;
     min-height:30px;
     padding: 4px 6px;
     border-radius: 4px;
@@ -387,65 +388,14 @@ label {
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
     transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
   }
-  input[type=text] {
-    padding: 4px 6px;
-    width:100%;
-  }
-  input[type=submit] {
-    @extend .btn;
-  }
   button {
+    float: right;
     padding: 4px 12px;
+    margin-left: 5px;
+    width: 20%;
   }
-
-  // Twitter-typeahead classes
-  .twitter-typeahead {
-    @extend .col-md-9;
-    padding: 0;
-  }
-  .tt-input {
-    position:relative;
-    z-index: 1051;
-  }
-  .tt-input:focus, select:focus {
-    border-color: rgba(82, 168, 236, 0.8);
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);
-    outline: 0 none;
-  }
-  .tt-hint {
-    position:absolute;
-    z-index: 1050;
-    color:#BBB;
-  }
-  .tt-suggestions {
-    border-radius: 4px;
-    margin: 2px 0 0 0;
-    z-index: 1051;
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-    min-width: 160px;
-    position: absolute;
-  }
-  .tt-suggestion {
-    clear: both;
-    color: #333;
-    display: block;
-    line-height: 20px;
-    padding: 3px 6px;
-    white-space: nowrap;
-  }
-  .tt-suggestion p {
-    padding: 0;
-    margin: 0;
-  }
-  .tt-cursor {
-    background-color: #264d52;
-    background-image: linear-gradient(to bottom, #2a5459, #224448);
-    background-repeat: repeat-x;
-    color: #fff;
-    outline: 0 none;
-    text-decoration: none;
+  table {
+    margin-top: 10px;
   }
 }
 
@@ -503,12 +453,6 @@ header div{
   padding-right: 12px;
 }
 
-.nav > li.desktop-hidden{
-  @media (min-width: $grid-float-breakpoint) {
-    display: none;
-  }
-}
-
 .container {
   width: 100%;
 }
@@ -528,12 +472,6 @@ header div{
     height: 25px;
     width: 300px;
     vertical-align: middle;
-}
-
-.desktop-hidden{
-  @media (min-width: $grid-float-breakpoint) {
-    display: none;
-  }
 }
 
 /* Sidebar */
@@ -712,19 +650,16 @@ span.constraints-label {
  */
 #facets .collapse,
 .facet_limit .collapse {
-  margin-top: 0;
-  margin-bottom:0 ;
-  height: 0;
-  @include transition(all 0.35s ease);
-
-  &.in {
-    padding: 0.5em 0em 1em 0em;
-    height: auto;
-  }
+  @include transition(all 0.25s ease);
   
-  li {
-    padding-right: 0px;
+  &.in {
+    padding: 0.5em 0 0 0;
   }
+}
+
+.more_facets {
+  text-align: right;
+  padding-right: 0 !important;
 }
 
 /**
@@ -808,6 +743,9 @@ button.close {
   @extend .btn-danger;
 }
 
+/**
+ * Twitter-typeahead classes
+ */
 
 .twitter-typeahead {
     @extend .col-md-9;
