@@ -133,9 +133,9 @@ tr.active-false td {
  */
 #header-navbar .navbar-brand {
   @extend .desktop-hidden;
-  padding: 0px 0px;
   height: 35px;
-  margin-left: 0px;
+  margin-left: 10px;
+  margin-top: 3px;
 }
 
 .navbar {
@@ -146,10 +146,6 @@ tr.active-false td {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
   margin: 10px 15px;
   min-height: 0px; 
-  
-  .icon-bar {
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
-  }
 }
 
 .navbar-nav {
@@ -160,16 +156,15 @@ tr.active-false td {
   } 
 }	
 
-.navbar-toggle {
-  background-color: #EDEDED;
-  padding: 7px 10px;
-  margin: 5px 10px;
-}
 .navbar-right {
   padding: 5px 0;
 }
-.navbar-header {
+.container > .navbar-header {
   height: 25px;
+  margin-right: 0px;
+}
+.navbar-inverse .navbar-toggle .icon-bar {
+  background-color: #888888;
 }
 
 .big-modal {
@@ -431,7 +426,7 @@ header div{
 }
 
 #sidebar, #facets {
-  padding-bottom: 0px;
+  padding-bottom: 10px;
   .panel {
     border-radius: 0px;
   }
@@ -440,7 +435,6 @@ header div{
   }
   .top-panel-heading {
     margin-bottom: 0em;
-    margin-top: 1em;
   }
 }
 
@@ -451,6 +445,13 @@ div[id*='facet-panel-'] {
   border-top: none;
   box-shadow: none;
   max-height: none;
+}
+
+.facets-toggle {
+  background-color: white;
+  .icon-bar {
+    background-color: #888888;
+  }
 }
 
 
