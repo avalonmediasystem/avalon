@@ -444,6 +444,14 @@ header div{
   }
 }
 
+div[id*='facet-panel-'] {
+  @extend .navbar-collapse;
+  padding-left: 0;
+  padding-right: 0;
+  border-top: none;
+  box-shadow: none;
+  max-height: none;
+}
 
 
 /* Footer */
