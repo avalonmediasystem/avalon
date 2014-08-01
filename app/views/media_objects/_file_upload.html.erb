@@ -126,6 +126,18 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <%- field_tag_options = defined?(uploader_options) ? uploader_options : {multiple: true} %>
 
+        <div class="fileinput fileinput-new input-group" data-provides="fileinput">
+          <div class="form-control" data-trigger="fileinput">
+            <i class="glyphicon glyphicon-file fileinput-exists"></i> 
+            <span class="fileinput-filename"></span></div>
+            <button name="upload_file" value="upload_file" class="fileinput-exists input-group-addon btn btn-default" type="submit">Upload</button>
+          <span class="input-group-addon btn btn-default btn-file"> 
+            <span class="fileinput-new">Select file</span>
+            <span class="fileinput-exists">Change</span>
+            <input type="file" name="..."></span>
+            <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+        </div>
+<!--
         <div class="fileupload fileupload-new" data-provides="fileupload">
           <div class="input-append">
             <div class="uneditable-input fileupload-new"></div>
@@ -152,7 +164,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               <% end %>
             </span>
           </div>
-        </div>
+        </div>-->
         
         <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
         <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
@@ -170,7 +182,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   <legend id="dropbox_modal_label">Import from a dropbox</legend>
   <p class="muted">Use the dropbox to import large files. Attach selected files after uploading. Files will be begin
  processing when you click Save and continue.</p>
-  <p><a class="btn btn-default dropbox-trigger" href="#">Open Dropbox</a></p>
+<button type="button" data-toggle="browse-everything" data-route="<%=browse_everything_engine.root_path%>" 
+  data-target="#myForm" class="btn btn-large btn-success" id="browse">Browse!</button>
   <%= render partial: "dropbox_details" %>
 </section>
 
@@ -187,7 +200,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <%= javascript_include_tag "file_upload_step" %>
-  <%= javascript_include_tag "bootstrap-fileupload" %>
+  <%= javascript_include_tag "bootstrap-fileupload.js" %>
+  <%= javascript_include_tag "jasny-bootstrap.min.js" %>
   <script>
     /* Hide the alert dialog on the page loading if Javascript is enabled */
     <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
