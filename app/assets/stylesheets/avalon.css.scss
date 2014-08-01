@@ -605,6 +605,8 @@ button.close {
   background-color: white;
 }
 
-.remove:hover, .remove:active {
-  @extend .btn-danger;
+.access-block {
+  .remove:hover, .remove:active {
+    @extend .btn-danger;
+  }
 }
