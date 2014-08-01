@@ -16,10 +16,8 @@ GIT
     database_cleaner (1.0.1)
 
 GIT
-<<<<<<< HEAD
-<<<<<<< HEAD
   remote: https://github.com/avalonmediasystem/about_page.git
-  revision: 1fb165be50f913a7940b1c6256b85900ce23a41b
+  revision: 384c1c21525049ab6111247bee65a3aed697e55a
   specs:
     about_page (0.2.6)
       rails (>= 3.2)
@@ -28,21 +26,12 @@ GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
   revision: ecbb3a961666768845fbc50b151ff0fbbfad6527
   tag: v3.1
-=======
-  remote: https://github.com/avalonmediasystem/avalon-about.git
-  revision: 4da42ab601c8ced5b3bd7dd983151ebe6acfd285
->>>>>>> Use upstream about_page now that it works with rails 4
   specs:
     avalon-about (0.1.0)
       about_page
       mediainfo
 
 GIT
-<<<<<<< HEAD
-=======
->>>>>>> Routes no longer complain
-=======
->>>>>>> Use upstream about_page now that it works with rails 4
   remote: https://github.com/avalonmediasystem/avalon-batch.git
   revision: 2737cac71d2e6a990ea6b937e6181f02c471b00f
   tag: v3.1
@@ -62,10 +51,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/felixwrapper.git
   revision: 2ae939d4811bc245d9f80c6a3f6cf6cc70d8c5b4
-<<<<<<< HEAD
   tag: v3.1
-=======
->>>>>>> First pass at updating to rails 4
   specs:
     felixwrapper (0.0.1)
       activesupport (>= 3.2.3)
@@ -76,18 +62,9 @@ GIT
       mediashelf-loggable
 
 GIT
-<<<<<<< HEAD
   remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector
   revision: f5a107b6553894ebed6d87eba1b6f50f8c1a480c
   tag: v3.1
-=======
-  remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector.git
-<<<<<<< HEAD
-  revision: d15557fc4c20f836377ede3d1bc02cb6d59a18a4
->>>>>>> Use active-fedora master to get latest bugfixes
-=======
-  revision: 2b565dc4626eaf31b0611fe85e6513b91c09e819
->>>>>>> First pass at updating to rails 4
   specs:
     media_element_thumbnail_selector (0.0.1)
       rails (>= 3.2.3)
@@ -137,10 +114,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/red5wrapper.git
   revision: 0975db8c8664730734c54cc5683bc75400e4143e
-<<<<<<< HEAD
   tag: v3.1
-=======
->>>>>>> First pass at updating to rails 4
   specs:
     red5wrapper (0.0.1)
       activesupport (>= 3.2.3)
@@ -161,26 +135,6 @@ GIT
       om
       rest-client
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-GIT
-  remote: https://github.com/projecthydra/active_fedora.git
-  revision: fed5ec944ceb7d643a9831de620e1771804e8f16
-  specs:
-    active-fedora (7.0.2)
-      activesupport (>= 3.0.0)
-      deprecation
-      linkeddata
-      mediashelf-loggable
-      nom-xml (>= 0.5.1)
-      om (~> 3.0.0)
-      rdf-rdfxml (~> 1.1.0)
-      rsolr (~> 1.0.10.pre1)
-      rubydora (~> 1.7.4)
-
-=======
->>>>>>> Update Gemfile
-=======
 GIT
   remote: https://github.com/projecthydra/hydra.git
   revision: e423d85181757fba90cd32b7030cdee4e93e053e
@@ -198,14 +152,9 @@ GIT
       rubydora (~> 1.8.0)
       solrizer (~> 3.3.0)
 
->>>>>>> Facet cleanup; basic metadata cleanup
 GEM
   remote: http://rubygems.org/
   specs:
-<<<<<<< HEAD
-<<<<<<< HEAD
-    about_page (0.2.7)
-      rails (>= 3.2)
     actionmailer (4.0.8)
       actionpack (= 4.0.8)
       mail (~> 2.5.4)
@@ -213,119 +162,14 @@ GEM
       activesupport (= 4.0.8)
       builder (~> 3.1.0)
       erubis (~> 2.7.0)
-<<<<<<< HEAD
-      journey (~> 1.0.4)
-      rack (~> 1.4.5)
-      rack-cache (~> 1.2)
-      rack-test (~> 0.6.1)
-      sprockets (~> 2.2.1)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    active-fedora (6.7.8)
-=======
-    active-fedora (7.0.2)
->>>>>>> Bump hydra-head to 7.0
-=======
       rack (~> 1.5.2)
       rack-test (~> 0.6.2)
-<<<<<<< HEAD
-    active-fedora (7.0.4)
->>>>>>> Update Gemfile
-=======
     active-fedora (7.1.0)
       active-triples (~> 0.2.2)
->>>>>>> Facet cleanup; basic metadata cleanup
       activesupport (>= 3.0.0)
       deprecation
       nom-xml (>= 0.5.1)
-<<<<<<< HEAD
-      om (~> 3.0.0)
-<<<<<<< HEAD
-<<<<<<< HEAD
-      rdf (~> 1.1.1.1)
-      rdf-rdfxml (= 1.0.1)
-      rsolr
-      rubydora (~> 1.7.4)
-    activemodel (3.2.19)
-      activesupport (= 3.2.19)
-=======
-      rdf-rdfxml (~> 1.1.0)
-      rsolr (~> 1.0.10.pre1)
-      rubydora (~> 1.7.4)
-=======
->>>>>>> Use active-fedora master to get latest bugfixes
-    activemodel (3.2.17)
-      activesupport (= 3.2.17)
->>>>>>> Bump hydra-head to 7.0
-      builder (~> 3.0.0)
-    activerecord (3.2.19)
-      activemodel (= 3.2.19)
-      activesupport (= 3.2.19)
-      arel (~> 3.0.2)
-      tzinfo (~> 0.3.29)
-    activeresource (3.2.19)
-      activemodel (= 3.2.19)
-      activesupport (= 3.2.19)
-    activesupport (3.2.19)
-      i18n (~> 0.6, >= 0.6.4)
-      multi_json (~> 1.0)
-    addressable (2.3.6)
-    arel (3.0.3)
-    autoparse (0.3.3)
-      addressable (>= 2.3.1)
-      extlib (>= 0.9.15)
-      multi_json (>= 1.0.0)
-=======
-=======
-    about_page (0.2.7)
-      rails (>= 3.2)
->>>>>>> Use upstream about_page now that it works with rails 4
-    actionmailer (4.0.5)
-      actionpack (= 4.0.5)
-      mail (~> 2.5.4)
-    actionpack (4.0.5)
-      activesupport (= 4.0.5)
-      builder (~> 3.1.0)
-      erubis (~> 2.7.0)
-      rack (~> 1.5.2)
-      rack-test (~> 0.6.2)
-    activemodel (4.0.5)
-      activesupport (= 4.0.5)
-      builder (~> 3.1.0)
-    activerecord (4.0.5)
-      activemodel (= 4.0.5)
-      activerecord-deprecated_finders (~> 1.0.2)
-      activesupport (= 4.0.5)
-      arel (~> 4.0.0)
-    activerecord-deprecated_finders (1.0.3)
-    activesupport (4.0.5)
-      i18n (~> 0.6, >= 0.6.9)
-      minitest (~> 4.2)
-      multi_json (~> 1.3)
-      thread_safe (~> 0.1)
-      tzinfo (~> 0.3.37)
-    addressable (2.3.6)
-    arel (4.0.2)
-    bcrypt (3.1.7)
->>>>>>> First pass at updating to rails 4
-    bcrypt-ruby (3.0.1)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    blacklight (4.7.0)
-      bootstrap-sass (>= 2.2.0, < 2.4)
-      deprecation (~> 0.1)
-=======
-    blacklight (5.3.0)
-=======
-    blacklight (5.4.0)
->>>>>>> Use hydra gem instead of hydra-head
-      bootstrap-sass (~> 3.0)
-      deprecation
->>>>>>> Bump hydra-head to 7.0
-=======
-=======
       om (~> 3.1)
->>>>>>> Facet cleanup; basic metadata cleanup
       rdf-rdfxml (~> 1.1.0)
       rsolr (~> 1.0.10)
       rubydora (~> 1.8)
@@ -356,6 +200,10 @@ GEM
       tzinfo (~> 0.3.37)
     addressable (2.3.6)
     arel (4.0.2)
+    autoparse (0.3.3)
+      addressable (>= 2.3.1)
+      extlib (>= 0.9.15)
+      multi_json (>= 1.0.0)
     bcrypt (3.1.7)
     bcrypt-ruby (3.1.5)
       bcrypt (>= 3.1.3)
@@ -367,20 +215,16 @@ GEM
     blacklight (5.5.2)
       bootstrap-sass (~> 3.0)
       deprecation
->>>>>>> Update Gemfile
       kaminari (~> 0.13)
       nokogiri (~> 1.6)
       rails (>= 3.2.6, < 5)
       rsolr (~> 1.0.6)
     block_helpers (0.3.3)
       activesupport (>= 2.0)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    bootstrap-sass (3.1.1.1)
+    bootstrap-sass (3.2.0.1)
       sass (~> 3.2)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    browse-everything (0.6.0)
+    bootstrap_form (2.1.1)
+    browse-everything (0.6.1)
       bootstrap-sass
       dropbox-sdk (>= 1.6.2)
       font-awesome-rails
@@ -390,30 +234,9 @@ GEM
       ruby-box
       sass-rails
       skydrive
-    builder (3.0.4)
-=======
-=======
-    bootstrap_form (2.1.1)
->>>>>>> Start switchover to bootstrap_form from twitter_bootstrap_form_for
-    builder (3.1.4)
->>>>>>> First pass at updating to rails 4
-    callsite (0.0.11)
-    cancancan (1.8.0)
-=======
-    bootstrap-sass (3.2.0.0)
-=======
-    bootstrap-sass (3.2.0.1)
->>>>>>> Facet cleanup; basic metadata cleanup
-      sass (~> 3.2)
-    bootstrap_form (2.1.1)
     builder (3.1.4)
     callsite (0.0.11)
-<<<<<<< HEAD
-    cancancan (1.9.0)
->>>>>>> Update Gemfile
-=======
     cancancan (1.9.1)
->>>>>>> CSS changes and jquery update
     capistrano (2.12.0)
       highline
       net-scp (>= 1.0.0)
@@ -433,43 +256,18 @@ GEM
     coderay (1.1.0)
     coffee-rails (4.0.1)
       coffee-script (>= 2.2.0)
-<<<<<<< HEAD
-<<<<<<< HEAD
-      railties (~> 3.2.0)
+      railties (>= 4.0.0, < 5.0)
     coffee-script (2.3.0)
       coffee-script-source
       execjs
     coffee-script-source (1.7.1)
     columnize (0.8.9)
-    compass (0.12.7)
-=======
-      railties (>= 4.0.0, < 5.0)
-    coffee-script (2.2.0)
-=======
-      railties (>= 4.0.0, < 5.0)
-    coffee-script (2.3.0)
->>>>>>> Update Gemfile
-      coffee-script-source
-      execjs
-    coffee-script-source (1.7.1)
-    columnize (0.8.9)
-<<<<<<< HEAD
-    compass (0.12.6)
->>>>>>> First pass at updating to rails 4
-      chunky_png (~> 1.2)
-      fssm (>= 0.2.7)
-      sass (~> 3.2.19)
-    compass-rails (1.1.7)
-      compass (>= 0.12.2)
-      sprockets (<= 2.11.0)
-=======
     compass (0.12.7)
       chunky_png (~> 1.2)
       fssm (>= 0.2.7)
       sass (~> 3.2.19)
     compass-rails (2.0.0)
       compass (>= 0.12.2)
->>>>>>> Update Gemfile
     compass-susy-plugin (0.9)
       compass (>= 0.11.1)
     daemons (1.1.9)
@@ -479,32 +277,12 @@ GEM
       debugger-linecache (~> 1.2.0)
       debugger-ruby_core_source (~> 1.3.5)
     debugger-linecache (1.2.0)
-<<<<<<< HEAD
-<<<<<<< HEAD
     debugger-ruby_core_source (1.3.5)
-<<<<<<< HEAD
-    delayed_job (3.0.5)
-      activesupport (~> 3.0)
-    delayed_job_active_record (0.3.3)
-      activerecord (>= 2.1.0, < 4)
-      delayed_job (~> 3.0)
-=======
-    debugger-ruby_core_source (1.3.2)
-=======
-    debugger-ruby_core_source (1.3.4)
->>>>>>> Start switchover to bootstrap_form from twitter_bootstrap_form_for
-    delayed_job (4.0.1)
-=======
     delayed_job (4.0.2)
->>>>>>> Update Gemfile
       activesupport (>= 3.0, < 4.2)
     delayed_job_active_record (4.0.1)
       activerecord (>= 3.0, < 4.2)
       delayed_job (>= 3.0, < 4.1)
-<<<<<<< HEAD
->>>>>>> First pass at updating to rails 4
-=======
->>>>>>> Update Gemfile
     deprecation (0.1.0)
       activesupport
     devise (3.2.4)
@@ -514,34 +292,10 @@ GEM
       thread_safe (~> 0.1)
       warden (~> 1.2.3)
     diff-lcs (1.2.5)
-<<<<<<< HEAD
     docile (1.1.5)
     dot-properties (0.1.3)
-<<<<<<< HEAD
     dropbox-sdk (1.6.4)
       json
-    email_spec (1.6.0)
-      launchy (~> 2.1)
-      mail (~> 2.2)
-    ensure_valid_encoding (0.5.3)
-    equivalent-xml (0.5.1)
-=======
-    docile (1.1.3)
-    dot-properties (0.1.2)
-    ebnf (0.3.6)
-      haml (~> 4.0)
-      rdf (~> 1.1)
-      sxp (~> 0.1, >= 0.1.3)
-    email_spec (1.5.0)
-      launchy (~> 2.1)
-      mail (~> 2.2)
-<<<<<<< HEAD
-    equivalent-xml (0.4.0)
->>>>>>> Bump hydra-head to 7.0
-=======
-    equivalent-xml (0.4.2)
->>>>>>> First pass at updating to rails 4
-=======
     ebnf (0.3.6)
       haml (~> 4.0)
       rdf (~> 1.1)
@@ -550,7 +304,6 @@ GEM
       launchy (~> 2.1)
       mail (~> 2.2)
     equivalent-xml (0.5.1)
->>>>>>> Update Gemfile
       nokogiri (>= 1.4.3)
     erubis (2.7.0)
     execjs (2.2.1)
@@ -561,15 +314,7 @@ GEM
       factory_girl (~> 4.4.0)
       railties (>= 3.0.0)
     fakefs (0.5.2)
-<<<<<<< HEAD
-<<<<<<< HEAD
     faker (1.4.2)
-=======
-    faker (1.3.0)
->>>>>>> First pass at updating to rails 4
-=======
-    faker (1.4.2)
->>>>>>> Update Gemfile
       i18n (~> 0.5)
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
@@ -606,22 +351,13 @@ GEM
       execjs (>= 1.2.9)
       sprockets (>= 2.0.3)
       tilt
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> Update Gemfile
     hashie (3.2.0)
     headless (1.0.2)
-=======
-    hashie (2.1.1)
-    headless (1.0.1)
->>>>>>> First pass at updating to rails 4
     highline (1.6.21)
     hike (1.2.3)
     hooks (0.3.6)
       uber (~> 0.0.4)
-<<<<<<< HEAD
-<<<<<<< HEAD
+    htmlentities (4.3.2)
     httmultiparty (0.3.15)
       httparty (>= 0.7.3)
       mimemagic
@@ -629,63 +365,8 @@ GEM
     httparty (0.13.1)
       json (~> 1.8)
       multi_xml (>= 0.5.2)
-    hydra (6.2.0)
-      active-fedora (~> 6.7.7)
-      blacklight (~> 4.7.0)
-      hydra-head (~> 6.5.0)
-      jettywrapper (~> 1.5.0)
-=======
-    htmlentities (4.3.2)
-<<<<<<< HEAD
-    hydra (7.0.0)
-      active-fedora (~> 7.0.2)
-      blacklight (~> 5.4.0)
-      hydra-head (~> 7.0.1)
-      jettywrapper (~> 1.7.0)
->>>>>>> Update Gemfile
-      nokogiri (~> 1.6.0)
-      nom-xml (~> 0.5.1)
-      om (~> 3.0.4)
-      rails (>= 3.2.15, < 5.0)
-      rsolr (~> 1.0.10)
-      rubydora (~> 1.7.4)
-      solrizer (~> 3.1.1)
-    hydra-access-controls (7.0.2)
-      active-fedora (~> 7.0.0)
-      activesupport
-      blacklight (~> 5.3)
-      cancancan
-      deprecation
-      sass-rails
-    hydra-core (7.0.2)
-      block_helpers
-      hydra-access-controls (= 7.0.2)
-      jettywrapper (>= 1.4.1)
-      rails (>= 3.2.3, < 5)
-<<<<<<< HEAD
-    hydra-head (6.5.2)
-      hydra-access-controls (= 6.5.2)
-      hydra-core (= 6.5.2)
-=======
-    htmlentities (4.3.1)
-    hydra (7.0.0)
-      active-fedora (~> 7.0.2)
-      blacklight (~> 5.4.0)
-      hydra-head (~> 7.0.1)
-      jettywrapper (~> 1.7.0)
-      nokogiri (~> 1.6.0)
-      nom-xml (~> 0.5.1)
-      om (~> 3.0.4)
-      rails (>= 3.2.15, < 5.0)
-      rsolr (~> 1.0.10)
-      rubydora (~> 1.7.4)
-      solrizer (~> 3.1.1)
-    hydra-access-controls (7.0.2)
-      active-fedora (~> 7.0.0)
-=======
     hydra-access-controls (7.2.0)
       active-fedora (~> 7.0)
->>>>>>> Facet cleanup; basic metadata cleanup
       activesupport
       blacklight (~> 5.3)
       cancancan
@@ -697,27 +378,9 @@ GEM
       hydra-access-controls (= 7.2.0)
       jettywrapper (>= 1.4.1)
       rails (>= 3.2.3, < 5)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    hydra-head (7.0.1)
-      hydra-access-controls (= 7.0.1)
-      hydra-core (= 7.0.1)
->>>>>>> Bump hydra-head to 7.0
-=======
-    hydra-head (7.0.2)
-      hydra-access-controls (= 7.0.2)
-      hydra-core (= 7.0.2)
->>>>>>> Use hydra gem instead of hydra-head
-=======
-    hydra-head (7.0.2)
-      hydra-access-controls (= 7.0.2)
-      hydra-core (= 7.0.2)
->>>>>>> Update Gemfile
-=======
     hydra-head (7.2.0)
       hydra-access-controls (= 7.2.0)
       hydra-core (= 7.2.0)
->>>>>>> Facet cleanup; basic metadata cleanup
       rails (>= 3.2.6)
     i18n (0.6.11)
     iconv (1.0.4)
@@ -725,20 +388,8 @@ GEM
       builder
       oauth (~> 0.4.5)
       uuid
-<<<<<<< HEAD
-    iso8601 (0.5.0)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    jettywrapper (1.5.2)
-=======
-    jettywrapper (1.7.0)
->>>>>>> Use hydra gem instead of hydra-head
-=======
-    jettywrapper (1.7.0)
->>>>>>> Update Gemfile
-=======
+    iso8601 (0.5.1)
     jettywrapper (1.8.2)
->>>>>>> Facet cleanup; basic metadata cleanup
       activesupport (>= 3.0.0)
       childprocess
       i18n
@@ -749,29 +400,9 @@ GEM
     jquery-ui-rails (5.0.0)
       railties (>= 3.2.16)
     json (1.8.1)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    jwt (1.0.0)
-=======
-    json-ld (1.1.3)
-=======
-    json-ld (1.1.3.1)
->>>>>>> Use hydra gem instead of hydra-head
-=======
-    json-ld (1.1.4)
->>>>>>> First pass at updating to rails 4
-      rdf (~> 1.1)
->>>>>>> Bump hydra-head to 7.0
-=======
-    json-ld (1.1.5)
-=======
     json-ld (1.1.6)
->>>>>>> Facet cleanup; basic metadata cleanup
       rdf (~> 1.1, >= 1.1.4)
->>>>>>> Update Gemfile
+    jwt (1.0.0)
     kaminari (0.15.1)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -807,126 +438,50 @@ GEM
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    marc (0.8.1)
-      ensure_valid_encoding
-      unf
-    media-element-logo-plugin (0.0.1)
-      rails (~> 3.2.3)
-=======
->>>>>>> Bump hydra-head to 7.0
+    media-element-logo-plugin (0.0.2)
+      rails (>= 3.2.3)
     mediainfo (0.7.2)
-<<<<<<< HEAD
-=======
-    mediainfo (0.7.2)
->>>>>>> Update Gemfile
     mediashelf-loggable (0.4.10)
-    meta_request (0.3.3)
+    meta_request (0.3.4)
       callsite (~> 0.0, >= 0.0.11)
       rack-contrib (~> 1.1)
       railties (>= 3.0.0, < 5.0.0)
-<<<<<<< HEAD
     method_source (0.8.2)
     mime-types (1.25.1)
     mimemagic (0.2.1)
     mini_portile (0.6.0)
-<<<<<<< HEAD
-    modal_logic (0.0.6)
-      handlebars_assets (= 0.14.1)
-<<<<<<< HEAD
-      rails (>= 3)
-=======
     minitest (4.7.5)
     modal_logic (0.0.7)
       handlebars_assets (= 0.14.1)
       rails (>= 4)
->>>>>>> fixing collection pages
     multi_json (1.10.1)
     multi_xml (0.5.5)
-=======
-      rails (~> 3.2.13)
-=======
-    mediashelf-loggable (0.4.9)
-    meta_request (0.3.0)
-      callsite
-      rack-contrib
-      railties
-    method_source (0.8.2)
-    mime-types (1.25.1)
-    mini_portile (0.5.3)
-=======
-    method_source (0.8.2)
-    mime-types (1.25.1)
-    mini_portile (0.6.0)
->>>>>>> Update Gemfile
-    minitest (4.7.5)
-    modal_logic (0.0.6)
-      handlebars_assets (= 0.14.1)
-      rails (>= 3)
->>>>>>> First pass at updating to rails 4
-    multi_json (1.10.0)
->>>>>>> Use hydra gem instead of hydra-head
     multipart-post (2.0.0)
     net-http-digest_auth (1.4)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
     net-http-persistent (1.9)
->>>>>>> Update Gemfile
     net-ldap (0.6.1)
     net-scp (1.2.1)
-=======
-    net-http-persistent (2.9.4)
-<<<<<<< HEAD
-    net-scp (1.1.2)
->>>>>>> Bump hydra-head to 7.0
       net-ssh (>= 2.6.5)
     net-sftp (2.1.2)
       net-ssh (>= 2.6.5)
     net-ssh (2.9.1)
-=======
-    net-scp (1.2.1)
-      net-ssh (>= 2.6.5)
-    net-sftp (2.1.2)
-      net-ssh (>= 2.6.5)
-    net-ssh (2.9.0)
->>>>>>> First pass at updating to rails 4
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
-<<<<<<< HEAD
-<<<<<<< HEAD
     netrc (0.7.7)
     nokogiri (1.6.3.1)
-=======
-    netrc (0.7.7)
-<<<<<<< HEAD
-    nokogiri (1.6.3)
->>>>>>> Update Gemfile
-=======
-    nokogiri (1.6.3.1)
->>>>>>> CSS changes and jquery update
       mini_portile (= 0.6.0)
-=======
-    nokogiri (1.6.2)
-      mini_portile (~> 0.5.2)
->>>>>>> Bump nokogiri to 1.6.2
     nom-xml (0.5.1)
       activesupport
       i18n
       nokogiri
     oauth (0.4.7)
-<<<<<<< HEAD
     oauth2 (1.0.0)
       faraday (>= 0.8, < 0.10)
       jwt (~> 1.0)
       multi_json (~> 1.3)
       multi_xml (~> 0.5)
       rack (~> 1.2)
-    om (3.0.7)
-=======
     om (3.1.0)
->>>>>>> Facet cleanup; basic metadata cleanup
       activemodel
       activesupport
       nokogiri (>= 1.4.2)
@@ -939,46 +494,21 @@ GEM
       omniauth (~> 1.0)
     orm_adapter (0.5.0)
     polyglot (0.3.5)
-    posix-spawn (0.3.8)
-<<<<<<< HEAD
-<<<<<<< HEAD
+    posix-spawn (0.3.9)
     pry (0.10.0)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
-=======
-    protected_attributes (1.0.7)
-      activemodel (>= 4.0.1, < 5.0)
-=======
->>>>>>> Remove protected_attributes and comment out deprecations
-    pry (0.9.12.6)
-      coderay (~> 1.0)
-      method_source (~> 0.8)
->>>>>>> Add protected_attributes gem for now
       slop (~> 3.4)
     pry-debugger (0.2.3)
       debugger (~> 1.3)
       pry (>= 0.9.10, < 0.11.0)
     pry-rails (0.3.2)
       pry (>= 0.9.10)
-<<<<<<< HEAD
-<<<<<<< HEAD
     puma (2.9.0)
-=======
-    puma (2.8.2)
->>>>>>> First pass at updating to rails 4
-=======
-    puma (2.9.0)
->>>>>>> Update Gemfile
       rack (>= 1.1, < 2.0)
     rack (1.5.2)
     rack-contrib (1.1.0)
       rack (>= 0.9.1)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    rack-ssl (1.3.4)
-      rack
-=======
->>>>>>> Update Gemfile
     rack-test (0.6.2)
       rack (>= 1.0)
     rails (4.0.8)
@@ -993,47 +523,10 @@ GEM
       actionpack (= 4.0.8)
       activesupport (= 4.0.8)
       rake (>= 0.8.7)
-<<<<<<< HEAD
-      rdoc (~> 3.4)
-      thor (>= 0.14.6, < 2.0)
-<<<<<<< HEAD
-=======
       thor (>= 0.18.1, < 2.0)
->>>>>>> Update Gemfile
     rake (10.3.2)
-=======
-=======
-    rack-test (0.6.2)
-      rack (>= 1.0)
-    rails (4.0.5)
-      actionmailer (= 4.0.5)
-      actionpack (= 4.0.5)
-      activerecord (= 4.0.5)
-      activesupport (= 4.0.5)
-      bundler (>= 1.3.0, < 2.0)
-      railties (= 4.0.5)
-      sprockets-rails (~> 2.0.0)
-    railties (4.0.5)
-      actionpack (= 4.0.5)
-      activesupport (= 4.0.5)
-      rake (>= 0.8.7)
-      thor (>= 0.18.1, < 2.0)
->>>>>>> First pass at updating to rails 4
-    rake (10.3.1)
->>>>>>> Bump rake version
     rb-fsevent (0.9.4)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    rdf (1.1.1.1)
-    rdf-rdfxml (1.0.1)
-      rdf (>= 1.0)
-      rdf-xsd (>= 1.0)
-=======
-    rdf (1.1.4.2)
-=======
     rdf (1.1.4.3)
->>>>>>> Facet cleanup; basic metadata cleanup
     rdf-aggregate-repo (1.1.0)
       rdf (>= 1.1)
     rdf-isomorphic (1.1.0)
@@ -1065,59 +558,13 @@ GEM
     rdf-turtle (1.1.4)
       ebnf (~> 0.3, >= 0.3.6)
       rdf (~> 1.1, >= 1.1.4)
->>>>>>> Update Gemfile
     rdf-xsd (1.1.1)
       rdf (~> 1.1)
     ref (1.0.5)
     rest-client (1.7.2)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
-<<<<<<< HEAD
     retriable (1.4.1)
-=======
-    rdf (1.1.3)
-    rdf-aggregate-repo (1.1.0)
-      rdf (>= 1.1)
-    rdf-isomorphic (1.1.0)
-      rdf (>= 1.1)
-    rdf-json (1.1.0)
-      rdf (>= 1.1.0)
-    rdf-microdata (1.1.1.1)
-      htmlentities (~> 4.3)
-      nokogiri (~> 1.6)
-      rdf (~> 1.1)
-      rdf-xsd (~> 1.1)
-    rdf-n3 (1.1.0.1)
-      rdf (~> 1.1)
-    rdf-rdfa (1.1.3.1)
-      haml (~> 4.0)
-      htmlentities (~> 4.3)
-      rdf (~> 1.1)
-      rdf-xsd (~> 1.1)
-    rdf-rdfxml (1.1.0.1)
-      rdf (~> 1.1)
-      rdf-rdfa (~> 1.1)
-      rdf-xsd (~> 1.1)
-    rdf-trig (1.1.3.1)
-      ebnf (~> 0.3, >= 0.3.5)
-      rdf (~> 1.1, >= 1.1.2.1)
-      rdf-turtle (~> 1.1, >= 1.1.3)
-    rdf-trix (1.1.0)
-      rdf (>= 1.1)
-    rdf-turtle (1.1.3.1)
-      ebnf (~> 0.3, >= 0.3.6)
-      rdf (~> 1.1, >= 1.1.3)
-    rdf-xsd (1.1.0)
-      rdf (>= 1.1)
-    rest-client (1.6.7)
-      mime-types (>= 1.16)
-    roo (1.13.2)
-      nokogiri
-      rubyzip
-      spreadsheet (> 0.6.4)
->>>>>>> Bump hydra-head to 7.0
-=======
->>>>>>> Update Gemfile
     rsolr (1.0.10)
       builder (>= 2.1.2)
     rspec (2.99.0)
@@ -1129,22 +576,11 @@ GEM
     rspec-core (2.99.1)
     rspec-expectations (2.99.2)
       diff-lcs (>= 1.1.3, < 2.0)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> CSS changes and jquery update
-=======
     rspec-its (1.0.1)
       rspec-core (>= 2.99.0.beta1)
       rspec-expectations (>= 2.99.0.beta1)
->>>>>>> deprecation fixing
     rspec-mocks (2.99.2)
     rspec-rails (2.99.0)
-=======
-    rspec-mocks (2.14.6)
-    rspec-rails (2.14.2)
->>>>>>> First pass at updating to rails 4
       actionpack (>= 3.0)
       activemodel (>= 3.0)
       activesupport (>= 3.0)
@@ -1167,15 +603,7 @@ GEM
       i18n
       iso8601
     ruby-ole (1.2.11.7)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    rubydora (1.7.5)
-=======
-    rubydora (1.7.4)
->>>>>>> Bump hydra-head to 7.0
-=======
     rubydora (1.8.0)
->>>>>>> Facet cleanup; basic metadata cleanup
       activemodel
       activesupport
       deprecation
@@ -1189,28 +617,6 @@ GEM
     rvm-capistrano (1.4.1)
       capistrano (>= 2.0.0)
     sass (3.2.19)
-<<<<<<< HEAD
-<<<<<<< HEAD
-    sass-rails (3.2.6)
-      railties (~> 3.2.0)
-      sass (>= 3.1.10)
-      tilt (~> 1.3)
-    shoulda-matchers (2.6.2)
-=======
-    sass-rails (4.0.3)
-      railties (>= 4.0.0, < 5.0)
-      sass (~> 3.2.0)
-      sprockets (~> 2.8, <= 2.11.0)
-      sprockets-rails (~> 2.0)
-    shoulda-matchers (2.6.1)
->>>>>>> First pass at updating to rails 4
-      activesupport (>= 3.0.0)
-    signet (0.5.1)
-      addressable (>= 2.2.3)
-      faraday (>= 0.9.0.rc5)
-      jwt (>= 0.1.5)
-      multi_json (>= 1.0.0)
-=======
     sass-rails (4.0.2)
       railties (>= 4.0.0, < 5.0)
       sass (~> 3.2.0)
@@ -1218,56 +624,29 @@ GEM
       sprockets-rails (~> 2.0.0)
     shoulda-matchers (2.6.2)
       activesupport (>= 3.0.0)
->>>>>>> Update Gemfile
+    signet (0.5.1)
+      addressable (>= 2.2.3)
+      faraday (>= 0.9.0.rc5)
+      jwt (>= 0.1.5)
+      multi_json (>= 1.0.0)
     simplecov (0.9.0)
       docile (~> 1.1.0)
       multi_json
       simplecov-html (~> 0.8.0)
     simplecov-html (0.8.0)
-<<<<<<< HEAD
-<<<<<<< HEAD
     skydrive (0.1.5)
       activesupport
       httmultiparty
       httparty (>= 0.11.0)
       oauth2 (>= 0.9.2)
     slop (3.6.0)
-=======
-    slop (3.5.0)
->>>>>>> First pass at updating to rails 4
-=======
-    slop (3.6.0)
-<<<<<<< HEAD
->>>>>>> Update Gemfile
-    solrizer (3.1.1)
-=======
     solrizer (3.3.0)
->>>>>>> Facet cleanup; basic metadata cleanup
       activesupport
       daemons
       nokogiri
       stomp
       xml-simple
-<<<<<<< HEAD
-<<<<<<< HEAD
-    sparql (1.1.2.1)
-      builder (>= 3.0)
-      ebnf (>= 0.3.2)
-      json (>= 1.7)
-      rdf (>= 1.1.0)
-      rdf-aggregate-repo (>= 1.1.0)
-      rdf-xsd (>= 1.0.2)
-      sparql-client (>= 1.1)
-      sxp (>= 0.1.3)
-    sparql-client (1.1.1)
-      json (>= 1.8)
-      net-http-persistent (>= 1.4)
-      rdf (>= 1.1)
-=======
-    sparql (1.1.3)
-=======
     sparql (1.1.4)
->>>>>>> Facet cleanup; basic metadata cleanup
       builder (~> 3.0)
       ebnf (~> 0.3, >= 0.3.5)
       rdf (~> 1.1, >= 1.1.4)
@@ -1278,7 +657,6 @@ GEM
     sparql-client (1.1.2)
       net-http-persistent (~> 1.4)
       rdf (~> 1.1)
->>>>>>> Update Gemfile
     spreadsheet (0.9.7)
       ruby-ole (>= 1.0)
     sprockets (2.11.0)
@@ -1294,57 +672,24 @@ GEM
     stomp (1.3.2)
     sxp (0.1.5)
     systemu (2.6.4)
-<<<<<<< HEAD
     therubyracer (0.12.1)
       libv8 (~> 3.16.14.0)
       ref
     thor (0.19.1)
-<<<<<<< HEAD
-=======
-    therubyracer (0.10.2)
-      libv8 (~> 3.3.10)
-    thor (0.19.1)
-    thread_safe (0.3.3)
->>>>>>> First pass at updating to rails 4
-=======
     thread_safe (0.3.4)
->>>>>>> Update Gemfile
     tilt (1.4.1)
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-    tzinfo (0.3.40)
-    uber (0.0.7)
-    uglifier (2.5.3)
-=======
-    tzinfo (0.3.39)
-    uber (0.0.6)
-    uglifier (2.5.0)
->>>>>>> First pass at updating to rails 4
-      execjs (>= 0.3.0)
-      json (>= 1.8.0)
-<<<<<<< HEAD
-    unf (0.1.4)
-      unf_ext
-    unf_ext (0.0.6)
-=======
->>>>>>> Bump hydra-head to 7.0
-=======
-=======
     twitter-typeahead-rails (0.10.2)
       actionpack (>= 3.1)
       jquery-rails
       railties (>= 3.1)
->>>>>>> Change from bootstrap.typeahead to twitter.typeahead
     tzinfo (0.3.40)
-    uber (0.0.7)
+    uber (0.0.8)
     uglifier (2.5.3)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
->>>>>>> Update Gemfile
     uuid (2.3.7)
       macaddr (~> 1.0)
     uuidtools (2.1.4)
@@ -1366,77 +711,18 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-  active-fedora (~> 6.7.8)
-=======
-=======
   about_page!
->>>>>>> First pass at updating to rails 4
-=======
->>>>>>> Routes no longer complain
-  active-fedora!
->>>>>>> Use active-fedora master to get latest bugfixes
-  activerecord-jdbcsqlite3-adapter
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
   active-fedora
   activerecord-jdbcsqlite3-adapter
   activerecord-session_store
-<<<<<<< HEAD
-  activesupport (~> 4.0.3)
->>>>>>> Update Gemfile
-=======
->>>>>>> Fix failing tests
   avalon-about!
   avalon-batch!
-=======
-=======
-  avalon-about!
->>>>>>> Use upstream about_page now that it works with rails 4
-  avalon-batch (~> 0.2.2)!
->>>>>>> Routes no longer complain
   avalon-workflow!
-<<<<<<< HEAD
-  bcrypt-ruby (~> 3.0.0)
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-  browse-everything (>= 0.6.0)
-  builder (~> 3.0.0)
-=======
-=======
-  bootstrap_form
->>>>>>> Start switchover to bootstrap_form from twitter_bootstrap_form_for
-  builder (~> 3.1.0)
->>>>>>> First pass at updating to rails 4
-  capistrano (~> 2.12.0)
-  capybara
-  coffee-rails
-  compass-rails (= 1.1.7)
-  compass-susy-plugin (~> 0.9.0)
-  database_cleaner!
-  debugger
-<<<<<<< HEAD
-  delayed_job_active_record (~> 0.3.3)
-  devise (~> 3.0.3)
-=======
-  delayed_job_active_record
-  devise (~> 3.2.0)
->>>>>>> First pass at updating to rails 4
-=======
-=======
   bcrypt-ruby (~> 3.1.0)
-<<<<<<< HEAD
->>>>>>> Facet cleanup; basic metadata cleanup
-=======
   better_errors
   binding_of_caller
->>>>>>> Death to overrides; viva la developers
   bootstrap_form
+  browse-everything (>= 0.6.0)
   builder (~> 3.1.0)
   capistrano (~> 2.12.0)
   capybara
@@ -1447,7 +733,6 @@ DEPENDENCIES
   debugger
   delayed_job_active_record
   devise (~> 3.2.0)
->>>>>>> Update Gemfile
   email_spec
   equivalent-xml
   execjs
@@ -1461,23 +746,7 @@ DEPENDENCIES
   handlebars_assets
   headless
   hooks
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-  hydra (~> 6.2.0)
-=======
-  hydra-head (~> 7.0)
->>>>>>> Bump hydra-head to 7.0
-=======
-  hydra (~> 7.0.0)
->>>>>>> Use hydra gem instead of hydra-head
-=======
-  hydra (~> 7.0)
->>>>>>> Update Gemfile
-=======
   hydra!
->>>>>>> Facet cleanup; basic metadata cleanup
   iconv
   jdbc-sqlite3
   jettywrapper
@@ -1498,7 +767,7 @@ DEPENDENCIES
   mediainfo
   meta_request
   mime-types (>= 1.1)
-  modal_logic (~> 0.0.6)
+  modal_logic
   multipart-post
   net-ldap
   omniauth-identity
@@ -1518,11 +787,7 @@ DEPENDENCIES
   rubyhorn!
   rubyzip (= 0.9.9)
   rvm-capistrano
-<<<<<<< HEAD
-  sass-rails (>= 3.2.3)
-=======
   sass-rails (= 4.0.2)
->>>>>>> Update Gemfile
   shoulda-matchers
   simplecov
   sprockets (~> 2.11.0)
