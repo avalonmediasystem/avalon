@@ -133,6 +133,17 @@ class MediaObjectsController < ApplicationController
     #@previous_view = media_object_path(@mediaobject)
   end
 
+  def bulk_delete
+    message = ""
+    params[:id].each do |id|
+      media_object = MediaObject.find(params[:id])
+      authorize! :destroy, media_object
+      message += "#{media_object.title} (#{params[:id]}) has been successfuly deleted"
+      media_object.destroy
+    end
+    redirect_to root_path, flash: { notice: message }
+  end
+
   def destroy
     media_object = MediaObject.find(params[:id])
     authorize! :destroy, media_object

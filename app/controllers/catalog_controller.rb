@@ -39,6 +39,7 @@ class CatalogController < ApplicationController
     # solr field configuration for search results/index views
     config.index.title_field = 'title_tesi'
     config.index.display_type_field = 'has_model_ssim'
+    config.index.thumbnail_method = :avalon_image_tag
 
     # solr field configuration for document/show views
     config.show.title_field = 'title_tesi'

@@ -14,25 +14,20 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% can_update = can?( :update_access_control, object) %>
-<%= bootstrap_form_for object, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
-  <%= hidden_field_tag :step, @active_step %>
 
+<% if can_update %>
+
+  <%= bootstrap_form_for object, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
+  <%= hidden_field_tag :step, @active_step %>
   <fieldset class='item-discovery'>
     <legend>Item discovery</legend>
-    <% if can_update %>
       <%= label_tag :hidden do %>
         <%= check_box_tag :hidden, '1', (hidden) %>
         Hide this item from search results 
       <% end %>
-    <% else %>
-      <%= hidden ? "Item is hidden from search results" : 
-        "Item is not hidden from search results" %>
-    <% end %>
   </fieldset>
-    
   <fieldset class='item-access'>
     <legend>Item access</legend>
-    <% if can_update %>
       <%= vid.hidden_field :pid %>
 
       <%= label_tag :visibility do %>
@@ -49,7 +44,18 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
         Collection staff only
       <% end %>
-    <% else %>
+  </fieldset> 
+  <% end #form_for %>		
+
+<% else %>
+
+  <fieldset class='item-discovery'>
+    <legend>Item discovery</legend>
+    <%= hidden ? "Item is hidden from search results" : 
+        "Item is not hidden from search results" %>
+  </fieldset>   
+  <fieldset class='item-access'>
+    <legend>Item access</legend>
       Item is viewable by
       <%= case @visibility
           when "public"
@@ -59,9 +65,9 @@ Unless required by applicable law or agreed to in writing, software distributed
           when "private"
             "collection staff only"
           end %>
-    <% end %>
   </fieldset> 
-<% end #form_for %>		
+
+<% end %>		
 
   <fieldset class='special-access'>
     <legend>Assign special access</legend>

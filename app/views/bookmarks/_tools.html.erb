@@ -1,0 +1,13 @@
+<ul class="bookmarkTools nav nav-pills">
+  <%# if can? :delete, @response.documents.map {|doc| doc.id} %>
+  <li class="delete">
+    <%= link_to t('blacklight.tools.delete'), bulk_delete_media_objects_path(:method => :delete, :id => @response.documents.map {|doc| doc.id}), :id => 'deleteLink', :name => 'delete', :class => 'btn btn-danger' %>
+  </li>
+  <%# end %>
+
+  <li class="email">
+    <%= link_to t('blacklight.tools.email'), email_catalog_path(:sort=>params[:sort], :per_page=>params[:per_page], :id => @response.documents.map {|doc| doc.id}), :class=>"btn btn-default", :id => "emailLink", :data => {:ajax_modal => "trigger"} %>
+  </li>
+  
+  <%= render_marc_tools %>
+</ul>

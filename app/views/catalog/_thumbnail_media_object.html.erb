@@ -13,13 +13,12 @@ Unless required by applicable law or agreed to in writing, software distributed
  specific language governing permissions and limitations under the License.
 --- END LICENSE_HEADER BLOCK ---
 %>
-<dl class="document-metadata dl-horizontal dl-invert col-md-9">
-  
-  <% index_fields(document).each do |solr_fname, field| -%>
-    <% if should_render_index_field? document, field %>
-	    <dt class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_label document, :field => solr_fname %></dt>
-	    <dd class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_value document, :field => solr_fname %></dd>
-    <% end -%>
-  <% end -%>
-
-</dl>
+<div class="col-md-3">
+  <% if image_url = image_for(document) %>
+    <%= link_to(media_object_path(document[:id]), {class: 'result-thumbnail'}) do %>
+      <%= image_tag( image_url ) %>
+    <% end %>
+  <% else %>
+    <%= image_tag 'no_icon.png', class: 'result-thumbnail' %>
+  <% end %>
+</div>

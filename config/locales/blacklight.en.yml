@@ -1,3 +1,39 @@
 en:
   blacklight:
     application_name: 'Avalon Media System'
+
+    header_links:
+      bookmarks: 'Manage Selected Items'
+
+    bookmarks:
+      title: 'Selected Items'
+      no_bookmarks: 'You have not selected any items'
+      addall:
+        button: 'Select All'
+      add:
+        button: 'Select'
+        success:
+          one: 'Successfully selected item.'
+          other: 'Successfully selected items.'
+        failure:  'Sorry, there was a problem saving the selected items.'
+      remove:
+        button: 'Unselect'
+        success: 'Successfully removed selected item.'
+        failure: 'Sorry, there was a problem removing the selected items.'
+        action_confirm: 'Remove this selected items?'
+      clear:
+        action_title: 'Clear selected items'
+        action_confirm: 'Clear your selected items?'
+        success: 'Cleared your selected items.'
+        failure: 'Sorry, there was a problem clearing your selected items.'
+      need_login: 'Please log in to manage and view your selected items.'
+      list_title: 'Your Selected Items'
+      delete: 'Remove'
+
+    back_to_bookmarks: 'Back to Selected Items'
+
+    search:
+      bookmarks:
+        present: "Selected"
+        absent: "Select"
+        inprogress: "Saving..."
