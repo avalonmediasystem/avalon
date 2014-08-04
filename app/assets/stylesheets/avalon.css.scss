@@ -409,6 +409,7 @@ header div{
 
 .sidenav { 
   h4 {
+    margin: 0px;
     background-color: $sidenavHeaderBackgroundColor;
     @include border-top-radius(6px);
   }
@@ -435,6 +436,9 @@ header div{
     padding-right: 0px;
     padding-left: 0px;
   }
+  ul {
+    margin-bottom: 0px;
+  }
   .top-panel-heading {
     margin-bottom: 0em;
   }
@@ -442,8 +446,8 @@ header div{
 
 div[id*='facet-panel-'] {
   @extend .navbar-collapse;
-  padding-left: 0;
-  padding-right: 0;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
   border-top: none;
   box-shadow: none;
   max-height: none;
