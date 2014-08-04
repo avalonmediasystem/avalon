@@ -17,11 +17,12 @@
 @import "branding";
 @import "font-awesome";
 @import "bootstrap-sprockets";
+@import "browse_everything";
 @import "bootstrap";
 @import "blacklight_themes/avalon";
 @import "blacklight/blacklight";
 @import "about_page";
-@import "browse_everything";
+
 /*
  * This is the default theme. You can modify many of the settings 
  * by editing your local app/assets/stylesheets/blacklight_themes/standard.css
