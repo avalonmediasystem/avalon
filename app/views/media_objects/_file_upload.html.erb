@@ -182,8 +182,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   <legend id="dropbox_modal_label">Import from a dropbox</legend>
   <p class="muted">Use the dropbox to import large files. Attach selected files after uploading. Files will be begin
  processing when you click Save and continue.</p>
-<button type="button" data-toggle="browse-everything" data-route="<%=browse_everything_engine.root_path%>" 
-  data-target="#myForm" class="btn btn-large btn-success" id="browse">Browse!</button>
+  <%= form_tag(master_files_path, id: 'dropbox_form', method: 'post') do %>
+    <input type="hidden" name="container_id" value="<%=h @mediaobject.pid %>"/>
+    <%= button_tag("Open Dropbox", type: 'button', class: 'btn btn-large btn-success', id: "browse-btn",
+      'data-toggle' => 'browse-everything', 'data-route' => browse_everything_engine.root_path,
+      'data-target' => '#dropbox_form', 'data-context' => @mediaobject.collection.pid ) %>
+  <% end %>
   <%= render partial: "dropbox_details" %>
 </section>
 
