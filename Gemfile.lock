@@ -451,7 +451,7 @@ GEM
     mimemagic (0.2.1)
     mini_portile (0.6.0)
     minitest (4.7.5)
-    modal_logic (0.0.7)
+    modal_logic (0.0.8)
       handlebars_assets (= 0.14.1)
       rails (>= 4)
     multi_json (1.10.1)
