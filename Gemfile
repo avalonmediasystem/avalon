@@ -116,12 +116,6 @@
     gem 'license_header'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
-  group :development do
-    #gem 'better_errors'
-    #gem 'binding_of_caller'
-    gem 'xray-rails'
-  end
-
   group :test do
     gem 'mime-types', ">=1.1"
     gem "headless"

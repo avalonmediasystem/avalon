@@ -58,9 +58,9 @@ class MasterFilesController < ApplicationController
     
     format_errors = "The file was not recognized as audio or video - "
     
-    if params.has_key?(:Filedata) and params.has_key?(:original)
+    if params.has_key?('...') and params.has_key?(:original)
       @master_files = []
-      params[:Filedata].each do |file|
+      Array(params['...']).each do |file|
         if (file.size > MasterFile::MAXIMUM_UPLOAD_SIZE)
           # Use the errors key to signal that it should be a red notice box rather
           # than the default

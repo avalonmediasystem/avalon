@@ -611,8 +611,22 @@ button.close {
   }
 }
 
+.fileinput {
+    max-width: 500px;
+    .form-control {
+      max-width: 500px;
+      white-space: nowrap;
+      overflow-x: hidden;
+    }
+}
+
 .ev-browser {
   background-color: white;
+}
+
+a[data-trigger='submit'] {
+  text-decoration: none;
+  color: black;
 }
 
 .access-block {
