@@ -159,16 +159,21 @@ tr.active-false td {
     }
   } 
 }	
-
 .navbar-right {
-  padding: 5px 0;
+  padding: 6px 0;
 }
 .container > .navbar-header {
-  height: 25px;
-  margin-right: 0px;
+  height: 30px;
 }
 .navbar-inverse .navbar-toggle .icon-bar {
   background-color: #888888;
+}
+.navbar-toggle {
+  margin: 4px;
+}
+#user-util-collapse{
+  margin-top: 10px;
+  border-top: 0;
 }
 
 .big-modal {
@@ -416,6 +421,7 @@ header div{
     margin: 0px;
     background-color: $sidenavHeaderBackgroundColor;
     @include border-top-radius(6px);
+    padding: 10px 0 10px 10px;
   }
   h5 {
     font-weight: bold;
@@ -424,6 +430,8 @@ header div{
 
 .sidenav .top-panel-heading {
   background-color: #cfd8d3;
+  padding: 0;
+  margin-bottom: 0;
 }
 
 .facets .panel-group .panel {
@@ -462,6 +470,7 @@ div[id*='facet-panel-'] {
   .icon-bar {
     background-color: #888888;
   }
+  margin: 3px;
 }
 
 
