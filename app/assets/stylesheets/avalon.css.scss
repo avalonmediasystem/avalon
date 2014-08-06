@@ -163,7 +163,7 @@ tr.active-false td {
   padding: 6px 0;
 }
 .container > .navbar-header {
-  height: 30px;
+  height: auto;
 }
 .navbar-inverse .navbar-toggle .icon-bar {
   background-color: #888888;
@@ -172,7 +172,6 @@ tr.active-false td {
   margin: 4px;
 }
 #user-util-collapse{
-  margin-top: 10px;
   border-top: 0;
 }
 
@@ -359,6 +358,7 @@ label {
 body {
   margin-top: 0;
   padding-top: 0;
+  min-width: 295px;
 }
 
 input[type="text"]#admin_group {
@@ -410,7 +410,7 @@ header div{
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
     transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
     height: 25px;
-    width: 300px;
+    width: 100%;
     vertical-align: middle;
 }
 
