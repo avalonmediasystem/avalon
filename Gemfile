@@ -22,7 +22,7 @@
   gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git' # HEAD , tag: 'avalon-r3'
   gem 'media-element-logo-plugin'
 
-  gem 'browse-everything', '>= 0.6.0'
+  gem 'browse-everything', '>= 0.6.3'
   
   gem 'roo', git: 'https://github.com/Empact/roo', ref: '9e1b969762cbb80b1c52cfddd848e489f22f468f'
 
@@ -85,7 +85,7 @@
     # For overriding the default interface with Twitter Bootstrap
     # This is now inherited from Blacklight
     gem 'sass-rails', '=4.0.2'
-    gem 'font-awesome-sass-rails'
+    gem 'font-awesome-rails', '~> 3.0'
     gem 'bootstrap_form'
     gem 'handlebars_assets'
     gem 'twitter-typeahead-rails'

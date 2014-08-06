@@ -37,8 +37,4 @@ $(document).ready(function() {
     ot.load(ot.data('src'));
     return false;
   })
-
-  $('#browse-btn').browseEverything().done(function(data) { 
-    console.dir(data);
-  })
 });

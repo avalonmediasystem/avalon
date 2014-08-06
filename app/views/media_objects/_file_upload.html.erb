@@ -138,9 +138,9 @@ Unless required by applicable law or agreed to in writing, software distributed
           <span class="input-group-addon btn btn-default btn-file"> 
             <span class="fileinput-new">Select file</span>
             <span class="fileinput-exists">Change</span>
-            <input type="file" name="..."></span>
-            <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+            <input type="file" name="Filedata[]"></input>
           </span>
+          <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
         </div>
 <!--
         <div class="fileupload fileupload-new" data-provides="fileupload">
@@ -209,6 +209,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <%= javascript_include_tag "file_upload_step" %>
+  <%= javascript_include_tag "file_browse" %>
+  <%= javascript_include_tag "file_table" %>
   <%= javascript_include_tag "bootstrap-fileupload.js" %>
   <%= javascript_include_tag "jasny-bootstrap.min.js" %>
   <script>

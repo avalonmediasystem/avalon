@@ -89,7 +89,7 @@ tr.active-false td {
     padding-left:  $line-height-base;
     margin-bottom: $line-height-computed/4;
     text-align: left;
-    @include border-radius($border-radius-base);
+    border-radius: $border-radius-base;
 
     background-color: $gray-lighter;
     border: $gray;
@@ -228,7 +228,7 @@ div#dropbox_modal {
   margin-bottom: $line-height-base/2;
   cursor: help;
 
-  @include border-radius($border-radius-base);
+  border-radius: $border-radius-base;
 
   &.collapse {
     display: none;
