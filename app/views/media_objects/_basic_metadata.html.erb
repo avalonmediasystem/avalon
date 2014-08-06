@@ -91,9 +91,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <%= javascript_include_tag 'dynamic_fields' %>
-<script>
-  $().ready(function() {
+  <script>
     DynamicFields.initialize();
-  });
-</script>
+  </script>
 <% end %>
