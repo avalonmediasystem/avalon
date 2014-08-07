@@ -63,7 +63,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <fieldset class='special-access'>
     <legend>Assign special access</legend>
     <% if flash[:error] %>
-      <div id="errors_information" class="alert alert-error active">
+      <div id="errors_information" class="alert alert-danger active">
        <button type="button" class="close" data-dismiss="alert">&times;</button>
        <% if flash[:error].is_a?(Array) 
          flash[:error].each do |err| %>

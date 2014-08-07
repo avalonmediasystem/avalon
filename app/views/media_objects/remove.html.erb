@@ -14,18 +14,19 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% #Copied from _administrative_links, should DRY it up %>
-<% if can? :destroy, @mediaobject %>
-  <div class="row-fluid">
-    <div class="btn-options">
-      <div class="alert alert-error">
-        Are you certain you want to remove this resource?
+<div class="container-fluid">
+  <% if can? :destroy, @mediaobject %>
+    <div class="row-fluid">
+      <div class="btn-options">
+        <div class="alert alert-danger">
+          Are you certain you want to remove this resource?
+        </div>
+        <%# This shouldn't be a plain link but the button_to helper does not render
+            correctly and fixing it might take a while %>
+        <%= link_to 'Yes, I am sure', @mediaobject, method: :delete, class: 'btn btn-danger' %>
+        <%= link_to 'No, go back', :back, class: 'btn btn-default' %> 
       </div>
-      <%# This shouldn't be a plain link but the button_to helper does not render
-          correctly and fixing it might take a while %>
-      <%= link_to 'Yes, I am sure', @mediaobject, method: :delete, class: 'btn btn-danger' %>
-      <%= link_to 'No, go back', :back, class: 'btn btn-default' %> 
     </div>
-  </div>
-<% end %>
-
-<%= render 'item_view' %>
+  <% end %>
+  <%= render 'item_view' %>
+</div>
