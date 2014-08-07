@@ -180,27 +180,8 @@ tr.active-false td {
   margin-left: -40%;
 }
 
-// If we are being responsive should really avoid using px measurements unless 
-// actually needed (!)
-div#dropbox_modal {
-  div.dataTables_paginate {
-    float: none;
-    text-align: left;
-  }
-
-  .modal-header .close {
-    margin-top: 11px;
-    margin-right: 14px;
-  }
-
-  .modal-header {
-    height: 37px;
-    padding: 0px 0px 0px 0px;
-  }
-
-  form {
-    margin: 0 0 0px;
-  }
+#browse-btn {
+  margin: .5em 0;
 }
 
 // Custom file preview field for Jasny bootstrap
@@ -612,6 +593,10 @@ button.close {
   &+.popover .arrow {
     left: 10%;
   }
+}
+
+.btn-confirmation+.popover .popover-content {
+  white-space: nowrap;
 }
 
 .fileupload-exists {

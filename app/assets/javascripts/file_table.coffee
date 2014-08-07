@@ -20,9 +20,3 @@ $(document).ready ->
     files = $(e.target.files).map (i,f) -> f.name
     preview = $(e.target).closest('.fileupload').data('fileupload').$preview
     preview.html(files.toArray().join())
-
-  $('.dropbox-trigger').click ->
-    $('#dropbox_modal').modal
-      backdrop: true,
-      keyboard: true
-    .addClass('big-modal')
