@@ -273,7 +273,7 @@ describe MediaObject do
   describe '#destroy' do
     it 'destroys related masterfiles' do
       media_object.parts << FactoryGirl.create(:master_file)
-      master_file_pids = media_object.parts.select(&:id).map(&:id)
+      master_file_pids = media_object.parts.map(&:id)
       media_object.section_pid = master_file_pids
       media_object.save( validate: false )
       media_object.destroy
