@@ -17,63 +17,61 @@ Unless required by applicable law or agreed to in writing, software distributed
   Groups
 <% end %>
 
-<div class="row col-md-7">
-  <% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
+<div class="container-fluid">
+  <div class="row col-md-7">
+    <% if flash[:error] %><div class="alert alert-danger"><%= flash[:error] %></div><% end %>
 
-  <h3>System Groups</h3>
-    <table class="table table-striped ">
-      <thead>
-        <tr>
-          <th>Group Name</th>
-          <th>Members#</th>
-          <!--<th>Ability</th>
-          <th>Resources#</th>-->
-        </tr>
-      </thead>
-      <tbody>
-        <% @default_groups.each do |group|%>
+    <h3>System Groups</h3>
+      <table class="table table-striped ">
+        <thead>
           <tr>
-            <td><%= link_to_if can?(:manage, group), group.name, edit_admin_group_path(group) %></td>
-            <td><%= group.users.count %></td>
+            <th>Group Name</th>
+            <th>Members#</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% @default_groups.each do |group|%>
+            <tr>
+              <td><%= link_to_if can?(:manage, group), group.name, edit_admin_group_path(group) %></td>
+              <td><%= group.users.count %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
 
-  <h3> Additional Groups</h3>
+    <h3> Additional Groups</h3>
 
-  <%= form_tag(admin_groups_path) do -%>
-    <%= text_field_tag 'admin_group', nil, :placeholder => 'Enter group name here...' %> 
-    <%= button_tag 'Create Group', type: "submit", class: "btn btn-default" %>
-  <% end -%>
+    <%= form_tag(admin_groups_path) do -%>
+      <%= text_field_tag 'admin_group', nil, :placeholder => 'Enter group name here...' %> 
+      <%= button_tag 'Create Group', type: "submit", class: "btn btn-default" %>
+    <% end -%>
 
-  <%= form_tag update_multiple_admin_groups_path, method: :put do %>
+    <%= form_tag update_multiple_admin_groups_path, method: :put do %>
 
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th><input type="checkbox" class="select-groups"></th>
-          <th>Group Name</th>
-          <th>Members#</th>
-          <!--<th>Ability</th>
-          <th>Resources#</th>-->
-        </tr>
-      </thead>
-      <tbody>
-        <% @groups.each do |group|%>
+      <table class="table table-striped">
+        <thead>
           <tr>
-            <td><%= check_box_tag "group_ids[]", group.name %></td>
-            <td><%= link_to group.name, edit_admin_group_path(group) %></td>
-            <td><%= group.users.count %></td>
+            <th><input type="checkbox" class="select-groups"></th>
+            <th>Group Name</th>
+            <th>Members#</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% @groups.each do |group|%>
+            <tr>
+              <td><%= check_box_tag "group_ids[]", group.name %></td>
+              <td><%= link_to group.name, edit_admin_group_path(group) %></td>
+              <td><%= group.users.count %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
 
-    <%= submit_tag "Delete Groups", method: :delete, confirm: "Deleted groups cannot be recovered. Are you sure?", 
+      <%= submit_tag "Delete Groups", method: :delete, 
+        confirm: "Deleted groups cannot be recovered. Are you sure?", 
         class: "btn btn-danger delete", disabled: true %>
-  <% end %>
-
+    <% end %>
+  </div>
 </div>
 
 <% content_for :page_scripts do %>

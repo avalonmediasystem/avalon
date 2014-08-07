@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   .inline-children > div { display: inline }
 </style>
 
-<% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
+<% if flash[:error] %><div class="alert alert-danger"><%= flash[:error] %></div><% end %>
 
 <%= bootstrap_form_for @group, html: { :class => 'form-inline'}  do |f| %>
    <fieldset class="whitespace">

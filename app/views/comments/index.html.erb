@@ -17,25 +17,27 @@ Unless required by applicable law or agreed to in writing, software distributed
   Contact Us
 <% end %>
 
-<% if flash[:notice] %>
-    <div class="alert"><%= flash[:notice] %></div>
-<% end %>
+<div class="container-fluid">
+  <% if flash[:notice] %>
+    <div class="alert alert-info"><%= flash[:notice] %></div>
+  <% end %>
 
-<% if flash[:error] %>
-  <div class="alert alert-error"><%= flash[:error] %></div> 
-<% end %>
+  <% if flash[:error] %>
+    <div class="alert alert-danger"><%= flash[:error] %></div> 
+  <% end %>
 
-<h2>Contact us</h2>
-<p>Interested in learning more about the Avalon Media System? Request a temporary account to explore the features that it provides.</p>
-<p><strong>All fields are required</strong></p>
+  <h2>Contact us</h2>
+  <p>Interested in learning more about the Avalon Media System? Request a temporary account to explore the features that it provides.</p>
+  <p><strong>All fields are required</strong></p>
 
-<%= bootstrap_form_for @comment, class: 'form-vertical' do |comment| %>
-<fieldset>
+  <%= bootstrap_form_for @comment, class: 'form-vertical' do |comment| %>
+  <fieldset>
       <%= comment.text_field :name, class: 'col-md-4', label: 'Name' %>
       <%= comment.email_field :email, class: 'col-md-4', label: 'Email address' %>
       <%= comment.email_field :email_confirmation, class: 'col-md-4', label: 'Confirm email address' %> 
       <%= comment.select :subject, @subjects, prompt: 'Select one',  class: 'col-md-4' %>    
       <%= comment.text_area :comment, rows: 10, class: 'col-md-4' %>
       <%= comment.primary "Submit comments" %>
-</fieldset>
-<% end %>
+  </fieldset>
+  <% end %>
+</div>

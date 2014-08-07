@@ -17,15 +17,16 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= @mediaobject.title || @mediaobject.pid %>
 <% end %>
 
-<% if flash[:notice].present? %>
-  <div class="clearfix" id="alerts">
-    <div class="alert alert-success">
-      <button type="button" class="close" data-dismiss="alert">&times;</button>
-      <%= flash[:notice] %>
-    </div>  
-  </div>
-<% end %>
 <div class="container-fluid" >
+  <% if flash[:notice].present? %>
+    <div class="clearfix" id="alerts">
+      <div class="alert alert-success">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <%= flash[:notice] %>
+      </div>  
+    </div>
+  <% end %>
+
   <%= render 'administrative_links' %>
   <%= render 'item_view' %>
 </div>

@@ -17,8 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= @collection.name %>
 <% end %>
 
-<div class="row-fluid">
-  <div class="col-md-12">
+<div class="container-fluid">
     <div class="well">
     <h3><%= @collection.name %></h3>
     <p> <strong>Description:</strong> <%= @collection.description %> </p>
@@ -36,7 +35,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <legend>Assign Staff Roles</legend>
 
         <% if flash[:notice] %>
-          <div class="alert alert-error col-md-9">
+          <div class="alert alert-danger col-md-9">
             <a href="#" class="close" data-dismiss="alert">&times;</a>
             <%= flash[:notice] %>
           </div>
@@ -74,7 +73,6 @@ Unless required by applicable law or agreed to in writing, software distributed
       </fieldset>
       
     <% end %>
-  </div>
 </div>
 
 <style>
