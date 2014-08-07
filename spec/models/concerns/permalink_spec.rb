@@ -49,14 +49,11 @@ describe Permalink do
     end
 
     context 'creating permalink' do
-      let(:media_object) { FactoryGirl.build(:media_object) }
+      let(:media_object) { master_file.mediaobject }
       
       it 'should get the absolute path to the object' do
-        allow(media_object).to receive(:pid).and_return('avalon:item')
-        allow(master_file).to receive(:pid).and_return('avalon:section')
-        master_file.mediaobject = media_object
-        expect(Permalink.url_for(media_object)).to eq('http://test.host/media_objects/avalon:item')
-        expect(Permalink.url_for(master_file)).to eq('http://test.host/media_objects/avalon:item/section/avalon:section')
+        expect(Permalink.url_for(media_object)).to eq("http://test.host/media_objects/#{media_object.pid}")
+        expect(Permalink.url_for(master_file)).to eq("http://test.host/media_objects/#{media_object.pid}/section/#{master_file.pid}")
       end
       
       it 'permalink_for raises ArgumentError if not passed mediaobject or masterfile' do

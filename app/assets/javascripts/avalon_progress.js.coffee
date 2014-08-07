@@ -18,7 +18,7 @@ class AvalonProgress
 
   updateBar = (bar, attrs) -> 
     for type, percent of attrs
-      target = $(".bar.bar-#{type}",bar)
+      target = $(".progress-bar.progress-bar-#{type}",bar)
       target.css('width',"#{percent}%")
 
   retrieve: (auto=false) ->

@@ -13,11 +13,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<%= twitter_bootstrap_form_for @collection, remote: true, html: { modal: true } do |f| %>
-  <%= f.text_field :name, class: 'span5' %>
-  <%= f.text_area :description, rows: 3, class: 'span5'  %>
+<%= bootstrap_form_for @collection, remote: true, html: { modal: true } do |f| %>
+  <%= f.text_field :name, class: 'col-md-5' %>
+  <%= f.text_area :description, rows: 3, class: 'col-md-5'  %>
 	<% if @collection.new? || can?(:update_unit, @collection)%>
-		<%= f.select(:unit, "Unit", Admin::Collection.units) %>
+		<%= f.select(:unit, Admin::Collection.units) %>
 	<% end %>	
 	<%= f.submit class: 'btn btn-primary btn-stateful-loading', data: {loading_text: 'Saving...'} %>
 	<a href="#" data-dismiss="modal" aria-hidden="true" class="btn">Cancel</a>

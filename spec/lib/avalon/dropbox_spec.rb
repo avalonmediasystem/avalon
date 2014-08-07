@@ -31,7 +31,7 @@ describe Avalon::Dropbox do
     end
 
     it 'returns false if the file is not found' do
-      subject.delete('some_file.mov').should be_false
+      subject.delete('some_file.mov').should be false
     end
 
   end

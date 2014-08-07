@@ -14,8 +14,8 @@
 
 class ObjectController < ApplicationController
   def show
-    obj = ActiveFedora::Base.find('dc_identifier_tesim' => params[:id])
-    obj ||= ActiveFedora::Base.find(params[:id], cast: true) rescue ActiveFedora::ObjectNotFoundError
+    obj = ActiveFedora::Base.where('dc_identifier_tesim' => params[:id]).first
+    obj ||= ActiveFedora::Base.find(params[:id], cast: true) rescue nil
     if obj.blank?
       redirect_to root_path
     else

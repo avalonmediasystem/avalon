@@ -40,16 +40,7 @@
 //= require jquery-ui
 //= require jquery.ui.nestedSortable
 
-//= require bootstrap-alert
-//= require bootstrap-dropdown
-//= require bootstrap-transition
-//= require bootstrap-collapse
-//= require bootstrap-modal
-//= require bootstrap-typeahead
-//= require bootstrap-button
-//= require bootstrap-tooltip
-//= require bootstrap-popover
-//= require bootstrap-tab
+//= require bootstrap-sprockets
 
 
 /* requirements for handling modals with modal logic gem */
@@ -59,13 +50,14 @@
 
 //= require browse_everything
 
+/* bootstrap 3 eliminated typeahead. use twitter-typeahead-rails instead */
+//= require twitter/typeahead
 
 /*
  * Place any local overrides in avalon.js (for Blacklight, Hydra, jQuery,
  * etc) 
  */
 //= require avalon
-//= require file_browse
 //= require pop_help
 //= require access_autocomplete
 //= require_self

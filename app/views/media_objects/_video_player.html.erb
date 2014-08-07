@@ -25,12 +25,12 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= javascript_include_tag 'avalon_progress' %>
           <% end %>
 
-          <div class="alert <%= @masterFiles.any? { |mf| mf.failed? } ? 'alert-error' : 'alert-info' %>">
+          <div class="alert <%= @masterFiles.any? { |mf| mf.failed? } ? 'alert-danger' : 'alert-info' %>">
             <h4>Conversion Process</h4>
             <br/>
             <div id="overall" class="progress progress-striped active hidden-phone">
-              <div class='bar bar-success' style='width:0%'></div>
-              <div class='bar bar-danger' style='width:0%'></div>
+              <div class='progress-bar progress-bar-success' style='width:0%'></div>
+              <div class='progress-bar progress-bar-danger' style='width:0%'></div>
             </div>
           </div>
         <% end %>

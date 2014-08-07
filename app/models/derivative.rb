@@ -53,7 +53,6 @@ class Derivative < ActiveFedora::Base
   # Getting the track ID from the fragment is not great but it does reduce the number
   # of calls to Matterhorn 
   def self.create_from_master_file(masterfile, markup, opts = {})
-    
     # Looks for an existing derivative of the same quality
     # and adds the track URL to it
     quality = markup.tags.quality.first.split('-')[1] unless markup.tags.quality.empty?
@@ -82,10 +81,10 @@ class Derivative < ActiveFedora::Base
     end
 
     if markup.tags.tag.include? "hls"   
-      derivative.hls_track_id = markup.track_id
+      derivative.hls_track_id = markup.track_id.first
       derivative.hls_url = markup.url.first
     else
-      derivative.track_id = markup.track_id
+      derivative.track_id = markup.track_id.first
       derivative.location_url = markup.url.first
       derivative.absolute_location = File.join(opts[:stream_base], Avalon::MatterhornRtmpUrl.parse(derivative.location_url).to_path) if opts[:stream_base]
     end

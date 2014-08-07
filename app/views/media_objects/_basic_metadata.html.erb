@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if flash[:error].present? %>
-  <div class='alert alert-error' style='display: inline-table;'><%= flash[:error] %></div>
+  <div class='alert alert-danger' style='display: inline-table;'><%= flash[:error] %></div>
 <% end %>
 
 <p>Fields followed by an asterisk (*) are required.</p>
@@ -30,7 +30,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       proper test coverage %>
   <%= render partial: 'text_fields',
              locals: {media: media, field: :creator,
-                      count: [3, @mediaobject.creator.length].max,
+                      count: [1, @mediaobject.creator.length].max,
                       text_label: 'Main contributor(s)', 
                       options: {required: true, tooltip: true, dynamic: true}} %>
                     
@@ -51,34 +51,34 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <%= render partial: 'text_fields',
              locals: {media: media, field: :contributor,
-                      count: [3, @mediaobject.contributor.length].max,
+                      count: [1, @mediaobject.contributor.length].max,
                       text_label: 'Contributor(s)', 
                       options: {tooltip: true, dynamic: true}} %>
 
   <%= render partial: 'text_fields',
              locals: {media: media, field: :publisher,
-                      count: [3, @mediaobject.publisher.length].max,
+                      count: [1, @mediaobject.publisher.length].max,
                       text_label: 'Publisher(s)', 
                       options: {tooltip: true, dynamic: true}} %>
 
   <%= render partial: 'text_fields',
              locals: {media: media, field: :genre,
-                      count: [3, @mediaobject.genre.length].max,
+                      count: [1, @mediaobject.genre.length].max,
                       text_label: 'Genre(s)', 
                       options: {tooltip: true, dynamic: true}} %>
   <%= render partial: 'text_fields',
              locals: {media: media, field: :topical_subject,
-                      count: [3, @mediaobject.topical_subject.length].max,
+                      count: [1, @mediaobject.topical_subject.length].max,
                       text_label: 'Subject(s)', 
                       options: {tooltip: true, dynamic: true}} %>
   <%= render partial: 'text_fields',
              locals: {media: media, field: :temporal_subject,
-                      count: [3, @mediaobject.temporal_subject.length].max,
+                      count: [1, @mediaobject.temporal_subject.length].max,
                       text_label: 'Time period(s)', 
                       options: {tooltip: true, dynamic: true}} %>
   <%= render partial: 'text_fields',
              locals: {media: media, field: :geographic_subject,
-                      count: [3, @mediaobject.geographic_subject.length].max,
+                      count: [1, @mediaobject.geographic_subject.length].max,
                       text_label: 'Location(s)', 
                       options: {tooltip: true, dynamic: true}} %>
   <%= render partial: 'text_field',
@@ -91,9 +91,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <%= javascript_include_tag 'dynamic_fields' %>
-<script>
-  $().ready(function() {
+  <script>
     DynamicFields.initialize();
-  });
-</script>
+  </script>
 <% end %>

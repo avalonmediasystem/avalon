@@ -25,7 +25,6 @@ class CatalogController < ApplicationController
   self.solr_search_params_logic += [:add_access_controls_to_solr_params_if_not_admin]
   
   # This filters out objects that you want to exclude from search results, like FileAssets
-  self.solr_search_params_logic += [:exclude_unwanted_models]
   self.solr_search_params_logic += [:only_wanted_models]
   self.solr_search_params_logic += [:only_published_items]
   self.solr_search_params_logic += [:limit_to_non_hidden_items]
@@ -38,13 +37,12 @@ class CatalogController < ApplicationController
     }
 
     # solr field configuration for search results/index views
-    config.index.show_link = 'title_tesi'
-    config.index.record_display_type = 'has_model_ssim'
+    config.index.title_field = 'title_tesi'
+    config.index.display_type_field = 'has_model_ssim'
 
     # solr field configuration for document/show views
-    config.show.html_title = 'title_tesi'
-    config.show.heading = 'title_tesi'
-    config.show.display_type = 'has_model_ssim'
+    config.show.title_field = 'title_tesi'
+    config.show.display_type_field = 'has_model_ssim'
 
     # solr fields that will be treated as facets by the blacklight application
     #   The ordering of the field names is the order of the display
@@ -90,9 +88,9 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
-    config.add_index_field 'creator_ssim', :label => 'Main contributors:', :helper_method => :contributor_index_display 
-    config.add_index_field 'date_ssi', :label => 'Date:' 
-    config.add_index_field 'summary_ssi', label: 'Summary:', :helper_method => :description_index_display
+    config.add_index_field 'creator_ssim', :label => 'Main contributors', :helper_method => :contributor_index_display 
+    config.add_index_field 'date_ssi', :label => 'Date' 
+    config.add_index_field 'summary_ssi', label: 'Summary', :helper_method => :description_index_display
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display 

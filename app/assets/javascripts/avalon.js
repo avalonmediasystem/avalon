@@ -20,7 +20,7 @@
 $(document).ready(function() {
   Blacklight.do_search_context_behavior = function() {}
 
-  $('.btn-stateful-loading').live('click', function() { $(this).button('loading'); });    
+  $( document ).on('click', '.btn-stateful-loading', function() { $(this).button('loading'); });    
 
   $('.popover-target').popover({
     placement: 'top',
@@ -36,9 +36,5 @@ $(document).ready(function() {
     var ot = $('#object_tree')
     ot.load(ot.data('src'));
     return false;
-  })
-
-  $('#browse-btn').browseEverything().done(function(data) { 
-    console.dir(data);
   })
 });

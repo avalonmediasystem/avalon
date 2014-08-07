@@ -294,7 +294,7 @@ class MediaObject < ActiveFedora::Base
   end
   
   def to_solr(solr_doc = Hash.new, opts = {})
-    super(solr_doc, opts)
+    solr_doc = super(solr_doc, opts)
     solr_doc[Solrizer.default_field_mapper.solr_name("created_by", :facetable, type: :string)] = self.DC.creator
     solr_doc[Solrizer.default_field_mapper.solr_name("duration", :displayable, type: :string)] = self.duration
     solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
