@@ -36,6 +36,7 @@ set(:shared_children) {
     config/matterhorn.yml 
     config/minter_state.yml
     config/role_map_#{fetch(:rails_env)}.yml 
+    config/secrets.yml
     config/solr.yml
     Gemfile.local 
     log 
