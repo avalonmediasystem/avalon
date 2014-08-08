@@ -71,6 +71,7 @@ module Avalon
     # of it stopping cold in production
     config.action_mailer.raise_delivery_errors = true
 
+    config.secret_key_base = YAML.load(File.open("#{Rails.root}/config/secrets.yml"))[Rails.env]['secret_key_base']
   end
   
   # Map config to the local namespace so we can use shorter references in 
