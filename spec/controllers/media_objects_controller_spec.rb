@@ -241,7 +241,7 @@ describe MediaObjectsController, type: :controller do
     end
     
     it "should remove the MediaObject and MasterFiles from the system" do
-      media_object.parts << FactoryGirl.create(:master_file)
+      media_object.parts << FactoryGirl.create(:master_file, mediaobject: media_object)
       master_file_pids = media_object.parts.map(&:id)
       media_object.section_pid = master_file_pids
       media_object.save( validate: false )
