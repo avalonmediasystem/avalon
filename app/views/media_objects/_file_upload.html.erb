@@ -13,12 +13,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% if flash[:error].present? %>
-  <ul class='unstyled alert alert-danger' style='display: inline-table;'>
-    <%= Array(flash[:error]).collect { |error| content_tag(:li,error) }.join('').html_safe %>
-  </ul>
-<% end %>
-
 <% unless @masterFiles.empty? %>
 <section id="associated_files" class="col-md-11">
       <legend>Associated files</legend>

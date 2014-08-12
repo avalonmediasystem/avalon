@@ -39,6 +39,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= render 'modules/header' %>
     <div class="container-fluid">
       <%= render :partial => 'modules/global_navigation' %>
+      <%= render 'modules/flash_messages' %>
       <%= yield %>
     </div>
     <%= render 'modules/footer' %>

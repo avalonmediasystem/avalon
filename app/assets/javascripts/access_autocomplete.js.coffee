@@ -35,5 +35,9 @@ $('.typeahead.from-model').each ->
     minLength: 2
   ,
     name: $target_id
-    displayKey: 'display'
+    displayKey: (suggestion) ->
+      if suggestion.display is ""
+        suggestion.id
+      else
+        suggestion.display
     source: mySource.ttAdapter()

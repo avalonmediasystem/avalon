@@ -13,9 +13,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% if flash[:error].present? %>
-  <div class='alert alert-danger' style='display: inline-table;'><%= flash[:error] %></div>
-<% end %>
 
 <p>Fields followed by an asterisk (*) are required.</p>
 <%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
