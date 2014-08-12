@@ -25,10 +25,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
     
     <div id="main_body" class="col-md-9 col-sm-8">
-
-    <h5><span class="muted"><%= @mediaobject.collection.name.present? ? @mediaobject.collection.name : 'Untitled collection' %> > <%= @mediaobject.title.present? ? @mediaobject.title : 'Untitled item' %></span></h5>
-    <h3><%= HYDRANT_STEPS.get_step(@active_step).title %></h3>  
-    <%= render current_step_for @active_step %>
+      <h5><span class="muted"><%= @mediaobject.collection.name.present? ? @mediaobject.collection.name : 'Untitled collection' %> > <%= @mediaobject.title.present? ? @mediaobject.title : 'Untitled item' %></span></h5>
+      <h3><%= HYDRANT_STEPS.get_step(@active_step).title %></h3>  
+      <%= render current_step_for @active_step %>
     </div>
   </div>
 </div>
