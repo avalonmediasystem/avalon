@@ -160,7 +160,7 @@ tr.active-false td {
   } 
 }	
 .navbar-right {
-  padding: 6px 0;
+  padding: 4px 0;
 }
 .container > .navbar-header {
   height: auto;
@@ -261,6 +261,7 @@ label {
     border: 1px solid #ccc;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
     transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+    background-color: white;
   }
   button {
     float: right;
@@ -268,7 +269,7 @@ label {
     margin-left: 5px;
     width: 20%;
   }
-  span {
+  span.twitter-typeahead {
     width: 75%;
   }
 }
@@ -292,6 +293,8 @@ label {
   color:#BBB;
 }
 .tt-suggestions {
+  @extend .col-lg-4;
+  @extend .col-md-12;
   border-radius: 4px;
   margin: 2px 0 0 0;
   z-index: 1051;
@@ -300,6 +303,7 @@ label {
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   min-width: 160px;
   position: absolute;
+  width: 100%;
 }
 .tt-suggestion {
   clear: both;
@@ -308,10 +312,12 @@ label {
   line-height: 20px;
   padding: 3px 6px;
   white-space: nowrap;
+  width: 100%;
 }
 .tt-suggestion p {
   padding: 0;
   margin: 0;
+  width: 100%;
 }
 .tt-cursor {
   background-color: #264d52;
@@ -321,7 +327,9 @@ label {
   outline: 0 none;
   text-decoration: none;
 }
-
+.tt-dropdown-menu {
+  width: 100%;
+}
 /**
  * Make the plus icon controls appear like a button
  */
