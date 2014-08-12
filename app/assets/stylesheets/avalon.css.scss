@@ -245,13 +245,16 @@ label {
   font-weight: normal;
 }
 
+input[type=text] {
+  padding: 3px;
+  border-radius: 4px;
+}
+
 .access-block {
   @extend .col-lg-4;
   @extend .col-md-12;
   input[type=text] {
     width:100%;
-    padding: 4px 6px;
-    border-radius: 4px;
   }
   select {
     width: 75%;
@@ -571,9 +574,10 @@ button.close {
   }
   .field_with_errors input { border-color: $state-danger-text;} 
   input, textarea{
-    @extend .col-sm-8;
+    width: 90%;
     float: none;
     margin-bottom: 10px;
+    padding: 3px;
   }
   label {
     display: block;
