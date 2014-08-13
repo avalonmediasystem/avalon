@@ -207,8 +207,4 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= javascript_include_tag "file_table" %>
   <%= javascript_include_tag "bootstrap-fileupload.js" %>
   <%= javascript_include_tag "jasny-bootstrap.min.js" %>
-  <script>
-    /* Hide the alert dialog on the page loading if Javascript is enabled */
-    <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
-  </script>
 <% end %>

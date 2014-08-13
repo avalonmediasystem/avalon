@@ -572,7 +572,10 @@ button.close {
   &.error {
     input:first-child{ border-color: $state-danger-text; }
   }
-  .field_with_errors input { border-color: $state-danger-text;} 
+  .field_with_errors input { 
+    border-color: $state-danger-border;
+    background-color: $state-danger-bg;
+  } 
   input, textarea{
     width: 90%;
     float: none;

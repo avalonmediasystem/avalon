@@ -1,28 +1,28 @@
 <% if flash[:error].present? || flash[:notice].present? %>
-<div class="clearfix" id="alerts">
-  <% if flash[:error].present? %>
-  <div id="errors_information" class="alert alert-danger active">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <% if flash[:error].is_a?(Array) 
-       flash[:error].each do |err| %>
-      <p class="notice"><%= err %></p>
+  <div class="clearfix" id="alerts">
+    <% if flash[:error].present? %>
+    <div class="alert alert-danger">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <% if flash[:error].is_a?(Array) 
+	flash[:error].each do |err| %>
+          <p class="notice"><%= err %></p>
+        <% end %>
+      <% else %>
+        <p class="notice"><%= flash[:error] %></p>
+      <% end %>
+    </div>
     <% end %>
-    <% else %>
-    <p class="notice"><%= flash[:error] %></p>
+    <% if flash[:notice].present? %>
+    <div class="alert alert-success">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+      <% if flash[:notice].is_a?(Array) 
+        flash[:notice].each do |err| %>
+          <p class="notice"><%= err %></p>
+        <% end %>
+      <% else %>
+        <p class="notice"><%= flash[:notice] %></p>
+      <% end %>
+    </div>  
     <% end %>
   </div>
-  <% end %>
-  <% if flash[:notice].present? %>
-  <div class="alert alert-success">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    <% if flash[:notice].is_a?(Array) 
-       flash[:notice].each do |err| %>
-      <p class="notice"><%= err %></p>
-    <% end %>
-    <% else %>
-    <p class="notice"><%= flash[:notice] %></p>
-    <% end %>
-  </div>  
-  <% end %>
-</div>
 <% end %>
