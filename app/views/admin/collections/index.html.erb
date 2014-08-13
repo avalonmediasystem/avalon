@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   Collections
 <% end %>
 
-<div class='container'>
+<div class='container-fluid'>
   <% unless @collections.empty? %>
     <h2>My Collections</h2>
 
@@ -36,7 +36,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <td> <%= collection.description %> </td>
           <td>
             <% if can?(:destroy, collection) %>
-              <%= link_to('Delete', remove_admin_collection_path(collection), class: 'btn btn-mini btn-danger') %>
+              <%= link_to('Delete', remove_admin_collection_path(collection), class: 'btn btn-xs btn-danger') %>
             <% else %>
               &nbsp;
             <% end %>

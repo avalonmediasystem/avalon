@@ -19,14 +19,14 @@
 
 
 -if @base_errors.present?
-  .alert.alert-error
+  .alert.alert-danger
     - @base_errors.uniq.each do |message|
       = message
       %br
 
 -@package.entries.each.with_index(2) do |entry,index|
   -if entry.errors.present?
-    .alert.alert-error
+    .alert.alert-danger
       %b= "Row #{index}: #{entry.fields[:main_title].try(:first) || 'Untitled' }"
       %br
       - entry.errors.messages.each_pair do |field, errors|

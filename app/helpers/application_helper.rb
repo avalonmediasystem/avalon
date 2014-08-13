@@ -128,7 +128,7 @@ module ApplicationHelper
       branch = repo.head.name
       commit = repo.head.commit.sha[0..5]
       time = repo.head.commit.committed_date.strftime('%d %b %Y %H:%M:%S')
-      pattern % [branch,commit,time]
+      link_to_if(AboutPage.configuration.git_log, pattern % [branch,commit,time], about_page.component_path('git_log'))
     rescue
       ""
     end
@@ -163,8 +163,8 @@ module ApplicationHelper
     content_tag(:div, itemscope: '', itemprop:  m.is_video? ? 'video' : 'audio',  itemtype: item_type ) do
       concat tag(:meta, itemprop: 'name', content: m.mediaobject.title )
       concat tag(:meta, itemprop: 'duration', content: formatted_duration )
-      concat tag(:meta, itemprop: 'thumbnail', content: Rails.application.routes.url_helpers.thumbnail_master_file_url(m))
-      concat tag(:meta, itemprop: 'image', content: Rails.application.routes.url_helpers.poster_master_file_url(m))
+      concat tag(:meta, itemprop: 'thumbnail', content: thumbnail_master_file_url(m))
+      concat tag(:meta, itemprop: 'image', content: poster_master_file_url(m))
       concat tag(:meta, itemprop: 'sameAs', content: m.permalink ) if m.permalink.present?
       concat tag(:meta, itemprop: 'genre', content: m.mediaobject.genre.join(' ')) unless m.mediaobject.genre.empty?
       concat tag(:meta, itemprop: 'about', content: m.mediaobject.subject.join(' ')) unless m.mediaobject.subject.empty?

@@ -13,5 +13,6 @@ AboutPage.configure do |config|
   config.mediainfo        = Avalon::About::MediaInfo.new(:version => '>=0.7.59')
   config.streaming_server = Avalon::About::RTMPServer.new(URI.parse(Avalon::Configuration.lookup('streaming.rtmp_base')).host)
   config.delayed_job      = Avalon::About::DelayedJob.new(:min => 1)
+  config.git_log          = AboutPage::GitLog.new(limit: 15) if Rails.env.development?
   config.dependencies     = AboutPage::Dependencies.new
 end

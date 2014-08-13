@@ -14,17 +14,16 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% if flash[:error].present? %>
-  <ul class='unstyled alert alert-error' style='display: inline-table;'>
+  <ul class='unstyled alert alert-danger' style='display: inline-table;'>
     <%= Array(flash[:error]).collect { |error| content_tag(:li,error) }.join('').html_safe %>
   </ul>
 <% end %>
 
 <% unless @masterFiles.empty? %>
-<section id="associated_files" class="span11">
+<section id="associated_files" class="col-md-11">
       <legend>Associated files</legend>
       <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
 <%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
-
       <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
   <div class="collapse form-tooltip" id="label-tooltip">
@@ -39,12 +38,12 @@ Unless required by applicable law or agreed to in writing, software distributed
       
     <table class="table table-striped">
       <colgroup>
-        <col class="span1">
-        <col class="span4">
-        <col class="span4">
-        <col class="span1">
-        <col class="span4">
-        <col class="span1">
+        <col class="col-md-1">
+        <col class="col-md-4">
+        <col class="col-md-4">
+        <col class="col-md-1">
+        <col class="col-md-4">
+        <col class="col-md-1">
       </colgroup>
       
       <thead>
@@ -101,7 +100,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                    # catalog controller %>
               <%= link_to 'Delete', 
                  master_file_path(part.pid),
-                 class: 'btn btn-mini btn-danger btn-confirmation',
+                 class: 'btn btn-xs btn-danger btn-confirmation',
                  method: :delete %>
           <% end %>
         </td>
@@ -114,7 +113,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   </section>
 <% end %>
 
-<section id="web_upload" class="span11">
+<section id="web_upload" class="col-md-11">
  <legend>Upload through the web</legend>
   <p class="muted">Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
 
@@ -127,6 +126,23 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <%- field_tag_options = defined?(uploader_options) ? uploader_options : {multiple: true} %>
 
+        <div class="fileinput fileinput-new input-group" data-provides="fileinput">
+          <div class="form-control" data-trigger="fileinput">
+            <i class="glyphicon glyphicon-file fileinput-exists"></i> 
+            <span class="fileinput-filename"></span>
+          </div>
+          <span class="fileinput-submit fileinput-exists input-group-addon btn btn-default btn-file"> 
+            <input type="hidden" name="upload_file" value="upload_file"></input>
+            <a href="#" data-trigger="submit">Upload</a>
+          </span>
+          <span class="input-group-addon btn btn-default btn-file"> 
+            <span class="fileinput-new">Select file</span>
+            <span class="fileinput-exists">Change</span>
+            <input type="file" name="Filedata[]"></input>
+          </span>
+          <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+        </div>
+<!--
         <div class="fileupload fileupload-new" data-provides="fileupload">
           <div class="input-append">
             <div class="uneditable-input fileupload-new"></div>
@@ -136,12 +152,12 @@ Unless required by applicable law or agreed to in writing, software distributed
             </div>
             <%= button_tag "Upload", name: "upload_file", class: "btn btn-primary fileupload-exists" %>
             <span class="btn btn-file">
-              <span class="fileupload-new">Select</span>
-              <span class="fileupload-exists">Change</span>
+              <span class="btn btn-default fileupload-new">Select</span>
+              <span class="btn btn-default fileupload-exists">Change</span>
               <%= file_field_tag "", field_tag_options %>
             </span>
-            <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
-            <span class="checkbox inline fileupload-exists">
+            <a href="#" class="btn btn-default fileupload-exists" data-dismiss="fileupload">Remove</a>
+            <span id="workflow_checkbox" class="checkbox inline fileupload-exists">
               <%# FIXME the style on the checkbox should be handled by css classes but it is getting bad values from bootstrap responsive %>
               <%= check_box_tag(:workflow, 'skip_transcoding', false, 
                 :style => "margin-top: 4px; margin-left: -15px;")%>
@@ -153,7 +169,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               <% end %>
             </span>
           </div>
-        </div>
+        </div>-->
         
         <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
         <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
@@ -167,28 +183,36 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </section>
 
-<section id="dropbox_upload" class="span11">
+<section id="dropbox_upload" class="col-md-11">
   <legend id="dropbox_modal_label">Import from a dropbox</legend>
   <p class="muted">Use the dropbox to import large files. Attach selected files after uploading. Files will be begin
  processing when you click Save and continue.</p>
-  <p><a class="btn dropbox-trigger" href="#">Open Dropbox</a></p>
+  <%= form_tag(master_files_path, id: 'dropbox_form', method: 'post') do %>
+    <input type="hidden" name="container_id" value="<%=h @mediaobject.pid %>"/>
+    <%= button_tag("Open Dropbox", type: 'button', class: 'btn btn-large btn-success', id: "browse-btn",
+      'data-toggle' => 'browse-everything', 'data-route' => browse_everything_engine.root_path,
+      'data-target' => '#dropbox_form', 'data-context' => @mediaobject.collection.pid ) %>
+  <% end %>
   <%= render partial: "dropbox_details" %>
-  <%= render partial: 'dropbox' %>
 </section>
 
-<section id="workflow_buttons" class="span11">
-<%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
+<section id="workflow_buttons" class="col-md-11">
+<%= bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
   <%= render "workflow_buttons", form: media %>
 <% end %>
 </section>
 
 <% content_for :page_styles do %>
+  <%= stylesheet_link_tag "browse_everything", media: "rel" %>
   <%= stylesheet_link_tag "jasny-bootstrap.min", media: "all" %>
 <% end %>
 
 <% content_for :page_scripts do %>
   <%= javascript_include_tag "file_upload_step" %>
-  <%= javascript_include_tag "bootstrap-fileupload" %>
+  <%= javascript_include_tag "file_browse" %>
+  <%= javascript_include_tag "file_table" %>
+  <%= javascript_include_tag "bootstrap-fileupload.js" %>
+  <%= javascript_include_tag "jasny-bootstrap.min.js" %>
   <script>
     /* Hide the alert dialog on the page loading if Javascript is enabled */
     <% unless flash[:upload] %>$('#upload_format').hide();<% end %>

@@ -12,7 +12,6 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-
 $('.typeahead.from-model').each ->
   $current_data = []
   $t = $(this)
@@ -23,21 +22,16 @@ $('.typeahead.from-model').each ->
       if $target.val() == '' or $t.val() == ''
         $target.val($t.val())
   $t.attr('autocomplete','off')
+  mySource = new Bloodhound(
+    datumTokenizer: (d) ->
+      Bloodhound.tokenizers.whitespace(d.display)
+    queryTokenizer: Bloodhound.tokenizers.whitespace
+    remote: "#{$('body').data('mountpoint')}autocomplete?q=%QUERY&t=#{$t.data('model')}"
+  )
+  mySource.initialize()
   $t.typeahead
     minLength: 2
-    source: (query, process) ->
-      if $target_id
-        $target.val('')
-      $.get "#{$('body').data('mountpoint')}autocomplete",
-        t: $t.data('model')
-        q: query
-        (data) ->
-          $current_data = data
-          display_values = $(data).map -> this.display
-          process(display_values)
-    updater: (item) ->
-      if $target_id
-        result = $.grep $current_data, (v) -> v.display == item
-        result = if result.length > 0 then result[0].id else item
-        $target.val(result)
-      return item
+  ,
+    name: $target_id
+    displayKey: 'display'
+    source: mySource.ttAdapter()

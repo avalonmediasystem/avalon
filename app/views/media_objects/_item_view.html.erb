@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div class="row">
-  <div class="span8" id="left_column">
+  <div class="col-sm-8" id="left_column">
     <section id="player" style="width: 100%">
       <% if @currentStream.present? and @currentStream.succeeded? %>
         <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
@@ -53,7 +53,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= render('share') if can?(:share, MediaObject) %>
   </div>
 
-  <div class="span4" id="right-column">
+  <div class="col-sm-4" id="right-column">
     <div id="metadata_container" class="">
       <section id="metadata"><%= render "metadata_display" %></section>
     </div>
@@ -81,7 +81,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <script>
     currentPlayer = new MediaElementPlayer('#video-tag', 
         { mode: 'auto_plugin',
-          pluginPath: <%= asset_path('mediaelement_rails/').inspect.html_safe %>,
+          pluginPath: '/assets/mediaelement_rails/',
           usePluginFullScreen: false,
           thumbnailSelectorUpdateURL: '/update-url',
           thumbnailSelectorEnabled: true,

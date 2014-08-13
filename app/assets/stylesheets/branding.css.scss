@@ -75,3 +75,20 @@ $constraint_border_color: scale-color($greenBG, $lightness: -20%);
 
 /* Change default breakpoint for the navigation bar */
 $navCollapseWidth: 650px;
+
+/* Bootstrap navbar styles */
+$navbar-inverse-color:                      #777;
+$navbar-inverse-bg:                         #F9F9F9;
+$navbar-inverse-border:                     #D4D4D4;
+$navbar-inverse-link-color:                 #777;
+$navbar-inverse-link-hover-color:           #333;
+
+// Navbar toggle
+$navbar-default-toggle-hover-bg:           #F5F5F5;
+$navbar-default-toggle-icon-bar-bg:        #F5F5F5;
+$navbar-default-toggle-border-color:       rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+
+// Inverted navbar toggle
+$navbar-inverse-toggle-hover-bg:            #E6E6E6;
+$navbar-inverse-toggle-icon-bar-bg:         #F5F5F5;
+$navbar-inverse-toggle-border-color:        rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);

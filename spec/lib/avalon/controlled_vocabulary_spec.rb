@@ -17,7 +17,7 @@ require 'avalon/controlled_vocabulary'
 
 describe Avalon::ControlledVocabulary do
   before do
-    File.stub(:read).and_return { '' }
+    File.stub(:read).and_return ''
     File.stub(:file?).and_return true
   end
 

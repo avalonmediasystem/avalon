@@ -1,13 +1,15 @@
   source 'http://rubygems.org'
 
   gem 'iconv'
-  gem 'rails', '~>3.2.3'
-  gem 'builder', '~>3.0.0'
-  
-  gem 'hydra', "~> 6.2.0"
-  gem 'active-fedora', "~> 6.7.8"
-  gem 'rubydora', "~> 1.7.5"
-  gem 'bcrypt-ruby', '~> 3.0.0'
+  gem 'rails', '~>4.0.3'
+  gem 'sprockets', '~>2.11.0'
+  #gem 'protected_attributes'
+  gem 'builder', '~>3.1.0'
+
+  gem 'hydra', '~>7.1'
+  gem 'active-fedora'
+  gem 'activerecord-session_store'
+  gem 'bcrypt-ruby', '~> 3.1.0'
   gem 'kaminari', '~> 0.15.0'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'avalon-r3'
@@ -18,12 +20,15 @@
   gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git' # HEAD , tag: 'avalon-r3'
   gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git' # HEAD , tag: 'avalon-r3'
   gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git' # HEAD , tag: 'avalon-r3'
+  gem 'media-element-logo-plugin'
 
+  gem 'browse-everything', '>= 0.6.3'
+  
   gem 'roo', git: 'https://github.com/Empact/roo', ref: '9e1b969762cbb80b1c52cfddd848e489f22f468f'
 
   gem 'multipart-post'  
   gem 'modal_logic'
-
+  
   gem 'rubyzip', '0.9.9'
   gem 'hooks'
 
@@ -43,10 +48,11 @@
     gem 'therubyracer', '>= 0.12.0'
   end
 
-  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git", tag: 'v3.1'
+  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git"
+  gem 'about_page', git: "https://github.com/avalonmediasystem/about_page.git"
 
   # You are free to implement your own User/Authentication solution in its place.
-  gem 'devise', '~>3.0.3'
+  gem 'devise', '~>3.2.0'
   #gem 'devise-guests'
   gem 'haml'
 
@@ -61,7 +67,7 @@
   gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
 
   gem 'mediainfo'
-  gem 'delayed_job_active_record', '~> 0.3.3'
+  gem 'delayed_job_active_record'
   gem 'whenever', require: false
   gem 'with_locking'
 
@@ -69,26 +75,30 @@
   gem 'net-ldap'
 
   group :assets, :production do
-    gem 'coffee-rails', "~> 3.2.1"
+    gem 'coffee-rails'
     gem 'uglifier', '>= 1.0.3'
-    gem 'jquery-rails', "~> 2.1.4"
-    gem 'compass-rails', '~> 1.0.0'
+    gem 'jquery-rails', '3.1.1'
+    gem 'jquery-ui-rails', '5.0.0'
+    gem 'compass-rails'
     gem 'compass-susy-plugin', '~> 0.9.0', require: 'susy'
 
     # For overriding the default interface with Twitter Bootstrap
     # This is now inherited from Blacklight
-    gem 'sass-rails', '~> 3.2.3'
-    gem 'font-awesome-sass-rails'
-    gem 'twitter_bootstrap_form_for',
-      git: "https://github.com/avalonmediasystem/twitter_bootstrap_form_for.git",
-      branch: "bootstrap-2.0"
+    gem 'sass-rails', '=4.0.2'
+    gem 'font-awesome-rails', '~> 3.0'
+    gem 'bootstrap_form'
     gem 'handlebars_assets'
+    gem 'twitter-typeahead-rails'
+  end
+
+  group :development do
+    gem 'xray-rails'
+    gem 'better_errors'
+    gem 'binding_of_caller'
   end
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do
-    #gem 'better_errors'
-    #gem 'binding_of_caller'
     gem 'meta_request'
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano'
@@ -110,6 +120,7 @@
     gem 'mime-types', ">=1.1"
     gem "headless"
     gem "rspec_junit_formatter"
+    gem 'rspec-its'
     gem 'simplecov'
     gem 'email_spec'
     gem 'capybara'

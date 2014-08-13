@@ -136,6 +136,13 @@ class MediaObject < ActiveFedora::Base
     not self.avalon_publisher.blank?
   end
 
+  def destroy
+    # attempt to stop the matterhorn processing job
+    self.parts.each(&:destroy)
+    self.parts.clear
+    super
+  end
+
   # Removes one or many MasterFiles from parts_with_order
   def parts_with_order_remove part
     self.parts_with_order = self.parts_with_order.reject{|master_file| master_file.pid == part.pid }
@@ -287,7 +294,7 @@ class MediaObject < ActiveFedora::Base
   end
   
   def to_solr(solr_doc = Hash.new, opts = {})
-    super(solr_doc, opts)
+    solr_doc = super(solr_doc, opts)
     solr_doc[Solrizer.default_field_mapper.solr_name("created_by", :facetable, type: :string)] = self.DC.creator
     solr_doc[Solrizer.default_field_mapper.solr_name("duration", :displayable, type: :string)] = self.duration
     solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'

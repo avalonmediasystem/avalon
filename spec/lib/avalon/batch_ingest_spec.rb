@@ -71,7 +71,7 @@ describe Avalon::Batch::Ingest do
     it 'should skip the corrupt manifest' do
       lambda { batch_ingest.ingest }.should_not raise_error
       error_file = File.join(@dropbox_dir,'example_batch_ingest','bad_manifest.xlsx.error')
-      File.exists?(error_file).should be_true
+      File.exists?(error_file).should be true
       File.read(error_file).should =~ /^Invalid manifest/
     end
     
@@ -231,24 +231,24 @@ describe Avalon::Batch::Ingest do
   end
 
   it "should be able to default to public access" do
-    pending "[VOV-1348] Wait until implemented"
+    skip "[VOV-1348] Wait until implemented"
   end
 
   it "should be able to default to specific groups" do
-    pending "[VOV-1348] Wait until implemented"
+    skip "[VOV-1348] Wait until implemented"
   end
 
   describe "#offset_valid?" do
-    it {expect(Avalon::Batch::Entry.offset_valid?("33.12345")).to be_true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("21:33.12345")).to be_true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("125:21:33.12345")).to be_true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("63.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("66:33.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(".12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":33.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":66:33.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("5:000")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("`5.000")).to be_false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("33.12345")).to be true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("21:33.12345")).to be true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("125:21:33.12345")).to be true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("63.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("66:33.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(".12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":33.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":66:33.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("5:000")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("`5.000")).to be false}
   end
 end

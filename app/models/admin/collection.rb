@@ -60,12 +60,6 @@ class Admin::Collection < ActiveFedora::Base
     @created_at ||= DateTime.parse(create_date)
   end
 
-  def to_solr(solr_doc = Hash.new, opts = {})
-    map = Solrizer::default_field_mapper
-    solr_doc[ map.solr_name(:name, :stored_searchable, type: :string).to_sym ] = self.name
-    super(solr_doc)
-  end
-
   def managers
     edit_users & ( RoleControls.users("manager") | (RoleControls.users("administrator") || []) )
   end
@@ -175,7 +169,7 @@ class Admin::Collection < ActiveFedora::Base
   handle_asynchronously :reindex_media_objects
 
   def to_solr(solr_doc=Hash.new, *args)
-    super
+    solr_doc = super(solr_doc)
     solr_doc[Solrizer.default_field_mapper.solr_name("name", :facetable, type: :string)] = self.name
     solr_doc[Solrizer.default_field_mapper.solr_name("dropbox_directory_name", :facetable, type: :string)] = self.dropbox_directory_name
     solr_doc

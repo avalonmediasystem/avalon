@@ -35,15 +35,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   </head>
 
   <body data-mountpoint="<%=root_path%>">
+    <%= render partial: 'shared/ajax_modal' %>
     <%= render 'modules/header' %>
-
     <div class="container-fluid">
-      <div class="row-fluid">
-        <%= render "modules/global_navigation" %>
-      </div>
+      <%= render :partial => 'modules/global_navigation' %>
+      <%= yield %>
     </div>
-    
-    <div class="container-fluid"><%= yield %></div>
     <%= render 'modules/footer' %>
 
     <!-- With this many Javascript files performance will be much better
