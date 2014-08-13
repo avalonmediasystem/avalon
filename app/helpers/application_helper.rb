@@ -128,7 +128,7 @@ module ApplicationHelper
       branch = repo.head.name
       commit = repo.head.commit.sha[0..5]
       time = repo.head.commit.committed_date.strftime('%d %b %Y %H:%M:%S')
-      pattern % [branch,commit,time]
+      link_to_if(AboutPage.configuration.git_log, pattern % [branch,commit,time], about_page.component_path('git_log'))
     rescue
       ""
     end

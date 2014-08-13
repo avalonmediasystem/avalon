@@ -48,7 +48,7 @@
     gem 'therubyracer', '>= 0.12.0'
   end
 
-  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git", tag: 'v3.1'
+  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git"
   gem 'about_page', git: "https://github.com/avalonmediasystem/about_page.git"
 
   # You are free to implement your own User/Authentication solution in its place.
