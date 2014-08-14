@@ -84,7 +84,7 @@ class MasterFilesController < ApplicationController
           master_file.destroy
           next
         else
-          flash[:upload] = create_upload_notice(master_file.file_format)
+          flash[:notice] = create_upload_notice(master_file.file_format)
         end
 	
         unless master_file.save
@@ -178,7 +178,7 @@ class MasterFilesController < ApplicationController
     media_object.set_duration!
     media_object.save( validate: false )
     
-    flash[:upload] = "#{filename} has been deleted from the system"
+    flash[:notice] = "#{filename} has been deleted from the system"
 
     redirect_to edit_media_object_path(media_object.pid, step: "file-upload")
   end

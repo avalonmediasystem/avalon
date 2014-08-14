@@ -13,14 +13,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% if flash[:error].present? %>
-  <ul class='unstyled alert alert-danger' style='display: inline-table;'>
-    <%= Array(flash[:error]).collect { |error| content_tag(:li,error) }.join('').html_safe %>
-  </ul>
-<% end %>
-
 <% unless @masterFiles.empty? %>
-<section id="associated_files" class="col-md-11">
+<div id="associated_files">
       <legend>Associated files</legend>
       <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
 <%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
@@ -110,10 +104,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   </table>
     <%= submit_tag "Update", class: "btn clearfix", donot_advance: true %>
 <% end %>
-  </section>
+  </div>
 <% end %>
 
-<section id="web_upload" class="col-md-11">
+<div id="web_upload">
  <legend>Upload through the web</legend>
   <p class="muted">Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
 
@@ -181,9 +175,9 @@ Unless required by applicable law or agreed to in writing, software distributed
     <button class="close">&times;</button>
     <p><%= t("file_upload_tip.skip_transcoding").html_safe %></p>
   </div>
-</section>
+</div>
 
-<section id="dropbox_upload" class="col-md-11">
+<div id="dropbox_upload">
   <legend id="dropbox_modal_label">Import from a dropbox</legend>
   <p class="muted">Use the dropbox to import large files. Attach selected files after uploading. Files will be begin
  processing when you click Save and continue.</p>
@@ -194,13 +188,13 @@ Unless required by applicable law or agreed to in writing, software distributed
       'data-target' => '#dropbox_form', 'data-context' => @mediaobject.collection.pid ) %>
   <% end %>
   <%= render partial: "dropbox_details" %>
-</section>
+</div>
 
-<section id="workflow_buttons" class="col-md-11">
+<div id="workflow_buttons">
 <%= bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
   <%= render "workflow_buttons", form: media %>
 <% end %>
-</section>
+</div>
 
 <% content_for :page_styles do %>
   <%= stylesheet_link_tag "browse_everything", media: "rel" %>
@@ -213,8 +207,4 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= javascript_include_tag "file_table" %>
   <%= javascript_include_tag "bootstrap-fileupload.js" %>
   <%= javascript_include_tag "jasny-bootstrap.min.js" %>
-  <script>
-    /* Hide the alert dialog on the page loading if Javascript is enabled */
-    <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
-  </script>
 <% end %>

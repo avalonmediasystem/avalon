@@ -160,7 +160,7 @@ tr.active-false td {
   } 
 }	
 .navbar-right {
-  padding: 6px 0;
+  padding: 4px 0;
 }
 .container > .navbar-header {
   height: auto;
@@ -193,32 +193,22 @@ tr.active-false td {
   }
 }
 
-/* 
- * Modal tooltips for the form should be visually distinct from the label or form
- * fields. Using Bootstrap variables for easy thematic overrides. This can't be called
- * just 'tooltip' because that class already exists in Bootstrap proper for other 
- * things
- *
- * 'collapse' and 'in' could probably be renamed since the Javascript no longer uses
- * Bootstrap specific code.
- */
-.form-tooltip {
-  background: $gray-lighter;
-  color: $gray-darker;  
-  padding: $padding-large-horizontal;
-  margin-bottom: $line-height-base/2;
+// Tooltips
+.tooltip-block {
   cursor: help;
+}
+.tooltip-label * {
+  cursor: pointer;
+}
+.tooltip-block .close {
+  font-size: 14px;
+}
 
-  border-radius: $border-radius-base;
-
-  &.collapse {
-    display: none;
-    height: 0;
-
-    &.in {
-      display: block; 
-      height: auto;
-    }
+// Multivalued fields
+.form-group.multivalued .input-group {
+  width: 100%;
+  .add-dynamic-field {
+    cursor: pointer;
   }
 }
 
@@ -245,13 +235,17 @@ label {
   font-weight: normal;
 }
 
+input[type=text], textarea {
+  padding: 3px;
+  border-radius: $input-border-radius;
+  border: 1px solid $input-border;
+}
+
 .access-block {
   @extend .col-lg-4;
   @extend .col-md-12;
   input[type=text] {
     width:100%;
-    padding: 4px 6px;
-    border-radius: 4px;
   }
   select {
     width: 75%;
@@ -261,6 +255,7 @@ label {
     border: 1px solid #ccc;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
     transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+    background-color: white;
   }
   button {
     float: right;
@@ -268,7 +263,7 @@ label {
     margin-left: 5px;
     width: 20%;
   }
-  span {
+  span.twitter-typeahead {
     width: 75%;
   }
 }
@@ -292,6 +287,8 @@ label {
   color:#BBB;
 }
 .tt-suggestions {
+  @extend .col-lg-4;
+  @extend .col-md-12;
   border-radius: 4px;
   margin: 2px 0 0 0;
   z-index: 1051;
@@ -300,6 +297,7 @@ label {
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   min-width: 160px;
   position: absolute;
+  width: 100%;
 }
 .tt-suggestion {
   clear: both;
@@ -308,10 +306,12 @@ label {
   line-height: 20px;
   padding: 3px 6px;
   white-space: nowrap;
+  width: 100%;
 }
 .tt-suggestion p {
   padding: 0;
   margin: 0;
+  width: 100%;
 }
 .tt-cursor {
   background-color: #264d52;
@@ -321,14 +321,8 @@ label {
   outline: 0 none;
   text-decoration: none;
 }
-
-/**
- * Make the plus icon controls appear like a button
- */
-.add-dynamic-field {
-  font-size: 125%;
-  vertical-align: center;
-  cursor: pointer
+.tt-dropdown-menu {
+  width: 100%;
 }
 
 /* UI Fixes */
@@ -484,7 +478,7 @@ footer .release {
 /* Alerts */
 
 #alerts {
-  margin-left: 0px;
+  margin: 10px 15px;
 }
 
 .alert-success {
@@ -561,11 +555,15 @@ button.close {
   &.error {
     input:first-child{ border-color: $state-danger-text; }
   }
-  .field_with_errors input { border-color: $state-danger-text;} 
+  .field_with_errors input { 
+    border-color: $state-danger-border;
+    background-color: $state-danger-bg;
+  } 
   input, textarea{
-    @extend .col-sm-8;
+    width: 90%;
     float: none;
     margin-bottom: 10px;
+    padding: 3px;
   }
   label {
     display: block;
@@ -584,7 +582,7 @@ button.close {
   }
 }
 
-.role-popover-help *, .popover-help *, .tooltip-help * {
+.role-popover-help *, .popover-help * {
   cursor: pointer;
 }
 

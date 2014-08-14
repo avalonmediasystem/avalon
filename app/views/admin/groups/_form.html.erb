@@ -17,15 +17,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   .inline-children > div { display: inline }
 </style>
 
-<% if flash[:error] %><div class="alert alert-danger"><%= flash[:error] %></div><% end %>
-
 <%= bootstrap_form_for @group, html: { :class => 'form-inline'}  do |f| %>
    <fieldset class="whitespace">
     <h3>Group</h3>
     <% if @group.class.name_is_static? @group.name %>
       <em><%= @group.name %></em>
     <% else %>
-      <%= text_field_tag :group_name, "Group name", value: @group.name %>
+      <%= text_field_tag :group_name, "Group name", value: @group.name, class: "col-md-5 col-sm-9 col-xs-10" %>
     <%= button_tag "Save", type: "submit", class: "btn btn-default" %>
     <%= link_to "Delete Group", admin_group_path(@group.name), 
         :method => :delete, confirm: "Deleted group cannot be recovered. Are you sure?", class: "btn btn-danger inline" %>
@@ -38,13 +36,13 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <%= form_tag update_users_admin_group_path, method: :put do %>
-  <div> 
+  <div class="col-md-7"> 
       <table class="table table-striped">
         <thead>
           <tr>
-            <th><input type="checkbox" class="select-groups"></th>
-            <th>Username</th>
-            <th></th>
+            <th class="col-md-1"><input type="checkbox" class="select-groups"></th>
+            <th class="col-md-4">Username</th>
+            <th class="col-md-1"></th>
           </tr>
         </thead>
         <tbody>
@@ -58,8 +56,10 @@ Unless required by applicable law or agreed to in writing, software distributed
          </tbody>
       </table>
     </div>
-    <%= hidden_field_tag 'id', @group.name %>
-    <%= submit_tag "Remove members", :method => :delete, class: "btn btn-danger delete", disabled: true  %>    
+    <div class="col-md-7">
+      <%= hidden_field_tag 'id', @group.name %>
+      <%= submit_tag "Remove members", :method => :delete, class: "btn btn-danger delete", disabled: true  %>    
+    </div>
 <% end %>
 
 <% content_for :page_scripts do %>

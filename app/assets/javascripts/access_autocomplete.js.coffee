@@ -18,9 +18,11 @@ $('.typeahead.from-model').each ->
   $target_id = $t.data('target')
   $target = $("input[name='#{$target_id}']")
   if $target_id
-    $t.on 'change', ->
-      if $target.val() == '' or $t.val() == ''
+    $t.on 'change typeahead:selected typeahead:autocompleted', (e, datum)->
+      if typeof datum is 'undefined'
         $target.val($t.val())
+      else
+        $target.val(datum.id)
   $t.attr('autocomplete','off')
   mySource = new Bloodhound(
     datumTokenizer: (d) ->
@@ -33,5 +35,9 @@ $('.typeahead.from-model').each ->
     minLength: 2
   ,
     name: $target_id
-    displayKey: 'display'
+    displayKey: (suggestion) ->
+      if suggestion.display is ""
+        suggestion.id
+      else
+        suggestion.display
     source: mySource.ttAdapter()
