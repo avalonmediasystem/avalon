@@ -148,7 +148,7 @@ tr.active-false td {
   border: 1px solid $navbar-inverse-border;
   border-radius: 4px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
-  margin: 10px 15px;
+  margin: 10px $grid-gutter-width/2;
   min-height: 0px; 
 }
 
