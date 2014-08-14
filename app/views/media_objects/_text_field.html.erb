@@ -13,16 +13,22 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% default_label = field.to_s %>
-<% text_label ||= default_label.humanize %>
-<% display_label = text_label || default_label.humanize %>
-<% options ||= {} %>
-
-<!-- <%= default_label.humanize %> field -->
-  <div class="form-group <% if @mediaobject.errors[field].any? %>has-error<% end %>">
-    <%= render partial: "modules/tooltip", locals: { media: media, field: field, default_label: default_label, text_label: text_label, display_label: display_label, options: options } %>
+<!-- <%= field.to_s.humanize %> field -->
+  <div class="form-group <% if options[:multivalued] %>multivalued<% end %> <% if @mediaobject.errors[field].any? %>has-error<% end %>">
+    <%= render partial: "modules/tooltip", locals: { form: form, field: field, tooltip: t("metadata_tip.#{field.to_s}"), options: options } %>
     <% if @mediaobject.errors[field].any? %>
       <%= content_tag :span, @mediaobject.errors[field].join(", "), class: 'help-block' %>
     <% end %>
-    <%= media.text_field field, class: 'form-control' %>
+    <% if options[:multivalued] %>
+      <% values = @mediaobject.send(field) %>
+      <% count = [1, values.length].max %>
+      <% count.times do |i| %>
+        <div class="input-group">
+          <% contents = values[i] || '' %>
+          <%= text_field_tag "media_object[#{field.to_s}][]", contents, class: 'form-control' %>
+        </div>
+      <% end %>
+    <% else %>
+      <%= form.text_field field, class: 'form-control' %>
+    <% end %>
   </div>
