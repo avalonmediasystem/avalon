@@ -138,8 +138,6 @@ tr.active-false td {
 #header-navbar .navbar-brand {
   @extend .desktop-hidden;
   height: 35px;
-  margin-left: 10px;
-  margin-top: 3px;
 }
 
 .navbar {
@@ -148,8 +146,8 @@ tr.active-false td {
   border: 1px solid $navbar-inverse-border;
   border-radius: 4px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
-  margin: 10px 15px;
   min-height: 0px; 
+  margin: 10px 0;
 }
 
 .navbar-nav {
@@ -428,6 +426,10 @@ header div{
   .top-panel-heading {
     margin-bottom: 0em;
   }
+}
+
+ul.result-list {
+  list-style-position: inside;
 }
 
 div[id*='facet-panel-'] {
