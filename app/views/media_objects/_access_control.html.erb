@@ -18,5 +18,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <%= render "modules/access_control", {form: vid, object: @mediaobject, visibility: @mediaobject.visibility, hidden: @mediaobject.hidden?} %>	
 
-  <%= render "workflow_buttons", form: vid %>	
 <% end #form_for %>		
+
+  <%= render "workflow_buttons" %>	
