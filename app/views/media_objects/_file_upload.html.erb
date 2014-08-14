@@ -125,7 +125,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <i class="glyphicon glyphicon-file fileinput-exists"></i> 
             <span class="fileinput-filename"></span>
           </div>
-          <span class="fileinput-submit fileinput-exists input-group-addon btn btn-default btn-file"> 
+          <span class="fileinput-submit fileinput-exists input-group-addon btn btn-default btn-file">
             <input type="hidden" name="upload_file" value="upload_file"></input>
             <a href="#" data-trigger="submit">Upload</a>
           </span>
@@ -135,35 +135,15 @@ Unless required by applicable law or agreed to in writing, software distributed
             <input type="file" name="Filedata[]"></input>
           </span>
           <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+          <span class="input-group-addon fileinput-exists" style="background-color: white; padding-top: 8px; padding-bottom: 2px; border: none;">
+            <%= check_box_tag(:workflow, 'skip_transcoding', false)%>
+            <%= label_tag(:skip_transcoding) do %>
+              <div style="font-size: inherit;" class="tooltip-help" data-title="Skip Transcoding" data-tooltip="#skip-transcoding-tooltip">
+                Skip transcoding                    
+              </div>
+            <% end %>
+          </span> 
         </div>
-<!--
-        <div class="fileupload fileupload-new" data-provides="fileupload">
-          <div class="input-append">
-            <div class="uneditable-input fileupload-new"></div>
-            <div class="uneditable-input-exists fileupload-exists">
-              <i class="icon-file"></i>
-              <span class="fileupload-preview"></span>
-            </div>
-            <%= button_tag "Upload", name: "upload_file", class: "btn btn-primary fileupload-exists" %>
-            <span class="btn btn-file">
-              <span class="btn btn-default fileupload-new">Select</span>
-              <span class="btn btn-default fileupload-exists">Change</span>
-              <%= file_field_tag "", field_tag_options %>
-            </span>
-            <a href="#" class="btn btn-default fileupload-exists" data-dismiss="fileupload">Remove</a>
-            <span id="workflow_checkbox" class="checkbox inline fileupload-exists">
-              <%# FIXME the style on the checkbox should be handled by css classes but it is getting bad values from bootstrap responsive %>
-              <%= check_box_tag(:workflow, 'skip_transcoding', false, 
-                :style => "margin-top: 4px; margin-left: -15px;")%>
-              <%= label_tag(:skip_transcoding) do %>
-                <div style="font-size: inherit;" class="tooltip-help" 
-                  data-title="<%= "something" %>" data-tooltip="#skip-transcoding-tooltip">
-                  Skip transcoding                    
-                </div>
-              <% end %>
-            </span>
-          </div>
-        </div>-->
         
         <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
         <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
@@ -183,7 +163,7 @@ Unless required by applicable law or agreed to in writing, software distributed
  processing when you click Save and continue.</p>
   <%= form_tag(master_files_path, id: 'dropbox_form', method: 'post') do %>
     <input type="hidden" name="container_id" value="<%=h @mediaobject.pid %>"/>
-    <%= button_tag("Open Dropbox", type: 'button', class: 'btn btn-large btn-success', id: "browse-btn",
+    <%= button_tag("Open Dropbox", type: 'button', class: 'btn btn-large btn-primary', id: "browse-btn",
       'data-toggle' => 'browse-everything', 'data-route' => browse_everything_engine.root_path,
       'data-target' => '#dropbox_form', 'data-context' => @mediaobject.collection.pid ) %>
   <% end %>

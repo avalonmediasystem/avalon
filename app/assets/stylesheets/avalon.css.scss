@@ -596,13 +596,6 @@ button.close {
   white-space: nowrap;
 }
 
-.fileupload-exists {
-  input[type='checkbox'] {
-    margin-top: 4px;
-    margin-left: -15px;
-  }
-}
-
 .fileinput {
     max-width: 500px;
     .form-control {
@@ -610,10 +603,6 @@ button.close {
       white-space: nowrap;
       overflow-x: hidden;
     }
-}
-
-.fileinput-submit {
-  z-index: 10 !important;
 }
 
 .ev-browser {
