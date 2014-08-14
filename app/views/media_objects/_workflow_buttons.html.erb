@@ -14,13 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div class="btn-group">
-  <%= bootstrap_form_for @mediaobject, html: { class: "form-horizontal", id: 'access_control_button_form'}  do |vid| %>
-    <%= submit_tag 'Save', name: 'save', class: "btn btn-default" %>
-    <%= submit_tag "Save and continue", name: 'save_and_continue', class: 'btn btn-primary' %>
-    <%= hidden_field_tag :step, @active_step %>
-    <%= check_box_tag :hidden, '1', hidden, style: 'visibility:hidden' %>
-    <%= radio_button_tag :visibility, 'public', (@visibility == 'public'), style: 'visibility:hidden' %>
-    <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted'), style: 'visibility:hidden' %>
-    <%= radio_button_tag :visibility, 'private', (@visibility == 'private'), style: 'visibility:hidden' %>
-  <% end #form_for %>		
+<%= submit_tag 'Save', name: 'save', class: "btn btn-default" %>
+<%= hidden_field_tag :step, @active_step %>
+<%= submit_tag "Save and continue", name: 'save_and_continue', class: 'btn btn-primary' %>
 </div>

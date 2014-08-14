@@ -14,5 +14,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-  <%= render "modules/access_control", {object: @mediaobject, visibility: @mediaobject.visibility, hidden: @mediaobject.hidden?} %>	
-  <%= render "workflow_buttons_access" , {object: @mediaobject, visibility: @mediaobject.visibility, hidden: @mediaobject.hidden?}%>	
+  <%= bootstrap_form_for @mediaobject, html: { class: "form-horizontal", id: 'access_control_button_form'}  do |vid| %>
+    <%= render "media_objects/workflow_buttons" , form: vid %>	
+    <div class="hidden">
+      <%= check_box_tag :hidden, '1', hidden, style: 'visibility:hidden' %>
+      <%= radio_button_tag :visibility, 'public', (@visibility == 'public'), style: 'visibility:hidden' %>
+      <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted'), style: 'visibility:hidden' %>
+      <%= radio_button_tag :visibility, 'private', (@visibility == 'private'), style: 'visibility:hidden' %>
+    </div>
+  <% end #form_for %>		
