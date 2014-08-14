@@ -207,6 +207,9 @@ tr.active-false td {
 // Multivalued fields
 .form-group.multivalued .input-group {
   width: 100%;
+  .add-dynamic-field {
+    cursor: pointer;
+  }
 }
 
 /*
