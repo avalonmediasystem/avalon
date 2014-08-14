@@ -13,13 +13,15 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-  <% can_update = can?( :update_access_control, object) %>
+<% can_update = can?( :update_access_control, object) %>
+<%= bootstrap_form_for @mediaobject, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
+  <%= hidden_field_tag :step, @active_step %>
 
   <fieldset class='item-discovery'>
     <legend>Item discovery</legend>
     <% if can_update %>
       <%= label_tag :hidden do %>
-        <%= check_box_tag 'hidden', '1', hidden %>
+        <%= check_box_tag :hidden, '1', (hidden) %>
         Hide this item from search results 
       <% end %>
     <% else %>
@@ -31,7 +33,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <fieldset class='item-access'>
     <legend>Item access</legend>
     <% if can_update %>
-      <%= form.hidden_field :pid %>
+      <%= vid.hidden_field :pid %>
 
       <%= label_tag :visibility do %>
       <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
@@ -59,6 +61,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           end %>
     <% end %>
   </fieldset> 
+<% end #form_for %>		
 
   <fieldset class='special-access'>
     <legend>Assign special access</legend>
