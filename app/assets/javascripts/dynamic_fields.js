@@ -25,18 +25,20 @@
         /* When we click the add button we need to manipulate the parent container, which
 	 * is a <div class="controls dynamic"> wrapper */
 	/* CSS selectors are faster than doing a last() call in jQuery */
-        var input_template = $(this).parent().find('input:last');
+        var input_group_template = $(this).parent();
 	/* By doing this we should just keep pushing the add button down as the last
 	 * element of the parent container */
-	var new_input = $(input_template).clone().attr('value', '');
-        $(input_template).after(new_input);
+	var new_input_group = $(input_group_template).clone();
+        new_input_group.find('input').val('');
+        $(input_group_template).find('.add-dynamic-field').remove();
+        $(input_group_template).after(new_input_group);
       });
     },
 
     /* Simpler is better */
     add_button_to_controls: function() {
-      var controls = $('.controls.dynamic').append(DynamicFields.add_input_html);
+      var controls = $('.form-group.multivalued').find('.input-group:last').append(DynamicFields.add_input_html);
     },
 
-    add_input_html: '<span class="add-dynamic-field muted"><i class="icon-plus"></i></span>'
+    add_input_html: '<span class="add-dynamic-field input-group-addon"><span class="glyphicon glyphicon-plus"></span></span>'
   }

@@ -193,33 +193,20 @@ tr.active-false td {
   }
 }
 
-/* 
- * Modal tooltips for the form should be visually distinct from the label or form
- * fields. Using Bootstrap variables for easy thematic overrides. This can't be called
- * just 'tooltip' because that class already exists in Bootstrap proper for other 
- * things
- *
- * 'collapse' and 'in' could probably be renamed since the Javascript no longer uses
- * Bootstrap specific code.
- */
-.form-tooltip {
-  background: $gray-lighter;
-  color: $gray-darker;  
-  padding: $padding-large-horizontal;
-  margin-bottom: $line-height-base/2;
+// Tooltips
+.tooltip-block {
   cursor: help;
+}
+.tooltip-label * {
+  cursor: pointer;
+}
+.tooltip-block .close {
+  font-size: 14px;
+}
 
-  border-radius: $border-radius-base;
-
-  &.collapse {
-    display: none;
-    height: 0;
-
-    &.in {
-      display: block; 
-      height: auto;
-    }
-  }
+// Multivalued fields
+.form-group.multivalued .input-group {
+  width: 100%;
 }
 
 /*
@@ -333,14 +320,6 @@ input[type=text], textarea {
 }
 .tt-dropdown-menu {
   width: 100%;
-}
-/**
- * Make the plus icon controls appear like a button
- */
-.add-dynamic-field {
-  font-size: 125%;
-  vertical-align: center;
-  cursor: pointer
 }
 
 /* UI Fixes */
@@ -600,7 +579,7 @@ button.close {
   }
 }
 
-.role-popover-help *, .popover-help *, .tooltip-help * {
+.role-popover-help *, .popover-help * {
   cursor: pointer;
 }
 
