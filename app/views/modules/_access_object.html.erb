@@ -13,16 +13,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<%= bootstrap_form_for object do |form| %>
   <div class="access-block" id="<%= access_object %>_management">
     
     <%# ----------- Title and tooltip ---------------------------------%>
-    <p class="tooltip-help" data-title="<%= access_object.titleize %>" data-tooltip=<%="##{access_object}_tooltip"%>>
-      <%= t("access_control.#{access_object}label").html_safe %>
-    </p>
-    <div class="collapse form-tooltip" id=<%="#{access_object}_tooltip"%>>
-      <button class="close">&times;</button>
-      <p><%= t("access_control.#{access_object}").html_safe %></p>
-    </div>
+    <%= render partial: "modules/tooltip", locals: { form: form, field: access_object, tooltip: t("access_control.#{access_object}"), options: {display_label: t("access_control.#{access_object}label").html_safe} } %>
 
     <%#------------ Add access item text field and submit button ------------ %>
     <div>
@@ -74,4 +69,4 @@ Unless required by applicable law or agreed to in writing, software distributed
     </table> 
   </div>
 
-        
+<% end %> 
