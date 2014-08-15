@@ -601,6 +601,10 @@ button.close {
     }
 }
 
+.fileinput-submit {
+  z-index: $zindex-popover !important;
+}
+
 .ev-browser {
   background-color: white;
 }
