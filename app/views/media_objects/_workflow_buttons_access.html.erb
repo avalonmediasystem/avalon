@@ -17,9 +17,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= bootstrap_form_for @mediaobject, html: { class: "form-horizontal", id: 'access_control_button_form'}  do |vid| %>
     <%= render "media_objects/workflow_buttons" , form: vid %>	
     <div class="hidden">
-      <%= check_box_tag :hidden, '1', hidden, style: 'visibility:hidden' %>
-      <%= radio_button_tag :visibility, 'public', (@visibility == 'public'), style: 'visibility:hidden' %>
-      <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted'), style: 'visibility:hidden' %>
-      <%= radio_button_tag :visibility, 'private', (@visibility == 'private'), style: 'visibility:hidden' %>
+      <%= check_box_tag :hidden, '1', hidden %>
+      <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
+      <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
+      <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
     </div>
   <% end #form_for %>		

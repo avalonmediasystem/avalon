@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% can_update = can?( :update_access_control, object) %>
-<%= bootstrap_form_for @mediaobject, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
+<%= bootstrap_form_for object, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
   <%= hidden_field_tag :step, @active_step %>
 
   <fieldset class='item-discovery'>
