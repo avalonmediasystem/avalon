@@ -29,8 +29,6 @@ Unless required by applicable law or agreed to in writing, software distributed
     Or <a href='https://wiki.dlib.indiana.edu/display/VarVideo/Avalon+Collections+Guide#AvalonCollectionsGuide-UploadingviaBatch'><b>learn how to</b></a> create items using batch upload.
     </div>
 
-    <%= bootstrap_form_for @collection, html: { class: "form-horizontal", id: 'access_control_form'}  do |co| %>
- 
       <fieldset>
         <legend>Assign Staff Roles</legend>
 
@@ -60,13 +58,21 @@ Unless required by applicable law or agreed to in writing, software distributed
 
       <fieldset>
          <legend>Set Default Access Control for New Items</legend>
-          <%= render "modules/access_control", { form: co, object: @collection, visibility: @collection.default_visibility, hidden: @collection.default_hidden? } %>	
-					<% if can? :update_access_control, @collection %>
-						<%= submit_tag "Save Access Settings", name: "save_access", class: "btn btn-primary" %>
-					<% end %>
+          <%= render "modules/access_control", { object: @collection, visibility: @collection.default_visibility, hidden: @collection.default_hidden? } %>	
+	  
+	  <% if can? :update_access_control, @collection %>
+	    <%= bootstrap_form_for @collection, html: { class: "form-horizontal", id: 'access_control_button_form'}  do |vid| %>
+	      <%= submit_tag "Save Access Settings", name: "save_access", class: "btn btn-primary" %>
+	      <div class="hidden">
+		<%= check_box_tag :hidden, '1', @collection.default_hidden? %>
+		<%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
+		<%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
+		<%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
+	      </div>
+	    <% end #form_for %>		
+	  <% end %>
       </fieldset>
       
-    <% end %>
 </div>
 
 <style>
