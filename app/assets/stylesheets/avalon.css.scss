@@ -220,11 +220,6 @@ label {
   }
 }
 
-.row-no-margin {
-  @extend .row;
-  margin: 0;
-}
-
 .item-access label {
   display: block;
 }
@@ -240,23 +235,29 @@ input[type=text], textarea, select {
 }
 
 .access-block {
-  @extend .col-lg-4;
-  @extend .col-md-12;
-  input[type=text] {
-    width:100%;
+  .row {
+    margin-right: 0;
   }
-  select {
-    width: 75%;
-    background-color: white;
-  }
-  button {
-    float: right;
-    padding: 4px 12px;
-    margin-left: 5px;
-    width: 20%;
-  }
-  span.twitter-typeahead {
-    width: 75%;
+  //@extend .col-lg-4;
+  //@extend .col-md-12;
+//  input[type=text] {
+//    width:100%;
+//  }
+//  select {
+//    width: 75%;
+//    background-color: white;
+//  }
+//  button {
+//    float: right;
+//    padding: 4px 12px;
+//    margin-left: 5px;
+//    width: 20%;
+//  }
+//  span.twitter-typeahead {
+//    width: 75%;
+//  }
+  .remove:hover, .remove:active {
+    @extend .btn-danger;
   }
 }
 
@@ -279,8 +280,6 @@ input[type=text], textarea, select {
   color:#BBB;
 }
 .tt-suggestions {
-  @extend .col-lg-4;
-  @extend .col-md-12;
   border-radius: 4px;
   margin: 2px 0 0 0;
   z-index: 1051;
@@ -338,6 +337,9 @@ input[type="text"]#admin_group {
   margin-bottom: 0em;
   font-size: .8em;
   @extend .mobile-hidden;
+  .row {
+    margin: 0;
+  }
 }
 
 
@@ -612,10 +614,4 @@ button.close {
 a[data-trigger='submit'] {
   text-decoration: none;
   color: black;
-}
-
-.access-block {
-  .remove:hover, .remove:active {
-    @extend .btn-danger;
-  }
 }
