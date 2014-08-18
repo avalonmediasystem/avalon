@@ -65,18 +65,18 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <fieldset class='special-access'>
     <legend>Assign special access</legend>
-    <div class="row-no-margin">
-      <%= render "modules/access_object", object: object,
-        access_object: "user", members: @users, autocomplete_model: 'user',
-        input_disabled: !can_update %>
-      <%= render "modules/access_object", object: object,
-        access_object: "group", members: @groups, 
-        dropdown_values: [@addable_groups, 'name', 'name'],
-        input_disabled: !can_update %>
-      <%= render "modules/access_object", object: object,
-        access_object: "class", members: @virtual_groups, 
-        autocomplete_model: 'externalGroup', display_helper: :vgroup_display,
-        input_disabled: !can_update %>
+    <div class="row">
+        <%= render "modules/access_object", object: object,
+          access_object: "user", members: @users, autocomplete_model: 'user',
+          input_disabled: !can_update %>
+        <%= render "modules/access_object", object: object,
+          access_object: "group", members: @groups, 
+          dropdown_values: [@addable_groups, 'name', 'name'],
+          input_disabled: !can_update %>
+        <%= render "modules/access_object", object: object,
+          access_object: "class", members: @virtual_groups, 
+          autocomplete_model: 'externalGroup', display_helper: :vgroup_display,
+          input_disabled: !can_update %>
     </div>
   </fieldset>
 <% content_for :page_scripts do %>
