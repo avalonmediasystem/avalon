@@ -40,10 +40,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 	  </div>
 	</div>
       <% end %>
-      <div class="row-fluid">
-	<div class="btn-options">
-	  <%= f.submit 'Yes, I am sure', class: 'btn btn-danger' %>
-	  <%= link_to 'No, go back', admin_collections_path, class: 'btn' %> 
+      <div class="row-fluid form-inline">
+	<div class="form-group">
+	  <%= f.submit 'Yes, I am sure', class: 'btn btn-danger form-control' %>
+	  <%= link_to 'No, go back', admin_collections_path, class: 'btn btn-primary form-control' %> 
 	</div>
       </div>
     <% end %>
