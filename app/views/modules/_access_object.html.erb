@@ -23,26 +23,24 @@ Unless required by applicable law or agreed to in writing, software distributed
 
       <%#------------ Add access item text field and submit button ------------ %>
       <div class="form-group row">
+        <div class="col-xs-10">
 	<% if defined?(dropdown_values) && dropdown_values.present? %>
-          <div class="col-lg-10">
 	  <%= select_tag "add_#{access_object}", 
 	    options_from_collection_for_select(*dropdown_values), 
 	    { include_blank: true, disabled: input_disabled, class: "form-control"}%>
-          </div>
 	<% elsif defined?(autocomplete_model) && autocomplete_model.present? %>
-          <div class="col-lg-10">
 	  <%= hidden_field_tag "add_#{access_object}" %>
 	  <%= text_field_tag "add_#{access_object}_display", nil, 
 	    class: "typeahead from-model form-control", 
 	    data: { model: autocomplete_model, target: "add_#{access_object}" },
 	    disabled: input_disabled %>
-          </div>
 	<% else %>
 	  <%= text_field_tag "add_#{access_object}", nil,
-	    disabled: input_disabled, class: "form-control col-lg-7"  %>
+	    disabled: input_disabled  %>
 	<% end %>
+        </div>
         <%= button_tag "Add", name: "submit_add_#{access_object}", type: "submit",
-          class: "btn btn-default col-lg-2", disabled: input_disabled, value: "Add" %>
+          class: "btn btn-default col-xs-2", disabled: input_disabled, value: "Add" %>
       </div>
     </div>
 

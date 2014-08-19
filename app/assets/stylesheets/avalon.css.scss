@@ -230,12 +230,6 @@ label {
   font-weight: normal;
 }
 
-input[type=text], textarea, select {
-  padding: 3px;
-  border-radius: $input-border-radius;
-  border: 1px solid $input-border;
-}
-
 .access-block {
   .row {
     margin-right: 0;
@@ -351,6 +345,10 @@ header div{
   .top-panel-heading {
     margin-bottom: 0em;
   }
+}
+
+ul.result-list {
+  list-style-position: inside;
 }
 
 div[id*='facet-panel-'] {
