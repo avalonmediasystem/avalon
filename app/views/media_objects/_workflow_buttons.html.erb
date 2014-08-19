@@ -14,7 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div class="btn-group">
-<%= submit_tag 'Save', name: 'save', class: "btn btn-default", form: form_id_for_step(@active_step) %>
-<%= hidden_field_tag :step, @active_step, form: form_id_for_step(@active_step) %>
-<%= submit_tag "Save and continue", name: 'save_and_continue', class: 'btn btn-primary', form: form_id_for_step(@active_step) %>
+<% form ||= nil %>
+<%= submit_tag 'Save', name: 'save', class: "btn btn-default", form: form %>
+<%= hidden_field_tag :step, @active_step, form: form %>
+<%= submit_tag "Save and continue", name: 'save_and_continue', class: 'btn btn-primary', form: form %>
 </div>
