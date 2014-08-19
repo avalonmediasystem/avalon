@@ -65,17 +65,15 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% end %>
         </td>
         <td>
-          <%= text_field_tag "parts[#{part.pid}][label]", part.label,
-            size: 30, class: 'section-label' %>
+          <%= text_field_tag "parts[#{part.pid}][label]", part.label, class: 'form-control' %>
         </td>
 	<td>
-          <%= text_field_tag "parts[#{part.pid}][permalink]", part.permalink,
-            size: 30, class: 'section-label' %>
+          <%= text_field_tag "parts[#{part.pid}][permalink]", part.permalink, class: 'form-control' %>
 	</td>
         <td>
           <% if part.is_video? %>
             <%= text_field_tag "parts[#{part.pid}][poster_offset]",
-              part.poster_offset.to_i.to_hms, size: 8, class: "input-small" %>
+              part.poster_offset.to_i.to_hms, class: 'input-small form-control' %>
           <% else %>
             <span class="input-small">n/a</span>
           <% end %>
