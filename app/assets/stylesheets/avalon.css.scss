@@ -238,82 +238,9 @@ input[type=text], textarea, select {
   .row {
     margin-right: 0;
   }
-  //@extend .col-lg-4;
-  //@extend .col-md-12;
-//  input[type=text] {
-//    width:100%;
-//  }
-//  select {
-//    width: 75%;
-//    background-color: white;
-//  }
-//  button {
-//    float: right;
-//    padding: 4px 12px;
-//    margin-left: 5px;
-//    width: 20%;
-//  }
-//  span.twitter-typeahead {
-//    width: 75%;
-//  }
   .remove:hover, .remove:active {
     @extend .btn-danger;
   }
-}
-
-// Twitter-typeahead classes
-.twitter-typeahead {
-  padding: 0;
-}
-.tt-input {
-  position:relative;
-  z-index: 1051;
-}
-.tt-input:focus, select:focus {
-  border-color: rgba(82, 168, 236, 0.8);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(82, 168, 236, 0.6);
-  outline: 0 none;
-}
-.tt-hint {
-  position:absolute;
-  z-index: 1050;
-  color:#BBB;
-}
-.tt-suggestions {
-  border-radius: 4px;
-  margin: 2px 0 0 0;
-  z-index: 1051;
-  background-color: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  min-width: 160px;
-  position: absolute;
-  width: 100%;
-}
-.tt-suggestion {
-  clear: both;
-  color: #333;
-  display: block;
-  line-height: 20px;
-  padding: 3px 6px;
-  white-space: nowrap;
-  width: 100%;
-}
-.tt-suggestion p {
-  padding: 0;
-  margin: 0;
-  width: 100%;
-}
-.tt-cursor {
-  background-color: #264d52;
-  background-image: linear-gradient(to bottom, #2a5459, #224448);
-  background-repeat: repeat-x;
-  color: #fff;
-  outline: 0 none;
-  text-decoration: none;
-}
-.tt-dropdown-menu {
-  width: 100%;
 }
 
 /* UI Fixes */
