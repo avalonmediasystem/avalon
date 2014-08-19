@@ -4,7 +4,6 @@
 if not Modernizr.formattribute
   $('input[type="submit"][form]').click (event) ->
     event.preventDefault()
-    alert('here!')
     form = document.getElementById($(this).attr('form'))
     newform = form.cloneNode()
     newform.id = newform.id + "_temp"
