@@ -79,19 +79,3 @@ Unless required by applicable law or agreed to in writing, software distributed
           input_disabled: !can_update %>
     </div>
   </fieldset>
-<% content_for :page_scripts do %>
-  <script>
-    $( "#access_control_form #hidden" ).on('change', function() {
-        $( "#access_control_button_form #hidden" ).prop('checked',this.checked);
-    });  
-    $( "#access_control_form #visibility_public" ).on('change', function() {
-        $( "#access_control_button_form #visibility_public" ).prop('checked', this.checked);
-    });  
-    $( "#access_control_form #visibility_restricted" ).on('change', function() {
-        $( "#access_control_button_form #visibility_restricted" ).prop('checked', this.checked);
-    });  
-    $( "#access_control_form #visibility_private" ).on('change', function() {
-        $( "#access_control_button_form #visibility_private" ).prop('checked', this.checked);
-    });  
-  </script>
-<% end %>
