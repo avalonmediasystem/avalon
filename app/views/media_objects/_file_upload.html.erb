@@ -100,7 +100,6 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     </tbody>
   </table>
-    <%= submit_tag "Update", class: "btn clearfix", donot_advance: true %>
 <% end %>
   </div>
 <% end %>
@@ -168,11 +167,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render partial: "dropbox_details" %>
 </div>
 
-<div id="workflow_buttons">
-<%= bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
-  <%= render "workflow_buttons" %>
-<% end %>
-</div>
+<%= render "workflow_buttons", form: 'master_files_form' %>
 
 <% content_for :page_styles do %>
   <%= stylesheet_link_tag "browse_everything", media: "rel" %>
