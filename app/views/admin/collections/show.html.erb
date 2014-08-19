@@ -61,15 +61,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <%= render "modules/access_control", { object: @collection, visibility: @collection.default_visibility, hidden: @collection.default_hidden? } %>	
 	  
 	  <% if can? :update_access_control, @collection %>
-	    <%= bootstrap_form_for @collection, html: { class: "form-horizontal", id: 'access_control_button_form'}  do |vid| %>
-	      <%= submit_tag "Save Access Settings", name: "save_access", class: "btn btn-primary" %>
-	      <div class="hidden">
-		<%= check_box_tag :hidden, '1', @collection.default_hidden? %>
-		<%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
-		<%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
-		<%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
-	      </div>
-	    <% end #form_for %>		
+	    <%= submit_tag "Save Access Settings", name: "save_access", class: "btn btn-primary", form: 'access_control_form' %>
 	  <% end %>
       </fieldset>
       
