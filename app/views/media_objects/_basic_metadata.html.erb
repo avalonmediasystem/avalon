@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 
 <p>Fields followed by an asterisk (*) are required.</p>
-<%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |form| %>
+<%= form_for @mediaobject, html: { class: 'form-vertical', id: form_id_for_step(@active_step) } do |form| %>
   <%= hidden_field_tag :step, @active_step %>
   
   <%= render partial: 'text_field', 

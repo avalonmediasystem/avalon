@@ -40,6 +40,10 @@ module MediaObjectsHelper
         css_class
      end
 
+     def form_id_for_step(step)
+       "#{step.gsub('-','_')}_form"
+     end
+
      def dropbox_url collection
         ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
         path = URI::Parser.new.escape(collection.dropbox_directory_name, %r{[/\\%& #]})

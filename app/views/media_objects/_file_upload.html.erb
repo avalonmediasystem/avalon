@@ -171,8 +171,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <div id="workflow_buttons">
-<%= bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
-  <%= render "workflow_buttons", form: media %>
+<%= bootstrap_form_for @mediaobject, html: { id: form_id_for_step(@active_step), class: "form-horizontal"} do |media| %>
+  <%= render "workflow_buttons" %>
 <% end %>
 </div>
 
@@ -184,7 +184,5 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
   <%= javascript_include_tag "file_upload_step" %>
   <%= javascript_include_tag "file_browse" %>
-  <%= javascript_include_tag "file_table" %>
-  <%= javascript_include_tag "bootstrap-fileupload.js" %>
   <%= javascript_include_tag "jasny-bootstrap.min.js" %>
 <% end %>
