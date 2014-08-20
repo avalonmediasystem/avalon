@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div id="associated_files">
       <legend>Associated files</legend>
       <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
-<%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
+<%= form_for @mediaobject, html: { class: 'form-vertical', id: 'master_files_form' } do |media| %>
       <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
   <div class="collapse form-tooltip" id="label-tooltip">
@@ -65,17 +65,15 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% end %>
         </td>
         <td>
-          <%= text_field_tag "parts[#{part.pid}][label]", part.label,
-            size: 30, class: 'section-label' %>
+          <%= text_field_tag "parts[#{part.pid}][label]", part.label, class: 'form-control' %>
         </td>
 	<td>
-          <%= text_field_tag "parts[#{part.pid}][permalink]", part.permalink,
-            size: 30, class: 'section-label' %>
+          <%= text_field_tag "parts[#{part.pid}][permalink]", part.permalink, class: 'form-control' %>
 	</td>
         <td>
           <% if part.is_video? %>
             <%= text_field_tag "parts[#{part.pid}][poster_offset]",
-              part.poster_offset.to_i.to_hms, size: 8, class: "input-small" %>
+              part.poster_offset.to_i.to_hms, class: 'input-small form-control' %>
           <% else %>
             <span class="input-small">n/a</span>
           <% end %>
@@ -102,7 +100,6 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     </tbody>
   </table>
-    <%= submit_tag "Update", class: "btn clearfix", donot_advance: true %>
 <% end %>
   </div>
 <% end %>
@@ -170,11 +167,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render partial: "dropbox_details" %>
 </div>
 
-<div id="workflow_buttons">
-<%= bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
-  <%= render "workflow_buttons", form: media %>
-<% end %>
-</div>
+<%= render "workflow_buttons", form: 'master_files_form' %>
 
 <% content_for :page_styles do %>
   <%= stylesheet_link_tag "browse_everything", media: "rel" %>
@@ -184,7 +177,5 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
   <%= javascript_include_tag "file_upload_step" %>
   <%= javascript_include_tag "file_browse" %>
-  <%= javascript_include_tag "file_table" %>
-  <%= javascript_include_tag "bootstrap-fileupload.js" %>
   <%= javascript_include_tag "jasny-bootstrap.min.js" %>
 <% end %>
