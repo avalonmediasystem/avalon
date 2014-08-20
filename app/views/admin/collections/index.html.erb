@@ -18,6 +18,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <div class='container-fluid'>
+  <div class="row col-md-9 col-lg-8">
   <% unless @collections.empty? %>
     <h2>My Collections</h2>
 
@@ -62,9 +63,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     </div>
   <% end %>
-
+  </div>
 </div>
-
 
 <% content_for :page_scripts do %>
   <script>
