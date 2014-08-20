@@ -44,5 +44,5 @@
     },
 
     add_button_html: '<div class="input-group-btn"><button class="add-dynamic-field btn btn-success"><span class="glyphicon glyphicon-plus"></span></button></div>',
-    remove_button_html: '<div class="input-group-btn"><button class="remove-dynamic-field btn btn-danger"><span class="glyphicon glyphicon-minus"></span></button><div>'
+    remove_button_html: '<div class="input-group-btn"><button class="remove-dynamic-field btn btn-danger"><span class="glyphicon glyphicon-minus"></span></button></div>'
   }
