@@ -19,26 +19,30 @@
     initialize: function() {
       /* Any fields marked with the class 'dynamic_field' will have an add button appended
        * to the DOM after the label */	
-      this.add_button_to_controls();
+      this.add_buttons_to_controls();
 
       $(document).on('click', '.add-dynamic-field', function(event){
-        /* When we click the add button we need to manipulate the parent container, which
-	 * is a <div class="controls dynamic"> wrapper */
-	/* CSS selectors are faster than doing a last() call in jQuery */
-        var input_group_template = $(this).parent();
-	/* By doing this we should just keep pushing the add button down as the last
-	 * element of the parent container */
-	var new_input_group = $(input_group_template).clone();
+        event.preventDefault();
+        var current_input_group = $(this).parent().parent();
+	var new_input_group = $(current_input_group).clone();
         new_input_group.find('input').val('');
-        $(input_group_template).find('.add-dynamic-field').remove();
-        $(input_group_template).after(new_input_group);
+        current_input_group.find('.input-group-btn').remove();
+        current_input_group.append(DynamicFields.remove_button_html);
+        $(current_input_group).after(new_input_group);
+      });
+
+      $(document).on('click', '.remove-dynamic-field', function(event){
+        event.preventDefault();
+        $(this).parent().parent().remove();
       });
     },
 
     /* Simpler is better */
-    add_button_to_controls: function() {
-      var controls = $('.form-group.multivalued').find('.input-group:last').append(DynamicFields.add_input_html);
+    add_buttons_to_controls: function() {
+      $('.form-group.multivalued').find('.input-group:not(:last)').append(DynamicFields.remove_button_html);
+      $('.form-group.multivalued').find('.input-group:last').append(DynamicFields.add_button_html);
     },
 
-    add_input_html: '<span class="add-dynamic-field input-group-addon"><span class="glyphicon glyphicon-plus"></span></span>'
+    add_button_html: '<div class="input-group-btn"><button class="add-dynamic-field btn btn-success"><span class="glyphicon glyphicon-plus"></span></button></div>',
+    remove_button_html: '<div class="input-group-btn"><button class="remove-dynamic-field btn btn-danger"><span class="glyphicon glyphicon-minus"></span></button><div>'
   }
