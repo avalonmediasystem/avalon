@@ -2,8 +2,8 @@ $ ->
   initialized = false
   $('#browse-btn').browseEverything()
     .show ->
-      skip_box = $('#workflow_checkbox').clone().css('margin-right','10px')
-      skip_box.find('i').remove()
+      skip_box = $('#web_upload input[name=workflow]').closest('span')
+        .clone().removeClass().css('margin-right','10px')
       
       $('.ev-cancel').before skip_box
       $('.ev-providers .ev-container a').click()
