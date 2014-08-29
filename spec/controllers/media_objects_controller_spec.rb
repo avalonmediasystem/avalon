@@ -152,6 +152,7 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should return an error if the PID does not exist" do
+        expect(MediaObject).to receive(:find).with('no-such-object') { raise ActiveFedora::ObjectNotFoundError }
         get :show, id: 'no-such-object'
         response.response_code.should == 404
       end

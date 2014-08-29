@@ -733,7 +733,6 @@ DEPENDENCIES
   faker
   felixwrapper!
   font-awesome-rails (~> 3.0)
-  grit
   haml
   handlebars_assets
   headless
