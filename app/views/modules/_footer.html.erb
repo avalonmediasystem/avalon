@@ -15,17 +15,21 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
    <div class="container-fluid">
 	  <footer>
-	   <ul>
-	     <li>Supported by <a href="http://www.avalonmediasystem.org">Indiana University Bloomington Libraries</a> </li>
-	     <li><%= link_to "Contact Us", comments_path %></li>
-	   </ul>
+	   <div class="span10" id="footer-text">
+	     <%= image_tag "blockiu_white.gif", alt: "Avalon Media System - #{t(:avalon_release)}" %>
+	     <ul>
+	       <li><strong>Media Collections Online is a service of Indiana University Libraries</strong></li>
+	       <li><strong>Powered by <%= link_to "Avalon", "http://avalonmediasystem.org" %></strong></li>
+	     </ul>
      
-	   <ul class="copyright">
-	   	 <li><%= image_tag "blockiu_white.gif", alt: "Avalon Media System - #{t(:avalon_release)}" %>
-	     <li><a href="http://www.indiana.edu/comments/copyright.shtml">Copyright</a> © 2013 <a href="http://www.indiana.edu/">The Trustees of Indiana University</a> </li>
-	     <li><a href="http://www.indiana.edu/comments/complaint.shtml">Copyright Complaints</a></li>
-	     <li><a href="http://go.iu.edu/4My">Libraries Privacy Policy</a></li>
-	   </ul>
-
+	     <ul class="copyright">
+	       <li><a href="http://www.indiana.edu/comments/copyright.shtml">Copyright</a> © 2013 <a href="http://www.indiana.edu/">The Trustees of Indiana University</a> </li>
+	       <li><a href="http://www.indiana.edu/comments/complaint.shtml">Copyright Complaints</a></li>
+	       <li><a href="http://go.iu.edu/4My">Libraries Privacy Policy</a></li>
+	     </ul>
+	   </div>
+	   <div id="footer-avalonlogo">
+	     <%= image_tag "Home.png", alt: "Avalon Media System - #{t(:avalon_release)}" %>
+	   </div>
     </footer>
    </div>
