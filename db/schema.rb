@@ -11,14 +11,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140521132807) do
+ActiveRecord::Schema.define(version: 20140903161907) do
 
   create_table "bookmarks", force: true do |t|
     t.integer  "user_id",       null: false
     t.string   "document_id"
     t.string   "title"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "user_type"
     t.string   "document_type"
   end
@@ -28,8 +28,8 @@ ActiveRecord::Schema.define(version: 20140521132807) do
   create_table "courses", force: true do |t|
     t.string   "context_id"
     t.text     "label"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "title"
   end
 
@@ -43,8 +43,8 @@ ActiveRecord::Schema.define(version: 20140521132807) do
     t.datetime "failed_at"
     t.string   "locked_by"
     t.string   "queue"
-    t.datetime "created_at",             null: false
-    t.datetime "updated_at",             null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority"
@@ -52,8 +52,8 @@ ActiveRecord::Schema.define(version: 20140521132807) do
   create_table "identities", force: true do |t|
     t.string   "email"
     t.string   "password_digest"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "ingest_batches", force: true do |t|
@@ -61,8 +61,8 @@ ActiveRecord::Schema.define(version: 20140521132807) do
     t.text     "media_object_ids"
     t.boolean  "finished",                    default: false
     t.boolean  "email_sent",                  default: false
-    t.datetime "created_at",                                  null: false
-    t.datetime "updated_at",                                  null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "name",             limit: 50
   end
 
@@ -71,23 +71,11 @@ ActiveRecord::Schema.define(version: 20140521132807) do
     t.integer "parent_id"
   end
 
-  create_table "roles", force: true do |t|
-    t.string "name"
-  end
-
-  create_table "roles_users", id: false, force: true do |t|
-    t.integer "role_id"
-    t.integer "user_id"
-  end
-
-  add_index "roles_users", ["role_id", "user_id"], name: "index_roles_users_on_role_id_and_user_id"
-  add_index "roles_users", ["user_id", "role_id"], name: "index_roles_users_on_user_id_and_role_id"
-
   create_table "searches", force: true do |t|
     t.text     "query_params"
     t.integer  "user_id"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "user_type"
   end
 
@@ -96,8 +84,8 @@ ActiveRecord::Schema.define(version: 20140521132807) do
   create_table "sessions", force: true do |t|
     t.string   "session_id", null: false
     t.text     "data"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id"
@@ -115,8 +103,8 @@ ActiveRecord::Schema.define(version: 20140521132807) do
 
   create_table "users", force: true do |t|
     t.string   "username",   default: "", null: false
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "provider"
     t.string   "uid"
     t.string   "email"
