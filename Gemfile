@@ -6,8 +6,18 @@
   #gem 'protected_attributes'
   gem 'builder', '~>3.1.0'
 
-  gem 'hydra', '~>7.1'
-  gem 'active-fedora'
+  gem 'blacklight', '~>5.7'
+
+  #gem 'hydra', '~>7.1'
+  gem 'hydra-head', '~>7.2.0'
+  gem 'active-fedora', '~> 7.1.0'
+  gem 'om', '~> 3.1.0'
+  gem 'solrizer', '~> 3.3.0'
+  gem 'rsolr', '~> 1.0.10'
+  gem 'nokogiri', '~> 1.6.0'
+  gem 'rubydora', '~> 1.8.0'
+  gem 'nom-xml', '~> 0.5.1'
+
   gem 'activerecord-session_store'
   gem 'bcrypt-ruby', '~> 3.1.0'
   gem 'kaminari', '~> 0.15.0'

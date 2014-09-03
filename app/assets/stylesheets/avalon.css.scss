@@ -345,10 +345,6 @@ header div{
   }
 }
 
-ul.result-list {
-  list-style-position: inside;
-}
-
 div[id*='facet-panel-'] {
   @extend .navbar-collapse;
   padding-left: 0 !important;
@@ -395,10 +391,6 @@ footer .release {
 }
 
 /* Alerts */
-
-#alerts {
-  margin: 10px 15px;
-}
 
 .alert-success {
   text-shadow: rgba(0, 0, 0, 0.1) 0px 1px 0px;

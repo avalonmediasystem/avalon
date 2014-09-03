@@ -62,6 +62,17 @@ module ApplicationHelper
     end
   end
 
+  def avalon_image_tag(document, image_options)
+    image_url = image_for(document)
+    if image_url.present?
+      link_to(media_object_path(document[:id]), {class: 'result-thumbnail'}) do
+        image_tag(image_url)
+      end
+    else
+      image_tag 'no_icon.png', class: 'result-thumbnail'
+    end
+  end
+
   def display_metadata(label, value, default=nil)
     return if value.blank? and default.nil?
     value ||= default
