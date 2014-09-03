@@ -56,11 +56,7 @@
   #gem 'devise-guests'
   gem 'haml'
 
-  gem "jettywrapper"
   gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git" # HEAD , tag: 'avalon-r3'
-  gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
-  gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
-
   gem 'validates_email_format_of'
   gem 'loofah'
   gem 'omniauth-identity'
@@ -95,28 +91,31 @@
     gem 'xray-rails'
     gem 'better_errors'
     gem 'binding_of_caller'
+    gem 'license_header'
+    gem 'pry'
+    gem 'pry-rails'
+    gem 'pry-debugger'
+    gem 'debugger'
+    gem 'meta_request'
   end
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do
-    gem 'meta_request'
+    gem "jettywrapper"
+    gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
+    gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
+
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano'
-    gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm' # HEAD , tag: 'avalon-r3'
-    gem 'factory_girl_rails'
     gem 'rspec-rails', '~>2.9'
-    gem 'pry'
-    gem 'pry-rails'
-    gem 'pry-debugger'
     gem 'puma'
     gem 'rb-fsevent', '~> 0.9.1'
-    gem 'debugger'
     gem 'letter_opener'
-    gem 'grit'
-    gem 'license_header'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do
+    gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm' # HEAD , tag: 'avalon-r3'
+    gem 'factory_girl_rails'
     gem 'mime-types', ">=1.1"
     gem "headless"
     gem "rspec_junit_formatter"

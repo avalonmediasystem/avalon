@@ -1,0 +1,7 @@
+default:
+  felix_port: 8080
+  java_opts:
+    - "-Xms1024m"
+    - "-Xmx1024m"
+    - "-XX:MaxPermSize=256m"
+  startup_wait: 90
