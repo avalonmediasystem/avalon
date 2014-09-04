@@ -15,8 +15,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <div class="access-block col-lg-4 col-md-12" id="<%= access_object %>_management">
 <%= bootstrap_form_for object do |form| %>
-<!--  <input id="step" name="step" type="hidden" value="access-control">
-  <input id="donot_advance" name="donot_advance" type="hidden" value="true"> -->
+  <input id="step" name="step" type="hidden" value="access-control"/>
+  <input id="donot_advance" name="donot_advance" type="hidden" value="true"/>
     <div class="form-group"> 
       <%# ----------- Title and tooltip ---------------------------------%>
       <%= render partial: "modules/tooltip", locals: { form: form, field: access_object, tooltip: t("access_control.#{access_object}"), options: {display_label: t("access_control.#{access_object}label").html_safe} } %>
