@@ -3,11 +3,11 @@
  ****************************************/
 @font-face {
   font-family: 'BentonSansCondensedRegular';
-  src:url('benton-sans-condensed/regular.eot');
-  src:url('benton-sans-condensed/regular.eot?#iefix') format('embedded-opentype'),
-    url('benton-sans-condensed/regular.svg#regular') format('svg'),
-    url('benton-sans-condensed/regular.woff') format('woff'),
-    url('benton-sans-condensed/regular.ttf') format('truetype');
+  src:font-url('benton-sans-condensed/regular.eot');
+  src:font-url('benton-sans-condensed/regular.eot?#iefix') format('embedded-opentype'),
+    font-url('benton-sans-condensed/regular.svg#regular') format('svg'),
+    font-url('benton-sans-condensed/regular.woff') format('woff'),
+    font-url('benton-sans-condensed/regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -67,7 +67,7 @@
 
 #branding-bar .campus {
 	font-family: "BentonSansCondensedRegular", "Arial Narrow", Arial, Helvetica, sans-serif;
-	font-size: 1em; /* 16px (16/16) */
+	font-size: 1.125em; /* 16px (16/16) */
 	left: auto;
 	letter-spacing: 0.025em;
 	line-height: 1em; /* 16px (16/16) */
@@ -278,6 +278,9 @@ footer a:link {
   right: 10px;
   position: absolute;
   bottom: 10px;
+  a:hover, a:focus {
+    color: white;
+  }
   @media all and (max-width: 768px) { 
     bottom: 4px;
   }
@@ -293,11 +296,16 @@ footer a:link {
   z-index: 1;
 }
 
+#home-about {
+  padding-right: 50px;
+}
+
 #home-visit-box {
   -webkit-box-shadow: 5px 5px 5px 0 #616161;
   box-shadow: 5px 5px 5px 0 #616161;
   @include border-radius(5px);
   background-color: #e5e3e0;
+  margin-bottom: 20px;
   p {
     padding: 15px 10px 10px 10px;
   }
