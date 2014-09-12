@@ -88,7 +88,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           features: <%=features.inspect.html_safe%>,
           audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
           mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
-          startQuality: 'high'
+          startQuality: 'low'
         });
   </script>
 <% end %>

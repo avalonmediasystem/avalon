@@ -1,0 +1,317 @@
+/****************************************
+ * Branding Bar
+ ****************************************/
+@font-face {
+  font-family: 'BentonSansCondensedRegular';
+  src:font-url('benton-sans-condensed/regular.eot');
+  src:font-url('benton-sans-condensed/regular.eot?#iefix') format('embedded-opentype'),
+    font-url('benton-sans-condensed/regular.svg#regular') format('svg'),
+    font-url('benton-sans-condensed/regular.woff') format('woff'),
+    font-url('benton-sans-condensed/regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/****************************************
+ * Branding Bar
+ ****************************************/
+
+#branding-bar {
+	background: #212121 url(iu/bg-bar.gif) repeat 0 100%;
+	color: #fff;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px; /* Normalize font size */
+	line-height: 18px; /* Normalize line height */
+	min-height: 40px;
+	overflow: visible;
+	text-align: right;
+	margin-left: -20px;
+  @media all and (max-width: 768px) { 
+    min-height: 46px;
+    margin-right: -20px;
+  }
+}
+#branding-bar h1,
+#branding-bar p,
+#branding-bar ul,
+#branding-bar form,
+#branding-bar fieldset,
+#branding-bar input,
+#branding-bar dl,
+#branding-bar dt,
+#branding-bar dd,
+#branding-bar img,
+#branding-bar abbr {
+	border: none;
+	display: block;
+	font-weight: normal;
+	margin: 0;
+	padding: 0;	
+}
+#branding-bar a {
+	color: #fff;	
+}
+#branding-bar ul {
+	list-style: none;
+}
+#branding-bar .wrapper {
+	position: relative;
+}
+/*** Bar ***/
+
+#branding-bar .bar {
+	border-top: 6px solid #990000;
+}
+
+/*** Trident Tab & Campus Name ***/
+
+#branding-bar .campus {
+	font-family: "BentonSansCondensedRegular", "Arial Narrow", Arial, Helvetica, sans-serif;
+	font-size: 1.125em; /* 16px (16/16) */
+	left: auto;
+	letter-spacing: 0.025em;
+	line-height: 1em; /* 16px (16/16) */
+	text-align: left;
+	text-transform: uppercase;
+	top: 6px;
+	z-index: 400;
+	margin-left: $gridGutterWidth;
+}
+#branding-bar .campus a {
+	display: table-cell;
+	height: 20px;
+	padding: 8px 0 0 75px;
+	text-decoration: none;
+	vertical-align: middle;	
+  @media all and (max-width: 768px) { 
+    height: 40px;
+    padding-left: 27px;
+  }
+
+}
+#branding-bar .campus a:hover {
+	text-decoration: none;	
+}
+#branding-bar .campus img {
+	height: auto;
+	position: absolute;
+	top: -6px;
+	width: 64px;
+	left: 27px;
+	z-index: 1;
+  @media all and (max-width: 768px) { 
+    width: 34px;
+    top: 0;
+    left: 7px;
+  }
+}
+#branding-bar .campus .expanded {
+	display: none;
+}
+
+.log-in-out {
+  color: white;
+  font-size: 0.9em;
+  float: right;
+  padding: 3px 20px 0 0;
+  @media all and (max-width: 768px) { 
+    padding-right: 0;
+  }
+}
+.log-in-out a {
+  color: white;
+  background: none;
+  padding: 0;
+}
+.log-in-out a:after {
+  content: none;
+}
+.log-in-out span + a:before {
+  content: " | ";
+}
+.log-in-out .pull-right {
+  padding: .5em;
+}
+
+footer {
+  font-size: .8em;
+  border-top: 3px solid #990000;
+  margin-left: -20px;
+  margin-right: -20px;
+  margin-top: 10px;
+  padding: 5px 20px;
+  position: relative;
+}
+
+footer ul {
+  float: none;
+}
+
+footer li:before {
+  content: " | ";
+}
+
+footer .copyright li:nth-child(2):before {
+  content: none;
+}
+
+footer a:visited {
+  color: #990000;
+  text-decoration: none;
+  font-weight: normal;
+}
+footer a:link {
+  color: #990000;
+  text-decoration: none;
+  font-weight: normal;
+}
+
+#footer-text {
+  margin-left: 0;
+  img {
+    width: auto;
+    height: 45px;
+    float: left;
+    margin-right: 5px;
+  }
+  ul {
+    margin-bottom: 0;
+    @media all and (max-width: 560px) {
+      display: inline;
+    }
+  }
+}
+
+#footer-avalonlogo {
+  position: absolute;
+  right: 10px;
+  img {
+    width: auto;
+    height: 50px;
+  }
+}
+.navbar {
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+.navbar-inner {
+  background-color: #4A3C31;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  @include border-radius(0);
+  position: relative;
+  height: 52px;
+  z-index: 0;
+  @media all and (max-width: 768px) { 
+    height: 40px;
+  }
+  @media all and (max-width: 670px) { 
+    height: 70px;
+  }
+}
+
+.navbar .brand {
+  color: white;
+  text-indent: 0;
+  background: none;
+  width: auto;
+  left: 104px;
+  font-size: 2em;
+  top: 20px;
+  position: absolute;
+  text-shadow: none;
+  height: auto;
+  @media all and (max-width: 979px) { 
+    left: 89px;
+  }
+  @media all and (max-width: 768px) { 
+    left: 10px;
+    top: 8px;
+  } 
+}
+.brand-color2 {
+  color: #AEA79F;
+}
+
+.navbar-browse {
+  color: white;
+  padding-right: 1em;
+  float: left;
+  margin-top: 10px;
+}
+
+.nav2 {
+  background-color: #44697D;
+  padding-right: 20px;
+  .container {
+    min-height: 27px;
+    margin-left: -20px;
+    margin-right: -20px;
+  }
+}
+
+.navbar .nav > li > a {
+  color: white;
+  text-shadow: none;
+  padding: 4px 15px;
+  padding-left: 25px;
+  @include border-radius(0);
+  @media all and (max-width: 979px) { 
+    padding-left: 105px;
+  }
+  @media all and (max-width: 768px) { 
+    padding-left: 25px;
+  }
+}
+
+.nav2 div ul.nav {
+  padding-left: 80px;
+  @media all and (max-width: 979px) { 
+    padding-left: 0px;
+    padding-top: 10px;
+  }
+}
+
+.iu-search {
+  right: 20px;
+  position: absolute;
+  bottom: 10px;
+  min-width: 300px;
+  a:hover, a:focus {
+    color: white;
+  }
+  input[type=text] {
+    color: black;
+  }
+  @media all and (max-width: 768px) { 
+    bottom: 4px;
+  }
+  @media all and (max-width: 670px) { 
+    left: 6px;
+  }
+  
+}
+
+.navbar .btn-navbar {
+  position: absolute;
+  right: 5px;
+  padding: 3px 3px 5px 3px;
+  z-index: 1;
+}
+
+#home-about {
+  padding-right: 50px;
+}
+
+#home-visit-box {
+  -webkit-box-shadow: 5px 5px 5px 0 #616161;
+  box-shadow: 5px 5px 5px 0 #616161;
+  @include border-radius(5px);
+  background-color: #e5e3e0;
+  margin-bottom: 20px;
+  p {
+    padding: 15px 10px 10px 10px;
+  }
+}

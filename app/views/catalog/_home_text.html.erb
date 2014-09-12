@@ -22,14 +22,50 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 <% end %>
 
-<h2>Sample Content</h2>
-
 <ul class="thumbnails">
-  <li class="span3"><h5>Featured Collection</h5><a href="#" class="thumbnail"><%= image_tag "Nutcracker-Ballet.png", alt: "Featured Collection" %></a></li>
-  <li class="span3"><h5>Featured Video</h5><a href="#" class="thumbnail"><%= image_tag "Charlie-McCarthy.png", alt: "Featured Collection" %></a></li>
-  <li class="span3"><h5>Featured Audio</h5><a href="#" class="thumbnail"><%= image_tag "Chucky-Lou.png", alt: "Featured Collection" %></a></li>
+  <li class="span3">
+    <%= link_to media_object_path("avalon:4553") do %>
+      <strong>Featured Film</strong>
+    <% end %>
+    <%= link_to media_object_path("avalon:4553") do %>
+      <%= image_tag "featured/masters.png", alt: "Featured Film", class: 'thumbnail' %>
+    <% end %>
+    <%= link_to 'The Masters of Disaster (1985)', media_object_path("avalon:4553") %>
+  </li>
+  <li class="span3">
+    <%= link_to catalog_index_path('f[collection_ssim][]' => 'Indiana University Libraries Moving Image Archive') do %>
+      <strong>Featured Video Collection</strong>
+    <% end %>
+    <%= link_to catalog_index_path('f[collection_ssim][]' => 'Indiana University Libraries Moving Image Archive') do %>
+      <%= image_tag "featured/minnieMouse.png", alt: "Featured Video Collection", class: 'thumbnail' %>
+    <% end %>
+    <%= link_to catalog_index_path('f[collection_ssim][]' => 'Indiana University Libraries Moving Image Archive') do %>
+      Indiana University Libraries Moving Image Archive
+    <% end %>
+  </li>
+  <li class="span3">
+    <%= link_to catalog_index_path('f[collection_ssim][]' => 'Birch Bayh Senatorial Papers') do %>
+      <strong>Featured Audio Collection</strong>
+    <% end %>
+    <%= link_to catalog_index_path('f[collection_ssim][]' => 'Birch Bayh Senatorial Papers') do %>
+      <%= image_tag "featured/birchBayhHearings.png", alt: "Featured Audio Collection", class: 'thumbnail' %>
+    <% end %>
+    <%= link_to catalog_index_path('f[collection_ssim][]' => 'Birch Bayh Senatorial Papers') do %>
+      Birch Bayh Senate Hearings
+    <% end %>
+  </li>
 </ul>
 
-<h4>Using the System</h4>
-
-<p>Avalon houses audio and video collections. Use the search box, or browse using the terms on the left side to discover content. Some content is only available when you sign in.  Sign in with your ID and passphrase.</p>
+<div class="row">
+<div class="span6">
+  <p><strong>Media Collections Online</strong> houses audio and video collections.</p>
+  <ul>
+    <li>Use the search box, or browse using the terms on the left side to discover content.</li>
+    <li>Some content is only available when you <% link_to '', 'sign in' %> with your ID and passphrase.</li>
+    <li>Login to <a href="https://oncourse.iu.edu">Oncourse</a> or <a href="https://canvas.iu.edu">Canvas</a> to access course materials.</li>
+  </ul>
+</div>
+<div id="home-visit-box" class="span3">
+  <p>Visit <a href="http://wiki.dlib.indiana.edu/display/MCO">Media Collections Online</a> services web site to learn about services for IU units.</p>
+</div>
+</div>
