@@ -20,9 +20,9 @@
 	background: #212121 url(iu/bg-bar.gif) repeat 0 100%;
 	color: #fff;
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 16px; /* Normalize font size */
+	font-size: 14px; /* Normalize font size */
 	line-height: 18px; /* Normalize line height */
-	min-height: 52px;
+	min-height: 40px;
 	overflow: visible;
 	text-align: right;
 	margin-left: -20px;
@@ -79,8 +79,8 @@
 }
 #branding-bar .campus a {
 	display: table-cell;
-	height: 46px;
-	padding: 0 0 0 75px;
+	height: 20px;
+	padding: 8px 0 0 75px;
 	text-decoration: none;
 	vertical-align: middle;	
   @media all and (max-width: 768px) { 
@@ -113,7 +113,7 @@
   color: white;
   font-size: 0.9em;
   float: right;
-  padding-right: 20px;
+  padding: 3px 20px 0 0;
   @media all and (max-width: 768px) { 
     padding-right: 0;
   }
@@ -275,11 +275,15 @@ footer a:link {
 }
 
 .iu-search {
-  right: 10px;
+  right: 20px;
   position: absolute;
   bottom: 10px;
+  min-width: 300px;
   a:hover, a:focus {
     color: white;
+  }
+  input[type=text] {
+    color: black;
   }
   @media all and (max-width: 768px) { 
     bottom: 4px;
@@ -287,6 +291,7 @@ footer a:link {
   @media all and (max-width: 670px) { 
     left: 6px;
   }
+  
 }
 
 .navbar .btn-navbar {
