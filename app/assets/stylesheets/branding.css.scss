@@ -39,23 +39,28 @@ $green: rgb(128, 165, 144);
 $greenBG: scale-color($green, $saturation: -40%, $lightness: 60%);
 $white: rgb(255, 255, 255);
 $orange: rgb(42, 84, 69);
-$gray: rgb(51,51,51);
+$black: #333;
+$gray: #CFD8D3;
+$lightgray: #F5F5F5;
 
 /* Links */
 
 $linkColor: rgb(42, 84, 89);
+$linkHoverColor: $lightgray;
 
 /* Alerts */
 
 $warningText: $gray;
 $warningBackground: rgb(234, 234, 234);
 
-$successText: $gray;
+$successText: $black;
 $successLink: rgb(250, 250, 250);
-$successBackground: $greenBG;
+$successBackground: $gray;
+$state-success-bg: $gray;
+$state-success-text: $black;
 
-$infoText: $gray;
-$infoBackground: rgb(234, 234, 234);
+$infoText: $black;
+$infoBackground: $gray;
 
 /* Header */
 
@@ -81,16 +86,52 @@ $navbar-inverse-color:                      #777;
 $navbar-inverse-bg:                         #F9F9F9;
 $navbar-inverse-border:                     #D4D4D4;
 $navbar-inverse-link-color:                 #777;
-$navbar-inverse-link-hover-color:           #333;
+$navbar-inverse-link-hover-color:           $black;
 
 // Navbar toggle
-$navbar-default-toggle-hover-bg:           #F5F5F5;
-$navbar-default-toggle-icon-bar-bg:        #F5F5F5;
-$navbar-default-toggle-border-color:       rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+$navbar-default-toggle-hover-bg:            $lightgray;
+$navbar-default-toggle-icon-bar-bg:         $lightgray;
+$navbar-default-toggle-border-color:        rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 
 // Inverted navbar toggle
 $navbar-inverse-toggle-hover-bg:            #E6E6E6;
-$navbar-inverse-toggle-icon-bar-bg:         #F5F5F5;
+$navbar-inverse-toggle-icon-bar-bg:         $lightgray;
 $navbar-inverse-toggle-border-color:        rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 
-$grid-gutter-width: 			    12px;
+$grid-gutter-width: 			    16px;
+$wellBackground:			    $gray;
+$sideHeaderBackgroundColor:		    $gray;
+
+$btn-default-color: 			    $black;
+$btn-default-bg: 			    $white;
+$btn-default-border: 			    $gray;
+$btn-primary-color: 			    $black;
+$btn-primary-bg: 			    $lightgray;
+$btn-primary-border: 			    $gray;
+$btn-success-color: 			    $black;
+$btn-success-bg: 			    $lightgray;
+$btn-success-border: 			    $gray;
+$btn-info-color: 			    $black;
+$btn-info-bg: 				    $lightgray;
+$btn-info-border: 			    $gray;
+$btn-warning-color: 			    $black;
+$btn-warning-bg: 			    $lightgray;
+$btn-warning-border: 			    $gray;
+$btn-danger-color: 			    $black;
+$btn-danger-bg: 			    $lightgray;
+$btn-danger-border: 			    $gray;
+
+$pagination-color:                     	    $linkColor;
+$pagination-bg:                        	    $white;
+$pagination-border:                    	    $gray;
+$pagination-hover-color:               	    $linkHoverColor;
+$pagination-hover-bg:                  	    $lightgray;
+$pagination-hover-border:              	    $gray;
+$pagination-active-color:              	    $gray;
+$pagination-active-bg:                 	    $lightgray;
+$pagination-active-border:             	    $gray;
+$pagination-disabled-color:            	    $gray;
+$pagination-disabled-bg:               	    $white;
+$pagination-disabled-border:           	    $gray;
+
+$nav-tabs-active-link-hover-color: 	    $black;

@@ -56,10 +56,15 @@ footer {
     content: none;
   }
 }
-
+a {
+  color: $linkColor;
+  &:hover { color: $linkColor; }
+  &:active { color: $linkColor; }
+  &:visited { color: $linkColor; }
+}
 @mixin hidden-disabled-link  {
   text-decoration: none !important;
-  color: black !important;
+  color: $black !important;
   cursor: default !important;
   pointer-events: none !important;
 }
@@ -74,7 +79,7 @@ footer {
 }
 
 tr.active-false td {
-  color: grey;
+  color: $gray;
 }
 
 /**
@@ -83,9 +88,9 @@ tr.active-false td {
  */
 .nav-wizard {
   li {
-    padding-top: $line-height-computed/3;
+    padding-top: 0;
     padding-right: $line-height-base;
-    padding-bottom: $line-height-computed/2;
+    padding-bottom: 1px;
     padding-left:  $line-height-base;
     margin-bottom: $line-height-computed/4;
     text-align: left;
@@ -254,7 +259,7 @@ input[type="text"]#admin_group {
 /* Header */
 .custom-header {
   background-color: #e9e9e9;
-  color: #333;
+  color: $black;
   margin-bottom: 0em;
   font-size: .8em;
   @extend .mobile-hidden;
@@ -311,9 +316,11 @@ header div{
     background-color: $sidenavHeaderBackgroundColor;
     @include border-top-radius(6px);
     padding: 10px 0 10px 10px;
+    font-weight: bold;
   }
   h5 {
     font-weight: bold;
+    font-size: .9em;
   }
 }
 
@@ -321,10 +328,6 @@ header div{
   background-color: #cfd8d3;
   padding: 0;
   margin-bottom: 0;
-}
-
-.facets .panel-group .panel {
-  margin-top: 0px;
 }
 
 #sidebar, #facets {
@@ -356,7 +359,7 @@ div[id*='facet-panel-'] {
 
 .facets-toggle {
   margin-top: -6px;
-  background-color: white;
+  background-color: $white;
   .icon-bar {
     background-color: #888888;
   }
@@ -372,7 +375,7 @@ footer {
 }
 
 footer a {
-  color: #333;
+  color: $black;
 }
 
 footer ul {
@@ -392,6 +395,10 @@ footer .release {
 
 /* Alerts */
 
+.alert {
+  padding: 8px;
+}
+
 .alert-success {
   text-shadow: rgba(0, 0, 0, 0.1) 0px 1px 0px;
   a {
@@ -402,6 +409,9 @@ footer .release {
   }
 }
 
+#featured_content_header {
+  margin-top: 0;
+}
 #featured_content {
   h5 {
     font-weight: bold;
@@ -517,14 +527,67 @@ button.close {
 }
 
 .fileinput-submit {
-  z-index: $zindex-popover !important;
+  z-index: $zindex-modal-background !important;
 }
 
 .ev-browser {
-  background-color: white;
+  background-color: $white;
 }
 
 a[data-trigger='submit'] {
   text-decoration: none;
-  color: black;
+  color: $black;
+}
+
+.facet-values {
+  font-size: .9em;
+}
+.facets .panel-group .panel {
+  margin-top: 0px;
+}
+.facet_limit-active > .panel-heading {
+  background-color: $lightgray;
+}
+:not(.facet_limit-active).facet_limit > .panel-heading {
+  background-color: $white;
+}
+
+.dl-horizontal {
+  dt {
+    width: auto;
+    margin-right: 1em;
+  }
+  dd {
+    margin-left: 0;
+  } 
+}
+
+#creation_metadata dd {
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+
+.index_title {
+  line-height: 20px;
+  margin-top: 0;
+}
+
+.form-control {
+  color: $black;
+}
+
+.share-tabs {
+  margin-top: 20px;
+}
+
+.tab-content > .tab-pane {
+  padding: 10px;
+  border-bottom: 1px solid $gray;
+  border-left: 1px solid $gray;
+  border-right: 1px solid $gray;
+  overflow: hidden;
+}
+
+#link-object, #link-section, #embed-part {
+  cursor: pointer;
 }
