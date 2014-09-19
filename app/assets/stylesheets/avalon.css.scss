@@ -592,3 +592,7 @@ a[data-trigger='submit'] {
 #link-object, #link-section, #embed-part {
   cursor: pointer;
 }
+
+#documents .document {
+  padding-bottom: $padding-base-vertical;
+}
