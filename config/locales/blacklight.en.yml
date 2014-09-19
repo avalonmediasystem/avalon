@@ -37,3 +37,7 @@ en:
         present: "Selected"
         absent: "Select"
         inprogress: "Saving..."
+      facets:
+        title: 'Browse By'
+      facets-workflow:
+        title: 'Limit to'
