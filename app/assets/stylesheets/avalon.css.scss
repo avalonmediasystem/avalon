@@ -647,7 +647,14 @@ a[data-trigger='submit'] {
     margin-bottom: 0;
 }
 
-#add_group {
-  margin-bottom: 5px;
+.btn-danger:visited {
+  color: $white;
 }
 
+.nav-pills > li > a {
+  padding: 4px 15px;
+  /* override bootstrap .nav overrides of button colors */
+  &.btn-danger {
+    @extend .btn-danger;
+  }
+}

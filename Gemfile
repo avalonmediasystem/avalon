@@ -6,7 +6,8 @@
   #gem 'protected_attributes'
   gem 'builder', '~>3.1.0'
 
-  gem 'blacklight', '~>5.7'
+  #gem 'blacklight', '~>5.7'
+  gem 'blacklight', git: 'https://github.com/cjcolvar/blacklight.git', branch: 'formless-actions'
 
   #gem 'hydra', '~>7.1'
   gem 'hydra-head', '~>7.2.0'

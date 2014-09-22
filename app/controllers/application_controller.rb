@@ -40,14 +40,6 @@ class ApplicationController < ActionController::Base
   def can_embed?
     false # override in controllers for action-targeted embeds
   end
-  
-  def get_user_collections
-    if can? :manage, Admin::Collection
-      Admin::Collection.all
-    else
-      Admin::Collection.where("#{ActiveFedora::SolrService.solr_name("inheritable_edit_access_person", Hydra::Datastream::RightsMetadata.indexer)}" => user_key).to_a
-    end
-  end
 
   def current_ability
     @current_ability ||= Ability.new(current_user, user_session)
@@ -83,4 +75,14 @@ class ApplicationController < ActionController::Base
       redirect_to new_user_session_path, flash: { notice: 'You are not authorized to perform this action. Try logging in.' }
     end
   end
+
+  def get_user_collections
+    if can? :manage, Admin::Collection
+      Admin::Collection.all
+    else
+      Admin::Collection.where("#{ActiveFedora::SolrService.solr_name("inheritable_edit_access_person", Hydra::Datastream::RightsMetadata.indexer)}" => user_key).to_a
+    end
+  end
+  helper_method :get_user_collections
+
 end

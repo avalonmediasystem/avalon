@@ -41,6 +41,7 @@ class MasterFilesController < ApplicationController
     end
     respond_to do |format|
       format.html do
+        response.headers.delete "X-Frame-Options" 
         render :layout => 'embed' 
       end
     end

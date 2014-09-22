@@ -89,4 +89,5 @@ class User < ActiveRecord::Base
     end
     seen
   end
+
 end
