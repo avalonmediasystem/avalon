@@ -16,12 +16,16 @@ require 'spec_helper'
 
 describe FileUploadStep do
   describe '#update_master_files' do
-    let(:masterfile) {FactoryGirl.create(:master_file)}
-    let(:mediaobject) {FactoryGirl.create(:media_object, parts: [masterfile])}
-    let(:step_context) { {mediaobject: mediaobject, parts: {masterfile.pid => {label: 'new label'}}} }
+    let!(:masterfile) {FactoryGirl.create(:master_file, label: 'foo')}
+    let!(:mediaobject) {FactoryGirl.create(:media_object, parts: [masterfile])}
     it 'should not regenerate a section permalink when the label is changed' do
-      expect(masterfile).to_not receive(:permalink=)
+      step_context = {mediaobject: mediaobject, parts: {masterfile.pid => {label: 'new label'}}}
       expect{FileUploadStep.new.update_master_files(step_context)}.to_not change{masterfile.permalink}
+    end
+    it 'should be able to set a blank label' do
+      step_context = {mediaobject: mediaobject, parts: {masterfile.pid => {label: ''}}}
+      FileUploadStep.new.update_master_files(step_context)
+      expect(masterfile.reload.label).to be_nil
     end
   end
 end
