@@ -74,4 +74,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   protected :find_user
+  
+  rescue_from Avalon::MissingUserId do |exception|
+    support_email = Avalon::Configuration.lookup('email.support')
+    notice_text = I18n.t('errors.lti_auth_error') % [support_email, support_email]
+    redirect_to root_path, flash: { error: notice_text.html_safe }
+  end
 end

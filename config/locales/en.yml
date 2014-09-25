@@ -9,6 +9,10 @@ en:
     embedded_audio: This audio content is restricted
   release_label: "Release"
   errors:
+    lti_auth_error: |
+      If you are an instructor, you cannot view these items in student mode. 
+      Please switch back to instructor mode to view. If you are a student and 
+      receiving this message, please contact us at <a href="mailto:%s">%s</a>.
     messages:
       blank: "field is required."
       taken: "is taken."
