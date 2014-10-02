@@ -43,8 +43,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
-  revision: ba96ef3873be6270c0d73174b01b570400979b83
-  tag: avalon-r3
+  revision: 9c711aa3624cc8e69fcf31eb033e47aeaacd175a
   specs:
     avalon-workflow (0.0.3)
 
