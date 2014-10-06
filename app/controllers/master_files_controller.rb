@@ -37,6 +37,7 @@ class MasterFilesController < ApplicationController
     end
     respond_to do |format|
       format.html do
+        response.headers['X-Frame-Options'] = 'ALLOWALL'
         render :layout => 'embed' 
       end
     end
