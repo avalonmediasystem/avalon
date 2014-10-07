@@ -24,6 +24,10 @@ class MasterFilesController < ApplicationController
   before_filter :authenticate_user!, :only => [:create]
   before_filter :ensure_readable_filedata, :only => [:create]
 
+  def can_embed?
+    params[:action] == 'embed'
+  end
+
   def show
     masterfile = MasterFile.find(params[:id])
     redirect_to pid_section_media_object_path(masterfile.mediaobject.pid, masterfile.pid)
@@ -37,7 +41,6 @@ class MasterFilesController < ApplicationController
     end
     respond_to do |format|
       format.html do
-        response.headers['X-Frame-Options'] = 'ALLOWALL'
         render :layout => 'embed' 
       end
     end

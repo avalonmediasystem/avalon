@@ -30,6 +30,10 @@ class MediaObjectsController < ApplicationController
     render '/errors/unknown_pid', status: 404
   end
  
+  def can_embed?
+    params[:action] == 'show'
+  end
+
   def new
     collection = Admin::Collection.find(params[:collection_id])
     authorize! :read, collection
