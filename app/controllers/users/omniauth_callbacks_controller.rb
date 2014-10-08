@@ -59,6 +59,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         user_session[:virtual_groups] += [user_session[:lti_group]]
         user_session[:full_login] = false
       end
+      if auth_type == 'shibboleth'
+        user_session[:virtual_groups] = request.env["omniauth.auth"].extra.affiliations
+      end
 
     end
 
