@@ -33,29 +33,6 @@
   }
 }
 
-footer {
-  margin-top: $line-height-base/2;
-  padding-top: $line-height-base;
-  border-top: 1px solid #EEE;
-  border-bottom: 1px solid #FFF;
-
-  ul {
-    margin-left: 0;
-  }
-  
-  li {
-    list-style-type: none;
-    display: inline;
-  }
-
-  li:before {
-    content: " - ";
-  }
-
-  li:first-child:before {
-    content: none;
-  }
-}
 a {
   color: $linkColor;
   &:hover { color: $linkColor; }
@@ -368,10 +345,28 @@ div[id*='facet-panel-'] {
 
 
 /* Footer */
-
 footer {
-  padding-top: 10px;
   margin-top: 10px;
+  padding-top: 20px;
+  border-top: 1px solid #EEE;
+  border-bottom: 1px solid #FFF;
+
+  ul {
+    margin-left: 0;
+  }
+  
+  li {
+    list-style-type: none;
+    display: inline;
+  }
+
+  li:before {
+    content: " - ";
+  }
+
+  li:first-child:before {
+    content: none;
+  }
 }
 
 footer a {
@@ -528,7 +523,7 @@ button.close {
 
 .fileinput-submit {
   z-index: $zindex-modal-background !important;
-  background-color: $gray;
+  #background-color: $gray;
 }
 
 .ev-browser {
@@ -595,4 +590,38 @@ a[data-trigger='submit'] {
 
 #documents .document {
   padding-bottom: $padding-base-vertical;
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.remove-dynamic-field:hover {
+  background: $red;
+}
+
+.fileinput-submit {
+  background-color: $blue !important;
+  border-color: $blue !important;
+  &:hover {
+    background-color: darken($blue, 15%) !important;
+  }
+  a[data-trigger='submit']{
+    color: $white;
+  }
+}
+
+.appliedFilter {
+  .btn {
+    background-color: $greenBG;
+    border-color: $green;
+    font-size: $font-size-base;
+  }
+  .constraint-value:hover {
+    background-color: $greenBG;
+    border-color: $green;
+  }
+}
+
+.index_title {
+  font-weight: bold;
 }

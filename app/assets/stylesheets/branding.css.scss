@@ -42,6 +42,8 @@ $orange: rgb(42, 84, 69);
 $black: #333;
 $gray: #CFD8D3;
 $lightgray: #F5F5F5;
+$red: #D9534F;
+$blue: #2a4d59;
 
 /* Links */
 
@@ -105,9 +107,9 @@ $sideHeaderBackgroundColor:		    $gray;
 $btn-default-color: 			    $black;
 $btn-default-bg: 			    $white;
 $btn-default-border: 			    $gray;
-$btn-primary-color: 			    $black;
-$btn-primary-bg: 			    $lightgray;
-$btn-primary-border: 			    $gray;
+$btn-primary-color: 			    $white;
+$btn-primary-bg: 			    $blue;
+$btn-primary-border: 			    $blue;
 $btn-success-color: 			    $black;
 $btn-success-bg: 			    $lightgray;
 $btn-success-border: 			    $gray;
