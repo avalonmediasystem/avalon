@@ -44,9 +44,9 @@ Unless required by applicable law or agreed to in writing, software distributed
         <th>Type</th>
         <th><div class="tooltip-help" data-tooltip="#label-tooltip">Section label</div></th>
 	<th><div class="tooltip-help" data-tooltip="#permalink-tooltip">Permalink</div></th>
-	<th><div class="tooltip-help" data-tooltip="#thumbnail-tooltip" style='min-width:7em;'>Thumbnail</div></th>
+	<th><div class="tooltip-help" data-tooltip="#thumbnail-tooltip" style='min-width:9em;'>Thumbnail</div></th>
         <th>File name</th>
-        <th>Size</th>
+        <th style="min-width:6em">Size</th>
         <th>&nbsp;</th>
       </thead>
 
@@ -82,7 +82,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <%= truncate_center(File.basename(part.file_location), 50, 20) %>
         </td>
         <td>
-          <strong><%= number_to_human_size(part.file_size) %></strong>
+          <%= number_to_human_size(part.file_size) %>
         </td>
         <td>
           <% if can? :edit, @mediaobject %>
@@ -90,8 +90,9 @@ Unless required by applicable law or agreed to in writing, software distributed
                  <%# On a Rails level this needs to be folded into the masterfiles
                    # controller's destroy method to help remove more vestiges of the
                    # catalog controller %>
-              <%= link_to 'Delete', 
+              <%= link_to '&times;'.html_safe, 
                  master_file_path(part.pid),
+		 title: 'Delete',
                  class: 'btn btn-xs btn-danger btn-confirmation',
                  method: :delete %>
           <% end %>

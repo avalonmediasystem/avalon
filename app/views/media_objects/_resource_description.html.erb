@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-
+<div id="resource_description_content">
 <p>Fields followed by an asterisk (*) are required.</p>
 <%= form_for @mediaobject, html: { class: 'form-vertical' } do |form| %>
   <%= hidden_field_tag :step, @active_step %>
@@ -65,9 +65,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render partial: 'text_field',
              locals: {form: form, field: :permalink,
                       options: {}} %>
-
   <%= render 'workflow_buttons' %>
 <% end %>
+</div>
 
 <% content_for :page_scripts do %>
   <%= javascript_include_tag 'dynamic_fields' %>
