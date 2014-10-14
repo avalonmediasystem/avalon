@@ -36,7 +36,7 @@ $('.btn-confirmation')
     content: () ->
       "<p>Are you sure?</p>
       <a href='#{$(this).attr('href')}' class='btn btn-xs btn-danger btn-confirm' data-method='delete' rel='nofollow'>Yes, Delete</a>
-      <a href='#' class='btn btn-xs btn-primary btn-cancel'>No, Cancel</a>"
+      <a href='#' class='btn btn-xs btn-primary'  id='special_button_color'>No, Cancel</a>"
     placement: 'left'
   .click () -> 
     t = this

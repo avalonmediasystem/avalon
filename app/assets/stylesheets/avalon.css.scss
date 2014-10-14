@@ -308,6 +308,9 @@ header div{
 }
 
 #sidebar, #facets {
+  @media (min-width: $screen-sm-min) {
+    max-width: 220px;
+  }
   padding-bottom: 10px;
   .panel {
     border-radius: 0px;
@@ -625,3 +628,24 @@ a[data-trigger='submit'] {
 .index_title {
   font-weight: bold;
 }
+
+#content {
+  max-width: 700px;
+}
+
+#resource_description_content {
+  max-width: 700px;
+}
+
+#special_button_color {
+  color: $white;
+}
+
+.edit_media_object .form-group {
+    margin-bottom: 0;
+}
+
+#add_group {
+  margin-bottom: 5px;
+}
+
