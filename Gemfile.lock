@@ -62,8 +62,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector
-  revision: f5a107b6553894ebed6d87eba1b6f50f8c1a480c
-  tag: v3.1
+  revision: b919ad61525cd608f42983846c87f48212e11646
   specs:
     media_element_thumbnail_selector (0.0.1)
       rails (>= 3.2.3)

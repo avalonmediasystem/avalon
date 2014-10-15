@@ -437,7 +437,7 @@ class MasterFile < ActiveFedora::Base
   def find_frame_source(options={})
     options[:offset] ||= 2000
 
-    response = { source: file_location, offset: options[:offset] }
+    response = { source: file_location, offset: options[:offset], master: true }
     unless File.exists?(response[:source])
       Rails.logger.warn("Masterfile `#{file_location}` not found. Extracting via HLS.")
       begin
@@ -447,7 +447,7 @@ class MasterFile < ActiveFedora::Base
         details = playlist.at(options[:offset])
         target = File.join(Dir.tmpdir,File.basename(details[:location]))
         File.open(target,'wb') { |f| open(details[:location]) { |io| f.write(io.read) } }
-        response = { source: target, offset: details[:offset] }
+        response = { source: target, offset: details[:offset], master: false }
       ensure
         StreamToken.find_by_token(token).destroy
       end
@@ -477,22 +477,25 @@ class MasterFile < ActiveFedora::Base
         File.symlink(frame_source[:source],file_source)
         begin
           options = [
-            '-ss',      (frame_source[:offset] / 1000.0).to_s,
             '-i',       file_source,
+            '-ss',      (frame_source[:offset] / 1000.0).to_s,
             '-s',       "#{new_width.to_i}x#{new_height.to_i}",
             '-vframes', '1',
             '-aspect',  aspect.to_s,
             '-f',       'image2',
             '-y',       jpeg.path
           ]
+          if frame_source[:master]
+            options[0..3] = options.values_at(2,3,0,1)
+          end
           Kernel.system(ffmpeg, *options)
           jpeg.rewind
           data = jpeg.read
           Rails.logger.debug("Generated #{data.length} bytes of data")
-          if data.length == 0
+          if (!frame_source[:master]) and data.length == 0
             # -ss before -i is faster, but fails on some files.
             Rails.logger.warn("No data received. Swapping -ss and -i options")
-            options[0],options[1],options[2],options[3] = options[2],options[3],options[0],options[1]
+            options[0..3] = options.values_at(2,3,0,1)
             Kernel.system(ffmpeg, *options)
             jpeg.rewind
             data = jpeg.read
