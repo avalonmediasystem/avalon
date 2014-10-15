@@ -577,6 +577,7 @@ a[data-trigger='submit'] {
 
 .share-tabs {
   margin-top: 20px;
+  max-width: 750px;
 }
 
 .tab-content > .tab-pane {
@@ -585,6 +586,7 @@ a[data-trigger='submit'] {
   border-left: 1px solid $gray;
   border-right: 1px solid $gray;
   overflow: hidden;
+  max-width: 750px;
 }
 
 #link-object, #link-section, #embed-part {
