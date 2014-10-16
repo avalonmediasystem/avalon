@@ -1,13 +1,26 @@
 class BookmarksController < CatalogController
   include Blacklight::Bookmarks
 
-  self.document_actions.delete(:email)
-  self.document_actions.delete(:citation)
+  self.document_actions.delete( :email )
+  self.document_actions.delete( :citation )
 
   self.add_action( :move, :move_action )
   self.add_action( :publish, :publish_action, {formless: true} )
   self.add_action( :unpublish, :unpublish_action, {formless: true} )
   self.add_action( :delete, :delete_action )
+
+  before_filter :verify_permissions, only: :index
+
+  def verify_permissions
+    @response, @documents = action_documents
+    mos = @documents.collect { |doc| MediaObject.find( doc.id ) }
+    self.document_actions.delete( :delete ) if mos.any? { |mo| cannot? :destroy, mo }
+    self.document_actions.delete( :unpublish ) if mos.any? { |mo| cannot? :unpublish, mo }
+    if mos.any? { |mo| cannot? :update, mo }
+      self.document_actions.delete( :publish )
+      self.document_actions.delete( :move )
+    end
+  end
 
   def publish_action documents
     update_status( 'publish', documents )
@@ -17,7 +30,7 @@ class BookmarksController < CatalogController
     update_status( 'unpublish', documents )
   end
 
-  def update_status (status, documents)
+  def update_status( status, documents )
     errors = []
     success_count = 0
     Array(documents.map(&:id)).each do |id|
