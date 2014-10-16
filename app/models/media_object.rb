@@ -140,6 +140,7 @@ class MediaObject < ActiveFedora::Base
     # attempt to stop the matterhorn processing job
     self.parts.each(&:destroy)
     self.parts.clear
+    Bookmark.where(document_id: self.pid).destroy_all
     super
   end
 

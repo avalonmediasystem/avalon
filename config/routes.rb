@@ -2,6 +2,13 @@ Avalon::Application.routes.draw do
   mount BrowseEverything::Engine => '/browse'
 #  HydraHead.add_routes(self)
 
+      get '/bookmarks/delete', as: :delete_bookmarks
+      post '/bookmarks/delete'
+      get '/bookmarks/move', as: :move_bookmarks
+      post '/bookmarks/move'
+      post '/bookmarks/publish', as: :publish_bookmarks
+      post '/bookmarks/unpublish', as: :unpublish_bookmarks
+
   #Blacklight catalog routes
   blacklight_for :catalog
   #match "catalog/facet/:id", :to => 'catalog#facet', :as => 'catalog_facet', via: [:get]
@@ -21,13 +28,20 @@ Avalon::Application.routes.draw do
   resources :media_objects, except: [:create] do
     member do
       put :update_status
-      # 'delete' has special signifigance so use 'remove' for now
-      get :remove
       get :progress, :action => :show_progress
       get 'content/:datastream', :action => :deliver_content, :as => :inspect
       get 'track/:part', :action => :show, :as => :indexed_section
       get 'section/:content', :action => :show, :as => :pid_section
       get 'tree', :action => :tree, :as => :tree
+      get :confirm_remove
+    end
+    collection do
+      get :confirm_remove
+      put :update_status
+      # 'delete' has special signifigance so use 'remove' for now
+      delete :remove, :action => :destroy
+      get :confirm_reassign_collection
+      put :reassign_collection
     end
   end
   resources :master_files, except: [:new, :index] do
@@ -43,14 +57,13 @@ Avalon::Application.routes.draw do
   end
 
   match '/media_objects/:media_object_id/section/:id/embed' => 'master_files#embed', via: [:get]
-  match '/media_objects/bulk/delete' => 'media_objects#bulk_delete', :as => :bulk_delete_media_objects, via: [:get]
-
   resources :derivatives, only: [:create]
   
   resources :comments, only: [:index, :create]
 
   #match 'search/index' => 'search#index'
   #match 'search/facet/:id' => 'search#facet'
+
 
   namespace :admin do
     resources :groups, except: [:show] do 

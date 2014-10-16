@@ -184,5 +184,4 @@ class Admin::CollectionsController < ApplicationController
       redirect_to admin_collection_path(@source_collection)
     end
   end
-
 end

@@ -236,54 +236,111 @@ describe MediaObjectsController, type: :controller do
   end
     
   describe "#destroy" do
-    let!(:media_object) { FactoryGirl.create(:media_object) }
+    let!(:collection) { FactoryGirl.create(:collection) }
     before(:each) do 
-      login_user media_object.collection.managers.first
+      login_user collection.managers.first
     end
     
     it "should remove the MediaObject and MasterFiles from the system" do
-      media_object.parts << FactoryGirl.create(:master_file, mediaobject: media_object)
-      master_file_pids = media_object.parts.map(&:id)
-      media_object.section_pid = master_file_pids
-      media_object.save( validate: false )
+      media_object = FactoryGirl.create(:media_object_with_master_file, collection: collection)
       delete :destroy, id: media_object.pid
-      MediaObject.exists?(media_object.pid).should == false
-      MasterFile.exists?(master_file_pids.first).should == false
+      expect(flash[:notice]).to include("success")
+      expect(MediaObject.exists?(media_object.pid)).to be_falsey
+      expect(MasterFile.exists?(media_object.parts.first.id)).to be_falsey
     end
 
-    it "should not be accessible through the search interface" do
-      skip "Figure out how to make the right query against Solr"
-    end
-
-    # This test may need to be more robust to catch errors but is just a first cut
-    # for the time being
-    it "should not be possible to delete an object which does not exist" do
-      skip "Fix access controls to stop throwing exception"
+    it "should fail when id doesn't exist" do
       delete :destroy, id: 'avalon:this-pid-is-fake'
-      response.should redirect_to root_path
+      expect(response.code).to eq '404'
+    end
+
+    it "should fail if user is not authorized" do
+      media_object = FactoryGirl.create(:media_object)
+      expect(delete :destroy, id: media_object.id).to redirect_to root_path
+      expect(flash[:notice]).to include("permission denied")
+    end
+
+    it "should remove multiple items" do
+      media_objects = []
+      3.times { media_objects << FactoryGirl.create(:media_object, collection: collection) }
+      delete :destroy, id: media_objects.map(&:id)
+      expect(flash[:notice]).to include('3 media objects')
+      media_objects.each {|mo| expect(MediaObject.exists?(mo.pid)).to be_falsey }
     end
   end
 
   describe "#update_status" do
-    let!(:media_object) { FactoryGirl.create(:media_object) }
+    let!(:collection) { FactoryGirl.create(:collection) }
     before(:each) do
-      login_user media_object.collection.managers.first
+      login_user collection.managers.first
       request.env["HTTP_REFERER"] = '/'
-      Permalink.on_generate { |obj| "http://example.edu/permalink" }
     end
 
-    it 'publishes media object' do
-      get 'update_status', :id => media_object.pid, :status => 'publish'
-      mo = MediaObject.find(media_object.pid)
-      mo.published?.should be true
-      mo.permalink.should be_present
+    context 'publishing' do
+      before(:each) do
+        Permalink.on_generate { |obj| "http://example.edu/permalink" }
+      end
+      it 'publishes media object' do
+	media_object = FactoryGirl.create(:media_object, collection: collection)
+        get 'update_status', id: media_object.pid, status: 'publish'
+        media_object.reload
+        expect(media_object).to be_published
+        expect(media_object.permalink).to be_present
+      end
+
+      it "should fail when id doesn't exist" do
+	get 'update_status', id: 'avalon:this-pid-is-fake', status: 'publish'
+	expect(response.code).to eq '404'
+      end
+
+      it "should fail if user is not authorized" do
+	media_object = FactoryGirl.create(:media_object)
+	expect(get 'update_status', id: media_object.pid, status: 'publish').to be_redirect
+	expect(flash[:notice]).to include("permission denied")
+      end
+
+      it "should publish multiple items" do
+	media_objects = []
+	3.times { media_objects << FactoryGirl.create(:media_object, collection: collection) }
+        get 'update_status', id: media_objects.map(&:id), status: 'publish'
+	expect(flash[:notice]).to include('3 media objects')
+        media_objects.each do |mo|
+          mo.reload
+	  expect(mo).to be_published
+	  expect(mo.permalink).to be_present
+        end
+      end
     end
 
-    it 'unpublishes media object' do
-      media_object.avalon_publisher = media_object.collection.managers.first
-      media_object.save
-      get 'update_status', :id => media_object.pid, :status => 'unpublish' 
-      MediaObject.find(media_object.pid).published?.should be false
+    context 'unpublishing' do
+      it 'unpublishes media object' do
+        media_object = FactoryGirl.create(:published_media_object, collection: collection)
+        get 'update_status', :id => media_object.pid, :status => 'unpublish'
+        media_object.reload
+        expect(media_object).not_to be_published
+      end
+
+      it "should fail when id doesn't exist" do
+	get 'update_status', id: 'avalon:this-pid-is-fake', status: 'unpublish'
+	expect(response.code).to eq '404'
+      end
+
+      it "should fail if user is not authorized" do
+	media_object = FactoryGirl.create(:media_object)
+	expect(get 'update_status', id: media_object.pid, status: 'unpublish').to be_redirect
+	expect(flash[:notice]).to include("permission denied")
+      end
+
+      it "should unpublish multiple items" do
+	media_objects = []
+	3.times { media_objects << FactoryGirl.create(:published_media_object, collection: collection) }
+        get 'update_status', id: media_objects.map(&:id), status: 'unpublish'
+	expect(flash[:notice]).to include('3 media objects')
+        media_objects.each do |mo|
+          mo.reload
+	  expect(mo).not_to be_published
+        end
+      end
     end
   end
 

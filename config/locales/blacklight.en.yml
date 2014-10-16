@@ -41,3 +41,59 @@ en:
         title: 'Browse By'
       facets-workflow:
         title: 'Limit to'
+
+    tools:
+      publish: "Publish"
+      unpublish: "Unpublish"
+      move: "Move"
+      delete: "Delete"
+
+    messages:
+      permission_denied: "Permission Denied"
+      go_back: "Go Back"
+      yes_sure: "Yes, I am Sure"
+
+    delete:
+      form:
+        title: "Delete Selected Items"
+      confirm: {
+        one: "Are you certain you want to delete the following resource?",
+	other: "Are you certain you want to delete the following resources?"
+      }
+      success: {
+        one: "%{count} media object successfully deleted.",
+	other: "%{count} media objects successfully deleted."
+      }
+      alert: {
+        one: "This object was not deleted:",
+        other: "These objects were not deleted:"
+      }     	     
+    move:
+      form:
+        title: "Move Selected Items"
+      insufficient_rights: "You do not have sufficient rights to any other collections to reassign selected items."
+      confirm: "Please select a new collection for selected items:"
+      button: "Move"
+      success: {
+        one: "%{count} media object successfully moved to collection %{collection_name}.",
+	other: "%{count} media objects successfully moved to collection %{collection_name}."
+      }
+      alert: {
+        one: "This object was not moved:",
+        other: "These objects were not moved:"
+      }     	     
+      error: "You do not have permission to add to collection %{collection_name}."
+    publish:
+      form:
+        title: "Publish Selected Items"
+      success: {
+        one: "%{count} media object successfully %{status}ed.",
+	other: "%{count} media objects successfully %{status}ed."
+      }
+      alert: {
+        one: "This object was not %{status}ed:",
+        other: "These objects were not %{status}ed:"
+      }     	     
+    unpublish:
+      form:
+        title: "Unpublish Selected Items"
