@@ -20,7 +20,7 @@ en:
         button: 'Unselect'
         success: 'Successfully removed selected item.'
         failure: 'Sorry, there was a problem removing the selected items.'
-        action_confirm: 'Remove this selected items?'
+        action_confirm: 'Remove the selected items?'
       clear:
         action_title: 'Clear selected items'
         action_confirm: 'Clear your selected items?'
@@ -57,42 +57,42 @@ en:
       form:
         title: "Delete Selected Items"
       confirm: {
-        one: "Are you certain you want to delete the following resource?",
-	other: "Are you certain you want to delete the following resources?"
+        one: "Are you certain you want to delete the following item?",
+	other: "Are you certain you want to delete the following items?"
       }
       success: {
-        one: "%{count} media object successfully deleted.",
-	other: "%{count} media objects successfully deleted."
+        one: "%{count} item successfully deleted.",
+	other: "%{count} items successfully deleted."
       }
       alert: {
-        one: "This object was not deleted:",
-        other: "These objects were not deleted:"
+        one: "This item was not deleted:",
+        other: "These items were not deleted:"
       }     	     
     move:
       form:
         title: "Move Selected Items"
-      insufficient_rights: "You do not have sufficient rights to any other collections to reassign selected items."
-      confirm: "Please select a new collection for selected items:"
+      insufficient_rights: "You do not have sufficient rights to move selected items to another collection."
+      confirm: "Please choose a new collection to move selected items:"
       button: "Move"
       success: {
-        one: "%{count} media object successfully moved to collection %{collection_name}.",
-	other: "%{count} media objects successfully moved to collection %{collection_name}."
+        one: "%{count} item successfully moved to collection %{collection_name}.",
+	other: "%{count} items successfully moved to collection %{collection_name}."
       }
       alert: {
-        one: "This object was not moved:",
-        other: "These objects were not moved:"
+        one: "This item was not moved:",
+        other: "These items were not moved:"
       }     	     
       error: "You do not have permission to add to collection %{collection_name}."
     publish:
       form:
         title: "Publish Selected Items"
       success: {
-        one: "%{count} media object successfully %{status}ed.",
-	other: "%{count} media objects successfully %{status}ed."
+        one: "%{count} item successfully %{status}ed.",
+	other: "%{count} items successfully %{status}ed."
       }
       alert: {
-        one: "This object was not %{status}ed:",
-        other: "These objects were not %{status}ed:"
+        one: "This item was not %{status}ed:",
+        other: "These items were not %{status}ed:"
       }     	     
     unpublish:
       form:
