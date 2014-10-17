@@ -24,5 +24,7 @@ class Users::SessionsController < Devise::SessionsController
   def destroy
     StreamToken.logout! session
     super
+    flash[:success] = flash[:notice]
+    flash[:notice] = nil
   end
 end

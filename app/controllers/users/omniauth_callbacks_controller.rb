@@ -49,7 +49,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     logger.debug "#{auth_type} :: #{current_user.inspect}"
     @user = User.send(find_method,request.env["omniauth.auth"], current_user)
     if @user.persisted?
-      flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => auth_type
+      flash[:success] = I18n.t "devise.omniauth_callbacks.success", :kind => auth_type
       sign_in @user, :event => :authentication
       user_session[:virtual_groups] = @user.ldap_groups
       user_session[:full_login] = true

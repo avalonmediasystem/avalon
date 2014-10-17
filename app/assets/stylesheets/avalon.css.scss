@@ -33,7 +33,7 @@
   }
 }
 
-a {
+a:not(.btn) {
   color: $linkColor;
   &:hover { color: $linkColor; }
   &:active { color: $linkColor; }
