@@ -2,24 +2,20 @@ module Avalon
   class EncodingProfileComparator
    
     EXPECTED_PROFILES = {
-     'high' => {bitrate: '4000000.0', height: '720', codec: 'AVC'},
-     'medium' => {bitrate: '2000000.0', height: '480', codec: 'AVC'},
-     'low' => {bitrate: '1000000.0', height: '360', codec: 'AVC'}
+     'high' => {video_bitrate: '2000000.0', audio_bitrate: '192000.0', height: '720', codec: 'AVC'},
+     'medium' => {video_bitrate: '1000000.0', audio_bitrate: '128000.0', height: '480', codec: 'AVC'},
+     'low' => {video_bitrate: '500000.0', audio_bitrate: '128000.0', height: '360', codec: 'AVC'}
     }
  
-    def self.find_profiles()
+    def self.find_invalid_profiles()
+      derivatives_to_reencode = []
       Derivative.find_each({}, {batch_size: 10}) do |d|
         epc = EncodingProfileComparator.new(d) rescue nil
         next if epc.nil?
-        if !epc.valid_profile?
-          puts "\nFound invalid derivative:"
-          puts d.descMetadata.pid
-          puts d.encoding.quality.first
-          puts d.encoding.video.video_bitrate.first
-          puts d.encoding.video.resolution.first
-          puts d.encoding.video.video_codec.first
-        end
+        derivatives_to_reencode << d if !epc.valid_profile?
       end
+      puts "Found #{derivatives_to_reencode.size} #{"item".pluralize(derivatives_to_reencode.size)} that do not match the expected profiles:"
+      derivatives_to_reencode.each {|d| puts "#{d.pid}: #{d.errors.full_messages.join(',')}"}
     end
 
     def initialize(derivative)
@@ -31,22 +27,35 @@ module Avalon
     end
 
     def valid_profile?
-      valid_bitrate? && valid_resolution? && valid_codec?
+      valid_video_bitrate? && valid_resolution? && valid_codec? #&& valid_audio_bitrate?
     end
 
-    def valid_bitrate?
-      deviation = @derivative.encoding.video.video_bitrate.first.to_f / @profile[:bitrate].to_f
-      0.9 < deviation && deviation < 1.1
+    def valid_video_bitrate?
+      deviation = @derivative.encoding.video.video_bitrate.first.to_f / @profile[:video_bitrate].to_f
+      valid = 0.9 < deviation && deviation < 1.1
+      @derivative.errors.add(:video_bitrate, "is not within 10% of expected bitrate of #{@profile[:video_bitrate]}") unless valid
+      valid
+    end
+
+    def valid_audio_bitrate?
+      deviation = @derivative.encoding.audio.audio_bitrate.first.to_f / @profile[:audio_bitrate].to_f
+      valid = 0.9 < deviation && deviation < 1.1
+      @derivative.errors.add(:audio_bitrate, "is not within 10% of expected bitrate of #{@profile[:audio_bitrate]}") unless valid
+      valid
     end
 
     def valid_resolution?
       height = @derivative.encoding.video.resolution.first.split('x')[1]
-      height == @profile[:height]
+      valid = height == @profile[:height]
+      @derivative.errors.add(:height, "is not the expected height of #{@profile[:height]}") unless valid
+      valid
     end
 
     def valid_codec?
       codec = @derivative.encoding.video.video_codec.first
-      codec == @profile[:codec]
+      valid = codec == @profile[:codec]
+      @derivative.errors.add(:codec, "is not the expected codec of #{@profile[:codec]}") unless valid
+      valid
     end
   end 
 end
