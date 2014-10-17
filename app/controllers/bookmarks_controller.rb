@@ -11,14 +11,20 @@ class BookmarksController < CatalogController
 
   before_filter :verify_permissions, only: :index
 
+  def initialize
+    super
+    @user_actions = []
+  end
+
   def verify_permissions
     @response, @documents = action_documents
     mos = @documents.collect { |doc| MediaObject.find( doc.id ) }
-    self.document_actions.delete( :delete ) if mos.any? { |mo| cannot? :destroy, mo }
-    self.document_actions.delete( :unpublish ) if mos.any? { |mo| cannot? :unpublish, mo }
+    @user_actions = self.document_actions.clone
+    @user_actions.delete( :delete ) if mos.any? { |mo| cannot? :destroy, mo }
+    @user_actions.delete( :unpublish ) if mos.any? { |mo| cannot? :unpublish, mo }
     if mos.any? { |mo| cannot? :update, mo }
-      self.document_actions.delete( :publish )
-      self.document_actions.delete( :move )
+      @user_actions.delete( :publish )
+      @user_actions.delete( :move )
     end
   end
 
