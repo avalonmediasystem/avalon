@@ -11,11 +11,6 @@ class BookmarksController < CatalogController
 
   before_filter :verify_permissions, only: :index
 
-  def initialize
-    super
-    @user_actions = []
-  end
-
   def verify_permissions
     @response, @documents = action_documents
     mos = @documents.collect { |doc| MediaObject.find( doc.id ) }
