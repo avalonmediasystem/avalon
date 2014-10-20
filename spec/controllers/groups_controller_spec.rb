@@ -93,7 +93,7 @@ describe Admin::GroupsController do
         login_as('policy_editor')
         new_group_name = Faker::Lorem.word
 
-        put 'update', group_name: new_group_name, new_user: "", id: group.name
+        put 'update', group_name: new_group_name, id: group.name
     
         new_group = Admin::Group.find(new_group_name)
         new_group.should_not be_nil
@@ -104,7 +104,7 @@ describe Admin::GroupsController do
       
       it "should not be able to rename system groups" do
         login_as('administrator')
-        put 'update', group_name: Faker::Lorem.word, new_user: "", id: 'manager'
+        put 'update', group_name: Faker::Lorem.word, id: 'manager'
         
         Admin::Group.find('manager').should_not be_nil
         flash[:error].should_not be_nil
