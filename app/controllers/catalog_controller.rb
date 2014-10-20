@@ -89,8 +89,7 @@ class CatalogController < ApplicationController
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
     config.add_index_field 'creator_ssim', label: 'Main contributors', helper_method: :contributor_index_display 
-    config.add_index_field 'date_ssi', label: 'Publication Date' 
-    config.add_index_field 'date_created_ssi', label: 'Creation Date' 
+    config.add_index_field 'date_ssi', label: 'Publication Date', helper_method: :combined_display_date
     config.add_index_field 'summary_ssi', label: 'Summary', helper_method: :description_index_display
 
     # solr fields to be displayed in the show (single result) view
