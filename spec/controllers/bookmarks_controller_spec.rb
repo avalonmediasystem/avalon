@@ -66,6 +66,27 @@ describe BookmarksController, type: :controller do
     end
   end
 
+  describe "index" do
+    context 'action buttons' do
+      it 'are displayed for authorized user' do
+        get 'index'
+        expect(response.body).to have_css('#moveLink')
+        expect(response.body).to have_css('#publishLink')
+        expect(response.body).to have_css('#unpublishLink')
+        expect(response.body).to have_css('#deleteLink')
+      end
+      it 'are not displayed for unauthorized user' do
+        collection.managers = [FactoryGirl.create(:manager).username]
+        collection.save
+        get 'index'
+        expect(response.body).not_to have_css('#moveLink')
+        expect(response.body).not_to have_css('#publishLink')
+        expect(response.body).not_to have_css('#unpublishLink')
+        expect(response.body).not_to have_css('#deleteLink')        
+      end
+    end
+  end
+
   describe "#move" do
     let!(:collection2) { FactoryGirl.create(:collection) }
 
