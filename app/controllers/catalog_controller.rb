@@ -98,8 +98,7 @@ class CatalogController < ApplicationController
     config.add_show_field 'format_sim', label: 'Format' 
     config.add_show_field 'creator_sim', label: 'Creator' 
     config.add_show_field 'language_sim', label: 'Language'
-    config.add_show_field 'date_ssi', label: 'Publication Date'
-    config.add_show_field 'date_created_ssi', label: 'Creation Date'
+    config.add_show_field 'date_ssi', label: 'Date'
     config.add_show_field 'abstract_sim', label: 'Abstract'
     config.add_show_field 'location_sim', label: 'Locations'
     config.add_show_field 'time_period_sim', label: 'Time periods'
@@ -170,7 +169,7 @@ class CatalogController < ApplicationController
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
     config.add_sort_field 'score desc, title_tesi asc, date_ssi desc', label: 'Relevance'
-    config.add_sort_field 'date_ssi desc, title_tesi asc', label: 'Publication Date'
+    config.add_sort_field 'date_ssi desc, title_tesi asc', label: 'Date'
     config.add_sort_field 'creator_ssi asc, title_tesi asc', label: 'Main contributor'
     config.add_sort_field 'title_tesi asc, date_ssi desc', label: 'Title'
 
