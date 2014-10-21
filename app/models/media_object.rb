@@ -89,6 +89,7 @@ class MediaObject < ActiveFedora::Base
     :geographic_subject => :geographic_subject,
     :temporal_subject => :temporal_subject,
     :topical_subject => :topical_subject,
+    :identifier => :identifier
     }
   end
 
@@ -118,6 +119,7 @@ class MediaObject < ActiveFedora::Base
   has_attributes :geographic_subject, datastream: :descMetadata, at: [:geographic_subject], multiple: true
   has_attributes :temporal_subject, datastream: :descMetadata, at: [:temporal_subject], multiple: true
   has_attributes :topical_subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
+  has_attributes :identifier, datastream: :descMetadata, at: [:identifier], multiple: true
   
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
     sds.field :duration, :string
@@ -132,6 +134,9 @@ class MediaObject < ActiveFedora::Base
 
   accepts_nested_attributes_for :parts, :allow_destroy => true
 
+  identifier_types_path = File.join(Rails.root, 'config/identifier_types.yml')
+  IDENTIFIER_TYPES = File.exists?(identifier_types_path) ? YAML.load(File.read(identifier_types_path)) : ['Other']
+  
   def published?
     not self.avalon_publisher.blank?
   end
@@ -209,6 +214,16 @@ class MediaObject < ActiveFedora::Base
 
   def update_datastream(datastream = :descMetadata, values = {})
     missing_attributes.clear
+    
+    # Special case the identifiers and their types
+    if values[:identifier]
+      if values[:identifier_type]
+        values[:identifier] = values.delete(:identifier_type).zip(values[:identifier]) 
+      else
+        values[:identifier].map! { |i| ['Other',i] }
+      end
+    end
+    
     values.each do |k, v|
       # First remove all blank attributes in arrays
       v.keep_if { |item| not item.blank? } if v.instance_of?(Array)
@@ -232,6 +247,10 @@ class MediaObject < ActiveFedora::Base
         update_attribute_in_metadata(k, Array(v))
       end
     end
+  end
+
+  def get_identifier_type_values
+    descMetadata.find_by_terms(:identifier).collect { |id| id.attributes['type'].value } 
   end
 
   # This method is one way in that it accepts class attributes and

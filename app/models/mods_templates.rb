@@ -172,6 +172,16 @@ module ModsTemplates
       def add_permalink(url)
         add_location_url(url, { :access => 'object in context' })
       end
+
+      define_template :_identifier do |xml,text,type|
+        xml.identifier(:type => type) { xml.text(text) }
+      end
+      
+      def add_identifier(content, attrs={})
+        (type,text) = content.is_a?(Array) ? content : ['Other',content]
+        add_child_node(ng_xml.root, :_identifier, text, type)
+      end
+
     end
   end
 

@@ -124,7 +124,9 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.related_item_id(:proxy => [:related_item, :identifier])
     t.collection(:proxy => [:related_item, :title_info, :title], :path => 'relatedItem[@type="host"]/oxns:titleInfo/oxns:title')
 
-    t.identifier
+    t.identifier(:path => 'identifier') do
+      t.type_(:path => '@type', :namespace_prefix => nil)
+    end
 
     t.location do
       t.url(:attributes => { :access => nil })

@@ -24,11 +24,21 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% count = [1, values.length].max %>
       <% count.times do |i| %>
         <div class="input-group">
+          <% if options[:dropdown_field] %>
+	    <%= render partial: "dropdown_field", locals: {i: i, options: options} %>
+	  <% end %>
           <% contents = values[i] || '' %>
           <%= text_field_tag "media_object[#{field.to_s}][]", contents, class: 'form-control' %>
         </div>
       <% end %>
     <% else %>
-      <%= form.text_field field, class: 'form-control' %>
+      <% if options[:dropdown_field] %>
+        <div class="input-group">
+	  <%= render partial: "dropdown_field", locals: {i: 0, options: options} %>
+	  <%= form.text_field field, class: 'form-control' %>
+        </div>
+      <% else %>
+        <%= form.text_field field, class: 'form-control' %>
+      <% end %>
     <% end %>
   </div>

@@ -23,17 +23,17 @@
 
       $(document).on('click', '.add-dynamic-field', function(event){
         event.preventDefault();
-        var current_input_group = $(this).parent().parent();
+        var current_input_group = $(this).closest('.input-group');
 	var new_input_group = $(current_input_group).clone();
         new_input_group.find('input').val('');
-        current_input_group.find('.input-group-btn').remove();
+        current_input_group.find('.input-group-btn').has('.add-dynamic-field').remove();
         current_input_group.append(DynamicFields.remove_button_html);
         $(current_input_group).after(new_input_group);
       });
 
       $(document).on('click', '.remove-dynamic-field', function(event){
         event.preventDefault();
-        $(this).parent().parent().remove();
+        $(this).closest('.input-group').remove();
       });
     },
 
