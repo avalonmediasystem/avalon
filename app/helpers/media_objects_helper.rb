@@ -50,4 +50,16 @@ module MediaObjectsHelper
         url = File.join(Avalon::Configuration.lookup('dropbox.upload_uri'), path)
         ic.iconv(url)
      end
+     
+     def combined_display_date mediaobject
+       (issued,created) = case mediaobject
+       when MediaObject
+         [mediaobject.date_issued, mediaobject.date_created]
+       when Hash
+         [mediaobject[:document]['date_ssi'], mediaobject[:document]['date_created_ssi']]
+       end
+       result = issued
+       result += " (Creation date: #{created})" if created.present?
+       result
+     end
 end

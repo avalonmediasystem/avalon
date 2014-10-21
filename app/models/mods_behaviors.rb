@@ -67,7 +67,10 @@ module ModsBehaviors
 
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
     solr_doc['date_ssi'] = self.find_by_terms(:date_issued).text
+    solr_doc['date_created_ssi'] = self.find_by_terms(:date_created).text
+    # Put both publication date and creation date into the date facet
     solr_doc['date_sim'] = get_year(solr_doc['date_ssi'])
+    solr_doc['date_sim'] += get_year(solr_doc['date_created_ssi']) if solr_doc['date_created_ssi'].present?
 
     # For full text, we stuff it into the mods_tesim field which is already configured for Mods doucments
     solr_doc['mods_tesim'] = self.ng_xml.xpath('//text()').collect { |t| t.text }

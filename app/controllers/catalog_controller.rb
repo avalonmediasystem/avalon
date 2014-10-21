@@ -67,7 +67,6 @@ class CatalogController < ApplicationController
     config.add_facet_field 'format_sim', label: 'Format', limit: 5, collapse: false
     # Eventually these need to be merged into a single facet
     config.add_facet_field 'creator_sim', label: 'Main contributor', limit: 5
-    #TODO add "Date" facet that points to issue date in mediaobject
     config.add_facet_field 'date_sim', label: 'Date', limit: 5
     config.add_facet_field 'genre_sim', label: 'Genres', limit: 5
     config.add_facet_field 'collection_ssim', label: 'Collection', limit: 5
@@ -90,7 +89,7 @@ class CatalogController < ApplicationController
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
     config.add_index_field 'creator_ssim', label: 'Main contributors', helper_method: :contributor_index_display 
-    config.add_index_field 'date_ssi', label: 'Date' 
+    config.add_index_field 'date_ssi', label: 'Date', helper_method: :combined_display_date
     config.add_index_field 'summary_ssi', label: 'Summary', helper_method: :description_index_display
 
     # solr fields to be displayed in the show (single result) view
@@ -170,7 +169,7 @@ class CatalogController < ApplicationController
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
     config.add_sort_field 'score desc, title_tesi asc, date_ssi desc', label: 'Relevance'
-    config.add_sort_field 'date_ssi desc, title_tesi asc', label: 'Year'
+    config.add_sort_field 'date_ssi desc, title_tesi asc', label: 'Date'
     config.add_sort_field 'creator_ssi asc, title_tesi asc', label: 'Main contributor'
     config.add_sort_field 'title_tesi asc, date_ssi desc', label: 'Title'
 
