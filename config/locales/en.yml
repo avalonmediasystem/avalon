@@ -90,23 +90,6 @@ en:
       target="_blank">Library of Congress Subject Headings</a>. For temporal
       subjects, use the Time period(s) field and for geographic subjects, use
       the Location(s) field in this form. See below.
-    manager: |
-      Managers have overall accountability for the collection. Managers can 
-      create collections and assign editor and depositor roles for those 
-      collections. They set the default access controls for items added to 
-      the collection, and they also step in when a published item needs 
-      revising or deleting. Managers can also do anything an editor or 
-      depositor can do.
-    editor: |
-      Editors have supervisory responsibility for the collection building — the 
-      ingest and description process. They can assign depositor roles, change 
-      the name or description of the collection, and can modify the access 
-      controls for individual items in the collection. Editors can also do 
-      anything a depositor can do.
-    depositor: |
-      Depositors add media to the collection and describe it with metadata. 
-      They can publish items but not unpublish. They can only modify or 
-      delete unpublished items.
     permalink: |
       The item Permalink is a URL that links to the Item as a whole. In addition, each section of an item will have a distinct permalink assigned in the File Upload page. If configured to do so, Avalon will automatically generate a permalink if this field is left blank.
   file_upload_tip:
@@ -125,6 +108,23 @@ en:
     userlabel: "Avalon User"
     grouplabel: "Avalon Group"
     classlabel: "External Group"
+    depositor: |
+      Depositors add media to the collection and describe it with metadata. 
+      They can publish items but not unpublish. They can only modify or 
+      delete unpublished items.
+    editor: |
+      Editors have supervisory responsibility for the collection building — the 
+      ingest and description process. They can assign depositor roles, change 
+      the name or description of the collection, and can modify the access 
+      controls for individual items in the collection. Editors can also do 
+      anything a depositor can do.
+    manager: |
+      Managers have overall accountability for the collection. Managers can 
+      create collections and assign editor and depositor roles for those 
+      collections. They set the default access controls for items added to 
+      the collection, and they also step in when a published item needs 
+      revising or deleting. Managers can also do anything an editor or 
+      depositor can do.
     user: |
       Enter a username to grant them access to an item or collection.
     group: |
