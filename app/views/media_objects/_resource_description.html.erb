@@ -70,8 +70,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                       display_label: 'Other ID(s)',
                       options: {multivalued: true, 
                                 dropdown_field: :identifier_type, 
-                                dropdown_options: MediaObject::IDENTIFIER_TYPES,
-                                dropdown_values: @mediaobject.get_identifier_type_values}} %>
+                                dropdown_options: MediaObject::IDENTIFIER_TYPES}} %>
   <%= render 'workflow_buttons' %>
 <% end %>
 </div>

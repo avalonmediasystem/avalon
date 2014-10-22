@@ -249,8 +249,8 @@ class MediaObject < ActiveFedora::Base
     end
   end
 
-  def get_identifier_type_values
-    descMetadata.find_by_terms(:identifier).collect { |id| id.attributes['type'].value } 
+  def identifier
+    descMetadata.identifier.type.zip(descMetadata.identifier)
   end
 
   # This method is one way in that it accepts class attributes and

@@ -15,9 +15,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <div class="input-group-btn">
   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-    <span><%= options[:dropdown_values][i] %></span> <span class="caret"></span>
+    <span><%= selected_value %></span> <span class="caret"></span>
   </button>
-  <%= hidden_field_tag "media_object[#{options[:dropdown_field]}][]", options[:dropdown_values][i] %>
+  <%= hidden_field_tag "media_object[#{options[:dropdown_field]}][]", selected_value %>
   <ul class="dropdown-menu" role="menu">
     <% options[:dropdown_options].each do |option| %>
     <li><a><%= option %></a></li>
