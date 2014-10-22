@@ -22,6 +22,7 @@ class MediaObject < ActiveFedora::Base
   include Avalon::Workflow::WorkflowModelMixin
   include VersionableModel
   include Permalink
+  require 'avalon/controlled_vocabulary'
   
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
@@ -134,8 +135,7 @@ class MediaObject < ActiveFedora::Base
 
   accepts_nested_attributes_for :parts, :allow_destroy => true
 
-  identifier_types_path = File.join(Rails.root, 'config/identifier_types.yml')
-  IDENTIFIER_TYPES = File.exists?(identifier_types_path) ? YAML.load(File.read(identifier_types_path)) : ['Other']
+  IDENTIFIER_TYPES =  Avalon::ControlledVocabulary.find_by_name(:identifier_types) || ['Other']
   
   def published?
     not self.avalon_publisher.blank?
