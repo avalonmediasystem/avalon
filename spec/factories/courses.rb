@@ -18,5 +18,6 @@ FactoryGirl.define do
   factory :course do
     context_id 'abcdef0123456789'
     label 'Existing Test Course'
+    title 'EX_TST_CRSE'
   end
 end

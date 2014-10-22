@@ -47,10 +47,11 @@ class User < ActiveRecord::Base
     end
     
     class_id = auth_hash.extra.context_id
-    if Course.find_by_context_id(class_id).nil?
-      class_name = auth_hash.extra.context_name
-      Course.create :context_id => class_id, :label => auth_hash.extra.consumer.context_label, :title => class_name unless class_name.nil?
-    end
+    class_label = auth_hash.extra.consumer.context_label
+    class_name = auth_hash.extra.context_name
+    course = Course.find_by_context_id(class_id) ||
+             Course.create(:context_id => class_id, :label => class_label, :title => class_name)
+    course.fix_object_rights!
     result = 
       User.find_by_username(auth_hash.uid) ||
       User.find_by_email(auth_hash.info.email) ||
