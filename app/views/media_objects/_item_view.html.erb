@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="row">
   <div class="col-sm-8" id="left_column">
     <section id="player" style="width: 100%">
-      <% if @currentStream.present? and @currentStream.succeeded? %>
+      <% if @currentStream.present? and @currentStream.derivatives.present? %>
         <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
         
         <% if @currentStreamInfo[:is_video] %>
@@ -44,7 +44,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end %>
       <% end %>
     </section>
-    <%= render 'video_player' %>
+    <%= render 'workflow_progress' %>
     <%= render partial: 'sections', 
         locals: {mediaobject: @mediaobject,
                  sections: @masterFiles,

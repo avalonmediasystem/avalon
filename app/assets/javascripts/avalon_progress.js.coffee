@@ -76,6 +76,12 @@ class AvalonProgress
 $(document).ready ->
   progress_controller = new AvalonProgress()
 
+  $('.progress-indented').prepend('
+    <span class="progress progress-inline">
+      <div class="progress-bar progress-bar-success" style="width:0%"></div>
+      <div class="progress-bar progress-bar-danger" style="width:0%"></div>
+      <div class="progress-bar progress-bar-warning" style="width:0%"></div>
+    </span>')
   $('.status-detail').hide()
   progress_controller.retrieve(true)
   $('.progress-inline').click ->
