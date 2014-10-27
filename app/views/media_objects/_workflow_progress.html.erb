@@ -13,8 +13,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-    <%# Refactor into its own partial once the layout is clear %>
-
+    <%# only display if depositor/edidtor/manager/administrator %>
+    <% if can? :update, @mediaobject %>
       <section id="progress" data-progress-url="<%= progress_media_object_path :id => @mediaobject.pid, :format => :json %>">
         <% if @masterFiles.blank? %>
           <div class="alert">
@@ -35,3 +35,4 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
         <% end %>
       </section>
+    <% end %>
