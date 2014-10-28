@@ -77,11 +77,5 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <%= javascript_include_tag 'dynamic_fields' %>
-  <script>
-    DynamicFields.initialize();
-  </script>
   <%= javascript_include_tag 'dropdown_text_fields' %>
-  <script>
-    DropdownTextFields.initialize();
-  </script>
 <% end %>
