@@ -56,28 +56,23 @@ class Derivative < ActiveFedora::Base
     # Looks for an existing derivative of the same quality
     # and adds the track URL to it
     quality = markup.tags.quality.first.split('-')[1] unless markup.tags.quality.empty?
-    derivative = nil
     masterfile = MasterFile.find(masterfile.pid)
-    masterfile.derivatives.each do |d|
-      derivative = d if d.encoding.quality.first == quality
-    end 
+    existing = masterfile.derivatives.to_a.select {|d| d.encoding.quality.first == quality }
 
     # If same quality derivative doesn't exist, create one
-    if derivative.blank?
-      derivative = Derivative.new 
+    derivative = Derivative.new 
       
-      derivative.duration = markup.duration.first
-      derivative.encoding.mime_type = markup.mimetype.first
-      derivative.encoding.quality = quality 
+    derivative.duration = markup.duration.first
+    derivative.encoding.mime_type = markup.mimetype.first
+    derivative.encoding.quality = quality 
 
-      derivative.encoding.audio.audio_bitrate = markup.audio.a_bitrate.first
-      derivative.encoding.audio.audio_codec = markup.audio.a_codec.first
+    derivative.encoding.audio.audio_bitrate = markup.audio.a_bitrate.first
+    derivative.encoding.audio.audio_codec = markup.audio.a_codec.first
  
-      unless markup.video.empty?
-        derivative.encoding.video.video_bitrate = markup.video.v_bitrate.first
-        derivative.encoding.video.video_codec = markup.video.v_codec.first
-        derivative.encoding.video.resolution = markup.video.resolution.first
-      end
+    unless markup.video.empty?
+      derivative.encoding.video.video_bitrate = markup.video.v_bitrate.first
+      derivative.encoding.video.video_codec = markup.video.v_codec.first
+      derivative.encoding.video.resolution = markup.video.resolution.first
     end
 
     if markup.tags.tag.include? "hls"   
@@ -90,7 +85,10 @@ class Derivative < ActiveFedora::Base
     end
     
     derivative.masterfile = masterfile
-    derivative.save
+    if derivative.save
+      #Remove old derivatives only if save succeeds
+      existing.map(&:delete)
+    end
     
     derivative
   end
@@ -101,6 +99,10 @@ class Derivative < ActiveFedora::Base
 
   def absolute_location=(value)
     derivativeFile.location = value
+  end
+
+  def media_package_id
+    Avalon::MatterhornRtmpUrl.parse(location_url).media_id
   end
 
   def tokenized_url(token, mobile=false)
@@ -139,17 +141,16 @@ class Derivative < ActiveFedora::Base
   def delete
     #catch exceptions and log them but don't stop the deletion of the derivative object!
     #TODO move this into a before_destroy callback
-    if masterfile.workflow_id.present?
+    begin
       job_urls = []
-      begin
-        job_urls << Rubyhorn.client.delete_track(masterfile.workflow_id, track_id) 
-        job_urls << Rubyhorn.client.delete_hls_track(masterfile.workflow_id, hls_track_id) if hls_track_id.present?
-      rescue Exception => e
-        logger.warn "Error deleting derivatives: #{e.message}"
-      end
+      media_package = Rubyhorn.client.get_media_package_from_id(media_package_id)
+      job_urls << Rubyhorn.client.delete_track(media_package, track_id) 
+      job_urls << Rubyhorn.client.delete_hls_track(media_package, hls_track_id) if hls_track_id.present?
 
       # Logs retraction jobs for sysadmin 
       File.open(Avalon::Configuration.lookup('matterhorn.cleanup_log'), "a+") { |f| f << job_urls.join("\n") + "\n" }
+    rescue Exception => e
+      logger.warn "Error deleting derivative: #{e.message}"
     end
 
     super

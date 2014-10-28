@@ -301,21 +301,13 @@ class MasterFile < ActiveFedora::Base
     # First step is to create derivative objects within Fedora for each
     # derived item. For this we need to pick only those which 
     # have a 'streaming' tag attached
-    
-    # Why do it this way? It will create a dynamic node that can be
-    # passed to the helper without any extra work
     matterhorn_response.streaming_tracks.size.times do |i|
       Derivative.create_from_master_file(self, matterhorn_response.streaming_tracks(i),{ stream_base: matterhorn_response.stream_base.first })
     end
 
     # Some elements of the original file need to be stored as well even 
     # though they are not being used right now. This includes a checksum 
-    # which can be used to validate the file has not changed and the 
-    # thumbnail.
-    #
-    # The thumbnail is tricky because Fedora cannot ingest from a URI. That 
-    # means if one exists we should copy it over to a temporary location and
-    # then hand the bits off to Fedora
+    # which can be used to validate the file has not changed. 
     self.mediapackage_id = matterhorn_response.mediapackage.id.first
     
     unless matterhorn_response.source_tracks(0).nil?

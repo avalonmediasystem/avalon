@@ -102,9 +102,6 @@
     gem 'better_errors'
     gem 'binding_of_caller'
     gem 'license_header'
-    gem 'pry'
-    gem 'pry-rails'
-    gem 'pry-debugger'
     gem 'debugger'
     gem 'meta_request'
   end
@@ -121,6 +118,9 @@
     gem 'puma'
     gem 'rb-fsevent', '~> 0.9.1'
     gem 'letter_opener'
+    gem 'pry'
+    gem 'pry-rails'
+    gem 'pry-debugger'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do

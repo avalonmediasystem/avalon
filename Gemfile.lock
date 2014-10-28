@@ -124,9 +124,9 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
-  revision: 46425a41d0730c739d60b2f25c192847dda31d8c
+  revision: d1e867353540038410eb532b322e5a43a9e716b7
   specs:
-    rubyhorn (0.0.5)
+    rubyhorn (0.0.6)
       activesupport
       json
       mime-types
@@ -446,7 +446,7 @@ GEM
     net-ssh (2.9.1)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
-    netrc (0.7.7)
+    netrc (0.8.0)
     nokogiri (1.6.3.1)
       mini_portile (= 0.6.0)
     nom-xml (0.5.1)
@@ -664,7 +664,7 @@ GEM
       actionpack (>= 3.1)
       jquery-rails
       railties (>= 3.1)
-    tzinfo (0.3.41)
+    tzinfo (0.3.42)
     uber (0.0.8)
     uglifier (2.5.3)
       execjs (>= 0.3.0)
