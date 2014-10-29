@@ -65,13 +65,17 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render partial: 'text_field',
              locals: {form: form, field: :permalink,
                       options: {}} %>
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :identifier,
+                      display_label: 'Other ID(s)',
+                      options: {multivalued: true, 
+                                dropdown_field: :identifier_type, 
+                                dropdown_options: MediaObject::IDENTIFIER_TYPES}} %>
   <%= render 'workflow_buttons' %>
 <% end %>
 </div>
 
 <% content_for :page_scripts do %>
   <%= javascript_include_tag 'dynamic_fields' %>
-  <script>
-    DynamicFields.initialize();
-  </script>
+  <%= javascript_include_tag 'dropdown_text_fields' %>
 <% end %>
