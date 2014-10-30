@@ -250,7 +250,8 @@ class MediaObject < ActiveFedora::Base
   end
 
   def identifier
-    descMetadata.identifier.type.zip(descMetadata.identifier)
+    identifier = descMetadata.identifier.type.zip(descMetadata.identifier)
+    identifier.empty? ? [[]] : identifier
   end
 
   # This method is one way in that it accepts class attributes and
