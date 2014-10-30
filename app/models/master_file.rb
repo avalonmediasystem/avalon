@@ -194,15 +194,14 @@ class MasterFile < ActiveFedora::Base
   end
 
   def process
-    args = {    "url" => "file://" + URI.escape(file_location),
-                "title" => pid,
-                "flavor" => "presenter/source",
-                "filename" => File.basename(file_location),
-                'workflow' => self.workflow_name,
-            }
-
-    m = MatterhornJobs.new
-    m.send_request args
+    raise "MasterFile is already being processed" if status_code.present? && !finished_processing?
+    Delayed::Job.enqueue MatterhornIngestJob.new({
+      'url' => "file://" + URI.escape(file_location),
+      'title' => pid,
+      'flavor' => "presenter/source",
+      'filename' => File.basename(file_location),
+      'workflow' => self.workflow_name,
+    })
   end
 
   def status?(value)
