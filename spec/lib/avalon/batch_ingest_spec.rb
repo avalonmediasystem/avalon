@@ -130,6 +130,14 @@ describe Avalon::Batch::Ingest do
       media_object = MediaObject.find(ingest_batch.media_object_ids[1])
       media_object.should be_hidden
     end
+
+    it 'should correctly set identifiers' do
+      batch_ingest.ingest
+      ingest_batch = IngestBatch.find(:first)
+      media_object = MediaObject.find(ingest_batch.media_object_ids.first)
+      media_object.identifier.should eq([["BIB","123"],["OCLC","ABC"]])
+    end
+
   end
 
   describe 'invalid manifest' do
