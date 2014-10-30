@@ -300,10 +300,17 @@ class MasterFile < ActiveFedora::Base
     # First step is to create derivative objects within Fedora for each
     # derived item. For this we need to pick only those which 
     # have a 'streaming' tag attached
-    matterhorn_response.streaming_tracks.size.times do |i|
-      Derivative.create_from_master_file(self, matterhorn_response.streaming_tracks(i),{ stream_base: matterhorn_response.stream_base.first })
-    end
+    derivative_data = Hash.new { |h,k| h[k] = {} }
+    0.upto(matterhorn_response.streaming_tracks.size-1) { |i|
+      track = matterhorn_response.streaming_tracks(i)
+      key = track.tags.tag.include?('hls') ? 'hls' : 'rtmp'
+      derivative_data[track.tags.quality.first.split('-').last][key] = track
+    }
 
+    derivative_data.each_pair do |quality, entries|
+      Derivative.create_from_master_file(self, quality, entries, { stream_base: matterhorn_response.stream_base.first })
+    end
+    
     # Some elements of the original file need to be stored as well even 
     # though they are not being used right now. This includes a checksum 
     # which can be used to validate the file has not changed. 

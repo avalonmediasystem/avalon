@@ -52,16 +52,17 @@ class Derivative < ActiveFedora::Base
 
   # Getting the track ID from the fragment is not great but it does reduce the number
   # of calls to Matterhorn 
-  def self.create_from_master_file(masterfile, markup, opts = {})
+  def self.create_from_master_file(masterfile, quality, entries, opts = {})
     # Looks for an existing derivative of the same quality
     # and adds the track URL to it
-    quality = markup.tags.quality.first.split('-')[1] unless markup.tags.quality.empty?
     masterfile = MasterFile.find(masterfile.pid)
     existing = masterfile.derivatives.to_a.select {|d| d.encoding.quality.first == quality }
 
     # If same quality derivative doesn't exist, create one
     derivative = Derivative.new 
-      
+    
+    hls_markup = entries['hls']
+    markup = entries['rtmp']
     derivative.duration = markup.duration.first
     derivative.encoding.mime_type = markup.mimetype.first
     derivative.encoding.quality = quality 
@@ -75,15 +76,15 @@ class Derivative < ActiveFedora::Base
       derivative.encoding.video.resolution = markup.video.resolution.first
     end
 
-    if markup.tags.tag.include? "hls"   
-      derivative.hls_track_id = markup.track_id.first
-      derivative.hls_url = markup.url.first
-    else
-      derivative.track_id = markup.track_id.first
-      derivative.location_url = markup.url.first
-      derivative.absolute_location = File.join(opts[:stream_base], Avalon::MatterhornRtmpUrl.parse(derivative.location_url).to_path) if opts[:stream_base]
+    derivative.track_id = markup.track_id.first
+    derivative.location_url = markup.url.first
+    derivative.absolute_location = File.join(opts[:stream_base], Avalon::MatterhornRtmpUrl.parse(derivative.location_url).to_path) if opts[:stream_base]
+
+    if hls_markup.present?
+      derivative.hls_track_id = hls_markup.track_id.first
+      derivative.hls_url = hls_markup.url.first
     end
-    
+
     derivative.masterfile = masterfile
     if derivative.save
       #Remove old derivatives only if save succeeds
