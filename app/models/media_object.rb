@@ -220,7 +220,7 @@ class MediaObject < ActiveFedora::Base
       if values[:identifier_type]
         values[:identifier] = values.delete(:identifier_type).zip(values[:identifier]) 
       else
-        values[:identifier].map! { |i| ['Other',i] }
+        values[:identifier].map! { |i| [IDENTIFIER_TYPES.first,i] }
       end
     end
     
@@ -251,7 +251,6 @@ class MediaObject < ActiveFedora::Base
 
   def identifier
     identifier = descMetadata.identifier.type.zip(descMetadata.identifier)
-    identifier.empty? ? [[]] : identifier
   end
 
   # This method is one way in that it accepts class attributes and
