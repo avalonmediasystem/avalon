@@ -20,4 +20,14 @@ class Course < ActiveRecord::Base
       { id: course.context_id, display: course.title }
     }
   end
+  
+  def fix_object_rights!
+    remove_groups = [label, title].select(&:present?)
+    criteria = remove_groups.collect { |val| %{read_access_group_ssim:"#{val}"} }.join(' OR ')
+    ActiveFedora::Base.where(criteria).each do |obj|
+      obj.read_groups -= remove_groups
+      obj.read_groups += [context_id] unless obj.read_groups.include?(context_id)
+      obj.save(validate: false)
+    end
+  end
 end
