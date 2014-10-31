@@ -332,7 +332,7 @@ class MediaObject < ActiveFedora::Base
     all_text_values << solr_doc["contributor_sim"]
     all_text_values << solr_doc["unit_ssim"]
     all_text_values << solr_doc["collection_ssim"]
-    all_text_values << solr_doc["summary_ssim"]
+    all_text_values << solr_doc["summary_ssi"]
     solr_doc["all_text_timv"] = all_text_values.flatten
     return solr_doc
   end

@@ -111,5 +111,18 @@ describe CatalogController do
         assigns(:document_list).map(&:id).should == [mo.id]
       end
     end
+
+    describe "search fields" do
+      let(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public', abstract: Faker::Lorem.sentence, contributor: [Faker::Name.last_name, Faker::Name.last_name]) }
+      ["title_tesi", "creator_ssim", "contributor_sim", "unit_ssim", "collection_ssim", "summary_ssi"].each do |field|
+        it "should find results based upon #{field}" do
+          query = Array(media_object.to_solr[field]).first
+          expect(query).not_to be_empty
+          get 'index', :q => media_object.to_solr[field]
+          expect(assigns(:document_list).count).to eq 1
+          expect(assigns(:document_list).map(&:id)). to eq [media_object.id]
+        end
+      end
+    end
   end
 end
