@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 namespace :delayed_job do 
+  require 'daemons'
   require 'delayed/command'
 
   desc "Starts Avalon's delayed_job worker"
