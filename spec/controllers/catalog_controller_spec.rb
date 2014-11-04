@@ -117,8 +117,10 @@ describe CatalogController do
       ["title_tesi", "creator_ssim", "contributor_sim", "unit_ssim", "collection_ssim", "summary_ssi"].each do |field|
         it "should find results based upon #{field}" do
           query = Array(media_object.to_solr[field]).first
+          #The following line is to check that the test is using a valid solr field name
+          #since an incorrect one will lead to an empty query resulting in a false positive below
           expect(query).not_to be_empty
-          get 'index', :q => media_object.to_solr[field]
+          get 'index', :q => query
           expect(assigns(:document_list).count).to eq 1
           expect(assigns(:document_list).map(&:id)). to eq [media_object.id]
         end
