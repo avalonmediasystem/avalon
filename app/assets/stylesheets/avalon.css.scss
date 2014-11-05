@@ -184,12 +184,19 @@ tr.active-false td {
   font-size: 14px;
 }
 
-// Multivalued fields
-.form-group.multivalued .input-group {
+// Form-group input fields
+.form-group .input-group {
   width: 100%;
+  .form-control {
+    border-radius: $border-radius-base;
+  }
   .add-dynamic-field {
     cursor: pointer;
   }
+}
+.form-group.multivalued .input-group .form-control {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
 }
 
 /*

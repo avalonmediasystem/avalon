@@ -45,7 +45,7 @@
 
 /* requirements for handling modals with modal logic gem */
 //= require modal_logic
-//= require handlebars.runtime
+//= require handlebars
 //= require templates/modal/crud
 
 //= require browse_everything
@@ -60,5 +60,4 @@
 //= require avalon
 //= require pop_help
 //= require input_form_attribute_support
-//= require access_autocomplete
 //= require_self

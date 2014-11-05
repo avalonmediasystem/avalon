@@ -76,7 +76,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 </style>
 
 <% content_for :page_scripts do %>
+  <%= javascript_include_tag 'autocomplete' %>
   <script>
     new ModalLogic()
   </script>
 <% end %>
+

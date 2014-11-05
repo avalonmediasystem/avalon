@@ -90,7 +90,8 @@ class MediaObject < ActiveFedora::Base
     :geographic_subject => :geographic_subject,
     :temporal_subject => :temporal_subject,
     :topical_subject => :topical_subject,
-    :identifier => :identifier
+    :identifier => :identifier,
+    :language => :language
     }
   end
 
@@ -121,6 +122,7 @@ class MediaObject < ActiveFedora::Base
   has_attributes :temporal_subject, datastream: :descMetadata, at: [:temporal_subject], multiple: true
   has_attributes :topical_subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
   has_attributes :identifier, datastream: :descMetadata, at: [:identifier], multiple: true
+  has_attributes :language, datastream: :descMetadata, at: [:language], multiple: true
   
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
     sds.field :duration, :string
@@ -251,6 +253,10 @@ class MediaObject < ActiveFedora::Base
 
   def identifier
     identifier = descMetadata.identifier.type.zip(descMetadata.identifier)
+  end
+
+  def language
+    descMetadata.language.code.zip(descMetadata.language.text).map{|a|{code: a[0],text: a[1]}}
   end
 
   # This method is one way in that it accepts class attributes and

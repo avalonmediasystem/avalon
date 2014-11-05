@@ -71,11 +71,18 @@ Unless required by applicable law or agreed to in writing, software distributed
                       options: {multivalued: true, 
                                 dropdown_field: :identifier_type, 
                                 dropdown_options: MediaObject::IDENTIFIER_TYPES}} %>
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :language,
+                      options: {multivalued: true,
+                                autocomplete_model: 'languageTerm',
+                                autocomplete_display_key: :text,
+                                autocomplete_id_key: :code}} %>
   <%= render 'workflow_buttons' %>
 <% end %>
 </div>
 
 <% content_for :page_scripts do %>
+  <%= javascript_include_tag 'autocomplete' %>
   <%= javascript_include_tag 'dynamic_fields' %>
   <%= javascript_include_tag 'dropdown_text_fields' %>
 <% end %>

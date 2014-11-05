@@ -146,7 +146,7 @@ describe MediaObject do
 
   describe "Languages are handled correctly" do
     it "should handle pairs of language codes and language names" do
-      media_object.update_datastream(:descMetadata, :language => ['eng','French','Castilian','Uyghur'])
+      media_object.update_datastream(:descMetadata, :language => ['eng','French','spa','uig'])
       media_object.descMetadata.language_code.to_a.should =~ ['eng','fre','spa','uig']
       media_object.descMetadata.language_text.to_a.should =~ ['English','French','Spanish','Uighur']
     end
