@@ -90,7 +90,7 @@ describe Avalon::Batch::Ingest do
 
     it 'should set MasterFile details' do
       batch_ingest.ingest
-      ingest_batch = IngestBatch.find(:first)
+      ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.first) 
       master_file = media_object.parts.first
       master_file.label.should == 'Quis quo'
@@ -116,14 +116,14 @@ describe Avalon::Batch::Ingest do
 
     it 'should set avalon_uploader' do
       batch_ingest.ingest
-      ingest_batch = IngestBatch.find(:first)
+      ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
       media_object.avalon_uploader.should == 'frances.dickens@reichel.com'
     end
 
     it 'should set hidden' do
       batch_ingest.ingest
-      ingest_batch = IngestBatch.find(:first)
+      ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
       media_object.should_not be_hidden
 
@@ -133,7 +133,7 @@ describe Avalon::Batch::Ingest do
 
     it 'should correctly set identifiers' do
       batch_ingest.ingest
-      ingest_batch = IngestBatch.find(:first)
+      ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
       media_object.identifier.should eq([["BIB","123"],["OCLC","ABC"]])
     end

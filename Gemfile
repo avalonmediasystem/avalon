@@ -103,10 +103,6 @@
     gem 'better_errors'
     gem 'binding_of_caller'
     gem 'license_header'
-    gem 'pry'
-    gem 'pry-rails'
-    gem 'pry-debugger', platforms: [:mri_19]
-    gem 'pry-byebug',   platforms: [:mri_20, :mri_21]
     gem 'meta_request'
   end
 
@@ -115,13 +111,17 @@
     gem "jettywrapper"
     gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
     gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
-
+    gem 'daemons'
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano'
     gem 'rspec-rails', '~>2.9'
     gem 'puma'
     gem 'rb-fsevent', '~> 0.9.1'
     gem 'letter_opener'
+    gem 'pry'
+    gem 'pry-rails'
+    gem 'pry-debugger', platforms: [:mri_19]
+    gem 'pry-byebug',   platforms: [:mri_20, :mri_21]
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :test do

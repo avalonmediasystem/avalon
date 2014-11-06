@@ -194,15 +194,14 @@ class MasterFile < ActiveFedora::Base
   end
 
   def process
-    args = {    "url" => "file://" + URI.escape(file_location),
-                "title" => pid,
-                "flavor" => "presenter/source",
-                "filename" => File.basename(file_location),
-                'workflow' => self.workflow_name,
-            }
-
-    m = MatterhornJobs.new
-    m.send_request args
+    raise "MasterFile is already being processed" if status_code.present? && !finished_processing?
+    Delayed::Job.enqueue MatterhornIngestJob.new({
+      'url' => "file://" + URI.escape(file_location),
+      'title' => pid,
+      'flavor' => "presenter/source",
+      'filename' => File.basename(file_location),
+      'workflow' => self.workflow_name,
+    })
   end
 
   def status?(value)
@@ -301,21 +300,20 @@ class MasterFile < ActiveFedora::Base
     # First step is to create derivative objects within Fedora for each
     # derived item. For this we need to pick only those which 
     # have a 'streaming' tag attached
-    
-    # Why do it this way? It will create a dynamic node that can be
-    # passed to the helper without any extra work
-    matterhorn_response.streaming_tracks.size.times do |i|
-      Derivative.create_from_master_file(self, matterhorn_response.streaming_tracks(i),{ stream_base: matterhorn_response.stream_base.first })
-    end
+    derivative_data = Hash.new { |h,k| h[k] = {} }
+    0.upto(matterhorn_response.streaming_tracks.size-1) { |i|
+      track = matterhorn_response.streaming_tracks(i)
+      key = track.tags.tag.include?('hls') ? 'hls' : 'rtmp'
+      derivative_data[track.tags.quality.first.split('-').last][key] = track
+    }
 
+    derivative_data.each_pair do |quality, entries|
+      Derivative.create_from_master_file(self, quality, entries, { stream_base: matterhorn_response.stream_base.first })
+    end
+    
     # Some elements of the original file need to be stored as well even 
     # though they are not being used right now. This includes a checksum 
-    # which can be used to validate the file has not changed and the 
-    # thumbnail.
-    #
-    # The thumbnail is tricky because Fedora cannot ingest from a URI. That 
-    # means if one exists we should copy it over to a temporary location and
-    # then hand the bits off to Fedora
+    # which can be used to validate the file has not changed. 
     self.mediapackage_id = matterhorn_response.mediapackage.id.first
     
     unless matterhorn_response.source_tracks(0).nil?

@@ -14,7 +14,6 @@
 
 FactoryGirl.define do
   factory :master_file do
-    status_code {Faker::Lorem.word}
     file_location {'/path/to/video.mp4'}
     percent_complete {"#{rand(100)}"}
     workflow_name 'avalon'
@@ -22,6 +21,7 @@ FactoryGirl.define do
 
     factory :master_file_with_derivative do
       workflow_name 'avalon'
+      status_code 'SUCCEEDED'
       after(:create) do |mf|
         mf.derivatives += [FactoryGirl.create(:derivative)]
         mf.save
