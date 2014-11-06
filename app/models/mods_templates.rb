@@ -123,6 +123,16 @@ module ModsTemplates
         add_child_node(ng_xml.root, :_language, term.code, term.text)
       end
 
+      define_template :_terms_of_use do |xml, text|
+        xml.accessCondition(:type => 'use and reproduction'){
+          xml.text(text)
+        }
+      end
+
+      def add_terms_of_use(value, opts={})
+        add_child_node(ng_xml.root, :_terms_of_use, value)
+      end
+
       define_template :media_type do |xml,mime_type|
         xml.physicalDescription {
           xml.internetMediaType mime_type

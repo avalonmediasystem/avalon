@@ -91,7 +91,8 @@ class MediaObject < ActiveFedora::Base
     :temporal_subject => :temporal_subject,
     :topical_subject => :topical_subject,
     :identifier => :identifier,
-    :language => :language
+    :language => :language,
+    :terms_of_use => :terms_of_use
     }
   end
 
@@ -123,6 +124,7 @@ class MediaObject < ActiveFedora::Base
   has_attributes :topical_subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
   has_attributes :identifier, datastream: :descMetadata, at: [:identifier], multiple: true
   has_attributes :language, datastream: :descMetadata, at: [:language], multiple: true
+  has_attributes :terms_of_use, datastream: :descMetadata, at: [:terms_of_use], multiple: false
   
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
     sds.field :duration, :string
@@ -219,11 +221,7 @@ class MediaObject < ActiveFedora::Base
     
     # Special case the identifiers and their types
     if values[:identifier]
-      if values[:identifier_type]
-        values[:identifier] = values.delete(:identifier_type).zip(values[:identifier]) 
-      else
-        values[:identifier].map! { |i| [IDENTIFIER_TYPES.first,i] }
-      end
+      values[:identifier] = [[values.delete(:identifier_type) || IDENTIFIER_TYPES.first, values[:identifier]]]
     end
     
     values.each do |k, v|
@@ -252,7 +250,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def identifier
-    identifier = descMetadata.identifier.type.zip(descMetadata.identifier)
+    descMetadata.identifier.present? ? [descMetadata.identifier.type.first,descMetadata.identifier.first] : nil
   end
 
   def language

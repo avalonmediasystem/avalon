@@ -23,6 +23,10 @@ class ModsDocument < ActiveFedora::OmDatastream
       :namespace_prefix=>nil,
       :schema => 'http://www.loc.gov/standards/mods/v3/mods-3-4.xsd')
 
+    t.identifier(:path => 'identifier') do
+      t.type_(:path => '@type', :namespace_prefix => nil)
+    end
+
     # Titles
     t.title_info(:path => 'titleInfo') do
       t.non_sort(:path => 'nonSort')
@@ -124,10 +128,6 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.related_item_id(:proxy => [:related_item, :identifier])
     t.collection(:proxy => [:related_item, :title_info, :title], :path => 'relatedItem[@type="host"]/oxns:titleInfo/oxns:title')
 
-    t.identifier(:path => 'identifier') do
-      t.type_(:path => '@type', :namespace_prefix => nil)
-    end
-
     t.location do
       t.url(:attributes => { :access => nil })
       t.url_with_context(:path => 'url', :attributes => { :access => 'object in context' })
@@ -136,8 +136,8 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.permalink(:ref => [:location, :url_with_context])
 
     t.usage(:path => 'accessCondition')
-    t.reproduction_notes(:path => 'accessCondition', :attributes => { :type => 'use and reproduction' })
-    t.restrictions(:path => 'accessCondition', :attributes => { :type => 'restrictions on access' })
+    t.terms_of_use(:path => 'accessCondition', :attributes => { :type => 'use and reproduction' })
+    t.access_restrictions(:path => 'accessCondition', :attributes => { :type => 'restrictions on access' })
 
     t.record_info(:path => 'recordInfo') do
       t.origin(:path => 'recordOrigin')

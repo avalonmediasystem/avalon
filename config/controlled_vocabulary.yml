@@ -1,8 +1,7 @@
 units:
  - Default Unit
 identifier_types:
- - BIB
- - LCCN
+ - Catalog Key
  - OCLC
- - Local
+ - LCCN
  - Other
