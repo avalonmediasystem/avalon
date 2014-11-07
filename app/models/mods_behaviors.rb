@@ -110,6 +110,7 @@ module ModsBehaviors
 
   def reorder_elements!
     order = [
+      'mods:mods/mods:identifier',
       'mods:mods/mods:titleInfo[@usage="primary"]',
       'mods:mods/mods:titleInfo[@type="alternative"]',
       'mods:mods/mods:titleInfo[@type="translated"]',
@@ -126,7 +127,6 @@ module ModsBehaviors
       'mods:mods/mods:note',
       'mods:mods/mods:subject',
       'mods:mods/mods:relatedItem',
-      'mods:mods/mods:identifier',
       'mods:mods/mods:location',
       'mods:mods/mods:accessCondition',
       'mods:mods/mods:recordInfo',
