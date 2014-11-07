@@ -23,7 +23,7 @@ class ModsDocument < ActiveFedora::OmDatastream
       :namespace_prefix=>nil,
       :schema => 'http://www.loc.gov/standards/mods/v3/mods-3-4.xsd')
 
-    t.identifier(:path => 'identifier') do
+    t.identifier(:path => 'mods/oxns:identifier') do
       t.type_(:path => '@type', :namespace_prefix => nil)
     end
 
