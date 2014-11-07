@@ -60,6 +60,18 @@ Unless required by applicable law or agreed to in writing, software distributed
                                 autocomplete_id_key: :code}} %>
 
   <%= render partial: 'text_field',
+             locals: {form: form, field: :original_physical_description,
+                      options: {multivalued: false}} %>
+
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :related_item,
+                      options: {display_label: 'Related Item(s)',
+                                multivalued: true,
+                                primary_label: 'URL',
+                                secondary_label: 'Label',
+                                secondary_field: :related_item_title}} %>
+
+  <%= render partial: 'text_field',
              locals: {form: form, field: :genre,
                       options: {display_label: 'Genre(s)', multivalued: true}} %>
   <%= render partial: 'text_field',

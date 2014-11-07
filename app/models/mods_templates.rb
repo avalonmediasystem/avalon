@@ -133,6 +133,35 @@ module ModsTemplates
         add_child_node(ng_xml.root, :_terms_of_use, value)
       end
 
+      define_template :_original_physical_description do |xml, text|
+        xml.relatedItem(:type => 'original'){
+          xml.physicalDescription{
+            xml.extent{
+              xml.text(text)
+            }
+          }
+        }
+      end
+
+      def add_original_physical_description(value, opts={})
+        add_child_node(ng_xml.root, :_original_physical_description, value)
+      end
+
+      define_template :_related_item do |xml, identifier, title|
+        xml.relatedItem{
+          xml.identifier { xml.text(identifier) } if identifier.present?
+          xml.titleInfo {
+            xml.title {
+              xml.text(title)
+            }
+          } if title.present?
+        }
+      end
+
+      def add_related_item(values, opts={})
+        add_child_node(ng_xml.root, :_related_item, values[0], values[1])
+      end
+
       define_template :media_type do |xml,mime_type|
         xml.physicalDescription {
           xml.internetMediaType mime_type

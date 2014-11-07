@@ -95,6 +95,13 @@ class ModsDocument < ActiveFedora::OmDatastream
     end
     t.media_type(:proxy => [:physical_description, :internet_media_type])
 
+    t.original_related_item(:path => 'relatedItem', :attributes => { :type => 'original'}) do
+      t.physical_description(:path => 'physicalDescription') do
+        t.extent
+      end
+    end
+    t.original_physical_description(:proxy => [:original_related_item, :physical_description, :extent])
+
     # Summary and Notes
     t.abstract(:path => 'abstract')
     t.note {
@@ -126,6 +133,7 @@ class ModsDocument < ActiveFedora::OmDatastream
       t.title_info(:ref => :title_info)
     end
     t.related_item_id(:proxy => [:related_item, :identifier])
+    t.related_item_title(:proxy => [:related_item, :title_info, :title])
     t.collection(:proxy => [:related_item, :title_info, :title], :path => 'relatedItem[@type="host"]/oxns:titleInfo/oxns:title')
 
     t.location do

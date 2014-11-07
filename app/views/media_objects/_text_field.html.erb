@@ -33,6 +33,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="input-group">
 	<% if options[:autocomplete_model] and options[:autocomplete_model].present? %>
 	  <%= render partial: "typeahead_field", locals: {fieldname: fieldname, value: value, options: options} %>
+	<% elsif options[:secondary_field] and options[:secondary_field].present? %>
+	  <%= render partial: "two_part_field", locals: {fieldname: fieldname, value: value, options: options} %>
 	<% else %>
           <% if options[:dropdown_field] %>
 	    <%= render partial: "dropdown_field", locals: {selected_value: Array(value)[0], options: options} %>

@@ -86,13 +86,14 @@ class MediaObject < ActiveFedora::Base
     :publisher => :publisher,
     :genre => :genre,
     :subject => :topical_subject,
-    :related_item => :related_item_id,
+    :related_item => :related_item,
     :geographic_subject => :geographic_subject,
     :temporal_subject => :temporal_subject,
     :topical_subject => :topical_subject,
     :identifier => :identifier,
     :language => :language,
-    :terms_of_use => :terms_of_use
+    :terms_of_use => :terms_of_use,
+    :original_physical_description => :original_physical_description,
     }
   end
 
@@ -117,7 +118,7 @@ class MediaObject < ActiveFedora::Base
   has_attributes :publisher, datastream: :descMetadata, at: [:publisher], multiple: true
   has_attributes :genre, datastream: :descMetadata, at: [:genre], multiple: true
   has_attributes :subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
-  has_attributes :related_item, datastream: :descMetadata, at: [:related_item_id], multiple: true
+  has_attributes :related_item, datastream: :descMetadata, at: [:related_item], multiple: true
 
   has_attributes :geographic_subject, datastream: :descMetadata, at: [:geographic_subject], multiple: true
   has_attributes :temporal_subject, datastream: :descMetadata, at: [:temporal_subject], multiple: true
@@ -125,6 +126,7 @@ class MediaObject < ActiveFedora::Base
   has_attributes :identifier, datastream: :descMetadata, at: [:identifier], multiple: false
   has_attributes :language, datastream: :descMetadata, at: [:language], multiple: true
   has_attributes :terms_of_use, datastream: :descMetadata, at: [:terms_of_use], multiple: false
+  has_attributes :original_physical_description, datastream: :descMetadata, at: [:original_physical_description], multiple: false
   
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
     sds.field :duration, :string
@@ -218,12 +220,14 @@ class MediaObject < ActiveFedora::Base
 
   def update_datastream(datastream = :descMetadata, values = {})
     missing_attributes.clear
-    
+binding.pry
     # Special case the identifiers and their types
     if values[:identifier]
-      values[:identifier] = [[values.delete(:identifier_type) || IDENTIFIER_TYPES.first, values[:identifier]]]
+      values[:identifier] = [[Array(values.delete(:identifier_type)).first || IDENTIFIER_TYPES.first, Array(values[:identifier]).first]]
     end
-    
+    if values[:related_item] and values[:related_item_title]
+        values[:related_item] = values.delete(:related_item).zip(values[:related_item_title])
+    end
     values.each do |k, v|
       # First remove all blank attributes in arrays
       v.keep_if { |item| not item.blank? } if v.instance_of?(Array)
@@ -252,7 +256,9 @@ class MediaObject < ActiveFedora::Base
   def identifier
     descMetadata.identifier.present? ? [descMetadata.identifier.type.first,descMetadata.identifier.first] : nil
   end
-
+  def related_item
+    descMetadata.related_item_id.zip(descMetadata.related_item_title)
+  end
   def language
     descMetadata.language.code.zip(descMetadata.language.text).map{|a|{code: a[0],text: a[1]}}
   end
