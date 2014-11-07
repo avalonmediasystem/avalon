@@ -128,7 +128,7 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.family_subject(:proxy => [:subject, :name, :name_part], :path => 'subject/oxns:name[@type="family"]/oxns:namePart')
     t.title_subject(:proxy => [:subject, :title_info, :title])
 
-    t.related_item(:path => 'relatedItem') do
+    t.related_item(:path => 'relatedItem[not(@type)]') do
       t.identifier
       t.title_info(:ref => :title_info)
     end
