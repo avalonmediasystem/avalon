@@ -332,6 +332,11 @@ class MediaObject < ActiveFedora::Base
     all_text_values << solr_doc["unit_ssim"]
     all_text_values << solr_doc["collection_ssim"]
     all_text_values << solr_doc["summary_ssi"]
+    all_text_values << solr_doc["publisher_sim"]
+    all_text_values << solr_doc["subject_topic_sim"]
+    all_text_values << solr_doc["subject_geographic_sim"]
+    all_text_values << solr_doc["subject_temporal_sim"]
+    all_text_values << solr_doc["genre_sim"]
     solr_doc["all_text_timv"] = all_text_values.flatten
     return solr_doc
   end
