@@ -113,10 +113,12 @@ describe CatalogController do
     end
 
     describe "search fields" do
-      let(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public', abstract: Faker::Lorem.sentence, contributor: [Faker::Name.last_name, Faker::Name.last_name]) }
-      ["title_tesi", "creator_ssim", "contributor_sim", "unit_ssim", "collection_ssim", "summary_ssi"].each do |field|
+      let(:media_object) { FactoryGirl.create(:fully_searchable_media_object) }
+      ["title_tesi", "creator_ssim", "contributor_sim", "unit_ssim", "collection_ssim", "summary_ssi", "publisher_sim", "subject_topic_sim", "subject_geographic_sim", "subject_temporal_sim", "genre_sim"].each do |field|
         it "should find results based upon #{field}" do
           query = Array(media_object.to_solr[field]).first
+          #split on ' ' and only search on the first word of a multiword field value
+          query = query.split(' ').first
           #The following line is to check that the test is using a valid solr field name
           #since an incorrect one will lead to an empty query resulting in a false positive below
           expect(query).not_to be_empty

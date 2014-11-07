@@ -21,6 +21,18 @@ FactoryGirl.define do
 
     factory :published_media_object do
       avalon_publisher {'publisher'}
+
+      factory :fully_searchable_media_object do
+        visibility {'public'}
+        abstract {Faker::Lorem.paragraph}
+        contributor {Faker::Name.name}
+        date_created {"#{Time.now}"}
+        publisher {Faker::Lorem.word}
+        genre {Faker::Lorem.word}
+        topical_subject {Faker::Lorem.word}
+        temporal_subject {Faker::Lorem.word}
+        geographic_subject {Faker::Address.country}
+      end
     end
     factory :media_object_with_master_file do
       after(:create) do |mo|
@@ -31,7 +43,6 @@ FactoryGirl.define do
         mo.save
       end
     end
-
   end
 
   factory :minimal_record, class: MediaObject do
