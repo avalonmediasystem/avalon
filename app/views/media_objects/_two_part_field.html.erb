@@ -13,11 +13,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-
 <% fieldarray = options[:multivalued]? "[]" : "" %>
 <% secondaryfieldname = "media_object[#{options[:secondary_field].to_s}]#{fieldarray}" %>
 
-<span>
-  <%= text_field_tag secondaryfieldname, value.present? ? value[1] : '', class: 'form-control', style: 'width:50%', placeholder: options[:secondary_label] %>
-  <%= text_field_tag fieldname, value.present? ? value[0] : '', class: 'form-control', style: 'width:50%', placeholder: options[:primary_label] %>
-</span>
+<%= text_field_tag secondaryfieldname, value.present? ? value[1] : '', class: 'form-control', style: 'width:50%', placeholder: options[:secondary_label] %>
+<%= text_field_tag fieldname, value.present? ? value[0] : '', class: 'form-control', style: 'width:50%', placeholder: options[:primary_label] %>
