@@ -100,8 +100,8 @@
 
   group :development do
     gem 'xray-rails'
-    gem 'better_errors'
-    gem 'binding_of_caller'
+    gem 'better_errors',   platforms: [:mri_20, :mri_21]
+    gem 'binding_of_caller',   platforms: [:mri_20, :mri_21]
     gem 'license_header'
     gem 'meta_request'
   end
