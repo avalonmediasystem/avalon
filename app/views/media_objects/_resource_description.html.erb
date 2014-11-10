@@ -61,14 +61,17 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <%= render partial: 'text_field',
              locals: {form: form, field: :original_physical_description,
-                      options: {multivalued: false}} %>
+                      options: {display_label: "Physical Description",
+                                multivalued: false}} %>
 
   <%= render partial: 'text_field',
              locals: {form: form, field: :related_item,
                       options: {display_label: 'Related Item(s)',
                                 multivalued: true,
                                 primary_label: 'URL',
+                                primary_key: :url,
                                 secondary_label: 'Label',
+                                secondary_key: :label,
                                 secondary_field: :related_item_title}} %>
 
   <%= render partial: 'text_field',

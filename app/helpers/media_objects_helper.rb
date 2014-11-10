@@ -62,4 +62,13 @@ module MediaObjectsHelper
        result += " (Creation date: #{created})" if created.present?
        result
      end
+
+     def display_language mediaobject
+       mediaobject.language.collect{|l|l[:text]}
+     end
+
+     def display_related_item mediaobject
+       mediaobject.related_item.collect{|r|r[:label]}
+     end
+
 end

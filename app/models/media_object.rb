@@ -257,7 +257,7 @@ class MediaObject < ActiveFedora::Base
     descMetadata.identifier.present? ? [descMetadata.identifier.type.first,descMetadata.identifier.first] : nil
   end
   def related_item
-    descMetadata.related_item_id.zip(descMetadata.related_item_title)
+    descMetadata.related_item_id.zip(descMetadata.related_item_title).map{|a|{url: a[0],label: a[1]}}
   end
   def language
     descMetadata.language.code.zip(descMetadata.language.text).map{|a|{code: a[0],text: a[1]}}
