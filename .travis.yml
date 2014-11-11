@@ -1,6 +1,7 @@
 ---
 git:
   submodules: false
+bundler_args: --without development debug
 before_install:
   - sudo apt-get install mediainfo
   - sudo ln -s /usr/bin/lsof /usr/sbin/lsof
@@ -18,5 +19,4 @@ language: ruby
 rvm:
   - 1.9.3
   - 2.0.0
-  - 2.1.0
-  
+  - 2.1.3

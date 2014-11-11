@@ -118,11 +118,14 @@
     gem 'puma'
     gem 'rb-fsevent', '~> 0.9.1'
     gem 'letter_opener'
+  end # (leave this comment here to catch a stray line inserted by blacklight!)
+
+  group :debug do
     gem 'pry'
     gem 'pry-rails'
     gem 'pry-debugger', platforms: [:mri_19]
     gem 'pry-byebug',   platforms: [:mri_20, :mri_21]
-  end # (leave this comment here to catch a stray line inserted by blacklight!)
+  end
 
   group :test do
     gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm' # HEAD , tag: 'avalon-r3'
