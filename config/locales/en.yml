@@ -94,6 +94,14 @@ en:
       The item Permalink is a URL that links to the Item as a whole. In addition, each section of an item will have a distinct permalink assigned in the File Upload page. If configured to do so, Avalon will automatically generate a permalink if this field is left blank.
     identifier: |
       Bibliographic ID should be used for an external record identifier that can connect the Avalon item to a catalog record or other record for the original item. Type specifies the type of external record identifier.
+    language: |
+      Language
+    terms_of_use: |
+      Terms of Use
+    original_physical_description: |
+      Physical Description
+    related_item: |
+      Related Item
   file_upload_tip:
     label: |
       The Section Label will be used in an item's listing to identify each file associated with the item.
