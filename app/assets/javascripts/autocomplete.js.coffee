@@ -14,6 +14,7 @@
 
 @initialize_typeahead = ($t) ->
   $target = $t.parent().find("input[name='#{$t.data('target')}']")
+  $validate = $t.data('validate') || false
   $t.attr('autocomplete','off')
   mySource = new Bloodhound(
     limit: 10
@@ -38,6 +39,9 @@
     $target.val suggestion["id"]
     return
   ).blur ->
+    if !$validate
+      $target.val $(this).val()
+      return
     if $(this).val() is ""
       $target.val ""
       return
