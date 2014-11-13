@@ -38,12 +38,13 @@
   ).on("typeahead:selected typeahead:autocompleted", (event, suggestion, dataset) ->
     $target.val suggestion["id"]
     return
+  ).on("keypress", (e) ->
+    if e.which is 13
+      e.preventDefault
+      return false
   ).blur ->
-    if !$validate
+    if !$validate or $(this).val() is ""
       $target.val $(this).val()
-      return
-    if $(this).val() is ""
-      $target.val ""
       return
     match = false
     i = mySource.index.datums.length - 1
