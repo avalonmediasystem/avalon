@@ -6,6 +6,8 @@ Avalon::Application.routes.draw do
       post '/bookmarks/delete'
       get '/bookmarks/move', as: :move_bookmarks
       post '/bookmarks/move'
+      get '/bookmarks/update_access_control', as: :update_access_control_bookmarks
+      post '/bookmarks/update_access_control'
       post '/bookmarks/publish', as: :publish_bookmarks
       post '/bookmarks/unpublish', as: :unpublish_bookmarks
 

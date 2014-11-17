@@ -4,6 +4,7 @@ class BookmarksController < CatalogController
   self.document_actions.delete( :email )
   self.document_actions.delete( :citation )
 
+  self.add_document_action( :update_access_control, callback: :access_control_action )
   self.add_document_action( :move, callback: :move_action )
   self.add_document_action( :publish, callback: :publish_action, tool_partial: 'formless_document_action')
   self.add_document_action( :unpublish, callback: :unpublish_action, tool_partial: 'formless_document_action' )
@@ -21,6 +22,22 @@ class BookmarksController < CatalogController
       @user_actions.delete( :publish )
       @user_actions.delete( :move )
     end
+    @user_actions.delete( :update_access_control ) if mos.any? { |mo| cannot? :update_access_control, mo }
+  end
+
+  def access_control_action documents
+    errors = []
+    success_count = 0
+    Array(documents.map(&:id)).each do |id|
+      media_object = MediaObject.find(id)
+      if cannot? :update_access_control, media_object
+        errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
+      else
+        #TODO Implement this!
+      end
+    end
+    flash[:success] = t("blacklight.update_access_control.success", count: success_count, status: status) if success_count > 0
+    flash[:alert] = "#{t(blacklight.update_access_control.alert, count: errors.count)}</br> #{ errors.join('<br/> ') }" if errors.count > 0
   end
 
   def publish_action documents
