@@ -134,11 +134,11 @@ GIT
       rest-client
 
 GIT
-  remote: https://github.com/cjcolvar/blacklight.git
-  revision: c06d8a560576699ae7607e8f82bd82ef21ecbe53
-  branch: formless-actions
+  remote: https://github.com/projectblacklight/blacklight.git
+  revision: d4f2cf5d6917b927d63867f50bb66f6bc5b9577b
+  ref: d4f2cf5d6917b927d63867f50bb66f6bc5b9577b
   specs:
-    blacklight (5.7.1)
+    blacklight (5.7.2)
       bootstrap-sass (~> 3.2)
       deprecation
       kaminari (~> 0.13)
