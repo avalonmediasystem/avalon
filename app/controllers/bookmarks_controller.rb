@@ -4,10 +4,10 @@ class BookmarksController < CatalogController
   self.document_actions.delete( :email )
   self.document_actions.delete( :citation )
 
-  self.add_action( :move, :move_action )
-  self.add_action( :publish, :publish_action, {formless: true} )
-  self.add_action( :unpublish, :unpublish_action, {formless: true} )
-  self.add_action( :delete, :delete_action )
+  self.add_document_action( :move, callback: :move_action )
+  self.add_document_action( :publish, callback: :publish_action, tool_partial: 'formless_document_action')
+  self.add_document_action( :unpublish, callback: :unpublish_action, tool_partial: 'formless_document_action' )
+  self.add_document_action( :delete, callback: :delete_action )
 
   before_filter :verify_permissions, only: :index
 
