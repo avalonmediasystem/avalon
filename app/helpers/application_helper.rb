@@ -80,7 +80,7 @@ module ApplicationHelper
     label = label.pluralize(sanitized_values.size)
     result = content_tag(:dt, label) +
     content_tag(:dd) {
-      sanitized_values.join('; ')
+      safe_join(sanitized_values,'; ')
     }
   end
 

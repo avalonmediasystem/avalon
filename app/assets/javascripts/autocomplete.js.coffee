@@ -55,7 +55,6 @@
         i=0
       i--
     if !match
-      alert "Invalid Entry"
       $target.val ""
       $(this).val ""
     return

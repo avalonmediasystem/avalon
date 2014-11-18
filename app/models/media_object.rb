@@ -57,6 +57,11 @@ class MediaObject < ActiveFedora::Base
   validate  :report_missing_attributes
   validates :collection, presence: true
   validates :governing_policy, presence: true
+  validate :validate_related_items
+
+  def validate_related_items
+    Array(related_item).each{|i|errors.add(:related_item, "Bad URL") unless i[:url] =~ URI::regexp(%w(http https))}
+  end
 
   def validate_creator
     if Array(creator).select { |c| c.present? }.empty?
@@ -238,17 +243,21 @@ class MediaObject < ActiveFedora::Base
       #
       # This does not feel right but is just a first pass. Maybe the use of NOM rather
       # than OM will mitigate the need for such tricks
-      if v.first.is_a?(Hash)
-        vals = []
-        attrs = []
+      begin
+        if v.first.is_a?(Hash)
+          vals = []
+          attrs = []
         
-        v.each do |entry|
-          vals << entry[:value]
-          attrs << entry[:attributes]
+          v.each do |entry|
+            vals << entry[:value]
+            attrs << entry[:attributes]
+          end
+          update_attribute_in_metadata(k, vals, attrs)
+        else
+          update_attribute_in_metadata(k, Array(v))
         end
-        update_attribute_in_metadata(k, vals, attrs)
-      else
-        update_attribute_in_metadata(k, Array(v))
+      rescue Exception => msg
+        missing_attributes[k.to_sym] = msg.to_s
       end
     end
   end
@@ -347,6 +356,8 @@ class MediaObject < ActiveFedora::Base
     all_text_values << solr_doc["subject_geographic_sim"]
     all_text_values << solr_doc["subject_temporal_sim"]
     all_text_values << solr_doc["genre_sim"]
+    all_text_values << solr_doc["language_sim"]
+    all_text_values << solr_doc["original_physical_description_si"]
     solr_doc["all_text_timv"] = all_text_values.flatten
     return solr_doc
   end

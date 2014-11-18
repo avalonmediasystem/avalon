@@ -119,8 +119,12 @@ module ModsTemplates
       end
 
       def add_language(value, opts={})
-        term = LanguageTerm.find(value)
-        add_child_node(ng_xml.root, :_language, term.code, term.text)
+        begin
+          term = LanguageTerm.find(value)
+          add_child_node(ng_xml.root, :_language, term.code, term.text)
+        rescue LanguageTerm::LookupError => e
+          raise e.to_s
+        end
       end
 
       define_template :_terms_of_use do |xml, text|
