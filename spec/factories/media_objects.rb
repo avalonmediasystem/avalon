@@ -32,6 +32,8 @@ FactoryGirl.define do
         topical_subject {Faker::Lorem.word}
         temporal_subject {Faker::Lorem.word}
         geographic_subject {Faker::Address.country}
+        language {"eng"}
+        original_physical_description {Faker::Lorem.word}
       end
     end
     factory :media_object_with_master_file do

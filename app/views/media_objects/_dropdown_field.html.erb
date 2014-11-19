@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% selected_value ||= options[:dropdown_options].first[:display] %>
+<% selected_value ||= options[:dropdown_options].keys.first %>
 <% fieldarray = options[:multivalued]? "[]" : "" %>
 
 <div class="input-group-btn">
