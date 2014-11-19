@@ -9,11 +9,6 @@
       <%= label_tag 'selectall', t('blacklight.bookmarks.addall.button') %>
   </div>
   <% content_for :page_scripts do %>
-    <script>
-      $('#bookmarks_selectall').on('change',function(event){ 
-        if (this.checked) $('label.toggle_bookmark:not(.checked) input.toggle_bookmark').click();
-        else $('label.toggle_bookmark.checked input.toggle_bookmark').click();
-      });
-    </script>
+    <%= javascript_include_tag 'select_all' %>
   <% end %>
 <% end %>
