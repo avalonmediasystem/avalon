@@ -146,8 +146,8 @@ class MediaObject < ActiveFedora::Base
 
   accepts_nested_attributes_for :parts, :allow_destroy => true
 
-  IDENTIFIER_TYPES =  Avalon::ControlledVocabulary.find_by_name(:identifier_types) || ['Other']
-  
+  IDENTIFIER_TYPES =  Avalon::ControlledVocabulary.find_by_name(:identifier_types) || [{:display=>"Other", :value=>"other"}]
+
   def published?
     not self.avalon_publisher.blank?
   end
@@ -228,7 +228,7 @@ class MediaObject < ActiveFedora::Base
 
     # Special case the identifiers and their types
     if values[:identifier]
-      values[:identifier] = [[Array(values.delete(:identifier_type)).first || IDENTIFIER_TYPES.first, Array(values[:identifier]).first]]
+      values[:identifier] = [[Array(values.delete(:identifier_type)).first || IDENTIFIER_TYPES.keys[0], Array(values[:identifier]).first]]
     end
     if values[:related_item] and values[:related_item_title]
         values[:related_item] = values[:related_item].zip(values.delete(:related_item_title))
@@ -266,7 +266,7 @@ class MediaObject < ActiveFedora::Base
     descMetadata.identifier.present? ? [descMetadata.identifier.type.first,descMetadata.identifier.first] : nil
   end
   def related_item
-    descMetadata.related_item_id.zip(descMetadata.related_item_title).map{|a|{url: a[0],label: a[1]}}
+    descMetadata.related_item_url.zip(descMetadata.related_item_label).map{|a|{url: a[0],label: a[1]}}
   end
   def language
     descMetadata.language.code.zip(descMetadata.language.text).map{|a|{code: a[0],text: a[1]}}

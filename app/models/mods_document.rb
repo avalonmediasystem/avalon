@@ -129,11 +129,15 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.title_subject(:proxy => [:subject, :title_info, :title])
 
     t.related_item(:path => 'relatedItem[not(@type)]') do
+      t.displayLabel(:path => {:attribute =>'displayLabel'}, :namespace_prefix => nil)
+      t.location(:path => 'location') do
+        t.url(:path => 'url')
+      end
       t.identifier
       t.title_info(:ref => :title_info)
     end
-    t.related_item_id(:proxy => [:related_item, :identifier])
-    t.related_item_title(:proxy => [:related_item, :title_info, :title])
+    t.related_item_url(:proxy => [:related_item, :location, :url])
+    t.related_item_label(:proxy => [:related_item, :displayLabel])
     t.collection(:proxy => [:related_item, :title_info, :title], :path => 'relatedItem[@type="host"]/oxns:titleInfo/oxns:title')
 
     t.location do

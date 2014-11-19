@@ -66,8 +66,8 @@ module ModsBehaviors
     solr_doc['language_sim'] = gather_terms(self.find_by_terms(:language_text))
     solr_doc['language_code_sim'] = gather_terms(self.find_by_terms(:language_code))
     solr_doc['original_physical_description_si'] = self.find_by_terms(:original_physical_description).text
-    solr_doc['related_item_id_sim'] = gather_terms(self.find_by_terms(:related_item_id))
-    solr_doc['related_item_title_sim'] = gather_terms(self.find_by_terms(:related_item_title))
+    solr_doc['related_item_url_sim'] = gather_terms(self.find_by_terms(:related_item_url))
+    solr_doc['related_item_label_sim'] = gather_terms(self.find_by_terms(:related_item_label))
     solr_doc['terms_of_use_si'] = self.find_by_terms(:terms_of_use).text
 
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight

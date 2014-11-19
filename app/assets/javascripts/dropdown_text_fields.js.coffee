@@ -19,6 +19,6 @@ $ ->
     event.preventDefault()
     d = $(this)
     group = d.closest('.input-group-btn')
-    group.find('.dropdown-toggle span').first().text(d.text())
-    group.find('input[type="hidden"]').val(d.text())
+    group.find('.dropdown-toggle span').first().text(d.find('a').text())
+    group.find('input[type="hidden"]').val(d.find('span.hidden').text())
     

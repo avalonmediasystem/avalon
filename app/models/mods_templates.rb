@@ -151,15 +151,10 @@ module ModsTemplates
         add_child_node(ng_xml.root, :_original_physical_description, value)
       end
 
-      define_template :_related_item do |xml, identifier, title|
-        xml.relatedItem{
-          xml.identifier { xml.text(identifier) } if identifier.present?
-          xml.titleInfo {
-            xml.title {
-              xml.text(title)
-            }
-          } if title.present?
-        }
+      define_template :_related_item do |xml, url, label|
+        xml.relatedItem(:displayLabel => label) {
+          xml.location { xml.url { xml.text(url) } } if url.present?
+        } if label.present?
       end
 
       def add_related_item(values, opts={})
