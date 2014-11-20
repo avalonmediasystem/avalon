@@ -97,3 +97,7 @@ en:
     unpublish:
       form:
         title: "Unpublish Selected Items"
+    update_access_control:
+      form:
+        title: "Manage Access Control Settings"
+      button: "Save"

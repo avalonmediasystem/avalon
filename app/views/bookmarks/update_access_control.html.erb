@@ -19,7 +19,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <h1><%= t('blacklight.update_access_control.form.title') %></h1>
 </div>
 
-<%= form_tag url_for(:controller => "bookmarks", :action => "update_access_control"), :id => 'update_access_control_form', :class => "form-horizontal", :method => :post do %>
+<%= form_for "add", url: url_for(:controller => "bookmarks", :action => "update_access_control"), html: { :id => 'update_access_control_form', :class => "form-horizontal" } do |form| %>
   <div class="modal-body">
     <div class="row-fluid">
       <div class="btn-options">
@@ -28,12 +28,68 @@ Unless required by applicable law or agreed to in writing, software distributed
             <p><%= t('blacklight.bookmarks.no_bookmarks') %></p>
           </div>
         <% else %>
-          <div class="alert">
-            <fieldset>
+          <div class="alert hidden">
               <p><%= t('blacklight.update_access_control.confirm') %></p>
-              <!-- Implement me! -->
-            </fieldset>
-          </div>
+	  </div>
+          <fieldset class="item-discovery">
+	    <legend>Discovery</legend>
+	    <%= label_tag :hidden do %>
+	      <%= check_box_tag :hidden, '1' %>
+	      Hide this item from search results 
+	    <% end %>
+	  </fieldset>
+          <fieldset class="item-access">
+	    <legend>Item Access</legend>
+	    <%= label_tag :visibility do %>
+	      <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
+	      Available to the general public
+	    <% end %>
+	    <%= label_tag :visibility do %>
+	      <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
+	      Logged in users only
+	    <% end %>
+	    <%= label_tag :visibility do %>
+	      <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
+	      Collection staff only
+	    <% end %>
+	  </fieldset>
+          <fieldset class="special-access">
+	    <legend>Special Access</legend>
+	    <%= label_tag "add_user" do %>
+	      <%= render partial: "modules/tooltip", locals: { form: form, field: 'user', tooltip: t("access_control.user"), options: {display_label: t("access_control.userlabel").html_safe} } %>
+	      <div style='display:inline-block;top:-6px;position:relative'>
+	      <%= hidden_field_tag "add_user" %>
+	      <%= text_field_tag "add_user_display", nil, 
+		  class: "typeahead from-model form-control", 
+		  data: { model: 'user', target: "add_user" } %>
+</div>
+	      <%= button_tag "Add", class:'btn btn-default' %>
+	      <%= button_tag "Remove", class:'btn btn-default' %>
+	    <% end %>
+	    <%= label_tag "add_group" do %>
+	      <%= render partial: "modules/tooltip", locals: { form: form, field: 'group', tooltip: t("access_control.group"), options: {display_label: t("access_control.grouplabel").html_safe} } %>
+	      <%  @addable_groups = [] %>
+	      <%  dropdown_values = [@addable_groups, 'name', 'name'] %>
+	      <%  dropdown_values = options_from_collection_for_select(*dropdown_values) %>
+	      <%  dropdown_values = options_for_select(['Test Group 1','Test Group 2']) %>
+	      <%= select_tag "add_group", 
+		  dropdown_values, 
+		  { include_blank: true, class: "form-control"}%>
+	      <%= button_tag "Add", class:'btn btn-default' %>
+	      <%= button_tag "Remove", class:'btn btn-default' %>
+	    <% end %>
+	    <%= label_tag "add_class" do %>
+	      <%= render partial: "modules/tooltip", locals: { form: form, field: 'class', tooltip: t("access_control.class"), options: {display_label: t("access_control.classlabel").html_safe} } %>
+	      <div style='display:inline-block;top:-6px;position:relative;'>
+	      <%= hidden_field_tag "add_class" %>
+	      <%= text_field_tag "add_class_display", nil, 
+		  class: "typeahead from-model form-control", 
+		  data: { model: 'externalGroup', target: "add_class" } %>
+	      </div>
+	      <%= button_tag "Add", class:'btn btn-default' %>
+	      <%= button_tag "Remove", class:'btn btn-default' %>
+	    <% end %>
+          </fieldset>
           <div class="modal-footer">
             <button type="submit" class="btn btn-primary"><%= t('blacklight.update_access_control.button') %></button>
           </div>
@@ -42,3 +98,19 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   </div>
 <% end %>
+
+<%# content_for :page_scripts do %>
+  <%= javascript_include_tag 'autocomplete' %>
+<%# end %>
+
+<script>
+$('.tooltip-label').on("click", function(event){
+    event.preventDefault()
+    targetNode = $(this).data('tooltip')
+    $(targetNode).collapse('toggle')
+});
+$('.help-block .close').on("click", function(event){
+  event.preventDefault()
+  $(this).parent().collapse('toggle')
+});
+</script>
