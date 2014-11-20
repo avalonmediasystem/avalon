@@ -33,7 +33,34 @@ class BookmarksController < CatalogController
       if cannot? :update_access_control, media_object
         errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
       else
-        #TODO Implement this!
+        media_object.hidden = params[:hidden] == "1" if params[:hidden].present?
+        media_object.visibility = params[:visibility] unless params[:visibility].blank?
+
+	# Limited access stuff
+	["group", "class", "user"].each do |title|
+	  if params["submit_add_#{title}"].present?
+	    if params["add_#{title}"].present?
+	      if ["group", "class"].include? title
+		media_object.read_groups += [params["add_#{title}"].strip]
+	      else
+		media_object.read_users += [params["add_#{title}"].strip]
+	      end
+	    else
+	      flash[:error] = "#{title.titleize} can't be blank."
+	    end
+	  end
+
+	  if params["remove_#{title}"].present?
+	    if ["group", "class"].include? title
+	      media_object.read_groups -= [params["remove_#{title}"]]
+	    else
+	      media_object.read_users -= [params["remove_#{title}"]]
+	    end
+	  end
+	end
+
+        media_object.save(validate: false)
+        success_count += 1
       end
     end
     flash[:success] = t("blacklight.update_access_control.success", count: success_count, status: status) if success_count > 0
