@@ -15,7 +15,7 @@
 
 module ApplicationHelper
   def application_name
-    Avalon::Configuration.lookup('name') || 'Avalon'
+    Avalon::Configuration.lookup('name') || 'Avalon Media System'
   end
   
   def release_text
