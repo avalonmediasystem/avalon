@@ -34,7 +34,8 @@
         suggestion.display
     source: mySource.ttAdapter()
     templates:
-      suggestion: Handlebars.compile('<p>{{display}}</p>')
+      suggestion: (suggestion) ->
+        "<p>" + suggestion.display + "</p>"
   ).on("typeahead:selected typeahead:autocompleted", (event, suggestion, dataset) ->
     $target.val suggestion["id"]
     return

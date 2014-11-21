@@ -45,7 +45,7 @@
 
 /* requirements for handling modals with modal logic gem */
 //= require modal_logic
-//= require handlebars
+//= require handlebars.runtime
 //= require templates/modal/crud
 
 //= require browse_everything
