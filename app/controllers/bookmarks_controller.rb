@@ -33,7 +33,7 @@ class BookmarksController < CatalogController
       if cannot? :update_access_control, media_object
         errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
       else
-        media_object.hidden = params[:hidden] == "1" if params[:hidden].present?
+        media_object.hidden = params[:hidden] == "true" if params[:hidden].present?
         media_object.visibility = params[:visibility] unless params[:visibility].blank?
 
 	# Limited access stuff
@@ -65,7 +65,7 @@ class BookmarksController < CatalogController
         success_count += 1
       end
     end
-    flash[:success] = t("blacklight.update_access_control.success", count: success_count, status: status) if success_count > 0
+    flash[:success] = t("blacklight.update_access_control.success", count: success_count) if success_count > 0
     flash[:alert] = "#{t(blacklight.update_access_control.alert, count: errors.count)}</br> #{ errors.join('<br/> ') }" if errors.count > 0
   end
 

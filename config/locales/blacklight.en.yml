@@ -101,3 +101,11 @@ en:
       form:
         title: "Manage Access Control Settings"
       button: "Save"
+      success: {
+        one: "Access controls successfully updated on %{count} item.",
+	other: "Access controls successfully updated on %{count} items."
+      }
+      alert: {
+        one: "Failed to update access control settings for this item:",
+        other: "Failed to update access control settings for these items:"
+      }     	     

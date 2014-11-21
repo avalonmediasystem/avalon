@@ -36,7 +36,8 @@ Unless required by applicable law or agreed to in writing, software distributed
           <fieldset class="item-discovery">
 	    <legend>Discovery</legend>
 	    <%= label_tag :hidden do %>
-	      <%= check_box_tag :hidden, '1', (@media_objects.all? {|doc| doc.hidden? == true})%>
+	      <%= hidden_field_tag :hidden %>
+	      <%= check_box_tag :hidden_display, '1', (@media_objects.all? {|doc| doc.hidden? == true})%>
 	      Hide this item from search results 
 	    <% end %>
 	  </fieldset>
@@ -70,10 +71,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 	    <% end %>
 	    <%= label_tag "group" do %>
 	      <%= render partial: "modules/tooltip", locals: { form: form, field: 'group', tooltip: t("access_control.group"), options: {display_label: t("access_control.grouplabel").html_safe} } %>
-	      <%  @addable_groups = [] %>
-	      <%  dropdown_values = [@addable_groups, 'name', 'name'] %>
+	      <%  dropdown_values = [Admin::Group.non_system_groups, 'name', 'name'] %>
 	      <%  dropdown_values = options_from_collection_for_select(*dropdown_values) %>
-	      <%  dropdown_values = options_for_select(['Test Group 1','Test Group 2']) %>
 	      <%= select_tag "group", 
 		  dropdown_values, 
 		  { include_blank: true, class: "form-control"}%>
@@ -114,5 +113,8 @@ $('.tooltip-label').on("click", function(event){
 $('.help-block .close').on("click", function(event){
   event.preventDefault()
   $(this).parent().collapse('toggle')
+});
+$('#hidden_display').on("click", function(event){
+  $('#hidden').val($(this).prop("checked"));
 });
 </script>
