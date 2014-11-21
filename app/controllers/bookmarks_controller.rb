@@ -39,24 +39,26 @@ class BookmarksController < CatalogController
 	# Limited access stuff
 	["group", "class", "user"].each do |title|
 	  if params["submit_add_#{title}"].present?
-	    if params["add_#{title}"].present?
+	    if params["#{title}"].present?
 	      if ["group", "class"].include? title
-		media_object.read_groups += [params["add_#{title}"].strip]
+		media_object.read_groups += [params["#{title}"].strip]
 	      else
-		media_object.read_users += [params["add_#{title}"].strip]
+		media_object.read_users += [params["#{title}"].strip]
 	      end
 	    else
 	      flash[:error] = "#{title.titleize} can't be blank."
 	    end
 	  end
 
-	  if params["remove_#{title}"].present?
-	    if ["group", "class"].include? title
-	      media_object.read_groups -= [params["remove_#{title}"]]
-	    else
-	      media_object.read_users -= [params["remove_#{title}"]]
+	  if params["submit_remove_#{title}"].present?
+	    if params["#{title}"].present?
+	      if ["group", "class"].include? title
+		media_object.read_groups -= [params["#{title}"]]
+	      else
+		media_object.read_users -= [params["#{title}"]]
+	      end
 	    end
-	  end
+          end
 	end
 
         media_object.save(validate: false)

@@ -57,39 +57,39 @@ Unless required by applicable law or agreed to in writing, software distributed
 	  </fieldset>
           <fieldset class="special-access">
 	    <legend>Special Access</legend>
-	    <%= label_tag "add_user" do %>
+	    <%= label_tag "user" do %>
 	      <%= render partial: "modules/tooltip", locals: { form: form, field: 'user', tooltip: t("access_control.user"), options: {display_label: t("access_control.userlabel").html_safe} } %>
 	      <div style='display:inline-block;top:-6px;position:relative'>
-	      <%= hidden_field_tag "add_user" %>
-	      <%= text_field_tag "add_user_display", nil, 
+	      <%= hidden_field_tag "user" %>
+	      <%= text_field_tag "user_display", nil, 
 		  class: "typeahead from-model form-control", 
-		  data: { model: 'user', target: "add_user" } %>
+		  data: { model: 'user', target: "user" } %>
 </div>
 	      <%= button_tag "Add", name: 'submit_add_user', class:'btn btn-default', value: 'Add' %>
-	      <%= button_tag "Remove", class:'btn btn-default' %>
+	      <%= button_tag "Remove", name: 'submit_remove_user', class:'btn btn-default', value: 'Remove' %>
 	    <% end %>
-	    <%= label_tag "add_group" do %>
+	    <%= label_tag "group" do %>
 	      <%= render partial: "modules/tooltip", locals: { form: form, field: 'group', tooltip: t("access_control.group"), options: {display_label: t("access_control.grouplabel").html_safe} } %>
 	      <%  @addable_groups = [] %>
 	      <%  dropdown_values = [@addable_groups, 'name', 'name'] %>
 	      <%  dropdown_values = options_from_collection_for_select(*dropdown_values) %>
 	      <%  dropdown_values = options_for_select(['Test Group 1','Test Group 2']) %>
-	      <%= select_tag "add_group", 
+	      <%= select_tag "group", 
 		  dropdown_values, 
 		  { include_blank: true, class: "form-control"}%>
 	      <%= button_tag "Add", name: 'submit_add_group', class:'btn btn-default', value: 'Add'  %>
-	      <%= button_tag "Remove", class:'btn btn-default' %>
+	      <%= button_tag "Remove", name: 'submit_remove_group', class:'btn btn-default', value: 'Remove' %>
 	    <% end %>
-	    <%= label_tag "add_class" do %>
+	    <%= label_tag "class" do %>
 	      <%= render partial: "modules/tooltip", locals: { form: form, field: 'class', tooltip: t("access_control.class"), options: {display_label: t("access_control.classlabel").html_safe} } %>
 	      <div style='display:inline-block;top:-6px;position:relative;'>
-	      <%= hidden_field_tag "add_class" %>
-	      <%= text_field_tag "add_class_display", nil, 
+	      <%= hidden_field_tag "class" %>
+	      <%= text_field_tag "class_display", nil, 
 		  class: "typeahead from-model form-control", 
-		  data: { model: 'externalGroup', target: "add_class" } %>
+		  data: { model: 'externalGroup', target: "class" } %>
 	      </div>
 	      <%= button_tag "Add", name: 'submit_add_class', class:'btn btn-default', value: 'Add'  %>
-	      <%= button_tag "Remove", class:'btn btn-default' %>
+	      <%= button_tag "Remove", name: 'submit_remove_class', class:'btn btn-default', value: 'Remove' %>
 	    <% end %>
           </fieldset>
           <div class="modal-footer">
