@@ -13,17 +13,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% selected_value ||= options[:dropdown_options].keys.first %>
-<% fieldarray = options[:multivalued]? "[]" : "" %>
-
-<div class="input-group-btn">
-  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-    <span><%= options[:dropdown_options][selected_value] %></span> <span class="caret"></span>
-  </button>
-  <%= hidden_field_tag "media_object[#{options[:dropdown_field]}]#{fieldarray}", selected_value %>
-  <ul class="dropdown-menu" role="menu">
-    <% options[:dropdown_options].each_pair do |value, display| %>
-    <li><a><%= display %></a><span class="hidden"><%= value %></li>
-    <% end %>
-  </ul>
-</div>
+<% display_value = (value.present? && options[:autocomplete_display_key].present?) ? value[options[:autocomplete_display_key]] : value %>
+<% id_value = (value.present? && options[:autocomplete_id_key].present?) ? value[options[:autocomplete_id_key]] : value %>
+<%= text_field_tag "display_#{fieldname}", display_value || '', 
+    class: "typeahead from-model form-control", 
+    data: { model: options[:autocomplete_model], target: fieldname, validate: options[:autocomplete_validate] },
+    disabled: !can?( :update, @mediaobject) %>
+<%= hidden_field_tag fieldname, id_value || '' %>

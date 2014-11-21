@@ -16,3 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <%= render "modules/access_control", {object: @mediaobject, visibility: @mediaobject.visibility, hidden: @mediaobject.hidden?} %>	
   <%= render "workflow_buttons", form: 'access_control_form' %>	
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'autocomplete' %>
+<% end %>

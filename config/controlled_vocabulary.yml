@@ -1,8 +1,0 @@
-units:
- - Default Unit
-identifier_types:
- - BIB
- - LCCN
- - OCLC
- - Local
- - Other

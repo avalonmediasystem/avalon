@@ -12,32 +12,54 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-$('.typeahead.from-model').each ->
-  $current_data = []
-  $t = $(this)
-  $target_id = $t.data('target')
-  $target = $("input[name='#{$target_id}']")
-  if $target_id
-    $t.on 'change typeahead:selected typeahead:autocompleted', (e, datum)->
-      if typeof datum is 'undefined'
-        $target.val($t.val())
-      else
-        $target.val(datum.id)
+@initialize_typeahead = ($t) ->
+  $target = $t.parent().find("input[name='#{$t.data('target')}']")
+  $validate = $t.data('validate') || false
   $t.attr('autocomplete','off')
   mySource = new Bloodhound(
+    limit: 10
     datumTokenizer: (d) ->
       Bloodhound.tokenizers.whitespace(d.display)
     queryTokenizer: Bloodhound.tokenizers.whitespace
-    remote: "#{$('body').data('mountpoint')}autocomplete?q=%QUERY&t=#{$t.data('model')}"
+    prefetch: "#{$('body').data('mountpoint')}autocomplete?q=&t=#{$t.data('model')}"
   )
   mySource.initialize()
-  $t.typeahead
+  $t.typeahead(
     minLength: 2
   ,
-    name: $target_id
     displayKey: (suggestion) ->
       if suggestion.display is ""
         suggestion.id
       else
         suggestion.display
     source: mySource.ttAdapter()
+    templates:
+      suggestion: (suggestion) ->
+        "<p>" + suggestion.display + "</p>"
+  ).on("typeahead:selected typeahead:autocompleted", (event, suggestion, dataset) ->
+    $target.val suggestion["id"]
+    return
+  ).on("keypress", (e) ->
+    if e.which is 13
+      e.preventDefault
+      return false
+  ).blur ->
+    if !$validate or $(this).val() is ""
+      $target.val $(this).val()
+      return
+    match = false
+    i = mySource.index.datums.length - 1
+    while i >= 0
+      if $(this).val() is mySource.index.datums[i].display
+        match = true
+        $target.val mySource.index.datums[i].id
+        i=0
+      i--
+    if !match
+      $target.val ""
+      $(this).val ""
+    return
+
+$('.typeahead.from-model').each ->
+  initialize_typeahead ($(this))
+  return

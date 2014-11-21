@@ -119,8 +119,46 @@ module ModsTemplates
       end
 
       def add_language(value, opts={})
-        term = LanguageTerm.find(value)
-        add_child_node(ng_xml.root, :_language, term.code, term.text)
+        begin
+          term = LanguageTerm.find(value)
+          add_child_node(ng_xml.root, :_language, term.code, term.text)
+        rescue LanguageTerm::LookupError => e
+          raise e.to_s
+        end
+      end
+
+      define_template :_terms_of_use do |xml, text|
+        xml.accessCondition(:type => 'use and reproduction'){
+          xml.text(text)
+        }
+      end
+
+      def add_terms_of_use(value, opts={})
+        add_child_node(ng_xml.root, :_terms_of_use, value)
+      end
+
+      define_template :_original_physical_description do |xml, text|
+        xml.relatedItem(:type => 'original'){
+          xml.physicalDescription{
+            xml.extent{
+              xml.text(text)
+            }
+          }
+        }
+      end
+
+      def add_original_physical_description(value, opts={})
+        add_child_node(ng_xml.root, :_original_physical_description, value)
+      end
+
+      define_template :_related_item do |xml, url, label|
+        xml.relatedItem(:displayLabel => label) {
+          xml.location { xml.url { xml.text(url) } } if url.present?
+        } if label.present?
+      end
+
+      def add_related_item(values, opts={})
+        add_child_node(ng_xml.root, :_related_item, values[0], values[1])
       end
 
       define_template :media_type do |xml,mime_type|

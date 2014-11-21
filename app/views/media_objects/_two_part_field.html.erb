@@ -13,17 +13,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% selected_value ||= options[:dropdown_options].keys.first %>
 <% fieldarray = options[:multivalued]? "[]" : "" %>
+<% secondaryfieldname = "media_object[#{options[:secondary_field].to_s}]#{fieldarray}" %>
 
-<div class="input-group-btn">
-  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-    <span><%= options[:dropdown_options][selected_value] %></span> <span class="caret"></span>
-  </button>
-  <%= hidden_field_tag "media_object[#{options[:dropdown_field]}]#{fieldarray}", selected_value %>
-  <ul class="dropdown-menu" role="menu">
-    <% options[:dropdown_options].each_pair do |value, display| %>
-    <li><a><%= display %></a><span class="hidden"><%= value %></li>
-    <% end %>
-  </ul>
-</div>
+<%= text_field_tag secondaryfieldname, value.present? ? value[options[:secondary_key]] : '', class: 'form-control', style: 'width:50%', placeholder: options[:secondary_label] %>
+<%= text_field_tag fieldname, value.present? ? value[options[:primary_key]] : '', class: 'form-control', style: 'width:50%', placeholder: options[:primary_label] %>

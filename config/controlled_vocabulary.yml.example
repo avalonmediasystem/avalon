@@ -1,0 +1,7 @@
+units:
+ - Default Unit
+identifier_types:
+ local: Catalog Key
+ oclc: OCLC
+ lccn: LCCN
+ other: Other

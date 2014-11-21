@@ -23,6 +23,10 @@ class ModsDocument < ActiveFedora::OmDatastream
       :namespace_prefix=>nil,
       :schema => 'http://www.loc.gov/standards/mods/v3/mods-3-4.xsd')
 
+    t.identifier(:path => 'mods/oxns:identifier') do
+      t.type_(:path => '@type', :namespace_prefix => nil)
+    end
+
     # Titles
     t.title_info(:path => 'titleInfo') do
       t.non_sort(:path => 'nonSort')
@@ -91,6 +95,13 @@ class ModsDocument < ActiveFedora::OmDatastream
     end
     t.media_type(:proxy => [:physical_description, :internet_media_type])
 
+    t.original_related_item(:path => 'relatedItem', :attributes => { :type => 'original'}) do
+      t.physical_description(:path => 'physicalDescription') do
+        t.extent
+      end
+    end
+    t.original_physical_description(:proxy => [:original_related_item, :physical_description, :extent])
+
     # Summary and Notes
     t.abstract(:path => 'abstract')
     t.note {
@@ -117,16 +128,17 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.family_subject(:proxy => [:subject, :name, :name_part], :path => 'subject/oxns:name[@type="family"]/oxns:namePart')
     t.title_subject(:proxy => [:subject, :title_info, :title])
 
-    t.related_item(:path => 'relatedItem') do
+    t.related_item(:path => 'relatedItem[not(@type)]') do
+      t.displayLabel(:path => {:attribute =>'displayLabel'}, :namespace_prefix => nil)
+      t.location(:path => 'location') do
+        t.url(:path => 'url')
+      end
       t.identifier
       t.title_info(:ref => :title_info)
     end
-    t.related_item_id(:proxy => [:related_item, :identifier])
+    t.related_item_url(:proxy => [:related_item, :location, :url])
+    t.related_item_label(:proxy => [:related_item, :displayLabel])
     t.collection(:proxy => [:related_item, :title_info, :title], :path => 'relatedItem[@type="host"]/oxns:titleInfo/oxns:title')
-
-    t.identifier(:path => 'identifier') do
-      t.type_(:path => '@type', :namespace_prefix => nil)
-    end
 
     t.location do
       t.url(:attributes => { :access => nil })
@@ -136,8 +148,8 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.permalink(:ref => [:location, :url_with_context])
 
     t.usage(:path => 'accessCondition')
-    t.reproduction_notes(:path => 'accessCondition', :attributes => { :type => 'use and reproduction' })
-    t.restrictions(:path => 'accessCondition', :attributes => { :type => 'restrictions on access' })
+    t.terms_of_use(:path => 'accessCondition', :attributes => { :type => 'use and reproduction' })
+    t.access_restrictions(:path => 'accessCondition', :attributes => { :type => 'restrictions on access' })
 
     t.record_info(:path => 'recordInfo') do
       t.origin(:path => 'recordOrigin')

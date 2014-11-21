@@ -19,29 +19,29 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% if @mediaobject.errors[field].any? %>
       <%= content_tag :span, @mediaobject.errors[field].join(", "), class: 'help-block' %>
     <% end %>
+    <% values = @mediaobject.send(field) %>
+    <% fieldarray = "" %>
     <% if options[:multivalued] %>
-      <% values = @mediaobject.send(field) %>
-      <% count = [1, values.length].max %>
-      <% count.times do |i| %>
-        <% value = values[i] %>
-	<div class="input-group">
+      <% fieldarray = "[]" %>
+    <% else %>
+      <% values = [values] %>
+    <% end %>
+    <% fieldname = "media_object[#{field.to_s}]#{fieldarray}" %>
+    <% count = [1, values.length].max %>
+    <% count.times do |i| %>
+      <% value = values[i] %>
+      <div class="input-group">
+	<% if options[:autocomplete_model] and options[:autocomplete_model].present? %>
+	  <%= render partial: "typeahead_field", locals: {fieldname: fieldname, value: value, options: options} %>
+	<% elsif options[:secondary_field] and options[:secondary_field].present? %>
+	  <%= render partial: "two_part_field", locals: {fieldname: fieldname, value: value, options: options} %>
+	<% else %>
           <% if options[:dropdown_field] %>
 	    <%= render partial: "dropdown_field", locals: {selected_value: Array(value)[0], options: options} %>
-            <%= text_field_tag "media_object[#{field.to_s}][]", Array(value)[1] || '', class: 'form-control' %>
-	  <% else %>
-            <%= text_field_tag "media_object[#{field.to_s}][]", value || '', class: 'form-control' %>
+            <% value = Array(value)[1] %>
 	  <% end %>
-        </div>
-      <% end %>
-    <% else %>
-      <% if options[:dropdown_field] %>
-        <% value = @mediaobject.send(field) %>
-        <div class="input-group">
-	  <%= render partial: "dropdown_field", locals: {selected_value: Array(value)[0], options: options} %>
-          <%= text_field_tag "media_object[#{field.to_s}][]", Array(value)[1] || '', class: 'form-control' %>
-        </div>
-      <% else %>
-        <%= form.text_field field, class: 'form-control' %>
-      <% end %>
+	  <%= text_field_tag fieldname, value || '', class: 'form-control' %>
+        <% end %>
+      </div>
     <% end %>
   </div>
