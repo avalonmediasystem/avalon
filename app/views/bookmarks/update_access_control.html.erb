@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-
+<% @media_objects = @documents.collect {|doc| MediaObject.find(doc.id)} %>
 <div class="modal-header">
   <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
   <h1><%= t('blacklight.update_access_control.form.title') %></h1>
@@ -34,7 +34,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <fieldset class="item-discovery">
 	    <legend>Discovery</legend>
 	    <%= label_tag :hidden do %>
-	      <%= check_box_tag :hidden, '1' %>
+	      <%= check_box_tag :hidden, '1', (@media_objects.all? {|doc| doc.hidden? == true})%>
 	      Hide this item from search results 
 	    <% end %>
 	  </fieldset>
@@ -63,7 +63,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 		  class: "typeahead from-model form-control", 
 		  data: { model: 'user', target: "add_user" } %>
 </div>
-	      <%= button_tag "Add", class:'btn btn-default' %>
+	      <%= button_tag "Add", name: 'submit_add_user', class:'btn btn-default', value: 'Add' %>
 	      <%= button_tag "Remove", class:'btn btn-default' %>
 	    <% end %>
 	    <%= label_tag "add_group" do %>
@@ -75,7 +75,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 	      <%= select_tag "add_group", 
 		  dropdown_values, 
 		  { include_blank: true, class: "form-control"}%>
-	      <%= button_tag "Add", class:'btn btn-default' %>
+	      <%= button_tag "Add", name: 'submit_add_group', class:'btn btn-default', value: 'Add'  %>
 	      <%= button_tag "Remove", class:'btn btn-default' %>
 	    <% end %>
 	    <%= label_tag "add_class" do %>
@@ -86,7 +86,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 		  class: "typeahead from-model form-control", 
 		  data: { model: 'externalGroup', target: "add_class" } %>
 	      </div>
-	      <%= button_tag "Add", class:'btn btn-default' %>
+	      <%= button_tag "Add", name: 'submit_add_class', class:'btn btn-default', value: 'Add'  %>
 	      <%= button_tag "Remove", class:'btn btn-default' %>
 	    <% end %>
           </fieldset>
