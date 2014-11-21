@@ -225,13 +225,12 @@ class MediaObject < ActiveFedora::Base
 
   def update_datastream(datastream = :descMetadata, values = {})
     missing_attributes.clear
-
     # Special case the identifiers and their types
     if values[:identifier]
       values[:identifier] = [[Array(values.delete(:identifier_type)).first || IDENTIFIER_TYPES.keys[0], Array(values[:identifier]).first]]
     end
-    if values[:related_item] and values[:related_item_title]
-        values[:related_item] = values[:related_item].zip(values.delete(:related_item_title))
+    if values[:related_item] and values[:related_item_label]
+        values[:related_item] = values[:related_item].zip(values.delete(:related_item_label))
     end
     values.each do |k, v|
       # First remove all blank attributes in arrays

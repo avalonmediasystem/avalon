@@ -135,7 +135,7 @@ describe Avalon::Batch::Ingest do
       batch_ingest.ingest
       ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
-      media_object.identifier.should eq(["Catalog Key","123"])
+      media_object.identifier.should eq(["local","123"])
     end
 
   end
