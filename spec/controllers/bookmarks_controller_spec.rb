@@ -109,4 +109,94 @@ describe BookmarksController, type: :controller do
       end
     end
   end
+
+  describe '#update_access_control' do
+    it 'changes the hidden property' do
+      post 'update_access_control', hidden: 'true'
+      expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+      media_objects.each do |mo|
+        mo.reload
+        expect(mo.hidden?).to be_true
+      end
+    end
+    it 'changes the visibility' do
+      post 'update_access_control', visibility: 'public'
+      expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+      media_objects.each do |mo|
+        mo.reload
+        expect(mo.visibility).to eq 'public'
+      end
+    end
+    context 'Limited access' do
+      context 'users' do
+	it 'adds a user to the selected items' do
+          post 'update_access_control', submit_add_user: 'Add', user: 'cjcolvar'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.read_users).to include 'cjcolvar'
+          end
+        end
+	it 'removes a user from the selected items' do
+          media_objects.each do |mo|
+            mo.read_users += ["john.doe"]
+            mo.save
+            mo.reload
+          end
+          post 'update_access_control', submit_remove_user: 'Remove', user: 'john.doe'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.read_users).not_to include 'john.doe'
+          end
+        end
+      end
+      context 'groups' do
+	it 'adds a group to the selected items' do
+          post 'update_access_control', submit_add_group: 'Add', group: 'students'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.read_groups).to include 'students'
+          end
+        end
+	it 'removes a group from the selected items' do
+          media_objects.each do |mo|
+            mo.read_groups += ["test-group"]
+            mo.save
+            mo.reload
+          end
+          post 'update_access_control', submit_remove_group: 'Remove', group: 'test-group'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.read_groups).not_to include 'test-group'
+          end
+        end
+      end
+      context 'external groups' do
+	it 'adds an external group to the selected items' do
+          post 'update_access_control', submit_add_class: 'Add', class: 'ECON-101'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.read_groups).to include 'ECON-101'
+          end
+        end
+	it 'removes an external group from the selected items' do
+          media_objects.each do |mo|
+            mo.read_groups += ["MUSIC-101"]
+            mo.save
+            mo.reload
+          end
+          post 'update_access_control', submit_remove_class: 'Remove', class: 'MUSIC-101'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.read_groups).not_to include 'MUSIC-101'
+          end
+        end
+      end
+    end
+  end
 end
