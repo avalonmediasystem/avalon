@@ -46,7 +46,7 @@ class BookmarksController < CatalogController
 		media_object.read_users += [params["#{title}"].strip]
 	      end
 	    else
-	      flash[:error] = "#{title.titleize} can't be blank."
+	      errors += ["#{title.titleize} can't be blank."]
 	    end
 	  end
 
@@ -57,6 +57,8 @@ class BookmarksController < CatalogController
 	      else
 		media_object.read_users -= [params["#{title}"]]
 	      end
+	    else
+	      errors += ["#{title.titleize} can't be blank."]
 	    end
           end
 	end
