@@ -26,7 +26,7 @@ module Avalon
     end
 
     def self.find_by_name( name )
-      vocabulary[name.to_sym] || []
+      vocabulary[name.to_sym]
     end
   end
 end
