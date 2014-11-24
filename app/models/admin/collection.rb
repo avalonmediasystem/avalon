@@ -53,7 +53,7 @@ class Admin::Collection < ActiveFedora::Base
   after_validation :create_dropbox_directory!, :on => :create
 
   def self.units
-    Avalon::ControlledVocabulary.find_by_name(:units)
+    Avalon::ControlledVocabulary.find_by_name(:units) || []
   end
 
   def created_at

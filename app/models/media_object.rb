@@ -146,7 +146,7 @@ class MediaObject < ActiveFedora::Base
 
   accepts_nested_attributes_for :parts, :allow_destroy => true
 
-  IDENTIFIER_TYPES =  Avalon::ControlledVocabulary.find_by_name(:identifier_types) || [{:display=>"Other", :value=>"other"}]
+  IDENTIFIER_TYPES =  Avalon::ControlledVocabulary.find_by_name(:identifier_types) || {"other" => "Local"}
 
   def published?
     not self.avalon_publisher.blank?
