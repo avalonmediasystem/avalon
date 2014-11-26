@@ -12,18 +12,12 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-section_form = $('#associated_files form')
-button_form = $('#workflow_buttons form')
-$('input[type=text]',section_form).each () ->
-  $(this).change () ->
-    double_id = "#{$(this).attr('id')}_double'"
-    double = $("input[id='#{double_id}']",button_form)
-    unless double.length > 0
-      double = $("<input type='hidden' id='#{double_id}' 
-        name='#{$(this).attr('name')}' 
-        value='#{$(this).val()}'/>").appendTo(button_form)
-    double.val($(this).val())
-$('input[type=submit]',section_form).hide()
+$("input[type=submit]").on "click", (e) ->
+  if $("#master_files_form").size() is 0
+    $("#alerts").append "<div class=\"alert alert-danger\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button><p>No files have been attached.</p></div>"
+    false
+  else
+    true
 
 $(document).on "click", ".btn-confirmation+.popover .btn", ->
   $('.btn-confirmation').popover('hide')

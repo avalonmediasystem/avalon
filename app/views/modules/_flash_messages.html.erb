@@ -1,5 +1,5 @@
+<div class="container-fluid" id="alerts">
 <% if defined? flash and !flash.empty? %>
-  <div class="container-fluid" id="alerts">
   <% [:success, :notice, :error, :alert].each do |type| %>
     <%- alert_class = case type
       when :success then "alert-success"
@@ -18,5 +18,5 @@
       </div>
     <% end %>
   <% end %>
-  </div>
 <% end %>
+</div>
