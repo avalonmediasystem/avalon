@@ -49,18 +49,6 @@
     <dynamicField name="*_timv" type="text" stored="false" indexed="true" multiValued="true" termVectors="true" termPositions="true" termOffsets="true"/>
     <dynamicField name="*_tsiv" type="text" stored="true" indexed="true" multiValued="false" termVectors="true" termPositions="true" termOffsets="true"/>
     <dynamicField name="*_tsimv" type="text" stored="true" indexed="true" multiValued="true" termVectors="true" termPositions="true" termOffsets="true"/>
-
-    <!-- AlphaSort text (_ta...) -->
-    <dynamicField name="*_tai" type="alphaSort" stored="false" indexed="true" multiValued="false"/>
-    <dynamicField name="*_taim" type="alphaSort" stored="false" indexed="true" multiValued="true"/>
-    <dynamicField name="*_tas" type="alphaSort" stored="true" indexed="false" multiValued="false"/>
-    <dynamicField name="*_tasm" type="alphaSort" stored="true" indexed="false" multiValued="true"/>
-    <dynamicField name="*_tasi" type="alphaSort" stored="true" indexed="true" multiValued="false"/>
-    <dynamicField name="*_tasim" type="alphaSort" stored="true" indexed="true" multiValued="true"/>
-    <dynamicField name="*_taiv" type="alphaSort" stored="false" indexed="true" multiValued="false" termVectors="true" termPositions="true" termOffsets="true"/>
-    <dynamicField name="*_taimv" type="alphaSort" stored="false" indexed="true" multiValued="true" termVectors="true" termPositions="true" termOffsets="true"/>
-    <dynamicField name="*_tasiv" type="alphaSort" stored="true" indexed="true" multiValued="false" termVectors="true" termPositions="true" termOffsets="true"/>
-    <dynamicField name="*_tasimv" type="alphaSort" stored="true" indexed="true" multiValued="true" termVectors="true" termPositions="true" termOffsets="true"/>
     
     <!-- English text (_te...) -->
     <dynamicField name="*_tei" type="text_en" stored="false" indexed="true" multiValued="false"/>

@@ -165,10 +165,10 @@ class CatalogController < ApplicationController
     # label in pulldown is followed by the name of the SOLR field to sort by and
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
-    config.add_sort_field 'score desc, title_tasi asc, date_ssi desc', label: 'Relevance'
-    config.add_sort_field 'date_ssi desc, title_tasi asc', label: 'Date'
-    config.add_sort_field 'creator_ssi asc, title_tasi asc', label: 'Main contributor'
-    config.add_sort_field 'title_tasi asc, date_ssi desc', label: 'Title'
+    config.add_sort_field 'score desc, title_ssort asc, date_ssi desc', label: 'Relevance'
+    config.add_sort_field 'date_ssi desc, title_ssort asc', label: 'Date'
+    config.add_sort_field 'creator_ssi asc, title_ssort asc', label: 'Main contributor'
+    config.add_sort_field 'title_ssort asc, date_ssi desc', label: 'Title'
 
     # If there are more than this many search results, no spelling ("did you 
     # mean") suggestion is offered.
