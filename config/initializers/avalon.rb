@@ -19,7 +19,8 @@ module Avalon
       "server"=>:generic,
       "rtmp_base"=>"rtmp://localhost/avalon/",
       "http_base"=>"http://localhost:3000/streams/",
-      "stream_token_ttl"=>20
+      "stream_token_ttl"=>20,
+      "default_quality"=>'low'
     },
     'controlled_vocabulary' => {'path'=>'config/controlled_vocabulary.yml'},
     'master_file_management' => {'strategy'=>'none'}
