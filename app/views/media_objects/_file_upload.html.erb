@@ -13,13 +13,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<%= form_for @mediaobject, html: { class: 'form-vertical', id: 'master_files_form' } do |media| %>
+      <%= hidden_field_tag :donot_advance, true %>
+      <%= hidden_field_tag :step, 'file-upload' %>
 <% unless @masterFiles.empty? %>
 <div id="associated_files">
       <legend>Associated files</legend>
       <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
-<%= form_for @mediaobject, html: { class: 'form-vertical', id: 'master_files_form' } do |media| %>
-      <%= hidden_field_tag :donot_advance, true %>
-      <%= hidden_field_tag :step, 'file-upload' %>
   <div class="collapse form-tooltip" id="label-tooltip">
     <button class="close">&times;</button> <p><%= t("file_upload_tip.label").html_safe %></p>
   </div>
@@ -101,8 +101,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     </tbody>
   </table>
+</div>
 <% end %>
-  </div>
 <% end %>
 
 <div id="web_upload">
