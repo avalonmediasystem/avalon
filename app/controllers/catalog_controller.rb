@@ -167,7 +167,7 @@ class CatalogController < ApplicationController
     # except in the relevancy case).
     config.add_sort_field 'score desc, title_ssort asc, date_ssi desc', label: 'Relevance'
     config.add_sort_field 'date_ssi desc, title_ssort asc', label: 'Date'
-    config.add_sort_field 'creator_ssi asc, title_ssort asc', label: 'Main contributor'
+    config.add_sort_field 'creator_ssort asc, title_ssort asc', label: 'Main contributor'
     config.add_sort_field 'title_ssort asc, date_ssi desc', label: 'Title'
 
     # If there are more than this many search results, no spelling ("did you 
