@@ -74,7 +74,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           features: <%=features.inspect.html_safe%>,
           audioHeight: 50,
           iOSDisplayedDuration: <%= @masterfile ? @masterfile.duration.to_i / 1000 : -1 %>,
-          startQuality: 'high',
+          startQuality: '<%= Avalon::Configuration.lookup('streaming.default_quality') %>',
           title: '<%= @masterfile.label %>',
           titleLink: '<%= media_object_url(@masterfile.mediaobject) %>',
           logoAction: 'popup',
