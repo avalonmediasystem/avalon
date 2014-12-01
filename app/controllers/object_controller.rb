@@ -32,6 +32,7 @@ class ObjectController < ApplicationController
   end
 
   def autocomplete
+    expires_now
     model = Module.const_get(params[:t].to_s.classify)
     render json: model.send(:autocomplete, params[:q].strip)
   end
