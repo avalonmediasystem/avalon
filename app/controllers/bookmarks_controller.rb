@@ -68,7 +68,7 @@ class BookmarksController < CatalogController
       end
     end
     flash[:success] = t("blacklight.update_access_control.success", count: success_count) if success_count > 0
-    flash[:alert] = "#{t('blacklight.update_access_control.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }" if errors.count > 0
+    flash[:alert] = "#{t('blacklight.update_access_control.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
   end
 
   def publish_action documents
@@ -104,7 +104,7 @@ class BookmarksController < CatalogController
       end
     end
     flash[:success] = t("blacklight.publish.success", count: success_count, status: status) if success_count > 0
-    flash[:alert] = "#{t('blacklight.publish.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }" if errors.count > 0
+    flash[:alert] = "#{t('blacklight.publish.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
   end
 
   def delete_action documents 
@@ -120,7 +120,7 @@ class BookmarksController < CatalogController
       end
     end
     flash[:success] = t("blacklight.delete.success", count: success_count) if success_count > 0
-    flash[:alert] = "#{t('blacklight.delete.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }" if errors.count > 0
+    flash[:alert] = "#{t('blacklight.delete.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
   end
 
   def move_action documents
@@ -141,7 +141,7 @@ class BookmarksController < CatalogController
         end
       end    
       flash[:success] = t("blacklight.move.success", count: success_count, collection_name: collection.name) if success_count > 0
-      flash[:alert] = "#{t('blacklight.move.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }" if errors.count > 0
+      flash[:alert] = "#{t('blacklight.move.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
     end
   end
 
