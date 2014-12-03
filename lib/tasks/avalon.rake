@@ -107,7 +107,17 @@ namespace :avalon do
 
   desc "Reindex all Avalon objects"
   task :reindex => :environment do
-    prefix = Avalon::Configuration.lookup('fedora.namespace')
-    ActiveFedora::Base.reindex_everything("pid~#{prefix}:*")
+    query = "pid~#{Avalon::Configuration.lookup('fedora.namespace')}:*"
+    #Override of ActiveFedora::Base.reindex_everything("pid~#{prefix}:*") including error handling/reporting
+    ActiveFedora::Base.send(:connections).each do |conn|
+      conn.search(query) do |object|
+        next if object.pid.start_with?('fedora-system:')
+        begin
+          ActiveFedora::Base.find(object.pid).update_index
+        rescue
+          puts "#{object.pid} failed reindex"
+        end
+      end
+    end
   end
 end
