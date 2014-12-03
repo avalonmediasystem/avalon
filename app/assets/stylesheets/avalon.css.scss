@@ -702,3 +702,7 @@ a[data-trigger='submit'] {
     }
   }
 }
+
+.about_page {
+  @extend .container-fluid;
+}
