@@ -37,4 +37,12 @@ $(document).ready(function() {
     ot.load(ot.data('src'));
     return false;
   })
+
+  $('.readonly').on('cut paste keypress', function(e) {
+    if ((e.ctrlKey||e.metaKey) && e.which==99) return true // allow ctrl-c
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  })
+
 });
