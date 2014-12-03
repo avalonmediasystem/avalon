@@ -14,6 +14,10 @@
 
 module ModsBehaviors
 
+  def prefix
+    ""
+  end
+
   def to_solr(solr_doc=SolrDocument.new)
     solr_doc = super(solr_doc)
 
