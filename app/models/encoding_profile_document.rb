@@ -65,4 +65,7 @@ class EncodingProfileDocument < ActiveFedora::OmDatastream
      return builder.doc
    end
 
+   def prefix
+     ""
+   end
 end
