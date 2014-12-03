@@ -131,23 +131,10 @@ describe CatalogController do
     end
 
     describe "sort fields" do
-      let(:m1) { FactoryGirl.create(:published_media_object, visibility: 'public') }
-      let(:m2) { FactoryGirl.create(:published_media_object, visibility: 'public') }
-      let(:m3) { FactoryGirl.create(:published_media_object, visibility: 'public') }
-      before(:each) do
-        m1.title = "Yabba"
-        m1.date_issued = "1960"
-        m1.creator = "Fred"
-        m1.save
-        m2.title = "Dabba"
-        m2.date_issued = "1970"
-        m2.creator = "Betty"
-        m2.save
-        m3.title = "Doo"
-        m3.date_issued = "1980"
-        m3.creator = "Wilma"
-        m3.save
-      end
+      let!(:m1) { FactoryGirl.create(:published_media_object, title: 'Yabba', date_issued: '1960', creator: 'Fred', visibility: 'public') }
+      let!(:m2) { FactoryGirl.create(:published_media_object, title: 'Dabba', date_issued: '1970', creator: 'Betty', visibility: 'public') }
+      let!(:m3) { FactoryGirl.create(:published_media_object, title: 'Doo', date_issued: '1980', creator: 'Wilma', visibility: 'public') }
+
       it "should sort correctly by title" do
         get :index, :sort => 'title_ssort asc, date_ssi desc'
         expect(assigns(:document_list).map(&:id)).to eq [m2.id, m3.id, m1.id]
