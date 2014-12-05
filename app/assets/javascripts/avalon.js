@@ -40,11 +40,11 @@ $(document).ready(function() {
 
   var iOS = !!/(iPad|iPhone|iPod)/g.test( navigator.userAgent );
   if (iOS) {
-    $('.readonly').attr("readonly", false);
-    $('.readonly').on('cut paste keydown', function(e) {
+    $('input[readonly], textarea[readonly]').on('cut paste keydown', function(e) {
       e.preventDefault();
       e.stopPropagation();
       return false;
     })
+    $('input[readonly], textarea[readonly]').attr("readonly", false);
   }
 });
