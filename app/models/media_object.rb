@@ -124,7 +124,7 @@ class MediaObject < ActiveFedora::Base
   has_attributes :publisher, datastream: :descMetadata, at: [:publisher], multiple: true
   has_attributes :genre, datastream: :descMetadata, at: [:genre], multiple: true
   has_attributes :subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
-  has_attributes :related_item_url, datastream: :descMetadata, at: [:related_item], multiple: true
+  has_attributes :related_item_url, datastream: :descMetadata, at: [:related_item_url], multiple: true
 
   has_attributes :geographic_subject, datastream: :descMetadata, at: [:geographic_subject], multiple: true
   has_attributes :temporal_subject, datastream: :descMetadata, at: [:temporal_subject], multiple: true
