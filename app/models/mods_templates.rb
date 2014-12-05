@@ -151,6 +151,12 @@ module ModsTemplates
         add_child_node(ng_xml.root, :_original_physical_description, value)
       end
 
+      define_template :media_type do |xml,mime_type|
+        xml.physicalDescription {
+          xml.internetMediaType mime_type
+        }
+      end
+
       define_template :_related_item do |xml, url, label|
         xml.relatedItem(:displayLabel => label) {
           xml.location { xml.url { xml.text(url) } } if url.present?
@@ -159,12 +165,6 @@ module ModsTemplates
 
       def add_related_item_url(values, opts={})
         add_child_node(ng_xml.root, :_related_item, values[0], values[1])
-      end
-
-      define_template :media_type do |xml,mime_type|
-        xml.physicalDescription {
-          xml.internetMediaType mime_type
-        }
       end
 
       define_template :note do |xml,text,type='general'|

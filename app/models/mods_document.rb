@@ -92,17 +92,17 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.language_text(:proxy => [:language, :text])
 
     # Physical Description
-    t.physical_description(:path => 'physicalDescription') do
+    t.mime_physical_description(:path => 'mods/oxns:physicalDescription') do
       t.internet_media_type(:path => 'internetMediaType')
     end
-    t.media_type(:proxy => [:physical_description, :internet_media_type])
+    t.media_type(:proxy => [:mime_physical_description, :internet_media_type])
 
     t.original_related_item(:path => 'relatedItem', :attributes => { :type => 'original'}) do
       t.physical_description(:path => 'physicalDescription') do
         t.extent
       end
     end
-    t.original_physical_description(:proxy => [:original_related_item, :physical_description, :extent])
+    t.physical_description(:proxy => [:original_related_item, :physical_description, :extent])
 
     # Summary and Notes
     t.abstract(:path => 'abstract')

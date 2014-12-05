@@ -321,13 +321,9 @@ class MediaObject < ActiveFedora::Base
       mime_types = nil if mime_types.empty?
       resource_types = nil if resource_types.empty?
 
-      descMetadata.ensure_root_term_exists!(:physical_description)
-      descMetadata.ensure_root_term_exists!(:resource_type)
+      update_attribute_in_metadata(:media_type, mime_types)
+      update_attribute_in_metadata(:resource_type, resource_types)
 
-      descMetadata.find_by_terms(:physical_description, :internet_media_type).remove
-      descMetadata.find_by_terms(:resource_type).remove
-
-      descMetadata.update_values([:physical_description, :internet_media_type] => mime_types, [:resource_type] => resource_types)
     rescue Exception => e
       logger.warn "Error in set_media_types!: #{e}"
     end
