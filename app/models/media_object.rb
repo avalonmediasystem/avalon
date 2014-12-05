@@ -133,7 +133,7 @@ class MediaObject < ActiveFedora::Base
 
   has_attributes :language, datastream: :descMetadata, at: [:language], multiple: true
   has_attributes :terms_of_use, datastream: :descMetadata, at: [:terms_of_use], multiple: false
-  has_attributes :physical_description, datastream: :descMetadata, at: [:original_physical_description], multiple: false
+  has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: false
   
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
     sds.field :duration, :string

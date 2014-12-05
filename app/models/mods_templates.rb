@@ -150,9 +150,6 @@ module ModsTemplates
       def add_physical_description(value, opts={})
         add_child_node(ng_xml.root, :_original_physical_description, value)
       end
-      def add_original_physical_description(value, opts={})
-        add_physical_description(value, opts)
-      end
 
       define_template :_related_item do |xml, url, label|
         xml.relatedItem(:displayLabel => label) {
