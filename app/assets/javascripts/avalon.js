@@ -38,11 +38,13 @@ $(document).ready(function() {
     return false;
   })
 
-  $('.readonly').on('cut paste keypress', function(e) {
-    if ((e.ctrlKey||e.metaKey) && e.which==99) return true // allow ctrl-c
-    e.preventDefault();
-    e.stopPropagation();
-    return false;
-  })
-
+  var iOS = !!/(iPad|iPhone|iPod)/g.test( navigator.userAgent );
+  if (iOS) {
+    $('input[readonly], textarea[readonly]').on('cut paste keydown', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    })
+    $('input[readonly], textarea[readonly]').attr("readonly", false);
+  }
 });
