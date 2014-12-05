@@ -147,7 +147,7 @@ module ModsTemplates
         }
       end
 
-      def add_original_physical_description(value, opts={})
+      def add_physical_description(value, opts={})
         add_child_node(ng_xml.root, :_original_physical_description, value)
       end
 
@@ -157,7 +157,7 @@ module ModsTemplates
         } if label.present?
       end
 
-      def add_related_item(values, opts={})
+      def add_related_item_url(values, opts={})
         add_child_node(ng_xml.root, :_related_item, values[0], values[1])
       end
 
@@ -215,7 +215,7 @@ module ModsTemplates
         xml.identifier(:type => type) { xml.text(text) }
       end
       
-      def add_identifier(content, attrs={})
+      def add_bibliographic_id(content, attrs={})
         (type,text) = content.is_a?(Array) ? content : ['Other',content]
         add_child_node(ng_xml.root, :_identifier, text, type)
       end

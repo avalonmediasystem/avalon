@@ -26,6 +26,8 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.identifier(:path => 'mods/oxns:identifier') do
       t.type_(:path => '@type', :namespace_prefix => nil)
     end
+    t.bibliographic_id(:proxy => [:identifier])
+    t.bibliographic_id_label(:proxy => [:identifier, :type])
 
     # Titles
     t.title_info(:path => 'titleInfo') do

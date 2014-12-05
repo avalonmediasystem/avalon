@@ -34,7 +34,7 @@ FactoryGirl.define do
         geographic_subject {Faker::Address.country}
         #language {"eng"} #Skip language because it is broken due to OM not using
                           #templates when setting values outside of #update_datastream
-        original_physical_description {Faker::Lorem.word}
+        physical_description {Faker::Lorem.word}
       end
     end
     factory :media_object_with_master_file do
