@@ -360,5 +360,14 @@ describe MediaObjectsController, type: :controller do
       media_object.reload
       media_object.section_pid.should eq master_file_pids.reverse
     end
+    it 'sets the MIME type' do
+      media_object = FactoryGirl.create(:media_object)
+      media_object.parts << FactoryGirl.create(:master_file_with_derivative)
+      media_object.section_pid = media_object.parts.map(&:id)
+      media_object.set_media_types!
+      media_object.save( validate: false )
+      media_object.reload
+      expect(media_object.descMetadata.media_type).to eq(["video/mp4"])
+    end
   end
 end
