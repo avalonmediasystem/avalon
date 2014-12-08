@@ -19,9 +19,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= hidden_field_tag :step, @active_step %>
   
   <%= render partial: 'text_field',
-             locals: {form: form, field: :identifier,
+             locals: {form: form, field: :bibliographic_id,
                       options: {display_label: 'Bibliographic ID',
-                                dropdown_field: :identifier_type, 
+                                dropdown_field: :bibliographic_id_label, 
                                 dropdown_options: MediaObject::IDENTIFIER_TYPES}} %>
 
   <%= render partial: 'text_field', 
@@ -61,12 +61,12 @@ Unless required by applicable law or agreed to in writing, software distributed
                                 autocomplete_id_key: :code}} %>
 
   <%= render partial: 'text_field',
-             locals: {form: form, field: :original_physical_description,
+             locals: {form: form, field: :physical_description,
                       options: {display_label: "Physical Description",
                                 multivalued: false}} %>
 
   <%= render partial: 'text_field',
-             locals: {form: form, field: :related_item,
+             locals: {form: form, field: :related_item_url,
                       options: {display_label: 'Related Item(s)',
                                 multivalued: true,
                                 primary_label: 'URL',

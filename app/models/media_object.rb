@@ -60,7 +60,7 @@ class MediaObject < ActiveFedora::Base
   validate :validate_related_items
 
   def validate_related_items
-    Array(related_item).each{|i|errors.add(:related_item, "Bad URL") unless i[:url] =~ URI::regexp(%w(http https))}
+    Array(related_item_url).each{|i|errors.add(:related_item_url, "Bad URL") unless i[:url] =~ URI::regexp(%w(http https))}
   end
 
   def validate_creator
@@ -91,14 +91,15 @@ class MediaObject < ActiveFedora::Base
     :publisher => :publisher,
     :genre => :genre,
     :subject => :topical_subject,
-    :related_item => :related_item,
+    :related_item_url => :related_item_url,
     :geographic_subject => :geographic_subject,
     :temporal_subject => :temporal_subject,
     :topical_subject => :topical_subject,
-    :identifier => :identifier,
+    :bibliographic_id => :bibliographic_id,
+    :bibliographic_id_label => :bibliographic_id_label,
     :language => :language,
     :terms_of_use => :terms_of_use,
-    :original_physical_description => :original_physical_description,
+    :physical_description => :physical_description,
     }
   end
 
@@ -123,15 +124,16 @@ class MediaObject < ActiveFedora::Base
   has_attributes :publisher, datastream: :descMetadata, at: [:publisher], multiple: true
   has_attributes :genre, datastream: :descMetadata, at: [:genre], multiple: true
   has_attributes :subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
-  has_attributes :related_item, datastream: :descMetadata, at: [:related_item], multiple: true
+  has_attributes :related_item_url, datastream: :descMetadata, at: [:related_item_url], multiple: true
 
   has_attributes :geographic_subject, datastream: :descMetadata, at: [:geographic_subject], multiple: true
   has_attributes :temporal_subject, datastream: :descMetadata, at: [:temporal_subject], multiple: true
   has_attributes :topical_subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
-  has_attributes :identifier, datastream: :descMetadata, at: [:identifier], multiple: false
+  has_attributes :bibliographic_id, datastream: :descMetadata, at: [:bibliographic_id], multiple: false
+
   has_attributes :language, datastream: :descMetadata, at: [:language], multiple: true
   has_attributes :terms_of_use, datastream: :descMetadata, at: [:terms_of_use], multiple: false
-  has_attributes :original_physical_description, datastream: :descMetadata, at: [:original_physical_description], multiple: false
+  has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: false
   
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
     sds.field :duration, :string
@@ -226,11 +228,11 @@ class MediaObject < ActiveFedora::Base
   def update_datastream(datastream = :descMetadata, values = {})
     missing_attributes.clear
     # Special case the identifiers and their types
-    if values[:identifier]
-      values[:identifier] = [[Array(values.delete(:identifier_type)).first || IDENTIFIER_TYPES.keys[0], Array(values[:identifier]).first]]
+    if values[:bibliographic_id]
+      values[:bibliographic_id] = [[Array(values.delete(:bibliographic_id_label)).first || IDENTIFIER_TYPES.keys[0], Array(values[:bibliographic_id]).first]]
     end
-    if values[:related_item] and values[:related_item_label]
-        values[:related_item] = values[:related_item].zip(values.delete(:related_item_label))
+    if values[:related_item_url] and values[:related_item_label]
+        values[:related_item_url] = values[:related_item_url].zip(values.delete(:related_item_label))
     end
     values.each do |k, v|
       # First remove all blank attributes in arrays
@@ -261,10 +263,10 @@ class MediaObject < ActiveFedora::Base
     end
   end
 
-  def identifier
+  def bibliographic_id
     descMetadata.identifier.present? ? [descMetadata.identifier.type.first,descMetadata.identifier.first] : nil
   end
-  def related_item
+  def related_item_url
     descMetadata.related_item_url.zip(descMetadata.related_item_label).map{|a|{url: a[0],label: a[1]}}
   end
   def language
@@ -319,13 +321,9 @@ class MediaObject < ActiveFedora::Base
       mime_types = nil if mime_types.empty?
       resource_types = nil if resource_types.empty?
 
-      descMetadata.ensure_root_term_exists!(:physical_description)
-      descMetadata.ensure_root_term_exists!(:resource_type)
+      update_attribute_in_metadata(:media_type, mime_types)
+      update_attribute_in_metadata(:resource_type, resource_types)
 
-      descMetadata.find_by_terms(:physical_description, :internet_media_type).remove
-      descMetadata.find_by_terms(:resource_type).remove
-
-      descMetadata.update_values([:physical_description, :internet_media_type] => mime_types, [:resource_type] => resource_types)
     rescue Exception => e
       logger.warn "Error in set_media_types!: #{e}"
     end
@@ -358,7 +356,7 @@ class MediaObject < ActiveFedora::Base
     all_text_values << solr_doc["subject_temporal_sim"]
     all_text_values << solr_doc["genre_sim"]
     all_text_values << solr_doc["language_sim"]
-    all_text_values << solr_doc["original_physical_description_si"]
+    all_text_values << solr_doc["physical_description_si"]
     solr_doc["all_text_timv"] = all_text_values.flatten
     return solr_doc
   end
