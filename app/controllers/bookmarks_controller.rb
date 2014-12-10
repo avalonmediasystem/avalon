@@ -63,8 +63,11 @@ class BookmarksController < CatalogController
           end
 	end
 
-        media_object.save(validate: false)
-        success_count += 1
+        if media_object.save(:validate => false)
+          success_count += 1
+        else
+          errors += ["#{media_object.title} (#{id}) #{t('blacklight.update_access_control.fail')} (#{media_object.errors.full_messages.join(' ')})."] 
+        end
       end
     end
     flash[:success] = t("blacklight.update_access_control.success", count: success_count) if success_count > 0
@@ -91,12 +94,18 @@ class BookmarksController < CatalogController
         when 'publish'
           media_object.publish!(user_key)
           # additional save to set permalink
-          media_object.save( validate: false )
-          success_count += 1
+          if media_object.save(:validate => false)
+            success_count += 1
+          else
+            errors += ["#{media_object.title} (#{id}) #{t('blacklight.publish.fail')} (#{media_object.errors.full_messages.join(' ')})."] 
+          end
         when 'unpublish'
           if can? :unpublish, media_object
-            media_object.publish!(nil)
-            success_count += 1
+            if media_object.publish!(nil)
+              success_count += 1
+            else
+              errors += ["#{media_object.title} (#{id}) #{t('blacklight.unpublish.fail')} (#{media_object.errors.full_messages.join(' ')})."] 
+            end
           else
             errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
           end
@@ -113,8 +122,11 @@ class BookmarksController < CatalogController
     Array(documents.map(&:id)).each do |id|
       media_object = MediaObject.find(id)
       if can? :destroy, media_object
-        media_object.destroy
-        success_count += 1
+        if media_object.destroy
+          success_count += 1
+        else
+          errors += ["#{media_object.title} (#{id}) #{t('blacklight.delete.fail')} (#{media_object.errors.full_messages.join(' ')})."] 
+        end
       else
         errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
       end
@@ -136,8 +148,11 @@ class BookmarksController < CatalogController
           errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
         else
           media_object.collection = collection
-          media_object.save(:validate => false)
-          success_count += 1
+          if media_object.save(:validate => false)
+            success_count += 1
+          else
+            errors += ["#{media_object.title} (#{id}) #{t('blacklight.move.fail')} (#{media_object.errors.full_messages.join(' ')})."] 
+          end
         end
       end    
       flash[:success] = t("blacklight.move.success", count: success_count, collection_name: collection.name) if success_count > 0
