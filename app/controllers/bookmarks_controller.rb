@@ -136,8 +136,11 @@ class BookmarksController < CatalogController
           errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
         else
           media_object.collection = collection
-          media_object.save(:validate => false)
-          success_count += 1
+          if media_object.save(:validate => false)
+            success_count += 1
+          else
+            errors += ["#{media_object.title} (#{id}) #{t('blacklight.move.fail')}."] 
+          end
         end
       end    
       flash[:success] = t("blacklight.move.success", count: success_count, collection_name: collection.name) if success_count > 0
