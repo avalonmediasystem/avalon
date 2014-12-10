@@ -78,7 +78,7 @@ en:
         one: "%{count} item successfully moved to collection %{collection_name}.",
 	other: "%{count} items successfully moved to collection %{collection_name}."
       }
-      fail: "Save failed, likely due to permissions problem."
+      fail: "Save failed."
       alert: {
         one: "This item was not moved:",
         other: "These items were not moved:"

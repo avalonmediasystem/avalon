@@ -139,7 +139,7 @@ class BookmarksController < CatalogController
           if media_object.save(:validate => false)
             success_count += 1
           else
-            errors += ["#{media_object.title} (#{id}) #{t('blacklight.move.fail')}."] 
+            errors += ["#{media_object.title} (#{id}) #{t('blacklight.move.fail')} (#{media_object.errors.full_messages.join(' ')})."] 
           end
         end
       end    
