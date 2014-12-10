@@ -64,6 +64,7 @@ en:
         one: "%{count} item successfully deleted.",
 	other: "%{count} items successfully deleted."
       }
+      fail: "Delete failed."
       alert: {
         one: "This item was not deleted:",
         other: "These items were not deleted:"
@@ -91,6 +92,7 @@ en:
         one: "%{count} item successfully %{status}ed.",
 	other: "%{count} items successfully %{status}ed."
       }
+      fail: "Save failed."
       alert: {
         one: "This item was not %{status}ed:",
         other: "These items were not %{status}ed:"
@@ -98,6 +100,7 @@ en:
     unpublish:
       form:
         title: "Unpublish Selected Items"
+      fail: "Unpublish failed."
     update_access_control:
       form:
         title: "Manage Access Control Settings"
@@ -106,6 +109,7 @@ en:
         one: "Access controls successfully updated on %{count} item.",
 	other: "Access controls successfully updated on %{count} items."
       }
+      fail: "Save failed."
       alert: {
         one: "Failed to update access control settings for this item:",
         other: "Failed to update access control settings for these items:"
