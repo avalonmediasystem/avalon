@@ -104,7 +104,7 @@ class BookmarksController < CatalogController
       end
     end
     flash[:success] = t("blacklight.publish.success", count: success_count, status: status) if success_count > 0
-    flash[:alert] = "#{t('blacklight.publish.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
+    flash[:alert] = "#{t('blacklight.publish.alert', count: errors.count, status: status)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
   end
 
   def delete_action documents 
