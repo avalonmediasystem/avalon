@@ -33,6 +33,18 @@ describe MediaObject do
     describe 'governing_policy' do
       it {should validate_presence_of(:governing_policy)}
     end
+    describe 'language' do
+      it 'should validate valid language' do
+        media_object.update_datastream :descMetadata, {language: 'eng'}
+        expect(media_object.valid?).to be_truthy
+        expect(media_object.errors[:language]).to be_empty
+      end
+      it 'should not validate invalid language' do
+        media_object.update_datastream :descMetadata, {language: 'engl'}
+        expect(media_object.valid?).to be_falsey
+        expect(media_object.errors[:language]).not_to be_empty
+      end
+    end
   end
 
   describe 'delegators' do
