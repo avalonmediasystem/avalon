@@ -30,6 +30,7 @@ set(:shared_children) {
     config/fedora.yml 
     config/matterhorn.yml 
     config/role_map_#{fetch(:rails_env)}.yml 
+    config/secrets.yml
     config/solr.yml
     log 
     tmp/pids
