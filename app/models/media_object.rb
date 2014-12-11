@@ -53,11 +53,16 @@ class MediaObject < ActiveFedora::Base
 
   validates :title, :presence => true
   validate  :validate_creator
+  validate  :validate_language
   validates :date_issued, :presence => true
   validate  :report_missing_attributes
   validates :collection, presence: true
   validates :governing_policy, presence: true
   validate :validate_related_items
+
+  def validate_language
+    Array(language).each{|i|errors.add(:language, "Language not recognized (#{i[:code]})") unless LanguageTerm::map[i[:code]] }
+  end
 
   def validate_related_items
     Array(related_item_url).each{|i|errors.add(:related_item_url, "Bad URL") unless i[:url] =~ URI::regexp(%w(http https))}
