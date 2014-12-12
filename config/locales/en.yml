@@ -44,10 +44,10 @@ en:
       persisted in a mods record in the <em>name[@type='personal']/namePart</em>
       element with a <em>role/roleTerm</em> value of 'cre'.
     creator: |
-      <strong>Required field.</strong> Main contributors are the primary persons
-      or bodies associated with the creation of the content.  Main contributors
+      <strong>Required field.</strong> Creators are the primary persons
+      or bodies associated with the creation of the content.  Creators
       will be included in search results display and aggregated for browsing
-      access. At this time there is no ability to specify a main contributor as
+      access. At this time there is no ability to specify a creator as
       a corporate body. When possible, use the <a
       href="http://id.loc.gov/authorities/names.html" target="_blank">Library of
       Congress Name Authority File</a>.    This value is persisted in a mods record
