@@ -244,21 +244,17 @@ class MediaObject < ActiveFedora::Base
       #
       # This does not feel right but is just a first pass. Maybe the use of NOM rather
       # than OM will mitigate the need for such tricks
-      begin
-        if v.first.is_a?(Hash)
-          vals = []
-          attrs = []
+      if v.first.is_a?(Hash)
+        vals = []
+        attrs = []
         
-          v.each do |entry|
-            vals << entry[:value]
-            attrs << entry[:attributes]
-          end
-          update_attribute_in_metadata(k, vals, attrs)
-        else
-          update_attribute_in_metadata(k, Array(v))
+        v.each do |entry|
+          vals << entry[:value]
+          attrs << entry[:attributes]
         end
-      rescue Exception => msg
-        missing_attributes[k.to_sym] = msg.to_s
+        update_attribute_in_metadata(k, vals, attrs)
+      else
+        update_attribute_in_metadata(k, Array(v))
       end
     end
   end
@@ -294,7 +290,11 @@ class MediaObject < ActiveFedora::Base
         #end
       elsif descMetadata.respond_to?("add_#{metadata_attribute}")
         values.each_with_index do |val, i|
-          descMetadata.send("add_#{metadata_attribute}", val, (attributes[i] || {}))
+          begin
+            descMetadata.send("add_#{metadata_attribute}", val, (attributes[i] || {}))
+          rescue Exception => msg
+            missing_attributes[metadata_attribute.to_sym] = msg.to_s
+          end
         end;
       else
         # Put in a placeholder so that the inserted nodes go into the right part of the
