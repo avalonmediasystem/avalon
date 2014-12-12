@@ -26,7 +26,8 @@ en:
       include liner notes, contents list, or an opera scene abstract. This field 
       is not meant for cataloger's descriptions but for descriptions that 
       accompany the item. Depending on the length of the summary it may be 
-      truncated in search results.
+      truncated in search results.   This value is persisted in a mods record in
+      the <em>abstract</em> element.
     collection: |
       Collection defines the source or host of the item (for example, the source 
       of the original record or the collection responsible for entering 
@@ -39,7 +40,9 @@ en:
       a band or opera, conductor, arranger, cinematographer, and choreographer. At
       this time this is no ability to specify a contributor as a corporate body. When
       possible, use the <a href="http://id.loc.gov/authorities/names.html"
-      target="_blank">Library of Congress Name Authority File</a>.
+      target="_blank">Library of Congress Name Authority File</a>.  This value is
+      persisted in a mods record in the <em>name[@type='personal']/namePart</em>
+      element with a <em>role/roleTerm</em> value of 'cre'.
     creator: |
       <strong>Required field.</strong> Main contributors are the primary persons
       or bodies associated with the creation of the content.  Main contributors
@@ -47,49 +50,65 @@ en:
       access. At this time there is no ability to specify a main contributor as
       a corporate body. When possible, use the <a
       href="http://id.loc.gov/authorities/names.html" target="_blank">Library of
-      Congress Name Authority File</a>.
+      Congress Name Authority File</a>.    This value is persisted in a mods record
+      in the <em>name[@type='personal']/namePart</em> element with a
+      <em>role/roleTerm</em> value of 'cre'.  This is indexed in such a way that it
+      appears as the Author facet in virgo and is prioritized in advanced searches
+      for author.
     date_created: |
       Creation date should only be used if Date is a re-issue date. Then Creation date
       would contain the original publication date. Enter date information in a format
       consistent with the options shown in <a
       href="http://www.loc.gov/standards/datetime/pre-submission.html"
-      target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.
+      target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.  This value is persisted
+      in a mods records in the <em>originInfo/dateCreated</em> element.
     date_issued: |
       <strong>Required field.</strong> Date should be the main publication date
       associated with the item to be used for sorting browse and search results.
       Enter date information in a format consistent with the options shown in <a
       href="http://www.loc.gov/standards/datetime/pre-submission.html"
-      target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.
+      target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.  This value is persisted
+      in a mods records in the <em>originInfo/dateIssued</em> element.  It is used in
+      Virgo when sorting by date and influences the Publication Era facet.
     genre: |
       Genre can be used to categorize an item by form, style, or subject matter. For
       consistency and to allow for sorting and aggregating, use terms from the <a
       href="http://metadataregistry.org/concept/list/vocabulary_id/148.html"
       target="_blank">Open Metadata Registry labels for PBCore: pbcoreGenre</a>.
+      This value is persisted in a mods record in the <em>genre</em> element.
     geographic_subject: |
       Location should be used for the geographic subject of the content. For
       consistency and to allow for sorting and aggregating, use terms from the
       <a href="http://www.getty.edu/research/tools/vocabularies/tgn/index.html"
-      target="_blank">Getty Thesaurus of Geographic Names</a>.
+      target="_blank">Getty Thesaurus of Geographic Names</a>.  This value is
+      persisted in a mods record in the <em>subject/location</em> element
     publisher: |
-      Publisher of the content of the item.
+      Publisher of the content of the item.  This value is persisted in a mods
+      record in the <em>originInfo/publisher</em> element.
     temporal_subject: |
       Time period should be used for the temporal subject of the content (for example,
       years or year ranges). Enter date information in a format consistent with the
       options shown in <a href="http://www.loc.gov/standards/datetime/pre-
-      submission.html" target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.
+      submission.html" target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.  This
+      value is persisted in a mods record in the <em>subject/temporal</em> element.
+      It is used in Virgo in the Geographic Location facet.
     title: |
       <strong>Required field.</strong> Title is used for display in search results and
       single item views. Recommended use is to reflect the content captured in
       digitized media files (such as the title of the piece performed or a short
       description of the content of a home movie). Lengthy titles may be truncated in
-      the search results view.
+      the search results view.  This value is persisted in a mods record in the
+      <em>titleInfo[@usage='primary']/title</em> element.  It it used (in a normalized
+      form) for title sorting.
     topical_subject: |
       Subject should be used for the topical subject of the content. For
       consistency and to allow for sorting and aggregating, use terms from the
       <a href="http://id.loc.gov/authorities/subjects.html"
       target="_blank">Library of Congress Subject Headings</a>. For temporal
       subjects, use the Time period(s) field and for geographic subjects, use
-      the Location(s) field in this form. See below.
+      the Location(s) field in this form. See below.  This values is persisted
+      in a mods record in the <em>subject/topic</em> element.  It is used for the
+      Subject facet in Virgo.
     permalink: |
       The item Permalink is a URL that links to the Item as a whole. In addition, each section of an item will have a distinct permalink assigned in the File Upload page. If configured to do so, Avalon will automatically generate a permalink if this field is left blank.
     bibliographic_id: |
