@@ -92,13 +92,13 @@ en:
       the Location(s) field in this form. See below.
     permalink: |
       The item Permalink is a URL that links to the Item as a whole. In addition, each section of an item will have a distinct permalink assigned in the File Upload page. If configured to do so, Avalon will automatically generate a permalink if this field is left blank.
-    identifier: |
+    bibliographic_id: |
       Bibliographic ID should be used for an external record identifier that can connect the Avalon item to a catalog record or other record for the original item. Type specifies the type of external record identifier.
     language: |
       Language uses a controlled vocabularly and the language entered must be a part of it. Entering in part of the language name will prompt Avalon's auto-complete feature. 
     terms_of_use: |
       Terms of Use is an optional field. 
-    original_physical_description: |
+    physical_description: |
       Physical Description is an optional field that will display information about the original resource being described. 
     related_item: |
       Related Item is an optional field. Enter in a label for the item as well as a URL. 
