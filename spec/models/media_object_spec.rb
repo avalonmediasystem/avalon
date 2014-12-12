@@ -33,18 +33,6 @@ describe MediaObject do
     describe 'governing_policy' do
       it {should validate_presence_of(:governing_policy)}
     end
-    describe 'language' do
-      it 'should validate valid language' do
-        media_object.update_datastream :descMetadata, {language: 'eng'}
-        expect(media_object.valid?).to be_truthy
-        expect(media_object.errors[:language]).to be_empty
-      end
-      it 'should not validate invalid language' do
-        media_object.update_datastream :descMetadata, {language: 'engl'}
-        expect(media_object.valid?).to be_falsey
-        expect(media_object.errors[:language]).not_to be_empty
-      end
-    end
   end
 
   describe 'delegators' do
@@ -158,9 +146,21 @@ describe MediaObject do
 
   describe "Languages are handled correctly" do
     it "should handle pairs of language codes and language names" do
-      media_object.update_datastream(:descMetadata, :language => ['eng','French','spa','uig'])
-      media_object.descMetadata.language_code.to_a.should =~ ['eng','fre','spa','uig']
-      media_object.descMetadata.language_text.to_a.should =~ ['English','French','Spanish','Uighur']
+      media_object.update_attribute_in_metadata :language, ['eng','French','spa','uig']
+      expect(media_object.descMetadata.language_code.to_a).to eq(['eng','fre','spa','uig'])
+      expect(media_object.descMetadata.language_text.to_a).to eq(['English','French','Spanish','Uighur'])
+    end
+    it 'should save valid languages' do
+      media_object.update_attribute_in_metadata :language, ['eng','spa']
+      expect(media_object.valid?).to be_truthy
+      expect(media_object.errors[:language]).to be_empty
+      expect(media_object.language).to eq([{code:'eng',text:'English'},{code:'spa',text:'Spanish'}])
+    end
+    it 'should not save invalid languages' do
+      media_object.update_attribute_in_metadata :language, ['eng','engl','spa']
+      expect(media_object.valid?).to be_falsey
+      expect(media_object.errors[:language]).not_to be_empty
+      expect(media_object.language).to eq([{code:'eng',text:'English'},{code:'spa',text:'Spanish'}])
     end
   end
 
