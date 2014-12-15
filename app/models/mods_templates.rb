@@ -123,7 +123,7 @@ module ModsTemplates
           term = LanguageTerm.find(value)
           add_child_node(ng_xml.root, :_language, term.code, term.text)
         rescue LanguageTerm::LookupError => e
-          raise e.to_s
+          add_child_node(ng_xml.root, :_language, value, value)
         end
       end
 
