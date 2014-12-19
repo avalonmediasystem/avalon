@@ -1,7 +1,7 @@
 module ActiveFedora
   class UnsavedDigitalObject
     def assign_pid
-    	pid_opts = {}
+   	pid_opts = {}
     	if ns = Avalon::Configuration.lookup('fedora.namespace')
     		pid_opts[:namespace] = ns
     	end

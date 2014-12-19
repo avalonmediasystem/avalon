@@ -119,14 +119,52 @@ module ModsTemplates
       end
 
       def add_language(value, opts={})
-        term = LanguageTerm.find(value)
-        add_child_node(ng_xml.root, :_language, term.code, term.text)
+        begin
+          term = LanguageTerm.find(value)
+          add_child_node(ng_xml.root, :_language, term.code, term.text)
+        rescue LanguageTerm::LookupError => e
+          add_child_node(ng_xml.root, :_language, value, value)
+        end
+      end
+
+      define_template :_terms_of_use do |xml, text|
+        xml.accessCondition(:type => 'use and reproduction'){
+          xml.text(text)
+        }
+      end
+
+      def add_terms_of_use(value, opts={})
+        add_child_node(ng_xml.root, :_terms_of_use, value)
+      end
+
+      define_template :_original_physical_description do |xml, text|
+        xml.relatedItem(:type => 'original'){
+          xml.physicalDescription{
+            xml.extent{
+              xml.text(text)
+            }
+          }
+        }
+      end
+
+      def add_physical_description(value, opts={})
+        add_child_node(ng_xml.root, :_original_physical_description, value)
       end
 
       define_template :media_type do |xml,mime_type|
         xml.physicalDescription {
           xml.internetMediaType mime_type
         }
+      end
+
+      define_template :_related_item do |xml, url, label|
+        xml.relatedItem(:displayLabel => label) {
+          xml.location { xml.url { xml.text(url) } } if url.present?
+        } if label.present?
+      end
+
+      def add_related_item_url(values, opts={})
+        add_child_node(ng_xml.root, :_related_item, values[0], values[1])
       end
 
       define_template :note do |xml,text,type='general'|
@@ -172,6 +210,16 @@ module ModsTemplates
       def add_permalink(url)
         add_location_url(url, { :access => 'object in context' })
       end
+
+      define_template :_identifier do |xml,text,type|
+        xml.identifier(:type => type) { xml.text(text) }
+      end
+      
+      def add_bibliographic_id(content, attrs={})
+        (type,text) = content.is_a?(Array) ? content : ['Other',content]
+        add_child_node(ng_xml.root, :_identifier, text, type)
+      end
+
     end
   end
 

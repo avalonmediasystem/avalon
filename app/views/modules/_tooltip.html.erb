@@ -13,17 +13,16 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-    <%= media.label field do %>
-      <%= 
-        link_to_if(options[:tooltip], display_label + (options[:required] ? " *" : ""), 
-          "https://wiki.dlib.indiana.edu/display/VarVideo/Resource+Description+Help##{default_label}", 
-          :target => '_help', :class => 'tooltip-help', :'data-title' => display_label, :'data-tooltip' => "##{default_label}_tooltip")
-      %>
+<% options[:display_label] ||= options[:multivalued] ? "#{field.to_s.humanize}(s)" : field.to_s.humanize %>
+
+    <%= form.label(field, class: 'control-label') do %>
+      <%= content_tag :span, class: 'tooltip-label', :'data-title' => options[:display_label], :'data-tooltip' => "##{field.to_s}_tooltip" do %>
+         <%= options[:display_label] %><% if options[:required] %>*<% end %>
+         <%= content_tag :span, '', class: 'glyphicon glyphicon-question-sign' %>
+      <% end %>
     <% end %>
     
-    <% if options[:tooltip] %>
-      <div class="collapse form-tooltip span8" id="<%= default_label %>_tooltip">
-        <button class="close">&times;</button>
-        <p><%= t("metadata_tip.#{default_label}").html_safe %></p>
-      </div>
-    <% end %>
+    <span class="help-block tooltip-block collapse" id="<%= field.to_s %>_tooltip">
+      <%= content_tag :span, '', class: 'close glyphicon glyphicon-remove' %>
+      <%= tooltip.html_safe %>
+    </span>

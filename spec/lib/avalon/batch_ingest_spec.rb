@@ -71,7 +71,7 @@ describe Avalon::Batch::Ingest do
     it 'should skip the corrupt manifest' do
       lambda { batch_ingest.ingest }.should_not raise_error
       error_file = File.join(@dropbox_dir,'example_batch_ingest','bad_manifest.xlsx.error')
-      File.exists?(error_file).should be_true
+      File.exists?(error_file).should be true
       File.read(error_file).should =~ /^Invalid manifest/
     end
     
@@ -90,7 +90,7 @@ describe Avalon::Batch::Ingest do
 
     it 'should set MasterFile details' do
       batch_ingest.ingest
-      ingest_batch = IngestBatch.find(:first)
+      ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.first) 
       master_file = media_object.parts.first
       master_file.label.should == 'Quis quo'
@@ -116,20 +116,28 @@ describe Avalon::Batch::Ingest do
 
     it 'should set avalon_uploader' do
       batch_ingest.ingest
-      ingest_batch = IngestBatch.find(:first)
+      ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
       media_object.avalon_uploader.should == 'frances.dickens@reichel.com'
     end
 
     it 'should set hidden' do
       batch_ingest.ingest
-      ingest_batch = IngestBatch.find(:first)
+      ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
       media_object.should_not be_hidden
 
       media_object = MediaObject.find(ingest_batch.media_object_ids[1])
       media_object.should be_hidden
     end
+
+    it 'should correctly set identifiers' do
+      batch_ingest.ingest
+      ingest_batch = IngestBatch.first
+      media_object = MediaObject.find(ingest_batch.media_object_ids.first)
+      media_object.bibliographic_id.should eq(["local","123"])
+    end
+
   end
 
   describe 'invalid manifest' do
@@ -231,24 +239,24 @@ describe Avalon::Batch::Ingest do
   end
 
   it "should be able to default to public access" do
-    pending "[VOV-1348] Wait until implemented"
+    skip "[VOV-1348] Wait until implemented"
   end
 
   it "should be able to default to specific groups" do
-    pending "[VOV-1348] Wait until implemented"
+    skip "[VOV-1348] Wait until implemented"
   end
 
   describe "#offset_valid?" do
-    it {expect(Avalon::Batch::Entry.offset_valid?("33.12345")).to be_true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("21:33.12345")).to be_true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("125:21:33.12345")).to be_true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("63.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("66:33.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(".12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":33.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":66:33.12345")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("5:000")).to be_false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("`5.000")).to be_false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("33.12345")).to be true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("21:33.12345")).to be true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("125:21:33.12345")).to be true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("63.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("66:33.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(".12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":33.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":66:33.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("5:000")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("`5.000")).to be false}
   end
 end

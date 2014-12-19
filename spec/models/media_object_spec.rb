@@ -33,6 +33,18 @@ describe MediaObject do
     describe 'governing_policy' do
       it {should validate_presence_of(:governing_policy)}
     end
+    describe 'language' do
+      it 'should validate valid language' do
+        media_object.update_datastream :descMetadata, {language: 'eng'}
+        expect(media_object.valid?).to be_truthy
+        expect(media_object.errors[:language]).to be_empty
+      end
+      it 'should not validate invalid language' do
+        media_object.update_datastream :descMetadata, {language: 'engl'}
+        expect(media_object.valid?).to be_falsey
+        expect(media_object.errors[:language]).not_to be_empty
+      end
+    end
   end
 
   describe 'delegators' do
@@ -113,19 +125,19 @@ describe MediaObject do
       it "should not be able to read unauthorized, published MediaObject" do
         media_object.avalon_publisher = "random"
         media_object.save
-        subject.cannot(:read, media_object).should be_true
+        subject.can?(:read, media_object).should be false
       end
 
       it "should not be able to read authorized, unpublished MediaObject" do
         media_object.read_users += [user.user_key]
         media_object.should_not be_published
-        subject.cannot(:read, media_object).should be_true
+        subject.can?(:read, media_object).should be false
       end
 
       it "should be able to read authorized, published MediaObject" do
         media_object.read_users += [user.user_key]
         media_object.publish! "random"
-        subject.can(:read, media_object).should be_true
+        subject.can?(:read, media_object).should be true
       end
     end
 
@@ -146,7 +158,7 @@ describe MediaObject do
 
   describe "Languages are handled correctly" do
     it "should handle pairs of language codes and language names" do
-      media_object.update_datastream(:descMetadata, :language => ['eng','French','Castilian','Uyghur'])
+      media_object.update_datastream(:descMetadata, :language => ['eng','French','spa','uig'])
       media_object.descMetadata.language_code.to_a.should =~ ['eng','fre','spa','uig']
       media_object.descMetadata.language_text.to_a.should =~ ['English','French','Spanish','Uighur']
     end
@@ -155,12 +167,13 @@ describe MediaObject do
   describe "Unknown metadata generates error" do
     it "should have an error on an unknown attribute" do
       media_object.update_attribute_in_metadata :foo, 'bar'
-      media_object.should have(1).errors_on(:foo)
+      media_object.valid?
+      expect(media_object.errors[:foo].size).to eq(1)
     end
   end
 
   describe "Field persistence" do
-    pending "setters should work"
+    skip "setters should work"
     xit "should reject unknown fields"
     xit "should update the contributors field" do
       contributor =  'Nathan Rogers'
@@ -240,12 +253,12 @@ describe MediaObject do
     it 'returns true if the statuses indicate processing is finished' do
       media_object.parts << MasterFile.new(status_code: ['STOPPED'])
       media_object.parts << MasterFile.new(status_code: ['SUCCEEDED'])
-      media_object.finished_processing?.should be_true
+      media_object.finished_processing?.should be true
     end
     it 'returns true if the statuses indicate processing is not finished' do
       media_object.parts << MasterFile.new(status_code: ['STOPPED'])
       media_object.parts << MasterFile.new(status_code: ['RUNNING'])
-      media_object.finished_processing?.should be_false
+      media_object.finished_processing?.should be false
     end
   end
 
@@ -267,7 +280,17 @@ describe MediaObject do
       media_object.parts << MasterFile.new(duration:nil)
       media_object.send(:calculate_duration).should == 0   
     end
+  end
 
+  describe '#destroy' do
+    it 'destroys related masterfiles' do
+      media_object.parts << FactoryGirl.create(:master_file)
+      master_file_pids = media_object.parts.map(&:id)
+      media_object.section_pid = master_file_pids
+      media_object.save( validate: false )
+      media_object.destroy
+      MasterFile.exists?(master_file_pids.first).should == false
+    end
   end
 
   describe '#populate_duration!' do
@@ -315,7 +338,7 @@ describe MediaObject do
       before(:each){ media_object.publish!('C.S. Lewis') } # saves the object
 
       it 'responds to permalink' do
-        media_object.respond_to?(:permalink).should be_true
+        media_object.respond_to?(:permalink).should be true
       end
 
       it 'sets the permalink on the object' do
@@ -370,13 +393,13 @@ describe MediaObject do
 
     describe '#ensure_permalink!' do
       it 'returns true when updated' do
-        media_object.should_receive(:ensure_permalink!).at_least(1).times.and_return{ true }
+        media_object.should_receive(:ensure_permalink!).at_least(1).times.and_return(false)
         media_object.publish!('C.S. Lewis')
       end 
 
       it 'returns false when not updated' do
         media_object.publish!('C.S. Lewis')
-        media_object.should_receive(:ensure_permalink!).and_return{ false }
+        media_object.should_receive(:ensure_permalink!).and_return(false)
         media_object.save( validate: false )
       end
     end

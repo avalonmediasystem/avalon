@@ -25,7 +25,6 @@ class CatalogController < ApplicationController
   self.solr_search_params_logic += [:add_access_controls_to_solr_params_if_not_admin]
   
   # This filters out objects that you want to exclude from search results, like FileAssets
-  self.solr_search_params_logic += [:exclude_unwanted_models]
   self.solr_search_params_logic += [:only_wanted_models]
   self.solr_search_params_logic += [:only_published_items]
   self.solr_search_params_logic += [:limit_to_non_hidden_items]
@@ -38,13 +37,13 @@ class CatalogController < ApplicationController
     }
 
     # solr field configuration for search results/index views
-    config.index.show_link = 'title_tesi'
-    config.index.record_display_type = 'has_model_ssim'
+    config.index.title_field = 'title_tesi'
+    config.index.display_type_field = 'has_model_ssim'
+    config.index.thumbnail_method = :avalon_image_tag
 
     # solr field configuration for document/show views
-    config.show.html_title = 'title_tesi'
-    config.show.heading = 'title_tesi'
-    config.show.display_type = 'has_model_ssim'
+    config.show.title_field = 'title_tesi'
+    config.show.display_type_field = 'has_model_ssim'
 
     # solr fields that will be treated as facets by the blacklight application
     #   The ordering of the field names is the order of the display
@@ -65,41 +64,38 @@ class CatalogController < ApplicationController
     #
     # :show may be set to false if you don't want the facet to be drawn in the 
     # facet bar
-    config.add_facet_field 'format_sim', :label => 'Format', :limit => 5, :expanded => true
+    config.add_facet_field 'format_sim', label: 'Format', limit: 5, collapse: false
     # Eventually these need to be merged into a single facet
-    config.add_facet_field 'creator_sim', :label => 'Main contributor', :limit => 5
-    #TODO add "Date" facet that points to issue date in mediaobject
-    config.add_facet_field 'date_sim', :label => 'Date', :limit => 5
-    config.add_facet_field 'genre_sim', :label => 'Genres', :limit => 5
-    config.add_facet_field 'collection_ssim', :label => 'Collection', :limit => 5
-    config.add_facet_field 'unit_ssim', :label => 'Unit', :limit => 5
+    config.add_facet_field 'creator_sim', label: 'Main contributor', limit: 5
+    config.add_facet_field 'date_sim', label: 'Date', limit: 5
+    config.add_facet_field 'genre_sim', label: 'Genres', limit: 5
+    config.add_facet_field 'collection_ssim', label: 'Collection', limit: 5
+    config.add_facet_field 'unit_ssim', label: 'Unit', limit: 5
+    config.add_facet_field 'language_sim', label: 'Language', limit: 5
 
 
     # Hide these facets if not a Collection Manager
-    config.add_facet_field 'workflow_published_sim', :label => 'Published', :limit => 5, :if_user_can => [:create, MediaObject], :group=>"workflow"
-    config.add_facet_field 'created_by_sim', :label => 'Created by', :limit => 5, :if_user_can => [:create, MediaObject], :group=>"workflow"
-    config.add_facet_field 'read_access_virtual_group_ssim', :label => 'External Group', :limit => 5, :if_user_can => [:create, MediaObject], :group=>"workflow", :helper_method => :vgroup_display
+    config.add_facet_field 'workflow_published_sim', label: 'Published', limit: 5, if_user_can: [:create, MediaObject], group: "workflow"
+    config.add_facet_field 'created_by_sim', label: 'Created by', limit: 5, if_user_can: [:create, MediaObject], group: "workflow"
+    config.add_facet_field 'read_access_virtual_group_ssim', label: 'External Group', limit: 5, if_user_can: [:create, MediaObject], group: "workflow", helper_method: :vgroup_display
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
     # handler defaults, or have no facets.
-    config.default_solr_params[:'facet.field'] = config.facet_fields.keys
-    #use this instead if you don't want to query facets marked :show=>false
-    #config.default_solr_params[:'facet.field'] = config.facet_fields.select{ |k, v| v[:show] != false}.keys    
-
+    config.add_facet_fields_to_solr_request!
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display 
-    config.add_index_field 'creator_ssim', :label => 'Main contributors:', :helper_method => :contributor_index_display 
-    config.add_index_field 'date_ssi', :label => 'Date:' 
-    config.add_index_field 'summary_ssi', label: 'Summary:', :helper_method => :description_index_display
+    config.add_index_field 'creator_ssim', label: 'Main contributors', helper_method: :contributor_index_display 
+    config.add_index_field 'date_ssi', label: 'Date', helper_method: :combined_display_date
+    config.add_index_field 'summary_ssi', label: 'Summary', helper_method: :description_index_display
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display 
-    config.add_show_field 'title_tesi', :label => 'Title' 
-    config.add_show_field 'format_sim', :label => 'Format' 
-    config.add_show_field 'creator_sim', :label => 'Creator' 
-    config.add_show_field 'language_sim', :label => 'Language'
+    config.add_show_field 'title_tesi', label: 'Title' 
+    config.add_show_field 'format_sim', label: 'Format' 
+    config.add_show_field 'creator_sim', label: 'Creator' 
+    config.add_show_field 'language_sim', label: 'Language'
     config.add_show_field 'date_ssi', label: 'Date'
     config.add_show_field 'abstract_sim', label: 'Abstract'
     config.add_show_field 'location_sim', label: 'Locations'
@@ -127,7 +123,7 @@ class CatalogController < ApplicationController
     # This one uses all the defaults set by the solr request handler. Which
     # solr request handler? The one set in config[:default_solr_parameters][:qt],
     # since we aren't specifying it otherwise. 
-    config.add_search_field 'all_fields', :label => 'All Fields'
+    config.add_search_field 'all_fields', label: 'All Fields'
 
     # Now we see how to over-ride Solr request handler defaults, in this
     # case for a BL "search field", which is really a dismax aggregate
@@ -170,16 +166,20 @@ class CatalogController < ApplicationController
     # label in pulldown is followed by the name of the SOLR field to sort by and
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
-    config.add_sort_field 'score desc, title_tesi asc, date_ssi desc', :label => 'Relevance'
-    config.add_sort_field 'date_ssi desc, title_tesi asc', :label => 'Year'
-    config.add_sort_field 'creator_ssi asc, title_tesi asc', :label => 'Main contributor'
-    config.add_sort_field 'title_tesi asc, date_ssi desc', :label => 'Title'
+    config.add_sort_field 'score desc, title_ssort asc, date_ssi desc', label: 'Relevance'
+    config.add_sort_field 'date_ssi desc, title_ssort asc', label: 'Date'
+    config.add_sort_field 'creator_ssort asc, title_ssort asc', label: 'Main contributor'
+    config.add_sort_field 'title_ssort asc, date_ssi desc', label: 'Title'
 
     # If there are more than this many search results, no spelling ("did you 
     # mean") suggestion is offered.
     config.spell_max = 5
   end
 
+  def can_embed?
+    params[:action] == 'index'
+  end
+  
   def only_wanted_models(solr_parameters, user_parameters)
     solr_parameters[:fq] ||= []
     solr_parameters[:fq] << 'has_model_ssim:"info:fedora/afmodel:MediaObject"'

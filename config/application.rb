@@ -11,7 +11,8 @@ if defined?(Bundler)
 end
 
 module Avalon
-  VERSION = '3.1'
+  VERSION = '3.2'
+  class MissingUserId < Exception; end
   
   class Application < Rails::Application
     require 'rubyhorn/rest_client/ingest'
@@ -55,7 +56,7 @@ module Avalon
     # This will create an empty whitelist of attributes available for mass-assignment for all models
     # in your app. As such, your models will need to explicitly whitelist or blacklist accessible
     # parameters by using an attr_accessible or attr_protected declaration.
-    config.active_record.whitelist_attributes = true
+    #config.active_record.whitelist_attributes = true
 
     # Enable the asset pipeline
     config.assets.enabled = true
@@ -71,6 +72,7 @@ module Avalon
     # of it stopping cold in production
     config.action_mailer.raise_delivery_errors = true
 
+    config.secret_key_base = ENV['AVALON_SECRET_KEY_BASE'] || YAML.load(File.open("#{Rails.root}/config/secrets.yml"))[Rails.env]['secret_key_base']
   end
   
   # Map config to the local namespace so we can use shorter references in 

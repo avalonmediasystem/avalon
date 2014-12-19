@@ -23,7 +23,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% if content_for? :title %>
          - <%= application_name %>
       <% else %>
-        Avalon Media System
+        <%= application_name %>
       <% end %>
     </title>
 
@@ -32,18 +32,17 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= stylesheet_link_tag "application", media: "all" %>
     <%= yield :page_styles %>
     <%= yield :additional_head_content %>
+    <%= javascript_include_tag :modernizr %>
   </head>
 
   <body data-mountpoint="<%=root_path%>">
+    <%= render partial: 'shared/ajax_modal' %>
     <%= render 'modules/header' %>
-
     <div class="container-fluid">
-      <div class="row-fluid">
-        <%= render "modules/global_navigation" %>
-      </div>
+      <%= render :partial => 'modules/global_navigation' %>
+      <%= render 'modules/flash_messages' %>
+      <%= yield %>
     </div>
-    
-    <div class="container-fluid"><%= yield %></div>
     <%= render 'modules/footer' %>
 
     <!-- With this many Javascript files performance will be much better

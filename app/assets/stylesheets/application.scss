@@ -15,21 +15,14 @@
 */
 
 @import "branding";
-@import "bootstrap";
-@import "bootstrap-responsive";
 @import "font-awesome";
+@import "bootstrap-sprockets";
+@import "browse_everything";
+@import "bootstrap";
 @import "blacklight_themes/avalon";
-@import "blacklight_themes/_facets";
-@import "blacklight_themes/_facets_responsive";
 @import "blacklight/blacklight";
 @import "about_page";
-
-/**
- * Blacklight overrides
- */
-body {
-  padding-top: 1em;
-}
+@import "typeahead";
 
 /*
  * This is the default theme. You can modify many of the settings 
@@ -55,4 +48,5 @@ body {
  *= require 'avalon-engage'
  *= require self
 */
+//= require rails_bootstrap_forms
 @import "avalon";

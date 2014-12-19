@@ -25,7 +25,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     
 <dl id="creation_metadata">
   <%= display_metadata('Main contributor', @mediaobject.creator, 'Not provided') %>
-  <%= display_metadata('Date', @mediaobject.date_issued, 'Not provided') %>
+  <%= display_metadata('Date', combined_display_date(@mediaobject), 'Not provided') %>
   <% unless @mediaobject.abstract.blank? %>
   <dt>Summary</dt>
   <dd>
@@ -40,10 +40,15 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= display_metadata('Location', @mediaobject.geographic_subject) %>
   <%= display_metadata('Collection', @mediaobject.collection.name) %>
   <%= display_metadata('Unit', @mediaobject.collection.unit) %>
+  <%= display_metadata('Language', display_language(@mediaobject)) %>
+  <%= display_metadata('Terms of Use', @mediaobject.terms_of_use) %>
+  <%= display_metadata('Physical Description', @mediaobject.physical_description) %>
+  <%= display_metadata('Related Item', display_related_item(@mediaobject)) %>
+
 </dl>
 <% if can? :inspect, @mediaobject %>
-  <%= link_to 'View Raw Metadata', inspect_media_object_path(@mediaobject.pid, 'descMetadata'), :target => 'blank', :class => "btn btn-small" %>
-  <%= link_to 'View Fedora Objects', tree_media_object_path(@mediaobject.pid), :id => 'show_object_tree', :target => 'blank', :class => "btn btn-small" %>
+  <%= link_to 'View Raw Metadata', inspect_media_object_path(@mediaobject.pid, 'descMetadata'), :target => 'blank', :class => "btn btn-default btn-small" %>
+  <%= link_to 'View Fedora Objects', tree_media_object_path(@mediaobject.pid), :id => 'show_object_tree', :target => 'blank', :class => "btn btn-default btn-small" %>
   <div id="object_tree" data-src="<%=tree_media_object_path(@mediaobject.pid)%>">
   </div>
 <% end %>

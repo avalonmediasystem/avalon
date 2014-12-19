@@ -40,10 +40,35 @@ module MediaObjectsHelper
         css_class
      end
 
+     def form_id_for_step(step)
+       "#{step.gsub('-','_')}_form"
+     end
+
      def dropbox_url collection
         ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
         path = URI::Parser.new.escape(collection.dropbox_directory_name, %r{[/\\%& #]})
         url = File.join(Avalon::Configuration.lookup('dropbox.upload_uri'), path)
         ic.iconv(url)
      end
+     
+     def combined_display_date mediaobject
+       (issued,created) = case mediaobject
+       when MediaObject
+         [mediaobject.date_issued, mediaobject.date_created]
+       when Hash
+         [mediaobject[:document]['date_ssi'], mediaobject[:document]['date_created_ssi']]
+       end
+       result = issued
+       result += " (Creation date: #{created})" if created.present?
+       result
+     end
+
+     def display_language mediaobject
+       mediaobject.language.collect{|l|l[:text]}
+     end
+
+     def display_related_item mediaobject
+       mediaobject.related_item_url.collect{ |r| link_to( r[:label], r[:url]) }
+     end
+
 end

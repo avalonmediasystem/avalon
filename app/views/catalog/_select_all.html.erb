@@ -1,0 +1,14 @@
+<% # container for select_all bookmarks button -%>
+
+<% if current_or_guest_user %>
+  <div class="col-sm-3 col-sm-offset-9 col-lg-2 col-lg-offset-10">
+      <% all_selected = @document_list.all? do |d|
+           current_or_guest_user.bookmarks.where({document_id: d.id, document_type: blacklight_config.solr_document_model.to_s}).exists?
+         end %>
+      <%= check_box_tag('bookmarks_selectall', '', all_selected) %>
+      <%= label_tag 'selectall', t('blacklight.bookmarks.addall.button') %>
+  </div>
+  <% content_for :page_scripts do %>
+    <%= javascript_include_tag 'select_all' %>
+  <% end %>
+<% end %>

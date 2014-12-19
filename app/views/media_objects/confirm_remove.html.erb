@@ -1,0 +1,44 @@
+<%#
+Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<div class="container-fluid">
+    <div class="row-fluid">
+      <div class="btn-options">
+	<% if params[:id].empty? %>
+          <div class="alert alert-danger">
+	    <p>No resources were selected.</p>
+	  </div>
+	  <%= link_to 'Go back', :back, class: 'btn btn-default' %> 
+	<% else %>
+	  <% params[:id] = Array(params[:id]) %>
+          <div class="alert alert-danger">
+            <p>Are you certain you want to delete the following <%= 'resource'.pluralize(params[:id].count) %>?</p>
+	    <ul>
+	      <% params[:id].each do |id| %>
+		<% @mediaobject = MediaObject.find(id)  %>
+		<% if can? :destroy, @mediaobject  %>
+	          <li><%= @mediaobject.title %> (<%= id %>)</li>
+	        <% else %>
+	          <li><%= @mediaobject.title %> (<%= id %>): permission denied</li>
+	        <% end %>
+	      <% end %>
+	    </ul>
+        </div>
+	<%= link_to 'Yes, I am sure', remove_media_objects_path( id: params[:id], previous_view: @previous_view ), method: :delete, id: 'deleteLink', name: 'delete', class: 'btn btn-danger' %>
+	<%= link_to 'No, go back', :back, class: 'btn btn-default' %> 
+	<% end %>
+      </div>
+    </div>
+</div>

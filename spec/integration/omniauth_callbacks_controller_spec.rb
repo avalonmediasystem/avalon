@@ -70,11 +70,31 @@ describe Users::OmniauthCallbacksController do
       end
 
       it "should have lti_group" do
+        expect(subject).not_to be_empty
         expect(subject[:lti_group]).not_to be_empty
       end
 
       it "should not be a full login" do
-        expect(subject[:full_login]).to be_false
+        expect(subject).not_to be_empty
+        expect(subject[:full_login]).to be_falsey
+      end
+    end
+
+    context 'missing uid' do
+      subject { Hash.new }
+
+      before :each do
+        Users::OmniauthCallbacksController.any_instance.stub(:user_session) { subject }
+        foo_hash.delete('lis_person_sourcedid')
+        post '/users/auth/lti/callback', foo_hash
+      end      
+      
+      it "should not log anyone in" do
+        expect(subject).to be_empty
+      end
+      
+      it "flashes an error message" do
+        expect(flash[:error] ).to match(%r{please contact us at <a href="mailto:avalon-support@example.edu">avalon-support@example.edu</a>})
       end
     end
 

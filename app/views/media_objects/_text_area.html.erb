@@ -13,16 +13,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% default_label = field.to_s %>
-<% text_label ||= default_label.humanize %>
-<% display_label = text_label || default_label.humanize %>
-<% options ||= {} %>
 
-<!-- <%= default_label.humanize %> field -->
-  <div class="control-group">
-    <%= render partial: "modules/tooltip", locals: { media: media, field: field, default_label: default_label, text_label: text_label, display_label: display_label, options: options } %>
-
-    <div class="controls">
-      <%= media.text_area field, rows: 10, class: 'span8' %>
-    </div>
+<!-- <%= field.to_s.humanize %> field -->
+  <div class="form-group <% if @mediaobject.errors[field].any? %>has-error<% end %>">
+    <%= render partial: "modules/tooltip", locals: { form: form, field: field, tooltip: t("metadata_tip.#{field.to_s}"), options: options } %>
+    <% if @mediaobject.errors[field].any? %>
+      <%= content_tag :span, @mediaobject.errors[field].join(", "), class: 'help-block' %>
+    <% end %>
+    <%= form.text_area field, rows: 10, class: 'form-control' %>
   </div>

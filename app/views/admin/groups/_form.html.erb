@@ -13,55 +13,69 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<style>
-  .inline-children > div { display: inline }
-</style>
 
-<% if flash[:error] %><div class="alert alert-error"><%= flash[:error] %></div><% end %>
 
-<%= twitter_bootstrap_form_for @group, html: { :class => 'form-inline'}  do |f| %>
-   <fieldset class="whitespace">
+<div class="col-md-9 col-lg-8">
+  <div class="container-fluid">
+  <%= bootstrap_form_for @group  do |f| %>
     <h3>Group</h3>
     <% if @group.class.name_is_static? @group.name %>
-      <em><%= @group.name %></em>
+      <p><%= @group.name %></p>
     <% else %>
-      <%= text_field_tag :group_name, "Group name", value: @group.name %>
-    <%= submit_tag "Save", class: "btn" %>
-    <%= link_to "Delete Group", admin_group_path(@group.name), 
-        :method => :delete, confirm: "Deleted group cannot be recovered. Are you sure?", class: "btn btn-danger inline" %>
+      <div class="col-xs-6 col-sm-8">
+        <%= text_field_tag :group_name, "Group name", value: @group.name, class: 'form-control' %>
+      </div>
+      <div class="col-xs-3 col-sm-2">
+	<%= button_tag "Save", type: "submit", class: "btn btn-default col-xs-12" %>
+      </div>
+      <div class="col-xs-3 col-sm-2">
+      <%= link_to "Delete Group", admin_group_path(@group.name), 
+          method: :delete, confirm: "Deleted group cannot be recovered. Are you sure?", 
+          class: "btn btn-danger col-xs-12" %>
+      </div>
     <% end %>
-  </fieldset>
-
+  <% end %>
+  </div>
+  <div class="container-fluid">
+    <%= bootstrap_form_for @group  do |f| %>
     <h3>Group Members</h3>
-    <%= text_field_tag :new_user, nil, class: 'typeahead from-model', data: { model: 'user' }, placeholder: 'Enter a username' %>
-    <%= f.submit "Add user", class: "btn" %>
-<% end %>
-
-<%= form_tag update_users_admin_group_path, method: :put do %>
-  <div> 
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th><input type="checkbox" class="select-groups"></th>
-            <th>Username</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @group.users.each do |user| %>
-            <tr>
-              <td><%= check_box_tag "user_ids[]", user %></td>
-              <td><%= user %></td>
-              <td></td>
-            </tr>
-           <% end %>
-         </tbody>
-      </table>
+    <div class="col-xs-9 col-sm-10">
+      <%= text_field_tag :new_user, nil, class: 'typeahead from-model form-control', 
+          data: { model: 'user' }, placeholder: 'Enter a username' %>
     </div>
+    <div class="col-xs-3 col-sm-2">
+      <%= button_tag "Add user", type: "submit", class: "btn btn-default col-xs-12" %>
+    </div>
+  <% end %>
+  </div>
+  <div class="container-fluid">
+  <%= form_tag update_users_admin_group_path, method: :put do %>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th class="col-md-1"><input type="checkbox" class="select-groups"></th>
+          <th class="col-md-10">Username</th>
+          <th class="col-md-1"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @group.users.each do |user| %>
+          <tr>
+            <td><%= check_box_tag "user_ids[]", user %></td>
+            <td><%= user %></td>
+            <td></td>
+          </tr>
+         <% end %>
+       </tbody>
+    </table>
+  </div>
+  <div class="container-fluid">
     <%= hidden_field_tag 'id', @group.name %>
     <%= submit_tag "Remove members", :method => :delete, class: "btn btn-danger delete", disabled: true  %>    
-<% end %>
-
+  </div>
+  <% end %>
+  </div>
+</div>
 <% content_for :page_scripts do %>
   <script>
     $('.select-groups').change(function(){

@@ -13,23 +13,22 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-  <% can_update = can?( :update_access_control, object) %>
+<% can_update = can?( :update_access_control, object) %>
 
-  <%= form.fieldset 'Item discovery', class: 'item-discovery' do %>
-    <% if can_update %>
+<% if can_update %>
+
+  <%= bootstrap_form_for object, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
+  <%= hidden_field_tag :step, @active_step %>
+  <fieldset class='item-discovery'>
+    <legend>Item discovery</legend>
       <%= label_tag :hidden do %>
-        <%= check_box_tag 'hidden', '1', hidden %>
+        <%= check_box_tag :hidden, '1', (hidden) %>
         Hide this item from search results 
       <% end %>
-    <% else %>
-      <%= hidden ? "Item is hidden from search results" : 
-        "Item is not hidden from search results" %>
-    <% end %>
-  <% end %>
-    
-  <%= form.fieldset 'Item access', class: 'item-access' do %>
-    <% if can_update %>
-      <%= form.hidden_field :pid %>
+  </fieldset>
+  <fieldset class='item-access'>
+    <legend>Item access</legend>
+      <%= vid.hidden_field :pid %>
 
       <%= label_tag :visibility do %>
       <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
@@ -45,7 +44,18 @@ Unless required by applicable law or agreed to in writing, software distributed
       <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
         Collection staff only
       <% end %>
-    <% else %>
+  </fieldset> 
+  <% end #form_for %>		
+
+<% else %>
+
+  <fieldset class='item-discovery'>
+    <legend>Item discovery</legend>
+    <%= hidden ? "Item is hidden from search results" : 
+        "Item is not hidden from search results" %>
+  </fieldset>   
+  <fieldset class='item-access'>
+    <legend>Item access</legend>
       Item is viewable by
       <%= case @visibility
           when "public"
@@ -55,34 +65,23 @@ Unless required by applicable law or agreed to in writing, software distributed
           when "private"
             "collection staff only"
           end %>
-    <% end %>
-  <% end %> 
+  </fieldset> 
 
-  <%= form.fieldset 'Assign special access', class: 'special-access' do %>
-    <% if flash[:error] %>
-      <div id="errors_information" class="alert alert-error active">
-       <button type="button" class="close" data-dismiss="alert">&times;</button>
-       <% if flash[:error].is_a?(Array) 
-         flash[:error].each do |err| %>
-         <p class="notice"><%= err %></p>
-       <% end %>
-       <% else %>
-         <p class="notice"><%= flash[:error] %></p>
-       <% end %>
-      </div>
-    <% end %>
-  
-    <div class="row-no-margin">
-      <%= render "modules/access_object", object: object,
-        access_object: "user", members: @users, autocomplete_model: 'user',
-        input_disabled: !can_update %>
-      <%= render "modules/access_object", object: object,
-        access_object: "group", members: @groups, 
-        dropdown_values: [@addable_groups, 'name', 'name'],
-        input_disabled: !can_update %>
-      <%= render "modules/access_object", object: object,
-        access_object: "class", members: @virtual_groups, 
-        autocomplete_model: 'externalGroup', display_helper: :vgroup_display,
-        input_disabled: !can_update %>
+<% end %>		
+
+  <fieldset class='special-access'>
+    <legend>Assign special access</legend>
+    <div class="row">
+        <%= render "modules/access_object", object: object,
+          access_object: "user", members: @users, autocomplete_model: 'user',
+          input_disabled: !can_update %>
+        <%= render "modules/access_object", object: object,
+          access_object: "group", members: @groups, 
+          dropdown_values: [@addable_groups, 'name', 'name'],
+          input_disabled: !can_update %>
+        <%= render "modules/access_object", object: object,
+          access_object: "class", members: @virtual_groups, 
+          autocomplete_model: 'externalGroup', display_helper: :vgroup_display,
+          input_disabled: !can_update %>
     </div>
-  <% end %>
+  </fieldset>

@@ -9,6 +9,10 @@ en:
     embedded_audio: This audio content is restricted
   release_label: "Release"
   errors:
+    lti_auth_error: |
+      If you are an instructor, you cannot view these items in student mode. 
+      Please switch back to instructor mode to view. If you are a student and 
+      receiving this message, please contact us at <a href="mailto:%s">%s</a>.
     messages:
       blank: "field is required."
       taken: "is taken."
@@ -86,25 +90,18 @@ en:
       target="_blank">Library of Congress Subject Headings</a>. For temporal
       subjects, use the Time period(s) field and for geographic subjects, use
       the Location(s) field in this form. See below.
-    manager: |
-      Managers have overall accountability for the collection. Managers can 
-      create collections and assign editor and depositor roles for those 
-      collections. They set the default access controls for items added to 
-      the collection, and they also step in when a published item needs 
-      revising or deleting. Managers can also do anything an editor or 
-      depositor can do.
-    editor: |
-      Editors have supervisory responsibility for the collection building — the 
-      ingest and description process. They can assign depositor roles, change 
-      the name or description of the collection, and can modify the access 
-      controls for individual items in the collection. Editors can also do 
-      anything a depositor can do.
-    depositor: |
-      Depositors add media to the collection and describe it with metadata. 
-      They can publish items but not unpublish. They can only modify or 
-      delete unpublished items.
     permalink: |
       The item Permalink is a URL that links to the Item as a whole. In addition, each section of an item will have a distinct permalink assigned in the File Upload page. If configured to do so, Avalon will automatically generate a permalink if this field is left blank.
+    bibliographic_id: |
+      Bibliographic ID should be used for an external record identifier that can connect the Avalon item to a catalog record or other record for the original item. Type specifies the type of external record identifier.
+    language: |
+      Language describes the language/s used in the item. Typing two or more letters within the field will bring up suggestions. If the desired language is not available you may type it in. This is an optional field. 
+    terms_of_use: |
+      Terms of Use is an optional field. 
+    physical_description: |
+      Physical Description is an optional field that will display information about the original resource being described. 
+    related_item_url: |
+      The label is the text that will be displayed in the item record and will link to the URL entered. Related Item is an optional field. 
   file_upload_tip:
     label: |
       The Section Label will be used in an item's listing to identify each file associated with the item.
@@ -121,6 +118,23 @@ en:
     userlabel: "Avalon User"
     grouplabel: "Avalon Group"
     classlabel: "External Group"
+    depositor: |
+      Depositors add media to the collection and describe it with metadata. 
+      They can publish items but not unpublish. They can only modify or 
+      delete unpublished items.
+    editor: |
+      Editors have supervisory responsibility for the collection building — the 
+      ingest and description process. They can assign depositor roles, change 
+      the name or description of the collection, and can modify the access 
+      controls for individual items in the collection. Editors can also do 
+      anything a depositor can do.
+    manager: |
+      Managers have overall accountability for the collection. Managers can 
+      create collections and assign editor and depositor roles for those 
+      collections. They set the default access controls for items added to 
+      the collection, and they also step in when a published item needs 
+      revising or deleting. Managers can also do anything an editor or 
+      depositor can do.
     user: |
       Enter a username to grant them access to an item or collection.
     group: |

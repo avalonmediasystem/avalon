@@ -14,8 +14,12 @@
 
 module ModsBehaviors
 
+  def prefix
+    ""
+  end
+
   def to_solr(solr_doc=SolrDocument.new)
-    super(solr_doc)
+    solr_doc = super(solr_doc)
 
     solr_doc['title_tesi'] = self.find_by_terms(:main_title).text
 
@@ -63,11 +67,19 @@ module ModsBehaviors
 
     # TODO: map PBcore's three-letter language codes to full language names
     # Right now, everything's English.
-    solr_doc['language_sim'] = self.find_by_terms(:language_text).text
+    solr_doc['language_sim'] = gather_terms(self.find_by_terms(:language_text))
+    solr_doc['language_code_sim'] = gather_terms(self.find_by_terms(:language_code))
+    solr_doc['physical_description_si'] = self.find_by_terms(:physical_description).text
+    solr_doc['related_item_url_sim'] = gather_terms(self.find_by_terms(:related_item_url))
+    solr_doc['related_item_label_sim'] = gather_terms(self.find_by_terms(:related_item_label))
+    solr_doc['terms_of_use_si'] = self.find_by_terms(:terms_of_use).text
 
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
     solr_doc['date_ssi'] = self.find_by_terms(:date_issued).text
+    solr_doc['date_created_ssi'] = self.find_by_terms(:date_created).text
+    # Put both publication date and creation date into the date facet
     solr_doc['date_sim'] = get_year(solr_doc['date_ssi'])
+    solr_doc['date_sim'] += get_year(solr_doc['date_created_ssi']) if solr_doc['date_created_ssi'].present?
 
     # For full text, we stuff it into the mods_tesim field which is already configured for Mods doucments
     solr_doc['mods_tesim'] = self.ng_xml.xpath('//text()').collect { |t| t.text }
@@ -107,6 +119,7 @@ module ModsBehaviors
 
   def reorder_elements!
     order = [
+      'mods:mods/mods:identifier',
       'mods:mods/mods:titleInfo[@usage="primary"]',
       'mods:mods/mods:titleInfo[@type="alternative"]',
       'mods:mods/mods:titleInfo[@type="translated"]',
@@ -123,7 +136,6 @@ module ModsBehaviors
       'mods:mods/mods:note',
       'mods:mods/mods:subject',
       'mods:mods/mods:relatedItem',
-      'mods:mods/mods:identifier',
       'mods:mods/mods:location',
       'mods:mods/mods:accessCondition',
       'mods:mods/mods:recordInfo',

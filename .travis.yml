@@ -1,0 +1,21 @@
+---
+git:
+  submodules: false
+bundler_args: --without development debug
+before_install:
+  - sudo apt-get install mediainfo
+  - sudo ln -s /usr/bin/lsof /usr/sbin/lsof
+  - cp spec/config/*.yml config
+  - git submodule init
+  - git submodule update --depth=10 -- red5
+  - git submodule update --depth=10 -- felix
+  - bundle config without development:production
+before_script:
+  - bundle exec rake jetty:unzip jetty:config felix:config avalon:services:start
+  - bundle exec rake db:migrate
+notifications:
+  irc: "chat.freenode.net#projectvov"
+language: ruby
+rvm:
+  - 2.0.0
+  - 2.1.5

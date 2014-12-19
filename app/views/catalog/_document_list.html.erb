@@ -1,0 +1,7 @@
+<% # container for all documents in index view -%>
+<div id="documents">
+  <% if render_bookmarks_control? && documents.count>1 %> 
+    <%= render "select_all" %>
+  <% end %>
+  <%= render documents, :as => :document %>
+</div>

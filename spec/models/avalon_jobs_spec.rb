@@ -31,8 +31,7 @@ describe AvalonJobs do
 
     describe "delete_masterfile" do
       it "should delete masterfile" do
-        AvalonJobs.delete_masterfile @mf.pid
-        Delayed::Worker.new.work_off 
+        AvalonJobs.delete_masterfile_without_delay @mf.pid
         expect(File.exists? @oldpath).to be false
         expect(MasterFile.find(@mf.pid).file_location).to be_blank
       end
@@ -41,8 +40,7 @@ describe AvalonJobs do
     describe "move_masterfile" do
       it "should move masterfile" do
         newpath = "/path/to/new/file.mp4"
-        AvalonJobs.move_masterfile @mf.pid, newpath
-        Delayed::Worker.new.work_off 
+        AvalonJobs.move_masterfile_without_delay @mf.pid, newpath
         expect(File.exists? @oldpath).to be false
         expect(File.exists? newpath).to be true
         expect(newpath).to eq MasterFile.find(@mf.pid).file_location

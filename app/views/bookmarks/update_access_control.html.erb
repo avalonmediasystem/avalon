@@ -1,0 +1,120 @@
+<%#
+Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<% @media_objects = @documents.collect {|doc| MediaObject.find(doc.id)} %>
+<% visibility = @media_objects.first.visibility %>
+<% @visibility = visibility if @media_objects.all? {|mo| mo.visibility == visibility} %>
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+  <h1><%= t('blacklight.update_access_control.form.title') %></h1>
+</div>
+
+<%= form_for "add", url: url_for(:controller => "bookmarks", :action => "update_access_control"), html: { :id => 'update_access_control_form', :class => "form-horizontal" } do |form| %>
+  <div class="modal-body">
+    <div class="row-fluid">
+      <div class="btn-options">
+        <% if  @documents.empty? %>
+          <div class="alert alert-danger">
+            <p><%= t('blacklight.bookmarks.no_bookmarks') %></p>
+          </div>
+        <% else %>
+          <div class="alert hidden">
+              <p><%= t('blacklight.update_access_control.confirm') %></p>
+	  </div>
+          <fieldset class="item-discovery">
+	    <legend>Discovery</legend>
+	    <%= label_tag :hidden do %>
+	      <%= hidden_field_tag :hidden %>
+	      <%= check_box_tag :hidden_display, '1', (@media_objects.all? {|doc| doc.hidden? == true})%>
+	      Hide this item from search results 
+	    <% end %>
+	  </fieldset>
+          <fieldset class="item-access">
+	    <legend>Item Access</legend>
+	    <%= label_tag :visibility do %>
+	      <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
+	      Available to the general public
+	    <% end %>
+	    <%= label_tag :visibility do %>
+	      <%= radio_button_tag :visibility, 'restricted', (@visibility == 'restricted') %>
+	      Logged in users only
+	    <% end %>
+	    <%= label_tag :visibility do %>
+	      <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
+	      Collection staff only
+	    <% end %>
+	  </fieldset>
+          <fieldset class="special-access">
+	    <legend>Special Access</legend>
+	    <%= label_tag "user" do %>
+	      <%= render partial: "modules/tooltip", locals: { form: form, field: 'user', tooltip: t("access_control.user"), options: {display_label: t("access_control.userlabel").html_safe} } %>
+	      <div style='display:inline-block;top:-6px;position:relative'>
+	      <%= hidden_field_tag "user" %>
+	      <%= text_field_tag "user_display", nil, 
+		  class: "typeahead from-model form-control", 
+		  data: { model: 'user', target: "user" } %>
+</div>
+	      <%= button_tag "Add", name: 'submit_add_user', class:'btn btn-default', value: 'Add' %>
+	      <%= button_tag "Remove", name: 'submit_remove_user', class:'btn btn-default', value: 'Remove' %>
+	    <% end %>
+	    <%= label_tag "group" do %>
+	      <%= render partial: "modules/tooltip", locals: { form: form, field: 'group', tooltip: t("access_control.group"), options: {display_label: t("access_control.grouplabel").html_safe} } %>
+	      <%  dropdown_values = [Admin::Group.non_system_groups, 'name', 'name'] %>
+	      <%  dropdown_values = options_from_collection_for_select(*dropdown_values) %>
+	      <%= select_tag "group", 
+		  dropdown_values, 
+		  { include_blank: true, class: "form-control"}%>
+	      <%= button_tag "Add", name: 'submit_add_group', class:'btn btn-default', value: 'Add'  %>
+	      <%= button_tag "Remove", name: 'submit_remove_group', class:'btn btn-default', value: 'Remove' %>
+	    <% end %>
+	    <%= label_tag "class" do %>
+	      <%= render partial: "modules/tooltip", locals: { form: form, field: 'class', tooltip: t("access_control.class"), options: {display_label: t("access_control.classlabel").html_safe} } %>
+	      <div style='display:inline-block;top:-6px;position:relative;'>
+	      <%= hidden_field_tag "class" %>
+	      <%= text_field_tag "class_display", nil, 
+		  class: "typeahead from-model form-control", 
+		  data: { model: 'externalGroup', target: "class" } %>
+	      </div>
+	      <%= button_tag "Add", name: 'submit_add_class', class:'btn btn-default', value: 'Add'  %>
+	      <%= button_tag "Remove", name: 'submit_remove_class', class:'btn btn-default', value: 'Remove' %>
+	    <% end %>
+          </fieldset>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary"><%= t('blacklight.update_access_control.button') %></button>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%# content_for :page_scripts do %>
+  <%= javascript_include_tag 'autocomplete' %>
+<%# end %>
+
+<script>
+$('.tooltip-label').on("click", function(event){
+    event.preventDefault()
+    targetNode = $(this).data('tooltip')
+    $(targetNode).collapse('toggle')
+});
+$('.help-block .close').on("click", function(event){
+  event.preventDefault()
+  $(this).parent().collapse('toggle')
+});
+$('#hidden_display').on("click", function(event){
+  $('#hidden').val($(this).prop("checked"));
+});
+</script>

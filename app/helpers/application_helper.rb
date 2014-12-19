@@ -15,7 +15,7 @@
 
 module ApplicationHelper
   def application_name
-    Avalon::Configuration.lookup('name') || 'Avalon'
+    Avalon::Configuration.lookup('name') || 'Avalon Media System'
   end
   
   def release_text
@@ -62,14 +62,25 @@ module ApplicationHelper
     end
   end
 
+  def avalon_image_tag(document, image_options)
+    image_url = image_for(document)
+    if image_url.present?
+      link_to(media_object_path(document[:id]), {class: 'result-thumbnail'}) do
+        image_tag(image_url)
+      end
+    else
+      image_tag 'no_icon.png', class: 'result-thumbnail'
+    end
+  end
+
   def display_metadata(label, value, default=nil)
     return if value.blank? and default.nil?
-    value ||= default
     sanitized_values = Array(value).collect { |v| sanitize(v.to_s.strip) }.delete_if(&:empty?)
+    sanitized_values = Array(default) if sanitized_values.empty?
     label = label.pluralize(sanitized_values.size)
     result = content_tag(:dt, label) +
     content_tag(:dd) {
-      sanitized_values.join('; ')
+      safe_join(sanitized_values,'; ')
     }
   end
 
@@ -128,7 +139,7 @@ module ApplicationHelper
       branch = repo.head.name
       commit = repo.head.commit.sha[0..5]
       time = repo.head.commit.committed_date.strftime('%d %b %Y %H:%M:%S')
-      pattern % [branch,commit,time]
+      link_to_if(AboutPage.configuration.git_log, pattern % [branch,commit,time], about_page.component_path('git_log'))
     rescue
       ""
     end
@@ -163,8 +174,8 @@ module ApplicationHelper
     content_tag(:div, itemscope: '', itemprop:  m.is_video? ? 'video' : 'audio',  itemtype: item_type ) do
       concat tag(:meta, itemprop: 'name', content: m.mediaobject.title )
       concat tag(:meta, itemprop: 'duration', content: formatted_duration )
-      concat tag(:meta, itemprop: 'thumbnail', content: Rails.application.routes.url_helpers.thumbnail_master_file_url(m))
-      concat tag(:meta, itemprop: 'image', content: Rails.application.routes.url_helpers.poster_master_file_url(m))
+      concat tag(:meta, itemprop: 'thumbnail', content: thumbnail_master_file_url(m))
+      concat tag(:meta, itemprop: 'image', content: poster_master_file_url(m))
       concat tag(:meta, itemprop: 'sameAs', content: m.permalink ) if m.permalink.present?
       concat tag(:meta, itemprop: 'genre', content: m.mediaobject.genre.join(' ')) unless m.mediaobject.genre.empty?
       concat tag(:meta, itemprop: 'about', content: m.mediaobject.subject.join(' ')) unless m.mediaobject.subject.empty?

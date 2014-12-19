@@ -36,20 +36,20 @@ Unless required by applicable law or agreed to in writing, software distributed
 
       <% if @mediaobject.published? %>
         <% if can?(:unpublish, @mediaobject) %>
-          <%= link_to 'Unpublish', update_status_media_object_path(@mediaobject, :status => 'unpublish'), method: :put, class: 'btn' %>
+          <%= link_to 'Unpublish', update_status_media_object_path(@mediaobject, status:'unpublish'), method: :put, class: 'btn btn-default' %>
         <% end %>
       <% else %>
-        <%= link_to 'Publish', update_status_media_object_path(@mediaobject, :status => 'publish'), method: :put, class: 'btn' %>
+        <%= link_to 'Publish', update_status_media_object_path(@mediaobject, status:'publish'), method: :put, class: 'btn btn-default' %>
       <% end %>
 
 
-        <%= link_to 'Edit', edit_media_object_path(@mediaobject), class: 'btn' %>
+        <%= link_to 'Edit', edit_media_object_path(@mediaobject), class: 'btn btn-default' %>
         <%# This might not be the best approach because it makes accidental 
             deletion possible just by following a link. Need to revisit when
             extra cycles are available %>
 
         <% if can? :destroy, @mediaobject %>
-          <%= link_to 'Delete', remove_media_object_path(@mediaobject), class: 'btn btn-danger' %>
+          <%= link_to 'Delete', confirm_remove_media_object_path(@mediaobject), class: 'btn btn-danger' %>
         <% end %>
       </div>
   </div>

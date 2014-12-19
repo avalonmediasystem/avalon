@@ -22,6 +22,7 @@ class MediaObject < ActiveFedora::Base
   include Avalon::Workflow::WorkflowModelMixin
   include VersionableModel
   include Permalink
+  require 'avalon/controlled_vocabulary'
   
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
@@ -52,10 +53,20 @@ class MediaObject < ActiveFedora::Base
 
   validates :title, :presence => true
   validate  :validate_creator
+  validate  :validate_language
   validates :date_issued, :presence => true
   validate  :report_missing_attributes
   validates :collection, presence: true
   validates :governing_policy, presence: true
+  validate  :validate_related_items
+
+  def validate_language
+    Array(language).each{|i|errors.add(:language, "Language not recognized (#{i[:code]})") unless LanguageTerm::map[i[:code]] }
+  end
+
+  def validate_related_items
+    Array(related_item_url).each{|i|errors.add(:related_item_url, "Bad URL") unless i[:url] =~ URI::regexp(%w(http https))}
+  end
 
   def validate_creator
     if Array(creator).select { |c| c.present? }.empty?
@@ -85,10 +96,15 @@ class MediaObject < ActiveFedora::Base
     :publisher => :publisher,
     :genre => :genre,
     :subject => :topical_subject,
-    :related_item => :related_item_id,
+    :related_item_url => :related_item_url,
     :geographic_subject => :geographic_subject,
     :temporal_subject => :temporal_subject,
     :topical_subject => :topical_subject,
+    :bibliographic_id => :bibliographic_id,
+    :bibliographic_id_label => :bibliographic_id_label,
+    :language => :language,
+    :terms_of_use => :terms_of_use,
+    :physical_description => :physical_description,
     }
   end
 
@@ -113,11 +129,16 @@ class MediaObject < ActiveFedora::Base
   has_attributes :publisher, datastream: :descMetadata, at: [:publisher], multiple: true
   has_attributes :genre, datastream: :descMetadata, at: [:genre], multiple: true
   has_attributes :subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
-  has_attributes :related_item, datastream: :descMetadata, at: [:related_item_id], multiple: true
+  has_attributes :related_item_url, datastream: :descMetadata, at: [:related_item_url], multiple: true
 
   has_attributes :geographic_subject, datastream: :descMetadata, at: [:geographic_subject], multiple: true
   has_attributes :temporal_subject, datastream: :descMetadata, at: [:temporal_subject], multiple: true
   has_attributes :topical_subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
+  has_attributes :bibliographic_id, datastream: :descMetadata, at: [:bibliographic_id], multiple: false
+
+  has_attributes :language, datastream: :descMetadata, at: [:language], multiple: true
+  has_attributes :terms_of_use, datastream: :descMetadata, at: [:terms_of_use], multiple: false
+  has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: false
   
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
     sds.field :duration, :string
@@ -132,8 +153,18 @@ class MediaObject < ActiveFedora::Base
 
   accepts_nested_attributes_for :parts, :allow_destroy => true
 
+  IDENTIFIER_TYPES =  Avalon::ControlledVocabulary.find_by_name(:identifier_types) || {"other" => "Local"}
+
   def published?
     not self.avalon_publisher.blank?
+  end
+
+  def destroy
+    # attempt to stop the matterhorn processing job
+    self.parts.each(&:destroy)
+    self.parts.clear
+    Bookmark.where(document_id: self.pid).destroy_all
+    super
   end
 
   # Removes one or many MasterFiles from parts_with_order
@@ -201,6 +232,13 @@ class MediaObject < ActiveFedora::Base
 
   def update_datastream(datastream = :descMetadata, values = {})
     missing_attributes.clear
+    # Special case the identifiers and their types
+    if values[:bibliographic_id]
+      values[:bibliographic_id] = [[Array(values.delete(:bibliographic_id_label)).first || IDENTIFIER_TYPES.keys[0], Array(values[:bibliographic_id]).first]]
+    end
+    if values[:related_item_url] and values[:related_item_label]
+        values[:related_item_url] = values[:related_item_url].zip(values.delete(:related_item_label))
+    end
     values.each do |k, v|
       # First remove all blank attributes in arrays
       v.keep_if { |item| not item.blank? } if v.instance_of?(Array)
@@ -211,19 +249,33 @@ class MediaObject < ActiveFedora::Base
       #
       # This does not feel right but is just a first pass. Maybe the use of NOM rather
       # than OM will mitigate the need for such tricks
-      if v.first.is_a?(Hash)
-        vals = []
-        attrs = []
+      begin
+        if v.first.is_a?(Hash)
+          vals = []
+          attrs = []
         
-        v.each do |entry|
-          vals << entry[:value]
-          attrs << entry[:attributes]
+          v.each do |entry|
+            vals << entry[:value]
+            attrs << entry[:attributes]
+          end
+          update_attribute_in_metadata(k, vals, attrs)
+        else
+          update_attribute_in_metadata(k, Array(v))
         end
-        update_attribute_in_metadata(k, vals, attrs)
-      else
-        update_attribute_in_metadata(k, Array(v))
+      rescue Exception => msg
+        missing_attributes[k.to_sym] = msg.to_s
       end
     end
+  end
+
+  def bibliographic_id
+    descMetadata.identifier.present? ? [descMetadata.identifier.type.first,descMetadata.identifier.first] : nil
+  end
+  def related_item_url
+    descMetadata.related_item_url.zip(descMetadata.related_item_label).map{|a|{url: a[0],label: a[1]}}
+  end
+  def language
+    descMetadata.language.code.zip(descMetadata.language.text).map{|a|{code: a[0],text: a[1]}}
   end
 
   # This method is one way in that it accepts class attributes and
@@ -274,20 +326,16 @@ class MediaObject < ActiveFedora::Base
       mime_types = nil if mime_types.empty?
       resource_types = nil if resource_types.empty?
 
-      descMetadata.ensure_root_term_exists!(:physical_description)
-      descMetadata.ensure_root_term_exists!(:resource_type)
+      update_attribute_in_metadata(:media_type, mime_types)
+      update_attribute_in_metadata(:resource_type, resource_types)
 
-      descMetadata.find_by_terms(:physical_description, :internet_media_type).remove
-      descMetadata.find_by_terms(:resource_type).remove
-
-      descMetadata.update_values([:physical_description, :internet_media_type] => mime_types, [:resource_type] => resource_types)
     rescue Exception => e
       logger.warn "Error in set_media_types!: #{e}"
     end
   end
   
   def to_solr(solr_doc = Hash.new, opts = {})
-    super(solr_doc, opts)
+    solr_doc = super(solr_doc, opts)
     solr_doc[Solrizer.default_field_mapper.solr_name("created_by", :facetable, type: :string)] = self.DC.creator
     solr_doc[Solrizer.default_field_mapper.solr_name("duration", :displayable, type: :string)] = self.duration
     solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
@@ -297,6 +345,8 @@ class MediaObject < ActiveFedora::Base
     solr_doc[Solrizer.default_field_mapper.solr_name("read_access_virtual_group", indexer)] = virtual_read_groups
     solr_doc["dc_creator_tesim"] = self.creator
     solr_doc["dc_publisher_tesim"] = self.publisher
+    solr_doc["title_ssort"] = self.title
+    solr_doc["creator_ssort"] = Array(self.creator).join(', ')
     #Add all searchable fields to the all_text_timv field
     all_text_values = []
     all_text_values << solr_doc["title_tesi"]
@@ -304,7 +354,14 @@ class MediaObject < ActiveFedora::Base
     all_text_values << solr_doc["contributor_sim"]
     all_text_values << solr_doc["unit_ssim"]
     all_text_values << solr_doc["collection_ssim"]
-    all_text_values << solr_doc["summary_ssim"]
+    all_text_values << solr_doc["summary_ssi"]
+    all_text_values << solr_doc["publisher_sim"]
+    all_text_values << solr_doc["subject_topic_sim"]
+    all_text_values << solr_doc["subject_geographic_sim"]
+    all_text_values << solr_doc["subject_temporal_sim"]
+    all_text_values << solr_doc["genre_sim"]
+    all_text_values << solr_doc["language_sim"]
+    all_text_values << solr_doc["physical_description_si"]
     solr_doc["all_text_timv"] = all_text_values.flatten
     return solr_doc
   end

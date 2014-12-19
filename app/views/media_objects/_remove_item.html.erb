@@ -13,4 +13,5 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<%= link_to "Delete this item", remove_media_object_path(@mediaobject), class: "btn btn-danger btn-block" %>
+
+<%= link_to "Delete this item", confirm_remove_media_object_path(@mediaobject), id: "special_button_color", class: "btn btn-danger btn-block" %>

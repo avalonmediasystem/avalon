@@ -14,16 +14,17 @@
 
 
 class User < ActiveRecord::Base
+  
 # Connects this user object to Hydra behaviors. 
- include Hydra::User
+  include Hydra::User
 # Connects this user object to Blacklights Bookmarks and Folders. 
- include Blacklight::User
+  include Blacklight::User
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
   devise :omniauthable
 
-  attr_accessible :username, :uid, :provider
-  attr_accessible :email, :guest
+#  attr_accessible :username, :uid, :provider
+#  attr_accessible :email, :guest
 
   validates :username, presence: true, uniqueness: true
   validates :email, presence: true, uniqueness: true
@@ -41,6 +42,10 @@ class User < ActiveRecord::Base
   end
 
   def self.find_for_lti(auth_hash, signed_in_resource=nil)
+    if auth_hash.uid.blank?
+      raise Avalon::MissingUserId 
+    end
+    
     class_id = auth_hash.extra.context_id
     if Course.find_by_context_id(class_id).nil?
       class_name = auth_hash.extra.context_name
@@ -84,4 +89,5 @@ class User < ActiveRecord::Base
     end
     seen
   end
+
 end

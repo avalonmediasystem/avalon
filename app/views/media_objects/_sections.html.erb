@@ -13,22 +13,17 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<%# Partial once the layout makes sense %>
       <% show_progress = sections.any? { |s| not s.succeeded? } %>
       <% unless (sections.blank? or sections.length == 1) and not show_progress %>
       <section class="whitespace" id="segments">
         <legend><i class="icon-list-alt"></i> Sections</legend>
           <ol id="section_links">
             <% sections.each_with_index do |section,i| %>
+              <% unless can? :edit, @mediaobject %>
+                <% next if section.derivatives.empty? %>
+              <% end %>
               <li class="<%= show_progress ? 'progress-indented' : ''%>">
                 <%# If the label has not been set use the file name as a default %>
-                <% if show_progress %>
-                  <span class="progress progress-inline">
-                    <div class='bar bar-success' style='width:0%'></div>
-                    <div class='bar bar-danger' style='width:0%'></div>
-                    <div class='bar bar-warning' style='width:0%'></div>
-                  </span>
-                <% end %>
                 <%=
                   link_to stream_label_for(section),
                     pid_section_media_object_path(mediaobject, section.pid),

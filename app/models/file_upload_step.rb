@@ -61,16 +61,16 @@ require 'avalon/dropbox'
     deleted_parts = []
     if not files.blank?
       files.each_pair do |pid,part|
-        selected_part = mediaobject.parts.find{|p| p.pid == pid}
+        selected_part = MasterFile.find(pid)
 
         if selected_part
           if part[:remove]
             deleted_parts << selected_part
             selected_part.destroy
           else
-            selected_part.label = part[:label]
-            selected_part.permalink = part[:permalink]
-            selected_part.poster_offset = part[:poster_offset]
+            selected_part.label = part[:label] unless part[:label].nil?
+            selected_part.permalink = part[:permalink] unless part[:permalink].nil?
+            selected_part.poster_offset = part[:poster_offset] unless part[:poster_offset].nil?
             unless selected_part.save
               context[:error] ||= []
               context[:error] << "#{selected_part.pid}: #{selected_part.errors.to_a.first.gsub(/(\d+)/) { |m| m.to_i.to_hms }}"

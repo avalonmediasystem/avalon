@@ -10,7 +10,7 @@ set :branch, ENV['SCM_BRANCH'] || "release/3.0.0"       # Git branch to deploy
 set :hls_dir, "/var/avalon/hls_streams"
 ssh_options[:keys] = ["/opt/staging/avalon/vov_deployment_key"]
 
-set :bundle_without, rails_env == "development" ? "production" : "development"
+set :bundle_without, rails_env == "development" ? "production" : "development debug"
 
 role :web, deployment_host
 role :app, deployment_host
@@ -36,6 +36,7 @@ set(:shared_children) {
     config/matterhorn.yml 
     config/minter_state.yml
     config/role_map_#{fetch(:rails_env)}.yml 
+    config/secrets.yml
     config/solr.yml
     Gemfile.local 
     log 

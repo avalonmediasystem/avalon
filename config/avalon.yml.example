@@ -27,6 +27,7 @@ development:
     stream_token_ttl: 20 #minutes
     rtmp_base: 'rtmp://localhost/avalon'
     http_base: 'http://localhost:3000/streams'
+    default_quality: 'low'
   groups:
     system_groups: [administrator, group_manager, manager]
   master_file_management:

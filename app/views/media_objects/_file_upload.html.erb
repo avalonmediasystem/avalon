@@ -13,20 +13,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% if flash[:error].present? %>
-  <ul class='unstyled alert alert-error' style='display: inline-table;'>
-    <%= Array(flash[:error]).collect { |error| content_tag(:li,error) }.join('').html_safe %>
-  </ul>
-<% end %>
-
-<% unless @masterFiles.empty? %>
-<section id="associated_files" class="span11">
-      <legend>Associated files</legend>
-      <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
-<%= form_for @mediaobject, html: { class: 'form-vertical', id: 'basic_metadata_form' } do |media| %>
-
+<%= form_for @mediaobject, html: { class: 'form-vertical', id: 'master_files_form' } do |media| %>
       <%= hidden_field_tag :donot_advance, true %>
       <%= hidden_field_tag :step, 'file-upload' %>
+<% unless @masterFiles.empty? %>
+<div id="associated_files">
+      <legend>Associated files</legend>
+      <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
   <div class="collapse form-tooltip" id="label-tooltip">
     <button class="close">&times;</button> <p><%= t("file_upload_tip.label").html_safe %></p>
   </div>
@@ -39,21 +32,21 @@ Unless required by applicable law or agreed to in writing, software distributed
       
     <table class="table table-striped">
       <colgroup>
-        <col class="span1">
-        <col class="span4">
-        <col class="span4">
-        <col class="span1">
-        <col class="span4">
-        <col class="span1">
+        <col class="col-md-1">
+        <col class="col-md-4">
+        <col class="col-md-4">
+        <col class="col-md-1">
+        <col class="col-md-4">
+        <col class="col-md-1">
       </colgroup>
       
       <thead>
         <th>Type</th>
         <th><div class="tooltip-help" data-tooltip="#label-tooltip">Section label</div></th>
 	<th><div class="tooltip-help" data-tooltip="#permalink-tooltip">Permalink</div></th>
-	<th><div class="tooltip-help" data-tooltip="#thumbnail-tooltip" style='min-width:7em;'>Thumbnail</div></th>
+	<th><div class="tooltip-help" data-tooltip="#thumbnail-tooltip" style='min-width:9em;'>Thumbnail</div></th>
         <th>File name</th>
-        <th>Size</th>
+        <th style="min-width:6em">Size</th>
         <th>&nbsp;</th>
       </thead>
 
@@ -72,17 +65,15 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% end %>
         </td>
         <td>
-          <%= text_field_tag "parts[#{part.pid}][label]", part.label,
-            size: 30, class: 'section-label' %>
+          <%= text_field_tag "parts[#{part.pid}][label]", part.label, class: 'form-control' %>
         </td>
 	<td>
-          <%= text_field_tag "parts[#{part.pid}][permalink]", part.permalink,
-            size: 30, class: 'section-label' %>
+          <%= text_field_tag "parts[#{part.pid}][permalink]", part.permalink, class: 'form-control' %>
 	</td>
         <td>
           <% if part.is_video? %>
             <%= text_field_tag "parts[#{part.pid}][poster_offset]",
-              part.poster_offset.to_i.to_hms, size: 8, class: "input-small" %>
+              part.poster_offset.to_i.to_hms, class: 'input-small form-control' %>
           <% else %>
             <span class="input-small">n/a</span>
           <% end %>
@@ -91,7 +82,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <%= truncate_center(File.basename(part.file_location), 50, 20) %>
         </td>
         <td>
-          <strong><%= number_to_human_size(part.file_size) %></strong>
+          <%= number_to_human_size(part.file_size) %>
         </td>
         <td>
           <% if can? :edit, @mediaobject %>
@@ -99,9 +90,10 @@ Unless required by applicable law or agreed to in writing, software distributed
                  <%# On a Rails level this needs to be folded into the masterfiles
                    # controller's destroy method to help remove more vestiges of the
                    # catalog controller %>
-              <%= link_to 'Delete', 
+              <%= link_to '&times;'.html_safe, 
                  master_file_path(part.pid),
-                 class: 'btn btn-mini btn-danger btn-confirmation',
+		 title: 'Delete',
+                 class: 'btn btn-xs btn-danger btn-confirmation',
                  method: :delete %>
           <% end %>
         </td>
@@ -109,12 +101,11 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     </tbody>
   </table>
-    <%= submit_tag "Update", class: "btn clearfix", donot_advance: true %>
+</div>
 <% end %>
-  </section>
 <% end %>
 
-<section id="web_upload" class="span11">
+<div id="web_upload">
  <legend>Upload through the web</legend>
   <p class="muted">Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
 
@@ -127,32 +118,29 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <%- field_tag_options = defined?(uploader_options) ? uploader_options : {multiple: true} %>
 
-        <div class="fileupload fileupload-new" data-provides="fileupload">
-          <div class="input-append">
-            <div class="uneditable-input fileupload-new"></div>
-            <div class="uneditable-input-exists fileupload-exists">
-              <i class="icon-file"></i>
-              <span class="fileupload-preview"></span>
-            </div>
-            <%= button_tag "Upload", name: "upload_file", class: "btn btn-primary fileupload-exists" %>
-            <span class="btn btn-file">
-              <span class="fileupload-new">Select</span>
-              <span class="fileupload-exists">Change</span>
-              <%= file_field_tag "", field_tag_options %>
-            </span>
-            <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
-            <span class="checkbox inline fileupload-exists">
-              <%# FIXME the style on the checkbox should be handled by css classes but it is getting bad values from bootstrap responsive %>
-              <%= check_box_tag(:workflow, 'skip_transcoding', false, 
-                :style => "margin-top: 4px; margin-left: -15px;")%>
-              <%= label_tag(:skip_transcoding) do %>
-                <div style="font-size: inherit;" class="tooltip-help" 
-                  data-title="<%= "something" %>" data-tooltip="#skip-transcoding-tooltip">
-                  Skip transcoding                    
-                </div>
-              <% end %>
-            </span>
+        <div class="fileinput fileinput-new input-group" data-provides="fileinput">
+          <div class="form-control" data-trigger="fileinput">
+            <i class="glyphicon glyphicon-file fileinput-exists"></i> 
+            <span class="fileinput-filename"></span>
           </div>
+          <span class="fileinput-submit fileinput-exists input-group-addon btn btn-default btn-file">
+            <input type="hidden" name="upload_file" value="upload_file"></input>
+            <a href="#" data-trigger="submit">Upload</a>
+          </span>
+          <span class="input-group-addon btn btn-default btn-file"> 
+            <span class="fileinput-new">Select file</span>
+            <span class="fileinput-exists">Change</span>
+            <input type="file" name="Filedata[]"></input>
+          </span>
+          <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
+          <span class="input-group-addon fileinput-exists" style="background-color: white; padding-top: 8px; padding-bottom: 2px; border: none;">
+            <%= check_box_tag(:workflow, 'skip_transcoding', false)%>
+            <%= label_tag(:skip_transcoding) do %>
+              <div style="font-size: inherit;" class="tooltip-help" data-title="Skip Transcoding" data-tooltip="#skip-transcoding-tooltip">
+                Skip transcoding                    
+              </div>
+            <% end %>
+          </span> 
         </div>
         
         <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
@@ -165,32 +153,31 @@ Unless required by applicable law or agreed to in writing, software distributed
     <button class="close">&times;</button>
     <p><%= t("file_upload_tip.skip_transcoding").html_safe %></p>
   </div>
-</section>
+</div>
 
-<section id="dropbox_upload" class="span11">
+<div id="dropbox_upload">
   <legend id="dropbox_modal_label">Import from a dropbox</legend>
   <p class="muted">Use the dropbox to import large files. Attach selected files after uploading. Files will be begin
  processing when you click Save and continue.</p>
-  <p><a class="btn dropbox-trigger" href="#">Open Dropbox</a></p>
+  <%= form_tag(master_files_path, id: 'dropbox_form', method: 'post') do %>
+    <%= hidden_field_tag("workflow") %>
+    <input type="hidden" name="container_id" value="<%=h @mediaobject.pid %>"/>
+    <%= button_tag("Open Dropbox", type: 'button', class: 'btn btn-large btn-primary', id: "browse-btn",
+      'data-toggle' => 'browse-everything', 'data-route' => browse_everything_engine.root_path,
+      'data-target' => '#dropbox_form', 'data-context' => @mediaobject.collection.pid ) %>
+  <% end %>
   <%= render partial: "dropbox_details" %>
-  <%= render partial: 'dropbox' %>
-</section>
+</div>
 
-<section id="workflow_buttons" class="span11">
-<%= twitter_bootstrap_form_for @mediaobject, html: { class: "form-horizontal"} do |media| %>
-  <%= render "workflow_buttons", form: media %>
-<% end %>
-</section>
+<%= render "workflow_buttons", form: 'master_files_form' %>
 
 <% content_for :page_styles do %>
+  <%= stylesheet_link_tag "browse_everything", media: "rel" %>
   <%= stylesheet_link_tag "jasny-bootstrap.min", media: "all" %>
 <% end %>
 
 <% content_for :page_scripts do %>
   <%= javascript_include_tag "file_upload_step" %>
-  <%= javascript_include_tag "bootstrap-fileupload" %>
-  <script>
-    /* Hide the alert dialog on the page loading if Javascript is enabled */
-    <% unless flash[:upload] %>$('#upload_format').hide();<% end %>
-  </script>
+  <%= javascript_include_tag "file_browse" %>
+  <%= javascript_include_tag "jasny-bootstrap.min.js" %>
 <% end %>

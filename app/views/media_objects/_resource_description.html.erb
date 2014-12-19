@@ -1,0 +1,106 @@
+<%#
+Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<div id="resource_description_content">
+<p>Fields followed by an asterisk (*) are required.</p>
+<%= form_for @mediaobject, html: { class: 'form-vertical' } do |form| %>
+  <%= hidden_field_tag :step, @active_step %>
+  
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :bibliographic_id,
+                      options: {display_label: 'Bibliographic ID',
+                                dropdown_field: :bibliographic_id_label, 
+                                dropdown_options: MediaObject::IDENTIFIER_TYPES}} %>
+
+  <%= render partial: 'text_field', 
+             locals: {form: form, field: :title, 
+                      options: {required: true}} %>
+
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :creator,
+                      options: {display_label: 'Main contributor(s)', required: true, multivalued: true}} %>
+                    
+  <%= render partial: 'text_field', 
+             locals: {form: form, field: :date_issued,
+                      options: {display_label: 'Publication date', required: true}} %>
+
+  <%= render partial: 'text_field', 
+             locals: {form: form, field: :date_created,
+                      options: {display_label: 'Creation date'}} %>
+
+  <%= render partial: 'text_area', 
+             locals: {form: form, field: :abstract,
+                      options: {display_label: 'Summary'}} %>
+
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :contributor,
+                      options: {multivalued: true}} %>
+
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :publisher,
+                      options: {multivalued: true}} %>
+
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :language,
+                      options: {multivalued: true,
+                                autocomplete_model: 'languageTerm',
+                                autocomplete_validate: false,
+                                autocomplete_display_key: :text,
+                                autocomplete_id_key: :code}} %>
+
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :physical_description,
+                      options: {display_label: "Physical Description",
+                                multivalued: false}} %>
+
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :related_item_url,
+                      options: {display_label: 'Related Item(s)',
+                                multivalued: true,
+                                primary_label: 'URL',
+                                primary_key: :url,
+                                secondary_label: 'Label',
+                                secondary_key: :label,
+                                secondary_field: :related_item_label}} %>
+
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :genre,
+                      options: {display_label: 'Genre(s)', multivalued: true}} %>
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :topical_subject,
+                      options: {display_label: 'Subject(s)', multivalued: true}} %>
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :temporal_subject,
+                      options: {display_label: 'Time period(s)', multivalued: true}} %>
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :geographic_subject,
+                      options: {display_label: 'Location(s)', multivalued: true}} %>
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :permalink,
+                      options: {}} %>
+  <%= render partial: 'text_area', 
+             locals: {form: form, field: :terms_of_use,
+                      options: {display_label: 'Terms of Use'}} %>
+
+
+  <%= render 'workflow_buttons' %>
+<% end %>
+</div>
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'autocomplete' %>
+  <%= javascript_include_tag 'dynamic_fields' %>
+  <%= javascript_include_tag 'dropdown_text_fields' %>
+<% end %>

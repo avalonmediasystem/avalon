@@ -13,36 +13,39 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-  <div class="span4 access-block" id="<%= access_object %>_management">
-    
-    <%# ----------- Title and tooltip ---------------------------------%>
-    <p class="tooltip-help" data-title="<%= access_object.titleize %>" data-tooltip=<%="##{access_object}_tooltip"%>>
-      <%= t("access_control.#{access_object}label").html_safe %>
-    </p>
-    <div class="collapse form-tooltip" id=<%="#{access_object}_tooltip"%>>
-      <button class="close">&times;</button>
-      <p><%= t("access_control.#{access_object}").html_safe %></p>
+<div class="access-block col-lg-4 col-md-12" id="<%= access_object %>_management">
+<%= bootstrap_form_for object do |form| %>
+  <input id="step" name="step" type="hidden" value="access-control"/>
+  <input id="donot_advance" name="donot_advance" type="hidden" value="true"/>
+    <div class="form-group"> 
+      <%# ----------- Title and tooltip ---------------------------------%>
+      <%= render partial: "modules/tooltip", locals: { form: form, field: access_object, tooltip: t("access_control.#{access_object}"), options: {display_label: t("access_control.#{access_object}label").html_safe} } %>
+
+      <%#------------ Add access item text field and submit button ------------ %>
+      <div class="form-group row">
+        <div class="col-xs-10">
+	<% if defined?(dropdown_values) && dropdown_values.present? %>
+	  <%= select_tag "add_#{access_object}", 
+	    options_from_collection_for_select(*dropdown_values), 
+	    { include_blank: true, disabled: input_disabled, class: "form-control"}%>
+	<% elsif defined?(autocomplete_model) && autocomplete_model.present? %>
+	  <%= hidden_field_tag "add_#{access_object}" %>
+	  <%= text_field_tag "add_#{access_object}_display", nil, 
+	    class: "typeahead from-model form-control", 
+	    data: { model: autocomplete_model, target: "add_#{access_object}" },
+	    disabled: input_disabled %>
+	<% else %>
+	  <%= text_field_tag "add_#{access_object}", nil,
+	    disabled: input_disabled  %>
+	<% end %>
+        </div>
+        <%= button_tag "Add", name: "submit_add_#{access_object}", type: "submit",
+          class: "btn btn-default col-xs-2", disabled: input_disabled, value: "Add" %>
+      </div>
     </div>
 
-    <%#------------ Add access item text field and submit button ------------ %>
-    <% if defined?(dropdown_values) && dropdown_values.present? %>
-      <%= select_tag "add_#{access_object}", 
-        options_from_collection_for_select(*dropdown_values), 
-        { include_blank: true, class: "span9", disabled: input_disabled}%>
-    <% elsif defined?(autocomplete_model) && autocomplete_model.present? %>
-      <%= hidden_field_tag "add_#{access_object}" %>
-      <%= text_field_tag "add_#{access_object}_display", nil, 
-        class: "span10 typeahead from-model", 
-        data: { model: autocomplete_model, target: "add_#{access_object}" },
-        disabled: input_disabled %>
-    <% else %>
-      <%= text_field_tag "add_#{access_object}", nil, class: "span10",
-        disabled: input_disabled  %>
-    <% end %>
-    <%= submit_tag "Add", name: "submit_add_#{access_object}",
-        disabled: input_disabled %>
     <%#----------- Access item list --------------- %>
-    <table class="table table-striped table-hover" style="margin-top:6px;">
+    <table class="table table-striped table-hover">
       <% unless members.empty? %>
       <tbody
         <% members.each do |member_object| %>
@@ -58,11 +61,11 @@ Unless required by applicable law or agreed to in writing, software distributed
           </td>
           <% if !input_disabled %>
           <td>
-            <%= link_to "×", 
+            <%= link_to "×",
               polymorphic_path(object, 
                 "remove_#{access_object}".to_sym => member_object, 
-                step: @active_step, donot_advance: true),
-              method: :put, class: "close" %>
+                step: @active_step, donot_advance: true), method: "put",
+              class: "btn btn-xs close remove" %>
           </td>
           <% end %>
         </tr>
@@ -70,6 +73,6 @@ Unless required by applicable law or agreed to in writing, software distributed
       </tbody>
       <% end %>
     </table> 
-  </div>
 
-        
+<% end %> 
+</div>

@@ -106,7 +106,7 @@ class Admin::CollectionsController < ApplicationController
       if params["submit_add_#{title}"].present? 
         if params["add_#{title}"].present? && can?("update_#{title.pluralize}".to_sym, @collection)
           begin
-            @collection.send "add_#{title}".to_sym, params["add_#{title}"]
+            @collection.send "add_#{title}".to_sym, params["add_#{title}"].strip
           rescue ArgumentError => e
             flash[:notice] = e.message
           end
@@ -127,9 +127,9 @@ class Admin::CollectionsController < ApplicationController
         if params["submit_add_#{title}"].present?
           if params["add_#{title}"].present?
             if ["group", "class"].include? title
-              @collection.default_read_groups += [params["add_#{title}"]]
+              @collection.default_read_groups += [params["add_#{title}"].strip]
             else
-              @collection.default_read_users += [params["add_#{title}"]]
+              @collection.default_read_users += [params["add_#{title}"].strip]
             end
           else
             flash[:notice] = "#{title.titleize} can't be blank."
@@ -171,12 +171,12 @@ class Admin::CollectionsController < ApplicationController
   def destroy
     @source_collection = Admin::Collection.find(params[:id])
     target_path = admin_collections_path
-    if @source_collection.media_objects.length > 0
+    if @source_collection.media_objects.count > 0
       @target_collection = Admin::Collection.find(params[:target_collection_id])
       Admin::Collection.reassign_media_objects( @source_collection.media_objects, @source_collection, @target_collection )
       target_path = admin_collection_path(@target_collection)
     end
-    if @source_collection.media_objects.length == 0
+    if @source_collection.media_objects.count == 0
       @source_collection.destroy
       redirect_to target_path
     else
@@ -184,5 +184,4 @@ class Admin::CollectionsController < ApplicationController
       redirect_to admin_collection_path(@source_collection)
     end
   end
-
 end

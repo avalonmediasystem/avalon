@@ -1,36 +1,25 @@
 <%#
 Copyright 2011-2014, The Trustees of Indiana University and Northwestern
-  University.  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
+ University. Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
 
 You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed 
-  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
-  specific language governing permissions and limitations under the License.
----  END LICENSE_HEADER BLOCK  ---
+Unless required by applicable law or agreed to in writing, software distributed
+ under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ specific language governing permissions and limitations under the License.
+--- END LICENSE_HEADER BLOCK ---
 %>
-<div class="result clearfix">
-  <div class="span2">
-    <% if image_url = image_for(document) %>
-      <%= link_to(media_object_path(document[:id]), {class: 'result-thumbnail'}) do %>
-        <%= image_tag( image_url ) %>
-      <% end %>
-    <% else %>
-      <%= image_tag 'no_icon.png', class: 'result-thumbnail' %>
-    <% end %>
-  </div>
-
-  <ul class="span6 result-list">
-    <% index_fields.each do |solr_fname, field| -%>
-      <% if should_render_index_field? document, field %>
-              <li class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_label :field => solr_fname %>
-                <span class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_value :document => document, :field => solr_fname %></span>
-              </li>
-      <% end -%>
+<dl class="document-metadata dl-horizontal dl-invert col-md-9">
+  
+  <% index_fields(document).each do |solr_fname, field| -%>
+    <% if should_render_index_field? document, field %>
+	    <dt class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_label document, :field => solr_fname %></dt>
+	    <dd class="blacklight-<%= solr_fname.parameterize %>"><%= render_index_field_value document, :field => solr_fname %></dd>
     <% end -%>
-  </ul>
-</div>
+  <% end -%>
+
+</dl>

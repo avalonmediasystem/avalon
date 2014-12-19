@@ -55,14 +55,15 @@ class Admin::GroupsController < ApplicationController
   end
   
   def create
-    if Admin::Group.exists?(params["admin_group"])
-      flash[:error] = "Group name #{params["admin_group"]} is taken."
+    name = params['admin_group'].strip
+    if Admin::Group.exists?(name)
+      flash[:error] = "Group name #{name} is taken."
       redirect_to admin_groups_path
       return
     end
 
     @group = Admin::Group.new
-    @group.name = params["admin_group"]
+    @group.name = name
     if @group.save
       redirect_to edit_admin_group_path(@group)
     else
@@ -105,7 +106,7 @@ class Admin::GroupsController < ApplicationController
         @group.name = new_group_name.blank? ? params["id"] : params["group_name"]
       end
     end
-    @group.users += [new_user] unless new_user.blank?
+    @group.users += [new_user.strip] unless new_user.blank?
     
     if @group.save
       flash[:notice] = "Successfully updated group \"#{@group.name}\""

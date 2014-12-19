@@ -13,16 +13,35 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% default_label = field.to_s %>
-<% text_label ||= default_label.humanize %>
-<% display_label = text_label || default_label.humanize %>
-<% options ||= {} %>
-
-<!-- <%= default_label.humanize %> field -->
-  <div class="control-group">
-    <%= render partial: "modules/tooltip", locals: { media: media, field: field, default_label: default_label, text_label: text_label, display_label: display_label, options: options } %>
-
-    <div class="controls <% if options[:dynamic] %>dynamic<% end %>">
-      <%= media.text_field field, class: 'span8' %>
-    </div>
+<!-- <%= field.to_s.humanize %> field -->
+  <div class="form-group <% if options[:multivalued] %>multivalued<% end %> <% if @mediaobject.errors[field].any? %>has-error<% end %>">
+    <%= render partial: "modules/tooltip", locals: { form: form, field: field, tooltip: t("metadata_tip.#{field.to_s}"), options: options } %>
+    <% if @mediaobject.errors[field].any? %>
+      <%= content_tag :span, @mediaobject.errors[field].join(", "), class: 'help-block' %>
+    <% end %>
+    <% values = @mediaobject.send(field) %>
+    <% fieldarray = "" %>
+    <% if options[:multivalued] %>
+      <% fieldarray = "[]" %>
+    <% else %>
+      <% values = [values] %>
+    <% end %>
+    <% fieldname = "media_object[#{field.to_s}]#{fieldarray}" %>
+    <% count = [1, values.length].max %>
+    <% count.times do |i| %>
+      <% value = values[i] %>
+      <div class="input-group">
+	<% if options[:autocomplete_model] and options[:autocomplete_model].present? %>
+	  <%= render partial: "typeahead_field", locals: {fieldname: fieldname, value: value, options: options} %>
+	<% elsif options[:secondary_field] and options[:secondary_field].present? %>
+	  <%= render partial: "two_part_field", locals: {fieldname: fieldname, value: value, options: options} %>
+	<% else %>
+          <% if options[:dropdown_field] %>
+	    <%= render partial: "dropdown_field", locals: {selected_value: Array(value)[0], options: options} %>
+            <% value = Array(value)[1] %>
+	  <% end %>
+	  <%= text_field_tag fieldname, value || '', class: 'form-control' %>
+        <% end %>
+      </div>
+    <% end %>
   </div>

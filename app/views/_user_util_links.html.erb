@@ -1,0 +1,43 @@
+<%#
+Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<div class="navbar-left">
+  <ul class="nav navbar-nav">
+    <li><%= link_to 'Browse', catalog_index_path(search_field: 'all_fields', utf8: '✓', q: '') %></li>
+    <% if can? :read, Admin::Collection %>
+    <li class=<%= active_for_controller('admin/collections') %>><%= link_to 'Manage Content', admin_collections_path %></li>
+    <% end %>
+    
+    <% if can? :manage, Admin::Group %>
+    <li class=<%= active_for_controller('admin/groups') %>><%= link_to 'Manage Groups', admin_groups_path, target: '_admin' %></li>
+    <% end %>
+    <% if user_session && user_session[:lti_group] %>
+    <li><%= link_to(vgroup_display(user_session[:lti_group]), catalog_index_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])) %></li>
+    <% end %>
+    <% if render_bookmarks_control? %>
+    <li class=<%= active_for_controller('bookmarks') %>>
+      <%= link_to bookmarks_path, id:'bookmarks_nav' do %>
+        <%= t('blacklight.header_links.bookmarks') %>
+	(<span data-role='bookmark-counter'><%= current_or_guest_user.bookmarks.count %></span>)
+      <% end %>
+    </li>
+    <% end %>
+    <li class="divider desktop-hidden" />
+    <%= link_to_if user_signed_in?, 'Sign out', destroy_user_session_path do %>
+    <%# Fallback if the test above fails %>
+    <%= link_to 'Sign in', new_user_session_path %>
+    <% end %>
+  </ul>
+</div>

@@ -1,34 +1,49 @@
 Avalon::Application.routes.draw do
-  Blacklight.add_routes(self, except: [:bookmarks, :feedback, :catalog])
+  mount BrowseEverything::Engine => '/browse'
 #  HydraHead.add_routes(self)
 
+      get '/bookmarks/delete', as: :delete_bookmarks
+      post '/bookmarks/delete'
+      get '/bookmarks/move', as: :move_bookmarks
+      post '/bookmarks/move'
+      get '/bookmarks/update_access_control', as: :update_access_control_bookmarks
+      post '/bookmarks/update_access_control'
+      post '/bookmarks/publish', as: :publish_bookmarks
+      post '/bookmarks/unpublish', as: :unpublish_bookmarks
+
   #Blacklight catalog routes
-  match "catalog/facet/:id", :to => 'catalog#facet', :as => 'catalog_facet'
-  match "catalog", :to => 'catalog#index', :as => 'catalog_index'
+  blacklight_for :catalog
+  #match "catalog/facet/:id", :to => 'catalog#facet', :as => 'catalog_facet', via: [:get]
+  #match "catalog", :to => 'catalog#index', :as => 'catalog_index', via: [:get]
 
   root :to => "catalog#index"
 
   devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }, format: false
   devise_scope :user do 
-    match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session
-    match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session
+    match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session, via: [:get]
+    match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
   end
-  match "/authorize", to: 'derivatives#authorize'
-  match "/autocomplete", to: 'object#autocomplete'
+  match "/authorize", to: 'derivatives#authorize', via: [:get, :post]
+  match "/autocomplete", to: 'object#autocomplete', via: [:get]
 
-  # My routes go here
-  # Routes for subjects and pbcore controller
-  match "object/:id", to: 'object#show'
+  match "object/:id", to: 'object#show', via: [:get]
   resources :media_objects, except: [:create] do
     member do
       put :update_status
-      # 'delete' has special signifigance so use 'remove' for now
-      get :remove
       get :progress, :action => :show_progress
       get 'content/:datastream', :action => :deliver_content, :as => :inspect
       get 'track/:part', :action => :show, :as => :indexed_section
       get 'section/:content', :action => :show, :as => :pid_section
       get 'tree', :action => :tree, :as => :tree
+      get :confirm_remove
+    end
+    collection do
+      get :confirm_remove
+      put :update_status
+      # 'delete' has special signifigance so use 'remove' for now
+      delete :remove, :action => :destroy
+      get :confirm_reassign_collection
+      put :reassign_collection
     end
   end
   resources :master_files, except: [:new, :index] do
@@ -43,14 +58,14 @@ Avalon::Application.routes.draw do
     end
   end
 
-  match '/media_objects/:media_object_id/section/:id/embed' => 'master_files#embed'
-
+  match '/media_objects/:media_object_id/section/:id/embed' => 'master_files#embed', via: [:get]
   resources :derivatives, only: [:create]
   
   resources :comments, only: [:index, :create]
 
   #match 'search/index' => 'search#index'
   #match 'search/facet/:id' => 'search#facet'
+
 
   namespace :admin do
     resources :groups, except: [:show] do 
@@ -75,7 +90,7 @@ Avalon::Application.routes.draw do
     end
   end
 
-  mount AboutPage::Engine => '/about(.:format)'
+  mount AboutPage::Engine => '/about(.:format)', :as => 'about_page'
   
   # The priority is based upon order of creation:
   # first created -> highest priority.

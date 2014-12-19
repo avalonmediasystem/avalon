@@ -45,23 +45,28 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %>
   <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
   <%= javascript_include_tag 'mediaelement-title/mep-feature-title' %>
+  <%= javascript_include_tag 'me-logo' %>
 
   <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
   <%= stylesheet_link_tag "mediaelement-title/mejs-title" =%>
+  <%= stylesheet_link_tag "me-logo" %>
 
+  <% features = ['playpause','current','progress','duration','volume','responsive', 'title'] %>
+  
   <% if @masterfile.is_video? %>
-    <% features = ['playpause','current','progress','duration','volume','qualities','fullscreen','responsive', 'title'] %>
+    <% features << 'qualities' %>
   <% else %>
     <%= javascript_include_tag 'mediaelement-hd-toggle/mep-feature-hdtoggle' %>
     <%= stylesheet_link_tag "mediaelement-hd-toggle/mejs-hdtoggle" =%>
-    <% features = ['playpause','current','progress','duration','volume','hdtoggle','fullscreen','responsive', 'title'] %>
+    <% features << 'hdtoggle' %>
   <% end %>
 
+  <% features += ['logo', 'fullscreen'] %>
   <script>
     currentPlayer = new MediaElementPlayer('#video-tag', 
         { mode: 'auto_plugin',
-          pluginPath: <%= asset_path('mediaelement_rails/').inspect.html_safe %>,
+          pluginPath: '/assets/mediaelement_rails/',
           usePluginFullScreen: false,
           videoWidth: '100%',
           videoHeight: '100%',
@@ -69,9 +74,12 @@ Unless required by applicable law or agreed to in writing, software distributed
           features: <%=features.inspect.html_safe%>,
           audioHeight: 50,
           iOSDisplayedDuration: <%= @masterfile ? @masterfile.duration.to_i / 1000 : -1 %>,
-          startQuality: 'high',
+          startQuality: '<%= Avalon::Configuration.lookup('streaming.default_quality') %>',
           title: '<%= @masterfile.label %>',
-          titleLink: '<%= media_object_url(@masterfile.mediaobject) %>'
+          titleLink: '<%= media_object_url(@masterfile.mediaobject) %>',
+          logoAction: 'popup',
+          logoURL: '<%= pid_section_media_object_url(@masterfile.mediaobject.pid, @masterfile.pid).html_safe %>',
+          logoTitle: 'View in repository'
         });
   </script>
 

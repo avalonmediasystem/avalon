@@ -1,0 +1,22 @@
+<% if defined? flash and !flash.empty? %>
+  <div class="container-fluid" id="alerts">
+  <% [:success, :notice, :error, :alert].each do |type| %>
+    <%- alert_class = case type
+      when :success then "alert-success"
+      when :notice  then "alert-info"
+      when :alert   then "alert-warning"
+      when :error   then "alert-danger"
+      else "alert-#{type}"
+      end
+    -%>
+    <% if flash[type] %>
+      <div class="alert <%=alert_class %>">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+	<% Array(flash[type]).each do |msg| %>
+          <p><%= msg %></p>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+  </div>
+<% end %>

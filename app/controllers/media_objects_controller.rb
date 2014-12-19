@@ -21,7 +21,7 @@ class MediaObjectsController < ApplicationController
 
 #  before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
-  before_filter :load_player_context, only: [:show, :show_progress, :remove]
+  before_filter :load_player_context, only: [:show, :show_progress]
 
   # Catch exceptions when you try to reference an object that doesn't exist.
   # Attempt to resolve it to a close match if one exists and offer a link to
@@ -30,6 +30,10 @@ class MediaObjectsController < ApplicationController
     render '/errors/unknown_pid', status: 404
   end
  
+  def can_embed?
+    params[:action] == 'show'
+  end
+
   def new
     collection = Admin::Collection.find(params[:collection_id])
     authorize! :read, collection
@@ -114,7 +118,7 @@ class MediaObjectsController < ApplicationController
         [mf.pid, mf_status]
       }
     ]
-    overall.each { |k,v| overall[k] = [0,[100,v.to_f/@masterFiles.length.to_f].min].max.round }
+    overall.each { |k,v| overall[k] = [0,[100,v.to_f/@masterFiles.length.to_f].min].max.floor }
 
     if overall[:success]+overall[:error] > 100
       overall[:error] = 100-overall[:success]
@@ -126,44 +130,53 @@ class MediaObjectsController < ApplicationController
     end
   end
 
-  # This sets up the delete view which is an item preview with the ability
-  # to take the item out of the system for good (by POSTing to the destroy
-  # action)
-  def remove 
-    #@previous_view = media_object_path(@mediaobject)
-  end
-
   def destroy
-    media_object = MediaObject.find(params[:id])
-    authorize! :destroy, media_object
-    message = "#{media_object.title} (#{params[:id]}) has been successfuly deleted"
-
-    # attempt to stop the matterhorn processing job
-    media_object.parts.each(&:destroy)
-    media_object.parts.clear
-    
-    media_object.destroy
-    
-    redirect_to root_path, flash: { notice: message }
+    errors = []
+    success_count = 0
+    Array(params[:id]).each do |id|
+      media_object = MediaObject.find(id)
+      if can? :destroy, media_object
+        media_object.destroy
+        success_count += 1
+      else
+        errors += [ "#{media_object.title} (#{params[:id]}) permission denied" ]
+      end      
+    end
+    message = "#{success_count} #{'media object'.pluralize(success_count)} successfully deleted."
+    message += "These objects were not deleted:</br> #{ errors.join('<br/> ') }" if errors.count > 0
+    redirect_to params[:previous_view]=='/bookmarks'? '/bookmarks' : root_path, flash: { notice: message }
   end
 
   # Sets the published status for the object. If no argument is given then
   # it will just toggle the state.
   def update_status
-    media_object = MediaObject.find(params[:id])
-    authorize! :update, media_object
-    
-    case params[:status]
-      when 'publish'
-        media_object.publish!(user_key)
-      when 'unpublish'
-        media_object.publish!(nil) if can?(:unpublish, media_object)   
+    status = params[:status]
+    errors = []
+    success_count = 0
+    Array(params[:id]).each do |id|
+      media_object = MediaObject.find(id)
+      if cannot? :update, media_object
+        errors += ["#{media_object.title} (#{id}) (permission denied)."]
+      else
+        case status
+          when 'publish'
+            media_object.publish!(user_key)
+            # additional save to set permalink
+            media_object.save( validate: false )
+            success_count += 1
+          when 'unpublish'
+            if can? :unpublish, media_object
+              media_object.publish!(nil)
+              success_count += 1
+            else
+              errors += ["#{media_object.title} (#{id}) (permission denied)."]
+            end
+        end
+      end
     end
-
-    # additional save to set permalink
-    media_object.save( validate: false )
-    
-    redirect_to :back
+    message = "#{success_count} #{'media object'.pluralize(success_count)} successfully #{status}ed."
+    message += "These objects were not #{status}ed:</br> #{ errors.join('<br/> ') }" if errors.count > 0
+    redirect_to :back, flash: {notice: message.html_safe}
   end
 
   # Sets the published status for the object. If no argument is given then
@@ -197,7 +210,7 @@ class MediaObjectsController < ApplicationController
   end
 
   protected
-
+  
   def load_master_files
     @mediaobject.parts_with_order
   end

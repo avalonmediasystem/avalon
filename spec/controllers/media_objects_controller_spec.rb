@@ -37,14 +37,14 @@ describe MediaObjectsController, type: :controller do
     end
 
     it "should not let manager of other collections create an item in this collection" do
-      pending
+      skip
     end
 
     context "Default permissions should be applied" do
       it "should be editable by the creator" do
         login_user collection.managers.first
         expect { get 'new', collection_id: collection.pid }.to change { MediaObject.count }
-        pid = MediaObject.find(:all).last.pid
+        pid = MediaObject.all.last.pid
         response.should redirect_to(edit_media_object_path(id: pid))
       end
 
@@ -82,11 +82,11 @@ describe MediaObjectsController, type: :controller do
 
        get 'edit', id: media_object.pid
        response.should be_success
-       response.should render_template HYDRANT_STEPS.first.template
+       response.should render_template "_#{HYDRANT_STEPS.first.template}"
      end
     
     it "should not default to the Access Control page" do
-      pending "[VOV-1165] Wait for product owner feedback on which step to default to"
+      skip "[VOV-1165] Wait for product owner feedback on which step to default to"
     end
 
     context "Updating the metadata should result in valid input" do
@@ -115,9 +115,7 @@ describe MediaObjectsController, type: :controller do
             .to('newpermalink')
         end
         it "should persist new permalink on unpublished media_object part" do 
-          part1 = FactoryGirl.create(:master_file)
-          mo.parts << part1
-          mo.save( validate: false )
+          part1 = FactoryGirl.create(:master_file, mediaobject: mo)
           expect {put 'update', id: mo.pid, step: 'file-upload', 
                   parts: { part1.pid => { permalink: 'newpermalinkpart' }}}
             .to change { MasterFile.find(part1.pid).permalink }
@@ -134,9 +132,7 @@ describe MediaObjectsController, type: :controller do
             .to('newpermalink')
         end
         it "should persist updated permalink on published media_object part" do
-          part1 = FactoryGirl.create(:master_file, permalink: 'oldpermalinkpart1')
-          mo.parts << part1
-          mo.save( validate: false )
+          part1 = FactoryGirl.create(:master_file, permalink: 'oldpermalinkpart1', mediaobject: mo)
           expect { put 'update', id: mo.pid, step: 'file-upload', 
                    parts: { part1.pid => { permalink: 'newpermalinkpart' }}}
             .to change { MasterFile.find(part1.pid).permalink }
@@ -156,6 +152,7 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should return an error if the PID does not exist" do
+        expect(MediaObject).to receive(:find).with('no-such-object') { raise ActiveFedora::ObjectNotFoundError }
         get :show, id: 'no-such-object'
         response.response_code.should == 404
       end
@@ -239,50 +236,111 @@ describe MediaObjectsController, type: :controller do
   end
     
   describe "#destroy" do
-    let!(:media_object) { FactoryGirl.create(:media_object) }
+    let!(:collection) { FactoryGirl.create(:collection) }
     before(:each) do 
-      login_user media_object.collection.managers.first
+      login_user collection.managers.first
     end
     
-    it "should remove the MediaObject from the system" do
+    it "should remove the MediaObject and MasterFiles from the system" do
+      media_object = FactoryGirl.create(:media_object_with_master_file, collection: collection)
       delete :destroy, id: media_object.pid
-      MediaObject.exists?(media_object.pid).should == false
+      expect(flash[:notice]).to include("success")
+      expect(MediaObject.exists?(media_object.pid)).to be_falsey
+      expect(MasterFile.exists?(media_object.parts.first.id)).to be_falsey
     end
 
-    it "should not be accessible through the search interface" do
-      delete :destroy, id: media_object.pid
-      pending "Figure out how to make the right query against Solr"
-    end
-
-    # This test may need to be more robust to catch errors but is just a first cut
-    # for the time being
-    it "should not be possible to delete an object which does not exist" do
-      pending "Fix access controls to stop throwing exception"
+    it "should fail when id doesn't exist" do
       delete :destroy, id: 'avalon:this-pid-is-fake'
-      response.should redirect_to root_path
+      expect(response.code).to eq '404'
+    end
+
+    it "should fail if user is not authorized" do
+      media_object = FactoryGirl.create(:media_object)
+      expect(delete :destroy, id: media_object.id).to redirect_to root_path
+      expect(flash[:notice]).to include("permission denied")
+    end
+
+    it "should remove multiple items" do
+      media_objects = []
+      3.times { media_objects << FactoryGirl.create(:media_object, collection: collection) }
+      delete :destroy, id: media_objects.map(&:id)
+      expect(flash[:notice]).to include('3 media objects')
+      media_objects.each {|mo| expect(MediaObject.exists?(mo.pid)).to be_falsey }
     end
   end
 
   describe "#update_status" do
-    let!(:media_object) { FactoryGirl.create(:media_object) }
+    let!(:collection) { FactoryGirl.create(:collection) }
     before(:each) do
-      login_user media_object.collection.managers.first
+      login_user collection.managers.first
       request.env["HTTP_REFERER"] = '/'
-      Permalink.on_generate { |obj| "http://example.edu/permalink" }
     end
 
-    it 'publishes media object' do
-      get 'update_status', :id => media_object.pid, :status => 'publish'
-      mo = MediaObject.find(media_object.pid)
-      mo.published?.should be_true
-      mo.permalink.should be_present
+    context 'publishing' do
+      before(:each) do
+        Permalink.on_generate { |obj| "http://example.edu/permalink" }
+      end
+      it 'publishes media object' do
+	media_object = FactoryGirl.create(:media_object, collection: collection)
+        get 'update_status', id: media_object.pid, status: 'publish'
+        media_object.reload
+        expect(media_object).to be_published
+        expect(media_object.permalink).to be_present
+      end
+
+      it "should fail when id doesn't exist" do
+	get 'update_status', id: 'avalon:this-pid-is-fake', status: 'publish'
+	expect(response.code).to eq '404'
+      end
+
+      it "should fail if user is not authorized" do
+	media_object = FactoryGirl.create(:media_object)
+	expect(get 'update_status', id: media_object.pid, status: 'publish').to be_redirect
+	expect(flash[:notice]).to include("permission denied")
+      end
+
+      it "should publish multiple items" do
+	media_objects = []
+	3.times { media_objects << FactoryGirl.create(:media_object, collection: collection) }
+        get 'update_status', id: media_objects.map(&:id), status: 'publish'
+	expect(flash[:notice]).to include('3 media objects')
+        media_objects.each do |mo|
+          mo.reload
+	  expect(mo).to be_published
+	  expect(mo.permalink).to be_present
+        end
+      end
     end
 
-    it 'unpublishes media object' do
-      media_object.avalon_publisher = media_object.collection.managers.first
-      media_object.save
-      get 'update_status', :id => media_object.pid, :status => 'unpublish' 
-      MediaObject.find(media_object.pid).published?.should be_false
+    context 'unpublishing' do
+      it 'unpublishes media object' do
+        media_object = FactoryGirl.create(:published_media_object, collection: collection)
+        get 'update_status', :id => media_object.pid, :status => 'unpublish'
+        media_object.reload
+        expect(media_object).not_to be_published
+      end
+
+      it "should fail when id doesn't exist" do
+	get 'update_status', id: 'avalon:this-pid-is-fake', status: 'unpublish'
+	expect(response.code).to eq '404'
+      end
+
+      it "should fail if user is not authorized" do
+	media_object = FactoryGirl.create(:media_object)
+	expect(get 'update_status', id: media_object.pid, status: 'unpublish').to be_redirect
+	expect(flash[:notice]).to include("permission denied")
+      end
+
+      it "should unpublish multiple items" do
+	media_objects = []
+	3.times { media_objects << FactoryGirl.create(:published_media_object, collection: collection) }
+        get 'update_status', id: media_objects.map(&:id), status: 'unpublish'
+	expect(flash[:notice]).to include('3 media objects')
+        media_objects.each do |mo|
+          mo.reload
+	  expect(mo).not_to be_published
+        end
+      end
     end
   end
 
@@ -292,7 +350,7 @@ describe MediaObjectsController, type: :controller do
       media_object = FactoryGirl.create(:media_object)
       media_object.parts << FactoryGirl.create(:master_file)
       media_object.parts << FactoryGirl.create(:master_file)
-      master_file_pids = media_object.parts.select(&:id).map(&:id)
+      master_file_pids = media_object.parts.map(&:id)
       media_object.section_pid = master_file_pids
       media_object.save( validate: false )
 
@@ -301,6 +359,15 @@ describe MediaObjectsController, type: :controller do
       put 'update', :id => media_object.pid, :masterfile_ids => master_file_pids.reverse, :step => 'structure'
       media_object.reload
       media_object.section_pid.should eq master_file_pids.reverse
+    end
+    it 'sets the MIME type' do
+      media_object = FactoryGirl.create(:media_object)
+      media_object.parts << FactoryGirl.create(:master_file_with_derivative)
+      media_object.section_pid = media_object.parts.map(&:id)
+      media_object.set_media_types!
+      media_object.save( validate: false )
+      media_object.reload
+      expect(media_object.descMetadata.media_type).to eq(["video/mp4"])
     end
   end
 end

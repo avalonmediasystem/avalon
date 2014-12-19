@@ -49,7 +49,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     logger.debug "#{auth_type} :: #{current_user.inspect}"
     @user = User.send(find_method,request.env["omniauth.auth"], current_user)
     if @user.persisted?
-      flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => auth_type
+      flash[:success] = I18n.t "devise.omniauth_callbacks.success", :kind => auth_type
       sign_in @user, :event => :authentication
       user_session[:virtual_groups] = @user.ldap_groups
       user_session[:full_login] = true
@@ -74,4 +74,10 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   protected :find_user
+  
+  rescue_from Avalon::MissingUserId do |exception|
+    support_email = Avalon::Configuration.lookup('email.support')
+    notice_text = I18n.t('errors.lti_auth_error') % [support_email, support_email]
+    redirect_to root_path, flash: { error: notice_text.html_safe }
+  end
 end

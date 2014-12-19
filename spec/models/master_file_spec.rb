@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'spec_helper'
+require 'rubyhorn/rest_client/exceptions'
 
 describe MasterFile do
 
@@ -106,15 +107,51 @@ describe MasterFile do
       let(:master_file){ MasterFile.new }
       it 'returns true for stopped' do
         master_file.status_code = ['STOPPED']
-        master_file.finished_processing?.should be_true
+        master_file.finished_processing?.should be true
       end
       it 'returns true for succeeded' do
         master_file.status_code = ['SUCCEEDED']
-        master_file.finished_processing?.should be_true
+        master_file.finished_processing?.should be true
       end
       it 'returns true for failed' do
         master_file.status_code = ['FAILED']
-        master_file.finished_processing?.should be_true
+        master_file.finished_processing?.should be true
+      end
+    end
+  end
+
+  describe '#process' do
+    let!(:master_file) { FactoryGirl.create(:master_file) }
+    let(:ingest_job) { MatterhornIngestJob.new({title: master_file.pid}) }
+    before do
+      allow(MatterhornIngestJob).to receive(:new).and_return(ingest_job)
+      allow(ingest_job).to receive(:perform)
+      Delayed::Worker.delay_jobs = false
+    end
+    it 'starts a Matterhorn workflow' do
+      master_file.process
+      expect(ingest_job).to have_received(:perform)
+    end
+    describe 'already processing' do
+      before do
+        master_file.status_code = 'RUNNING'
+      end
+      it 'should not start a Matterhorn workflow' do
+        expect{master_file.process}.to raise_error(RuntimeError)
+        expect(ingest_job).not_to have_received(:perform)
+      end
+    end
+    describe 'failure' do
+      before do
+        Rubyhorn.stub_chain(:client, :addMediaPackageWithUrl).and_raise(Rubyhorn::RestClient::Exceptions::ServerError, "FAILED")
+      Delayed::Worker.delay_jobs = true
+      end
+      it 'should set the status to FAILED when the request to Matterhorn fails' do
+        master_file.process
+        #Have to manually tell delayed_job to do the work because callback doesn't get fired with delay_jobs = false
+        Delayed::Worker.new.work_off
+        master_file.reload
+        expect(master_file.status_code).to eq('FAILED')
       end
     end
   end
@@ -130,7 +167,6 @@ describe MasterFile do
     end
 
     it "should delete with a nil parent (VOV-1357)" do
-      pending "bugfix"      
       masterfile.mediaobject = nil
       masterfile.save
       expect { masterfile.delete }.to change { MasterFile.all.count }.by(-1)

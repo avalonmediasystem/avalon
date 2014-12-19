@@ -64,8 +64,8 @@ namespace :avalon do
       password = ENV['avalon_password']
       groups = ENV['avalon_groups'].split(",")
      
-      Identity.create(email: username, password: password)
-      User.create(username: username)
+      Identity.create!(email: username, password: password, password_confirmation: password)
+      User.create!(username: username, email: username)
       groups.each do |group|
         RoleControls.add_role(group) unless RoleControls.role_exists? group
         RoleControls.add_user_role(username, group)
@@ -107,7 +107,17 @@ namespace :avalon do
 
   desc "Reindex all Avalon objects"
   task :reindex => :environment do
-    prefix = Avalon::Configuration.lookup('fedora.namespace')
-    ActiveFedora::Base.reindex_everything("pid~#{prefix}:*")
+    query = "pid~#{Avalon::Configuration.lookup('fedora.namespace')}:*"
+    #Override of ActiveFedora::Base.reindex_everything("pid~#{prefix}:*") including error handling/reporting
+    ActiveFedora::Base.send(:connections).each do |conn|
+      conn.search(query) do |object|
+        next if object.pid.start_with?('fedora-system:')
+        begin
+          ActiveFedora::Base.find(object.pid).update_index
+        rescue
+          puts "#{object.pid} failed reindex"
+        end
+      end
+    end
   end
 end
