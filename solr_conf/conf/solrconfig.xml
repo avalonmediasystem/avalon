@@ -16,6 +16,23 @@
   
   <dataDir>${solr.data.dir:}</dataDir>
 
+  <updateHandler class="solr.DirectUpdateHandler2">
+
+    <updateLog>
+      <str name="dir">${solr.ulog.dir:}</str>
+    </updateLog>
+
+    <autoCommit> 
+      <maxTime>${solr.autoCommit.maxTime:15000}</maxTime> 
+      <openSearcher>false</openSearcher> 
+    </autoCommit>
+
+    <autoSoftCommit> 
+      <maxTime>${solr.autoSoftCommit.maxTime:-1}</maxTime> 
+    </autoSoftCommit>
+
+  </updateHandler>
+
   <requestHandler name="search" class="solr.SearchHandler" default="true">
     <!-- default values for query parameters can be specified, these
          will be overridden by parameters in the request
