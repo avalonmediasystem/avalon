@@ -23,17 +23,17 @@
   gem 'bcrypt-ruby', '~> 3.1.0'
   gem 'kaminari', '~> 0.15.0'
 
-  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git'#, tag: 'avalon-r3'
+  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'v3.2'
   gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git", tag: 'v3.1'
-  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'v3.1' # HEAD , tag: 'avalon-r3'
-  gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git' # HEAD , tag: 'avalon-r3'
-  gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector' # HEAD , tag: 'v3.1'
-  gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git' # HEAD , tag: 'avalon-r3'
-  gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git' # HEAD , tag: 'avalon-r3'
-  gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git' # HEAD , tag: 'avalon-r3'
+  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'v3.1'
+  gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r3'
+  gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'v3.2'
+  gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'v3.2'
+  gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r3'
+  gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r3'
   gem 'media-element-logo-plugin'
 
-  gem 'browse-everything', '>= 0.6.3'
+  gem 'browse-everything', '0.6.3'
   
   gem 'roo', git: 'https://github.com/Empact/roo', ref: '9e1b969762cbb80b1c52cfddd848e489f22f468f'
 
@@ -59,19 +59,19 @@
     gem 'therubyracer', '>= 0.12.0'
   end
 
-  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git"
-  gem 'about_page', git: "https://github.com/avalonmediasystem/about_page.git"
+  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git", tag: 'v3.2'
+  gem 'about_page', git: "https://github.com/avalonmediasystem/about_page.git", tag: 'avalon-v3.2'
 
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise', '~>3.2.0'
   #gem 'devise-guests'
   gem 'haml'
 
-  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git" # HEAD , tag: 'avalon-r3'
+  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'v3.2'
   gem 'validates_email_format_of'
   gem 'loofah'
   gem 'omniauth-identity'
-  gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
+  gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'v3.1'
 
   gem 'mediainfo'
   gem 'delayed_job_active_record'
@@ -109,8 +109,8 @@
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do
     gem "jettywrapper"
-    gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
-    gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'v3.1' # HEAD , tag: 'avalon-r3'
+    gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'v3.1'
+    gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'v3.1'
     gem 'daemons'
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano'
