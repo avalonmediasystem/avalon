@@ -95,7 +95,7 @@ en:
     bibliographic_id: |
       Bibliographic ID should be used for an external record identifier that can connect the Avalon item to a catalog record or other record for the original item. Type specifies the type of external record identifier.
     language: |
-      Language describes the language/s used in the item. Typing two or more
+      Language describes the languages used in the item. Typing two or more
       letters within the field will bring up permitted matches. Only terms or
       codes from the <a href="http://www.loc.gov/marc/languages/"
       target="_blank">MARC Code List for Languages</a> may be used. This is an
