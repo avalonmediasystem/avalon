@@ -3,6 +3,12 @@
 	<xsl:output encoding="UTF-8" indent="yes" method="xml"/>
 	<xsl:strip-space elements="*"/>
 
+	<!-- Avalon Media System changes:
+		
+Added type="primary" to 245 titles
+Changed "marc" date encodings to "edtf"
+
+-->
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
 	MARC21slim2MODS3-5 (Revision 1.106) 20141219
 	
@@ -79,7 +85,7 @@ Revision 1.39 - Aquifer revision 1.23 Changed mapping for 762 (Subseries Entry) 
 Revision 1.38 - Aquifer revision 1.29 Dropped 007s for electronic versions 2009/11/18 tmee
 Revision 1.37 - Fixed date redundancy in output (with questionable dates) 2009/11/16 tmee
 Revision 1.36 - If mss material (Ldr/06=d,p,f,t) map 008 dates and 260$c/$g dates to dateCreated 2009/11/24, otherwise map 008 and 260$c/$g to dateIssued 2010/01/08 tmee
-Revision 1.35 - Mapped appended detailed dates from 008/07-10 and 008/11-14 to dateIssued or DateCreated w/encoding="marc" 2010/01/12 tmee
+Revision 1.35 - Mapped appended detailed dates from 008/07-10 and 008/11-14 to dateIssued or DateCreated w/encoding="edtf" 2010/01/12 tmee
 Revision 1.34 - Mapped 045b B.C. and C.E. date range info to iso8601-compliant dates in <subject><temporal> 2009/01/08 ntra
 Revision 1.33 - Mapped Ldr/06 "o" to <typeOfResource>kit 2009/11/16 tmee
 Revision 1.32 - Mapped specific note types from the MODS Note Type list <http://www.loc.gov/standards/mods/mods-notes.html> tmee 2009/11/17
@@ -887,23 +893,23 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			<!-- tmee 1.52 -->
 
 			<xsl:for-each select="marc:datafield[@tag=046]/marc:subfield[@code='c']">
-				<dateIssued encoding="marc" point="start">
+				<dateIssued encoding="edtf" point="start">
 					<xsl:value-of select="."/>
 				</dateIssued>
 			</xsl:for-each>
 			<xsl:for-each select="marc:datafield[@tag=046]/marc:subfield[@code='e']">
-				<dateIssued encoding="marc" point="end">
+				<dateIssued encoding="edtf" point="end">
 					<xsl:value-of select="."/>
 				</dateIssued>
 			</xsl:for-each>
 
 			<xsl:for-each select="marc:datafield[@tag=046]/marc:subfield[@code='k']">
-				<dateCreated encoding="marc" point="start">
+				<dateCreated encoding="edtf" point="start">
 					<xsl:value-of select="."/>
 				</dateCreated>
 			</xsl:for-each>
 			<xsl:for-each select="marc:datafield[@tag=046]/marc:subfield[@code='l']">
-				<dateCreated encoding="marc" point="end">
+				<dateCreated encoding="edtf" point="end">
 					<xsl:value-of select="."/>
 				</dateCreated>
 			</xsl:for-each>
@@ -967,7 +973,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 			<xsl:if test="($controlField008-6='e' or $controlField008-6='p' or $controlField008-6='r' or $controlField008-6='s' or $controlField008-6='t') and ($leader6='d' or $leader6='f' or $leader6='p' or $leader6='t')">
 				<xsl:if test="$controlField008-7-10 and ($controlField008-7-10 != $dataField260c)">
-					<dateCreated encoding="marc">
+					<dateCreated encoding="edtf">
 						<xsl:value-of select="$controlField008-7-10"/>
 					</dateCreated>
 				</xsl:if>
@@ -975,14 +981,14 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 			<xsl:if test="($controlField008-6='e' or $controlField008-6='p' or $controlField008-6='r' or $controlField008-6='s' or $controlField008-6='t') and not($leader6='d' or $leader6='f' or $leader6='p' or $leader6='t')">
 				<xsl:if test="$controlField008-7-10 and ($controlField008-7-10 != $dataField260c)">
-					<dateIssued encoding="marc">
+					<dateIssued encoding="edtf">
 						<xsl:value-of select="$controlField008-7-10"/></dateIssued>
 				</xsl:if>
 			</xsl:if>
 
 			<xsl:if test="$controlField008-6='c' or $controlField008-6='d' or $controlField008-6='i' or $controlField008-6='k' or $controlField008-6='m' or $controlField008-6='u'">
 				<xsl:if test="$controlField008-7-10">
-					<dateIssued encoding="marc" point="start">
+					<dateIssued encoding="edtf" point="start">
 						<xsl:value-of select="$controlField008-7-10"/>
 					</dateIssued>
 				</xsl:if>
@@ -990,7 +996,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 			<xsl:if test="$controlField008-6='c' or $controlField008-6='d' or $controlField008-6='i' or $controlField008-6='k' or $controlField008-6='m' or $controlField008-6='u'">
 				<xsl:if test="$controlField008-11-14">
-					<dateIssued encoding="marc" point="end">
+					<dateIssued encoding="edtf" point="end">
 						<xsl:value-of select="$controlField008-11-14"/>
 					</dateIssued>
 				</xsl:if>
@@ -998,14 +1004,14 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 			<xsl:if test="$controlField008-6='q'">
 				<xsl:if test="$controlField008-7-10">
-					<dateIssued encoding="marc" point="start" qualifier="questionable">
+					<dateIssued encoding="edtf" point="start" qualifier="questionable">
 						<xsl:value-of select="$controlField008-7-10"/>
 					</dateIssued>
 				</xsl:if>
 			</xsl:if>
 			<xsl:if test="$controlField008-6='q'">
 				<xsl:if test="$controlField008-11-14">
-					<dateIssued encoding="marc" point="end" qualifier="questionable">
+					<dateIssued encoding="edtf" point="end" qualifier="questionable">
 						<xsl:value-of select="$controlField008-11-14"/>
 					</dateIssued>
 				</xsl:if>
@@ -1015,7 +1021,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			<!-- tmee 1.77 008-06 dateIssued for value 's' 1.89 removed 20130920 
 			<xsl:if test="$controlField008-6='s'">
 				<xsl:if test="$controlField008-7-10">
-					<dateIssued encoding="marc">
+					<dateIssued encoding="edtf">
 						<xsl:value-of select="$controlField008-7-10"/>
 					</dateIssued>
 				</xsl:if>
@@ -1024,7 +1030,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			
 			<xsl:if test="$controlField008-6='t'">
 				<xsl:if test="$controlField008-11-14">
-					<copyrightDate encoding="marc">
+					<copyrightDate encoding="iso8601">
 						<xsl:value-of select="$controlField008-11-14"/>
 					</copyrightDate>
 				</xsl:if>
@@ -2723,7 +2729,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</recordContentSource>
 			</xsl:for-each>
 			<xsl:for-each select="marc:controlfield[@tag=008]">
-				<recordCreationDate encoding="marc">
+				<recordCreationDate encoding="edtf">
 					<xsl:value-of select="substring(.,1,6)"/>
 				</recordCreationDate>
 			</xsl:for-each>
@@ -2745,7 +2751,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			</xsl:for-each>
 
 			<recordOrigin>Converted from MARCXML to MODS version 3.5 using MARC21slim2MODS3-5.xsl
-				(Revision 1.106 2014/12/19)</recordOrigin>
+				(Revision 1.106 2014/12/19), customized for the Avalon Media System (last revised 2014/12/26)</recordOrigin>
 
 			<xsl:for-each select="marc:datafield[@tag=040]/marc:subfield[@code='b']">
 				<languageOfCataloging>
@@ -4197,7 +4203,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	</xsl:template>
 	<!-- 1.79 -->
 	<xsl:template name="createTitleInfoFrom245">
-		<titleInfo>
+		<titleInfo usage="primary">
 			<xsl:call-template name="xxx880"/>
 			<xsl:variable name="title">
 				<xsl:choose>
