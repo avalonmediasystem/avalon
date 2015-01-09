@@ -19,8 +19,10 @@ class ResourceDescriptionStep < Avalon::Workflow::BasicStep
 
   def execute context
     mediaobject = context[:mediaobject]
+    populate_from_catalog = context[:media_object][:bibliographic_id] != mediaobject.bibliographic_id
     mediaobject.permalink = context[:media_object].delete(:permalink)
     mediaobject.update_datastream(:descMetadata, context[:media_object])
+    mediaobject.descMetadata.populate_from_catalog! if populate_from_catalog
     mediaobject.save
     context
   end
