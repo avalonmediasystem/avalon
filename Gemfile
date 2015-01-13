@@ -69,7 +69,7 @@
   gem 'loofah'
   gem 'omniauth-identity'
   gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'v3.1'
-  gem 'omniauth-shibboleth', git: "https://github.com/uvalib/omniauth-shibboleth.git", tag: 'v0.2.0'
+  gem 'omniauth-shibboleth', git: "https://github.com/uvalib/omniauth-shibboleth.git", tag: 'v0.3.0'
 
   gem 'mediainfo'
   gem 'delayed_job_active_record'
