@@ -14,7 +14,34 @@
 
 class MatterhornIngestJob < Struct.new(:args)
   def perform
-    Rubyhorn.client.addMediaPackageWithUrl(args)
+    if args[:url].is_a? Hash
+      multipleFileIngest
+    else
+      Rubyhorn.client.addMediaPackageWithUrl(args)
+    end
+  end
+
+  def multipleFileIngest
+    #Create empty media package xml document
+    mp = Rubyhorn.client.createMediaPackage
+
+    #Next line associates workflow title to avalon via masterfile pid
+    dc = Nokogiri::XML('<dublincore xmlns="http://www.opencastproject.org/xsd/1.0/dublincore/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dcterms:title>' + args[:title] + '</dcterms:title></dublincore>')
+    mp = Rubyhorn.client.addDCCatalog({'mediaPackage' => mp.to_xml, 'dublinCore' => dc.to_xml, 'flavor' => 'dublincore/episode'})
+
+    #Add quality levels - repeated for each supplied file url
+    args[:url].each_pair do |quality, url|
+      mp = Rubyhorn.client.addTrack({'mediaPackage' => mp.to_xml, 'url' => url, 'flavor' => args[:flavor]})
+      #Rewrite track to include quality tag
+      #Get the empty tags element under the newly added track
+      tags = mp.xpath('//xmlns:track/xmlns:tags[not(node())]', 'xmlns' => 'http://mediapackage.opencastproject.org').first
+      qualityTag = Nokogiri::XML::Node.new 'tag', mp
+      qualityTag.content = quality
+      tags.add_child qualityTag
+    end
+
+    #Finally ingest the media package
+    Rubyhorn.client.ingest({"workflow" => args[:workflow], "mediaPackage" => mp.to_xml})
   end
 
   def error(job, exception)
