@@ -20,7 +20,9 @@ describe MasterFile do
   describe "validations" do
     subject {MasterFile.new}
     it {should validate_presence_of(:workflow_name)}
-    it {should ensure_inclusion_of(:workflow_name).in_array(MasterFile::WORKFLOWS)}
+    it {should validate_inclusion_of(:workflow_name).in_array(MasterFile::WORKFLOWS)}
+    it {should validate_presence_of(:file_format)}
+    it {should validate_exclusion_of(:file_format).in_array(['Unknown']).with_message("The file was not recognized as audio or video.")}
   end
 
   describe "locations" do

@@ -72,6 +72,7 @@ class MasterFile < ActiveFedora::Base
       record.errors.add attr, "must be between 0 and #{record.duration}"
     end
   end
+  validates :file_format, presence: true, exclusion: { in: ['Unknown'], message: "The file was not recognized as audio or video." }
 
   has_model_version 'R3'
   before_save 'update_stills_from_offset!'
@@ -101,6 +102,23 @@ class MasterFile < ActiveFedora::Base
   
   EMBED_SIZE = {:medium => 600}
   AUDIO_HEIGHT = 50
+
+  def create(file, parent, opts = {})
+    mf = MasterFile.new
+    mf.save(validate: false)
+    mf.mediaobject = parent
+    mf.setContent(Array(file).first)
+    mf.set_workflow(opts[:workflow])
+    begin
+      mf.save!
+    rescue Exception => e
+      mf.destroy
+      raise e
+    end
+    #Explicitly start processing here
+    mf.process file
+    mf
+  end
 
   def save_parent
     unless mediaobject.nil?
@@ -193,15 +211,24 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def process
+  def process file=nil
     raise "MasterFile is already being processed" if status_code.present? && !finished_processing?
-    Delayed::Job.enqueue MatterhornIngestJob.new({
-      'url' => "file://" + URI.escape(file_location),
-      'title' => pid,
-      'flavor' => "presenter/source",
-      'filename' => File.basename(file_location),
-      'workflow' => self.workflow_name,
-    })
+    if file.is_a? Hash
+       Delayed::Job.enqueue MatterhornIngestJob.new({
+	'url' => file,
+	'title' => pid,
+	'flavor' => "presenter/source",
+	'workflow' => self.workflow_name,
+      })
+    else
+      Delayed::Job.enqueue MatterhornIngestJob.new({
+	'url' => "file://" + URI.escape(file_location),
+	'title' => pid,
+	'flavor' => "presenter/source",
+	'filename' => File.basename(file_location),
+	'workflow' => self.workflow_name,
+      })
+    end
   end
 
   def status?(value)
