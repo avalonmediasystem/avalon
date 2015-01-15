@@ -83,11 +83,12 @@ describe Avalon::Batch::Ingest do
       IngestBatch.count.should == 1
     end
 
-    it 'should ingest batch with skip-transcoding derivatives'
-      skip_transcode_batch_path = File.join(@dropbox_dir, 'batch_manifest_skip_transcode.xlsx')
-      skip_transcode_batch = Avalon::Batch::Package.new(skip_transcode_batch_path, collection)
-      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [skip_transcode_batch]
+    it 'should ingest batch with skip-transcoding derivatives' do
+      derivatives_batch_path = File.join('spec/fixtures', 'batch_manifest_derivatives.xlsx')
+      derivatives_batch = Avalon::Batch::Package.new(derivatives_batch_path, collection)
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [derivatives_batch]
       batch_ingest.ingest
+      IngestBatch.count.should == 1
     end
  
     it 'creates an ingest batch object' do
