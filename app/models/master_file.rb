@@ -103,7 +103,7 @@ class MasterFile < ActiveFedora::Base
   EMBED_SIZE = {:medium => 600}
   AUDIO_HEIGHT = 50
 
-  def create(file, parent, opts = {})
+  def create!(file, parent, opts = {})
     mf = MasterFile.new
     mf.save(validate: false)
     mf.mediaobject = parent
