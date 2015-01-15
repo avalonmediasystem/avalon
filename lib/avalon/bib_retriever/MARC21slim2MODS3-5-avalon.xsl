@@ -1,13 +1,32 @@
-<xsl:stylesheet xmlns="http://www.loc.gov/mods/v3" xmlns:marc="http://www.loc.gov/MARC21/slim" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" exclude-result-prefixes="xlink marc" version="1.0">
+<xsl:stylesheet xmlns="http://www.loc.gov/mods/v3" xmlns:marc="http://www.loc.gov/MARC21/slim"
+	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+	exclude-result-prefixes="xlink marc" version="2.0">
 	<xsl:include href="http://www.loc.gov/standards/marcxml/xslt/MARC21slimUtils.xsl"/>
 	<xsl:output encoding="UTF-8" indent="yes" method="xml"/>
 	<xsl:strip-space elements="*"/>
 
 	<!-- Avalon Media System changes:
 		
-Added type="primary" to 245 titles
+Added type="primary" to 245 titles 
 Changed "marc" date encodings to "edtf"
-
+Put 245 $a$b$f$g$k$n$p$s all into one <titleInfo><title> element to facilitate complete display. kdm 20150113
+Put 100, 700$aqbcd into same <name><namePart> element. kdm 20150113
+Put 110, 710$abcdn into same <name><namePart> element. kdm 20150113
+Put 111, 711$acdenq into same <name><namePart> element. kdm 20150113
+Added <role><roleTerm> for 100, 110 and 111; removed template calls to construct roles from $e and $4. kdm 20150113
+Added <role><roleTerm>Contributor for 700, 710 and 711; removed template calls to construct roles from $e and $4. kdm 20150113
+Put 600$aqbcd into same <subject><name><namePart> element. kdm 20150113
+Put 610$abcdn into same <subject><name><namePart> element. kdm 20150113
+Put 611$acdenq into same <subject><name><namePart> element. kdm 20150113
+Put 630subfields into same <subject><topic> element. kdm 20150113
+Added dateCreated from 008/11-14 if 008/06='r' or 'p'. kdm, 20150113
+Added dateIssued from 008/7-10 if 008/06='r' or 'p'. kdm, 20150113
+Removed dateCreated and dateIssued from 046. kdm, 20150113
+removed all LC code to take dateIssued or dateCreated from 260$c and 264$c. kdm, 20150113
+Pushed physicalDescription under relatedItem@type='original'. kdm 20150113
+Added conditions for 340 (same as 300). kdm 20150114
+Added type="primary" to 1xx names. mbk 20150115
+Added type="text" to hardcoded roleTerms mbk 20150115
 -->
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
 	MARC21slim2MODS3-5 (Revision 1.106) 20141219
@@ -123,7 +142,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	<xsl:template match="/">
 		<xsl:choose>
 			<xsl:when test="//marc:collection">
-				<modsCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+				<modsCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
 					<xsl:for-each select="//marc:collection/marc:record">
 						<mods version="3.5">
 							<xsl:call-template name="marcRecord"/>
@@ -132,7 +152,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</modsCollection>
 			</xsl:when>
 			<xsl:otherwise>
-				<mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+				<mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.5"
+					xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
 					<xsl:for-each select="//marc:record">
 						<xsl:call-template name="marcRecord"/>
 					</xsl:for-each>
@@ -244,17 +265,47 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 		<!-- name -->
 
-		<xsl:for-each select="marc:datafield[@tag='100']">
-			<xsl:call-template name="createNameFrom100"/>
-		</xsl:for-each>
+		<xsl:choose>
+			<!-- Added template match with mode to promote names in first 7xx to Creator in MODS, if they exist. jlh 20150115 -->
+			<xsl:when test="not(//marc:datafield[@tag='100'] or //marc:datafield[@tag='110'] or //marc:datafield[@tag='111'])">
+				<xsl:choose>
+					<xsl:when test="marc:datafield[@tag='700']">
+						<xsl:apply-templates select="marc:datafield[@tag='700'][1]" mode="create100NameFrom700" />
+					</xsl:when>
+					<xsl:when test="marc:datafield[@tag='710']">
+						<xsl:apply-templates select="marc:datafield[@tag='710'][1]" mode="create110NameFrom710" />
+					</xsl:when>
+					<xsl:when test="marc:datafield[@tag='711']">
+						<xsl:apply-templates select="marc:datafield[@tag='711'][1]" mode="create111NameFrom711" />
+					</xsl:when>
+					<xsl:otherwise>
+						<name usage="primary">
+							<namePart>
+								Unknown
+							</namePart>
+							<role>
+								<roleTerm type="text">Creator</roleTerm>
+							</role>
+						</name>
+					</xsl:otherwise>
+				</xsl:choose>			
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:for-each select="marc:datafield[@tag='100']">
+					<xsl:call-template name="createNameFrom100"/>
+				</xsl:for-each>
 
-		<xsl:for-each select="marc:datafield[@tag='110']">
-			<xsl:call-template name="createNameFrom110"/>
-		</xsl:for-each>
+				<xsl:for-each select="marc:datafield[@tag='110']">
+					<xsl:call-template name="createNameFrom110"/>
+				</xsl:for-each>
 
-		<xsl:for-each select="marc:datafield[@tag='111']">
-			<xsl:call-template name="createNameFrom111"/>
-		</xsl:for-each>
+				<xsl:for-each select="marc:datafield[@tag='111']">
+					<xsl:call-template name="createNameFrom111"/>
+				</xsl:for-each>
+			</xsl:otherwise>
+
+		</xsl:choose>
+
 
 		<xsl:for-each select="marc:datafield[@tag='700']">
 			<xsl:call-template name="createNameFrom700"/>
@@ -337,10 +388,12 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		<xsl:if test="$typeOf008='MP'">
 			<xsl:variable name="controlField008-25" select="substring($controlField008,26,1)"/>
 			<xsl:choose>
-				<xsl:when test="$controlField008-25='a' or $controlField008-25='b' or $controlField008-25='c' or marc:controlfield[@tag=007][substring(text(),1,1)='a'][substring(text(),2,1)='j']">
+				<xsl:when
+					test="$controlField008-25='a' or $controlField008-25='b' or $controlField008-25='c' or marc:controlfield[@tag=007][substring(text(),1,1)='a'][substring(text(),2,1)='j']">
 					<genre authority="marcgt">map</genre>
 				</xsl:when>
-				<xsl:when test="$controlField008-25='e' or marc:controlfield[@tag=007][substring(text(),1,1)='a'][substring(text(),2,1)='d']">
+				<xsl:when
+					test="$controlField008-25='e' or marc:controlfield[@tag=007][substring(text(),1,1)='a'][substring(text(),2,1)='d']">
 					<genre authority="marcgt">atlas</genre>
 				</xsl:when>
 			</xsl:choose>
@@ -470,7 +523,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<genre authority="marcgt">festschrift</genre>
 			</xsl:if>
 			<xsl:variable name="controlField008-34" select="substring($controlField008,35,1)"/>
-			<xsl:if test="$controlField008-34='a' or $controlField008-34='b' or $controlField008-34='c' or $controlField008-34='d'">
+			<xsl:if
+				test="$controlField008-34='a' or $controlField008-34='b' or $controlField008-34='c' or $controlField008-34='d'">
 				<genre authority="marcgt">biography</genre>
 			</xsl:if>
 			<xsl:variable name="controlField008-33" select="substring($controlField008,34,1)"/>
@@ -591,7 +645,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:when test="$controlField008-33='p'">
 					<genre authority="marcgt">microscope slide</genre>
 				</xsl:when>
-				<xsl:when test="$controlField008-33='q' or marc:controlfield[@tag=007][substring(text(),1,1)='a'][substring(text(),2,1)='q']">
+				<xsl:when
+					test="$controlField008-33='q' or marc:controlfield[@tag=007][substring(text(),1,1)='a'][substring(text(),2,1)='q']">
 					<genre authority="marcgt">model</genre>
 				</xsl:when>
 				<xsl:when test="$controlField008-33='r'">
@@ -611,9 +666,9 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</xsl:when>
 			</xsl:choose>
 		</xsl:if>
-	
-<!-- 111$n, 711$n 1.103 -->	
-		
+
+		<!-- 111$n, 711$n 1.103 -->
+
 		<xsl:if test="$typeOf008='BK'">
 			<xsl:variable name="controlField008-28" select="substring($controlField008,29,1)"/>
 			<xsl:choose>
@@ -819,7 +874,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</xsl:when>
 			</xsl:choose>
 		</xsl:if>
-		
+
 
 		<!-- genre -->
 
@@ -837,7 +892,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 		<originInfo>
 			<xsl:call-template name="scriptCode"/>
-			<xsl:for-each select="marc:datafield[(@tag=260 or @tag=250) and marc:subfield[@code='a' or code='b' or @code='c' or code='g']]">
+			<xsl:for-each
+				select="marc:datafield[(@tag=260 or @tag=250) and marc:subfield[@code='a' or code='b' or @code='c' or code='g']]">
 				<xsl:call-template name="z2xx880"/>
 			</xsl:for-each>
 
@@ -891,8 +947,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			</xsl:for-each>
 
 			<!-- tmee 1.52 -->
-
-			<xsl:for-each select="marc:datafield[@tag=046]/marc:subfield[@code='c']">
+			<!--removed LC code, kdm 20150113-->
+			<!--xsl:for-each select="marc:datafield[@tag=046]/marc:subfield[@code='c']">
 				<dateIssued encoding="edtf" point="start">
 					<xsl:value-of select="."/>
 				</dateIssued>
@@ -901,9 +957,10 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<dateIssued encoding="edtf" point="end">
 					<xsl:value-of select="."/>
 				</dateIssued>
-			</xsl:for-each>
+			</xsl:for-each-->
 
-			<xsl:for-each select="marc:datafield[@tag=046]/marc:subfield[@code='k']">
+			<!--removed LC code, kdm 20150113-->
+			<!--xsl:for-each select="marc:datafield[@tag=046]/marc:subfield[@code='k']">
 				<dateCreated encoding="edtf" point="start">
 					<xsl:value-of select="."/>
 				</dateCreated>
@@ -912,7 +969,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<dateCreated encoding="edtf" point="end">
 					<xsl:value-of select="."/>
 				</dateCreated>
-			</xsl:for-each>
+			</xsl:for-each-->
 
 			<!-- tmee 1.35 1.36 dateIssued/nonMSS vs dateCreated/MSS -->
 			<xsl:for-each select="marc:datafield[@tag=260]/marc:subfield[@code='b' or @code='c' or @code='g']">
@@ -927,7 +984,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 							</xsl:call-template>
 						</publisher>
 					</xsl:when>
-					<xsl:when test="(@code='c')">
+					<!--removed all LC code to take dateIssued or dateCreated from 260$c. kdm, 20150113-->
+					<!--xsl:when test="(@code='c')">
 						<xsl:if test="$leader6='d' or $leader6='f' or $leader6='p' or $leader6='t'">
 							<dateCreated>
 								<xsl:call-template name="chopPunctuation">
@@ -955,7 +1013,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 								<xsl:value-of select="."/>
 							</dateCreated>
 						</xsl:if>
-					</xsl:when>
+					</xsl:when-->
 				</xsl:choose>
 			</xsl:for-each>
 			<xsl:variable name="dataField260c">
@@ -970,39 +1028,48 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 
 			<!-- tmee 1.35 and 1.36 and 1.84-->
+			<!--Avalon Media System change: always take dateCreated from 008/11-14 if 008/06='r' or 'p', and always take dateIssued from 008/7-10, changed by kdm, 20150113-->
+			<xsl:if test="($controlField008-6='r' or $controlField008-6='p')">
+				<dateCreated encoding="edtf">
+					<xsl:value-of select="$controlField008-11-14"/>
+				</dateCreated>
+			</xsl:if>
+			<xsl:if test="$controlField008-7-10">
+				<dateIssued encoding="edtf">
+					<xsl:value-of select="$controlField008-7-10"/>
+				</dateIssued>
+			</xsl:if>
 
-			<xsl:if test="($controlField008-6='e' or $controlField008-6='p' or $controlField008-6='r' or $controlField008-6='s' or $controlField008-6='t') and ($leader6='d' or $leader6='f' or $leader6='p' or $leader6='t')">
+			<!--LC code removed for Avalon-->
+			<!--xsl:if test="($controlField008-6='e' or $controlField008-6='p' or $controlField008-6='r' or $controlField008-6='s' or $controlField008-6='t') and ($leader6='d' or $leader6='f' or $leader6='p' or $leader6='t')">
 				<xsl:if test="$controlField008-7-10 and ($controlField008-7-10 != $dataField260c)">
 					<dateCreated encoding="edtf">
 						<xsl:value-of select="$controlField008-7-10"/>
 					</dateCreated>
 				</xsl:if>
-			</xsl:if>
-
-			<xsl:if test="($controlField008-6='e' or $controlField008-6='p' or $controlField008-6='r' or $controlField008-6='s' or $controlField008-6='t') and not($leader6='d' or $leader6='f' or $leader6='p' or $leader6='t')">
+			</xsl:if-->
+			<!--xsl:if test="($controlField008-6='e' or $controlField008-6='p' or $controlField008-6='r' or $controlField008-6='s' or $controlField008-6='t') and not($leader6='d' or $leader6='f' or $leader6='p' or $leader6='t')">
 				<xsl:if test="$controlField008-7-10 and ($controlField008-7-10 != $dataField260c)">
 					<dateIssued encoding="edtf">
 						<xsl:value-of select="$controlField008-7-10"/></dateIssued>
 				</xsl:if>
-			</xsl:if>
-
-			<xsl:if test="$controlField008-6='c' or $controlField008-6='d' or $controlField008-6='i' or $controlField008-6='k' or $controlField008-6='m' or $controlField008-6='u'">
+			</xsl:if-->
+			<!--xsl:if test="$controlField008-6='c' or $controlField008-6='d' or $controlField008-6='i' or $controlField008-6='k' or $controlField008-6='m' or $controlField008-6='u'">
 				<xsl:if test="$controlField008-7-10">
 					<dateIssued encoding="edtf" point="start">
 						<xsl:value-of select="$controlField008-7-10"/>
 					</dateIssued>
 				</xsl:if>
-			</xsl:if>
-
-			<xsl:if test="$controlField008-6='c' or $controlField008-6='d' or $controlField008-6='i' or $controlField008-6='k' or $controlField008-6='m' or $controlField008-6='u'">
+			</xsl:if-->
+			<!--xsl:if test="$controlField008-6='c' or $controlField008-6='d' or $controlField008-6='i' or $controlField008-6='k' or $controlField008-6='m' or $controlField008-6='u'">
 				<xsl:if test="$controlField008-11-14">
 					<dateIssued encoding="edtf" point="end">
 						<xsl:value-of select="$controlField008-11-14"/>
 					</dateIssued>
 				</xsl:if>
-			</xsl:if>
+			</xsl:if-->
 
-			<xsl:if test="$controlField008-6='q'">
+			<!--xsl:if test="$controlField008-6='q'">
 				<xsl:if test="$controlField008-7-10">
 					<dateIssued encoding="edtf" point="start" qualifier="questionable">
 						<xsl:value-of select="$controlField008-7-10"/>
@@ -1015,7 +1082,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 						<xsl:value-of select="$controlField008-11-14"/>
 					</dateIssued>
 				</xsl:if>
-			</xsl:if>
+			</xsl:if-->
 
 
 			<!-- tmee 1.77 008-06 dateIssued for value 's' 1.89 removed 20130920 
@@ -1027,7 +1094,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</xsl:if>
 			</xsl:if>
 			-->
-			
+
 			<xsl:if test="$controlField008-6='t'">
 				<xsl:if test="$controlField008-11-14">
 					<copyrightDate encoding="iso8601">
@@ -1058,8 +1125,10 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			<xsl:for-each select="marc:leader">
 				<issuance>
 					<xsl:choose>
-						<xsl:when test="$leader7='a' or $leader7='c' or $leader7='d' or $leader7='m'">monographic</xsl:when>
-						<xsl:when test="$leader7='m' and ($leader19='a' or $leader19='b' or $leader19='c')">multipart monograph</xsl:when>
+						<xsl:when test="$leader7='a' or $leader7='c' or $leader7='d' or $leader7='m'"
+							>monographic</xsl:when>
+						<xsl:when test="$leader7='m' and ($leader19='a' or $leader19='b' or $leader19='c')">multipart
+							monograph</xsl:when>
 						<!-- 1.106 20141218 -->
 						<xsl:when test="$leader7='m' and ($leader19=' ')">single unit</xsl:when>
 						<xsl:when test="$leader7='m' and ($leader19='#')">single unit</xsl:when>
@@ -1068,7 +1137,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					</xsl:choose>
 				</issuance>
 			</xsl:for-each>
-			
+
 			<!-- 1.96 20140422 -->
 			<xsl:for-each select="marc:datafield[@tag=310]|marc:datafield[@tag=321]">
 				<frequency>
@@ -1077,9 +1146,9 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					</xsl:call-template>
 				</frequency>
 			</xsl:for-each>
-			
+
 			<!-- 1.67 1.72 updated fixed location issue 201308 1.86	-->
-			
+
 			<xsl:if test="$typeOf008='SE'">
 				<xsl:for-each select="marc:controlfield[@tag=008]">
 					<xsl:variable name="controlField008-18" select="substring($controlField008,19,1)"/>
@@ -1144,16 +1213,17 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<!-- Template checks for altRepGroup - 880 $6 1.88 20130829 added chopPunc-->
 				<xsl:call-template name="xxx880"/>
 				<place>
-						<placeTerm type="text">
-							<xsl:value-of select="marc:subfield[@code='a']"/>
-						</placeTerm>
+					<placeTerm type="text">
+						<xsl:value-of select="marc:subfield[@code='a']"/>
+					</placeTerm>
 				</place>
 				<publisher>
 					<xsl:value-of select="marc:subfield[@code='b']"/>
 				</publisher>
-				<dateIssued>
+				<!--removed for Avalon Media System, kdm 20150113-->
+				<!--dateIssued>
 					<xsl:value-of select="marc:subfield[@code='c']"/>
-				</dateIssued>
+				</dateIssued-->
 			</originInfo>
 		</xsl:for-each>
 		<xsl:for-each select="marc:datafield[@tag=264][@ind2=2]">
@@ -1194,14 +1264,17 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 		<xsl:for-each select="marc:datafield[@tag=880]">
 			<xsl:variable name="related_datafield" select="substring-before(marc:subfield[@code='6'],'-')"/>
-			<xsl:variable name="occurence_number" select="substring( substring-after(marc:subfield[@code='6'],'-') , 1 , 2 )"/>
-			<xsl:variable name="hit" select="../marc:datafield[@tag=$related_datafield and contains(marc:subfield[@code='6'] , concat('880-' , $occurence_number))]/@tag"/>
+			<xsl:variable name="occurence_number"
+				select="substring( substring-after(marc:subfield[@code='6'],'-') , 1 , 2 )"/>
+			<xsl:variable name="hit"
+				select="../marc:datafield[@tag=$related_datafield and contains(marc:subfield[@code='6'] , concat('880-' , $occurence_number))]/@tag"/>
 
 			<xsl:choose>
 				<xsl:when test="$hit='260'">
 					<originInfo>
 						<xsl:call-template name="scriptCode"/>
-						<xsl:for-each select="../marc:datafield[@tag=260 and marc:subfield[@code='a' or code='b' or @code='c' or code='g']]">
+						<xsl:for-each
+							select="../marc:datafield[@tag=260 and marc:subfield[@code='a' or code='b' or @code='c' or code='g']]">
 							<xsl:call-template name="z2xx880"/>
 						</xsl:for-each>
 						<xsl:if test="marc:subfield[@code='a']">
@@ -1216,17 +1289,19 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 								<xsl:value-of select="marc:subfield[@code='b']"/>
 							</publisher>
 						</xsl:if>
-						<xsl:if test="marc:subfield[@code='c']">
+						<!--removed for Avalon Media System, kdm 20150113-->
+						<!--xsl:if test="marc:subfield[@code='c']">
 							<dateIssued>
 								<xsl:value-of select="marc:subfield[@code='c']"/>
 							</dateIssued>
-						</xsl:if>
-						<xsl:if test="marc:subfield[@code='g']">
+						</xsl:if-->
+						<!--xsl:if test="marc:subfield[@code='g']">
 							<dateCreated>
 								<xsl:value-of select="marc:subfield[@code='g']"/>
 							</dateCreated>
-						</xsl:if>
-						<xsl:for-each select="../marc:datafield[@tag=880]/marc:subfield[@code=6][contains(text(),'250')]">
+						</xsl:if-->
+						<xsl:for-each
+							select="../marc:datafield[@tag=880]/marc:subfield[@code=6][contains(text(),'250')]">
 							<edition>
 								<xsl:value-of select="following-sibling::marc:subfield"/>
 							</edition>
@@ -1262,7 +1337,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		</xsl:for-each>
 
 		<!-- language 041 -->
-		<xsl:variable name="controlField008-35-37" select="normalize-space(translate(substring($controlField008,36,3),'|#',''))"/>
+		<xsl:variable name="controlField008-35-37"
+			select="normalize-space(translate(substring($controlField008,36,3),'|#',''))"/>
 		<xsl:if test="$controlField008-35-37">
 			<language>
 				<languageTerm authority="iso639-2b" type="code">
@@ -1271,7 +1347,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			</language>
 		</xsl:if>
 		<xsl:for-each select="marc:datafield[@tag=041]">
-			<xsl:for-each select="marc:subfield[@code='a' or @code='b' or @code='d' or @code='e' or @code='f' or @code='g' or @code='h']">
+			<xsl:for-each
+				select="marc:subfield[@code='a' or @code='b' or @code='d' or @code='e' or @code='f' or @code='g' or @code='h']">
 				<xsl:variable name="langCodes" select="."/>
 				<xsl:choose>
 					<xsl:when test="../marc:subfield[@code='2']='rfc3066'">
@@ -1340,23 +1417,28 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</xsl:if>
 			</xsl:variable>
 			<xsl:choose>
-				<xsl:when test="($check008-23 and $controlField008-23='f') or ($check008-29 and $controlField008-29='f')">
+				<xsl:when
+					test="($check008-23 and $controlField008-23='f') or ($check008-29 and $controlField008-29='f')">
 					<form authority="marcform">braille</form>
 				</xsl:when>
-				<xsl:when test="($controlField008-23=' ' and ($leader6='c' or $leader6='d')) or (($typeOf008='BK' or $typeOf008='SE') and ($controlField008-23=' ' or $controlField008='r'))">
+				<xsl:when
+					test="($controlField008-23=' ' and ($leader6='c' or $leader6='d')) or (($typeOf008='BK' or $typeOf008='SE') and ($controlField008-23=' ' or $controlField008='r'))">
 					<form authority="marcform">print</form>
 				</xsl:when>
-				<xsl:when test="$leader6 = 'm' or ($check008-23 and $controlField008-23='s') or ($check008-29 and $controlField008-29='s')">
+				<xsl:when
+					test="$leader6 = 'm' or ($check008-23 and $controlField008-23='s') or ($check008-29 and $controlField008-29='s')">
 					<form authority="marcform">electronic</form>
 				</xsl:when>
 				<!-- 1.33 -->
 				<xsl:when test="$leader6 = 'o'">
 					<form authority="marcform">kit</form>
 				</xsl:when>
-				<xsl:when test="($check008-23 and $controlField008-23='b') or ($check008-29 and $controlField008-29='b')">
+				<xsl:when
+					test="($check008-23 and $controlField008-23='b') or ($check008-29 and $controlField008-29='b')">
 					<form authority="marcform">microfiche</form>
 				</xsl:when>
-				<xsl:when test="($check008-23 and $controlField008-23='a') or ($check008-29 and $controlField008-29='a')">
+				<xsl:when
+					test="($check008-23 and $controlField008-23='a') or ($check008-29 and $controlField008-29='a')">
 					<form authority="marcform">microfilm</form>
 				</xsl:when>
 			</xsl:choose>
@@ -1784,24 +1866,50 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		</xsl:variable>
 
 
-		<xsl:if test="string-length(normalize-space($physicalDescription))">
+		<!--put physicalDescription/extent under relatedItem@type="original". kdm, 20150113-->
+		<xsl:if test="marc:datafield[@tag=300 or @tag=340]">
+			<relatedItem>
+				<xsl:attribute name="type">original</xsl:attribute>
+				<physicalDescription>
+					<extent>
+						<xsl:for-each select="marc:datafield[@tag=300 or @tag=340]">
+							<xsl:choose>
+								<xsl:when test="position() !=last()">
+									<xsl:value-of select="."/>
+									<xsl:text> </xsl:text>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="."/>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:for-each>
+					</extent>
+				</physicalDescription>
+			</relatedItem>
+		</xsl:if>
+
+		<!--remove LC's physicalDescription coding for Avalon Media Syste, kdm 20150113-->
+		<!--<xsl:if test="string-length(normalize-space($physicalDescription))">-->
+		<!--relatedItem>
+			<xsl:attribute name="type">original</xsl:attribute>
 			<physicalDescription>
-				<xsl:for-each select="marc:datafield[@tag=300]">
-					<!-- Template checks for altRepGroup - 880 $6 -->
-					<xsl:call-template name="z3xx880"/>
+				<xsl:for-each select="marc:datafield[@tag=300]">-->
+		<!--	<Template checks for altRepGroup - 880 $6 -->
+		<!--<xsl:call-template name="z3xx880"/>
 				</xsl:for-each>
-				<xsl:for-each select="marc:datafield[@tag=337]">
-					<!-- Template checks for altRepGroup - 880 $6 -->
-					<xsl:call-template name="xxx880"/>
+				<xsl:for-each select="marc:datafield[@tag=337]">-->
+		<!-- Template checks for altRepGroup - 880 $6 -->
+		<!--<xsl:call-template name="xxx880"/>
 				</xsl:for-each>
-				<xsl:for-each select="marc:datafield[@tag=338]">
-					<!-- Template checks for altRepGroup - 880 $6 -->
-					<xsl:call-template name="xxx880"/>
+				<xsl:for-each select="marc:datafield[@tag=338]">-->
+		<!-- Template checks for altRepGroup - 880 $6 -->
+		<!--<xsl:call-template name="xxx880"/>
 				</xsl:for-each>
 
 				<xsl:copy-of select="$physicalDescription"/>
 			</physicalDescription>
-		</xsl:if>
+			</relatedItem>
+		</xsl:if>-->
 
 
 		<xsl:for-each select="marc:datafield[@tag=520]">
@@ -1964,7 +2072,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			<xsl:call-template name="createNoteFrom585"/>
 		</xsl:for-each>
 
-		<xsl:for-each select="marc:datafield[@tag=501 or @tag=507 or @tag=513 or @tag=514 or @tag=516 or @tag=522 or @tag=525 or @tag=526 or @tag=544 or @tag=547 or @tag=550 or @tag=552 or @tag=555 or @tag=556 or @tag=565 or @tag=567 or @tag=580 or @tag=584 or @tag=586]">
+		<xsl:for-each
+			select="marc:datafield[@tag=501 or @tag=507 or @tag=513 or @tag=514 or @tag=516 or @tag=522 or @tag=525 or @tag=526 or @tag=544 or @tag=547 or @tag=550 or @tag=552 or @tag=555 or @tag=556 or @tag=565 or @tag=567 or @tag=580 or @tag=584 or @tag=586]">
 			<xsl:call-template name="createNoteFrom5XX"/>
 		</xsl:for-each>
 
@@ -2098,20 +2207,20 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 						</dateOther>
 					</originInfo>
 				</xsl:for-each>
-				
+
 				<part>
 					<detail type="part">
 						<number>
-					<xsl:call-template name="chopPunctuation">
-						<xsl:with-param name="chopString">
-							<xsl:call-template name="subfieldSelect">
-								<xsl:with-param name="codes">c</xsl:with-param>
+							<xsl:call-template name="chopPunctuation">
+								<xsl:with-param name="chopString">
+									<xsl:call-template name="subfieldSelect">
+										<xsl:with-param name="codes">c</xsl:with-param>
+									</xsl:call-template>
+								</xsl:with-param>
 							</xsl:call-template>
-						</xsl:with-param>
-					</xsl:call-template>
 						</number>
 					</detail>
-					</part>
+				</part>
 			</relatedItem>
 		</xsl:for-each>
 
@@ -2594,8 +2703,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:value-of select="normalize-space(substring-after(marc:subfield[@code='a'], '(OCoLC)'))"/>
 			</identifier>
 		</xsl:for-each>
-		
-		
+
+
 		<!-- 3.5 1.95 20140421 -->
 		<xsl:for-each select="marc:datafield[@tag='035'][marc:subfield[@code='a'][contains(text(), '(WlCaITV)')]]">
 			<identifier type="WlCaITV">
@@ -2621,16 +2730,23 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 		<!-- 1.51 tmee 20100129-->
 		<xsl:for-each select="marc:datafield[@tag='856'][marc:subfield[@code='u']]">
-			<xsl:if test="starts-with(marc:subfield[@code='u'],'urn:hdl') or starts-with(marc:subfield[@code='u'],'hdl') or starts-with(marc:subfield[@code='u'],'http://hdl.loc.gov') ">
+			<xsl:if
+				test="starts-with(marc:subfield[@code='u'],'urn:hdl') or starts-with(marc:subfield[@code='u'],'hdl') or starts-with(marc:subfield[@code='u'],'http://hdl.loc.gov') ">
 				<identifier>
 					<xsl:attribute name="type">
-						<xsl:if test="starts-with(marc:subfield[@code='u'],'urn:doi') or starts-with(marc:subfield[@code='u'],'doi')">doi</xsl:if>
-						<xsl:if test="starts-with(marc:subfield[@code='u'],'urn:hdl') or starts-with(marc:subfield[@code='u'],'hdl') or starts-with(marc:subfield[@code='u'],'http://hdl.loc.gov')">hdl</xsl:if>
+						<xsl:if
+							test="starts-with(marc:subfield[@code='u'],'urn:doi') or starts-with(marc:subfield[@code='u'],'doi')"
+							>doi</xsl:if>
+						<xsl:if
+							test="starts-with(marc:subfield[@code='u'],'urn:hdl') or starts-with(marc:subfield[@code='u'],'hdl') or starts-with(marc:subfield[@code='u'],'http://hdl.loc.gov')"
+							>hdl</xsl:if>
 					</xsl:attribute>
-					<xsl:value-of select="concat('hdl:',substring-after(marc:subfield[@code='u'],'http://hdl.loc.gov/'))"/>
+					<xsl:value-of
+						select="concat('hdl:',substring-after(marc:subfield[@code='u'],'http://hdl.loc.gov/'))"/>
 				</identifier>
 			</xsl:if>
-			<xsl:if test="starts-with(marc:subfield[@code='u'],'urn:hdl') or starts-with(marc:subfield[@code='u'],'hdl')">
+			<xsl:if
+				test="starts-with(marc:subfield[@code='u'],'urn:hdl') or starts-with(marc:subfield[@code='u'],'hdl')">
 				<identifier type="hdl">
 					<xsl:if test="marc:subfield[@code='y' or @code='3' or @code='z']">
 						<xsl:attribute name="displayLabel">
@@ -2639,11 +2755,12 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 							</xsl:call-template>
 						</xsl:attribute>
 					</xsl:if>
-					<xsl:value-of select="concat('hdl:',substring-after(marc:subfield[@code='u'],'http://hdl.loc.gov/'))"/>
+					<xsl:value-of
+						select="concat('hdl:',substring-after(marc:subfield[@code='u'],'http://hdl.loc.gov/'))"/>
 				</identifier>
 			</xsl:if>
 		</xsl:for-each>
-		
+
 		<xsl:for-each select="marc:datafield[@tag=024][@ind1=1]">
 			<identifier type="upc">
 				<xsl:value-of select="marc:subfield[@code='a']"/>
@@ -2750,8 +2867,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</recordIdentifier>
 			</xsl:for-each>
 
-			<recordOrigin>Converted from MARCXML to MODS version 3.5 using MARC21slim2MODS3-5.xsl
-				(Revision 1.106 2014/12/19), customized for the Avalon Media System (last revised 2014/12/26)</recordOrigin>
+			<recordOrigin>Converted from MARCXML to MODS version 3.5 using MARC21slim2MODS3-5.xsl (Revision 1.106
+				2014/12/19), customized for the Avalon Media System (last revised 2014/12/26)</recordOrigin>
 
 			<xsl:for-each select="marc:datafield[@tag=040]/marc:subfield[@code='b']">
 				<languageOfCataloging>
@@ -2999,7 +3116,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	</xsl:template>
 
 	<xsl:template name="nameABCDN">
-		<xsl:for-each select="marc:subfield[@code='a']">
+		<!--instead of using LC's original code for corporate names, mimic code for personal names & put all subfields into namePart-->
+		<!--xsl:for-each select="marc:subfield[@code='a']">
 			<namePart>
 				<xsl:call-template name="chopPunctuation">
 					<xsl:with-param name="chopString" select="."/>
@@ -3014,17 +3132,15 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		<xsl:if test="marc:subfield[@code='c'] or marc:subfield[@code='d'] or marc:subfield[@code='n']">
 			<namePart>
 				<xsl:call-template name="subfieldSelect">
-					<xsl:with-param name="codes">cdn</xsl:with-param>
+					<xsl:with-param name="codes">abcdn</xsl:with-param>
 				</xsl:call-template>
-			</namePart>
-		</xsl:if>
-	</xsl:template>
-	<xsl:template name="nameABCDQ">
+			</namePart-->
 		<namePart>
 			<xsl:call-template name="chopPunctuation">
 				<xsl:with-param name="chopString">
 					<xsl:call-template name="subfieldSelect">
-						<xsl:with-param name="codes">aq</xsl:with-param>
+						<!--added fields bcd to aq for Avalon Media System, kdm 20150114-->
+						<xsl:with-param name="codes">abcdn</xsl:with-param>
 					</xsl:call-template>
 				</xsl:with-param>
 				<xsl:with-param name="punctuation">
@@ -3032,9 +3148,27 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</xsl:with-param>
 			</xsl:call-template>
 		</namePart>
-		<xsl:call-template name="termsOfAddress"/>
-		<xsl:call-template name="nameDate"/>
 	</xsl:template>
+
+	<xsl:template name="nameABCDQ">
+		<namePart>
+			<xsl:call-template name="chopPunctuation">
+				<xsl:with-param name="chopString">
+					<xsl:call-template name="subfieldSelect">
+						<!--added fields bcd to aq for Avalon Media System, kdm 20150114-->
+						<xsl:with-param name="codes">aqbcd</xsl:with-param>
+					</xsl:call-template>
+				</xsl:with-param>
+				<xsl:with-param name="punctuation">
+					<xsl:text>:,;/ </xsl:text>
+				</xsl:with-param>
+			</xsl:call-template>
+		</namePart>
+		<!--removed use of termsOfAddress and nameDate for Avalon Media System, kdm 20150114-->
+		<!--xsl:call-template name="termsOfAddress"/>
+		<xsl:call-template name="nameDate"/-->
+	</xsl:template>
+
 	<xsl:template name="nameACDEQ">
 		<namePart>
 			<xsl:call-template name="subfieldSelect">
@@ -3042,18 +3176,35 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			</xsl:call-template>
 		</namePart>
 	</xsl:template>
-	
+
 	<!--1.104 20141104-->
+
+	<!--instead of using LC's original code for corporate names, mimic code for personal names & put all subfields into namePart-->
 	<xsl:template name="nameACDENQ">
+		<namePart>
+			<xsl:call-template name="chopPunctuation">
+				<xsl:with-param name="chopString">
+					<xsl:call-template name="subfieldSelect">
+						<!--added fields bcde to anq for Avalon Media System, kdm 20150114-->
+						<xsl:with-param name="codes">acdenq</xsl:with-param>
+					</xsl:call-template>
+				</xsl:with-param>
+				<xsl:with-param name="punctuation">
+					<xsl:text>:,;/ </xsl:text>
+				</xsl:with-param>
+			</xsl:call-template>
+		</namePart>
+	</xsl:template>
+
+	<!--this is LC's code, which has been replaced by Avalon code, kdm 20150113-->
+	<!--xsl:template name="nameACDENQ">
 		<namePart>
 			<xsl:call-template name="subfieldSelect">
 				<xsl:with-param name="codes">acdenq</xsl:with-param>
 			</xsl:call-template>
 		</namePart>
-	</xsl:template>
-	
-	
-	
+	</xsl:template-->
+
 	<xsl:template name="constituentOrRelatedType">
 		<xsl:if test="@ind2=2">
 			<xsl:attribute name="type">constituent</xsl:attribute>
@@ -3251,7 +3402,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		<xsl:param name="afterCodes"/>
 		<xsl:variable name="str">
 			<xsl:for-each select="marc:subfield">
-				<xsl:if test="contains($anyCodes, @code) or (contains($beforeCodes,@code) and following-sibling::marc:subfield[@code=$axis])      or (contains($afterCodes,@code) and preceding-sibling::marc:subfield[@code=$axis])">
+				<xsl:if
+					test="contains($anyCodes, @code) or (contains($beforeCodes,@code) and following-sibling::marc:subfield[@code=$axis])      or (contains($afterCodes,@code) and preceding-sibling::marc:subfield[@code=$axis])">
 					<xsl:value-of select="text()"/>
 					<xsl:text> </xsl:text>
 				</xsl:if>
@@ -3685,26 +3837,29 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					<xsl:value-of select="$sf06260b"/>
 				</xsl:when>
 				<xsl:when test="@tag='250' and ../marc:datafield[@tag='260']/marc:subfield[@code='6']">
-					<xsl:variable name="sf06260" select="normalize-space(../marc:datafield[@tag='260']/marc:subfield[@code='6'])"/>
+					<xsl:variable name="sf06260"
+						select="normalize-space(../marc:datafield[@tag='260']/marc:subfield[@code='6'])"/>
 					<xsl:variable name="sf06260a" select="substring($sf06260, 1, 3)"/>
 					<xsl:variable name="sf06260b" select="substring($sf06260, 5, 2)"/>
 					<xsl:variable name="sf06260c" select="substring($sf06260, 7)"/>
 					<xsl:value-of select="$sf06260b"/>
 				</xsl:when>
 			</xsl:choose>
-		</xsl:variable>            
+		</xsl:variable>
 
 		<xsl:variable name="x250">
 			<xsl:choose>
 				<xsl:when test="@tag='250' and marc:subfield[@code='6']">
-					<xsl:variable name="sf06250" select="normalize-space(../marc:datafield[@tag='250']/marc:subfield[@code='6'])"/>
+					<xsl:variable name="sf06250"
+						select="normalize-space(../marc:datafield[@tag='250']/marc:subfield[@code='6'])"/>
 					<xsl:variable name="sf06250a" select="substring($sf06250, 1, 3)"/>
 					<xsl:variable name="sf06250b" select="substring($sf06250, 5, 2)"/>
 					<xsl:variable name="sf06250c" select="substring($sf06250, 7)"/>
 					<xsl:value-of select="$sf06250b"/>
 				</xsl:when>
 				<xsl:when test="@tag='260' and ../marc:datafield[@tag='250']/marc:subfield[@code='6']">
-					<xsl:variable name="sf06250" select="normalize-space(../marc:datafield[@tag='250']/marc:subfield[@code='6'])"/>
+					<xsl:variable name="sf06250"
+						select="normalize-space(../marc:datafield[@tag='250']/marc:subfield[@code='6'])"/>
 					<xsl:variable name="sf06250a" select="substring($sf06250, 1, 3)"/>
 					<xsl:variable name="sf06250b" select="substring($sf06250, 5, 2)"/>
 					<xsl:variable name="sf06250c" select="substring($sf06250, 7)"/>
@@ -3745,7 +3900,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					<xsl:value-of select="$sf06300b"/>
 				</xsl:when>
 				<xsl:when test="@tag='351' and ../marc:datafield[@tag='300']/marc:subfield[@code='6']">
-					<xsl:variable name="sf06300" select="normalize-space(../marc:datafield[@tag='300']/marc:subfield[@code='6'])"/>
+					<xsl:variable name="sf06300"
+						select="normalize-space(../marc:datafield[@tag='300']/marc:subfield[@code='6'])"/>
 					<xsl:variable name="sf06300a" select="substring($sf06300, 1, 3)"/>
 					<xsl:variable name="sf06300b" select="substring($sf06300, 5, 2)"/>
 					<xsl:variable name="sf06300c" select="substring($sf06300, 7)"/>
@@ -3757,14 +3913,16 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		<xsl:variable name="x351">
 			<xsl:choose>
 				<xsl:when test="@tag='351' and marc:subfield[@code='6']">
-					<xsl:variable name="sf06351" select="normalize-space(../marc:datafield[@tag='351']/marc:subfield[@code='6'])"/>
+					<xsl:variable name="sf06351"
+						select="normalize-space(../marc:datafield[@tag='351']/marc:subfield[@code='6'])"/>
 					<xsl:variable name="sf06351a" select="substring($sf06351, 1, 3)"/>
 					<xsl:variable name="sf06351b" select="substring($sf06351, 5, 2)"/>
 					<xsl:variable name="sf06351c" select="substring($sf06351, 7)"/>
 					<xsl:value-of select="$sf06351b"/>
 				</xsl:when>
 				<xsl:when test="@tag='300' and ../marc:datafield[@tag='351']/marc:subfield[@code='6']">
-					<xsl:variable name="sf06351" select="normalize-space(../marc:datafield[@tag='351']/marc:subfield[@code='6'])"/>
+					<xsl:variable name="sf06351"
+						select="normalize-space(../marc:datafield[@tag='351']/marc:subfield[@code='6'])"/>
 					<xsl:variable name="sf06351a" select="substring($sf06351, 1, 3)"/>
 					<xsl:variable name="sf06351b" select="substring($sf06351, 5, 2)"/>
 					<xsl:variable name="sf06351c" select="substring($sf06351, 7)"/>
@@ -4132,29 +4290,30 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	<!-- 130 tmee 1.101 20140806-->
 	<xsl:template name="createTitleInfoFrom130">
 
-			<titleInfo type="uniform">
-				<title>
-					<xsl:variable name="str">
-						<xsl:for-each select="marc:subfield">
-							<xsl:if test="(contains('s',@code))">
-								<xsl:value-of select="text()"/>
-								<xsl:text> </xsl:text>
-							</xsl:if>
-							<xsl:if test="(contains('adfklmors',@code) and (not(../marc:subfield[@code='n' or @code='p']) or (following-sibling::marc:subfield[@code='n' or @code='p'])))">
-								<xsl:value-of select="text()"/>
-								<xsl:text> </xsl:text>
-							</xsl:if>
-						</xsl:for-each>
-					</xsl:variable>
-					<xsl:call-template name="chopPunctuation">
-						<xsl:with-param name="chopString">
-							<xsl:value-of select="substring($str,1,string-length($str)-1)"/>
-						</xsl:with-param>
-					</xsl:call-template>
-				</title>
-				<xsl:call-template name="part"/>
-			</titleInfo>
-		
+		<titleInfo type="uniform">
+			<title>
+				<xsl:variable name="str">
+					<xsl:for-each select="marc:subfield">
+						<xsl:if test="(contains('s',@code))">
+							<xsl:value-of select="text()"/>
+							<xsl:text> </xsl:text>
+						</xsl:if>
+						<xsl:if
+							test="(contains('adfklmors',@code) and (not(../marc:subfield[@code='n' or @code='p']) or (following-sibling::marc:subfield[@code='n' or @code='p'])))">
+							<xsl:value-of select="text()"/>
+							<xsl:text> </xsl:text>
+						</xsl:if>
+					</xsl:for-each>
+				</xsl:variable>
+				<xsl:call-template name="chopPunctuation">
+					<xsl:with-param name="chopString">
+						<xsl:value-of select="substring($str,1,string-length($str)-1)"/>
+					</xsl:with-param>
+				</xsl:call-template>
+			</title>
+			<xsl:call-template name="part"/>
+		</titleInfo>
+
 	</xsl:template>
 	<xsl:template name="createTitleInfoFrom730">
 		<titleInfo type="uniform">
@@ -4165,7 +4324,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 							<xsl:value-of select="text()"/>
 							<xsl:text> </xsl:text>
 						</xsl:if>
-						<xsl:if test="(contains('adfklmors',@code) and (not(../marc:subfield[@code='n' or @code='p']) or (following-sibling::marc:subfield[@code='n' or @code='p'])))">
+						<xsl:if
+							test="(contains('adfklmors',@code) and (not(../marc:subfield[@code='n' or @code='p']) or (following-sibling::marc:subfield[@code='n' or @code='p'])))">
 							<xsl:value-of select="text()"/>
 							<xsl:text> </xsl:text>
 						</xsl:if>
@@ -4202,9 +4362,28 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		</titleInfo>
 	</xsl:template>
 	<!-- 1.79 -->
+
+	<!--START HERE-->
+	<!--fix should be similar to the nameABCDN template-->
+
 	<xsl:template name="createTitleInfoFrom245">
 		<titleInfo usage="primary">
-			<xsl:call-template name="xxx880"/>
+			<!--added this title section and removed the LC code, kdm 20140113-->
+			<title>
+				<xsl:call-template name="chopPunctuation">
+					<xsl:with-param name="chopString">
+						<xsl:call-template name="subfieldSelect">
+							<!--added fields bcd to aq for Avalon Media System, kdm 20150114-->
+							<xsl:with-param name="codes">abfgknps</xsl:with-param>
+						</xsl:call-template>
+					</xsl:with-param>
+					<xsl:with-param name="punctuation">
+						<xsl:text>:,;/ </xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+			</title>
+			<!--removed, kdm 20140113. We will just stick all of the 245 except $c into title-->
+			<!--xsl:call-template name="xxx880"/>
 			<xsl:variable name="title">
 				<xsl:choose>
 					<xsl:when test="marc:subfield[@code='b']">
@@ -4257,7 +4436,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					</xsl:call-template>
 				</subTitle>
 			</xsl:if>
-			<xsl:call-template name="part"/>
+			<xsl:call-template name="part"/-->
 		</titleInfo>
 	</xsl:template>
 
@@ -4298,7 +4477,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			<title>
 				<xsl:variable name="str">
 					<xsl:for-each select="marc:subfield">
-						<xsl:if test="(contains('adfklmors',@code) and (not(../marc:subfield[@code='n' or @code='p']) or (following-sibling::marc:subfield[@code='n' or @code='p'])))">
+						<xsl:if
+							test="(contains('adfklmors',@code) and (not(../marc:subfield[@code='n' or @code='p']) or (following-sibling::marc:subfield[@code='n' or @code='p'])))">
 							<xsl:value-of select="text()"/>
 							<xsl:text> </xsl:text>
 						</xsl:if>
@@ -4331,6 +4511,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	</xsl:template>
 
 	<!-- name 100 110 111 1.93      -->
+	<!--added code to put all 100$aqbcd into namePart, kdm 20150113, commented out the rest of LC's code-->
 
 	<xsl:template name="createNameFrom100">
 		<xsl:if test="@ind1='0' or @ind1='1'">
@@ -4345,8 +4526,12 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					</xsl:attribute>
 				</xsl:if>
 				<xsl:call-template name="nameABCDQ"/>
-				<xsl:call-template name="affiliation"/>
-				<xsl:call-template name="role"/>
+				<!--removed the following template calls and hard code role to use Creator. kdm, 20150113-->
+				<role>
+					<roleTerm type="text">Creator</roleTerm>
+				</role>
+				<!--xsl:call-template name="affiliation"/-->
+				<!--xsl:call-template name="role"/-->
 			</name>
 		</xsl:if>
 		<!-- 1.99 240 fix 20140804 -->
@@ -4356,15 +4541,19 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					<xsl:text>primary</xsl:text>
 				</xsl:attribute>
 				<xsl:call-template name="xxx880"/>
-			
+
 				<xsl:if test="ancestor::marcrecord//marc:datafield[@tag='240']">
 					<xsl:attribute name="nameTitleGroup">
 						<xsl:text>1</xsl:text>
 					</xsl:attribute>
 				</xsl:if>
 				<xsl:call-template name="nameABCDQ"/>
-				<xsl:call-template name="affiliation"/>
-				<xsl:call-template name="role"/>
+				<!--removed the following template calls and hard code role to use Creator. kdm, 20150113-->
+				<role>
+					<roleTerm type="text">Creator</roleTerm>
+				</role>
+				<!--xsl:call-template name="affiliation"/-->
+				<!--xsl:call-template name="role"/-->
 			</name>
 		</xsl:if>
 	</xsl:template>
@@ -4378,7 +4567,11 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</xsl:attribute>
 			</xsl:if>
 			<xsl:call-template name="nameABCDN"/>
-			<xsl:call-template name="role"/>
+			<!--removed the following template calls and hard code role to use Creator. kdm, 20150113-->
+			<role>
+				<roleTerm type="text">Creator</roleTerm>
+			</role>
+			<!--xsl:call-template name="role"/-->
 		</name>
 	</xsl:template>
 
@@ -4394,29 +4587,86 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</xsl:attribute>
 			</xsl:if>
 			<xsl:call-template name="nameACDENQ"/>
-			<xsl:call-template name="role"/>
+			<!--removed the following template calls and hard code role to use Creator. kdm, 20150113-->
+			<role>
+				<roleTerm type="text">Creator</roleTerm>
+			</role>
+			<!--xsl:call-template name="role"/-->
 		</name>
 	</xsl:template>
 
 
 
 	<!-- name 700 710 711 720 -->
-
+	
+	<!-- Promotes name in 700 to Creator in MODS for Avalon Media System. jlh 20150115 -->
+	<xsl:template match="marc:datafield[@tag='700']" mode="create100NameFrom700">
+		<xsl:if test="@ind1='1'">
+			<name type="personal" usage="primary">
+				<xsl:call-template name="xxx880"/>
+				<xsl:call-template name="nameABCDQ"/>
+				<role>
+					<roleTerm type="text">Creator</roleTerm>
+				</role>
+			</name>
+		</xsl:if>
+		<xsl:if test="@ind1='3'">
+			<name type="family" usage="primary">
+				<xsl:call-template name="xxx880"/>
+				<xsl:call-template name="nameABCDQ"/>
+				<role>
+					<roleTerm type="text">Creator</roleTerm>
+				</role>
+			</name>
+		</xsl:if>
+	</xsl:template>
+	
+	<!-- Promotes name in 710 to Creator in MODS for Avalon Media System. jlh 20150115 -->
+	<xsl:template match="marc:datafield[@tag='710']" mode="create110NameFrom710">
+		<name type="corporate" usage="primary">
+			<xsl:call-template name="xxx880"/>
+			<xsl:call-template name="nameABCDN"/>
+			<role>
+				<roleTerm type="text">Creator</roleTerm>
+			</role>
+		</name>
+	</xsl:template>
+	
+	<!-- Promotes name in 711 to Creator in MODS for Avalon Media System. jlh 20150115 -->
+	<xsl:template match="marc:datafield[@tag='711']" mode="create111NameFrom711">
+		<name type="conference" usage="primary">
+			<xsl:call-template name="xxx880"/>
+			<xsl:call-template name="nameACDENQ"/>
+			<role>
+				<roleTerm type="text">Creator</roleTerm>
+			</role>
+		</name>
+	</xsl:template>
+	
+	
 	<xsl:template name="createNameFrom700">
 		<xsl:if test="@ind1='1'">
 			<name type="personal">
 				<xsl:call-template name="xxx880"/>
 				<xsl:call-template name="nameABCDQ"/>
-				<xsl:call-template name="affiliation"/>
-				<xsl:call-template name="role"/>
+				<!--removed the following template calls and hard code role to use Contributor. kdm, 20150113-->
+				<role>
+					<roleTerm type="text">Contributor</roleTerm>
+				</role>
+				<!--xsl:call-template name="affiliation"/-->
+				<!--xsl:call-template name="role"/-->
 			</name>
 		</xsl:if>
 		<xsl:if test="@ind1='3'">
 			<name type="family">
 				<xsl:call-template name="xxx880"/>
 				<xsl:call-template name="nameABCDQ"/>
-				<xsl:call-template name="affiliation"/>
-				<xsl:call-template name="role"/>
+				<!--removed the following template calls and hard code role to use Contributor. kdm, 20150113-->
+				<role>
+					<roleTerm type="text">Contributor</roleTerm>
+				</role>
+				<!--xsl:call-template name="affiliation"/-->
+				<!--xsl:call-template name="role"/-->
 			</name>
 		</xsl:if>
 	</xsl:template>
@@ -4425,20 +4675,28 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		<name type="corporate">
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="nameABCDN"/>
-			<xsl:call-template name="role"/>
+			<!--removed the following template calls and hard code role to use Contributor. kdm, 20150113-->
+			<role>
+				<roleTerm type="text">Contributor</roleTerm>
+			</role>
+			<!--xsl:call-template name="role"/-->
 		</name>
 	</xsl:template>
 
-<!-- 111 1.104 20141104 -->
+	<!-- 111 1.104 20141104 -->
 	<xsl:template name="createNameFrom711">
 		<name type="conference">
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="nameACDENQ"/>
-			<xsl:call-template name="role"/>
+			<!--removed the following template calls and hard code role to use Contributor. kdm, 20150113-->
+			<role>
+				<roleTerm type="text">Contributor</roleTerm>
+			</role>
+			<!--xsl:call-template name="role"/-->
 		</name>
 	</xsl:template>
-	
-	
+
+
 	<xsl:template name="createNameFrom720">
 		<!-- 1.91 FLVC correction: the original if test will fail because of xpath: the current node (from the for-each above) is already the 720 datafield -->
 		<!-- <xsl:if test="marc:datafield[@tag='720'][not(marc:subfield[@code='t'])]"> -->
@@ -4452,13 +4710,17 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<namePart>
 					<xsl:value-of select="marc:subfield[@code='a']"/>
 				</namePart>
-				<xsl:call-template name="role"/>
+				<!--removed the following template calls and hard code role to use Contributor. kdm, 20150113-->
+				<role>
+					<roleTerm type="text">Contributor</roleTerm>
+				</role>
+				<!--xsl:call-template name="role"/-->
 			</name>
 		</xsl:if>
 	</xsl:template>
-	
-	
-	
+
+
+
 	<!-- replced by above 1.91
 	<xsl:template name="createNameFrom720">
 		<xsl:if test="marc:datafield[@tag='720'][not(marc:subfield[@code='t'])]">
@@ -4549,7 +4811,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					<xsl:when test="@ind1='4'">Content advice</xsl:when>
 				</xsl:choose>
 			</xsl:attribute>
-			
+
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="uri"/>
 			<xsl:call-template name="subfieldSelect">
@@ -4576,15 +4838,15 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	<!-- 1.100 245c 20140804 -->
 	<xsl:template name="createNoteFrom245c">
 		<xsl:if test="marc:subfield[@code='c']">
-				<note type="statement of responsibility">
-					<xsl:attribute name="altRepGroup">
-						<xsl:text>00</xsl:text>
-					</xsl:attribute>
-					<xsl:call-template name="scriptCode"/>
-					<xsl:call-template name="subfieldSelect">
-						<xsl:with-param name="codes">c</xsl:with-param>
-					</xsl:call-template>
-				</note>
+			<note type="statement of responsibility">
+				<xsl:attribute name="altRepGroup">
+					<xsl:text>00</xsl:text>
+				</xsl:attribute>
+				<xsl:call-template name="scriptCode"/>
+				<xsl:call-template name="subfieldSelect">
+					<xsl:with-param name="codes">c</xsl:with-param>
+				</xsl:call-template>
+			</note>
 		</xsl:if>
 
 	</xsl:template>
@@ -4964,7 +5226,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		<subject>
 			<xsl:call-template name="xxx880"/>
 			<cartographics>
-			<xsl:for-each select="marc:subfield[@code='a' or @code='b' or @code='c']">
+				<xsl:for-each select="marc:subfield[@code='a' or @code='b' or @code='c']">
 					<xsl:if test="@code='a'">
 						<scale>
 							<xsl:value-of select="."/>
@@ -4980,12 +5242,36 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 							<xsl:value-of select="."/>
 						</coordinates>
 					</xsl:if>
-			</xsl:for-each>
+				</xsl:for-each>
 			</cartographics>
 		</subject>
 	</xsl:template>
 
+	<!--this chunk of code was added for Avalon, kdm 20150113-->
 	<xsl:template name="createSubNameFrom600">
+		<subject>
+			<xsl:call-template name="subjectAuthority"/>
+			<name type="personal">
+				<namePart>
+					<xsl:for-each
+						select="marc:subfield[@code='a' or @code='b' or @code='c' or @code='d' or @code='t' or @code='n' or @code='p']">
+						<xsl:choose>
+							<xsl:when test="position()!=last()">
+								<xsl:value-of select="."/>
+								<xsl:text> </xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="."/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:for-each>
+				</namePart>
+			</name>
+		</subject>
+	</xsl:template>
+
+	<!--this is LC's code, which has been replaced by Avalon code, kdm 20150113-->
+	<!--xsl:template name="createSubNameFrom600">
 		<subject>
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subjectAuthority"/>
@@ -5020,9 +5306,33 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			</xsl:if>
 			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
+	</xsl:template-->
+
+	<!--this chunk of code was added for Avalon, kdm 20150113-->
+	<xsl:template name="createSubNameFrom610">
+		<subject>
+			<xsl:call-template name="subjectAuthority"/>
+			<name type="corporate">
+				<namePart>
+					<xsl:for-each
+						select="marc:subfield[@code='a' or @code='b' or @code='c' or @code='d' or @code='t' or @code='n' or @code='p']">
+						<xsl:choose>
+							<xsl:when test="position()!=last()">
+								<xsl:value-of select="."/>
+								<xsl:text> </xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="."/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:for-each>
+				</namePart>
+			</name>
+		</subject>
 	</xsl:template>
 
-	<xsl:template name="createSubNameFrom610">
+	<!--this is LC's code, which has been replaced by Avalon code, kdm 20150113-->
+	<!--xsl:template name="createSubNameFrom610">
 		<subject>
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subjectAuthority"/>
@@ -5062,9 +5372,33 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			</xsl:if>
 			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
+	</xsl:template-->
+
+	<!--this chunk of code was added for Avalon, kdm 20150113-->
+	<xsl:template name="createSubNameFrom611">
+		<subject>
+			<xsl:call-template name="subjectAuthority"/>
+			<name type="conference">
+				<namePart>
+					<xsl:for-each
+						select="marc:subfield[@code='a' or @code='c' or @code='d' or @code='e' or @code='n' or @code='q' or @code='t'  or @code='p']">
+						<xsl:choose>
+							<xsl:when test="position()!=last()">
+								<xsl:value-of select="."/>
+								<xsl:text> </xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:value-of select="."/>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:for-each>
+				</namePart>
+			</name>
+		</subject>
 	</xsl:template>
 
-	<xsl:template name="createSubNameFrom611">
+	<!--this is LC's code, which has been replaced by Avalon code, kdm 20150113-->
+	<!--xsl:template name="createSubNameFrom611">
 		<subject>
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subjectAuthority"/>
@@ -5098,9 +5432,31 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			</xsl:if>
 			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
+	</xsl:template-->
+
+	<!--this chunk of code was added for Avalon, kdm 20150113-->
+	<xsl:template name="createSubTitleFrom630">
+		<subject>
+			<xsl:call-template name="subjectAuthority"/>
+			<topic>
+				<xsl:for-each
+					select="marc:subfield[@code='a' or @code='d' or @code='f' or @code='h' or @code='k' or @code='l' or @code='o' or @code='r']">
+					<xsl:choose>
+						<xsl:when test="position()!=last()">
+							<xsl:value-of select="."/>
+							<xsl:text> </xsl:text>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="."/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:for-each>
+			</topic>
+		</subject>
 	</xsl:template>
 
-	<xsl:template name="createSubTitleFrom630">
+	<!--this is LC's code, which has been replaced by Avalon code, kdm 20150113-->
+	<!--xsl:template name="createSubTitleFrom630">
 		<subject>
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subjectAuthority"/>
@@ -5118,7 +5474,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			</titleInfo>
 			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
-	</xsl:template>
+	</xsl:template-->
 
 	<xsl:template name="createSubChronFrom648">
 		<subject>
@@ -5191,7 +5547,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</topic>
 			</subject>
 		</xsl:if>
-<!-- tmee 1.93 20140130 -->
+		<!-- tmee 1.93 20140130 -->
 		<xsl:if test="@ind=' ' or @ind1='0' or @ind1='1'">
 			<subject>
 				<name type="personal">
@@ -5480,7 +5836,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				</physicalLocation>
 			</xsl:if>
 			<!-- 1.78 -->
-			<xsl:if test="marc:subfield[@code='h' or @code='i' or @code='j' or @code='k' or @code='l' or @code='m' or @code='t']">
+			<xsl:if
+				test="marc:subfield[@code='h' or @code='i' or @code='j' or @code='k' or @code='l' or @code='m' or @code='t']">
 				<shelfLocator>
 					<xsl:call-template name="subfieldSelect">
 						<xsl:with-param name="codes">hijklmt</xsl:with-param>
@@ -5497,11 +5854,16 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					<!-- 1.41 tmee AQ1.9 added choice protocol for @usage="primary display" -->
 					<xsl:variable name="primary">
 						<xsl:choose>
-							<xsl:when test="@ind2=0 and count(preceding-sibling::marc:datafield[@tag=856] [@ind2=0])=0">true</xsl:when>
+							<xsl:when test="@ind2=0 and count(preceding-sibling::marc:datafield[@tag=856] [@ind2=0])=0"
+								>true</xsl:when>
 
-							<xsl:when test="@ind2=1 and         count(ancestor::marc:record//marc:datafield[@tag=856][@ind2=0])=0 and         count(preceding-sibling::marc:datafield[@tag=856][@ind2=1])=0">true</xsl:when>
+							<xsl:when
+								test="@ind2=1 and         count(ancestor::marc:record//marc:datafield[@tag=856][@ind2=0])=0 and         count(preceding-sibling::marc:datafield[@tag=856][@ind2=1])=0"
+								>true</xsl:when>
 
-							<xsl:when test="@ind2!=1 and @ind2!=0 and         @ind2!=2 and count(ancestor::marc:record//marc:datafield[@tag=856 and         @ind2=0])=0 and count(ancestor::marc:record//marc:datafield[@tag=856 and         @ind2=1])=0 and         count(preceding-sibling::marc:datafield[@tag=856][@ind2])=0">true</xsl:when>
+							<xsl:when
+								test="@ind2!=1 and @ind2!=0 and         @ind2!=2 and count(ancestor::marc:record//marc:datafield[@tag=856 and         @ind2=0])=0 and count(ancestor::marc:record//marc:datafield[@tag=856 and         @ind2=1])=0 and         count(preceding-sibling::marc:datafield[@tag=856][@ind2])=0"
+								>true</xsl:when>
 							<xsl:otherwise>false</xsl:otherwise>
 						</xsl:choose>
 					</xsl:variable>
