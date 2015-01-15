@@ -17,9 +17,6 @@
 $ ->
   add_button_html = '<div class="input-group-btn"><button type="button" class="add-dynamic-field btn btn-success"><span class="glyphicon glyphicon-plus"></span></button></div>'
   remove_button_html = '<div class="input-group-btn"><button type="button" class="remove-dynamic-field btn btn-success"><span class="glyphicon glyphicon-minus"></span></button></div>'
-  import_button_html = '<div class="input-group-btn"><button type="submit" name="media_object[import_bib_record]" class="btn btn-success" value="yes">Import</button></div>'
-
-  $('#media_object_bibliographic_id').closest('div').append(import_button_html)
   
   $('.form-group.multivalued').each ->
       t = $(this)
