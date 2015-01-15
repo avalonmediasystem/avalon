@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" version="3.5" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-5.xsd">
+  <titleInfo usage="primary">
+    <title>The Grand Budapest Hotel</title>
+  </titleInfo>
+  <titleInfo type="uniform">
+    <title>Grand Budapest Hotel (Motion picture)</title>
+  </titleInfo>
+  <name type="personal" usage="primary">
+    <namePart>Anderson, Wes, 1969-</namePart>
+    <role>
+      <roleTerm type="text">Creator</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Anderson, Wes, 1969-</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Guinness, Hugo</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Rudin, Scott, 1958-</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Rales, Steven</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Dawson, Jeremy (Producer)</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Fiennes, Ralph</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Abraham, F. Murray</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Amalric, Mathieu, 1965-</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Brody, Adrien</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Dafoe, Willem</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Goldblum, Jeff, 1952-</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Keitel, Harvey</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Law, Jude, 1972-</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Murray, Bill, 1950 September 21-</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Norton, Edward</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Ronan, Saoirse, 1994-</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Schwartzman, Jason, 1980-</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Seydoux, Léa, 1985-</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Wilkinson, Tom, 1948-</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Wilson, Owen, 1968-</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Desplat, Alexandre</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Pilling, Barney</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="personal">
+    <namePart>Yeoman, Robert D., 1951-</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="corporate">
+    <namePart>Fox Searchlight Pictures</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="corporate">
+    <namePart>Indian Paintbrush (Firm)</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="corporate">
+    <namePart>Studio Babelsberg</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="corporate">
+    <namePart>American Empirical Pictures</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <name type="corporate">
+    <namePart>Twentieth Century Fox Home Entertainment, Inc.</namePart>
+    <role>
+      <roleTerm type="text">Contributor</roleTerm>
+    </role>
+  </name>
+  <typeOfResource>moving image</typeOfResource>
+  <genre authority="marcgt">videorecording</genre>
+  <genre authority="rdacontent">two-dimensional moving image</genre>
+  <genre authority="lcgft">Dark comedy films.</genre>
+  <genre authority="lcgft">Feature films.</genre>
+  <genre authority="lcgft">Fiction films.</genre>
+  <genre authority="lcgft">Video recordings for the hearing impaired.</genre>
+  <genre authority="lcgft">Video recordings for people with visual disabilities.</genre>
+  <originInfo>
+    <place>
+      <placeTerm type="code" authority="marccountry">cau</placeTerm>
+    </place>
+    <dateIssued encoding="edtf">2014</dateIssued>
+    <copyrightDate encoding="iso8601">2014</copyrightDate>
+    <issuance>monographic</issuance>
+  </originInfo>
+  <originInfo eventType="distribution">
+    <place>
+      <placeTerm type="text">Beverly Hills, California :</placeTerm>
+    </place>
+    <publisher>Twentieth Century Fox Home Entertainment,</publisher>
+    <dateOther type="distribution">[2014]</dateOther>
+  </originInfo>
+  <language>
+    <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+  </language>
+  <language>
+    <languageTerm authority="iso639-2b" type="code">spa</languageTerm>
+  </language>
+  <language>
+    <languageTerm authority="iso639-2b" type="code">fre</languageTerm>
+  </language>
+  <relatedItem type="original">
+    <physicalDescription>
+      <extent>1 videodisc (100 minutes) :sound, color ;4 3/4 in. 4 3/4 in.rda</extent>
+    </physicalDescription>
+  </relatedItem>
+  <abstract type="Summary">The adventures of Gustave H, a legendary concierge at a famous European hotel between the wars, and Zero Moustafa, the lobby boy who becomes his most trusted friend. The story involves the theft and recovery of a priceless Renaissance painting and the battle for an enormous family fortune.</abstract>
+  <targetAudience>MPAA rating: R; for language, some sexual content and violence.</targetAudience>
+  <targetAudience authority="marctarget">adult</targetAudience>
+  <note type="statement of responsibility" altRepGroup="00">Fox Searchlight Pictures in association with Indian Paintbrush and Studio Babelsberg present ; an American Empirical Picture ; produced by Wes Anderson, Scott Rudin, Steven Rales, Jeremy Dawson ; story by Wes Anderson &amp; Hugo Guinness ; screenplay by Wes Anderson ; directed by Wes Anderson.</note>
+  <note>Originally released as a motion picture in 2014.</note>
+  <note>Special features: Mendl's Secret Recipe; cast and Wes Anderson featurettes; stills gallery.</note>
+  <note type="creation/production credits">Music, Alexandre Desplat ; editor, Barney Pilling ; production designer, Adam Stockhausen ; director of photography, Robert Yeoman.</note>
+  <note type="performers">Ralph Fiennes,  F. Murray Abraham, Mathieu Amalric, Adrien Brody, Willem Dafoe, Jeff Goldblum, Harvey Keitel, Jude Law, Bill Murray, Edward Norton, Saoirse Ronan, Jason Schwartzman, Léa Seydoux, Tilda Swinton, Tom Wilkinson, Owen Wilson.</note>
+  <note type="system details">DVD, NTSC region 1, dual layer; widescreen (1.85:1) presentation; Dolby Digital 5.1, surround Dolby Digital 2.0.</note>
+  <note type="language">In English (Dolby Digital 5.1), dubbed French (surround Dolby Digital 2.0), or dubbed Spanish (surround Dolby Digital 2.0); French and Spanish subtitles; English subtitles for the deaf and hard-of-hearing (SDH); English descriptive audio track for people with visual disabilities.</note>
+  <subject>
+    <geographicCode authority="marcgac">e------</geographicCode>
+  </subject>
+  <subject authority="lcsh">
+    <topic>Hotels</topic>
+    <geographic>Europe</geographic>
+    <genre>Drama</genre>
+  </subject>
+  <subject authority="lcsh">
+    <topic>Hotel concierges</topic>
+    <geographic>Europe</geographic>
+    <genre>Drama</genre>
+  </subject>
+  <subject authority="lcsh">
+    <topic>Art thefts</topic>
+    <genre>Drama</genre>
+  </subject>
+  <subject authority="lcsh">
+    <topic>Friendship</topic>
+    <genre>Drama</genre>
+  </subject>
+  <classification authority="lcc">PN1997.2 .G73 2014</classification>
+  <classification authority="ddc" edition="23">791.43/72</classification>
+  <identifier type="videorecording identifier">2289739 Twentieth Century Fox Home Entertainment</identifier>
+  <identifier type="oclc">ocn879297774</identifier>
+  <identifier type="stock number">Midwest Tape</identifier>
+  <identifier type="upc">024543897385</identifier>
+  <identifier type="upc">024543897385</identifier>
+  <identifier type="upc">024543897392</identifier>
+  <recordInfo>
+    <descriptionStandard>rda</descriptionStandard>
+    <recordContentSource authority="marcorg">TEFMT</recordContentSource>
+    <recordCreationDate encoding="edtf">140506</recordCreationDate>
+    <recordChangeDate encoding="iso8601">20140708133756.0</recordChangeDate>
+    <recordIdentifier>7041954</recordIdentifier>
+    <recordOrigin>Converted from MARCXML to MODS version 3.5 using MARC21slim2MODS3-5.xsl (Revision 1.106
+				2014/12/19), customized for the Avalon Media System (last revised 2014/12/26)</recordOrigin>
+    <languageOfCataloging>
+      <languageTerm authority="iso639-2b" type="code">eng</languageTerm>
+    </languageOfCataloging>
+  </recordInfo>
+</mods>
