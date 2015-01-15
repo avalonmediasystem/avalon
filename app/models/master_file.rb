@@ -72,7 +72,7 @@ class MasterFile < ActiveFedora::Base
       record.errors.add attr, "must be between 0 and #{record.duration}"
     end
   end
-  validates :file_format, presence: true, exclusion: { in: ['Unknown'], message: "The file was not recognized as audio or video." }
+  #validates :file_format, presence: true, exclusion: { in: ['Unknown'], message: "The file was not recognized as audio or video." }
 
   has_model_version 'R3'
   before_save 'update_stills_from_offset!'
@@ -103,23 +103,6 @@ class MasterFile < ActiveFedora::Base
   EMBED_SIZE = {:medium => 600}
   AUDIO_HEIGHT = 50
 
-  def create!(file, parent, opts = {})
-    mf = MasterFile.new
-    mf.save(validate: false)
-    mf.mediaobject = parent
-    mf.setContent(Array(file).first)
-    mf.set_workflow(opts[:workflow])
-    begin
-      mf.save!
-    rescue Exception => e
-      mf.destroy
-      raise e
-    end
-    #Explicitly start processing here
-    mf.process file
-    mf
-  end
-
   def save_parent
     unless mediaobject.nil?
       mediaobject.save(validate: false)  
@@ -130,14 +113,17 @@ class MasterFile < ActiveFedora::Base
     delete
   end
 
-  def setContent(file, content_type = nil)
-    if file.is_a? ActionDispatch::Http::UploadedFile
-      self.file_format = determine_format(file.tempfile, file.content_type)
+  def setContent(file)
+    case file
+    when Hash #Multiple files for pre-transcoded derivatives
+      saveOriginal(file['quality-high'])
+      file.each_value {|f| f.close unless f.closed? }
+    when ActionDispatch::Http::UploadedFile #Web upload
       saveOriginal(file, file.original_filename)
-    else
-      self.file_format = determine_format(file, content_type)
-      saveOriginal(file, nil)
+    else #Batch or dropbox
+      saveOriginal(file)
     end
+    reloadTechnicalMetadata!
   end
 
   def set_workflow( workflow  = nil )
@@ -214,8 +200,10 @@ class MasterFile < ActiveFedora::Base
   def process file=nil
     raise "MasterFile is already being processed" if status_code.present? && !finished_processing?
     if file.is_a? Hash
+       files = file.dup
+       files.each_pair {|quality, f| files[quality] = "file://" + URI.escape(File.realpath(f.to_path))}
        Delayed::Job.enqueue MatterhornIngestJob.new({
-	'url' => file,
+	'url' => files,
 	'title' => pid,
 	'flavor' => "presenter/source",
 	'workflow' => self.workflow_name,
@@ -565,26 +553,7 @@ class MasterFile < ActiveFedora::Base
     result
   end
 
-  def determine_format(file, content_type = nil)
-    #FIXME Catch exceptions here and do something helpful like log warning and set format to unknown
-    media_format = Mediainfo.new file
-
-    # It appears that formats like MP4 can be caught as both audio and video
-    # so a case statement should flow in the preferred order
-    upload_format = case
-                    when media_format.video?
-                      'Moving image'
-                    when media_format.audio?
-                       'Sound'
-                    else
-                       'Unknown'
-                    end 
-  
-    return upload_format
-  end
-
-  def saveOriginal(file, original_name)
-    @mediainfo = nil
+  def saveOriginal(file, original_name=nil)
     realpath = File.realpath(file.path)
     if original_name.present?
       config_path = Avalon::Configuration.lookup('matterhorn.media_path')
@@ -600,6 +569,24 @@ class MasterFile < ActiveFedora::Base
     else 
       self.file_location = realpath
     end
+    self.file_size = file.size.to_s
+    file.close
+  end
+
+  def reloadTechnicalMetadata!
+    #Reset mediainfo
+    @mediainfo = nil
+
+    # Formats like MP4 can be caught as both audio and video
+    # so the case statement flows in the preferred order
+    self.file_format = case
+                    when mediainfo.video?
+                      'Moving image'
+                    when mediainfo.audio?
+                       'Sound'
+                    else
+                       'Unknown'
+                    end
 
     self.duration = begin
       mediainfo.duration.to_s
@@ -617,10 +604,6 @@ class MasterFile < ActiveFedora::Base
       self.original_frame_size = mediainfo.video.streams.first.frame_size
       self.poster_offset = [2000,mediainfo.duration.to_i].min
     end
-
-    self.file_size = file.size.to_s
-
-    file.close
   end
 
   def post_processing_file_management
