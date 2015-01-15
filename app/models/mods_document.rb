@@ -201,12 +201,17 @@ class ModsDocument < ActiveFedora::OmDatastream
     EOC
   end
   
-  def populate_from_catalog!
-    bib_id = self.bibliographic_id.first
+  def populate_from_catalog! bib_id=nil
+    bib_id ||= self.bibliographic_id.first
     if bib_id.present?
       new_record = Avalon::BibRetriever.instance.get_record(bib_id)
       if new_record.present?
-        self.content = new_record
+        self.ng_xml = Nokogiri::XML(new_record)
+        [:genre, :topical_subject, :geographic_subject, :temporal_subject, 
+         :occupation_subject, :person_subject, :corporate_subject, :family_subject, 
+         :title_subject].each do |field|
+           self.send("#{field}=".to_sym, self.send(field).uniq)
+        end
       end
     end
   end
