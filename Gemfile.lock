@@ -144,12 +144,6 @@ GIT
       rest-client
 
 GIT
-  remote: https://github.com/bricestacey/ruby-zoom.git
-  revision: 9a3787008e0385f8d9085bbfb2b27096e1bcb528
-  specs:
-    zoom (0.4.1)
-
-GIT
   remote: https://github.com/projectblacklight/blacklight.git
   revision: d4f2cf5d6917b927d63867f50bb66f6bc5b9577b
   ref: d4f2cf5d6917b927d63867f50bb66f6bc5b9577b
@@ -818,4 +812,3 @@ DEPENDENCIES
   whenever
   with_locking
   xray-rails
-  zoom (~> 0.4.1)!

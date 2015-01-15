@@ -46,7 +46,10 @@
   # microdata
   gem 'ruby-duration'
 
-  gem 'zoom', '~>0.4.1', :git => 'https://github.com/bricestacey/ruby-zoom.git'
+# Uncomment the following line to include z39.59/zoom support in Avalon::BibRetriever
+# NOTE: Requires the yaz library to be installed
+#  gem 'zoom', '~>0.4.1', :git => 'https://github.com/bricestacey/ruby-zoom.git'
+
   gem 'marc'
   
   platforms :jruby do
