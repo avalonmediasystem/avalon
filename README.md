@@ -19,6 +19,7 @@ explore the out-of-the-box functionality or do basic development.
 * Copy config/avalon.yml.example to config/avalon.yml and [change](https://wiki.dlib.indiana.edu/display/VarVideo/Configuration+Files#ConfigurationFiles-config%2Favalon.yml) as necessary
 * Copy config/authentication.yml.example to config/authentication.yml
 * Copy config/controlled_vocabulary.yml.example to config/controlled_vocabulary.yml
+* Setup config/secrets.yml
 * ```rake avalon:services:start```
 * ```rake db:migrate```
 * ```rake db:test:prepare```
