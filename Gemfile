@@ -46,6 +46,12 @@
   # microdata
   gem 'ruby-duration'
 
+# Uncomment the following line to include z39.59/zoom support in Avalon::BibRetriever
+# NOTE: Requires the yaz library to be installed
+#  gem 'zoom', '~>0.4.1', :git => 'https://github.com/bricestacey/ruby-zoom.git'
+
+  gem 'marc'
+  
   platforms :jruby do
     gem 'jruby-openssl'
     gem 'activerecord-jdbcsqlite3-adapter'
@@ -118,11 +124,11 @@
     gem 'puma'
     gem 'rb-fsevent', '~> 0.9.1'
     gem 'letter_opener'
+    gem 'pry'
+    gem 'pry-rails'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :debug do
-    gem 'pry'
-    gem 'pry-rails'
     gem 'pry-debugger', platforms: [:mri_19]
     gem 'pry-byebug',   platforms: [:mri_20, :mri_21]
   end

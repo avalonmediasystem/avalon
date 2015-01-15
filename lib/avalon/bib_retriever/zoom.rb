@@ -12,21 +12,25 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class ResourceDescriptionStep < Avalon::Workflow::BasicStep
-  def initialize(step = 'resource-description', title = "Resource description", summary = "Metadata about the item", template = 'resource_description')
-    super
-  end
-
-  def execute context
-    mediaobject = context[:mediaobject]
-    populate_from_catalog = context[:media_object][:import_bib_record].present?
-    if populate_from_catalog
-      mediaobject.descMetadata.populate_from_catalog!(context[:media_object][:bibliographic_id])
-    else
-      mediaobject.permalink = context[:media_object].delete(:permalink)
-      mediaobject.update_datastream(:descMetadata, context[:media_object])
+module Avalon
+  class BibRetriever
+    class Zoom < ::Avalon::BibRetriever
+      
+      def initialize config
+        super
+        @config['port'] ||= 7090
+        @config['attribute'] ||= 7
+      end
+      
+      def get_record(bib_id)
+        record = nil
+        ZOOM::Connection.open(config['host'], config['port']) do |conn|
+          conn.database_name = config['database']
+          conn.preferred_record_syntax = 'marc21'
+          record = conn.search("@attr 1=#{config['attribute']} #{bib_id}")
+        end
+        record[0].nil? ? nil : marc2mods(record[0].raw)
+      end
     end
-    mediaobject.save
-    context
   end
 end

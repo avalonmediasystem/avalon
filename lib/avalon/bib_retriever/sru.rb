@@ -12,21 +12,20 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class ResourceDescriptionStep < Avalon::Workflow::BasicStep
-  def initialize(step = 'resource-description', title = "Resource description", summary = "Metadata about the item", template = 'resource_description')
-    super
-  end
-
-  def execute context
-    mediaobject = context[:mediaobject]
-    populate_from_catalog = context[:media_object][:import_bib_record].present?
-    if populate_from_catalog
-      mediaobject.descMetadata.populate_from_catalog!(context[:media_object][:bibliographic_id])
-    else
-      mediaobject.permalink = context[:media_object].delete(:permalink)
-      mediaobject.update_datastream(:descMetadata, context[:media_object])
+module Avalon
+  class BibRetriever
+    class SRU < ::Avalon::BibRetriever
+      def get_record(bib_id)
+        doc = Nokogiri::XML RestClient.get(url_for(bib_id))
+        record = doc.xpath('//zs:recordData/*', "zs"=>"http://www.loc.gov/zing/srw/").first
+        record.nil? ? nil : marcxml2mods(record.to_s)
+      end
+      
+      def url_for(bib_id)
+        uri = URI.parse config['url']
+        uri.query = "version=1.1&operation=searchRetrieve&maximumRecords=10000&recordSchema=marcxml&query=rec.id=#{bib_id}"
+        uri.to_s
+      end
     end
-    mediaobject.save
-    context
   end
 end

@@ -12,6 +12,8 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+require 'avalon/bib_retriever'
+
 class ModsDocument < ActiveFedora::OmDatastream
   
   include ModsTemplates
@@ -197,6 +199,21 @@ class ModsDocument < ActiveFedora::OmDatastream
       <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3"
         xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd"/>
     EOC
+  end
+  
+  def populate_from_catalog! bib_id=nil
+    bib_id ||= self.bibliographic_id.first
+    if bib_id.present?
+      new_record = Avalon::BibRetriever.instance.get_record(bib_id)
+      if new_record.present?
+        self.ng_xml = Nokogiri::XML(new_record)
+        [:genre, :topical_subject, :geographic_subject, :temporal_subject, 
+         :occupation_subject, :person_subject, :corporate_subject, :family_subject, 
+         :title_subject].each do |field|
+           self.send("#{field}=".to_sym, self.send(field).uniq)
+        end
+      end
+    end
   end
 
 end
