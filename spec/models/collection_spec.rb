@@ -468,11 +468,12 @@ describe Admin::Collection do
     before do
       @media_objects = (1..3).map{ FactoryGirl.create(:media_object)}
       @collection = FactoryGirl.create(:collection, media_objects: @media_objects)
+      allow(Admin::Collection).to receive(:find).with(@collection.pid).and_return(@collection)
     end
     it 'should reindex in the background' do
       expect(@collection.reindex_members {}).to be_a_kind_of(Delayed::Job)
     end
-    it 'should call save on all member objects' do
+    it 'should call update_index on all member objects' do
       Delayed::Worker.delay_jobs = false
       @media_objects.each {|mo| mo.should_receive("update_index").and_return(true)}
       @collection.reindex_members {}
