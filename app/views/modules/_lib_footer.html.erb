@@ -1,0 +1,64 @@
+<%#
+Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<!-- Part 1: Wrap all page content here -->
+
+<div id="footer">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12  col-md-12 col-sm-12 col-xs-12">
+        <div class="contact_info pull-left col-md-4 col-sm-12 col-xs-12">
+          <a href="http://www.library.virginia.edu/" target="_blank">University of Virginia Library</a><br>
+          PO Box 400113, Charlottesville, VA 22904-4113<br>
+          ph: (434) 924-3021, fax: (434) 924-1431, <a href="mailto:library@virginia.edu">library@virginia.edu</a>
+        </div>
+        <div class="aux_links pull-right col-md-7 col-sm-12 col-xs-12">
+          <a href="http://www.library.virginia.edu/organization/" target="_blank">Depts./Contacts</a> | <a href="http://www.virginia.edu/" target="_blank">U.Va. Home</a> | <a href="http://its.virginia.edu/" target="_blank">ITS</a><br>
+          <a href="http://www.library.virginia.edu/askalibrarian/" target="_blank">Questions? Ask a Librarian</a> | <a href="http://www.library.virginia.edu/site-search/" target="blank">Search</a> | <a href="http://www.library.virginia.edu/hours/" target="_blank">Hours</a> | <a href="http://www.library.virginia.edu/map/" target="_blank">Map</a> | <a href="http://www.library.virginia.edu/policies/" target="_blank">Policies</a> | <a href="http://www.library.virginia.edu/press/" target="_blank">Press</a> | <a href="http://www.library.virginia.edu/jobs/" target="_blank">Jobs</a><br>
+          <a href="http://www.virginia.edu/copyright.html" id="copyrightLink" target="_blank">©</a> 2015 by the Rector and Visitors of the <a href="http://www.virginia.edu/" target="_blank">University of Virginia</a>
+        </div>
+      </div>
+    </div>
+    <hr />
+    <div id="footer_notices">
+      <div id="hydra_logo" class="pull-right">
+        <%= image_tag "powered_by_hydra.png", height: "50px", width: "80px", alt: "Hydra logo" %>
+      </div>
+      <div id="bottom_text">
+        <%= image_tag "federal_lib_logo.png", height: "33px", width: "37px", alt: "Federal Library Depository logo" %>
+        <div id="federal_lib" class="col-md-8">This library is a Congressionally designated depository for <a href="http://guides.lib.virginia.edu/findinggovinfo/" target="_blank">U.S. Government documents</a>.
+          Public access to the Government documents is guaranteed by public law.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+    .aux_links a {
+        color:white;
+    }
+    @media screen and (min-width:0px)and (max-width: 1000px) {
+        .aux_links {
+            margin-top:10px;
+        }
+    }
+    .contact_info a {
+        color:white;
+    }
+    .contact_info.pull-left a {
+        color:white;
+    }
+</style>

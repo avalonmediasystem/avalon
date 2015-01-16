@@ -1,15 +1,15 @@
-/* 
+/*
  * Copyright 2011-2014, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed 
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- *   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+ *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
 */
@@ -44,7 +44,12 @@ $gray: #CFD8D3;
 $lightgray: #F5F5F5;
 $red: #D9534F;
 $blue: #2a4d59;
-
+$library_blue: #0D3268;
+$library_orange:#F59A2C;
+$library_cream:#F1E5C7;
+$library_gray:#E6E7E8;
+$library_light_blue:#46A8C2;
+$library_green:#7AC143;
 /* Links */
 
 $linkColor: rgb(42, 84, 89);
@@ -68,11 +73,11 @@ $infoBackground: $gray;
 
 /* Header */
 
-$headerBackgroundColor: rgb(234, 234, 234);
+$headerBackgroundColor: $library_blue;
 $headerTextColor: $white;
 $loginTextColor: $gray;
 $loginLinkColor: rgb(42, 84, 89);
-$loginLinkBackgroundColor: rgb(251, 176, 64);
+$loginLinkBackgroundColor: $library_orange;
 
 /* Sidenav */
 
@@ -135,3 +140,82 @@ $pagination-disabled-border:           	    $gray;
 
 $nav-tabs-active-link-hover-color: 	    $black;
 $input-color:				    $black;
+
+/* Custom Styles UVA Library */
+
+/* Header styles  --------------- */
+.logo a img{
+  max-width:150px;
+}
+.log-in-out {
+  padding-top: 19px;
+}
+.navbar-right {
+  margin-right:10px;
+}
+
+.lib_banner_container {
+  background: #051f39;
+  height: 34px;
+  padding: 8px 0;
+}
+.lib_logo{
+  padding-left: 15px;
+}
+.account_links li a.or_highlight {
+  color: #f59a2c;
+  border-bottom: 1px dotted #89a;
+  line-height: 14px;
+}
+.account_links {
+  list-style-type: none;
+  margin-bottom: -22px;
+  padding-right: 10px;
+}
+.avalon_bar {
+  margin-bottom: 30px;
+}
+.main_content {
+  padding: 0px 20px 0px 20px;
+  clear:both;
+  margin-bottom:30px;
+}
+#header-navbar {
+  background-color: #f9f9f9;
+  background-image: none;
+  border: 1px solid rgba(212, 212, 212, 0.28);
+  border-radius: 2px;
+  margin: 10px 0;
+  min-height: 0px;
+}
+/* Sticky footer styles  --------------- */
+html,
+body {
+  height: 100%;
+  /* The html and body elements cannot have any padding or margin. */
+}
+
+/* Wrapper for page content to push down footer */
+#wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  /* Negative indent footer by it's height */
+  margin: 0 auto -200px;
+}
+
+/* Set the fixed height of the footer here */
+#push,
+#footer {
+  min-height: 200px;
+}
+#footer {
+  background-color: #f5f5f5;
+  background: #051f39;
+  border-top: 2px solid #013;
+  padding: 20px 30px 35px 30px;
+  color:#d2e5f7;
+}
+#federal_lib a {
+  color:white;
+}
