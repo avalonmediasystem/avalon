@@ -199,22 +199,29 @@ class MasterFile < ActiveFedora::Base
 
   def process file=nil
     raise "MasterFile is already being processed" if status_code.present? && !finished_processing?
+
+    if file.nil? && (self.workflow_name == 'avalon-skip-transcoding' || self.workflow_name == 'avalon-skip-transcoding-audio')
+      file = {'quality-high' => File.new(file_location)}
+    end
+
     if file.is_a? Hash
-       files = file.dup
-       files.each_pair {|quality, f| files[quality] = "file://" + URI.escape(File.realpath(f.to_path))}
-       Delayed::Job.enqueue MatterhornIngestJob.new({
-	'url' => files,
-	'title' => pid,
-	'flavor' => "presenter/source",
-	'workflow' => self.workflow_name,
+      files = file.dup
+      files.each_pair {|quality, f| files[quality] = "file://" + URI.escape(File.realpath(f.to_path))}
+      #The hash below has to be symbol keys or else delayed_job chokes
+      Delayed::Job.enqueue MatterhornIngestJob.new({
+	title: pid,
+	flavor: "presenter/source",
+	workflow: self.workflow_name,
+	url: files
       })
     else
+      #The hash below has to be string keys or else rubyhorn complains
       Delayed::Job.enqueue MatterhornIngestJob.new({
 	'url' => "file://" + URI.escape(file_location),
 	'title' => pid,
 	'flavor' => "presenter/source",
 	'filename' => File.basename(file_location),
-	'workflow' => self.workflow_name,
+	'workflow' => self.workflow_name
       })
     end
   end
