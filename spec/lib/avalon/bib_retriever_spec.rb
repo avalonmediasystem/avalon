@@ -24,7 +24,7 @@ describe Avalon::BibRetriever do
       Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
     end
     
-    let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=10000&recordSchema=marcxml&query=rec.id=#{bib_id}" }
+    let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
     let(:sru_response) { File.read(File.expand_path("../../../fixtures/#{bib_id}.xml",__FILE__)) }
     it 'retrieves proper MODS' do
       RestClient.should_receive(:get).with(sru_url).and_return(sru_response)

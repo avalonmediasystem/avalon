@@ -15,6 +15,11 @@
 module Avalon
   class BibRetriever
     class SRU < ::Avalon::BibRetriever
+      def initialize config
+        super
+        @config['query'] ||= 'rec.id=%s'
+      end
+      
       def get_record(bib_id)
         doc = Nokogiri::XML RestClient.get(url_for(bib_id))
         record = doc.xpath('//zs:recordData/*', "zs"=>"http://www.loc.gov/zing/srw/").first
@@ -23,7 +28,8 @@ module Avalon
       
       def url_for(bib_id)
         uri = URI.parse config['url']
-        uri.query = "version=1.1&operation=searchRetrieve&maximumRecords=10000&recordSchema=marcxml&query=rec.id=#{bib_id}"
+        query_param = config['query'] % bib_id.to_s
+        uri.query = "version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=#{query_param}"
         uri.to_s
       end
     end

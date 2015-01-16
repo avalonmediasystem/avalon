@@ -36,6 +36,7 @@ development:
   bib_retriever:
     protocol: sru
     url: http://zgate.example.edu:9000/exampledb
+    query: rec.id='%s'
 test:
   fedora:
     namespace: avalon
@@ -69,3 +70,4 @@ test:
   bib_retriever:
     protocol: sru
     url: http://zgate.example.edu:9000/exampledb
+    query: rec.id='%s'
