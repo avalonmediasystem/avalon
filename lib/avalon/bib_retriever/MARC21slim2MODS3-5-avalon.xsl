@@ -27,6 +27,8 @@ Pushed physicalDescription under relatedItem@type='original'. kdm 20150113
 Added conditions for 340 (same as 300). kdm 20150114
 Added type="primary" to 1xx names. mbk 20150115
 Added type="text" to hardcoded roleTerms mbk 20150115
+Added processing of 100, 700$tnp and 110, 710$tp and 11, 711$tp. kdm 20150115
+
 -->
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
 	MARC21slim2MODS3-5 (Revision 1.106) 20141219
@@ -3140,7 +3142,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:with-param name="chopString">
 					<xsl:call-template name="subfieldSelect">
 						<!--added fields bcd to aq for Avalon Media System, kdm 20150114-->
-						<xsl:with-param name="codes">abcdn</xsl:with-param>
+						<xsl:with-param name="codes">abcdntp</xsl:with-param>
 					</xsl:call-template>
 				</xsl:with-param>
 				<xsl:with-param name="punctuation">
@@ -3156,7 +3158,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:with-param name="chopString">
 					<xsl:call-template name="subfieldSelect">
 						<!--added fields bcd to aq for Avalon Media System, kdm 20150114-->
-						<xsl:with-param name="codes">aqbcd</xsl:with-param>
+						<xsl:with-param name="codes">aqbcdtnp</xsl:with-param>
 					</xsl:call-template>
 				</xsl:with-param>
 				<xsl:with-param name="punctuation">
@@ -3186,7 +3188,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:with-param name="chopString">
 					<xsl:call-template name="subfieldSelect">
 						<!--added fields bcde to anq for Avalon Media System, kdm 20150114-->
-						<xsl:with-param name="codes">acdenq</xsl:with-param>
+						<xsl:with-param name="codes">acdenqtp</xsl:with-param>
 					</xsl:call-template>
 				</xsl:with-param>
 				<xsl:with-param name="punctuation">

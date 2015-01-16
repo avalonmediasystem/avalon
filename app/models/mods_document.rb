@@ -47,7 +47,7 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.uniform_title(:proxy => [:uniform_title_info, :title])
 
     # Creators and Contributors
-    t.name(:path => 'name') do
+    t.name(:path => 'mods/oxns:name') do
       t.type_(:path => '@type', :namespace_prefix => nil)
       t.name_part(:path => 'namePart')
       t.role do
@@ -55,11 +55,11 @@ class ModsDocument < ActiveFedora::OmDatastream
         t.text(:path => 'roleTerm', :attributes => { :type => 'text' })
       end
     end
-    t._contributor_name(:ref => [:name], :path => 'name[not(@usage) or @usage!="primary"]')
+    t._contributor_name(:ref => [:name], :path => 'mods/oxns:name[not(@usage) or @usage!="primary"]')
     t.contributor(:proxy => [:_contributor_name, :name_part])
-    t._creator_name(:ref => [:name], :path => 'name[oxns:role/oxns:roleTerm[@type="text"] = "Creator" or oxns:role/oxns:roleTerm[@type="code"] = "cre"]')
+    t._creator_name(:ref => [:name], :path => 'mods/oxns:name[oxns:role/oxns:roleTerm[@type="text"] = "Creator" or oxns:role/oxns:roleTerm[@type="code"] = "cre"]')
     t.creator(:proxy => [:_creator_name, :name_part])
-    t._primary_creator_name(:ref => [:name], :path => 'name[@usage="primary"]')
+    t._primary_creator_name(:ref => [:name], :path => 'mods/oxns:name[@usage="primary"]')
     t.primary_creator(:proxy => [:_creator_name, :name_part])
 
     t.statement_of_responsibility(:path => 'note', :attributes => { :type => 'statement of responsbility' })
