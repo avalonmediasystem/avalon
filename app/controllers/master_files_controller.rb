@@ -218,7 +218,7 @@ class MasterFilesController < ApplicationController
       opts = { :type => params[:type], :size => params[:size], :offset => params[:offset].to_f*1000, :preview => true }
       master_file.extract_still(opts)
     else
-      authorize! :read, parent, message: "You do not have sufficient privileges to view this file"
+      authorize! :read, parent, message: "You do not have sufficient privileges to view this file" unless parent.published?
       ds = master_file.datastreams[params[:type]]
       mimeType = ds.mimeType
       ds.content

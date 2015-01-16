@@ -24,7 +24,7 @@ Unless required by applicable law or agreed to in writing, software distributed
      </div>
     
 <dl id="creation_metadata">
-  <%= display_metadata('Main contributor', @mediaobject.creator, 'Not provided') %>
+  <%= display_metadata('Creator', @mediaobject.creator, 'Not provided') %>
   <%= display_metadata('Date', combined_display_date(@mediaobject), 'Not provided') %>
   <% unless @mediaobject.abstract.blank? %>
   <dt>Summary</dt>
@@ -37,7 +37,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= display_metadata('Genre', @mediaobject.genre) %>
   <%= display_metadata('Subject', @mediaobject.subject) %>
   <%= display_metadata('Time period', @mediaobject.temporal_subject) %>
-  <%= display_metadata('Location', @mediaobject.geographic_subject) %>
+  <%= display_metadata('Geographic subject', @mediaobject.geographic_subject) %>
   <%= display_metadata('Collection', @mediaobject.collection.name) %>
   <%= display_metadata('Unit', @mediaobject.collection.unit) %>
   <%= display_metadata('Language', display_language(@mediaobject)) %>

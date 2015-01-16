@@ -41,9 +41,16 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="container-fluid">
       <%= render :partial => 'modules/global_navigation' %>
       <%= render 'modules/flash_messages' %>
-      <%= yield %>
     </div>
-    <%= render 'modules/footer' %>
+    <div id="wrap">
+      <!-- Begin page content -->
+      <div class="container main_content">
+        <%= yield %>
+      </div>
+      <div id="push"></div>
+    </div>
+
+    <%= render 'modules/lib_footer' %>
 
     <!-- With this many Javascript files performance will be much better
          if they are included here. That means the important content will

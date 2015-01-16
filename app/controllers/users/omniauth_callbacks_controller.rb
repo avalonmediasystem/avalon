@@ -59,6 +59,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         user_session[:virtual_groups] += [user_session[:lti_group]]
         user_session[:full_login] = false
       end
+      if auth_type == 'shibboleth'
+        user_session[:virtual_groups] = request.env["omniauth.auth"].extra.affiliations
+      end
 
     end
 
@@ -69,7 +72,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     elsif auth_type == 'lti' && user_session[:virtual_groups].present?
       redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])
     else
-      redirect_to root_url
+      redirect_to root_url(:port => 80, :only_path => false, :protocol => 'http')
     end
   end
 

@@ -90,8 +90,8 @@ class MasterFile < ActiveFedora::Base
   # limits of the system. For now this is hard coded but should probably eventually
   # be set up in a configuration file somewhere
   #
-  # 250 MB is the file limit for now
-  MAXIMUM_UPLOAD_SIZE = (2**20) * 250
+  # 2000 MB is the file limit for now
+  MAXIMUM_UPLOAD_SIZE = (2**20) * 2000
 
   AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav", "audio/x-wav"]
   VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
