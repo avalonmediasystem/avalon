@@ -7,8 +7,8 @@
 
 	<!-- Avalon Media System changes:
 		
-Added type="primary" to 245 titles 
-Changed "marc" date encodings to "edtf"
+Added type="primary" to 245 titles. mbk 20150112
+Changed "marc" date encodings to "edtf". mbk 20150112
 Put 245 $a$b$f$g$k$n$p$s all into one <titleInfo><title> element to facilitate complete display. kdm 20150113
 Put 100, 700$aqbcd into same <name><namePart> element. kdm 20150113
 Put 110, 710$abcdn into same <name><namePart> element. kdm 20150113
@@ -34,7 +34,7 @@ Suppress all generation of genre from 047 and 336 for Avalon Media System. kdm, 
 Pull in cached local copy of MARC21slimUtils.xsl. mbk 20150116
 Replaced LC's code with processing to put each 653$a into a separate subject/topic for Avalon Media System. kdm, 20150120
 Moved all of the 264 information into a single originInfo stanza. Type of 264 is retained only in date fields. Note that multiple 260s are already handled via on originInfo. kdm, 20150121
-
+Split 650 subfields into separate subject stanzas. mbk 20150121
 
 -->
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
@@ -1917,7 +1917,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			<xsl:for-each select="marc:datafield[@tag=337]">
 				<form type="media">
 					<xsl:attribute name="authority">
-						<xsl:value-of select="marc:subfield[@code=2]"/>
+						<xsl:value-of select="marc:subfield[@code='2']"/>
 					</xsl:attribute>
 					<xsl:call-template name="subfieldSelect">
 						<xsl:with-param name="codes">a</xsl:with-param>
@@ -1928,7 +1928,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			<xsl:for-each select="marc:datafield[@tag=338]">
 				<form type="carrier">
 					<xsl:attribute name="authority">
-						<xsl:value-of select="marc:subfield[@code=2]"/>
+						<xsl:value-of select="marc:subfield[@code='2']"/>
 					</xsl:attribute>
 					<xsl:call-template name="subfieldSelect">
 						<xsl:with-param name="codes">a</xsl:with-param>
@@ -3398,20 +3398,21 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		</xsl:for-each>
 	</xsl:template>
 	<xsl:template name="subjectAuthority">
-		<xsl:if test="@ind2!=4">
-			<xsl:if test="@ind2!=' '">
-				<xsl:if test="@ind2!=8">
-					<xsl:if test="@ind2!=9">
+		<xsl:variable name="ind2" select="ancestor-or-self::marc:datafield/@ind2"/>
+		<xsl:if test="$ind2!=4">
+			<xsl:if test="$ind2!=' '">
+				<xsl:if test="$ind2!=8">
+					<xsl:if test="$ind2!=9">
 						<xsl:attribute name="authority">
 							<xsl:choose>
-								<xsl:when test="@ind2=0">lcsh</xsl:when>
-								<xsl:when test="@ind2=1">lcshac</xsl:when>
-								<xsl:when test="@ind2=2">mesh</xsl:when>
+								<xsl:when test="$ind2=0">lcsh</xsl:when>
+								<xsl:when test="$ind2=1">lcshac</xsl:when>
+								<xsl:when test="$ind2=2">mesh</xsl:when>
 								<!-- 1/04 fix -->
-								<xsl:when test="@ind2=3">nal</xsl:when>
-								<xsl:when test="@ind2=5">csh</xsl:when>
-								<xsl:when test="@ind2=6">rvm</xsl:when>
-								<xsl:when test="@ind2=7">
+								<xsl:when test="$ind2=3">nal</xsl:when>
+								<xsl:when test="$ind2=5">csh</xsl:when>
+								<xsl:when test="$ind2=6">rvm</xsl:when>
+								<xsl:when test="$ind2=7">
 									<xsl:value-of select="marc:subfield[@code='2']"/>
 								</xsl:when>
 							</xsl:choose>
@@ -3452,20 +3453,23 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	</xsl:template>
 	<xsl:template name="subjectAnyOrder">
 		<xsl:for-each select="marc:subfield[@code='v' or @code='x' or @code='y' or @code='z']">
-			<xsl:choose>
-				<xsl:when test="@code='v'">
-					<xsl:call-template name="subjectGenre"/>
-				</xsl:when>
-				<xsl:when test="@code='x'">
-					<xsl:call-template name="subjectTopic"/>
-				</xsl:when>
-				<xsl:when test="@code='y'">
-					<xsl:call-template name="subjectTemporalY"/>
-				</xsl:when>
-				<xsl:when test="@code='z'">
-					<xsl:call-template name="subjectGeographicZ"/>
-				</xsl:when>
-			</xsl:choose>
+			<subject>
+				<xsl:call-template name="subjectAuthority"/>
+				<xsl:choose>
+					<xsl:when test="@code='v'">
+						<xsl:call-template name="subjectGenre"/>
+					</xsl:when>
+					<xsl:when test="@code='x'">
+						<xsl:call-template name="subjectTopic"/>
+					</xsl:when>
+					<xsl:when test="@code='y'">
+						<xsl:call-template name="subjectTemporalY"/>
+					</xsl:when>
+					<xsl:when test="@code='z'">
+						<xsl:call-template name="subjectGeographicZ"/>
+					</xsl:when>
+				</xsl:choose>
+			</subject>
 		</xsl:for-each>
 	</xsl:template>
 	<xsl:template name="specialSubfieldSelect">
@@ -5585,8 +5589,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					</xsl:with-param>
 				</xsl:call-template>
 			</topic>
-			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
+		<xsl:call-template name="subjectAnyOrder"/>
 	</xsl:template>
 
 	<xsl:template name="createSubGeoFrom651">
