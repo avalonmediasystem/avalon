@@ -201,8 +201,7 @@ class ModsDocument < ActiveFedora::OmDatastream
     EOC
   end
   
-  def populate_from_catalog! bib_id=nil
-    bib_id ||= self.bibliographic_id.first
+  def populate_from_catalog! bib_id, bib_id_label = 'local'
     if bib_id.present?
       new_record = Avalon::BibRetriever.instance.get_record(bib_id)
       if new_record.present?
@@ -214,6 +213,11 @@ class ModsDocument < ActiveFedora::OmDatastream
         end
       end
     end
+    self.bibliographic_id = nil
+    self.add_bibliographic_id([bib_id_label, bib_id])
+    languages = self.language.collect &:strip
+    self.language = nil
+    languages.each { |lang| self.add_language(lang) }
   end
 
 end

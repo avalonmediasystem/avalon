@@ -43,9 +43,9 @@ module Avalon
     end
 
     def marcxml2mods(marcxml)
-      xsl = Dir.chdir(File.dirname(XSLT_FILE)) { Nokogiri::XSLT.parse(File.read(XSLT_FILE)) }
+      @@xsl ||= Dir.chdir(File.dirname(XSLT_FILE)) { Nokogiri::XSLT.parse(File.read(XSLT_FILE)) }
       doc = Nokogiri::XML(marcxml)
-      mods = xsl.transform(doc)
+      mods = @@xsl.transform(doc)
       mods.to_s
     end
     
