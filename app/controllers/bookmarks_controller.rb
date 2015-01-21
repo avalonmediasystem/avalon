@@ -25,6 +25,12 @@ class BookmarksController < CatalogController
     @user_actions.delete( :update_access_control ) if mos.any? { |mo| cannot? :update_access_control, mo }
   end
 
+  def action_documents
+    bookmarks = token_or_current_or_guest_user.bookmarks
+    bookmark_ids = bookmarks.collect { |b| b.document_id.to_s }
+    get_solr_response_for_document_ids(bookmark_ids, rows: bookmark_ids.count)
+  end
+
   def access_control_action documents
     errors = []
     success_count = 0
