@@ -105,13 +105,13 @@ module Avalon
           master_file = MasterFile.new
           master_file.save(validate: false) #required: need pid before setting mediaobject
           master_file.mediaobject = media_object
+          files = gatherFiles(file_spec[:file])
+          master_file.setContent(files)
           master_file.absolute_location = file_spec[:absolute_location] if file_spec[:absolute_location].present?
           master_file.label = file_spec[:label] if file_spec[:label].present?
           master_file.poster_offset = file_spec[:offset] if file_spec[:offset].present?
          
           #Make sure to set content before setting the workflow 
-          files = gatherFiles(file_spec[:file])
-          master_file.setContent(files)
           master_file.set_workflow(file_spec[:skip_transcoding] ? 'skip_transcoding' : nil)
           if master_file.save
             media_object.save(validate: false)

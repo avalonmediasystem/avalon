@@ -97,6 +97,10 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'should set MasterFile details' do
+      details_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
+      details_batch = Avalon::Batch::Package.new(details_file, collection)
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [details_batch]
+ 
       batch_ingest.ingest
       ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.first) 
