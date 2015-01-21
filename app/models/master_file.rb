@@ -200,7 +200,8 @@ class MasterFile < ActiveFedora::Base
   def process file=nil
     raise "MasterFile is already being processed" if status_code.present? && !finished_processing?
 
-    if file.nil? && (self.workflow_name == 'avalon-skip-transcoding' || self.workflow_name == 'avalon-skip-transcoding-audio')
+    #Build hash for single file skip transcoding
+    if !file.is_a?(Hash) && (self.workflow_name == 'avalon-skip-transcoding' || self.workflow_name == 'avalon-skip-transcoding-audio')
       file = {'quality-high' => File.new(file_location)}
     end
 
