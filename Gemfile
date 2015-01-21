@@ -145,6 +145,7 @@
     gem 'shoulda-matchers'
     gem 'faker'
     gem 'fakefs', require: "fakefs/safe"
+    gem 'hashdiff'
   end
 
   extra_gems = File.expand_path("../Gemfile.local",__FILE__)

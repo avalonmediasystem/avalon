@@ -120,7 +120,6 @@ module Avalon
             logger.error "Problem saving MasterFile(#{master_file.pid}): #{master_file.errors.full_messages.to_sentence}"
           end
         end
-
         context = {media_object: { pid: media_object.pid, access: 'private' }, mediaobject: media_object, user: @manifest.package.user.user_key, hidden: opts[:hidden] ? '1' : nil }
         HYDRANT_STEPS.get_step('access-control').execute context
         media_object.workflow.last_completed_step = 'access-control'
@@ -137,7 +136,7 @@ module Avalon
         media_object
       end
 
-      def gatherFiles(file)
+      def self.gatherFiles(file)
         derivatives = {}
         %w(low medium high).each do |quality|
           derivative = derivativePath(file, quality)
@@ -146,7 +145,7 @@ module Avalon
         derivatives.empty? ? File.new(file) : derivatives
       end
 
-      def derivativePaths(filename)
+      def self.derivativePaths(filename)
         paths = []
         %w(low medium high).each do |quality|
           derivative = derivativePath(filename, quality)
@@ -155,7 +154,7 @@ module Avalon
         paths
       end
 
-      def derivativePath(filename, quality)
+      def self.derivativePath(filename, quality)
         filename.dup.insert(filename.rindex('.'), ".#{quality}")
       end
     end
