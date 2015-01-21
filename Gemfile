@@ -24,7 +24,6 @@
   gem 'kaminari', '~> 0.15.0'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'v3.2'
-  gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git", tag: 'v3.1'
   gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'v3.1'
   gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r3'
   gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'v3.2'
