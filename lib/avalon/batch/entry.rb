@@ -105,7 +105,7 @@ module Avalon
           master_file = MasterFile.new
           master_file.save(validate: false) #required: need pid before setting mediaobject
           master_file.mediaobject = media_object
-          files = gatherFiles(file_spec[:file])
+          files = self.class.gatherFiles(file_spec[:file])
           master_file.setContent(files)
           master_file.absolute_location = file_spec[:absolute_location] if file_spec[:absolute_location].present?
           master_file.label = file_spec[:label] if file_spec[:label].present?
