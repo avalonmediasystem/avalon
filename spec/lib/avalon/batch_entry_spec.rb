@@ -32,13 +32,14 @@ describe Avalon::Batch::Entry do
       diff == []
     end
   end
-
+  let(:testdir) {'spec/fixtures/dropbox/dynamic'}
   let(:filename) {'videoshort.mp4'}
   %w(low medium high).each do |quality|
     let("filename_#{quality}".to_sym) {"videoshort.#{quality}.mp4"}
   end
   let(:derivative_paths) {[filename_low, filename_medium, filename_high]}
   let(:derivative_hash) {{'quality-low' => File.new(filename_low), 'quality-medium' => File.new(filename_medium), 'quality-high' => File.new(filename_high)}}
+
 
   before(:each) do
     #FakeFS.activate!
@@ -50,15 +51,14 @@ describe Avalon::Batch::Entry do
   end
 
   describe '#process' do
+    let(:collection) {FactoryGirl.create(:collection)}
     it 'should should call MasterFile.setContent with a hash or derivatives' do
       manifest = double()
-      manifest.stub_chain(:package, :dir).and_return('')
+      manifest.stub_chain(:package, :dir).and_return(testdir)
       manifest.stub_chain(:package, :user, :user_key).and_return('archivist1@example.org')
-      manifest.stub_chain(:package, :collection).and_return(FactoryGirl.create(:collection))
+      manifest.stub_chain(:package, :collection).and_return(collection)
 
-      #TODO fill in required fields in first parameter...maybe move all of this into a factory
-      entry = Avalon::Batch::Entry.new([], [{file: filename, skip_transcoding: true}], nil, nil, manifest)
-      #TODO see if this next line with the custom matcher even works!
+      entry = Avalon::Batch::Entry.new({ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", collection: collection, governing_policy: collection }, [{file: filename, skip_transcoding: true}], {}, nil, manifest)
       expect_any_instance_of(MasterFile).to receive(:setContent).with(hash_match(derivative_hash))
       entry.process!
     end
