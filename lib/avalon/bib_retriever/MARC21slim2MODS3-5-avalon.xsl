@@ -32,6 +32,9 @@ Moved identifiers under relatedItem@type="original". kdm 2015011
 Suppress all generation of genre from fixed fields for Avalon Media System. kdm, 20150116
 Suppress all generation of genre from 047 and 336 for Avalon Media System. kdm, 20150116
 Pull in cached local copy of MARC21slimUtils.xsl. mbk 20150116
+Replaced LC's code with processing to put each 653$a into a separate subject/topic for Avalon Media System. kdm, 20150120
+Moved all of the 264 information into a single originInfo stanza. Type of 264 is retained only in date fields. Note that multiple 260s are already handled via on originInfo. kdm, 20150121
+
 
 -->
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
@@ -1193,13 +1196,15 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					</xsl:if>
 				</xsl:for-each>
 			</xsl:if>
-		</originInfo>
+		<!--extend originInfo to include 264s for Avalon Media System. kdm, 20150121-->
+		<!--/originInfo-->
 
 
 		<!-- originInfo - 264 -->
 
+		<!--moved all 264s into the same originInfo for Avalon Media System. kdm, 20150121-->
 		<xsl:for-each select="marc:datafield[@tag=264][@ind2=0]">
-			<originInfo eventType="production">
+			<!--originInfo eventType="production"-->
 				<!-- Template checks for altRepGroup - 880 $6 -->
 				<xsl:call-template name="xxx880"/>
 				<!--replaced original LC code with code that matches their 260 code-->
@@ -1227,10 +1232,10 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<dateOther type="production">
 					<xsl:value-of select="marc:subfield[@code='c']"/>
 				</dateOther>
-			</originInfo>
+			<!--/originInfo-->
 		</xsl:for-each>
 		<xsl:for-each select="marc:datafield[@tag=264][@ind2=1]">
-			<originInfo eventType="publication">
+			<!--originInfo eventType="publication"-->
 				<!-- Template checks for altRepGroup - 880 $6 1.88 20130829 added chopPunc-->
 				<xsl:call-template name="xxx880"/>
 				<place>
@@ -1258,10 +1263,10 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<!--dateIssued>
 					<xsl:value-of select="marc:subfield[@code='c']"/>
 				</dateIssued-->
-			</originInfo>
+			<!--/originInfo-->
 		</xsl:for-each>
 		<xsl:for-each select="marc:datafield[@tag=264][@ind2=2]">
-			<originInfo eventType="distribution">
+			<!--originInfo eventType="distribution"-->
 				<!-- Template checks for altRepGroup - 880 $6 -->
 				<xsl:call-template name="xxx880"/>
 				<place>
@@ -1288,10 +1293,10 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<dateOther type="distribution">
 					<xsl:value-of select="marc:subfield[@code='c']"/>
 				</dateOther>
-			</originInfo>
+			<!--/originInfo-->
 		</xsl:for-each>
 		<xsl:for-each select="marc:datafield[@tag=264][@ind2=3]">
-			<originInfo eventType="manufacture">
+			<!--originInfo eventType="manufacture"-->
 				<!-- Template checks for altRepGroup - 880 $6 -->
 				<xsl:call-template name="xxx880"/>
 				<place>
@@ -1318,9 +1323,9 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<dateOther type="manufacture">
 					<xsl:value-of select="marc:subfield[@code='c']"/>
 				</dateOther>
-			</originInfo>
+			<!--/originInfo-->
 		</xsl:for-each>
-
+	</originInfo>
 
 		<xsl:for-each select="marc:datafield[@tag=880]">
 			<xsl:variable name="related_datafield" select="substring-before(marc:subfield[@code='6'],'-')"/>
@@ -2322,8 +2327,15 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			<xsl:call-template name="createSubGeoFrom651"/>
 		</xsl:for-each>
 
-		<xsl:for-each select="marc:datafield[@tag=653]">
-			<xsl:call-template name="createSubFrom653"/>
+		<!--replace LC's code (commented out) with processing to put each 653$a into a separate subject/topic for Avalon Media System. kdm, 20150120-->
+		<xsl:for-each select="marc:datafield[@tag=653]/marc:subfield[@code='a']">
+		<!--xsl:for-each select="marc:datafield[@tag=653]"-->
+			<!--xsl:call-template name="createSubFrom653"/-->
+			<subject>
+				<topic>
+					<xsl:value-of select="."/>
+				</topic>
+			</subject>
 		</xsl:for-each>
 
 		<xsl:for-each select="marc:datafield[@tag=656]">
@@ -5501,7 +5513,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			<xsl:call-template name="subjectAuthority"/>
 			<topic>
 				<xsl:for-each
-					select="marc:subfield[@code='a' or @code='d' or @code='f' or @code='h' or @code='k' or @code='l' or @code='o' or @code='r']">
+					select="marc:subfield[@code='a' or @code='n' or @code='p' or @code='d' or @code='f' or @code='h' or @code='k' or @code='l' or @code='s' or @code='o' or @code='r']">
 					<xsl:choose>
 						<xsl:when test="position()!=last()">
 							<xsl:value-of select="."/>
