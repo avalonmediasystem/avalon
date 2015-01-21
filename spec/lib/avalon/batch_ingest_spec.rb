@@ -14,7 +14,7 @@
 
 require 'spec_helper'
 require 'avalon/dropbox'
-require 'avalon/batch_ingest'
+require 'avalon/batch/ingest'
 require 'fileutils'
 
 describe Avalon::Batch::Ingest do
