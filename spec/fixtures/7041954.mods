@@ -193,8 +193,6 @@
     <dateIssued encoding="edtf">2014</dateIssued>
     <copyrightDate encoding="iso8601">2014</copyrightDate>
     <issuance>monographic</issuance>
-  </originInfo>
-  <originInfo eventType="distribution">
     <place>
       <placeTerm type="text">Beverly Hills, California</placeTerm>
     </place>
@@ -237,20 +235,32 @@
   </subject>
   <subject authority="lcsh">
     <topic>Hotels</topic>
+  </subject>
+  <subject authority="lcsh">
     <geographic>Europe</geographic>
+  </subject>
+  <subject authority="lcsh">
     <genre>Drama</genre>
   </subject>
   <subject authority="lcsh">
     <topic>Hotel concierges</topic>
+  </subject>
+  <subject authority="lcsh">
     <geographic>Europe</geographic>
+  </subject>
+  <subject authority="lcsh">
     <genre>Drama</genre>
   </subject>
   <subject authority="lcsh">
     <topic>Art thefts</topic>
+  </subject>
+  <subject authority="lcsh">
     <genre>Drama</genre>
   </subject>
   <subject authority="lcsh">
     <topic>Friendship</topic>
+  </subject>
+  <subject authority="lcsh">
     <genre>Drama</genre>
   </subject>
   <classification authority="lcc">PN1997.2 .G73 2014</classification>

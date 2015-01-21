@@ -3213,7 +3213,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:with-param name="chopString">
 					<xsl:call-template name="subfieldSelect">
 						<!--added fields bcd to aq for Avalon Media System, kdm 20150114-->
-						<xsl:with-param name="codes">abcdntp</xsl:with-param>
+						<xsl:with-param name="codes">abcdntmpr</xsl:with-param>
 					</xsl:call-template>
 				</xsl:with-param>
 				<xsl:with-param name="punctuation">
@@ -3229,7 +3229,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:with-param name="chopString">
 					<xsl:call-template name="subfieldSelect">
 						<!--added fields bcd to aq for Avalon Media System, kdm 20150114-->
-						<xsl:with-param name="codes">aqbcdtnp</xsl:with-param>
+						<xsl:with-param name="codes">aqbcdtmnpr</xsl:with-param>
 					</xsl:call-template>
 				</xsl:with-param>
 				<xsl:with-param name="punctuation">
@@ -3259,7 +3259,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:with-param name="chopString">
 					<xsl:call-template name="subfieldSelect">
 						<!--added fields bcde to anq for Avalon Media System, kdm 20150114-->
-						<xsl:with-param name="codes">acdenqtp</xsl:with-param>
+						<xsl:with-param name="codes">acdenqtmpr</xsl:with-param>
 					</xsl:call-template>
 				</xsl:with-param>
 				<xsl:with-param name="punctuation">
