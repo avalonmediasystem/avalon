@@ -289,9 +289,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					</xsl:when>
 					<xsl:otherwise>
 						<name usage="primary">
-							<namePart>
-								Unknown
-							</namePart>
+							<namePart>Unknown</namePart>
 							<role>
 								<roleTerm type="text">Creator</roleTerm>
 							</role>
