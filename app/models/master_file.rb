@@ -116,7 +116,7 @@ class MasterFile < ActiveFedora::Base
   def setContent(file)
     case file
     when Hash #Multiple files for pre-transcoded derivatives
-      saveOriginal(file['quality-high'])
+      saveOriginal( (file.has_key?('quality-high') && File.file?( file['quality-high'] )) ? file['quality-high'] : (file.has_key?('quality-medium') && File.file?( file['quality-medium'] )) ? file['quality-medium'] : file.values[0] )
       file.each_value {|f| f.close unless f.closed? }
     when ActionDispatch::Http::UploadedFile #Web upload
       saveOriginal(file, file.original_filename)
