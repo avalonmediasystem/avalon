@@ -32,54 +32,108 @@ describe Avalon::Batch::Entry do
       diff == []
     end
   end
-  let(:testdir) {'spec/fixtures/dropbox/dynamic'}
-  let(:filename) {'videoshort.mp4'}
-  %w(low medium high).each do |quality|
-    let("filename_#{quality}".to_sym) {"videoshort.#{quality}.mp4"}
+
+  let(:filename) {'spec/fixtures/videoshort.mp4'}
+  let(:testdir) {'spec/fixtures'}
+  let(:collection) {FactoryGirl.create(:collection)}
+  let(:manifest) do
+    manifest = double()
+    manifest.stub_chain(:package, :dir).and_return(testdir)
+    manifest.stub_chain(:package, :user, :user_key).and_return('archivist1@example.org')
+    manifest.stub_chain(:package, :collection).and_return(collection)
+    manifest
   end
-  let(:derivative_paths) {[filename_low, filename_medium, filename_high]}
-  let(:derivative_hash) {{'quality-low' => File.new(filename_low), 'quality-medium' => File.new(filename_medium), 'quality-high' => File.new(filename_high)}}
-
-
-  before(:each) do
-    #FakeFS.activate!
-    derivative_paths.each {|path| FileUtils.touch(path)}
-  end
-
-  after(:each) do
-    #FakeFS.deactivate!
+  let(:entry) do
+    Avalon::Batch::Entry.new({ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", collection: collection, governing_policy: collection }, [{file: filename, skip_transcoding: false}], {}, nil, manifest)
   end
 
-  describe '#process' do
-    let(:collection) {FactoryGirl.create(:collection)}
-    it 'should should call MasterFile.setContent with a hash or derivatives' do
-      manifest = double()
-      manifest.stub_chain(:package, :dir).and_return(testdir)
-      manifest.stub_chain(:package, :user, :user_key).and_return('archivist1@example.org')
-      manifest.stub_chain(:package, :collection).and_return(collection)
-
-      entry = Avalon::Batch::Entry.new({ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", collection: collection, governing_policy: collection }, [{file: filename, skip_transcoding: true}], {}, nil, manifest)
-      expect_any_instance_of(MasterFile).to receive(:setContent).with(hash_match(derivative_hash))
-      entry.process!
+  describe '#file_valid?' do
+    it 'should be valid if the file exists' do
+      expect(entry.file_valid?({file: filename})).to be_truthy
+      expect(entry.errors).to be_empty
+    end 
+    it 'should be valid if pretranscoded derivatives exist and it is skip-transcoding' do
+      allow(entry).to receive(:derivativePaths).and_return(['spec/fixtures/derivative.low.mp4', 'spec/fixtures/derivative.medium.mp4', 'spec/fixtures/derivative.high.mp4'])
+      expect(entry.file_valid?({file: 'derivative.mp4', skip_transcoding: true})).to be_truthy
+      expect(entry.errors).to be_empty
+    end 
+    it 'should be invalid if pretranscoded derivatives exist and it is not skip-transcoding' do
+      allow(entry).to receive(:derivativePaths).and_return(['spec/fixtures/derivative.low.mp4', 'spec/fixtures/derivative.medium.mp4', 'spec/fixtures/derivative.high.mp4'])
+      expect(entry.file_valid?({file: 'derivative.mp4', skip_transcoding: false})).to be_falsey
+      expect(entry.errors).not_to be_empty
+    end 
+    it 'should be invalid if neither the file nor pretranscoded derivatives exist' do
+      allow(entry).to receive(:derivativePaths).and_return([])
+      expect(entry.file_valid?({file: 'derivative.mp4', skip_transcoding: false})).to be_falsey
+      expect(entry.errors).not_to be_empty
     end
   end
 
   describe '#gatherFiles' do
-    it 'should return a hash of files keyed with their quality' do
-      expect(Avalon::Batch::Entry.gatherFiles(filename)).to hash_match derivative_hash
+    it 'should return a file when no pretranscoded derivatives exist' do      
+      expect(FileUtils.cmp(Avalon::Batch::Entry.gatherFiles(filename), filename)).to be_truthy
     end
   end
 
-  describe '#derivativePaths' do
-    it 'should return the paths to all derivative files that exist' do
-      expect(Avalon::Batch::Entry.derivativePaths(filename)).to eq derivative_paths
+  describe 'with multiple pretranscoded derivatives' do
+    let(:testdir) {'spec/fixtures/dropbox/dynamic'}
+    let(:filename) {'videoshort.mp4'}
+    %w(low medium high).each do |quality|
+      let("filename_#{quality}".to_sym) {"videoshort.#{quality}.mp4"}
+    end
+    let(:derivative_paths) {[filename_low, filename_medium, filename_high]}
+    let(:derivative_hash) {{'quality-low' => File.new(filename_low), 'quality-medium' => File.new(filename_medium), 'quality-high' => File.new(filename_high)}}
+
+
+    before(:each) do
+      #FakeFS.activate!
+      #FakeFS::FileSystem.clone(File.join(Rails.root, "config"))
+      FileUtils.mkdir_p(testdir)
+      derivative_paths.each {|path| FileUtils.touch(path)}
+    end
+
+    after(:each) do
+      derivative_paths.each {|path| FileUtils.rm(path)}      
+      FileUtils.rmdir(testdir)
+      #FakeFS.deactivate!
+    end
+
+    describe '#process' do
+      let(:entry) do
+        Avalon::Batch::Entry.new({ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", collection: collection, governing_policy: collection }, [{file: filename, skip_transcoding: true}], {}, nil, manifest)
+      end
+
+      before(:each) do
+        derivative_paths.each {|path| FileUtils.touch(File.join(testdir,path))}
+      end
+      after(:each) do
+        derivative_paths.each {|path| FileUtils.rm(File.join(testdir,path))}
+      end
+
+      it 'should call MasterFile.setContent with a hash or derivatives' do
+	allow_any_instance_of(MasterFile).to receive(:file_format).and_return('Moving image')
+	expect_any_instance_of(MasterFile).to receive(:setContent).with(hash_match(derivative_hash))
+	expect_any_instance_of(MasterFile).to receive(:process).with(hash_match(derivative_hash))
+	entry.process!
+      end
+    end
+
+    describe '#gatherFiles' do
+      it 'should return a hash of files keyed with their quality' do
+	expect(Avalon::Batch::Entry.gatherFiles(filename)).to hash_match derivative_hash
+      end
+    end
+
+    describe '#derivativePaths' do
+      it 'should return the paths to all derivative files that exist' do
+	expect(Avalon::Batch::Entry.derivativePaths(filename)).to eq derivative_paths
+      end
+    end
+
+    describe '#derivativePath' do
+      it 'should insert supplied quality into filename' do
+	expect(Avalon::Batch::Entry.derivativePath(filename, 'low')).to eq filename_low
+      end
     end
   end
-
-  describe '#derivativePath' do
-    it 'should insert supplied quality into filename' do
-      expect(Avalon::Batch::Entry.derivativePath(filename, 'low')).to eq filename_low
-    end
-  end
-
 end
