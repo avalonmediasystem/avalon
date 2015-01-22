@@ -181,8 +181,6 @@
     </role>
   </name>
   <typeOfResource>moving image</typeOfResource>
-  <genre authority="marcgt">videorecording</genre>
-  <genre authority="rdacontent">two-dimensional moving image</genre>
   <genre authority="lcgft">Dark comedy films.</genre>
   <genre authority="lcgft">Feature films.</genre>
   <genre authority="lcgft">Fiction films.</genre>
@@ -195,12 +193,10 @@
     <dateIssued encoding="edtf">2014</dateIssued>
     <copyrightDate encoding="iso8601">2014</copyrightDate>
     <issuance>monographic</issuance>
-  </originInfo>
-  <originInfo eventType="distribution">
     <place>
-      <placeTerm type="text">Beverly Hills, California :</placeTerm>
+      <placeTerm type="text">Beverly Hills, California</placeTerm>
     </place>
-    <publisher>Twentieth Century Fox Home Entertainment,</publisher>
+    <publisher>Twentieth Century Fox Home Entertainment</publisher>
     <dateOther type="distribution">[2014]</dateOther>
   </originInfo>
   <language>
@@ -214,8 +210,15 @@
   </language>
   <relatedItem type="original">
     <physicalDescription>
-      <extent>1 videodisc (100 minutes) :sound, color ;4 3/4 in. 4 3/4 in.rda</extent>
+      <form authority="marccategory">videorecording</form>
+      <form authority="marcsmd">videodisc</form>
+      <extent>1 videodisc (100 minutes) : sound, color ; 4 3/4 in.</extent>
+      <form type="media" authority="rdamedia">video</form>
+      <form type="carrier" authority="rdacarrier">videodisc</form>
     </physicalDescription>
+    <identifier type="videorecording identifier">2289739 Twentieth Century Fox Home Entertainment</identifier>
+    <identifier type="oclc">ocn879297774</identifier>
+    <identifier type="stock number">Midwest Tape</identifier>
   </relatedItem>
   <abstract type="Summary">The adventures of Gustave H, a legendary concierge at a famous European hotel between the wars, and Zero Moustafa, the lobby boy who becomes his most trusted friend. The story involves the theft and recovery of a priceless Renaissance painting and the battle for an enormous family fortune.</abstract>
   <targetAudience>MPAA rating: R; for language, some sexual content and violence.</targetAudience>
@@ -232,27 +235,36 @@
   </subject>
   <subject authority="lcsh">
     <topic>Hotels</topic>
+  </subject>
+  <subject authority="lcsh">
     <geographic>Europe</geographic>
+  </subject>
+  <subject authority="lcsh">
     <genre>Drama</genre>
   </subject>
   <subject authority="lcsh">
     <topic>Hotel concierges</topic>
+  </subject>
+  <subject authority="lcsh">
     <geographic>Europe</geographic>
+  </subject>
+  <subject authority="lcsh">
     <genre>Drama</genre>
   </subject>
   <subject authority="lcsh">
     <topic>Art thefts</topic>
+  </subject>
+  <subject authority="lcsh">
     <genre>Drama</genre>
   </subject>
   <subject authority="lcsh">
     <topic>Friendship</topic>
+  </subject>
+  <subject authority="lcsh">
     <genre>Drama</genre>
   </subject>
   <classification authority="lcc">PN1997.2 .G73 2014</classification>
   <classification authority="ddc" edition="23">791.43/72</classification>
-  <identifier type="videorecording identifier">2289739 Twentieth Century Fox Home Entertainment</identifier>
-  <identifier type="oclc">ocn879297774</identifier>
-  <identifier type="stock number">Midwest Tape</identifier>
   <identifier type="upc">024543897385</identifier>
   <identifier type="upc">024543897385</identifier>
   <identifier type="upc">024543897392</identifier>
