@@ -279,41 +279,67 @@ describe MasterFile do
   end
 
   describe '#setContent' do
-    describe "uploaded file" do
-      let(:fixture)    { File.expand_path('../../fixtures/videoshort.mp4',__FILE__) }
-      let(:original)   { File.basename(fixture) }
-      let(:tempdir)    { File.realpath('/tmp') }
-      let(:tempfile)   { File.join(tempdir, 'RackMultipart20130816-2519-y2wzc7') }
-      let(:media_path) { File.expand_path("../../masterfiles-#{SecureRandom.uuid}",__FILE__)}
-      let(:upload)     { ActionDispatch::Http::UploadedFile.new :tempfile => File.open(tempfile), :filename => original, :type => 'video/mp4' }
-      subject { 
-        mf = MasterFile.new
-        mf.setContent(upload)
-        mf
-      }
+    describe "multiple files for pre-transcoded derivatives" do
+      let(:filename_high)    { File.expand_path('../../fixtures/videoshort.high.mp4',__FILE__) }
+      let(:filename_medium)    { File.expand_path('../../fixtures/videoshort.medium.mp4',__FILE__) }
+      let(:filename_low)    { File.expand_path('../../fixtures/videoshort.low.mp4',__FILE__) }
+      let(:derivative_hash) {{'quality-low' => File.new(filename_low), 'quality-medium' => File.new(filename_medium), 'quality-high' => File.new(filename_high)}}
 
-      before(:each) do
-        @old_media_path = Avalon::Configuration.lookup('matterhorn.media_path')
-        FileUtils.mkdir_p media_path
-        FileUtils.cp fixture, tempfile
+      describe "quality-high exists" do
+        it "it should set the correct file location and size" do
+          masterfile = FactoryGirl.create(:master_file)
+          masterfile.setContent(derivative_hash)
+          masterfile.file_location.should == filename_high
+          masterfile.file_size.should == "199160"
+        end
+      end
+      describe "quality-high does not exist" do
+        it "should set the correct file location and size" do
+          masterfile = FactoryGirl.create(:master_file)
+          masterfile.setContent(derivative_hash.except("quality-high"))
+          masterfile.file_location.should == filename_medium
+          masterfile.file_size.should == "199160"
+        end
       end
 
-      after(:each) do
-        Avalon::Configuration['matterhorn']['media_path'] = @old_media_path
-        File.unlink subject.file_location
-        FileUtils.rm_rf media_path
-      end
+    end
 
-      it "should rename an uploaded file in place" do
-        Avalon::Configuration['matterhorn'].delete('media_path')
-        subject.file_location.should == File.join(tempdir,original)
-      end
-
-      it "should copy an uploaded file to the Matterhorn media path" do
-        Avalon::Configuration['matterhorn']['media_path'] = media_path
-        subject.file_location.should == File.join(media_path,original)
+    describe "single uploaded file" do
+      describe "uploaded file" do
+        let(:fixture)    { File.expand_path('../../fixtures/videoshort.mp4',__FILE__) }
+        let(:original)   { File.basename(fixture) }
+        let(:tempdir)    { File.realpath('/tmp') }
+        let(:tempfile)   { File.join(tempdir, 'RackMultipart20130816-2519-y2wzc7') }
+        let(:media_path) { File.expand_path("../../masterfiles-#{SecureRandom.uuid}",__FILE__)}
+        let(:upload)     { ActionDispatch::Http::UploadedFile.new :tempfile => File.open(tempfile), :filename => original, :type => 'video/mp4' }
+        subject { 
+          mf = MasterFile.new
+          mf.setContent(upload)
+          mf
+        }
+        
+        before(:each) do
+          @old_media_path = Avalon::Configuration.lookup('matterhorn.media_path')
+          FileUtils.mkdir_p media_path
+          FileUtils.cp fixture, tempfile
+        end
+        
+        after(:each) do
+          Avalon::Configuration['matterhorn']['media_path'] = @old_media_path
+          File.unlink subject.file_location
+          FileUtils.rm_rf media_path
+        end
+        
+        it "should rename an uploaded file in place" do
+          Avalon::Configuration['matterhorn'].delete('media_path')
+          subject.file_location.should == File.join(tempdir,original)
+        end
+        
+        it "should copy an uploaded file to the Matterhorn media path" do
+          Avalon::Configuration['matterhorn']['media_path'] = media_path
+          subject.file_location.should == File.join(media_path,original)
+        end
       end
     end
   end
-  
 end
