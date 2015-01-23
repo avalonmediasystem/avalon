@@ -22,14 +22,14 @@ module Avalon
     	attr_reader :fields, :files, :opts, :row, :errors, :manifest, :collection
 
     	def initialize(fields, files, opts, row, manifest)
-    		@fields = fields
-    		@files  = files
-    		@opts   = opts
-    		@row    = row
-                @manifest = manifest
-    		@errors = ActiveModel::Errors.new(self)
-                @files.each { |file| file[:file] = File.join(@manifest.package.dir,file[:file]) }
-    	end
+	  @fields = fields
+	  @files  = files
+	  @opts   = opts
+	  @row    = row
+	  @manifest = manifest
+	  @errors = ActiveModel::Errors.new(self)
+	  @files.each { |file| file[:file] = File.join(@manifest.package.dir, file[:file]) }
+        end
 
         def media_object
           @media_object ||= MediaObject.new(avalon_uploader: @manifest.package.user.user_key, 
@@ -139,7 +139,7 @@ module Avalon
       def self.gatherFiles(file)
         derivatives = {}
         %w(low medium high).each do |quality|
-          derivative = derivativePath(file, quality)
+          derivative = self.derivativePath(file, quality)
           derivatives["quality-#{quality}"] = File.new(derivative) if File.file? derivative
         end
         derivatives.empty? ? File.new(file) : derivatives
@@ -148,7 +148,7 @@ module Avalon
       def self.derivativePaths(filename)
         paths = []
         %w(low medium high).each do |quality|
-          derivative = derivativePath(filename, quality)
+          derivative = self.derivativePath(filename, quality)
           paths << derivative if File.file? derivative
         end
         paths

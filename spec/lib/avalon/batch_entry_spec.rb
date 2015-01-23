@@ -33,8 +33,8 @@ describe Avalon::Batch::Entry do
     end
   end
 
-  let(:filename) {'spec/fixtures/videoshort.mp4'}
-  let(:testdir) {'spec/fixtures'}
+  let(:testdir) {'spec/fixtures/dropbox/dynamic'}
+  let(:filename) {File.join(testdir,'video.mp4')}
   let(:collection) {FactoryGirl.create(:collection)}
   let(:manifest) do
     manifest = double()
@@ -47,23 +47,36 @@ describe Avalon::Batch::Entry do
     Avalon::Batch::Entry.new({ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", collection: collection, governing_policy: collection }, [{file: filename, skip_transcoding: false}], {}, nil, manifest)
   end
 
+  before(:each) do
+    #FakeFS.activate!
+    #FakeFS::FileSystem.clone(File.join(Rails.root, "config"))
+    FileUtils.mkdir_p(testdir)
+    FileUtils.touch(filename)
+  end
+
+  after(:each) do
+    FileUtils.rm(filename)
+    FileUtils.rmdir(testdir)
+    #FakeFS.deactivate!
+  end
+
   describe '#file_valid?' do
     it 'should be valid if the file exists' do
       expect(entry.file_valid?({file: filename})).to be_truthy
       expect(entry.errors).to be_empty
     end 
     it 'should be valid if pretranscoded derivatives exist and it is skip-transcoding' do
-      allow(entry).to receive(:derivativePaths).and_return(['spec/fixtures/derivative.low.mp4', 'spec/fixtures/derivative.medium.mp4', 'spec/fixtures/derivative.high.mp4'])
+      allow(Avalon::Batch::Entry).to receive(:derivativePaths).and_return(['derivative.low.mp4', 'derivative.medium.mp4', 'derivative.high.mp4'])
       expect(entry.file_valid?({file: 'derivative.mp4', skip_transcoding: true})).to be_truthy
       expect(entry.errors).to be_empty
     end 
     it 'should be invalid if pretranscoded derivatives exist and it is not skip-transcoding' do
-      allow(entry).to receive(:derivativePaths).and_return(['spec/fixtures/derivative.low.mp4', 'spec/fixtures/derivative.medium.mp4', 'spec/fixtures/derivative.high.mp4'])
+      allow(Avalon::Batch::Entry).to receive(:derivativePaths).and_return(['derivative.low.mp4', 'derivative.medium.mp4', 'derivative.high.mp4'])
       expect(entry.file_valid?({file: 'derivative.mp4', skip_transcoding: false})).to be_falsey
       expect(entry.errors).not_to be_empty
     end 
     it 'should be invalid if neither the file nor pretranscoded derivatives exist' do
-      allow(entry).to receive(:derivativePaths).and_return([])
+      allow(Avalon::Batch::Entry).to receive(:derivativePaths).and_return([])
       expect(entry.file_valid?({file: 'derivative.mp4', skip_transcoding: false})).to be_falsey
       expect(entry.errors).not_to be_empty
     end
@@ -76,7 +89,6 @@ describe Avalon::Batch::Entry do
   end
 
   describe 'with multiple pretranscoded derivatives' do
-    let(:testdir) {'spec/fixtures/dropbox/dynamic'}
     let(:filename) {'videoshort.mp4'}
     %w(low medium high).each do |quality|
       let("filename_#{quality}".to_sym) {"videoshort.#{quality}.mp4"}
@@ -86,16 +98,11 @@ describe Avalon::Batch::Entry do
 
 
     before(:each) do
-      #FakeFS.activate!
-      #FakeFS::FileSystem.clone(File.join(Rails.root, "config"))
-      FileUtils.mkdir_p(testdir)
       derivative_paths.each {|path| FileUtils.touch(path)}
     end
 
     after(:each) do
       derivative_paths.each {|path| FileUtils.rm(path)}      
-      FileUtils.rmdir(testdir)
-      #FakeFS.deactivate!
     end
 
     describe '#process' do
