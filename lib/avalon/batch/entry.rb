@@ -67,9 +67,9 @@ module Avalon
           if File.file?(file_spec[:file])
             #Do nothing.
           else
-            if derivativePaths(file_spec[:file]).present? && file_spec[:skip_transcoding]
+            if self.class.derivativePaths(file_spec[:file]).present? && file_spec[:skip_transcoding]
               #Do nothing.
-            elsif derivativePaths(file_spec[:file]).present? && !file_spec[:skip_transcoding]
+            elsif self.class.derivativePaths(file_spec[:file]).present? && !file_spec[:skip_transcoding]
               @errors.add(:content, "Derivative files found but skip transcoding not selected")
               valid = false
             else
