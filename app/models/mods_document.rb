@@ -70,7 +70,7 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.genre
 
     # Publishing Info
-    t.origin_info(:path => 'originInfo') do
+    t.origin_info(:path => 'mods/oxns:originInfo') do
       t.publisher
       t.place_info(:path => 'place') do
         t.place_term(:path => 'placeTerm')
