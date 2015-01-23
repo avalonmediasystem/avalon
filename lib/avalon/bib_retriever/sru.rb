@@ -17,7 +17,7 @@ module Avalon
     class SRU < ::Avalon::BibRetriever
       def initialize config
         super
-        @config['query'] ||= 'rec.id=%s'
+        @config['query'] ||= 'rec.id=%{bib_id}'
       end
       
       def get_record(bib_id)
@@ -28,7 +28,7 @@ module Avalon
       
       def url_for(bib_id)
         uri = URI.parse config['url']
-        query_param = config['query'] % bib_id.to_s
+        query_param = config['query'] % { bib_id: bib_id.to_s }
         uri.query = "version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=#{query_param}"
         uri.to_s
       end
