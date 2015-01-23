@@ -14,7 +14,7 @@
 
 require 'spec_helper'
 require 'avalon/dropbox'
-require 'avalon/batch_ingest'
+require 'avalon/batch/ingest'
 require 'fileutils'
 
 describe Avalon::Batch::Ingest do
@@ -83,12 +83,24 @@ describe Avalon::Batch::Ingest do
       IngestBatch.count.should == 1
     end
 
+    it 'should ingest batch with skip-transcoding derivatives' do
+      derivatives_batch_path = File.join('spec/fixtures', 'batch_manifest_derivatives.xlsx')
+      derivatives_batch = Avalon::Batch::Package.new(derivatives_batch_path, collection)
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [derivatives_batch]
+      batch_ingest.ingest
+      IngestBatch.count.should == 1
+    end
+ 
     it 'creates an ingest batch object' do
       batch_ingest.ingest
       IngestBatch.count.should == 1
     end
 
     it 'should set MasterFile details' do
+      details_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
+      details_batch = Avalon::Batch::Package.new(details_file, collection)
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [details_batch]
+ 
       batch_ingest.ingest
       ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.first) 

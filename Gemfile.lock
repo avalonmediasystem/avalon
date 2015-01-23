@@ -34,16 +34,6 @@ GIT
       mediainfo
 
 GIT
-  remote: https://github.com/avalonmediasystem/avalon-batch.git
-  revision: 2737cac71d2e6a990ea6b937e6181f02c471b00f
-  tag: v3.1
-  specs:
-    avalon-batch (0.3.0)
-      activemodel
-      activesupport
-      roo
-
-GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
   revision: bcefb17e76a71ae657450434c22290ab52c123cf
   tag: v3.2
@@ -348,6 +338,7 @@ GEM
       execjs (>= 1.2.9)
       sprockets (>= 2.0.3)
       tilt
+    hashdiff (0.2.2)
     hashie (3.3.1)
     headless (1.0.2)
     highline (1.6.21)
@@ -720,7 +711,6 @@ DEPENDENCIES
   activerecord-jdbcsqlite3-adapter
   activerecord-session_store
   avalon-about!
-  avalon-batch!
   avalon-workflow!
   bcrypt-ruby (~> 3.1.0)
   better_errors
@@ -748,6 +738,7 @@ DEPENDENCIES
   font-awesome-rails (~> 3.0)
   haml
   handlebars_assets
+  hashdiff
   headless
   hooks
   hydra-head (~> 7.2.0)

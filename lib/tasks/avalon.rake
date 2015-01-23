@@ -43,7 +43,7 @@ namespace :avalon do
     desc "Starts Avalon batch ingest"
     task :ingest => :environment do
       # Starts the ingest process
-      require 'avalon/batch_ingest'
+      require 'avalon/batch/ingest'
 
       WithLocking.run(name: 'batch_ingest') do
         Admin::Collection.all.each do |collection|
