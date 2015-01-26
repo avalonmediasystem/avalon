@@ -61,8 +61,8 @@ en:
 	other: "Are you certain you want to delete the following items?"
       }
       success: {
-        one: "%{count} item successfully deleted.",
-	other: "%{count} items successfully deleted."
+        one: "One item is being deleted.",
+	other: "%{count} items are being deleted. This operation could take awhile for large numbers of items."
       }
       fail: "Delete failed."
       alert: {
@@ -76,8 +76,8 @@ en:
       confirm: "Please choose a new collection to move selected items:"
       button: "Move"
       success: {
-        one: "%{count} item successfully moved to collection %{collection_name}.",
-	other: "%{count} items successfully moved to collection %{collection_name}."
+        one: "One item is being moved to collection %{collection_name}.",
+	other: "%{count} items are being moved to collection %{collection_name}. This operation could take awhile for large numbers of items."
       }
       fail: "Save failed."
       alert: {
@@ -89,8 +89,8 @@ en:
       form:
         title: "Publish Selected Items"
       success: {
-        one: "%{count} item successfully %{status}ed.",
-	other: "%{count} items successfully %{status}ed."
+        one: "One item is being %{status}ed.",
+	other: "%{count} items are being %{status}ed. This operation could take awhile for large numbers of items."
       }
       fail: "Save failed."
       alert: {
@@ -106,8 +106,8 @@ en:
         title: "Manage Access Control Settings"
       button: "Save"
       success: {
-        one: "Access controls successfully updated on %{count} item.",
-	other: "Access controls successfully updated on %{count} items."
+        one: "Access controls are being updated on %{count} item.",
+	other: "Access controls are being updated on %{count} items. This operation could take awhile for large numbers of items."
       }
       fail: "Save failed."
       alert: {
