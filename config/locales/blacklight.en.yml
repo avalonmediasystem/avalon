@@ -62,7 +62,7 @@ en:
       }
       success: {
         one: "One item is being deleted.",
-	other: "%{count} items are being deleted. This operation could take awhile for large numbers of items."
+	other: "%{count} items are being deleted. This operation could take a while for large numbers of items."
       }
       fail: "Delete failed."
       alert: {
@@ -77,7 +77,7 @@ en:
       button: "Move"
       success: {
         one: "One item is being moved to collection %{collection_name}.",
-	other: "%{count} items are being moved to collection %{collection_name}. This operation could take awhile for large numbers of items."
+	other: "%{count} items are being moved to collection %{collection_name}. This operation could take a while for large numbers of items."
       }
       fail: "Save failed."
       alert: {
@@ -85,18 +85,19 @@ en:
         other: "These items were not moved:"
       }     	     
       error: "You do not have permission to add to collection %{collection_name}."
-    publish:
-      form:
-        title: "Publish Selected Items"
+    status:
       success: {
         one: "One item is being %{status}ed.",
-	other: "%{count} items are being %{status}ed. This operation could take awhile for large numbers of items."
+	other: "%{count} items are being %{status}ed. This operation could take a while for large numbers of items."
       }
-      fail: "Save failed."
       alert: {
         one: "This item was not %{status}ed:",
         other: "These items were not %{status}ed:"
-      }     	     
+      }
+    publish:
+      form:
+        title: "Publish Selected Items"
+      fail: "Save failed."
     unpublish:
       form:
         title: "Unpublish Selected Items"
@@ -107,7 +108,7 @@ en:
       button: "Save"
       success: {
         one: "Access controls are being updated on %{count} item.",
-	other: "Access controls are being updated on %{count} items. This operation could take awhile for large numbers of items."
+	other: "Access controls are being updated on %{count} items. This operation could take a while for large numbers of items."
       }
       fail: "Save failed."
       alert: {
