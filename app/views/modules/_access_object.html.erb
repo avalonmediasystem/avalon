@@ -46,7 +46,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     <%#----------- Access item list --------------- %>
     <table class="table table-striped table-hover">
-      <% unless members.empty? %>
+      <% if members.present? %>
       <tbody
         <% members.each do |member_object| %>
         <tr>

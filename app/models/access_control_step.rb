@@ -58,6 +58,15 @@ class AccessControlStep < Avalon::Workflow::BasicStep
     mediaobject.hidden = context[:hidden] == "1"
 
     mediaobject.save
+
+    #Setup these values in the context because the edit partial is being rendered without running the controller's #edit (VOV-2978)
+    mediaobject.reload
+    context[:users] = mediaobject.read_users
+    context[:groups] = mediaobject.read_groups
+    context[:virtual_groups] = mediaobject.virtual_read_groups
+    context[:addable_groups] = Admin::Group.non_system_groups.reject { |g| context[:groups].include? g.name }
+    context[:addable_courses] = Course.all.reject { |c| context[:virtual_groups].include? c.context_id }
+
     context
   end
 end
