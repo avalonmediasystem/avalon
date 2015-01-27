@@ -372,7 +372,7 @@ class MediaObject < ActiveFedora::Base
   # manner
 
   class << self
-    def access_control documents, params
+    def access_control_bulk documents, params
       errors = []
       successes = []
       documents.each do |id|
@@ -408,9 +408,9 @@ class MediaObject < ActiveFedora::Base
       end
       return successes, errors
     end
-    handle_asynchronously :access_control    
+    handle_asynchronously :access_control_bulk unless Rails.env.test?
     
-    def update_status documents, user_key, params
+    def update_status_bulk documents, user_key, params
       errors = []
       successes = []
       status = params['action']
@@ -435,9 +435,9 @@ class MediaObject < ActiveFedora::Base
       end
       return successes, errors
     end
-    handle_asynchronously :update_status
+    handle_asynchronously :update_status_bulk unless Rails.env.test?
     
-    def delete documents, params
+    def delete_bulk documents, params
       errors = []
       successes = []
       documents.each do |id|
@@ -450,9 +450,9 @@ class MediaObject < ActiveFedora::Base
       end
       return successes, errors
     end
-    handle_asynchronously :delete
+    handle_asynchronously :delete_bulk unless Rails.env.test?
     
-    def move documents, params
+    def move_bulk documents, params
       collection = Admin::Collection.find( params[:target_collection_id] )
       errors = []
       successes = []
@@ -467,7 +467,7 @@ class MediaObject < ActiveFedora::Base
       end    
       return successes, errors
     end
-    handle_asynchronously :move
+    handle_asynchronously :move_bulk unless Rails.env.test?
 
   end
 
