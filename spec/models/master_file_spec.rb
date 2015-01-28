@@ -130,6 +130,9 @@ describe MasterFile do
       allow(ingest_job).to receive(:perform)
       Delayed::Worker.delay_jobs = false
     end
+    after do
+      Delayed::Worker.delay_jobs = true
+    end
     it 'starts a Matterhorn workflow' do
       master_file.process
       expect(ingest_job).to have_received(:perform)
@@ -146,7 +149,10 @@ describe MasterFile do
     describe 'failure' do
       before do
         Rubyhorn.stub_chain(:client, :addMediaPackageWithUrl).and_raise(Rubyhorn::RestClient::Exceptions::ServerError, "FAILED")
-      Delayed::Worker.delay_jobs = true
+        Delayed::Worker.delay_jobs = true
+      end
+      after do
+        Delayed::Worker.delay_jobs = false
       end
       it 'should set the status to FAILED when the request to Matterhorn fails' do
         master_file.process
