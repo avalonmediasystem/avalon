@@ -18,7 +18,7 @@ Added <role><roleTerm>Contributor for 700, 710 and 711; removed template calls t
 Put 600$aqbcd into same <subject><name><namePart> element. kdm 20150113
 Put 610$abcdn into same <subject><name><namePart> element. kdm 20150113
 Put 611$acdenq into same <subject><name><namePart> element. kdm 20150113
-Put 630subfields into same <subject><topic> element. kdm 20150113
+Put 630 subfields into same <subject><topic> element. kdm 20150113
 Added dateCreated from 008/11-14 if 008/06='r' or 'p'. kdm, 20150113
 Added dateIssued from 008/7-10 if 008/06='r' or 'p'. kdm, 20150113
 Removed dateCreated and dateIssued from 046. kdm, 20150113
@@ -35,7 +35,11 @@ Pull in cached local copy of MARC21slimUtils.xsl. mbk 20150116
 Replaced LC's code with processing to put each 653$a into a separate subject/topic for Avalon Media System. kdm, 20150120
 Moved all of the 264 information into a single originInfo stanza. Type of 264 is retained only in date fields. Note that multiple 260s are already handled via on originInfo. kdm, 20150121
 Split 650 subfields into separate subject stanzas. mbk 20150121
-
+Added processing of 700$tmnpr and 710$tmpr. kdm 20150121
+600, 610, and 611 should go into <subject><topic> for Avalon Media System; moved them there from <subject><name><namePart> element. kdm 20150127
+Added 600$q to process; inadvertently left out. kdm 20150127
+Added call to <xsl:call-template name="subjectAnyOrder"/> for 600, 610, 611, 630 in order to process subfields x, y, v, and z. kdm 20150127
+Adjust 1xx, 6xx, 7xx subfields to match mapping spreadsheet. kdm 20150127
 -->
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
 	MARC21slim2MODS3-5 (Revision 1.106) 20141219
@@ -3211,7 +3215,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:with-param name="chopString">
 					<xsl:call-template name="subfieldSelect">
 						<!--added fields bcd to aq for Avalon Media System, kdm 20150114-->
-						<xsl:with-param name="codes">abcdntmpr</xsl:with-param>
+						<xsl:with-param name="codes">abcdfgklnpt</xsl:with-param>
 					</xsl:call-template>
 				</xsl:with-param>
 				<xsl:with-param name="punctuation">
@@ -3227,7 +3231,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:with-param name="chopString">
 					<xsl:call-template name="subfieldSelect">
 						<!--added fields bcd to aq for Avalon Media System, kdm 20150114-->
-						<xsl:with-param name="codes">aqbcdtmnpr</xsl:with-param>
+						<xsl:with-param name="codes">aqbcdfgklmtnoprst</xsl:with-param>
 					</xsl:call-template>
 				</xsl:with-param>
 				<xsl:with-param name="punctuation">
@@ -3257,7 +3261,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:with-param name="chopString">
 					<xsl:call-template name="subfieldSelect">
 						<!--added fields bcde to anq for Avalon Media System, kdm 20150114-->
-						<xsl:with-param name="codes">acdenqtmpr</xsl:with-param>
+						<xsl:with-param name="codes">acdefgklnqstp</xsl:with-param>
 					</xsl:call-template>
 				</xsl:with-param>
 				<xsl:with-param name="punctuation">
@@ -4438,9 +4442,6 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	</xsl:template>
 	<!-- 1.79 -->
 
-	<!--START HERE-->
-	<!--fix should be similar to the nameABCDN template-->
-
 	<xsl:template name="createTitleInfoFrom245">
 		<titleInfo usage="primary">
 			<!--added this title section and removed the LC code, kdm 20140113-->
@@ -5326,22 +5327,23 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	<xsl:template name="createSubNameFrom600">
 		<subject>
 			<xsl:call-template name="subjectAuthority"/>
-			<name type="personal">
-				<namePart>
-					<xsl:for-each
-						select="marc:subfield[@code='a' or @code='b' or @code='c' or @code='d' or @code='t' or @code='n' or @code='p']">
-						<xsl:choose>
-							<xsl:when test="position()!=last()">
-								<xsl:value-of select="."/>
-								<xsl:text> </xsl:text>
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:value-of select="."/>
-							</xsl:otherwise>
-						</xsl:choose>
-					</xsl:for-each>
-				</namePart>
-			</name>
+			<topic>
+				<xsl:for-each
+					select="marc:subfield[@code='a' or @code='q' or @code='b' or @code='c' or @code='d' 
+					or @code='f' or @code='g' or @code='k' or @code='l' or @code='m'  or @code='o'
+					or @code='r' or @code='s' or @code='t' or @code='n' or @code='p']">
+					<xsl:choose>
+						<xsl:when test="position()!=last()">
+							<xsl:value-of select="."/>
+							<xsl:text> </xsl:text>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="."/>
+						</xsl:otherwise>
+					</xsl:choose>
+				</xsl:for-each>
+			</topic>
+			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
 	</xsl:template>
 
@@ -5387,10 +5389,10 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	<xsl:template name="createSubNameFrom610">
 		<subject>
 			<xsl:call-template name="subjectAuthority"/>
-			<name type="corporate">
-				<namePart>
+				<topic>
 					<xsl:for-each
-						select="marc:subfield[@code='a' or @code='b' or @code='c' or @code='d' or @code='t' or @code='n' or @code='p']">
+					select="marc:subfield[@code='a' or @code='b' or @code='c' or @code='d' or @code='f' 
+					or @code='g' or @code='k' or @code='l' or @code='t' or @code='n' or @code='p']">
 						<xsl:choose>
 							<xsl:when test="position()!=last()">
 								<xsl:value-of select="."/>
@@ -5401,8 +5403,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 							</xsl:otherwise>
 						</xsl:choose>
 					</xsl:for-each>
-				</namePart>
-			</name>
+				</topic>
+			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
 	</xsl:template>
 
@@ -5453,10 +5455,11 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	<xsl:template name="createSubNameFrom611">
 		<subject>
 			<xsl:call-template name="subjectAuthority"/>
-			<name type="conference">
-				<namePart>
+				<topic>
 					<xsl:for-each
-						select="marc:subfield[@code='a' or @code='c' or @code='d' or @code='e' or @code='n' or @code='q' or @code='t'  or @code='p']">
+					select="marc:subfield[@code='a' or @code='c' or @code='d' or @code='e' or @code='f' 
+					or @code='g' or @code='k' or @code='l' or @code='n' or @code='p' or @code='q' 
+					or @code='s' or @code='t']">
 						<xsl:choose>
 							<xsl:when test="position()!=last()">
 								<xsl:value-of select="."/>
@@ -5467,8 +5470,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 							</xsl:otherwise>
 						</xsl:choose>
 					</xsl:for-each>
-				</namePart>
-			</name>
+				</topic>
+			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
 	</xsl:template>
 
@@ -5527,6 +5530,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					</xsl:choose>
 				</xsl:for-each>
 			</topic>
+			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
 	</xsl:template>
 
