@@ -26,6 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= bootstrap_form_for @comment do |comment| %>
     <fieldset>
       <%= comment.text_field :name, label: 'Name' %>
+      <%= comment.hidden_field :nickname %>
       <%= comment.email_field :email, label: 'Email address' %>
       <%= comment.email_field :email_confirmation, label: 'Confirm email address' %> 
       <%= comment.select :subject, @subjects, prompt: 'Select one' %>    
