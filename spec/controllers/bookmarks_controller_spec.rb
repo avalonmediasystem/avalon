@@ -30,6 +30,9 @@ describe BookmarksController, type: :controller do
   end
 
   describe "#destroy" do
+    before(:each) do
+      Delayed::Worker.delay_jobs = false
+    end
     it "should remove multiple items" do
       post :delete
       expect(flash[:success]).to eq(I18n.t("blacklight.delete.success", count: 3))
@@ -41,6 +44,7 @@ describe BookmarksController, type: :controller do
     context 'publishing' do
       before(:each) do
         Permalink.on_generate { |obj| "http://example.edu/permalink" }
+        Delayed::Worker.delay_jobs = false
       end
 
       it "should publish multiple items" do
@@ -55,6 +59,9 @@ describe BookmarksController, type: :controller do
     end
 
     context 'unpublishing' do
+      before(:each) do
+        Delayed::Worker.delay_jobs = false
+      end
       it "should unpublish multiple items" do
         post 'unpublish'
 	expect(flash[:success]).to eq( I18n.t("blacklight.status.success", count: 3, status: 'unpublish'))
@@ -89,6 +96,9 @@ describe BookmarksController, type: :controller do
 
   describe "#move" do
     let!(:collection2) { FactoryGirl.create(:collection) }
+    before(:each) do
+      Delayed::Worker.delay_jobs = false
+    end
 
     context 'user has no permission on target collection' do
       it 'responds with error message' do
@@ -111,6 +121,9 @@ describe BookmarksController, type: :controller do
   end
 
   describe '#update_access_control' do
+    before(:each) do
+      Delayed::Worker.delay_jobs = false
+    end
     it 'changes the hidden property' do
       post 'update_access_control', hidden: 'true'
       expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
