@@ -209,6 +209,11 @@ class MediaObjectsController < ApplicationController
     params.merge!({mediaobject: model_object, user: user_key, ability: current_ability})
   end
 
+  def set_session_quality
+    session[:quality] = params[:quality] if params[:quality].present?
+    render nothing: true
+  end
+
   protected
   
   def load_master_files
