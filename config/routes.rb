@@ -11,6 +11,8 @@ Avalon::Application.routes.draw do
       post '/bookmarks/publish', as: :publish_bookmarks
       post '/bookmarks/unpublish', as: :unpublish_bookmarks
 
+  post '/media_objects/set_session_quality'
+
   #Blacklight catalog routes
   blacklight_for :catalog
   #match "catalog/facet/:id", :to => 'catalog#facet', :as => 'catalog_facet', via: [:get]
