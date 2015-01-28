@@ -1,0 +1,271 @@
+<?xml version="1.0"?>
+<zs:searchRetrieveResponse xmlns:zs="http://www.loc.gov/zing/srw/"><zs:version>1.1</zs:version><zs:numberOfRecords>1</zs:numberOfRecords><zs:records><zs:record><zs:recordSchema>info:srw/schema/1/marcxml-v1.1</zs:recordSchema><zs:recordPacking>xml</zs:recordPacking><zs:recordData><record xmlns="http://www.loc.gov/MARC21/slim">
+  <leader>01523cgm a2200433 a 4500</leader>
+  <controlfield tag="001">7763100</controlfield>
+  <controlfield tag="005">20150127160330.0</controlfield>
+  <controlfield tag="007">aj can|n</controlfield>
+  <controlfield tag="008">150127r19991990ilu---            kneng d</controlfield>
+  <datafield tag="040" ind1=" " ind2=" ">
+    <subfield code="a">IEN</subfield>
+    <subfield code="c">IEN</subfield>
+  </datafield>
+  <datafield tag="041" ind1="0" ind2=" ">
+    <subfield code="a">eng</subfield>
+    <subfield code="d">fre</subfield>
+    <subfield code="j">ger</subfield>
+  </datafield>
+  <datafield tag="111" ind1="2" ind2="0">
+    <subfield code="a">111 A</subfield>
+    <subfield code="c">C</subfield>
+    <subfield code="d">D</subfield>
+    <subfield code="e">E</subfield>
+    <subfield code="f">F</subfield>
+    <subfield code="g">G</subfield>
+    <subfield code="k">K</subfield>
+    <subfield code="l">L</subfield>
+    <subfield code="n">N</subfield>
+    <subfield code="p">P</subfield>
+    <subfield code="q">Q</subfield>
+    <subfield code="t">T</subfield>
+  </datafield>
+  <datafield tag="245" ind1="0" ind2="4">
+    <subfield code="a">245 A :</subfield>
+    <subfield code="b">B</subfield>
+    <subfield code="f">F</subfield>
+    <subfield code="g">G</subfield>
+    <subfield code="k">K</subfield>
+    <subfield code="n">N</subfield>
+    <subfield code="p">P</subfield>
+    <subfield code="s">S /</subfield>
+    <subfield code="c">C.</subfield>
+  </datafield>
+  <datafield tag="246" ind1="3" ind2="0">
+    <subfield code="a">246</subfield>
+  </datafield>
+  <datafield tag="260" ind1=" " ind2=" ">
+    <subfield code="a">260 A :</subfield>
+    <subfield code="b">260 B,</subfield>
+    <subfield code="c">2010.</subfield>
+  </datafield>
+  <datafield tag="260" ind1=" " ind2=" ">
+    <subfield code="a">260 A :</subfield>
+    <subfield code="b">260 B,</subfield>
+    <subfield code="c">2014.</subfield>
+  </datafield>
+  <datafield tag="300" ind1=" " ind2=" ">
+    <subfield code="a">300 A  :</subfield>
+    <subfield code="b">300 B ;</subfield>
+    <subfield code="c">300 C.</subfield>
+  </datafield>
+  <datafield tag="600" ind1="1" ind2="0">
+    <subfield code="a">600 (100) A</subfield>
+    <subfield code="b">B</subfield>
+    <subfield code="c">C</subfield>
+    <subfield code="d">D</subfield>
+    <subfield code="f">F</subfield>
+    <subfield code="g">G</subfield>
+    <subfield code="k">K</subfield>
+    <subfield code="l">L</subfield>
+    <subfield code="n">N</subfield>
+    <subfield code="p">P</subfield>
+    <subfield code="q">Q</subfield>
+    <subfield code="t">T</subfield>
+  </datafield>
+  <datafield tag="610" ind1="2" ind2="0">
+    <subfield code="a">610 (110) A</subfield>
+    <subfield code="b">B</subfield>
+    <subfield code="b">B</subfield>
+    <subfield code="c">C</subfield>
+    <subfield code="d">D</subfield>
+    <subfield code="f">F</subfield>
+    <subfield code="g">G</subfield>
+    <subfield code="k">K</subfield>
+    <subfield code="l">L</subfield>
+    <subfield code="n">N</subfield>
+    <subfield code="p">P</subfield>
+    <subfield code="t">T</subfield>
+  </datafield>
+  <datafield tag="611" ind1="2" ind2="0">
+    <subfield code="a">611 (111) A</subfield>
+    <subfield code="c">C</subfield>
+    <subfield code="d">D</subfield>
+    <subfield code="e">E</subfield>
+    <subfield code="f">F</subfield>
+    <subfield code="g">G</subfield>
+    <subfield code="k">K</subfield>
+    <subfield code="l">L</subfield>
+    <subfield code="n">N</subfield>
+    <subfield code="p">P</subfield>
+    <subfield code="q">Q</subfield>
+    <subfield code="t">T</subfield>
+  </datafield>
+  <datafield tag="500" ind1=" " ind2=" ">
+    <subfield code="a">500</subfield>
+  </datafield>
+  <datafield tag="520" ind1=" " ind2=" ">
+    <subfield code="a">520</subfield>
+  </datafield>
+  <datafield tag="530" ind1=" " ind2=" ">
+    <subfield code="a">530</subfield>
+  </datafield>
+  <datafield tag="540" ind1=" " ind2=" ">
+    <subfield code="a">540</subfield>
+  </datafield>
+  <datafield tag="600" ind1="1" ind2="0">
+    <subfield code="a">600 A</subfield>
+    <subfield code="b">B</subfield>
+    <subfield code="c">C</subfield>
+    <subfield code="d">D</subfield>
+    <subfield code="f">F</subfield>
+    <subfield code="g">G</subfield>
+    <subfield code="k">K</subfield>
+    <subfield code="l">L</subfield>
+    <subfield code="m">M</subfield>
+    <subfield code="n">N</subfield>
+    <subfield code="o">O</subfield>
+    <subfield code="p">P</subfield>
+    <subfield code="q">Q</subfield>
+    <subfield code="r">R</subfield>
+    <subfield code="s">S</subfield>
+    <subfield code="t">T</subfield>
+    <subfield code="x">600 X</subfield>
+    <subfield code="y">600 Y</subfield>
+    <subfield code="z">600 Z</subfield>
+    <subfield code="v">600 V</subfield>
+  </datafield>
+  <datafield tag="610" ind1="2" ind2="0">
+    <subfield code="a">610 A</subfield>
+    <subfield code="b">B</subfield>
+    <subfield code="b">B</subfield>
+    <subfield code="c">C</subfield>
+    <subfield code="d">D</subfield>
+    <subfield code="f">F</subfield>
+    <subfield code="g">G</subfield>
+    <subfield code="k">K</subfield>
+    <subfield code="l">L</subfield>
+    <subfield code="n">N</subfield>
+    <subfield code="p">P</subfield>
+    <subfield code="t">T</subfield>
+    <subfield code="x">610 X</subfield>
+    <subfield code="y">610 Y</subfield>
+    <subfield code="z">610 Z</subfield>
+    <subfield code="v">610 V</subfield>
+  </datafield>
+  <datafield tag="611" ind1="2" ind2="0">
+    <subfield code="a">611 A</subfield>
+    <subfield code="c">C</subfield>
+    <subfield code="d">D</subfield>
+    <subfield code="e">E</subfield>
+    <subfield code="f">F</subfield>
+    <subfield code="g">G</subfield>
+    <subfield code="k">K</subfield>
+    <subfield code="l">L</subfield>
+    <subfield code="n">N</subfield>
+    <subfield code="p">P</subfield>
+    <subfield code="q">Q</subfield>
+    <subfield code="s">S</subfield>
+    <subfield code="t">T</subfield>
+    <subfield code="x">611 X</subfield>
+    <subfield code="y">611 Y</subfield>
+    <subfield code="z">611 Z</subfield>
+    <subfield code="v">611 V</subfield>
+  </datafield>
+  <datafield tag="630" ind1="0" ind2="0">
+    <subfield code="a">630 A</subfield>
+    <subfield code="d">D</subfield>
+    <subfield code="f">F</subfield>
+    <subfield code="h">H</subfield>
+    <subfield code="k">K</subfield>
+    <subfield code="l">L</subfield>
+    <subfield code="o">O</subfield>
+    <subfield code="r">R</subfield>
+    <subfield code="x">630 X</subfield>
+    <subfield code="y">630 Y</subfield>
+    <subfield code="z">630 Z</subfield>
+    <subfield code="v">630 V</subfield>
+  </datafield>
+  <datafield tag="648" ind1=" " ind2="7">
+    <subfield code="a">648</subfield>
+    <subfield code="2">lcsh.</subfield>
+  </datafield>
+  <datafield tag="648" ind1=" " ind2="0">
+    <subfield code="a">648</subfield>
+  </datafield>
+  <datafield tag="650" ind1=" " ind2="0">
+    <subfield code="a">650 A</subfield>
+    <subfield code="x">650 X</subfield>
+    <subfield code="y">650 Y</subfield>
+    <subfield code="z">650 Z</subfield>
+    <subfield code="v">650 V</subfield>
+  </datafield>
+  <datafield tag="651" ind1=" " ind2="0">
+    <subfield code="a">651 A</subfield>
+    <subfield code="x">651 X</subfield>
+    <subfield code="y">651 Y</subfield>
+    <subfield code="z">651 Z</subfield>
+    <subfield code="v">651 V</subfield>
+  </datafield>
+  <datafield tag="653" ind1=" " ind2=" ">
+    <subfield code="a">653 A</subfield>
+    <subfield code="a">653 A</subfield>
+  </datafield>
+  <datafield tag="655" ind1=" " ind2="0">
+    <subfield code="a">655 A</subfield>
+  </datafield>
+  <datafield tag="700" ind1="1" ind2="0">
+    <subfield code="a">700 A</subfield>
+    <subfield code="b">B</subfield>
+    <subfield code="c">C</subfield>
+    <subfield code="d">D</subfield>
+    <subfield code="f">F</subfield>
+    <subfield code="g">G</subfield>
+    <subfield code="k">K</subfield>
+    <subfield code="l">L</subfield>
+    <subfield code="m">M</subfield>
+    <subfield code="n">N</subfield>
+    <subfield code="o">O</subfield>
+    <subfield code="p">P</subfield>
+    <subfield code="q">Q</subfield>
+    <subfield code="r">R</subfield>
+    <subfield code="s">S</subfield>
+    <subfield code="t">T</subfield>
+  </datafield>
+  <datafield tag="710" ind1="2" ind2=" ">
+    <subfield code="a">710 A</subfield>
+    <subfield code="b">B</subfield>
+    <subfield code="b">B</subfield>
+    <subfield code="c">C</subfield>
+    <subfield code="d">D</subfield>
+    <subfield code="f">F</subfield>
+    <subfield code="g">G</subfield>
+    <subfield code="k">K</subfield>
+    <subfield code="l">L</subfield>
+    <subfield code="n">N</subfield>
+    <subfield code="p">P</subfield>
+    <subfield code="t">T</subfield>
+  </datafield>
+  <datafield tag="711" ind1="2" ind2="0">
+    <subfield code="a">711 A</subfield>
+    <subfield code="c">C</subfield>
+    <subfield code="d">D</subfield>
+    <subfield code="e">E</subfield>
+    <subfield code="f">F</subfield>
+    <subfield code="g">G</subfield>
+    <subfield code="k">K</subfield>
+    <subfield code="l">L</subfield>
+    <subfield code="n">N</subfield>
+    <subfield code="p">P</subfield>
+    <subfield code="q">Q</subfield>
+    <subfield code="s">S</subfield>
+    <subfield code="t">T</subfield>
+  </datafield>
+  <datafield tag="752" ind1=" " ind2=" ">
+    <subfield code="a">752 A</subfield>
+    <subfield code="b">752 B</subfield>
+    <subfield code="c">752 C</subfield>
+    <subfield code="d">752 D</subfield>
+  </datafield>
+  <datafield tag="948" ind1=" " ind2=" ">
+    <subfield code="a">suppressed record for testing Avalon.</subfield>
+  </datafield>
+</record></zs:recordData><zs:recordPosition>1</zs:recordPosition></zs:record></zs:records></zs:searchRetrieveResponse>
