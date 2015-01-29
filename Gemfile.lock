@@ -70,8 +70,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-qualityselector.git
-  revision: fb5f36e24bc6309ace5d382bc533e83dc0ba5dd1
-  tag: avalon-r3
+  revision: 3a5a5c82336478fa37034396e56c2b5a0eda75ad
   specs:
     mediaelement-qualityselector (0.0.1)
 
