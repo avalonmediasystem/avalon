@@ -371,6 +371,106 @@ class MediaObject < ActiveFedora::Base
   # and research as opposed to being able to just throw something together in an ad hoc
   # manner
 
+  class << self
+    def access_control_bulk documents, params
+      errors = []
+      successes = []
+      documents.each do |id|
+        media_object = self.find(id)
+        media_object.hidden = params[:hidden] == "true" if params[:hidden].present?
+        media_object.visibility = params[:visibility] unless params[:visibility].blank?
+        # Limited access stuff
+        ["group", "class", "user"].each do |title|
+          if params["submit_add_#{title}"].present?
+            if params["#{title}"].present?
+              if ["group", "class"].include? title
+                media_object.read_groups += [params["#{title}"].strip]
+              else
+                media_object.read_users += [params["#{title}"].strip]
+              end
+            end
+          end
+          if params["submit_remove_#{title}"].present?
+            if params["#{title}"].present?
+              if ["group", "class"].include? title
+                media_object.read_groups -= [params["#{title}"]]
+              else
+                media_object.read_users -= [params["#{title}"]]
+              end
+            end
+          end
+        end
+        if media_object.save
+          successes += [media_object]
+        else
+          errors += [media_object]
+        end
+      end
+      return successes, errors
+    end
+    handle_asynchronously :access_control_bulk
+    
+    def update_status_bulk documents, user_key, params
+      errors = []
+      successes = []
+      status = params['action']
+      documents.each do |id|
+        media_object = self.find(id)
+        case status
+        when 'publish'
+          media_object.publish!(user_key)
+          # additional save to set permalink
+          if media_object.save
+            successes += [media_object]
+          else
+            errors += [media_object]
+          end
+        when 'unpublish'
+          if media_object.publish!(nil)
+            successes += [media_object]
+          else
+            errors += [media_object]
+          end
+        end
+      end
+      return successes, errors
+    end
+    handle_asynchronously :update_status_bulk
+    
+    def delete_bulk documents, params
+      errors = []
+      successes = []
+      documents.each do |id|
+        media_object = self.find(id)
+        if media_object.destroy
+          successes += [media_object]
+        else
+          errors += [media_object]
+        end
+      end
+      return successes, errors
+    end
+    handle_asynchronously :delete_bulk
+    
+    def move_bulk documents, params
+      collection = Admin::Collection.find( params[:target_collection_id] )
+      errors = []
+      successes = []
+      documents.each do |id|
+        media_object = self.find(id)
+        media_object.collection = collection
+        if media_object.save
+          successes += [media_object]
+        else
+          errors += [media_object]
+        end
+      end    
+      return successes, errors
+    end
+    handle_asynchronously :move_bulk
+
+  end
+
   private
     def after_create
       self.DC.identifier = pid
@@ -401,5 +501,5 @@ class MediaObject < ActiveFedora::Base
 
       true
     end
-
+  
 end

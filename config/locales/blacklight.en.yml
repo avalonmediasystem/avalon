@@ -61,8 +61,8 @@ en:
 	other: "Are you certain you want to delete the following items?"
       }
       success: {
-        one: "%{count} item successfully deleted.",
-	other: "%{count} items successfully deleted."
+        one: "One item is being deleted.",
+	other: "%{count} items are being deleted. This operation could take a while for large numbers of items."
       }
       fail: "Delete failed."
       alert: {
@@ -76,8 +76,8 @@ en:
       confirm: "Please choose a new collection to move selected items:"
       button: "Move"
       success: {
-        one: "%{count} item successfully moved to collection %{collection_name}.",
-	other: "%{count} items successfully moved to collection %{collection_name}."
+        one: "One item is being moved to collection %{collection_name}.",
+	other: "%{count} items are being moved to collection %{collection_name}. This operation could take a while for large numbers of items."
       }
       fail: "Save failed."
       alert: {
@@ -85,18 +85,19 @@ en:
         other: "These items were not moved:"
       }     	     
       error: "You do not have permission to add to collection %{collection_name}."
-    publish:
-      form:
-        title: "Publish Selected Items"
+    status:
       success: {
-        one: "%{count} item successfully %{status}ed.",
-	other: "%{count} items successfully %{status}ed."
+        one: "One item is being %{status}ed.",
+	other: "%{count} items are being %{status}ed. This operation could take a while for large numbers of items."
       }
-      fail: "Save failed."
       alert: {
         one: "This item was not %{status}ed:",
         other: "These items were not %{status}ed:"
-      }     	     
+      }
+    publish:
+      form:
+        title: "Publish Selected Items"
+      fail: "Save failed."
     unpublish:
       form:
         title: "Unpublish Selected Items"
@@ -106,8 +107,8 @@ en:
         title: "Manage Access Control Settings"
       button: "Save"
       success: {
-        one: "Access controls successfully updated on %{count} item.",
-	other: "Access controls successfully updated on %{count} items."
+        one: "Access controls are being updated on %{count} item.",
+	other: "Access controls are being updated on %{count} items. This operation could take a while for large numbers of items."
       }
       fail: "Save failed."
       alert: {
