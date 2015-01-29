@@ -71,69 +71,57 @@
   </subject>
   <subject authority="lcsh">
     <topic>600 A B C D F G K L M N O P Q R S T</topic>
-    <subject authority="lcsh">
-      <topic>600 X</topic>
-    </subject>
-    <subject authority="lcsh">
-      <temporal>600 Y</temporal>
-    </subject>
-    <subject authority="lcsh">
-      <geographic>600 Z</geographic>
-    </subject>
-    <subject authority="lcsh">
-      <genre>600 V</genre>
-    </subject>
+  </subject>
+  <subject authority="lcsh">
+    <topic>600 X</topic>
+  </subject>
+  <subject authority="lcsh">
+    <temporal>600 Y</temporal>
+  </subject>
+  <subject authority="lcsh">
+    <geographic>600 Z</geographic>
   </subject>
   <subject authority="lcsh">
     <topic>610 (110) A B B C D F G K L N P T</topic>
   </subject>
   <subject authority="lcsh">
     <topic>610 A B B C D F G K L N P T</topic>
-    <subject authority="lcsh">
-      <topic>610 X</topic>
-    </subject>
-    <subject authority="lcsh">
-      <temporal>610 Y</temporal>
-    </subject>
-    <subject authority="lcsh">
-      <geographic>610 Z</geographic>
-    </subject>
-    <subject authority="lcsh">
-      <genre>610 V</genre>
-    </subject>
+  </subject>
+  <subject authority="lcsh">
+    <topic>610 X</topic>
+  </subject>
+  <subject authority="lcsh">
+    <temporal>610 Y</temporal>
+  </subject>
+  <subject authority="lcsh">
+    <geographic>610 Z</geographic>
   </subject>
   <subject authority="lcsh">
     <topic>611 (111) A C D E F G K L N P Q T</topic>
   </subject>
   <subject authority="lcsh">
     <topic>611 A C D E F G K L N P Q S T</topic>
-    <subject authority="lcsh">
-      <topic>611 X</topic>
-    </subject>
-    <subject authority="lcsh">
-      <temporal>611 Y</temporal>
-    </subject>
-    <subject authority="lcsh">
-      <geographic>611 Z</geographic>
-    </subject>
-    <subject authority="lcsh">
-      <genre>611 V</genre>
-    </subject>
+  </subject>
+  <subject authority="lcsh">
+    <topic>611 X</topic>
+  </subject>
+  <subject authority="lcsh">
+    <temporal>611 Y</temporal>
+  </subject>
+  <subject authority="lcsh">
+    <geographic>611 Z</geographic>
   </subject>
   <subject authority="lcsh">
     <topic>630 A D F H K L O R</topic>
-    <subject authority="lcsh">
-      <topic>630 X</topic>
-    </subject>
-    <subject authority="lcsh">
-      <temporal>630 Y</temporal>
-    </subject>
-    <subject authority="lcsh">
-      <geographic>630 Z</geographic>
-    </subject>
-    <subject authority="lcsh">
-      <genre>630 V</genre>
-    </subject>
+  </subject>
+  <subject authority="lcsh">
+    <topic>630 X</topic>
+  </subject>
+  <subject authority="lcsh">
+    <temporal>630 Y</temporal>
+  </subject>
+  <subject authority="lcsh">
+    <geographic>630 Z</geographic>
   </subject>
   <subject authority="lcsh.">
     <temporal>648</temporal>
@@ -154,22 +142,16 @@
     <geographic>650 Z</geographic>
   </subject>
   <subject authority="lcsh">
-    <genre>650 V</genre>
+    <geographic>651 A</geographic>
   </subject>
   <subject authority="lcsh">
-    <geographic>651 A</geographic>
-    <subject authority="lcsh">
-      <topic>651 X</topic>
-    </subject>
-    <subject authority="lcsh">
-      <temporal>651 Y</temporal>
-    </subject>
-    <subject authority="lcsh">
-      <geographic>651 Z</geographic>
-    </subject>
-    <subject authority="lcsh">
-      <genre>651 V</genre>
-    </subject>
+    <topic>651 X</topic>
+  </subject>
+  <subject authority="lcsh">
+    <temporal>651 Y</temporal>
+  </subject>
+  <subject authority="lcsh">
+    <geographic>651 Z</geographic>
   </subject>
   <subject>
     <topic>653 A</topic>
