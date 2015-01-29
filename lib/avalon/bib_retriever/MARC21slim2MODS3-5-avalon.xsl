@@ -3281,7 +3281,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	</xsl:template-->
 
 	<xsl:template name="constituentOrRelatedType">
-		<xsl:if test="@ind2=2">
+		<!-- Added single quotes around @code check - jlh 20150128 -->
+		<xsl:if test="@ind2='2'">
 			<xsl:attribute name="type">constituent</xsl:attribute>
 		</xsl:if>
 	</xsl:template>
@@ -3454,13 +3455,15 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 	</xsl:template>
 	<xsl:template name="subjectAnyOrder">
-		<xsl:for-each select="marc:subfield[@code='v' or @code='x' or @code='y' or @code='z']">
+		<!-- Commented out check for $v to create genre subject, for Avalon Media System. jlh 20150128 -->
+		<!-- <xsl:for-each select="marc:subfield[@code='v' or @code='x' or @code='y' or @code='z']"> -->
+		<xsl:for-each select="marc:subfield[@code='x' or @code='y' or @code='z']">
 			<subject>
 				<xsl:call-template name="subjectAuthority"/>
 				<xsl:choose>
-					<xsl:when test="@code='v'">
+					<!-- <xsl:when test="@code='v'">
 						<xsl:call-template name="subjectGenre"/>
-					</xsl:when>
+					</xsl:when> -->
 					<xsl:when test="@code='x'">
 						<xsl:call-template name="subjectTopic"/>
 					</xsl:when>
@@ -5324,6 +5327,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	</xsl:template>
 
 	<!--this chunk of code was added for Avalon, kdm 20150113-->
+	<!-- Moved call to subjectAnyOrder outside of previous <subject> since those are also inside separate <subject> for Avalon, jlh 20150128 -->
 	<xsl:template name="createSubNameFrom600">
 		<subject>
 			<xsl:call-template name="subjectAuthority"/>
@@ -5343,8 +5347,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					</xsl:choose>
 				</xsl:for-each>
 			</topic>
-			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
+		<xsl:call-template name="subjectAnyOrder"/>
 	</xsl:template>
 
 	<!--this is LC's code, which has been replaced by Avalon code, kdm 20150113-->
@@ -5386,6 +5390,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	</xsl:template-->
 
 	<!--this chunk of code was added for Avalon, kdm 20150113-->
+	<!-- Moved call to subjectAnyOrder outside of previous <subject> since those are also inside separate <subject> for Avalon, jlh 20150128 -->
 	<xsl:template name="createSubNameFrom610">
 		<subject>
 			<xsl:call-template name="subjectAuthority"/>
@@ -5404,8 +5409,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 						</xsl:choose>
 					</xsl:for-each>
 				</topic>
-			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
+		<xsl:call-template name="subjectAnyOrder"/>
 	</xsl:template>
 
 	<!--this is LC's code, which has been replaced by Avalon code, kdm 20150113-->
@@ -5452,6 +5457,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	</xsl:template-->
 
 	<!--this chunk of code was added for Avalon, kdm 20150113-->
+	<!-- Moved call to subjectAnyOrder outside of previous <subject> since those are also inside separate <subject> for Avalon, jlh 20150128 -->
 	<xsl:template name="createSubNameFrom611">
 		<subject>
 			<xsl:call-template name="subjectAuthority"/>
@@ -5471,8 +5477,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 						</xsl:choose>
 					</xsl:for-each>
 				</topic>
-			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
+		<xsl:call-template name="subjectAnyOrder"/>
 	</xsl:template>
 
 	<!--this is LC's code, which has been replaced by Avalon code, kdm 20150113-->
@@ -5513,6 +5519,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	</xsl:template-->
 
 	<!--this chunk of code was added for Avalon, kdm 20150113-->
+	<!-- Moved call to subjectAnyOrder outside of previous <subject> since those are also inside separate <subject> for Avalon, jlh 20150128 -->
 	<xsl:template name="createSubTitleFrom630">
 		<subject>
 			<xsl:call-template name="subjectAuthority"/>
@@ -5530,8 +5537,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					</xsl:choose>
 				</xsl:for-each>
 			</topic>
-			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
+		<xsl:call-template name="subjectAnyOrder"/>
 	</xsl:template>
 
 	<!--this is LC's code, which has been replaced by Avalon code, kdm 20150113-->
@@ -5556,11 +5563,14 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	</xsl:template-->
 
 	<xsl:template name="createSubChronFrom648">
+		<!-- Moved call to subjectAnyOrder outside of previous <subject> since those are also inside separate <subject> for Avalon, jlh 20150128 -->
 		<subject>
 			<xsl:call-template name="xxx880"/>
-			<xsl:if test="marc:subfield[@code=2]">
+			<!-- Added single quotes around @code check - jlh 20150128 -->
+			<xsl:if test="marc:subfield[@code='2']">
 				<xsl:attribute name="authority">
-					<xsl:value-of select="marc:subfield[@code=2]"/>
+					<!-- Added single quotes around @code check - jlh 20150128 -->
+					<xsl:value-of select="marc:subfield[@code='2']"/>
 				</xsl:attribute>
 			</xsl:if>
 			<xsl:call-template name="uri"/>
@@ -5574,8 +5584,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					</xsl:with-param>
 				</xsl:call-template>
 			</temporal>
-			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
+		<xsl:call-template name="subjectAnyOrder"/>
 	</xsl:template>
 
 	<xsl:template name="createSubTopFrom650">
@@ -5596,6 +5606,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	</xsl:template>
 
 	<xsl:template name="createSubGeoFrom651">
+		<!-- Moved call to subjectAnyOrder outside of previous <subject> since those are also inside separate <subject> for Avalon, jlh 20150128 -->
 		<subject>
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="subjectAuthority"/>
@@ -5606,8 +5617,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					</xsl:call-template>
 				</geographic>
 			</xsl:for-each>
-			<xsl:call-template name="subjectAnyOrder"/>
 		</subject>
+		<xsl:call-template name="subjectAnyOrder"/>
 	</xsl:template>
 
 	<xsl:template name="createSubFrom653">
