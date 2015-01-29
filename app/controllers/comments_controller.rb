@@ -23,12 +23,13 @@ class CommentsController < ApplicationController
 	def create
 	  @comment = Comment.new
 	  @comment.name = params[:comment][:name]
+          @comment.nickname = params[:comment][:nickname]
 	  @comment.email = params[:comment][:email]
 	  @comment.email_confirmation = params[:comment][:email_confirmation]
 	  @comment.subject = params[:comment][:subject]
 	  @comment.comment = params[:comment][:comment]
 	  
-		if (@comment.valid? && !@comment.spam?)
+		if (@comment.valid?)
 		    begin
 			  CommentsMailer.contact_email(@comment).deliver
 			rescue Errno::ECONNRESET => e

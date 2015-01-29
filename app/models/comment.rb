@@ -67,9 +67,4 @@ class Comment
     false
   end
   
-  def spam?
-    # TODO : Stub out a method for verifying that it is not spam beyond this basic
-    #        test
-    return (not @nickname.nil?)
-  end
 end
