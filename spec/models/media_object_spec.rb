@@ -49,7 +49,6 @@ describe MediaObject do
       it "should not accept invalid EDTF formatted dates" do
         media_object.date_issued = 'blahbalnaklsdn'
         expect(media_object.valid?).to be_falsey
-        binding.pry
         expect(media_object.errors[:date_issued].present?).to be_truthy
       end
 
