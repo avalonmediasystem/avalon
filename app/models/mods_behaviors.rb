@@ -78,8 +78,8 @@ module ModsBehaviors
     solr_doc['date_ssi'] = self.find_by_terms(:date_issued).text
     solr_doc['date_created_ssi'] = self.find_by_terms(:date_created).text
     # Put both publication date and creation date into the date facet
-    solr_doc['date_sim'] = get_year(solr_doc['date_ssi'])
-    solr_doc['date_sim'] += get_year(solr_doc['date_created_ssi']) if solr_doc['date_created_ssi'].present?
+    solr_doc['date_sim'] = gather_years(solr_doc['date_ssi'])
+    solr_doc['date_sim'] += gather_years(solr_doc['date_created_ssi']) if solr_doc['date_created_ssi'].present?
 
     # For full text, we stuff it into the mods_tesim field which is already configured for Mods doucments
     solr_doc['mods_tesim'] = self.ng_xml.xpath('//text()').collect { |t| t.text }
@@ -168,25 +168,23 @@ module ModsBehaviors
     terms.collect { |r| r.text }.compact.uniq
   end
 
-  def get_year(s)
-    if s.match(/^[\du]{4}$/)
-      return gather_years(s)
-    elsif s.match(/^\d{4}$/)
-      return [s.to_s]
-    elsif s.match(/^(\d{4})-\d{2}$/)
-      return [$1.to_s]
+  def gather_years(date)
+    parsed = Date.edtf(date)
+    return Array.new if parsed.nil?
+    years = if parsed.respond_to?(:map)
+      parsed.map(&:year)
+    elsif parsed.unspecified?(:year)
+      parsed.precision = :year
+      if parsed.unspecified.year[2]
+	EDTF::Interval.new(parsed, parsed.next(99).last).map(&:year)
+      elsif parsed.unspecified.year[3]
+	EDTF::Interval.new(parsed, parsed.next(9).last).map(&:year)
+      end
     else
-      return [DateTime.parse(s).year.to_s] rescue nil
+      parsed.precision = :year
+      Array(parsed.year)
     end
-  end
-
-  def gather_years(s)
-    return nil unless s.match(/^[\du]{4}$/)
-    result = [s]
-    s.scan(/u/).size.times do
-      result = result.collect{|d| (0...10).collect {|i| d.sub(/u/, i.to_s) } }.flatten
-    end
-    result
+    years.map(&:to_s)
   end
 
   # Override NokogiriDatastream#update_term_values to use the explicit 

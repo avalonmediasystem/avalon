@@ -44,6 +44,7 @@
 
   # microdata
   gem 'ruby-duration'
+  gem 'edtf'
 
 # Uncomment the following line to include z39.59/zoom support in Avalon::BibRetriever
 # NOTE: Requires the yaz library to be installed
