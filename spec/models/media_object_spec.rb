@@ -45,6 +45,19 @@ describe MediaObject do
         expect(media_object.errors[:language]).not_to be_empty
       end
     end
+    describe "Valid date formats" do
+      it "should not accept invalid EDTF formatted dates" do
+      # Example dates grabbed from here: http://www.loc.gov/standards/datetime/pre-submission.html#table
+        media_object.date_issued = 'blahbalnaklsdn'
+        expect(media_object.valid?).to be_falsey
+        #Have certain error messages returned.
+      end
+
+      it "should accept valid EDTF formatted dates" do
+        media_object.date_issued = '2001-02-03'
+        expect(media_object.valid?).to be_truthy
+      end
+    end
   end
 
   describe 'delegators' do
@@ -222,10 +235,6 @@ describe MediaObject do
     end
   end
 
-  describe "Valid formats" do
-    it "should only accept ISO formatted dates"
-  end
-  
   describe "Ingest status" do
     it "should default to unpublished" do
       media_object.workflow.published.first.should eq "false"
