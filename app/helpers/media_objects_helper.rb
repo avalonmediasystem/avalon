@@ -71,4 +71,13 @@ module MediaObjectsHelper
        mediaobject.related_item_url.collect{ |r| link_to( r[:label], r[:url]) }
      end
 
+     def current_quality stream_info
+       available_qualities = Array(stream_info[:stream_flash]).collect {|s| s[:quality]}
+       available_qualities += Array(stream_info[:stream_hls]).collect {|s| s[:quality]}
+       available_qualities.uniq!
+       quality ||= session[:quality] if session['quality'].present? && available_qualities.include?(session[:quality])
+       quality ||= Avalon::Configuration.lookup('streaming.default_quality') if available_qualities.include?(Avalon::Configuration.lookup('streaming.default_quality'))
+       quality ||= available_qualities.first
+       quality
+     end
 end
