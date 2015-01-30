@@ -76,12 +76,10 @@ class MediaObject < ActiveFedora::Base
   end
 
   def validate_dates
-    if date_issued.present? && Date.edtf(date_issued).nil?
-      errors.add(:date_issued, "Date Issued (#{date_issued}) in wrong format")
-    end
-
-    if date_created.present? && Date.edtf(date_created).nil?
-      errors.add(:date_created, "Date Created (#{date_created}) in wrong format")
+    [:date_created, :date_issued, :copyright_date].each do |d|
+      if self.send(d).present? && Date.edtf(self.send(d)).nil?
+        errors.add(d, "Date (#{self.send(d)}) in wrong format.")
+      end
     end
   end
 

@@ -184,7 +184,7 @@ module ModsBehaviors
       parsed.precision = :year
       Array(parsed.year)
     end
-    years.map(&:to_s)
+    years.uniq.map(&:to_s)
   end
 
   # Override NokogiriDatastream#update_term_values to use the explicit 

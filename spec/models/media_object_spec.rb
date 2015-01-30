@@ -47,16 +47,35 @@ describe MediaObject do
     end
     describe "Valid date formats" do
       it "should not accept invalid EDTF formatted dates" do
-      # Example dates grabbed from here: http://www.loc.gov/standards/datetime/pre-submission.html#table
         media_object.date_issued = 'blahbalnaklsdn'
         expect(media_object.valid?).to be_falsey
-        #Have certain error messages returned.
+        binding.pry
+        expect(media_object.errors[:date_issued].present?).to be_truthy
       end
 
       it "should accept valid EDTF formatted dates" do
         media_object.date_issued = '2001-02-03'
         expect(media_object.valid?).to be_truthy
       end
+    end
+  end
+
+  describe '#gather_years' do
+    it "should gather the year from a date string" do
+      expect(media_object.descMetadata.send(:gather_years, '2014-10-20')).to eq ['2014']
+    end
+
+    it "should gather all possible years with unknown designator" do
+      expect(media_object.descMetadata.send(:gather_years, '199u')).to eq ['1990', '1991', '1992', '1993', '1994', '1995', '1996', '1997', '1998', '1999']
+
+      expect(media_object.descMetadata.send(:gather_years, '198x')).to eq ['1980', '1981', '1982', '1983', '1984', '1985', '1986', '1987', '1988', '1989']
+    end
+    it "should gather years from sets" do
+      expect(media_object.descMetadata.send(:gather_years, '[1667,1668, 1670..1672]')).to eq ['1667', '1668', '1670', '1671', '1672']
+      expect(media_object.descMetadata.send(:gather_years, '{1667,1668, 1670..1672}')).to eq ['1667', '1668', '1670', '1671', '1672']
+    end
+    it "should gather years from interval" do
+      expect(media_object.descMetadata.send(:gather_years, '2004-06/2006-08')).to eq ['2004', '2005', '2006']
     end
   end
 
