@@ -172,6 +172,7 @@ module ModsBehaviors
     parsed = Date.edtf(date)
     return Array.new if parsed.nil?
     years = if parsed.respond_to?(:map)
+      parsed.map(&:year_precision!)
       parsed.map(&:year)
     elsif parsed.unspecified?(:year)
       parsed.precision = :year
@@ -181,10 +182,10 @@ module ModsBehaviors
 	EDTF::Interval.new(parsed, parsed.next(9).last).map(&:year)
       end
     else
-      parsed.precision = :year
+      parsed.year_precision!
       Array(parsed.year)
     end
-    years.uniq.map(&:to_s)
+    years.map(&:to_s).uniq
   end
 
   # Override NokogiriDatastream#update_term_values to use the explicit 
