@@ -45,36 +45,57 @@ describe MediaObject do
         expect(media_object.errors[:language]).not_to be_empty
       end
     end
-    describe "Valid date formats" do
+    describe 'dates' do
+      let! (:valid_dates) {{
+          '-9999' => ['-9999'],
+          '0000' => ['0'],
+          '2001' => ['2001'],
+          '2001-02' => ['2001'],
+          '2001-02-03' => ['2001'],
+          '2001-02-03T09:30:01' => ['2001'],
+          '2004-01-01T10:10:10Z' => ['2004'],
+          '2004-01-01T10:10:10+05:00' => ['2004'],
+          '2006/2008' => ['2006','2007','2008'],
+          '2004-01-01/2005' => ['2004','2005'],
+          '2005-02-01/2006-02' => ['2005','2006'],
+          '2006-03-01/2007-02-08' => ['2006','2007'],
+          '2007/2008-02-01' => ['2007','2008'],
+          '2008-02/2009-02-01' => ['2008','2009'],
+          '2009-01-04/2010-02-01' => ['2009','2010'],
+          '1984?' => ['1984'],
+          '1984~' => ['1984'],
+          '1984?~' => ['1984'],
+          '2004-06-11?' => ['2004'],
+          'unknown/2006' => [],
+          '2001-21' => ['2001'],
+          '[1667,1668,1670..1672]' => ['1667','1668','1670','1671','1672'],
+          '{1667,1668,1670..1672}' => ['1667','1668','1670','1671','1672'],
+          '159u' => ['1590','1591','1592','1593','1594','1595','1596','1597','1598','1599'],
+          '159u-12' => [],
+          '159u-12-25' => ['1590','1591','1592','1593','1594','1595','1596','1597','1598','1599'],
+          '159x' => ['1590','1591','1592','1593','1594','1595','1596','1597','1598','1599'],
+          '2011-(06-04)~' => ['2011']
+        }}
       it "should not accept invalid EDTF formatted dates" do
-        media_object.date_issued = 'blahbalnaklsdn'
-        expect(media_object.valid?).to be_falsey
-        expect(media_object.errors[:date_issued].present?).to be_truthy
+        [Faker::Lorem.sentence(4),'-999','17000'].each do |d|
+          media_object.date_issued = d
+          expect(media_object.valid?).to be_falsey
+          expect(media_object.errors[:date_issued].present?).to be_truthy
+        end
       end
-
+      
       it "should accept valid EDTF formatted dates" do
-        media_object.date_issued = '2001-02-03'
-        expect(media_object.valid?).to be_truthy
+        valid_dates.keys do |d|
+          media_object.date_issued = d
+          expect(media_object.valid?).to be_truthy
+        end
       end
-    end
-  end
-
-  describe '#gather_years' do
-    it "should gather the year from a date string" do
-      expect(media_object.descMetadata.send(:gather_years, '2014-10-20')).to eq ['2014']
-    end
-
-    it "should gather all possible years with unknown designator" do
-      expect(media_object.descMetadata.send(:gather_years, '199u')).to eq ['1990', '1991', '1992', '1993', '1994', '1995', '1996', '1997', '1998', '1999']
-
-      expect(media_object.descMetadata.send(:gather_years, '198x')).to eq ['1980', '1981', '1982', '1983', '1984', '1985', '1986', '1987', '1988', '1989']
-    end
-    it "should gather years from sets" do
-      expect(media_object.descMetadata.send(:gather_years, '[1667,1668, 1670..1672]')).to eq ['1667', '1668', '1670', '1671', '1672']
-      expect(media_object.descMetadata.send(:gather_years, '{1667,1668, 1670..1672}')).to eq ['1667', '1668', '1670', '1671', '1672']
-    end
-    it "should gather years from interval" do
-      expect(media_object.descMetadata.send(:gather_years, '2004-06/2006-08')).to eq ['2004', '2005', '2006']
+      
+      it "should gather the year from a date string" do
+        valid_dates.each_pair do |k,v|
+          expect(media_object.descMetadata.send(:gather_years, k)).to eq v        
+        end
+      end 
     end
   end
 
