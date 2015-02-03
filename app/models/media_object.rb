@@ -59,6 +59,7 @@ class MediaObject < ActiveFedora::Base
   validates :collection, presence: true
   validates :governing_policy, presence: true
   validate  :validate_related_items
+  validate  :validate_dates
 
   def validate_language
     Array(language).each{|i|errors.add(:language, "Language not recognized (#{i[:code]})") unless LanguageTerm::map[i[:code]] }
@@ -71,6 +72,14 @@ class MediaObject < ActiveFedora::Base
   def validate_creator
     if Array(creator).select { |c| c.present? }.empty?
       errors.add(:creator, I18n.t("errors.messages.blank"))
+    end
+  end
+
+  def validate_dates
+    [:date_created, :date_issued, :copyright_date].each do |d|
+      if self.send(d).present? && Date.edtf(self.send(d)).nil?
+        errors.add(d, I18n.t("errors.messages.dateformat", date: self.send(d)))
+      end
     end
   end
 
