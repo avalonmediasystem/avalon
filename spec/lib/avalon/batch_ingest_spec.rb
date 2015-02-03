@@ -99,7 +99,7 @@ describe Avalon::Batch::Ingest do
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [details_batch]
  
       batch_ingest.ingest
-      ingest_batch = IngestBatch.first
+      ingest_batch = IngestBatch.last
       media_object = MediaObject.find(ingest_batch.media_object_ids.first) 
       master_file = media_object.parts.first
       master_file.label.should == 'Quis quo'
@@ -125,14 +125,14 @@ describe Avalon::Batch::Ingest do
 
     it 'should set avalon_uploader' do
       batch_ingest.ingest
-      ingest_batch = IngestBatch.first
+      ingest_batch = IngestBatch.last
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
       media_object.avalon_uploader.should == 'frances.dickens@reichel.com'
     end
 
     it 'should set hidden' do
       batch_ingest.ingest
-      ingest_batch = IngestBatch.first
+      ingest_batch = IngestBatch.last
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
       media_object.should_not be_hidden
 
@@ -142,7 +142,7 @@ describe Avalon::Batch::Ingest do
 
     it 'should correctly set identifiers' do
       batch_ingest.ingest
-      ingest_batch = IngestBatch.first
+      ingest_batch = IngestBatch.last
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
       media_object.bibliographic_id.should eq(["local","123"])
     end
