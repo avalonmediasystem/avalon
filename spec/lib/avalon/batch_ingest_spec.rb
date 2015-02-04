@@ -79,21 +79,18 @@ describe Avalon::Batch::Ingest do
       space_batch_path = File.join('spec/fixtures/dropbox/example batch ingest', 'batch manifest with spaces.xlsx')
       space_batch = Avalon::Batch::Package.new(space_batch_path, collection)
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [space_batch]
-      batch_ingest.ingest
-      IngestBatch.count.should == 1
+      expect{batch_ingest.ingest}.to change{IngestBatch.count}.by(1)
     end
 
     it 'should ingest batch with skip-transcoding derivatives' do
       derivatives_batch_path = File.join('spec/fixtures', 'batch_manifest_derivatives.xlsx')
       derivatives_batch = Avalon::Batch::Package.new(derivatives_batch_path, collection)
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [derivatives_batch]
-      batch_ingest.ingest
-      IngestBatch.count.should == 1
+      expect{batch_ingest.ingest}.to change{IngestBatch.count}.by(1)
     end
  
     it 'creates an ingest batch object' do
-      batch_ingest.ingest
-      IngestBatch.count.should == 1
+      expect{batch_ingest.ingest}.to change{IngestBatch.count}.by(1)
     end
 
     it 'should set MasterFile details' do
@@ -102,7 +99,7 @@ describe Avalon::Batch::Ingest do
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [details_batch]
  
       batch_ingest.ingest
-      ingest_batch = IngestBatch.first
+      ingest_batch = IngestBatch.last
       media_object = MediaObject.find(ingest_batch.media_object_ids.first) 
       master_file = media_object.parts.first
       master_file.label.should == 'Quis quo'
@@ -128,14 +125,14 @@ describe Avalon::Batch::Ingest do
 
     it 'should set avalon_uploader' do
       batch_ingest.ingest
-      ingest_batch = IngestBatch.first
+      ingest_batch = IngestBatch.last
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
       media_object.avalon_uploader.should == 'frances.dickens@reichel.com'
     end
 
     it 'should set hidden' do
       batch_ingest.ingest
-      ingest_batch = IngestBatch.first
+      ingest_batch = IngestBatch.last
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
       media_object.should_not be_hidden
 
@@ -145,7 +142,7 @@ describe Avalon::Batch::Ingest do
 
     it 'should correctly set identifiers' do
       batch_ingest.ingest
-      ingest_batch = IngestBatch.first
+      ingest_batch = IngestBatch.last
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
       media_object.bibliographic_id.should eq(["local","123"])
     end
@@ -170,8 +167,7 @@ describe Avalon::Batch::Ingest do
     it 'does not create an ingest batch object when there are zero packages' do
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return []
       #expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(anything(), include("Expected error message"))
-      batch_ingest.ingest
-      IngestBatch.count.should == 0
+      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
     end
 
     it 'should result in an error if a file is not found' do
@@ -180,8 +176,7 @@ describe Avalon::Batch::Ingest do
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
       mailer.should_receive(:deliver)
-      batch_ingest.ingest
-      IngestBatch.count.should == 0
+      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
       batch.errors[3].messages.should have_key(:content)
       batch.errors[3].messages[:content].should eq(["File not found: spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain_wrong.mov"])
     end
@@ -189,8 +184,7 @@ describe Avalon::Batch::Ingest do
     it 'does not create an ingest batch object when there are no files' do
       batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/no_files.xlsx', collection)
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [batch]
-      batch_ingest.ingest
-      IngestBatch.count.should == 0
+      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
     end
 
     it 'should fail if the manifest specified a non-manager user' do
@@ -199,8 +193,7 @@ describe Avalon::Batch::Ingest do
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(anything(), include("User jay@krajcik.org does not have permission to add items to collection: Ut minus ut accusantium odio autem odit..")).and_return(mailer)
       mailer.should_receive(:deliver)
-      batch_ingest.ingest
-      IngestBatch.count.should == 0
+      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
     end
 
     it 'should fail if a bad offset is specified' do
@@ -209,8 +202,7 @@ describe Avalon::Batch::Ingest do
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
       mailer.should_receive(:deliver)
-      batch_ingest.ingest
-      IngestBatch.count.should == 0
+      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
       batch.errors[4].messages.should have_key(:offset)
       batch.errors[4].messages[:offset].should eq(['Invalid offset: 5:000'])
     end
@@ -221,8 +213,7 @@ describe Avalon::Batch::Ingest do
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
       mailer.should_receive(:deliver)
-      batch_ingest.ingest
-      IngestBatch.count.should == 0
+      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
       batch.errors[4].messages.should have_key(:creator)
       batch.errors[4].messages[:creator].should eq(['field is required.'])
     end
@@ -233,8 +224,7 @@ describe Avalon::Batch::Ingest do
       mailer = double('mailer').as_null_object
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
       mailer.should_receive(:deliver)
-      batch_ingest.ingest
-      IngestBatch.count.should == 0
+      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
       batch.errors[4].messages.should have_key(:contributator)
       batch.errors[4].messages[:contributator].should eq(["Metadata attribute 'contributator' not found"])
     end
