@@ -35,7 +35,11 @@ module Avalon
           @media_object ||= MediaObject.new(avalon_uploader: @manifest.package.user.user_key, 
                                             collection: @manifest.package.collection).tap do |mo|
             mo.workflow.origin = 'batch'
-            mo.update_datastream(:descMetadata, fields.dup)
+            if fields[:bibliographic_id].present?
+              mo.descMetadata.populate_from_catalog!(fields[:bibliographic_id].first,fields[:bibliographic_id_label].first)
+            else
+              mo.update_datastream(:descMetadata, fields.dup)
+            end
           end
           @media_object
         end
