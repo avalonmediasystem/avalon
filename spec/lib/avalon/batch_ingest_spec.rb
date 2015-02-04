@@ -83,9 +83,10 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'should ingest batch with skip-transcoding derivatives' do
-      derivatives_batch_path = File.join('spec/fixtures', 'batch_manifest_derivatives.xlsx')
+      derivatives_batch_path = File.join('spec/fixtures/dropbox/pretranscoded_batch_ingest', 'batch_manifest_derivatives.xlsx')
       derivatives_batch = Avalon::Batch::Package.new(derivatives_batch_path, collection)
       Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [derivatives_batch]
+      expect_any_instance_of(MasterFile).to receive(:process).with(hash_including('quality-high', 'quality-medium', 'quality-low'))
       expect{batch_ingest.ingest}.to change{IngestBatch.count}.by(1)
     end
  
