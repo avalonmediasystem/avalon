@@ -20,14 +20,19 @@ describe Avalon::BibRetriever do
   let(:mods) { File.read(File.expand_path("../../../fixtures/#{bib_id}.mods",__FILE__)) }
   
   describe 'sru' do
-    before :each do
-      Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
-    end
-    
     let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=%5E%25#{bib_id}" }
     let(:sru_response) { File.read(File.expand_path("../../../fixtures/#{bib_id}.xml",__FILE__)) }
+
+    before :each do
+      Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+      FakeWeb.register_uri :get, sru_url, body: sru_response
+    end
+    
+    after :each do
+      FakeWeb.clean_registry
+    end
+    
     it 'retrieves proper MODS' do
-      RestClient.should_receive(:get).with(sru_url).and_return(sru_response)
       response = Avalon::BibRetriever.instance.get_record("^%#{bib_id}")
       expect(Nokogiri::XML(response)).to be_equivalent_to(mods)
     end

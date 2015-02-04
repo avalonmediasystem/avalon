@@ -146,6 +146,7 @@
     gem 'shoulda-matchers'
     gem 'faker'
     gem 'fakefs', require: "fakefs/safe"
+    gem 'fakeweb'
     gem 'hashdiff'
   end
 
