@@ -65,9 +65,14 @@ describe Avalon::Batch::Entry do
       expect(entry.file_valid?({file: filename})).to be_truthy
       expect(entry.errors).to be_empty
     end 
-    it 'should be valid if pretranscoded derivatives exist and it is skip-transcoding' do
-      allow(Avalon::Batch::Entry).to receive(:derivativePaths).and_return(['derivative.low.mp4', 'derivative.medium.mp4', 'derivative.high.mp4'])
-      expect(entry.file_valid?({file: 'derivative.mp4', skip_transcoding: true})).to be_truthy
+    it 'should be valid if masterfile exists and it is not skip-transcoding' do
+      allow(Avalon::Batch::Entry).to receive(:derivativePaths).and_return([])
+      expect(entry.file_valid?({file: filename, skip_transcoding: false})).to be_truthy
+      expect(entry.errors).to be_empty
+    end 
+    it 'should be valid if masterfile exists and it is skip-transcoding' do
+      allow(Avalon::Batch::Entry).to receive(:derivativePaths).and_return([])
+      expect(entry.file_valid?({file: filename, skip_transcoding: true})).to be_truthy
       expect(entry.errors).to be_empty
     end 
     it 'should be invalid if pretranscoded derivatives exist and it is not skip-transcoding' do
@@ -75,11 +80,30 @@ describe Avalon::Batch::Entry do
       expect(entry.file_valid?({file: 'derivative.mp4', skip_transcoding: false})).to be_falsey
       expect(entry.errors).not_to be_empty
     end 
-    it 'should be invalid if neither the file nor pretranscoded derivatives exist' do
-      allow(Avalon::Batch::Entry).to receive(:derivativePaths).and_return([])
-      expect(entry.file_valid?({file: 'derivative.mp4', skip_transcoding: false})).to be_falsey
+    it 'should be valid if pretranscoded derivatives exist and it is skip-transcoding' do
+      allow(Avalon::Batch::Entry).to receive(:derivativePaths).and_return(['derivative.low.mp4', 'derivative.medium.mp4', 'derivative.high.mp4'])
+      expect(entry.file_valid?({file: 'derivative.mp4', skip_transcoding: true})).to be_truthy
+      expect(entry.errors).to be_empty
+    end 
+    it 'should be invalid if neither the file nor derivatives exist - not skip transcode' do
+      expect(entry.file_valid?({file: 'nonexistent.mp4', skip_transcoding: false})).to be_falsey
       expect(entry.errors).not_to be_empty
     end
+    it 'should be invalid if neither the file nor derivatives exist - skip transcode' do
+      allow(Avalon::Batch::Entry).to receive(:derivativePaths).and_return([])
+      expect(entry.file_valid?({file: 'derivative.mp4', skip_transcoding: true})).to be_falsey
+      expect(entry.errors).not_to be_empty
+    end
+    it 'should be invalid if both file and derivatives exist and it is not skip-transcoding' do
+      allow(Avalon::Batch::Entry).to receive(:derivativePaths).and_return(['video.low.mp4', 'video.medium.mp4', 'video.high.mp4'])
+      expect(entry.file_valid?({file: filename, skip_transcoding: false})).to be_falsey
+      expect(entry.errors).not_to be_empty
+    end 
+    it 'should be invalid if both file and derivatives exist and it is skip-transcoding' do
+      allow(Avalon::Batch::Entry).to receive(:derivativePaths).and_return(['video.low.mp4', 'video.medium.mp4', 'video.high.mp4'])
+      expect(entry.file_valid?({file: filename, skip_transcoding: true})).to be_falsey
+      expect(entry.errors).not_to be_empty
+    end 
   end
 
   describe '#gatherFiles' do
