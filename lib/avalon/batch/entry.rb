@@ -64,7 +64,10 @@ module Avalon
             valid = false
           end
           # Ensure listed files exist
-          if File.file?(file_spec[:file])
+          if File.file?(file_spec[:file]) && self.class.derivativePaths(file_spec[:file]).present?
+            @errors.add(:content, "Both original and derivative files found")
+            valid = false
+          elsif File.file?(file_spec[:file])
             #Do nothing.
           else
             if self.class.derivativePaths(file_spec[:file]).present? && file_spec[:skip_transcoding]
