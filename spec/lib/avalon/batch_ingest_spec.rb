@@ -49,16 +49,22 @@ describe Avalon::Batch::Ingest do
   describe 'valid manifest' do
     let(:collection) { FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
     let(:batch_ingest) { Avalon::Batch::Ingest.new(collection) }
-
+    let(:bib_id) { '7763100' }
+    let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
+    let(:sru_response) { File.read(File.expand_path("../../../fixtures/#{bib_id}.xml",__FILE__)) }
+    
     before :each do
       @dropbox_dir = collection.dropbox.base_directory
       FileUtils.cp_r 'spec/fixtures/dropbox/example_batch_ingest', @dropbox_dir
+      Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+      FakeWeb.register_uri :get, sru_url, body: sru_response
     end
 
     after :each do
       if @dropbox_dir =~ %r{spec/fixtures/dropbox/Ut} 
         FileUtils.rm_rf @dropbox_dir
       end
+      FakeWeb.clean_registry
     end
 
     it 'should send email when batch finishes processing' do
@@ -94,6 +100,17 @@ describe Avalon::Batch::Ingest do
       expect{batch_ingest.ingest}.to change{IngestBatch.count}.by(1)
     end
 
+    it 'should retrieve bib data' do
+      bib_import_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
+      bib_import_batch = Avalon::Batch::Package.new(bib_import_file, collection)
+      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [bib_import_batch]
+      batch_ingest.ingest
+      ingest_batch = IngestBatch.first
+      media_object = MediaObject.find(ingest_batch.media_object_ids.last)
+      media_object.bibliographic_id.should == ['local', bib_id]
+      media_object.title.should == '245 A : B F G K N P S'
+    end
+    
     it 'should set MasterFile details' do
       details_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
       details_batch = Avalon::Batch::Package.new(details_file, collection)
@@ -144,8 +161,8 @@ describe Avalon::Batch::Ingest do
     it 'should correctly set identifiers' do
       batch_ingest.ingest
       ingest_batch = IngestBatch.last
-      media_object = MediaObject.find(ingest_batch.media_object_ids.first)
-      media_object.bibliographic_id.should eq(["local","123"])
+      media_object = MediaObject.find(ingest_batch.media_object_ids.last)
+      media_object.bibliographic_id.should eq(["local",bib_id])
     end
 
   end
