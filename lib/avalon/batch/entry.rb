@@ -36,7 +36,7 @@ module Avalon
                                             collection: @manifest.package.collection).tap do |mo|
             mo.workflow.origin = 'batch'
             if fields[:bibliographic_id].present?
-              mo.descMetadata.populate_from_catalog!(fields[:bibliographic_id].first,fields[:bibliographic_id_label].first)
+              mo.descMetadata.populate_from_catalog!(fields[:bibliographic_id].first, Array(fields[:bibliographic_id_label]).first)
             else
               mo.update_datastream(:descMetadata, fields.dup)
             end
