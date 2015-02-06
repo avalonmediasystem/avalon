@@ -211,13 +211,12 @@ class ModsDocument < ActiveFedora::OmDatastream
          :title_subject].each do |field|
            self.send("#{field}=".to_sym, self.send(field).uniq)
         end
+        languages = self.language.collect &:strip
+        self.language = nil
+        languages.each { |lang| self.add_language(lang) }
       end
     end
     self.bibliographic_id = nil
     self.add_bibliographic_id([bib_id_label, bib_id])
-    languages = self.language.collect &:strip
-    self.language = nil
-    languages.each { |lang| self.add_language(lang) }
   end
-
 end
