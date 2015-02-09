@@ -40,6 +40,7 @@ Added processing of 700$tmnpr and 710$tmpr. kdm 20150121
 Added 600$q to process; inadvertently left out. kdm 20150127
 Added call to <xsl:call-template name="subjectAnyOrder"/> for 600, 610, 611, 630 in order to process subfields x, y, v, and z. kdm 20150127
 Adjust 1xx, 6xx, 7xx subfields to match mapping spreadsheet. kdm 20150127
+Suppress typeOfResource in favor of that specified by Avalon Media System. bwk 20150209
 -->
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
 	MARC21slim2MODS3-5 (Revision 1.106) 20141219
@@ -370,7 +371,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		</xsl:for-each>
 -->
 
-		<typeOfResource>
+		<!--suppress typeOfResource in favor of that specified by Avalon Media System -->
+		<!--typeOfResource>
 			<xsl:if test="$leader7='c'">
 				<xsl:attribute name="collection">yes</xsl:attribute>
 			</xsl:if>
@@ -390,6 +392,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:when test="$leader6='p'">mixed material</xsl:when>
 			</xsl:choose>
 		</typeOfResource>
+-->
 		<!--suppress all generation of genre from fixed fields for Avalon Media System. kdm, 20150116-->
 		<!--xsl:if test="substring($controlField008,26,1)='d'">
 			<genre authority="marcgt">globe</genre>
