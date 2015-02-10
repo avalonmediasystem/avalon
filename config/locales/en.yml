@@ -16,7 +16,7 @@ en:
     messages:
       blank: "field is required."
       taken: "is taken."
-      dateformat: "Date (%{date}) is in wrong format."
+      dateformat: "(%{date}) is in wrong format."
   media_object:
     empty_share_link: ""
     empty_share_link_notice: "After processing has started the embedded link will be available."
