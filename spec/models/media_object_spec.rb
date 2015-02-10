@@ -365,6 +365,10 @@ describe MediaObject do
     it 'uses stringified keys for everything except :id' do
       media_object.to_solr.keys.reject { |k| k.is_a?(String) }.should == [:id]
     end
+    it 'should not index any unknown resource types' do
+      media_object.descMetadata.resource_type = 'notated music'
+      expect(media_object.to_solr['format_sim']).not_to include 'Notated Music'
+    end
   end
 
   describe 'permalink' do
