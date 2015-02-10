@@ -120,4 +120,10 @@ namespace :avalon do
       end
     end
   end
+
+  desc "Identify invalid Avalon Media Objects"
+  task :validate => :environment do
+    MediaObject.find_each({},{batch_size:5}) {|mo| puts "#{mo.pid}: #{mo.errors.full_messages}" if !mo.valid? }
+  end
+
 end
