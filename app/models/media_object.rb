@@ -387,7 +387,7 @@ class MediaObject < ActiveFedora::Base
       successes = []
       documents.each do |id|
         media_object = self.find(id)
-        media_object.hidden = params[:hidden] == "true" if params[:hidden].present?
+        media_object.hidden = params[:hidden] if !params[:hidden].nil?
         media_object.visibility = params[:visibility] unless params[:visibility].blank?
         # Limited access stuff
         ["group", "class", "user"].each do |title|
