@@ -54,7 +54,7 @@
       )
       if matches.length > 0
         target.val matches[0].id
-      else if !validate
+      else if !$validate
         target.val typed
       else
         target.val ""
