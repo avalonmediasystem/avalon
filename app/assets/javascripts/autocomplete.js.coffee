@@ -44,21 +44,21 @@
       e.preventDefault
       return false
   ).blur ->
-    if !$validate or $(this).val() is ""
-      $target.val $(this).val()
-      return
-    match = false
-    i = mySource.index.datums.length - 1
-    while i >= 0
-      if $(this).val() is mySource.index.datums[i].display
-        match = true
-        $target.val mySource.index.datums[i].id
-        i=0
-      i--
-    if !match
+    typed = $(this).val()
+    if typed is ""
       $target.val ""
-      $(this).val ""
-    return
+    else
+      matches = $.grep(mySource.index.datums, (e) ->
+        e.display == typed
+      )
+      if matches.length > 0
+        $target.val matches[0].id
+      else if !validate
+        $target.val typed
+      else
+        $target.val ""
+        $(this).val ""
+      return
 
 $('.typeahead.from-model').each ->
   initialize_typeahead ($(this))
