@@ -20,6 +20,12 @@ $ ->
   
   $('.form-group.multivalued').each ->
       t = $(this)
+      t.find('.input-group').each (igIndex, e) ->
+        $(e).find('input[id]').each (inIndex, e2) ->
+          e2.id = e2.id + igIndex
+        #Update typeahead targets
+        $(e).find('input[data-target]').each (inIndex, e2) ->
+          $(e2).attr('data-target', $(e2).attr('data-target') + igIndex)
       t.find('.input-group:not(:last)').append(remove_button_html);
       t.find('.input-group:last').append(add_button_html);
 
@@ -28,6 +34,14 @@ $ ->
         current_input_group = $(this).closest('.input-group')
         new_input_group = current_input_group.clone()
         new_input_group.find('input').val('')
+        new_input_group.find('input[id]').each (i,e) ->
+          idArray = e.id.split('_')
+          idArray.push(parseInt(idArray.pop()) + 1)
+          e.id = idArray.join('_')
+        new_input_group.find('input[data-target]').each (i, e) ->
+          target = $(e).attr('data-target').split('_')
+          target.push(parseInt(target.pop()) + 1)
+          $(e).attr('data-target', target.join('_'))
         if current_input_group.find('.twitter-typeahead').size()
           new_input = new_input_group.find('.tt-input').clone()
           new_input.removeClass('tt-input')

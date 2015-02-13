@@ -13,7 +13,6 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 @initialize_typeahead = ($t) ->
-  $target = $t.parent().find("input[name='#{$t.data('target')}']")
   $validate = $t.data('validate') || false
   $t.attr('autocomplete','off')
   mySource = new Bloodhound(
@@ -37,26 +36,28 @@
       suggestion: (suggestion) ->
         "<p>" + suggestion.display + "</p>"
   ).on("typeahead:selected typeahead:autocompleted", (event, suggestion, dataset) ->
-    $target.val suggestion["id"]
+    target = $("##{$t.data('target')}")
+    target.val suggestion["id"]
     return
   ).on("keypress", (e) ->
     if e.which is 13
       e.preventDefault
       return false
   ).blur ->
+    target = $("##{$t.data('target')}")
     typed = $(this).val()
     if typed is ""
-      $target.val ""
+      target.val ""
     else
       matches = $.grep(mySource.index.datums, (e) ->
         e.display == typed
       )
       if matches.length > 0
-        $target.val matches[0].id
+        target.val matches[0].id
       else if !validate
-        $target.val typed
+        target.val typed
       else
-        $target.val ""
+        target.val ""
         $(this).val ""
       return
 
