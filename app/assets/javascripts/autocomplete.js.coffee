@@ -50,7 +50,7 @@
       target.val ""
     else
       matches = $.grep(mySource.index.datums, (e) ->
-        e.display == typed
+        e.display.toLowerCase() is typed.toLowerCase()
       )
       if matches.length > 0
         target.val matches[0].id
