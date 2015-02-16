@@ -13,7 +13,6 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 @initialize_typeahead = ($t) ->
-  $target = $t.parent().find("input[name='#{$t.data('target')}']")
   $validate = $t.data('validate') || false
   $t.attr('autocomplete','off')
   mySource = new Bloodhound(
@@ -37,28 +36,30 @@
       suggestion: (suggestion) ->
         "<p>" + suggestion.display + "</p>"
   ).on("typeahead:selected typeahead:autocompleted", (event, suggestion, dataset) ->
-    $target.val suggestion["id"]
+    target = $("##{$t.data('target')}")
+    target.val suggestion["id"]
     return
   ).on("keypress", (e) ->
     if e.which is 13
       e.preventDefault
       return false
   ).blur ->
-    if !$validate or $(this).val() is ""
-      $target.val $(this).val()
+    target = $("##{$t.data('target')}")
+    typed = $(this).val()
+    if typed is ""
+      target.val ""
+    else
+      matches = $.grep(mySource.index.datums, (e) ->
+        e.display.toLowerCase() is typed.toLowerCase()
+      )
+      if matches.length > 0
+        target.val matches[0].id
+      else if !$validate
+        target.val typed
+      else
+        target.val ""
+        $(this).val ""
       return
-    match = false
-    i = mySource.index.datums.length - 1
-    while i >= 0
-      if $(this).val() is mySource.index.datums[i].display
-        match = true
-        $target.val mySource.index.datums[i].id
-        i=0
-      i--
-    if !match
-      $target.val ""
-      $(this).val ""
-    return
 
 $('.typeahead.from-model').each ->
   initialize_typeahead ($(this))

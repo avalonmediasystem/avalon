@@ -17,6 +17,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% id_value = (value.present? && options[:autocomplete_id_key].present?) ? value[options[:autocomplete_id_key]] : value %>
 <%= text_field_tag "display_#{fieldname}", display_value || '', 
     class: "typeahead from-model form-control", 
-    data: { model: options[:autocomplete_model], target: fieldname, validate: options[:autocomplete_validate] },
+    data: { model: options[:autocomplete_model], target: sanitize_to_id(fieldname), validate: options[:autocomplete_validate] },
     disabled: !can?( :update, @mediaobject) %>
 <%= hidden_field_tag fieldname, id_value || '' %>
