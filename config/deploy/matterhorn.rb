@@ -54,5 +54,3 @@ namespace :deploy do
     sudo "service #{application} restart"
   end
 end
-
-
