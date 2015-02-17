@@ -116,12 +116,20 @@ describe BookmarksController, type: :controller do
   end
 
   describe '#update_access_control' do
-    it 'changes the hidden property' do
-      post 'update_access_control', hidden: 'true'
+    it 'changes to hidden' do
+      post 'update_access_control', hidden: "true"
       expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
       media_objects.each do |mo|
         mo.reload
-        expect(mo.hidden?).to be_true
+        expect(mo.hidden?).to be_truthy
+      end
+    end
+    it 'changes to shown' do
+      post 'update_access_control', hidden: "false"
+      expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+      media_objects.each do |mo|
+        mo.reload
+        expect(mo.hidden?).to be_falsey
       end
     end
     it 'changes the visibility' do

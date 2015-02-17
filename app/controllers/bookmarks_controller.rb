@@ -44,6 +44,8 @@ class BookmarksController < CatalogController
     end
     flash[:success] = t("blacklight.update_access_control.success", count: success_ids.count) if success_ids.count > 0
     flash[:alert] = "#{t('blacklight.update_access_control.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
+
+    params[:hidden] = params[:hidden] == "true" if params[:hidden].present?
     MediaObject.access_control_bulk success_ids, params
   end
 
