@@ -69,7 +69,7 @@ class CatalogController < ApplicationController
     # facet bar
     config.add_facet_field 'format_sim', label: 'Format', limit: 5, collapse: false
     # Eventually these need to be merged into a single facet
-    config.add_facet_field 'creator_sim', label: 'Main contributor', limit: 5
+    config.add_facet_field 'creator_ssim', label: 'Main contributor', limit: 5
     config.add_facet_field 'date_sim', label: 'Date', limit: 5
     config.add_facet_field 'genre_sim', label: 'Genres', limit: 5
     config.add_facet_field 'collection_ssim', label: 'Collection', limit: 5
