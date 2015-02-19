@@ -18,6 +18,26 @@ require 'avalon/bib_retriever'
 describe Avalon::BibRetriever do
   let(:bib_id) { '7763100' }
   let(:mods) { File.read(File.expand_path("../../../fixtures/#{bib_id}.mods",__FILE__)) }
+
+  describe 'configured?' do
+    before :each do
+      Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+    end
+    
+    it 'valid' do
+      expect(Avalon::BibRetriever).to be_configured
+    end
+    
+    it 'invalid' do
+      Avalon::Configuration['bib_retriever'] = { 'protocol' => 'unknown', 'url' => 'http://zgate.example.edu:9000/db' }
+      expect(Avalon::BibRetriever).not_to be_configured
+    end
+    
+    it 'missing' do
+      Avalon::Configuration['bib_retriever'] = nil
+      expect(Avalon::BibRetriever).not_to be_configured
+    end
+  end
   
   describe 'sru' do
     let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=%5E%25#{bib_id}" }
