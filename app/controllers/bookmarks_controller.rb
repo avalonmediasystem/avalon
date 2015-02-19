@@ -39,10 +39,29 @@ class BookmarksController < CatalogController
     @user_actions.delete( :update_access_control ) if mos.any? { |mo| cannot? :update_access_control, mo }
   end
 
+  def index
+    @bookmarks = token_or_current_or_guest_user.bookmarks
+    bookmark_ids = @bookmarks.collect { |b| b.document_id.to_s }
+  
+    @response, @document_list = get_solr_response_for_document_ids(bookmark_ids, defType: 'edismax')
+
+    respond_to do |format|
+      format.html { }
+      format.rss  { render :layout => false }
+      format.atom { render :layout => false }
+      format.json do
+        render json: render_search_results_as_json
+      end
+
+      additional_response_formats(format)
+      document_export_formats(format)
+    end
+  end
+
   def action_documents
     bookmarks = token_or_current_or_guest_user.bookmarks
     bookmark_ids = bookmarks.collect { |b| b.document_id.to_s }
-    get_solr_response_for_document_ids(bookmark_ids, rows: bookmark_ids.count)
+    get_solr_response_for_document_ids(bookmark_ids, rows: bookmark_ids.count, defType: 'edismax')
   end
 
   def access_control_action documents
