@@ -15,4 +15,4 @@
 
 $ ->
   import_button_html = '<div class="input-group-btn"><button type="submit" name="media_object[import_bib_record]" class="btn btn-success" value="yes">Import</button></div>'
-  $('#media_object_bibliographic_id').closest('div').append(import_button_html)
+  $('div.import-button').append(import_button_html)
