@@ -577,6 +577,9 @@ a[data-trigger='submit'] {
   @media (min-width: 600px) and (max-width: $screen-sm-min){
     max-width: 550px;
   }
+}
+//left panel on large screens should be extra small, not so for extended facet list
+.panel-body .facet-values .facet-label {
   @media (min-width: $screen-sm-min){
     max-width: 159px;
   }
