@@ -18,21 +18,30 @@ module Avalon
     attr_reader :config
     
     class << self
-      def instance
-        if @instance.nil?
-          config = Avalon::Configuration.lookup('bib_retriever')
-          case config['protocol'].downcase
-          when 'sru', /^yaz/
-            require 'avalon/bib_retriever/sru'
-            @instance = Avalon::BibRetriever::SRU.new config
-          when /^z(oom|39)/
-            require 'avalon/bib_retriever/zoom'
-            @instance = Avalon::BibRetriever::Zoom.new config
-          else
-            raise ArgumentError, "Unknown bib retriever protocol: #{config['protocol']}"
-          end
+      def configured?
+        begin
+          instance.present?
+        rescue ArgumentError
+          false
         end
-        @instance
+      end
+      
+      def instance
+        config = Avalon::Configuration.lookup('bib_retriever')
+        unless config.respond_to?(:[]) and config['protocol'].present?
+          raise ArgumentError, "Missing/invalid bib retriever configuration" 
+        end
+        
+        case config['protocol'].downcase
+        when 'sru', /^yaz/
+          require 'avalon/bib_retriever/sru'
+          Avalon::BibRetriever::SRU.new config
+        when /^z(oom|39)/
+          require 'avalon/bib_retriever/zoom'
+          Avalon::BibRetriever::Zoom.new config
+        else
+          raise ArgumentError, "Unknown bib retriever protocol: #{config['protocol']}"
+        end
       end
       
       protected :new, :allocate

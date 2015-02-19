@@ -19,7 +19,7 @@ class ResourceDescriptionStep < Avalon::Workflow::BasicStep
 
   def execute context
     mediaobject = context[:mediaobject]
-    populate_from_catalog = context[:media_object][:import_bib_record].present?
+    populate_from_catalog = Avalon::BibRetriever.configured? and context[:media_object][:import_bib_record].present?
     if populate_from_catalog
       mediaobject.descMetadata.populate_from_catalog!(context[:media_object][:bibliographic_id],context[:media_object][:bibliographic_id_label])
     else
