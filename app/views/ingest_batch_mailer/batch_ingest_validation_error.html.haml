@@ -29,7 +29,7 @@
     .alert.alert-danger
       %b= "Row #{index}: #{entry.fields[:main_title].try(:first) || 'Untitled' }"
       -if Avalon::BibRetriever.configured? and entry.fields[:bibliographic_id].present?
-         %p Initial processing of your batch ingest failed. Details are below. If Bibliographic ID is used for batch ingest, check that the ID works with the service being used.
+        %p Initial processing of your batch ingest failed. Details are below. If Bibliographic ID is used for batch ingest, check that the ID works with the service being used.
       %br
       - entry.errors.messages.each_pair do |field, errors|
         #{field.to_s.titleize} - #{errors.join(', ')}
