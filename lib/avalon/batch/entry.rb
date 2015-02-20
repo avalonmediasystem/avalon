@@ -37,7 +37,11 @@ module Avalon
                                             collection: @manifest.package.collection).tap do |mo|
             mo.workflow.origin = 'batch'
             if Avalon::BibRetriever.configured? and fields[:bibliographic_id].present?
-              mo.descMetadata.populate_from_catalog!(fields[:bibliographic_id].first, Array(fields[:bibliographic_id_label]).first)
+              begin
+                mo.descMetadata.populate_from_catalog!(fields[:bibliographic_id].first, Array(fields[:bibliographic_id_label]).first)
+              rescue Exception => e
+                @errors.add(:bibliographic_id, e.message)
+              end
             else
               mo.update_datastream(:descMetadata, fields.dup)
             end
