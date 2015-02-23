@@ -18,7 +18,9 @@ class ModsDocument < ActiveFedora::OmDatastream
   
   include ModsTemplates
   include ModsBehaviors
-
+  
+  IDENTIFIER_TYPES = Avalon::ControlledVocabulary.find_by_name(:identifier_types) || {"other" => "Local"}
+  
   set_terminology do |t|
     t.root(:path=>'mods',
       :xmlns => 'http://www.loc.gov/mods/v3', 
@@ -201,8 +203,9 @@ class ModsDocument < ActiveFedora::OmDatastream
     EOC
   end
   
-  def populate_from_catalog! bib_id, bib_id_label = 'local'
+  def populate_from_catalog! bib_id, bib_id_label = nil
     if bib_id.present?
+      bib_id_label ||= IDENTIFIER_TYPES.keys.first
       new_record = Avalon::BibRetriever.instance.get_record(bib_id)
       if new_record.present?
         self.ng_xml = Nokogiri::XML(new_record)
