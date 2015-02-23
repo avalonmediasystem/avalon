@@ -162,8 +162,6 @@ class MediaObject < ActiveFedora::Base
 
   accepts_nested_attributes_for :parts, :allow_destroy => true
 
-  IDENTIFIER_TYPES =  Avalon::ControlledVocabulary.find_by_name(:identifier_types) || {"other" => "Local"}
-
   def published?
     not self.avalon_publisher.blank?
   end
@@ -243,7 +241,7 @@ class MediaObject < ActiveFedora::Base
     missing_attributes.clear
     # Special case the identifiers and their types
     if values[:bibliographic_id]
-      values[:bibliographic_id] = [[Array(values.delete(:bibliographic_id_label)).first || IDENTIFIER_TYPES.keys[0], Array(values[:bibliographic_id]).first]]
+      values[:bibliographic_id] = [[Array(values.delete(:bibliographic_id_label)).first || ModsDocument::IDENTIFIER_TYPES.keys[0], Array(values[:bibliographic_id]).first]]
     end
     if values[:related_item_url] and values[:related_item_label]
         values[:related_item_url] = values[:related_item_url].zip(values.delete(:related_item_label))
