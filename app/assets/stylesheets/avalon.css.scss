@@ -22,7 +22,7 @@
  * Snippets to extend
  */ 
 .mobile-hidden {
- @media (max-width: $screen-sm-min) {
+ @media (max-width: $screen-xs-max) {
     display: none !important;
   }
 }
