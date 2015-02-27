@@ -20,7 +20,7 @@
     datumTokenizer: (d) ->
       Bloodhound.tokenizers.whitespace(d.display)
     queryTokenizer: Bloodhound.tokenizers.whitespace
-    prefetch: "#{$('body').data('mountpoint')}autocomplete?q=&t=#{$t.data('model')}"
+    remote: "#{$('body').data('mountpoint')}autocomplete?q=%QUERY&t=#{$t.data('model')}"
   )
   mySource.initialize()
   $t.typeahead(
