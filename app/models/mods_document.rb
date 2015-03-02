@@ -1,4 +1,4 @@
-# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -12,11 +12,15 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+require 'avalon/bib_retriever'
+
 class ModsDocument < ActiveFedora::OmDatastream
   
   include ModsTemplates
   include ModsBehaviors
-
+  
+  IDENTIFIER_TYPES = Avalon::ControlledVocabulary.find_by_name(:identifier_types) || {"other" => "Local"}
+  
   set_terminology do |t|
     t.root(:path=>'mods',
       :xmlns => 'http://www.loc.gov/mods/v3', 
@@ -45,7 +49,7 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.uniform_title(:proxy => [:uniform_title_info, :title])
 
     # Creators and Contributors
-    t.name(:path => 'name') do
+    t.name(:path => 'mods/oxns:name') do
       t.type_(:path => '@type', :namespace_prefix => nil)
       t.name_part(:path => 'namePart')
       t.role do
@@ -53,11 +57,11 @@ class ModsDocument < ActiveFedora::OmDatastream
         t.text(:path => 'roleTerm', :attributes => { :type => 'text' })
       end
     end
-    t._contributor_name(:ref => [:name], :path => 'name[not(@usage) or @usage!="primary"]')
+    t._contributor_name(:ref => [:name], :path => 'mods/oxns:name[not(@usage) or @usage!="primary"]')
     t.contributor(:proxy => [:_contributor_name, :name_part])
-    t._creator_name(:ref => [:name], :path => 'name[oxns:role/oxns:roleTerm[@type="text"] = "Creator" or oxns:role/oxns:roleTerm[@type="code"] = "cre"]')
+    t._creator_name(:ref => [:name], :path => 'mods/oxns:name[oxns:role/oxns:roleTerm[@type="text"] = "Creator" or oxns:role/oxns:roleTerm[@type="code"] = "cre"]')
     t.creator(:proxy => [:_creator_name, :name_part])
-    t._primary_creator_name(:ref => [:name], :path => 'name[@usage="primary"]')
+    t._primary_creator_name(:ref => [:name], :path => 'mods/oxns:name[@usage="primary"]')
     t.primary_creator(:proxy => [:_creator_name, :name_part])
 
     t.statement_of_responsibility(:path => 'note', :attributes => { :type => 'statement of responsbility' })
@@ -68,7 +72,7 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.genre
 
     # Publishing Info
-    t.origin_info(:path => 'originInfo') do
+    t.origin_info(:path => 'mods/oxns:originInfo') do
       t.publisher
       t.place_info(:path => 'place') do
         t.place_term(:path => 'placeTerm')
@@ -198,5 +202,24 @@ class ModsDocument < ActiveFedora::OmDatastream
         xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd"/>
     EOC
   end
-
+  
+  def populate_from_catalog! bib_id, bib_id_label = nil
+    if bib_id.present?
+      bib_id_label ||= IDENTIFIER_TYPES.keys.first
+      new_record = Avalon::BibRetriever.instance.get_record(bib_id)
+      if new_record.present?
+        self.ng_xml = Nokogiri::XML(new_record)
+        [:genre, :topical_subject, :geographic_subject, :temporal_subject, 
+         :occupation_subject, :person_subject, :corporate_subject, :family_subject, 
+         :title_subject].each do |field|
+           self.send("#{field}=".to_sym, self.send(field).uniq)
+        end
+        languages = self.language.collect &:strip
+        self.language = nil
+        languages.each { |lang| self.add_language(lang) }
+      end
+    end
+    self.bibliographic_id = nil
+    self.add_bibliographic_id([bib_id_label, bib_id])
+  end
 end

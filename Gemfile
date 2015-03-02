@@ -24,9 +24,8 @@
   gem 'kaminari', '~> 0.15.0'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'v3.2'
-  gem 'avalon-batch', git: "https://github.com/avalonmediasystem/avalon-batch.git", tag: 'v3.1'
   gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'v3.1'
-  gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r3'
+  gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'v3.3'
   gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'v3.2'
   gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'v3.2'
   gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r3'
@@ -45,7 +44,14 @@
 
   # microdata
   gem 'ruby-duration'
+  gem 'edtf'
 
+# Uncomment the following line to include z39.59/zoom support in Avalon::BibRetriever
+# NOTE: Requires the yaz library to be installed
+#  gem 'zoom', '~>0.4.1', :git => 'https://github.com/bricestacey/ruby-zoom.git'
+
+  gem 'marc'
+  
   platforms :jruby do
     gem 'jruby-openssl'
     gem 'activerecord-jdbcsqlite3-adapter'
@@ -118,11 +124,11 @@
     gem 'puma'
     gem 'rb-fsevent', '~> 0.9.1'
     gem 'letter_opener'
+    gem 'pry'
+    gem 'pry-rails'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :debug do
-    gem 'pry'
-    gem 'pry-rails'
     gem 'pry-debugger', platforms: [:mri_19]
     gem 'pry-byebug',   platforms: [:mri_20, :mri_21]
   end
@@ -140,6 +146,8 @@
     gem 'shoulda-matchers'
     gem 'faker'
     gem 'fakefs', require: "fakefs/safe"
+    gem 'fakeweb'
+    gem 'hashdiff'
   end
 
   extra_gems = File.expand_path("../Gemfile.local",__FILE__)

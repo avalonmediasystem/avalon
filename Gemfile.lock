@@ -18,6 +18,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/about_page.git
   revision: 4897a1b74f6badcb8b5fe79fb6c6676e50f67a34
+  tag: avalon-v3.2
   specs:
     about_page (0.3.1)
       rails (>= 3.2)
@@ -26,24 +27,16 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
   revision: 4bb6dda8426bfdad0969bbadb8f921c633d1cda0
+  tag: v3.2
   specs:
     avalon-about (0.1.0)
       about_page
       mediainfo
 
 GIT
-  remote: https://github.com/avalonmediasystem/avalon-batch.git
-  revision: 2737cac71d2e6a990ea6b937e6181f02c471b00f
-  tag: v3.1
-  specs:
-    avalon-batch (0.3.0)
-      activemodel
-      activesupport
-      roo
-
-GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
   revision: bcefb17e76a71ae657450434c22290ab52c123cf
+  tag: v3.2
   specs:
     avalon-workflow (0.0.3)
 
@@ -63,6 +56,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector
   revision: b919ad61525cd608f42983846c87f48212e11646
+  tag: v3.2
   specs:
     media_element_thumbnail_selector (0.0.1)
       rails (>= 3.2.3)
@@ -70,24 +64,27 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-hd-toggle.git
   revision: 102ad74ef5baef7b15983a9a49586da461fe1d32
+  tag: avalon-r3
   specs:
     mediaelement-hd-toggle (0.0.1)
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-qualityselector.git
-  revision: fb5f36e24bc6309ace5d382bc533e83dc0ba5dd1
+  revision: 3a5a5c82336478fa37034396e56c2b5a0eda75ad
   specs:
     mediaelement-qualityselector (0.0.1)
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-skin-avalon.git
-  revision: 04bacf10aa13f6f363e40cc03feda417c395ee8a
+  revision: 0a9342f6a106e6d3756dc46b6f47c005050fdb62
+  tag: v3.2
   specs:
     mediaelement-skin-avalon (0.0.1)
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-title.git
   revision: a2e67d24217f06a0a7d46c0175cc64fc178cf1fc
+  tag: avalon-r3
   specs:
     mediaelement-title (0.0.1)
 
@@ -124,6 +121,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
   revision: a1c32d1f788b9d93b28f4eeb7cfc9b30f1935a81
+  tag: v3.2
   specs:
     rubyhorn (0.0.6)
       activesupport
@@ -293,9 +291,12 @@ GEM
       haml (~> 4.0)
       rdf (~> 1.1)
       sxp (~> 0.1, >= 0.1.3)
+    edtf (2.1.0)
+      activesupport (>= 3.0, < 5.0)
     email_spec (1.6.0)
       launchy (~> 2.1)
       mail (~> 2.2)
+    ensure_valid_encoding (0.5.3)
     equivalent-xml (0.5.1)
       nokogiri (>= 1.4.3)
     erubis (2.7.0)
@@ -309,6 +310,7 @@ GEM
     fakefs (0.6.0)
     faker (1.4.3)
       i18n (~> 0.5)
+    fakeweb (1.3.0)
     faraday (0.9.0)
       multipart-post (>= 1.2, < 3)
     fastercsv (1.5.5)
@@ -338,6 +340,7 @@ GEM
       execjs (>= 1.2.9)
       sprockets (>= 2.0.3)
       tilt
+    hashdiff (0.2.2)
     hashie (3.3.1)
     headless (1.0.2)
     highline (1.6.21)
@@ -424,6 +427,10 @@ GEM
       systemu (~> 2.6.2)
     mail (2.6.1)
       mime-types (>= 1.16, < 3)
+    marc (0.8.2)
+      ensure_valid_encoding
+      scrub_rb (>= 1.0.1, < 2)
+      unf
     media-element-logo-plugin (0.0.2)
       rails (>= 3.2.3)
     mediainfo (0.7.2)
@@ -602,7 +609,7 @@ GEM
       nokogiri
       rest-client
     rubyzip (0.9.9)
-    rugged (0.21.0)
+    rugged (0.21.3)
     rvm-capistrano (1.4.1)
       capistrano (>= 2.0.0)
     sass (3.2.19)
@@ -611,6 +618,7 @@ GEM
       sass (~> 3.2.0)
       sprockets (~> 2.8, <= 2.11.0)
       sprockets-rails (~> 2.0.0)
+    scrub_rb (1.0.1)
     shoulda-matchers (2.7.0)
       activesupport (>= 3.0.0)
     signet (0.5.1)
@@ -676,6 +684,9 @@ GEM
     uglifier (2.5.3)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.6)
     uuid (2.3.7)
       macaddr (~> 1.0)
     uuidtools (2.1.5)
@@ -702,14 +713,13 @@ DEPENDENCIES
   activerecord-jdbcsqlite3-adapter
   activerecord-session_store
   avalon-about!
-  avalon-batch!
   avalon-workflow!
   bcrypt-ruby (~> 3.1.0)
   better_errors
   binding_of_caller
   blacklight!
   bootstrap_form
-  browse-everything (>= 0.6.3)
+  browse-everything (= 0.6.3)
   builder (~> 3.1.0)
   capistrano (~> 2.12.0)
   capybara
@@ -720,16 +730,19 @@ DEPENDENCIES
   database_cleaner!
   delayed_job_active_record
   devise (~> 3.2.0)
+  edtf
   email_spec
   equivalent-xml
   execjs
   factory_girl_rails
   fakefs
   faker
+  fakeweb
   felixwrapper!
   font-awesome-rails (~> 3.0)
   haml
   handlebars_assets
+  hashdiff
   headless
   hooks
   hydra-head (~> 7.2.0)
@@ -743,6 +756,7 @@ DEPENDENCIES
   letter_opener
   license_header
   loofah
+  marc
   media-element-logo-plugin
   media_element_thumbnail_selector!
   mediaelement-hd-toggle!

@@ -1,4 +1,4 @@
-# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -16,7 +16,7 @@ FactoryGirl.define do
   factory :media_object do
     title {Faker::Lorem.sentence}
     creator {FactoryGirl.create(:user).username}
-    date_issued {"#{Time.now}"}
+    date_issued {"#{Date.today.edtf}"}
     collection {FactoryGirl.create(:collection)}
 
     factory :published_media_object do
@@ -26,7 +26,7 @@ FactoryGirl.define do
         visibility {'public'}
         abstract {Faker::Lorem.paragraph}
         contributor {Faker::Name.name}
-        date_created {"#{Time.now}"}
+        date_created {"#{Date.today.edtf}"}
         publisher {Faker::Lorem.word}
         genre {Faker::Lorem.word}
         topical_subject {Faker::Lorem.word}
@@ -51,14 +51,14 @@ FactoryGirl.define do
   factory :minimal_record, class: MediaObject do
     title 'Minimal test record'
     creator 'RSpec'
-    date_issued '#{Time.now}'
+    date_issued '#{Date.today.edtf}'
     abstract 'A bare bones test record with only required fields completed'
   end
   
   factory :single_entry, class: MediaObject do
     title 'Single contributor'
     creator 'RSpec'
-    date_issued '#{Time.now}'
+    date_issued '#{Date.today.edtf}'
     abstract 'A record with only a single contributor and publisher'
     
     contributor 'RSpec helper'
@@ -69,7 +69,7 @@ FactoryGirl.define do
   factory :multiple_entries, class: MediaObject do
     title 'Multiple contributors'
     creator 'RSpec'
-    date_issued '#{Time.now}'
+    date_issued '#{Date.today.edtf}'
     abstract 'A record with multiple contributors, publishers, and search terms'
     
     contributor ['Chris Colvard', 'Nathan Rogers', 'Phuong Dinh']

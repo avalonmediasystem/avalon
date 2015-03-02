@@ -11,7 +11,7 @@ if defined?(Bundler)
 end
 
 module Avalon
-  VERSION = '3.2.3'
+  VERSION = '3.3'
   class MissingUserId < Exception; end
   
   class Application < Rails::Application
@@ -43,6 +43,7 @@ module Avalon
 
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"
+    ENV["LANG"] = "en_US.utf-8"
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]

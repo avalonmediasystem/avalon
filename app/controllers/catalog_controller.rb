@@ -1,4 +1,4 @@
-# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -20,14 +20,17 @@ class CatalogController < ApplicationController
   # Extend Blacklight::Catalog with Hydra behaviors (primarily editing).
   include Hydra::Controller::ControllerBehavior
   include Hydra::PolicyAwareAccessControlsEnforcement
-  
-	# This applies appropriate access controls to all solr queries
+ 
+  before_filter :save_sticky_settings
+ 
+  # This applies appropriate access controls to all solr queries
   self.solr_search_params_logic += [:add_access_controls_to_solr_params_if_not_admin]
   
   # This filters out objects that you want to exclude from search results, like FileAssets
   self.solr_search_params_logic += [:only_wanted_models]
   self.solr_search_params_logic += [:only_published_items]
   self.solr_search_params_logic += [:limit_to_non_hidden_items]
+  self.solr_search_params_logic += [:apply_sticky_settings]
 
   configure_blacklight do |config|
     config.http_method = :post
@@ -66,7 +69,7 @@ class CatalogController < ApplicationController
     # facet bar
     config.add_facet_field 'format_sim', label: 'Format', limit: 5, collapse: false
     # Eventually these need to be merged into a single facet
-    config.add_facet_field 'creator_sim', label: 'Main contributor', limit: 5
+    config.add_facet_field 'creator_ssim', label: 'Main contributor', limit: 5
     config.add_facet_field 'date_sim', label: 'Date', limit: 5
     config.add_facet_field 'genre_sim', label: 'Genres', limit: 5
     config.add_facet_field 'collection_ssim', label: 'Collection', limit: 5
@@ -204,4 +207,15 @@ class CatalogController < ApplicationController
 			add_access_controls_to_solr_params(solr_parameters, user_parameters)
 		end
 	end
+
+  def save_sticky_settings
+    session[:sort] = params[:sort] if params[:sort].present?
+    session[:per_page] = params[:per_page] if params[:per_page].present?
+  end
+
+  def apply_sticky_settings(solr_parameters, user_parameters)
+    solr_parameters[:rows] = session[:per_page] if session[:per_page].present?
+    solr_parameters[:sort] = session[:sort] if session[:sort].present?
+  end
+
 end 

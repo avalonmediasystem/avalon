@@ -1,4 +1,4 @@
-# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -207,6 +207,11 @@ class MediaObjectsController < ApplicationController
 
   def build_context
     params.merge!({mediaobject: model_object, user: user_key, ability: current_ability})
+  end
+
+  def set_session_quality
+    session[:quality] = params[:quality] if params[:quality].present?
+    render nothing: true
   end
 
   protected

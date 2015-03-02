@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+Copyright 2011-2015, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -22,7 +22,8 @@ Unless required by applicable law or agreed to in writing, software distributed
              locals: {form: form, field: :bibliographic_id,
                       options: {display_label: 'Bibliographic ID',
                                 dropdown_field: :bibliographic_id_label, 
-                                dropdown_options: MediaObject::IDENTIFIER_TYPES}} %>
+                                dropdown_options: ModsDocument::IDENTIFIER_TYPES,
+                                extra_classes: Avalon::BibRetriever.configured? ? 'import-button' : nil}} %>
 
   <%= render partial: 'text_field', 
              locals: {form: form, field: :title, 
@@ -103,4 +104,5 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= javascript_include_tag 'autocomplete' %>
   <%= javascript_include_tag 'dynamic_fields' %>
   <%= javascript_include_tag 'dropdown_text_fields' %>
+  <%= javascript_include_tag 'import_button' %>
 <% end %>

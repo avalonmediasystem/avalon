@@ -1,4 +1,4 @@
-# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -22,11 +22,16 @@ describe BookmarksController, type: :controller do
     
   before(:each) do
     request.env["HTTP_REFERER"] = '/'
+    Delayed::Worker.delay_jobs = false
     login_user collection.managers.first
     3.times do
       media_objects << mo = FactoryGirl.create(:media_object, collection: collection)
       post :create, id: mo.id
     end
+  end
+
+  after(:each) do
+    Delayed::Worker.delay_jobs = true
   end
 
   describe "#destroy" do
@@ -45,7 +50,7 @@ describe BookmarksController, type: :controller do
 
       it "should publish multiple items" do
         post 'publish'
-	expect(flash[:success]).to eq( I18n.t("blacklight.publish.success", count: 3, status: 'publish'))
+	expect(flash[:success]).to eq( I18n.t("blacklight.status.success", count: 3, status: 'publish'))
         media_objects.each do |mo|
           mo.reload
 	  expect(mo).to be_published
@@ -57,7 +62,7 @@ describe BookmarksController, type: :controller do
     context 'unpublishing' do
       it "should unpublish multiple items" do
         post 'unpublish'
-	expect(flash[:success]).to eq( I18n.t("blacklight.publish.success", count: 3, status: 'unpublish'))
+	expect(flash[:success]).to eq( I18n.t("blacklight.status.success", count: 3, status: 'unpublish'))
         media_objects.each do |mo|
           mo.reload
 	  expect(mo).not_to be_published
@@ -111,12 +116,20 @@ describe BookmarksController, type: :controller do
   end
 
   describe '#update_access_control' do
-    it 'changes the hidden property' do
-      post 'update_access_control', hidden: 'true'
+    it 'changes to hidden' do
+      post 'update_access_control', hidden: "true"
       expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
       media_objects.each do |mo|
         mo.reload
-        expect(mo.hidden?).to be_true
+        expect(mo.hidden?).to be_truthy
+      end
+    end
+    it 'changes to shown' do
+      post 'update_access_control', hidden: "false"
+      expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+      media_objects.each do |mo|
+        mo.reload
+        expect(mo.hidden?).to be_falsey
       end
     end
     it 'changes the visibility' do

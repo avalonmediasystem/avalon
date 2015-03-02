@@ -1,4 +1,4 @@
-# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -43,7 +43,7 @@ namespace :avalon do
     desc "Starts Avalon batch ingest"
     task :ingest => :environment do
       # Starts the ingest process
-      require 'avalon/batch_ingest'
+      require 'avalon/batch/ingest'
 
       WithLocking.run(name: 'batch_ingest') do
         Admin::Collection.all.each do |collection|
@@ -120,4 +120,10 @@ namespace :avalon do
       end
     end
   end
+
+  desc "Identify invalid Avalon Media Objects"
+  task :validate => :environment do
+    MediaObject.find_each({},{batch_size:5}) {|mo| puts "#{mo.pid}: #{mo.errors.full_messages}" if !mo.valid? }
+  end
+
 end

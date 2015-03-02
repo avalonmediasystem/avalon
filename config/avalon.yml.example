@@ -5,6 +5,7 @@ development:
   domain:
     host: localhost
     port: 3000
+    protocol: http
   dropbox:
     path: '/srv/avalon/dropbox/'
     upload_uri: 'sftp://localhost/srv/avalon/dropbox'
@@ -33,7 +34,10 @@ development:
   master_file_management:
     strategy: 'none' #'delete', or 'move' (for move uncomment and configure next line)
     #path: '/path/to/move/to'
-
+  bib_retriever:
+    protocol: sru
+    url: http://zgate.example.edu:9000/exampledb
+    query: rec.id='%s'
 test:
   fedora:
     namespace: avalon
@@ -64,3 +68,7 @@ test:
   master_file_management:
     strategy: 'none' #'delete', or 'move' (for move uncomment and configure next line)
     #path: '/path/to/move/to'
+  bib_retriever:
+    protocol: sru
+    url: http://zgate.example.edu:9000/exampledb
+    query: rec.id='%s'

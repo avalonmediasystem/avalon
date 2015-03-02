@@ -1,5 +1,4 @@
-# 
-# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -12,14 +11,20 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
-#
+
 
 $ ->
   add_button_html = '<div class="input-group-btn"><button type="button" class="add-dynamic-field btn btn-success"><span class="glyphicon glyphicon-plus"></span></button></div>'
   remove_button_html = '<div class="input-group-btn"><button type="button" class="remove-dynamic-field btn btn-success"><span class="glyphicon glyphicon-minus"></span></button></div>'
-
+  
   $('.form-group.multivalued').each ->
       t = $(this)
+      t.find('.input-group').each (igIndex, e) ->
+        $(e).find('input[id]').each (inIndex, e2) ->
+          e2.id = e2.id + igIndex
+        #Update typeahead targets
+        $(e).find('input[data-target]').each (inIndex, e2) ->
+          $(e2).attr('data-target', $(e2).attr('data-target') + igIndex)
       t.find('.input-group:not(:last)').append(remove_button_html);
       t.find('.input-group:last').append(add_button_html);
 
@@ -28,6 +33,14 @@ $ ->
         current_input_group = $(this).closest('.input-group')
         new_input_group = current_input_group.clone()
         new_input_group.find('input').val('')
+        new_input_group.find('input[id]').each (i,e) ->
+          idArray = e.id.split('_')
+          idArray.push(parseInt(idArray.pop()) + 1)
+          e.id = idArray.join('_')
+        new_input_group.find('input[data-target]').each (i, e) ->
+          target = $(e).attr('data-target').split('_')
+          target.push(parseInt(target.pop()) + 1)
+          $(e).attr('data-target', target.join('_'))
         if current_input_group.find('.twitter-typeahead').size()
           new_input = new_input_group.find('.tt-input').clone()
           new_input.removeClass('tt-input')

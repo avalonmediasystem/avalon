@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+Copyright 2011-2015, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -30,7 +30,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% count = [1, values.length].max %>
     <% count.times do |i| %>
       <% value = values[i] %>
-      <div class="input-group">
+      <div class="input-group <%=options[:extra_classes]%>">
 	<% if options[:autocomplete_model] and options[:autocomplete_model].present? %>
 	  <%= render partial: "typeahead_field", locals: {fieldname: fieldname, value: value, options: options} %>
 	<% elsif options[:secondary_field] and options[:secondary_field].present? %>

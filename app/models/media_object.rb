@@ -1,4 +1,4 @@
-# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -59,6 +59,7 @@ class MediaObject < ActiveFedora::Base
   validates :collection, presence: true
   validates :governing_policy, presence: true
   validate  :validate_related_items
+  validate  :validate_dates
 
   def validate_language
     Array(language).each{|i|errors.add(:language, "Language not recognized (#{i[:code]})") unless LanguageTerm::map[i[:code]] }
@@ -71,6 +72,14 @@ class MediaObject < ActiveFedora::Base
   def validate_creator
     if Array(creator).select { |c| c.present? }.empty?
       errors.add(:creator, I18n.t("errors.messages.blank"))
+    end
+  end
+
+  def validate_dates
+    [:date_created, :date_issued, :copyright_date].each do |d|
+      if self.send(d).present? && Date.edtf(self.send(d)).nil?
+        errors.add(d, I18n.t("errors.messages.dateformat", date: self.send(d)))
+      end
     end
   end
 
@@ -153,8 +162,6 @@ class MediaObject < ActiveFedora::Base
 
   accepts_nested_attributes_for :parts, :allow_destroy => true
 
-  IDENTIFIER_TYPES =  Avalon::ControlledVocabulary.find_by_name(:identifier_types) || {"other" => "Local"}
-
   def published?
     not self.avalon_publisher.blank?
   end
@@ -234,7 +241,7 @@ class MediaObject < ActiveFedora::Base
     missing_attributes.clear
     # Special case the identifiers and their types
     if values[:bibliographic_id]
-      values[:bibliographic_id] = [[Array(values.delete(:bibliographic_id_label)).first || IDENTIFIER_TYPES.keys[0], Array(values[:bibliographic_id]).first]]
+      values[:bibliographic_id] = [[Array(values.delete(:bibliographic_id_label)).first || ModsDocument::IDENTIFIER_TYPES.keys[0], Array(values[:bibliographic_id]).first]]
     end
     if values[:related_item_url] and values[:related_item_label]
         values[:related_item_url] = values[:related_item_url].zip(values.delete(:related_item_label))
@@ -362,6 +369,7 @@ class MediaObject < ActiveFedora::Base
     all_text_values << solr_doc["genre_sim"]
     all_text_values << solr_doc["language_sim"]
     all_text_values << solr_doc["physical_description_si"]
+    all_text_values << solr_doc["date_sim"]
     solr_doc["all_text_timv"] = all_text_values.flatten
     return solr_doc
   end
@@ -370,6 +378,106 @@ class MediaObject < ActiveFedora::Base
   # validate against a known controlled vocabulary. This one will take some thought
   # and research as opposed to being able to just throw something together in an ad hoc
   # manner
+
+  class << self
+    def access_control_bulk documents, params
+      errors = []
+      successes = []
+      documents.each do |id|
+        media_object = self.find(id)
+        media_object.hidden = params[:hidden] if !params[:hidden].nil?
+        media_object.visibility = params[:visibility] unless params[:visibility].blank?
+        # Limited access stuff
+        ["group", "class", "user"].each do |title|
+          if params["submit_add_#{title}"].present?
+            if params["#{title}"].present?
+              if ["group", "class"].include? title
+                media_object.read_groups += [params["#{title}"].strip]
+              else
+                media_object.read_users += [params["#{title}"].strip]
+              end
+            end
+          end
+          if params["submit_remove_#{title}"].present?
+            if params["#{title}"].present?
+              if ["group", "class"].include? title
+                media_object.read_groups -= [params["#{title}"]]
+              else
+                media_object.read_users -= [params["#{title}"]]
+              end
+            end
+          end
+        end
+        if media_object.save
+          successes += [media_object]
+        else
+          errors += [media_object]
+        end
+      end
+      return successes, errors
+    end
+    handle_asynchronously :access_control_bulk
+    
+    def update_status_bulk documents, user_key, params
+      errors = []
+      successes = []
+      status = params['action']
+      documents.each do |id|
+        media_object = self.find(id)
+        case status
+        when 'publish'
+          media_object.publish!(user_key)
+          # additional save to set permalink
+          if media_object.save
+            successes += [media_object]
+          else
+            errors += [media_object]
+          end
+        when 'unpublish'
+          if media_object.publish!(nil)
+            successes += [media_object]
+          else
+            errors += [media_object]
+          end
+        end
+      end
+      return successes, errors
+    end
+    handle_asynchronously :update_status_bulk
+    
+    def delete_bulk documents, params
+      errors = []
+      successes = []
+      documents.each do |id|
+        media_object = self.find(id)
+        if media_object.destroy
+          successes += [media_object]
+        else
+          errors += [media_object]
+        end
+      end
+      return successes, errors
+    end
+    handle_asynchronously :delete_bulk
+    
+    def move_bulk documents, params
+      collection = Admin::Collection.find( params[:target_collection_id] )
+      errors = []
+      successes = []
+      documents.each do |id|
+        media_object = self.find(id)
+        media_object.collection = collection
+        if media_object.save
+          successes += [media_object]
+        else
+          errors += [media_object]
+        end
+      end    
+      return successes, errors
+    end
+    handle_asynchronously :move_bulk
+
+  end
 
   private
     def after_create
@@ -401,5 +509,5 @@ class MediaObject < ActiveFedora::Base
 
       true
     end
-
+  
 end

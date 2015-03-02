@@ -1,4 +1,4 @@
-# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -44,6 +44,58 @@ describe MediaObject do
         expect(media_object.valid?).to be_falsey
         expect(media_object.errors[:language]).not_to be_empty
       end
+    end
+    describe 'dates' do
+      let! (:valid_dates) {{
+          '-9999' => ['-9999'],
+          '0000' => ['0'],
+          '2001' => ['2001'],
+          '2001-02' => ['2001'],
+          '2001-02-03' => ['2001'],
+          '2001-02-03T09:30:01' => ['2001'],
+          '2004-01-01T10:10:10Z' => ['2004'],
+          '2004-01-01T10:10:10+05:00' => ['2004'],
+          '2006/2008' => ['2006','2007','2008'],
+          '2004-01-01/2005' => ['2004','2005'],
+          '2005-02-01/2006-02' => ['2005','2006'],
+          '2006-03-01/2007-02-08' => ['2006','2007'],
+          '2007/2008-02-01' => ['2007','2008'],
+          '2008-02/2009-02-01' => ['2008','2009'],
+          '2009-01-04/2010-02-01' => ['2009','2010'],
+          '1984?' => ['1984'],
+          '1984~' => ['1984'],
+          '1984?~' => ['1984'],
+          '2004-06-11?' => ['2004'],
+          'unknown/2006' => [],
+          '2001-21' => ['2001'],
+          '[1667,1668,1670..1672]' => ['1667','1668','1670','1671','1672'],
+          '{1667,1668,1670..1672}' => ['1667','1668','1670','1671','1672'],
+          '159u' => ['1590','1591','1592','1593','1594','1595','1596','1597','1598','1599'],
+          '159u-12' => [],
+          '159u-12-25' => ['1590','1591','1592','1593','1594','1595','1596','1597','1598','1599'],
+          '159x' => ['1590','1591','1592','1593','1594','1595','1596','1597','1598','1599'],
+          '2011-(06-04)~' => ['2011']
+        }}
+      it "should not accept invalid EDTF formatted dates" do
+        [Faker::Lorem.sentence(4),'-999','17000'].each do |d|
+          media_object.date_issued = d
+          expect(media_object.valid?).to be_falsey
+          expect(media_object.errors[:date_issued].present?).to be_truthy
+        end
+      end
+      
+      it "should accept valid EDTF formatted dates" do
+        valid_dates.keys do |d|
+          media_object.date_issued = d
+          expect(media_object.valid?).to be_truthy
+        end
+      end
+      
+      it "should gather the year from a date string" do
+        valid_dates.each_pair do |k,v|
+          expect(media_object.descMetadata.send(:gather_years, k)).to eq v        
+        end
+      end 
     end
   end
 
@@ -222,10 +274,6 @@ describe MediaObject do
     end
   end
 
-  describe "Valid formats" do
-    it "should only accept ISO formatted dates"
-  end
-  
   describe "Ingest status" do
     it "should default to unpublished" do
       media_object.workflow.published.first.should eq "false"
@@ -316,6 +364,10 @@ describe MediaObject do
   describe 'indexing' do
     it 'uses stringified keys for everything except :id' do
       media_object.to_solr.keys.reject { |k| k.is_a?(String) }.should == [:id]
+    end
+    it 'should not index any unknown resource types' do
+      media_object.descMetadata.resource_type = 'notated music'
+      expect(media_object.to_solr['format_sim']).not_to include 'Notated Music'
     end
   end
 

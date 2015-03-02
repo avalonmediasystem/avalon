@@ -1,4 +1,4 @@
-# Copyright 2011-2014, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -72,6 +72,7 @@ class MasterFile < ActiveFedora::Base
       record.errors.add attr, "must be between 0 and #{record.duration}"
     end
   end
+  #validates :file_format, presence: true, exclusion: { in: ['Unknown'], message: "The file was not recognized as audio or video." }
 
   has_model_version 'R3'
   before_save 'update_stills_from_offset!'
@@ -112,14 +113,17 @@ class MasterFile < ActiveFedora::Base
     delete
   end
 
-  def setContent(file, content_type = nil)
-    if file.is_a? ActionDispatch::Http::UploadedFile
-      self.file_format = determine_format(file.tempfile, file.content_type)
+  def setContent(file)
+    case file
+    when Hash #Multiple files for pre-transcoded derivatives
+      saveOriginal( (file.has_key?('quality-high') && File.file?( file['quality-high'] )) ? file['quality-high'] : (file.has_key?('quality-medium') && File.file?( file['quality-medium'] )) ? file['quality-medium'] : file.values[0] )
+      file.each_value {|f| f.close unless f.closed? }
+    when ActionDispatch::Http::UploadedFile #Web upload
       saveOriginal(file, file.original_filename)
-    else
-      self.file_format = determine_format(file, content_type)
-      saveOriginal(file, nil)
+    else #Batch or dropbox
+      saveOriginal(file)
     end
+    reloadTechnicalMetadata!
   end
 
   def set_workflow( workflow  = nil )
@@ -193,15 +197,34 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def process
+  def process file=nil
     raise "MasterFile is already being processed" if status_code.present? && !finished_processing?
-    Delayed::Job.enqueue MatterhornIngestJob.new({
-      'url' => "file://" + URI.escape(file_location),
-      'title' => pid,
-      'flavor' => "presenter/source",
-      'filename' => File.basename(file_location),
-      'workflow' => self.workflow_name,
-    })
+
+    #Build hash for single file skip transcoding
+    if !file.is_a?(Hash) && (self.workflow_name == 'avalon-skip-transcoding' || self.workflow_name == 'avalon-skip-transcoding-audio')
+      file = {'quality-high' => File.new(file_location)}
+    end
+
+    if file.is_a? Hash
+      files = file.dup
+      files.each_pair {|quality, f| files[quality] = "file://" + URI.escape(File.realpath(f.to_path))}
+      #The hash below has to be symbol keys or else delayed_job chokes
+      Delayed::Job.enqueue MatterhornIngestJob.new({
+	title: pid,
+	flavor: "presenter/source",
+	workflow: self.workflow_name,
+	url: files
+      })
+    else
+      #The hash below has to be string keys or else rubyhorn complains
+      Delayed::Job.enqueue MatterhornIngestJob.new({
+	'url' => "file://" + URI.escape(file_location),
+	'title' => pid,
+	'flavor' => "presenter/source",
+	'filename' => File.basename(file_location),
+	'workflow' => self.workflow_name
+      })
+    end
   end
 
   def status?(value)
@@ -538,26 +561,7 @@ class MasterFile < ActiveFedora::Base
     result
   end
 
-  def determine_format(file, content_type = nil)
-    #FIXME Catch exceptions here and do something helpful like log warning and set format to unknown
-    media_format = Mediainfo.new file
-
-    # It appears that formats like MP4 can be caught as both audio and video
-    # so a case statement should flow in the preferred order
-    upload_format = case
-                    when media_format.video?
-                      'Moving image'
-                    when media_format.audio?
-                       'Sound'
-                    else
-                       'Unknown'
-                    end 
-  
-    return upload_format
-  end
-
-  def saveOriginal(file, original_name)
-    @mediainfo = nil
+  def saveOriginal(file, original_name=nil)
     realpath = File.realpath(file.path)
     if original_name.present?
       config_path = Avalon::Configuration.lookup('matterhorn.media_path')
@@ -573,6 +577,24 @@ class MasterFile < ActiveFedora::Base
     else 
       self.file_location = realpath
     end
+    self.file_size = file.size.to_s
+    file.close
+  end
+
+  def reloadTechnicalMetadata!
+    #Reset mediainfo
+    @mediainfo = nil
+
+    # Formats like MP4 can be caught as both audio and video
+    # so the case statement flows in the preferred order
+    self.file_format = case
+                    when mediainfo.video?
+                      'Moving image'
+                    when mediainfo.audio?
+                       'Sound'
+                    else
+                       'Unknown'
+                    end
 
     self.duration = begin
       mediainfo.duration.to_s
@@ -590,10 +612,6 @@ class MasterFile < ActiveFedora::Base
       self.original_frame_size = mediainfo.video.streams.first.frame_size
       self.poster_offset = [2000,mediainfo.duration.to_i].min
     end
-
-    self.file_size = file.size.to_s
-
-    file.close
   end
 
   def post_processing_file_management
