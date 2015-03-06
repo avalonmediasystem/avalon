@@ -14,29 +14,38 @@
 
 class BookmarksController < CatalogController
   include Blacklight::Bookmarks
+  
+  blacklight_config.show.document_actions[:email].if = false if blacklight_config.show.document_actions[:email]
+  blacklight_config.show.document_actions[:citation].if = false if blacklight_config.show.document_actions[:citation]
 
-  self.document_actions.delete( :email )
-  self.document_actions.delete( :citation )
+  self.add_show_tools_partial( :update_access_control, callback: :access_control_action, if: Proc.new { |context, config, options| context.controller.user_can? :update_access_control } )
 
-  self.add_document_action( :update_access_control, callback: :access_control_action )
-  self.add_document_action( :move, callback: :move_action )
-  self.add_document_action( :publish, callback: :status_action, tool_partial: 'formless_document_action')
-  self.add_document_action( :unpublish, callback: :status_action, tool_partial: 'formless_document_action' )
-  self.add_document_action( :delete, callback: :delete_action )
+  self.add_show_tools_partial( :move, callback: :move_action, if: Proc.new { |context, config, options| context.controller.user_can? :move } )
+
+  self.add_show_tools_partial( :publish, callback: :status_action, modal: false, partial: 'formless_document_action', if: Proc.new { |context, config, options| context.controller.user_can? :publish } )
+
+  self.add_show_tools_partial( :unpublish, callback: :status_action, modal: false, partial: 'formless_document_action', if: Proc.new { |context, config, options| context.controller.user_can? :unpublish } )
+
+  self.add_show_tools_partial( :delete, callback: :delete_action, if: Proc.new { |context, config, options| context.controller.user_can? :delete } )
 
   before_filter :verify_permissions, only: :index
 
+  def user_can? action
+    @valid_user_actions.include? action
+  end
+
   def verify_permissions
     @response, @documents = action_documents
+    @valid_user_actions = [:delete, :unpublish, :publish, :move, :update_access_control]
     mos = @documents.collect { |doc| MediaObject.find( doc.id ) }
-    @user_actions = self.document_actions.clone
-    @user_actions.delete( :delete ) if mos.any? { |mo| cannot? :destroy, mo }
-    @user_actions.delete( :unpublish ) if mos.any? { |mo| cannot? :unpublish, mo }
-    if mos.any? { |mo| cannot? :update, mo }
-      @user_actions.delete( :publish )
-      @user_actions.delete( :move )
+    @documents.each do |doc|
+      mo = MediaObject.find(doc.id)
+      @valid_user_actions.delete :delete if @valid_user_actions.include? :delete and cannot? :destroy, mo
+      @valid_user_actions.delete :unpublish if @valid_user_actions.include? :unpublish and cannot? :unpublish, mo
+      @valid_user_actions.delete :publish if @valid_user_actions.include? :publish and cannot? :update, mo
+      @valid_user_actions.delete :move if @valid_user_actions.include? :move and cannot? :update, mo
+      @valid_user_actions.delete :update_access_control if @valid_user_actions.include? :update_access_control and cannot? :update_access_control, mo
     end
-    @user_actions.delete( :update_access_control ) if mos.any? { |mo| cannot? :update_access_control, mo }
   end
 
   def index

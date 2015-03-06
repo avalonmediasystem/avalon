@@ -14,10 +14,7 @@
 
 module Blacklight::LocalBlacklightHelper 
   def facet_field_names group=nil
-    blacklight_config.facet_fields.select { |facet,opts|
-      ability = opts[:if_user_can]
-      group == opts[:group] && (ability.nil? || can?(*ability))
-    }.keys
+    blacklight_config.facet_fields.select { |facet,opts| group == opts[:group] }.keys
   end
 
   def facet_group_names
