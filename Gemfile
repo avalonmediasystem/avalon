@@ -7,17 +7,17 @@
   gem 'builder', '~>3.1.0'
 
   #gem 'blacklight', '~>5.7'
-  gem 'blacklight', git: 'https://github.com/projectblacklight/blacklight.git', ref: 'd4f2cf5d6917b927d63867f50bb66f6bc5b9577b'
+  #gem 'blacklight', git: 'https://github.com/projectblacklight/blacklight.git', ref: 'd4f2cf5d6917b927d63867f50bb66f6bc5b9577b'
 
-  #gem 'hydra', '~>7.1'
-  gem 'hydra-head', '~>7.2.0'
-  gem 'active-fedora', '~> 7.1.0'
-  gem 'om', '~> 3.1.0'
-  gem 'solrizer', '~> 3.3.0'
-  gem 'rsolr', '~> 1.0.10'
-  gem 'nokogiri', '~> 1.6.0'
-  gem 'rubydora', '~> 1.8.0'
-  gem 'nom-xml', '~> 0.5.1'
+  gem 'hydra', '~>7.2'
+  #gem 'hydra-head', '~>7.2.0'
+  #gem 'active-fedora', '~> 7.1.0'
+  #gem 'om', '~> 3.1.0'
+  #gem 'solrizer', '~> 3.3.0'
+  #gem 'rsolr', '~> 1.0.10'
+  #gem 'nokogiri', '~> 1.6.0'
+  #gem 'rubydora', '~> 1.8.0'
+  #gem 'nom-xml', '~> 0.5.1'
 
   gem 'activerecord-session_store'
   gem 'bcrypt-ruby', '~> 3.1.0'
@@ -97,7 +97,7 @@
 
     # For overriding the default interface with Twitter Bootstrap
     # This is now inherited from Blacklight
-    gem 'sass-rails', '=4.0.2'
+    gem 'sass-rails', '=4.0.3'
     gem 'font-awesome-rails', '~> 3.0'
     gem 'bootstrap_form'
     gem 'handlebars_assets'

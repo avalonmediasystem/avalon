@@ -31,12 +31,11 @@ Unless required by applicable law or agreed to in writing, software distributed
             <p><%= t('blacklight.delete.confirm', count: @documents.count) %></p>
 	    <ul>
 	      <% @documents.each do |doc| %>
-	        <% id = doc.get(:id) %>
-		<% @mediaobject = MediaObject.find(id)  %>
+		<% @mediaobject = MediaObject.find(doc.id)  %>
 		<% if can? :destroy, @mediaobject  %>
-	          <li><%= @mediaobject.title %> (<%= id %>)<%=hidden_field_tag "id[]", id %></li>
+	          <li><%= @mediaobject.title %> (<%= doc.id %>)<%=hidden_field_tag "id[]", doc.id %></li>
 	        <% else %>
-	          <li><%= @mediaobject.title %> (<%= id %>): <%= t('blacklight.messages.permission_denied') %></li>
+	          <li><%= @mediaobject.title %> (<%= doc.id %>): <%= t('blacklight.messages.permission_denied') %></li>
 	        <% end %>
 	      <% end %>
 	    </ul>

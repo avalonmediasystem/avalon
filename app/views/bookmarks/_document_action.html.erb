@@ -13,4 +13,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<%= link_to action_label(name, opts), action_path(name, opts, path_options), {:id => "#{name}Link", :class => "btn btn-default", :data => {:ajax_modal => "trigger"}} %>
+<%= link_to document_action_label(document_action_config.key, document_action_config),
+            document_action_path(document_action_config, (local_assigns.has_key?(:url_opts) ? url_opts : {}).merge(({id: document} if document) || {})),
+            id: document_action_config.fetch(:id, "#{document_action_config.key}Link"),
+            class: "btn btn-default",
+            data: {}.merge(({ajax_modal: "trigger"} if document_action_config.modal != false) || {}) %>
