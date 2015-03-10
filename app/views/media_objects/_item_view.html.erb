@@ -21,7 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         
         <% if @currentStreamInfo[:is_video] %>
           <%= master_file_meta_properties(@currentStream) do %>
-            <video class="mejs-avalon" controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] %>" preload="auto">
+            <video class="mejs-avalon" controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] if parse_media_fragment_param[0] == 0 %>" preload="auto">
               <% @currentStreamInfo[:stream_flash].each do |flash| %>
                 <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
               <% end %>
@@ -89,10 +89,15 @@ Unless required by applicable law or agreed to in writing, software distributed
           audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
           mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
           startQuality: '<%= current_quality(@currentStreamInfo) %>',
-          <% if (!!Float(request['t']) rescue false) %>
+          <% f_start, f_end = parse_media_fragment_param 
+	     #if (!!Float(request['t']) rescue false)
+	     if f_start > 0 %>
             success: function (mediaElement, domObject, player) {
               mediaElement.addEventListener('loadedmetadata', function(e) {
-                mediaElement.setCurrentTime(<%= request['t'] %>)
+                mediaElement.setCurrentTime(<%= f_start %>)
+              });
+              domObject.addEventListener('loadedmetadata', function(e) {
+                this.currentTime = <%= f_start %>;
               });
             }
           <% end %>

@@ -80,4 +80,11 @@ module MediaObjectsHelper
        quality ||= available_qualities.first
        quality
      end
+
+     def parse_media_fragment_param
+       return 0,nil if !params['t'].present?
+       f_start,f_end = params['t'].split(',')
+       return ( Float(f_start) rescue 0 ) , ( Float(f_end) rescue nil )
+     end
+
 end
