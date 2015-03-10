@@ -131,9 +131,9 @@ describe CatalogController do
     end
 
     describe "sort fields" do
-      let!(:m1) { FactoryGirl.create(:published_media_object, title: 'Yabba', date_issued: '1960', creator: 'Fred', visibility: 'public') }
-      let!(:m2) { FactoryGirl.create(:published_media_object, title: 'Dabba', date_issued: '1970', creator: 'Betty', visibility: 'public') }
-      let!(:m3) { FactoryGirl.create(:published_media_object, title: 'Doo', date_issued: '1980', creator: 'Wilma', visibility: 'public') }
+      let!(:m1) { FactoryGirl.create(:published_media_object, title: 'Yabba', date_issued: '1960', creator: ['Fred'], visibility: 'public') }
+      let!(:m2) { FactoryGirl.create(:published_media_object, title: 'Dabba', date_issued: '1970', creator: ['Betty'], visibility: 'public') }
+      let!(:m3) { FactoryGirl.create(:published_media_object, title: 'Doo', date_issued: '1980', creator: ['Wilma'], visibility: 'public') }
 
       it "should sort correctly by title" do
         get :index, :sort => 'title_ssort asc, date_ssi desc'

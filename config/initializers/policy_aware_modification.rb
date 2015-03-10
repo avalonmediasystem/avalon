@@ -6,8 +6,8 @@ module Hydra::PolicyAwareAccessControlsEnforcement
     #### TODO -- Memoize this and put it in the session?
     user_access_filters = []
     # Grant access based on user id & role
-    user_access_filters += apply_policy_role_permissions(discovery_permissions)
-    user_access_filters += apply_policy_individual_permissions(discovery_permissions)
+    user_access_filters += apply_policy_group_permissions(discovery_permissions)
+    user_access_filters += apply_policy_user_permissions(discovery_permissions)
     result = policy_class.find_with_conditions( user_access_filters.join(" OR "), :fl => "id", :rows => policy_class.count, method: :post)
 
     logger.debug "get policies: #{result}\n\n"
