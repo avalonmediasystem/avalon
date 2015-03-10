@@ -79,7 +79,14 @@ Unless required by applicable law or agreed to in writing, software distributed
           titleLink: '<%= media_object_url(@masterfile.mediaobject) %>',
           logoAction: 'popup',
           logoURL: '<%= pid_section_media_object_url(@masterfile.mediaobject.pid, @masterfile.pid).html_safe %>',
-          logoTitle: 'View in repository'
+          logoTitle: 'View in repository',
+          <% if (!!Float(request['t']) rescue false) %>
+            success: function (mediaElement, domObject, player) {
+              mediaElement.addEventListener('loadedmetadata', function(e) {
+                mediaElement.setCurrentTime(<%= request['t'] %>)
+              });
+            }
+          <% end %>
         });
   </script>
 
