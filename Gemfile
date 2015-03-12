@@ -9,7 +9,7 @@
   #gem 'blacklight', '~>5.7'
   #gem 'blacklight', git: 'https://github.com/projectblacklight/blacklight.git', ref: 'd4f2cf5d6917b927d63867f50bb66f6bc5b9577b'
 
-  gem 'hydra', '~>7.2'
+  gem 'hydra', '~>8.0', git: 'https://github.com/projecthydra/hydra.git', branch: '8-0-testing'
   #gem 'hydra-head', '~>7.2.0'
   #gem 'active-fedora', '~> 7.1.0'
   #gem 'om', '~> 3.1.0'
