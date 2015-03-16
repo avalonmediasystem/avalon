@@ -81,10 +81,16 @@ module MediaObjectsHelper
        quality
      end
 
+     def parse_hour_min_sec s
+       return nil if s.nil?
+       smh = s.split(':').reverse
+       (Float(smh[0]) rescue 0) + 60*(Float(smh[1]) rescue 0) + 3600*(Float(smh[2]) rescue 0)
+     end
+
      def parse_media_fragment_param
        return 0,nil if !params['t'].present?
        f_start,f_end = params['t'].split(',')
-       return ( Float(f_start) rescue 0 ) , ( Float(f_end) rescue nil )
+       return parse_hour_min_sec(f_start) , parse_hour_min_sec(f_end)
      end
 
 end
