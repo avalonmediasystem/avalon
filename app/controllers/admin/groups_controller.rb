@@ -67,6 +67,7 @@ class Admin::GroupsController < ApplicationController
     if @group.save
       redirect_to edit_admin_group_path(@group)
     else
+      flash[ :error ] = @group.errors
       redirect_to admin_groups_path
     end 
   end
