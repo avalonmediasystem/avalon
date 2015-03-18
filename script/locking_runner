@@ -7,7 +7,16 @@ SEMAPHORE=$1
 LOCKFILE=tmp/pids/$SEMAPHORE
 shift
 
-trap "{ rm -f $LOCKFILE ; exit 255; }" EXIT
+trap unlock EXIT
+
+unlock()
+{
+  if [ "$$" -eq `less $LOCKFILE` ]; then # don't remove another process's lock
+    rm -f $LOCKFILE 
+    exit 255
+  fi
+}
+
 if [ ! -e $LOCKFILE ]; then
     echo "$$" > $LOCKFILE
     "$@" || true #run the command
