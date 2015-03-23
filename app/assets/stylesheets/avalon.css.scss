@@ -747,3 +747,19 @@ a[data-trigger='submit'] {
 .about_page {
   @extend .container-fluid;
 }
+
+#share-button {
+  text-align: right;
+  a:link, a:visited, a:hover, a:active {
+    text-decoration: none;
+    outline: 0;
+  }
+}
+#share-list .tab-content {
+  margin-bottom: 20px; 
+}
+#share-list .share-tabs {
+  a:link, a:visited, a:hover, a:active {
+    outline: 0;
+  }
+}
