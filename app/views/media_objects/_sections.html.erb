@@ -13,31 +13,73 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-      <% show_progress = sections.any? { |s| not s.succeeded? } %>
-      <% unless (sections.blank? or sections.length == 1) and not show_progress %>
-      <section class="whitespace" id="segments">
-        <legend><i class="icon-list-alt"></i> Sections</legend>
-          <ol id="section_links">
-            <% sections.each_with_index do |section,i| %>
-              <% unless can? :edit, @mediaobject %>
-                <% next if section.derivatives.empty? %>
-              <% end %>
-              <li class="<%= show_progress ? 'progress-indented' : ''%>">
-                <%# If the label has not been set use the file name as a default %>
-                <%=
-                  link_to stream_label_for(section),
-                    share_link_for( section ),
-                    data: {segment: section.pid, is_video: section.is_video?, share_link: share_link_for(section)},
-                    class: (section.pid == activeStream.pid ? 'current-stream' : nil)
-                %>
-                <% unless section.duration.blank? %>
-                  (<%= milliseconds_to_formatted_time(section.duration.to_i) %>)
-                <% end %>
-                <% if show_progress %>
-                  <div class="status-detail alert" style="display: none"></div>
-                <% end %>
-              </li>
-              <% end %>
-          </ol>
-       </section>
-       <% end %>
+<% show_progress = sections.any? { |s| not s.succeeded? } %>
+<% unless (sections.blank? or sections.length == 1) and not show_progress %>
+
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+
+    <% (1..3).each do |n| %>
+    <div class="panel-heading" role="tab" id="heading<%= n %>">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" href="#section<%= n %>" aria-expanded="<%= n==1?'true':'false' %>" aria-controls="collapse<%= n %>">
+          Section <%= n %> Title
+        </a>
+        <% if n==1 %>
+	  <button style="float:right" class="btn btn-default btn-xs" id="expand_button">Expand All</button>
+	  <button style="float:right" class="btn btn-default btn-xs hidden" id="collapse_button">Collapse All</button>
+        <% end %>
+      </h4>
+    </div>
+    <div id="section<%= n %>" class="panel-collapse collapse <%= n==1?'in':'' %>" role="tabpanel" aria-labelledby="heading<%= n %>">
+      <div class="panel-body">
+        <ol id="section_links">
+          <% sections.each_with_index do |section,i| %>
+          <% unless can? :edit, @mediaobject %>
+          <% next if section.derivatives.empty? %>
+          <% end %>
+          <li class="<%= show_progress ? 'progress-indented' : ''%>">
+            <%# If the label has not been set use the file name as a default %>
+            <%=
+               link_to stream_label_for(section),
+                 share_link_for( section ),
+                 data: {segment: section.pid, is_video: section.is_video?, share_link: share_link_for(section)},
+                 class: (section.pid == activeStream.pid ? 'current-stream' : nil)
+            %>
+            <% unless section.duration.blank? %>
+            (<%= milliseconds_to_formatted_time(section.duration.to_i) %>)
+            <% end %>
+            <% if show_progress %>
+            <div class="status-detail alert" style="display: none"></div>
+            <% end %>
+          </li>
+          <% end %>
+        </ol>
+      </div>
+    </div>
+    <% end %>
+  </div>
+</div>
+
+<% content_for :page_scripts do %>
+<script>
+  $('#expand_button').on('click', function() {
+    $('#accordion.panel-group .panel-collapse').collapse('show');
+  });
+  $('#collapse_button').on('click', function() {
+    $('#accordion.panel-group .panel-collapse').collapse('hide');
+  });
+  $('#accordion.panel-group .panel-collapse').on('shown.bs.collapse', function() {
+    if($('#accordion.panel-group .panel-collapse').length == $('#accordion.panel-group .panel-collapse.in').length) {
+      $('#expand_button').addClass('hidden');
+      $('#collapse_button').removeClass('hidden');
+    }
+  });
+  $('#accordion.panel-group .panel-collapse').on('hidden.bs.collapse', function() {
+      $('#expand_button').removeClass('hidden');
+      $('#collapse_button').addClass('hidden');
+  });
+</script>
+<% end %>
+<% end %>
+
