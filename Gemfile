@@ -11,7 +11,7 @@
 
   gem 'hydra', '~>8.0', git: 'https://github.com/projecthydra/hydra.git', branch: '8-0-testing'
   #gem 'hydra-head', '~>7.2.0'
-  #gem 'active-fedora', '~> 7.1.0'
+  gem 'active-fedora', git: 'https://github.com/projecthydra/active_fedora.git', branch: '8.0-stable'
   #gem 'om', '~> 3.1.0'
   #gem 'solrizer', '~> 3.3.0'
   #gem 'rsolr', '~> 1.0.10'

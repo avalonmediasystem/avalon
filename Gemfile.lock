@@ -134,6 +134,21 @@ GIT
       rest-client
 
 GIT
+  remote: https://github.com/projecthydra/active_fedora.git
+  revision: e66c803640b6f4771136a44929376c97c6f645f5
+  branch: 8.0-stable
+  specs:
+    active-fedora (8.0.0)
+      active-triples (~> 0.4.0)
+      activesupport (>= 3.0.0)
+      deprecation
+      nom-xml (>= 0.5.1)
+      om (~> 3.1)
+      rdf-rdfxml (~> 1.1.0)
+      rsolr (~> 1.0.10)
+      rubydora (~> 1.8)
+
+GIT
   remote: https://github.com/projecthydra/hydra.git
   revision: 22c8a455d413fdd1fc41ab958a50af6edf6aba49
   branch: 8-0-testing
@@ -163,15 +178,6 @@ GEM
       erubis (~> 2.7.0)
       rack (~> 1.5.2)
       rack-test (~> 0.6.2)
-    active-fedora (8.0.0)
-      active-triples (~> 0.4.0)
-      activesupport (>= 3.0.0)
-      deprecation
-      nom-xml (>= 0.5.1)
-      om (~> 3.1)
-      rdf-rdfxml (~> 1.1.0)
-      rsolr (~> 1.0.10)
-      rubydora (~> 1.8)
     active-triples (0.4.0)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -304,7 +310,7 @@ GEM
     dot-properties (0.1.3)
     dropbox-sdk (1.6.4)
       json
-    ebnf (0.3.6)
+    ebnf (0.3.7)
       haml (~> 4.0)
       rdf (~> 1.1)
       sxp (~> 0.1, >= 0.1.3)
@@ -533,7 +539,7 @@ GEM
       thor (>= 0.18.1, < 2.0)
     rake (10.4.2)
     rb-fsevent (0.9.4)
-    rdf (1.1.9)
+    rdf (1.1.10)
       link_header (~> 0.0, >= 0.0.8)
     rdf-aggregate-repo (1.1.0)
       rdf (>= 1.1)
@@ -725,6 +731,7 @@ PLATFORMS
 
 DEPENDENCIES
   about_page!
+  active-fedora!
   activerecord-jdbcsqlite3-adapter
   activerecord-session_store
   avalon-about!
