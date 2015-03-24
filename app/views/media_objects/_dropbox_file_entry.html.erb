@@ -21,11 +21,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   		        <td>
   		          <% case file[:media_type]
   		             when /^audio/ %>
-	    		       <i class="icon-volume-up"></i>
+	    		       <i class="fa fa-volume-up"></i>
   		          <% when /^video/ %>
-	    		       <i class="icon-film"></i>
+	    		       <i class="fa fa-film"></i>
 	    		  <% else %>
-			       <i class="icon-question-sign"></i>
+			       <i class="fa fa-question-sign"></i>
   		          <% end %>
   		        </td>
                         <td><%= file[:media_type] %></td>

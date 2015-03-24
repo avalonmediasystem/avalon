@@ -70,7 +70,7 @@ window.AvalonStreams = {
       }
     },
     
-    nowPlaying: '<i class="icon-circle-arrow-left"></i>'
+    nowPlaying: '<i class="now-playing fa fa-arrow-circle-right"></i>'
 };
 
 $().ready(function() {

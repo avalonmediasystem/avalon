@@ -763,3 +763,30 @@ a[data-trigger='submit'] {
     outline: 0;
   }
 }
+#accordion.panel-group {
+  a {
+    &:link, &:visited, &:hover, &:active {
+      outline: 0;
+      text-decoration: none;
+    }
+    .panel-title .fa {
+      font-size: .9em;
+      float: right;
+    }
+  }
+  .panel-heading {
+    border-bottom: 1px solid #dddddd;
+  }
+  .panel-body {
+    border-top: none;
+  }
+}
+li.stream-li {
+  position: relative;
+}
+i.now-playing {
+  position: absolute;
+  left: -40px;
+  top: 3px;
+  color: $linkColor;
+}
