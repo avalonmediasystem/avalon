@@ -278,7 +278,7 @@ GEM
       compass (>= 0.12.2)
     compass-susy-plugin (0.9)
       compass (>= 0.11.1)
-    daemons (1.2.0)
+    daemons (1.2.2)
     debug_inspector (0.0.2)
     debugger (1.6.8)
       columnize (>= 0.3.1)
