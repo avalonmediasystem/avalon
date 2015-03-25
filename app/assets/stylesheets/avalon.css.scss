@@ -763,6 +763,12 @@ a[data-trigger='submit'] {
     outline: 0;
   }
 }
+
+$accordionPadding: 20px;
+@function accordion-indent($n) {
+  @return -1 * $n * $accordionPadding;
+}
+
 #accordion.panel-group {
   a {
     &:link, &:visited, &:hover, &:active {
@@ -779,14 +785,37 @@ a[data-trigger='submit'] {
   }
   .panel-body {
     border-top: none;
+    i.now-playing {
+      position: absolute;
+      top: 3px;
+      color: $linkColor;
+    }
+    ul {
+      list-style: none;
+      padding-left: $accordionPadding;
+      i.now-playing {
+        left: accordion-indent(1);
+      }
+      ul {
+        i.now-playing {
+          left: accordion-indent(2);
+        }
+	ul {
+	  i.now-playing {
+	    left: accordion-indent(3);
+          }
+ 	  ul {
+	    i.now-playing {
+	      left: accordion-indent(4);
+	    }
+	  }
+	}
+      }
+    }
   }
 }
 li.stream-li {
   position: relative;
 }
 i.now-playing {
-  position: absolute;
-  left: -40px;
-  top: 3px;
-  color: $linkColor;
 }

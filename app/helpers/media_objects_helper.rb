@@ -93,4 +93,57 @@ module MediaObjectsHelper
        return parse_hour_min_sec(f_start) , parse_hour_min_sec(f_end)
      end
 
+     def is_current_section? section
+        section.pid == @currentStream.pid
+     end
+
+     def structure_html section, index
+       sm = section.get_structural_metadata
+       return "" if sm.xpath('//Item').empty?
+       sectionnode = sm.xpath('//Item')
+       sectionlabel = sectionnode.attribute('label').value
+       current = is_current_section? section
+
+       s = <<EOF
+    <div class="panel-heading" role="tab" id="heading#{index}">
+      <a data-toggle="collapse" href="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}">
+        <h4 class="panel-title">
+          <span class="fa fa-minus-square #{current ? '' : 'hidden'}"></span>
+          <span class="fa fa-plus-square #{current ? 'hidden' : ''}"></span>
+          <span>#{sectionlabel}</span>
+        </h4>
+      </a>
+    </div>
+    <div id="section#{index}" class="panel-collapse collapse #{current ? 'in' : ''}" role="tabpanel" aria-labelledby="heading#{index}">
+      <div class="panel-body">
+        <ul>
+EOF
+       tracknumber = 0
+       sectionnode.children.each do |node| 
+         st, tracknumber = parse_node section, node, tracknumber
+         s+=st
+       end
+       s += <<EOF
+        </ul>
+      </div>
+    </div>
+EOF
+     end
+
+     def parse_node section, node, tracknumber
+       if node.name.upcase=="DIV"
+         contents = ''
+         node.children.each { |n| nodecontent, tracknumber = parse_node section, n, tracknumber; contents+=nodecontent }
+         return "<li>#{node.attribute('label')}</li><li><ul>#{contents}</ul></li>", tracknumber
+       elsif node.name.upcase=="SPAN"
+         tracknumber += 1
+         label = "#{tracknumber}. #{node.attribute('label').value}"
+         url = "#{share_link_for( section )}?t=#{node.attribute('begin').value},#{node.attribute('end').value}"
+         data =  {segment: section.pid, is_video: section.is_video?, share_link: url}
+         myclass = section.pid == @currentStream.pid ? 'current-stream' : nil
+         link = link_to label, url, data: data, class: myclass
+         return "<li class='stream-li'>#{link}</li>", tracknumber
+       end
+     end
+
 end
