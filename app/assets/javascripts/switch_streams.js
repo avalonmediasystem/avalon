@@ -20,13 +20,17 @@ window.AvalonStreams = {
       $('a.current-stream ~ i').remove();
       $('a[data-segment]').removeClass('current-stream');
 
-      $("a[data-segment='" + activeSegment + "']").addClass('current-stream');
-
       if (typeof stream_info != 'undefined' && stream_info !== null && !isNaN(parseFloat(stream_info['t']))) {
 	  // the event handler for MediaElement.loadedmetadata will refer to these global values
 	  jumped = false;
-	  offset = stream_info['t'].split(',')[0];
+	  offset = parseFloat(stream_info['t'].split(',')[0]);
       }
+
+      $("a[data-segment='" + activeSegment + "']").each(function(index,node) {
+	      if (offset >= parseFloat(node.dataset.fragmentbegin) && offset < parseFloat(node.dataset.fragmentend)){
+		  $(node).addClass('current-stream');
+	      }
+	  });
 
       $('a.current-stream').trigger('streamswitch', [stream_info]).parent().append(AvalonStreams.nowPlaying);
     },

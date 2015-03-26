@@ -87,9 +87,9 @@ module MediaObjectsHelper
        (Float(smh[0]) rescue 0) + 60*(Float(smh[1]) rescue 0) + 3600*(Float(smh[2]) rescue 0)
      end
 
-     def parse_media_fragment_param
-       return 0,nil if !params['t'].present?
-       f_start,f_end = params['t'].split(',')
+     def parse_media_fragment fragment
+       return 0,nil if !fragment.present?
+       f_start,f_end = fragment.split(',')
        return parse_hour_min_sec(f_start) , parse_hour_min_sec(f_end)
      end
 
@@ -97,52 +97,77 @@ module MediaObjectsHelper
         section.pid == @currentStream.pid
      end
 
-     def structure_html section, index
-       sm = section.get_structural_metadata
-       return "" if sm.xpath('//Item').empty?
-       sectionnode = sm.xpath('//Item')
-       sectionlabel = sectionnode.attribute('label').value
+     def structure_html section, index, show_progress
        current = is_current_section? section
 
-       s = <<EOF
+       headeropen = <<EOF
     <div class="panel-heading" role="tab" id="heading#{index}">
       <a data-toggle="collapse" href="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}">
         <h4 class="panel-title">
-          <span class="fa fa-minus-square #{current ? '' : 'hidden'}"></span>
-          <span class="fa fa-plus-square #{current ? 'hidden' : ''}"></span>
-          <span>#{sectionlabel}</span>
+EOF
+       headerclose = <<EOF
         </h4>
       </a>
     </div>
+EOF
+       progress_div = show_progress ? '<div class="status-detail alert progress-indented" style="display: none"></div>' : ''
+
+       sm = section.get_structural_metadata
+
+       # If there is no structural metadata associated with this masterfile return the stream info
+       if sm.xpath('//Item').empty?
+         mydata = {segment: section.pid, is_video: section.is_video?, share_link: share_link_for(section)} 
+         myclass = current ? 'current-stream' : nil
+         link = link_to stream_label_for(section), share_link_for( section ), data: mydata, class: myclass 
+         return "#{headeropen}<li class='stream-li #{ 'progress-indented' if progress_div.present? }'>#{link}#{progress_div}</li>#{headerclose}"
+       end
+
+       sectionnode = sm.xpath('//Item')
+       sectionlabel = sectionnode.attribute('label').value
+
+       # If there are subsections within structure, build a collapsible panel with the contents
+       if sectionnode.children.present?
+         tracknumber = 0
+         contents = ''
+         sectionnode.children.each do |node| 
+           st, tracknumber = parse_node section, node, tracknumber, progress_div
+           contents+=st
+         end
+         s = <<EOF
+   #{headeropen}
+          <span class="fa fa-minus-square #{current ? '' : 'hidden'}"></span>
+          <span class="fa fa-plus-square #{current ? 'hidden' : ''}"></span>
+          <span>#{sectionlabel}</span>
+   #{headerclose}
     <div id="section#{index}" class="panel-collapse collapse #{current ? 'in' : ''}" role="tabpanel" aria-labelledby="heading#{index}">
       <div class="panel-body">
-        <ul>
-EOF
-       tracknumber = 0
-       sectionnode.children.each do |node| 
-         st, tracknumber = parse_node section, node, tracknumber
-         s+=st
-       end
-       s += <<EOF
-        </ul>
+        <ul>#{contents}</ul>
       </div>
     </div>
 EOF
+       # If there are so subsections within the structure, return just the header with the single section
+       else
+         st, tracknumber = parse_node section, sectionnode, 0, progress_div
+         s = "#{headeropen}<span>#{st}</span>#{headerclose}"
+       end
      end
 
-     def parse_node section, node, tracknumber
+     def parse_node section, node, tracknumber, progress_div
        if node.name.upcase=="DIV"
          contents = ''
-         node.children.each { |n| nodecontent, tracknumber = parse_node section, n, tracknumber; contents+=nodecontent }
+         node.children.each { |n| nodecontent, tracknumber = parse_node section, n, tracknumber, show_progress; contents+=nodecontent }
          return "<li>#{node.attribute('label')}</li><li><ul>#{contents}</ul></li>", tracknumber
-       elsif node.name.upcase=="SPAN"
+       elsif ['SPAN','ITEM'].include? node.name.upcase
          tracknumber += 1
          label = "#{tracknumber}. #{node.attribute('label').value}"
-         url = "#{share_link_for( section )}?t=#{node.attribute('begin').value},#{node.attribute('end').value}"
-         data =  {segment: section.pid, is_video: section.is_video?, share_link: url}
+         start = node.attribute('begin').present? ? node.attribute('begin').value : 0
+         stop = node.attribute('end').present? ? node.attribute('end').value : ''
+         start,stop = parse_media_fragment "#{start},#{stop}"
+         url = "#{share_link_for( section )}?t=#{start},#{stop}"
+         data =  {segment: section.pid, is_video: section.is_video?, share_link: url, fragmentbegin: start, fragmentend: stop}
          myclass = section.pid == @currentStream.pid ? 'current-stream' : nil
          link = link_to label, url, data: data, class: myclass
-         return "<li class='stream-li'>#{link}</li>", tracknumber
+         return "<li class='stream-li #{ 'progress-indented' if progress_div.present? }'>#{link}#{progress_div}</li>", tracknumber
        end
      end
 

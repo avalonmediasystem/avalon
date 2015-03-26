@@ -20,48 +20,20 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="heading0" style="border-bottom: 1px solid #ddd;">
       <h4 class="panel-title">
+        <span>Sections</span>
 	<button class="btn btn-primary btn-xs" id="expand_button">Expand All</button>
 	<button class="btn btn-primary btn-xs hidden" id="collapse_button">Collapse All</button>
+	<br class="clear"/>
       </h4>
     </div>
 
-    <% (1..3).each do |n| %>
-    <div class="panel-heading" role="tab" id="heading<%= n %>">
-      <a data-toggle="collapse" href="#section<%= n %>" aria-expanded="<%= n==1?'true':'false' %>" aria-controls="collapse<%= n %>">
-        <h4 class="panel-title">
-          <span class="fa fa-minus-square <%= n==1?'':'hidden' %>"></span>
-          <span class="fa fa-plus-square <%= n==1?'hidden':'' %>"></span>
-          <span>Section <%= n %> Title</span>
-        </h4>
-      </a>
-    </div>
-    <div id="section<%= n %>" class="panel-collapse collapse <%= n==1?'in':'' %>" role="tabpanel" aria-labelledby="heading<%= n %>">
-      <div class="panel-body">
-        <ol id="section_links">
-          <% sections.each_with_index do |section,i| %>
-          <% unless can? :edit, @mediaobject %>
-          <% next if section.derivatives.empty? %>
-          <% end %>
-          <li class="stream-li<%= show_progress ? ' progress-indented' : ''%>">
-            <%# If the label has not been set use the file name as a default %>
-            <%=
-               link_to stream_label_for(section),
-                 share_link_for( section ),
-                 data: {segment: section.pid, is_video: section.is_video?, share_link: share_link_for(section)},
-                 class: (section.pid == activeStream.pid ? 'current-stream' : nil)
-            %>
-            <% unless section.duration.blank? %>
-            (<%= milliseconds_to_formatted_time(section.duration.to_i) %>)
-            <% end %>
-            <% if show_progress %>
-            <div class="status-detail alert" style="display: none"></div>
-            <% end %>
-          </li>
-          <% end %>
-        </ol>
-      </div>
-    </div>
-    <% end %>
+<% sections.each_with_index do |section,i| %>
+<%   unless can? :edit, @mediaobject %>
+<%     next if section.derivatives.empty? %>
+<%   end %>
+<%=  structure_html(section,i,show_progress).html_safe %>
+<% end %>
+
   </div>
 </div>
 

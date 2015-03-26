@@ -780,8 +780,14 @@ $accordionPadding: 20px;
       float: right;
     }
   }
+  ul, li {
+    list-style: none;
+  }
   .panel-heading {
     border-bottom: 1px solid #dddddd;
+    #expand_button, #collapse_button {
+      float:right;
+    }
   }
   .panel-body {
     border-top: none;
@@ -791,7 +797,6 @@ $accordionPadding: 20px;
       color: $linkColor;
     }
     ul {
-      list-style: none;
       padding-left: $accordionPadding;
       i.now-playing {
         left: accordion-indent(1);
@@ -817,5 +822,9 @@ $accordionPadding: 20px;
 li.stream-li {
   position: relative;
 }
-i.now-playing {
+
+div.status-detail {
+  margin-bottom: 0;
+  margin-left: 40px;
+  font-size: .9em;
 }
