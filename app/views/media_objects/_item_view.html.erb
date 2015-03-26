@@ -77,7 +77,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     features << 'thumbnailSelector' if can? :edit, @mediaobject
     features.concat ['fullscreen','responsive']
   %>
-
+  <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
     var jumped = false;
     var offset = <%= f_start %>;
@@ -104,4 +104,5 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% end %>
         });
   </script>
+  <% end %>
 <% end %>

@@ -124,6 +124,9 @@ EOF
 
        sectionnode = sm.xpath('//Item')
        sectionlabel = sectionnode.attribute('label').value
+       unless section.duration.blank?
+         sectionlabel += " (#{milliseconds_to_formatted_time(section.duration.to_i)})"
+       end
 
        # If there are subsections within structure, build a collapsible panel with the contents
        if sectionnode.children.present?
@@ -155,14 +158,15 @@ EOF
      def parse_node section, node, tracknumber, progress_div
        if node.name.upcase=="DIV"
          contents = ''
-         node.children.each { |n| nodecontent, tracknumber = parse_node section, n, tracknumber, show_progress; contents+=nodecontent }
+         node.children.each { |n| nodecontent, tracknumber = parse_node section, n, tracknumber, progress_div; contents+=nodecontent }
          return "<li>#{node.attribute('label')}</li><li><ul>#{contents}</ul></li>", tracknumber
        elsif ['SPAN','ITEM'].include? node.name.upcase
          tracknumber += 1
-         label = "#{tracknumber}. #{node.attribute('label').value}"
          start = node.attribute('begin').present? ? node.attribute('begin').value : 0
-         stop = node.attribute('end').present? ? node.attribute('end').value : ''
+         stop = node.attribute('end').present? ? node.attribute('end').value : section.duration.blank? ? 0 : milliseconds_to_formatted_time(section.duration.to_i)
          start,stop = parse_media_fragment "#{start},#{stop}"
+         node_duration = milliseconds_to_formatted_time((stop.to_i-start.to_i)*1000)
+         label = "#{tracknumber}. #{node.attribute('label').value} (#{node_duration})"
          url = "#{share_link_for( section )}?t=#{start},#{stop}"
          data =  {segment: section.pid, is_video: section.is_video?, share_link: url, fragmentbegin: start, fragmentend: stop}
          myclass = section.pid == @currentStream.pid ? 'current-stream' : nil

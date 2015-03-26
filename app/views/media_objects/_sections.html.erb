@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="panel panel-default">
     <div class="panel-heading" role="tab" id="heading0" style="border-bottom: 1px solid #ddd;">
       <h4 class="panel-title">
-        <span>Sections</span>
+        <span id="section-label">Sections</span>
 	<button class="btn btn-primary btn-xs" id="expand_button">Expand All</button>
 	<button class="btn btn-primary btn-xs hidden" id="collapse_button">Collapse All</button>
 	<br class="clear"/>
@@ -39,6 +39,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
 <script>
+  if ($('.fa-plus-square').length + $('.fa-minus-square').length <= 1){
+    $('#collapse_button').addClass('hidden');
+    $('#expand_button').addClass('hidden');
+  } else {
+    $('.panel-title #section-label').addClass('hidden');
+  }
   $('#expand_button').on('click', function() {
     $('#accordion.panel-group .panel-collapse').collapse('show');
     $('#accordion.panel-group a .panel-title .fa-plus-square').addClass('hidden');

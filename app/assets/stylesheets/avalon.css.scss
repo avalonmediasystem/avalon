@@ -628,7 +628,6 @@ a[data-trigger='submit'] {
 }
 
 .share-tabs {
-  margin-top: 20px;
   max-width: 750px;
 }
 
@@ -750,6 +749,7 @@ a[data-trigger='submit'] {
 
 #share-button {
   text-align: right;
+  margin-bottom: 10px;
   a:link, a:visited, a:hover, a:active {
     text-decoration: none;
     outline: 0;
@@ -785,8 +785,10 @@ $accordionPadding: 20px;
   }
   .panel-heading {
     border-bottom: 1px solid #dddddd;
+    padding: 7px 10px;
     #expand_button, #collapse_button {
       float:right;
+      margin-top: -2px;
     }
   }
   .panel-body {

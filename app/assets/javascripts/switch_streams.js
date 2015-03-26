@@ -20,9 +20,10 @@ window.AvalonStreams = {
       $('a.current-stream ~ i').remove();
       $('a[data-segment]').removeClass('current-stream');
 
+      jumped = false;
+      offset = 0
       if (typeof stream_info != 'undefined' && stream_info !== null && !isNaN(parseFloat(stream_info['t']))) {
 	  // the event handler for MediaElement.loadedmetadata will refer to these global values
-	  jumped = false;
 	  offset = parseFloat(stream_info['t'].split(',')[0]);
       }
 
