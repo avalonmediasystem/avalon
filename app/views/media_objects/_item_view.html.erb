@@ -80,6 +80,13 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <script>
     var jumped = false;
+    var offset = <%= f_start %>;
+    var set_offset = function(event){
+      if (!jumped ){
+        jumped = true;
+        currentPlayer.setCurrentTime(offset);
+      }
+    }
     currentPlayer = new MediaElementPlayer('#video-tag', 
         { mode: 'auto_plugin',
           pluginPath: '/assets/mediaelement_rails/',
@@ -92,12 +99,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           startQuality: '<%= current_quality(@currentStreamInfo) %>',
           <% if f_start > 0 %>
             success: function (mediaElement, domObject, player) {
-              mediaElement.addEventListener('loadedmetadata', function(e) {
-                if (!jumped ){
-                  jumped = true;
-                  mediaElement.setCurrentTime(<%= f_start %>);
-                }
-              });
+              mediaElement.addEventListener('loadedmetadata', set_offset);
             }
           <% end %>
         });
