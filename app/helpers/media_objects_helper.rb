@@ -118,15 +118,15 @@ EOF
        if sm.xpath('//Item').empty?
          mydata = {segment: section.pid, is_video: section.is_video?, share_link: share_link_for(section)} 
          myclass = current ? 'current-stream' : nil
-         link = link_to stream_label_for(section), share_link_for( section ), data: mydata, class: myclass 
-         return "#{headeropen}<li class='stream-li #{ 'progress-indented' if progress_div.present? }'>#{link}#{progress_div}</li>#{headerclose}"
+         sectionlabel = "#{index+1}. #{stream_label_for(section)}"
+         sectionlabel += " (#{milliseconds_to_formatted_time(section.duration.to_i)})" unless section.duration.blank?
+         link = link_to sectionlabel, share_link_for( section ), data: mydata, class: myclass 
+         return "#{headeropen}<ul><li class='stream-li #{ 'progress-indented' if progress_div.present? }'>#{link}#{progress_div}</li></ul>#{headerclose}"
        end
 
        sectionnode = sm.xpath('//Item')
-       sectionlabel = sectionnode.attribute('label').value
-       unless section.duration.blank?
-         sectionlabel += " (#{milliseconds_to_formatted_time(section.duration.to_i)})"
-       end
+       sectionlabel = "#{index+1}. #{sectionnode.attribute('label').value}"
+       sectionlabel += " (#{milliseconds_to_formatted_time(section.duration.to_i)})" unless section.duration.blank?
 
        # If there are subsections within structure, build a collapsible panel with the contents
        if sectionnode.children.present?
@@ -140,7 +140,7 @@ EOF
    #{headeropen}
           <span class="fa fa-minus-square #{current ? '' : 'hidden'}"></span>
           <span class="fa fa-plus-square #{current ? 'hidden' : ''}"></span>
-          <span>#{sectionlabel}</span>
+          <ul><li><span>#{sectionlabel}</span></li></ul>
    #{headerclose}
     <div id="section#{index}" class="panel-collapse collapse #{current ? 'in' : ''}" role="tabpanel" aria-labelledby="heading#{index}">
       <div class="panel-body">
@@ -150,8 +150,8 @@ EOF
 EOF
        # If there are so subsections within the structure, return just the header with the single section
        else
-         st, tracknumber = parse_node section, sectionnode, 0, progress_div
-         s = "#{headeropen}<span>#{st}</span>#{headerclose}"
+         st, tracknumber = parse_node section, sectionnode.first, index, progress_div
+         s = "#{headeropen}<span><ul>#{st}</ul></span>#{headerclose}"
        end
      end
 

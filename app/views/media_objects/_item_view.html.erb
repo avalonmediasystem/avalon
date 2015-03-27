@@ -79,12 +79,23 @@ Unless required by applicable law or agreed to in writing, software distributed
   %>
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
+    var updating_segment = false;
     var jumped = false;
     var offset = <%= f_start %>;
     var set_offset = function(event){
-      if (!jumped ){
+      currentOffset = currentPlayer.getCurrentTime();
+      //alert("offset: "+offset+" currentOffset: "+currentOffset);
+      if (currentOffset != offset) {
         jumped = true;
         currentPlayer.setCurrentTime(offset);
+      }
+    }
+    var update_active_stream = function(event){
+      if (!updating_segment) {
+        updating_segment = true;
+        active_segment = $('a.current-stream').data('segment')
+        AvalonStreams.setActiveSection(active_segment);
+        updating_segment = false;
       }
     }
     currentPlayer = new MediaElementPlayer('#video-tag', 
@@ -97,11 +108,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
           mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
           startQuality: '<%= current_quality(@currentStreamInfo) %>',
-          <% if f_start > 0 %>
-            success: function (mediaElement, domObject, player) {
-              mediaElement.addEventListener('loadedmetadata', set_offset);
-            }
-          <% end %>
+          success: function (mediaElement, domObject, player) {
+            mediaElement.addEventListener('loadedmetadata', set_offset);
+            mediaElement.addEventListener('timeupdate', update_active_stream ); 
+          }
         });
   </script>
   <% end %>

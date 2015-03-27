@@ -46,15 +46,6 @@ a:not(.btn) {
   pointer-events: none !important;
 }
 
-.current-stream {
-  font-weight: bold;
-
-  &:link { @hidden-disabled-link }
-  &:hover { @hidden-disabled-link }
-  &:active { @hidden-disabled-link }
-  &:visited { @hidden-disabled-link }
-}
-
 tr.active-false td {
   color: $gray;
 }
@@ -749,6 +740,7 @@ a[data-trigger='submit'] {
 
 #share-button {
   text-align: right;
+  margin-top: 10px;
   margin-bottom: 10px;
   a:link, a:visited, a:hover, a:active {
     text-decoration: none;
@@ -783,9 +775,21 @@ $accordionPadding: 20px;
   ul, li {
     list-style: none;
   }
+  li.stream-li {
+    position: relative;
+  }
+  i.now-playing {
+    position: absolute;
+    color: $linkColor;
+    left: accordion-indent(1);
+  }
   .panel-heading {
     border-bottom: 1px solid #dddddd;
     padding: 7px 10px;
+    ul {
+      padding-left: $accordionPadding;
+      margin-bottom: 0;
+    }
     #expand_button, #collapse_button {
       float:right;
       margin-top: -2px;
@@ -793,14 +797,10 @@ $accordionPadding: 20px;
   }
   .panel-body {
     border-top: none;
-    i.now-playing {
-      position: absolute;
-      top: 3px;
-      color: $linkColor;
-    }
     ul {
       padding-left: $accordionPadding;
       i.now-playing {
+        top: 3px;
         left: accordion-indent(1);
       }
       ul {
@@ -821,8 +821,17 @@ $accordionPadding: 20px;
     }
   }
 }
-li.stream-li {
-  position: relative;
+
+.current-stream {
+  font-weight: bold;
+  border-radius: 3px;
+  margin-left: -5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  &:link { @hidden-disabled-link }
+  &:hover { @hidden-disabled-link }
+  &:active { @hidden-disabled-link }
+  &:visited { @hidden-disabled-link }
 }
 
 div.status-detail {

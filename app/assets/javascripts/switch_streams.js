@@ -19,20 +19,13 @@ window.AvalonStreams = {
       /* Start by resetting the state of all sections */
       $('a.current-stream ~ i').remove();
       $('a[data-segment]').removeClass('current-stream');
-
-      jumped = false;
-      offset = 0
-      if (typeof stream_info != 'undefined' && stream_info !== null && !isNaN(parseFloat(stream_info['t']))) {
-	  // the event handler for MediaElement.loadedmetadata will refer to these global values
-	  offset = parseFloat(stream_info['t'].split(',')[0]);
-      }
-
+      currentTime = currentPlayer.getCurrentTime()
       $("a[data-segment='" + activeSegment + "']").each(function(index,node) {
-	      if (offset >= parseFloat(node.dataset.fragmentbegin) && offset < parseFloat(node.dataset.fragmentend)){
-		  $(node).addClass('current-stream');
-	      }
-	  });
-
+        if (typeof(node.dataset.fragmentbegin)=='undefined' || (currentTime >= parseFloat(node.dataset.fragmentbegin) && currentTime < parseFloat(node.dataset.fragmentend))){
+	  $(node).addClass('current-stream');
+	}
+      });
+      if (!$("a.current-stream").length) $("a[data-segment='" + activeSegment + "']").first().addClass('current-stream');
       $('a.current-stream').trigger('streamswitch', [stream_info]).parent().append(AvalonStreams.nowPlaying);
     },
 
@@ -76,6 +69,12 @@ window.AvalonStreams = {
             currentPlayer.setPoster(stream_info.poster_image);
           currentPlayer.buildqualities(currentPlayer, currentPlayer.controls, currentPlayer.layers, currentPlayer.media);
           currentPlayer.load(); 
+	  if (!isNaN(parseFloat(stream_info['t']))) {
+	      alert("currentTime: "+stream_info['t']);
+	    currentPlayer.setCurrentTime( parseFloat(stream_info['t'].split(',')[0]));
+	  }
+
+
         } else {
           //currentPlayer = AvalonPlayer.init($('#player'), opts);
         }
@@ -90,24 +89,31 @@ $().ready(function() {
     AvalonStreams.setActiveSection($('a.current-stream').data('segment'), null);
     
     $('a[data-segment]').click(function(event) {
+      var target = $(this);
 
       // Only does the AJAX switching if type of new stream is identical to old stream,
       // otherwise do the regular page load
-      if ($('a.current-stream').data('is-video') == $(this).data('is-video')) {
+      if ($('a.current-stream').data('is-video') == target.data('is-video')) {
         event.preventDefault();
-        var target = $(this);
 
-        /**
-         * Explicitly make this a JSON request 
-         */
-        var uri = target.attr('href').split('?')[0] + '.json';
-	var params = target.attr('href').split('?')[1];
-        var segment = $(this).data('segment');
+        // If it is the same segment, just change the offset
+        if ($('a.current-stream').data('segment') == target.data('segment') && typeof(target.data('fragmentbegin')!='undefined')) {
+	  currentPlayer.setCurrentTime(parseFloat(target.data('fragmentbegin')));
+	  AvalonStreams.setActiveSection(target.data('segment'), null);
+	} else {
 
-        $.getJSON(uri, 'content=' + segment + '&' + params, function(data) {
-          AvalonStreams.setActiveSection(segment, data);
-          AvalonStreams.refreshStream(data);
-        });
+          /**
+           * Explicitly make this a JSON request 
+           */
+          var uri = target.attr('href').split('?')[0] + '.json';
+	  var params = target.attr('href').split('?')[1];
+	  var segment = target.data('segment');
+
+	  $.getJSON(uri, 'content=' + segment + '&' + params, function(data) {
+	    AvalonStreams.refreshStream(data);
+            AvalonStreams.setActiveSection(segment, data);
+	  });
+	}
       }
     });
 });
