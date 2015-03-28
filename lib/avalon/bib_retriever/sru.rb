@@ -12,6 +12,8 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+require 'rest-client'
+
 module Avalon
   class BibRetriever
     class SRU < ::Avalon::BibRetriever
