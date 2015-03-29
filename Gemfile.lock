@@ -133,39 +133,6 @@ GIT
       om
       rest-client
 
-GIT
-  remote: https://github.com/projecthydra/active_fedora.git
-  revision: e66c803640b6f4771136a44929376c97c6f645f5
-  branch: 8.0-stable
-  specs:
-    active-fedora (8.0.0)
-      active-triples (~> 0.4.0)
-      activesupport (>= 3.0.0)
-      deprecation
-      nom-xml (>= 0.5.1)
-      om (~> 3.1)
-      rdf-rdfxml (~> 1.1.0)
-      rsolr (~> 1.0.10)
-      rubydora (~> 1.8)
-
-GIT
-  remote: https://github.com/projecthydra/hydra.git
-  revision: 22c8a455d413fdd1fc41ab958a50af6edf6aba49
-  branch: 8-0-testing
-  specs:
-    hydra (8.0.0)
-      active-fedora (~> 8.0.0)
-      blacklight (~> 5.9.0)
-      hydra-head (~> 8.0.0)
-      jettywrapper (~> 1.8.3)
-      nokogiri (~> 1.6.5)
-      nom-xml (~> 0.5.2)
-      om (~> 3.1.0)
-      rails (>= 3.2.15, < 5.0)
-      rsolr (~> 1.0.12)
-      rubydora (~> 1.8.1)
-      solrizer (~> 3.3.0)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -178,6 +145,15 @@ GEM
       erubis (~> 2.7.0)
       rack (~> 1.5.2)
       rack-test (~> 0.6.2)
+    active-fedora (8.0.1)
+      active-triples (~> 0.4.0)
+      activesupport (>= 3.0.0)
+      deprecation
+      nom-xml (>= 0.5.1)
+      om (~> 3.1)
+      rdf-rdfxml (~> 1.1.0)
+      rsolr (~> 1.0.10)
+      rubydora (~> 1.8)
     active-triples (0.4.0)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -221,13 +197,13 @@ GEM
       rack (>= 0.9.0)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
-    blacklight (5.9.3)
+    blacklight (5.10.3)
       bootstrap-sass (~> 3.2)
       deprecation
       kaminari (~> 0.13)
       nokogiri (~> 1.6)
       rails (>= 3.2.6, < 5)
-      rsolr (~> 1.0.6)
+      rsolr (~> 1.0.11)
     block_helpers (0.3.3)
       activesupport (>= 2.0)
     bootstrap-sass (3.3.3)
@@ -376,22 +352,34 @@ GEM
     httparty (0.13.3)
       json (~> 1.8)
       multi_xml (>= 0.5.2)
-    hydra-access-controls (8.0.0)
+    hydra (8.0.0)
+      active-fedora (~> 8.0.1)
+      blacklight (~> 5.10.0)
+      hydra-head (~> 8.1.0)
+      jettywrapper (~> 1.8.3)
+      nokogiri (~> 1.6.5)
+      nom-xml (~> 0.5.2)
+      om (~> 3.1.0)
+      rails (>= 3.2.15, < 5.0)
+      rsolr (~> 1.0.12)
+      rubydora (~> 1.8.1)
+      solrizer (~> 3.3.0)
+    hydra-access-controls (8.1.0)
       active-fedora (~> 8.0.0)
       activesupport (~> 4.0)
-      blacklight (~> 5.3)
-      cancancan
-      deprecation
+      blacklight (~> 5.10)
+      cancancan (~> 1.8)
+      deprecation (~> 0.1)
       om (~> 3.0, >= 3.0.7)
       sass-rails
-    hydra-core (8.0.0)
+    hydra-core (8.1.0)
       block_helpers
-      hydra-access-controls (= 8.0.0)
+      hydra-access-controls (= 8.1.0)
       jettywrapper (~> 1.5)
       rails (~> 4.0)
-    hydra-head (8.0.0)
-      hydra-access-controls (= 8.0.0)
-      hydra-core (= 8.0.0)
+    hydra-head (8.1.0)
+      hydra-access-controls (= 8.1.0)
+      hydra-core (= 8.1.0)
       rails (~> 4.0)
     i18n (0.7.0)
     iconv (1.0.4)
@@ -731,7 +719,6 @@ PLATFORMS
 
 DEPENDENCIES
   about_page!
-  active-fedora!
   activerecord-jdbcsqlite3-adapter
   activerecord-session_store
   avalon-about!
@@ -766,7 +753,7 @@ DEPENDENCIES
   hashdiff
   headless
   hooks
-  hydra (~> 8.0)!
+  hydra (~> 8.0)
   iconv
   jdbc-sqlite3
   jettywrapper
