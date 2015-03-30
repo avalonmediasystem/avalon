@@ -22,17 +22,16 @@ class CatalogController < ApplicationController
   include Hydra::PolicyAwareAccessControlsEnforcement
  
   before_filter :save_sticky_settings
- 
-  # This applies appropriate access controls to all solr queries
-  self.solr_search_params_logic += [:add_access_controls_to_solr_params_if_not_admin]
-  
-  # This filters out objects that you want to exclude from search results, like FileAssets
-  self.solr_search_params_logic += [:only_wanted_models]
-  self.solr_search_params_logic += [:only_published_items]
-  self.solr_search_params_logic += [:limit_to_non_hidden_items]
-  self.solr_search_params_logic += [:apply_sticky_settings]
+
+  #Override taken from Hydra::Controller::ControllerBehavior and reapplied here to be in scope
+  def search_builder processor_chain = search_params_logic
+    super.tap { |builder| builder.current_ability = current_ability }
+  end 
+
+  CatalogController.search_params_logic += [:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models, :only_published_items, :limit_to_non_hidden_items, :apply_sticky_settings]
 
   configure_blacklight do |config|
+    config.search_builder_class = SearchBuilder
     config.http_method = :post
     config.default_solr_params = { 
       :qt => 'search',
@@ -183,31 +182,6 @@ class CatalogController < ApplicationController
     params[:action] == 'index'
   end
   
-  def only_wanted_models(solr_parameters, user_parameters)
-    solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << 'has_model_ssim:"info:fedora/afmodel:MediaObject"'
-  end
-
-  def only_published_items(solr_parameters, user_parameters)
-    if cannot? :create, MediaObject
-      solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << 'workflow_published_sim:"Published"'
-    end
-  end
-
-  def limit_to_non_hidden_items(solr_parameters, user_parameters)
-    if cannot? :create, MediaObject
-      solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << '!hidden_bsi:true'
-    end
-  end
-
-	def add_access_controls_to_solr_params_if_not_admin(solr_parameters, user_parameters)
-		if cannot? :discover_everything, MediaObject
-			add_access_controls_to_solr_params(solr_parameters, user_parameters)
-		end
-	end
-
   def save_sticky_settings
     session[:sort] = params[:sort] if params[:sort].present?
     session[:per_page] = params[:per_page] if params[:per_page].present?

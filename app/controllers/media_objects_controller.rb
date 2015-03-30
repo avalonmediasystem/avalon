@@ -17,7 +17,6 @@ require 'avalon/controller/controller_behavior'
 class MediaObjectsController < ApplicationController 
   include Avalon::Workflow::WorkflowControllerBehavior
   include Avalon::Controller::ControllerBehavior
-  include Hydra::AccessControlsEnforcement
 
 #  before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
