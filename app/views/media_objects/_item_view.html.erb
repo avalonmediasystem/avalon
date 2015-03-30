@@ -80,13 +80,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
     var updating_segment = false;
-    var jumped = false;
     var offset = <%= f_start %>;
     var set_offset = function(event){
       currentOffset = currentPlayer.getCurrentTime();
       //alert("offset: "+offset+" currentOffset: "+currentOffset);
       if (currentOffset != offset) {
-        jumped = true;
         currentPlayer.setCurrentTime(offset);
       }
     }

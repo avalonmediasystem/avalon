@@ -68,13 +68,10 @@ window.AvalonStreams = {
           if (stream_info.poster_image != "undefined" && stream_info.poster_image != null)
             currentPlayer.setPoster(stream_info.poster_image);
           currentPlayer.buildqualities(currentPlayer, currentPlayer.controls, currentPlayer.layers, currentPlayer.media);
+	  // set global variable offset for loadedmetadata listener
+	  if (!isNaN(parseFloat(stream_info['t']))) offset = parseFloat(stream_info['t'].split(',')[0]);
+	  else offset=0;
           currentPlayer.load(); 
-	  if (!isNaN(parseFloat(stream_info['t']))) {
-	      alert("currentTime: "+stream_info['t']);
-	    currentPlayer.setCurrentTime( parseFloat(stream_info['t'].split(',')[0]));
-	  }
-
-
         } else {
           //currentPlayer = AvalonPlayer.init($('#player'), opts);
         }
