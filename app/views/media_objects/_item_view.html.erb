@@ -83,7 +83,6 @@ Unless required by applicable law or agreed to in writing, software distributed
     var offset = <%= f_start %>;
     var set_offset = function(event){
       currentOffset = currentPlayer.getCurrentTime();
-      //alert("offset: "+offset+" currentOffset: "+currentOffset);
       if (currentOffset != offset) {
         currentPlayer.setCurrentTime(offset);
       }
@@ -96,6 +95,12 @@ Unless required by applicable law or agreed to in writing, software distributed
         updating_segment = false;
       }
     }
+    seeked_handler = function(event){
+      currentPlayer.pause();
+    }
+    seeking_handler = function(event){
+      currentPlayer.play();
+    }
     currentPlayer = new MediaElementPlayer('#video-tag', 
         { mode: 'auto_plugin',
           pluginPath: '/assets/mediaelement_rails/',
@@ -107,8 +112,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
           startQuality: '<%= current_quality(@currentStreamInfo) %>',
           success: function (mediaElement, domObject, player) {
-            mediaElement.addEventListener('loadedmetadata', set_offset);
-            mediaElement.addEventListener('timeupdate', update_active_stream ); 
+            mediaElement.addEventListener('loadedmetadata', set_offset, true);
+            mediaElement.addEventListener('timeupdate', update_active_stream, true ); 
+            mediaElement.addEventListener('seeked', seeked_handler, true);
+            mediaElement.addEventListener('seeking', seeking_handler, true);
           }
         });
   </script>

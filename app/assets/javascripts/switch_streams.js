@@ -25,7 +25,7 @@ window.AvalonStreams = {
 	  $(node).addClass('current-stream');
 	}
       });
-      if (!$("a.current-stream").length) $("a[data-segment='" + activeSegment + "']").first().addClass('current-stream');
+      //if (!$("a.current-stream").length) $("a[data-segment='" + activeSegment + "']").first().addClass('current-stream');
       $('a.current-stream').trigger('streamswitch', [stream_info]).parent().append(AvalonStreams.nowPlaying);
     },
 
