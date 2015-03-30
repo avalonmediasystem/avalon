@@ -20,24 +20,23 @@ window.AvalonStreams = {
       $('a.current-stream ~ i').remove();
       $('a[data-segment]').removeClass('current-stream');
       currentTime = currentPlayer.getCurrentTime()
-      $("a[data-segment='" + activeSegment + "']").each(function(index,node) {
-        if (typeof(node.dataset.fragmentbegin)=='undefined' || (currentTime >= parseFloat(node.dataset.fragmentbegin) && currentTime < parseFloat(node.dataset.fragmentend))){
-	  $(node).addClass('current-stream');
+      sectionnodes = $("a[data-segment='" + activeSegment + "']");
+      if (typeof(sectionnodes[0].dataset.fragmentbegin)=='undefined' ) {
+	// section doesn't have mediafragment data
+	$(sectionnodes[0]).addClass('current-stream');
+      } else {
+	// find the sub-section that contains the player's current time
+        for (i=0; i<sectionnodes.length; i++){
+	    if (currentTime >= parseFloat(sectionnodes[i].dataset.fragmentbegin) && 
+		( i+1 == sectionnodes.length || currentTime < parseFloat(sectionnodes[i+1].dataset.fragmentbegin))){
+		$(sectionnodes[i]).addClass('current-stream');
+		i=sectionnodes.length; //break
+	    }
 	}
-      });
-      //if (!$("a.current-stream").length) $("a[data-segment='" + activeSegment + "']").first().addClass('current-stream');
+      }
       $('a.current-stream').trigger('streamswitch', [stream_info]).parent().append(AvalonStreams.nowPlaying);
     },
 
-    setActiveLabel: function(title) {
-      target = $('#stream_label');
-      if (target) {
-	/* This seems a bit unneeded with CSS3 but that can wait for a
-	 * future release
-	 */
-        target.fadeToggle(50, function() { target.text(title); target.fadeToggle(50) });
-      }
-    },
 
     /*
      * This method should take care of the heavy lifting involved in passing a message
@@ -63,8 +62,6 @@ window.AvalonStreams = {
             videoNode.append('<source src="' + hls.url + '" data-quality="' + hls.quality + '" data-plugin-type="native" type="application/vnd.apple.mpegURL">');
           }
           
-          // Rebuilds the quality selector
-          //currentPlayer.setSrc(newSrc);
           if (stream_info.poster_image != "undefined" && stream_info.poster_image != null)
             currentPlayer.setPoster(stream_info.poster_image);
           currentPlayer.buildqualities(currentPlayer, currentPlayer.controls, currentPlayer.layers, currentPlayer.media);
@@ -72,8 +69,6 @@ window.AvalonStreams = {
 	  if (!isNaN(parseFloat(stream_info['t']))) offset = parseFloat(stream_info['t'].split(',')[0]);
 	  else offset=0;
           currentPlayer.load(); 
-        } else {
-          //currentPlayer = AvalonPlayer.init($('#player'), opts);
         }
       }
     },
