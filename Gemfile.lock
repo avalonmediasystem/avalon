@@ -133,6 +133,29 @@ GIT
       om
       rest-client
 
+GIT
+  remote: https://github.com/projecthydra/hydra-head.git
+  revision: aa73d36bdee72ada33adde2009ff715854080925
+  branch: bugfix/APOs
+  specs:
+    hydra-access-controls (8.1.0)
+      active-fedora (~> 8.0.0)
+      activesupport (~> 4.0)
+      blacklight (~> 5.10)
+      cancancan (~> 1.8)
+      deprecation (~> 0.1)
+      om (~> 3.0, >= 3.0.7)
+      sass-rails
+    hydra-core (8.1.0)
+      block_helpers
+      hydra-access-controls (= 8.1.0)
+      jettywrapper (~> 1.5)
+      rails (~> 4.0)
+    hydra-head (8.1.0)
+      hydra-access-controls (= 8.1.0)
+      hydra-core (= 8.1.0)
+      rails (~> 4.0)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -364,23 +387,6 @@ GEM
       rsolr (~> 1.0.12)
       rubydora (~> 1.8.1)
       solrizer (~> 3.3.0)
-    hydra-access-controls (8.1.0)
-      active-fedora (~> 8.0.0)
-      activesupport (~> 4.0)
-      blacklight (~> 5.10)
-      cancancan (~> 1.8)
-      deprecation (~> 0.1)
-      om (~> 3.0, >= 3.0.7)
-      sass-rails
-    hydra-core (8.1.0)
-      block_helpers
-      hydra-access-controls (= 8.1.0)
-      jettywrapper (~> 1.5)
-      rails (~> 4.0)
-    hydra-head (8.1.0)
-      hydra-access-controls (= 8.1.0)
-      hydra-core (= 8.1.0)
-      rails (~> 4.0)
     i18n (0.7.0)
     iconv (1.0.4)
     ims-lti (1.1.8)
@@ -754,6 +760,7 @@ DEPENDENCIES
   headless
   hooks
   hydra (~> 8.0)
+  hydra-access-controls!
   iconv
   jdbc-sqlite3
   jettywrapper
