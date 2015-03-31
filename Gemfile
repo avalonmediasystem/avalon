@@ -6,18 +6,8 @@
   #gem 'protected_attributes'
   gem 'builder', '~>3.1.0'
 
-  #gem 'blacklight', '~>5.7'
-  #gem 'blacklight', git: 'https://github.com/projectblacklight/blacklight.git', ref: 'd4f2cf5d6917b927d63867f50bb66f6bc5b9577b'
-
-  gem 'hydra', '~>7.2'
-  #gem 'hydra-head', '~>7.2.0'
-  #gem 'active-fedora', '~> 7.1.0'
-  #gem 'om', '~> 3.1.0'
-  #gem 'solrizer', '~> 3.3.0'
-  #gem 'rsolr', '~> 1.0.10'
-  #gem 'nokogiri', '~> 1.6.0'
-  #gem 'rubydora', '~> 1.8.0'
-  #gem 'nom-xml', '~> 0.5.1'
+  gem 'hydra', '~>8.0'
+  gem 'hydra-access-controls', git: 'https://github.com/projecthydra/hydra-head.git', branch: 'bugfix/APOs'
 
   gem 'activerecord-session_store'
   gem 'bcrypt-ruby', '~> 3.1.0'

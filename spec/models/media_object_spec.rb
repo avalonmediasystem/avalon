@@ -101,7 +101,7 @@ describe MediaObject do
 
   describe 'delegators' do
     it 'correctly sets the creator' do
-      media_object.creator = 'Creator, Joan'
+      media_object.creator = ['Creator, Joan']
       media_object.creator.should include('Creator, Joan')
       media_object.descMetadata.creator.should include('Creator, Joan')
     end
@@ -299,13 +299,13 @@ describe MediaObject do
 
   describe '#finished_processing?' do
     it 'returns true if the statuses indicate processing is finished' do
-      media_object.parts << MasterFile.new(status_code: ['STOPPED'])
-      media_object.parts << MasterFile.new(status_code: ['SUCCEEDED'])
+      media_object.parts << MasterFile.new(status_code: 'STOPPED')
+      media_object.parts << MasterFile.new(status_code: 'SUCCEEDED')
       media_object.finished_processing?.should be true
     end
     it 'returns true if the statuses indicate processing is not finished' do
-      media_object.parts << MasterFile.new(status_code: ['STOPPED'])
-      media_object.parts << MasterFile.new(status_code: ['RUNNING'])
+      media_object.parts << MasterFile.new(status_code: 'STOPPED')
+      media_object.parts << MasterFile.new(status_code: 'RUNNING')
       media_object.finished_processing?.should be false
     end
   end
