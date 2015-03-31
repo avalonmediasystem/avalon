@@ -13,31 +13,64 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-      <% show_progress = sections.any? { |s| not s.succeeded? } %>
-      <% unless (sections.blank? or sections.length == 1) and not show_progress %>
-      <section class="whitespace" id="segments">
-        <legend><i class="icon-list-alt"></i> Sections</legend>
-          <ol id="section_links">
-            <% sections.each_with_index do |section,i| %>
-              <% unless can? :edit, @mediaobject %>
-                <% next if section.derivatives.empty? %>
-              <% end %>
-              <li class="<%= show_progress ? 'progress-indented' : ''%>">
-                <%# If the label has not been set use the file name as a default %>
-                <%=
-                  link_to stream_label_for(section),
-                    share_link_for( section ),
-                    data: {segment: section.pid, is_video: section.is_video?, share_link: share_link_for(section)},
-                    class: (section.pid == activeStream.pid ? 'current-stream' : nil)
-                %>
-                <% unless section.duration.blank? %>
-                  (<%= milliseconds_to_formatted_time(section.duration.to_i) %>)
-                <% end %>
-                <% if show_progress %>
-                  <div class="status-detail alert" style="display: none"></div>
-                <% end %>
-              </li>
-              <% end %>
-          </ol>
-       </section>
-       <% end %>
+<% show_progress = sections.any? { |s| not s.succeeded? } %>
+<% unless (sections.blank? or sections.length == 1) and not show_progress %>
+
+<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+  <div class="panel panel-default">
+    <div class="panel-heading" role="tab" id="heading0" style="border-bottom: 1px solid #ddd;">
+      <h4 class="panel-title">
+        <span id="section-label">Sections</span>
+	<button class="btn btn-primary btn-xs" id="expand_button">Expand All</button>
+	<button class="btn btn-primary btn-xs hidden" id="collapse_button">Collapse All</button>
+	<br class="clear"/>
+      </h4>
+    </div>
+
+<% sections.each_with_index do |section,i| %>
+<%   unless can? :edit, @mediaobject %>
+<%     next if section.derivatives.empty? %>
+<%   end %>
+<%=  structure_html(section,i,show_progress).html_safe %>
+<% end %>
+
+  </div>
+</div>
+
+<% content_for :page_scripts do %>
+<script>
+  if ($('.fa-plus-square').length + $('.fa-minus-square').length <= 1){
+    $('#collapse_button').addClass('hidden');
+    $('#expand_button').addClass('hidden');
+  } else {
+    $('.panel-title #section-label').addClass('hidden');
+  }
+  $('#expand_button').on('click', function() {
+    $('#accordion.panel-group .panel-collapse').collapse('show');
+    $('#accordion.panel-group a .panel-title .fa-plus-square').addClass('hidden');
+    $('#accordion.panel-group a .panel-title .fa-minus-square').removeClass('hidden');
+  });
+  $('#collapse_button').on('click', function() {
+    $('#accordion.panel-group .panel-collapse').collapse('hide');
+    $('#accordion.panel-group a .panel-title .fa-plus-square').removeClass('hidden');
+    $('#accordion.panel-group a .panel-title .fa-minus-square').addClass('hidden');
+  });
+  $('#accordion.panel-group .panel-collapse').on('shown.bs.collapse', function() {
+    if($('#accordion.panel-group .panel-collapse').length == $('#accordion.panel-group .panel-collapse.in').length) {
+      $('#expand_button').addClass('hidden');
+      $('#collapse_button').removeClass('hidden');
+    }
+  });
+  $('#accordion.panel-group .panel-collapse').on('hidden.bs.collapse', function() {
+    $('#expand_button').removeClass('hidden');
+    $('#collapse_button').addClass('hidden');
+  });
+  $('#accordion.panel-group a .panel-title').on('click', function() {
+    $(this).find('.fa-plus-square').toggleClass('hidden');
+    $(this).find('.fa-minus-square').toggleClass('hidden');
+  });
+
+</script>
+<% end %>
+<% end %>
+

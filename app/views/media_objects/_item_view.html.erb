@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% f_start, f_end = parse_media_fragment_param %>
+<% f_start, f_end = parse_media_fragment params['t'] %>
 <div class="row">
   <div class="col-sm-8" id="left_column">
     <section id="player" style="width: 100%">
@@ -46,12 +46,11 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     </section>
     <%= render 'workflow_progress' %>
+    <%= render('share') if can?(:share, MediaObject) %>
     <%= render partial: 'sections', 
         locals: {mediaobject: @mediaobject,
                  sections: @masterFiles,
                  activeStream: @currentStream} %>
-
-    <%= render('share') if can?(:share, MediaObject) %>
   </div>
 
   <div class="col-sm-4" id="right-column">
@@ -78,9 +77,30 @@ Unless required by applicable law or agreed to in writing, software distributed
     features << 'thumbnailSelector' if can? :edit, @mediaobject
     features.concat ['fullscreen','responsive']
   %>
-
+  <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
-    var jumped = false;
+    var updating_segment = false;
+    var offset = <%= f_start %>;
+    var set_offset = function(event){
+      currentOffset = currentPlayer.getCurrentTime();
+      if (currentOffset != offset) {
+        currentPlayer.setCurrentTime(offset);
+      }
+    }
+    var update_active_stream = function(event){
+      if (!updating_segment) {
+        updating_segment = true;
+        active_segment = $('a.current-stream').data('segment')
+        AvalonStreams.setActiveSection(active_segment);
+        updating_segment = false;
+      }
+    }
+    seeked_handler = function(event){
+      currentPlayer.pause();
+    }
+    seeking_handler = function(event){
+      currentPlayer.play();
+    }
     currentPlayer = new MediaElementPlayer('#video-tag', 
         { mode: 'auto_plugin',
           pluginPath: '/assets/mediaelement_rails/',
@@ -91,16 +111,13 @@ Unless required by applicable law or agreed to in writing, software distributed
           audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
           mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
           startQuality: '<%= current_quality(@currentStreamInfo) %>',
-          <% if f_start > 0 %>
-            success: function (mediaElement, domObject, player) {
-              mediaElement.addEventListener('loadedmetadata', function(e) {
-                if (!jumped ){
-                  jumped = true;
-                  mediaElement.setCurrentTime(<%= f_start %>);
-                }
-              });
-            }
-          <% end %>
+          success: function (mediaElement, domObject, player) {
+            mediaElement.addEventListener('loadedmetadata', set_offset, true);
+            mediaElement.addEventListener('timeupdate', update_active_stream, true ); 
+            mediaElement.addEventListener('seeked', seeked_handler, true);
+            mediaElement.addEventListener('seeking', seeking_handler, true);
+          }
         });
   </script>
+  <% end %>
 <% end %>

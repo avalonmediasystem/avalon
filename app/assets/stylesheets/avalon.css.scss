@@ -46,15 +46,6 @@ a:not(.btn) {
   pointer-events: none !important;
 }
 
-.current-stream {
-  font-weight: bold;
-
-  &:link { @hidden-disabled-link }
-  &:hover { @hidden-disabled-link }
-  &:active { @hidden-disabled-link }
-  &:visited { @hidden-disabled-link }
-}
-
 tr.active-false td {
   color: $gray;
 }
@@ -628,7 +619,6 @@ a[data-trigger='submit'] {
 }
 
 .share-tabs {
-  margin-top: 20px;
   max-width: 750px;
 }
 
@@ -746,4 +736,106 @@ a[data-trigger='submit'] {
 
 .about_page {
   @extend .container-fluid;
+}
+
+#share-button {
+  text-align: right;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  a:link, a:visited, a:hover, a:active {
+    text-decoration: none;
+    outline: 0;
+  }
+}
+#share-list .tab-content {
+  margin-bottom: 20px; 
+}
+#share-list .share-tabs {
+  a:link, a:visited, a:hover, a:active {
+    outline: 0;
+  }
+}
+
+$accordionPadding: 20px;
+@function accordion-indent($n) {
+  @return -1 * $n * $accordionPadding;
+}
+
+#accordion.panel-group {
+  a {
+    &:link, &:visited, &:hover, &:active {
+      outline: 0;
+      text-decoration: none;
+    }
+    .panel-title .fa {
+      font-size: .9em;
+      float: right;
+    }
+  }
+  ul, li {
+    list-style: none;
+  }
+  li.stream-li {
+    position: relative;
+  }
+  i.now-playing {
+    position: absolute;
+    color: $linkColor;
+    left: accordion-indent(1);
+  }
+  .panel-heading {
+    border-bottom: 1px solid #dddddd;
+    padding: 7px 10px;
+    ul {
+      padding-left: $accordionPadding;
+      margin-bottom: 0;
+    }
+    #expand_button, #collapse_button {
+      float:right;
+      margin-top: -2px;
+    }
+  }
+  .panel-body {
+    border-top: none;
+    ul {
+      padding-left: $accordionPadding;
+      i.now-playing {
+        top: 3px;
+        left: accordion-indent(1);
+      }
+      ul {
+        i.now-playing {
+          left: accordion-indent(2);
+        }
+	ul {
+	  i.now-playing {
+	    left: accordion-indent(3);
+          }
+ 	  ul {
+	    i.now-playing {
+	      left: accordion-indent(4);
+	    }
+	  }
+	}
+      }
+    }
+  }
+}
+
+.current-stream {
+  font-weight: bold;
+  border-radius: 3px;
+  margin-left: -5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  &:link { @hidden-disabled-link }
+  &:hover { @hidden-disabled-link }
+  &:active { @hidden-disabled-link }
+  &:visited { @hidden-disabled-link }
+}
+
+div.status-detail {
+  margin-bottom: 0;
+  margin-left: 40px;
+  font-size: .9em;
 }

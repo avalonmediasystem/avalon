@@ -30,16 +30,16 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% @masterFiles.each do |masterfile| %>
     <tr data-segment="<%= masterfile.pid %>">
       <td>
-        <i class="icon-reorder"></i>
+        <i class="fa fa-reorder"></i>
       </td>
       <td>
         <% case masterfile.file_format
            when 'Sound' %>
-             <i class="icon-volume-up"></i>
+             <i class="fa fa-volume-up"></i>
         <% when 'Moving image' %>
-             <i class="icon-film"></i>
+             <i class="fa fa-film"></i>
         <% else %>
-             <i class="icon-question-sign"></i>
+             <i class="fa fa-question-sign"></i>
         <% end %>
       </td>
       <td>

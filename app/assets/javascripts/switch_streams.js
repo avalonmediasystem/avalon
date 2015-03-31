@@ -19,20 +19,24 @@ window.AvalonStreams = {
       /* Start by resetting the state of all sections */
       $('a.current-stream ~ i').remove();
       $('a[data-segment]').removeClass('current-stream');
-
-      $("a[data-segment='" + activeSegment + "']").addClass('current-stream');
+      currentTime = currentPlayer.getCurrentTime()
+      sectionnodes = $("a[data-segment='" + activeSegment + "']");
+      if (typeof(sectionnodes[0].dataset.fragmentbegin)=='undefined' ) {
+	// section doesn't have mediafragment data
+	$(sectionnodes[0]).addClass('current-stream');
+      } else {
+	// find the sub-section that contains the player's current time
+        for (i=0; i<sectionnodes.length; i++){
+	    if (currentTime >= parseFloat(sectionnodes[i].dataset.fragmentbegin) && 
+		( i+1 == sectionnodes.length || currentTime < parseFloat(sectionnodes[i+1].dataset.fragmentbegin))){
+		$(sectionnodes[i]).addClass('current-stream');
+		i=sectionnodes.length; //break
+	    }
+	}
+      }
       $('a.current-stream').trigger('streamswitch', [stream_info]).parent().append(AvalonStreams.nowPlaying);
     },
 
-    setActiveLabel: function(title) {
-      target = $('#stream_label');
-      if (target) {
-	/* This seems a bit unneeded with CSS3 but that can wait for a
-	 * future release
-	 */
-        target.fadeToggle(50, function() { target.text(title); target.fadeToggle(50) });
-      }
-    },
 
     /*
      * This method should take care of the heavy lifting involved in passing a message
@@ -58,19 +62,18 @@ window.AvalonStreams = {
             videoNode.append('<source src="' + hls.url + '" data-quality="' + hls.quality + '" data-plugin-type="native" type="application/vnd.apple.mpegURL">');
           }
           
-          // Rebuilds the quality selector
-          //currentPlayer.setSrc(newSrc);
           if (stream_info.poster_image != "undefined" && stream_info.poster_image != null)
             currentPlayer.setPoster(stream_info.poster_image);
           currentPlayer.buildqualities(currentPlayer, currentPlayer.controls, currentPlayer.layers, currentPlayer.media);
+	  // set global variable offset for loadedmetadata listener
+	  if (!isNaN(parseFloat(stream_info['t']))) offset = parseFloat(stream_info['t'].split(',')[0]);
+	  else offset=0;
           currentPlayer.load(); 
-        } else {
-          //currentPlayer = AvalonPlayer.init($('#player'), opts);
         }
       }
     },
     
-    nowPlaying: '<i class="icon-circle-arrow-left"></i>'
+    nowPlaying: '<i class="now-playing fa fa-arrow-circle-right"></i>'
 };
 
 $().ready(function() {
@@ -78,23 +81,31 @@ $().ready(function() {
     AvalonStreams.setActiveSection($('a.current-stream').data('segment'), null);
     
     $('a[data-segment]').click(function(event) {
+      var target = $(this);
 
       // Only does the AJAX switching if type of new stream is identical to old stream,
       // otherwise do the regular page load
-      if ($('a.current-stream').data('is-video') == $(this).data('is-video')) {
+      if ($('a.current-stream').data('is-video') == target.data('is-video')) {
         event.preventDefault();
-        var target = $(this);
 
-        /**
-         * Explicitly make this a JSON request 
-         */
-        var uri = target.attr('href').split('?')[0] + '.json';
-        var segment = $(this).data('segment');
+        // If it is the same segment, just change the offset
+        if ($('a.current-stream').data('segment') == target.data('segment') && typeof(target.data('fragmentbegin')!='undefined')) {
+	  currentPlayer.setCurrentTime(parseFloat(target.data('fragmentbegin')));
+	  AvalonStreams.setActiveSection(target.data('segment'), null);
+	} else {
 
-        $.getJSON(uri, 'content=' + segment, function(data) {
-          AvalonStreams.setActiveSection(segment, data);
-          AvalonStreams.refreshStream(data);
-        });
+          /**
+           * Explicitly make this a JSON request 
+           */
+          var uri = target.attr('href').split('?')[0] + '.json';
+	  var params = target.attr('href').split('?')[1];
+	  var segment = target.data('segment');
+
+	  $.getJSON(uri, 'content=' + segment + '&' + params, function(data) {
+	    AvalonStreams.refreshStream(data);
+            AvalonStreams.setActiveSection(segment, data);
+	  });
+	}
       }
     });
 });

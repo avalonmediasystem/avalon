@@ -26,6 +26,8 @@ class MasterFile < ActiveFedora::Base
   include Rails.application.routes.url_helpers
   include Permalink
   include VersionableModel
+
+  has_metadata name: "structuralMetadata", :type => ActiveFedora::Datastream
   
   WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio']
 
@@ -64,7 +66,6 @@ class MasterFile < ActiveFedora::Base
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
-
 
   validates :workflow_name, presence: true, inclusion: { in: Proc.new{ WORKFLOWS } }
   validates_each :poster_offset, :thumbnail_offset do |record, attr, value|
@@ -160,6 +161,17 @@ class MasterFile < ActiveFedora::Base
     unless self.mediaobject.nil?
       self.mediaobject.parts_with_order += [self]
       self.mediaobject.parts += [self]
+    end
+  end
+
+  def set_structural_metadata path
+    self.structuralMetadata.content = File.open(path)
+    self.structuralMetadata.mimeType = "text/xml"
+  end
+
+  def get_structural_metadata
+    Nokogiri::XML(self.structuralMetadata.content) do |config|
+      config.noblanks
     end
   end
 

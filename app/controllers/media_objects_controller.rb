@@ -229,6 +229,7 @@ class MediaObjectsController < ApplicationController
       end
       params[:content] = @mediaobject.section_pid[index]
     end
+      
     @masterFiles = load_master_files
     @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
     @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
@@ -236,6 +237,7 @@ class MediaObjectsController < ApplicationController
     # exceptions. It might be worth refactoring when there are some extra
     # cycles available.
     @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
+    @currentStreamInfo['t'] = params[:t] # add MediaFragment from params
  end
 
   # The goal of this method is to determine which stream to provide to the interface
