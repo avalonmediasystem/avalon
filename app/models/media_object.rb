@@ -267,7 +267,11 @@ class MediaObject < ActiveFedora::Base
           end
           update_attribute_in_metadata(k, vals, attrs)
         else
-          update_attribute_in_metadata(k, Array(v))
+          if self.class.multiple?(k)
+            update_attribute_in_metadata(k, Array(v))
+          else
+            update_attribute_in_metadata(k, v)
+          end
         end
       rescue Exception => msg
         missing_attributes[k.to_sym] = msg.to_s
@@ -297,15 +301,19 @@ class MediaObject < ActiveFedora::Base
       missing_attributes[attribute] = "Metadata attribute '#{attribute}' not found"
       return false
     else
-      values = Array(value).select { |v| not v.blank? }
+      values = if self.class.multiple?(attribute)
+        Array(value).select { |v| not v.blank? }
+      else
+        value
+      end
       descMetadata.find_by_terms( metadata_attribute ).each &:remove
       if descMetadata.template_registry.has_node_type?( metadata_attribute )
-        values.each_with_index do |val, i|
+        Array(values).each_with_index do |val, i|
           descMetadata.add_child_node(descMetadata.ng_xml.root, metadata_attribute, val, (attributes[i]||{}))
         end
         #end
       elsif descMetadata.respond_to?("add_#{metadata_attribute}")
-        values.each_with_index do |val, i|
+        Array(values).each_with_index do |val, i|
           descMetadata.send("add_#{metadata_attribute}", val, (attributes[i] || {}))
         end;
       else
