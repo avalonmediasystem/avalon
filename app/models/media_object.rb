@@ -133,6 +133,7 @@ class MediaObject < ActiveFedora::Base
   has_attributes :abstract, datastream: :descMetadata, at: [:abstract], multiple: false
   has_attributes :note, datastream: :descMetadata, at: [:note], multiple: true
   has_attributes :format, datastream: :descMetadata, at: [:media_type], multiple: false
+  has_attributes :resource_type, datastream: :descMetadata, at: [:resource_type], multiple: true
   # Additional descriptive metadata
   has_attributes :contributor, datastream: :descMetadata, at: [:contributor], multiple: true
   has_attributes :publisher, datastream: :descMetadata, at: [:publisher], multiple: true
@@ -341,7 +342,8 @@ class MediaObject < ActiveFedora::Base
       mime_types = nil if mime_types.empty?
       resource_types = nil if resource_types.empty?
 
-      update_attribute_in_metadata(:media_type, mime_types)
+      #format = mime_types.first
+      update_attribute_in_metadata(:format, mime_types)
       update_attribute_in_metadata(:resource_type, resource_types)
 
     rescue Exception => e
