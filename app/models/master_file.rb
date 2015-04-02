@@ -170,9 +170,8 @@ class MasterFile < ActiveFedora::Base
   end
 
   def get_structural_metadata
-    Nokogiri::XML(self.structuralMetadata.content) do |config|
-      config.noblanks
-    end
+    sm = Nokogiri::XML(self.structuralMetadata.content) { |config| config.noblanks }
+    sm.xpath('//Item').empty? ? nil : sm
   end
 
   def delete 
