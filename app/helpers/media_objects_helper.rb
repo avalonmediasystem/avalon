@@ -97,6 +97,10 @@ module MediaObjectsHelper
         section.pid == @currentStream.pid
      end
 
+     def hide_sections? sections
+       sections.blank? or (sections.length == 1 && sections.first.get_structural_metadata.xpath('//Item').empty?)
+     end
+
      def structure_html section, index, show_progress
        current = is_current_section? section
 

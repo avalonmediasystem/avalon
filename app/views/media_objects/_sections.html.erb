@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% show_progress = sections.any? { |s| not s.succeeded? } %>
-<% unless (sections.blank? or (sections.length == 1 && sections.first.get_structural_metadata.xpath('//Item').empty?)) and not show_progress %>
+<% unless hide_sections?(sections) and not show_progress %>
 
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
   <div class="panel panel-default">
