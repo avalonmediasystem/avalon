@@ -133,6 +133,7 @@ class MediaObject < ActiveFedora::Base
   has_attributes :abstract, datastream: :descMetadata, at: [:abstract], multiple: false
   has_attributes :note, datastream: :descMetadata, at: [:note], multiple: true
   has_attributes :format, datastream: :descMetadata, at: [:media_type], multiple: false
+  has_attributes :resource_type, datastream: :descMetadata, at: [:resource_type], multiple: true
   # Additional descriptive metadata
   has_attributes :contributor, datastream: :descMetadata, at: [:contributor], multiple: true
   has_attributes :publisher, datastream: :descMetadata, at: [:publisher], multiple: true
@@ -267,7 +268,7 @@ class MediaObject < ActiveFedora::Base
           end
           update_attribute_in_metadata(k, vals, attrs)
         else
-          update_attribute_in_metadata(k, Array(v))
+          update_attribute_in_metadata(k, v)
         end
       rescue Exception => msg
         missing_attributes[k.to_sym] = msg.to_s
@@ -292,20 +293,23 @@ class MediaObject < ActiveFedora::Base
     # class attributes are displayed in the view and posted to the server
     metadata_attribute = find_metadata_attribute(attribute)
     metadata_attribute_value = value
-
     if metadata_attribute.nil?
       missing_attributes[attribute] = "Metadata attribute '#{attribute}' not found"
       return false
     else
-      values = Array(value).select { |v| not v.blank? }
+      values = if self.class.multiple?(attribute)
+        Array(value).select { |v| not v.blank? }
+      else
+        value
+      end
       descMetadata.find_by_terms( metadata_attribute ).each &:remove
       if descMetadata.template_registry.has_node_type?( metadata_attribute )
-        values.each_with_index do |val, i|
+        Array(values).each_with_index do |val, i|
           descMetadata.add_child_node(descMetadata.ng_xml.root, metadata_attribute, val, (attributes[i]||{}))
         end
         #end
       elsif descMetadata.respond_to?("add_#{metadata_attribute}")
-        values.each_with_index do |val, i|
+        Array(values).each_with_index do |val, i|
           descMetadata.send("add_#{metadata_attribute}", val, (attributes[i] || {}))
         end;
       else
@@ -333,7 +337,8 @@ class MediaObject < ActiveFedora::Base
       mime_types = nil if mime_types.empty?
       resource_types = nil if resource_types.empty?
 
-      update_attribute_in_metadata(:media_type, mime_types)
+      #format = mime_types.first
+      update_attribute_in_metadata(:format, mime_types)
       update_attribute_in_metadata(:resource_type, resource_types)
 
     rescue Exception => e
