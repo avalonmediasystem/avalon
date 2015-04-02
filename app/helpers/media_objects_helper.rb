@@ -97,6 +97,10 @@ module MediaObjectsHelper
         section.pid == @currentStream.pid
      end
 
+     def hide_sections? sections
+       sections.blank? or (sections.length == 1 && sections.first.get_structural_metadata.nil?)
+     end
+
      def structure_html section, index, show_progress
        current = is_current_section? section
 
@@ -115,7 +119,7 @@ EOF
        sm = section.get_structural_metadata
 
        # If there is no structural metadata associated with this masterfile return the stream info
-       if sm.xpath('//Item').empty?
+       if sm.nil?
          mydata = {segment: section.pid, is_video: section.is_video?, share_link: share_link_for(section)} 
          myclass = current ? 'current-stream' : nil
          sectionlabel = "#{index+1}. #{stream_label_for(section)}"
