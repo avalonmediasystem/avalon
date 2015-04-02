@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <% show_progress = sections.any? { |s| not s.succeeded? } %>
-<% unless (sections.blank? or sections.length == 1) and not show_progress %>
+<% unless (sections.blank? or (sections.length == 1 && sections.first.get_structural_metadata.xpath('//Item').empty?)) and not show_progress %>
 
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
   <div class="panel panel-default">
@@ -39,11 +39,21 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
 <script>
-  if ($('.fa-plus-square').length + $('.fa-minus-square').length <= 1){
+  if ($('.fa-plus-square').length + $('.fa-minus-square').length <= 2){
     $('#collapse_button').addClass('hidden');
     $('#expand_button').addClass('hidden');
   } else {
     $('.panel-title #section-label').addClass('hidden');
+    $('#accordion.panel-group .panel-collapse').on('shown.bs.collapse', function() {
+      if($('#accordion.panel-group .panel-collapse').length == $('#accordion.panel-group .panel-collapse.in').length) {
+        $('#expand_button').addClass('hidden');
+        $('#collapse_button').removeClass('hidden');
+      }
+    });
+    $('#accordion.panel-group .panel-collapse').on('hidden.bs.collapse', function() {
+      $('#expand_button').removeClass('hidden');
+      $('#collapse_button').addClass('hidden');
+    });
   }
   $('#expand_button').on('click', function() {
     $('#accordion.panel-group .panel-collapse').collapse('show');
@@ -54,16 +64,6 @@ Unless required by applicable law or agreed to in writing, software distributed
     $('#accordion.panel-group .panel-collapse').collapse('hide');
     $('#accordion.panel-group a .panel-title .fa-plus-square').removeClass('hidden');
     $('#accordion.panel-group a .panel-title .fa-minus-square').addClass('hidden');
-  });
-  $('#accordion.panel-group .panel-collapse').on('shown.bs.collapse', function() {
-    if($('#accordion.panel-group .panel-collapse').length == $('#accordion.panel-group .panel-collapse.in').length) {
-      $('#expand_button').addClass('hidden');
-      $('#collapse_button').removeClass('hidden');
-    }
-  });
-  $('#accordion.panel-group .panel-collapse').on('hidden.bs.collapse', function() {
-    $('#expand_button').removeClass('hidden');
-    $('#collapse_button').addClass('hidden');
   });
   $('#accordion.panel-group a .panel-title').on('click', function() {
     $(this).find('.fa-plus-square').toggleClass('hidden');
