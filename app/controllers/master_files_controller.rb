@@ -30,7 +30,7 @@ class MasterFilesController < ApplicationController
 
   def show
     masterfile = MasterFile.find(params[:id])
-    redirect_to pid_section_media_object_path(masterfile.mediaobject.pid, masterfile.pid)
+    redirect_to pid_section_media_object_path(masterfile.mediaobject_id, masterfile.pid, params.except(:id, :action, :controller))
   end
 
   def embed
