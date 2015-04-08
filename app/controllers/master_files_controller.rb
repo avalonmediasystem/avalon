@@ -47,6 +47,35 @@ class MasterFilesController < ApplicationController
     end
   end
 
+  def attach_structure
+    if params[:id].blank? || (not MasterFile.exists?(params[:id]))
+      flash[:notice] = "MasterFile #{params[:id]} does not exist"
+      redirect_to :back 
+      return
+    end
+    @masterfile = MasterFile.find(params[:id])
+    if not MediaObject.exists?(@masterfile.mediaobject_id)
+      flash[:notice] = "MediaObject #{@masterfile.mediaobject_id} does not exist"
+      redirect_to :back 
+      return
+    end
+    if params.has_key?(:Filedata)
+      media_object = MediaObject.find(@masterfile.mediaobject_id)
+      authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
+
+      file = params[:Filedata]
+      @masterfile.structuralMetadata.content = File.open(File.realpath(file.path))
+      unless @masterfile.save
+        flash[:error] = "There was a problem storing the file"
+      end
+    end
+    respond_to do |format|
+    	format.html { redirect_to edit_media_object_path(@masterfile.mediaobject_id, step: 'structure') }
+    	format.js { }
+    end
+
+end
+
   # Creates and Saves a File Asset to contain the the Uploaded file 
   # If container_id is provided:
   # * the File Asset will use RELS-EXT to assert that it's a part of the specified container

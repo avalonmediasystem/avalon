@@ -57,6 +57,7 @@ Avalon::Application.routes.draw do
       post 'poster',    :to => 'master_files#set_frame', :defaults => { :type => 'poster', :format => 'html' }
       post 'still',     :to => 'master_files#set_frame', :defaults => { :format => 'html' }
       get :embed
+      post 'attach_structure', :to => 'master_files#attach_structure'
     end
   end
 
