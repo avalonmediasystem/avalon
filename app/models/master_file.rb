@@ -176,7 +176,7 @@ class MasterFile < ActiveFedora::Base
 
   def delete 
     # Stops all processing and deletes the workflow
-    unless workflow_id.blank? || new_object? || finished_processing?
+    unless workflow_id.blank? || new_record? || finished_processing?
       begin
         Rubyhorn.client.stop(workflow_id)
       rescue Exception => e
