@@ -63,8 +63,7 @@ class MasterFilesController < ApplicationController
       media_object = MediaObject.find(@masterfile.mediaobject_id)
       authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
 
-      file = params[:Filedata]
-      @masterfile.structuralMetadata.content = File.open(File.realpath(file.path))
+      @masterfile.structuralMetadata.content =  params[:Filedata].open
       unless @masterfile.save
         flash[:error] = "There was a problem storing the file"
       end

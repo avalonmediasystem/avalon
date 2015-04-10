@@ -14,7 +14,7 @@
 
 class StructuralMetadata < ActiveFedora::Datastream
 
-  def toXML
+  def to_xml
     sm = Nokogiri::XML(self.content) { |config| config.noblanks }
     sm.xpath('//Item').empty? ? nil : sm
   end

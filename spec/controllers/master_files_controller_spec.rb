@@ -265,7 +265,7 @@ describe MasterFilesController do
       @file = fixture_file_upload('/structure.xml', 'text/xml')
       post 'attach_structure', Filedata: @file, id: master_file.id
       master_file.reload
-      master_file.structuralMetadata.toXML.xpath('//Item').length.should == 1
+      master_file.structuralMetadata.to_xml.xpath('//Item').length.should == 1
       flash[:errors].should be_nil        
       flash[:notice].should be_nil        
     end
