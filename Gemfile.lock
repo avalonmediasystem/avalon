@@ -91,8 +91,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: de27be5f4355886aee0e39711c1dd3db8aac698a
-  tag: v3.1
+  revision: 9add24ac8859159f3e639c5711aed2feefd3203c
+  branch: bugfix/timeupdate-events
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)

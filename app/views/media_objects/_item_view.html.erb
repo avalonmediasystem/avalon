@@ -80,7 +80,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
     var updating_segment = false;
-    var iwaspaused = true;
 
     var update_active_stream = function(event){
       if (!updating_segment) {
@@ -89,13 +88,6 @@ Unless required by applicable law or agreed to in writing, software distributed
         if (typeof(active_segment) != 'undefined') AvalonStreams.setActiveSection(active_segment);
         updating_segment = false;
       }
-    }
-    seeked_handler = function(event){
-      if (iwaspaused) currentPlayer.pause();
-    }
-    seeking_handler = function(event){
-      iwaspaused = currentPlayer.media.paused;
-      currentPlayer.play();
     }
     currentPlayer = new MediaElementPlayer('#video-tag', 
         { mode: 'auto_plugin',
@@ -113,8 +105,6 @@ Unless required by applicable law or agreed to in writing, software distributed
               currentPlayer.media.removeEventListener('loadedmetadata', loadedmetadata);
             }, true);
             mediaElement.addEventListener('timeupdate', update_active_stream, true ); 
-            mediaElement.addEventListener('seeked', seeked_handler, true);
-            mediaElement.addEventListener('seeking', seeking_handler, true);
           }
         });
   </script>
