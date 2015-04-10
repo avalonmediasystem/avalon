@@ -27,7 +27,7 @@ class MasterFile < ActiveFedora::Base
   include Permalink
   include VersionableModel
 
-  has_metadata name: "structuralMetadata", :type => ActiveFedora::Datastream
+  has_metadata name: "structuralMetadata", :type => StructuralMetadata, :mimeType => "text/xml"
   
   WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio']
 
@@ -162,16 +162,6 @@ class MasterFile < ActiveFedora::Base
       self.mediaobject.parts_with_order += [self]
       self.mediaobject.parts += [self]
     end
-  end
-
-  def set_structural_metadata path
-    self.structuralMetadata.content = File.open(path)
-    self.structuralMetadata.mimeType = "text/xml"
-  end
-
-  def get_structural_metadata
-    sm = Nokogiri::XML(self.structuralMetadata.content) { |config| config.noblanks }
-    sm.xpath('//Item').empty? ? nil : sm
   end
 
   def delete 

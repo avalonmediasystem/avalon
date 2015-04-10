@@ -251,5 +251,25 @@ describe MasterFilesController do
       end
     end
   end
+
+  describe "#attach_structure" do
+    let!(:media_object) {FactoryGirl.create(:media_object_with_master_file)}
+    let!(:content_provider) {login_user media_object.collection.managers.first}
+    let!(:master_file) {media_object.parts.first}
+
+    before(:each) do
+      login_user media_object.collection.managers.first
+    end
+    
+    it "should populate structuralMetadata datastream with xml" do
+      @file = fixture_file_upload('/structure.xml', 'text/xml')
+      post 'attach_structure', Filedata: @file, id: master_file.id
+      master_file.reload
+      master_file.structuralMetadata.to_xml.xpath('//Item').length.should == 1
+      flash[:errors].should be_nil        
+      flash[:notice].should be_nil        
+    end
+
+  end
   
 end

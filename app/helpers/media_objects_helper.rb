@@ -98,7 +98,7 @@ module MediaObjectsHelper
      end
 
      def hide_sections? sections
-       sections.blank? or (sections.length == 1 && sections.first.get_structural_metadata.nil?)
+       sections.blank? or (sections.length == 1 && sections.first.structuralMetadata.to_xml.nil?)
      end
 
      def structure_html section, index, show_progress
@@ -116,7 +116,7 @@ EOF
 EOF
        progress_div = show_progress ? '<div class="status-detail alert progress-indented" style="display: none"></div>' : ''
 
-       sm = section.get_structural_metadata
+       sm = section.structuralMetadata.to_xml
 
        # If there is no structural metadata associated with this masterfile return the stream info
        if sm.nil?
