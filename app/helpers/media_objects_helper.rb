@@ -129,18 +129,13 @@ EOF
        end
 
        sectionnode = sm.xpath('//Item')
-       sectionlabel = "#{index+1}. #{sectionnode.attribute('label').value}"
-       sectionlabel += " (#{milliseconds_to_formatted_time(section.duration.to_i)})" unless section.duration.blank?
 
        # If there are subsections within structure, build a collapsible panel with the contents
        if sectionnode.children.present?
+         sectionlabel = "#{index+1}. #{sectionnode.attribute('label').value}"
+         sectionlabel += " (#{milliseconds_to_formatted_time(section.duration.to_i)})" unless section.duration.blank?
          tracknumber = 0
-         contents = ''
-         sectionnode.children.each do |node| 
-           st, tracknumber = parse_node section, node, tracknumber, progress_div
-           contents+=st
-         end
-         s = <<EOF
+         wrapperopen = <<EOF
    #{headeropen}
           <span class="fa fa-minus-square #{current ? '' : 'hidden'}"></span>
           <span class="fa fa-plus-square #{current ? 'hidden' : ''}"></span>
@@ -148,17 +143,39 @@ EOF
    #{headerclose}
     <div id="section#{index}" class="panel-collapse collapse #{current ? 'in' : ''}" role="tabpanel" aria-labelledby="heading#{index}">
       <div class="panel-body">
-        <ul>#{contents}</ul>
+        <ul>
+EOF
+         wrapperclose = <<EOF 
+        </ul>
       </div>
     </div>
 EOF
-       # If there are so subsections within the structure, return just the header with the single section
+       # If there are no subsections within the structure, return just the header with the single section
        else
-         st, tracknumber = parse_node section, sectionnode.first, index, progress_div
-         s = "#{headeropen}<span><ul>#{st}</ul></span>#{headerclose}"
+         tracknumber = index
+         wrapperopen = "#{headeropen}<span><ul>"
+         wrapperclose = "</ul></span>#{headerclose}"
        end
+       contents, tracknumber = parse_section section, sectionnode.first, tracknumber, progress_div
+       "#{wrapperopen}#{contents}#{wrapperclose}"
      end
 
+     def parse_section section, node, index, progress_div
+       sm = section.structuralMetadata.to_xml
+       sectionnode = sm.xpath('//Item')
+       if sectionnode.children.present?
+         tracknumber = 0
+         contents = ''
+         sectionnode.children.each do |node| 
+           st, tracknumber = parse_node section, node, tracknumber, progress_div
+           contents+=st
+         end
+       else
+         contents, tracknumber = parse_node section, sectionnode.first, index, progress_div         
+       end
+       return contents, tracknumber
+     end
+ 
      def parse_node section, node, tracknumber, progress_div
        if node.name.upcase=="DIV"
          contents = ''
@@ -166,17 +183,24 @@ EOF
          return "<li>#{node.attribute('label')}</li><li><ul>#{contents}</ul></li>", tracknumber
        elsif ['SPAN','ITEM'].include? node.name.upcase
          tracknumber += 1
-         start = node.attribute('begin').present? ? node.attribute('begin').value : 0
-         stop = node.attribute('end').present? ? node.attribute('end').value : section.duration.blank? ? 0 : milliseconds_to_formatted_time(section.duration.to_i)
-         start,stop = parse_media_fragment "#{start},#{stop}"
-         node_duration = milliseconds_to_formatted_time((stop.to_i-start.to_i)*1000)
-         label = "#{tracknumber}. #{node.attribute('label').value} (#{node_duration})"
+         label = "#{tracknumber}. #{node.attribute('label').value} (#{get_duration node, section})"
+         start,stop = get_xml_media_fragment node, section
          url = "#{share_link_for( section )}?t=#{start},#{stop}"
          data =  {segment: section.pid, is_video: section.is_video?, share_link: url, fragmentbegin: start, fragmentend: stop}
-         myclass = section.pid == @currentStream.pid ? 'current-stream' : nil
+         myclass = section.pid == @currentStream && @currentStream.pid ? 'current-stream' : nil
          link = link_to label, url, data: data, class: myclass
          return "<li class='stream-li #{ 'progress-indented' if progress_div.present? }'>#{link}#{progress_div}</li>", tracknumber
        end
      end
 
+     def get_xml_media_fragment node, section
+       start = node.attribute('begin').present? ? node.attribute('begin').value : 0
+       stop = node.attribute('end').present? ? node.attribute('end').value : section.duration.blank? ? 0 : milliseconds_to_formatted_time(section.duration.to_i)
+       parse_media_fragment "#{start},#{stop}"
+     end
+
+     def get_duration node, section
+       start,stop = get_xml_media_fragment node, section
+       milliseconds_to_formatted_time((stop.to_i-start.to_i)*1000)
+     end
 end

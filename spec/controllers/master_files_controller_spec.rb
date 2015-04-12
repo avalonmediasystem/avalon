@@ -263,7 +263,7 @@ describe MasterFilesController do
     
     it "should populate structuralMetadata datastream with xml" do
       @file = fixture_file_upload('/structure.xml', 'text/xml')
-      post 'attach_structure', Filedata: @file, id: master_file.id
+      post 'attach_structure', master_file: {structure: @file}, id: master_file.id
       master_file.reload
       master_file.structuralMetadata.to_xml.xpath('//Item').length.should == 1
       flash[:errors].should be_nil        
