@@ -110,6 +110,13 @@ module Avalon
           true
         end
 
+      def self.attach_structure_to_master_file( master_file, filename )
+          structural_file = "#{filename}.structure.xml"
+          if File::exists? structural_file
+            master_file.structuralMetadata.content=File::open(structural_file)
+          end
+      end
+
       def process!
         media_object.save
 
@@ -118,6 +125,7 @@ module Avalon
           master_file.save(validate: false) #required: need pid before setting mediaobject
           master_file.mediaobject = media_object
           files = self.class.gatherFiles(file_spec[:file])
+          self.class.attach_structure_to_master_file(master_file, file_spec[:file])
           master_file.setContent(files)
           master_file.absolute_location = file_spec[:absolute_location] if file_spec[:absolute_location].present?
           master_file.label = file_spec[:label] if file_spec[:label].present?
