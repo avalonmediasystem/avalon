@@ -65,7 +65,7 @@ class MasterFilesController < ApplicationController
     if params[:master_file].present? && params[:master_file][:structure].present?
       @masterfile.structuralMetadata.content = params[:master_file][:structure].open
     else
-      @masterfile.structuralMetadata.content = " "        
+      @masterfile.structuralMetadata.delete
     end
     unless @masterfile.save
       flash[:error] = "There was a problem storing the file"
