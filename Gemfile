@@ -100,6 +100,8 @@
     gem 'binding_of_caller',   platforms: [:mri_20, :mri_21]
     gem 'license_header'
     gem 'meta_request'
+    gem 'capistrano', '~>2.12.0'
+    gem 'rvm-capistrano'
   end
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
@@ -108,8 +110,6 @@
     gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'v3.1'
     gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'v3.1'
     gem 'daemons'
-    gem 'capistrano', '~>2.12.0'
-    gem 'rvm-capistrano'
     gem 'rspec-rails', '~>2.9'
     gem 'puma'
     gem 'rb-fsevent', '~> 0.9.1'
