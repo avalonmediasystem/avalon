@@ -112,8 +112,8 @@ module Avalon
 
       def self.attach_structure_to_master_file( master_file, filename )
           structural_file = "#{filename}.structure.xml"
-          if File::exists? structural_file
-            master_file.structuralMetadata.content=File::open(structural_file)
+          if File.exists? structural_file
+            master_file.structuralMetadata.content=File.open(structural_file)
           end
       end
 
