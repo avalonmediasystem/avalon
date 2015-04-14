@@ -94,7 +94,7 @@ module MediaObjectsHelper
      end
 
      def is_current_section? section
-        section.pid == @currentStream.pid
+        @currentStream && ( section.pid == @currentStream.pid )
      end
 
      def hide_sections? sections
@@ -187,7 +187,7 @@ EOF
          start,stop = get_xml_media_fragment node, section
          url = "#{share_link_for( section )}?t=#{start},#{stop}"
          data =  {segment: section.pid, is_video: section.is_video?, share_link: url, fragmentbegin: start, fragmentend: stop}
-         myclass = section.pid == @currentStream && @currentStream.pid ? 'current-stream' : nil
+         myclass = is_current_section?(section) ? 'current-stream' : nil
          link = link_to label, url, data: data, class: myclass
          return "<li class='stream-li #{ 'progress-indented' if progress_div.present? }'>#{link}#{progress_div}</li>", tracknumber
        end
