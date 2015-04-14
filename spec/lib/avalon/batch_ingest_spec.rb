@@ -115,6 +115,14 @@ describe Avalon::Batch::Ingest do
       media_object.title.should == '245 A : B F G K N P S'
     end
     
+    it 'should ingest structural metadata' do
+      batch_ingest.ingest
+      ingest_batch = IngestBatch.first
+      media_object = MediaObject.find(ingest_batch.media_object_ids.first)
+      master_file = media_object.parts.first
+      expect(master_file.structuralMetadata.has_content?).to be_true
+    end
+
     it 'should set MasterFile details' do
       batch_ingest.ingest
       ingest_batch = IngestBatch.last
