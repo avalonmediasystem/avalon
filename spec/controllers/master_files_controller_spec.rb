@@ -259,15 +259,24 @@ describe MasterFilesController do
 
     before(:each) do
       login_user media_object.collection.managers.first
+      # populate the structuralMetadata datastream with an uploaded xml file
+      @file = fixture_file_upload('/structure.xml', 'text/xml')
+      post 'attach_structure', master_file: {structure: @file}, id: master_file.id
+      master_file.reload
     end
     
     it "should populate structuralMetadata datastream with xml" do
-      @file = fixture_file_upload('/structure.xml', 'text/xml')
-      post 'attach_structure', Filedata: @file, id: master_file.id
+      expect(master_file.structuralMetadata.to_xml.xpath('//Item').length).to be(1)
+      expect(flash[:errors]).to be_nil
+      expect(flash[:notice]).to be_nil
+    end
+    it "should remove contents of structuralMetadata datastream" do
+      # remove the contents of the datastream
+      post 'attach_structure', id: master_file.id
       master_file.reload
-      master_file.structuralMetadata.to_xml.xpath('//Item').length.should == 1
-      flash[:errors].should be_nil        
-      flash[:notice].should be_nil        
+      expect(master_file.structuralMetadata.to_xml).to be_nil
+      expect(flash[:errors]).to be_nil
+      expect(flash[:notice]).to be_nil
     end
 
   end

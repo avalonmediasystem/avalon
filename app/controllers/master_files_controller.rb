@@ -59,21 +59,22 @@ class MasterFilesController < ApplicationController
       redirect_to :back 
       return
     end
-    if params.has_key?(:Filedata)
-      media_object = MediaObject.find(@masterfile.mediaobject_id)
-      authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
 
-      @masterfile.structuralMetadata.content =  params[:Filedata].open
-      unless @masterfile.save
-        flash[:error] = "There was a problem storing the file"
-      end
+    media_object = MediaObject.find(@masterfile.mediaobject_id)
+    authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
+    if params[:master_file].present? && params[:master_file][:structure].present?
+      @masterfile.structuralMetadata.content = params[:master_file][:structure].open
+    else
+      @masterfile.structuralMetadata.delete
+    end
+    unless @masterfile.save
+      flash[:error] = "There was a problem storing the file"
     end
     respond_to do |format|
-    	format.html { redirect_to edit_media_object_path(@masterfile.mediaobject_id, step: 'structure') }
-    	format.js { }
+      format.html { redirect_to edit_media_object_path(@masterfile.mediaobject_id, step: 'structure') }
+      format.js { }
     end
-
-end
+  end
 
   # Creates and Saves a File Asset to contain the the Uploaded file 
   # If container_id is provided:

@@ -19,7 +19,7 @@ $('.sortable').sortable({
   update: function(e, ui) {
     $('form > [name="masterfile_ids[]"]').remove();
 
-    $(this).find('tr').each(function(){     
+    $(this).find('li.section').each(function(){     
       $('<input>').attr({ 
         type: 'hidden', 
         name: 'masterfile_ids[]', 
@@ -32,13 +32,11 @@ $('.sortable').sortable({
 
 $(".sortable").nestedSortable({
   forcePlaceholderSize:true,
-  handle: 'div',
+  handle: 'li.section',
   helper: 'clone',
-  listType: 'tbody',
-  items: 'tr',
   opacity: .6,
   revert: 250,
   tabSize: 25,
   tolerance: 'pointer',
-  toleranceElement: '> div'
+  toleranceElement: 'ul'
 }).disableSelection();
