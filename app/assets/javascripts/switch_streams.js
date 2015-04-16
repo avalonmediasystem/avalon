@@ -99,8 +99,8 @@ $().ready(function() {
           /**
            * Explicitly make this a JSON request 
            */
-          var uri = target.attr('href').split('?')[0] + '.json';
-	  var params = target.attr('href').split('?')[1];
+	  var uri = target.data('native-url').split('?')[0] + '.json';
+	  var params = target.data('native-url').split('?')[1];
 
 	  $.getJSON(uri, 'content=' + segment + '&' + params, function(data) {
 	    AvalonStreams.refreshStream(data);
