@@ -185,8 +185,9 @@ EOF
          tracknumber += 1
          label = "#{tracknumber}. #{node.attribute('label').value} (#{get_duration node, section})"
          start,stop = get_xml_media_fragment node, section
+         native_url = "#{pid_section_media_object_path(@mediaobject, section.pid)}?t=#{start},#{stop}"
          url = "#{share_link_for( section )}?t=#{start},#{stop}"
-         data =  {segment: section.pid, is_video: section.is_video?, share_link: url, fragmentbegin: start, fragmentend: stop}
+         data =  {segment: section.pid, is_video: section.is_video?, native_url: native_url, fragmentbegin: start, fragmentend: stop}
          myclass = is_current_section?(section) ? 'current-stream' : nil
          link = link_to label, url, data: data, class: myclass
          return "<li class='stream-li #{ 'progress-indented' if progress_div.present? }'>#{link}#{progress_div}</li>", tracknumber
