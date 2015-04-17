@@ -50,7 +50,8 @@ class MasterFilesController < ApplicationController
   def oembed
     if params[:url].present?
       pid = params[:url].split('?')[0].split('/').last
-      mf = MasterFile.find(pid)
+      mf = ActiveFedora::Base.where('dc_identifier_tesim' => pid).first
+      mf ||= MasterFile.find(pid) rescue nil
       if mf.present?
         width = params[:maxwidth] || MasterFile::EMBED_SIZE[:medium]
         height = mf.is_video? ? (width.to_f/mf.display_aspect_ratio.to_f).floor : MasterFile::AUDIO_HEIGHT
@@ -67,7 +68,6 @@ class MasterFilesController < ApplicationController
           "provider_url" => request.base_url,
           "width" => width,
           "height" => height,
-          "title" => mf.mediaobject.title,
           "html" => mf.embed_code(width)
         }
         respond_to do |format|
