@@ -135,8 +135,8 @@ GIT
 
 GIT
   remote: https://github.com/projecthydra/hydra-head.git
-  revision: aa73d36bdee72ada33adde2009ff715854080925
-  branch: bugfix/APOs
+  revision: 723d08f6773fec4e7e6a3b353ce4695d2638204f
+  branch: 8-1-stable
   specs:
     hydra-access-controls (8.1.0)
       active-fedora (~> 8.0.0)

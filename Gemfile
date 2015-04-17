@@ -7,7 +7,7 @@
   gem 'builder', '~>3.1.0'
 
   gem 'hydra', '~>8.0'
-  gem 'hydra-access-controls', git: 'https://github.com/projecthydra/hydra-head.git', branch: 'bugfix/APOs'
+  gem 'hydra-access-controls', git: 'https://github.com/projecthydra/hydra-head.git', branch: '8-1-stable'
 
   gem 'activerecord-session_store'
   gem 'bcrypt-ruby', '~> 3.1.0'
