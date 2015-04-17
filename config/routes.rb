@@ -27,7 +27,7 @@ Avalon::Application.routes.draw do
   end
   match "/authorize", to: 'derivatives#authorize', via: [:get, :post]
   match "/autocomplete", to: 'object#autocomplete', via: [:get]
-  match "/oembed", to: 'object#oembed', via: [:get]
+  match "/oembed", to: 'master_files#oembed', via: [:get]
 
   match "object/:id", to: 'object#show', via: [:get]
   resources :media_objects, except: [:create] do

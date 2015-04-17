@@ -37,18 +37,4 @@ class ObjectController < ApplicationController
     render json: model.send(:autocomplete, params[:q].strip)
   end
 
-  def oembed
-    if params[:url].present?
-      pid = params[:url].split('?')[0].split('/').last
-      mf = MasterFile.find(pid)
-      if mf.present?
-        hash = mf.oembed_hash(params[:maxwidth], params[:maxheight])
-        respond_to do |format|
-          format.xml  { render xml: hash.to_xml({root: 'oembed'}) }
-          format.json { render json: hash }
-        end
-      end
-    end
-  end
-
 end

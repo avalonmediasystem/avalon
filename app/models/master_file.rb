@@ -268,27 +268,6 @@ class MasterFile < ActiveFedora::Base
     }
   end
 
-  def oembed_hash(width = nil, maxheight = nil)
-    width ||= EMBED_SIZE[:medium]
-    height = is_video? ? (width.to_f/display_aspect_ratio.to_f).floor : AUDIO_HEIGHT
-    if maxheight.present? && height>maxheight.to_f
-      width = (maxheight*display_aspect_ratio.to_f).floor
-      height = maxheight.to_i
-    end
-    width = width.to_i
-    hash = {
-      "version" => "1.0",
-      "type" => is_video? ? "video" : "rich",
-      "provider_name" => Avalon::Configuration.lookup('name') || 'Avalon Media System',
-      "provider_url" => defined?(app) ? app.root_url : "" ,
-      "width" => width,
-      "height" => height,
-      "title" => self.mediaobject.title,
-      "html" => embed_code(width)
-    }
-    return hash
-  end
-
   def embed_code(width, permalink_opts = {})
     begin
       if self.permalink
