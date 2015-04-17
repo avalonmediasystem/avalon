@@ -52,8 +52,8 @@ class MasterFilesController < ApplicationController
       pid = params[:url].split('?')[0].split('/').last
       mf = MasterFile.find(pid)
       if mf.present?
-        width = params[:maxwidth] || EMBED_SIZE[:medium]
-        height = mf.is_video? ? (width.to_f/mf.display_aspect_ratio.to_f).floor : AUDIO_HEIGHT
+        width = params[:maxwidth] || MasterFile::EMBED_SIZE[:medium]
+        height = mf.is_video? ? (width.to_f/mf.display_aspect_ratio.to_f).floor : MasterFile::AUDIO_HEIGHT
         maxheight = params['maxheight']
         if maxheight.present? && height>maxheight.to_f
           width = (maxheight*mf.display_aspect_ratio.to_f).floor
