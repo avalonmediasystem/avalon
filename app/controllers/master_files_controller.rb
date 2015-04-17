@@ -47,6 +47,37 @@ class MasterFilesController < ApplicationController
     end
   end
 
+  def oembed
+    if params[:url].present?
+      pid = params[:url].split('?')[0].split('/').last
+      mf = MasterFile.find(pid)
+      if mf.present?
+        width = params[:maxwidth] || EMBED_SIZE[:medium]
+        height = mf.is_video? ? (width.to_f/mf.display_aspect_ratio.to_f).floor : AUDIO_HEIGHT
+        maxheight = params['maxheight']
+        if maxheight.present? && height>maxheight.to_f
+          width = (maxheight*mf.display_aspect_ratio.to_f).floor
+          height = maxheight.to_i
+        end
+        width = width.to_i
+        hash = {
+          "version" => "1.0",
+          "type" => mf.is_video? ? "video" : "rich",
+          "provider_name" => Avalon::Configuration.lookup('name') || 'Avalon Media System',
+          "provider_url" => request.base_url,
+          "width" => width,
+          "height" => height,
+          "title" => mf.mediaobject.title,
+          "html" => mf.embed_code(width)
+        }
+        respond_to do |format|
+          format.xml  { render xml: hash.to_xml({root: 'oembed'}) }
+          format.json { render json: hash }
+        end
+      end
+    end
+  end
+
   def attach_structure
     if params[:id].blank? || (not MasterFile.exists?(params[:id]))
       flash[:notice] = "MasterFile #{params[:id]} does not exist"
