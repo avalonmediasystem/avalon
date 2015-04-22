@@ -50,7 +50,7 @@ class MasterFilesController < ApplicationController
   def oembed
     if params[:url].present?
       pid = params[:url].split('?')[0].split('/').last
-      mf = ActiveFedora::Base.where('dc_identifier_tesim' => pid).first
+      mf = MasterFile.where("dc_identifier_tesim:\"#{pid}\"").first
       mf ||= MasterFile.find(pid) rescue nil
       if mf.present?
         width = params[:maxwidth] || MasterFile::EMBED_SIZE[:medium]
