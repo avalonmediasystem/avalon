@@ -267,6 +267,7 @@ describe MasterFilesController do
     
     it "should populate structuralMetadata datastream with xml" do
       expect(master_file.structuralMetadata.to_xml.xpath('//Item').length).to be(1)
+      expect(master_file.structuralMetadata.valid?).to be true
       expect(flash[:errors]).to be_nil
       expect(flash[:notice]).to be_nil
     end
@@ -275,10 +276,10 @@ describe MasterFilesController do
       post 'attach_structure', id: master_file.id
       master_file.reload
       expect(master_file.structuralMetadata.to_xml).to be_nil
+      expect(master_file.structuralMetadata.valid?).to be false
       expect(flash[:errors]).to be_nil
       expect(flash[:notice]).to be_nil
     end
-
   end
   
 end
