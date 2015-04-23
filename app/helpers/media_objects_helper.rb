@@ -120,7 +120,7 @@ EOF
 
        # If there is no structural metadata associated with this masterfile return the stream info
        if sm.nil?
-         mydata = {segment: section.pid, is_video: section.is_video?, share_link: share_link_for(section)} 
+         mydata = {segment: section.pid, is_video: section.is_video?, share_link: share_link_for(section), native_url: url_for(section)} 
          myclass = current ? 'current-stream' : nil
          sectionlabel = "#{index+1}. #{stream_label_for(section)}"
          sectionlabel += " (#{milliseconds_to_formatted_time(section.duration.to_i)})" unless section.duration.blank?
