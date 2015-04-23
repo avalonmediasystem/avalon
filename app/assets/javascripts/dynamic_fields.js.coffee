@@ -32,12 +32,12 @@ $ ->
         e.preventDefault()
         current_input_group = $(this).closest('.input-group')
         new_input_group = current_input_group.clone()
-        new_input_group.find('input').val('')
-        new_input_group.find('input[id]').each (i,e) ->
+        new_input_group.find('input, textarea').val('')
+        new_input_group.find('input[id], textarea[id]').each (i,e) ->
           idArray = e.id.split('_')
           idArray.push(parseInt(idArray.pop()) + 1)
           e.id = idArray.join('_')
-        new_input_group.find('input[data-target]').each (i, e) ->
+        new_input_group.find('input[data-target], textarea[data-target]').each (i, e) ->
           target = $(e).attr('data-target').split('_')
           target.push(parseInt(target.pop()) + 1)
           $(e).attr('data-target', target.join('_'))
@@ -48,13 +48,30 @@ $ ->
           new_input_group.find('.twitter-typeahead').remove()
           initialize_typeahead(new_input)
         else if current_input_group.find('.dropdown-menu').size()
-          dropdown_default = current_input_group.find('.dropdown-menu li:first a').text()
-          new_input_group.find('.dropdown-toggle span').first().text(dropdown_default)
-          new_input_group.find('input[type="hidden"]').val(dropdown_default)
+          dropdown_default_label = current_input_group.find('.dropdown-menu li:first a').text()
+          dropdown_default_value = current_input_group.find('.dropdown-menu li:first span').text()
+          new_input_group.find('.dropdown-toggle span').first().text(dropdown_default_label)
+          new_input_group.find('input[type="hidden"]').val(dropdown_default_value)
         current_input_group.find('.input-group-btn').has('.add-dynamic-field').remove()
         current_input_group.append(remove_button_html)
-        current_input_group.after(new_input_group)
+        textarea = current_input_group.data('textarea')
+        if typeof(textarea) != "undefined"
+          current_textarea = $(document.getElementById(textarea))
+          new_textarea = current_textarea.clone()
+          new_textarea.val('')
+          idArray = new_textarea.attr('id').split('_')
+          idArray.push(parseInt(idArray.pop()) + 1)
+          new_textarea.attr('id', idArray.join('_'))
+          new_input_group.attr('data-textarea', new_textarea.attr('id'))
+          current_textarea.after(new_input_group)
+          new_input_group.after(new_textarea)
+        else
+          current_input_group.after(new_input_group)
         
       $(document).on 'click', '.remove-dynamic-field', (e) ->
         e.preventDefault()
-        $(this).closest('.input-group').remove()
+        current_input_group = $(this).closest('.input-group')
+        textarea = current_input_group.data('textarea')
+        if typeof(textarea)!="undefined"
+          $(document.getElementById(textarea)).remove()
+        current_input_group.remove()

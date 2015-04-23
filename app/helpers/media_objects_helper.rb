@@ -63,6 +63,26 @@ module MediaObjectsHelper
        result
      end
 
+     def display_notes mediaobject
+       note_string = ""
+       note_types = ModsDocument::NOTE_TYPES.clone
+       note_types['table of contents']='Contents'
+       sorted_note_types = note_types.keys.sort
+       sorted_note_types.prepend(sorted_note_types.delete 'general')
+       sorted_note_types.each do |note_type|
+         notes = note_type == 'table of contents'? mediaobject.table_of_contents : gather_notes_of_type(mediaobject, note_type)
+         notes.each_with_index do |note, i|
+           note_string += "<p class='item_note_header'>#{note_types[note_type]}</p>" if i==0 and note_type!='general'
+           note_string += simple_format(note, class:'item_note')
+         end
+       end
+       note_string
+     end
+
+     def gather_notes_of_type mediaobject, type
+       mediaobject.note.present? ? mediaobject.note.select{|n| n[0]==type}.collect{|n|n[1]} : []
+     end
+
      def display_language mediaobject
        mediaobject.language.collect{|l|l[:text]}
      end

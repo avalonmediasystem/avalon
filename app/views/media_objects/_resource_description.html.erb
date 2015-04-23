@@ -94,7 +94,16 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render partial: 'text_area', 
              locals: {form: form, field: :terms_of_use,
                       options: {display_label: 'Terms of Use'}} %>
-
+  <%= render partial: 'text_area', 
+             locals: {form: form, field: :table_of_contents,
+                      options: {multivalued: true,
+                                display_label: 'Table of Contents'}} %>
+  <%= render partial: 'text_area',
+             locals: {form: form, field: :note,
+                      options: {multivalued: true,
+                                display_label: 'Note(s)',
+                                dropdown_field: :note_type,
+                                dropdown_options: ModsDocument::NOTE_TYPES }} %>
 
   <%= render 'workflow_buttons' %>
 <% end %>

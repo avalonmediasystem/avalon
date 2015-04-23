@@ -32,9 +32,16 @@ FactoryGirl.define do
         topical_subject {[Faker::Lorem.word]}
         temporal_subject {[Faker::Lorem.word]}
         geographic_subject {[Faker::Address.country]}
-        #language {"eng"} #Skip language because it is broken due to OM not using
-                          #templates when setting values outside of #update_datastream
         physical_description {Faker::Lorem.word}
+        table_of_contents {[Faker::Lorem.paragraph]}
+        after(:create) do |mo|
+          mo.update_datastream(:descMetadata, {
+            note: [Faker::Lorem.paragraph], 
+            note_type: ['general'], 
+            language: ['eng']
+          })
+          mo.save
+        end
       end
     end
     factory :media_object_with_master_file do

@@ -44,6 +44,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= display_metadata('Terms of Use', @mediaobject.terms_of_use) %>
   <%= display_metadata('Physical Description', @mediaobject.physical_description) %>
   <%= display_metadata('Related Item', display_related_item(@mediaobject)) %>
+  <%= display_metadata('Notes', display_notes(@mediaobject)) %>
 
 </dl>
 <% if can? :inspect, @mediaobject %>

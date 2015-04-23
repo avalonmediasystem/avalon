@@ -5,3 +5,12 @@ identifier_types:
  oclc: OCLC
  lccn: LCCN
  other: Other
+note_types:
+ general: General Note
+ awards: Awards
+ biographical/historical: Bibliographical/Historical Note
+ creation/production credits: Creation/Production Credits
+ language: Language Note
+ performers: Performers
+ statement of responsibility: Statement of Responsibility
+ venue: Venue

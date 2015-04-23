@@ -113,6 +113,7 @@ class MediaObject < ActiveFedora::Base
     :bibliographic_id_label => :bibliographic_id_label,
     :language => :language,
     :terms_of_use => :terms_of_use,
+    :table_of_contents => :table_of_contents,
     :physical_description => :physical_description,
     }
   end
@@ -148,6 +149,7 @@ class MediaObject < ActiveFedora::Base
 
   has_attributes :language, datastream: :descMetadata, at: [:language], multiple: true
   has_attributes :terms_of_use, datastream: :descMetadata, at: [:terms_of_use], multiple: false
+  has_attributes :table_of_contents, datastream: :descMetadata, at: [:table_of_contents], multiple: true
   has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: false
   
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
@@ -247,6 +249,9 @@ class MediaObject < ActiveFedora::Base
     if values[:related_item_url] and values[:related_item_label]
         values[:related_item_url] = values[:related_item_url].zip(values.delete(:related_item_label))
     end
+    if values[:note]
+      values[:note]=values[:note].zip(values.delete(:note_type)).map{|v| {value: v[0], attributes: v[1]}}
+    end
     values.each do |k, v|
       # First remove all blank attributes in arrays
       v.keep_if { |item| not item.blank? } if v.instance_of?(Array)
@@ -285,6 +290,10 @@ class MediaObject < ActiveFedora::Base
   def language
     descMetadata.language.code.zip(descMetadata.language.text).map{|a|{code: a[0],text: a[1]}}
   end
+  def note
+    descMetadata.note.present? ? descMetadata.note.type.zip(descMetadata.note) : nil
+  end
+
 
   # This method is one way in that it accepts class attributes and
   # maps them to metadata attributes.
@@ -375,6 +384,8 @@ class MediaObject < ActiveFedora::Base
     all_text_values << solr_doc["language_sim"]
     all_text_values << solr_doc["physical_description_si"]
     all_text_values << solr_doc["date_sim"]
+    all_text_values << solr_doc["notes_sim"]
+    all_text_values << solr_doc["table_of_contents_sim"]
     solr_doc["all_text_timv"] = all_text_values.flatten
     return solr_doc
   end

@@ -20,6 +20,7 @@ class ModsDocument < ActiveFedora::OmDatastream
   include ModsBehaviors
   
   IDENTIFIER_TYPES = Avalon::ControlledVocabulary.find_by_name(:identifier_types) || {"other" => "Local"}
+  NOTE_TYPES = Avalon::ControlledVocabulary.find_by_name(:note_types) || {"local" => "Local Note"}
   
   set_terminology do |t|
     t.root(:path=>'mods',
@@ -155,6 +156,7 @@ class ModsDocument < ActiveFedora::OmDatastream
 
     t.usage(:path => 'accessCondition')
     t.terms_of_use(:path => 'accessCondition', :attributes => { :type => 'use and reproduction' })
+    t.table_of_contents(:path => 'tableOfContents')
     t.access_restrictions(:path => 'accessCondition', :attributes => { :type => 'restrictions on access' })
 
     t.record_info(:path => 'recordInfo') do
