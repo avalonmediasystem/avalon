@@ -100,8 +100,6 @@ class MasterFilesController < ApplicationController
         return
       end
       @masterfile.structuralMetadata.content = params[:master_file][:structure].open
-      @masterfile.structuralMetadata.mimeType = "text/xml"
-      @masterfile.structuralMetadata.save
     else
       @masterfile.structuralMetadata.delete
     end

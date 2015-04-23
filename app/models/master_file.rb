@@ -27,7 +27,7 @@ class MasterFile < ActiveFedora::Base
   include Permalink
   include VersionableModel
 
-  has_metadata name: "structuralMetadata", :type => StructuralMetadata, :mimeType => "text/xml"
+  has_metadata name: "structuralMetadata", :type => StructuralMetadata
   
   WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio']
 

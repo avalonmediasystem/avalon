@@ -118,7 +118,7 @@ module MediaObjectsHelper
      end
 
      def hide_sections? sections
-       sections.blank? or (sections.length == 1 && sections.first.structuralMetadata.to_xml.nil?)
+       sections.blank? or (sections.length == 1 && sections.first.structuralMetadata.empty?)
      end
 
      def structure_html section, index, show_progress
@@ -136,10 +136,8 @@ EOF
 EOF
        progress_div = show_progress ? '<div class="status-detail alert progress-indented" style="display: none"></div>' : ''
 
-       sm = section.structuralMetadata.to_xml
-
        # If there is no structural metadata associated with this masterfile return the stream info
-       if sm.nil?
+       if section.structuralMetadata.empty?
          mydata = {segment: section.pid, is_video: section.is_video?, share_link: share_link_for(section), native_url: url_for(section)} 
          myclass = current ? 'current-stream' : nil
          sectionlabel = "#{index+1}. #{stream_label_for(section)}"
@@ -148,7 +146,7 @@ EOF
          return "#{headeropen}<ul><li class='stream-li #{ 'progress-indented' if progress_div.present? }'>#{link}#{progress_div}</li></ul>#{headerclose}"
        end
 
-       sectionnode = sm.xpath('//Item')
+       sectionnode = section.structuralMetadata.xpath('//Item')
 
        # If there are subsections within structure, build a collapsible panel with the contents
        if sectionnode.children.present?
@@ -181,12 +179,12 @@ EOF
      end
 
      def parse_section section, node, index, progress_div
-       sm = section.structuralMetadata.to_xml
-       sectionnode = sm.xpath('//Item')
+       sectionnode = section.structuralMetadata.xpath('//Item')
        if sectionnode.children.present?
          tracknumber = 0
          contents = ''
          sectionnode.children.each do |node| 
+           next if node.blank?
            st, tracknumber = parse_node section, node, tracknumber, progress_div
            contents+=st
          end
@@ -199,7 +197,11 @@ EOF
      def parse_node section, node, tracknumber, progress_div
        if node.name.upcase=="DIV"
          contents = ''
-         node.children.each { |n| nodecontent, tracknumber = parse_node section, n, tracknumber, progress_div; contents+=nodecontent }
+         node.children.each do |n| 
+           next if n.blank?
+           nodecontent, tracknumber = parse_node section, n, tracknumber, progress_div
+           contents+=nodecontent
+         end
          return "<li>#{node.attribute('label')}</li><li><ul>#{contents}</ul></li>", tracknumber
        elsif ['SPAN','ITEM'].include? node.name.upcase
          tracknumber += 1
