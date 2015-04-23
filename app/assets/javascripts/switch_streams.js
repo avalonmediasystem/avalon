@@ -99,10 +99,15 @@ $().ready(function() {
           /**
            * Explicitly make this a JSON request 
            */
-	  var uri = target.data('native-url').split('?')[0] + '.json';
-	  var params = target.data('native-url').split('?')[1];
+    var switchUrl = target.data('nativeUrl') || target.attr('href')
+    var splitUrl = switchUrl.split('?')
+	  var uri = splitUrl[0] + '.json';
+	  var params = ['content=' + segment]
+    if (splitUrl[1] != undefined) {
+        params.push(splitUrl[1]);
+    }
 
-	  $.getJSON(uri, 'content=' + segment + '&' + params, function(data) {
+	  $.getJSON(uri, params.join('&'), function(data) {
 	    AvalonStreams.refreshStream(data);
             AvalonStreams.setActiveSection(segment, data);
 	  });
