@@ -189,9 +189,33 @@ tr.active-false td {
       border-bottom-right-radius: $border-radius-base;      
     }
   }
+  .input-group-btn {
+    vertical-align: top;
+  }
   .add-dynamic-field {
     cursor: pointer;
   }
+}
+.form-group .input-group.typed-textarea {
+  .input-group-btn:first-of-type {
+    width: 100%;
+    button {
+      width: 100%;
+      text-align: left;
+      border-bottom-left-radius: 0;
+    }
+  }
+  .input-group-btn:last-of-type {
+    button {
+      border-bottom-right-radius: 0;
+    }
+  }
+}
+.form-group textarea.typed-textarea {
+  border-top: none;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  margin-bottom: 2px;
 }
 
 /*
@@ -890,4 +914,7 @@ div.status-detail {
   }
 }
 
- 
+.item_note_header {
+  text-transform: uppercase;
+  margin-bottom: 0;
+}

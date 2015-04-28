@@ -173,6 +173,13 @@ describe Avalon::Batch::Ingest do
       media_object.bibliographic_id.should eq(["local",bib_id])
     end
 
+    it 'should correctly set notes' do
+      batch_ingest.ingest
+      ingest_batch = IngestBatch.last
+      media_object = MediaObject.find(ingest_batch.media_object_ids.first)
+      media_object.note.first.should eq(["general","This is a test general note"])
+    end
+
   end
 
   describe 'invalid manifest' do

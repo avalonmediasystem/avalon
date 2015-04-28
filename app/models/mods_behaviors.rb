@@ -47,6 +47,7 @@ module ModsBehaviors
 #    solr_doc['physical_dtl_sim'] = gather_terms(self.find_by_terms(:format))
 #    solr_doc['contents_sim'] = gather_terms(self.find_by_terms(:parts_list))
     solr_doc['notes_sim'] = gather_terms(self.find_by_terms(:note))
+    solr_doc["table_of_contents_sim"] = gather_terms(self.find_by_terms(:table_of_contents))
     solr_doc['access_sim'] = gather_terms(self.find_by_terms(:usage))
 #    solr_doc['collection_sim'] = gather_terms(self.find_by_terms(:archival_collection))
     #filter formats based upon whitelist
