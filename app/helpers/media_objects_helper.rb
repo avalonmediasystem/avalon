@@ -63,6 +63,11 @@ module MediaObjectsHelper
        result
      end
 
+     def display_system_identifiers mediaobject
+       ids = [Array(mediaobject.bibliographic_id)] + Array(mediaobject.system_identifier)
+       ids.collect{|i| "#{ ModsDocument::IDENTIFIER_TYPES[i[0]] }: #{ i[1] }" }
+     end
+
      def display_notes mediaobject
        note_string = ""
        note_types = ModsDocument::NOTE_TYPES.clone

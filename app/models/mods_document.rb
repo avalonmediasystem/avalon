@@ -31,8 +31,6 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.identifier(:path => 'mods/oxns:identifier') do
       t.type_(:path => '@type', :namespace_prefix => nil)
     end
-    t.bibliographic_id(:proxy => [:identifier])
-    t.bibliographic_id_label(:proxy => [:identifier, :type])
 
     # Titles
     t.title_info(:path => 'titleInfo') do
@@ -103,11 +101,11 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.media_type(:proxy => [:mime_physical_description, :internet_media_type])
 
     t.original_related_item(:path => 'relatedItem', :attributes => { :type => 'original'}) do
-      t.physical_description(:path => 'physicalDescription') do
-        t.extent
-      end
+      t.physical_description(:path => 'physicalDescription') { t.extent }
+      t.system_identifier(:path => 'identifier') { t.type_(:path => '@type', :namespace_prefix => nil) }
     end
     t.physical_description(:proxy => [:original_related_item, :physical_description, :extent])
+    t.system_identifier(:proxy => [:original_related_item, :system_identifier])
 
     # Summary and Notes
     t.abstract(:path => 'abstract')
@@ -164,7 +162,8 @@ class ModsDocument < ActiveFedora::OmDatastream
       t.content_source(:path => 'recordContentSource')
       t.creation_date(:path => 'recordCreationDate')
       t.change_date(:path => 'recordChangeDate')
-      t.identifier(:path => 'recordIdentifier')
+      t.identifier(:path => "recordIdentifier[@source='Fedora']") { t.source_(:path => '@source', :namespace_prefix => nil) }
+      t.bibliographic_id(:path => "recordIdentifier[@source!='Fedora']") { t.source_(:path => '@source', :namespace_prefix => nil) }
       t.language_of_cataloging(:path => 'languageOfCataloging') { t.language_term(:path => 'languageTerm') }
       t.language(:proxy => [:language_of_cataloging, :language_term])
     end
@@ -174,6 +173,7 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.record_change_date(:proxy => [:record_info, :change_date])
     t.record_identifier(:proxy => [:record_info, :identifier])
     t.record_language(:proxy => [:record_info, :language])
+    t.bibliographic_id(:proxy => [:record_info, :bibliographic_id])
   end
 
   def self.xml_template
@@ -222,6 +222,7 @@ class ModsDocument < ActiveFedora::OmDatastream
       end
     end
     self.bibliographic_id = nil
-    self.add_bibliographic_id([bib_id_label, bib_id])
+    self.add_bibliographic_id(bib_id, bib_id_label)
+    self.add_system_identifier(bib_id, bib_id_label)
   end
 end
