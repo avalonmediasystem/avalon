@@ -84,7 +84,7 @@ module MediaObjectsHelper
      end
 
      def display_language mediaobject
-       mediaobject.language.collect{|l|l[:text]}
+       mediaobject.language.collect{|l|l[:text]}.uniq
      end
 
      def display_related_item mediaobject
