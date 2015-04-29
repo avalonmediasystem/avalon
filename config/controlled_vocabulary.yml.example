@@ -11,6 +11,7 @@ note_types:
  biographical/historical: Bibliographical/Historical Note
  creation/production credits: Creation/Production Credits
  language: Language Note
+ local: Local Note
  performers: Performers
  statement of responsibility: Statement of Responsibility
- venue: Venue
+ venue: Venue/Event Date

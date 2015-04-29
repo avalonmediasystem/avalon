@@ -41,6 +41,8 @@ Added 600$q to process; inadvertently left out. kdm 20150127
 Added call to <xsl:call-template name="subjectAnyOrder"/> for 600, 610, 611, 630 in order to process subfields x, y, v, and z. kdm 20150127
 Adjust 1xx, 6xx, 7xx subfields to match mapping spreadsheet. kdm 20150127
 Suppress typeOfResource in favor of that specified by Avalon Media System. bwk 20150209
+Added three Notes elements: 500 (note@type="general"), 586 (note@type="awards"), and 590 (note@type="local"). kdm 20150420
+Removed 041 subfields except for $d and $j. kdm 20150429
 -->
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
 	MARC21slim2MODS3-5 (Revision 1.106) 20141219
@@ -1418,7 +1420,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		</xsl:if>
 		<xsl:for-each select="marc:datafield[@tag=041]">
 			<xsl:for-each
-				select="marc:subfield[@code='a' or @code='b' or @code='d' or @code='e' or @code='f' or @code='g' or @code='h']">
+				select="marc:subfield[@code='d' or @code='j']">
 				<xsl:variable name="langCodes" select="."/>
 				<xsl:choose>
 					<xsl:when test="../marc:subfield[@code='2']='rfc3066'">
@@ -2282,9 +2284,17 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		<xsl:for-each select="marc:datafield[@tag=585]">
 			<xsl:call-template name="createNoteFrom585"/>
 		</xsl:for-each>
+		
+		<xsl:for-each select="marc:datafield[@tag=586]">
+			<xsl:call-template name="createNoteFrom586"/>
+		</xsl:for-each>
+		
+		<xsl:for-each select="marc:datafield[@tag=590]">
+			<xsl:call-template name="createNoteFrom590"/>
+		</xsl:for-each>
 
 		<xsl:for-each
-			select="marc:datafield[@tag=501 or @tag=507 or @tag=513 or @tag=514 or @tag=516 or @tag=522 or @tag=525 or @tag=526 or @tag=544 or @tag=547 or @tag=550 or @tag=552 or @tag=555 or @tag=556 or @tag=565 or @tag=567 or @tag=580 or @tag=584 or @tag=586]">
+			select="marc:datafield[@tag=501 or @tag=507 or @tag=513 or @tag=514 or @tag=516 or @tag=522 or @tag=525 or @tag=526 or @tag=544 or @tag=547 or @tag=550 or @tag=552 or @tag=555 or @tag=556 or @tag=565 or @tag=567 or @tag=580 or @tag=584]">
 			<xsl:call-template name="createNoteFrom5XX"/>
 		</xsl:for-each>
 
@@ -4299,8 +4309,12 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:call-template name="createNoteFrom5XX"/>
 			</xsl:when>
 			<xsl:when test="$sf06a='586'">
-				<xsl:call-template name="createNoteFrom5XX"/>
+				<xsl:call-template name="createNoteFrom586"/>
 			</xsl:when>
+						<xsl:when test="$sf06a='590'">
+				<xsl:call-template name="createNoteFrom590"/>
+			</xsl:when>
+
 
 			<!--  subject 034 043 045 255 656 662 752 	-->
 
@@ -4948,7 +4962,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 	</xsl:template>
 
 	<xsl:template name="createNoteFrom500">
-		<note>
+		<note type="general">
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="uri"/>
 			<xsl:value-of select="marc:subfield[@code='a']"/>
@@ -5239,6 +5253,34 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 	<xsl:template name="createNoteFrom585">
 		<note type="exhibitions">
+			<xsl:call-template name="xxx880"/>
+			<xsl:call-template name="uri"/>
+			<xsl:variable name="str">
+				<xsl:for-each select="marc:subfield[@code!='6' and @code!='8']">
+					<xsl:value-of select="."/>
+					<xsl:text> </xsl:text>
+				</xsl:for-each>
+			</xsl:variable>
+			<xsl:value-of select="substring($str,1,string-length($str)-1)"/>
+		</note>
+	</xsl:template>
+	
+	<xsl:template name="createNoteFrom586">
+		<note type="awards">
+			<xsl:call-template name="xxx880"/>
+			<xsl:call-template name="uri"/>
+			<xsl:variable name="str">
+				<xsl:for-each select="marc:subfield[@code!='6' and @code!='8']">
+					<xsl:value-of select="."/>
+					<xsl:text> </xsl:text>
+				</xsl:for-each>
+			</xsl:variable>
+			<xsl:value-of select="substring($str,1,string-length($str)-1)"/>
+		</note>
+	</xsl:template>
+
+	<xsl:template name="createNoteFrom590">
+		<note type="local">
 			<xsl:call-template name="xxx880"/>
 			<xsl:call-template name="uri"/>
 			<xsl:variable name="str">
