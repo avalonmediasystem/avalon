@@ -64,8 +64,10 @@ module MediaObjectsHelper
      end
 
      def display_system_identifiers mediaobject
-       ids = [Array(mediaobject.bibliographic_id)] + Array(mediaobject.system_identifier)
-       ids.collect{|i| "#{ ModsDocument::IDENTIFIER_TYPES[i[0]] }: #{ i[1] }" }
+       # bibliographic_id has form [:type,"value"], system_identifier has form [[:type,"value],[:type,"value"],...]
+       ids = mediaobject.bibliographic_id.present? ? [mediaobject.bibliographic_id] : []
+       ids += Array(mediaobject.system_identifier)
+       ids.uniq.collect{|i| "#{ ModsDocument::IDENTIFIER_TYPES[i[0]] }: #{ i[1] }" }
      end
 
      def display_notes mediaobject
