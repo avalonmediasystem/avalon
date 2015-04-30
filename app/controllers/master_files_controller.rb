@@ -94,6 +94,11 @@ class MasterFilesController < ApplicationController
     media_object = MediaObject.find(@masterfile.mediaobject_id)
     authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
     if params[:master_file].present? && params[:master_file][:structure].present?
+      unless StructuralMetadata.content_valid? params[:master_file][:structure].open
+        flash[:error] = "File was not valid XML or did not contain required elements."
+        redirect_to :back
+        return
+      end
       @masterfile.structuralMetadata.content = params[:master_file][:structure].open
     else
       @masterfile.structuralMetadata.delete

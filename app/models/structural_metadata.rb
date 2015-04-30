@@ -13,10 +13,20 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class StructuralMetadata < ActiveFedora::Datastream
+  include ActiveFedora::Datastreams::NokogiriDatastreams
 
-  def to_xml
-    sm = Nokogiri::XML(self.content) { |config| config.noblanks }
-    sm.xpath('//Item').empty? ? nil : sm
+  def mimeType
+    'text/xml'
+  end
+
+  delegate :xpath, to: :ng_xml
+
+  def self.content_valid? content
+    Nokogiri::XML(content).xpath('//Item').present?
+  end
+
+  def valid?
+    xpath('//Item').present?
   end
 
 end

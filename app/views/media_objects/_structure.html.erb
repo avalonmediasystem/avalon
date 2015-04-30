@@ -57,9 +57,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 	    <% end %>
           </div>
           <br class="clear"/>
-          <% sm = section.structuralMetadata.to_xml %>
-          <% if sm.present? %>
-          <%   sectionnode = sm.xpath('//Item') %>
+          <% if section.structuralMetadata.present? %>
+          <%   sectionnode = section.structuralMetadata.xpath('//Item') %>
           <%   if sectionnode.children.present? %>
           <%     sectionlabel = sectionnode.attribute('label').value %> 
           <%     contents, tracknumber = parse_section section, sectionnode.first, index, "" %>
