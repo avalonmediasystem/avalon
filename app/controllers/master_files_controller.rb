@@ -68,7 +68,7 @@ class MasterFilesController < ApplicationController
           "provider_url" => request.base_url,
           "width" => width,
           "height" => height,
-          "html" => mf.embed_code(width)
+          "html" => mf.embed_code(width, {urlappend: '/embed'})
         }
         respond_to do |format|
           format.xml  { render xml: hash.to_xml({root: 'oembed'}) }
