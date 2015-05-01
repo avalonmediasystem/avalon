@@ -63,7 +63,7 @@ class ModsDocument < ActiveFedora::OmDatastream
     t._primary_creator_name(:ref => [:name], :path => 'mods/oxns:name[@usage="primary"]')
     t.primary_creator(:proxy => [:_creator_name, :name_part])
 
-    t.statement_of_responsibility(:path => 'note', :attributes => { :type => 'statement of responsbility' })
+    t.statement_of_responsibility(:path => 'note', :attributes => { :type => 'statement of responsibility' })
 
     # Type and Genre
     t.resource_type(:path => 'typeOfResource')
@@ -102,10 +102,10 @@ class ModsDocument < ActiveFedora::OmDatastream
 
     t.original_related_item(:path => 'relatedItem', :attributes => { :type => 'original'}) do
       t.physical_description(:path => 'physicalDescription') { t.extent }
-      t.system_identifier(:path => 'identifier') { t.type_(:path => '@type', :namespace_prefix => nil) }
+      t.other_identifier(:path => 'identifier') { t.type_(:path => '@type', :namespace_prefix => nil) }
     end
     t.physical_description(:proxy => [:original_related_item, :physical_description, :extent])
-    t.system_identifier(:proxy => [:original_related_item, :system_identifier])
+    t.other_identifier(:proxy => [:original_related_item, :other_identifier])
 
     # Summary and Notes
     t.abstract(:path => 'abstract')
@@ -223,6 +223,6 @@ class ModsDocument < ActiveFedora::OmDatastream
     end
     self.bibliographic_id = nil
     self.add_bibliographic_id(bib_id, bib_id_label)
-    self.add_system_identifier(bib_id, bib_id_label)
+    self.add_other_identifier(bib_id, bib_id_label)
   end
 end

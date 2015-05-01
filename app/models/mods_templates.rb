@@ -166,15 +166,15 @@ module ModsTemplates
         add_child_node(get_original_related_item, :_original_physical_description, value)
       end
 
-      define_template :_system_identifier do |xml,text,type|
+      define_template :_other_identifier do |xml,text,type|
         type = ModsDocument::IDENTIFIER_TYPES.keys.first if type.empty?
         xml.identifier(:type => type) {
           xml.text(text)
         }
       end
 
-      def add_system_identifier(content, attrs={})
-        add_child_node(get_original_related_item, :_system_identifier, content, attrs)
+      def add_other_identifier(content, attrs={})
+        add_child_node(get_original_related_item, :_other_identifier, content, attrs)
       end
 
       define_template :media_type do |xml,mime_type|
