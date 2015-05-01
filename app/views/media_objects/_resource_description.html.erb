@@ -94,6 +94,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render partial: 'text_area', 
              locals: {form: form, field: :terms_of_use,
                       options: {display_label: 'Terms of Use'}} %>
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :system_identifier,
+                      options: {display_label: 'System Identifier',
+                                multivalued: true,
+                                dropdown_field: :system_identifier_type, 
+                                dropdown_options: ModsDocument::IDENTIFIER_TYPES}} %>
   <%= render partial: 'text_area', 
              locals: {form: form, field: :table_of_contents,
                       options: {multivalued: true,

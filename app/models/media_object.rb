@@ -41,7 +41,7 @@ class MediaObject < ActiveFedora::Base
   before_save 'descMetadata.remove_empty_nodes!'
   before_save 'update_permalink_and_dependents'
 
-  has_model_version 'R3'
+  has_model_version 'R4'
 
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
@@ -110,11 +110,12 @@ class MediaObject < ActiveFedora::Base
     :temporal_subject => :temporal_subject,
     :topical_subject => :topical_subject,
     :bibliographic_id => :bibliographic_id,
-    :bibliographic_id_label => :bibliographic_id_label,
     :language => :language,
     :terms_of_use => :terms_of_use,
     :table_of_contents => :table_of_contents,
     :physical_description => :physical_description,
+    :system_identifier => :system_identifier,
+    :record_identifier => :record_identifier,
     }
   end
 
@@ -151,6 +152,8 @@ class MediaObject < ActiveFedora::Base
   has_attributes :terms_of_use, datastream: :descMetadata, at: [:terms_of_use], multiple: false
   has_attributes :table_of_contents, datastream: :descMetadata, at: [:table_of_contents], multiple: true
   has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: false
+  has_attributes :system_identifier, datastream: :descMetadata, at: [:system_identifier], multiple: true
+  has_attributes :record_identifier, datastream: :descMetadata, at: [:record_identifier], multiple: true
   
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
     sds.field :duration, :string
@@ -244,13 +247,16 @@ class MediaObject < ActiveFedora::Base
     missing_attributes.clear
     # Special case the identifiers and their types
     if values[:bibliographic_id]
-      values[:bibliographic_id] = [[Array(values.delete(:bibliographic_id_label)).first || ModsDocument::IDENTIFIER_TYPES.keys[0], Array(values[:bibliographic_id]).first]]
+      values[:bibliographic_id] = {value: values[:bibliographic_id], attributes: values.delete(:bibliographic_id_label)}
     end
     if values[:related_item_url] and values[:related_item_label]
         values[:related_item_url] = values[:related_item_url].zip(values.delete(:related_item_label))
     end
     if values[:note]
       values[:note]=values[:note].zip(values.delete(:note_type)).map{|v| {value: v[0], attributes: v[1]}}
+    end
+    if values[:system_identifier]
+      values[:system_identifier]=values[:system_identifier].zip(values.delete(:system_identifier_type)).map{|v| {value: v[0], attributes: v[1]}}
     end
     values.each do |k, v|
       # First remove all blank attributes in arrays
@@ -263,7 +269,9 @@ class MediaObject < ActiveFedora::Base
       # This does not feel right but is just a first pass. Maybe the use of NOM rather
       # than OM will mitigate the need for such tricks
       begin
-        if v.first.is_a?(Hash)
+        if v.is_a?(Hash)
+          update_attribute_in_metadata(k, v[:value], v[:attributes])
+        elsif v.is_a?(Array) and v.first.is_a?(Hash)
           vals = []
           attrs = []
         
@@ -282,7 +290,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def bibliographic_id
-    descMetadata.identifier.present? ? [descMetadata.identifier.type.first,descMetadata.identifier.first] : nil
+    descMetadata.bibliographic_id.present? ? [descMetadata.bibliographic_id.source.first,descMetadata.bibliographic_id.first] : nil
   end
   def related_item_url
     descMetadata.related_item_url.zip(descMetadata.related_item_label).map{|a|{url: a[0],label: a[1]}}
@@ -292,6 +300,9 @@ class MediaObject < ActiveFedora::Base
   end
   def note
     descMetadata.note.present? ? descMetadata.note.type.zip(descMetadata.note) : nil
+  end
+  def system_identifier
+    descMetadata.system_identifier.present? ? descMetadata.system_identifier.type.zip(descMetadata.system_identifier) : nil
   end
 
 
@@ -314,12 +325,12 @@ class MediaObject < ActiveFedora::Base
       descMetadata.find_by_terms( metadata_attribute ).each &:remove
       if descMetadata.template_registry.has_node_type?( metadata_attribute )
         Array(values).each_with_index do |val, i|
-          descMetadata.add_child_node(descMetadata.ng_xml.root, metadata_attribute, val, (attributes[i]||{}))
+          descMetadata.add_child_node(descMetadata.ng_xml.root, metadata_attribute, val, (Array(attributes)[i]||{}))
         end
         #end
       elsif descMetadata.respond_to?("add_#{metadata_attribute}")
         Array(values).each_with_index do |val, i|
-          descMetadata.send("add_#{metadata_attribute}", val, (attributes[i] || {}))
+          descMetadata.send("add_#{metadata_attribute}", val, (Array(attributes)[i] || {}))
         end;
       else
         # Put in a placeholder so that the inserted nodes go into the right part of the
@@ -386,6 +397,7 @@ class MediaObject < ActiveFedora::Base
     all_text_values << solr_doc["date_sim"]
     all_text_values << solr_doc["notes_sim"]
     all_text_values << solr_doc["table_of_contents_sim"]
+    all_text_values << solr_doc["system_identifier_sim"]
     solr_doc["all_text_timv"] = all_text_values.flatten
     return solr_doc
   end

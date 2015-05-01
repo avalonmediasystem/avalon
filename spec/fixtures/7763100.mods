@@ -209,7 +209,7 @@
     <recordContentSource authority="marcorg">IEN</recordContentSource>
     <recordCreationDate encoding="edtf">150127</recordCreationDate>
     <recordChangeDate encoding="iso8601">20150127160330.0</recordChangeDate>
-    <recordIdentifier>7763100</recordIdentifier>
+    <recordIdentifier source="local">7763100</recordIdentifier>
     <recordOrigin>Converted from MARCXML to MODS version 3.5 using MARC21slim2MODS3-5.xsl (Revision 1.106
       2014/12/19), customized for the Avalon Media System (last revised 2014/12/26)</recordOrigin>
   </recordInfo>

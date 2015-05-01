@@ -274,6 +274,16 @@ describe MediaObject do
     end
   end
 
+  describe "Update datastream directly" do
+    it "should reflect datastream changes on media object" do
+      newtitle = Faker::Lorem.sentence
+      media_object.descMetadata.add_bibliographic_id('ABC123','local')
+      media_object.save
+      media_object.reload
+      expect(media_object.bibliographic_id).to eq(["local","ABC123"])
+    end
+  end
+
   describe "Ingest status" do
     it "should default to unpublished" do
       media_object.workflow.published.first.should eq "false"

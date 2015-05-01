@@ -19,7 +19,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% if @mediaobject.errors[field].any? %>
       <%= content_tag :span, @mediaobject.errors[field].join(", "), class: 'help-block' %>
     <% end %>
-    <% values = @mediaobject.send(field) %>
+    <% values = @mediaobject.send(field) || "" %>
     <% fieldarray = "" %>
     <% if options[:multivalued] %>
       <% fieldarray = "[]" %>

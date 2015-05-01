@@ -29,6 +29,15 @@ module ModsTemplates
         }
       end
 
+      define_template :_identifier do |xml,text,type|
+        xml.identifier(:type => type) { xml.text(text) }
+      end
+      def add_identifier(content, attrs={})
+        (type,text) = content.is_a?(Array) ? content : ['Other',content]
+        add_child_node(ng_xml.root, :_identifier, text, type)
+      end
+
+
       def add_title(title, attrs={}, defaults={})
         add_child_node(ng_xml.root, :title_info, title, defaults.merge(attrs))
       end
@@ -137,18 +146,35 @@ module ModsTemplates
         add_child_node(ng_xml.root, :_terms_of_use, value)
       end
 
+      def get_original_related_item
+        node = find_by_terms(:original_related_item)
+        if node.empty?
+          node = ng_xml.root.add_child('<relatedItem type="original"/>')
+        end
+        Array(node).first
+      end
+
       define_template :_original_physical_description do |xml, text|
-        xml.relatedItem(:type => 'original'){
-          xml.physicalDescription{
-            xml.extent{
-              xml.text(text)
-            }
+        xml.physicalDescription{
+          xml.extent{
+            xml.text(text)
           }
         }
       end
 
       def add_physical_description(value, opts={})
-        add_child_node(ng_xml.root, :_original_physical_description, value)
+        add_child_node(get_original_related_item, :_original_physical_description, value)
+      end
+
+      define_template :_system_identifier do |xml,text,type|
+        type = ModsDocument::IDENTIFIER_TYPES.keys.first if type.empty?
+        xml.identifier(:type => type) {
+          xml.text(text)
+        }
+      end
+
+      def add_system_identifier(content, attrs={})
+        add_child_node(get_original_related_item, :_system_identifier, content, attrs)
       end
 
       define_template :media_type do |xml,mime_type|
@@ -211,13 +237,27 @@ module ModsTemplates
         add_location_url(url, { :access => 'object in context' })
       end
 
-      define_template :_identifier do |xml,text,type|
-        xml.identifier(:type => type) { xml.text(text) }
+      define_template :_record_identifier do |xml,text,source|
+        source = ModsDocument::IDENTIFIER_TYPES.keys.first if source.empty?
+        xml.recordIdentifier(:source => source) {
+          xml.text(text)
+        }
       end
-      
+
+      def get_record_info
+        node = find_by_terms(:record_info)
+        if node.empty?
+          node = ng_xml.root.add_child('<recordInfo/>')
+        end
+        Array(node).first
+      end
+
       def add_bibliographic_id(content, attrs={})
-        (type,text) = content.is_a?(Array) ? content : ['Other',content]
-        add_child_node(ng_xml.root, :_identifier, text, type)
+        add_child_node(get_record_info, :_record_identifier, content, attrs)
+      end
+
+      def add_record_identifier(content)
+        add_child_node(get_record_info, :_record_identifier, content, "Fedora")
       end
 
     end

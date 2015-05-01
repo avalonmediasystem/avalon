@@ -43,6 +43,7 @@ Adjust 1xx, 6xx, 7xx subfields to match mapping spreadsheet. kdm 20150127
 Suppress typeOfResource in favor of that specified by Avalon Media System. bwk 20150209
 Added three Notes elements: 500 (note@type="general"), 586 (note@type="awards"), and 590 (note@type="local"). kdm 20150420
 Removed 041 subfields except for $d and $j. kdm 20150429
+Replaced use of 003 value for recordInfo\recordIdentifer@source with "local". kdm 20150430
 -->
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
 	MARC21slim2MODS3-5 (Revision 1.106) 20141219
@@ -2946,11 +2947,13 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			</xsl:for-each>
 			<xsl:for-each select="marc:controlfield[@tag=001]">
 				<recordIdentifier>
-					<xsl:if test="../marc:controlfield[@tag=003]">
+				<!--kdm 20150430. Removed use of 003 for @source and replaced it with "local" for Avalon Media System use-->
+					<!--xsl:if test="../marc:controlfield[@tag=003]"-->
 						<xsl:attribute name="source">
-							<xsl:value-of select="../marc:controlfield[@tag=003]"/>
+							<!--xsl:value-of select="../marc:controlfield[@tag=003]"/-->
+							<xsl:text>local</xsl:text>
 						</xsl:attribute>
-					</xsl:if>
+					<!--/xsl:if-->
 					<xsl:value-of select="."/>
 				</recordIdentifier>
 			</xsl:for-each>

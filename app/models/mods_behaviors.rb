@@ -47,7 +47,7 @@ module ModsBehaviors
 #    solr_doc['physical_dtl_sim'] = gather_terms(self.find_by_terms(:format))
 #    solr_doc['contents_sim'] = gather_terms(self.find_by_terms(:parts_list))
     solr_doc['notes_sim'] = gather_terms(self.find_by_terms(:note))
-    solr_doc["table_of_contents_sim"] = gather_terms(self.find_by_terms(:table_of_contents))
+    solr_doc['table_of_contents_sim'] = gather_terms(self.find_by_terms(:table_of_contents))
     solr_doc['access_sim'] = gather_terms(self.find_by_terms(:usage))
 #    solr_doc['collection_sim'] = gather_terms(self.find_by_terms(:archival_collection))
     #filter formats based upon whitelist
@@ -75,6 +75,7 @@ module ModsBehaviors
     solr_doc['related_item_url_sim'] = gather_terms(self.find_by_terms(:related_item_url))
     solr_doc['related_item_label_sim'] = gather_terms(self.find_by_terms(:related_item_label))
     solr_doc['terms_of_use_si'] = self.find_by_terms(:terms_of_use).text
+    solr_doc['system_identifier_sim'] = self.find_by_terms(:system_identifier).text
 
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
     solr_doc['date_ssi'] = self.find_by_terms(:date_issued).text
@@ -94,7 +95,7 @@ module ModsBehaviors
   end
 
   def ensure_identifier_exists!
-    self.record_identifier = self.pid if self.record_identifier.empty? or self.record_identifier.join.empty?
+    self.send(:add_record_identifier, self.pid) if self.record_identifier.empty? or self.record_identifier.join.empty?
   end
 
   def update_change_date!(t=Time.now.iso8601)

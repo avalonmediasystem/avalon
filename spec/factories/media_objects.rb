@@ -38,6 +38,8 @@ FactoryGirl.define do
           mo.update_datastream(:descMetadata, {
             note: [Faker::Lorem.paragraph], 
             note_type: ['general'], 
+            system_identifier: [Faker::Lorem.word],
+            system_identifier_type: ['local'],
             language: ['eng']
           })
           mo.save
