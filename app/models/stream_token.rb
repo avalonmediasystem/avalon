@@ -18,18 +18,24 @@ class StreamToken < ActiveRecord::Base
 #  attr_accessible :token, :target, :expires
 
   def self.media_token(session)
+    session[:hash_tokens] ||= []
     session[:media_token] ||= SecureRandom.hex(16)
   end
 
   def self.find_or_create_session_token(session, target)
     self.purge_expired!
-    result = self.find_or_create_by_token_and_target(media_token(session), target)
+    hash_token = Digest::SHA1.new
+    hash_token << media_token(session) << target
+    result = self.find_or_create_by_token_and_target(hash_token.to_s, target)
     result.renew!
+    session[:hash_tokens] << result.token
     result.token
   end
 
   def self.logout!(session)
-    self.find_all_by_token(media_token(session)).each &:delete
+    session[:hash_tokens].each { |sha|
+      self.find_all_by_token(sha).each &:delete
+    }
   end
 
   def self.purge_expired!
@@ -39,11 +45,11 @@ class StreamToken < ActiveRecord::Base
   def self.validate_token(value)
     raise Unauthorized, "Unauthorized" if value.nil?
 
-    (target, token_string) = value.scan(/^(.+)-(.+)$/).first
-    token = self.find_by_token_and_target(token_string, target)
+    token = self.find_by_token(value)
     if token.present? and token.expires > Time.now
       token.renew!
-      return target
+      valid_streams = ActiveFedora::SolrService.query(%{is_derivation_of_ssim: "info:fedora/#{token.target}"}, fl: 'stream_path_ssi')
+      return valid_streams.collect { |d| d['stream_path_ssi'] }
     else
       raise Unauthorized, "Unauthorized"
     end
