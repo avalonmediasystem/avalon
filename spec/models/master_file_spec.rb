@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'spec_helper'
-require 'rubyhorn/rest_client/exceptions'
+#require 'rubyhorn/rest_client/exceptions'
 
 describe MasterFile do
 
@@ -34,55 +34,51 @@ describe MasterFile do
     }
 
     it "should know where its (local) masterfile is" do
-      subject.file_location.should == '/foo/bar/baz/quux.mp4'
-      subject.absolute_location.should == 'file:///foo/bar/baz/quux.mp4'
+      expect(subject.file_location).to eq '/foo/bar/baz/quux.mp4'
+      expect(subject.absolute_location).to eq 'file:///foo/bar/baz/quux.mp4'
     end
 
     it "should know where its (Samba remote) masterfile is" do
       Avalon::FileResolver.any_instance.stub(:mounts) { 
         ["//user@some.server.at.an.example.edu/stuff on /foo/bar (smbfs, nodev, nosuid, mounted by user)"]
       }
-
-      subject.absolute_location.should == 'smb://some.server.at.an.example.edu/stuff/baz/quux.mp4'
+      expect(subject.absolute_location).to eq 'smb://some.server.at.an.example.edu/stuff/baz/quux.mp4'
     end
 
     it "should know where its (CIFS remote) masterfile is" do
       Avalon::FileResolver.any_instance.stub(:mounts) { 
         ["//user@some.server.at.an.example.edu/stuff on /foo/bar (cifs, nodev, nosuid, mounted by user)"]
       }
-
-      subject.absolute_location.should == 'cifs://some.server.at.an.example.edu/stuff/baz/quux.mp4'
+      expect(subject.absolute_location).to eq 'cifs://some.server.at.an.example.edu/stuff/baz/quux.mp4'
     end
 
     it "should know where its (NFS remote) masterfile is" do
       Avalon::FileResolver.any_instance.stub(:mounts) { 
         ["some.server.at.an.example.edu:/stuff on /foo/bar (nfs, nodev, nosuid, mounted by user)"]
       }
-
-      subject.absolute_location.should == 'nfs://some.server.at.an.example.edu/stuff/baz/quux.mp4'
+      expect(subject.absolute_location).to eq 'nfs://some.server.at.an.example.edu/stuff/baz/quux.mp4'
     end
 
     it "should follow the file to a new location" do
-      subject.absolute_location.should == 'file:///foo/bar/baz/quux.mp4'
       subject.file_location = "/tmp/baz/quux.mp4"
-      subject.absolute_location.should == 'file:///tmp/baz/quux.mp4'
+      expect(subject.absolute_location).to eq 'file:///tmp/baz/quux.mp4'
     end
 
     it "should accept configurable overrides" do
       Avalon::FileResolver.any_instance.stub(:overrides) {
         { '/foo/bar/' => 'http://repository.example.edu/foothings/' }
       }
-      subject.absolute_location.should == 'http://repository.example.edu/foothings/baz/quux.mp4'
+      expect(subject.absolute_location).to eq 'http://repository.example.edu/foothings/baz/quux.mp4'
     end
 
     it "should accept an empty file location" do
       subject.file_location = ""
-      subject.absolute_location.should be_empty
+      expect(subject.absolute_location).to be_empty
     end
 
     it "should accept a nil file location" do
       subject.file_location = nil
-      subject.absolute_location.should be_nil
+      expect(subject.absolute_location).to be_nil
     end
   end
 
@@ -108,11 +104,11 @@ describe MasterFile do
     describe 'classifying statuses' do
       let(:master_file){ MasterFile.new }
       it 'returns true for stopped' do
-        master_file.status_code = 'STOPPED'
+        master_file.status_code = 'CANCELLED'
         master_file.finished_processing?.should be true
       end
       it 'returns true for succeeded' do
-        master_file.status_code = 'SUCCEEDED'
+        master_file.status_code = 'COMPLETED'
         master_file.finished_processing?.should be true
       end
       it 'returns true for failed' do
@@ -124,37 +120,37 @@ describe MasterFile do
 
   describe '#process' do
     let!(:master_file) { FactoryGirl.create(:master_file) }
-    let(:ingest_job) { MatterhornIngestJob.new({title: master_file.pid}) }
+    let(:encode_job) { MasterFileEncodeJob.new(master_file.pid, ActiveEncode::Base.new(nil)) }
     before do
-      allow(MatterhornIngestJob).to receive(:new).and_return(ingest_job)
-      allow(ingest_job).to receive(:perform)
+      allow(MasterFileEncodeJob).to receive(:new).and_return(encode_job)
+      allow(encode_job).to receive(:perform)
       Delayed::Worker.delay_jobs = false
     end
     after do
       Delayed::Worker.delay_jobs = true
     end
-    it 'starts a Matterhorn workflow' do
+    it 'starts an ActiveEncode workflow' do
       master_file.process
-      expect(ingest_job).to have_received(:perform)
+      expect(encode_job).to have_received(:perform)
     end
     describe 'already processing' do
       before do
         master_file.status_code = 'RUNNING'
       end
-      it 'should not start a Matterhorn workflow' do
+      it 'should not start an ActiveEncode workflow' do
         expect{master_file.process}.to raise_error(RuntimeError)
-        expect(ingest_job).not_to have_received(:perform)
+        expect(encode_job).not_to have_received(:perform)
       end
     end
     describe 'failure' do
       before do
-        Rubyhorn.stub_chain(:client, :addMediaPackageWithUrl).and_raise(Rubyhorn::RestClient::Exceptions::ServerError, "FAILED")
+        allow(encode_job.encode).to receive(:create!).and_raise(Exception)
         Delayed::Worker.delay_jobs = true
       end
       after do
         Delayed::Worker.delay_jobs = false
       end
-      it 'should set the status to FAILED when the request to Matterhorn fails' do
+      it 'should set the status to FAILED when ActiveEncode::Base#create fails' do
         master_file.process
         #Have to manually tell delayed_job to do the work because callback doesn't get fired with delay_jobs = false
         Delayed::Worker.new.work_off
@@ -168,9 +164,11 @@ describe MasterFile do
     subject(:masterfile) { derivative.masterfile }
     let(:derivative) {FactoryGirl.create(:derivative)}
     it "should delete (VOV-1805)" do
-      Rubyhorn.stub_chain(:client,:delete_track).and_return("http://test.com/retract_rtmp.xml")
-      Rubyhorn.stub_chain(:client,:delete_hls_track).and_return("http://test.com/retract_hls.xml")
-      masterfile
+      #Rubyhorn.stub_chain(:client,:delete_track).and_return("http://test.com/retract_rtmp.xml")
+      #Rubyhorn.stub_chain(:client,:delete_hls_track).and_return("http://test.com/retract_hls.xml")
+      #masterfile
+      allow(derivative).to receive(:delete).and_return true
+      allow(ActiveEncode::Base).to receive(:stop)
       expect { masterfile.delete }.to change { MasterFile.all.count }.by(-1)
     end
 
@@ -341,7 +339,7 @@ describe MasterFile do
           subject.file_location.should == File.join(tempdir,original)
         end
         
-        it "should copy an uploaded file to the Matterhorn media path" do
+        it "should copy an uploaded file to the media path" do
           Avalon::Configuration['matterhorn']['media_path'] = media_path
           subject.file_location.should == File.join(media_path,original)
         end

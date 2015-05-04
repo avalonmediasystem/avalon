@@ -99,7 +99,7 @@ class MasterFile < ActiveFedora::Base
   VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
   UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
   QUALITY_ORDER = { "high" => 1, "medium" => 2, "low" => 3 }
-  END_STATES = ['STOPPED', 'SUCCEEDED', 'FAILED', 'SKIPPED']
+  END_STATES = ['CANCELLED', 'COMPLETED', 'FAILED']
   
   EMBED_SIZE = {:medium => 600}
   AUDIO_HEIGHT = 50
@@ -168,7 +168,7 @@ class MasterFile < ActiveFedora::Base
     # Stops all processing and deletes the workflow
     unless workflow_id.blank? || new_record? || finished_processing?
       begin
-        Rubyhorn.client.stop(workflow_id)
+        ActiveEncode::Base.stop(workflow_id)
       rescue Exception => e
         logger.warn "Error stopping workflow: #{e.message}"
       end
@@ -206,26 +206,10 @@ class MasterFile < ActiveFedora::Base
       file = {'quality-high' => File.new(file_location)}
     end
 
-    if file.is_a? Hash
-      files = file.dup
-      files.each_pair {|quality, f| files[quality] = "file://" + URI.escape(File.realpath(f.to_path))}
-      #The hash below has to be symbol keys or else delayed_job chokes
-      Delayed::Job.enqueue MatterhornIngestJob.new({
-	title: pid,
-	flavor: "presenter/source",
-	workflow: self.workflow_name,
-	url: files
-      })
-    else
-      #The hash below has to be string keys or else rubyhorn complains
-      Delayed::Job.enqueue MatterhornIngestJob.new({
-	'url' => "file://" + URI.escape(file_location),
-	'title' => pid,
-	'flavor' => "presenter/source",
-	'filename' => File.basename(file_location),
-	'workflow' => self.workflow_name
-      })
-    end
+    input = file.dup.each_pair {|quality, f| files[quality] = "file://" + URI.escape(File.realpath(f.to_path))} if file.is_a? Hash
+    input ||= file
+
+    Delayed::Job.enqueue MasterFileEncodeJob.new(self.id, ActiveEncode::Base.new(input, {}, preset: self.workflow_name))
   end
 
   def status?(value)
