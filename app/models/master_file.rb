@@ -222,7 +222,7 @@ byebug
   end
 
   def succeeded?
-    status?('SUCCEEDED')
+    status?('COMPLETED')
   end
 
   def stream_details(token,host=nil)
@@ -279,59 +279,56 @@ byebug
     END_STATES.include?(status_code)
   end
 
-  def update_progress!( params, matterhorn_response )
+  def update_progress!(encode)
+    Rails.logger.info("Updating with encode: #{encode.inspect}")
+    self.operation = encode.current_operations.first if encode.current_operations.present?
+    self.error = encode.errors.first if encode.errors.present?
+    self.status_code = encode.state.to_s.upcase
+    self.duration = encode.tech_metadata[:duration] if encode.tech_metadata[:duration]
+    self.checksum = encode.tech_metadata[:checksum] if encode.tech_metadata[:checksum]
+    self.workflow_id = encode.id
+    self.workflow_name = encode.options[:preset]
 
-    response_duration = matterhorn_response.source_tracks(0).duration.try(:first)
-
-    pct = calculate_percent_complete(matterhorn_response)
-    self.percent_complete  = pct[:complete].to_i.to_s
-    self.percent_succeeded = pct[:succeeded].to_i.to_s
-    self.percent_failed    = (pct[:failed].to_i + pct[:stopped].to_i).to_s
-
-    self.status_code = matterhorn_response.state[0]
-    self.failures = matterhorn_response.operations.operation.operation_state.select { |state| state == 'FAILED' }.length.to_s
-    current_operation = matterhorn_response.find_by_terms(:operations,:operation).select { |n| n['state'] == 'INSTANTIATED' }.first.try(:[],'description')
-    current_operation ||= matterhorn_response.find_by_terms(:operations,:operation).select { |n| ['RUNNING','FAILED','SUCCEEDED'].include?n['state'] }.last.try(:[],'description')
-    self.operation = current_operation
-    self.error = matterhorn_response.errors.last
-
-    # Because there is no attribute_changed? in AF
-    # we want to find out if the duration has changed
-    # so we can update it along with the media object.
-    if response_duration && response_duration !=  self.duration
-      self.duration = response_duration
+    case self.status_code
+    when"COMPLETED"
+      self.percent_complete = "100"
+      self.percent_succeeded = "100"
+      self.percent_failed = "0"
+      self.update_progress_on_success!(encode)
+    when "FAILED"
+      self.percent_complete = "100"
+      self.percent_succeeded = "0"
+      self.percent_failed = "100"
     end
-
-    save
+    self
   end
 
-  def update_progress_on_success!( matterhorn_response )
-    # First step is to create derivative objects within Fedora for each
-    # derived item. For this we need to pick only those which 
-    # have a 'streaming' tag attached
-    derivative_data = Hash.new { |h,k| h[k] = {} }
-    0.upto(matterhorn_response.streaming_tracks.size-1) { |i|
-      track = matterhorn_response.streaming_tracks(i)
-      key = track.tags.tag.include?('hls') ? 'hls' : 'rtmp'
-      derivative_data[track.tags.quality.first.split('-').last][key] = track
-    }
+  def update_progress_on_success!(encode)
+    rtmp_outputs = encode.output.select{|k,o| o[:url].starts_with? "rtmp"}
+    #FIXME find something better to select on than http for HLS streams
+    hls_outputs = encode.output.select{|k,o| o[:url].starts_with? "http"}
 
-    derivative_data.each_pair do |quality, entries|
-      Derivative.create_from_master_file(self, quality, entries, { stream_base: matterhorn_response.stream_base.first })
+    rtmp_outputs.each do |id, output|
+      existing = derivatives.to_a.find {|d| d.encoding.quality.first == output[:label].sub(/quality-/, '')}
+      d = Derivative.from_output(output, encode.options)
+      d.masterfile = self
+      d.track_id = id
+
+      hls_version_id, hls_version = hls_outputs.find {|k,o| o[:label] == output[:label]}
+      d.hls_track_id = hls_version if hls_version_id
+      d.hls_url = hls_version[:url] if hls_version
+
+      if d.save
+        existing.delete if existing
+      end
     end
-    
-    # Some elements of the original file need to be stored as well even 
-    # though they are not being used right now. This includes a checksum 
-    # which can be used to validate the file has not changed. 
-    self.mediapackage_id = matterhorn_response.mediapackage.id.first
-    
-    unless matterhorn_response.source_tracks(0).nil?
-      self.file_checksum = matterhorn_response.source_tracks(0).checksum.first
-    end
+
+    #Is mediapackage_id just the root path segment after the base?
+    self.mediapackage_id = derivatives.first.media_package_id if derivatives.first
 
     save
-    
-    run_hook :after_processing
+
+    run_hook :after_processing 
   end
 
   alias_method :'_poster_offset=', :'poster_offset='

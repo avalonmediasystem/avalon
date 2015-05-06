@@ -50,47 +50,21 @@ class Derivative < ActiveFedora::Base
     @url_handler ||= UrlHandler.const_get(url_handler_class.to_sym)
   end
 
-  # Getting the track ID from the fragment is not great but it does reduce the number
-  # of calls to Matterhorn 
-  def self.create_from_master_file(masterfile, quality, entries, opts = {})
-    # Looks for an existing derivative of the same quality
-    # and adds the track URL to it
-    masterfile = MasterFile.find(masterfile.pid)
-    existing = masterfile.derivatives.to_a.select {|d| d.encoding.quality.first == quality }
+  def self.from_output(output, opts={})
+    derivative = Derivative.new
+    derivative.duration = output[:duration]
+    derivative.encoding.mime_type = output[:mime_type]
+    derivative.encoding.quality = output[:label].sub(/quality-/, '')
 
-    # If same quality derivative doesn't exist, create one
-    derivative = Derivative.new 
-    
-    hls_markup = entries['hls']
-    markup = entries['rtmp']
-    derivative.duration = markup.duration.first
-    derivative.encoding.mime_type = markup.mimetype.first
-    derivative.encoding.quality = quality 
+    derivative.encoding.audio.audio_bitrate = output[:audio_bitrate]
+    derivative.encoding.audio.audio_codec = output[:audio_codec]
+    derivative.encoding.video.video_bitrate = output[:video_bitrate]
+    derivative.encoding.video.video_codec = output[:video_codec]
+    derivative.encoding.video.resolution = "#{output[:width]}x#{output[:height]}" if output[:width] && output[:height]
 
-    derivative.encoding.audio.audio_bitrate = markup.audio.a_bitrate.first
-    derivative.encoding.audio.audio_codec = markup.audio.a_codec.first
- 
-    unless markup.video.empty?
-      derivative.encoding.video.video_bitrate = markup.video.v_bitrate.first
-      derivative.encoding.video.video_codec = markup.video.v_codec.first
-      derivative.encoding.video.resolution = markup.video.resolution.first
-    end
-
-    derivative.track_id = markup.track_id.first
-    derivative.location_url = markup.url.first
+    derivative.location_url = output[:url]
     derivative.absolute_location = File.join(opts[:stream_base], Avalon::MatterhornRtmpUrl.parse(derivative.location_url).to_path) if opts[:stream_base]
 
-    if hls_markup.present?
-      derivative.hls_track_id = hls_markup.track_id.first
-      derivative.hls_url = hls_markup.url.first
-    end
-
-    derivative.masterfile = masterfile
-    if derivative.save
-      #Remove old derivatives only if save succeeds
-      existing.map(&:delete)
-    end
-    
     derivative
   end
 

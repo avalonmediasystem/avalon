@@ -134,7 +134,7 @@ GIT
 
 GIT
   remote: https://github.com/projecthydra-labs/active-encode.git
-  revision: c1a2757db0c6d3f8aa2e63048b8705d4f6064841
+  revision: cec4377647b15c1546cef95da407aca374f72e65
   specs:
     active-encode (0.0.1)
       activesupport
@@ -704,7 +704,7 @@ GEM
       actionpack (>= 3.1)
       jquery-rails
       railties (>= 3.1)
-    tzinfo (0.3.43)
+    tzinfo (0.3.44)
     uber (0.0.13)
     uglifier (2.7.1)
       execjs (>= 0.3.0)

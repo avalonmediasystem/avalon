@@ -1,7 +1,14 @@
 class MasterFileEncodeJob < Struct.new(:master_file_id, :encode)
   def perform
-    encode.create!
-    #TODO while encode.running? update masterfile
+    if !encode.created?
+      MasterFile.find(master_file_id).update_progress!(encode.create!).save
+    else
+      MasterFile.find(master_file_id).update_progress!(encode.reload).save
+    end
+  end
+
+  def after(job)
+    reschedule(job, 5.seconds.from_now) if job.payload_object.encode.running?
   end
 
   def error(job, exception)
@@ -12,4 +19,3 @@ class MasterFileEncodeJob < Struct.new(:master_file_id, :encode)
     master_file.save
   end
 end
-
