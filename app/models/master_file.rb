@@ -210,7 +210,7 @@ class MasterFile < ActiveFedora::Base
     input ||= "file://" + URI.escape(file_location)
 byebug
 
-    Delayed::Job.enqueue MasterFileEncodeJob.new(self.id, ActiveEncode::Base.new(input, {}, preset: self.workflow_name))
+    Delayed::Job.enqueue MasterFileEncodeJob.new(self.id, ActiveEncode::Base.new(input, preset: self.workflow_name))
   end
 
   def status?(value)
