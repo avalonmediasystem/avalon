@@ -22,7 +22,7 @@ FactoryGirl.define do
     depositors {[FactoryGirl.create(:user).username]}
     media_objects {[]}
 
-    ignore { items 0 }
+    transient { items 0 }
     after(:create) do |c, env|
       1.upto(env.items) { FactoryGirl.create(:media_object, collection: c) }
     end
