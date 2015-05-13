@@ -209,7 +209,7 @@ class MasterFile < ActiveFedora::Base
     input = file.dup.each_pair {|quality, f| files[quality] = "file://" + URI.escape(File.realpath(f.to_path))} if file.is_a? Hash
     input ||= "file://" + URI.escape(file_location)
 
-    Delayed::Job.enqueue MasterFileEncodeJob.new(self.id, ActiveEncode::Base.new(input, preset: self.workflow_name))
+    Delayed::Job.enqueue ActiveEncodeJob::Create.new(self.id, ActiveEncode::Base.new(input, preset: self.workflow_name))
   end
 
   def status?(value)
@@ -278,13 +278,16 @@ class MasterFile < ActiveFedora::Base
     END_STATES.include?(status_code)
   end
 
-  def update_progress!(encode)
-    Rails.logger.info("Updating with encode: #{encode.inspect}")
+  def update_progress!
+    update_progress_with_encode!(ActiveEncode::Base.find(self.workflow_id))
+  end
+
+  def update_progress_with_encode!(encode)
     self.operation = encode.current_operations.first if encode.current_operations.present?
     self.error = encode.errors.first if encode.errors.present?
     self.status_code = encode.state.to_s.upcase
     self.duration = encode.tech_metadata[:duration] if encode.tech_metadata[:duration]
-    self.checksum = encode.tech_metadata[:checksum] if encode.tech_metadata[:checksum]
+    self.file_checksum = encode.tech_metadata[:checksum] if encode.tech_metadata[:checksum]
     self.workflow_id = encode.id
     self.workflow_name = encode.options[:preset]
 
