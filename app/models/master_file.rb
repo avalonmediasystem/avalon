@@ -284,6 +284,8 @@ class MasterFile < ActiveFedora::Base
 
   def update_progress_with_encode!(encode)
     self.operation = encode.current_operations.first if encode.current_operations.present?
+    self.percent_complete = encode.percent_complete.to_s
+    self.percent_succeeded = encode.percent_complete.to_s
     self.error = encode.errors.first if encode.errors.present?
     self.status_code = encode.state.to_s.upcase
     self.duration = encode.tech_metadata[:duration] if encode.tech_metadata[:duration]
@@ -293,14 +295,14 @@ class MasterFile < ActiveFedora::Base
 
     case self.status_code
     when"COMPLETED"
-      self.percent_complete = "100"
-      self.percent_succeeded = "100"
-      self.percent_failed = "0"
+      self.percent_complete = encode.percent_complete.to_s
+      self.percent_succeeded = encode.percent_complete.to_s
+      self.percent_failed = 0.to_s
       self.update_progress_on_success!(encode)
     when "FAILED"
-      self.percent_complete = "100"
-      self.percent_succeeded = "0"
-      self.percent_failed = "100"
+      self.percent_complete = encode.percent_complete.to_s
+      self.percent_succeeded = encode.percent_complete.to_s
+      self.percent_failed = (100 - encode.percent_complete).to_s
     end
     self
   end

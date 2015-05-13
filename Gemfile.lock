@@ -134,7 +134,7 @@ GIT
 
 GIT
   remote: https://github.com/projecthydra-labs/active-encode.git
-  revision: 886891f9bf6b6a4d61960b0e4a9bf7470d7fd4de
+  revision: 50229d8c5d793280dcc3b1c07e50fa6b267125fa
   specs:
     active-encode (0.0.1)
       activesupport
