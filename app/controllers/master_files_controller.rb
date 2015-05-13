@@ -81,34 +81,35 @@ class MasterFilesController < ApplicationController
   def attach_structure
     if params[:id].blank? || (not MasterFile.exists?(params[:id]))
       flash[:notice] = "MasterFile #{params[:id]} does not exist"
-      redirect_to :back 
-      return
     end
     @masterfile = MasterFile.find(params[:id])
-    if not MediaObject.exists?(@masterfile.mediaobject_id)
+    unless flash.empty? and  MediaObject.exists?(@masterfile.mediaobject_id)
       flash[:notice] = "MediaObject #{@masterfile.mediaobject_id} does not exist"
-      redirect_to :back 
-      return
     end
-
-    media_object = MediaObject.find(@masterfile.mediaobject_id)
-    authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
-    if params[:master_file].present? && params[:master_file][:structure].present?
-      unless StructuralMetadata.content_valid? params[:master_file][:structure].open
-        flash[:error] = "File was not valid XML or did not contain required elements."
-        redirect_to :back
-        return
+    if flash.empty?
+      media_object = MediaObject.find(@masterfile.mediaobject_id)
+      authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
+      structure = request.format.json? ? params[:xml_content] : nil
+      if params[:master_file].present? && params[:master_file][:structure].present?
+        structure = params[:master_file][:structure].open.read
       end
-      @masterfile.structuralMetadata.content = params[:master_file][:structure].open
-    else
-      @masterfile.structuralMetadata.delete
-    end
-    unless @masterfile.save
-      flash[:error] = "There was a problem storing the file"
+      if structure.present?
+        validation_errors = StructuralMetadata.content_valid? structure
+        if validation_errors.empty?
+          @masterfile.structuralMetadata.content = structure
+        else
+          flash[:error] = validation_errors.map{|e| "Line #{e.line}: #{e.to_s}" }
+        end
+      else
+        @masterfile.structuralMetadata.delete
+      end
+      if flash.empty?
+        flash[:error] = "There was a problem storing the file" unless @masterfile.save
+      end
     end
     respond_to do |format|
       format.html { redirect_to edit_media_object_path(@masterfile.mediaobject_id, step: 'structure') }
-      format.js { }
+      format.json { render json: {structure: structure, flash: flash} }
     end
   end
 

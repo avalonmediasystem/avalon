@@ -19,14 +19,18 @@ class StructuralMetadata < ActiveFedora::Datastream
     'text/xml'
   end
 
+  def self.schema
+    Nokogiri::XML::Schema(File.read('public/avalon_structure.xsd'))
+  end
+
   delegate :xpath, to: :ng_xml
 
   def self.content_valid? content
-    Nokogiri::XML(content).xpath('//Item').present?
+    self.schema.validate(Nokogiri::XML(content))
   end
 
   def valid?
-    xpath('//Item').present?
+    self.class.schema.validate(self.ng_xml).empty?
   end
 
 end

@@ -898,7 +898,8 @@ div.status-detail {
   div.structure_xml {
     padding: 10px 20px;
     border-top: 1px dotted $gray;
-    ul {
+    min-height: 40px;
+    div.structure_view ul {
         padding-left: 20px;
       li {
         display: block;
@@ -913,6 +914,37 @@ div.status-detail {
     }
   }
 }
+    div.structure_edit {
+      .modal-dialog {
+        min-width: 900px;
+      }
+      ul {
+        list-style:none;
+        padding: 0;
+      }
+      ul.element_header {
+	.top_actions {
+	  margin-top: 1px;
+	}
+	.element_name {
+	  margin-left: 6px;
+	}
+      }
+      .xml_tab_area {
+	.gui_content {
+	  background-color: inherit;
+	}
+	.xml_problems_panel {
+	  background-color: $state-danger-bg;
+	}
+      }
+      .xml_textarea {
+        padding: 0;
+      }
+      .section_edit_submit {
+        margin-bottom: 10px;
+      }
+    }
 
 .item_note_header {
   text-transform: uppercase;
