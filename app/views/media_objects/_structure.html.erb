@@ -13,6 +13,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<% content_for :additional_head_content do %>
+<%= stylesheet_link_tag 'jquery.xmleditor.css' %>
+<% end %>
+
 <p class="muted">Drag files to reorder them.</p>
 
 <% if @masterFiles.blank? %>
@@ -53,44 +57,162 @@ Unless required by applicable law or agreed to in writing, software distributed
 	    <%= form_for section, :url => attach_structure_master_file_path(section.pid), html: {method: "post"} do |form| %>
 	      <%= form.file_field :structure, class: "filedata", style: "height:0px;width:0px;" %>
 	      <input type="button" class="btn btn-primary btn-xs" onclick="$('#structure_<%= index %> .filedata').click();" value="Upload" />
+	      <input type="button" class='btn btn-primary btn-xs' value="Edit" data-toggle="modal" data-target="#edit_structure_<%= index %>" />
               <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
 	    <% end %>
           </div>
-          <br class="clear"/>
-          <% if section.structuralMetadata.present? %>
-          <%   sectionnode = section.structuralMetadata.xpath('//Item') %>
-          <%   if sectionnode.children.present? %>
-          <%     sectionlabel = sectionnode.attribute('label').value %> 
-          <%     contents, tracknumber = parse_section section, sectionnode.first, index, "" %>
-                 <span><%= sectionlabel.html_safe %></span><ul><%= contents.html_safe %></ul>
-          <%   else %>
-          <%     sectionlabel = "#{index+1}. #{sectionnode.attribute('label').value}" %>
-          <%     sectionlabel += " (#{milliseconds_to_formatted_time(section.duration.to_i)})" unless section.duration.blank? %>
-                 <span><%= sectionlabel.html_safe %></span>
-          <%   end %>
-          <% end %>
+	  <div class="structure_view"/>
         </div>
       </li>
       <% end %>
     </ul>
   </div>
-<% end %>
+
 <div/>
 <br class="clear"/>
 <%= bootstrap_form_for @mediaobject, html: { class: "form-horizontal" } do |media| %>
   <%= render "workflow_buttons" %>
 <% end %>
 
+<% default_structure='<Item label=\' \'></Item>' %>
+<% @masterFiles.each_with_index do |section, index| %>
+  <div id="edit_structure_<%= index %>" class="structure_edit modal fade" data-backdrop="false" data-submit_url="<%= attach_structure_master_file_path(section.pid) %>">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content col-md-12">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Edit Structure</h4>
+        </div>
+        <div class="modal-body structure_edit col-md-12">
+	  <textarea rows=20 class="col-md-12 original_textarea" id="structure_<%= index %>"><%= section.structuralMetadata.valid? ? section.structuralMetadata.to_xml : default_structure %></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
+<% end %>
+
 <% content_for :page_scripts do %>
   <%= javascript_include_tag 'sort_streams' %>
-
+  <%= javascript_include_tag 'xmleditor/jquery.xmleditor' %>
+  <%= javascript_include_tag 'xmleditor/xsd2json' %>
+  <%= javascript_include_tag 'xmleditor/vkbeautify' %>
+  <%= javascript_include_tag 'xmleditor/ace' %>
+  <%= javascript_include_tag 'xmleditor/mode-xml' %>
 <script>
+
+function htmlDecode(value){
+  return $('<div/>').html(value).text();
+}
+
+function parse_structure(xml,index){
+  var $xml = $( $.parseXML(xml) );
+  var $item = $xml.find( "Item" );
+  if ($item.length) {
+    if ($item.children().length) return "<span>"+$item.attr('label')+"</span><ul>"+parse_section($item.first(), index)[0]+"</ul>";
+    else return "<span>"+(index+1)+". "+$item.attr('label')+"</span>";
+  } else return "";
+}
+
+function parse_section (node, index) {
+  if (node.children().length) {
+    tracknumber = 0;
+    var contents = '';
+    $.each(node.children(), function( index, node ) {
+        nodecontents = parse_node(node, tracknumber);
+        contents+=nodecontents[0];
+        tracknumber = nodecontents[1];
+    });
+  } else {
+    nodecontents = parse_node(node.first, index);
+    contents = nodecontents[0];
+    tracknumber = nodecontents[1];
+  }
+  return [contents, tracknumber];
+}
+
+function parse_node(node, tracknumber){
+  if (node.nodeName.toUpperCase()=="DIV"){
+    contents = ''
+    $.each($(node).children(), function( index, node ) {
+      nodecontents = parse_node(node, tracknumber);
+      contents += nodecontents[0];
+      tracknumber = nodecontents[1];
+    });
+    return ["<li>"+$(node).attr('label')+"</li><li><ul>"+contents+"</ul></li>", tracknumber];
+  } else if ($.inArray(node.nodeName.toUpperCase(),['SPAN','ITEM']) != -1){
+    tracknumber += 1;
+    return ["<li class='stream-li'>"+tracknumber+". "+$(node).attr('label')+"</li>", tracknumber];
+  } else {
+    return ["",tracknumber];
+  }
+}
+
 $('.structure_toggle').on('click', function (e) { 
   $(this).find('i.fa').toggleClass('hidden');
-  $('#'+$(this).data('target')).toggleClass('hidden');
+  target = $(this).data('target')
+  section_index = parseInt(target.split('_')[1]);
+  populate_structure_preview(section_index)
+  $('#'+target).toggleClass('hidden');
 });
-$( ".filedata" ).change(function() {
-  $(this).closest("form").submit();
+
+$( '.filedata' ).change(function() {
+  $(this).closest('form').submit();
+});
+
+function populate_structure_preview(index){
+  $xmltextarea = $('#edit_structure_'+index).find('textarea.original_textarea');
+  $('#structure_'+index).find('.structure_view').html(parse_structure(htmlDecode($xmltextarea.html()),index));
+}
+
+function attach_structure_response(r) {
+  if (r['flash'] && r['flash'].length) {
+    msg = ''
+    for (var i=0; i<r['flash'].length; i++) {
+      for (var j=0; j<r['flash'][i][1].length; j++) {
+        msg += r['flash'][i][1][j]+'<br/>';
+      }
+    }
+    return msg;
+  } else {
+    current_xml_editor.find('textarea.original_textarea').html(r['structure']);
+    section_index = parseInt(current_xml_editor.attr('id').split('_')[2]);
+    populate_structure_preview(section_index);
+    current_xml_editor.modal('hide');
+    current_xml_editor = null;
+  }
+}
+
+var current_xml_editor;
+var extractor = new Xsd2Json('avalon_structure.xsd', {'schemaURI':'/', 'rootElement':'item'});
+$('.structure_edit.modal').on('shown.bs.modal', function(){
+  modal = $(this);
+  current_xml_editor = modal;
+  if (modal.find('.xml_editor_container').length==0) {
+    te = modal.find('.original_textarea').first();
+    footer = modal.find('.modal-footer').first();
+    mb = modal.find('.modal-body').first();
+    te.height( $(window).height() - te.offset().top - footer.height() - (mb.outerHeight()-mb.height()) );
+    te.xmlEditor({
+      schema: extractor.getSchema(),
+      floatingMenu: false,
+      confirmExitWhenUnsubmitted: false,
+      loadSchemaAsychronously: false,
+      xmlEditorLabel: 'Graphical',
+      textEditorLabel: 'Raw XML',
+      containerElement: {
+        element: mb,
+        fixedHeight: true,
+      },
+      submitButtonConfigs : [
+        {
+          url: $(this).data('submit_url'),
+          responseHandler: attach_structure_response,
+          label: 'Save and Exit',
+          cssClass: 'btn btn-primary section_edit_submit',
+        }],
+    });
+  }
 });
 </script>
 <% end %>
