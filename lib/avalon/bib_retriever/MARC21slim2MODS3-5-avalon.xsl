@@ -44,6 +44,8 @@ Suppress typeOfResource in favor of that specified by Avalon Media System. bwk 2
 Added three Notes elements: 500 (note@type="general"), 586 (note@type="awards"), and 590 (note@type="local"). kdm 20150420
 Removed 041 subfields except for $d and $j. kdm 20150429
 Replaced use of 003 value for recordInfo\recordIdentifer@source with "local". kdm 20150430
+Added type="other" for 024 ind1=8. kdm 20150501
+Removed identifiers except <identifier  type="issue number | matrix number | music publisher | videorecording identifer"> to <relatedItem@type="identifer">. kdm 20150514
 -->
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
 	MARC21slim2MODS3-5 (Revision 1.106) 20141219
@@ -1980,7 +1982,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 				<xsl:copy-of select="$physicalDescription"/>
 			</physicalDescription>
 		<!--put 020, 024, 022, 028, 010, 035, 037 under relatedItem@type="original" for Avalon Media System kdm, 20150113-->
-		<xsl:for-each select="marc:datafield[@tag='020']">
+		<!--keep only 028 with indicator 1=0,1,3,4 -->
+		<!--xsl:for-each select="marc:datafield[@tag='020']">
 			<xsl:if test="marc:subfield[@code='a']">
 				<identifier type="isbn">
 					<xsl:value-of select="marc:subfield[@code='a']"/>
@@ -1993,9 +1996,9 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					<xsl:value-of select="marc:subfield[@code='z']"/>
 				</identifier>
 			</xsl:if>
-		</xsl:for-each>
+		</xsl:for-each-->
 
-		<xsl:for-each select="marc:datafield[@tag='024'][@ind1='0']">
+		<!--xsl:for-each select="marc:datafield[@tag='024'][@ind1='0']">
 			<xsl:if test="marc:subfield[@code='a']">
 				<identifier type="isrc">
 					<xsl:value-of select="marc:subfield[@code='a']"/>
@@ -2017,12 +2020,12 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			</identifier>
 		</xsl:for-each>
 		<xsl:for-each select="marc:datafield[@tag='024'][@ind1='8']">
-			<identifier>
+			<identifier type="other">
 				<xsl:value-of select="marc:subfield[@code='a']"/>
 			</identifier>
-		</xsl:for-each>
+		</xsl:for-each-->
 
-		<xsl:for-each select="marc:datafield[@tag='022'][marc:subfield[@code='a']]">
+		<!--xsl:for-each select="marc:datafield[@tag='022'][marc:subfield[@code='a']]">
 			<xsl:if test="marc:subfield[@code='a']">
 				<identifier type="issn">
 					<xsl:value-of select="marc:subfield[@code='a']"/>
@@ -2056,9 +2059,9 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					<xsl:value-of select="marc:subfield[@code='m']"/>
 				</identifier>
 			</xsl:if>
-		</xsl:for-each>
+		</xsl:for-each-->
 
-		<xsl:for-each select="marc:datafield[@tag='010'][marc:subfield[@code='a']]">
+		<!--xsl:for-each select="marc:datafield[@tag='010'][marc:subfield[@code='a']]">
 			<identifier type="lccn">
 				<xsl:value-of select="normalize-space(marc:subfield[@code='a'])"/>
 			</identifier>
@@ -2067,15 +2070,16 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			<identifier type="lccn" invalid="yes">
 				<xsl:value-of select="normalize-space(marc:subfield[@code='z'])"/>
 			</identifier>
-		</xsl:for-each>
+		</xsl:for-each-->
 
-		<xsl:for-each select="marc:datafield[@tag='028']">
+		<xsl:for-each select="marc:datafield[@tag='028'][@ind1='0'] | marc:datafield[@tag='028'][@ind1='1'] | 
+		marc:datafield[@tag='028'][@ind1='3'] | marc:datafield[@tag='028'][@ind1='4']">
 			<identifier>
 				<xsl:attribute name="type">
 					<xsl:choose>
 						<xsl:when test="@ind1='0'">issue number</xsl:when>
 						<xsl:when test="@ind1='1'">matrix number</xsl:when>
-						<xsl:when test="@ind1='2'">music plate</xsl:when>
+						<!--xsl:when test="@ind1='2'">music plate</xsl:when-->
 						<xsl:when test="@ind1='3'">music publisher</xsl:when>
 						<xsl:when test="@ind1='4'">videorecording identifier</xsl:when>
 					</xsl:choose>
@@ -2091,21 +2095,13 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			</identifier>
 		</xsl:for-each>
 
-		<xsl:for-each select="marc:datafield[@tag='035'][marc:subfield[@code='a'][contains(text(), '(OCoLC)')]]">
+		<!--xsl:for-each select="marc:datafield[@tag='035'][marc:subfield[@code='a'][contains(text(), '(OCoLC)')]]">
 			<identifier type="oclc">
 				<xsl:value-of select="normalize-space(substring-after(marc:subfield[@code='a'], '(OCoLC)'))"/>
 			</identifier>
-		</xsl:for-each>
+		</xsl:for-each-->
 
-
-		<!-- 3.5 1.95 20140421 -->
-		<xsl:for-each select="marc:datafield[@tag='035'][marc:subfield[@code='a'][contains(text(), '(WlCaITV)')]]">
-			<identifier type="WlCaITV">
-				<xsl:value-of select="normalize-space(substring-after(marc:subfield[@code='a'], '(WlCaITV)'))"/>
-			</identifier>
-		</xsl:for-each>
-
-		<xsl:for-each select="marc:datafield[@tag='037']">
+		<!--xsl:for-each select="marc:datafield[@tag='037']">
 			<identifier type="stock number">
 				<xsl:if test="marc:subfield[@code='c']">
 					<xsl:attribute name="displayLabel">
@@ -2118,7 +2114,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 					<xsl:with-param name="codes">ab</xsl:with-param>
 				</xsl:call-template>
 			</identifier>
-		</xsl:for-each>			
+		</xsl:for-each-->			
 			
 			
 			
@@ -2814,11 +2810,9 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		</xsl:for-each>
 
 		<!--Moved code dealing with 020, 024, 022, 028, 010, 035, 037 into relatedItem@type="original" for Avalon Media System. kdm, 20150116-->
-
-
-
+		<!--removed 024 and 856 for Avalon Media System. kdm, 20150514-->
 		<!-- 1.51 tmee 20100129-->
-		<xsl:for-each select="marc:datafield[@tag='856'][marc:subfield[@code='u']]">
+		<!--xsl:for-each select="marc:datafield[@tag='856'][marc:subfield[@code='u']]">
 			<xsl:if
 				test="starts-with(marc:subfield[@code='u'],'urn:hdl') or starts-with(marc:subfield[@code='u'],'hdl') or starts-with(marc:subfield[@code='u'],'http://hdl.loc.gov') ">
 				<identifier>
@@ -2848,13 +2842,13 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 						select="concat('hdl:',substring-after(marc:subfield[@code='u'],'http://hdl.loc.gov/'))"/>
 				</identifier>
 			</xsl:if>
-		</xsl:for-each>
+		</xsl:for-each-->
 
-		<xsl:for-each select="marc:datafield[@tag=024][@ind1=1]">
+		<!--xsl:for-each select="marc:datafield[@tag=024][@ind1=1]">
 			<identifier type="upc">
 				<xsl:value-of select="marc:subfield[@code='a']"/>
 			</identifier>
-		</xsl:for-each>
+		</xsl:for-each-->
 
 
 		<!-- 1.51 tmee 20100129 removed duplicate code 20131217

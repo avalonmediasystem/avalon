@@ -14,14 +14,15 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div id="metadata_header">
-        <% unless @mediaobject.title.blank? %>
-      <legend>
-        <%= @mediaobject.title %>
-      <% else %>
-        <%= @mediaobject.pid %>
-      <% end %>
-      </legend>
-     </div>
+  <legend>
+    <% unless @mediaobject.title.blank? %>
+      <%= @mediaobject.title %>
+    <% else %>
+      <%= @mediaobject.pid %>
+    <% end %>
+    <%= "/ #{@mediaobject.statement_of_responsibility}" if @mediaobject.statement_of_responsibility.present? %>
+  </legend>
+</div>
     
 <dl id="creation_metadata">
   <%= display_metadata('Main contributor', @mediaobject.creator, 'Not provided') %>
@@ -44,8 +45,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= display_metadata('Terms of Use', @mediaobject.terms_of_use) %>
   <%= display_metadata('Physical Description', @mediaobject.physical_description) %>
   <%= display_metadata('Related Item', display_related_item(@mediaobject)) %>
-  <%= display_metadata('System Identifier', display_system_identifiers(@mediaobject)) %>
   <%= display_metadata('Notes', display_notes(@mediaobject)) %>
+  <%= display_metadata('Other Identifier', display_other_identifiers(@mediaobject)) %>
 
 </dl>
 <% if can? :inspect, @mediaobject %>

@@ -114,7 +114,7 @@ class MediaObject < ActiveFedora::Base
     :terms_of_use => :terms_of_use,
     :table_of_contents => :table_of_contents,
     :physical_description => :physical_description,
-    :system_identifier => :system_identifier,
+    :other_identifier => :other_identifier,
     :record_identifier => :record_identifier,
     }
   end
@@ -152,7 +152,7 @@ class MediaObject < ActiveFedora::Base
   has_attributes :terms_of_use, datastream: :descMetadata, at: [:terms_of_use], multiple: false
   has_attributes :table_of_contents, datastream: :descMetadata, at: [:table_of_contents], multiple: true
   has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: false
-  has_attributes :system_identifier, datastream: :descMetadata, at: [:system_identifier], multiple: true
+  has_attributes :other_identifier, datastream: :descMetadata, at: [:other_identifier], multiple: true
   has_attributes :record_identifier, datastream: :descMetadata, at: [:record_identifier], multiple: true
   
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
@@ -255,8 +255,8 @@ class MediaObject < ActiveFedora::Base
     if values[:note]
       values[:note]=values[:note].zip(values.delete(:note_type)).map{|v| {value: v[0], attributes: v[1]}}
     end
-    if values[:system_identifier]
-      values[:system_identifier]=values[:system_identifier].zip(values.delete(:system_identifier_type)).map{|v| {value: v[0], attributes: v[1]}}
+    if values[:other_identifier]
+      values[:other_identifier]=values[:other_identifier].zip(values.delete(:other_identifier_type)).map{|v| {value: v[0], attributes: v[1]}}
     end
     values.each do |k, v|
       # First remove all blank attributes in arrays
@@ -301,8 +301,8 @@ class MediaObject < ActiveFedora::Base
   def note
     descMetadata.note.present? ? descMetadata.note.type.zip(descMetadata.note) : nil
   end
-  def system_identifier
-    descMetadata.system_identifier.present? ? descMetadata.system_identifier.type.zip(descMetadata.system_identifier) : nil
+  def other_identifier
+    descMetadata.other_identifier.present? ? descMetadata.other_identifier.type.zip(descMetadata.other_identifier) : nil
   end
 
 
@@ -397,7 +397,7 @@ class MediaObject < ActiveFedora::Base
     all_text_values << solr_doc["date_sim"]
     all_text_values << solr_doc["notes_sim"]
     all_text_values << solr_doc["table_of_contents_sim"]
-    all_text_values << solr_doc["system_identifier_sim"]
+    all_text_values << solr_doc["other_identifier_sim"]
     solr_doc["all_text_timv"] = all_text_values.flatten
     return solr_doc
   end
