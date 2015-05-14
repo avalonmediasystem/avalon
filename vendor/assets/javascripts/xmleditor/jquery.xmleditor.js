@@ -606,7 +606,7 @@ $.widget( "xml.xmlEditor", {
 				self.setXMLFromEditor();
 			} catch (e) {
 				self.xmlState.documentChangedEvent();
-				this.xmlEditorContainer.find("." + submissionStatusClass).html("Failed to save<br/>See errors at top").css("background-color", "#ffbbbb").animate({backgroundColor: "#ffffff"}, 1000);
+				self.xmlEditorContainer.find("." + submissionStatusClass).html("Failed to save<br/>See errors at top").css("background-color", "#ffbbbb").animate({backgroundColor: "#ffffff"}, 1000);
 				self.addProblem("Cannot save due to invalid xml", e);
 				return false;
 			}
@@ -2319,14 +2319,25 @@ ModifyMenuPanel.prototype.refreshContextualMenus = function(targetElement) {
 ModifyMenuPanel.prototype.setMenuPosition = function(){
 	if (this.menuColumn == null || this.menuColumn.offset() == null)
 		return;
-
-	var xmlWorkAreaContainer = this.editor.xmlWorkAreaContainer;
 	var xmlEditorContainer = this.editor.xmlEditorContainer;
+	if (this.editor.viewportFixedHeight) {
+	  this.menuColumn.css({
+	    position : 'absolute',
+	    left : xmlEditorContainer.outerWidth() - this.menuColumn.innerWidth(),
+	    top : "-"+this.editor.editorHeader.outerHeight()+'px',
+	  });
+	  this.editor.editorHeaderGroup.css({
+	    position : 'absolute',
+	    top : "-"+this.editor.editorHeader.outerHeight()+'px',
+	  });
+	  return;
+	}
+	var xmlWorkAreaContainer = this.editor.xmlWorkAreaContainer;
 	var menuTop = xmlWorkAreaContainer.offset().top;
-	if (false && $(window).scrollTop() >= menuTop) {
+	if ($(window).scrollTop() >= menuTop) {
 		this.menuColumn.css({
 			position : 'fixed',
-			left : xmlEditorContainer.offset().left + xmlEditorContainer.outerWidth() - this.menuColumn.innerWidth() + 30,
+			left : xmlEditorContainer.offset().left + xmlEditorContainer.outerWidth() - this.menuColumn.innerWidth(),
 			top : 0
 		});
 		this.editor.editorHeaderGroup.css({
@@ -2335,18 +2346,14 @@ ModifyMenuPanel.prototype.setMenuPosition = function(){
 		});
 	} else {
 		this.menuColumn.css({
-			position : 'fixed',
-			left : xmlEditorContainer.outerWidth() - this.menuColumn.innerWidth() + 30,
-			top : 75,
+			position : 'absolute',
+			left : xmlEditorContainer.outerWidth() - this.menuColumn.innerWidth(),
+			top : 0
 		});
-
 		this.editor.editorHeaderGroup.css({
-			position : 'fixed',
-			top : 70,
-			    // left : 10,
-			width : xmlEditorContainer.outerWidth() - this.menuColumn.innerWidth(),
+			position : 'absolute',
+			top : 0
 		});
-
 	}
 
 	// Adjust the menu's height so that it doesn't run out of the editor container
@@ -2544,8 +2551,8 @@ TextEditor.prototype.resetSelectedTagRange = function() {
 
 TextEditor.prototype.initialize = function(parentContainer) {
 	this.xmlContent = $("<div/>").attr({'id' : textContentClass + this.editor.instanceNumber, 'class' : textContentClass}).appendTo(parentContainer);
-	this.xmlEditorDiv = $("<div/>").attr('id', 'text_editor').appendTo(this.xmlContent);
-	this.aceEditor = ace.edit("text_editor");
+	this.xmlEditorDiv = $("<div/>").attr('id', 'text_editor_'+this.editor.instanceNumber).appendTo(this.xmlContent);
+	this.aceEditor = ace.edit("text_editor_"+this.editor.instanceNumber);
 	this.aceEditor.setTheme("ace/theme/textmate");
 	this.aceEditor.getSession().setMode("ace/mode/xml");
 	this.aceEditor.setShowPrintMargin(false);

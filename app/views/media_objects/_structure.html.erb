@@ -188,11 +188,11 @@ var extractor = new Xsd2Json('avalon_structure.xsd', {'schemaURI':'/', 'rootElem
 $('.structure_edit.modal').on('shown.bs.modal', function(){
   modal = $(this);
   current_xml_editor = modal;
+  te = modal.find('.original_textarea').first();
+  footer = modal.find('.modal-footer').first();
+  mb = modal.find('.modal-body').first();
+  te.height( $(window).height() + modal.offset().top - te.offset().top - footer.height() - (mb.outerHeight()-mb.height()) );
   if (modal.find('.xml_editor_container').length==0) {
-    te = modal.find('.original_textarea').first();
-    footer = modal.find('.modal-footer').first();
-    mb = modal.find('.modal-body').first();
-    te.height( $(window).height() - te.offset().top - footer.height() - (mb.outerHeight()-mb.height()) );
     te.xmlEditor({
       schema: extractor.getSchema(),
       floatingMenu: false,
