@@ -937,6 +937,12 @@ div.status-detail {
 	.xml_problems_panel {
 	  background-color: $state-danger-bg;
 	}
+	.attribute_container > textarea {
+	  resize: both;
+	}
+	.attribute_container > a, .attribute_container > label {
+	  vertical-align: top
+	}
       }
       .xml_textarea {
         padding: 0;
