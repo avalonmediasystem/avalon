@@ -121,6 +121,7 @@ $.widget( "xml.xmlEditor", {
 		targetNS: null,
 
 		containerElement: { element: null, fixedHeight: false },
+		defaultView: 'gui',  // ['gui','text']
 	},
 	
 	_create: function() {
@@ -388,6 +389,7 @@ $.widget( "xml.xmlEditor", {
 		this.refreshDisplay();
 		// Capture baseline undo state
 		this.undoHistory.captureSnapshot();
+		if (this.options.defaultView=='text') this.modeChange(1);
 	},
 	
 	// Construct user interface components of the editor
