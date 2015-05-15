@@ -84,7 +84,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <h4 class="modal-title">Edit Structure</h4>
         </div>
         <div class="modal-body structure_edit col-md-12">
-	  <textarea rows=20 class="col-md-12 original_textarea" id="structure_<%= index %>"><%= section.structuralMetadata.valid? ? section.structuralMetadata.to_xml : default_structure %></textarea>
+	  <textarea rows=20 class="col-md-12 original_textarea" id="structure_<%= index %>" style="visibility:hidden"><%= section.structuralMetadata.valid? ? section.structuralMetadata.to_xml : default_structure %></textarea>
         </div>
       </div>
     </div>
