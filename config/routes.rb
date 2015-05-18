@@ -26,6 +26,7 @@ Avalon::Application.routes.draw do
     match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
   end
   match "/authorize", to: 'derivatives#authorize', via: [:get, :post]
+  match "/authorize/:path", to: 'derivatives#authorize', via: [:get, :post]
   match "/autocomplete", to: 'object#autocomplete', via: [:get]
   match "/oembed", to: 'master_files#oembed', via: [:get]
 

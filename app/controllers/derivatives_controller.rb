@@ -30,7 +30,7 @@ class DerivativesController < ApplicationController
       
       respond_to do |format|
         format.urlencoded { render :text => resp.to_query, :content_type => :urlencoded, :status => :accepted }
-        format.text       { render :text => resp[:authorized], :status => :accepted }
+        format.text       { render :text => resp[:authorized].join(' '), :status => :accepted }
         format.xml        { render :xml  => resp, :root => :response, :status => :accepted }
         format.json       { render :json => resp, :status => :accepted }
       end

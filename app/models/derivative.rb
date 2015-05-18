@@ -93,7 +93,7 @@ class Derivative < ActiveFedora::Base
   def tokenized_url(token, mobile=false)
     #uri = URI.parse(url.first)
     uri = streaming_url(mobile)
-    "#{uri.to_s}?token=#{masterfile.mediapackage_id}-#{token}".html_safe
+    "#{uri.to_s}?token=#{token}".html_safe
   end
 
   def streaming_url(is_mobile=false)
@@ -121,5 +121,29 @@ class Derivative < ActiveFedora::Base
       else
         "other"
       end
+  end
+
+  def delete
+    #catch exceptions and log them but don't stop the deletion of the derivative object!
+    #TODO move this into a before_destroy callback
+    begin
+      job_urls = []
+      media_package = Rubyhorn.client.get_media_package_from_id(media_package_id)
+      job_urls << Rubyhorn.client.delete_track(media_package, track_id) 
+      job_urls << Rubyhorn.client.delete_hls_track(media_package, hls_track_id) if hls_track_id.present?
+
+      # Logs retraction jobs for sysadmin 
+      File.open(Avalon::Configuration.lookup('matterhorn.cleanup_log'), "a+") { |f| f << job_urls.join("\n") + "\n" }
+    rescue Exception => e
+      logger.warn "Error deleting derivative: #{e.message}"
+    end
+
+    super
+  end
+  
+  def to_solr(solr_doc = Hash.new)
+    super(solr_doc)
+    solr_doc['stream_path_tesim'] = location_url.split(/:/).last
+    solr_doc
   end
 end 
