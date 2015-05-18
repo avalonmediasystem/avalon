@@ -194,46 +194,6 @@ class MasterFilesController < ApplicationController
     end
   end
 
-  def update
-    master_file = MasterFile.find(params[:id])
-
-    if params[:workflow_id].present?
-      master_file.workflow_id ||= params[:workflow_id]
-      workflow = begin
-        Rubyhorn.client.instance_xml(params[:workflow_id])
-      rescue Rubyhorn::RestClient::Exceptions::HTTPNotFound
-        nil
-      end
-      if workflow
-        master_file.update_progress!(params, workflow)
-      else
-        master_file.status_code = 'STOPPED'
-        master_file.save
-      end
-
-      # If Matterhorn reports that the processing is complete then we need
-      # to prepare Fedora by pulling several important values closer to the
-      # interface. This will speed up searching, allow for on-the-fly quality
-      # switching, and avoids hitting Matterhorn repeatedly when loading up
-      # a list of search results
-      if master_file.status_code.eql? 'SUCCEEDED'
-        master_file.update_progress_on_success!(workflow)
-      end
-
-      # We handle the case where the item was batch ingested. If so the
-      # update method needs to kick off an email letting the uploader know it is
-      # ready to be previewed
-      ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( master_file.mediaobject.id )
-      if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
-        IngestBatchMailer.status_email(ingest_batch.id).deliver
-        ingest_batch.email_sent = true
-        ingest_batch.save!
-      end
-    end
-
-    render nothing: true
-  end
-
   # When destroying a file asset be sure to stop it first
   def destroy
     master_file = MasterFile.find(params[:id])

@@ -49,7 +49,7 @@ Avalon::Application.routes.draw do
       put :reassign_collection
     end
   end
-  resources :master_files, except: [:new, :index] do
+  resources :master_files, except: [:new, :index, :update] do
     member do
       get  'thumbnail', :to => 'master_files#get_frame', :defaults => { :type => 'thumbnail' }
       get  'poster',    :to => 'master_files#get_frame', :defaults => { :type => 'poster' }
