@@ -88,6 +88,15 @@ class MasterFile < ActiveFedora::Base
     media_object.save(validate: false)
   end
 
+  after_processing do
+    ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( self.id )
+    if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
+      IngestBatchMailer.status_email(ingest_batch.id).deliver
+      ingest_batch.email_sent = true
+      ingest_batch.save!
+    end
+  end
+
   # First and simplest test - make sure that the uploaded file does not exceed the
   # limits of the system. For now this is hard coded but should probably eventually
   # be set up in a configuration file somewhere
@@ -108,10 +117,6 @@ class MasterFile < ActiveFedora::Base
     unless mediaobject.nil?
       mediaobject.save(validate: false)  
     end
-  end
-
-  def destroy
-    delete
   end
 
   def setContent(file)
@@ -164,28 +169,14 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def delete 
-    # Stops all processing and deletes the workflow
-    unless workflow_id.blank? || new_record? || finished_processing?
-      begin
-        ActiveEncode::Base.stop(workflow_id)
-      rescue Exception => e
-        logger.warn "Error stopping workflow: #{e.message}"
-      end
-    end
-
+  def destroy 
     mo = self.mediaobject
     self.mediaobject = nil
+    self.derivatives.map(&:destroy)
 
-    derivatives_deleted = true
-    self.derivatives.each do |d|
-      if !d.delete
-        derivatives_deleted = false
-      end
-    end
-    if !derivatives_deleted 
-      #flash[:error] << "Some derivatives could not be deleted."
-    end 
+    # Stops all processing and deletes the workflow
+    ActiveEncode::Base.find(workflow_id).purge! if workflow_id.present?
+
     clear_association_cache
     
     super

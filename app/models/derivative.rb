@@ -45,6 +45,16 @@ class Derivative < ActiveFedora::Base
 
   has_metadata name: 'encoding', type: EncodingProfileDocument
 
+  before_destroy do
+    begin
+      encode = ActiveEncode::Base.find(masterfile.workflow_id)
+      encode.remove_output!(track_id)
+      encode.remove_output!(hls_track_id) if hls_track_id.present?
+    rescue Exception => e
+      logger.warn "Error deleting derivative: #{e.message}"
+    end
+  end
+
   def self.url_handler
     url_handler_class = Avalon::Configuration.lookup('streaming.server').to_s.classify
     @url_handler ||= UrlHandler.const_get(url_handler_class.to_sym)
@@ -111,23 +121,5 @@ class Derivative < ActiveFedora::Base
       else
         "other"
       end
-  end
-
-  def delete
-    #catch exceptions and log them but don't stop the deletion of the derivative object!
-    #TODO move this into a before_destroy callback
-    begin
-      job_urls = []
-      media_package = Rubyhorn.client.get_media_package_from_id(media_package_id)
-      job_urls << Rubyhorn.client.delete_track(media_package, track_id) 
-      job_urls << Rubyhorn.client.delete_hls_track(media_package, hls_track_id) if hls_track_id.present?
-
-      # Logs retraction jobs for sysadmin 
-      File.open(Avalon::Configuration.lookup('matterhorn.cleanup_log'), "a+") { |f| f << job_urls.join("\n") + "\n" }
-    rescue Exception => e
-      logger.warn "Error deleting derivative: #{e.message}"
-    end
-
-    super
   end
 end 
