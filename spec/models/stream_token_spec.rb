@@ -21,7 +21,7 @@ describe StreamToken do
     let(:session) { { :session_id => '00112233445566778899aabbccddeeff' } }
 
     it "should create a token" do
-      StreamToken.find_or_create_session_token(session, target).should =~ /^[0-9a-f]{32}$/
+      StreamToken.find_or_create_session_token(session, target).should =~ /^[0-9a-f]{40}$/
     end
   end
 
@@ -29,7 +29,7 @@ describe StreamToken do
     let(:session) { {} }
 
     it "should create a token" do
-      StreamToken.find_or_create_session_token(session, target).should =~ /^[0-9a-f]{32}$/
+      StreamToken.find_or_create_session_token(session, target).should =~ /^[0-9a-f]{40}$/
     end
   end
 end

@@ -83,20 +83,15 @@ describe MasterFile do
   end
 
   describe "masterfiles=" do
+    let(:derivative) {Derivative.create}
+    let(:master_file) {FactoryGirl.create(:master_file)}
     it "should set hasDerivation relationships on self" do
-      derivative = Derivative.new
-      mf = FactoryGirl.build(:master_file)
-      mf.save
-      derivative.save
+      master_file.relationships(:is_derivation_of).size.should == 0
 
-      mf.relationships(:is_derivation_of).size.should == 0
-
-      mf.derivatives += [derivative]
+      master_file.derivatives += [derivative]
 
       derivative.relationships(:is_derivation_of).size.should == 1
-      derivative.relationships(:is_derivation_of).first.should == mf.internal_uri
-
-      #derivative.relationships_are_dirty.should be true
+      derivative.relationships(:is_derivation_of).first.should == master_file.internal_uri
     end
   end
 
@@ -120,9 +115,9 @@ describe MasterFile do
 
   describe '#process' do
     let!(:master_file) { FactoryGirl.create(:master_file) }
-    let(:encode_job) { MasterFileEncodeJob.new(master_file.pid, ActiveEncode::Base.new(nil)) }
+    let(:encode_job) { ActiveEncodeJob::Create.new(master_file.pid, ActiveEncode::Base.new(nil)) }
     before do
-      allow(MasterFileEncodeJob).to receive(:new).and_return(encode_job)
+      allow(ActiveEncodeJob::Create).to receive(:new).and_return(encode_job)
       allow(encode_job).to receive(:perform)
       Delayed::Worker.delay_jobs = false
     end
