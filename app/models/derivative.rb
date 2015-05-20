@@ -125,7 +125,7 @@ class Derivative < ActiveFedora::Base
 
   def to_solr(solr_doc = Hash.new)
     super(solr_doc)
-    solr_doc['stream_path_tesim'] = location_url.split(/:/).last if location_url.present?
+    solr_doc['stream_path_ssi'] = location_url.split(/:/).last if location_url.present?
     solr_doc
   end
 end 
