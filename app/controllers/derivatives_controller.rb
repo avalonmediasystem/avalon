@@ -29,8 +29,8 @@ class DerivativesController < ApplicationController
       resp = { :authorized => StreamToken.validate_token(params[:token]) }
       
       respond_to do |format|
-        format.urlencoded { render :text => resp.to_query, :content_type => :urlencoded, :status => :accepted }
-        format.text       { render :text => resp[:authorized].join(' '), :status => :accepted }
+        format.urlencoded { resp[:authorized] = resp[:authorized].join(';'); render :text => resp.to_query, :content_type => :urlencoded, :status => :accepted }
+        format.text       { render :text => resp[:authorized].join("\n"), :status => :accepted }
         format.xml        { render :xml  => resp, :root => :response, :status => :accepted }
         format.json       { render :json => resp, :status => :accepted }
       end

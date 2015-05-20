@@ -34,7 +34,7 @@ module Avalon
 				content = resp.body.strip
 				resp.close
 				if status == 202
-					content.split(/\s+/).each do |auth_stream|
+					content.split(/\n/).each do |auth_stream|
 						if stream_path.index(auth_stream)
 							file = File.expand_path("./public/#{env['PATH_INFO']}")
 							if File.exists?(file)
