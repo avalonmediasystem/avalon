@@ -197,8 +197,12 @@ class MasterFile < ActiveFedora::Base
       file = {'quality-high' => File.new(file_location)}
     end
 
-    input = file.dup.each_pair {|quality, f| files[quality] = "file://" + URI.escape(File.realpath(f.to_path))} if file.is_a? Hash
-    input ||= "file://" + URI.escape(file_location)
+    input = if file.is_a? Hash
+      file_dup = file.dup
+      file_dup.each_pair {|quality, f| file_dup[quality] = "file://" + URI.escape(File.realpath(f.to_path))}
+    else
+      "file://" + URI.escape(file_location)
+    end
 
     Delayed::Job.enqueue ActiveEncodeJob::Create.new(self.id, ActiveEncode::Base.new(input, preset: self.workflow_name))
   end
