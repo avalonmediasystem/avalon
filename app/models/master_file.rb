@@ -57,12 +57,13 @@ class MasterFile < ActiveFedora::Base
     d.field :operation, :string
     d.field :error, :string
     d.field :failures, :string
+    d.field :encoder_classname, :string
   end
 
   has_metadata name: 'masterFile', type: UrlDatastream
 
   has_attributes :file_checksum, :file_size, :duration, :display_aspect_ratio, :original_frame_size, :file_format, :poster_offset, :thumbnail_offset, datastream: :descMetadata, multiple: false
-  has_attributes :workflow_id, :workflow_name, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures, datastream: :mhMetadata, multiple: false
+  has_attributes :workflow_id, :workflow_name, :encoder_classname, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures, datastream: :mhMetadata, multiple: false
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
@@ -431,6 +432,20 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
+  def encoder_class
+    find_encoder_class(encoder_classname) || find_encoder_class(workflow_name.to_s.classify) || ActiveEncode::Base
+  end
+  
+  def encoder_class=(value)
+    if value.nil?
+      mhMetadata.encoder_classname = nil
+    elsif value.is_a?(Class) and value.ancestors.include?(ActiveEncode::Base)
+      mhMetadata.encoder_classname = value.name
+    else
+      raise ArgumentError, '#encoder_class must be a descendant of ActiveEncode::Base'
+    end
+  end
+  
   protected
 
   def mediainfo
@@ -616,4 +631,7 @@ class MasterFile < ActiveFedora::Base
     "#{options[:pid].gsub(":","_")}-#{File.basename(oldpath)}"
   end
 
+  def find_encoder_class(klass_name)
+    ActiveEncode::Base.descendants.find { |c| c.name == klass_name }
+  end
 end

@@ -341,4 +341,57 @@ describe MasterFile do
       end
     end
   end
+
+  describe "#encoder_class" do
+    subject { FactoryGirl.create(:master_file) }
+    
+    before :all do
+      class WorkflowEncoder < ActiveEncode::Base
+      end
+      
+      module EncoderModule
+        class MyEncoder < ActiveEncode::Base
+        end
+      end
+    end
+    
+    after :all do
+      EncoderModule.send(:remove_const, :MyEncoder)
+      Object.send(:remove_const, :EncoderModule)
+      Object.send(:remove_const, :WorkflowEncoder)
+    end
+    
+    it "should default to ActiveEncode::Base" do
+      expect(subject.encoder_class).to eq(ActiveEncode::Base)
+    end
+    
+    it "should infer the class from a workflow name" do
+      subject.workflow_name = 'workflow_encoder'
+      expect(subject.encoder_class).to eq(WorkflowEncoder)
+    end
+    
+    it "should fall back to ActiveEncode::Base when a workflow class can't be resolved" do
+      subject.workflow_name = 'nonexistent_workflow_encoder'
+      expect(subject.encoder_class).to eq(ActiveEncode::Base)
+    end
+    
+    it "should resolve an explicitly named encoder class" do
+      subject.encoder_classname = 'EncoderModule::MyEncoder'
+      expect(subject.encoder_class).to eq(EncoderModule::MyEncoder)
+    end
+
+    it "should fall back to ActiveEncode::Base when an encoder class can't be resolved" do
+      subject.encoder_classname = 'EncoderModule::NonexistentEncoder'
+      expect(subject.encoder_class).to eq(ActiveEncode::Base)
+    end
+    
+    it "should correctly set the encoder classname from the encoder" do
+      subject.encoder_class = EncoderModule::MyEncoder
+      expect(subject.encoder_classname).to eq('EncoderModule::MyEncoder')
+    end
+    
+    it "should reject an invalid encoder class" do
+      expect { subject.encoder_class = Object }.to raise_error(ArgumentError)
+    end
+  end
 end
