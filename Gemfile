@@ -63,7 +63,8 @@
   #gem 'devise-guests'
   gem 'haml'
 
-  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'v3.2'
+  gem 'active-encode', git: "https://github.com/projecthydra-labs/active-encode.git"
+  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
   gem 'validates_email_format_of'
   gem 'loofah'
   gem 'omniauth-identity'

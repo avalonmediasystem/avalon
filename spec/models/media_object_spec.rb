@@ -309,12 +309,12 @@ describe MediaObject do
 
   describe '#finished_processing?' do
     it 'returns true if the statuses indicate processing is finished' do
-      media_object.parts << MasterFile.new(status_code: 'STOPPED')
-      media_object.parts << MasterFile.new(status_code: 'SUCCEEDED')
+      media_object.parts << MasterFile.new(status_code: 'CANCELLED')
+      media_object.parts << MasterFile.new(status_code: 'COMPLETED')
       media_object.finished_processing?.should be true
     end
     it 'returns true if the statuses indicate processing is not finished' do
-      media_object.parts << MasterFile.new(status_code: 'STOPPED')
+      media_object.parts << MasterFile.new(status_code: 'CANCELLED')
       media_object.parts << MasterFile.new(status_code: 'RUNNING')
       media_object.finished_processing?.should be false
     end

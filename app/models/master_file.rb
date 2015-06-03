@@ -57,12 +57,13 @@ class MasterFile < ActiveFedora::Base
     d.field :operation, :string
     d.field :error, :string
     d.field :failures, :string
+    d.field :encoder_classname, :string
   end
 
   has_metadata name: 'masterFile', type: UrlDatastream
 
   has_attributes :file_checksum, :file_size, :duration, :display_aspect_ratio, :original_frame_size, :file_format, :poster_offset, :thumbnail_offset, datastream: :descMetadata, multiple: false
-  has_attributes :workflow_id, :workflow_name, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures, datastream: :mhMetadata, multiple: false
+  has_attributes :workflow_id, :workflow_name, :encoder_classname, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures, datastream: :mhMetadata, multiple: false
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
@@ -88,6 +89,15 @@ class MasterFile < ActiveFedora::Base
     media_object.save(validate: false)
   end
 
+  after_processing do
+    ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( self.id )
+    if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
+      IngestBatchMailer.status_email(ingest_batch.id).deliver
+      ingest_batch.email_sent = true
+      ingest_batch.save!
+    end
+  end
+
   # First and simplest test - make sure that the uploaded file does not exceed the
   # limits of the system. For now this is hard coded but should probably eventually
   # be set up in a configuration file somewhere
@@ -99,7 +109,7 @@ class MasterFile < ActiveFedora::Base
   VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
   UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
   QUALITY_ORDER = { "high" => 1, "medium" => 2, "low" => 3 }
-  END_STATES = ['STOPPED', 'SUCCEEDED', 'FAILED', 'SKIPPED']
+  END_STATES = ['CANCELLED', 'COMPLETED', 'FAILED']
   
   EMBED_SIZE = {:medium => 600}
   AUDIO_HEIGHT = 50
@@ -108,10 +118,6 @@ class MasterFile < ActiveFedora::Base
     unless mediaobject.nil?
       mediaobject.save(validate: false)  
     end
-  end
-
-  def destroy
-    delete
   end
 
   def setContent(file)
@@ -164,28 +170,14 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def delete 
-    # Stops all processing and deletes the workflow
-    unless workflow_id.blank? || new_record? || finished_processing?
-      begin
-        Rubyhorn.client.stop(workflow_id)
-      rescue Exception => e
-        logger.warn "Error stopping workflow: #{e.message}"
-      end
-    end
-
+  def destroy 
     mo = self.mediaobject
     self.mediaobject = nil
+    self.derivatives.map(&:destroy)
 
-    derivatives_deleted = true
-    self.derivatives.each do |d|
-      if !d.delete
-        derivatives_deleted = false
-      end
-    end
-    if !derivatives_deleted 
-      #flash[:error] << "Some derivatives could not be deleted."
-    end 
+    # Stops all processing and deletes the workflow
+    ActiveEncode::Base.find(workflow_id).purge! if workflow_id.present?
+
     clear_association_cache
     
     super
@@ -206,26 +198,14 @@ class MasterFile < ActiveFedora::Base
       file = {'quality-high' => File.new(file_location)}
     end
 
-    if file.is_a? Hash
-      files = file.dup
-      files.each_pair {|quality, f| files[quality] = "file://" + URI.escape(File.realpath(f.to_path))}
-      #The hash below has to be symbol keys or else delayed_job chokes
-      Delayed::Job.enqueue MatterhornIngestJob.new({
-	title: pid,
-	flavor: "presenter/source",
-	workflow: self.workflow_name,
-	url: files
-      })
+    input = if file.is_a? Hash
+      file_dup = file.dup
+      file_dup.each_pair {|quality, f| file_dup[quality] = "file://" + URI.escape(File.realpath(f.to_path))}
     else
-      #The hash below has to be string keys or else rubyhorn complains
-      Delayed::Job.enqueue MatterhornIngestJob.new({
-	'url' => "file://" + URI.escape(file_location),
-	'title' => pid,
-	'flavor' => "presenter/source",
-	'filename' => File.basename(file_location),
-	'workflow' => self.workflow_name
-      })
+      "file://" + URI.escape(file_location)
     end
+
+    Delayed::Job.enqueue ActiveEncodeJob::Create.new(self.id, ActiveEncode::Base.new(input, preset: self.workflow_name))
   end
 
   def status?(value)
@@ -237,7 +217,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def succeeded?
-    status?('SUCCEEDED')
+    status?('COMPLETED')
   end
 
   def stream_details(token,host=nil)
@@ -294,59 +274,61 @@ class MasterFile < ActiveFedora::Base
     END_STATES.include?(status_code)
   end
 
-  def update_progress!( params, matterhorn_response )
-
-    response_duration = matterhorn_response.source_tracks(0).duration.try(:first)
-
-    pct = calculate_percent_complete(matterhorn_response)
-    self.percent_complete  = pct[:complete].to_i.to_s
-    self.percent_succeeded = pct[:succeeded].to_i.to_s
-    self.percent_failed    = (pct[:failed].to_i + pct[:stopped].to_i).to_s
-
-    self.status_code = matterhorn_response.state[0]
-    self.failures = matterhorn_response.operations.operation.operation_state.select { |state| state == 'FAILED' }.length.to_s
-    current_operation = matterhorn_response.find_by_terms(:operations,:operation).select { |n| n['state'] == 'INSTANTIATED' }.first.try(:[],'description')
-    current_operation ||= matterhorn_response.find_by_terms(:operations,:operation).select { |n| ['RUNNING','FAILED','SUCCEEDED'].include?n['state'] }.last.try(:[],'description')
-    self.operation = current_operation
-    self.error = matterhorn_response.errors.last
-
-    # Because there is no attribute_changed? in AF
-    # we want to find out if the duration has changed
-    # so we can update it along with the media object.
-    if response_duration && response_duration !=  self.duration
-      self.duration = response_duration
-    end
-
-    save
+  def update_progress!
+    update_progress_with_encode!(ActiveEncode::Base.find(self.workflow_id))
   end
 
-  def update_progress_on_success!( matterhorn_response )
-    # First step is to create derivative objects within Fedora for each
-    # derived item. For this we need to pick only those which 
-    # have a 'streaming' tag attached
-    derivative_data = Hash.new { |h,k| h[k] = {} }
-    0.upto(matterhorn_response.streaming_tracks.size-1) { |i|
-      track = matterhorn_response.streaming_tracks(i)
-      key = track.tags.tag.include?('hls') ? 'hls' : 'rtmp'
-      derivative_data[track.tags.quality.first.split('-').last][key] = track
-    }
+  def update_progress_with_encode!(encode)
+    self.operation = encode.current_operations.first if encode.current_operations.present?
+    self.percent_complete = encode.percent_complete.to_s
+    self.percent_succeeded = encode.percent_complete.to_s
+    self.error = encode.errors.first if encode.errors.present?
+    self.status_code = encode.state.to_s.upcase
+    self.duration = encode.tech_metadata[:duration] if encode.tech_metadata[:duration]
+    self.file_checksum = encode.tech_metadata[:checksum] if encode.tech_metadata[:checksum]
+    self.workflow_id = encode.id
+    self.workflow_name = encode.options[:preset]
 
-    derivative_data.each_pair do |quality, entries|
-      Derivative.create_from_master_file(self, quality, entries, { stream_base: matterhorn_response.stream_base.first })
+    case self.status_code
+    when"COMPLETED"
+      self.percent_complete = encode.percent_complete.to_s
+      self.percent_succeeded = encode.percent_complete.to_s
+      self.percent_failed = 0.to_s
+      self.update_progress_on_success!(encode)
+    when "FAILED"
+      self.percent_complete = encode.percent_complete.to_s
+      self.percent_succeeded = encode.percent_complete.to_s
+      self.percent_failed = (100 - encode.percent_complete).to_s
     end
-    
-    # Some elements of the original file need to be stored as well even 
-    # though they are not being used right now. This includes a checksum 
-    # which can be used to validate the file has not changed. 
-    self.mediapackage_id = matterhorn_response.mediapackage.id.first
-    
-    unless matterhorn_response.source_tracks(0).nil?
-      self.file_checksum = matterhorn_response.source_tracks(0).checksum.first
+    self
+  end
+
+  def update_progress_on_success!(encode)
+    rtmp_outputs = encode.output.select{|k,o| o[:url].starts_with? "rtmp"}
+    #FIXME find something better to select on than http for HLS streams
+    hls_outputs = encode.output.select{|k,o| o[:url].starts_with? "http"}
+
+    rtmp_outputs.each do |id, output|
+      existing = derivatives.to_a.find {|d| d.encoding.quality.first == output[:label].sub(/quality-/, '')}
+      d = Derivative.from_output(output, encode.options)
+      d.masterfile = self
+      d.track_id = id
+
+      hls_version_id, hls_version = hls_outputs.find {|k,o| o[:label] == output[:label]}
+      d.hls_track_id = hls_version if hls_version_id
+      d.hls_url = hls_version[:url] if hls_version
+
+      if d.save
+        existing.delete if existing
+      end
     end
+
+    #Is mediapackage_id just the root path segment after the base?
+    self.mediapackage_id = derivatives.first.media_package_id if derivatives.first
 
     save
-    
-    run_hook :after_processing
+
+    run_hook :after_processing 
   end
 
   alias_method :'_poster_offset=', :'poster_offset='
@@ -450,6 +432,20 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
+  def encoder_class
+    find_encoder_class(encoder_classname) || find_encoder_class(workflow_name.to_s.classify) || ActiveEncode::Base
+  end
+  
+  def encoder_class=(value)
+    if value.nil?
+      mhMetadata.encoder_classname = nil
+    elsif value.is_a?(Class) and value.ancestors.include?(ActiveEncode::Base)
+      mhMetadata.encoder_classname = value.name
+    else
+      raise ArgumentError, '#encoder_class must be a descendant of ActiveEncode::Base'
+    end
+  end
+  
   protected
 
   def mediainfo
@@ -463,7 +459,7 @@ class MasterFile < ActiveFedora::Base
     unless File.exists?(response[:source])
       Rails.logger.warn("Masterfile `#{file_location}` not found. Extracting via HLS.")
       begin
-        token = StreamToken.find_or_create_session_token({media_token:nil}, self.mediapackage_id)
+        token = StreamToken.find_or_create_session_token({media_token:nil}, self.pid)
         playlist_url = self.stream_details(token)[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
         playlist = Avalon::M3U8Reader.read(playlist_url)
         details = playlist.at(options[:offset])
@@ -635,4 +631,7 @@ class MasterFile < ActiveFedora::Base
     "#{options[:pid].gsub(":","_")}-#{File.basename(oldpath)}"
   end
 
+  def find_encoder_class(klass_name)
+    ActiveEncode::Base.descendants.find { |c| c.name == klass_name }
+  end
 end

@@ -121,8 +121,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
-  revision: a1c32d1f788b9d93b28f4eeb7cfc9b30f1935a81
-  tag: v3.2
+  revision: acc4424c0c3de19e465b6635988c85b98f649c2a
   specs:
     rubyhorn (0.0.6)
       activesupport
@@ -132,6 +131,13 @@ GIT
       net-http-digest_auth
       om
       rest-client
+
+GIT
+  remote: https://github.com/projecthydra-labs/active-encode.git
+  revision: d839b50471e72fc0d70ca4aece1ea5816f22b2ff
+  specs:
+    active-encode (0.0.1)
+      activesupport
 
 GIT
   remote: https://github.com/projecthydra/hydra-head.git
@@ -725,6 +731,7 @@ PLATFORMS
 
 DEPENDENCIES
   about_page!
+  active-encode!
   activerecord-jdbcsqlite3-adapter
   activerecord-session_store
   avalon-about!
