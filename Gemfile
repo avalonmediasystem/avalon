@@ -70,6 +70,7 @@
   gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'v3.1'
 
   gem 'mediainfo'
+  gem 'delayed_job', '=4.0.4'
   gem 'delayed_job_active_record'
   gem 'whenever', require: false
   gem 'with_locking'
