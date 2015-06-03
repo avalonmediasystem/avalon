@@ -38,33 +38,21 @@ describe Derivative do
     end
   end
 
-  describe "deleting" do
+  describe "destroy" do
     let!(:derivative) {FactoryGirl.create(:derivative)}
-    before :each do 
-      File.open(Avalon::Configuration.lookup('matterhorn.cleanup_log'), "w+") {}
-    end
 
-    it "should delete and start retraction jobs" do
-      job_urls = ["http://test.com/retract_rtmp.xml", "http://test.com/retract_hls.xml"]
-      Rubyhorn.stub_chain(:client,:get_media_package_from_id).and_return('6f69c008-06a4-4bad-bb60-26297f0b4c06')
-      Rubyhorn.stub_chain(:client,:delete_track).and_return(job_urls[0])
-      Rubyhorn.stub_chain(:client,:delete_hls_track).and_return(job_urls[1])
-      expect{derivative.delete}.to change{Derivative.count}.by(-1)
-      
-      log_count = 0
-      file = File.new(Avalon::Configuration.lookup('matterhorn.cleanup_log'))
-      file.each { |line| log_count += 1 if line.start_with?(job_urls[0]) || line.start_with?(job_urls[1]) }
-      log_count.should == 2
+    it "should delete and retract files" do
+      expect{derivative.destroy}.to change{Derivative.count}.by(-1)
     end 
 
     it "should not throw error when location_url is missing" do
       derivative.location_url = nil
-      derivative.delete
+      derivative.destroy
       Derivative.all.count.should == 0
     end
 
     it "should not throw error when workflow doesn't exist in Matterhorn" do
-      derivative.delete
+      derivative.destroy
       Derivative.all.count.should == 0
     end
 
@@ -72,7 +60,7 @@ describe Derivative do
       Rubyhorn.stub_chain(:client,:delete_track).and_raise("Stream not found error")
       Rubyhorn.stub_chain(:client,:delete_hls_track).and_raise("Stream not found error")
 
-      expect{derivative.delete}.to change{Derivative.count}.by(-1)
+      expect{derivative.destroy}.to change{Derivative.count}.by(-1)
     end 
   end
 
