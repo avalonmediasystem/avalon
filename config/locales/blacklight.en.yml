@@ -33,6 +33,7 @@ en:
     back_to_bookmarks: 'Back to Selected Items'
 
     search:
+      title: '%{constraints} - %{application_name} Search'
       bookmarks:
         present: "Selected"
         absent: "Select"
@@ -41,6 +42,8 @@ en:
         title: 'Browse By'
       facets-workflow:
         title: 'Limit to'
+      filters:
+        none: 'Browse'
 
     tools:
       publish: "Publish"
