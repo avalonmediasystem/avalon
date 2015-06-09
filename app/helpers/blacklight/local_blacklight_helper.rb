@@ -12,7 +12,11 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-module Blacklight::LocalBlacklightHelper 
+module Blacklight::LocalBlacklightHelper
+  def has_facet_values? fields = facet_field_names, options = {}
+    facets_from_request(fields).any? { |display_facet| !display_facet.items.empty? && should_render_facet?(display_facet) }
+  end
+
   def facet_field_names group=nil
     blacklight_config.facet_fields.select { |facet,opts| group == opts[:group] }.keys
   end
