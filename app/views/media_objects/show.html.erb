@@ -13,9 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% content_for :title do %>
-  <%= @mediaobject.title || @mediaobject.pid %>
-<% end %>
+<% @page_title = t('media_objects.show.title', :media_object_title => (@mediaobject.title || @mediaobject.pid), :application_name => application_name) %>
 
 <div class="container-fluid" >
   <%= render 'administrative_links' %>

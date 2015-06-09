@@ -151,3 +151,22 @@ en:
       Select an Avalon group from the dropdown list below to grant it access to an item or collection.
     class: |
       Enter an external group to grant it access to an item or collection. This group might represent students in a course or members of an institution-specific group.
+
+  contact:
+    title: 'Contact Us - %{application_name}'
+
+  groups:
+    title: 'Groups - %{application_name}'
+    show:
+      title: '%{group_name} - Groups - %{application_name}'
+
+  collections:
+    title: 'Collections - %{application_name}'
+    show:
+      title: '%{collection_name} - Collections - %{application_name}'
+
+  media_objects:
+    edit:
+      title: '%{step_title} - %{media_object_title} - %{application_name}'
+    show:
+      title: '%{media_object_title} - %{application_name}'

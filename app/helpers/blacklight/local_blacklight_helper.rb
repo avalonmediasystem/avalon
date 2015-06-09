@@ -34,4 +34,27 @@ module Blacklight::LocalBlacklightHelper
     truncate(field, length: 200) unless field.blank?
   end
 
+  def constraints_filters_string filters
+    return if filters.nil?
+    filters.map {|facet, values| contstraints_filter_string(facet, values)}.join(' / ')
+  end
+
+  def contstraints_filter_string(facet, values)
+    facet_config = facet_configuration_for_field(facet)
+
+    case values.size
+    when 1
+      "#{facet_field_label(facet_config.key)}: #{facet_display_value(facet, values.first)}"
+    when 2 #if multiple facet selection enabled
+      "#{facet_field_label(facet_config.key)}: #{facet_display_value(facet, values.first)} or #{facet_display_value(facet, values.last)}"
+    else #if multiple facet selection enabled
+      "#{facet_field_label(facet_config.key)}: #{values.size} selected"
+    end
+  end
+
+  def constraints_string(localized_params = params)
+    result = [localized_params[:q], constraints_filters_string(localized_params[:f])].keep_if(&:present?).join(" / ")
+    result = t('blacklight.search.filters.none') if result.empty?
+    result
+  end
 end
