@@ -55,8 +55,8 @@ class MasterFilesController < ApplicationController
       if mf.present?
         width = params[:maxwidth] || MasterFile::EMBED_SIZE[:medium]
         height = mf.is_video? ? (width.to_f/mf.display_aspect_ratio.to_f).floor : MasterFile::AUDIO_HEIGHT
-        maxheight = params['maxheight']
-        if maxheight.present? && height>maxheight.to_f
+        maxheight = params['maxheight'].to_f
+        if 0<maxheight && maxheight<height
           width = (maxheight*mf.display_aspect_ratio.to_f).floor
           height = maxheight.to_i
         end
