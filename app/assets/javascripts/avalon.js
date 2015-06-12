@@ -47,4 +47,6 @@ $(document).ready(function() {
     })
     $('input[readonly], textarea[readonly]').attr("readonly", false);
   }
+
+  $('a').has('img, ul').addClass('block');
 });

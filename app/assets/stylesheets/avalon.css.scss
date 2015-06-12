@@ -1,18 +1,18 @@
-/* 
+/*
  * Copyright 2011-2015, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed 
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- *   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+ *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
-*/
+ */
 
 @import "branding";
 @import "bootstrap/variables";
@@ -20,9 +20,9 @@
 
 /**
  * Snippets to extend
- */ 
+ */
 .mobile-hidden {
- @media (max-width: $screen-xs-max) {
+  @media (max-width: $screen-xs-max) {
     display: none !important;
   }
 }
@@ -79,7 +79,7 @@ tr.active-false td {
       margin-left: 1em;
       margin-right: 1em;
     }
-  } 
+  }
 
   li.nav-success {
     background-color: $state-success-bg;
@@ -120,7 +120,7 @@ tr.active-false td {
   border-radius: 4px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
   margin: 10px 0;
-  min-height: 0px; 
+  min-height: 0px;
 }
 
 .navbar-nav {
@@ -128,8 +128,8 @@ tr.active-false td {
     a {
       padding: 7px 10px;
     }
-  } 
-}	
+  }
+}
 .navbar-right {
   padding: 4px 0;
 }
@@ -186,7 +186,7 @@ tr.active-false td {
     }
     &:last-child {
       border-top-right-radius: $border-radius-base;
-      border-bottom-right-radius: $border-radius-base;      
+      border-bottom-right-radius: $border-radius-base;
     }
   }
   .input-group-btn {
@@ -295,25 +295,25 @@ header div{
 }
 
 .avalon-search-query-form .search-query {
-    border-radius: 15px;
-    font-family: Arial,Helvetica,sans-serif;
-    font-size: 13px;
-    font-weight: normal;
-    line-height: 1;
-    margin-bottom: 0;
-    padding: 4px 14px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
-    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
-    height: 25px;
-    width: 100%;
-    vertical-align: middle;
+  border-radius: 15px;
+  font-family: Arial,Helvetica,sans-serif;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 1;
+  margin-bottom: 0;
+  padding: 4px 14px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+  transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+  height: 25px;
+  width: 100%;
+  vertical-align: middle;
 }
 
 /* Sidebar */
 
-.sidenav { 
+.sidenav {
   h4 {
     margin: 0px;
     background-color: $sidenavHeaderBackgroundColor;
@@ -383,7 +383,7 @@ footer {
   ul {
     margin-left: 0;
   }
-  
+
   li {
     list-style-type: none;
     display: inline;
@@ -405,14 +405,14 @@ footer a {
 footer ul {
   float: left;
   margin-left: -40px;
-  @media all and (max-width: 475px) { 
+  @media all and (max-width: 475px) {
     float: none;
   }
 }
 
 footer .release {
   float: right;
-  @media all and (max-width: 475px) { 
+  @media all and (max-width: 475px) {
     float: none;
   }
 }
@@ -428,7 +428,7 @@ footer .release {
   a {
     color: $successLink;
     &:hover {
-    color: scale-color($successLink, $lightness: -20%);
+      color: scale-color($successLink, $lightness: -20%);
     }
   }
 }
@@ -466,7 +466,7 @@ span.constraints-label {
     padding: 0;
     background-color: transparent;
     border: 0;
-    
+
     /* Force the summary to wrap neatly */
     word-wrap: normal;
     word-break: normal;
@@ -484,12 +484,12 @@ span.constraints-label {
 }
 
 .progress-inline {
-    display: inline-block;
-    height: 9pt;
-    width: 36pt;
-    margin-right: 2pt;
-    margin-bottom: 0;
-    cursor: pointer;
+  display: inline-block;
+  height: 9pt;
+  width: 36pt;
+  margin-right: 2pt;
+  margin-bottom: 0;
+  cursor: pointer;
 }
 
 button.close {
@@ -500,10 +500,10 @@ button.close {
   &.error {
     input:first-child{ border-color: $state-danger-text; }
   }
-  .field_with_errors input { 
+  .field_with_errors input {
     border-color: $state-danger-border;
     background-color: $state-danger-bg;
-  } 
+  }
   input, textarea{
     width: 90%;
     float: none;
@@ -519,7 +519,7 @@ button.close {
   margin-bottom: 0px;
 }
 
-.mejs-poster { 
+.mejs-poster {
   overflow: hidden;
   img {
     width: 100%;
@@ -542,12 +542,12 @@ button.close {
 }
 
 .fileinput {
+  max-width: 500px;
+  .form-control {
     max-width: 500px;
-    .form-control {
-      max-width: 500px;
-      white-space: nowrap;
-      overflow-x: hidden;
-    }
+    white-space: nowrap;
+    overflow-x: hidden;
+  }
 }
 
 .fileinput-submit {
@@ -585,27 +585,32 @@ a[data-trigger='submit'] {
   -o-hyphens: inherit;
   hyphens: inherit;
   //for IE to correctly wrap long words, container must have fixed width
-  display: block;
+  display: inline-block;
+  width: 78%;
+  position: relative;
+  padding-right: 20px;
   @media (max-width: 600px) {
     max-width: 250px;
   }
   @media (min-width: 600px) and (max-width: $screen-sm-min){
     max-width: 550px;
   }
-  .selected {
-    display: block;
-    width: 80%;
-    float: left;
-  }
   .remove {
-    width: 20%;
-    float: right;
+    position: absolute;
+    top: 0;
+    right: 0;
+    text-indent: 0;
   }
 }
+
+.facet-count {
+  float: right;
+  width: 20%;
+}
+
 //left panel on large screens should be extra small, not so for extended facet list
 .panel-body .facet-values .facet-label {
   @media (min-width: $screen-sm-min){
-    max-width: 159px;
   }
 }
 .facets .panel-group .panel {
@@ -625,7 +630,7 @@ a[data-trigger='submit'] {
   }
   dd {
     margin-left: 0;
-  } 
+  }
 }
 
 #creation_metadata dd {
@@ -710,7 +715,7 @@ a[data-trigger='submit'] {
 }
 
 .edit_media_object .form-group {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .btn-danger:visited {
@@ -770,13 +775,21 @@ a[data-trigger='submit'] {
     text-decoration: none;
     outline: 0;
   }
+  a:focus {
+    outline: 1px solid $linkColor;
+    outline-offset: 1px;
+  }
 }
 #share-list .tab-content {
-  margin-bottom: 20px; 
+  margin-bottom: 20px;
 }
 #share-list .share-tabs {
   a:link, a:visited, a:hover, a:active {
     outline: 0;
+  }
+  a:focus {
+    outline: 1px solid $linkColor;
+    outline-offset: 1px;
   }
 }
 
@@ -790,6 +803,10 @@ $accordionPadding: 20px;
     &:link, &:visited, &:hover, &:active {
       outline: 0;
       text-decoration: none;
+    }
+    &:focus {
+      outline: 1px solid $linkColor;
+      outline-offset: 3px;
     }
     .panel-title .fa {
       font-size: .9em;
@@ -831,16 +848,16 @@ $accordionPadding: 20px;
         i.now-playing {
           left: accordion-indent(2);
         }
-	ul {
-	  i.now-playing {
-	    left: accordion-indent(3);
+        ul {
+          i.now-playing {
+            left: accordion-indent(3);
           }
- 	  ul {
-	    i.now-playing {
-	      left: accordion-indent(4);
-	    }
-	  }
-	}
+          ul {
+            i.now-playing {
+              left: accordion-indent(4);
+            }
+          }
+        }
       }
     }
   }
@@ -900,7 +917,7 @@ div.status-detail {
     border-top: 1px dotted $gray;
     min-height: 40px;
     div.structure_view ul {
-        padding-left: 20px;
+      padding-left: 20px;
       li {
         display: block;
         width: 100%;
@@ -914,46 +931,77 @@ div.status-detail {
     }
   }
 }
-    div.structure_edit {
-      .modal-dialog {
-        min-width: 900px;
-      }
-      ul {
-        list-style:none;
-        padding: 0;
-      }
-      ul.element_header {
-	.top_actions {
-	  margin-top: 1px;
-	}
-	.element_name {
-	  margin-left: 6px;
-	}
-      }
-      .xml_tab_area {
-	.gui_content {
-	  background-color: inherit;
-	}
-	.xml_problems_panel {
-	  background-color: $state-danger-bg;
-	}
-	.attribute_container > textarea {
-	  resize: both;
-	}
-	.attribute_container > a, .attribute_container > label {
-	  vertical-align: top
-	}
-      }
-      .xml_textarea {
-        padding: 0;
-      }
-      .section_edit_submit {
-        margin-bottom: 10px;
-        margin-top: 4px;
-      }
+div.structure_edit {
+  .modal-dialog {
+    min-width: 900px;
+  }
+  ul {
+    list-style:none;
+    padding: 0;
+  }
+  ul.element_header {
+    .top_actions {
+      margin-top: 1px;
     }
+    .element_name {
+      margin-left: 6px;
+    }
+  }
+  .xml_tab_area {
+    .gui_content {
+      background-color: inherit;
+    }
+    .xml_problems_panel {
+      background-color: $state-danger-bg;
+    }
+    .attribute_container > textarea {
+      resize: both;
+    }
+    .attribute_container > a, .attribute_container > label {
+      vertical-align: top
+    }
+  }
+  .xml_textarea {
+    padding: 0;
+  }
+  .section_edit_submit {
+    margin-bottom: 10px;
+    margin-top: 4px;
+  }
+}
 
 .item_note_header {
   text-transform: uppercase;
   margin-bottom: 0;
+}
+
+.block {
+  display: block;
+}
+
+a[href]:focus,
+input[type='submit']:focus,
+input[type='image']:focus,
+input[type='text']:focus,
+input[type='checkbox']:focus,
+label[for]:focus,
+select:focus,
+button:focus,
+textarea:focus {
+  outline-style: solid;
+  outline-width: 1px;
+  outline-color: $linkColor;
+  outline-offset: 1px;
+}
+
+a[href]:hover,
+input[type='submit']:hover,
+input[type='image']:hover,
+input[type='text']:hover,
+input[type='checkbox']:hover,
+label[for]:hover,
+select:hover,
+button:hover,
+textarea:hover {
+  outline: none;
 }
