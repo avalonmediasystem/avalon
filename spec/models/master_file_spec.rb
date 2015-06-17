@@ -394,4 +394,18 @@ describe MasterFile do
       expect { subject.encoder_class = Object }.to raise_error(ArgumentError)
     end
   end
+
+  describe "#embed_title" do
+    subject { FactoryGirl.create( :master_file, { mediaobject: FactoryGirl.create( :media_object, { title: "test" })})}
+
+    it "should have an appropriate title for the embed code with no label" do
+      expect( subject.embed_title ).to eq( "test - video.mp4" )
+    end
+
+    it "should have an appropriate title for the embed code with a label" do
+      subject.label = "test"
+
+      expect( subject.embed_title ).to eq( "test - test" )
+    end
+  end
 end
