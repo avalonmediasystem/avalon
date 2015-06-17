@@ -315,7 +315,7 @@ class MasterFile < ActiveFedora::Base
       d.track_id = id
 
       hls_version_id, hls_version = hls_outputs.find {|k,o| o[:label] == output[:label]}
-      d.hls_track_id = hls_version if hls_version_id
+      d.hls_track_id = hls_version_id if hls_version_id
       d.hls_url = hls_version[:url] if hls_version
 
       if d.save
