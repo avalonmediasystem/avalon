@@ -18,7 +18,7 @@ class R3ContentToR4 < ActiveRecord::Migration
       bib_id_label = mo.descMetadata.identifier.type.first
       mo.descMetadata.bibliographic_id = nil
       mo.descMetadata.add_bibliographic_id(bib_id, bib_id_label)
-      mo.descMetadata.add_system_identifier(bib_id, bib_id_label)
+      mo.descMetadata.add_other_identifier(bib_id, bib_id_label)
       mo.descMetadata.identifier = nil
       mo.save_as_version('R4', validate: false)
     end
