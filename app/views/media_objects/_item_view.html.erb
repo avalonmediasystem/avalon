@@ -21,7 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% f_start, f_end = parse_media_fragment params['t'] %>
 <div class="row">
   <div class="col-sm-8" id="left_column">
-    <section id="player" style="width: 100%">
+    <section id="content" class="avalon-player" style="width: 100%" tabIndex="0">
       <% if @currentStream.present? and @currentStream.derivatives.present? %>
         <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
         

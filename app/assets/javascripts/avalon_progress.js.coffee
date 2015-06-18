@@ -71,7 +71,7 @@ class AvalonProgress
     data = @data[section_id]
     if data.status != 'SUCCEEDED' or data.complete < 100
       window.currentPlayer = null
-      $('#player').html('<div id="nojs"></div>')
+      $('.avalon-player').html('<div id="nojs"></div>')
 
 $(document).ready ->
   progress_controller = new AvalonProgress()
