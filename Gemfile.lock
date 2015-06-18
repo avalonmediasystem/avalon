@@ -77,8 +77,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-skin-avalon.git
-  revision: 0a9342f6a106e6d3756dc46b6f47c005050fdb62
-  tag: v3.2
+  revision: 8b9c8a77989ad0b080e179161bf954798275a7ad
   specs:
     mediaelement-skin-avalon (0.0.1)
 
@@ -830,6 +829,3 @@ DEPENDENCIES
   whenever
   with_locking
   xray-rails
-
-BUNDLED WITH
-   1.10.4
