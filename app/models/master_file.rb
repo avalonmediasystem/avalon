@@ -176,8 +176,13 @@ class MasterFile < ActiveFedora::Base
     self.derivatives.map(&:destroy)
 
     # Stops all processing and deletes the workflow
-    ActiveEncode::Base.find(workflow_id).purge! if workflow_id.present?
-
+    if workflow_id.present?
+      begin
+        ActiveEncode::Base.find(workflow_id).purge!
+      rescue Rubyhorn::RestClient::Exceptions::ServerError
+        logger.warn "Error purging encode #{workflow_id} for MasterFile #{id}"
+      end
+    end
     clear_association_cache
     
     super
