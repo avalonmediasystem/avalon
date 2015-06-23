@@ -60,7 +60,11 @@ class Derivative < ActiveFedora::Base
     @url_handler ||= UrlHandler.const_get(url_handler_class.to_sym)
   end
 
-  def self.from_output(output, opts={})
+  def self.from_output(dists, opts={})
+    #output is an array of 1 or more distributions of the same derivative (e.g. file and HLS segmented file)
+    hls_output = dists.delete(dists.find {|o| o.url.ends_with? "m3u8" })
+    output = dists.first || hls_output
+
     derivative = Derivative.new
     derivative.duration = output[:duration]
     derivative.encoding.mime_type = output[:mime_type]
@@ -72,8 +76,11 @@ class Derivative < ActiveFedora::Base
     derivative.encoding.video.video_codec = output[:video_codec]
     derivative.encoding.video.resolution = "#{output[:width]}x#{output[:height]}" if output[:width] && output[:height]
 
-    derivative.location_url = output[:url]
-    derivative.absolute_location = File.join(opts[:stream_base], Avalon::MatterhornRtmpUrl.parse(derivative.location_url).to_path) if opts[:stream_base]
+    derivative.hls_track_id = hls_output[:id]
+    derivative.hls_url = hls_output[:url]
+
+    derivative.absolute_location = output[:url]
+    derivative.location_url = output[:url] #FIXME use streaming_url or some other method to map the file:// url into a rtmp url
 
     derivative
   end
