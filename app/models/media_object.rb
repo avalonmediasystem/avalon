@@ -320,7 +320,7 @@ class MediaObject < ActiveFedora::Base
       values = if self.class.multiple?(attribute)
         Array(value).select { |v| not v.blank? }
       elsif Array(value).length==1
-        Array(value).first()
+        Array(value).first
       else
         value
       end
