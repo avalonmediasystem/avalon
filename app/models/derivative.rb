@@ -12,13 +12,11 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-require 'avalon/matterhorn_rtmp_url'
+require 'avalon/stream_mapper'
 
 class Derivative < ActiveFedora::Base
   include ActiveFedora::Associations
   include VersionableModel
-
-  class_attribute :url_handler
 
   belongs_to :masterfile, :class_name=>'MasterFile', :property=>:is_derivation_of
 
@@ -55,11 +53,6 @@ class Derivative < ActiveFedora::Base
     end
   end
 
-  def self.url_handler
-    url_handler_class = Avalon::Configuration.lookup('streaming.server').to_s.classify
-    @url_handler ||= UrlHandler.const_get(url_handler_class.to_sym)
-  end
-
   def self.from_output(dists, opts={})
     #output is an array of 1 or more distributions of the same derivative (e.g. file and HLS segmented file)
     hls_output = dists.delete(dists.find {|o| o[:url].ends_with? "m3u8" })
@@ -80,21 +73,24 @@ class Derivative < ActiveFedora::Base
     derivative.hls_url = hls_output[:url]
 
     derivative.absolute_location = output[:url]
-    derivative.location_url = output[:url] #FIXME use streaming_url or some other method to map the file:// url into a rtmp url
-
     derivative
   end
 
+  def set_streaming_locations!
+    path = URI.parse(absolute_location).path
+    self.location_url = Avalon::StreamMapper.map(path,'rtmp',self.format)
+    self.hls_url      = Avalon::StreamMapper.map(path,'http',self.format)
+    self
+  end
+  
   def absolute_location
     derivativeFile.location
   end
 
   def absolute_location=(value)
     derivativeFile.location = value
-  end
-
-  def media_package_id
-    Avalon::MatterhornRtmpUrl.parse(location_url).media_id
+    set_streaming_locations!
+    derivativeFile.location
   end
 
   def tokenized_url(token, mobile=false)
@@ -104,19 +100,7 @@ class Derivative < ActiveFedora::Base
   end
 
   def streaming_url(is_mobile=false)
-    # We need to tweak the RTMP stream to reflect the right format for AMS.
-    # That means extracting the extension from the end and placing it just
-    # after the application in the URL
-
-    protocol = is_mobile ? 'http' : 'rtmp'
-
-    rtmp_url = Avalon::MatterhornRtmpUrl.parse location_url
-    if rtmp_url.extension.nil? or rtmp_url.prefix.nil?
-      rtmp_url.prefix = rtmp_url.extension = [rtmp_url.extension,rtmp_url.prefix].find { |thing| not thing.nil? }
-    end
-
-    template = ERB.new(self.class.url_handler.patterns[protocol][format])
-    result = File.join(Avalon::Configuration.lookup("streaming.#{protocol}_base"),template.result(rtmp_url.binding))
+    is_mobile ? self.hls_url : self.location_url
   end
 
   def format

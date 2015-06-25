@@ -830,6 +830,3 @@ DEPENDENCIES
   whenever
   with_locking
   xray-rails
-
-BUNDLED WITH
-   1.10.4
