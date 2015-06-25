@@ -133,7 +133,7 @@ GIT
 
 GIT
   remote: https://github.com/projecthydra-labs/active-encode.git
-  revision: a8ce099afa94244bd0d77d99a5118ab044e95083
+  revision: 2f08e3bbcd99bddb9db08710e5ebb7a4a1477d02
   specs:
     active-encode (0.0.1)
       activemodel

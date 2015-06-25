@@ -65,63 +65,99 @@ describe Derivative do
   end
 
   describe "streaming" do
-
-    before :each do
-      @d = Derivative.new
-      @rtmp_base = Avalon::Configuration.lookup('streaming.rtmp_base')
-      @http_base = Avalon::Configuration.lookup('streaming.http_base')
-      @d.location_url = "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4"
-    end
+    let(:rtmp_base)  { Avalon::Configuration.lookup('streaming.rtmp_base')    }
+    let(:http_base)  { Avalon::Configuration.lookup('streaming.http_base')    }
+    let(:root)       { Avalon::Configuration.lookup('streaming.content_path') }
+    let(:location)   { "file://#{root}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4" }
+    let(:derivative) { Derivative.new }
 
     describe "generic" do
       before :each do
-        Derivative.url_handler = UrlHandler::Generic
+        Avalon::StreamMapper.streaming_server = :generic
       end
 
-      it "should properly create an RTMP video streaming URL" do
-        @d.encoding.video = 'true'
-        @d.streaming_url(false).should == "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      it "RTMP video" do
+        derivative.encoding.video = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
       end
 
-      it "should properly create an RTMP audio streaming URL" do
-        @d.encoding.audio = 'true'
-        @d.streaming_url(false).should == "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      it "RTMP audio" do
+        derivative.encoding.audio = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
       end
 
-      it "should properly create an HTTP video streaming URL" do
-        @d.encoding.video = 'true'
-        @d.streaming_url(true).should == "#{@http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+      it "HTTP video" do
+        derivative.encoding.video = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(true).should == "#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
       end
 
-      it "should properly create an HTTP audio streaming URL" do
-        @d.encoding.audio = 'true'
-        @d.streaming_url(true).should == "#{@http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+      it "HTTP audio" do
+        derivative.encoding.audio = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(true).should == "#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
       end
     end
 
     describe "adobe" do
       before :each do
-        Derivative.url_handler = UrlHandler::Adobe
+        Avalon::StreamMapper.streaming_server = :adobe
       end
 
-      it "should properly create an RTMP video streaming URL" do
-        @d.encoding.video = 'true'
-        @d.streaming_url(false).should == "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      it "RTMP video" do
+        derivative.encoding.video = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
       end
 
-      it "should properly create an RTMP audio streaming URL" do
-        @d.encoding.audio = 'true'
-        @d.streaming_url(false).should == "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      it "RTMP audio" do
+        derivative.encoding.audio = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
       end
 
-      it "should properly create an HTTP video streaming URL" do
-        @d.encoding.video = 'true'
-        @d.streaming_url(true).should == "#{@http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+      it "HTTP video" do
+        derivative.encoding.video = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(true).should == "#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
       end
 
-      it "should properly create an HTTP audio streaming URL" do
-        @d.encoding.audio = 'true'
-        @d.streaming_url(true).should == "#{@http_base}/audio-only/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+      it "HTTP audio" do
+        derivative.encoding.audio = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(true).should == "#{http_base}/audio-only/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+      end
+    end
+
+    describe "wowza" do
+      before :each do
+        Avalon::StreamMapper.streaming_server = :wowza
+      end
+
+      it "RTMP video" do
+        derivative.encoding.video = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      end
+
+      it "RTMP audio" do
+        derivative.encoding.audio = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      end
+
+      it "HTTP video" do
+        derivative.encoding.video = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(true).should == "#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8"
+      end
+
+      it "HTTP audio" do
+        derivative.encoding.audio = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(true).should == "#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8"
       end
     end
   end

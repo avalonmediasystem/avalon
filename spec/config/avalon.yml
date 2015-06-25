@@ -24,6 +24,7 @@ development:
         enable_starttls_auto: false
   streaming:
     stream_token_ttl: 20 #minutes
+    content_path: '/path/to/avalon/content'
     rtmp_base: 'rtmp://localhost/avalon'
     http_base: 'http://localhost:3000/streams'
   groups:
@@ -58,6 +59,7 @@ test:
         enable_starttls_auto: false
   streaming:
     stream_token_ttl: 20 #minute
+    content_path: '/path/to/avalon/content'
     rtmp_base: 'rtmp://localhost/avalon'
     http_base: 'http://localhost:3000/streams'
   groups:

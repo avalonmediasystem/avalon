@@ -18,6 +18,7 @@ module Avalon
     "email"=>{},
     "streaming"=>{
       "server"=>:generic,
+      "content_path"=>File.join(Rails.root,"red5/webapps/avalon/streams"),
       "rtmp_base"=>"rtmp://localhost/avalon/",
       "http_base"=>"http://localhost:3000/streams/",
       "stream_token_ttl"=>20,
@@ -36,7 +37,6 @@ module Avalon
       location.respond_to?(:keys) ? location[key] : nil
     end
   end
-
   
   begin
     mipath = Avalon::Configuration.lookup('mediainfo.path')

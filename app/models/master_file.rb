@@ -173,16 +173,13 @@ class MasterFile < ActiveFedora::Base
   def destroy 
     mo = self.mediaobject
     self.mediaobject = nil
+
+    # Stops all processing
+    if workflow_id.present? && !finished_processing?
+      ActiveEncode::Base.find(workflow_id).cancel!
+    end
     self.derivatives.map(&:destroy)
 
-    # Stops all processing and deletes the workflow
-    if workflow_id.present?
-      begin
-        ActiveEncode::Base.find(workflow_id).purge!
-      rescue Rubyhorn::RestClient::Exceptions::ServerError
-        logger.warn "Error purging encode #{workflow_id} for MasterFile #{id}"
-      end
-    end
     clear_association_cache
     
     super
@@ -313,22 +310,13 @@ class MasterFile < ActiveFedora::Base
   end
 
   def update_progress_on_success!(encode)
-    rtmp_outputs = encode.output.select{|k,o| o[:url].starts_with? "rtmp"}
-    #FIXME find something better to select on than http for HLS streams
-    hls_outputs = encode.output.select{|k,o| o[:url].starts_with? "http"}
-
-    rtmp_outputs.each do |id, output|
-      existing = derivatives.to_a.find {|d| d.encoding.quality.first == output[:label].sub(/quality-/, '')}
-      d = Derivative.from_output(output, encode.options)
-      d.masterfile = self
-      d.track_id = id
-
-      hls_version_id, hls_version = hls_outputs.find {|k,o| o[:label] == output[:label]}
-      d.hls_track_id = hls_version_id if hls_version_id
-      d.hls_url = hls_version[:url] if hls_version
-
-      if d.save
-        existing.delete if existing
+    outputs_by_quality = encode.output.group_by {|o| o[:label]}
+   
+    outputs_by_quality.each_pair do |quality, outputs|
+      existing = derivatives.to_a.find {|d| d.encoding.quality.first == quality}
+      d = Derivative.from_output(outputs, encode.options.merge(masterfile: self))
+      if d.save && existing
+        existing.delete
       end
     end
 
