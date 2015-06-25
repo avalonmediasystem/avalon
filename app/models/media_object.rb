@@ -319,6 +319,8 @@ class MediaObject < ActiveFedora::Base
     else
       values = if self.class.multiple?(attribute)
         Array(value).select { |v| not v.blank? }
+      elsif Array(value).length==1
+        Array(value).first
       else
         value
       end
