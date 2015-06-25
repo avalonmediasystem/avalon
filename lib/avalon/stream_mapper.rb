@@ -1,10 +1,6 @@
 module Avalon
   class DefaultStreamMapper
-    Detail = Struct.new(:rtmp_base, :http_base, :path, :filename, :extension)
-    class Detail
-      alias_method :_binding, :binding
-      def binding; _binding; end
-    end
+    Detail = Struct.new(:rtmp_base, :http_base, :path, :filename, :extension) { def get_binding; binding; end }
     
     attr_accessor :streaming_server
     
@@ -29,7 +25,7 @@ module Avalon
 
     def map(path, protocol, format)
       template = ERB.new(self.url_handler[protocol][format])
-      template.result(stream_details_for(path).binding)
+      template.result(stream_details_for(path).get_binding)
     end
   end
   
