@@ -293,7 +293,7 @@ class MasterFile < ActiveFedora::Base
     self.duration = encode.tech_metadata[:duration] if encode.tech_metadata[:duration]
     self.file_checksum = encode.tech_metadata[:checksum] if encode.tech_metadata[:checksum]
     self.workflow_id = encode.id
-    self.workflow_name = encode.options[:preset]
+    #self.workflow_name = encode.options[:preset] #MH can switch to an error workflow
 
     case self.status_code
     when"COMPLETED"
