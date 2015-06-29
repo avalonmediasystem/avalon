@@ -293,7 +293,7 @@ class MasterFile < ActiveFedora::Base
     self.duration = encode.tech_metadata[:duration] if encode.tech_metadata[:duration]
     self.file_checksum = encode.tech_metadata[:checksum] if encode.tech_metadata[:checksum]
     self.workflow_id = encode.id
-    self.workflow_name = encode.options[:preset]
+    #self.workflow_name = encode.options[:preset] #MH can switch to an error workflow
 
     case self.status_code
     when"COMPLETED"
@@ -314,7 +314,8 @@ class MasterFile < ActiveFedora::Base
    
     outputs_by_quality.each_pair do |quality, outputs|
       existing = derivatives.to_a.find {|d| d.encoding.quality.first == quality}
-      d = Derivative.from_output(outputs, encode.options.merge(masterfile: self))
+      d = Derivative.from_output(outputs)
+      d.masterfile = self
       if d.save && existing
         existing.delete
       end
