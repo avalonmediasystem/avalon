@@ -53,7 +53,7 @@ class Derivative < ActiveFedora::Base
     end
   end
 
-  def self.from_output(dists, opts={})
+  def self.from_output(dists)
     #output is an array of 1 or more distributions of the same derivative (e.g. file and HLS segmented file)
     hls_output = dists.delete(dists.find {|o| o[:url].ends_with? "m3u8" })
     output = dists.first || hls_output
@@ -69,8 +69,10 @@ class Derivative < ActiveFedora::Base
     derivative.encoding.video.video_codec = output[:video_codec]
     derivative.encoding.video.resolution = "#{output[:width]}x#{output[:height]}" if output[:width] && output[:height]
 
-    derivative.hls_track_id = hls_output[:id]
-    derivative.hls_url = hls_output[:url]
+    if hls_output
+      derivative.hls_track_id = hls_output[:id]
+      derivative.hls_url = hls_output[:url]
+    end
 
     derivative.absolute_location = output[:url]
     derivative

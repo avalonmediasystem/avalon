@@ -314,7 +314,8 @@ class MasterFile < ActiveFedora::Base
    
     outputs_by_quality.each_pair do |quality, outputs|
       existing = derivatives.to_a.find {|d| d.encoding.quality.first == quality}
-      d = Derivative.from_output(outputs, encode.options.merge(masterfile: self))
+      d = Derivative.from_output(outputs)
+      d.masterfile = self
       if d.save && existing
         existing.delete
       end
