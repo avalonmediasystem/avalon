@@ -60,6 +60,11 @@ class MediaObject < ActiveFedora::Base
   validates :governing_policy, presence: true
   validate  :validate_related_items
   validate  :validate_dates
+  validate  :validate_note_type
+
+  def validate_note_type
+    Array(note).each{|i|errors.add(:note, "Note type (#{i[0]}) not in controlled vocabulary") unless ModsDocument::NOTE_TYPES.keys.include? i[0] }
+  end
 
   def validate_language
     Array(language).each{|i|errors.add(:language, "Language not recognized (#{i[:code]})") unless LanguageTerm::map[i[:code]] }

@@ -97,6 +97,19 @@ describe MediaObject do
         end
       end 
     end
+
+    describe 'notes' do
+      it 'should validate notes with types in controlled vocabulary' do
+        media_object.update_datastream :descMetadata, {note: ['Test Note'], note_type: ['general']}
+        expect(media_object.valid?).to be_truthy
+        expect(media_object.errors[:note]).to be_empty
+      end
+      it 'should not validate notes with types not in controlled vocabulary' do
+        media_object.update_datastream :descMetadata, {note: ['Test Note'], note_type: ['genreal']}
+        expect(media_object.valid?).to be_falsey
+        expect(media_object.errors[:note]).not_to be_empty
+      end
+    end
   end
 
   describe 'delegators' do
