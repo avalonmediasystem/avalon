@@ -69,8 +69,10 @@ class Derivative < ActiveFedora::Base
     derivative.encoding.video.video_codec = output[:video_codec]
     derivative.encoding.video.resolution = "#{output[:width]}x#{output[:height]}" if output[:width] && output[:height]
 
-    derivative.hls_track_id = hls_output[:id]
-    derivative.hls_url = hls_output[:url]
+    if hls_output
+      derivative.hls_track_id = hls_output[:id]
+      derivative.hls_url = hls_output[:url]
+    end
 
     derivative.absolute_location = output[:url]
     derivative
