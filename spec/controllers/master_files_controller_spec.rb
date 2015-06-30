@@ -13,7 +13,6 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'spec_helper'
-require 'rubyhorn/rest_client/exceptions'
 
 describe MasterFilesController do
   describe "#create" do
@@ -71,7 +70,6 @@ describe MasterFilesController do
        request.env["HTTP_REFERER"] = "/"
      
        @file = fixture_file_upload('/public-domain-book.txt', 'application/json')
-        Rubyhorn.stub_chain(:client,:stop).and_return(true)
 
        expect { post :create, Filedata: [@file], original: 'any', container_id: media_object.pid }.not_to change { MasterFile.count }
      
@@ -128,7 +126,6 @@ describe MasterFilesController do
 
     before(:each) do
       login_user master_file.mediaobject.collection.managers.first
-      Rubyhorn.stub_chain(:client,:stop).and_return(true) 
     end
 
     context "should be deleted" do

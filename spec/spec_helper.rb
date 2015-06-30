@@ -73,6 +73,8 @@ RSpec.configure do |config|
       'fake_dropbox' => Dir.mktmpdir
     }
     Avalon::Configuration['dropbox']['path'] = Avalon::Configuration.lookup('spec.fake_dropbox')
+
+    ActiveEncode::Base.engine_adapter = :test
     
     server_options = { host: 'test.host', port: nil }
     Rails.application.routes.default_url_options.merge!( server_options )
