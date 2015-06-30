@@ -224,5 +224,11 @@ class ModsDocument < ActiveFedora::OmDatastream
     self.bibliographic_id = nil
     self.add_bibliographic_id(bib_id, bib_id_label)
     self.add_other_identifier(bib_id, bib_id_label)
+
+    # Filter out notes that are not in the configured controlled vocabulary
+    notezip = note.zip note.type
+    self.note = nil
+    notezip.each { |n| self.add_child_node self.ng_xml.root, :note, n[0], n[1] if NOTE_TYPES.include? n[1] }
+
   end
 end
