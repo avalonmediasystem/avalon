@@ -17,10 +17,14 @@ require 'avalon/controller/controller_behavior'
 class MediaObjectsController < ApplicationController 
   include Avalon::Workflow::WorkflowControllerBehavior
   include Avalon::Controller::ControllerBehavior
+  include ConditionalPartials
 
 #  before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
   before_filter :load_player_context, only: [:show, :show_progress]
+
+  add_conditional_partial :share, :share, partial: 'share_resource'
+  add_conditional_partial :share, :embed, partial: 'embed_resource'
 
   # Catch exceptions when you try to reference an object that doesn't exist.
   # Attempt to resolve it to a close match if one exists and offer a link to
