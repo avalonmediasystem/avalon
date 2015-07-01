@@ -17,12 +17,13 @@ module ConditionalPartials
   extend ActiveSupport::Concern
 
   included do
-    CONDITIONAL_PARTIALS = {}
+    class_attribute :_conditional_partials, instance_accessor: false, instance_predicate: false
+    self._conditional_partials = {}
   end
 
   module ClassMethods
     def add_conditional_partial partial_list_name, name, opts={}
-      CONDITIONAL_PARTIALS[partial_list_name] ||= {}
+      _conditional_partials[partial_list_name] ||= {}
       config = opts
       config[:name] = name
 
@@ -30,7 +31,11 @@ module ConditionalPartials
         yield config
       end
 
-      CONDITIONAL_PARTIALS[partial_list_name][name] =  Blacklight::OpenStructWithHashAccess.new( config )
+      _conditional_partials[partial_list_name][name] = config
+    end
+
+    def conditional_partials partial_list_name
+      _conditional_partials[partial_list_name]
     end
   end
 end
