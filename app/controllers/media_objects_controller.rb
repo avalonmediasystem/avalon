@@ -23,8 +23,8 @@ class MediaObjectsController < ApplicationController
   before_filter :inject_workflow_steps, only: [:edit, :update]
   before_filter :load_player_context, only: [:show, :show_progress]
 
-  add_conditional_partial :share, :share, partial: 'share_resource'
-  add_conditional_partial :share, :embed, partial: 'embed_resource'
+  add_conditional_partial :share, :share, partial: 'share_resource', if: true
+  add_conditional_partial :share, :embed, partial: 'embed_resource', if: false
 
   # Catch exceptions when you try to reference an object that doesn't exist.
   # Attempt to resolve it to a close match if one exists and offer a link to

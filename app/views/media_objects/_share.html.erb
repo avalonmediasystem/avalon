@@ -24,12 +24,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <div id="share-list" class="collapse">
   <ul class="nav nav-tabs share-tabs">
-    <li class="active"><a href="#link-tab" data-toggle="tab">Share this resource</a></li>
-    <li><a href="#embed-tab" data-toggle="tab">Embed</a></li>
+    <%= render_conditional_partials :share, section:'share-tabs' %>
   </ul>
 
   <div class="tab-content">
-    <%= render_conditional_partials :share %>
+    <%= render_conditional_partials :share, section:'tab-content' %>
   </div>
 </div>
 <% content_for :page_scripts do %>

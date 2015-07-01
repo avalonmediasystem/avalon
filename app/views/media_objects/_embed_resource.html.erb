@@ -1,3 +1,5 @@
+<% if section=='tab-content' %>
+
     <div class="tab-pane" id="embed-tab">
       <% if @currentStream.present? %>
       <p class="muted">Copy the text below to embed this resource</p>
@@ -9,3 +11,8 @@
       <% end %>
     </div>
 
+<% elsif section=='share-tabs' %>
+
+    <li><a href="#embed-tab" data-toggle="tab">Embed</a></li>
+
+<% end %>

@@ -30,7 +30,7 @@ module ConditionalPartials
         yield config
       end
 
-      CONDITIONAL_PARTIALS[partial_list_name][name] = config
+      CONDITIONAL_PARTIALS[partial_list_name][name] =  Blacklight::OpenStructWithHashAccess.new( config )
     end
   end
 end
