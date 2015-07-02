@@ -16,7 +16,7 @@
 module ConditionalPartialsHelper
   def render_conditional_partials(partials_list_name, options={}, &block)
     content = []
-    partials = controller.class.conditional_partials partials_list_name
+    partials = controller.class.conditional_partials[partials_list_name]
     partials.select { |_, config| evaluate_if_unless_configuration config, options }.each do |key, config|
       config[:key] ||= key
       rendered = render(partial: config[:partial] || key.to_s, locals:{ partial_config: config }.merge(options))

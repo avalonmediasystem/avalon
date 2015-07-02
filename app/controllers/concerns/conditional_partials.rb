@@ -33,9 +33,5 @@ module ConditionalPartials
 
       _conditional_partials[partial_list_name][name] = config
     end
-
-    def conditional_partials partial_list_name
-      _conditional_partials[partial_list_name]
-    end
   end
 end
