@@ -17,13 +17,13 @@ module ConditionalPartials
   extend ActiveSupport::Concern
 
   included do
-    class_attribute :_conditional_partials, instance_accessor: false, instance_predicate: false
-    self._conditional_partials = {}
+    class_attribute :conditional_partials, instance_accessor: false, instance_predicate: false
+    self.conditional_partials = {}
   end
 
   module ClassMethods
     def add_conditional_partial partial_list_name, name, opts={}
-      _conditional_partials[partial_list_name] ||= {}
+      conditional_partials[partial_list_name] ||= {}
       config = opts
       config[:name] = name
 
@@ -31,7 +31,7 @@ module ConditionalPartials
         yield config
       end
 
-      _conditional_partials[partial_list_name][name] = config
+      conditional_partials[partial_list_name][name] = config
     end
   end
 end

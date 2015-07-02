@@ -36,14 +36,14 @@ module ConditionalPartialsHelper
   # @return [Boolean]
   def evaluate_if_unless_configuration displayable_config, *args
     return displayable_config if displayable_config === true or displayable_config === false
-    
+
     if_value = !displayable_config.has_key?(:if) ||
-                    displayable_config.if.nil? ||
-                    evaluate_configuration_conditional(displayable_config.if, displayable_config, *args)
+                    displayable_config[:if].nil? ||
+                    evaluate_configuration_conditional(displayable_config[:if], displayable_config, *args)
     
     unless_value = !displayable_config.has_key?(:unless) ||
-                      displayable_config.unless.nil? ||
-                      !evaluate_configuration_conditional(displayable_config.unless, displayable_config, *args)
+                      displayable_config[:unless].nil? ||
+                      !evaluate_configuration_conditional(displayable_config[:unless], displayable_config, *args)
 
     if_value && unless_value
   end
