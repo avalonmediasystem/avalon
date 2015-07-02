@@ -51,7 +51,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     </section>
     <%= render 'workflow_progress' %>
-    <%= render('share') if can?(:share, MediaObject) %>
+    <%= render 'share' %>
     <%= render partial: 'sections', 
         locals: {mediaobject: @mediaobject,
                  sections: @masterFiles,
