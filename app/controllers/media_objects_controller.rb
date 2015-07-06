@@ -27,7 +27,6 @@ class MediaObjectsController < ApplicationController
   add_conditional_partial :share, :embed, partial: 'embed_resource', unless: Proc.new {|ctx, _| ctx.user_session[:lti_group].present? }
   add_conditional_partial :share, :lti_url, partial: 'lti_url', if: Proc.new {|ctx, _| ctx.user_session[:lti_group].present? }
 
-
   # Catch exceptions when you try to reference an object that doesn't exist.
   # Attempt to resolve it to a close match if one exists and offer a link to
   # the show page for that item. Otherwise ... nothing!
