@@ -808,10 +808,11 @@ $accordionPadding: 20px;
       outline: 1px solid $linkColor;
       outline-offset: 3px;
     }
-    .panel-title .fa {
-      font-size: .9em;
-      float: right;
-    }
+  }
+  .panel-title .fa {
+    font-size: .9em;
+    float: right;
+    cursor: pointer;
   }
   ul, li {
     list-style: none;

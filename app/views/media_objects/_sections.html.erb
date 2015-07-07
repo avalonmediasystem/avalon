@@ -57,17 +57,21 @@ Unless required by applicable law or agreed to in writing, software distributed
   }
   $('#expand_button').on('click', function() {
     $('#accordion.panel-group .panel-collapse').collapse('show');
-    $('#accordion.panel-group a .panel-title .fa-plus-square').addClass('hidden');
-    $('#accordion.panel-group a .panel-title .fa-minus-square').removeClass('hidden');
+    $('#accordion.panel-group .panel-title .fa-plus-square').addClass('hidden');
+    $('#accordion.panel-group .panel-title .fa-minus-square').removeClass('hidden');
   });
   $('#collapse_button').on('click', function() {
     $('#accordion.panel-group .panel-collapse').collapse('hide');
-    $('#accordion.panel-group a .panel-title .fa-plus-square').removeClass('hidden');
-    $('#accordion.panel-group a .panel-title .fa-minus-square').addClass('hidden');
+    $('#accordion.panel-group .panel-title .fa-plus-square').removeClass('hidden');
+    $('#accordion.panel-group .panel-title .fa-minus-square').addClass('hidden');
   });
-  $('#accordion.panel-group a .panel-title').on('click', function() {
-    $(this).find('.fa-plus-square').toggleClass('hidden');
-    $(this).find('.fa-minus-square').toggleClass('hidden');
+  $('#accordion.panel-group .panel-title .fa-plus-square').on('click', function() {
+    $(this).toggleClass('hidden');
+    $(this).closest('.panel-title').find('.fa-minus-square').toggleClass('hidden');
+  });
+  $('#accordion.panel-group .panel-title .fa-minus-square').on('click', function() {
+    $(this).toggleClass('hidden');
+    $(this).closest('.panel-title').find('.fa-plus-square').toggleClass('hidden');
   });
 
 </script>
