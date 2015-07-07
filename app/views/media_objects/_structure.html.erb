@@ -115,16 +115,16 @@ function parse_structure(xml,index){
 }
 
 function parse_section (node, index) {
+  var contents = '';
   if (node.children().length) {
     tracknumber = 0;
-    var contents = '';
     $.each(node.children(), function( index, node ) {
         nodecontents = parse_node(node, tracknumber);
         contents+=nodecontents[0];
         tracknumber = nodecontents[1];
     });
   } else {
-    nodecontents = parse_node(node.first, index);
+    var nodecontents = parse_node(node.first, index);
     contents = nodecontents[0];
     tracknumber = nodecontents[1];
   }
@@ -133,9 +133,9 @@ function parse_section (node, index) {
 
 function parse_node(node, tracknumber){
   if (node.nodeName.toUpperCase()=="DIV"){
-    contents = ''
+    var contents = ''
     $.each($(node).children(), function( index, node ) {
-      nodecontents = parse_node(node, tracknumber);
+      var nodecontents = parse_node(node, tracknumber);
       contents += nodecontents[0];
       tracknumber = nodecontents[1];
     });
