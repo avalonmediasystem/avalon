@@ -23,13 +23,17 @@ class MediaObjectsController < ApplicationController
   before_filter :inject_workflow_steps, only: [:edit, :update]
   before_filter :load_player_context, only: [:show, :show_progress]
 
-  add_conditional_partial :share, :share, partial: 'share_resource', unless: Proc.new {|ctx, _| ctx.user_session.present? && ctx.user_session[:lti_group].present? }
-  add_conditional_partial :share, :embed, partial: 'embed_resource', unless: Proc.new {|ctx, _| ctx.user_session.present? && ctx.user_session[:lti_group].present? }
-  add_conditional_partial :share, 
-                          :lti_url, 
-                          partial: 'lti_url', 
-                          if: Proc.new {|ctx, _| ctx.user_session.present? && (ctx.user_session[:lti_group].present? || 
-                                                 ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@mediaobject').collection))}
+  add_conditional_partial :share, :share, partial: 'share_resource', 
+    if: Proc.new {|ctx, _| ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@mediaobject').collection) ||
+                           !(ctx.user_session.present? && ctx.user_session[:lti_group].present?) }
+
+  add_conditional_partial :share, :embed, partial: 'embed_resource',
+    if: Proc.new {|ctx, _| ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@mediaobject').collection) ||
+                           !(ctx.user_session.present? && ctx.user_session[:lti_group].present?) }
+
+  add_conditional_partial :share, :lti_url, partial: 'lti_url', 
+    if: Proc.new {|ctx, _| ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@mediaobject').collection) || 
+                           (ctx.user_session.present? && ctx.user_session[:lti_group].present?)}
 
   # Catch exceptions when you try to reference an object that doesn't exist.
   # Attempt to resolve it to a close match if one exists and offer a link to

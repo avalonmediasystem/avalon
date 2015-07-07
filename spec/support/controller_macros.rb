@@ -35,6 +35,7 @@ module ControllerMacros
     sign_in user
     @controller.user_session[:virtual_groups] = [lti_class]
     @controller.user_session[:full_login] = false
+    @controller.user_session[:lti_group] = lti_class
     user
   end
 end

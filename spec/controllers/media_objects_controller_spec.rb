@@ -180,6 +180,59 @@ describe MediaObjectsController, type: :controller do
       end
     end
 
+    context "Conditional Share partials should be rendered" do
+      context "Normal login" do
+        it "administrators: should include lti, embed, and share" do
+          login_as(:administrator)
+          get :show, id: media_object.pid
+          expect(response).to render_template(:_share_resource)
+          expect(response).to render_template(:_embed_resource)
+          expect(response).to render_template(:_lti_url)
+        end
+        it "managers: should include lti, embed, and share" do
+          login_user media_object.collection.managers.first
+          get :show, id: media_object.pid
+          expect(response).to render_template(:_share_resource)
+          expect(response).to render_template(:_embed_resource)
+          expect(response).to render_template(:_lti_url)
+        end
+        it "editors: should include lti, embed, and share" do
+          login_user media_object.collection.editors.first
+          get :show, id: media_object.pid
+          expect(response).to render_template(:_share_resource)
+          expect(response).to render_template(:_embed_resource)
+          expect(response).to render_template(:_lti_url)
+        end
+        it "others: should include embed and share and NOT lti" do
+          login_as(:user)
+          get :show, id: media_object.pid
+          expect(response).to render_template(:_share_resource)
+          expect(response).to render_template(:_embed_resource)
+          expect(response).to_not render_template(:_lti_url)
+        end
+      end
+      context "LTI login" do
+        it "administrators/managers/editors: should include lti, embed, and share" do
+          user = login_lti 'administrator'
+          lti_group = @controller.user_session[:virtual_groups].first
+          mo = FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
+          get :show, id: media_object.pid
+          expect(response).to render_template(:_share_resource)
+          expect(response).to render_template(:_embed_resource)
+          expect(response).to render_template(:_lti_url)
+        end
+        it "others: should include only lti" do
+          user = login_lti 'student'
+          lti_group = @controller.user_session[:virtual_groups].first
+          mo = FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
+          get :show, id: media_object.pid
+          expect(response).to_not render_template(:_share_resource)
+          expect(response).to_not render_template(:_embed_resource)
+          expect(response).to render_template(:_lti_url)
+        end
+      end
+    end
+
     context "correctly handle unfound streams/sections" do
       subject(:mo){FactoryGirl.create(:media_object_with_master_file)}
       before do 
