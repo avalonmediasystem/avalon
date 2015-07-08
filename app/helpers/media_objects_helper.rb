@@ -133,12 +133,10 @@ module MediaObjectsHelper
 
        headeropen = <<EOF
     <div class="panel-heading" role="tab" id="heading#{index}">
-      <a data-toggle="collapse" href="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}">
-        <h4 class="panel-title">
+      <h4 class="panel-title">
 EOF
        headerclose = <<EOF
         </h4>
-      </a>
     </div>
 EOF
        progress_div = show_progress ? '<div class="status-detail alert progress-indented" style="display: none"></div>' : ''
@@ -161,11 +159,13 @@ EOF
          sectionlabel += " (#{milliseconds_to_formatted_time(section.duration.to_i)})" unless section.duration.blank?
          tracknumber = 0
          wrapperopen = <<EOF
-   #{headeropen}
-          <span class="fa fa-minus-square #{current ? '' : 'hidden'}"></span>
-          <span class="fa fa-plus-square #{current ? 'hidden' : ''}"></span>
+          #{headeropen}
+          <span class="fa fa-minus-square #{current ? '' : 'hidden'}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></span>
+          <span class="fa fa-plus-square #{current ? 'hidden' : ''}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></span>
+      <a href="#{share_link_for( section )}">
           <ul><li><span>#{sectionlabel}</span></li></ul>
-   #{headerclose}
+      </a>#{headerclose}
+
     <div id="section#{index}" class="panel-collapse collapse #{current ? 'in' : ''}" role="tabpanel" aria-labelledby="heading#{index}">
       <div class="panel-body">
         <ul>
@@ -178,8 +178,8 @@ EOF
        # If there are no subsections within the structure, return just the header with the single section
        else
          tracknumber = index
-         wrapperopen = "#{headeropen}<span><ul>"
-         wrapperclose = "</ul></span>#{headerclose}"
+         wrapperopen = "#{headeropen}<a href='#{share_link_for( section )}'><span><ul>"
+         wrapperclose = "</ul></span></a>#{headerclose}"
        end
        contents, tracknumber = parse_section section, sectionnode.first, tracknumber, progress_div
        "#{wrapperopen}#{contents}#{wrapperclose}"
