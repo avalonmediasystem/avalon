@@ -75,7 +75,7 @@ module ModsBehaviors
     solr_doc['related_item_url_sim'] = gather_terms(self.find_by_terms(:related_item_url))
     solr_doc['related_item_label_sim'] = gather_terms(self.find_by_terms(:related_item_label))
     solr_doc['terms_of_use_si'] = self.find_by_terms(:terms_of_use).text
-    solr_doc['other_identifier_sim'] = self.find_by_terms(:other_identifier).text
+    solr_doc['other_identifier_sim'] = gather_terms(self.find_by_terms(:other_identifier))
 
     # Extract 4-digit year for creation date facet in Hydra and pub_date facet in Blacklight
     solr_doc['date_ssi'] = self.find_by_terms(:date_issued).text

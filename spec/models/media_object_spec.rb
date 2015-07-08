@@ -392,6 +392,13 @@ describe MediaObject do
       media_object.descMetadata.resource_type = 'notated music'
       expect(media_object.to_solr['format_sim']).not_to include 'Notated Music'
     end
+    it 'should index separate identifiers as separate values' do
+      media_object.descMetadata.add_other_identifier('12345678','lccn')
+      media_object.descMetadata.add_other_identifier('8675309 testing','local')
+      solr_doc = media_object.to_solr
+      expect(solr_doc['other_identifier_sim']).to include('12345678','8675309 testing')
+      expect(solr_doc['other_identifier_sim']).not_to include('123456788675309 testing')
+    end
   end
 
   describe 'permalink' do
