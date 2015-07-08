@@ -116,6 +116,8 @@ function parse_structure(xml,index){
 
 function parse_section (node, index) {
   var contents = '';
+  var tracknumber;
+  var nodecontents;
   if (node.children().length) {
     tracknumber = 0;
     $.each(node.children(), function( index, node ) {
@@ -124,7 +126,7 @@ function parse_section (node, index) {
         tracknumber = nodecontents[1];
     });
   } else {
-    var nodecontents = parse_node(node.first, index);
+    nodecontents = parse_node(node.first, index);
     contents = nodecontents[0];
     tracknumber = nodecontents[1];
   }
