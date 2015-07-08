@@ -45,7 +45,7 @@ class Derivative < ActiveFedora::Base
 
   before_destroy do
     begin
-      encode = ActiveEncode::Base.find(masterfile.workflow_id)
+      encode = masterfile.encoder_class.find(masterfile.workflow_id)
       encode.remove_output!(track_id)
       encode.remove_output!(hls_track_id) if hls_track_id.present?
     rescue Exception => e
