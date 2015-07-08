@@ -178,7 +178,7 @@ EOF
        # If there are no subsections within the structure, return just the header with the single section
        else
          tracknumber = index
-         wrapperopen = "#{headeropen}<a href="#{share_link_for( section )}"><span><ul>"
+         wrapperopen = "#{headeropen}<a href='#{share_link_for( section )}'><span><ul>"
          wrapperclose = "</ul></span></a>#{headerclose}"
        end
        contents, tracknumber = parse_section section, sectionnode.first, tracknumber, progress_div
