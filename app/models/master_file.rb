@@ -176,7 +176,7 @@ class MasterFile < ActiveFedora::Base
 
     # Stops all processing
     if workflow_id.present? && !finished_processing?
-      ActiveEncode::Base.find(workflow_id).cancel!
+      encoder_class.find(workflow_id).cancel!
     end
     self.derivatives.map(&:destroy)
 
@@ -207,7 +207,7 @@ class MasterFile < ActiveFedora::Base
       "file://" + URI.escape(file_location)
     end
 
-    Delayed::Job.enqueue ActiveEncodeJob::Create.new(self.id, ActiveEncode::Base.new(input, preset: self.workflow_name))
+    Delayed::Job.enqueue ActiveEncodeJob::Create.new(self.id, encoder_class.new(input, preset: self.workflow_name))
   end
 
   def status?(value)
@@ -281,7 +281,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def update_progress!
-    update_progress_with_encode!(ActiveEncode::Base.find(self.workflow_id))
+    update_progress_with_encode!(encoder_class.find(self.workflow_id))
   end
 
   def update_progress_with_encode!(encode)
