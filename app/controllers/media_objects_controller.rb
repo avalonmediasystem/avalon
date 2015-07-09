@@ -30,12 +30,12 @@ class MediaObjectsController < ApplicationController
     ctx.user_session.present? && ctx.user_session[:lti_group].present?
   end
 
-  is_editor_or_not_lti = lambda { |ctx| self.is_editor(ctx) || !self.is_lti_session(ctx) }
-  is_editor_or_lti = lambda { |ctx| self.is_editor(ctx) || self.is_lti_session(ctx) }
+  is_editor_or_not_lti = proc { |ctx| self.is_editor(ctx) || !self.is_lti_session(ctx) }
+  is_editor_or_lti = proc { |ctx| self.is_editor(ctx) || self.is_lti_session(ctx) }
 
-  add_conditional_partial :share, :share, partial: 'share_resource', if: Proc.new {|ctx, _| is_editor_or_not_lti.call(ctx)}
-  add_conditional_partial :share, :embed, partial: 'embed_resource', if: Proc.new {|ctx, _| is_editor_or_not_lti.call(ctx)}
-  add_conditional_partial :share, :lti_url, partial: 'lti_url',  if: Proc.new {|ctx, _| is_editor_or_lti.call(ctx)}
+  add_conditional_partial :share, :share, partial: 'share_resource', if: is_editor_or_not_lti
+  add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti
+  add_conditional_partial :share, :lti_url, partial: 'lti_url',  if: is_editor_or_lti
 
 
   # Catch exceptions when you try to reference an object that doesn't exist.
