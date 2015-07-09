@@ -404,4 +404,14 @@ describe MasterFile do
       expect( subject.embed_title ).to eq( "test - test" )
     end
   end
+
+  describe "#update_ingest_batch" do
+    let(:media_object) {FactoryGirl.create(:media_object)}
+    let!(:ingest_batch) {IngestBatch.create(media_object_ids: [media_object.id], email: Faker::Internet.email)}
+    let(:master_file) {FactoryGirl.create( :master_file , {mediaobject: media_object, status_code: 'COMPLETED'} )}
+    it 'should send email when ingest batch is finished processing' do
+      master_file.send(:update_ingest_batch)
+      expect(ingest_batch.reload.email_sent?).to be true
+    end
+  end
 end

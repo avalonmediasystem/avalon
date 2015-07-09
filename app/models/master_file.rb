@@ -81,21 +81,13 @@ class MasterFile < ActiveFedora::Base
 
   define_hooks :after_processing
   after_processing :post_processing_file_management
+  after_processing :update_ingest_batch
   
   after_processing do
     media_object = self.mediaobject
     media_object.set_media_types!
     media_object.set_duration!
     media_object.save(validate: false)
-  end
-
-  after_processing do
-    ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( self.id )
-    if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
-      IngestBatchMailer.status_email(ingest_batch.id).deliver
-      ingest_batch.email_sent = true
-      ingest_batch.save!
-    end
   end
 
   # First and simplest test - make sure that the uploaded file does not exceed the
@@ -627,6 +619,15 @@ class MasterFile < ActiveFedora::Base
 
   def post_processing_move_filename(oldpath, options={})
     "#{options[:pid].gsub(":","_")}-#{File.basename(oldpath)}"
+  end
+
+  def update_ingest_batch
+    ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( self.mediaobject.id )
+    if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
+      IngestBatchMailer.status_email(ingest_batch.id).deliver
+      ingest_batch.email_sent = true
+      ingest_batch.save!
+    end
   end
 
   def find_encoder_class(klass_name)
