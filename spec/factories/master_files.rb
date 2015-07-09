@@ -21,7 +21,7 @@ FactoryGirl.define do
 
     factory :master_file_with_derivative do
       workflow_name 'avalon'
-      status_code 'SUCCEEDED'
+      status_code 'COMPLETED'
       after(:create) do |mf|
         mf.derivatives += [FactoryGirl.create(:derivative)]
         mf.save
