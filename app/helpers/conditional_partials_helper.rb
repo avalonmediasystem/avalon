@@ -30,6 +30,16 @@ module ConditionalPartialsHelper
   end
 
   ##
+  # Determine whether any item in partial_list will be rendered by evaluating :if and :unless conditions
+  #
+  # @param [Symbol] partials_list_name
+  # @return [Boolean]
+  def will_partial_list_render? partials_list_name, *args
+    partials = controller.class.conditional_partials[partials_list_name]
+    partials.select { |_, config| evaluate_if_unless_configuration config, *args }.present?
+  end
+
+  ##
   # Evaluate conditionals for a configuration with if/unless attributes
   #
   # @param displayable_config [#if,#unless] an object that responds to if/unless

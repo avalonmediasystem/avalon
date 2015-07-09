@@ -231,6 +231,12 @@ describe MediaObjectsController, type: :controller do
           expect(response).to render_template(:_lti_url)
         end
       end
+      context "No share tabs rendered" do
+        it "should not render Share button" do
+          @controller.stub(:evaluate_if_unless_configuration).and_return false
+          expect(response).to_not render_template(:_share)
+        end
+      end
     end
 
     context "correctly handle unfound streams/sections" do
