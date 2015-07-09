@@ -23,17 +23,20 @@ class MediaObjectsController < ApplicationController
   before_filter :inject_workflow_steps, only: [:edit, :update]
   before_filter :load_player_context, only: [:show, :show_progress]
 
-  add_conditional_partial :share, :share, partial: 'share_resource', 
-    if: Proc.new {|ctx, _| ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@mediaobject').collection) ||
-                           !(ctx.user_session.present? && ctx.user_session[:lti_group].present?) }
+  def self.is_editor ctx
+    ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@mediaobject').collection)
+  end
+  def self.is_lti_session ctx
+    ctx.user_session.present? && ctx.user_session[:lti_group].present?
+  end
 
-  add_conditional_partial :share, :embed, partial: 'embed_resource',
-    if: Proc.new {|ctx, _| ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@mediaobject').collection) ||
-                           !(ctx.user_session.present? && ctx.user_session[:lti_group].present?) }
+  is_editor_or_not_lti = lambda { |ctx| self.is_editor(ctx) || !self.is_lti_session(ctx) }
+  is_editor_or_lti = lambda { |ctx| self.is_editor(ctx) || self.is_lti_session(ctx) }
 
-  add_conditional_partial :share, :lti_url, partial: 'lti_url', 
-    if: Proc.new {|ctx, _| ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@mediaobject').collection) || 
-                           (ctx.user_session.present? && ctx.user_session[:lti_group].present?)}
+  add_conditional_partial :share, :share, partial: 'share_resource', if: Proc.new {|ctx, _| is_editor_or_not_lti.call(ctx)}
+  add_conditional_partial :share, :embed, partial: 'embed_resource', if: Proc.new {|ctx, _| is_editor_or_not_lti.call(ctx)}
+  add_conditional_partial :share, :lti_url, partial: 'lti_url',  if: Proc.new {|ctx, _| is_editor_or_lti.call(ctx)}
+
 
   # Catch exceptions when you try to reference an object that doesn't exist.
   # Attempt to resolve it to a close match if one exists and offer a link to
@@ -41,7 +44,7 @@ class MediaObjectsController < ApplicationController
   rescue_from ActiveFedora::ObjectNotFoundError do |exception|
     render '/errors/unknown_pid', status: 404
   end
- 
+
   def can_embed?
     params[:action] == 'show'
   end
