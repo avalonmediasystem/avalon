@@ -581,6 +581,7 @@ $.widget( "xml.xmlEditor", {
 		var xmlString = this.textEditor.aceEditor.getValue();
 		this.xmlState.setXMLFromString(xmlString);
 		this.guiEditor.setRootElement(this.xmlState.xml.children()[0]);
+		this.guiEditor.refreshElements();
 		this.addTopLevelMenu.populate(this.guiEditor.rootElement)
 	},
 	
