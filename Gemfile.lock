@@ -744,6 +744,7 @@ DEPENDENCIES
   bcrypt-ruby (~> 3.1.0)
   better_errors
   binding_of_caller
+  bootstrap-sass (= 3.3.3)
   bootstrap_form
   browse-everything (= 0.6.3)
   builder (~> 3.1.0)
