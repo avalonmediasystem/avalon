@@ -62,10 +62,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     end
 
-    if request['media_object_id']
-      redirect_to media_object_path(request['media_object_id'])
-    elsif request['section_id']
-      redirect_to masterfile_path(request['section_id'])
+    if request['target_id']
+      redirect_to object_path(request['target_id'])
     elsif session[:previous_url] 
       redirect_to session.delete :previous_url
     elsif auth_type == 'lti' && user_session[:virtual_groups].present?
