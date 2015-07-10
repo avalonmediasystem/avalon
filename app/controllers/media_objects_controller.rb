@@ -17,10 +17,26 @@ require 'avalon/controller/controller_behavior'
 class MediaObjectsController < ApplicationController 
   include Avalon::Workflow::WorkflowControllerBehavior
   include Avalon::Controller::ControllerBehavior
+  include ConditionalPartials
 
 #  before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
   before_filter :load_player_context, only: [:show, :show_progress]
+
+  def self.is_editor ctx
+    ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@mediaobject').collection)
+  end
+  def self.is_lti_session ctx
+    ctx.user_session.present? && ctx.user_session[:lti_group].present?
+  end
+
+  is_editor_or_not_lti = proc { |ctx| self.is_editor(ctx) || !self.is_lti_session(ctx) }
+  is_editor_or_lti = proc { |ctx| self.is_editor(ctx) || self.is_lti_session(ctx) }
+
+  add_conditional_partial :share, :share, partial: 'share_resource', if: is_editor_or_not_lti
+  add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti
+  add_conditional_partial :share, :lti_url, partial: 'lti_url',  if: is_editor_or_lti
+
 
   # Catch exceptions when you try to reference an object that doesn't exist.
   # Attempt to resolve it to a close match if one exists and offer a link to
@@ -28,7 +44,7 @@ class MediaObjectsController < ApplicationController
   rescue_from ActiveFedora::ObjectNotFoundError do |exception|
     render '/errors/unknown_pid', status: 404
   end
- 
+
   def can_embed?
     params[:action] == 'show'
   end

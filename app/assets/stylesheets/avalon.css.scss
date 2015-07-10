@@ -647,17 +647,12 @@ a[data-trigger='submit'] {
   color: $black;
 }
 
-.share-tabs {
-  max-width: 750px;
-}
-
 .tab-content > .tab-pane {
   padding: 10px;
   border-bottom: 1px solid $gray;
   border-left: 1px solid $gray;
   border-right: 1px solid $gray;
   overflow: hidden;
-  max-width: 750px;
 }
 
 #link-object, #link-section, #embed-part {
@@ -770,7 +765,7 @@ a[data-trigger='submit'] {
 #share-button {
   text-align: right;
   margin-top: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 0;
   a:link, a:visited, a:hover, a:active {
     text-decoration: none;
     outline: 0;
@@ -799,6 +794,7 @@ $accordionPadding: 20px;
 }
 
 #accordion.panel-group {
+  margin-top: 10px;
   a {
     &:link, &:visited, &:hover, &:active {
       outline: 0;

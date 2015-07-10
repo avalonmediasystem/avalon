@@ -21,44 +21,16 @@ Unless required by applicable law or agreed to in writing, software distributed
   </a>
   <br class="clear"/>
 </div>
+
 <div id="share-list" class="collapse">
   <ul class="nav nav-tabs share-tabs">
-    <li class="active"><a href="#link-tab" data-toggle="tab">Share this resource</a></li>
-    <li><a href="#embed-tab" data-toggle="tab">Embed</a></li>
+    <%= render_conditional_partials :share, section:'share-tabs' %>
   </ul>
 
   <div class="tab-content">
-    <div class="tab-pane active" id="link-tab">
-      <p class="muted">Copy the link below to share this resource</p>
-      <form role="form">
-	<div class="form-group">
-          <label for="link-object">Item</label>
-          <input type="text" class="col-md-5 form-control" id="link-object" value="<%= share_link_for(@mediaobject) %>" onClick="this.select();" readonly="readonly">
-	</div>
-	<div class="form-group">
-          <label for="link-section">Section</label>
-          <% if @currentStream.present? %>
-          <input type="text" class="col-md-5 form-control" id="link-section" value="<%= share_link_for(@currentStream) %>" onClick="this.select();" readonly="readonly">
-          <% else %>
-          <p class="muted"> <%= I18n.t('media_object.empty_share_section_permalink_notice') %> </p>
-          <% end %>
-	</div>
-      </form>
-    </div>
-  
-    <div class="tab-pane" id="embed-tab">
-      <% if @currentStream.present? %>
-      <p class="muted">Copy the text below to embed this resource</p>
-      <textarea class="col-md-6" rows="3" id="embed-part" onClick="this.select();" readonly="readonly">
-        <%= @currentStream.embed_code(MasterFile::EMBED_SIZE[:medium], { urlappend: '/embed' }) %>
-      </textarea>
-      <% else %>
-      <p class="muted"> <%= I18n.t('media_object.empty_share_link_notice') %> </p>
-      <% end %>
-    </div>
+    <%= render_conditional_partials :share, section:'tab-content' %>
   </div>
 </div>
-
 <% content_for :page_scripts do %>
 
 <script>
@@ -74,6 +46,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       e.preventDefault();
       $(this).tab('show');
     });
+    $('.share-tabs li').first().toggleClass('active')
+    $('.tab-content .tab-pane').first().toggleClass('active')
   })
 </script>
 
