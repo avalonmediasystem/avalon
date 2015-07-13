@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-    <section id="content" class="avalon-player" style="width: 100%" tabIndex="0">
+    <section id="content" class="avalon-player" style="width: 100%" tabIndex="-1">
       <% if @masterfile.present? and @masterfile.succeeded? %>
         <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
         
@@ -81,18 +81,21 @@ Unless required by applicable law or agreed to in writing, software distributed
           logoAction: 'popup',
           logoURL: '<%= pid_section_media_object_url(@masterfile.mediaobject.pid, @masterfile.pid).html_safe %>',
           logoTitle: 'View in repository',
+          success: function() { 
+            keyboardAccess();,
           <% if (!!Float(request['t']) rescue false) %>
-            success: function (mediaElement, domObject, player) {
-              mediaElement.addEventListener('loadedmetadata', function(e) {
-                mediaElement.setCurrentTime(<%= request['t'] %>)
-              });
-            }
-          <% end %>
+              success: function (mediaElement, domObject, player) {
+                mediaElement.addEventListener('loadedmetadata', function(e) {
+                  mediaElement.setCurrentTime(<%= request['t'] %>)
+                });
+              },
+        <% end %>
+          error: function() { console.log( "HI I'M STUPID" );}
         });
   </script>
 
   <style>
-    a { text-decoration: none; } 
-    a:hover { text-decoration: underline } 
+a { text-decoration: none; } 
+a:hover { text-decoration: underline } 
   </style>
 <% end %>
