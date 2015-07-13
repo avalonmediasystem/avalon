@@ -21,7 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% f_start, f_end = parse_media_fragment params['t'] %>
 <div class="row">
   <div class="col-sm-8" id="left_column">
-    <section id="content" class="avalon-player" style="width: 100%" tabIndex="0">
+    <section id="content" class="avalon-player" style="width: 100%" tabIndex="-1">
       <% if @currentStream.present? and @currentStream.derivatives.present? %>
         <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
         
@@ -105,6 +105,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
           startQuality: '<%= current_quality(@currentStreamInfo) %>',
           success: function (mediaElement, domObject, player) {
+            keyboardAccess();
             mediaElement.addEventListener('loadedmetadata', function loadedmetadata () {
               currentPlayer.setCurrentTime(<%= f_start %>);
               currentPlayer.media.removeEventListener('loadedmetadata', loadedmetadata);

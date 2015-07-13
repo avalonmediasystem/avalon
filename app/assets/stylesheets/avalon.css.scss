@@ -770,10 +770,6 @@ a[data-trigger='submit'] {
     text-decoration: none;
     outline: 0;
   }
-  a:focus {
-    outline: 1px solid $linkColor;
-    outline-offset: 1px;
-  }
 }
 #share-list .tab-content {
   margin-bottom: 20px;
@@ -781,10 +777,6 @@ a[data-trigger='submit'] {
 #share-list .share-tabs {
   a:link, a:visited, a:hover, a:active {
     outline: 0;
-  }
-  a:focus {
-    outline: 1px solid $linkColor;
-    outline-offset: 1px;
   }
 }
 
@@ -800,9 +792,9 @@ $accordionPadding: 20px;
       outline: 0;
       text-decoration: none;
     }
-    &:focus {
-      outline: 1px solid $linkColor;
-      outline-offset: 3px;
+    .panel-title .fa {
+      font-size: .9em;
+      float: right;
     }
   }
   .panel-title .fa {
@@ -976,29 +968,13 @@ div.structure_edit {
   display: block;
 }
 
-a[href]:focus,
-input[type='submit']:focus,
-input[type='image']:focus,
-input[type='text']:focus,
-input[type='checkbox']:focus,
-label[for]:focus,
-select:focus,
-button:focus,
-textarea:focus {
-  outline-style: solid;
-  outline-width: 1px;
-  outline-color: $linkColor;
-  outline-offset: 1px;
+.page_element_outline {
+  outline: solid 1px $linkColor !important;
+  outline-offset: 1px !important;
 }
 
-a[href]:hover,
-input[type='submit']:hover,
-input[type='image']:hover,
-input[type='text']:hover,
-input[type='checkbox']:hover,
-label[for]:hover,
-select:hover,
-button:hover,
-textarea:hover {
-  outline: none;
+.player_element_outline {
+  outline: solid 3px orange !important;
+  outline-offset: 0;
 }
+

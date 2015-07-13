@@ -59,4 +59,116 @@ $(document).ready(function() {
       element.focus();
     }
   }, false);
+
+  $( "#content" ).focus( function() {
+    $( ".mejs-controls" ).css( "visibility", "visible" );
+    $( ".mejs-controls button:first" ).focus();
+  })
+
+  // If .avalon-player exists keyboardAccess loads from the success callback
+  if ( $( ".avalon-player" ).length == 0 ) {
+    keyboardAccess();
+  }
+
 });
+
+var keyboardAccess = function() {
+    var interactive_elements = [ "a", "input", "button", "textarea" ];
+    outline_on = true;
+
+    function addElementOutline( element ) {
+      $( element ).on( "focus", function() {
+        if ( outline_on ) {
+          var player = $( ".avalon-player" )[ 0 ];
+          if ( player && $.contains( player, $( this )[ 0 ] )) {
+            $( this ).addClass( "player_element_outline" );
+          } else {
+            $( this ).addClass( "page_element_outline" )
+          }
+        }
+      })
+    };
+
+    function removeElementOutline( element ) {
+      $( element ).on( "blur", function() {
+        if ( outline_on ) {
+          var player = $( ".avalon-player" )[ 0 ];
+          if ( player && $.contains( player, $( this )[ 0 ] )) {
+            $( this ).removeClass( "player_element_outline" );
+          } else {
+            $( this ).removeClass( "page_element_outline" )
+          }
+        }
+      })
+    };
+
+    function hideOutlineForMouse( element ) {
+      $( element ).on( "mouseover", function() {
+        outline_on = false;
+      });
+      $( element ).on( "mouseout", function() {
+        outline_on = true;
+      });
+    };
+
+    function interactiveElements() {
+      $.each( interactive_elements, function( index, value ) {
+        addElementOutline( value );
+        removeElementOutline( value );
+        hideOutlineForMouse( value );
+      });
+    }
+
+    interactiveElements();
+
+    $( ".avalon-player" ).mouseover( function() {
+      outline_on = false;
+    });
+
+    $( ".avalon-player" ).mouseout( function() {
+      outline_on = true;
+    });
+
+    // Tab in and out of the player
+    function tabIntoPlayer( e ) {
+      if ( !e.shiftKey && e.keyCode == 9 ) {
+        $( ".mejs-controls" ).css( "visibility", "visible" );
+        $( ".mejs-controls button:first" ).focus();
+      }
+    }
+
+    if ( $( "#administrative_options" ).length == 0 ) {
+      $( "#searchField" ).on( "keydown", function( e ) {
+        tabIntoPlayer( e );
+        if ( !e.shiftKey ) {
+          return false;
+        }
+      });
+    } else {
+      $( "#administrative_options a:last" ).on( "keydown", function( e ) {
+        tabIntoPlayer( e );
+        return false;
+      });
+    }
+
+    $( "#share-button a:first" ).on( "keydown", function( e ) {
+      if ( e.shiftKey && e.keyCode == 9 ) {
+        $( ".mejs-controls" ).css( "visibility", "visible" );
+        $( ".mejs-controls button:last" ).focus()
+        return false;
+      }
+    });
+
+    // Hide the controls when tabbing out of the player
+    $( ".mejs-controls button:last" ).on( "keydown", function( e ) {
+      if ( !e.shiftKey && e.keyCode == 9 ) {
+        $( ".mejs-controls" ).css( "visibility", "hidden" );
+      }
+    });
+
+    $( ".mejs-controls button:first" ).on( "keydown", function( e ) {
+      if ( e.shiftKey && e.keyCode == 9 ) {
+        $( ".mejs-controls" ).css( "visibility", "hidden" );
+      }
+    });
+  };

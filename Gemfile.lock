@@ -70,14 +70,15 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-qualityselector.git
-  revision: 3a5a5c82336478fa37034396e56c2b5a0eda75ad
-  tag: v3.3
+  revision: f7f0102d7931040be539321b85c5457d67511e98
+  tag: avalon-r4
   specs:
     mediaelement-qualityselector (0.0.1)
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-skin-avalon.git
-  revision: 8b9c8a77989ad0b080e179161bf954798275a7ad
+  revision: 7b2c739eddc2de1bc085c541115a6484be2032a0
+  tag: avalon-r4
   specs:
     mediaelement-skin-avalon (0.0.1)
 
@@ -90,8 +91,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: b3ee05df9c9c1e8d537632b42b3816cb099ed760
-  branch: bugfix/timeupdate-events
+  revision: 9d7144e0f2d73c3936ffcc4e0722ffeab3424719
+  tag: avalon-r4
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
