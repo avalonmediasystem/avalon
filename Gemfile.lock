@@ -121,7 +121,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
-  revision: 288b2d7d45aeb10122827aa2a9cc9c84bb3eb53d
+  revision: 26358e3bb355134dd78aad13c68274653c971fdc
   specs:
     rubyhorn (0.0.6)
       activesupport
@@ -134,7 +134,7 @@ GIT
 
 GIT
   remote: https://github.com/projecthydra-labs/active-encode.git
-  revision: 96c8e0bddd40be9a648826176a5024d67651157f
+  revision: db9275a9aae83bbc6a56cfeabf38127118e5f6c8
   specs:
     active-encode (0.0.1)
       activemodel
@@ -290,7 +290,7 @@ GEM
       compass (>= 0.12.2)
     compass-susy-plugin (0.9)
       compass (>= 0.11.1)
-    daemons (1.2.2)
+    daemons (1.2.3)
     debug_inspector (0.0.2)
     debugger (1.6.8)
       columnize (>= 0.3.1)
@@ -471,7 +471,7 @@ GEM
     modal_logic (0.0.8)
       handlebars_assets (= 0.14.1)
       rails (>= 4)
-    multi_json (1.11.1)
+    multi_json (1.11.2)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
     net-http-digest_auth (1.4)
@@ -717,7 +717,7 @@ GEM
       json (>= 1.8.0)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.6)
+    unf_ext (0.0.7.1)
     validates_email_format_of (1.6.2)
       i18n
     warden (1.2.3)
