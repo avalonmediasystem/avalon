@@ -74,7 +74,7 @@ $(document).ready(function() {
 
 var keyboardAccess = function() {
     var interactive_elements = [ "a", "input", "button", "textarea" ];
-    outline_on = true;
+    var outline_on = true;
 
     function addElementOutline( element ) {
       $( element ).on( "focus", function() {
@@ -137,7 +137,7 @@ var keyboardAccess = function() {
       }
     }
 
-    if ( $( "#administrative_options" ).length == 0 ) {
+    if ( $( "#administrative_options" ).length == 0 && $( ".avalon-player" ).length !== 0 ) {
       $( "#searchField" ).on( "keydown", function( e ) {
         tabIntoPlayer( e );
         if ( !e.shiftKey ) {
@@ -147,7 +147,9 @@ var keyboardAccess = function() {
     } else {
       $( "#administrative_options a:last" ).on( "keydown", function( e ) {
         tabIntoPlayer( e );
-        return false;
+        if ( !e.shiftKey ) {
+          return false;
+        }
       });
     }
 
