@@ -121,7 +121,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
-  revision: 26358e3bb355134dd78aad13c68274653c971fdc
+  revision: 36f79674d16c555bda0415f34b5d3dabe8885e19
   specs:
     rubyhorn (0.0.6)
       activesupport
@@ -134,7 +134,7 @@ GIT
 
 GIT
   remote: https://github.com/projecthydra-labs/active-encode.git
-  revision: db9275a9aae83bbc6a56cfeabf38127118e5f6c8
+  revision: fa02be775b5a204f89587437e5473445b78bf3eb
   specs:
     active-encode (0.0.1)
       activemodel
