@@ -40,14 +40,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </section>
 
 <% content_for :page_scripts do %>
-  <%= javascript_include_tag 'jquery' %>
-  <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
-  <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %>
-  <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
-  <%= javascript_include_tag 'mediaelement-title/mep-feature-title' %>
-  <%= javascript_include_tag 'me-logo' %>
-  <%= javascript_include_tag 'refresh_token' %>
-
+  <%= javascript_include_tag 'embed_player' =%>
   <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
   <%= stylesheet_link_tag "mediaelement-title/mejs-title" =%>
