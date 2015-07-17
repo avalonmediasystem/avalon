@@ -80,8 +80,6 @@ class MasterFile < ActiveFedora::Base
   before_save 'update_stills_from_offset!'
 
   define_hooks :after_processing
-  after_processing :post_processing_file_management
-  after_processing :update_ingest_batch
   
   after_processing do
     media_object = self.mediaobject
@@ -89,6 +87,9 @@ class MasterFile < ActiveFedora::Base
     media_object.set_duration!
     media_object.save(validate: false)
   end
+
+  after_processing :post_processing_file_management
+  after_processing :update_ingest_batch
 
   # First and simplest test - make sure that the uploaded file does not exceed the
   # limits of the system. For now this is hard coded but should probably eventually
