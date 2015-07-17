@@ -81,16 +81,14 @@ Unless required by applicable law or agreed to in writing, software distributed
           logoAction: 'popup',
           logoURL: '<%= pid_section_media_object_url(@masterfile.mediaobject.pid, @masterfile.pid).html_safe %>',
           logoTitle: 'View in repository',
-          success: function() { 
-            keyboardAccess();,
-          <% if (!!Float(request['t']) rescue false) %>
-              success: function (mediaElement, domObject, player) {
-                mediaElement.addEventListener('loadedmetadata', function(e) {
-                  mediaElement.setCurrentTime(<%= request['t'] %>)
-                });
-              },
-        <% end %>
-          error: function() { console.log( "HI I'M STUPID" );}
+          success: function(mediaElement, domObject, player) { 
+            keyboardAccess();
+            <% if (!!Float(reqdduest['t']) rescue false) %>
+            mediaElement.addEventListener('loadedmetadata', function(e) {
+              mediaElement.setCurrentTime(<%= request['t'] %>)
+            });
+            <% end %>
+          }
         });
   </script>
 
