@@ -35,7 +35,7 @@ class StreamToken < ActiveRecord::Base
   def self.logout!(session)
     session[:hash_tokens].each { |sha|
       self.find_all_by_token(sha).each &:delete
-    }
+    } unless session[:hash_tokens].nil?
   end
 
   def self.purge_expired!
