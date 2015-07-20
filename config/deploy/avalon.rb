@@ -33,6 +33,7 @@ set(:shared_children) {
     config/database.yml 
     config/environments/development.rb
     config/fedora.yml 
+    config/lti.yml 
     config/matterhorn.yml 
     config/minter_state.yml
     config/role_map_#{fetch(:rails_env)}.yml 
