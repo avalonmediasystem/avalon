@@ -32,4 +32,21 @@ describe StreamToken do
       StreamToken.find_or_create_session_token(session, target).should =~ /^[0-9a-f]{40}$/
     end
   end
+
+  describe "delete session" do
+    let(:session) { { :session_id => '00112233445566778899aabbccddeeff' } }
+    describe "tokens exist" do
+      let!(:token) {  StreamToken.find_or_create_session_token(session, target) }
+      it "should delete existing tokens" do
+        StreamToken.logout! session
+        expect( StreamToken.exists? token ).to be_falsey
+      end
+    end
+    describe "tokens don't exist" do
+      it "should not bomb" do
+        expect { StreamToken.logout! session }.not_to change { StreamToken.count }
+      end
+    end
+  end
+
 end
