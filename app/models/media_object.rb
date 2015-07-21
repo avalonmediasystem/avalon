@@ -353,24 +353,24 @@ class MediaObject < ActiveFedora::Base
   end
 
   def set_media_types!
-    begin
-      mime_types = parts.collect { |mf| 
-        mf.file_location.nil? ? nil : Rack::Mime.mime_type(File.extname(mf.file_location)) 
-      }.compact.uniq
-      
-      resource_type_to_formatted_text_map = {'Moving image' => 'moving image', 'Sound' => 'sound recording'}
-      resource_types = self.parts.collect{|master_file| resource_type_to_formatted_text_map[master_file.file_format] }.uniq
+    mime_types = parts.reject {|mf| mf.file_location.blank? }.collect { |mf| 
+      Rack::Mime.mime_type(File.extname(mf.file_location)) 
+    }.uniq
+    update_attribute_in_metadata(:format, mime_types.empty? ? nil : mime_types)
+  end
 
-      mime_types = nil if mime_types.empty?
-      resource_types = nil if resource_types.empty?
-
-      #format = mime_types.first
-      update_attribute_in_metadata(:format, mime_types)
-      update_attribute_in_metadata(:resource_type, resource_types)
-
-    rescue Exception => e
-      logger.warn "Error in set_media_types!: #{e}"
-    end
+  def set_resource_types!  
+    resource_types = parts.reject {|mf| mf.file_format.blank? }.collect{ |mf|
+      case mf.file_format
+      when 'Moving image'
+        'moving image'
+      when 'Sound'
+        'sound recording'
+      else
+        mf.file_format.downcase
+      end
+    }.uniq
+    update_attribute_in_metadata(:resource_type, resource_types.empty? ? nil : resource_types)
   end
   
   def to_solr(solr_doc = Hash.new, opts = {})
