@@ -139,17 +139,21 @@ var keyboardAccess = function() {
 
     if ( $( "#administrative_options" ).length == 0 && $( ".avalon-player" ).length !== 0 ) {
       $( "#searchField" ).on( "keydown", function( e ) {
-        tabIntoPlayer( e );
-        if ( !e.shiftKey ) {
-          return false;
-        }
+	if ( e.keyCode == 9 ) {
+          tabIntoPlayer( e );
+          if ( !e.shiftKey ) {
+            return false;
+          }
+	}
       });
     } else {
       $( "#administrative_options a:last" ).on( "keydown", function( e ) {
-        tabIntoPlayer( e );
-        if ( !e.shiftKey ) {
-          return false;
-        }
+        if ( e.keyCode == 9 ) {
+          tabIntoPlayer( e );
+          if ( !e.shiftKey ) {
+            return false;
+          }
+	}
       });
     }
 
