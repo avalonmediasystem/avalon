@@ -21,7 +21,7 @@ window.AvalonStreams = {
       /* Start by resetting the state of all sections */
       $('a.current-stream ~ i').remove();
       $('a[data-segment]').removeClass('current-stream');
-      currentTime = currentPlayer.getCurrentTime()
+      currentTime = typeof(currentPlayer)=='undefined' ? 0 : currentPlayer.getCurrentTime();
       if (typeof(sectionnodes[0].dataset.fragmentbegin) == 'undefined') {
         // section doesn't have mediafragment data
         $(sectionnodes[0]).addClass('current-stream');
