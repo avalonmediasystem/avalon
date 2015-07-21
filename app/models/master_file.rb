@@ -62,7 +62,7 @@ class MasterFile < ActiveFedora::Base
 
   has_metadata name: 'masterFile', type: UrlDatastream
 
-  has_attributes :file_checksum, :file_size, :duration, :display_aspect_ratio, :original_frame_size, :file_format, :poster_offset, :thumbnail_offset, datastream: :descMetadata, multiple: false
+  has_attributes :file_location, :file_checksum, :file_size, :duration, :display_aspect_ratio, :original_frame_size, :file_format, :poster_offset, :thumbnail_offset, datastream: :descMetadata, multiple: false
   has_attributes :workflow_id, :workflow_name, :encoder_classname, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures, datastream: :mhMetadata, multiple: false
 
   has_file_datastream name: 'thumbnail'
@@ -78,16 +78,10 @@ class MasterFile < ActiveFedora::Base
 
   has_model_version 'R3'
   before_save 'update_stills_from_offset!'
+  around_save :update_media_object!, if: Proc.new { |mf| mf.duration_changed? or mf.file_location_changed? or mf.file_format_changed? }
 
   define_hooks :after_processing
   
-  after_processing do
-    media_object = self.mediaobject
-    media_object.set_media_types!
-    media_object.set_duration!
-    media_object.save(validate: false)
-  end
-
   after_processing :post_processing_file_management
   after_processing :update_ingest_batch
 
@@ -106,6 +100,15 @@ class MasterFile < ActiveFedora::Base
   
   EMBED_SIZE = {:medium => 600}
   AUDIO_HEIGHT = 50
+
+  def update_media_object!
+    yield
+    return if mediaobject.nil?
+    mediaobject.set_duration!
+    mediaobject.set_media_types!
+    mediaobject.set_resource_types!
+    mediaobject.save(validate: false)
+  end
 
   def save_parent
     unless mediaobject.nil?
@@ -410,11 +413,8 @@ class MasterFile < ActiveFedora::Base
     masterFile.location = value
   end
 
-  def file_location
-    descMetadata.file_location.first
-  end
-
   def file_location=(value)
+    file_location_will_change!
     descMetadata.file_location = value
     if value.blank?
       self.absolute_location = value

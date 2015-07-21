@@ -15,6 +15,7 @@
 FactoryGirl.define do
   factory :master_file do
     file_location {'/path/to/video.mp4'}
+    file_format {'Moving image'}
     percent_complete {"#{rand(100)}"}
     workflow_name 'avalon'
     mediaobject {FactoryGirl.create(:media_object)}
