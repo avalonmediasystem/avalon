@@ -566,7 +566,10 @@ a[data-trigger='submit'] {
 
 .facet-values {
   //set hyphen definitions at this (display:block) level
+  //The fact that there are two word-break declarations in a row is a hack, not a mistake.
+  //Firefox doesn't support word-break: break-word, which is what we want, so this lets it fall back to keep-all.
   word-break: keep-all;
+  word-break: break-word;
   -webkit-hyphens: auto;
   -moz-hyphens: auto;
   -ms-hyphens: auto;
@@ -977,4 +980,3 @@ div.structure_edit {
   outline: solid 3px orange !important;
   outline-offset: 0;
 }
-
