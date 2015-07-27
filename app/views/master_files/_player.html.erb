@@ -76,7 +76,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           logoTitle: 'View in repository',
           success: function(mediaElement, domObject, player) { 
             keyboardAccess();
-            <% if (!!Float(reqdduest['t']) rescue false) %>
+            <% if (!!Float(request['t']) rescue false) %>
             mediaElement.addEventListener('loadedmetadata', function(e) {
               mediaElement.setCurrentTime(<%= request['t'] %>)
             });
