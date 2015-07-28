@@ -4,11 +4,11 @@
       <p class="muted">Copy the link below to share this resource via LTI</p>
       <form role="form">
         <div class="form-group">
-          <label for="link-object">Item</label>
+          <label for="ltilink-object">Item</label>
           <input type="text" class="col-md-5 form-control" id="ltilink-object" value="<%= courselink_url(target_id: @mediaobject) %>" onClick="this.select();" readonly="readonly">
         </div>
         <div class="form-group">
-          <label for="link-section">Section</label>
+          <label for="ltilink-section">Section</label>
           <% if @currentStream.present? %>
           <input type="text" class="col-md-5 form-control" id="ltilink-section" value="<%= courselink_url(target_id: @currentStream) %>" onClick="this.select();" readonly="readonly">
           <% else %>
