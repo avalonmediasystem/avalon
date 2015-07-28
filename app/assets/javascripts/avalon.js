@@ -160,15 +160,15 @@ var keyboardAccess = function() {
       }
     });
 
-    // Hide the controls when tabbing out of the player
+    // Hide the controls when tabbing out of the video player
     $( ".mejs-controls button:last" ).on( "keydown", function( e ) {
-      if ( !e.shiftKey && e.keyCode == 9 ) {
+      if ( !e.shiftKey && e.keyCode == 9 && $( "#content div[itemprop='video']" ).length !== 0 ) {
         $( ".mejs-controls" ).css( "visibility", "hidden" );
       }
     });
 
     $( ".mejs-controls button:first" ).on( "keydown", function( e ) {
-      if ( e.shiftKey && e.keyCode == 9 ) {
+      if ( e.shiftKey && e.keyCode == 9 && $( "#content div[itemprop='video']" ).length !== 0 ) {
         $( ".mejs-controls" ).css( "visibility", "hidden" );
       }
     });
