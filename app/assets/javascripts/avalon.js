@@ -83,11 +83,11 @@ $(document).ready(function() {
 
 var keyboardAccess = function() {
     var interactive_elements = [ "a", "input", "button", "textarea" ];
-    var outline_on = true;
 
     function addElementOutline( element ) {
+      $( element ).addClass( "outline_on" );
       $( element ).on( "focus", function() {
-        if ( outline_on ) {
+        if ( $( this ).hasClass( "outline_on" )) {
           var player = $( ".avalon-player" )[ 0 ];
           if ( player && $.contains( player, $( this )[ 0 ] )) {
             $( this ).addClass( "player_element_outline" );
@@ -100,23 +100,17 @@ var keyboardAccess = function() {
 
     function removeElementOutline( element ) {
       $( element ).on( "blur", function() {
-        if ( outline_on ) {
-          var player = $( ".avalon-player" )[ 0 ];
-          if ( player && $.contains( player, $( this )[ 0 ] )) {
-            $( this ).removeClass( "player_element_outline" );
-          } else {
-            $( this ).removeClass( "page_element_outline" )
-          }
-        }
-      })
+        $( this ).removeClass( "player_element_outline" );
+        $( this ).removeClass( "page_element_outline" );
+      });
     };
 
     function hideOutlineForMouse( element ) {
       $( element ).on( "mouseover", function() {
-        outline_on = false;
+        $( this ).removeClass( "outline_on" );
       });
       $( element ).on( "mouseout", function() {
-        outline_on = true;
+        $( this ).addClass( "outline_on" );
       });
     };
 
@@ -129,14 +123,6 @@ var keyboardAccess = function() {
     }
 
     interactiveElements();
-
-    $( ".avalon-player" ).mouseover( function() {
-      outline_on = false;
-    });
-
-    $( ".avalon-player" ).mouseout( function() {
-      outline_on = true;
-    });
 
     // Tab in and out of the player
     function tabIntoPlayer( e ) {
