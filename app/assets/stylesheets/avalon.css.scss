@@ -779,13 +779,11 @@ $accordionPadding: 20px;
 #accordion.panel-group {
   margin-top: 10px;
   a {
+    display: inline-block;
+    cursor: pointer;
     &:link, &:visited, &:hover, &:active {
       outline: 0;
       text-decoration: none;
-    }
-    .panel-title .fa {
-      font-size: .9em;
-      float: right;
     }
   }
   .panel-title .fa {
@@ -857,7 +855,6 @@ $accordionPadding: 20px;
 
 div.status-detail {
   margin-bottom: 0;
-  margin-left: 40px;
   font-size: .9em;
 }
 
