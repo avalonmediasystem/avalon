@@ -47,7 +47,7 @@ class Derivative < ActiveFedora::Base
     begin
       encode = masterfile.encoder_class.find(masterfile.workflow_id)
       encode.remove_output!(track_id)
-      encode.remove_output!(hls_track_id) if hls_track_id.present?
+      encode.remove_output!(hls_track_id) if hls_track_id.present? && track_id != hls_track_id
     rescue Exception => e
       logger.warn "Error deleting derivative: #{e.message}"
     end
@@ -59,6 +59,7 @@ class Derivative < ActiveFedora::Base
     output = dists.first || hls_output
 
     derivative = Derivative.new
+    derivative.track_id = output[:id]
     derivative.duration = output[:duration]
     derivative.encoding.mime_type = output[:mime_type]
     derivative.encoding.quality = output[:label].sub(/quality-/, '')
