@@ -75,7 +75,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <% @masterFiles.each_with_index do |section, index| %>
-  <% default_structure="<Item label='#{section.label.present? ? section.label : ' '}'></Item>" %>
+  <% default_structure="<Item label='#{stream_label_for(section)}'></Item>" %>
   <div id="edit_structure_<%= index %>" class="structure_edit modal fade" data-backdrop="false" data-submit_url="<%= attach_structure_master_file_path(section.pid) %>">
     <div class="modal-dialog modal-lg">
       <div class="modal-content col-md-12">
