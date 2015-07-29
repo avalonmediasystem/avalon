@@ -24,7 +24,6 @@ Avalon::Application.routes.draw do
   devise_scope :user do 
     match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session, via: [:get]
     match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
-    match "/courselink/:target_id", :to => "users/omniauth_callbacks", :action => "lti", :as => :courselink, via: [:get, :post]
   end
   match "/authorize", to: 'derivatives#authorize', via: [:get, :post]
   match "/authorize/:path", to: 'derivatives#authorize', via: [:get, :post]
