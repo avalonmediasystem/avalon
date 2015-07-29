@@ -49,7 +49,6 @@ class MasterFile < ActiveFedora::Base
   has_metadata name: 'mhMetadata', :type => ActiveFedora::SimpleDatastream do |d|
     d.field :workflow_id, :string
     d.field :workflow_name, :string
-    d.field :mediapackage_id, :string
     d.field :percent_complete, :string
     d.field :percent_succeeded, :string
     d.field :percent_failed, :string
@@ -63,7 +62,7 @@ class MasterFile < ActiveFedora::Base
   has_metadata name: 'masterFile', type: UrlDatastream
 
   has_attributes :file_location, :file_checksum, :file_size, :duration, :display_aspect_ratio, :original_frame_size, :file_format, :poster_offset, :thumbnail_offset, datastream: :descMetadata, multiple: false
-  has_attributes :workflow_id, :workflow_name, :encoder_classname, :mediapackage_id, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures, datastream: :mhMetadata, multiple: false
+  has_attributes :workflow_id, :workflow_name, :encoder_classname, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures, datastream: :mhMetadata, multiple: false
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
@@ -239,7 +238,6 @@ class MasterFile < ActiveFedora::Base
       label: label,
       is_video: is_video?,
       poster_image: poster_path,
-      mediapackage_id: mediapackage_id,
       embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}), 
       stream_flash: flash, 
       stream_hls: hls 
@@ -316,9 +314,6 @@ class MasterFile < ActiveFedora::Base
         existing.delete
       end
     end
-
-    #Is mediapackage_id just the root path segment after the base?
-    self.mediapackage_id = derivatives.first.media_package_id if derivatives.first
 
     save
 
