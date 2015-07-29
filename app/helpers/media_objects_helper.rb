@@ -142,7 +142,13 @@ EOF
     </div>
 EOF
 
-       data = {segment: section.pid, is_video: section.is_video?, share_link: share_link_for(section), native_url: pid_section_media_object_path(@mediaobject, section.pid)} 
+       data = {
+         segment: section.pid, 
+         is_video: section.is_video?, 
+         share_link: share_link_for(section), 
+         lti_share_link: courselink_url(target_id: section),
+         native_url: pid_section_media_object_path(@mediaobject, section.pid)
+       } 
        duration = section.duration.blank? ? '' : " (#{milliseconds_to_formatted_time(section.duration.to_i)})"
        myclass = current ? 'current-stream' : nil
 
