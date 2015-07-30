@@ -91,7 +91,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: 9d7144e0f2d73c3936ffcc4e0722ffeab3424719
+  revision: 0e473012fb2d40c92b4b78940968b9328bedd081
   tag: avalon-r4
   specs:
     mediaelement_rails (0.5.1)
@@ -524,7 +524,7 @@ GEM
       pry (>= 0.9.10)
     puma (2.11.1)
       rack (>= 1.1, < 2.0)
-    rack (1.5.2)
+    rack (1.5.5)
     rack-contrib (1.2.0)
       rack (>= 0.9.1)
     rack-test (0.6.3)
