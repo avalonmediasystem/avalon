@@ -46,7 +46,7 @@ class Derivative < ActiveFedora::Base
   before_destroy do
     begin
       encode = masterfile.encoder_class.find(masterfile.workflow_id)
-      encode.remove_output!(track_id)
+      encode.remove_output!(track_id) if track_id.present?
       encode.remove_output!(hls_track_id) if hls_track_id.present? && track_id != hls_track_id
     rescue Exception => e
       logger.warn "Error deleting derivative: #{e.message}"
