@@ -81,6 +81,14 @@ var keyboardAccess = function() {
           }
 	}
       });
+      $( ".mejs-title" ).on( "keydown", function( e ) { //for embedded player
+	if ( e.keyCode == 9 ) {
+          tabIntoPlayer( e );
+          if ( !e.shiftKey ) {
+            return false;
+          }
+	}
+      });
     } else {
       $( "#administrative_options a:last" ).on( "keydown", function( e ) {
         if ( e.keyCode == 9 ) {
@@ -93,6 +101,13 @@ var keyboardAccess = function() {
     }
 
     $( "#share-button a:first" ).on( "keydown", function( e ) {
+      if ( e.shiftKey && e.keyCode == 9 ) {
+        $( ".mejs-controls" ).css( "visibility", "visible" );
+        $( ".mejs-controls button:last" ).focus()
+        return false;
+      }
+    });
+    $( "#after-player" ).on( "keydown", function( e ) { // for embedded player
       if ( e.shiftKey && e.keyCode == 9 ) {
         $( ".mejs-controls" ).css( "visibility", "visible" );
         $( ".mejs-controls button:last" ).focus()
