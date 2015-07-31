@@ -36,8 +36,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 <script>
   $(document).ready(function() {
     $(document).on('streamswitch', function(e, stream_info){
-      $('#link-section').val($('a.current-stream').data('share-link'));
       $('#ltilink-section').val($('a.current-stream').data('lti-share-link'));
+      $('#share-link-section').val($('a.current-stream').data('share-link'));
       if (stream_info != null) {
         $('#embed-part').text(stream_info.embed_code);
       }
