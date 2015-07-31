@@ -64,6 +64,10 @@ var keyboardAccess = function() {
 
     interactiveElements();
 
+    // Special case for the play/pause overlay
+    $( ".mejs-overlay-play" ).on( "mouseover", function() { $( ".mejs-playpause-button button" ).removeClass( "outline_on" )});
+    $( ".mejs-overlay-play" ).on( "mouseout", function() { $( ".mejs-playpause-button button" ).addClass( "outline_on" )});
+
     // Tab in and out of the player
     function tabIntoPlayer( e ) {
       if ( !e.shiftKey && e.keyCode == 9 ) {
@@ -74,20 +78,20 @@ var keyboardAccess = function() {
 
     if ( $( "#administrative_options" ).length == 0 && $( ".avalon-player" ).length !== 0 ) {
       $( "#searchField" ).on( "keydown", function( e ) {
-	if ( e.keyCode == 9 ) {
+        if ( e.keyCode == 9 ) {
           tabIntoPlayer( e );
           if ( !e.shiftKey ) {
             return false;
           }
-	}
+        }
       });
       $( ".mejs-title" ).on( "keydown", function( e ) { //for embedded player
-	if ( e.keyCode == 9 ) {
+        if ( e.keyCode == 9 ) {
           tabIntoPlayer( e );
           if ( !e.shiftKey ) {
             return false;
           }
-	}
+        }
       });
     } else {
       $( "#administrative_options a:last" ).on( "keydown", function( e ) {
@@ -96,7 +100,7 @@ var keyboardAccess = function() {
           if ( !e.shiftKey ) {
             return false;
           }
-	}
+        }
       });
     }
 
