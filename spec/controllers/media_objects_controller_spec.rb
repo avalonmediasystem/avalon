@@ -172,10 +172,9 @@ describe MediaObjectsController, type: :controller do
         media_object = MediaObject.find(mopid)
 
         media_object.parts.collect { |part| 
-          package_id = part.mediapackage_id 
           get 'show', id: media_object.pid, format: 'json', content: part.pid
           json_obj = JSON.parse(response.body)
-          json_obj['mediapackage_id'].should == part.mediapackage_id
+          json_obj['is_video'].should == part.is_video?
         }
       end
     end
