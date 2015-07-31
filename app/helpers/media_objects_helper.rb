@@ -150,12 +150,11 @@ EOF
          native_url: pid_section_media_object_path(@mediaobject, section.pid)
        } 
        duration = section.duration.blank? ? '' : " (#{milliseconds_to_formatted_time(section.duration.to_i)})"
-       myclass = current ? 'current-stream' : nil
 
        # If there is no structural metadata associated with this masterfile return the stream info
        if section.structuralMetadata.empty?
          label = "<ul><li><span>#{index+1}. #{stream_label_for(section)} #{duration}</span></li></ul>".html_safe
-         link = link_to label, share_link_for( section ), data: data, class: myclass 
+         link = link_to label, share_link_for( section ), data: data, class: current ? 'current-stream playable' : nil
          return "#{headeropen}#{link}#{headerclose}"
        end
 
@@ -165,7 +164,7 @@ EOF
        if sectionnode.children.present?
          tracknumber = 0
          label = "<ul><li><span>#{index+1}. #{sectionnode.attribute('label').value} #{duration}</span></li></ul>".html_safe
-         link = link_to label, share_link_for( section ), data: data
+         link = link_to label, share_link_for( section ), data: data, class: current ? 'current-stream' : nil
          wrapperopen = <<EOF
           #{headeropen}
           <button class="fa fa-minus-square #{current ? '' : 'hidden'}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
@@ -224,8 +223,7 @@ EOF
          native_url = "#{pid_section_media_object_path(@mediaobject, section.pid)}?t=#{start},#{stop}"
          url = "#{share_link_for( section )}?t=#{start},#{stop}"
          data =  {segment: section.pid, is_video: section.is_video?, native_url: native_url, fragmentbegin: start, fragmentend: stop}
-         myclass = is_current_section?(section) ? 'current-stream' : nil
-         link = link_to label, url, data: data, class: myclass
+         link = link_to label, url, data: data, class: is_current_section?(section) ? 'current-stream playable' : nil
          return "<li class='stream-li'>#{link}</li>", tracknumber
        end
      end
