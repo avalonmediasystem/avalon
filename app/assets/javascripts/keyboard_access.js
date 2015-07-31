@@ -23,11 +23,11 @@ $(document).ready(function() {
 
 var keyboardAccess = function() {
     var interactive_elements = [ "a", "input", "button", "textarea" ];
-    var outline_on = true;
 
     function addElementOutline( element ) {
+      $( element ).addClass( "outline_on" );
       $( element ).on( "focus", function() {
-        if ( outline_on ) {
+        if ( $( this ).hasClass( "outline_on" )) {
           var player = $( ".avalon-player" )[ 0 ];
           if ( player && $.contains( player, $( this )[ 0 ] )) {
             $( this ).addClass( "player_element_outline" );
@@ -40,23 +40,17 @@ var keyboardAccess = function() {
 
     function removeElementOutline( element ) {
       $( element ).on( "blur", function() {
-        if ( outline_on ) {
-          var player = $( ".avalon-player" )[ 0 ];
-          if ( player && $.contains( player, $( this )[ 0 ] )) {
-            $( this ).removeClass( "player_element_outline" );
-          } else {
-            $( this ).removeClass( "page_element_outline" )
-          }
-        }
-      })
+        $( this ).removeClass( "player_element_outline" );
+        $( this ).removeClass( "page_element_outline" );
+      });
     };
 
     function hideOutlineForMouse( element ) {
       $( element ).on( "mouseover", function() {
-        outline_on = false;
+        $( this ).removeClass( "outline_on" );
       });
       $( element ).on( "mouseout", function() {
-        outline_on = true;
+        $( this ).addClass( "outline_on" );
       });
     };
 
@@ -70,14 +64,6 @@ var keyboardAccess = function() {
 
     interactiveElements();
 
-    $( ".avalon-player" ).mouseover( function() {
-      outline_on = false;
-    });
-
-    $( ".avalon-player" ).mouseout( function() {
-      outline_on = true;
-    });
-
     // Tab in and out of the player
     function tabIntoPlayer( e ) {
       if ( !e.shiftKey && e.keyCode == 9 ) {
@@ -88,6 +74,14 @@ var keyboardAccess = function() {
 
     if ( $( "#administrative_options" ).length == 0 && $( ".avalon-player" ).length !== 0 ) {
       $( "#searchField" ).on( "keydown", function( e ) {
+	if ( e.keyCode == 9 ) {
+          tabIntoPlayer( e );
+          if ( !e.shiftKey ) {
+            return false;
+          }
+	}
+      });
+      $( ".mejs-title" ).on( "keydown", function( e ) { //for embedded player
 	if ( e.keyCode == 9 ) {
           tabIntoPlayer( e );
           if ( !e.shiftKey ) {
@@ -113,16 +107,23 @@ var keyboardAccess = function() {
         return false;
       }
     });
+    $( "#after-player" ).on( "keydown", function( e ) { // for embedded player
+      if ( e.shiftKey && e.keyCode == 9 ) {
+        $( ".mejs-controls" ).css( "visibility", "visible" );
+        $( ".mejs-controls button:last" ).focus()
+        return false;
+      }
+    });
 
-    // Hide the controls when tabbing out of the player
+    // Hide the controls when tabbing out of the video player
     $( ".mejs-controls button:last" ).on( "keydown", function( e ) {
-      if ( !e.shiftKey && e.keyCode == 9 ) {
+      if ( !e.shiftKey && e.keyCode == 9 && $( "#content div[itemprop='video']" ).length !== 0 ) {
         $( ".mejs-controls" ).css( "visibility", "hidden" );
       }
     });
 
     $( ".mejs-controls button:first" ).on( "keydown", function( e ) {
-      if ( e.shiftKey && e.keyCode == 9 ) {
+      if ( e.shiftKey && e.keyCode == 9 && $( "#content div[itemprop='video']" ).length !== 0 ) {
         $( ".mejs-controls" ).css( "visibility", "hidden" );
       }
     });
