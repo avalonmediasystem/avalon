@@ -236,6 +236,21 @@ describe MediaObjectsController, type: :controller do
           expect(response).to_not render_template(:_share)
         end
       end
+      context "No LTI configuration" do
+        around do |example|
+          providers = Avalon::Authentication::Providers
+          Avalon::Authentication::Providers = Avalon::Authentication::Providers.reject{|p| p[:provider] == :lti}
+          example.run
+          Avalon::Authentication::Providers = providers
+        end
+        it "should not include lti" do
+          login_as(:administrator)
+          get :show, id: media_object.pid
+          expect(response).to render_template(:_share_resource)
+          expect(response).to render_template(:_embed_resource)
+          expect(response).to_not render_template(:_lti_url)
+        end
+      end
     end
 
     context "correctly handle unfound streams/sections" do
