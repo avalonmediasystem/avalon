@@ -16,7 +16,7 @@
 
 window.AvalonStreams = {
   setActiveSection: function(activeSegment, stream_info) {
-    sectionnodes = $("a[data-segment='" + activeSegment + "']");
+    sectionnodes = $("a[data-segment='" + activeSegment + "'].playable");
     if (sectionnodes.length > 0) {
       /* Start by resetting the state of all sections */
       $('a.current-stream ~ i').remove();

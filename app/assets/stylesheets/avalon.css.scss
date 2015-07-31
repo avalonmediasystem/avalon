@@ -786,12 +786,14 @@ $accordionPadding: 20px;
       text-decoration: none;
     }
   }
-  .panel-title .fa {
-    font-size: .9em;
-    float: right;
-    cursor: pointer;
-    border: none;
-    background-color: $lightgray;
+  .panel-title{
+    .fa-plus-square, .fa-minus-square {
+      font-size: .9em;
+      float: right;
+      cursor: pointer;
+      border: none;
+      background-color: $lightgray;
+    }
   }
   ul, li {
     list-style: none;
@@ -802,7 +804,7 @@ $accordionPadding: 20px;
   i.now-playing {
     position: absolute;
     color: $linkColor;
-    left: accordion-indent(1);
+    left: $accordionPadding;
   }
   .panel-heading {
     border-bottom: 1px solid #dddddd;
