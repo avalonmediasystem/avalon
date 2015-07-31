@@ -165,7 +165,7 @@ EOF
        if sectionnode.children.present?
          tracknumber = 0
          label = "<ul><li><span>#{index+1}. #{sectionnode.attribute('label').value} #{duration}</span></li></ul>".html_safe
-         link = link_to label, share_link_for( section ), data: data, class: myclass
+         link = link_to label, share_link_for( section ), data: data
          wrapperopen = <<EOF
           #{headeropen}
           <button class="fa fa-minus-square #{current ? '' : 'hidden'}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
