@@ -16,6 +16,10 @@
 
 window.AvalonStreams = {
   setActiveSection: function(activeSegment, stream_info) {
+    /* Mark the current section separately from the current stream */
+    $("a.current-section").removeClass('current-section');
+    $("a[data-segment='" + activeSegment + "']:first").addClass('current-section');
+
     sectionnodes = $("a[data-segment='" + activeSegment + "'].playable");
     if (sectionnodes.length > 0) {
       /* Start by resetting the state of all sections */

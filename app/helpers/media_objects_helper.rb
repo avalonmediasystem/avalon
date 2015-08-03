@@ -154,7 +154,7 @@ EOF
        # If there is no structural metadata associated with this masterfile return the stream info
        if section.structuralMetadata.empty?
          label = "<ul><li><span>#{index+1}. #{stream_label_for(section)} #{duration}</span></li></ul>".html_safe
-         link = link_to label, share_link_for( section ), data: data, class: current ? 'current-stream playable' : 'playable'
+         link = link_to label, share_link_for( section ), data: data, class: current ? 'current-stream current-section playable' : 'playable'
          return "#{headeropen}#{link}#{headerclose}"
        end
 
@@ -164,7 +164,7 @@ EOF
        if sectionnode.children.present?
          tracknumber = 0
          label = "<ul><li><span>#{index+1}. #{sectionnode.attribute('label').value} #{duration}</span></li></ul>".html_safe
-         link = link_to label, share_link_for( section ), data: data, class: current ? 'current-stream' : nil
+         link = link_to label, share_link_for( section ), data: data, class: current ? 'current-stream current-section' : nil
          wrapperopen = <<EOF
           #{headeropen}
           <button class="fa fa-minus-square #{current ? '' : 'hidden'}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
