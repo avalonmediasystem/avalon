@@ -64,9 +64,9 @@ var keyboardAccess = function() {
 
     interactiveElements();
 
-    // Special case for the play/pause overlay
-    $( ".mejs-overlay-play" ).on( "mouseover", function() { $( ".mejs-playpause-button button" ).removeClass( "outline_on" )});
-    $( ".mejs-overlay-play" ).on( "mouseout", function() { $( ".mejs-playpause-button button" ).addClass( "outline_on" )});
+    // Special case for the play/pause overlay and play controls background
+    $( ".mejs-overlay-play, .mejs-controls" ).on( "mouseover", function() { $( ".mejs-playpause-button button" ).removeClass( "outline_on" )});
+    $( ".mejs-overlay-play, .mejs-controls" ).on( "mouseout", function() { $( ".mejs-playpause-button button" ).addClass( "outline_on" )});
 
     // Tab in and out of the player
     function tabIntoPlayer( e ) {
