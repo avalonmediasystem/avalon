@@ -102,15 +102,17 @@ en:
       target="_blank">MARC Code List for Languages</a> may be used. This is an
       optional field. 
     terms_of_use: |
-      Terms of Use is an optional field. 
+      Terms of Use describes the conditions under which content may be used. This is an optional field. 
     physical_description: |
       Physical Description is an optional field that will display information about the original resource being described. 
     related_item_url: |
       The label is the text that will be displayed in the item record and will link to the URL entered. Related Item is an optional field. 
     note: |
-      Note is used to describe aspects of the resource not accounted for in any of the other fields, such as creation or production credits, performers, venue, historical or biographical information, language details, awards given to the performance or the work performed. Recommended use is to provide a separate Contributor field for each person or body associated with the creation of the content and to use a Note to provide more information about such contributions or to provide information about secondary persons or bodies associated with the creation of the content. Type specifies the type of note and is used as a label in the user interface.<br><br>Statement of Responsibility is used to provide information about primary persons or bodies associated with the creation of the content, along with details about their roles. This information can be transcribed from the credits  listed in the resource itself or on its packaging. Recommended use is to provide a separate Contributor field for each person or body listed in the Statement of Responsibility. Statement of Responsibility may be left empty if the use of Contributor fields alone is preferred. Statement of Responsibility is displayed in the user interface appended to the Title field, following a “ / “.
-    system_identifier: |
-      System Identifier should be used for an external record identifier that can connect the Avalon item to a catalog record or other record for the original item. This identifier differs from Bibliographic Identifier in that it is not used to retrieve a record from another system. Type specifies the type of external record identifier.
+      Note is used to describe aspects of the resource not accounted for in any of the other fields, such as creation or production credits, performers, venue, historical or biographical information, language details, awards given to the performance or the work performed. Recommended use is to provide a separate Contributor field for each person or body associated with the creation of the content and to use a Note to provide more information about such contributions or to provide information about secondary persons or bodies associated with the creation of the content. Type specifies the type of note and is used as a label in the user interface.<br><br>Statement of Responsibility is used to provide information about primary persons or bodies associated with the creation of the content, along with details about their roles. This information can be transcribed from the credits  listed in the resource itself or on its packaging. Recommended use is to provide a separate Contributor field for each person or body listed in the Statement of Responsibility. Statement of Responsibility may be left empty if the use of Contributor fields alone is preferred. Statement of Responsibility is displayed in the user interface appended to the Title field, following a ' / '.
+    other_identifier: |
+      Other Identifier should be used for an external record identifier that can connect the Avalon item to a catalog record or other record for the original item. This identifier differs from Bibliographic Identifier in that it is not used to retrieve a record from another system. Type specifies the type of external record identifier.
+    table_of_contents: |
+      Table of Contents is used to provide the titles of separate works or parts of a resource. Information provided may also contain statements of responsibility or other sequential designations. Titles of separate works or parts should be separated by ' -- ' (space-hyphen-hyphen-space).
 
   file_upload_tip:
     label: |
