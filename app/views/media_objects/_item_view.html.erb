@@ -114,5 +114,8 @@ Unless required by applicable law or agreed to in writing, software distributed
           }
         });
   </script>
+  <script>
+    var streamJSON = <%= @currentStreamInfo.to_json.html_safe %>;
+  </script>
   <% end %>
 <% end %>
