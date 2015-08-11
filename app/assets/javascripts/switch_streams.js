@@ -73,13 +73,16 @@ window.AvalonStreams = {
           videoNode.append('<source src="' + hls.url + '" data-quality="' + hls.quality + '" data-plugin-type="native" type="application/vnd.apple.mpegURL">');
         }
 
-        if (stream_info.poster_image != "undefined" && stream_info.poster_image != null)
-          currentPlayer.setPoster(stream_info.poster_image);
+      if (stream_info.poster_image != "undefined" && stream_info.poster_image != null)
+        var initialTime = parseFloat(stream_info['t'].split(',')[0]);
+        if (isNaN(initialTime)) initialTime = 0;
+        currentPlayer.setPoster(stream_info.poster_image);
         currentPlayer.buildqualities(currentPlayer, currentPlayer.controls, currentPlayer.layers, currentPlayer.media);
-        currentPlayer.media.addEventListener('loadedmetadata', function loadedmetadata() {
-          currentPlayer.setCurrentTime(isNaN(parseFloat(stream_info['t'])) ? 0 : parseFloat(stream_info['t'].split(',')[0]));
-          currentPlayer.media.removeEventListener('loadedmetadata', loadedmetadata);
-        }, true);
+        var loadeddata = function() {
+          currentPlayer.setCurrentTime(initialTime);
+          currentPlayer.media.removeEventListener('loadeddata', loadeddata);
+        };
+        currentPlayer.media.addEventListener('loadeddata', loadeddata, true);
         currentPlayer.load();
       }
     }
