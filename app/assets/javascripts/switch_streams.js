@@ -90,6 +90,7 @@ window.AvalonStreams = {
 
 $().ready(function() {
   /* Initialize the extra eye candy on page load */
+  AvalonStreams.refreshStream(streamJSON);
   AvalonStreams.setActiveSection($('a.current-stream').data('segment'), null);
 
   $('a[data-segment]').click(function(event) {
