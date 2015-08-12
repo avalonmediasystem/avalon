@@ -78,7 +78,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-skin-avalon.git
   revision: 7b2c739eddc2de1bc085c541115a6484be2032a0
-  tag: avalon-r4
+  branch: master
   specs:
     mediaelement-skin-avalon (0.0.1)
 
