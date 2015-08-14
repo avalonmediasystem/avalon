@@ -77,7 +77,9 @@ window.AvalonStreams = {
         var initialTime = parseFloat(stream_info['t'].split(',')[0]);
         if (isNaN(initialTime)) initialTime = 0;
         currentPlayer.setPoster(stream_info.poster_image);
-        currentPlayer.buildqualities(currentPlayer, currentPlayer.controls, currentPlayer.layers, currentPlayer.media);
+        if (currentPlayer.qualities.length > 0) {
+          currentPlayer.buildqualities(currentPlayer, currentPlayer.controls, currentPlayer.layers, currentPlayer.media);
+        }
         var loadeddata = function() {
           currentPlayer.setCurrentTime(initialTime);
           currentPlayer.media.removeEventListener('loadeddata', loadeddata);
