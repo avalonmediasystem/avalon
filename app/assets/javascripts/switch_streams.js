@@ -73,13 +73,13 @@ window.AvalonStreams = {
           videoNode.append('<source src="' + hls.url + '" data-quality="' + hls.quality + '" data-plugin-type="native" type="application/vnd.apple.mpegURL">');
         }
 
-      if (stream_info.poster_image != "undefined" && stream_info.poster_image != null)
+        if (stream_info.poster_image != "undefined" && stream_info.poster_image != null)
+          currentPlayer.setPoster(stream_info.poster_image);
         var initialTime = parseFloat(stream_info['t'].split(',')[0]);
-        if (isNaN(initialTime)) initialTime = 0;
-        currentPlayer.setPoster(stream_info.poster_image);
-        if (currentPlayer.qualities.length > 0) {
+        if (isNaN(initialTime))
+          initialTime = 0;
+        if (currentPlayer.qualities.length > 0)
           currentPlayer.buildqualities(currentPlayer, currentPlayer.controls, currentPlayer.layers, currentPlayer.media);
-        }
         var loadeddata = function() {
           currentPlayer.setCurrentTime(initialTime);
           currentPlayer.media.removeEventListener('loadeddata', loadeddata);
