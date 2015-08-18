@@ -69,6 +69,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
   <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
   <%= javascript_include_tag 'switch_streams' %> 
+  <%= javascript_include_tag 'android_pre_play' %> 
   <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %> 
   <%= javascript_include_tag 'me-thumb-selector' %>
   <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
@@ -111,6 +112,9 @@ Unless required by applicable law or agreed to in writing, software distributed
               currentPlayer.media.removeEventListener('loadedmetadata', loadedmetadata);
             }, true);
             mediaElement.addEventListener('timeupdate', update_active_stream, true ); 
+	    if (mejs.MediaFeatures.isAndroid) {
+              androidPrePlay(<%= f_start %>, <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>, player);
+	    }
           }
         });
   </script>
