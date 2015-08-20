@@ -47,6 +47,17 @@
       }
     },
 
+    setupCreationTrigger: function(playerThing) {
+      var watchForCreation = function() {
+        if (defined(playerThing) && defined(playerThing.created) && playerThing.created) {
+          $(playerThing).trigger('created')
+        } else {
+          setTimeout(watchForCreation, 100);
+        }
+      }
+      watchForCreation();
+    },
+
     /*
      * This method should take care of the heavy lifting involved in passing a message
      * to the player
@@ -83,12 +94,12 @@
             if (isNaN(initialTime)) initialTime = 0;
             if (exists(currentPlayer.qualities) && (currentPlayer.qualities.length > 0))
               currentPlayer.buildqualities(currentPlayer, currentPlayer.controls, currentPlayer.layers, currentPlayer.media);
-            var loadeddata = function() {
+            $(currentPlayer).one('created', function() {
               currentPlayer.setCurrentTime(initialTime);
-              currentPlayer.media.removeEventListener('loadeddata', loadeddata);
-            };
-            currentPlayer.media.addEventListener('loadeddata', loadeddata, true);
+              $('section#content').css('visibility','visible');
+            });
             currentPlayer.load();
+            this.setupCreationTrigger(currentPlayer);
           }
         }
       }
