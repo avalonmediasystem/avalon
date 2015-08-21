@@ -6,3 +6,5 @@
 //= require mediaelement-title/mep-feature-title
 //= require me-logo
 //= require refresh_token
+//= require switch_streams
+//= require android_pre_play
