@@ -73,7 +73,11 @@ Unless required by applicable law or agreed to in writing, software distributed
     $(this).toggleClass('hidden');
     $(this).closest('.panel-title').find('.fa-plus-square').toggleClass('hidden');
   });
-
+  $('.panel-title a').on('click',function(){
+    var panelheader = $(this).closest('.panel-title');
+    var sectiondiv = $(panelheader.find('.fa-plus-square').data('target'));
+    if (!sectiondiv.hasClass('in')) panelheader.find('.fa-plus-square').click();
+  });
 </script>
 <% end %>
 <% end %>
