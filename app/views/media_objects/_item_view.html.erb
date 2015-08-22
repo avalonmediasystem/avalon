@@ -68,58 +68,25 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
-  <%= javascript_include_tag 'switch_streams' %> 
   <%= javascript_include_tag 'android_pre_play' %> 
   <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %> 
   <%= javascript_include_tag 'me-thumb-selector' %>
   <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
+  <%= javascript_include_tag 'avalon_player' %>
 
   <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>   
   <%= stylesheet_link_tag 'me-thumb-selector' %>
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
 
-  <%
-    features = ['playpause','current','progress','duration','volume','qualities']
-    features << 'thumbnailSelector' if can? :edit, @mediaobject
-    features.concat ['fullscreen','responsive']
-  %>
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
-    var updating_segment = false;
-
-    var update_active_stream = function(event){
-      if (!updating_segment) {
-        updating_segment = true;
-        active_segment = $('a.current-stream').data('segment')
-        if (typeof(active_segment) != 'undefined') AvalonStreams.setActiveSection(active_segment);
-        updating_segment = false;
-      }
-    }
-    currentPlayer = new MediaElementPlayer('#video-tag', 
-        { mode: 'auto_plugin',
-          pluginPath: '/assets/mediaelement_rails/',
-          usePluginFullScreen: false,
-          thumbnailSelectorUpdateURL: '/update-url',
-          thumbnailSelectorEnabled: true,
-          features: <%=features.inspect.html_safe%>,
-          audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
-          mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
-          startQuality: '<%= current_quality(@currentStreamInfo) %>',
-          success: function (mediaElement, domObject, player) {
-            keyboardAccess();
-            mediaElement.addEventListener('loadedmetadata', function loadedmetadata () {
-              currentPlayer.setCurrentTime(<%= f_start %>);
-              currentPlayer.media.removeEventListener('loadedmetadata', loadedmetadata);
-            }, true);
-            mediaElement.addEventListener('timeupdate', update_active_stream, true ); 
-	    if (mejs.MediaFeatures.isAndroid) {
-              androidPrePlay(<%= f_start %>, <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>, player);
-	    }
-          }
-        });
-  </script>
-  <script>
-    var streamJSON = <%= @currentStreamInfo.to_json.html_safe %>;
+    avalonPlayer = new AvalonPlayer($('#left_column'), <%= @currentStreamInfo.to_json.html_safe %>, {
+      audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
+      mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
+      thumbnailSelector: <%= can?(:edit, @mediaobject) ? 'true' : 'false' %>,
+      startQuality: '<%= current_quality(@currentStreamInfo) %>'
+    })
+    currentPlayer = avalonPlayer.player;
   </script>
   <% end %>
 <% end %>

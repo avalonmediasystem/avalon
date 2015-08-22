@@ -235,6 +235,7 @@ class MasterFile < ActiveFedora::Base
 
     # Returns the hash
     {
+      id: self.pid,
       label: label,
       is_video: is_video?,
       poster_image: poster_path,

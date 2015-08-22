@@ -1,68 +1,69 @@
-  var avalonStartTime = 0;
-  var avalonDuration = 0;
-  var originalSetCurrentTime;
-  var originalGetCurrentTime;
+(function() {
+  var _t = {
+    androidPrePlay: function(startTime, duration, player){
+      _t.player = player;
+      _t.avalonStartTime = startTime;
+      _t.avalonDuration = duration;
+      _t.originalSetCurrentTime = _t.player.setCurrentTime;
+      _t.player.setCurrentTime = _t.androidSetCurrentTime;
+      //_t.player.media.setCurrentTime = androidSetCurrentTime;
+      _t.originalGetCurrentTime = _t.player.getCurrentTime;
+      _t.player.getCurrentTime = _t.androidGetCurrentTime;
+      _t.player.media.addEventListener('play', _t.androidFirstPlay, true);
+    },
+   
+    durationChanged: function() {
+      console.log(_t.player.media.duration);
+      if (_t.player.media.duration == 0)
+        return;
+      _t.player.setCurrentTime(_t.avalonStartTime);
+      console.log(_t.player.media.duration + " " + _t.player.getCurrentTime() + " " + _t.player.media.seeking);
+      _t.player.media.removeEventListener('durationchange', _t.durationChanged);
+    },
 
-  function androidPrePlay(startTime, duration, player){
-    avalonStartTime = startTime;
-    avalonDuration = duration;
-    originalSetCurrentTime = player.setCurrentTime;
-    player.setCurrentTime = androidSetCurrentTime;
-    //player.media.setCurrentTime = androidSetCurrentTime;
-    originalGetCurrentTime = player.getCurrentTime;
-    player.getCurrentTime = androidGetCurrentTime;
-    player.media.addEventListener('play', androidFirstPlay, true);
-  }
- 
-  function durationChanged () {
-    console.log(currentPlayer.media.duration);
-    if (currentPlayer.media.duration == 0)
-      return;
-    currentPlayer.setCurrentTime(avalonStartTime);
-    console.log(currentPlayer.media.duration + " " + currentPlayer.getCurrentTime() + " " + currentPlayer.media.seeking);
-    currentPlayer.media.removeEventListener('durationchange', durationChanged);
-  }
+    androidSetCurrentTime: function(time) {
+      //don't actually call media.currentTime but update everything else manually
+      console.log('androidSetCurrentTime: ' + time);
+      _t.avalonStartTime = time;
+      _t.androidSetCurrentRail(time);
+      _t.androidUpdateCurrent(time);
+    },
 
-  function androidSetCurrentTime (time) {
-    //don't actually call media.currentTime but update everything else manually
-    console.log('androidSetCurrentTime: ' + time);
-    avalonStartTime = time;
-    androidSetCurrentRail(time);
-    androidUpdateCurrent(time);
-    update_active_stream();
-  }
+    androidGetCurrentTime: function() {
+      return _t.avalonStartTime;
+    },
 
-  function androidGetCurrentTime () {
-    return avalonStartTime;
-  }
+    androidSetCurrentRail: function(time) {
+      var total = _t.player.controls.find('.mejs-time-total');
+      var handle = _t.player.controls.find('.mejs-time-handle');
+      var current = _t.player.controls.find('.mejs-time-current');
+      
+      // update bar and handle
+      if (total && handle) {
+        var
+          newWidth = Math.round(total.width() * time / _t.avalonDuration),
+          handlePos = newWidth - Math.round(handle.outerWidth(true) / 2);
 
-  function androidSetCurrentRail (time) {
-    var total = currentPlayer.controls.find('.mejs-time-total');
-    var handle = currentPlayer.controls.find('.mejs-time-handle');
-    var current = currentPlayer.controls.find('.mejs-time-current');
-    
-    // update bar and handle
-    if (total && handle) {
-      var
-        newWidth = Math.round(total.width() * time / avalonDuration),
-        handlePos = newWidth - Math.round(handle.outerWidth(true) / 2);
+          current.width(newWidth);
+          handle.css('left', handlePos);
+      }
+    },
 
-        current.width(newWidth);
-        handle.css('left', handlePos);
+    androidUpdateCurrent: function(time) {
+      var currenttime = _t.player.currenttime;
+      if (currenttime) {
+        currenttime.html(mejs.Utility.secondsToTimeCode(time, _t.player.options.alwaysShowHours || _t.avalonDuration > 3600, _t.player.options.showTimecodeFrameCount,  _t.player.options.framesPerSecond || 25));
+      }
+    },
+
+    androidFirstPlay: function() {
+      _t.player.setCurrentTime = _t.originalSetCurrentTime;
+      //_t.player.media.setCurrentTime = originalSetCurrentTime;
+      _t.player.getCurrentTime = _t.originalGetCurrentTime;
+      _t.player.media.addEventListener('durationchange', _t.durationChanged, true);
+      _t.player.media.removeEventListener("play", _t.androidFirstPlay);
     }
-  }
-
-  function androidUpdateCurrent (time) {
-    var currenttime = currentPlayer.currenttime;
-    if (currenttime) {
-      currenttime.html(mejs.Utility.secondsToTimeCode(time, currentPlayer.options.alwaysShowHours || avalonDuration > 3600, currentPlayer.options.showTimecodeFrameCount,  currentPlayer.options.framesPerSecond || 25));
-    }
-  }
-
-  function androidFirstPlay () {
-    currentPlayer.setCurrentTime = originalSetCurrentTime;
-    //currentPlayer.media.setCurrentTime = originalSetCurrentTime;
-    currentPlayer.getCurrentTime = originalGetCurrentTime;
-    currentPlayer.media.addEventListener('durationchange', durationChanged, true);
-    currentPlayer.media.removeEventListener("play", androidFirstPlay);
-  }
+  };
+  
+  (typeof exports !== "undefined" && exports !== null ? exports : this).AndroidShim = _t;
+})();
