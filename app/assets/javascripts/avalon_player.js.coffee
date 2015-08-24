@@ -32,7 +32,7 @@ class AvalonPlayer
       features: features
       startQuality: 'low'
       success: (mediaElement, domObject, player) =>
-        if mejs.MediaFeatures.isAndroid then AndroidShim.androidPrePlay(start_time, opts.mobileDisplayedDuration, player)
+        if mejs.MediaFeatures.isAndroid then AndroidShim.androidPrePlay(start_time, opts.mobileDisplayedDuration, this, player)
 
     player_options[key] = val for key, val of opts
     @player = new MediaElementPlayer element, player_options
@@ -80,7 +80,7 @@ class AvalonPlayer
     @stream_info = value
     @refreshStream()
     
-  setActiveSection: (active_segment) ->
+  setActiveSection: ->
     if @active_segment != @stream_info.id
       @active_segment = @stream_info.id
       @container.find("a.current-section").removeClass('current-section')
@@ -90,33 +90,46 @@ class AvalonPlayer
     current_time = if @player? then @player.getCurrentTime() else 0
     active_node = null
     for node in section_nodes by -1
-      if current_time >= parseFloat(node.dataset.fragmentbegin)
+      node_data = $(node).data()
+      begin = parseFloat(node_data.fragmentbegin) || 0
+      end = parseFloat(node_data.fragmentend) || Number.MAX_VALUE
+      if (begin <= current_time <= end)
         active_node = node
         break
-      
+#    active_node ||= $('a.current-section')
+    
     current_stream = @container.find('a.current-stream')  
     if current_stream[0] != active_node
-      current_stream.siblings('i').remove()
       current_stream.removeClass('current-stream')
       $(active_node)
         .addClass('current-stream')
         .trigger('streamswitch', [@stream_info])
-        .parent().append('<i class="now-playing fa fa-arrow-circle-right"></i>')
-      
+        
+    marked_node = @container.find('i.now-playing')
+    now_playing_node = @container.find('a.current-stream')
+    if now_playing_node.length == 0
+      now_playing_node = @container.find('a.current-section')
+    unless now_playing_node == marked_node
+      marked_node.remove()
+      now_playing_node.before('<i class="now-playing fa fa-arrow-circle-right"></i>')
+          
   initStructureHandlers: ->
     @container.find('a[data-segment]').on 'click', (e) =>
       target = $(e.currentTarget)
       segment = target.data('segment')
       
-      current_stream = @container.find('a.current-stream').data()
+      current_stream = 
+        @container.find('a.current-stream').data() || 
+        @container.find('a.current-section').data() || 
+        {}
       target_stream  = target.data()
       
-      if current_stream['is-video'] == target_stream['is-video']
+      if current_stream.isVideo == target_stream.isVideo
         e.preventDefault()
-        if current_stream['segment'] == target_stream['segment']
+        if current_stream.segment == target_stream.segment
           @player.setCurrentTime(parseFloat(target.data('fragmentbegin')))
         else
-          splitUrl = (target_stream['nativeUrl'] || target.attr('href')).split('?')
+          splitUrl = (target_stream.nativeUrl || target.attr('href')).split('?')
           uri = "#{splitUrl[0]}.json"
           params = ["content=#{segment}"]
           params.push(splitUrl[1]) if splitUrl[1]?
