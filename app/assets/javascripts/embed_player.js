@@ -4,5 +4,6 @@
 //= require mediaelement-qualityselector/mep-feature-qualities
 //= require mediaelement-skin-avalon/mep-feature-responsive
 //= require mediaelement-title/mep-feature-title
+//= require avalon_player
 //= require me-logo
 //= require refresh_token
