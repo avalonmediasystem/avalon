@@ -614,7 +614,12 @@ class MasterFile < ActiveFedora::Base
   end
 
   def post_processing_move_filename(oldpath, options={})
-    "#{options[:pid].gsub(":","_")}-#{File.basename(oldpath)}"
+    prefix = options[:pid].gsub(":","_")
+    if oldpath.start_with?(prefix)
+      oldpath
+    else 
+      "#{prefix}-#{File.basename(oldpath)}"
+    end
   end
 
   def update_ingest_batch
