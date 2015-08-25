@@ -47,12 +47,34 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= stylesheet_link_tag "mediaelement-title/mejs-title" =%>
   <%= stylesheet_link_tag "me-logo" %>
 
+  <% features = ['playpause','current','progress','duration','volume','responsive', 'title'] %>
+  
+  <% if @masterfile.is_video? %>
+    <% features << 'qualities' %>
+  <% else %>
+    <%= javascript_include_tag 'mediaelement-hd-toggle/mep-feature-hdtoggle' %>
+    <%= stylesheet_link_tag "mediaelement-hd-toggle/mejs-hdtoggle" =%>
+    <% features << 'hdtoggle' %>
+  <% end %>
+
+  <% features += ['logo', 'fullscreen'] %>
+
   <script>
-    avalonPlayer = new AvalonPlayer($('#content').parent(), <%= @currentStreamInfo.to_json.html_safe %>, {
+    avalonPlayer = new AvalonPlayer($('#content').parent(), <%= @stream_info.to_json.html_safe %>, {
       audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
-      mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
-      thumbnailSelector: <%= can?(:edit, @mediaobject) ? 'true' : 'false' %>,
-      startQuality: '<%= current_quality(@currentStreamInfo) %>'
+      mobileDisplayedDuration: <%= @masterfile ? (@masterfile.duration.to_f / 1000).round : -1 %>,
+      startQuality: '<%= current_quality(@stream_info) %>',
+      features: <%= features.inspect.html_safe %>,
+      videoWidth: '100%',
+      videoHeight: '100%',
+      enableAutosize: true,
+      iOSDisplayedDuration: <%= @masterfile ? @masterfile.duration.to_i / 1000 : -1 %>,
+      startQuality: '<%= current_quality(@stream_info) %>',
+      title: '<%= @masterfile.label %>',
+      titleLink: '<%= media_object_url(@masterfile.mediaobject) %>',
+      logoAction: 'popup',
+      logoURL: '<%= pid_section_media_object_url(@masterfile.mediaobject.pid, @masterfile.pid).html_safe %>',
+      logoTitle: 'View in repository'
     })
     currentPlayer = avalonPlayer.player;
   </script>
