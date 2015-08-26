@@ -241,7 +241,8 @@ class MasterFile < ActiveFedora::Base
       poster_image: poster_path,
       embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}), 
       stream_flash: flash, 
-      stream_hls: hls 
+      stream_hls: hls,
+      duration: (duration.to_f / 1000).round
     }
   end
 

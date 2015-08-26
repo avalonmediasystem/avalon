@@ -1,17 +1,20 @@
 (function() {
   var _t = {
-    androidPrePlay: function(startTime, duration, handler, player){
+    androidPrePlay: function(handler, player){
       _t.handler = handler;
       _t.player = player;
-      _t.avalonStartTime = startTime;
-      _t.avalonDuration = duration;
-      _t.originalSetCurrentTime = _t.player.setCurrentTime;
+      _t.avalonStartTime = handler.stream_info.t || 0;
+      _t.avalonDuration = handler.stream_info.duration;
+      if (typeof _t.originalSetCurrentTime != 'function')
+        _t.originalSetCurrentTime = _t.player.setCurrentTime;
       _t.player.setCurrentTime = _t.androidSetCurrentTime;
-      _t.originalGetCurrentTime = _t.player.getCurrentTime;
+      if (typeof _t.originalGetCurrentTime != 'function')
+        _t.originalGetCurrentTime = _t.player.getCurrentTime;
       _t.player.getCurrentTime = _t.androidGetCurrentTime;
+      $(_t.player.durationD).html(mejs.Utility.secondsToTimeCode(handler.stream_info.duration));
       _t.player.media.addEventListener('play', _t.androidFirstPlay, true);
     },
-   
+    
     durationChanged: function() {
       console.log(_t.player.media.duration);
       if (_t.player.media.duration == 0)

@@ -32,8 +32,9 @@ class AvalonPlayer
       features: features
       startQuality: 'low'
       success: (mediaElement, domObject, player) =>
-        if mejs.MediaFeatures.isAndroid then AndroidShim.androidPrePlay(start_time, opts.mobileDisplayedDuration, this, player)
-
+        @boundPrePlay = => if mejs.MediaFeatures.isAndroid then AndroidShim.androidPrePlay(this, player)
+        @boundPrePlay()
+        
     player_options[key] = val for key, val of opts
     @player = new MediaElementPlayer element, player_options
     @refreshStream()
@@ -72,6 +73,8 @@ class AvalonPlayer
         $(@player.media).one 'loadedmetadata', initialize_view
         $(@player.media).one 'loadeddata', initialize_view
         keyboardAccess()
+        @boundPrePlay()
+
         
       @player.load()
       @setupCreationTrigger()
