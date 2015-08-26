@@ -504,4 +504,23 @@ describe MediaObject do
       end
     end
   end
+
+  describe 'bib import' do
+    let(:bib_id) { '7763100' }
+    let(:mods) { File.read(File.expand_path("../../fixtures/#{bib_id}.mods",__FILE__)) }
+    before do
+      media_object.update_attribute_in_metadata(:resource_type, ["moving image"])
+      media_object.update_attribute_in_metadata(:format, "video/mpeg")
+      instance = double("instance")
+      allow(Avalon::BibRetriever).to receive(:instance).and_return(instance)
+      allow(Avalon::BibRetriever.instance).to receive(:get_record).and_return(mods)
+    end
+
+    it 'should not override format' do
+      expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to_not change { media_object.format }
+    end
+    it 'should not override resource_type' do
+      expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to_not change { media_object.resource_type }
+    end
+  end
 end
