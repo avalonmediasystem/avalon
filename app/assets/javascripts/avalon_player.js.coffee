@@ -129,6 +129,7 @@ class AvalonPlayer
         if current_stream.segment == target_stream.segment
           @player.setCurrentTime(parseFloat(target.data('fragmentbegin')))
         else
+          $('.mejs-overlay-loading').show().closest('.mejs-layer').show()
           splitUrl = (target_stream.nativeUrl || target.attr('href')).split('?')
           uri = "#{splitUrl[0]}.json"
           params = ["content=#{segment}"]
