@@ -210,12 +210,18 @@ class ModsDocument < ActiveFedora::OmDatastream
       bib_id_label ||= IDENTIFIER_TYPES.keys.first
       new_record = Avalon::BibRetriever.instance.get_record(bib_id)
       if new_record.present?
+        old_resource_type = self.resource_type.dup
+        old_media_type = self.media_type.dup
         self.ng_xml = Nokogiri::XML(new_record)
         [:genre, :topical_subject, :geographic_subject, :temporal_subject, 
          :occupation_subject, :person_subject, :corporate_subject, :family_subject, 
          :title_subject].each do |field|
            self.send("#{field}=".to_sym, self.send(field).uniq)
         end
+        old_media_type.each do |val|
+          self.add_child_node(self.ng_xml.root, :media_type, val)
+        end
+        self.send("resource_type=", old_resource_type)
         languages = self.language.collect &:strip
         self.language = nil
         languages.each { |lang| self.add_language(lang) }
