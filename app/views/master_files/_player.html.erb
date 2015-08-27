@@ -58,32 +58,25 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% end %>
 
   <% features += ['logo', 'fullscreen'] %>
+
   <script>
-    currentPlayer = new MediaElementPlayer('#video-tag', 
-        { mode: 'auto_plugin',
-          pluginPath: '/assets/mediaelement_rails/',
-          usePluginFullScreen: false,
-          videoWidth: '100%',
-          videoHeight: '100%',
-          enableAutosize: true,
-          features: <%=features.inspect.html_safe%>,
-          audioHeight: 50,
-          iOSDisplayedDuration: <%= @masterfile ? @masterfile.duration.to_i / 1000 : -1 %>,
-          startQuality: '<%= current_quality(@stream_info) %>',
-          title: '<%= @masterfile.label %>',
-          titleLink: '<%= media_object_url(@masterfile.mediaobject) %>',
-          logoAction: 'popup',
-          logoURL: '<%= pid_section_media_object_url(@masterfile.mediaobject.pid, @masterfile.pid).html_safe %>',
-          logoTitle: 'View in repository',
-          success: function(mediaElement, domObject, player) { 
-            keyboardAccess();
-            <% if (!!Float(request['t']) rescue false) %>
-            mediaElement.addEventListener('loadedmetadata', function(e) {
-              mediaElement.setCurrentTime(<%= request['t'] %>)
-            });
-            <% end %>
-          }
-        });
+    avalonPlayer = new AvalonPlayer($('#content').parent(), <%= @stream_info.to_json.html_safe %>, {
+      audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
+      mobileDisplayedDuration: <%= @masterfile ? (@masterfile.duration.to_f / 1000).round : -1 %>,
+      startQuality: '<%= current_quality(@stream_info) %>',
+      features: <%= features.inspect.html_safe %>,
+      videoWidth: '100%',
+      videoHeight: '100%',
+      enableAutosize: true,
+      iOSDisplayedDuration: <%= @masterfile ? @masterfile.duration.to_i / 1000 : -1 %>,
+      startQuality: '<%= current_quality(@stream_info) %>',
+      title: '<%= @masterfile.label %>',
+      titleLink: '<%= media_object_url(@masterfile.mediaobject) %>',
+      logoAction: 'popup',
+      logoURL: '<%= pid_section_media_object_url(@masterfile.mediaobject.pid, @masterfile.pid).html_safe %>',
+      logoTitle: 'View in repository'
+    })
+    currentPlayer = avalonPlayer.player;
   </script>
 
   <style>

@@ -845,7 +845,7 @@ $accordionPadding: 20px;
   }
 }
 
-.current-stream {
+.current-section, .current-stream {
   font-weight: bold;
   border-radius: 3px;
   margin-left: -5px;
@@ -968,4 +968,8 @@ div.structure_edit {
 .player_element_outline {
   outline: solid 1px orange !important;
   outline-offset: 0;
+}
+
+.mejs-overlay-loading {
+  border-radius: 50% !important;
 }
