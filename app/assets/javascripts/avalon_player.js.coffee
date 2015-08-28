@@ -42,6 +42,9 @@ class AvalonPlayer
   
   setupCreationTrigger: ->
     watchForCreation = =>
+      # Special case visibility trigger for IE
+      if (mejs.PluginDetector.ua.match(/trident/gi) != null) then @container.find('#content').css('visibility','visible')
+        
       if @player? && @player.created? && @player.created
         $(@player).trigger('created')
       else
@@ -68,7 +71,7 @@ class AvalonPlayer
 
       $(@player).one 'created', =>
         $(@player.media).on 'timeupdate', => @setActiveSection()
-        $('section#content').css('visibility','visible')
+        @container.find('#content').css('visibility','visible')
         @player.setCurrentTime(initialTime)
         $(@player.media).one 'loadedmetadata', initialize_view
         $(@player.media).one 'loadeddata', initialize_view
