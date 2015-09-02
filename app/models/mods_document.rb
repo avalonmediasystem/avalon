@@ -20,6 +20,7 @@ class ModsDocument < ActiveFedora::OmDatastream
   include ModsBehaviors
   
   IDENTIFIER_TYPES = Avalon::ControlledVocabulary.find_by_name(:identifier_types) || {"other" => "Local"}
+  NOTE_TYPES = Avalon::ControlledVocabulary.find_by_name(:note_types) || {"local" => "Local Note"}
   
   set_terminology do |t|
     t.root(:path=>'mods',
@@ -30,8 +31,6 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.identifier(:path => 'mods/oxns:identifier') do
       t.type_(:path => '@type', :namespace_prefix => nil)
     end
-    t.bibliographic_id(:proxy => [:identifier])
-    t.bibliographic_id_label(:proxy => [:identifier, :type])
 
     # Titles
     t.title_info(:path => 'titleInfo') do
@@ -64,7 +63,7 @@ class ModsDocument < ActiveFedora::OmDatastream
     t._primary_creator_name(:ref => [:name], :path => 'mods/oxns:name[@usage="primary"]')
     t.primary_creator(:proxy => [:_creator_name, :name_part])
 
-    t.statement_of_responsibility(:path => 'note', :attributes => { :type => 'statement of responsbility' })
+    t.statement_of_responsibility(:path => 'note', :attributes => { :type => 'statement of responsibility' })
 
     # Type and Genre
     t.resource_type(:path => 'typeOfResource')
@@ -102,11 +101,11 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.media_type(:proxy => [:mime_physical_description, :internet_media_type])
 
     t.original_related_item(:path => 'relatedItem', :attributes => { :type => 'original'}) do
-      t.physical_description(:path => 'physicalDescription') do
-        t.extent
-      end
+      t.physical_description(:path => 'physicalDescription') { t.extent }
+      t.other_identifier(:path => 'identifier') { t.type_(:path => '@type', :namespace_prefix => nil) }
     end
     t.physical_description(:proxy => [:original_related_item, :physical_description, :extent])
+    t.other_identifier(:proxy => [:original_related_item, :other_identifier])
 
     # Summary and Notes
     t.abstract(:path => 'abstract')
@@ -155,6 +154,7 @@ class ModsDocument < ActiveFedora::OmDatastream
 
     t.usage(:path => 'accessCondition')
     t.terms_of_use(:path => 'accessCondition', :attributes => { :type => 'use and reproduction' })
+    t.table_of_contents(:path => 'tableOfContents')
     t.access_restrictions(:path => 'accessCondition', :attributes => { :type => 'restrictions on access' })
 
     t.record_info(:path => 'recordInfo') do
@@ -162,7 +162,8 @@ class ModsDocument < ActiveFedora::OmDatastream
       t.content_source(:path => 'recordContentSource')
       t.creation_date(:path => 'recordCreationDate')
       t.change_date(:path => 'recordChangeDate')
-      t.identifier(:path => 'recordIdentifier')
+      t.identifier(:path => "recordIdentifier[@source='Fedora']") { t.source_(:path => '@source', :namespace_prefix => nil) }
+      t.bibliographic_id(:path => "recordIdentifier[@source!='Fedora']") { t.source_(:path => '@source', :namespace_prefix => nil) }
       t.language_of_cataloging(:path => 'languageOfCataloging') { t.language_term(:path => 'languageTerm') }
       t.language(:proxy => [:language_of_cataloging, :language_term])
     end
@@ -172,6 +173,7 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.record_change_date(:proxy => [:record_info, :change_date])
     t.record_identifier(:proxy => [:record_info, :identifier])
     t.record_language(:proxy => [:record_info, :language])
+    t.bibliographic_id(:proxy => [:record_info, :bibliographic_id])
   end
 
   def self.xml_template
@@ -208,18 +210,31 @@ class ModsDocument < ActiveFedora::OmDatastream
       bib_id_label ||= IDENTIFIER_TYPES.keys.first
       new_record = Avalon::BibRetriever.instance.get_record(bib_id)
       if new_record.present?
+        old_resource_type = self.resource_type.dup
+        old_media_type = self.media_type.dup
         self.ng_xml = Nokogiri::XML(new_record)
         [:genre, :topical_subject, :geographic_subject, :temporal_subject, 
          :occupation_subject, :person_subject, :corporate_subject, :family_subject, 
          :title_subject].each do |field|
            self.send("#{field}=".to_sym, self.send(field).uniq)
         end
+        old_media_type.each do |val|
+          self.add_child_node(self.ng_xml.root, :media_type, val)
+        end
+        self.send("resource_type=", old_resource_type)
         languages = self.language.collect &:strip
         self.language = nil
         languages.each { |lang| self.add_language(lang) }
       end
     end
     self.bibliographic_id = nil
-    self.add_bibliographic_id([bib_id_label, bib_id])
+    self.add_bibliographic_id(bib_id, bib_id_label)
+    self.add_other_identifier(bib_id, bib_id_label)
+
+    # Filter out notes that are not in the configured controlled vocabulary
+    notezip = note.zip note.type
+    self.note = nil
+    notezip.each { |n| self.add_child_node self.ng_xml.root, :note, n[0], n[1] if NOTE_TYPES.include? n[1] }
+
   end
 end

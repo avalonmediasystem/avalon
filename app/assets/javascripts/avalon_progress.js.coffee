@@ -37,7 +37,7 @@ class AvalonProgress
     sections = $('a[data-segment]')
     sections.each (i,sec) =>
       id = $(sec).data('segment')
-      bar = $(sec).prev('span.progress')
+      bar = $(sec).closest('.panel-title').find('span.progress')
       info_box = $(sec).next('div.alert')
 
       info = @data[id]
@@ -71,7 +71,7 @@ class AvalonProgress
     data = @data[section_id]
     if data.status != 'SUCCEEDED' or data.complete < 100
       window.currentPlayer = null
-      $('#player').html('<div id="nojs"></div>')
+      $('.avalon-player').html('<div id="nojs"></div>')
 
 $(document).ready ->
   progress_controller = new AvalonProgress()

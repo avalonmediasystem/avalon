@@ -22,17 +22,16 @@ class CatalogController < ApplicationController
   include Hydra::PolicyAwareAccessControlsEnforcement
  
   before_filter :save_sticky_settings
- 
-  # This applies appropriate access controls to all solr queries
-  self.solr_search_params_logic += [:add_access_controls_to_solr_params_if_not_admin]
-  
-  # This filters out objects that you want to exclude from search results, like FileAssets
-  self.solr_search_params_logic += [:only_wanted_models]
-  self.solr_search_params_logic += [:only_published_items]
-  self.solr_search_params_logic += [:limit_to_non_hidden_items]
-  self.solr_search_params_logic += [:apply_sticky_settings]
+
+  #Override taken from Hydra::Controller::ControllerBehavior and reapplied here to be in scope
+  def search_builder processor_chain = search_params_logic
+    super.tap { |builder| builder.current_ability = current_ability }
+  end 
+
+  CatalogController.search_params_logic += [:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models, :only_published_items, :limit_to_non_hidden_items, :apply_sticky_settings]
 
   configure_blacklight do |config|
+    config.search_builder_class = SearchBuilder
     config.http_method = :post
     config.default_solr_params = { 
       :qt => 'search',
@@ -78,9 +77,9 @@ class CatalogController < ApplicationController
 
 
     # Hide these facets if not a Collection Manager
-    config.add_facet_field 'workflow_published_sim', label: 'Published', limit: 5, if_user_can: [:create, MediaObject], group: "workflow"
-    config.add_facet_field 'created_by_sim', label: 'Created by', limit: 5, if_user_can: [:create, MediaObject], group: "workflow"
-    config.add_facet_field 'read_access_virtual_group_ssim', label: 'External Group', limit: 5, if_user_can: [:create, MediaObject], group: "workflow", helper_method: :vgroup_display
+    config.add_facet_field 'workflow_published_sim', label: 'Published', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"
+    config.add_facet_field 'created_by_sim', label: 'Created by', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"
+    config.add_facet_field 'read_access_virtual_group_ssim', label: 'External Group', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow", helper_method: :vgroup_display
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
@@ -183,31 +182,6 @@ class CatalogController < ApplicationController
     params[:action] == 'index'
   end
   
-  def only_wanted_models(solr_parameters, user_parameters)
-    solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << 'has_model_ssim:"info:fedora/afmodel:MediaObject"'
-  end
-
-  def only_published_items(solr_parameters, user_parameters)
-    if cannot? :create, MediaObject
-      solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << 'workflow_published_sim:"Published"'
-    end
-  end
-
-  def limit_to_non_hidden_items(solr_parameters, user_parameters)
-    if cannot? :create, MediaObject
-      solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << '!hidden_bsi:true'
-    end
-  end
-
-	def add_access_controls_to_solr_params_if_not_admin(solr_parameters, user_parameters)
-		if cannot? :discover_everything, MediaObject
-			add_access_controls_to_solr_params(solr_parameters, user_parameters)
-		end
-	end
-
   def save_sticky_settings
     session[:sort] = params[:sort] if params[:sort].present?
     session[:per_page] = params[:per_page] if params[:per_page].present?

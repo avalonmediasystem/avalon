@@ -16,124 +16,123 @@ require 'spec_helper'
 
 describe Derivative do
 
-  describe "masterfile" do
-    it "should set relationships on self and masterfile" do
-      derivative = Derivative.new
-      mf = FactoryGirl.build(:master_file)
-      mf.save
-      derivative.save
-
-      derivative.relationships(:is_derivation_of).size.should == 0
-      mf.relationships(:has_derivation).size.should == 0
-
-      derivative.masterfile = mf
-
-      derivative.relationships(:is_derivation_of).size.should == 1
-#      mf.relationships(:has_derivation).size.should == 1
-      derivative.relationships(:is_derivation_of).first.should eq "info:fedora/#{mf.pid}"
-#      mf.relationships(:has_derivation).first.should eq "info:fedora/#{derivation.pid}"
-
-      derivative.relationships_are_dirty.should be true
-#      mf.relationships_are_dirty.should be true
-    end
-  end
-
-  describe "deleting" do
+  describe "#destroy" do
     let!(:derivative) {FactoryGirl.create(:derivative)}
-    before :each do 
-      File.open(Avalon::Configuration.lookup('matterhorn.cleanup_log'), "w+") {}
-    end
 
-    it "should delete and start retraction jobs" do
-      job_urls = ["http://test.com/retract_rtmp.xml", "http://test.com/retract_hls.xml"]
-      Rubyhorn.stub_chain(:client,:get_media_package_from_id).and_return('6f69c008-06a4-4bad-bb60-26297f0b4c06')
-      Rubyhorn.stub_chain(:client,:delete_track).and_return(job_urls[0])
-      Rubyhorn.stub_chain(:client,:delete_hls_track).and_return(job_urls[1])
-      expect{derivative.delete}.to change{Derivative.count}.by(-1)
-      
-      log_count = 0
-      file = File.new(Avalon::Configuration.lookup('matterhorn.cleanup_log'))
-      file.each { |line| log_count += 1 if line.start_with?(job_urls[0]) || line.start_with?(job_urls[1]) }
-      log_count.should == 2
+    it "should delete and retract files" do
+      encode = ActiveEncode::Base.new(nil)
+      expect(ActiveEncode::Base).to receive(:find).and_return(encode)
+      expect(encode).to receive(:remove_output!).twice.and_return({})
+      expect{derivative.destroy}.to change{Derivative.count}.by(-1)
     end 
 
-    it "should not throw error when location_url is missing" do
-      derivative.location_url = nil
-      derivative.delete
-      Derivative.all.count.should == 0
+    it "should not throw error when encode doesn't exist anymore" do
+      expect(ActiveEncode::Base).to receive(:find).and_return nil
+      expect{derivative.destroy}.to change{Derivative.count}.by(-1)
     end
 
-    it "should not throw error when workflow doesn't exist in Matterhorn" do
-      derivative.delete
-      Derivative.all.count.should == 0
-    end
-
-    it "should delete even if retraction fails (VOV-1356)" do
-      Rubyhorn.stub_chain(:client,:delete_track).and_raise("Stream not found error")
-      Rubyhorn.stub_chain(:client,:delete_hls_track).and_raise("Stream not found error")
-
-      expect{derivative.delete}.to change{Derivative.count}.by(-1)
+    it "should delete even if retraction fails" do
+      encode = ActiveEncode::Base.new(nil)
+      expect(ActiveEncode::Base).to receive(:find).and_return(encode)
+      expect(encode).to receive(:remove_output!).and_raise Exception
+      expect{derivative.destroy}.to change{Derivative.count}.by(-1)
     end 
   end
 
   describe "streaming" do
-
-    before :each do
-      @d = Derivative.new
-      @rtmp_base = Avalon::Configuration.lookup('streaming.rtmp_base')
-      @http_base = Avalon::Configuration.lookup('streaming.http_base')
-      @d.location_url = "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4"
-    end
+    let(:rtmp_base)  { Avalon::Configuration.lookup('streaming.rtmp_base')    }
+    let(:http_base)  { Avalon::Configuration.lookup('streaming.http_base')    }
+    let(:root)       { Avalon::Configuration.lookup('streaming.content_path') }
+    let(:location)   { "file://#{root}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4" }
+    let(:derivative) { Derivative.new }
 
     describe "generic" do
       before :each do
-        Derivative.url_handler = UrlHandler::Generic
+        Avalon::StreamMapper.streaming_server = :generic
       end
 
-      it "should properly create an RTMP video streaming URL" do
-        @d.encoding.video = 'true'
-        @d.streaming_url(false).should == "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      it "RTMP video" do
+        derivative.encoding.video = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
       end
 
-      it "should properly create an RTMP audio streaming URL" do
-        @d.encoding.audio = 'true'
-        @d.streaming_url(false).should == "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      it "RTMP audio" do
+        derivative.encoding.audio = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
       end
 
-      it "should properly create an HTTP video streaming URL" do
-        @d.encoding.video = 'true'
-        @d.streaming_url(true).should == "#{@http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+      it "HTTP video" do
+        derivative.encoding.video = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(true).should == "#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
       end
 
-      it "should properly create an HTTP audio streaming URL" do
-        @d.encoding.audio = 'true'
-        @d.streaming_url(true).should == "#{@http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+      it "HTTP audio" do
+        derivative.encoding.audio = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(true).should == "#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
       end
     end
 
     describe "adobe" do
       before :each do
-        Derivative.url_handler = UrlHandler::Adobe
+        Avalon::StreamMapper.streaming_server = :adobe
       end
 
-      it "should properly create an RTMP video streaming URL" do
-        @d.encoding.video = 'true'
-        @d.streaming_url(false).should == "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      it "RTMP video" do
+        derivative.encoding.video = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
       end
 
-      it "should properly create an RTMP audio streaming URL" do
-        @d.encoding.audio = 'true'
-        @d.streaming_url(false).should == "#{@rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      it "RTMP audio" do
+        derivative.encoding.audio = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
       end
 
-      it "should properly create an HTTP video streaming URL" do
-        @d.encoding.video = 'true'
-        @d.streaming_url(true).should == "#{@http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+      it "HTTP video" do
+        derivative.encoding.video = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(true).should == "#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
       end
 
-      it "should properly create an HTTP audio streaming URL" do
-        @d.encoding.audio = 'true'
-        @d.streaming_url(true).should == "#{@http_base}/audio-only/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+      it "HTTP audio" do
+        derivative.encoding.audio = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(true).should == "#{http_base}/audio-only/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+      end
+    end
+
+    describe "wowza" do
+      before :each do
+        Avalon::StreamMapper.streaming_server = :wowza
+      end
+
+      it "RTMP video" do
+        derivative.encoding.video = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      end
+
+      it "RTMP audio" do
+        derivative.encoding.audio = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+      end
+
+      it "HTTP video" do
+        derivative.encoding.video = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(true).should == "#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8"
+      end
+
+      it "HTTP audio" do
+        derivative.encoding.audio = 'true'
+        derivative.absolute_location = location
+        derivative.streaming_url(true).should == "#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8"
       end
     end
   end

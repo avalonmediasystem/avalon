@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-    <section id="player" style="width: 100%">
+    <section id="content" class="avalon-player" style="width: 100%" tabIndex="-1">
       <% if @masterfile.present? and @masterfile.succeeded? %>
         <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
         
@@ -36,17 +36,12 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% end %>
           </audio>
         <% end %>
+	<button id="after-player" style="position:absolute;top:-1000px"></button>
       <% end %>
     </section>
 
 <% content_for :page_scripts do %>
-  <%= javascript_include_tag 'jquery' %>
-  <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
-  <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %>
-  <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
-  <%= javascript_include_tag 'mediaelement-title/mep-feature-title' %>
-  <%= javascript_include_tag 'me-logo' %>
-
+  <%= javascript_include_tag 'embed_player' =%>
   <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
   <%= stylesheet_link_tag "mediaelement-title/mejs-title" =%>
@@ -63,28 +58,29 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% end %>
 
   <% features += ['logo', 'fullscreen'] %>
+
   <script>
-    currentPlayer = new MediaElementPlayer('#video-tag', 
-        { mode: 'auto_plugin',
-          pluginPath: '/assets/mediaelement_rails/',
-          usePluginFullScreen: false,
-          videoWidth: '100%',
-          videoHeight: '100%',
-          enableAutosize: true,
-          features: <%=features.inspect.html_safe%>,
-          audioHeight: 50,
-          iOSDisplayedDuration: <%= @masterfile ? @masterfile.duration.to_i / 1000 : -1 %>,
-          startQuality: '<%= current_quality(@stream_info) %>',
-          title: '<%= @masterfile.label %>',
-          titleLink: '<%= media_object_url(@masterfile.mediaobject) %>',
-          logoAction: 'popup',
-          logoURL: '<%= pid_section_media_object_url(@masterfile.mediaobject.pid, @masterfile.pid).html_safe %>',
-          logoTitle: 'View in repository'
-        });
+    avalonPlayer = new AvalonPlayer($('#content').parent(), <%= @stream_info.to_json.html_safe %>, {
+      audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
+      mobileDisplayedDuration: <%= @masterfile ? (@masterfile.duration.to_f / 1000).round : -1 %>,
+      startQuality: '<%= current_quality(@stream_info) %>',
+      features: <%= features.inspect.html_safe %>,
+      videoWidth: '100%',
+      videoHeight: '100%',
+      enableAutosize: true,
+      iOSDisplayedDuration: <%= @masterfile ? @masterfile.duration.to_i / 1000 : -1 %>,
+      startQuality: '<%= current_quality(@stream_info) %>',
+      title: '<%= @masterfile.label %>',
+      titleLink: '<%= media_object_url(@masterfile.mediaobject) %>',
+      logoAction: 'popup',
+      logoURL: '<%= pid_section_media_object_url(@masterfile.mediaobject.pid, @masterfile.pid).html_safe %>',
+      logoTitle: 'View in repository'
+    })
+    currentPlayer = avalonPlayer.player;
   </script>
 
   <style>
-    a { text-decoration: none; } 
-    a:hover { text-decoration: underline } 
+a { text-decoration: none; } 
+a:hover { text-decoration: underline } 
   </style>
 <% end %>

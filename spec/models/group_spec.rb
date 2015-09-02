@@ -15,7 +15,15 @@
 require 'spec_helper'
 
 describe Admin::Group do
-  it {should validate_presence_of(:name)}
+
+  describe "name" do
+    it { should validate_presence_of( :name )}
+    it { should_not allow_value( 'group.01' ).for( :name )}
+    it { should_not allow_value( 'group;01' ).for( :name )}
+    it { should_not allow_value( 'group%01' ).for( :name )}
+    it { should_not allow_value( 'group/01' ).for( :name )}
+  end
+
   describe "non system groups" do
     it "should not have system groups" do
       groups = Admin::Group.non_system_groups

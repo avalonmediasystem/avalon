@@ -1,18 +1,18 @@
-/* 
+/*
  * Copyright 2011-2015, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed 
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- *   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+ *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
-*/
+ */
 
 @import "branding";
 @import "bootstrap/variables";
@@ -20,9 +20,9 @@
 
 /**
  * Snippets to extend
- */ 
+ */
 .mobile-hidden {
- @media (max-width: $screen-xs-max) {
+  @media (max-width: $screen-xs-max) {
     display: none !important;
   }
 }
@@ -44,15 +44,6 @@ a:not(.btn) {
   color: $black !important;
   cursor: default !important;
   pointer-events: none !important;
-}
-
-.current-stream {
-  font-weight: bold;
-
-  &:link { @hidden-disabled-link }
-  &:hover { @hidden-disabled-link }
-  &:active { @hidden-disabled-link }
-  &:visited { @hidden-disabled-link }
 }
 
 tr.active-false td {
@@ -88,7 +79,7 @@ tr.active-false td {
       margin-left: 1em;
       margin-right: 1em;
     }
-  } 
+  }
 
   li.nav-success {
     background-color: $state-success-bg;
@@ -129,7 +120,7 @@ tr.active-false td {
   border-radius: 4px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
   margin: 10px 0;
-  min-height: 0px; 
+  min-height: 0px;
 }
 
 .navbar-nav {
@@ -137,8 +128,8 @@ tr.active-false td {
     a {
       padding: 7px 10px;
     }
-  } 
-}	
+  }
+}
 .navbar-right {
   padding: 4px 0;
 }
@@ -195,12 +186,36 @@ tr.active-false td {
     }
     &:last-child {
       border-top-right-radius: $border-radius-base;
-      border-bottom-right-radius: $border-radius-base;      
+      border-bottom-right-radius: $border-radius-base;
     }
+  }
+  .input-group-btn {
+    vertical-align: top;
   }
   .add-dynamic-field {
     cursor: pointer;
   }
+}
+.form-group .input-group.typed-textarea {
+  .input-group-btn:first-of-type {
+    width: 100%;
+    button {
+      width: 100%;
+      text-align: left;
+      border-bottom-left-radius: 0;
+    }
+  }
+  .input-group-btn:last-of-type {
+    button {
+      border-bottom-right-radius: 0;
+    }
+  }
+}
+.form-group textarea.typed-textarea {
+  border-top: none;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  margin-bottom: 2px;
 }
 
 /*
@@ -280,25 +295,25 @@ header div{
 }
 
 .avalon-search-query-form .search-query {
-    border-radius: 15px;
-    font-family: Arial,Helvetica,sans-serif;
-    font-size: 13px;
-    font-weight: normal;
-    line-height: 1;
-    margin-bottom: 0;
-    padding: 4px 14px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
-    transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
-    height: 25px;
-    width: 100%;
-    vertical-align: middle;
+  border-radius: 15px;
+  font-family: Arial,Helvetica,sans-serif;
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 1;
+  margin-bottom: 0;
+  padding: 4px 14px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+  transition: border 0.2s linear 0s, box-shadow 0.2s linear 0s;
+  height: 25px;
+  width: 100%;
+  vertical-align: middle;
 }
 
 /* Sidebar */
 
-.sidenav { 
+.sidenav {
   h4 {
     margin: 0px;
     background-color: $sidenavHeaderBackgroundColor;
@@ -368,7 +383,7 @@ footer {
   ul {
     margin-left: 0;
   }
-  
+
   li {
     list-style-type: none;
     display: inline;
@@ -390,14 +405,14 @@ footer a {
 footer ul {
   float: left;
   margin-left: -40px;
-  @media all and (max-width: 475px) { 
+  @media all and (max-width: 475px) {
     float: none;
   }
 }
 
 footer .release {
   float: right;
-  @media all and (max-width: 475px) { 
+  @media all and (max-width: 475px) {
     float: none;
   }
 }
@@ -413,7 +428,7 @@ footer .release {
   a {
     color: $successLink;
     &:hover {
-    color: scale-color($successLink, $lightness: -20%);
+      color: scale-color($successLink, $lightness: -20%);
     }
   }
 }
@@ -451,7 +466,7 @@ span.constraints-label {
     padding: 0;
     background-color: transparent;
     border: 0;
-    
+
     /* Force the summary to wrap neatly */
     word-wrap: normal;
     word-break: normal;
@@ -469,12 +484,12 @@ span.constraints-label {
 }
 
 .progress-inline {
-    display: inline-block;
-    height: 9pt;
-    width: 36pt;
-    margin-right: 2pt;
-    margin-bottom: 0;
-    cursor: pointer;
+  display: inline-block;
+  height: 9pt;
+  width: 36pt;
+  margin-right: 2pt;
+  margin-bottom: 0;
+  cursor: pointer;
 }
 
 button.close {
@@ -485,10 +500,10 @@ button.close {
   &.error {
     input:first-child{ border-color: $state-danger-text; }
   }
-  .field_with_errors input { 
+  .field_with_errors input {
     border-color: $state-danger-border;
     background-color: $state-danger-bg;
-  } 
+  }
   input, textarea{
     width: 90%;
     float: none;
@@ -504,7 +519,7 @@ button.close {
   margin-bottom: 0px;
 }
 
-.mejs-poster { 
+.mejs-poster {
   overflow: hidden;
   img {
     width: 100%;
@@ -527,12 +542,12 @@ button.close {
 }
 
 .fileinput {
+  max-width: 500px;
+  .form-control {
     max-width: 500px;
-    .form-control {
-      max-width: 500px;
-      white-space: nowrap;
-      overflow-x: hidden;
-    }
+    white-space: nowrap;
+    overflow-x: hidden;
+  }
 }
 
 .fileinput-submit {
@@ -550,7 +565,10 @@ a[data-trigger='submit'] {
 }
 
 .facet-values {
+  display: table;
+  table-layout: fixed;
   //set hyphen definitions at this (display:block) level
+  -ms-word-break: keep-all;
   word-break: keep-all;
   -webkit-hyphens: auto;
   -moz-hyphens: auto;
@@ -562,6 +580,8 @@ a[data-trigger='submit'] {
 }
 
 .facet-values .facet-label {
+  display: table-cell;
+  position: relative;
   //override any blacklight hyphen definitions made at this (display:inline) level
   word-break: inherit;
   -webkit-hyphens: inherit;
@@ -569,21 +589,21 @@ a[data-trigger='submit'] {
   -ms-hyphens: inherit;
   -o-hyphens: inherit;
   hyphens: inherit;
-  //for IE to correctly wrap long words, container must have fixed width
-  display: block;
-  @media (max-width: 600px) {
-    max-width: 250px;
-  }
-  @media (min-width: 600px) and (max-width: $screen-sm-min){
-    max-width: 550px;
-  }
-}
-//left panel on large screens should be extra small, not so for extended facet list
-.panel-body .facet-values .facet-label {
-  @media (min-width: $screen-sm-min){
-    max-width: 159px;
+  padding-right: 20px;
+
+  .remove {
+    position: absolute;
+    top: 0;
+    right: 0.5em;
+    text-indent: 0;
   }
 }
+
+.facet-count {
+  text-align: right;
+  width: 5em;
+}
+
 .facets .panel-group .panel {
   margin-top: 0px;
 }
@@ -601,7 +621,7 @@ a[data-trigger='submit'] {
   }
   dd {
     margin-left: 0;
-  } 
+  }
 }
 
 #creation_metadata dd {
@@ -618,21 +638,15 @@ a[data-trigger='submit'] {
   color: $black;
 }
 
-.share-tabs {
-  margin-top: 20px;
-  max-width: 750px;
-}
-
 .tab-content > .tab-pane {
   padding: 10px;
   border-bottom: 1px solid $gray;
   border-left: 1px solid $gray;
   border-right: 1px solid $gray;
   overflow: hidden;
-  max-width: 750px;
 }
 
-#link-object, #link-section, #embed-part {
+#link-object, #ltilink-object, #ltilink-section, #share-link-section, #embed-part {
   cursor: pointer;
 }
 
@@ -687,7 +701,7 @@ a[data-trigger='submit'] {
 }
 
 .edit_media_object .form-group {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 .btn-danger:visited {
@@ -737,4 +751,225 @@ a[data-trigger='submit'] {
 
 .about_page {
   @extend .container-fluid;
+}
+
+#share-button {
+  text-align: right;
+  margin-top: 10px;
+  margin-bottom: 0;
+  a:link, a:visited, a:hover, a:active {
+    text-decoration: none;
+    outline: 0;
+  }
+}
+#share-list .tab-content {
+  margin-bottom: 20px;
+}
+#share-list .share-tabs {
+  a:link, a:visited, a:hover, a:active {
+    outline: 0;
+  }
+}
+
+$accordionPadding: 20px;
+@function accordion-indent($n) {
+  @return -1 * $n * $accordionPadding;
+}
+
+#accordion.panel-group {
+  margin-top: 10px;
+  a {
+    display: inline-block;
+    cursor: pointer;
+    &:link, &:visited, &:hover, &:active {
+      outline: 0;
+      text-decoration: none;
+    }
+  }
+  .panel-title{
+    .fa-plus-square, .fa-minus-square {
+      font-size: .9em;
+      float: right;
+      cursor: pointer;
+      border: none;
+      background-color: $lightgray;
+    }
+  }
+  ul, li {
+    list-style: none;
+  }
+  li.stream-li {
+    position: relative;
+  }
+  i.now-playing {
+    position: absolute;
+    color: $linkColor;
+    left: $accordionPadding;
+  }
+  .panel-heading {
+    border-bottom: 1px solid #dddddd;
+    padding: 7px 10px;
+    ul {
+      padding-left: $accordionPadding;
+      margin-bottom: 0;
+    }
+    #expand_button, #collapse_button {
+      float:right;
+      margin-top: -2px;
+    }
+  }
+  .panel-body {
+    border-top: none;
+    ul {
+      padding-left: $accordionPadding;
+      i.now-playing {
+        top: 3px;
+        left: accordion-indent(1);
+      }
+      ul {
+        i.now-playing {
+          left: accordion-indent(2);
+        }
+        ul {
+          i.now-playing {
+            left: accordion-indent(3);
+          }
+          ul {
+            i.now-playing {
+              left: accordion-indent(4);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.current-section, .current-stream {
+  font-weight: bold;
+  border-radius: 3px;
+  margin-left: -5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  &:link { @hidden-disabled-link }
+  &:hover { @hidden-disabled-link }
+  &:active { @hidden-disabled-link }
+  &:visited { @hidden-disabled-link }
+}
+
+div.status-detail {
+  margin-bottom: 0;
+  font-size: .9em;
+}
+
+/* MediaObject structure page */
+
+#mediaobject_structure {
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    min-width: 800px;
+  }
+  ul.header {
+    background-color: $lightgray;
+    font-weight: bold;
+  }
+  li.section {
+    &:nth-of-type(2n) {
+      background-color: $lightgray;
+    }
+  }
+  ul.fileinfo, ul.header {
+    border-top: 1px solid $gray;
+    li {
+      display: inline-block;
+      padding: 8px;
+      vertical-align: top;
+      &:nth-of-type(1) { width: 50px; text-align: center; }
+      &:nth-of-type(2) { width: 30%; }
+      &:nth-of-type(3) { width: 40%; }
+      &:nth-of-type(4) { width: 75px; text-align: left; }
+      &:nth-of-type(5) { width: 80px; text-align: center; float: right; }
+    }
+  }
+  div.structure_xml {
+    padding: 10px 20px;
+    border-top: 1px dotted $gray;
+    min-height: 40px;
+    div.structure_view ul {
+      padding-left: 20px;
+      li {
+        display: block;
+        width: 100%;
+      }
+    }
+    div.structure_actions {
+      float: right;
+      form {
+        display: inline;
+      }
+    }
+  }
+}
+div.structure_edit {
+  .modal-dialog {
+    min-width: 900px;
+  }
+  ul {
+    list-style:none;
+    padding: 0;
+  }
+  ul.element_header {
+    .top_actions {
+      margin-top: 1px;
+    }
+    .element_name {
+      margin-left: 6px;
+    }
+  }
+  .xml_tab_area {
+    .gui_content {
+      background-color: inherit;
+    }
+    .xml_problems_panel {
+      background-color: $state-danger-bg;
+    }
+    .attribute_container > textarea {
+      resize: both;
+    }
+    .attribute_container > a, .attribute_container > label {
+      vertical-align: top
+    }
+  }
+  .xml_textarea {
+    padding: 0;
+  }
+  .section_edit_submit {
+    margin-bottom: 10px;
+    margin-top: 4px;
+  }
+}
+
+.item_note_header {
+  text-transform: uppercase;
+  margin-bottom: 0;
+}
+
+.block {
+  display: block;
+}
+
+.page_element_outline {
+  outline: solid 1px $linkColor !important;
+  outline-offset: 1px !important;
+}
+
+.player_element_outline {
+  outline: solid 1px orange !important;
+  outline-offset: 0;
+}
+
+.mejs-overlay-loading {
+  border-radius: 50% !important;
 }

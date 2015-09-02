@@ -97,11 +97,24 @@ describe MediaObject do
         end
       end 
     end
+
+    describe 'notes' do
+      it 'should validate notes with types in controlled vocabulary' do
+        media_object.update_datastream :descMetadata, {note: ['Test Note'], note_type: ['general']}
+        expect(media_object.valid?).to be_truthy
+        expect(media_object.errors[:note]).to be_empty
+      end
+      it 'should not validate notes with types not in controlled vocabulary' do
+        media_object.update_datastream :descMetadata, {note: ['Test Note'], note_type: ['genreal']}
+        expect(media_object.valid?).to be_falsey
+        expect(media_object.errors[:note]).not_to be_empty
+      end
+    end
   end
 
   describe 'delegators' do
     it 'correctly sets the creator' do
-      media_object.creator = 'Creator, Joan'
+      media_object.creator = ['Creator, Joan']
       media_object.creator.should include('Creator, Joan')
       media_object.descMetadata.creator.should include('Creator, Joan')
     end
@@ -274,6 +287,16 @@ describe MediaObject do
     end
   end
 
+  describe "Update datastream directly" do
+    it "should reflect datastream changes on media object" do
+      newtitle = Faker::Lorem.sentence
+      media_object.descMetadata.add_bibliographic_id('ABC123','local')
+      media_object.save
+      media_object.reload
+      expect(media_object.bibliographic_id).to eq(["local","ABC123"])
+    end
+  end
+
   describe "Ingest status" do
     it "should default to unpublished" do
       media_object.workflow.published.first.should eq "false"
@@ -299,13 +322,13 @@ describe MediaObject do
 
   describe '#finished_processing?' do
     it 'returns true if the statuses indicate processing is finished' do
-      media_object.parts << MasterFile.new(status_code: ['STOPPED'])
-      media_object.parts << MasterFile.new(status_code: ['SUCCEEDED'])
+      media_object.parts << MasterFile.new(status_code: 'CANCELLED')
+      media_object.parts << MasterFile.new(status_code: 'COMPLETED')
       media_object.finished_processing?.should be true
     end
     it 'returns true if the statuses indicate processing is not finished' do
-      media_object.parts << MasterFile.new(status_code: ['STOPPED'])
-      media_object.parts << MasterFile.new(status_code: ['RUNNING'])
+      media_object.parts << MasterFile.new(status_code: 'CANCELLED')
+      media_object.parts << MasterFile.new(status_code: 'RUNNING')
       media_object.finished_processing?.should be false
     end
   end
@@ -341,13 +364,31 @@ describe MediaObject do
     end
   end
 
-  describe '#populate_duration!' do
+  describe '#set_duration!' do
     it 'sets duration on the model' do
       media_object.set_duration!
       media_object.duration.should == '0'
     end
   end
 
+  describe '#set_media_types!' do
+    let!(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
+    it 'sets format on the model' do
+      expect(media_object.format).to be nil
+      media_object.set_media_types!
+      expect(media_object.format).to eq "video/mp4"
+    end
+  end
+
+  describe '#set_resource_types!' do
+    let!(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
+    it 'sets resource_type on the model' do
+      expect(media_object.descMetadata.resource_type).to eq []
+      media_object.set_resource_types!
+      expect(media_object.descMetadata.resource_type).to eq ["moving image"]
+    end
+  end
+ 
   describe '#publish!' do
     describe 'facet' do
       it 'publishes' do
@@ -368,6 +409,13 @@ describe MediaObject do
     it 'should not index any unknown resource types' do
       media_object.descMetadata.resource_type = 'notated music'
       expect(media_object.to_solr['format_sim']).not_to include 'Notated Music'
+    end
+    it 'should index separate identifiers as separate values' do
+      media_object.descMetadata.add_other_identifier('12345678','lccn')
+      media_object.descMetadata.add_other_identifier('8675309 testing','local')
+      solr_doc = media_object.to_solr
+      expect(solr_doc['other_identifier_sim']).to include('12345678','8675309 testing')
+      expect(solr_doc['other_identifier_sim']).not_to include('123456788675309 testing')
     end
   end
 
@@ -454,6 +502,25 @@ describe MediaObject do
         media_object.should_receive(:ensure_permalink!).and_return(false)
         media_object.save( validate: false )
       end
+    end
+  end
+
+  describe 'bib import' do
+    let(:bib_id) { '7763100' }
+    let(:mods) { File.read(File.expand_path("../../fixtures/#{bib_id}.mods",__FILE__)) }
+    before do
+      media_object.update_attribute_in_metadata(:resource_type, ["moving image"])
+      media_object.update_attribute_in_metadata(:format, "video/mpeg")
+      instance = double("instance")
+      allow(Avalon::BibRetriever).to receive(:instance).and_return(instance)
+      allow(Avalon::BibRetriever.instance).to receive(:get_record).and_return(mods)
+    end
+
+    it 'should not override format' do
+      expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to_not change { media_object.format }
+    end
+    it 'should not override resource_type' do
+      expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to_not change { media_object.resource_type }
     end
   end
 end

@@ -11,7 +11,7 @@ if defined?(Bundler)
 end
 
 module Avalon
-  VERSION = '3.3'
+  VERSION = '4.0'
   class MissingUserId < Exception; end
   
   class Application < Rails::Application

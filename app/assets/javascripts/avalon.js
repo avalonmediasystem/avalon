@@ -19,6 +19,15 @@
  * Rails and causes it to redirect to the wrong place. */
 $(document).ready(function() {
   Blacklight.do_search_context_behavior = function() {}
+  // adjust width of facet columns to fit their contents
+  function longer (a,b){ return b.textContent.length - a.textContent.length; }
+  $('ul.facet-values, ul.pivot-facet').map(function(){
+      var longest = $(this).find('.facet-count span').sort(longer).first();
+      var clone = longest.clone().css('visibility','hidden');
+      $('body').append(clone);
+      $(this).find('.facet-count').first().width(clone.width());
+      clone.remove();
+  });
 
   $( document ).on('click', '.btn-stateful-loading', function() { $(this).button('loading'); });    
 
@@ -47,4 +56,22 @@ $(document).ready(function() {
     })
     $('input[readonly], textarea[readonly]').attr("readonly", false);
   }
+
+  $('a').has('img, ul').addClass('block');
+
+  window.addEventListener("hashchange", function(event) {
+    var element = document.getElementById(location.hash.substring(1));
+    if (element) {
+      if (!/^(?:a|select|input|button|textarea)$/i.test(element.tagName)) {
+        element.tabIndex = -1;
+      }
+      element.focus();
+    }
+  }, false);
+
+  $( "#content" ).focus( function() {
+    $( ".mejs-controls" ).css( "visibility", "visible" );
+    $( ".mejs-controls button:first" ).focus();
+  })
+
 });

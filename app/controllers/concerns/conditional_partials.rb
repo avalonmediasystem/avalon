@@ -12,21 +12,26 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-module UrlHandler
-	class Generic
 
-		def self.patterns
-			{
-				'rtmp' => {
-					'video' => "<%=prefix%>:<%=media_id%>/<%=stream_id%>/<%=filename%>",
-					'audio' => "<%=prefix%>:<%=media_id%>/<%=stream_id%>/<%=filename%>",
-				},
-				'http' => {
-					'video' => "<%=media_id%>/<%=stream_id%>/<%=filename%>.<%=extension%>.m3u8",
-					'audio' => "<%=media_id%>/<%=stream_id%>/<%=filename%>.<%=extension%>.m3u8",
-				}
-			}
-		end
+module ConditionalPartials
+  extend ActiveSupport::Concern
 
-	end
+  included do
+    class_attribute :conditional_partials, instance_accessor: false, instance_predicate: false
+    self.conditional_partials = {}
+  end
+
+  module ClassMethods
+    def add_conditional_partial partial_list_name, name, opts={}
+      conditional_partials[partial_list_name] ||= {}
+      config = opts
+      config[:name] = name
+
+      if block_given?
+        yield config
+      end
+
+      conditional_partials[partial_list_name][name] = config
+    end
+  end
 end

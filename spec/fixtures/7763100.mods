@@ -53,6 +53,9 @@
   <language objectPart="sung or spoken text">
     <languageTerm authority="iso639-2b" type="code">fre</languageTerm>
   </language>
+  <language objectPart="">
+    <languageTerm authority="iso639-2b" type="code">ger</languageTerm>
+  </language>
   <relatedItem type="original">
     <physicalDescription>
       <form authority="marccategory">map</form>
@@ -63,7 +66,7 @@
   <abstract type="Summary">520</abstract>
   <accessCondition type="use and reproduction">540</accessCondition>
   <note type="statement of responsibility" altRepGroup="00">C.</note>
-  <note>500</note>
+  <note type="general">500</note>
   <note type="additional physical form">530</note>
   <subject authority="lcsh">
     <topic>600 (100) A B C D F G K L N P Q T</topic>
@@ -206,8 +209,8 @@
     <recordContentSource authority="marcorg">IEN</recordContentSource>
     <recordCreationDate encoding="edtf">150127</recordCreationDate>
     <recordChangeDate encoding="iso8601">20150127160330.0</recordChangeDate>
-    <recordIdentifier>7763100</recordIdentifier>
+    <recordIdentifier source="local">7763100</recordIdentifier>
     <recordOrigin>Converted from MARCXML to MODS version 3.5 using MARC21slim2MODS3-5.xsl (Revision 1.106
-				2014/12/19), customized for the Avalon Media System (last revised 2014/12/26)</recordOrigin>
+      2014/12/19), customized for the Avalon Media System (last revised 2014/12/26)</recordOrigin>
   </recordInfo>
 </mods>

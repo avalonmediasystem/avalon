@@ -17,11 +17,26 @@ require 'avalon/controller/controller_behavior'
 class MediaObjectsController < ApplicationController 
   include Avalon::Workflow::WorkflowControllerBehavior
   include Avalon::Controller::ControllerBehavior
-  include Hydra::AccessControlsEnforcement
+  include ConditionalPartials
 
 #  before_filter :enforce_access_controls
   before_filter :inject_workflow_steps, only: [:edit, :update]
   before_filter :load_player_context, only: [:show, :show_progress]
+
+  def self.is_editor ctx
+    ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@mediaobject').collection)
+  end
+  def self.is_lti_session ctx
+    ctx.user_session.present? && ctx.user_session[:lti_group].present?
+  end
+
+  is_editor_or_not_lti = proc { |ctx| self.is_editor(ctx) || !self.is_lti_session(ctx) }
+  is_editor_or_lti = proc { |ctx| (Avalon::Authentication::Providers.any? {|p| p[:provider] == :lti } &&self.is_editor(ctx)) || self.is_lti_session(ctx) }
+
+  add_conditional_partial :share, :share, partial: 'share_resource', if: is_editor_or_not_lti
+  add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti
+  add_conditional_partial :share, :lti_url, partial: 'lti_url',  if: is_editor_or_lti
+
 
   # Catch exceptions when you try to reference an object that doesn't exist.
   # Attempt to resolve it to a close match if one exists and offer a link to
@@ -29,7 +44,7 @@ class MediaObjectsController < ApplicationController
   rescue_from ActiveFedora::ObjectNotFoundError do |exception|
     render '/errors/unknown_pid', status: 404
   end
- 
+
   def can_embed?
     params[:action] == 'show'
   end
@@ -54,7 +69,7 @@ class MediaObjectsController < ApplicationController
 
     if 'preview' == @active_step 
       @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
-      @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
+      @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.pid)
       @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
 
       if (not @masterFiles.empty? and @currentStream.blank?)
@@ -230,13 +245,15 @@ class MediaObjectsController < ApplicationController
       end
       params[:content] = @mediaobject.section_pid[index]
     end
+      
     @masterFiles = load_master_files
     @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
-    @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.mediapackage_id)
+    @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.pid)
     # This rescue statement seems a bit dodgy because it catches *all*
     # exceptions. It might be worth refactoring when there are some extra
     # cycles available.
     @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
+    @currentStreamInfo['t'] = params[:t] # add MediaFragment from params
  end
 
   # The goal of this method is to determine which stream to provide to the interface

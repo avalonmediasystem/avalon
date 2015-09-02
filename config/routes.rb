@@ -26,9 +26,11 @@ Avalon::Application.routes.draw do
     match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
   end
   match "/authorize", to: 'derivatives#authorize', via: [:get, :post]
+  match "/authorize/:path", to: 'derivatives#authorize', via: [:get, :post]
   match "/autocomplete", to: 'object#autocomplete', via: [:get]
+  match "/oembed", to: 'master_files#oembed', via: [:get]
 
-  match "object/:id", to: 'object#show', via: [:get]
+  match "object/:id", to: 'object#show', via: [:get], :as => :object
   resources :media_objects, except: [:create] do
     member do
       put :update_status
@@ -48,7 +50,7 @@ Avalon::Application.routes.draw do
       put :reassign_collection
     end
   end
-  resources :master_files, except: [:new, :index] do
+  resources :master_files, except: [:new, :index, :update] do
     member do
       get  'thumbnail', :to => 'master_files#get_frame', :defaults => { :type => 'thumbnail' }
       get  'poster',    :to => 'master_files#get_frame', :defaults => { :type => 'poster' }
@@ -57,6 +59,7 @@ Avalon::Application.routes.draw do
       post 'poster',    :to => 'master_files#set_frame', :defaults => { :type => 'poster', :format => 'html' }
       post 'still',     :to => 'master_files#set_frame', :defaults => { :format => 'html' }
       get :embed
+      post 'attach_structure'
     end
   end
 

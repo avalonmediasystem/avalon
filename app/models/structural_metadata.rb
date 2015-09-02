@@ -12,21 +12,25 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-module UrlHandler
-	class Adobe
+class StructuralMetadata < ActiveFedora::Datastream
+  include ActiveFedora::Datastreams::NokogiriDatastreams
 
-		def self.patterns
-			{
-				'rtmp' => {
-					'video' => "<%=prefix%>:<%=media_id%>/<%=stream_id%>/<%=filename%>",
-					'audio' => "<%=prefix%>:<%=media_id%>/<%=stream_id%>/<%=filename%>",
-				},
-				'http' => {
-					'video' => "<%=media_id%>/<%=stream_id%>/<%=filename%>.<%=extension%>.m3u8",
-					'audio' => "audio-only/<%=media_id%>/<%=stream_id%>/<%=filename%>.<%=extension%>.m3u8",
-				}
-			}
-		end
+  def mimeType
+    'text/xml'
+  end
 
-	end
+  def self.schema
+    Nokogiri::XML::Schema(File.read('public/avalon_structure.xsd'))
+  end
+
+  delegate :xpath, to: :ng_xml
+
+  def self.content_valid? content
+    self.schema.validate(Nokogiri::XML(content))
+  end
+
+  def valid?
+    self.class.schema.validate(self.ng_xml).empty?
+  end
+
 end

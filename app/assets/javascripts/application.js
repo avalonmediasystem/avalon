@@ -58,6 +58,7 @@
  * etc) 
  */
 //= require avalon
+//= require keyboard_access
 //= require pop_help
 //= require input_form_attribute_support
 //= require_self

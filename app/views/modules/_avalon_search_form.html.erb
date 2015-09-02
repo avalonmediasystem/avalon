@@ -14,16 +14,18 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div class="navbar-right">
-  <form accept-charset="UTF-8" action="/catalog" class="avalon-search-query-form avalon-form-search" method="get"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
-     
-
-	<input id="search_field" name="search_field" type="hidden" value="all_fields">
+  <form accept-charset="UTF-8" action="/catalog" class="avalon-search-query-form avalon-form-search" method="get">
+    <div style="margin:0;padding:0;display:inline">
+      <input name="utf8" type="hidden" value="✓">
+    </div>
+    <input id="search_field" name="search_field" type="hidden" value="all_fields">
     <div>
-      <input class="search-query q" id="appendedInputButtons" name="q" placeholder="Search" type="text" value="">
+      <label class="sr-only" for="searchField">Search</label>
+      <input class="search-query q" id="searchField" name="q" placeholder="Search" type="text" value="">
       <button type="submit" class="btn btn-primary hidden">
         <span class="submit-search-text">Search</span>
-        <i class="icon-search icon-white"></i>
+        <i class="fa fa-search icon-white"></i>
       </button>
     </div>
-</form>
+  </form>
 </div>

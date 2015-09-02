@@ -41,7 +41,7 @@ class MediaObject < ActiveFedora::Base
   before_save 'descMetadata.remove_empty_nodes!'
   before_save 'update_permalink_and_dependents'
 
-  has_model_version 'R3'
+  has_model_version 'R4'
 
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
@@ -60,6 +60,11 @@ class MediaObject < ActiveFedora::Base
   validates :governing_policy, presence: true
   validate  :validate_related_items
   validate  :validate_dates
+  validate  :validate_note_type
+
+  def validate_note_type
+    Array(note).each{|i|errors.add(:note, "Note type (#{i[0]}) not in controlled vocabulary") unless ModsDocument::NOTE_TYPES.keys.include? i[0] }
+  end
 
   def validate_language
     Array(language).each{|i|errors.add(:language, "Language not recognized (#{i[:code]})") unless LanguageTerm::map[i[:code]] }
@@ -110,10 +115,12 @@ class MediaObject < ActiveFedora::Base
     :temporal_subject => :temporal_subject,
     :topical_subject => :topical_subject,
     :bibliographic_id => :bibliographic_id,
-    :bibliographic_id_label => :bibliographic_id_label,
     :language => :language,
     :terms_of_use => :terms_of_use,
+    :table_of_contents => :table_of_contents,
     :physical_description => :physical_description,
+    :other_identifier => :other_identifier,
+    :record_identifier => :record_identifier,
     }
   end
 
@@ -133,6 +140,7 @@ class MediaObject < ActiveFedora::Base
   has_attributes :abstract, datastream: :descMetadata, at: [:abstract], multiple: false
   has_attributes :note, datastream: :descMetadata, at: [:note], multiple: true
   has_attributes :format, datastream: :descMetadata, at: [:media_type], multiple: false
+  has_attributes :resource_type, datastream: :descMetadata, at: [:resource_type], multiple: true
   # Additional descriptive metadata
   has_attributes :contributor, datastream: :descMetadata, at: [:contributor], multiple: true
   has_attributes :publisher, datastream: :descMetadata, at: [:publisher], multiple: true
@@ -147,7 +155,10 @@ class MediaObject < ActiveFedora::Base
 
   has_attributes :language, datastream: :descMetadata, at: [:language], multiple: true
   has_attributes :terms_of_use, datastream: :descMetadata, at: [:terms_of_use], multiple: false
+  has_attributes :table_of_contents, datastream: :descMetadata, at: [:table_of_contents], multiple: true
   has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: false
+  has_attributes :other_identifier, datastream: :descMetadata, at: [:other_identifier], multiple: true
+  has_attributes :record_identifier, datastream: :descMetadata, at: [:record_identifier], multiple: true
   
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
     sds.field :duration, :string
@@ -241,10 +252,16 @@ class MediaObject < ActiveFedora::Base
     missing_attributes.clear
     # Special case the identifiers and their types
     if values[:bibliographic_id]
-      values[:bibliographic_id] = [[Array(values.delete(:bibliographic_id_label)).first || ModsDocument::IDENTIFIER_TYPES.keys[0], Array(values[:bibliographic_id]).first]]
+      values[:bibliographic_id] = {value: values[:bibliographic_id], attributes: values.delete(:bibliographic_id_label)}
     end
     if values[:related_item_url] and values[:related_item_label]
         values[:related_item_url] = values[:related_item_url].zip(values.delete(:related_item_label))
+    end
+    if values[:note]
+      values[:note]=values[:note].zip(values.delete(:note_type)).map{|v| {value: v[0], attributes: v[1]}}
+    end
+    if values[:other_identifier]
+      values[:other_identifier]=values[:other_identifier].zip(values.delete(:other_identifier_type)).map{|v| {value: v[0], attributes: v[1]}}
     end
     values.each do |k, v|
       # First remove all blank attributes in arrays
@@ -257,7 +274,9 @@ class MediaObject < ActiveFedora::Base
       # This does not feel right but is just a first pass. Maybe the use of NOM rather
       # than OM will mitigate the need for such tricks
       begin
-        if v.first.is_a?(Hash)
+        if v.is_a?(Hash)
+          update_attribute_in_metadata(k, v[:value], v[:attributes])
+        elsif v.is_a?(Array) and v.first.is_a?(Hash)
           vals = []
           attrs = []
         
@@ -267,7 +286,7 @@ class MediaObject < ActiveFedora::Base
           end
           update_attribute_in_metadata(k, vals, attrs)
         else
-          update_attribute_in_metadata(k, Array(v))
+          update_attribute_in_metadata(k, v)
         end
       rescue Exception => msg
         missing_attributes[k.to_sym] = msg.to_s
@@ -276,7 +295,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def bibliographic_id
-    descMetadata.identifier.present? ? [descMetadata.identifier.type.first,descMetadata.identifier.first] : nil
+    descMetadata.bibliographic_id.present? ? [descMetadata.bibliographic_id.source.first,descMetadata.bibliographic_id.first] : nil
   end
   def related_item_url
     descMetadata.related_item_url.zip(descMetadata.related_item_label).map{|a|{url: a[0],label: a[1]}}
@@ -284,6 +303,13 @@ class MediaObject < ActiveFedora::Base
   def language
     descMetadata.language.code.zip(descMetadata.language.text).map{|a|{code: a[0],text: a[1]}}
   end
+  def note
+    descMetadata.note.present? ? descMetadata.note.type.zip(descMetadata.note) : nil
+  end
+  def other_identifier
+    descMetadata.other_identifier.present? ? descMetadata.other_identifier.type.zip(descMetadata.other_identifier) : nil
+  end
+
 
   # This method is one way in that it accepts class attributes and
   # maps them to metadata attributes.
@@ -292,21 +318,26 @@ class MediaObject < ActiveFedora::Base
     # class attributes are displayed in the view and posted to the server
     metadata_attribute = find_metadata_attribute(attribute)
     metadata_attribute_value = value
-
     if metadata_attribute.nil?
       missing_attributes[attribute] = "Metadata attribute '#{attribute}' not found"
       return false
     else
-      values = Array(value).select { |v| not v.blank? }
+      values = if self.class.multiple?(attribute)
+        Array(value).select { |v| not v.blank? }
+      elsif Array(value).length==1
+        Array(value).first
+      else
+        value
+      end
       descMetadata.find_by_terms( metadata_attribute ).each &:remove
       if descMetadata.template_registry.has_node_type?( metadata_attribute )
-        values.each_with_index do |val, i|
-          descMetadata.add_child_node(descMetadata.ng_xml.root, metadata_attribute, val, (attributes[i]||{}))
+        Array(values).each_with_index do |val, i|
+          descMetadata.add_child_node(descMetadata.ng_xml.root, metadata_attribute, val, (Array(attributes)[i]||{}))
         end
         #end
       elsif descMetadata.respond_to?("add_#{metadata_attribute}")
-        values.each_with_index do |val, i|
-          descMetadata.send("add_#{metadata_attribute}", val, (attributes[i] || {}))
+        Array(values).each_with_index do |val, i|
+          descMetadata.send("add_#{metadata_attribute}", val, (Array(attributes)[i] || {}))
         end;
       else
         # Put in a placeholder so that the inserted nodes go into the right part of the
@@ -322,23 +353,24 @@ class MediaObject < ActiveFedora::Base
   end
 
   def set_media_types!
-    begin
-      mime_types = parts.collect { |mf| 
-        mf.file_location.nil? ? nil : Rack::Mime.mime_type(File.extname(mf.file_location)) 
-      }.compact.uniq
-      
-      resource_type_to_formatted_text_map = {'Moving image' => 'moving image', 'Sound' => 'sound recording'}
-      resource_types = self.parts.collect{|master_file| resource_type_to_formatted_text_map[master_file.file_format] }.uniq
+    mime_types = parts.reject {|mf| mf.file_location.blank? }.collect { |mf| 
+      Rack::Mime.mime_type(File.extname(mf.file_location)) 
+    }.uniq
+    update_attribute_in_metadata(:format, mime_types.empty? ? nil : mime_types)
+  end
 
-      mime_types = nil if mime_types.empty?
-      resource_types = nil if resource_types.empty?
-
-      update_attribute_in_metadata(:media_type, mime_types)
-      update_attribute_in_metadata(:resource_type, resource_types)
-
-    rescue Exception => e
-      logger.warn "Error in set_media_types!: #{e}"
-    end
+  def set_resource_types!  
+    resource_types = parts.reject {|mf| mf.file_format.blank? }.collect{ |mf|
+      case mf.file_format
+      when 'Moving image'
+        'moving image'
+      when 'Sound'
+        'sound recording'
+      else
+        mf.file_format.downcase
+      end
+    }.uniq
+    update_attribute_in_metadata(:resource_type, resource_types.empty? ? nil : resource_types)
   end
   
   def to_solr(solr_doc = Hash.new, opts = {})
@@ -370,7 +402,11 @@ class MediaObject < ActiveFedora::Base
     all_text_values << solr_doc["language_sim"]
     all_text_values << solr_doc["physical_description_si"]
     all_text_values << solr_doc["date_sim"]
+    all_text_values << solr_doc["notes_sim"]
+    all_text_values << solr_doc["table_of_contents_sim"]
+    all_text_values << solr_doc["other_identifier_sim"]
     solr_doc["all_text_timv"] = all_text_values.flatten
+    solr_doc.each_pair { |k,v| solr_doc[k] = v.is_a?(Array) ? v.select { |e| e =~ /\S/ } : v }
     return solr_doc
   end
 

@@ -58,6 +58,9 @@ describe Avalon::Batch::Ingest do
       FileUtils.cp_r 'spec/fixtures/dropbox/example_batch_ingest', @dropbox_dir
       Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
       FakeWeb.register_uri :get, sru_url, body: sru_response
+      manifest_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
+      batch = Avalon::Batch::Package.new(manifest_file, collection)
+      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
     end
 
     after :each do
@@ -75,7 +78,11 @@ describe Avalon::Batch::Ingest do
     end
     
     it 'should skip the corrupt manifest' do
-      lambda { batch_ingest.ingest }.should_not raise_error
+      manifest_file = File.join(@dropbox_dir,'example_batch_ingest','bad_manifest.xlsx')
+      batch = Avalon::Batch::Package.new(manifest_file, collection)
+      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
+      expect { batch_ingest.ingest }.not_to raise_error
+      expect { batch_ingest.ingest }.not_to change{IngestBatch.count}
       error_file = File.join(@dropbox_dir,'example_batch_ingest','bad_manifest.xlsx.error')
       File.exists?(error_file).should be true
       File.read(error_file).should =~ /^Invalid manifest/
@@ -101,9 +108,6 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'should retrieve bib data' do
-      bib_import_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
-      bib_import_batch = Avalon::Batch::Package.new(bib_import_file, collection)
-      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [bib_import_batch]
       batch_ingest.ingest
       ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.last)
@@ -111,11 +115,15 @@ describe Avalon::Batch::Ingest do
       media_object.title.should == '245 A : B F G K N P S'
     end
     
+    it 'should ingest structural metadata' do
+      batch_ingest.ingest
+      ingest_batch = IngestBatch.first
+      media_object = MediaObject.find(ingest_batch.media_object_ids.first)
+      master_file = media_object.parts.first
+      expect(master_file.structuralMetadata.has_content?).to be_true
+    end
+
     it 'should set MasterFile details' do
-      details_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
-      details_batch = Avalon::Batch::Package.new(details_file, collection)
-      Avalon::Dropbox.any_instance.stub(:find_new_packages).and_return [details_batch]
- 
       batch_ingest.ingest
       ingest_batch = IngestBatch.last
       media_object = MediaObject.find(ingest_batch.media_object_ids.first) 
@@ -163,6 +171,13 @@ describe Avalon::Batch::Ingest do
       ingest_batch = IngestBatch.last
       media_object = MediaObject.find(ingest_batch.media_object_ids.last)
       media_object.bibliographic_id.should eq(["local",bib_id])
+    end
+
+    it 'should correctly set notes' do
+      batch_ingest.ingest
+      ingest_batch = IngestBatch.last
+      media_object = MediaObject.find(ingest_batch.media_object_ids.first)
+      media_object.note.first.should eq(["general","This is a test general note"])
     end
 
   end
@@ -243,8 +258,8 @@ describe Avalon::Batch::Ingest do
       IngestBatchMailer.should_receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
       mailer.should_receive(:deliver)
       expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
-      batch.errors[4].messages.should have_key(:contributator)
-      batch.errors[4].messages[:contributator].should eq(["Metadata attribute 'contributator' not found"])
+      expect(batch.errors[4].messages).to have_key(:contributator)
+      expect(batch.errors[4].messages[:contributator]).to eq(["Metadata attribute 'contributator' not found"])
     end
     
     it 'should fail if an unknown error occurs' do

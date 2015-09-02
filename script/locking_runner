@@ -7,8 +7,8 @@ SEMAPHORE=$1
 LOCKFILE=tmp/pids/$SEMAPHORE
 shift
 
-trap "{ rm -f $LOCKFILE ; exit 255; }" EXIT
-if [ ! -e $LOCKFILE ]; then
-    echo "$$" > $LOCKFILE
-    "$@" || true #run the command
+if ( set -o noclobber; echo "$$" > "$LOCKFILE") 2> /dev/null; 
+then
+  trap 'rm -f "$LOCKFILE"; exit 255' INT TERM EXIT
+  "$@" || true #run the command
 fi

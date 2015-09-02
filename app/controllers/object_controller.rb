@@ -14,7 +14,7 @@
 
 class ObjectController < ApplicationController
   def show
-    obj = ActiveFedora::Base.where('dc_identifier_tesim' => params[:id]).first
+    obj = ActiveFedora::Base.where("dc_identifier_tesim:\"#{params[:id]}\"").first
     obj ||= ActiveFedora::Base.find(params[:id], cast: true) rescue nil
     if obj.blank?
       redirect_to root_path
@@ -36,4 +36,5 @@ class ObjectController < ApplicationController
     model = Module.const_get(params[:t].to_s.classify)
     render json: model.send(:autocomplete, params[:q].strip)
   end
+
 end

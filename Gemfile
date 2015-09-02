@@ -6,30 +6,20 @@
   #gem 'protected_attributes'
   gem 'builder', '~>3.1.0'
 
-  #gem 'blacklight', '~>5.7'
-  gem 'blacklight', git: 'https://github.com/projectblacklight/blacklight.git', ref: 'd4f2cf5d6917b927d63867f50bb66f6bc5b9577b'
-
-  #gem 'hydra', '~>7.1'
-  gem 'hydra-head', '~>7.2.0'
-  gem 'active-fedora', '~> 7.1.0'
-  gem 'om', '~> 3.1.0'
-  gem 'solrizer', '~> 3.3.0'
-  gem 'rsolr', '~> 1.0.10'
-  gem 'nokogiri', '~> 1.6.0'
-  gem 'rubydora', '~> 1.8.0'
-  gem 'nom-xml', '~> 0.5.1'
+  gem 'hydra', '~>8.0'
+  gem 'hydra-access-controls', git: 'https://github.com/projecthydra/hydra-head.git', branch: '8-1-stable'
 
   gem 'activerecord-session_store'
   gem 'bcrypt-ruby', '~> 3.1.0'
   gem 'kaminari', '~> 0.15.0'
 
-  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'v3.2'
-  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'v3.1'
-  gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'v3.3'
-  gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'v3.2'
-  gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'v3.2'
-  gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r3'
-  gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r3'
+  gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'avalon-r4'
+  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r4'
+  gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r4'
+  gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r4'
+  gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'avalon-r4'
+  gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r4'
+  gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r4'
   gem 'media-element-logo-plugin'
 
   gem 'browse-everything', '0.6.3'
@@ -65,21 +55,23 @@
     gem 'therubyracer', '>= 0.12.0'
   end
 
-  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git", tag: 'v3.2'
-  gem 'about_page', git: "https://github.com/avalonmediasystem/about_page.git", tag: 'avalon-v3.2'
+  gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git", tag: 'avalon-r4'
+  gem 'about_page', git: "https://github.com/avalonmediasystem/about_page.git", tag: 'avalon-r4'
 
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise', '~>3.2.0'
   #gem 'devise-guests'
   gem 'haml'
 
-  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'v3.2'
+  gem 'active-encode', git: "https://github.com/projecthydra-labs/active-encode.git"
+  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
   gem 'validates_email_format_of'
   gem 'loofah'
   gem 'omniauth-identity'
-  gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'v3.1'
+  gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 
   gem 'mediainfo'
+  gem 'delayed_job', '=4.0.4'
   gem 'delayed_job_active_record'
   gem 'whenever', require: false
   gem 'with_locking'
@@ -97,11 +89,12 @@
 
     # For overriding the default interface with Twitter Bootstrap
     # This is now inherited from Blacklight
-    gem 'sass-rails', '=4.0.2'
-    gem 'font-awesome-rails', '~> 3.0'
+    gem 'bootstrap-sass', '=3.3.3'
+    gem 'sass-rails', '=4.0.3'
+    gem 'font-awesome-rails', '~> 4.3'
     gem 'bootstrap_form'
     gem 'handlebars_assets'
-    gem 'twitter-typeahead-rails'
+    gem 'twitter-typeahead-rails', '=0.10.5'
   end
 
   group :development do
@@ -110,16 +103,16 @@
     gem 'binding_of_caller',   platforms: [:mri_20, :mri_21]
     gem 'license_header'
     gem 'meta_request'
+    gem 'capistrano', '~>2.12.0'
+    gem 'rvm-capistrano', require: false
   end
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
   group :development, :test do
     gem "jettywrapper"
-    gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'v3.1'
-    gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'v3.1'
+    gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'avalon-r4'
+    gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'avalon-r4'
     gem 'daemons'
-    gem 'capistrano', '~>2.12.0'
-    gem 'rvm-capistrano'
     gem 'rspec-rails', '~>2.9'
     gem 'puma'
     gem 'rb-fsevent', '~> 0.9.1'
@@ -134,7 +127,7 @@
   end
 
   group :test do
-    gem 'database_cleaner', git: 'https://github.com/atomical/database_cleaner', branch: 'adding_support_for_active_fedora_orm' # HEAD , tag: 'avalon-r3'
+    gem 'database_cleaner', git: 'https://github.com/avalonmediasystem/database_cleaner.git', tag: 'avalon-r4'
     gem 'factory_girl_rails'
     gem 'mime-types', ">=1.1"
     gem "headless"

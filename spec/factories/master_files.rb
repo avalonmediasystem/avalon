@@ -15,13 +15,14 @@
 FactoryGirl.define do
   factory :master_file do
     file_location {'/path/to/video.mp4'}
+    file_format {'Moving image'}
     percent_complete {"#{rand(100)}"}
     workflow_name 'avalon'
     mediaobject {FactoryGirl.create(:media_object)}
 
     factory :master_file_with_derivative do
       workflow_name 'avalon'
-      status_code 'SUCCEEDED'
+      status_code 'COMPLETED'
       after(:create) do |mf|
         mf.derivatives += [FactoryGirl.create(:derivative)]
         mf.save
