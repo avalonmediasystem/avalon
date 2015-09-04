@@ -23,12 +23,12 @@
   gem 'media-element-logo-plugin'
 
   gem 'browse-everything', '0.6.3'
-  
+
   gem 'roo', git: 'https://github.com/Empact/roo', ref: '9e1b969762cbb80b1c52cfddd848e489f22f468f'
 
-  gem 'multipart-post'  
+  gem 'multipart-post'
   gem 'modal_logic'
-  
+
   gem 'rubyzip', '0.9.9'
   gem 'hooks'
 
@@ -41,7 +41,7 @@
 #  gem 'zoom', '~>0.4.1', :git => 'https://github.com/bricestacey/ruby-zoom.git'
 
   gem 'marc'
-  
+
   platforms :jruby do
     gem 'jruby-openssl'
     gem 'activerecord-jdbcsqlite3-adapter'
@@ -141,6 +141,7 @@
     gem 'fakefs', require: "fakefs/safe"
     gem 'fakeweb'
     gem 'hashdiff'
+    gem 'coveralls'
   end
 
   extra_gems = File.expand_path("../Gemfile.local",__FILE__)
