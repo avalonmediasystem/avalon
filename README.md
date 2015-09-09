@@ -3,13 +3,15 @@
 
 [![Build Status](https://travis-ci.org/avalonmediasystem/avalon.svg?branch=develop)](https://travis-ci.org/avalonmediasystem/avalon)
 
+[![Coverage Status](https://coveralls.io/repos/avalonmediasystem/avalon/badge.svg?branch=master&service=github)](https://coveralls.io/github/avalonmediasystem/avalon?branch=master)
+
 For more information and regular project updates visit the [Avalon blog](http://www.avalonmediasystem.org/blog).
 
 # Installing Avalon Media System
 Instructions on how to get a local installation of Avalon Media System installed on your system are available for [Linux](https://wiki.dlib.indiana.edu/display/VarVideo/Getting+Started+(Linux)) and [OS X](https://wiki.dlib.indiana.edu/display/VarVideo/Getting+Started+(OS+X)).
 
 # Getting started
-The following steps will let you run the avalon stack locally in order to 
+The following steps will let you run the avalon stack locally in order to
 explore the out-of-the-box functionality or do basic development.
 
 * Ensure that you're running one of the Ruby versions listed in under rvm in ".travis.yml".
