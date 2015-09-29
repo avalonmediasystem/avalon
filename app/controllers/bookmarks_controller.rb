@@ -14,6 +14,10 @@
 
 class BookmarksController < CatalogController
   include Blacklight::Bookmarks
+
+  #HACK next two lines are a hack for problems in the puppet VM tomcat/solr
+  BookmarksController.search_params_logic -= [:add_query_to_solr]
+  BookmarksController.search_params_logic += [:rewrite_bookmarks_search]
   
   blacklight_config.show.document_actions[:email].if = false if blacklight_config.show.document_actions[:email]
   blacklight_config.show.document_actions[:citation].if = false if blacklight_config.show.document_actions[:citation]
@@ -29,6 +33,23 @@ class BookmarksController < CatalogController
   self.add_show_tools_partial( :delete, callback: :delete_action, if: Proc.new { |context, config, options| context.controller.user_can? :delete } )
 
   before_filter :verify_permissions, only: :index
+
+  #HACK next two methods are a hack for problems in the puppet VM tomcat/solr
+  def rewrite_bookmarks_search(solr_parameters, user_parameters)
+    solr_parameters[:q] = "id:(#{ Array(user_parameters[:q][:id]).map { |x| solr_escape(x) }.join(' OR ')})"
+  end
+
+  def solr_escape val, options={}
+    options[:quote] ||= '"'
+    unless val =~ /^[a-zA-Z0-9$_\-\^]+$/
+      val = options[:quote] +
+        # Yes, we need crazy escaping here, to deal with regexp esc too!
+        val.gsub("'", "\\\\\'").gsub('"', "\\\\\"") +
+        options[:quote]
+    end
+    return val 
+  end
+
 
   def user_can? action
     @valid_user_actions.include? action
