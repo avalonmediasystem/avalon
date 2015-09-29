@@ -468,6 +468,15 @@ class MasterFile < ActiveFedora::Base
     is_video? ? 'dctypes:MovingImage' : 'dctypes:Sound'
   end
 
+  def self.post_processing_move_filename(oldpath, options = {})
+    prefix = options[:pid].tr(':', '_')
+    if File.basename(oldpath).start_with?(prefix)
+      File.basename(oldpath)
+    else
+      "#{prefix}-#{File.basename(oldpath)}"
+    end
+  end
+
   protected
 
   def mediainfo
@@ -642,19 +651,10 @@ class MasterFile < ActiveFedora::Base
     when 'move'
       move_path = Avalon::Configuration.lookup('master_file_management.path')
       raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?
-      newpath = File.join(move_path, post_processing_move_filename(file_location, pid: self.pid))
+      newpath = File.join(move_path, MasterFile.post_processing_move_filename(file_location, pid: pid))
       AvalonJobs.move_masterfile self.pid, newpath
     else
       # Do nothing
-    end
-  end
-
-  def post_processing_move_filename(oldpath, options={})
-    prefix = options[:pid].gsub(":","_")
-    if oldpath.start_with?(prefix)
-      oldpath
-    else
-      "#{prefix}-#{File.basename(oldpath)}"
     end
   end
 
