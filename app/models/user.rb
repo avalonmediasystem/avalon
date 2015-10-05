@@ -90,4 +90,9 @@ class User < ActiveRecord::Base
     seen
   end
 
+  def destroy
+    Bookmark.where(user_id: self.id).destroy_all
+    super
+  end
+
 end
