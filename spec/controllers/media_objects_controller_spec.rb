@@ -417,6 +417,19 @@ describe MediaObjectsController, type: :controller do
     end
   end
 
+  describe "#save" do
+    it 'removes bookmarks that are no longer viewable' do
+      media_object = FactoryGirl.create(:published_media_object)
+      user = FactoryGirl.create(:public)
+      bookmark = Bookmark.create(document_id: media_object.pid, user_id: user.id) 
+      login_user media_object.collection.managers.first
+      request.env["HTTP_REFERER"] = '/'
+      expect {
+        get 'update_status', id: media_object.pid, status: 'unpublish'
+      }.to change { Bookmark.exists? bookmark }.from( true ).to( false )
+    end
+  end
+
   describe "#update" do
     it 'updates the order' do
 
