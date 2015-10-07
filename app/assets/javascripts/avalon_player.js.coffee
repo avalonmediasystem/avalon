@@ -31,6 +31,7 @@ class AvalonPlayer
       thumbnailSelectorEnabled: true
       features: features
       startQuality: 'low'
+      customError: 'No native or Flash playback support is present'
       success: (mediaElement, domObject, player) =>
         @boundPrePlay = => if mejs.MediaFeatures.isAndroid then AndroidShim.androidPrePlay(this, player)
         @boundPrePlay()
