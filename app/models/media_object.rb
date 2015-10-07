@@ -41,6 +41,8 @@ class MediaObject < ActiveFedora::Base
   before_save 'descMetadata.remove_empty_nodes!'
   before_save 'update_permalink_and_dependents'
 
+  after_save 'remove_bookmarks'
+
   has_model_version 'R4'
 
   # Call custom validation methods to ensure that required fields are present and
@@ -546,4 +548,9 @@ class MediaObject < ActiveFedora::Base
       true
     end
   
+    def remove_bookmarks
+      Bookmark.where(document_id: self.pid).each do |b|
+        b.destroy if ( !User.exists? b.user_id ) or ( Ability.new( User.find b.user_id ).cannot? :read, self )
+      end
+    end
 end

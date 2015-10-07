@@ -65,4 +65,13 @@ describe User do
     end
   end
 
+  describe "#destroy" do
+    it 'removes bookmarks for user' do
+      media_object = FactoryGirl.create(:published_media_object)
+      user = FactoryGirl.create(:public)
+      bookmark = Bookmark.create(document_id: media_object.pid, user_id: user.id) 
+      expect { user.destroy }.to change { Bookmark.exists? bookmark }.from( true ).to( false )
+    end
+  end
+
 end
