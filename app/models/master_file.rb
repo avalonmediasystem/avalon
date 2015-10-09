@@ -34,7 +34,7 @@ class MasterFile < ActiveFedora::Base
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
   has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
 
-  has_metadata name: 'descMetadata', :type => ActiveFedora::SimpleDatastream do |d|
+  has_metadata name: 'descMetadata', :type => CachingSimpleDatastream.create(self) do |d|
     d.field :file_location, :string
     d.field :file_checksum, :string
     d.field :file_size, :string
@@ -47,7 +47,7 @@ class MasterFile < ActiveFedora::Base
     d.field :date_digitized, :string
   end
 
-  has_metadata name: 'mhMetadata', :type => ActiveFedora::SimpleDatastream do |d|
+  has_metadata name: 'mhMetadata', :type => CachingSimpleDatastream.create(self) do |d|
     d.field :workflow_id, :string
     d.field :workflow_name, :string
     d.field :percent_complete, :string
@@ -220,7 +220,7 @@ class MasterFile < ActiveFedora::Base
 
   def stream_details(token,host=nil)
     flash, hls = [], []
-    derivatives.each do |d|
+    ActiveFedora::SolrService.reify_solr_results(derivatives.load_from_solr, load_from_solr: true).each do |d|
       common = { quality: d.encoding.quality.first,
                  mimetype: d.encoding.mime_type.first,
                  format: d.format } 
