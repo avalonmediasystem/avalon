@@ -23,8 +23,8 @@ class Ability
     @user_groups = default_user_groups
     @user_groups |= current_user.groups if current_user and current_user.respond_to? :groups
     @user_groups |= ['registered'] unless current_user.new_record?
-    @user_groups |= @session[:virtual_groups] unless @session.blank?
-    @user_groups |= request.remote_ip
+    @user_groups |= @session[:virtual_groups] unless @session.blank? or @session[:virtual_groups].blank?
+    @user_groups |= [@session[:remote_ip]] unless @session.blank? or @session[:remote_ip].blank?
     @user_groups
   end
 
