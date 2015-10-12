@@ -153,7 +153,7 @@ class Ability
 
   def full_login?
     return @full_login unless @full_login.nil?
-    @full_login = @session.present? ? @session[:full_login] : true
+    @full_login = ( @session.present? and @session[:full_login].present? ) ? @session[:full_login] : true
     @full_login
   end
 end
