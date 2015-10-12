@@ -123,10 +123,10 @@ class Admin::CollectionsController < ApplicationController
 
     # If Save Access Setting button or Add/Remove User/Group button has been clicked
     if can?(:update_access_control, @collection)
-      ["group", "class", "user"].each do |title|
+      ["group", "class", "user", "ipaddress"].each do |title|
         if params["submit_add_#{title}"].present?
           if params["add_#{title}"].present?
-            if ["group", "class"].include? title
+            if ["group", "class", "ipaddress"].include? title
               @collection.default_read_groups += [params["add_#{title}"].strip]
             else
               @collection.default_read_users += [params["add_#{title}"].strip]
@@ -137,7 +137,7 @@ class Admin::CollectionsController < ApplicationController
         end
         
         if params["remove_#{title}"].present?
-          if ["group", "class"].include? title
+          if ["group", "class", "ipaddress"].include? title
             @collection.default_read_groups -= [params["remove_#{title}"]]
           else
             @collection.default_read_users -= [params["remove_#{title}"]]

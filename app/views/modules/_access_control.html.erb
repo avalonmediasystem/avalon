@@ -84,7 +84,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           autocomplete_model: 'externalGroup', display_helper: :vgroup_display,
           input_disabled: !can_update %>
         <%= render "modules/access_object", object: object,
-          access_object: "ipaddress", members: @ipaddresses,
+          access_object: "ipaddress", members: @ip_groups,
           input_disabled: !can_update %>
     </div>
   </fieldset>

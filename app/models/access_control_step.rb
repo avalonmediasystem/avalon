@@ -31,10 +31,10 @@ class AccessControlStep < Avalon::Workflow::BasicStep
     end
 
     # Limited access stuff
-    ["group", "class", "user"].each do |title|
+    ["group", "class", "user", "ipaddress"].each do |title|
       if context["submit_add_#{title}"].present?
         if context["add_#{title}"].present?
-          if ["group", "class"].include? title
+          if ["group", "class","ipaddress"].include? title
             mediaobject.read_groups += [context["add_#{title}"].strip]
           else
             mediaobject.read_users += [context["add_#{title}"].strip]
@@ -45,7 +45,7 @@ class AccessControlStep < Avalon::Workflow::BasicStep
       end
       
       if context["remove_#{title}"].present?
-        if ["group", "class"].include? title
+        if ["group", "class", "ipaddress"].include? title
           mediaobject.read_groups -= [context["remove_#{title}"]]
         else
           mediaobject.read_users -= [context["remove_#{title}"]]
