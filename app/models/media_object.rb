@@ -427,10 +427,10 @@ class MediaObject < ActiveFedora::Base
         media_object.hidden = params[:hidden] if !params[:hidden].nil?
         media_object.visibility = params[:visibility] unless params[:visibility].blank?
         # Limited access stuff
-        ["group", "class", "user"].each do |title|
+        ["group", "class", "user", "ipaddress"].each do |title|
           if params["submit_add_#{title}"].present?
             if params["#{title}"].present?
-              if ["group", "class"].include? title
+              if ["group", "class", "ipaddress"].include? title
                 media_object.read_groups += [params["#{title}"].strip]
               else
                 media_object.read_users += [params["#{title}"].strip]
@@ -439,7 +439,7 @@ class MediaObject < ActiveFedora::Base
           end
           if params["submit_remove_#{title}"].present?
             if params["#{title}"].present?
-              if ["group", "class"].include? title
+              if ["group", "class", "ipaddress"].include? title
                 media_object.read_groups -= [params["#{title}"]]
               else
                 media_object.read_users -= [params["#{title}"]]
