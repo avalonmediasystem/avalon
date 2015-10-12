@@ -21,8 +21,12 @@ module Avalon
         self.read_groups.select {|g| Admin::Group.exists? g}
       end
 
+      def ip_read_groups
+        self.read_groups.select {|g| IPAddr.new(g) rescue false }
+      end
+
       def virtual_read_groups
-        self.read_groups - ["public", "registered"] - local_read_groups
+        self.read_groups - ["public", "registered"] - local_read_groups - ip_read_groups
       end
     end
   end

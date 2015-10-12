@@ -384,6 +384,7 @@ class MediaObject < ActiveFedora::Base
     solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
     indexer = Solrizer::Descriptor.new(:string, :stored, :indexed, :multivalued)
     solr_doc[Solrizer.default_field_mapper.solr_name("read_access_virtual_group", indexer)] = virtual_read_groups
+    solr_doc[Solrizer.default_field_mapper.solr_name("read_access_ip_group", indexer)] = ip_read_groups.to_range.map(&:to_s)
     solr_doc["dc_creator_tesim"] = self.creator
     solr_doc["dc_publisher_tesim"] = self.publisher
     solr_doc["title_ssort"] = self.title
