@@ -130,6 +130,7 @@ en:
     userlabel: "Avalon User"
     grouplabel: "Avalon Group"
     classlabel: "External Group"
+    ipaddresslabel: "IP Address or Range"
     depositor: |
       Depositors add media to the collection and describe it with metadata. 
       They can publish items but not unpublish. They can only modify or 
@@ -153,6 +154,8 @@ en:
       Select an Avalon group from the dropdown list below to grant it access to an item or collection.
     class: |
       Enter an external group to grant it access to an item or collection. This group might represent students in a course or members of an institution-specific group.
+    ipaddress: |
+      An IP Address or subnet. Eg. 255.0.1.10 or 255.0.1.10/21 or 255.0.1.10/255.255.255.0
 
   contact:
     title: 'Contact Us - %{application_name}'
