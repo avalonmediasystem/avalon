@@ -374,7 +374,7 @@ class MediaObject < ActiveFedora::Base
     }.uniq
     update_attribute_in_metadata(:resource_type, resource_types.empty? ? nil : resource_types)
   end
-  
+
   def to_solr(solr_doc = Hash.new, opts = {})
     solr_doc = super(solr_doc, opts)
     solr_doc[Solrizer.default_field_mapper.solr_name("created_by", :facetable, type: :string)] = self.DC.creator
@@ -384,7 +384,7 @@ class MediaObject < ActiveFedora::Base
     solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
     indexer = Solrizer::Descriptor.new(:string, :stored, :indexed, :multivalued)
     solr_doc[Solrizer.default_field_mapper.solr_name("read_access_virtual_group", indexer)] = virtual_read_groups
-    solr_doc[Solrizer.default_field_mapper.solr_name("read_access_ip_group", indexer)] = ip_read_groups.map {|ip| ip.to_range.map(&:to_s)}.flatten
+    solr_doc[Solrizer.default_field_mapper.solr_name("read_access_ip_group", indexer)] = collect_ips_for_index(ip_read_groups)
     solr_doc["dc_creator_tesim"] = self.creator
     solr_doc["dc_publisher_tesim"] = self.publisher
     solr_doc["title_ssort"] = self.title
@@ -554,4 +554,13 @@ class MediaObject < ActiveFedora::Base
         b.destroy if ( !User.exists? b.user_id ) or ( Ability.new( User.find b.user_id ).cannot? :read, self )
       end
     end
+
+  def collect_ips_for_index ip_strings
+    ips = ip_strings.collect do |ip|
+      addr = IPAddr.new(ip) rescue next
+      addr.to_range.map(&:to_s)
+    end
+    ips.flatten.compact.uniq
+  end
+  
 end
