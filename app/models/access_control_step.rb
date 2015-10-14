@@ -38,10 +38,10 @@ class AccessControlStep < Avalon::Workflow::BasicStep
           if title=='user'
             mediaobject.read_users += [val]
           elsif title=='ipaddress'
-            if IPAddr.new(val) rescue false
+            if ( IPAddr.new(val) rescue false )
               mediaobject.read_groups += [val]
             else
-              flash[:notice] = "IP Address #{val} is invalid. Valid examples: 124.124.10.10, 124.124.0.0/16, 124.124.0.0/255.255.0.0"
+              context[:error] = "IP Address #{val} is invalid. Valid examples: 124.124.10.10, 124.124.0.0/16, 124.124.0.0/255.255.0.0"
             end
           else
             mediaobject.read_groups += [val]

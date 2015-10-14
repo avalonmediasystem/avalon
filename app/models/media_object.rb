@@ -434,7 +434,7 @@ class MediaObject < ActiveFedora::Base
               if title=='user'
                 media_object.read_users += [val]
               elsif title=='ipaddress'
-                media_object.read_groups += [val] unless IPAddr.new(val) rescue false
+                media_object.read_groups += [val] unless ( IPAddr.new(val) rescue false )
               else
                 media_object.read_groups += [val]
               end
