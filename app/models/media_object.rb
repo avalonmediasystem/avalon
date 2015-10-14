@@ -429,8 +429,8 @@ class MediaObject < ActiveFedora::Base
         # Limited access stuff
         ["group", "class", "user", "ipaddress"].each do |title|
           if params["submit_add_#{title}"].present?
-            if params["#{title}"].present?
-              val = params["add_#{title}"].strip
+            if params[title].present?
+              val = params[title].strip
               if title=='user'
                 media_object.read_users += [val]
               elsif title=='ipaddress'
@@ -441,11 +441,11 @@ class MediaObject < ActiveFedora::Base
             end
           end
           if params["submit_remove_#{title}"].present?
-            if params["#{title}"].present?
+            if params[title].present?
               if ["group", "class", "ipaddress"].include? title
-                media_object.read_groups -= [params["#{title}"]]
+                media_object.read_groups -= [params[title]]
               else
-                media_object.read_users -= [params["#{title}"]]
+                media_object.read_users -= [params[title]]
               end
             end
           end

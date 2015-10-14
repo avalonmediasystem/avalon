@@ -131,7 +131,7 @@ class Admin::CollectionsController < ApplicationController
             if title=='user'
               @collection.default_read_users += [val]
             elsif title=='ipaddress'
-              if IPAddr.new(val) rescue false
+              if ( IPAddr.new(val) rescue false )
                 @collection.default_read_groups += [val]
               else
                 flash[:notice] = "IP Address #{val} is invalid. Valid examples: 124.124.10.10, 124.124.0.0/16, 124.124.0.0/255.255.0.0"
