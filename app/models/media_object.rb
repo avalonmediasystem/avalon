@@ -430,10 +430,13 @@ class MediaObject < ActiveFedora::Base
         ["group", "class", "user", "ipaddress"].each do |title|
           if params["submit_add_#{title}"].present?
             if params["#{title}"].present?
-              if ["group", "class", "ipaddress"].include? title
-                media_object.read_groups += [params["#{title}"].strip]
+              val = params["add_#{title}"].strip
+              if title=='user'
+                media_object.read_users += [val]
+              elsif title=='ipaddress'
+                media_object.read_groups += [val] unless IPAddr.new(val) rescue false
               else
-                media_object.read_users += [params["#{title}"].strip]
+                media_object.read_groups += [val]
               end
             end
           end

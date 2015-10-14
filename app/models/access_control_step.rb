@@ -34,10 +34,17 @@ class AccessControlStep < Avalon::Workflow::BasicStep
     ["group", "class", "user", "ipaddress"].each do |title|
       if context["submit_add_#{title}"].present?
         if context["add_#{title}"].present?
-          if ["group", "class","ipaddress"].include? title
-            mediaobject.read_groups += [context["add_#{title}"].strip]
+          val = context["add_#{title}"].strip
+          if title=='user'
+            mediaobject.read_users += [val]
+          elsif title=='ipaddress'
+            if IPAddr.new(val) rescue false
+              mediaobject.read_groups += [val]
+            else
+              flash[:notice] = "IP Address #{val} is invalid. Valid examples: 124.124.10.10, 124.124.0.0/16, 124.124.0.0/255.255.0.0"
+            end
           else
-            mediaobject.read_users += [context["add_#{title}"].strip]
+            mediaobject.read_groups += [val]
           end
         else
           context[:error] = "#{title.titleize} can't be blank."
