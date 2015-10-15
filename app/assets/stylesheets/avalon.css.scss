@@ -973,3 +973,10 @@ div.structure_edit {
 .mejs-overlay-loading {
   border-radius: 50% !important;
 }
+
+.me-cannotplay {
+  @extend .alert;
+  @extend .alert-danger;
+  text-align: center;
+  visibility: visible !important;
+}
