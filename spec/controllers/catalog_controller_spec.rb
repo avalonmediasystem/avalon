@@ -139,7 +139,7 @@ describe CatalogController do
       it "should show results for items visible to the the user's IPv6 subnet" do
         ip_address3 = Faker::Internet.ip_v6_address
         allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(ip_address3)
-        mo3 = FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [ip_address3+'/192']) 
+        mo3 = FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [ip_address3+'/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00']) 
         get 'index', :q => ""
         expect(assigns(:document_list).count).to be >= 1
         expect(assigns(:document_list).map(&:id)).to include mo3.id
