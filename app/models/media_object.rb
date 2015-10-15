@@ -385,6 +385,7 @@ class MediaObject < ActiveFedora::Base
     indexer = Solrizer::Descriptor.new(:string, :stored, :indexed, :multivalued)
     solr_doc[Solrizer.default_field_mapper.solr_name("read_access_virtual_group", indexer)] = virtual_read_groups
     solr_doc[Solrizer.default_field_mapper.solr_name("read_access_ip_group", indexer)] = collect_ips_for_index(ip_read_groups)
+    solr_doc[Hydra.config.permissions.read.group] += solr_doc[Solrizer.default_field_mapper.solr_name("read_access_ip_group", indexer)]
     solr_doc["dc_creator_tesim"] = self.creator
     solr_doc["dc_publisher_tesim"] = self.publisher
     solr_doc["title_ssort"] = self.title
