@@ -42,7 +42,9 @@ class ApplicationController < ActionController::Base
   end
 
   def current_ability
-    @current_ability ||= Ability.new(current_user, user_session)
+    session_opts ||= user_session
+    session_opts ||= {}
+    @current_ability ||= Ability.new(current_user, session_opts.merge(remote_ip: request.remote_ip))
   end
 
   def store_location

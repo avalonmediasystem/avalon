@@ -213,6 +213,32 @@ describe MediaObject do
 
       it{ should_not be_able_to(:share, MediaObject) }
     end
+
+    context 'when ip address' do
+      subject{ ability }
+      let(:user) { FactoryGirl.create(:user) }
+      let(:ip_addr) { Faker::Internet.ip_v4_address }
+      let(:ability) { Ability.new(user, {remote_ip: ip_addr}) }
+      before do
+        allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(ip_addr)
+      end
+
+      it 'should not be able to read unauthorized, published MediaObject' do
+        media_object.read_groups += [Faker::Internet.ip_v4_address]
+        media_object.publish! "random"
+        expect(subject.can?(:read, media_object)).to be_falsey
+      end
+      it 'should be able to read single-ip authorized, published MediaObject' do
+        media_object.read_groups += [ip_addr]
+        media_object.publish! "random"
+        expect(subject.can?(:read, media_object)).to be_truthy
+      end
+      it 'should be able to read ip-range authorized, published MediaObject' do
+        media_object.read_groups += ["#{ip_addr}/30"]
+        media_object.publish! "random"
+        expect(subject.can?(:read, media_object)).to be_truthy
+      end
+    end
   end
 
   describe "Required metadata is present" do

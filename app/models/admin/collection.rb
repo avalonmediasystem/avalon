@@ -45,7 +45,7 @@ class Admin::Collection < ActiveFedora::Base
   
   delegate :read_groups, :read_groups=, :read_users, :read_users=,
            :visibility, :visibility=, :hidden?, :hidden=, 
-           :local_read_groups, :virtual_read_groups, 
+           :local_read_groups, :virtual_read_groups, :ip_read_groups,
            to: :defaultRights, prefix: :default
 
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }

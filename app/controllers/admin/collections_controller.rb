@@ -39,6 +39,7 @@ class Admin::CollectionsController < ApplicationController
     @groups = @collection.default_local_read_groups
     @users = @collection.default_read_users
     @virtual_groups = @collection.default_virtual_read_groups
+    @ip_groups = @collection.default_ip_read_groups
     @visibility = @collection.default_visibility
 
     @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }
@@ -123,13 +124,20 @@ class Admin::CollectionsController < ApplicationController
 
     # If Save Access Setting button or Add/Remove User/Group button has been clicked
     if can?(:update_access_control, @collection)
-      ["group", "class", "user"].each do |title|
+      ["group", "class", "user", "ipaddress"].each do |title|
         if params["submit_add_#{title}"].present?
           if params["add_#{title}"].present?
-            if ["group", "class"].include? title
-              @collection.default_read_groups += [params["add_#{title}"].strip]
+            val = params["add_#{title}"].strip
+            if title=='user'
+              @collection.default_read_users += [val]
+            elsif title=='ipaddress'
+              if ( IPAddr.new(val) rescue false )
+                @collection.default_read_groups += [val]
+              else
+                flash[:notice] = "IP Address #{val} is invalid. Valid examples: 124.124.10.10, 124.124.0.0/16, 124.124.0.0/255.255.0.0"
+              end
             else
-              @collection.default_read_users += [params["add_#{title}"].strip]
+              @collection.default_read_groups += [val]
             end
           else
             flash[:notice] = "#{title.titleize} can't be blank."
@@ -137,7 +145,7 @@ class Admin::CollectionsController < ApplicationController
         end
         
         if params["remove_#{title}"].present?
-          if ["group", "class"].include? title
+          if ["group", "class", "ipaddress"].include? title
             @collection.default_read_groups -= [params["remove_#{title}"]]
           else
             @collection.default_read_users -= [params["remove_#{title}"]]

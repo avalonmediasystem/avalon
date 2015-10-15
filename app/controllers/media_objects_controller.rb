@@ -82,6 +82,7 @@ class MediaObjectsController < ApplicationController
       @groups = @mediaobject.local_read_groups
       @users = @mediaobject.read_users
       @virtual_groups = @mediaobject.virtual_read_groups
+      @ip_groups = @mediaobject.ip_read_groups
       @visibility = @mediaobject.visibility
 
       @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }

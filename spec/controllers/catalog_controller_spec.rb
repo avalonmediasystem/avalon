@@ -112,6 +112,40 @@ describe CatalogController do
       end
     end
 
+    describe "as an unauthenticated user with a specific IP address" do
+      before(:each) do 
+        @user = login_as 'public'
+        @ip_address1 = Faker::Internet.ip_v4_address
+        @mo = FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [@ip_address1]) 
+      end
+      it "should show no results when no items are visible to the user's IP address" do
+        get 'index', :q => ""
+        expect(assigns(:document_list).count).to eq 0
+      end
+      it "should show results for items visible to the the user's IP address" do
+        allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(@ip_address1)
+        get 'index', :q => ""
+        expect(assigns(:document_list).count).to eq 1
+        expect(assigns(:document_list).map(&:id)).to include @mo.id
+      end
+      it "should show results for items visible to the the user's IPv4 subnet" do
+        ip_address2 = Faker::Internet.ip_v4_address
+        allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(ip_address2)
+        mo2 = FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [ip_address2+'/30']) 
+        get 'index', :q => ""
+        expect(assigns(:document_list).count).to be >= 1
+        expect(assigns(:document_list).map(&:id)).to include mo2.id
+      end
+      it "should show results for items visible to the the user's IPv6 subnet" do
+        ip_address3 = Faker::Internet.ip_v6_address
+        allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(ip_address3)
+        mo3 = FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [ip_address3+'/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00']) 
+        get 'index', :q => ""
+        expect(assigns(:document_list).count).to be >= 1
+        expect(assigns(:document_list).map(&:id)).to include mo3.id
+      end
+    end
+
     describe "search fields" do
       let(:media_object) { FactoryGirl.create(:fully_searchable_media_object) }
       ["title_tesi", "creator_ssim", "contributor_sim", "unit_ssim", "collection_ssim", "summary_ssi", "publisher_sim", "subject_topic_sim", "subject_geographic_sim", "subject_temporal_sim", "genre_sim", "physical_description_si", "language_sim", "date_sim", "notes_sim", "table_of_contents_sim", "other_identifier_sim" ].each do |field|

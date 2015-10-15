@@ -374,7 +374,7 @@ class MediaObject < ActiveFedora::Base
     }.uniq
     update_attribute_in_metadata(:resource_type, resource_types.empty? ? nil : resource_types)
   end
-  
+
   def to_solr(solr_doc = Hash.new, opts = {})
     solr_doc = super(solr_doc, opts)
     solr_doc[Solrizer.default_field_mapper.solr_name("created_by", :facetable, type: :string)] = self.DC.creator
@@ -384,6 +384,9 @@ class MediaObject < ActiveFedora::Base
     solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
     indexer = Solrizer::Descriptor.new(:string, :stored, :indexed, :multivalued)
     solr_doc[Solrizer.default_field_mapper.solr_name("read_access_virtual_group", indexer)] = virtual_read_groups
+    solr_doc[Solrizer.default_field_mapper.solr_name("read_access_ip_group", indexer)] = collect_ips_for_index(ip_read_groups)
+    solr_doc[Hydra.config.permissions.read.group] ||= []
+    solr_doc[Hydra.config.permissions.read.group] += solr_doc[Solrizer.default_field_mapper.solr_name("read_access_ip_group", indexer)]
     solr_doc["dc_creator_tesim"] = self.creator
     solr_doc["dc_publisher_tesim"] = self.publisher
     solr_doc["title_ssort"] = self.title
@@ -426,22 +429,25 @@ class MediaObject < ActiveFedora::Base
         media_object.hidden = params[:hidden] if !params[:hidden].nil?
         media_object.visibility = params[:visibility] unless params[:visibility].blank?
         # Limited access stuff
-        ["group", "class", "user"].each do |title|
+        ["group", "class", "user", "ipaddress"].each do |title|
           if params["submit_add_#{title}"].present?
-            if params["#{title}"].present?
-              if ["group", "class"].include? title
-                media_object.read_groups += [params["#{title}"].strip]
+            if params[title].present?
+              val = params[title].strip
+              if title=='user'
+                media_object.read_users += [val]
+              elsif title=='ipaddress'
+                media_object.read_groups += [val] unless ( IPAddr.new(val) rescue false )
               else
-                media_object.read_users += [params["#{title}"].strip]
+                media_object.read_groups += [val]
               end
             end
           end
           if params["submit_remove_#{title}"].present?
-            if params["#{title}"].present?
-              if ["group", "class"].include? title
-                media_object.read_groups -= [params["#{title}"]]
+            if params[title].present?
+              if ["group", "class", "ipaddress"].include? title
+                media_object.read_groups -= [params[title]]
               else
-                media_object.read_users -= [params["#{title}"]]
+                media_object.read_users -= [params[title]]
               end
             end
           end
@@ -553,4 +559,13 @@ class MediaObject < ActiveFedora::Base
         b.destroy if ( !User.exists? b.user_id ) or ( Ability.new( User.find b.user_id ).cannot? :read, self )
       end
     end
+
+  def collect_ips_for_index ip_strings
+    ips = ip_strings.collect do |ip|
+      addr = IPAddr.new(ip) rescue next
+      addr.to_range.map(&:to_s)
+    end
+    ips.flatten.compact.uniq || []
+  end
+  
 end

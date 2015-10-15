@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div class="access-block col-lg-4 col-md-12" id="<%= access_object %>_management">
+<div class="access-block col-lg-8" id="<%= access_object %>_management">
 <%= bootstrap_form_for object do |form| %>
   <input id="step" name="step" type="hidden" value="access-control"/>
   <input id="donot_advance" name="donot_advance" type="hidden" value="true"/>
@@ -36,6 +36,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 	    disabled: input_disabled %>
 	<% else %>
 	  <%= text_field_tag "add_#{access_object}", nil,
+            class: "form-control",
 	    disabled: input_disabled  %>
 	<% end %>
         </div>
