@@ -128,13 +128,21 @@ describe CatalogController do
         expect(assigns(:document_list).count).to eq 1
         expect(assigns(:document_list).map(&:id)).to include @mo.id
       end
-      it "should show results for items visible to the the user's IP subnet" do
+      it "should show results for items visible to the the user's IPv4 subnet" do
         ip_address2 = Faker::Internet.ip_v4_address
         allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(ip_address2)
         mo2 = FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [ip_address2+'/30']) 
         get 'index', :q => ""
         expect(assigns(:document_list).count).to be >= 1
         expect(assigns(:document_list).map(&:id)).to include mo2.id
+      end
+      it "should show results for items visible to the the user's IPv6 subnet" do
+        ip_address3 = Faker::Internet.ip_v6_address
+        allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(ip_address3)
+        mo3 = FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [ip_address3+'/192']) 
+        get 'index', :q => ""
+        expect(assigns(:document_list).count).to be >= 1
+        expect(assigns(:document_list).map(&:id)).to include mo3.id
       end
     end
 
