@@ -564,7 +564,7 @@ class MediaObject < ActiveFedora::Base
       addr = IPAddr.new(ip) rescue next
       addr.to_range.map(&:to_s)
     end
-    ips.flatten.compact.uniq
+    ips.flatten.compact.uniq || []
   end
   
 end
