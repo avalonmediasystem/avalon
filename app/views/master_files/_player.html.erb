@@ -74,7 +74,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       titleLink: '<%= media_object_url(@masterfile.mediaobject) %>',
       logoAction: 'popup',
       logoURL: '<%= pid_section_media_object_url(@masterfile.mediaobject.pid, @masterfile.pid).html_safe %>',
-      logoTitle: 'View in repository'
+      logoTitle: 'View in repository',
+      customError: '<%= t("media_objects.player.customError").html_safe %>'
     })
     currentPlayer = avalonPlayer.player;
   </script>
