@@ -93,7 +93,17 @@ Unless required by applicable law or agreed to in writing, software distributed
         </div>
         <%= button_tag "Add", name: 'submit_add_class', class:'btn btn-default', value: 'Add'  %>
         <%= button_tag "Remove", name: 'submit_remove_class', class:'btn btn-default', value: 'Remove' %>
+	<% end %>
+      <%= label_tag "ipaddress" do %>
+        <%= render partial: "modules/tooltip", locals: { form: form, field: 'ipaddress', tooltip: t("access_control.ipaddress"), options: {display_label: t("access_control.ipaddresslabel").html_safe} } %>
+        <div style='display:inline-block;top:1px;position:relative;'>
+        <%= text_field_tag "ipaddress", nil, class: "form-control" %>
+        </div>
+        <%= button_tag "Add", name: 'submit_add_ipaddress', class:'btn btn-default', value: 'Add'  %>
+        <%= button_tag "Remove", name: 'submit_remove_ipaddress', class:'btn btn-default', value: 'Remove' %>
       <% end %>
+
+
           </fieldset>
           <div class="modal-footer">
             <button type="submit" class="btn btn-primary"><%= t('blacklight.update_access_control.button') %></button>
