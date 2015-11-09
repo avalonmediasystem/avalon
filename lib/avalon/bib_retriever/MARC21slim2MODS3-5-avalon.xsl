@@ -1414,8 +1414,8 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 		<!-- language 041 -->
 		<xsl:variable name="controlField008-35-37"
-			select="normalize-space(translate(substring($controlField008,36,3),'|#',''))"/>
-		<xsl:if test="$controlField008-35-37 != 'N/A'">
+			select="normalize-space(translate(substring($controlField008,36,3),'|#','')) != 'N/A'"/>
+		<xsl:if test="$controlField008-35-37">
 			<language>
 				<languageTerm authority="iso639-2b" type="code">
 					<xsl:value-of select="substring($controlField008,36,3)"/>
