@@ -46,6 +46,7 @@ Removed 041 subfields except for $d and $j. kdm 20150429
 Replaced use of 003 value for recordInfo\recordIdentifer@source with "local". kdm 20150430
 Added type="other" for 024 ind1=8. kdm 20150501
 Removed identifiers except <identifier  type="issue number | matrix number | music publisher | videorecording identifer"> to <relatedItem@type="identifer">. kdm 20150514
+Added check that controlField008-35-37 variable is not set to 'N/A' from old cataloging practices. jlh 20151109
 -->
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
 	MARC21slim2MODS3-5 (Revision 1.106) 20141219
@@ -1414,7 +1415,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		<!-- language 041 -->
 		<xsl:variable name="controlField008-35-37"
 			select="normalize-space(translate(substring($controlField008,36,3),'|#',''))"/>
-		<xsl:if test="$controlField008-35-37">
+		<xsl:if test="$controlField008-35-37 != 'N/A'">
 			<language>
 				<languageTerm authority="iso639-2b" type="code">
 					<xsl:value-of select="substring($controlField008,36,3)"/>
