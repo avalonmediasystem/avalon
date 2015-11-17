@@ -6,8 +6,16 @@
   #gem 'protected_attributes'
   gem 'builder', '~>3.1.0'
 
-  gem 'hydra', '~>8.0'
-  gem 'hydra-access-controls', git: 'https://github.com/projecthydra/hydra-head.git', branch: '8-1-stable'
+#  gem 'hydra', '~>8.0'
+  gem 'hydra-head', git: 'https://github.com/avalonmediasystem/hydra-head.git', branch: '8-1-stable'
+  gem 'active-fedora', '~> 8.1.0'
+  gem 'om', '~> 3.1.0'
+  gem 'solrizer', '~> 3.3.0'
+  gem 'rsolr', '~> 1.0.12'
+  gem 'blacklight', '~> 5.10.0'
+  gem 'nokogiri', '~> 1.6.5'
+  gem 'rubydora', '~> 1.8.1'
+  gem 'nom-xml', '~> 0.5.2'
 
   gem 'activerecord-session_store'
   gem 'bcrypt-ruby', '~> 3.1.0'
