@@ -20,19 +20,31 @@ class VocabularyController < ApplicationController
   end
 
   def show
-    if params[:id].present?
+    if Avalon::ControlledVocabulary.vocabulary.has_key? params[:id].to_sym
       render json: Avalon::ControlledVocabulary.vocabulary[params[:id].to_sym]
+    else
+      render json: {errors: ["Vocabulary not found for #{params[:id]}"]}, status: 404
     end
   end
 
   def update
     result = false
-    if params[:id].present? and params[:entry].present?
-      v = Avalon::ControlledVocabulary.vocabulary
-      v[params[:id].to_sym] |= [params[:entry]]
-      result = Avalon::ControlledVocabulary.vocabulary = v
+    if params[:id].present?
+      if params[:entry].present?
+        v = Avalon::ControlledVocabulary.vocabulary
+        v[params[:id].to_sym] |= [params[:entry]]
+        result = Avalon::ControlledVocabulary.vocabulary = v
+        if result
+          render json: status: 200
+        else
+          render json: {errors: ["Update failed"]}, status: 422
+        end
+      else
+        render json: {errors: ["No update value sent"]}, status: 422
+      end
+    else
+      render json: {errors: ["Vocabulary not found for #{params[:id]}"]}, status: 404
     end
-    render json: result
   end
 
 end
