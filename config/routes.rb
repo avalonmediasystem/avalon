@@ -32,9 +32,7 @@ Avalon::Application.routes.draw do
 
   match "object/:id", to: 'object#show', via: [:get], :as => :object
 
-  match "/vocabulary", to: 'vocabulary#index', via: [:get]
-  match "/vocabulary/:vocabulary", to: 'vocabulary#index', via: [:get]
-  match "/vocabulary/add_entry/:vocabulary", to: 'vocabulary#add_entry', via: [:post]
+  resources :vocabulary, except: [:create, :destroy, :new, :edit]
 
   resources :media_objects, except: [:create] do
     member do

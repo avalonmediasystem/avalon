@@ -16,18 +16,20 @@ class VocabularyController < ApplicationController
   respond_to :json
 
   def index
-    if params[:vocabulary].present?
-      render json: Avalon::ControlledVocabulary.vocabulary[params[:vocabulary].to_sym]
-    else
-      render json: Avalon::ControlledVocabulary.vocabulary
+    render json: Avalon::ControlledVocabulary.vocabulary
+  end
+
+  def show
+    if params[:id].present?
+      render json: Avalon::ControlledVocabulary.vocabulary[params[:id].to_sym]
     end
   end
 
-  def add_entry
+  def update
     result = false
-    if params[:vocabulary].present? and params[:entry].present?
+    if params[:id].present? and params[:entry].present?
       v = Avalon::ControlledVocabulary.vocabulary
-      v[params[:vocabulary].to_sym] |= [params[:entry]]
+      v[params[:id].to_sym] |= [params[:entry]]
       result = Avalon::ControlledVocabulary.vocabulary = v
     end
     render json: result

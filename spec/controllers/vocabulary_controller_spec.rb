@@ -19,21 +19,23 @@ describe VocabularyController, type: :controller do
 
   before(:each) { Avalon::ControlledVocabulary.class_variable_set :@@path, Rails.root.join('spec/fixtures/controlled_vocabulary.yml') }
 
-  describe "#show" do
+  describe "#index" do
     it "should return vocabulary for entire app" do
       get 'index'
       expect(JSON.parse(response.body)).to include('units','note_types','identifier_types')
     end
+  end
+  describe "#show" do
     it "should return a particular vocabulary" do
-      get 'index', vocabulary: :units
+      get 'show', id: :units
       expect(JSON.parse(response.body)).to include('Default Unit')
     end
   end
-
-  describe "#add" do
+  describe "#update" do
     it "should add unit to controlled vocabulary" do
-      post 'add_entry', vocabulary: :units, entry: 'New Unit'
+      put 'update', id: :units, entry: 'New Unit'
       expect(Avalon::ControlledVocabulary.vocabulary[:units]).to include("New Unit")
     end
   end
+
 end
