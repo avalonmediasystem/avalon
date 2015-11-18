@@ -25,6 +25,7 @@ FactoryGirl.define do
     transient { items 0 }
     after(:create) do |c, env|
       1.upto(env.items) { FactoryGirl.create(:media_object, collection: c) }
+      c.reload
     end
   end
 end

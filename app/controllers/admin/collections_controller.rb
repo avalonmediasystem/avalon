@@ -29,21 +29,35 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections
   def index
-    @collections = get_user_collections
+    respond_to do |format|
+      format.js   { render json: Admin::Collection.all.map{|c| c.to_json } }
+      format.html { @collections = get_user_collections }
+    end
   end
 
   # GET /collections/1
   def show
-    @collection = Admin::Collection.find(params[:id])
-    redirect_to admin_collections_path unless can? :read, @collection
-    @groups = @collection.default_local_read_groups
-    @users = @collection.default_read_users
-    @virtual_groups = @collection.default_virtual_read_groups
-    @ip_groups = @collection.default_ip_read_groups
-    @visibility = @collection.default_visibility
-
-    @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }
-    @addable_courses = Course.all.reject { |c| @virtual_groups.include? c.context_id }
+    respond_to do |format|
+      format.js { 
+        begin
+          render json: Admin::Collection.find(params[:id]).to_json
+        rescue
+          render json: {errors: ["Collection not found for #{params[:id]}"]}, status: 404
+        end
+      }
+      format.html {
+        @collection = Admin::Collection.find(params[:id])
+        redirect_to admin_collections_path unless can? :read, @collection
+        @groups = @collection.default_local_read_groups
+        @users = @collection.default_read_users
+        @virtual_groups = @collection.default_virtual_read_groups
+        @ip_groups = @collection.default_ip_read_groups
+        @visibility = @collection.default_visibility
+        
+        @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }
+        @addable_courses = Course.all.reject { |c| @virtual_groups.include? c.context_id }
+      }
+    end
   end
 
   # GET /collections/new
@@ -61,6 +75,12 @@ class Admin::CollectionsController < ApplicationController
     respond_to do |format|
       format.js   { render json: modal_form_response(@collection) }
     end
+  end
+
+  # GET /collections/1/items
+  def items
+    @collection = Admin::Collection.find(params[:id])
+    render json: @collection.media_objects_to_json
   end
  
   # POST /collections

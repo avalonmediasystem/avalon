@@ -178,12 +178,38 @@ class Admin::Collection < ActiveFedora::Base
     solr_doc
   end
 
+  def to_json
+    { 
+      id: pid, 
+      name: name, 
+      unit: unit, 
+      description: description,
+      object_count: { 
+        total: media_objects.count, 
+        published: media_objects.reject{|mo| !mo.published?}.count,
+        unpublished: media_objects.reject{|mo| mo.published?}.count
+      }, 
+      roles: { 
+        managers: managers, 
+        editors: editors, 
+        depositors: depositors 
+      }, 
+      objects: self.media_objects_to_json
+    }
+  end
+
   def dropbox
     Avalon::Dropbox.new( dropbox_absolute_path, self )
   end
 
   def dropbox_absolute_path( name = nil )
     File.join(Avalon::Configuration.lookup('dropbox.path'), name || dropbox_directory_name)
+  end
+
+  def media_objects_to_json
+    objects = {}
+    media_objects.each{|mo| objects[mo.pid]=mo.to_json}
+    objects
   end
 
   private

@@ -98,6 +98,16 @@ describe Admin::CollectionsController, type: :controller do
     end
   end
 
+  describe "#index" do
+    let!(:collection) { FactoryGirl.create(:collection) }
+    it "should return list of collections" do
+      login_as(:administrator)
+      get 'index', format:'js'
+      expect(JSON.parse(response.body).count).to eq(1)
+      expect(JSON.parse(response.body)[0]['id']).to eq(collection.pid)
+    end
+  end
+
   describe "#show" do
     let!(:collection) { FactoryGirl.create(:collection) }
 
@@ -112,6 +122,29 @@ describe Admin::CollectionsController, type: :controller do
       get 'show', id: collection.id
       response.should redirect_to(admin_collections_path)
     end
+
+    it "should return json for specific collection" do
+      login_as(:administrator)
+      get 'show', id: collection.pid, format: 'js'
+      expect(JSON.parse(response.body)['id']).to eq(collection.pid)
+    end
+
+    it "should return 404 if requested collection not present" do
+      login_as(:administrator)
+      get 'show', id: :doesnt_exist, format: 'js'
+      expect(response.status).to eq(404)
+    end
+  end
+
+  describe "#items" do
+    let!(:collection) { FactoryGirl.create(:collection, items: 2) }
+
+    it "should return json for specific collection's media objects" do
+      login_as(:administrator)
+      get 'items', id: collection.pid, format: 'js'
+      expect(JSON.parse(response.body)).to include(collection.media_objects[0].pid,collection.media_objects[1].pid)
+    end
+
   end
 
   describe "#create" do
