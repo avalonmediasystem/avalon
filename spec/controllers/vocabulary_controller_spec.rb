@@ -13,12 +13,19 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'spec_helper'
+require 'fileutils'
 
 describe VocabularyController, type: :controller do
   render_views
 
-  before(:each) { Avalon::ControlledVocabulary.class_variable_set :@@path, Rails.root.join('spec/fixtures/controlled_vocabulary.yml') }
-
+  before(:all) {
+    FileUtils.cp_r 'spec/fixtures/controlled_vocabulary.yml', 'spec/fixtures/controlled_vocabulary.yml.tmp'
+    Avalon::ControlledVocabulary.class_variable_set :@@path, Rails.root.join('spec/fixtures/controlled_vocabulary.yml.tmp') 
+  }
+  after(:all) {
+    File.delete('spec/fixtures/controlled_vocabulary.yml.tmp')
+  }
+  
   describe "#index" do
     it "should return vocabulary for entire app" do
       get 'index'

@@ -30,7 +30,7 @@ module Avalon
     # @param [Hash] vocabulary The new vocabulary to save
     # @returns [Hash, false] The newly saved vocabulary, or false if save unable to obtain lock
     def self.vocabulary= vocabulary
-      f = File.open(@@path, File::RDWR|File::CREAT, 0644)
+      f = File.open(@@path, File::RDWR|File::TRUNC|File::CREAT, 0644)
       if f.flock(File::LOCK_NB|File::LOCK_EX)
         YAML.dump(vocabulary, f)
         f.flock(File::LOCK_UN)
