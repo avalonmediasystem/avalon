@@ -29,13 +29,13 @@ class VocabularyController < ApplicationController
 
   def update
     result = false
-    if params[:id].present?
+    if Avalon::ControlledVocabulary.vocabulary.has_key? params[:id].to_sym
       if params[:entry].present?
         v = Avalon::ControlledVocabulary.vocabulary
-        v[params[:id].to_sym] |= [params[:entry]]
+        v[params[:id].to_sym] |= Array(params[:entry])
         result = Avalon::ControlledVocabulary.vocabulary = v
         if result
-          render json: status: 200
+          render nothing: true, content_type: 'application/json', status: 200
         else
           render json: {errors: ["Update failed"]}, status: 422
         end
