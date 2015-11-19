@@ -85,7 +85,7 @@ class Admin::CollectionsController < ApplicationController
  
   # POST /collections
   def create
-    @collection = Admin::Collection.create(params[:admin_collection].merge(managers: [user_key]))
+    @collection = Admin::Collection.create(params[:admin_collection])
     if @collection.persisted?
       User.where(username: [RoleControls.users('administrator')].flatten).each do |admin_user|
         NotificationsMailer.delay.new_collection( 
