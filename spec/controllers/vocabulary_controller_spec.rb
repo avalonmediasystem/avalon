@@ -40,6 +40,8 @@ describe VocabularyController, type: :controller do
     it "should return 404 if requested vocabulary not present" do
       get 'show', id: :doesnt_exist
       expect(response.status).to eq(404)
+      expect(JSON.parse(response.body)["errors"].class).to eq Array
+      expect(JSON.parse(response.body)["errors"].first.class).to eq String
     end
   end
   describe "#update" do
@@ -50,15 +52,21 @@ describe VocabularyController, type: :controller do
     it "should return 404 if requested vocabulary not present" do
       put 'update', id: :doesnt_exist, entry: 'test'
       expect(response.status).to eq(404)
+      expect(JSON.parse(response.body)["errors"].class).to eq Array
+      expect(JSON.parse(response.body)["errors"].first.class).to eq String
     end
     it "should return 422 if no new value sent" do
       put 'update', id: :units
       expect(response.status).to eq(422)
+      expect(JSON.parse(response.body)["errors"].class).to eq Array
+      expect(JSON.parse(response.body)["errors"].first.class).to eq String
     end
     it "should return 422 if update fails" do
       allow(Avalon::ControlledVocabulary).to receive(:vocabulary=).and_return(false)
       put 'update', id: :units
       expect(response.status).to eq(422)
+      expect(JSON.parse(response.body)["errors"].class).to eq Array
+      expect(JSON.parse(response.body)["errors"].first.class).to eq String
     end
   end
 
