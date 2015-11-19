@@ -15,34 +15,35 @@
 class VocabularyController < ApplicationController
   respond_to :json
 
+  before_action :verify_vocabulary_exists, except: [:index]
+ 
   def index
     render json: Avalon::ControlledVocabulary.vocabulary
   end
 
   def show
-    if Avalon::ControlledVocabulary.vocabulary.has_key? params[:id].to_sym
-      render json: Avalon::ControlledVocabulary.vocabulary[params[:id].to_sym]
-    else
-      render json: {errors: ["Vocabulary not found for #{params[:id]}"]}, status: 404
-    end
+    render json: Avalon::ControlledVocabulary.vocabulary[params[:id].to_sym]
   end
 
   def update
-    result = false
-    if Avalon::ControlledVocabulary.vocabulary.has_key? params[:id].to_sym
-      if params[:entry].present?
-        v = Avalon::ControlledVocabulary.vocabulary
-        v[params[:id].to_sym] |= Array(params[:entry])
-        result = Avalon::ControlledVocabulary.vocabulary = v
-        if result
-          render nothing: true, content_type: 'application/json', status: 200
-        else
-          render json: {errors: ["Update failed"]}, status: 422
-        end
-      else
-        render json: {errors: ["No update value sent"]}, status: 422
-      end
+    unless params[:entry].present?
+      render json: {errors: ["No update value sent"]}, status: 422 and return
+    end
+
+    v = Avalon::ControlledVocabulary.vocabulary
+    v[params[:id].to_sym] |= Array(params[:entry])
+    result = Avalon::ControlledVocabulary.vocabulary = v
+    if result
+      render nothing: true, content_type: 'application/json', status: 200
     else
+      render json: {errors: ["Update failed"]}, status: 422
+    end
+  end
+
+  private
+
+  def verify_vocabulary_exists
+    if Avalon::ControlledVocabulary.vocabulary[params[:id].to_sym].blank?
       render json: {errors: ["Vocabulary not found for #{params[:id]}"]}, status: 404
     end
   end
