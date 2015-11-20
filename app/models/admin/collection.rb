@@ -206,9 +206,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def media_objects_to_json
-    objects = {}
-    media_objects.each{|mo| objects[mo.pid]=mo.to_json}
-    objects
+    media_objects.collect{|mo| [mo.pid, mo.to_json] }.to_h
   end
 
   private

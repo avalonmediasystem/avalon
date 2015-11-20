@@ -175,6 +175,7 @@ describe Admin::CollectionsController, type: :controller do
       login_as(:administrator)
       get 'items', id: collection.pid, format: 'js'
       expect(JSON.parse(response.body)).to include(collection.media_objects[0].pid,collection.media_objects[1].pid)
+      #TODO add check that mediaobject is serialized to json properly
     end
 
   end
