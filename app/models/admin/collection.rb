@@ -193,8 +193,7 @@ class Admin::Collection < ActiveFedora::Base
         managers: managers, 
         editors: editors, 
         depositors: depositors 
-      }, 
-      objects: self.media_objects_to_json
+      } 
     }
   end
 
