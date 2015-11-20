@@ -13,12 +13,43 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<%= bootstrap_form_for @collection, remote: true, html: { modal: true } do |f| %>
-  <%= f.text_field :name, class: 'col-md-5' %>
-  <%= f.text_area :description, rows: 3, class: 'col-md-5'  %>
-	<% if @collection.new_record? || can?(:update_unit, @collection)%>
-		<%= f.select(:unit, Admin::Collection.units) %>
-	<% end %>	
-	<%= f.submit class: 'btn btn-primary btn-stateful-loading', data: {loading_text: 'Saving...'} %>
+
+<div id="new_collection" class="modal fade" role="dialog" data-backdrop="true" data-submit_url="<%= 'create' %>" >
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h3 class='modal-title'>Create Collection</h3>
+      </div>
+      <div class="modal-body">
+	<%= bootstrap_form_for @collection, remote: true, html: { modal: true }, format: 'json' do |f| %>
+	  <%= hidden_field_tag 'admin_collection[managers][]', user_key, class: 'col-md-5' %>
+	  <%= f.text_field :name, class: 'col-md-5' %>
+	  <%= f.text_area :description, rows: 3, class: 'col-md-5'  %>
+	  <% if @collection.new_record? || can?(:update_unit, @collection)%>
+	    <%= f.select(:unit, Admin::Collection.units) %>
+	  <% end %>	
+	  <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: {loading_text: 'Saving...'} %>
 	<a href="#" data-dismiss="modal" aria-hidden="true" class="btn">Cancel</a>
+	<% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<% content_for :page_scripts do %>
+  <script>
+    function inject_alert(message) {
+      $('#header-navbar').closest('.container-fluid').after('<div class="container-fluid" id="alerts"><div class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button>'+message+'</div></div>');
+    }
+
+    $('form[data-remote][modal]').on('ajax:complete', function(jq_event, xhr) {
+      if (xhr.responseJSON.hasOwnProperty('errors')){
+        $(this).closest('.modal').modal('hide')
+        inject_alert(xhr.responseJSON['errors'].join('<br/>'));
+      }
+      else window.location = '/admin/collections/'+xhr.responseJSON['id'];
+    });
+  </script>
 <% end %>

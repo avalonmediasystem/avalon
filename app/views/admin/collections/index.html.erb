@@ -44,7 +44,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
       </tbody>
     </table>
-    <%= link_to('Create Collection', new_admin_collection_path, remote: true, modal: true, class: 'btn btn-primary') unless cannot? :create, Admin::Collection %>
+    <%= button_tag("Create Collection", class: 'btn btn-primary btn-large', data: {toggle:"modal", target:"#new_collection"}) unless cannot? :create, Admin::Collection %>
   <% else %>
     <div class="hero-unit">
       <h2>You don't have any collections yet</h2>
@@ -53,7 +53,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <p>Would you like to create one?</p>
         <div class="whitespace"></div>
         <p>
-          <%= link_to('Create Collection', new_admin_collection_path, remote: true, modal: true, class: 'btn btn-primary btn-large')  %>
+	  <%= button_tag("Create Collection", class: 'btn btn-primary btn-large', data: {toggle:"modal", target:"#new_collection"}) %>
         </p>
       <% else %>
         <p>You'll need to be assigned to one</p>
@@ -64,8 +64,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
-<% content_for :page_scripts do %>
-  <script>
-    new ModalLogic()
-  </script>
-<% end %>
+<% @collection = Admin::Collection.new %>
+<%= render "form" %>
+
