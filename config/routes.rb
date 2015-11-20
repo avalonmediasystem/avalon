@@ -31,6 +31,9 @@ Avalon::Application.routes.draw do
   match "/oembed", to: 'master_files#oembed', via: [:get]
 
   match "object/:id", to: 'object#show', via: [:get], :as => :object
+
+  resources :vocabulary, except: [:create, :destroy, :new, :edit]
+
   resources :media_objects, except: [:create] do
     member do
       put :update_status
