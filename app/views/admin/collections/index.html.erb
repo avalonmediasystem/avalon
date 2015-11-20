@@ -44,6 +44,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
       </tbody>
     </table>
+    <input type="button" class='btn btn-primary btn-large' value="Create Collection" data-toggle="modal" data-target="#new_collection" /><br/>
     <%= link_to('Create Collection', new_admin_collection_path, remote: true, modal: true, class: 'btn btn-primary') unless cannot? :create, Admin::Collection %>
   <% else %>
     <div class="hero-unit">
@@ -53,6 +54,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <p>Would you like to create one?</p>
         <div class="whitespace"></div>
         <p>
+          <input type="button" class='btn btn-primary btn-large' value="Create Collection" data-toggle="modal" data-target="#new_collection" /><br/>
           <%= link_to('Create Collection', new_admin_collection_path, remote: true, modal: true, class: 'btn btn-primary btn-large')  %>
         </p>
       <% else %>
@@ -64,8 +66,14 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
+<%= render "form" %>
+
 <% content_for :page_scripts do %>
   <script>
-    new ModalLogic()
+    $('form[data-remote][modal]').on('ajax:complete', function(jq_event, xhr) {
+      //return that.processResponse(jq_event, xhr);
+      console.log("here");
+    });
+    //new ModalLogic()
   </script>
 <% end %>

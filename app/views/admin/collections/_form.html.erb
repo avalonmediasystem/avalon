@@ -13,13 +13,29 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<%= bootstrap_form_for @collection, remote: true, html: { modal: true } do |f| %>
-  <%= hidden_field_tag 'admin_collection[managers][]', user_key, class: 'col-md-5' %>
-  <%= f.text_field :name, class: 'col-md-5' %>
-  <%= f.text_area :description, rows: 3, class: 'col-md-5'  %>
-	<% if @collection.new_record? || can?(:update_unit, @collection)%>
-		<%= f.select(:unit, Admin::Collection.units) %>
-	<% end %>	
-	<%= f.submit class: 'btn btn-primary btn-stateful-loading', data: {loading_text: 'Saving...'} %>
+<% @collection = Admin::Collection.new %>
+
+<div id="new_collection" class="modal fade" role="dialog" data-backdrop="true" data-submit_url="<%= 'create' %>" >
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h3 class='modal-title'>Create Collection</h3>
+      </div>
+      <div class="modal-body">
+	<%= bootstrap_form_for @collection, remote: true, html: { modal: true } do |f| %>
+	  <%= hidden_field_tag 'admin_collection[managers][]', user_key, class: 'col-md-5' %>
+	  <%= f.text_field :name, class: 'col-md-5' %>
+	  <%= f.text_area :description, rows: 3, class: 'col-md-5'  %>
+	  <% if @collection.new_record? || can?(:update_unit, @collection)%>
+	    <%= f.select(:unit, Admin::Collection.units) %>
+	  <% end %>	
+	  <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: {loading_text: 'Saving...'} %>
 	<a href="#" data-dismiss="modal" aria-hidden="true" class="btn">Cancel</a>
-<% end %>
+	<% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+
