@@ -16,5 +16,5 @@ notifications:
   irc: "chat.freenode.net#projectvov"
 language: ruby
 rvm:
-  - 2.0.0
   - 2.1.7
+  - 2.2.3
