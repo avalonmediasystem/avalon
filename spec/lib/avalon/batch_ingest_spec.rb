@@ -120,7 +120,7 @@ describe Avalon::Batch::Ingest do
       ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
       master_file = media_object.parts.first
-      expect(master_file.structuralMetadata.has_content?).to be_true
+      expect(master_file.structuralMetadata.has_content?).to be_truthy
     end
 
     it 'should set MasterFile details' do
