@@ -30,7 +30,7 @@ class Admin::CollectionsController < ApplicationController
   # GET /collections
   def index
     respond_to do |format|
-      format.js   { render json: Admin::Collection.all.map{|c| c.to_json } }
+      format.json   { render json: Admin::Collection.all.map{|c| c.to_json } }
       format.html { @collections = get_user_collections }
     end
   end
@@ -38,10 +38,10 @@ class Admin::CollectionsController < ApplicationController
   # GET /collections/1
   def show
     respond_to do |format|
-      format.js { 
+      format.json { 
         begin
           render json: Admin::Collection.find(params[:id]).to_json
-        rescue
+        rescue ActiveFedora::ObjectNotFoundError
           render json: {errors: ["Collection not found for #{params[:id]}"]}, status: 404
         end
       }

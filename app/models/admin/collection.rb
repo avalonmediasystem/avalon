@@ -193,8 +193,7 @@ class Admin::Collection < ActiveFedora::Base
         managers: managers, 
         editors: editors, 
         depositors: depositors 
-      }, 
-      objects: self.media_objects_to_json
+      } 
     }
   end
 
@@ -207,9 +206,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def media_objects_to_json
-    objects = {}
-    media_objects.each{|mo| objects[mo.pid]=mo.to_json}
-    objects
+    media_objects.collect{|mo| [mo.pid, mo.to_json] }.to_h
   end
 
   private
