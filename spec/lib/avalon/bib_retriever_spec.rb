@@ -60,7 +60,7 @@ describe Avalon::BibRetriever do
   
   describe 'zoom' do
     it 'retrieves proper MODS' do
-      pending "need a reasonable way to mock ruby-zoom"
+      skip "need a reasonable way to mock ruby-zoom"
     end
   end
 end

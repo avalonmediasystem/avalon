@@ -88,6 +88,7 @@ Avalon::Application.routes.draw do
       member do
         get 'edit'
         get 'remove'
+        get 'items'
       end
     end
   end

@@ -415,6 +415,13 @@ class MediaObject < ActiveFedora::Base
     return solr_doc
   end
 
+  def to_json
+    {
+      id: self.pid,
+      title: self.title
+    }
+  end
+
   # Other validation to consider adding into future iterations is the ability to
   # validate against a known controlled vocabulary. This one will take some thought
   # and research as opposed to being able to just throw something together in an ad hoc

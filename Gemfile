@@ -113,7 +113,7 @@
     gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'avalon-r4'
     gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'avalon-r4'
     gem 'daemons'
-    gem 'rspec-rails', '~>2.9'
+    gem 'rspec-rails'
     gem 'puma'
     gem 'rb-fsevent', '~> 0.9.1'
     gem 'letter_opener'
@@ -131,7 +131,6 @@
     gem 'factory_girl_rails'
     gem 'mime-types', ">=1.1"
     gem "headless"
-    gem "rspec_junit_formatter"
     gem 'rspec-its'
     gem 'simplecov'
     gem 'email_spec'

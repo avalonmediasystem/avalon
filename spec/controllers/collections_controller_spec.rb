@@ -98,6 +98,30 @@ describe Admin::CollectionsController, type: :controller do
     end
   end
 
+  describe "#index" do
+    let!(:collection) { FactoryGirl.create(:collection) }
+    subject(:json) { JSON.parse(response.body) }
+
+    before do
+      login_as(:administrator)
+      get 'index', format:'json'
+    end
+
+    it "should return list of collections" do
+      expect(json.count).to eq(1)
+      expect(json.first['id']).to eq(collection.pid)
+      expect(json.first['name']).to eq(collection.name)
+      expect(json.first['unit']).to eq(collection.unit)
+      expect(json.first['description']).to eq(collection.description)
+      expect(json.first['object_count']['total']).to eq(collection.media_objects.count)
+      expect(json.first['object_count']['published']).to eq(collection.media_objects.reject{|mo| !mo.published?}.count)
+      expect(json.first['object_count']['unpublished']).to eq(collection.media_objects.reject{|mo| mo.published?}.count)
+      expect(json.first['roles']['managers']).to eq(collection.managers)
+      expect(json.first['roles']['editors']).to eq(collection.editors)
+      expect(json.first['roles']['depositors']).to eq(collection.depositors)
+    end
+  end
+
   describe "#show" do
     let!(:collection) { FactoryGirl.create(:collection) }
 
@@ -112,6 +136,48 @@ describe Admin::CollectionsController, type: :controller do
       get 'show', id: collection.id
       response.should redirect_to(admin_collections_path)
     end
+
+    context "with json format" do
+      subject(:json) { JSON.parse(response.body) }
+
+      before do
+        login_as(:administrator)
+        get 'show', id: collection.pid, format:'json'
+      end
+
+      it "should return json for specific collection" do
+        expect(json['id']).to eq(collection.pid)
+        expect(json['name']).to eq(collection.name)
+        expect(json['unit']).to eq(collection.unit)
+        expect(json['description']).to eq(collection.description)
+        expect(json['object_count']['total']).to eq(collection.media_objects.count)
+        expect(json['object_count']['published']).to eq(collection.media_objects.reject{|mo| !mo.published?}.count)
+        expect(json['object_count']['unpublished']).to eq(collection.media_objects.reject{|mo| mo.published?}.count)
+        expect(json['roles']['managers']).to eq(collection.managers)
+        expect(json['roles']['editors']).to eq(collection.editors)
+        expect(json['roles']['depositors']).to eq(collection.depositors)
+      end
+
+      it "should return 404 if requested collection not present" do
+        login_as(:administrator)
+        get 'show', id: 'avalon:doesnt_exist', format: 'json'
+        expect(response.status).to eq(404)
+        expect(JSON.parse(response.body)["errors"].class).to eq Array
+        expect(JSON.parse(response.body)["errors"].first.class).to eq String
+      end
+    end
+  end
+
+  describe "#items" do
+    let!(:collection) { FactoryGirl.create(:collection, items: 2) }
+
+    it "should return json for specific collection's media objects" do
+      login_as(:administrator)
+      get 'items', id: collection.pid, format: 'js'
+      expect(JSON.parse(response.body)).to include(collection.media_objects[0].pid,collection.media_objects[1].pid)
+      #TODO add check that mediaobject is serialized to json properly
+    end
+
   end
 
   describe "#create" do
