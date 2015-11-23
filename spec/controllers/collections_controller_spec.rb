@@ -160,7 +160,7 @@ describe Admin::CollectionsController, type: :controller do
 
       it "should return 404 if requested collection not present" do
         login_as(:administrator)
-        get 'show', id: :doesnt_exist, format: 'json'
+        get 'show', id: 'avalon:doesnt_exist', format: 'json'
         expect(response.status).to eq(404)
         expect(JSON.parse(response.body)["errors"].class).to eq Array
         expect(JSON.parse(response.body)["errors"].first.class).to eq String
