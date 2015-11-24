@@ -419,8 +419,14 @@ class MediaObject < ActiveFedora::Base
 
   def to_json
     {
-      id: self.pid,
-      title: self.title
+      id: pid,
+      title: title,
+      collection: collection.name,
+      main_contributors: creator, 
+      publication_date: date_created, 
+      published_by: avalon_publisher,
+      published: !avalon_publisher.nil?, 
+      summary: abstract
     }
   end
 
