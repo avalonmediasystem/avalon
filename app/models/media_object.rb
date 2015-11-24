@@ -423,7 +423,7 @@ class MediaObject < ActiveFedora::Base
       main_contributors: creator, 
       publication_date: date_created, 
       published_by: avalon_publisher,
-      published: !avalon_publisher.nil?, 
+      published: published?, 
       summary: abstract
     }
   end
