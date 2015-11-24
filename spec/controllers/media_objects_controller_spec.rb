@@ -17,11 +17,86 @@ require 'spec_helper'
 describe MediaObjectsController, type: :controller do
   render_views
 
+  before(:each) do
+    request.env["HTTP_REFERER"] = '/'
+  end
+
+  describe "#create" do
+    let!(:collection) { FactoryGirl.create(:collection) }
+
+    it "should respond with 422 if collection not found" do
+      post 'create', collection_id: Faker::Lorem.word
+      expect(response.status).to eq(422)
+      expect(JSON.parse(response.body)).to include('errors')
+      expect(JSON.parse(response.body)["errors"].class).to eq Array
+      expect(JSON.parse(response.body)["errors"].first.class).to eq String
+    end
+    it "should create a new mediaobject" do
+      media_object = FactoryGirl.create(:multiple_entries)
+      testdir = 'spec/fixtures/'
+      filename = 'videoshort.high.mp4'
+      absolute_location = File.join(testdir, filename)
+      structure = File.read(File.join(testdir, 'structure.xml'))
+      masterfile = {
+        file_location: absolute_location,
+        label: "Part 1",
+        file_checksum: "7ae24368ccb7a6c6422a14ff73f33c9a",
+        file_size: "199160",
+        duration: "6315",
+        display_aspect_ratio: "1.7777777777777777",
+        original_frame_size: "200x110",
+        file_format: "Moving image",
+        poster_offset: "0:02",
+        thumbnail_offset: "0:02",
+        workflow_name: "avalon",
+        percent_complete: "100.0",
+        percent_succeeded: "100.0",
+        percent_failed: "0",
+        status_code: "COMPLETED",
+        structure: structure
+      }
+      descMetadata_fields = [:title,
+                             :alternative_title,
+                             :translated_title,
+                             :uniform_title,
+                             :statement_of_responsibility,
+                             :creator,
+                             :date_created,
+                             :date_issued,
+                             :copyright_date,
+                             :abstract,
+                             :note,
+                             :format,
+                             :resource_type,
+                             :contributor,
+                             :publisher,
+                             :genre,
+                             :subject,
+                             :related_item_url,
+                             :geographic_subject,
+                             :temporal_subject,
+                             :topical_subject,
+                             :bibliographic_id,
+                             :language,
+                             :terms_of_use,
+                             :table_of_contents,
+                             :physical_description,
+                             :other_identifier
+                           ]
+      fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
+      post 'create', fields: fields, files: [masterfile], collection_id: collection.pid
+      expect(response.status).to eq(200)
+      new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+      expect(new_media_object.title).to eq media_object.title
+      expect(new_media_object.creator).to eq media_object.creator
+      expect(new_media_object.date_issued).to eq media_object.date_issued
+      expect(new_media_object.parts_with_order).to eq new_media_object.parts
+    end
+
+  end
+
   describe "#new" do
     let!(:collection) { FactoryGirl.create(:collection) }
-    before(:each) do
-      request.env["HTTP_REFERER"] = '/'
-    end
 
     it "should redirect to sign in page with a notice when unauthenticated" do
       expect { get 'new', collection_id: collection.pid }.not_to change { MediaObject.count }

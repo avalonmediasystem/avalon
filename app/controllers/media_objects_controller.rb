@@ -20,7 +20,7 @@ class MediaObjectsController < ApplicationController
   include ConditionalPartials
 
 #  before_filter :enforce_access_controls
-  before_filter :inject_workflow_steps, only: [:edit, :update]
+  before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
   before_filter :load_player_context, only: [:show, :show_progress]
 
   def self.is_editor ctx
@@ -59,6 +59,46 @@ class MediaObjectsController < ApplicationController
     @mediaobject.save(:validate => false)
 
     redirect_to edit_media_object_path(@mediaobject)
+  end
+
+  # POST /media_objects
+  def create
+    begin
+      collection = Admin::Collection.find(params[:collection_id])
+    rescue ActiveFedora::ObjectNotFoundError
+      render json: {errors: ["Collection not found for #{params[:collection_id]}"]}, status: 422
+      return
+    end
+    @mediaobject = MediaObject.new(avalon_uploader: collection.managers.first, collection: collection)
+    @mediaobject.update_datastream(:descMetadata, params[:fields])
+    error_messages = []
+    if !@mediaobject.save
+        error_messages += ['Failed to create media object:']+@mediaobject.errors.full_messages
+    else
+      params[:files].each do |file_spec|
+        master_file = MasterFile.new(file_spec.except :structure)
+        master_file.mediaobject = @mediaobject
+        master_file.structuralMetadata.content = file_spec[:structure] if file_spec[:structure].present?
+        master_file.label = file_spec[:label] if file_spec[:label].present?
+        if master_file.save
+          @mediaobject.parts += [master_file]
+        else
+          error_messages += ["Problem saving MasterFile for #{file_spec[:file_location] rescue "<unknown>"}:"]+master_file.errors.full_messages
+          @mediaobject.destroy
+          break
+        end
+      end   
+      @mediaobject.parts_with_order = @mediaobject.parts
+      if !@mediaobject.save
+        error_messages += ['Failed to create media object:']+@mediaobject.errors.full_messages
+      end
+    end
+    if error_messages.empty?
+      render json: {id: @mediaobject.pid}, status: 200
+    else
+      render json: {errors: error_messages}, status: 422
+      @mediaobject.destroy
+    end
   end
 
   def custom_edit
@@ -275,4 +315,5 @@ class MediaObjectsController < ApplicationController
     # If you haven't dropped out by this point return an empty item
     nil
   end 
+  
 end

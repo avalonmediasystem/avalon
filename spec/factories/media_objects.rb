@@ -78,8 +78,9 @@ FactoryGirl.define do
   factory :multiple_entries, class: MediaObject do
     title 'Multiple contributors'
     creator ['RSpec']
-    date_issued '#{Date.today.edtf}'
+    date_issued {"#{Date.today.edtf}"}
     abstract 'A record with multiple contributors, publishers, and search terms'
+    collection {FactoryGirl.create(:collection)}
     
     contributor ['Chris Colvard', 'Nathan Rogers', 'Phuong Dinh']
     publisher ['Mark Notess', 'Jon Dunn', 'Stu Baker']

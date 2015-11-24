@@ -34,7 +34,7 @@ Avalon::Application.routes.draw do
 
   resources :vocabulary, except: [:create, :destroy, :new, :edit]
 
-  resources :media_objects, except: [:create] do
+  resources :media_objects do
     member do
       put :update_status
       get :progress, :action => :show_progress
