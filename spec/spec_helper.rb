@@ -98,7 +98,7 @@ RSpec.configure do |config|
     Rails.cache.clear
     DatabaseCleaner.start
     RoleMap.reset!
-    Admin::Collection.stub(:units).and_return ['University Archives', 'University Library']
+    allow(Admin::Collection).to receive(:units).and_return ['University Archives', 'University Library']
   end
 
   config.after(:each) do

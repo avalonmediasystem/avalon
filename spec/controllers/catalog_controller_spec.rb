@@ -20,24 +20,24 @@ describe CatalogController do
       it "should show results for items that are public and published" do
         mo = FactoryGirl.create(:published_media_object, visibility: 'public')
         get 'index', :q => ""
-        response.should be_success
-        response.should render_template('catalog/index')
-        assigns(:document_list).count.should eql(1)
-        assigns(:document_list).map(&:id).should == [mo.id]
+        expect(response).to be_success
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:document_list).count).to eql(1)
+        expect(assigns(:document_list).map(&:id)).to eq([mo.id])
       end
       it "should not show results for items that are not public" do
         mo = FactoryGirl.create(:published_media_object, visibility: 'restricted')
         get 'index', :q => ""
-        response.should be_success
-        response.should render_template('catalog/index')
-        assigns(:document_list).count.should eql(0)
+        expect(response).to be_success
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:document_list).count).to eql(0)
       end
       it "should not show results for items that are not published" do
         mo = FactoryGirl.create(:media_object, visibility: 'public')
         get 'index', :q => ""
-        response.should be_success
-        response.should render_template('catalog/index')
-        assigns(:document_list).count.should eql(0)
+        expect(response).to be_success
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:document_list).count).to eql(0)
       end
     end
     describe "as an authenticated user" do
@@ -47,24 +47,24 @@ describe CatalogController do
       it "should show results for items that are published and available to registered users" do
         mo = FactoryGirl.create(:published_media_object, visibility: 'restricted')
         get 'index', :q => ""
-        response.should be_success
-        response.should render_template('catalog/index')
-        assigns(:document_list).count.should eql(1)
-        assigns(:document_list).map(&:id).should == [mo.id]
+        expect(response).to be_success
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:document_list).count).to eql(1)
+        expect(assigns(:document_list).map(&:id)).to eq([mo.id])
       end
       it "should not show results for items that are not public or available to registered users" do
         mo = FactoryGirl.create(:published_media_object, visibility: 'private')
         get 'index', :q => ""
-        response.should be_success
-        response.should render_template('catalog/index')
-        assigns(:document_list).count.should eql(0)
+        expect(response).to be_success
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:document_list).count).to eql(0)
       end
       it "should not show results for items that are not published" do
         mo = FactoryGirl.create(:media_object, visibility: 'public')
         get 'index', :q => ""
-        response.should be_success
-        response.should render_template('catalog/index')
-        assigns(:document_list).count.should eql(0)
+        expect(response).to be_success
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:document_list).count).to eql(0)
       end
     end
     describe "as a manager" do
@@ -74,17 +74,17 @@ describe CatalogController do
       it "should show results for items that are unpublished, private, and belong to one of my collections" do
         mo = FactoryGirl.create(:media_object, visibility: 'private', collection: collection)
         get 'index', :q => ""
-        response.should be_success
-        response.should render_template('catalog/index')
-        assigns(:document_list).count.should eql(1)
-        assigns(:document_list).map(&:id).should == [mo.id]
+        expect(response).to be_success
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:document_list).count).to eql(1)
+        expect(assigns(:document_list).map(&:id)).to eq([mo.id])
       end
       it "should not show results for items that do not belong to one of my collections" do
         mo = FactoryGirl.create(:media_object, visibility: 'private')
         get 'index', :q => ""
-        response.should be_success
-        response.should render_template('catalog/index')
-        assigns(:document_list).count.should eql(0)
+        expect(response).to be_success
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:document_list).count).to eql(0)
       end
     end
 		describe "as an administrator" do
@@ -93,10 +93,10 @@ describe CatalogController do
 			it "should show results for all items" do
         mo = FactoryGirl.create(:media_object, visibility: 'private')
         get 'index', :q => ""
-        response.should be_success
-        response.should render_template('catalog/index')
-        assigns(:document_list).count.should eql(1)
-        assigns(:document_list).map(&:id).should == [mo.id]
+        expect(response).to be_success
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:document_list).count).to eql(1)
+        expect(assigns(:document_list).map(&:id)).to eq([mo.id])
       end
 		end
     describe "as an lti user" do
@@ -105,10 +105,10 @@ describe CatalogController do
       it "should show results for items visible to the lti virtual group" do
         mo = FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
         get 'index', :q => "read_access_virtual_group_ssim:#{lti_group}"
-        response.should be_success
-        response.should render_template('catalog/index')
-        assigns(:document_list).count.should eql(1)
-        assigns(:document_list).map(&:id).should == [mo.id]
+        expect(response).to be_success
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:document_list).count).to eql(1)
+        expect(assigns(:document_list).map(&:id)).to eq([mo.id])
       end
     end
 

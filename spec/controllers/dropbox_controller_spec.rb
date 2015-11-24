@@ -26,18 +26,18 @@ describe DropboxController do
     @collection = FactoryGirl.create(:collection)
     @temp_files = (0..20).map{|index| { name: "a_movie_#{index}.mov" } }
     @dropbox = double(Avalon::Dropbox)
-    @dropbox.stub(:all).and_return @temp_files
-    Avalon::Dropbox.stub(:new).and_return(@dropbox)
+    allow(@dropbox).to receive(:all).and_return @temp_files
+    allow(Avalon::Dropbox).to receive(:new).and_return(@dropbox)
   end
 
   it 'deletes video/audio files' do
-    @dropbox.should_receive(:delete).exactly(@temp_files.count).times
+    expect(@dropbox).to receive(:delete).exactly(@temp_files.count).times
     delete :bulk_delete, { :collection_id => @collection.pid, :filenames => @temp_files.map{|f| f[:name] } }
   end
 
   it "should allow the collection manager to delete" do
     login_user @collection.managers.first
-    @dropbox.should_receive(:delete).exactly(@temp_files.count).times
+    expect(@dropbox).to receive(:delete).exactly(@temp_files.count).times
     delete :bulk_delete, {:collection_id => @collection.pid, :filenames => @temp_files.map{|f| f[:name]}}
     expect(response.status).to be(200)
   end

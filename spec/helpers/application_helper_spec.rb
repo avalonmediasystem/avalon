@@ -17,39 +17,39 @@ require 'spec_helper'
 describe ApplicationHelper do
   describe "#active_for_controller" do
     before(:each) do
-      helper.stub(:params).and_return({controller: 'media_objects'})
+      allow(helper).to receive(:params).and_return({controller: 'media_objects'})
     end
     it "should return 'active' for matching controller names" do
-      helper.active_for_controller('media_objects').should == 'active'
+      expect(helper.active_for_controller('media_objects')).to eq('active')
     end
     it "should return '' for non-matching controller names" do
-      helper.active_for_controller('master_files').should == ''
+      expect(helper.active_for_controller('master_files')).to eq('')
     end
     it "should handle name-spaced controllers" do
-      helper.stub(:params).and_return({controller: 'admin/groups'})
-      helper.active_for_controller('admin/groups').should == 'active'
-      helper.active_for_controller('groups').should == ''
+      allow(helper).to receive(:params).and_return({controller: 'admin/groups'})
+      expect(helper.active_for_controller('admin/groups')).to eq('active')
+      expect(helper.active_for_controller('groups')).to eq('')
     end
   end
 
   describe "#stream_label_for" do
     it "should return the label first if it is available" do
       master_file = FactoryGirl.build(:master_file, label: 'Label')
-      master_file.file_location.should_not be_nil
-      master_file.label.should_not be_nil
-      helper.stream_label_for(master_file).should == 'Label'
+      expect(master_file.file_location).not_to be_nil
+      expect(master_file.label).not_to be_nil
+      expect(helper.stream_label_for(master_file)).to eq('Label')
     end
     it "should return the filename second if it is available" do
       master_file = FactoryGirl.build(:master_file, label: nil)
-      master_file.file_location.should_not be_nil
-      master_file.label.should be_nil
-      helper.stream_label_for(master_file).should == File.basename(master_file.file_location)
+      expect(master_file.file_location).not_to be_nil
+      expect(master_file.label).to be_nil
+      expect(helper.stream_label_for(master_file)).to eq(File.basename(master_file.file_location))
     end
     it "should handle empty file_locations and labels" do
       master_file = FactoryGirl.build(:master_file, file_location: nil, label: nil)
-      master_file.file_location.should be_nil
-      master_file.label.should be_nil
-      helper.stream_label_for(master_file).should == master_file.pid
+      expect(master_file.file_location).to be_nil
+      expect(master_file.label).to be_nil
+      expect(helper.stream_label_for(master_file)).to eq(master_file.pid)
     end
   end
 

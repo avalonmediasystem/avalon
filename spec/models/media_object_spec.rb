@@ -23,15 +23,15 @@ describe MediaObject do
       it 'has errors when not present' do
         media_object.collection = nil
         media_object.valid?
-        media_object.errors.should include(:collection)
+        expect(media_object.errors).to include(:collection)
       end
       it 'does not have errors when present' do
         media_object.valid?
-        media_object.errors[:collection].should be_empty
+        expect(media_object.errors[:collection]).to be_empty
       end
     end
     describe 'governing_policy' do
-      it {should validate_presence_of(:governing_policy)}
+      it {is_expected.to validate_presence_of(:governing_policy)}
     end
     describe 'language' do
       it 'should validate valid language' do
@@ -115,8 +115,8 @@ describe MediaObject do
   describe 'delegators' do
     it 'correctly sets the creator' do
       media_object.creator = ['Creator, Joan']
-      media_object.creator.should include('Creator, Joan')
-      media_object.descMetadata.creator.should include('Creator, Joan')
+      expect(media_object.creator).to include('Creator, Joan')
+      expect(media_object.descMetadata.creator).to include('Creator, Joan')
     end
   end
 
@@ -127,23 +127,23 @@ describe MediaObject do
       subject{ ability}
       let(:ability){ Ability.new(User.where(username: collection.managers.first).first) }
 
-      it{ should be_able_to(:create, MediaObject) }
-      it{ should be_able_to(:read, media_object) }
-      it{ should be_able_to(:update, media_object) }
-      it{ should be_able_to(:destroy, media_object) }
-      it{ should be_able_to(:inspect, media_object) }
+      it{ is_expected.to be_able_to(:create, MediaObject) }
+      it{ is_expected.to be_able_to(:read, media_object) }
+      it{ is_expected.to be_able_to(:update, media_object) }
+      it{ is_expected.to be_able_to(:destroy, media_object) }
+      it{ is_expected.to be_able_to(:inspect, media_object) }
       it "should be able to destroy and unpublish published item" do
         media_object.publish! "someone"
-        subject.should be_able_to(:destroy, media_object)
-        subject.should be_able_to(:unpublish, media_object)
+        expect(subject).to be_able_to(:destroy, media_object)
+        expect(subject).to be_able_to(:unpublish, media_object)
       end
 
       context 'and logged in through LTI' do
         let(:ability){ Ability.new(User.where(username: collection.managers.first).first, {full_login: false, virtual_groups: [Faker::Lorem.word]}) }
 
-        it{ should_not be_able_to(:share, MediaObject) }
-        it{ should_not be_able_to(:update, media_object) }
-        it{ should_not be_able_to(:destroy, media_object) }
+        it{ is_expected.not_to be_able_to(:share, MediaObject) }
+        it{ is_expected.not_to be_able_to(:update, media_object) }
+        it{ is_expected.not_to be_able_to(:destroy, media_object) }
       end
     end
 
@@ -151,17 +151,17 @@ describe MediaObject do
       subject{ ability}
       let(:ability){ Ability.new(User.where(username: collection.editors.first).first) }
 
-      it{ should be_able_to(:create, MediaObject) }
-      it{ should be_able_to(:read, media_object) }
-      it{ should be_able_to(:update, media_object) }
-      it{ should be_able_to(:destroy, media_object) }
-      it{ should be_able_to(:update_access_control, media_object) }
+      it{ is_expected.to be_able_to(:create, MediaObject) }
+      it{ is_expected.to be_able_to(:read, media_object) }
+      it{ is_expected.to be_able_to(:update, media_object) }
+      it{ is_expected.to be_able_to(:destroy, media_object) }
+      it{ is_expected.to be_able_to(:update_access_control, media_object) }
       it "should not be able to destroy and unpublish published item" do
         media_object.publish! "someone"
-        subject.should_not be_able_to(:destroy, media_object)
-        subject.should_not be_able_to(:update, media_object)
-        subject.should_not be_able_to(:update_access_control, media_object)
-        subject.should_not be_able_to(:unpublish, media_object)
+        expect(subject).not_to be_able_to(:destroy, media_object)
+        expect(subject).not_to be_able_to(:update, media_object)
+        expect(subject).not_to be_able_to(:update_access_control, media_object)
+        expect(subject).not_to be_able_to(:unpublish, media_object)
       end
     end
 
@@ -169,16 +169,16 @@ describe MediaObject do
       subject{ ability }
       let(:ability){ Ability.new(User.where(username: collection.depositors.first).first) }
 
-      it{ should be_able_to(:create, MediaObject) }
-      it{ should be_able_to(:read, media_object) }
-      it{ should be_able_to(:update, media_object) }
-      it{ should be_able_to(:destroy, media_object) }
+      it{ is_expected.to be_able_to(:create, MediaObject) }
+      it{ is_expected.to be_able_to(:read, media_object) }
+      it{ is_expected.to be_able_to(:update, media_object) }
+      it{ is_expected.to be_able_to(:destroy, media_object) }
       it "should not be able to destroy and unpublish published item" do
         media_object.publish! "someone"
-        subject.should_not be_able_to(:destroy, media_object)
-        subject.should_not be_able_to(:unpublish, media_object)
+        expect(subject).not_to be_able_to(:destroy, media_object)
+        expect(subject).not_to be_able_to(:unpublish, media_object)
       end
-      it{ should_not be_able_to(:update_access_control, media_object) }
+      it{ is_expected.not_to be_able_to(:update_access_control, media_object) }
     end
 
     context 'when end-user' do
@@ -186,23 +186,23 @@ describe MediaObject do
       let(:ability){ Ability.new(user) }
       let(:user){FactoryGirl.create(:user)}
 
-      it{ should be_able_to(:share, MediaObject) }
+      it{ is_expected.to be_able_to(:share, MediaObject) }
       it "should not be able to read unauthorized, published MediaObject" do
         media_object.avalon_publisher = "random"
         media_object.save
-        subject.can?(:read, media_object).should be false
+        expect(subject.can?(:read, media_object)).to be false
       end
 
       it "should not be able to read authorized, unpublished MediaObject" do
         media_object.read_users += [user.user_key]
-        media_object.should_not be_published
-        subject.can?(:read, media_object).should be false
+        expect(media_object).not_to be_published
+        expect(subject.can?(:read, media_object)).to be false
       end
 
       it "should be able to read authorized, published MediaObject" do
         media_object.read_users += [user.user_key]
         media_object.publish! "random"
-        subject.can?(:read, media_object).should be true
+        expect(subject.can?(:read, media_object)).to be true
       end
     end
 
@@ -211,7 +211,7 @@ describe MediaObject do
       let(:user){ FactoryGirl.create(:user_lti) }
       let(:ability){ Ability.new(user, {full_login: false, virtual_groups: [Faker::Lorem.word]}) }
 
-      it{ should_not be_able_to(:share, MediaObject) }
+      it{ is_expected.not_to be_able_to(:share, MediaObject) }
     end
 
     context 'when ip address' do
@@ -242,16 +242,16 @@ describe MediaObject do
   end
 
   describe "Required metadata is present" do
-    it {should validate_presence_of(:creator)}
-    it {should validate_presence_of(:date_issued)}
-    it {should validate_presence_of(:title)}
+    it {is_expected.to validate_presence_of(:creator)}
+    it {is_expected.to validate_presence_of(:date_issued)}
+    it {is_expected.to validate_presence_of(:title)}
   end
 
   describe "Languages are handled correctly" do
     it "should handle pairs of language codes and language names" do
       media_object.update_datastream(:descMetadata, :language => ['eng','French','spa','uig'])
-      media_object.descMetadata.language_code.to_a.should =~ ['eng','fre','spa','uig']
-      media_object.descMetadata.language_text.to_a.should =~ ['English','French','Spanish','Uighur']
+      expect(media_object.descMetadata.language_code.to_a).to match_array(['eng','fre','spa','uig'])
+      expect(media_object.descMetadata.language_text.to_a).to match_array(['English','French','Spanish','Uighur'])
     end
   end
 
@@ -271,27 +271,27 @@ describe MediaObject do
       media_object.contributor = contributor
       media_object.save
 
-      media_object.contributor.length.should == 1
-      media_object.contributor.should == [contributor]
+      expect(media_object.contributor.length).to eq(1)
+      expect(media_object.contributor).to eq([contributor])
     end
 
     xit "should support multiple contributors" do
       contributors =  ['Chris Colvard', 'Phuong Dinh', 'Michael Klein', 'Nathan Rogers']
       media_object.contributor = contributors
       media_object.save
-      media_object.contributor.length.should > 1
-      media_object.contrinbutor.should == contributors
+      expect(media_object.contributor.length).to be > 1
+      expect(media_object.contrinbutor).to eq(contributors)
     end
 
     xit "should support multiple publishers" do
       media_object.publisher = ['Indiana University']
-      media_object.publisher.length.should == 1
+      expect(media_object.publisher.length).to eq(1)
       
       publishers = ['Indiana University', 'Northwestern University', 'Ohio State University', 'Notre Dame']
       media_object.publisher = publishers
       media_object.save
-      media_object.publisher.length.should > 1
-      media_object.publisher.should == publishers
+      expect(media_object.publisher.length).to be > 1
+      expect(media_object.publisher).to eq(publishers)
     end
   end
   
@@ -305,11 +305,11 @@ describe MediaObject do
         'date_created'=> '1956'
       }
       media_object.update_datastream(:descMetadata, params)
-      media_object.creator.should      == params['creator']
-      media_object.contributor.should  == params['contributor']
-      media_object.title.should        == params['title']
-      media_object.date_issued.should  == params['date_issued']
-      media_object.date_created.should == params['date_created']
+      expect(media_object.creator).to      eq(params['creator'])
+      expect(media_object.contributor).to  eq(params['contributor'])
+      expect(media_object.title).to        eq(params['title'])
+      expect(media_object.date_issued).to  eq(params['date_issued'])
+      expect(media_object.date_created).to eq(params['date_created'])
     end
   end
 
@@ -325,24 +325,24 @@ describe MediaObject do
 
   describe "Ingest status" do
     it "should default to unpublished" do
-      media_object.workflow.published.first.should eq "false"
-      media_object.workflow.published?.should eq false
+      expect(media_object.workflow.published.first).to eq "false"
+      expect(media_object.workflow.published?).to eq false
     end
 
     it "should be published when the item is visible" do
       media_object.workflow.publish
 
-      media_object.workflow.published.should == ['true'] 
-      media_object.workflow.last_completed_step.first.should == HYDRANT_STEPS.last.step
+      expect(media_object.workflow.published).to eq(['true']) 
+      expect(media_object.workflow.last_completed_step.first).to eq(HYDRANT_STEPS.last.step)
     end
 
     it "should recognize the current step" do
       media_object.workflow.last_completed_step = 'structure'
-      media_object.workflow.current?('access-control').should == true
+      expect(media_object.workflow.current?('access-control')).to eq(true)
     end
 
     it "should default to the first workflow step" do
-      media_object.workflow.last_completed_step.should == ['']
+      expect(media_object.workflow.last_completed_step).to eq([''])
     end
   end
 
@@ -350,32 +350,32 @@ describe MediaObject do
     it 'returns true if the statuses indicate processing is finished' do
       media_object.parts << MasterFile.new(status_code: 'CANCELLED')
       media_object.parts << MasterFile.new(status_code: 'COMPLETED')
-      media_object.finished_processing?.should be true
+      expect(media_object.finished_processing?).to be true
     end
     it 'returns true if the statuses indicate processing is not finished' do
       media_object.parts << MasterFile.new(status_code: 'CANCELLED')
       media_object.parts << MasterFile.new(status_code: 'RUNNING')
-      media_object.finished_processing?.should be false
+      expect(media_object.finished_processing?).to be false
     end
   end
 
   describe '#calculate_duration' do
     it 'returns zero if there are zero master files' do
-      media_object.send(:calculate_duration).should == 0      
+      expect(media_object.send(:calculate_duration)).to eq(0)      
     end
     it 'returns the correct duration with two master files' do
       media_object.parts << MasterFile.new(duration: '40')
       media_object.parts << MasterFile.new(duration: '40')
-      media_object.send(:calculate_duration).should == 80      
+      expect(media_object.send(:calculate_duration)).to eq(80)      
     end
     it 'returns the correct duration with two master files one nil' do
       media_object.parts << MasterFile.new(duration: '40')
       media_object.parts << MasterFile.new(duration: nil)
-      media_object.send(:calculate_duration).should == 40    
+      expect(media_object.send(:calculate_duration)).to eq(40)    
     end
     it 'returns the correct duration with one master file that is nil' do
       media_object.parts << MasterFile.new(duration:nil)
-      media_object.send(:calculate_duration).should == 0   
+      expect(media_object.send(:calculate_duration)).to eq(0)   
     end
   end
 
@@ -386,14 +386,14 @@ describe MediaObject do
       media_object.section_pid = master_file_pids
       media_object.save( validate: false )
       media_object.destroy
-      MasterFile.exists?(master_file_pids.first).should == false
+      expect(MasterFile.exists?(master_file_pids.first)).to eq(false)
     end
   end
 
   describe '#set_duration!' do
     it 'sets duration on the model' do
       media_object.set_duration!
-      media_object.duration.should == '0'
+      expect(media_object.duration).to eq('0')
     end
   end
 
@@ -419,18 +419,18 @@ describe MediaObject do
     describe 'facet' do
       it 'publishes' do
         media_object.publish!('adam@adam.com')
-        media_object.to_solr["workflow_published_sim"].should == 'Published'
+        expect(media_object.to_solr["workflow_published_sim"]).to eq('Published')
       end
       it 'unpublishes' do
         media_object.publish!(nil)
-        media_object.to_solr["workflow_published_sim"].should == 'Unpublished'        
+        expect(media_object.to_solr["workflow_published_sim"]).to eq('Unpublished')        
       end
     end
   end
 
   describe 'indexing' do
     it 'uses stringified keys for everything except :id' do
-      media_object.to_solr.keys.reject { |k| k.is_a?(String) }.should == [:id]
+      expect(media_object.to_solr.keys.reject { |k| k.is_a?(String) }).to eq([:id])
     end
     it 'should not index any unknown resource types' do
       media_object.descMetadata.resource_type = 'notated music'
@@ -455,7 +455,7 @@ describe MediaObject do
 
     context 'unpublished' do
       it 'is empty when unpublished' do
-        media_object.permalink.should be_blank
+        expect(media_object.permalink).to be_blank
       end
     end
 
@@ -464,21 +464,21 @@ describe MediaObject do
       before(:each){ media_object.publish!('C.S. Lewis') } # saves the object
 
       it 'responds to permalink' do
-        media_object.respond_to?(:permalink).should be true
+        expect(media_object.respond_to?(:permalink)).to be true
       end
 
       it 'sets the permalink on the object' do
-        media_object.permalink.should_not be_nil
+        expect(media_object.permalink).not_to be_nil
       end
 
       it 'sets the correct permalink' do
-        media_object.permalink.should == 'http://www.example.com/perma-url'
+        expect(media_object.permalink).to eq('http://www.example.com/perma-url')
       end
 
       it 'does not remove the permalink if the permalink service returns nil' do
         Permalink.on_generate{ nil }
         media_object.save( validate: false )
-        media_object.permalink.should == 'http://www.example.com/perma-url'
+        expect(media_object.permalink).to eq('http://www.example.com/perma-url')
       end
 
     end
@@ -493,8 +493,8 @@ describe MediaObject do
           'http://www.example.com/perma-url'
         }
         media_object.ensure_permalink!
-        t.should == "http://test.host/media_objects/#{media_object.pid}"
-        media_object.permalink.should == 'http://www.example.com/perma-url'
+        expect(t).to eq("http://test.host/media_objects/#{media_object.pid}")
+        expect(media_object.permalink).to eq('http://www.example.com/perma-url')
       end
 
     end
@@ -503,7 +503,7 @@ describe MediaObject do
 
       it 'logs an error when the permalink service returns an exception' do
         Permalink.on_generate{ 1 / 0 }
-        Rails.logger.should_receive(:error)
+        expect(Rails.logger).to receive(:error)
         media_object.ensure_permalink!
       end
 
@@ -511,7 +511,7 @@ describe MediaObject do
 
     describe "#ensure_permalink!" do
       it 'is not called when the object is not persisted' do
-        media_object.should_not_receive(:ensure_permalink!)
+        expect(media_object).not_to receive(:ensure_permalink!)
         media_object.save
       end
     end
@@ -519,13 +519,13 @@ describe MediaObject do
 
     describe '#ensure_permalink!' do
       it 'returns true when updated' do
-        media_object.should_receive(:ensure_permalink!).at_least(1).times.and_return(false)
+        expect(media_object).to receive(:ensure_permalink!).at_least(1).times.and_return(false)
         media_object.publish!('C.S. Lewis')
       end 
 
       it 'returns false when not updated' do
         media_object.publish!('C.S. Lewis')
-        media_object.should_receive(:ensure_permalink!).and_return(false)
+        expect(media_object).to receive(:ensure_permalink!).and_return(false)
         media_object.save( validate: false )
       end
     end

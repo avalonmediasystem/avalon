@@ -28,15 +28,15 @@ describe Admin::CollectionsController, type: :controller do
       manager = FactoryGirl.create(:manager)
       put 'update', id: collection.id, submit_add_manager: 'Add', add_manager: manager.username
       collection.reload
-      manager.should be_in(collection.managers)
+      expect(manager).to be_in(collection.managers)
     end
 
     it "should not add users to manager role" do
       user = FactoryGirl.create(:user)
       put 'update', id: collection.id, submit_add_manager: 'Add', add_manager: user.username
       collection.reload
-      user.should_not be_in(collection.managers)
-      flash[:notice].should_not be_empty
+      expect(user).not_to be_in(collection.managers)
+      expect(flash[:notice]).not_to be_empty
     end
 
     it "should remove users from manager role" do
@@ -46,7 +46,7 @@ describe Admin::CollectionsController, type: :controller do
       manager = User.where(username: collection.managers.first).first
       put 'update', id: collection.id, remove_manager: manager.username
       collection.reload
-      manager.should_not be_in(collection.managers)
+      expect(manager).not_to be_in(collection.managers)
     end
   end
 
@@ -61,7 +61,7 @@ describe Admin::CollectionsController, type: :controller do
       editor = FactoryGirl.build(:user)
       put 'update', id: collection.id, submit_add_editor: 'Add', add_editor: editor.username
       collection.reload
-      editor.should be_in(collection.editors)
+      expect(editor).to be_in(collection.editors)
     end
 
     it "should remove users from editor role" do
@@ -69,7 +69,7 @@ describe Admin::CollectionsController, type: :controller do
       editor = User.where(username: collection.editors.first).first
       put 'update', id: collection.id, remove_editor: editor.username
       collection.reload
-      editor.should_not be_in(collection.editors)
+      expect(editor).not_to be_in(collection.editors)
     end
   end
 
@@ -84,7 +84,7 @@ describe Admin::CollectionsController, type: :controller do
       depositor = FactoryGirl.build(:user)
       put 'update', id: collection.id, submit_add_depositor: 'Add', add_depositor: depositor.username
       collection.reload
-      depositor.should be_in(collection.depositors)
+      expect(depositor).to be_in(collection.depositors)
     end
 
     it "should remove users from depositor role" do
@@ -92,7 +92,7 @@ describe Admin::CollectionsController, type: :controller do
       depositor = User.where(username: collection.depositors.first).first
       put 'update', id: collection.id, remove_depositor: depositor.username
       collection.reload
-      depositor.should_not be_in(collection.depositors)
+      expect(depositor).not_to be_in(collection.depositors)
     end
   end
 
@@ -126,13 +126,13 @@ describe Admin::CollectionsController, type: :controller do
     it "should allow access to managers" do
       login_user(collection.managers.first)
       get 'show', id: collection.id
-      response.should be_ok
+      expect(response).to be_ok
     end
 
     it "should redirect to collections index when manager doesn't have access" do
       login_as(:manager)
       get 'show', id: collection.id
-      response.should redirect_to(admin_collections_path)
+      expect(response).to redirect_to(admin_collections_path)
     end
 
     context "with json format" do
@@ -183,8 +183,8 @@ describe Admin::CollectionsController, type: :controller do
     before(:each) { login_as(:administrator) } #Login as admin so there will be at least one administrator to get an email
     it "should notify administrators" do
       mock_delay = double('mock_delay').as_null_object 
-      NotificationsMailer.stub(:delay).and_return(mock_delay)
-      mock_delay.should_receive(:new_collection)
+      allow(NotificationsMailer).to receive(:delay).and_return(mock_delay)
+      expect(mock_delay).to receive(:new_collection)
       post 'create', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}
     end
     it "should create a new collection" do
@@ -208,8 +208,8 @@ describe Admin::CollectionsController, type: :controller do
     end 
     it "should notify administrators if name changed" do
       mock_delay = double('mock_delay').as_null_object 
-      NotificationsMailer.stub(:delay).and_return(mock_delay)
-      mock_delay.should_receive(:update_collection)
+      allow(NotificationsMailer).to receive(:delay).and_return(mock_delay)
+      expect(mock_delay).to receive(:update_collection)
       @collection = FactoryGirl.create(:collection)
       put 'update', id: @collection.pid, admin_collection: {name: "#{@collection.name}-new", description: @collection.description, unit: @collection.unit}
     end
