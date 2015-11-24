@@ -23,6 +23,8 @@ class MediaObject < ActiveFedora::Base
   include VersionableModel
   include Permalink
   require 'avalon/controlled_vocabulary'
+
+  include Kaminari::ActiveFedoraModelExtension
   
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
