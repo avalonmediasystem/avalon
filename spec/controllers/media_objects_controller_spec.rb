@@ -345,7 +345,7 @@ describe MediaObjectsController, type: :controller do
         expect(json['main_contributors']).to eq(media_object.creator)
         expect(json['publication_date']).to eq(media_object.date_created)
         expect(json['published_by']).to eq(media_object.avalon_publisher)
-        expect(json['published']).to eq(!media_object.avalon_publisher.nil?)
+        expect(json['published']).to eq(media_object.published?)
         expect(json['summary']).to eq(media_object.abstract)
       end
 
