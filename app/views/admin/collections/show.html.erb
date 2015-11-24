@@ -22,7 +22,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <p> <strong>Unit:</strong> <%= @collection.unit %> </p>
     <%= link_to('Create An Item', new_media_object_path(collection_id: @collection.pid), class: 'btn btn-primary') if can? :create, MediaObject %>
     <%= link_to('List All Items', catalog_index_path('f[collection_ssim][]' => @collection.name), class: 'btn btn-default') %>
-    <%= link_to('Edit Collection Info', edit_admin_collection_path(@collection), class: 'btn btn-default', remote: true, modal: true) if can? :update, @collection %>
+    <%= button_tag('Edit Collection Info', class: 'btn btn-default', data: {toggle:"modal", target:"#new_collection"}) if can? :update, @collection %>
     <br/><br>
     Or <a href='https://wiki.dlib.indiana.edu/display/VarVideo/Avalon+Collections+Guide#AvalonCollectionsGuide-UploadingviaBatch'><b>learn how to</b></a> create items using batch upload.
     </div>
@@ -73,9 +73,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   [name='save_access'] { margin-left: 20px;  }
 </style>
 
+<%= render "form" %>
+
 <% content_for :page_scripts do %>
   <%= javascript_include_tag 'autocomplete' %>
-  <script>
-    new ModalLogic()
-  </script>
 <% end %>
