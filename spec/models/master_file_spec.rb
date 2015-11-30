@@ -414,4 +414,16 @@ describe MasterFile do
       expect(ingest_batch.reload.email_sent?).to be true
     end
   end
+
+  describe '#update_progress_on_success!' do
+    subject(:master_file) { FactoryGirl.create(:master_file) }
+    let(:encode) { double("encode", :output => []) }
+
+    it 'should set the digitized date' do
+      master_file.update_progress_on_success!(encode)
+      master_file.reload
+      expect(master_file.date_digitized).to_not be_empty
+    end
+    
+  end
 end

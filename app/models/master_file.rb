@@ -44,6 +44,7 @@ class MasterFile < ActiveFedora::Base
     d.field :file_format, :string
     d.field :poster_offset, :string
     d.field :thumbnail_offset, :string
+    d.field :date_digitized, :string
   end
 
   has_metadata name: 'mhMetadata', :type => ActiveFedora::SimpleDatastream do |d|
@@ -61,7 +62,7 @@ class MasterFile < ActiveFedora::Base
 
   has_metadata name: 'masterFile', type: UrlDatastream
 
-  has_attributes :file_location, :file_checksum, :file_size, :duration, :display_aspect_ratio, :original_frame_size, :file_format, :poster_offset, :thumbnail_offset, datastream: :descMetadata, multiple: false
+  has_attributes :file_location, :file_checksum, :file_size, :duration, :display_aspect_ratio, :original_frame_size, :file_format, :poster_offset, :thumbnail_offset, :date_digitized, datastream: :descMetadata, multiple: false
   has_attributes :workflow_id, :workflow_name, :encoder_classname, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures, datastream: :mhMetadata, multiple: false
 
   has_file_datastream name: 'thumbnail'
@@ -316,6 +317,9 @@ class MasterFile < ActiveFedora::Base
         existing.delete
       end
     end
+
+    #Set date digitized to now
+    self.date_digitized = DateTime.now.to_s
 
     save
 
