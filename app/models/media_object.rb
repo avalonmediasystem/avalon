@@ -391,7 +391,7 @@ class MediaObject < ActiveFedora::Base
     solr_doc["dc_publisher_tesim"] = self.publisher
     solr_doc["title_ssort"] = self.title
     solr_doc["creator_ssort"] = Array(self.creator).join(', ')
-    solr_doc["date_digitized_sim"] = parts.collect {|mf| mf.date_digitized }.compact.map {|dt| dt.split('T').first }
+    solr_doc["date_digitized_sim"] = parts.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
     #Add all searchable fields to the all_text_timv field
     all_text_values = []
     all_text_values << solr_doc["title_tesi"]

@@ -319,7 +319,7 @@ class MasterFile < ActiveFedora::Base
     end
 
     #Set date digitized to now
-    self.date_digitized = DateTime.now.to_s
+    self.date_digitized = Time.now.utc.iso8601
 
     save
 
