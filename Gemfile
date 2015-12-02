@@ -131,7 +131,6 @@
     gem 'factory_girl_rails'
     gem 'mime-types', ">=1.1"
     gem "headless"
-    gem 'rspec-its'
     gem 'simplecov'
     gem 'email_spec'
     gem 'capybara'

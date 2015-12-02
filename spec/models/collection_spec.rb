@@ -133,54 +133,17 @@ describe Admin::Collection do
     it {is_expected.to ensure_inclusion_of(:unit).in_array(Admin::Collection.units)}
     it "should ensure length of :managers is_at_least(1)"
 
-    describe '#name' do
-      subject { super().name }
-      it {is_expected.to eq("Herman B. Wells Collection")}
-    end
-
-    describe '#unit' do
-      subject { super().unit }
-      it {is_expected.to eq("University Archives")}
-    end
-
-    describe '#description' do
-      subject { super().description }
-      it {is_expected.to eq("Collection about our 11th university president, 1938-1962")}
-    end
-
-    describe '#created_at' do
-      subject { super().created_at }
-      it {is_expected.to eq(DateTime.parse(wells_collection.create_date))}
-    end
-
-    describe '#managers' do
-      subject { super().managers }
-      it {is_expected.to eq([manager.username])}
-    end
-
-    describe '#editors' do
-      subject { super().editors }
-      it {is_expected.to eq([editor.username])}
-    end
-
-    describe '#depositors' do
-      subject { super().depositors }
-      it {is_expected.to eq([depositor.username])}
-    end
-
-    describe '#rightsMetadata' do
-      subject { super().rightsMetadata }
-      it {is_expected.to be_kind_of Hydra::Datastream::RightsMetadata}
-    end
-
-    describe '#inheritedRights' do
-      subject { super().inheritedRights }
-      it {is_expected.to be_kind_of Hydra::Datastream::InheritableRightsMetadata}
-    end
-
-    describe '#defaultRights' do
-      subject { super().defaultRights }
-      it {is_expected.to be_kind_of Hydra::Datastream::NonIndexedRightsMetadata}
+    it "should have attributes" do
+      expect(subject.name).to eq("Herman B. Wells Collection")
+      expect(subject.unit).to eq("University Archives")
+      expect(subject.description).to eq("Collection about our 11th university president, 1938-1962")
+      expect(subject.created_at).to eq(DateTime.parse(wells_collection.create_date))
+      expect(subject.managers).to eq([manager.username])
+      expect(subject.editors).to eq([editor.username])
+      expect(subject.depositors).to eq([depositor.username])
+      expect(subject.rightsMetadata).to be_kind_of Hydra::Datastream::RightsMetadata
+      expect(subject.inheritedRights).to be_kind_of Hydra::Datastream::InheritableRightsMetadata
+      expect(subject.defaultRights).to be_kind_of Hydra::Datastream::NonIndexedRightsMetadata
     end
   end
 
