@@ -132,11 +132,10 @@ GIT
       rest-client
 
 GIT
-  remote: https://github.com/projecthydra-labs/active-encode.git
-  revision: fa02be775b5a204f89587437e5473445b78bf3eb
+  remote: https://github.com/projecthydra-labs/active_encode.git
+  revision: d95ce45651f77acc220968c1169e9863bedd31de
   specs:
-    active-encode (0.0.1)
-      activemodel
+    active_encode (0.0.2)
       activesupport
 
 GIT
@@ -736,7 +735,7 @@ PLATFORMS
 
 DEPENDENCIES
   about_page!
-  active-encode!
+  active_encode!
   activerecord-jdbcsqlite3-adapter
   activerecord-session_store
   avalon-about!
