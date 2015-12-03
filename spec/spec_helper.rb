@@ -20,7 +20,6 @@ SimpleCov.start 'rails'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
 require 'rspec/autorun'
-require 'rspec/its'
 require 'equivalent-xml/rspec_matchers'
 require 'capybara/rspec'
 require 'database_cleaner'
@@ -98,7 +97,7 @@ RSpec.configure do |config|
     Rails.cache.clear
     DatabaseCleaner.start
     RoleMap.reset!
-    Admin::Collection.stub(:units).and_return ['University Archives', 'University Library']
+    allow(Admin::Collection).to receive(:units).and_return ['University Archives', 'University Library']
   end
 
   config.after(:each) do

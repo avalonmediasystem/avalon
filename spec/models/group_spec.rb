@@ -17,18 +17,18 @@ require 'spec_helper'
 describe Admin::Group do
 
   describe "name" do
-    it { should validate_presence_of( :name )}
-    it { should_not allow_value( 'group.01' ).for( :name )}
-    it { should_not allow_value( 'group;01' ).for( :name )}
-    it { should_not allow_value( 'group%01' ).for( :name )}
-    it { should_not allow_value( 'group/01' ).for( :name )}
+    it { is_expected.to validate_presence_of( :name )}
+    it { is_expected.not_to allow_value( 'group.01' ).for( :name )}
+    it { is_expected.not_to allow_value( 'group;01' ).for( :name )}
+    it { is_expected.not_to allow_value( 'group%01' ).for( :name )}
+    it { is_expected.not_to allow_value( 'group/01' ).for( :name )}
   end
 
   describe "non system groups" do
     it "should not have system groups" do
       groups = Admin::Group.non_system_groups
       system_groups = Avalon::Configuration.lookup('groups.system_groups')
-      groups.each { |g| system_groups.should_not include g.name }
+      groups.each { |g| expect(system_groups).not_to include g.name }
     end
   end
 

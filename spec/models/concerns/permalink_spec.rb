@@ -22,11 +22,11 @@ describe Permalink do
 
     context 'permalink does not exist' do
       it 'returns nil' do
-        master_file.permalink.should be_nil
+        expect(master_file.permalink).to be_nil
       end
 
       it 'returns nil with query variables' do 
-        master_file.permalink({a:'b'}).should be_nil
+        expect(master_file.permalink({a:'b'})).to be_nil
       end
     end
 
@@ -39,12 +39,12 @@ describe Permalink do
       end
       
       it 'returns a string' do
-        master_file.permalink.should be_kind_of(String)
+        expect(master_file.permalink).to be_kind_of(String)
       end
       
       it 'appends query variables to the url' do
         query_var_hash = { urlappend: '/embed' }
-        master_file.permalink(query_var_hash).should == "#{permalink_url}?#{query_var_hash.to_query}"
+        expect(master_file.permalink(query_var_hash)).to eq("#{permalink_url}?#{query_var_hash.to_query}")
       end
     end
 

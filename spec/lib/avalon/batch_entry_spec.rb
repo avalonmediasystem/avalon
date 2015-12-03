@@ -38,9 +38,9 @@ describe Avalon::Batch::Entry do
   let(:collection) {FactoryGirl.create(:collection)}
   let(:manifest) do
     manifest = double()
-    manifest.stub_chain(:package, :dir).and_return(testdir)
-    manifest.stub_chain(:package, :user, :user_key).and_return('archivist1@example.org')
-    manifest.stub_chain(:package, :collection).and_return(collection)
+    allow(manifest).to receive_message_chain(:package, :dir).and_return(testdir)
+    allow(manifest).to receive_message_chain(:package, :user, :user_key).and_return('archivist1@example.org')
+    allow(manifest).to receive_message_chain(:package, :collection).and_return(collection)
     manifest
   end
   let(:entry) do

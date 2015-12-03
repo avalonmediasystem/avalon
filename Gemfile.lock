@@ -603,9 +603,6 @@ GEM
     rspec-expectations (3.4.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.4.0)
-    rspec-its (1.0.1)
-      rspec-core (>= 2.99.0.beta1)
-      rspec-expectations (>= 2.99.0.beta1)
     rspec-mocks (3.4.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.4.0)
@@ -814,7 +811,6 @@ DEPENDENCIES
   rb-fsevent (~> 0.9.1)
   red5wrapper!
   roo!
-  rspec-its
   rspec-rails
   ruby-duration
   rubyhorn!

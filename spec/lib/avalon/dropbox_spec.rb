@@ -26,12 +26,12 @@ describe Avalon::Dropbox do
     let(:collection) { FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
     subject { Avalon::Dropbox.new(Avalon::Configuration.lookup('dropbox.path'),collection) }
     it 'returns true if the file is found' do
-      File.stub(:delete).and_return true
+      allow(File).to receive(:delete).and_return true
       subject.delete('some_file.mov')
     end
 
     it 'returns false if the file is not found' do
-      subject.delete('some_file.mov').should be false
+      expect(subject.delete('some_file.mov')).to be false
     end
 
   end
