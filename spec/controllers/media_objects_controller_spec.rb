@@ -21,78 +21,110 @@ describe MediaObjectsController, type: :controller do
     request.env["HTTP_REFERER"] = '/'
   end
 
-  describe "#create" do
+  context "JSON API methods" do
     let!(:collection) { FactoryGirl.create(:collection) }
-
-    it "should respond with 422 if collection not found" do
-      post 'create', collection_id: Faker::Lorem.word
-      expect(response.status).to eq(422)
-      expect(JSON.parse(response.body)).to include('errors')
-      expect(JSON.parse(response.body)["errors"].class).to eq Array
-      expect(JSON.parse(response.body)["errors"].first.class).to eq String
+    let!(:testdir) {'spec/fixtures/'}
+    let!(:filename) {'videoshort.high.mp4'}
+    let!(:absolute_location) {File.join(testdir, filename)}
+    let!(:structure) {File.read(File.join(testdir, 'structure.xml'))}
+    let!(:masterfile) {{
+      file_location: absolute_location,
+      label: "Part 1",
+      file_checksum: "7ae24368ccb7a6c6422a14ff73f33c9a",
+      file_size: "199160",
+      duration: "6315",
+      display_aspect_ratio: "1.7777777777777777",
+      original_frame_size: "200x110",
+      file_format: "Moving image",
+      poster_offset: "0:02",
+      thumbnail_offset: "0:02",
+      workflow_name: "avalon",
+      percent_complete: "100.0",
+      percent_succeeded: "100.0",
+      percent_failed: "0",
+      status_code: "COMPLETED",
+      structure: structure
+      }}
+    let!(:descMetadata_fields) {[
+      :title,
+      :alternative_title,
+      :translated_title,
+      :uniform_title,
+      :statement_of_responsibility,
+      :creator,
+      :date_created,
+      :date_issued,
+      :copyright_date,
+      :abstract,
+      :note,
+      :format,
+      :resource_type,
+      :contributor,
+      :publisher,
+      :genre,
+      :subject,
+      :related_item_url,
+      :geographic_subject,
+      :temporal_subject,
+      :topical_subject,
+      :bibliographic_id,
+      :language,
+      :terms_of_use,
+      :table_of_contents,
+      :physical_description,
+      :other_identifier
+    ]}
+    describe "#create" do
+      it "should respond with 422 if collection not found" do
+        post 'create', collection_id: Faker::Lorem.word
+        expect(response.status).to eq(422)
+        expect(JSON.parse(response.body)).to include('errors')
+        expect(JSON.parse(response.body)["errors"].class).to eq Array
+        expect(JSON.parse(response.body)["errors"].first.class).to eq String
+      end
+      it "should create a new mediaobject" do
+        media_object = FactoryGirl.create(:multiple_entries)
+        fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
+        post 'create', fields: fields, files: [masterfile], collection_id: collection.pid
+        expect(response.status).to eq(200)
+        new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+        expect(new_media_object.title).to eq media_object.title
+        expect(new_media_object.creator).to eq media_object.creator
+        expect(new_media_object.date_issued).to eq media_object.date_issued
+        expect(new_media_object.parts_with_order).to eq new_media_object.parts
+      end
     end
-    it "should create a new mediaobject" do
-      media_object = FactoryGirl.create(:multiple_entries)
-      testdir = 'spec/fixtures/'
-      filename = 'videoshort.high.mp4'
-      absolute_location = File.join(testdir, filename)
-      structure = File.read(File.join(testdir, 'structure.xml'))
-      masterfile = {
-        file_location: absolute_location,
-        label: "Part 1",
-        file_checksum: "7ae24368ccb7a6c6422a14ff73f33c9a",
-        file_size: "199160",
-        duration: "6315",
-        display_aspect_ratio: "1.7777777777777777",
-        original_frame_size: "200x110",
-        file_format: "Moving image",
-        poster_offset: "0:02",
-        thumbnail_offset: "0:02",
-        workflow_name: "avalon",
-        percent_complete: "100.0",
-        percent_succeeded: "100.0",
-        percent_failed: "0",
-        status_code: "COMPLETED",
-        structure: structure
-      }
-      descMetadata_fields = [:title,
-                             :alternative_title,
-                             :translated_title,
-                             :uniform_title,
-                             :statement_of_responsibility,
-                             :creator,
-                             :date_created,
-                             :date_issued,
-                             :copyright_date,
-                             :abstract,
-                             :note,
-                             :format,
-                             :resource_type,
-                             :contributor,
-                             :publisher,
-                             :genre,
-                             :subject,
-                             :related_item_url,
-                             :geographic_subject,
-                             :temporal_subject,
-                             :topical_subject,
-                             :bibliographic_id,
-                             :language,
-                             :terms_of_use,
-                             :table_of_contents,
-                             :physical_description,
-                             :other_identifier
-                           ]
-      fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
-      post 'create', fields: fields, files: [masterfile], collection_id: collection.pid
-      expect(response.status).to eq(200)
-      new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
-      expect(new_media_object.title).to eq media_object.title
-      expect(new_media_object.creator).to eq media_object.creator
-      expect(new_media_object.date_issued).to eq media_object.date_issued
-      expect(new_media_object.parts_with_order).to eq new_media_object.parts
+    describe "#update" do
+      let!(:media_object) { FactoryGirl.create(:media_object_with_master_file) }
+      it "should update a mediaobject's metadata" do
+        old_title = media_object.title
+        put 'update', format: 'json', id: media_object.pid, fields: {title: old_title+'new'}, collection_id: media_object.collection_id
+        expect(JSON.parse(response.body)['id'].class).to eq String
+        expect(JSON.parse(response.body)).not_to include('errors')
+        media_object.reload
+        expect(media_object.title).to eq old_title+'new'
+      end
+      it "should add a masterfile to a mediaobject" do
+        put 'update', format: 'json', id: media_object.pid, files: [masterfile], collection_id: media_object.collection_id
+        expect(JSON.parse(response.body)['id'].class).to eq String
+        expect(JSON.parse(response.body)).not_to include('errors')
+        media_object.reload
+        expect(media_object.parts.count).to eq 2
+      end
+      it "should return 404 if media object doesn't exist" do
+        allow_any_instance_of(MediaObject).to receive(:save).and_return false
+        put 'update', format: 'json', id: 'avalon:doesnt_exist', fields: {}, collection_id: media_object.collection_id
+        expect(response.status).to eq(404)
+      end
+      it "should return 422 if media object update failed" do
+        allow_any_instance_of(MediaObject).to receive(:save).and_return false
+        put 'update', format: 'json', id: media_object.pid, fields: {}, collection_id: media_object.collection_id
+        expect(response.status).to eq(422)
+        expect(JSON.parse(response.body)).to include('errors')
+        expect(JSON.parse(response.body)["errors"].class).to eq Array
+        expect(JSON.parse(response.body)["errors"].first.class).to eq String
+      end
     end
-
   end
 
   describe "#new" do

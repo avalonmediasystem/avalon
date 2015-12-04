@@ -63,18 +63,31 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects
   def create
+    @mediaobject = MediaObject.new
+    update_mediaobject
+  end
+
+  # PUT /media_object/1
+  def update
+    @mediaobject = MediaObject.find(params[:id])
+    update_mediaobject
+  end
+
+  def update_mediaobject
     begin
       collection = Admin::Collection.find(params[:collection_id])
     rescue ActiveFedora::ObjectNotFoundError
       render json: {errors: ["Collection not found for #{params[:collection_id]}"]}, status: 422
       return
     end
-    @mediaobject = MediaObject.new(avalon_uploader: collection.managers.first, collection: collection)
-    @mediaobject.update_datastream(:descMetadata, params[:fields])
+
+    @mediaobject.collection = collection
+    @mediaobject.avalon_uploader = 'REST API'
+    @mediaobject.update_datastream(:descMetadata, params[:fields]) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
     error_messages = []
     if !@mediaobject.save
         error_messages += ['Failed to create media object:']+@mediaobject.errors.full_messages
-    else
+    elsif params[:files].respond_to?('each')
       params[:files].each do |file_spec|
         master_file = MasterFile.new(file_spec.except :structure)
         master_file.mediaobject = @mediaobject
@@ -91,6 +104,7 @@ class MediaObjectsController < ApplicationController
       @mediaobject.parts_with_order = @mediaobject.parts
       if !@mediaobject.save
         error_messages += ['Failed to create media object:']+@mediaobject.errors.full_messages
+        @mediaobject.destroy
       end
     end
     if error_messages.empty?
