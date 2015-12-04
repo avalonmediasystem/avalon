@@ -76,7 +76,7 @@ describe MediaObjectsController, type: :controller do
     ]}
     describe "#create" do
       it "should respond with 422 if collection not found" do
-        post 'create', collection_id: Faker::Lorem.word
+        post 'create', collection_id: "avalon:doesnt_exist"
         expect(response.status).to eq(422)
         expect(JSON.parse(response.body)).to include('errors')
         expect(JSON.parse(response.body)["errors"].class).to eq Array
