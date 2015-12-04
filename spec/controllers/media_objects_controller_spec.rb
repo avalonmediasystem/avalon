@@ -164,6 +164,21 @@ describe MediaObjectsController, type: :controller do
     end
   end
 
+  describe 'pagination' do
+      before do
+byebug
+        30.times { FactoryGirl.create(:published_media_object, visibility: 'public') }
+byebug
+        get 'index', format:'json'
+      end
+      it 'should paginate' do
+byebug
+        expect(json.count).to eq(25)
+        expect(json['per_page']).to eq(25)
+        expect(json['page']).to eq(1)
+      end
+  end
+
   describe "#show" do
     let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
 

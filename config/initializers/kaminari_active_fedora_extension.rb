@@ -17,7 +17,7 @@ module Kaminari
 #      end
 #    end
 #  end
-
+#
   module ActiveFedoraModelExtension
     extend ActiveSupport::Concern
 
@@ -104,3 +104,14 @@ module Kaminari
   end
 end
 
+ActiveFedora::Relation.class_eval do
+  include Kaminari::ConfigurationMethods
+
+  def page(num = nil)
+    limit(Kaminari.config.default_per_page).offset(Kaminari.config.default_per_page * ((num = num.to_i - 1) < 0 ? 0 : num)).extending do
+      include Kaminari::ActiveFedoraRelationMethods
+      include Kaminari::PageScopeMethods
+    end
+  end
+
+end

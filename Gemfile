@@ -87,6 +87,8 @@
   gem 'equivalent-xml'
   gem 'net-ldap'
 
+  gem 'api-pagination'
+
   group :assets, :production do
     gem 'coffee-rails'
     gem 'uglifier', '>= 1.0.3'
