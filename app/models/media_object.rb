@@ -201,6 +201,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def section_pid=( pids )
+    self.section_pid_will_change!
     self.sectionsMetadata.find_by_terms(:section_pid).each &:remove
     self.sectionsMetadata.update_values(['section_pid'] => pids)
   end

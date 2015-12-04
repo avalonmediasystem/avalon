@@ -549,4 +549,14 @@ describe MediaObject do
       expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to_not change { media_object.resource_type }
     end
   end
+
+  describe '#section_pid=' do
+    it 'should report changes' do
+      expect( media_object.section_pid_changed? ).to be_falsey
+      expect( media_object.changes ).to eq({})
+      media_object.section_pid = ["avalon:test"]
+      expect( media_object.section_pid_changed? ).to be_truthy
+      expect( media_object.changes ).to eq({"section_pid"=>[[], ["avalon:test"]]})
+    end
+  end
 end
