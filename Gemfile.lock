@@ -209,6 +209,7 @@ GEM
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
     addressable (2.3.7)
+    api-pagination (4.1.1)
     arel (4.0.2)
     autoparse (0.3.3)
       addressable (>= 2.3.1)
@@ -742,6 +743,7 @@ DEPENDENCIES
   active-encode!
   activerecord-jdbcsqlite3-adapter
   activerecord-session_store
+  api-pagination
   avalon-about!
   avalon-workflow!
   bcrypt-ruby (~> 3.1.0)
