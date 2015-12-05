@@ -114,4 +114,5 @@ ActiveFedora::Relation.class_eval do
     end
   end
 
+  delegate :to_json, to: :to_a
 end
