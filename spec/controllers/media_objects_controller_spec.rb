@@ -165,17 +165,17 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe 'pagination' do
+      let(:collection) { FactoryGirl.create(:collection) }
+      subject(:json) { JSON.parse(response.body) }
       before do
-byebug
-        30.times { FactoryGirl.create(:published_media_object, visibility: 'public') }
-byebug
-        get 'index', format:'json'
+        5.times { FactoryGirl.create(:published_media_object, visibility: 'public', collection: collection) }
+        login_as(:administrator)
+        get 'index', format:'json', per_page: '2'
       end
       it 'should paginate' do
-byebug
-        expect(json.count).to eq(25)
-        expect(json['per_page']).to eq(25)
-        expect(json['page']).to eq(1)
+        expect(json.count).to eq(2)
+        expect(response.headers['Per-Page']).to eq('2')
+        expect(response.headers['Total']).to eq('5')
       end
   end
 
