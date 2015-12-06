@@ -22,6 +22,9 @@ describe MediaObjectsController, type: :controller do
   end
 
   context "JSON API methods" do
+    before(:each) do
+      login_as(:administrator)
+    end
     let!(:collection) { FactoryGirl.create(:collection) }
     let!(:testdir) {'spec/fixtures/'}
     let!(:filename) {'videoshort.high.mp4'}
@@ -96,16 +99,24 @@ describe MediaObjectsController, type: :controller do
     end
     describe "#update" do
       let!(:media_object) { FactoryGirl.create(:media_object_with_master_file) }
+      it "should route json format to #json_update" do
+        assert_routing({ path: 'media_objects/avalon:1.json', method: :put }, 
+                       { controller: 'media_objects', action: 'json_update', id: 'avalon:1', format: 'json' })
+      end
+      it "should route unspecified format to #update" do
+        assert_routing({ path: 'media_objects/avalon:1', method: :put }, 
+                       { controller: 'media_objects', action: 'update', id: 'avalon:1', format: 'html' })
+      end
       it "should update a mediaobject's metadata" do
         old_title = media_object.title
-        put 'update', format: 'json', id: media_object.pid, fields: {title: old_title+'new'}, collection_id: media_object.collection_id
+        put 'json_update', format: 'json', id: media_object.pid, fields: {title: old_title+'new'}, collection_id: media_object.collection_id
         expect(JSON.parse(response.body)['id'].class).to eq String
         expect(JSON.parse(response.body)).not_to include('errors')
         media_object.reload
         expect(media_object.title).to eq old_title+'new'
       end
       it "should add a masterfile to a mediaobject" do
-        put 'update', format: 'json', id: media_object.pid, files: [masterfile], collection_id: media_object.collection_id
+        put 'json_update', format: 'json', id: media_object.pid, files: [masterfile], collection_id: media_object.collection_id
         expect(JSON.parse(response.body)['id'].class).to eq String
         expect(JSON.parse(response.body)).not_to include('errors')
         media_object.reload
@@ -113,12 +124,12 @@ describe MediaObjectsController, type: :controller do
       end
       it "should return 404 if media object doesn't exist" do
         allow_any_instance_of(MediaObject).to receive(:save).and_return false
-        put 'update', format: 'json', id: 'avalon:doesnt_exist', fields: {}, collection_id: media_object.collection_id
+        put 'json_update', format: 'json', id: 'avalon:doesnt_exist', fields: {}, collection_id: media_object.collection_id
         expect(response.status).to eq(404)
       end
       it "should return 422 if media object update failed" do
         allow_any_instance_of(MediaObject).to receive(:save).and_return false
-        put 'update', format: 'json', id: media_object.pid, fields: {}, collection_id: media_object.collection_id
+        put 'json_update', format: 'json', id: media_object.pid, fields: {}, collection_id: media_object.collection_id
         expect(response.status).to eq(422)
         expect(JSON.parse(response.body)).to include('errors')
         expect(JSON.parse(response.body)["errors"].class).to eq Array

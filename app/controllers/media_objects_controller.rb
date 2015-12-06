@@ -67,9 +67,14 @@ class MediaObjectsController < ApplicationController
     update_mediaobject
   end
 
-  # PUT /media_object/1
-  def update
-    @mediaobject = MediaObject.find(params[:id])
+  # PUT /media_objects/avalon:1.json
+  def json_update
+    begin
+      @mediaobject = MediaObject.find(params[:id])
+    rescue ActiveFedora::ObjectNotFoundError
+      render json: {errors: ["Mediaobject not found for #{params[:id]}"]}, status: 404
+      return
+    end
     update_mediaobject
   end
 

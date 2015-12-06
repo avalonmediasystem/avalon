@@ -34,8 +34,10 @@ Avalon::Application.routes.draw do
 
   resources :vocabulary, except: [:create, :destroy, :new, :edit]
 
-  resources :media_objects do
+  resources :media_objects, except: [:update] do
     member do
+      put :update, action: :update, defaults: { format: 'html' }, constraints: { format: 'html' }
+      put :update, action: :json_update, constraints: { format: 'json' }
       put :update_status
       get :progress, :action => :show_progress
       get 'content/:datastream', :action => :deliver_content, :as => :inspect
