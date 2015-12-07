@@ -30,13 +30,14 @@ class Admin::CollectionsController < ApplicationController
   # GET /collections
   def index
     respond_to do |format|
-      format.json   { render json: Admin::Collection.all.map{|c| c.to_json } }
+      format.json { paginate json: Admin::Collection.all }
       format.html { @collections = get_user_collections }
     end
   end
 
   # GET /collections/1
   def show
+    #authorize! :read, @mediaobject
     respond_to do |format|
       format.json { 
         begin
@@ -79,8 +80,8 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1/items
   def items
-    @collection = Admin::Collection.find(params[:id])
-    render json: @collection.media_objects_to_json
+    mos = paginate Admin::Collection.find(params[:id]).media_objects
+    render json: mos.collect{|mo| [mo.pid, mo.to_json] }.to_h
   end
  
   # POST /collections

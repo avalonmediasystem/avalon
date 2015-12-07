@@ -120,6 +120,26 @@ describe Admin::CollectionsController, type: :controller do
     end
   end
 
+  describe 'pagination' do
+    subject(:json) { JSON.parse(response.body) }
+    it 'should paginate index' do
+      5.times { FactoryGirl.create(:collection) }
+      login_as(:administrator)
+      get 'index', format:'json', per_page: '2'
+      expect(json.count).to eq(2)
+      expect(response.headers['Per-Page']).to eq('2')
+      expect(response.headers['Total']).to eq('5')
+    end
+    it 'should paginate collection/items' do
+      collection = FactoryGirl.create(:collection, items: 5)
+      login_as(:administrator)
+      get 'items', id: collection.pid, format: 'json', per_page: '2'
+      expect(json.count).to eq(2)
+      expect(response.headers['Per-Page']).to eq('2')
+      expect(response.headers['Total']).to eq('5')
+    end
+  end
+
   describe "#show" do
     let!(:collection) { FactoryGirl.create(:collection) }
 
@@ -171,7 +191,7 @@ describe Admin::CollectionsController, type: :controller do
 
     it "should return json for specific collection's media objects" do
       login_as(:administrator)
-      get 'items', id: collection.pid, format: 'js'
+      get 'items', id: collection.pid, format: 'json'
       expect(JSON.parse(response.body)).to include(collection.media_objects[0].pid,collection.media_objects[1].pid)
       #TODO add check that mediaobject is serialized to json properly
     end
