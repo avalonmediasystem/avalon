@@ -97,7 +97,6 @@ class MediaObjectsController < ApplicationController
 
   def index
     respond_to do |format|
-      #format.json   { render json: MediaObject.all.map{|mo| mo.to_json } }
       format.json  { paginate json: MediaObject.all }
     end
   end
