@@ -417,7 +417,7 @@ class MediaObject < ActiveFedora::Base
     return solr_doc
   end
 
-  def to_json
+  def as_json(options={})
     {
       id: pid,
       title: title,

@@ -178,7 +178,7 @@ class Admin::Collection < ActiveFedora::Base
     solr_doc
   end
 
-  def to_json
+  def as_json(options={})
     { 
       id: pid, 
       name: name, 
