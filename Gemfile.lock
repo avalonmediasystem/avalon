@@ -54,6 +54,29 @@ GIT
       mediashelf-loggable
 
 GIT
+  remote: https://github.com/avalonmediasystem/hydra-head.git
+  revision: 95d4a526ba73e449829f221565c3186f93c375b9
+  branch: 8-1-stable
+  specs:
+    hydra-access-controls (8.1.0)
+      active-fedora (~> 8.0)
+      activesupport (~> 4.0)
+      blacklight (~> 5.10)
+      cancancan (~> 1.8)
+      deprecation (~> 0.1)
+      om (~> 3.0, >= 3.0.7)
+      sass-rails
+    hydra-core (8.1.0)
+      block_helpers
+      hydra-access-controls (= 8.1.0)
+      jettywrapper (~> 1.5)
+      rails (~> 4.0)
+    hydra-head (8.1.0)
+      hydra-access-controls (= 8.1.0)
+      hydra-core (= 8.1.0)
+      rails (~> 4.0)
+
+GIT
   remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector
   revision: b919ad61525cd608f42983846c87f48212e11646
   tag: avalon-r4
@@ -138,29 +161,6 @@ GIT
     active_encode (0.0.2)
       activesupport
 
-GIT
-  remote: https://github.com/projecthydra/hydra-head.git
-  revision: 723d08f6773fec4e7e6a3b353ce4695d2638204f
-  branch: 8-1-stable
-  specs:
-    hydra-access-controls (8.1.0)
-      active-fedora (~> 8.0.0)
-      activesupport (~> 4.0)
-      blacklight (~> 5.10)
-      cancancan (~> 1.8)
-      deprecation (~> 0.1)
-      om (~> 3.0, >= 3.0.7)
-      sass-rails
-    hydra-core (8.1.0)
-      block_helpers
-      hydra-access-controls (= 8.1.0)
-      jettywrapper (~> 1.5)
-      rails (~> 4.0)
-    hydra-head (8.1.0)
-      hydra-access-controls (= 8.1.0)
-      hydra-core (= 8.1.0)
-      rails (~> 4.0)
-
 GEM
   remote: http://rubygems.org/
   specs:
@@ -173,14 +173,14 @@ GEM
       erubis (~> 2.7.0)
       rack (~> 1.5.2)
       rack-test (~> 0.6.2)
-    active-fedora (8.0.1)
+    active-fedora (8.1.0)
       active-triples (~> 0.4.0)
       activesupport (>= 3.0.0)
       deprecation
       nom-xml (>= 0.5.1)
       om (~> 3.1)
       rdf-rdfxml (~> 1.1.0)
-      rsolr (~> 1.0.10)
+      rsolr (~> 1.0.11)
       rubydora (~> 1.8)
     active-triples (0.4.0)
       activemodel (>= 3.0.0)
@@ -254,7 +254,7 @@ GEM
       debugger-linecache (~> 1.2)
       slop (~> 3.6)
     callsite (0.0.11)
-    cancancan (1.10.1)
+    cancancan (1.13.1)
     capistrano (2.12.0)
       highline
       net-scp (>= 1.0.0)
@@ -322,8 +322,7 @@ GEM
     dot-properties (0.1.3)
     dropbox-sdk (1.6.4)
       json
-    ebnf (0.3.7)
-      haml (~> 4.0)
+    ebnf (1.0.0)
       rdf (~> 1.1)
       sxp (~> 0.1, >= 0.1.3)
     edtf (2.1.0)
@@ -380,7 +379,7 @@ GEM
     hike (1.2.3)
     hooks (0.3.6)
       uber (~> 0.0.4)
-    htmlentities (4.3.3)
+    htmlentities (4.3.4)
     httmultiparty (0.3.16)
       httparty (>= 0.7.3)
       mimemagic
@@ -390,18 +389,6 @@ GEM
     httparty (0.13.3)
       json (~> 1.8)
       multi_xml (>= 0.5.2)
-    hydra (8.0.0)
-      active-fedora (~> 8.0.1)
-      blacklight (~> 5.10.0)
-      hydra-head (~> 8.1.0)
-      jettywrapper (~> 1.8.3)
-      nokogiri (~> 1.6.5)
-      nom-xml (~> 0.5.2)
-      om (~> 3.1.0)
-      rails (>= 3.2.15, < 5.0)
-      rsolr (~> 1.0.12)
-      rubydora (~> 1.8.1)
-      solrizer (~> 3.3.0)
     i18n (0.7.0)
     iconv (1.0.4)
     ims-lti (1.1.8)
@@ -419,8 +406,9 @@ GEM
     jquery-ui-rails (5.0.0)
       railties (>= 3.2.16)
     json (1.8.3)
-    json-ld (1.1.8)
-      rdf (~> 1.1, >= 1.1.7)
+    json-ld (1.1.11.1)
+      multi_json (~> 1.11)
+      rdf (~> 1.1, >= 1.1.17, < 1.99)
     jwt (1.3.0)
     kaminari (0.15.1)
       actionpack (>= 3.0.0)
@@ -433,24 +421,23 @@ GEM
     license_header (0.0.4)
       highline
     link_header (0.0.8)
-    linkeddata (1.1.2)
-      equivalent-xml (~> 0.4)
-      json-ld (~> 1.1, >= 1.1.7)
-      nokogiri (~> 1.6)
-      rdf (~> 1.1, >= 1.1.7)
-      rdf-aggregate-repo (~> 1.1)
-      rdf-isomorphic (~> 1.1)
-      rdf-json (~> 1.1)
-      rdf-microdata (~> 2.0)
-      rdf-n3 (~> 1.1)
-      rdf-rdfa (~> 1.1, >= 1.1.5)
-      rdf-rdfxml (~> 1.1, >= 1.1.3)
-      rdf-reasoner (~> 0.2, >= 0.2.1)
-      rdf-trig (~> 1.1, >= 1.1.3)
-      rdf-trix (~> 1.1)
-      rdf-turtle (~> 1.1, >= 1.1.5)
-      sparql (~> 1.1, >= 1.1.4)
-      sparql-client (~> 1.1, >= 1.1.3)
+    linkeddata (1.1.1)
+      equivalent-xml (>= 0.4.0)
+      json-ld (>= 1.1.1)
+      nokogiri (>= 1.6.1)
+      rdf (>= 1.1.1)
+      rdf-aggregate-repo (>= 1.1.0)
+      rdf-isomorphic (>= 1.1.0)
+      rdf-json (>= 1.1.0)
+      rdf-microdata (>= 1.1.1)
+      rdf-n3 (>= 1.1.0)
+      rdf-rdfa (>= 1.1.1)
+      rdf-rdfxml (>= 1.1.0)
+      rdf-trig (>= 1.1.2)
+      rdf-trix (>= 1.1.0)
+      rdf-turtle (>= 1.1.2)
+      sparql (>= 1.1.2)
+      sparql-client (>= 1.1.1)
     logger (1.2.8)
     loofah (2.0.1)
       nokogiri (>= 1.5.9)
@@ -548,47 +535,43 @@ GEM
       thor (>= 0.18.1, < 2.0)
     rake (10.4.2)
     rb-fsevent (0.9.4)
-    rdf (1.1.10)
+    rdf (1.1.17.1)
       link_header (~> 0.0, >= 0.0.8)
-    rdf-aggregate-repo (1.1.0)
-      rdf (>= 1.1)
-    rdf-isomorphic (1.1.0)
-      rdf (>= 1.1)
-    rdf-json (1.1.1)
-      rdf (~> 1.1)
-    rdf-microdata (2.0)
+    rdf-aggregate-repo (1.1.0.1)
+      rdf (~> 1.1, < 1.99)
+    rdf-isomorphic (1.1.0.2)
+      rdf (~> 1.1, >= 1.1.17, < 1.99)
+    rdf-json (1.1.2.1)
+      rdf (~> 1.1, < 1.99)
+    rdf-microdata (2.0.2)
       htmlentities (~> 4.3)
       nokogiri (~> 1.6)
       rdf (~> 1.1)
       rdf-xsd (~> 1.1)
-    rdf-n3 (1.1.2)
-      rdf (~> 1.1, >= 1.1.5)
-    rdf-rdfa (1.1.5)
+    rdf-n3 (1.1.3.1)
+      rdf (~> 1.1, >= 1.1.17, < 1.99)
+    rdf-rdfa (1.1.6.1)
       haml (~> 4.0)
       htmlentities (~> 4.3)
-      rdf (~> 1.1, >= 1.1.6)
-      rdf-aggregate-repo
-      rdf-xsd (~> 1.1)
-    rdf-rdfxml (1.1.3)
+      rdf (~> 1.1, >= 1.1.6, < 1.99)
+      rdf-aggregate-repo (~> 1.1, < 1.99)
+      rdf-xsd (~> 1.1, < 1.99)
+    rdf-rdfxml (1.1.5.1)
       htmlentities (~> 4.3)
-      rdf (~> 1.1, >= 1.1.6)
-      rdf-rdfa (~> 1.1, >= 1.1.4.1)
-      rdf-xsd (~> 1.1)
-    rdf-reasoner (0.2.1)
-      rdf (~> 1.1, >= 1.1.4.2)
-      rdf-turtle (~> 1.1)
-      rdf-xsd (~> 1.1)
-    rdf-trig (1.1.3.1)
-      ebnf (~> 0.3, >= 0.3.5)
+      rdf (~> 1.1, >= 1.1.6, < 1.99)
+      rdf-rdfa (~> 1.1, >= 1.1.4.1, < 1.99)
+      rdf-xsd (~> 1.1, < 1.99)
+    rdf-trig (1.1.3)
+      ebnf (>= 0.3.5)
       rdf (~> 1.1, >= 1.1.2.1)
       rdf-turtle (~> 1.1, >= 1.1.3)
-    rdf-trix (1.1.0)
-      rdf (>= 1.1)
-    rdf-turtle (1.1.5)
-      ebnf (~> 0.3, >= 0.3.6)
-      rdf (~> 1.1, >= 1.1.4)
-    rdf-xsd (1.1.3)
-      rdf (~> 1.1, >= 1.1.9)
+    rdf-trix (1.99.0)
+      rdf (~> 1.1)
+    rdf-turtle (1.1.8.1)
+      ebnf (~> 1.0)
+      rdf (~> 1.1, >= 1.1.10, < 1.99)
+    rdf-xsd (1.1.5.1)
+      rdf (~> 1.1, >= 1.1.9, < 1.99)
     ref (1.0.5)
     rest-client (1.8.0)
       http-cookie (>= 1.0.2, < 2.0)
@@ -670,15 +653,16 @@ GEM
       nokogiri
       stomp
       xml-simple
-    sparql (1.1.4)
-      builder (~> 3.0)
-      ebnf (~> 0.3, >= 0.3.5)
-      rdf (~> 1.1, >= 1.1.4)
-      rdf-aggregate-repo (~> 1.1, >= 1.1.0)
-      rdf-xsd (~> 1.1)
-      sparql-client (~> 1.1)
-      sxp (~> 0.1)
-    sparql-client (1.1.4)
+    sparql (1.1.2.1)
+      builder (>= 3.0)
+      ebnf (>= 0.3.2)
+      json (>= 1.7)
+      rdf (>= 1.1.0)
+      rdf-aggregate-repo (>= 1.1.0)
+      rdf-xsd (>= 1.0.2)
+      sparql-client (>= 1.1)
+      sxp (>= 0.1.3)
+    sparql-client (1.99.0)
       net-http-persistent (~> 2.9)
       rdf (~> 1.1)
     spreadsheet (1.0.1)
@@ -735,6 +719,7 @@ PLATFORMS
 
 DEPENDENCIES
   about_page!
+  active-fedora (~> 8.1.0)
   active_encode!
   activerecord-jdbcsqlite3-adapter
   activerecord-session_store
@@ -743,6 +728,7 @@ DEPENDENCIES
   bcrypt-ruby (~> 3.1.0)
   better_errors
   binding_of_caller
+  blacklight (~> 5.10.0)
   bootstrap-sass (= 3.3.3)
   bootstrap_form
   browse-everything (= 0.6.3)
@@ -773,8 +759,7 @@ DEPENDENCIES
   hashdiff
   headless
   hooks
-  hydra (~> 8.0)
-  hydra-access-controls!
+  hydra-head!
   iconv
   jdbc-sqlite3
   jettywrapper
@@ -799,6 +784,9 @@ DEPENDENCIES
   modal_logic
   multipart-post
   net-ldap
+  nokogiri (~> 1.6.5)
+  nom-xml (~> 0.5.2)
+  om (~> 3.1.0)
   omniauth-identity
   omniauth-lti!
   pry
@@ -810,14 +798,17 @@ DEPENDENCIES
   rb-fsevent (~> 0.9.1)
   red5wrapper!
   roo!
+  rsolr (~> 1.0.12)
   rspec-rails
   ruby-duration
+  rubydora (~> 1.8.1)
   rubyhorn!
   rubyzip (= 0.9.9)
   rvm-capistrano
   sass-rails (= 4.0.3)
   shoulda-matchers
   simplecov
+  solrizer (~> 3.3.0)
   sprockets (~> 2.11.0)
   sqlite3
   therubyracer (>= 0.12.0)
