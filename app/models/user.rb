@@ -57,6 +57,10 @@ class User < ActiveRecord::Base
       User.create(:username => auth_hash.uid, :email => auth_hash.info.email)
   end
 
+  def self.find_for_json_api(auth_hash, signed_in_resource=nil)
+    User.find_or_create!(username: auth_hash.uid, email: auth_hash.info.email)
+  end
+
   def self.autocomplete(query)
     self.where("username LIKE :q OR email LIKE :q", q: "%#{query}%").collect { |user|
       { id: user.user_key, display: user.user_key }

@@ -58,6 +58,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         user_session[:lti_group] = request.env["omniauth.auth"].extra.context_id
         user_session[:virtual_groups] += [user_session[:lti_group]]
         user_session[:full_login] = false
+      elsif auth_type == 'json_api'
+        user_session[:full_login] = false
+        user_session[:json_api_login] = true
       end
 
     end

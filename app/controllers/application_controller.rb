@@ -14,6 +14,7 @@
 
 class ApplicationController < ActionController::Base
   before_filter :store_location
+  before_filter :handle_api_request
 
   # Adds a few additional behaviors into the application controller 
   include Blacklight::Controller  
@@ -50,6 +51,13 @@ class ApplicationController < ActionController::Base
   def store_location
     if request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?
       session[:previous_url] = root_path + "self_closing.html"
+    end
+  end
+
+  def handle_api_request
+    if request[:api_key].present?
+      session[:previous_url] = request.fullpath
+      redirect_to user_omniauth_callback_path(action: 'lti', request.params)
     end
   end
 
