@@ -120,6 +120,20 @@ class Ability
         can :share, MediaObject
       end
 
+      if is_api_request?
+        can :json_index, MediaObject
+        can :json_show, MediaObject
+        can :json_create, MediaObject
+        can :json_update, MediaObject
+        can :json_index, Admin::Collection
+        can :json_show,  Admin::Collection
+        can :json_create,  Admin::Collection
+        can :json_update,  Admin::Collection
+        can :json_index, ControlledVocabulary
+        can :json_show, ControlledVocabulary
+        can :json_update, ControlledVocabulary
+      end
+
       cannot :update, MediaObject do |mediaobject|
         (not full_login?) || (!is_member_of?(mediaobject.collection)) || 
           ( mediaobject.published? && !@user.in?(mediaobject.collection.managers) )
@@ -156,4 +170,9 @@ class Ability
     @full_login = ( @session.present? and @session.has_key? :full_login ) ? @session[:full_login] : true
     @full_login
   end
+
+  def is_api_request?
+    !!@session[:json_api_login]
+  end
+
 end

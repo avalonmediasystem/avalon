@@ -18,25 +18,37 @@ class VocabularyController < ApplicationController
   before_action :verify_vocabulary_exists, except: [:index]
  
   def index
-    render json: Avalon::ControlledVocabulary.vocabulary
-  end
-
-  def show
-    render json: Avalon::ControlledVocabulary.vocabulary[params[:id].to_sym]
-  end
-
-  def update
-    unless params[:entry].present?
-      render json: {errors: ["No update value sent"]}, status: 422 and return
-    end
-
-    v = Avalon::ControlledVocabulary.vocabulary
-    v[params[:id].to_sym] |= Array(params[:entry])
-    result = Avalon::ControlledVocabulary.vocabulary = v
-    if result
-      render nothing: true, content_type: 'application/json', status: 200
+    if can? :json_index, Avalon::ControlledVocabulary
+      render json: Avalon::ControlledVocabulary.vocabulary
     else
-      render json: {errors: ["Update failed"]}, status: 422
+      render json: {errors: ['Permission denied.']}, status: 403
+    end
+  end
+  
+  def show
+    if can? :json_show, Avalon::ControlledVocabulary
+      render json: Avalon::ControlledVocabulary.vocabulary[params[:id].to_sym]
+    else
+      render json: {errors: ['Permission denied.']}, status: 403
+    end
+  end
+  
+  def update
+    if can? :json_show, Avalon::ControlledVocabulary
+      unless params[:entry].present?
+        render json: {errors: ["No update value sent"]}, status: 422 and return
+      end
+      
+      v = Avalon::ControlledVocabulary.vocabulary
+      v[params[:id].to_sym] |= Array(params[:entry])
+      result = Avalon::ControlledVocabulary.vocabulary = v
+      if result
+        render nothing: true, content_type: 'application/json', status: 200
+      else
+        render json: {errors: ["Update failed"]}, status: 422
+      end
+    else
+      render json: {errors: ['Permission denied.']}, status: 403
     end
   end
 

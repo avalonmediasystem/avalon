@@ -63,19 +63,26 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects
   def create
-    @mediaobject = MediaObject.new
-    update_mediaobject
+    if can? :json_create, MediaObject
+      @mediaobject = MediaObject.new
+      update_mediaobject
+    else
+      render json: {errors: ["Permission denied."], status: 403}
+    end
   end
 
   # PUT /media_objects/avalon:1.json
   def json_update
-    begin
-      @mediaobject = MediaObject.find(params[:id])
-    rescue ActiveFedora::ObjectNotFoundError
-      render json: {errors: ["Mediaobject not found for #{params[:id]}"]}, status: 404
-      return
+    if can? :json_update, MediaObject
+      begin
+        @mediaobject = MediaObject.find(params[:id])
+        update_mediaobject
+      rescue ActiveFedora::ObjectNotFoundError
+        render json: {errors: ["Mediaobject not found for #{params[:id]}"]}, status: 404
+      end
+    else
+      render json: {errors: ["Permission denied."], status: 403}
     end
-    update_mediaobject
   end
 
   def update_mediaobject
@@ -156,14 +163,21 @@ class MediaObjectsController < ApplicationController
 
   def index
     respond_to do |format|
-      format.json  { paginate json: MediaObject.all }
+      format.json { 
+        if can? :json_index, MediaObject
+          paginate json: MediaObject.all
+        else
+          render json: {errors: ["Permission denied."], status: 403}
+        end
+      }
     end
   end
 
   def show
     respond_to do |format|
       format.html do
-	if (not @masterFiles.empty? and @currentStream.blank?) then
+        authorize! :read, @mediaobject
+        if (not @masterFiles.empty? and @currentStream.blank?) then
           redirect_to media_object_path(@mediaobject.pid), flash: { notice: 'That stream was not recognized. Defaulting to the first available stream for the resource' }
         else 
           render
@@ -173,10 +187,14 @@ class MediaObjectsController < ApplicationController
         if params.has_key? :content #switchStream sends :content to specify which stream and expects currentStreamInfo in response
           render json: @currentStreamInfo 
         else
-          begin
-            render json: MediaObject.find(params[:id]).to_json
-          rescue ActiveFedora::ObjectNotFoundError
-            render json: {errors: ["Media Object not found for #{params[:id]}"]}, status: 404
+          if can? :json_show, MediaObject
+            begin
+              render json: MediaObject.find(params[:id]).to_json
+            rescue ActiveFedora::ObjectNotFoundError
+              render json: {errors: ["Media Object not found for #{params[:id]}"]}, status: 404
+            end
+          else
+            render json: {errors: ["Permission denied."], status: 403}
           end
         end 
       end
