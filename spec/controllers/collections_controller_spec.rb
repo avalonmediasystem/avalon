@@ -131,7 +131,6 @@ describe Admin::CollectionsController, type: :controller do
       expect(response.headers['Total']).to eq('5')
     end
     it 'should paginate collection/items' do
-      pending("ActiveFedora bug with chaining relations fixed")
       collection = FactoryGirl.create(:collection, items: 5)
       login_as(:administrator)
       get 'items', id: collection.pid, format: 'json', per_page: '2'

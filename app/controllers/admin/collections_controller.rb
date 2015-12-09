@@ -80,8 +80,7 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1/items
   def items
-    mos = Admin::Collection.find(params[:id]).media_objects
-    # mos = paginate Admin::Collection.find(params[:id]).media_objects (when activefedora bug fixed)
+    mos = paginate Admin::Collection.find(params[:id]).media_objects
     render json: mos.collect{|mo| [mo.pid, mo.to_json] }.to_h
   end
  
