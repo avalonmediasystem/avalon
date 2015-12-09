@@ -57,7 +57,7 @@ class ApplicationController < ActionController::Base
   def handle_api_request
     if request[:api_key].present?
       session[:previous_url] = request.fullpath
-      redirect_to user_omniauth_callback_path(action: 'lti', request.params)
+      redirect_to user_omniauth_callback_path(request.params.merge(action: 'json_api'))
     end
   end
 
