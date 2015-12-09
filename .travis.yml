@@ -3,6 +3,7 @@ git:
   submodules: false
 bundler_args: --without development debug
 before_install:
+  - sudo apt-get update
   - sudo apt-get install mediainfo
   - sudo ln -s /usr/bin/lsof /usr/sbin/lsof
   - cp spec/config/*.yml config
