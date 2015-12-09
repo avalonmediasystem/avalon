@@ -23,6 +23,8 @@ class MediaObject < ActiveFedora::Base
   include VersionableModel
   include Permalink
   require 'avalon/controlled_vocabulary'
+
+  include Kaminari::ActiveFedoraModelExtension
   
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
@@ -417,10 +419,16 @@ class MediaObject < ActiveFedora::Base
     return solr_doc
   end
 
-  def to_json
+  def as_json(options={})
     {
-      id: self.pid,
-      title: self.title
+      id: pid,
+      title: title,
+      collection: collection.name,
+      main_contributors: creator, 
+      publication_date: date_created, 
+      published_by: avalon_publisher,
+      published: published?, 
+      summary: abstract
     }
   end
 

@@ -95,8 +95,13 @@ class MediaObjectsController < ApplicationController
     flash[:notice] = @notice
   end
 
+  def index
+    respond_to do |format|
+      format.json  { paginate json: MediaObject.all }
+    end
+  end
+
   def show
-    authorize! :read, @mediaobject
     respond_to do |format|
       format.html do
 	if (not @masterFiles.empty? and @currentStream.blank?) then
@@ -106,7 +111,15 @@ class MediaObjectsController < ApplicationController
         end
       end
       format.json do
-        render :json => @currentStreamInfo 
+        if params.has_key? :content #switchStream sends :content to specify which stream and expects currentStreamInfo in response
+          render json: @currentStreamInfo 
+        else
+          begin
+            render json: MediaObject.find(params[:id]).to_json
+          rescue ActiveFedora::ObjectNotFoundError
+            render json: {errors: ["Media Object not found for #{params[:id]}"]}, status: 404
+          end
+        end 
       end
     end
   end
@@ -237,7 +250,10 @@ class MediaObjectsController < ApplicationController
   end
 
   def load_player_context
+    return if request.format.json? and !params.has_key? :content
+
     @mediaobject = MediaObject.find(params[:id])
+    authorize! :read, @mediaobject
 
     if params[:part]
       index = params[:part].to_i-1

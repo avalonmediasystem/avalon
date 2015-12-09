@@ -142,6 +142,43 @@ describe MediaObjectsController, type: :controller do
     end
   end
 
+  describe "#index" do
+    let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
+    subject(:json) { JSON.parse(response.body) }
+
+    before do
+      login_as(:administrator)
+      get 'index', format:'json'
+    end
+
+    it "should return list of media_objects" do
+      expect(json.count).to eq(1)
+      expect(json.first['id']).to eq(media_object.pid)
+      expect(json.first['title']).to eq(media_object.title)
+      expect(json.first['collection']).to eq(media_object.collection.name)
+      expect(json.first['main_contributors']).to eq(media_object.creator)
+      expect(json.first['publication_date']).to eq(media_object.date_created)
+      expect(json.first['published_by']).to eq(media_object.avalon_publisher)
+      expect(json.first['published']).to eq(media_object.published?)
+      expect(json.first['summary']).to eq(media_object.abstract)
+    end
+  end
+
+  describe 'pagination' do
+      let(:collection) { FactoryGirl.create(:collection) }
+      subject(:json) { JSON.parse(response.body) }
+      before do
+        5.times { FactoryGirl.create(:published_media_object, visibility: 'public', collection: collection) }
+        login_as(:administrator)
+        get 'index', format:'json', per_page: '2'
+      end
+      it 'should paginate' do
+        expect(json.count).to eq(2)
+        expect(response.headers['Per-Page']).to eq('2')
+        expect(response.headers['Total']).to eq('5')
+      end
+  end
+
   describe "#show" do
     let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
 
@@ -306,6 +343,36 @@ describe MediaObjectsController, type: :controller do
         expect(response).to redirect_to root_path
       end
     end
+
+    context "with json format" do
+      subject(:json) { JSON.parse(response.body) }
+      let!(:media_object) { FactoryGirl.create(:media_object) }
+
+      before(:each) do
+        login_as(:administrator)
+      end
+
+      it "should return json for specific media_object" do
+        get 'show', id: media_object.pid, format:'json'
+        expect(json['id']).to eq(media_object.pid)
+        expect(json['title']).to eq(media_object.title)
+        expect(json['collection']).to eq(media_object.collection.name)
+        expect(json['main_contributors']).to eq(media_object.creator)
+        expect(json['publication_date']).to eq(media_object.date_created)
+        expect(json['published_by']).to eq(media_object.avalon_publisher)
+        expect(json['published']).to eq(media_object.published?)
+        expect(json['summary']).to eq(media_object.abstract)
+      end
+
+      it "should return 404 if requested media_object not present" do
+        login_as(:administrator)
+        get 'show', id: 'avalon:doesnt_exist', format: 'json'
+        expect(response.status).to eq(404)
+        expect(JSON.parse(response.body)["errors"].class).to eq Array
+        expect(JSON.parse(response.body)["errors"].first.class).to eq String
+      end
+    end
+
   end
     
   describe "#destroy" do
