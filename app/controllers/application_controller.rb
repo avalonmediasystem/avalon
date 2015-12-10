@@ -14,7 +14,8 @@
 
 class ApplicationController < ActionController::Base
   before_filter :store_location
-  before_filter :handle_api_request
+  before_action :pre_api_request
+#  after_action :post_api_request
 
   # Adds a few additional behaviors into the application controller 
   include Blacklight::Controller  
@@ -54,10 +55,18 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def handle_api_request
-    if request[:api_key].present?
+  def pre_api_request
+byebug
+    if current_user.nil? && request[:api_key].present? && request[:controller] != "users/omniauth_callbacks"
       session[:previous_url] = request.fullpath
-      redirect_to user_omniauth_callback_path(request.params.merge(action: 'json_api'))
+      redirect_to user_omniauth_callback_path({action: 'api', api_key: request.params["api_key"]})
+    end
+  end
+
+  def post_api_request
+byebug
+    if session.present? && session.session[:api_login]
+      request.session.destroy
     end
   end
 

@@ -121,17 +121,20 @@ class Ability
       end
 
       if is_api_request?
+        can :manage, MediaObject
         can :json_index, MediaObject
         can :json_show, MediaObject
         can :json_create, MediaObject
         can :json_update, MediaObject
+        can :manage, Admin::Collection
         can :json_index, Admin::Collection
         can :json_show,  Admin::Collection
         can :json_create,  Admin::Collection
         can :json_update,  Admin::Collection
-        can :json_index, ControlledVocabulary
-        can :json_show, ControlledVocabulary
-        can :json_update, ControlledVocabulary
+        can :manage, Avalon::ControlledVocabulary
+        can :json_index, Avalon::ControlledVocabulary
+        can :json_show, Avalon::ControlledVocabulary
+        can :json_update, Avalon::ControlledVocabulary
       end
 
       cannot :update, MediaObject do |mediaobject|
@@ -172,7 +175,9 @@ class Ability
   end
 
   def is_api_request?
-    !!@session[:json_api_login]
+    @json_api_login ||= !!@session[:json_api_login] if @session.present?
+    @json_api_login ||= false
+    @json_api_login
   end
 
 end

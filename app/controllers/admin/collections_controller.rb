@@ -32,6 +32,7 @@ class Admin::CollectionsController < ApplicationController
     respond_to do |format|
       format.html { @collections = get_user_collections }
       format.json { 
+byebug
         if can? :json_index, Admin::Collection
           paginate json: Admin::Collection.all 
         else
@@ -126,7 +127,7 @@ class Admin::CollectionsController < ApplicationController
   
   # PUT /collections/1
   def update
-    if request.format.json? && !can? :json_update Admin::Collection
+    if request.format.json? && cannot?(:json_update, Admin::Collection)
       render json: {errors: ["Permission denied."], status: 403}
       return
     end
