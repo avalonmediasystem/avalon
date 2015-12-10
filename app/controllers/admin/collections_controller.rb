@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class Admin::CollectionsController < ApplicationController
-  before_filter :authenticate_user!, unless: proc{|c| request.format.json?}
+  before_filter :authenticate_user!
   load_and_authorize_resource except: [:remove, :show]
   respond_to :html
   
@@ -31,14 +31,7 @@ class Admin::CollectionsController < ApplicationController
   def index
     respond_to do |format|
       format.html { @collections = get_user_collections }
-      format.json { 
-byebug
-        if can? :json_index, Admin::Collection
-          paginate json: Admin::Collection.all 
-        else
-          render json: {errors: ["Permission denied."], status: 403}
-        end
-      }
+      format.json { paginate json: Admin::Collection.all }
     end
   end
 

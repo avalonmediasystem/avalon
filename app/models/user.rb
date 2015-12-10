@@ -57,11 +57,11 @@ class User < ActiveRecord::Base
       User.create(:username => auth_hash.uid, :email => auth_hash.info.email)
   end
 
-  def self.find_for_api(auth_hash, signed_in_resource=nil)
-    User.find_by_username(auth_hash.uid) ||
-    User.find_by_email(auth_hash.info.email) ||
-    User.create(:username => auth_hash.uid, :email => auth_hash.info.email)
-  end
+#  def self.find_for_api(username, email, signed_in_resource=nil)
+#    User.find_by_username(username) ||
+#    User.find_by_email(email) ||
+#    User.create(:username => username, :email => email)
+#  end
 
   def self.autocomplete(query)
     self.where("username LIKE :q OR email LIKE :q", q: "%#{query}%").collect { |user|

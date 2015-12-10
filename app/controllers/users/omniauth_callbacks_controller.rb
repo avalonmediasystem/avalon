@@ -26,7 +26,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def after_omniauth_failure_path_for(scope)
-byebug
     case failed_strategy.name
     when 'lti'
       default_msg = I18n.t 'devise.omniauth_callbacks.failure', reason: failure_message
@@ -61,9 +60,6 @@ byebug
         user_session[:lti_group] = request.env["omniauth.auth"].extra.context_id
         user_session[:virtual_groups] += [user_session[:lti_group]]
         user_session[:full_login] = false
-      elsif auth_type == 'api'
-        user_session[:full_login] = false
-        user_session[:json_api_login] = true
       end
 
     end
