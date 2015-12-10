@@ -33,8 +33,6 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       uri = URI.parse request['launch_presentation_return_url']
       uri.query = {lti_errormsg: msg}.to_query
       uri.to_s
-    when 'api'
-      render json: {errors: ["Permission denied."], status: 403}
     else
       new_user_session_path(scope)
     end
