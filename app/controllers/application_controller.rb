@@ -70,7 +70,8 @@ class ApplicationController < ActionController::Base
         user_session[:json_api_login] = true
         user_session[:full_login] = false
       else
-        render json: {errors: ["Permission denied."], status: 403}
+        render json: {errors: ["Permission denied."]}, status: 403
+        return
       end
     end
     yield

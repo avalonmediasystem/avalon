@@ -40,14 +40,10 @@ class Admin::CollectionsController < ApplicationController
     #authorize! :read, @mediaobject
     respond_to do |format|
       format.json { 
-        if can? :json_show, Admin::Collection
-          begin
-            render json: Admin::Collection.find(params[:id]).to_json
-          rescue ActiveFedora::ObjectNotFoundError
-            render json: {errors: ["Collection not found for #{params[:id]}"]}, status: 404
-          end
-        else
-          render json: {errors: ["Permission denied."], status: 403}
+        begin
+          render json: Admin::Collection.find(params[:id]).to_json
+        rescue ActiveFedora::ObjectNotFoundError
+          render json: {errors: ["Collection not found for #{params[:id]}"]}, status: 404
         end
       }
       format.html {
@@ -84,46 +80,34 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1/items
   def items
-    if can? :json_show, Admin::Collection
-      begin
-        mos = paginate Admin::Collection.find(params[:id]).media_objects
-        render json: mos.collect{|mo| [mo.pid, mo.to_json] }.to_h
-      rescue ActiveFedora::ObjectNotFoundError
-        render json: {errors: ["Collection not found for #{params[:id]}"]}, status: 404
-      end
-    else
-      render json: {errors: ["Permission denied."], status: 403}
+    begin
+      mos = paginate Admin::Collection.find(params[:id]).media_objects
+      render json: mos.collect{|mo| [mo.pid, mo.to_json] }.to_h
+    rescue ActiveFedora::ObjectNotFoundError
+      render json: {errors: ["Collection not found for #{params[:id]}"]}, status: 404
     end
   end
  
   # POST /collections
   def create
-    if can? :json_create, Admin::Collection
-      @collection = Admin::Collection.create(params[:admin_collection])
-      if @collection.persisted?
-        User.where(username: [RoleControls.users('administrator')].flatten).each do |admin_user|
-          NotificationsMailer.delay.new_collection( 
-            creator_id: current_user.id, 
-            collection_id: @collection.id, 
-            user_id: admin_user.id, 
-            subject: "New collection: #{@collection.name}"
-          )
-        end
-        render json: {id: @collection.pid}, status: 200
-      else
-        render json: {errors: ['Failed to create collection:']+@collection.errors.full_messages}, status: 422
+    @collection = Admin::Collection.create(params[:admin_collection])
+    if @collection.persisted?
+      User.where(username: [RoleControls.users('administrator')].flatten).each do |admin_user|
+        NotificationsMailer.delay.new_collection( 
+          creator_id: current_user.id, 
+          collection_id: @collection.id, 
+          user_id: admin_user.id, 
+          subject: "New collection: #{@collection.name}"
+        )
       end
+      render json: {id: @collection.pid}, status: 200
     else
-      render json: {errors: ["Permission denied."], status: 403}
+      render json: {errors: ['Failed to create collection:']+@collection.errors.full_messages}, status: 422
     end
   end
   
   # PUT /collections/1
   def update
-    if request.format.json? && cannot?(:json_update, Admin::Collection)
-      render json: {errors: ["Permission denied."], status: 403}
-      return
-    end
     @collection = Admin::Collection.find(params[:id])
     name_changed = false
     if params[:admin_collection].present?

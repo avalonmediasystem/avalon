@@ -100,12 +100,13 @@ describe Admin::CollectionsController, type: :controller do
     let!(:collection) { FactoryGirl.create(:collection) }
     subject(:json) { JSON.parse(response.body) }
 
-    before do
-      login_as(:administrator)
-      get 'index', format:'json'
+    it "should return 403 if bad token passed" do
+      get 'index', format:'json', api_key:'badtoken'
+      expect(response.status).to eq(403)
     end
 
     it "should return list of collections" do
+      get 'index', format:'json', api_key:'secret_token'
       expect(json.count).to eq(1)
       expect(json.first['id']).to eq(collection.pid)
       expect(json.first['name']).to eq(collection.name)
@@ -158,12 +159,12 @@ describe Admin::CollectionsController, type: :controller do
     context "with json format" do
       subject(:json) { JSON.parse(response.body) }
 
-      before do
-        login_as(:administrator)
-        get 'show', id: collection.pid, format:'json'
+      it "should return 403 if bad token passed" do
+        get 'show', id: collection.pid, format:'json', api_key:'badtoken'
+        expect(response.status).to eq(403)
       end
-
       it "should return json for specific collection" do
+        get 'show', id: collection.pid, format:'json', api_key:'secret_token'
         expect(json['id']).to eq(collection.pid)
         expect(json['name']).to eq(collection.name)
         expect(json['unit']).to eq(collection.unit)
@@ -188,10 +189,14 @@ describe Admin::CollectionsController, type: :controller do
 
   describe "#items" do
     let!(:collection) { FactoryGirl.create(:collection, items: 2) }
+    it "should return 403 if bad token passed" do
+      get 'items', id: collection.pid, format:'json', api_key:'badtoken'
+      expect(response.status).to eq(403)
+    end
 
     it "should return json for specific collection's media objects" do
       login_as(:administrator)
-      get 'items', id: collection.pid, format: 'json'
+      get 'items', id: collection.pid, format: 'json', api_key:'secret_token'
       expect(JSON.parse(response.body)).to include(collection.media_objects[0].pid,collection.media_objects[1].pid)
       #TODO add check that mediaobject is serialized to json properly
     end
@@ -200,20 +205,24 @@ describe Admin::CollectionsController, type: :controller do
 
   describe "#create" do
     let!(:collection) { FactoryGirl.build(:collection) }
-    before(:each) { login_as(:administrator) } #Login as admin so there will be at least one administrator to get an email
+    it "should return 403 if bad token passed" do
+      post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}, api_key:'badtoken'
+      expect(response.status).to eq(403)
+    end
     it "should notify administrators" do
+      login_as(:administrator) #otherwise, there are no administrators to mail
       mock_delay = double('mock_delay').as_null_object 
       allow(NotificationsMailer).to receive(:delay).and_return(mock_delay)
       expect(mock_delay).to receive(:new_collection)
-      post 'create', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}
+      post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}, api_key:'secret_token'
     end
     it "should create a new collection" do
-      post 'create', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}
+      post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}, api_key:'secret_token'
       expect(JSON.parse(response.body)['id'].class).to eq String
       expect(JSON.parse(response.body)).not_to include('errors')
     end
     it "should return 422 if collection creation failed" do
-      post 'create', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit}
+      post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit}, api_key:'secret_token'
       expect(response.status).to eq(422)
       expect(JSON.parse(response.body)).to include('errors')
       expect(JSON.parse(response.body)["errors"].class).to eq Array
@@ -223,10 +232,8 @@ describe Admin::CollectionsController, type: :controller do
   end
 
   describe "#update" do
-    before(:each) do
-      login_as(:administrator)
-    end 
     it "should notify administrators if name changed" do
+      login_as(:administrator) #otherwise, there are no administrators to mail
       mock_delay = double('mock_delay').as_null_object 
       allow(NotificationsMailer).to receive(:delay).and_return(mock_delay)
       expect(mock_delay).to receive(:update_collection)
@@ -237,9 +244,13 @@ describe Admin::CollectionsController, type: :controller do
     context "update REST API" do
       let!(:collection) { FactoryGirl.create(:collection)}
 
+      it "should return 403 if bad token passed" do
+        put 'update', format: 'json', id: collection.pid, admin_collection: {description: collection.description+'new'}, api_key:'secret_token', api_key:'badtoken'
+        expect(response.status).to eq(403)
+      end
       it "should update a collection via API" do
         old_description = collection.description
-        put 'update', format: 'json', id: collection.pid, admin_collection: {description: collection.description+'new'}
+        put 'update', format: 'json', id: collection.pid, admin_collection: {description: collection.description+'new'}, api_key:'secret_token'
         expect(JSON.parse(response.body)['id'].class).to eq String
         expect(JSON.parse(response.body)).not_to include('errors')
         collection.reload
@@ -247,7 +258,7 @@ describe Admin::CollectionsController, type: :controller do
       end
       it "should return 422 if collection update via API failed" do
         allow_any_instance_of(Admin::Collection).to receive(:save).and_return false
-        put 'update', format: 'json', id: collection.pid, admin_collection: {description: collection.description+'new'}
+        put 'update', format: 'json', id: collection.pid, admin_collection: {description: collection.description+'new'}, api_key:'secret_token'
         expect(response.status).to eq(422)
         expect(JSON.parse(response.body)).to include('errors')
         expect(JSON.parse(response.body)["errors"].class).to eq Array
