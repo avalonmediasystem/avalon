@@ -27,43 +27,55 @@ describe VocabularyController, type: :controller do
   }
   
   describe "#index" do
+    it "should return 403 if bad token passed" do
+      get 'index', format:'json', api_key:'badtoken'
+      expect(response.status).to eq(403)
+    end
     it "should return vocabulary for entire app" do
-      get 'index'
+      get 'index', format:'json', api_key:'secret_token'
       expect(JSON.parse(response.body)).to include('units','note_types','identifier_types')
     end
   end
   describe "#show" do
+    it "should return 403 if bad token passed" do
+      get 'show', format:'json', id: :units, api_key:'badtoken'
+      expect(response.status).to eq(403)
+    end
     it "should return a particular vocabulary" do
-      get 'show', id: :units
+      get 'show', format:'json', id: :units, api_key:'secret_token'
       expect(JSON.parse(response.body)).to include('Default Unit')
     end
     it "should return 404 if requested vocabulary not present" do
-      get 'show', id: :doesnt_exist
+      get 'show', format:'json', id: :doesnt_exist, api_key:'secret_token'
       expect(response.status).to eq(404)
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String
     end
   end
   describe "#update" do
+    it "should return 403 if bad token passed" do
+      put 'update', format:'json', id: :units, entry: 'New Unit', api_key:'badtoken'
+      expect(response.status).to eq(403)
+    end
     it "should add unit to controlled vocabulary" do
-      put 'update', id: :units, entry: 'New Unit'
+      put 'update', format:'json', id: :units, entry: 'New Unit', api_key:'secret_token'
       expect(Avalon::ControlledVocabulary.vocabulary[:units]).to include("New Unit")
     end
     it "should return 404 if requested vocabulary not present" do
-      put 'update', id: :doesnt_exist, entry: 'test'
+      put 'update', format:'json', id: :doesnt_exist, entry: 'test', api_key:'secret_token'
       expect(response.status).to eq(404)
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String
     end
     it "should return 422 if no new value sent" do
-      put 'update', id: :units
+      put 'update', format:'json', id: :units, api_key:'secret_token'
       expect(response.status).to eq(422)
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String
     end
     it "should return 422 if update fails" do
       allow(Avalon::ControlledVocabulary).to receive(:vocabulary=).and_return(false)
-      put 'update', id: :units
+      put 'update', format:'json', id: :units, api_key:'secret_token'
       expect(response.status).to eq(422)
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String
