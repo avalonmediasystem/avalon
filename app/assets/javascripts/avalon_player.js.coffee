@@ -138,14 +138,10 @@ class AvalonPlayer
         else
           $('.mejs-overlay-loading').show().closest('.mejs-layer').show()
           splitUrl = (target_stream.nativeUrl || target.attr('href')).split('?')
-          uri = "#{splitUrl[0]}.json"
+          uri = "#{splitUrl[0]}.js"
           params = ["content=#{segment}"]
           params.push(splitUrl[1]) if splitUrl[1]?
-          $.ajax
-            dataType: 'js'
-            url: uri
-            data: params.join('&')
-            success: (data) => @setStreamInfo(data)
+          $.getJSON uri, params.join('&'), (data) => @setStreamInfo(data)
             
 (exports ? this).AvalonPlayer = AvalonPlayer      
       
