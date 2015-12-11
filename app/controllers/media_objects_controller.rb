@@ -63,25 +63,17 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects
   def create
-    if can? :json_create, MediaObject
-      @mediaobject = MediaObject.new
-      update_mediaobject
-    else
-      render json: {errors: ["Permission denied."], status: 403}
-    end
+    @mediaobject = MediaObject.new
+    update_mediaobject
   end
 
   # PUT /media_objects/avalon:1.json
   def json_update
-    if can? :json_update, MediaObject
-      begin
-        @mediaobject = MediaObject.find(params[:id])
-        update_mediaobject
-      rescue ActiveFedora::ObjectNotFoundError
-        render json: {errors: ["Mediaobject not found for #{params[:id]}"]}, status: 404
-      end
-    else
-      render json: {errors: ["Permission denied."], status: 403}
+    begin
+      @mediaobject = MediaObject.find(params[:id])
+      update_mediaobject
+    rescue ActiveFedora::ObjectNotFoundError
+      render json: {errors: ["Mediaobject not found for #{params[:id]}"]}, status: 404
     end
   end
 
@@ -164,11 +156,7 @@ class MediaObjectsController < ApplicationController
   def index
     respond_to do |format|
       format.json { 
-        if can? :json_index, MediaObject
-          paginate json: MediaObject.all
-        else
-          render json: {errors: ["Permission denied."], status: 403}
-        end
+        paginate json: MediaObject.all
       }
     end
   end
@@ -183,20 +171,15 @@ class MediaObjectsController < ApplicationController
           render
         end
       end
+      format.js do
+        render json: @currentStreamInfo 
+      end
       format.json do
-        if params.has_key? :content #switchStream sends :content to specify which stream and expects currentStreamInfo in response
-          render json: @currentStreamInfo 
-        else
-          if can? :json_show, MediaObject
-            begin
-              render json: MediaObject.find(params[:id]).to_json
-            rescue ActiveFedora::ObjectNotFoundError
-              render json: {errors: ["Media Object not found for #{params[:id]}"]}, status: 404
-            end
-          else
-            render json: {errors: ["Permission denied."], status: 403}
-          end
-        end 
+        begin
+          render json: MediaObject.find(params[:id]).to_json
+        rescue ActiveFedora::ObjectNotFoundError
+          render json: {errors: ["Media Object not found for #{params[:id]}"]}, status: 404
+        end
       end
     end
   end

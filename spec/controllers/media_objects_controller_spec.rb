@@ -22,9 +22,6 @@ describe MediaObjectsController, type: :controller do
   end
 
   context "JSON API methods" do
-    before(:each) do
-      login_as(:administrator)
-    end
     let!(:collection) { FactoryGirl.create(:collection) }
     let!(:testdir) {'spec/fixtures/'}
     let!(:filename) {'videoshort.high.mp4'}
@@ -78,8 +75,12 @@ describe MediaObjectsController, type: :controller do
       :other_identifier
     ]}
     describe "#create" do
+      it "should return 403 if bad token passed" do
+        post 'create', format: 'json', collection_id: collection.pid, api_key:'badtoken'
+        expect(response.status).to eq(403)
+      end
       it "should respond with 422 if collection not found" do
-        post 'create', collection_id: "avalon:doesnt_exist"
+        post 'create', collection_id: "avalon:doesnt_exist", api_key:'secret_token'
         expect(response.status).to eq(422)
         expect(JSON.parse(response.body)).to include('errors')
         expect(JSON.parse(response.body)["errors"].class).to eq Array
@@ -88,7 +89,7 @@ describe MediaObjectsController, type: :controller do
       it "should create a new mediaobject" do
         media_object = FactoryGirl.create(:multiple_entries)
         fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
-        post 'create', fields: fields, files: [masterfile], collection_id: collection.pid
+        post 'create', fields: fields, files: [masterfile], collection_id: collection.pid, api_key:'secret_token'
         expect(response.status).to eq(200)
         new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
         expect(new_media_object.title).to eq media_object.title
@@ -107,16 +108,20 @@ describe MediaObjectsController, type: :controller do
         assert_routing({ path: 'media_objects/avalon:1', method: :put }, 
                        { controller: 'media_objects', action: 'update', id: 'avalon:1', format: 'html' })
       end
+      it "should return 403 if bad token passed" do
+        put 'json_update', format: 'json', id: media_object.pid, fields: {title: media_object.title}, collection_id: media_object.collection_id, api_key:'badtoken'
+        expect(response.status).to eq(403)
+      end
       it "should update a mediaobject's metadata" do
         old_title = media_object.title
-        put 'json_update', format: 'json', id: media_object.pid, fields: {title: old_title+'new'}, collection_id: media_object.collection_id
+        put 'json_update', format: 'json', id: media_object.pid, fields: {title: old_title+'new'}, collection_id: media_object.collection_id, api_key:'secret_token'
         expect(JSON.parse(response.body)['id'].class).to eq String
         expect(JSON.parse(response.body)).not_to include('errors')
         media_object.reload
         expect(media_object.title).to eq old_title+'new'
       end
       it "should add a masterfile to a mediaobject" do
-        put 'json_update', format: 'json', id: media_object.pid, files: [masterfile], collection_id: media_object.collection_id
+        put 'json_update', format: 'json', id: media_object.pid, files: [masterfile], collection_id: media_object.collection_id, api_key:'secret_token'
         expect(JSON.parse(response.body)['id'].class).to eq String
         expect(JSON.parse(response.body)).not_to include('errors')
         media_object.reload
@@ -124,12 +129,12 @@ describe MediaObjectsController, type: :controller do
       end
       it "should return 404 if media object doesn't exist" do
         allow_any_instance_of(MediaObject).to receive(:save).and_return false
-        put 'json_update', format: 'json', id: 'avalon:doesnt_exist', fields: {}, collection_id: media_object.collection_id
+        put 'json_update', format: 'json', id: 'avalon:doesnt_exist', fields: {}, collection_id: media_object.collection_id, api_key:'secret_token'
         expect(response.status).to eq(404)
       end
       it "should return 422 if media object update failed" do
         allow_any_instance_of(MediaObject).to receive(:save).and_return false
-        put 'json_update', format: 'json', id: media_object.pid, fields: {}, collection_id: media_object.collection_id
+        put 'json_update', format: 'json', id: media_object.pid, fields: {}, collection_id: media_object.collection_id, api_key:'secret_token'
         expect(response.status).to eq(422)
         expect(JSON.parse(response.body)).to include('errors')
         expect(JSON.parse(response.body)["errors"].class).to eq Array
@@ -264,12 +269,13 @@ describe MediaObjectsController, type: :controller do
     let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
     subject(:json) { JSON.parse(response.body) }
 
-    before do
-      login_as(:administrator)
-      get 'index', format:'json'
+    it "should return 403 if bad token passed" do
+      get 'index', format:'json', api_key:'badtoken'
+      expect(response.status).to eq(403)
     end
 
     it "should return list of media_objects" do
+      get 'index', format:'json', api_key:'secret_token'
       expect(json.count).to eq(1)
       expect(json.first['id']).to eq(media_object.pid)
       expect(json.first['title']).to eq(media_object.title)
@@ -288,7 +294,7 @@ describe MediaObjectsController, type: :controller do
       before do
         5.times { FactoryGirl.create(:published_media_object, visibility: 'public', collection: collection) }
         login_as(:administrator)
-        get 'index', format:'json', per_page: '2'
+        get 'index', format:'json', per_page: '2', api_key:'secret_token'
       end
       it 'should paginate' do
         expect(json.count).to eq(2)
@@ -327,7 +333,7 @@ describe MediaObjectsController, type: :controller do
         media_object = MediaObject.find(mopid)
 
         media_object.parts.collect { |part| 
-          get 'show', id: media_object.pid, format: 'json', content: part.pid
+          get 'show', id: media_object.pid, format: 'js', content: part.pid
           json_obj = JSON.parse(response.body)
           expect(json_obj['is_video']).to eq(part.is_video?)
         }
@@ -466,12 +472,13 @@ describe MediaObjectsController, type: :controller do
       subject(:json) { JSON.parse(response.body) }
       let!(:media_object) { FactoryGirl.create(:media_object) }
 
-      before(:each) do
-        login_as(:administrator)
+      it "should return 403 if bad token passed" do
+        get 'show', id: media_object.pid, format:'json', api_key:'badtoken'
+        expect(response.status).to eq(403)
       end
 
       it "should return json for specific media_object" do
-        get 'show', id: media_object.pid, format:'json'
+        get 'show', id: media_object.pid, format:'json', api_key:'secret_token'
         expect(json['id']).to eq(media_object.pid)
         expect(json['title']).to eq(media_object.title)
         expect(json['collection']).to eq(media_object.collection.name)
@@ -484,7 +491,7 @@ describe MediaObjectsController, type: :controller do
 
       it "should return 404 if requested media_object not present" do
         login_as(:administrator)
-        get 'show', id: 'avalon:doesnt_exist', format: 'json'
+        get 'show', id: 'avalon:doesnt_exist', format: 'json', api_key:'secret_token'
         expect(response.status).to eq(404)
         expect(JSON.parse(response.body)["errors"].class).to eq Array
         expect(JSON.parse(response.body)["errors"].first.class).to eq String

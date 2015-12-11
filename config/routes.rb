@@ -34,7 +34,7 @@ Avalon::Application.routes.draw do
 
   resources :vocabulary, except: [:create, :destroy, :new, :edit]
 
-  resources :media_objects, except: [:update] do
+  resources :media_objects, except: [:create, :update] do
     member do
       put :update, action: :update, defaults: { format: 'html' }, constraints: { format: 'html' }
       put :update, action: :json_update, constraints: { format: 'json' }
@@ -47,6 +47,7 @@ Avalon::Application.routes.draw do
       get :confirm_remove
     end
     collection do
+      post :create, action: :create, constraints: { format: 'json' }
       get :confirm_remove
       put :update_status
       # 'delete' has special signifigance so use 'remove' for now
