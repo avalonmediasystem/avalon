@@ -30,8 +30,8 @@ class Admin::CollectionsController < ApplicationController
   # GET /collections
   def index
     respond_to do |format|
-      format.json { paginate json: Admin::Collection.all }
       format.html { @collections = get_user_collections }
+      format.json { paginate json: Admin::Collection.all }
     end
   end
 
@@ -80,8 +80,12 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1/items
   def items
-    mos = paginate Admin::Collection.find(params[:id]).media_objects
-    render json: mos.collect{|mo| [mo.pid, mo.to_json] }.to_h
+    begin
+      mos = paginate Admin::Collection.find(params[:id]).media_objects
+      render json: mos.collect{|mo| [mo.pid, mo.to_json] }.to_h
+    rescue ActiveFedora::ObjectNotFoundError
+      render json: {errors: ["Collection not found for #{params[:id]}"]}, status: 404
+    end
   end
  
   # POST /collections

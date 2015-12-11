@@ -20,16 +20,16 @@ class VocabularyController < ApplicationController
   def index
     render json: Avalon::ControlledVocabulary.vocabulary
   end
-
+  
   def show
     render json: Avalon::ControlledVocabulary.vocabulary[params[:id].to_sym]
   end
-
+  
   def update
     unless params[:entry].present?
       render json: {errors: ["No update value sent"]}, status: 422 and return
     end
-
+    
     v = Avalon::ControlledVocabulary.vocabulary
     v[params[:id].to_sym] |= Array(params[:entry])
     result = Avalon::ControlledVocabulary.vocabulary = v

@@ -71,11 +71,10 @@ class MediaObjectsController < ApplicationController
   def json_update
     begin
       @mediaobject = MediaObject.find(params[:id])
+      update_mediaobject
     rescue ActiveFedora::ObjectNotFoundError
       render json: {errors: ["Mediaobject not found for #{params[:id]}"]}, status: 404
-      return
     end
-    update_mediaobject
   end
 
   def update_mediaobject
@@ -156,29 +155,31 @@ class MediaObjectsController < ApplicationController
 
   def index
     respond_to do |format|
-      format.json  { paginate json: MediaObject.all }
+      format.json { 
+        paginate json: MediaObject.all
+      }
     end
   end
 
   def show
     respond_to do |format|
       format.html do
-	if (not @masterFiles.empty? and @currentStream.blank?) then
+        authorize! :read, @mediaobject
+        if (not @masterFiles.empty? and @currentStream.blank?) then
           redirect_to media_object_path(@mediaobject.pid), flash: { notice: 'That stream was not recognized. Defaulting to the first available stream for the resource' }
         else 
           render
         end
       end
+      format.js do
+        render json: @currentStreamInfo 
+      end
       format.json do
-        if params.has_key? :content #switchStream sends :content to specify which stream and expects currentStreamInfo in response
-          render json: @currentStreamInfo 
-        else
-          begin
-            render json: MediaObject.find(params[:id]).to_json
-          rescue ActiveFedora::ObjectNotFoundError
-            render json: {errors: ["Media Object not found for #{params[:id]}"]}, status: 404
-          end
-        end 
+        begin
+          render json: MediaObject.find(params[:id]).to_json
+        rescue ActiveFedora::ObjectNotFoundError
+          render json: {errors: ["Media Object not found for #{params[:id]}"]}, status: 404
+        end
       end
     end
   end
