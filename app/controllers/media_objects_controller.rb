@@ -87,10 +87,24 @@ class MediaObjectsController < ApplicationController
 
     @mediaobject.collection = collection
     @mediaobject.avalon_uploader = 'REST API'
-    @mediaobject.update_datastream(:descMetadata, params[:fields]) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
+
+    populate_from_catalog = !!params[:import_bib_record]
+    if populate_from_catalog and Avalon::BibRetriever.configured?
+      begin
+        @mediaobject.descMetadata.populate_from_catalog!(Array(params[:fields][:bibliographic_id]).first, 
+                                                         Array(params[:fields][:bibliographic_id_label]).first)
+      rescue Exception => e
+        render json: {errors: ['Bib import failed', e.message]}, status: 422
+        return
+      end
+    else
+      @mediaobject.update_datastream(:descMetadata, params[:fields]) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
+    end
+
     error_messages = []
+
     if !@mediaobject.save
-        error_messages += ['Failed to create media object:']+@mediaobject.errors.full_messages
+      error_messages += ['Failed to create media object:']+@mediaobject.errors.full_messages
     elsif params[:files].respond_to?('each')
       params[:files].each do |file_spec|
         master_file = MasterFile.new(file_spec.except :structure)
