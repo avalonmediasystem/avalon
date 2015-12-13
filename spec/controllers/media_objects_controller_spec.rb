@@ -27,6 +27,9 @@ describe MediaObjectsController, type: :controller do
     let!(:filename) {'videoshort.high.mp4'}
     let!(:absolute_location) {File.join(testdir, filename)}
     let!(:structure) {File.read(File.join(testdir, 'structure.xml'))}
+    let!(:bib_id) { '7763100' }
+    let!(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
+    let!(:sru_response) { File.read(File.expand_path("../../fixtures/#{bib_id}.xml",__FILE__)) }
     let!(:masterfile) {{
       file_location: absolute_location,
       label: "Part 1",
@@ -96,6 +99,16 @@ describe MediaObjectsController, type: :controller do
         expect(new_media_object.creator).to eq media_object.creator
         expect(new_media_object.date_issued).to eq media_object.date_issued
         expect(new_media_object.parts_with_order).to eq new_media_object.parts
+      end
+      it "should create a new mediaobject with successful bib import" do
+        Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+        FakeWeb.register_uri :get, sru_url, body: sru_response
+        fields = { bibliographic_id: bib_id }
+        post 'create', import_bib_record: true, fields: fields, files: [masterfile], collection_id: collection.pid, api_key:'secret_token'
+        expect(response.status).to eq(200)
+        new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+        expect(new_media_object.bibliographic_id).to eq(['local', bib_id])
+        expect(new_media_object.title).to eq('245 A : B F G K N P S')
       end
     end
     describe "#update" do
