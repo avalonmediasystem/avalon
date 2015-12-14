@@ -25,57 +25,70 @@ describe VocabularyController, type: :controller do
   after(:all) {
     File.delete('spec/fixtures/controlled_vocabulary.yml.tmp')
   }
+
+  before do
+    request.headers['Avalon-Api-Key'] = 'secret_token'
+  end
   
   describe "#index" do
-    it "should return 403 if bad token passed" do
-      get 'index', format:'json', api_key:'badtoken'
-      expect(response.status).to eq(403)
+    context 'with bad authentication token' do
+      it "should return 403 if bad token passed" do
+        request.headers['Avalon-Api-Key'] = 'badtoken'
+        get 'index', format:'json'
+        expect(response.status).to eq(403)
+      end
     end
     it "should return vocabulary for entire app" do
-      get 'index', format:'json', api_key:'secret_token'
+      get 'index', format:'json'
       expect(JSON.parse(response.body)).to include('units','note_types','identifier_types')
     end
   end
   describe "#show" do
-    it "should return 403 if bad token passed" do
-      get 'show', format:'json', id: :units, api_key:'badtoken'
-      expect(response.status).to eq(403)
+    context 'with bad authentication token' do
+      it "should return 403 if bad token passed" do
+        request.headers['Avalon-Api-Key'] = 'badtoken'
+	get 'show', format:'json', id: :units
+	expect(response.status).to eq(403)
+      end
     end
     it "should return a particular vocabulary" do
-      get 'show', format:'json', id: :units, api_key:'secret_token'
+      get 'show', format:'json', id: :units
       expect(JSON.parse(response.body)).to include('Default Unit')
     end
     it "should return 404 if requested vocabulary not present" do
-      get 'show', format:'json', id: :doesnt_exist, api_key:'secret_token'
+      get 'show', format:'json', id: :doesnt_exist
       expect(response.status).to eq(404)
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String
     end
   end
   describe "#update" do
-    it "should return 403 if bad token passed" do
-      put 'update', format:'json', id: :units, entry: 'New Unit', api_key:'badtoken'
-      expect(response.status).to eq(403)
+    context 'with bad authentication token' do
+      it "should return 403 if bad token passed" do
+        request.headers['Avalon-Api-Key'] = 'badtoken'
+	put 'update', format:'json', id: :units, entry: 'New Unit'
+	expect(response.status).to eq(403)
+      end
     end
     it "should add unit to controlled vocabulary" do
-      put 'update', format:'json', id: :units, entry: 'New Unit', api_key:'secret_token'
+      put 'update', format:'json', id: :units, entry: 'New Unit'
       expect(Avalon::ControlledVocabulary.vocabulary[:units]).to include("New Unit")
     end
     it "should return 404 if requested vocabulary not present" do
-      put 'update', format:'json', id: :doesnt_exist, entry: 'test', api_key:'secret_token'
+      put 'update', format:'json', id: :doesnt_exist, entry: 'test'
       expect(response.status).to eq(404)
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String
     end
     it "should return 422 if no new value sent" do
-      put 'update', format:'json', id: :units, api_key:'secret_token'
+      put 'update', format:'json', id: :units
       expect(response.status).to eq(422)
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String
     end
     it "should return 422 if update fails" do
       allow(Avalon::ControlledVocabulary).to receive(:vocabulary=).and_return(false)
-      put 'update', format:'json', id: :units, api_key:'secret_token'
+      put 'update', format:'json', id: :units
       expect(response.status).to eq(422)
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String

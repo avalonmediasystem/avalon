@@ -101,12 +101,14 @@ describe Admin::CollectionsController, type: :controller do
     subject(:json) { JSON.parse(response.body) }
 
     it "should return 403 if bad token passed" do
-      get 'index', format:'json', api_key:'badtoken'
+      request.headers['Avalon-Api-Key'] = 'badtoken'
+      get 'index', format:'json'
       expect(response.status).to eq(403)
     end
 
     it "should return list of collections" do
-      get 'index', format:'json', api_key:'secret_token'
+      request.headers['Avalon-Api-Key'] = 'secret_token'
+      get 'index', format:'json'
       expect(json.count).to eq(1)
       expect(json.first['id']).to eq(collection.pid)
       expect(json.first['name']).to eq(collection.name)
@@ -125,7 +127,7 @@ describe Admin::CollectionsController, type: :controller do
     subject(:json) { JSON.parse(response.body) }
     it 'should paginate index' do
       5.times { FactoryGirl.create(:collection) }
-      login_as(:administrator)
+      request.headers['Avalon-Api-Key'] = 'secret_token'
       get 'index', format:'json', per_page: '2'
       expect(json.count).to eq(2)
       expect(response.headers['Per-Page']).to eq('2')
@@ -133,7 +135,7 @@ describe Admin::CollectionsController, type: :controller do
     end
     it 'should paginate collection/items' do
       collection = FactoryGirl.create(:collection, items: 5)
-      login_as(:administrator)
+      request.headers['Avalon-Api-Key'] = 'secret_token'
       get 'items', id: collection.pid, format: 'json', per_page: '2'
       expect(json.count).to eq(2)
       expect(response.headers['Per-Page']).to eq('2')
@@ -160,11 +162,13 @@ describe Admin::CollectionsController, type: :controller do
       subject(:json) { JSON.parse(response.body) }
 
       it "should return 403 if bad token passed" do
-        get 'show', id: collection.pid, format:'json', api_key:'badtoken'
+        request.headers['Avalon-Api-Key'] = 'badtoken'
+        get 'show', id: collection.pid, format:'json'
         expect(response.status).to eq(403)
       end
       it "should return json for specific collection" do
-        get 'show', id: collection.pid, format:'json', api_key:'secret_token'
+        request.headers['Avalon-Api-Key'] = 'secret_token'
+        get 'show', id: collection.pid, format:'json'
         expect(json['id']).to eq(collection.pid)
         expect(json['name']).to eq(collection.name)
         expect(json['unit']).to eq(collection.unit)
@@ -178,7 +182,7 @@ describe Admin::CollectionsController, type: :controller do
       end
 
       it "should return 404 if requested collection not present" do
-        login_as(:administrator)
+        request.headers['Avalon-Api-Key'] = 'secret_token'
         get 'show', id: 'avalon:doesnt_exist', format: 'json'
         expect(response.status).to eq(404)
         expect(JSON.parse(response.body)["errors"].class).to eq Array
@@ -190,13 +194,14 @@ describe Admin::CollectionsController, type: :controller do
   describe "#items" do
     let!(:collection) { FactoryGirl.create(:collection, items: 2) }
     it "should return 403 if bad token passed" do
-      get 'items', id: collection.pid, format:'json', api_key:'badtoken'
+      request.headers['Avalon-Api-Key'] = 'badtoken'
+      get 'items', id: collection.pid, format:'json'
       expect(response.status).to eq(403)
     end
 
     it "should return json for specific collection's media objects" do
-      login_as(:administrator)
-      get 'items', id: collection.pid, format: 'json', api_key:'secret_token'
+      request.headers['Avalon-Api-Key'] = 'secret_token'
+      get 'items', id: collection.pid, format: 'json'
       expect(JSON.parse(response.body)).to include(collection.media_objects[0].pid,collection.media_objects[1].pid)
       #TODO add check that mediaobject is serialized to json properly
     end
@@ -206,7 +211,8 @@ describe Admin::CollectionsController, type: :controller do
   describe "#create" do
     let!(:collection) { FactoryGirl.build(:collection) }
     it "should return 403 if bad token passed" do
-      post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}, api_key:'badtoken'
+      request.headers['Avalon-Api-Key'] = 'badtoken'
+      post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}
       expect(response.status).to eq(403)
     end
     it "should notify administrators" do
@@ -214,15 +220,18 @@ describe Admin::CollectionsController, type: :controller do
       mock_delay = double('mock_delay').as_null_object 
       allow(NotificationsMailer).to receive(:delay).and_return(mock_delay)
       expect(mock_delay).to receive(:new_collection)
-      post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}, api_key:'secret_token'
+      request.headers['Avalon-Api-Key'] = 'secret_token'
+      post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}
     end
     it "should create a new collection" do
-      post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}, api_key:'secret_token'
+      request.headers['Avalon-Api-Key'] = 'secret_token'
+      post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}
       expect(JSON.parse(response.body)['id'].class).to eq String
       expect(JSON.parse(response.body)).not_to include('errors')
     end
     it "should return 422 if collection creation failed" do
-      post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit}, api_key:'secret_token'
+      request.headers['Avalon-Api-Key'] = 'secret_token'
+      post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit}
       expect(response.status).to eq(422)
       expect(JSON.parse(response.body)).to include('errors')
       expect(JSON.parse(response.body)["errors"].class).to eq Array
@@ -245,12 +254,14 @@ describe Admin::CollectionsController, type: :controller do
       let!(:collection) { FactoryGirl.create(:collection)}
 
       it "should return 403 if bad token passed" do
-        put 'update', format: 'json', id: collection.pid, admin_collection: {description: collection.description+'new'}, api_key:'secret_token', api_key:'badtoken'
+        request.headers['Avalon-Api-Key'] = 'badtoken'
+        put 'update', format: 'json', id: collection.pid, admin_collection: {description: collection.description+'new'}
         expect(response.status).to eq(403)
       end
       it "should update a collection via API" do
         old_description = collection.description
-        put 'update', format: 'json', id: collection.pid, admin_collection: {description: collection.description+'new'}, api_key:'secret_token'
+        request.headers['Avalon-Api-Key'] = 'secret_token'
+        put 'update', format: 'json', id: collection.pid, admin_collection: {description: collection.description+'new'}
         expect(JSON.parse(response.body)['id'].class).to eq String
         expect(JSON.parse(response.body)).not_to include('errors')
         collection.reload
@@ -258,7 +269,8 @@ describe Admin::CollectionsController, type: :controller do
       end
       it "should return 422 if collection update via API failed" do
         allow_any_instance_of(Admin::Collection).to receive(:save).and_return false
-        put 'update', format: 'json', id: collection.pid, admin_collection: {description: collection.description+'new'}, api_key:'secret_token'
+        request.headers['Avalon-Api-Key'] = 'secret_token'
+        put 'update', format: 'json', id: collection.pid, admin_collection: {description: collection.description+'new'}
         expect(response.status).to eq(422)
         expect(JSON.parse(response.body)).to include('errors')
         expect(JSON.parse(response.body)["errors"].class).to eq Array

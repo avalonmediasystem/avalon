@@ -55,8 +55,8 @@ class ApplicationController < ActionController::Base
   end
 
   def handle_api_request
-    if request[:api_key].present?
-      token = request[:api_key]
+    if request.headers['Avalon-Api-Key'].present?
+      token = request.headers['Avalon-Api-Key']
       #verify token (and IP)
       apiauth = Avalon::Authentication::Config.find {|p| p[:id] == :api }
       if apiauth[:tokens].include? token

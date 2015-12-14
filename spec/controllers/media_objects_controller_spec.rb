@@ -78,27 +78,35 @@ describe MediaObjectsController, type: :controller do
       :other_identifier
     ]}
     describe "#create" do
-      it "should return 403 if bad token passed" do
-        post 'create', format: 'json', collection_id: collection.pid, api_key:'badtoken'
-        expect(response.status).to eq(403)
-      end
-      it "should respond with 422 if collection not found" do
-        post 'create', collection_id: "avalon:doesnt_exist", api_key:'secret_token'
-        expect(response.status).to eq(422)
-        expect(JSON.parse(response.body)).to include('errors')
-        expect(JSON.parse(response.body)["errors"].class).to eq Array
-        expect(JSON.parse(response.body)["errors"].first.class).to eq String
-      end
-      it "should create a new mediaobject" do
-        media_object = FactoryGirl.create(:multiple_entries)
-        fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
-        post 'create', fields: fields, files: [masterfile], collection_id: collection.pid, api_key:'secret_token'
-        expect(response.status).to eq(200)
-        new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
-        expect(new_media_object.title).to eq media_object.title
-        expect(new_media_object.creator).to eq media_object.creator
-        expect(new_media_object.date_issued).to eq media_object.date_issued
-        expect(new_media_object.parts_with_order).to eq new_media_object.parts
+      context 'using api' do
+	before do
+	  request.headers['Avalon-Api-Key'] = 'secret_token'
+	end
+	context 'with bad authentication token' do
+	  it "should return 403 if bad token passed" do
+	    request.headers['Avalon-Api-Key'] = 'badtoken'
+	    post 'create', format: 'json', collection_id: collection.pid
+	    expect(response.status).to eq(403)
+	  end
+	end
+	it "should respond with 422 if collection not found" do
+	  post 'create', collection_id: "avalon:doesnt_exist"
+	  expect(response.status).to eq(422)
+	  expect(JSON.parse(response.body)).to include('errors')
+	  expect(JSON.parse(response.body)["errors"].class).to eq Array
+	  expect(JSON.parse(response.body)["errors"].first.class).to eq String
+	end
+	it "should create a new mediaobject" do
+	  media_object = FactoryGirl.create(:multiple_entries)
+	  fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
+	  post 'create', fields: fields, files: [masterfile], collection_id: collection.pid
+	  expect(response.status).to eq(200)
+	  new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+	  expect(new_media_object.title).to eq media_object.title
+	  expect(new_media_object.creator).to eq media_object.creator
+	  expect(new_media_object.date_issued).to eq media_object.date_issued
+	  expect(new_media_object.parts_with_order).to eq new_media_object.parts
+	end
       end
       it "should create a new mediaobject with successful bib import" do
         Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
@@ -112,46 +120,54 @@ describe MediaObjectsController, type: :controller do
       end
     end
     describe "#update" do
-      let!(:media_object) { FactoryGirl.create(:media_object_with_master_file) }
-      it "should route json format to #json_update" do
-        assert_routing({ path: 'media_objects/avalon:1.json', method: :put }, 
-                       { controller: 'media_objects', action: 'json_update', id: 'avalon:1', format: 'json' })
-      end
-      it "should route unspecified format to #update" do
-        assert_routing({ path: 'media_objects/avalon:1', method: :put }, 
-                       { controller: 'media_objects', action: 'update', id: 'avalon:1', format: 'html' })
-      end
-      it "should return 403 if bad token passed" do
-        put 'json_update', format: 'json', id: media_object.pid, fields: {title: media_object.title}, collection_id: media_object.collection_id, api_key:'badtoken'
-        expect(response.status).to eq(403)
-      end
-      it "should update a mediaobject's metadata" do
-        old_title = media_object.title
-        put 'json_update', format: 'json', id: media_object.pid, fields: {title: old_title+'new'}, collection_id: media_object.collection_id, api_key:'secret_token'
-        expect(JSON.parse(response.body)['id'].class).to eq String
-        expect(JSON.parse(response.body)).not_to include('errors')
-        media_object.reload
-        expect(media_object.title).to eq old_title+'new'
-      end
-      it "should add a masterfile to a mediaobject" do
-        put 'json_update', format: 'json', id: media_object.pid, files: [masterfile], collection_id: media_object.collection_id, api_key:'secret_token'
-        expect(JSON.parse(response.body)['id'].class).to eq String
-        expect(JSON.parse(response.body)).not_to include('errors')
-        media_object.reload
-        expect(media_object.parts.count).to eq 2
-      end
-      it "should return 404 if media object doesn't exist" do
-        allow_any_instance_of(MediaObject).to receive(:save).and_return false
-        put 'json_update', format: 'json', id: 'avalon:doesnt_exist', fields: {}, collection_id: media_object.collection_id, api_key:'secret_token'
-        expect(response.status).to eq(404)
-      end
-      it "should return 422 if media object update failed" do
-        allow_any_instance_of(MediaObject).to receive(:save).and_return false
-        put 'json_update', format: 'json', id: media_object.pid, fields: {}, collection_id: media_object.collection_id, api_key:'secret_token'
-        expect(response.status).to eq(422)
-        expect(JSON.parse(response.body)).to include('errors')
-        expect(JSON.parse(response.body)["errors"].class).to eq Array
-        expect(JSON.parse(response.body)["errors"].first.class).to eq String
+      context 'using api' do
+	before do
+	  request.headers['Avalon-Api-Key'] = 'secret_token'
+	end
+	let!(:media_object) { FactoryGirl.create(:media_object_with_master_file) }
+	it "should route json format to #json_update" do
+	  assert_routing({ path: 'media_objects/avalon:1.json', method: :put }, 
+			 { controller: 'media_objects', action: 'json_update', id: 'avalon:1', format: 'json' })
+	end
+	it "should route unspecified format to #update" do
+	  assert_routing({ path: 'media_objects/avalon:1', method: :put }, 
+			 { controller: 'media_objects', action: 'update', id: 'avalon:1', format: 'html' })
+	end
+	context 'with bad authentication token' do
+	  it "should return 403 if bad token passed" do
+	    request.headers['Avalon-Api-Key'] = 'badtoken'
+	    put 'json_update', format: 'json', id: media_object.pid, fields: {title: media_object.title}, collection_id: media_object.collection_id
+	    expect(response.status).to eq(403)
+	  end
+	end
+	it "should update a mediaobject's metadata" do
+	  old_title = media_object.title
+	  put 'json_update', format: 'json', id: media_object.pid, fields: {title: old_title+'new'}, collection_id: media_object.collection_id
+	  expect(JSON.parse(response.body)['id'].class).to eq String
+	  expect(JSON.parse(response.body)).not_to include('errors')
+	  media_object.reload
+	  expect(media_object.title).to eq old_title+'new'
+	end
+	it "should add a masterfile to a mediaobject" do
+	  put 'json_update', format: 'json', id: media_object.pid, files: [masterfile], collection_id: media_object.collection_id
+	  expect(JSON.parse(response.body)['id'].class).to eq String
+	  expect(JSON.parse(response.body)).not_to include('errors')
+	  media_object.reload
+	  expect(media_object.parts.count).to eq 2
+	end
+	it "should return 404 if media object doesn't exist" do
+	  allow_any_instance_of(MediaObject).to receive(:save).and_return false
+	  put 'json_update', format: 'json', id: 'avalon:doesnt_exist', fields: {}, collection_id: media_object.collection_id
+	  expect(response.status).to eq(404)
+	end
+	it "should return 422 if media object update failed" do
+	  allow_any_instance_of(MediaObject).to receive(:save).and_return false
+	  put 'json_update', format: 'json', id: media_object.pid, fields: {}, collection_id: media_object.collection_id
+	  expect(response.status).to eq(422)
+	  expect(JSON.parse(response.body)).to include('errors')
+	  expect(JSON.parse(response.body)["errors"].class).to eq Array
+	  expect(JSON.parse(response.body)["errors"].first.class).to eq String
+	end
       end
     end
   end
@@ -283,12 +299,14 @@ describe MediaObjectsController, type: :controller do
     subject(:json) { JSON.parse(response.body) }
 
     it "should return 403 if bad token passed" do
-      get 'index', format:'json', api_key:'badtoken'
+      request.headers['Avalon-Api-Key'] = 'badtoken'
+      get 'index', format:'json'
       expect(response.status).to eq(403)
     end
 
     it "should return list of media_objects" do
-      get 'index', format:'json', api_key:'secret_token'
+      request.headers['Avalon-Api-Key'] = 'secret_token'
+      get 'index', format:'json'
       expect(json.count).to eq(1)
       expect(json.first['id']).to eq(media_object.pid)
       expect(json.first['title']).to eq(media_object.title)
@@ -306,8 +324,8 @@ describe MediaObjectsController, type: :controller do
       subject(:json) { JSON.parse(response.body) }
       before do
         5.times { FactoryGirl.create(:published_media_object, visibility: 'public', collection: collection) }
-        login_as(:administrator)
-        get 'index', format:'json', per_page: '2', api_key:'secret_token'
+        request.headers['Avalon-Api-Key'] = 'secret_token'
+        get 'index', format:'json', per_page: '2'
       end
       it 'should paginate' do
         expect(json.count).to eq(2)
@@ -485,13 +503,19 @@ describe MediaObjectsController, type: :controller do
       subject(:json) { JSON.parse(response.body) }
       let!(:media_object) { FactoryGirl.create(:media_object) }
 
-      it "should return 403 if bad token passed" do
-        get 'show', id: media_object.pid, format:'json', api_key:'badtoken'
-        expect(response.status).to eq(403)
+      before do
+	request.headers['Avalon-Api-Key'] = 'secret_token'
+      end
+      context 'with bad authentication token' do
+	it "should return 403 if bad token passed" do
+	  request.headers['Avalon-Api-Key'] = 'badtoken'
+          get 'show', id: media_object.pid, format:'json'
+          expect(response.status).to eq(403)
+        end
       end
 
       it "should return json for specific media_object" do
-        get 'show', id: media_object.pid, format:'json', api_key:'secret_token'
+        get 'show', id: media_object.pid, format:'json'
         expect(json['id']).to eq(media_object.pid)
         expect(json['title']).to eq(media_object.title)
         expect(json['collection']).to eq(media_object.collection.name)
@@ -504,7 +528,7 @@ describe MediaObjectsController, type: :controller do
 
       it "should return 404 if requested media_object not present" do
         login_as(:administrator)
-        get 'show', id: 'avalon:doesnt_exist', format: 'json', api_key:'secret_token'
+        get 'show', id: 'avalon:doesnt_exist', format: 'json'
         expect(response.status).to eq(404)
         expect(JSON.parse(response.body)["errors"].class).to eq Array
         expect(JSON.parse(response.body)["errors"].first.class).to eq String
