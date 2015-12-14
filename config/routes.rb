@@ -38,6 +38,7 @@ Avalon::Application.routes.draw do
     member do
       put :update, action: :update, defaults: { format: 'html' }, constraints: { format: 'html' }
       put :update, action: :json_update, constraints: { format: 'json' }
+      patch :update, action: :update, defaults: { format: 'html' }, constraints: { format: 'html' }
       put :update_status
       get :progress, :action => :show_progress
       get 'content/:datastream', :action => :deliver_content, :as => :inspect
