@@ -105,6 +105,14 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  rescue_from ActiveFedora::ObjectNotFoundError do |exception|
+    if request.format == :json
+      render json: {errors: ["#{params[:id]} not found"]}, status: 404
+    else
+      render '/errors/unknown_pid', status: 404
+    end
+  end
+
   def get_user_collections
     if can? :manage, Admin::Collection
       Admin::Collection.all

@@ -37,14 +37,6 @@ class MediaObjectsController < ApplicationController
   add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti
   add_conditional_partial :share, :lti_url, partial: 'lti_url',  if: is_editor_or_lti
 
-
-  # Catch exceptions when you try to reference an object that doesn't exist.
-  # Attempt to resolve it to a close match if one exists and offer a link to
-  # the show page for that item. Otherwise ... nothing!
-  rescue_from ActiveFedora::ObjectNotFoundError do |exception|
-    render '/errors/unknown_pid', status: 404
-  end
-
   def can_embed?
     params[:action] == 'show'
   end
@@ -69,12 +61,8 @@ class MediaObjectsController < ApplicationController
 
   # PUT /media_objects/avalon:1.json
   def json_update
-    begin
-      @mediaobject = MediaObject.find(params[:id])
-      update_mediaobject
-    rescue ActiveFedora::ObjectNotFoundError
-      render json: {errors: ["Mediaobject not found for #{params[:id]}"]}, status: 404
-    end
+    @mediaobject = MediaObject.find(params[:id])
+    update_mediaobject
   end
 
   def update_mediaobject
@@ -189,11 +177,7 @@ class MediaObjectsController < ApplicationController
         render json: @currentStreamInfo 
       end
       format.json do
-        begin
-          render json: MediaObject.find(params[:id]).to_json
-        rescue ActiveFedora::ObjectNotFoundError
-          render json: {errors: ["Media Object not found for #{params[:id]}"]}, status: 404
-        end
+        render json: MediaObject.find(params[:id]).to_json
       end
     end
   end

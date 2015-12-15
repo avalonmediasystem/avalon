@@ -17,6 +17,48 @@ require 'spec_helper'
 describe Admin::CollectionsController, type: :controller do
   render_views
 
+  describe 'security' do
+    let(:collection) { FactoryGirl.create(:collection) }
+    describe 'ingest api' do
+      it "all routes should return 401 when no token is present" do
+        expect(get :index, format: 'json').to have_http_status(401)
+        expect(get :show, id: collection.id, format: 'json').to have_http_status(401)
+        expect(get :items, id: collection.id, format: 'json').to have_http_status(401)
+        expect(post :create, format: 'json').to have_http_status(401)
+        expect(put :update, id: collection.id, format: 'json').to have_http_status(401)
+      end
+      it "all routes should return 403 when a bad token in present" do
+        request.headers['Avalon-Api-Key'] = 'badtoken'
+        expect(get :index, format: 'json').to have_http_status(403)
+        expect(get :show, id: collection.id, format: 'json').to have_http_status(403)
+        expect(get :items, id: collection.id, format: 'json').to have_http_status(403)
+        expect(post :create, format: 'json').to have_http_status(403)
+        expect(put :update, id: collection.id, format: 'json').to have_http_status(403)
+      end
+    end
+    describe 'normal auth' do
+      context 'with end-user' do
+        before do
+          login_as :user
+        end
+        #New is isolated here due to issues caused by the controller instance not being regenerated
+        it "should redirect to /" do
+          expect(get :new).to redirect_to(root_path)
+        end
+        it "all routes should redirect to /" do
+          expect(get :index).to redirect_to(root_path)
+          expect(get :show, id: collection.id).to redirect_to(root_path)
+          expect(get :edit, id: collection.id).to redirect_to(root_path)
+          expect(get :remove, id: collection.id).to redirect_to(root_path)
+          expect(post :create).to redirect_to(root_path)
+          expect(put :update, id: collection.id).to redirect_to(root_path)
+          expect(patch :update, id: collection.id).to redirect_to(root_path)
+          expect(delete :destroy, id: collection.id).to redirect_to(root_path)
+        end
+      end
+    end
+  end
+
   describe "#manage" do
     let!(:collection) { FactoryGirl.create(:collection) }
     before(:each) do
@@ -100,12 +142,6 @@ describe Admin::CollectionsController, type: :controller do
     let!(:collection) { FactoryGirl.create(:collection) }
     subject(:json) { JSON.parse(response.body) }
 
-    it "should return 403 if bad token passed" do
-      request.headers['Avalon-Api-Key'] = 'badtoken'
-      get 'index', format:'json'
-      expect(response.status).to eq(403)
-    end
-
     it "should return list of collections" do
       request.headers['Avalon-Api-Key'] = 'secret_token'
       get 'index', format:'json'
@@ -152,20 +188,9 @@ describe Admin::CollectionsController, type: :controller do
       expect(response).to be_ok
     end
 
-    it "should redirect to collections index when manager doesn't have access" do
-      login_as(:manager)
-      get 'show', id: collection.id
-      expect(response).to redirect_to(admin_collections_path)
-    end
-
     context "with json format" do
       subject(:json) { JSON.parse(response.body) }
 
-      it "should return 403 if bad token passed" do
-        request.headers['Avalon-Api-Key'] = 'badtoken'
-        get 'show', id: collection.pid, format:'json'
-        expect(response.status).to eq(403)
-      end
       it "should return json for specific collection" do
         request.headers['Avalon-Api-Key'] = 'secret_token'
         get 'show', id: collection.pid, format:'json'
@@ -193,11 +218,6 @@ describe Admin::CollectionsController, type: :controller do
 
   describe "#items" do
     let!(:collection) { FactoryGirl.create(:collection, items: 2) }
-    it "should return 403 if bad token passed" do
-      request.headers['Avalon-Api-Key'] = 'badtoken'
-      get 'items', id: collection.pid, format:'json'
-      expect(response.status).to eq(403)
-    end
 
     it "should return json for specific collection's media objects" do
       request.headers['Avalon-Api-Key'] = 'secret_token'
@@ -210,11 +230,7 @@ describe Admin::CollectionsController, type: :controller do
 
   describe "#create" do
     let!(:collection) { FactoryGirl.build(:collection) }
-    it "should return 403 if bad token passed" do
-      request.headers['Avalon-Api-Key'] = 'badtoken'
-      post 'create', format:'json', admin_collection: {name: collection.name, description: collection.description, unit: collection.unit, managers: collection.managers}
-      expect(response.status).to eq(403)
-    end
+
     it "should notify administrators" do
       login_as(:administrator) #otherwise, there are no administrators to mail
       mock_delay = double('mock_delay').as_null_object 
@@ -253,11 +269,6 @@ describe Admin::CollectionsController, type: :controller do
     context "update REST API" do
       let!(:collection) { FactoryGirl.create(:collection)}
 
-      it "should return 403 if bad token passed" do
-        request.headers['Avalon-Api-Key'] = 'badtoken'
-        put 'update', format: 'json', id: collection.pid, admin_collection: {description: collection.description+'new'}
-        expect(response.status).to eq(403)
-      end
       it "should update a collection via API" do
         old_description = collection.description
         request.headers['Avalon-Api-Key'] = 'secret_token'
