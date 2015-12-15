@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class VocabularyController < ApplicationController
+  before_filter :authenticate_user!
+  before_filter :authorize_user!
   respond_to :json
 
   before_action :verify_vocabulary_exists, except: [:index]
@@ -41,6 +43,10 @@ class VocabularyController < ApplicationController
   end
 
   private
+
+  def authorize_user!
+    authorize!(params[:action].to_sym, Avalon::ControlledVocabulary)
+  end
 
   def verify_vocabulary_exists
     if Avalon::ControlledVocabulary.vocabulary[params[:id].to_sym].blank?

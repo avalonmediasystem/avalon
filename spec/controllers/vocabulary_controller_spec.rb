@@ -29,7 +29,41 @@ describe VocabularyController, type: :controller do
   before do
     request.headers['Avalon-Api-Key'] = 'secret_token'
   end
-  
+ 
+  describe 'security' do
+    let(:vocab) { :units }
+    describe 'ingest api' do
+      it "all routes should return 401 when no token is present" do
+        request.headers['Avalon-Api-Key'] = nil
+        expect(get :index, format: 'json').to have_http_status(401)
+        expect(get :show, id: vocab, format: 'json').to have_http_status(401)
+        expect(put :update, id: vocab, format: 'json').to have_http_status(401)
+        expect(patch :update, id: vocab, format: 'json').to have_http_status(401)
+      end
+      it "all routes should return 403 when a bad token in present" do
+        request.headers['Avalon-Api-Key'] = 'badtoken'
+        expect(get :index, format: 'json').to have_http_status(403)
+        expect(get :show, id: vocab, format: 'json').to have_http_status(403)
+        expect(put :update, id: vocab, format: 'json').to have_http_status(403)
+        expect(patch :update, id: vocab, format: 'json').to have_http_status(403)
+      end
+    end
+    describe 'normal auth' do
+      context 'with end-user' do
+        before do
+          request.headers['Avalon-Api-Key'] = nil
+          login_as :user
+        end
+        it "all routes should redirect to /" do
+          expect(get :index, format: 'json').to redirect_to(root_path)
+          expect(get :show, id: vocab, format: 'json').to redirect_to(root_path)
+          expect(put :update, id: vocab, format: 'json').to redirect_to(root_path)
+          expect(patch :update, id: vocab, format: 'json').to redirect_to(root_path)
+        end
+      end
+    end
+  end
+ 
   describe "#index" do
     context 'with bad authentication token' do
       it "should return 403 if bad token passed" do
