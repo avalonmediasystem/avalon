@@ -18,6 +18,8 @@ require 'uri'
 module Avalon
   class M3U8Reader
 
+    attr_reader :playlist
+
     def self.read(io)
       if io.is_a?(IO)
         self.new(io.read)
@@ -47,6 +49,9 @@ module Avalon
         elsif line =~ /^#EXTINF:(.+),(.*)$/
           tags[:duration] = $1.to_f
           tags[:title] = $2
+        elsif line =~ /\.m3u8?.*$/i
+          url = @base.is_a?(URI) ? @base.merge(line).to_s : File.expand_path(line,@base.to_s)
+          @playlist.merge!(Avalon::M3U8Reader.read(url).playlist)
         elsif line =~ /^[^#]/
           tags[:filename] = line
           @playlist[:files] << tags
