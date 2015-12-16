@@ -174,7 +174,10 @@ module ModsBehaviors
   def gather_years(date)
     parsed = Date.edtf(date)
     return Array.new if parsed.nil?
-    years = if parsed.respond_to?(:map)
+    years = 
+    if parsed.respond_to?(:unknown?) && parsed.unknown?
+      ['Unknown']
+    elsif parsed.respond_to?(:map)
       parsed.map(&:year_precision!)
       parsed.map(&:year)
     elsif parsed.unspecified?(:year)
