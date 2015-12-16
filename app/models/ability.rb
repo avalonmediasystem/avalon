@@ -122,15 +122,7 @@ class Ability
 
       if is_api_request?
         can :manage, MediaObject
-        can :json_index, MediaObject
-        can :json_show, MediaObject
-        can :json_create, MediaObject
-        can :json_update, MediaObject
         can :manage, Admin::Collection
-        can :json_index, Admin::Collection
-        can :json_show,  Admin::Collection
-        can :json_create,  Admin::Collection
-        can :json_update,  Admin::Collection
         can :manage, Avalon::ControlledVocabulary
       end
 
