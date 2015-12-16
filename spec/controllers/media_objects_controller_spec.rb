@@ -1,14 +1,14 @@
 # Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
@@ -21,13 +21,13 @@ describe MediaObjectsController, type: :controller do
     request.env["HTTP_REFERER"] = '/'
   end
 
-   describe 'security' do
+  describe 'security' do
     let(:media_object) { FactoryGirl.create(:media_object) }
     let(:collection) { FactoryGirl.create(:collection) }
     describe 'ingest api' do
       it "all routes should return 401 when no token is present" do
         expect(get :index, format: 'json').to have_http_status(401)
-        expect(get :show, id: media_object.id, format: 'json').to have_http_status(401) #302
+        expect(get :show, id: media_object.id, format: 'json').to have_http_status(401)
         expect(post :create, format: 'json').to have_http_status(401)
         expect(put :update, id: media_object.id, format: 'json').to have_http_status(401)
       end
@@ -40,6 +40,23 @@ describe MediaObjectsController, type: :controller do
       end
     end
     describe 'normal auth' do
+      context 'with unauthenticated user' do
+        #New is isolated here due to issues caused by the controller instance not being regenerated
+        it "should redirect to sign in" do
+          expect(get :new).to redirect_to(new_user_session_path)
+        end
+        it "all routes should redirect to sign in" do
+          expect(get :show, id: media_object.id).to redirect_to(new_user_session_path)
+          expect(get :edit, id: media_object.id).to redirect_to(new_user_session_path)
+          expect(get :confirm_remove, id: media_object.id).to redirect_to(new_user_session_path)
+          expect(post :create).to redirect_to(new_user_session_path)
+          expect(put :update, id: media_object.id).to redirect_to(new_user_session_path)
+          expect(put :update_status, id: media_object.id).to redirect_to(new_user_session_path)
+          expect(get :tree, id: media_object.id).to redirect_to(new_user_session_path)
+          expect(get :deliver_content, id: media_object.id, datastream: 'descMetadata').to redirect_to(new_user_session_path)
+          expect(delete :destroy, id: media_object.id).to redirect_to(new_user_session_path)
+        end
+      end
       context 'with end-user' do
         before do
           login_as :user
@@ -61,7 +78,7 @@ describe MediaObjectsController, type: :controller do
         end
       end
     end
-  end 
+  end
 
   context "JSON API methods" do
     let!(:collection) { FactoryGirl.create(:collection) }
@@ -121,100 +138,87 @@ describe MediaObjectsController, type: :controller do
     ]}
     describe "#create" do
       context 'using api' do
-	before do
-	  request.headers['Avalon-Api-Key'] = 'secret_token'
-	end
-	it "should respond with 422 if collection not found" do
-	  post 'create', collection_id: "avalon:doesnt_exist"
-	  expect(response.status).to eq(422)
-	  expect(JSON.parse(response.body)).to include('errors')
-	  expect(JSON.parse(response.body)["errors"].class).to eq Array
-	  expect(JSON.parse(response.body)["errors"].first.class).to eq String
-	end
-	it "should create a new mediaobject" do
-	  media_object = FactoryGirl.create(:multiple_entries)
-	  fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
-	  post 'create', fields: fields, files: [masterfile], collection_id: collection.pid
-	  expect(response.status).to eq(200)
-	  new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
-	  expect(new_media_object.title).to eq media_object.title
-	  expect(new_media_object.creator).to eq media_object.creator
-	  expect(new_media_object.date_issued).to eq media_object.date_issued
-	  expect(new_media_object.parts_with_order).to eq new_media_object.parts
-	end
-      end
-      it "should create a new mediaobject with successful bib import" do
-        Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
-        FakeWeb.register_uri :get, sru_url, body: sru_response
-        fields = { bibliographic_id: bib_id }
-        post 'create', import_bib_record: true, fields: fields, files: [masterfile], collection_id: collection.pid, api_key:'secret_token'
-        expect(response.status).to eq(200)
-        new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
-        expect(new_media_object.bibliographic_id).to eq(['local', bib_id])
-        expect(new_media_object.title).to eq('245 A : B F G K N P S')
+        before do
+           request.headers['Avalon-Api-Key'] = 'secret_token'
+        end
+        it "should respond with 422 if collection not found" do
+          post 'create', format: 'json', collection_id: "avalon:doesnt_exist"
+          expect(response.status).to eq(422)
+          expect(JSON.parse(response.body)).to include('errors')
+          expect(JSON.parse(response.body)["errors"].class).to eq Array
+          expect(JSON.parse(response.body)["errors"].first.class).to eq String
+        end
+        it "should create a new mediaobject" do
+          media_object = FactoryGirl.create(:multiple_entries)
+          fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
+          post 'create', format: 'json', fields: fields, files: [masterfile], collection_id: collection.pid
+          expect(response.status).to eq(200)
+          new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+          expect(new_media_object.title).to eq media_object.title
+          expect(new_media_object.creator).to eq media_object.creator
+          expect(new_media_object.date_issued).to eq media_object.date_issued
+          expect(new_media_object.parts_with_order).to eq new_media_object.parts
+        end
+        it "should create a new mediaobject with successful bib import" do
+          Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+          FakeWeb.register_uri :get, sru_url, body: sru_response
+          fields = { bibliographic_id: bib_id }
+          post 'create', format: 'json', import_bib_record: true, fields: fields, files: [masterfile], collection_id: collection.pid
+          expect(response.status).to eq(200)
+          new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+          expect(new_media_object.bibliographic_id).to eq(['local', bib_id])
+          expect(new_media_object.title).to eq('245 A : B F G K N P S')
+        end
       end
     end
     describe "#update" do
       context 'using api' do
-	before do
-	  request.headers['Avalon-Api-Key'] = 'secret_token'
-	end
-	let!(:media_object) { FactoryGirl.create(:media_object_with_master_file) }
-	it "should route json format to #json_update" do
-	  assert_routing({ path: 'media_objects/avalon:1.json', method: :put }, 
-			 { controller: 'media_objects', action: 'json_update', id: 'avalon:1', format: 'json' })
-	end
-	it "should route unspecified format to #update" do
-	  assert_routing({ path: 'media_objects/avalon:1', method: :put }, 
-			 { controller: 'media_objects', action: 'update', id: 'avalon:1', format: 'html' })
-	end
-	it "should update a mediaobject's metadata" do
-	  old_title = media_object.title
-	  put 'json_update', format: 'json', id: media_object.pid, fields: {title: old_title+'new'}, collection_id: media_object.collection_id
-	  expect(JSON.parse(response.body)['id'].class).to eq String
-	  expect(JSON.parse(response.body)).not_to include('errors')
-	  media_object.reload
-	  expect(media_object.title).to eq old_title+'new'
-	end
-	it "should add a masterfile to a mediaobject" do
-	  put 'json_update', format: 'json', id: media_object.pid, files: [masterfile], collection_id: media_object.collection_id
-	  expect(JSON.parse(response.body)['id'].class).to eq String
-	  expect(JSON.parse(response.body)).not_to include('errors')
-	  media_object.reload
-	  expect(media_object.parts.count).to eq 2
-	end
-	it "should return 404 if media object doesn't exist" do
-	  allow_any_instance_of(MediaObject).to receive(:save).and_return false
-	  put 'json_update', format: 'json', id: 'avalon:doesnt_exist', fields: {}, collection_id: media_object.collection_id
-	  expect(response.status).to eq(404)
-	end
-	it "should return 422 if media object update failed" do
-	  allow_any_instance_of(MediaObject).to receive(:save).and_return false
-	  put 'json_update', format: 'json', id: media_object.pid, fields: {}, collection_id: media_object.collection_id
-	  expect(response.status).to eq(422)
-	  expect(JSON.parse(response.body)).to include('errors')
-	  expect(JSON.parse(response.body)["errors"].class).to eq Array
-	  expect(JSON.parse(response.body)["errors"].first.class).to eq String
-	end
+        before do
+          request.headers['Avalon-Api-Key'] = 'secret_token'
+        end
+        let!(:media_object) { FactoryGirl.create(:media_object_with_master_file) }
+        it "should route json format to #json_update" do
+          assert_routing({ path: 'media_objects/avalon:1.json', method: :put },
+             { controller: 'media_objects', action: 'json_update', id: 'avalon:1', format: 'json' })
+        end
+        it "should route unspecified format to #update" do
+          assert_routing({ path: 'media_objects/avalon:1', method: :put },
+             { controller: 'media_objects', action: 'update', id: 'avalon:1', format: 'html' })
+        end
+        it "should update a mediaobject's metadata" do
+          old_title = media_object.title
+          put 'json_update', format: 'json', id: media_object.pid, fields: {title: old_title+'new'}, collection_id: media_object.collection_id
+          expect(JSON.parse(response.body)['id'].class).to eq String
+          expect(JSON.parse(response.body)).not_to include('errors')
+          media_object.reload
+          expect(media_object.title).to eq old_title+'new'
+        end
+        it "should add a masterfile to a mediaobject" do
+          put 'json_update', format: 'json', id: media_object.pid, files: [masterfile], collection_id: media_object.collection_id
+          expect(JSON.parse(response.body)['id'].class).to eq String
+          expect(JSON.parse(response.body)).not_to include('errors')
+          media_object.reload
+          expect(media_object.parts.count).to eq 2
+        end
+        it "should return 404 if media object doesn't exist" do
+          allow_any_instance_of(MediaObject).to receive(:save).and_return false
+          put 'json_update', format: 'json', id: 'avalon:doesnt_exist', fields: {}, collection_id: media_object.collection_id
+          expect(response.status).to eq(404)
+        end
+        it "should return 422 if media object update failed" do
+          allow_any_instance_of(MediaObject).to receive(:save).and_return false
+          put 'json_update', format: 'json', id: media_object.pid, fields: {}, collection_id: media_object.collection_id
+          expect(response.status).to eq(422)
+          expect(JSON.parse(response.body)).to include('errors')
+          expect(JSON.parse(response.body)["errors"].class).to eq Array
+          expect(JSON.parse(response.body)["errors"].first.class).to eq String
+        end
       end
     end
   end
 
   describe "#new" do
     let!(:collection) { FactoryGirl.create(:collection) }
-
-    it "should redirect to sign in page with a notice when unauthenticated" do
-      expect { get 'new', collection_id: collection.pid }.not_to change { MediaObject.count }
-      expect(flash[:notice]).not_to be_nil
-      expect(response).to redirect_to(new_user_session_path)
-    end
-  
-    it "should redirect to home page with a notice when authenticated but unauthorized" do
-      login_as :user
-      expect { get 'new', collection_id: collection.pid }.not_to change { MediaObject.count }
-      expect(flash[:notice]).not_to be_nil
-      expect(response).to redirect_to(root_path)
-    end
 
     it "should not let manager of other collections create an item in this collection" do
       skip
@@ -231,8 +235,8 @@ describe MediaObjectsController, type: :controller do
       it "should copy default permissions from its owning collection" do
         login_user collection.depositors.first
 
-        get 'new', collection_id: collection.pid 
-         
+        get 'new', collection_id: collection.pid
+
         #MediaObject.all.last.edit_users.should include(collection.managers)
         #MediaObject.all.last.edit_users.should include(collection.depositors)
       end
@@ -243,20 +247,6 @@ describe MediaObjectsController, type: :controller do
   describe "#edit" do
     let!(:media_object) { FactoryGirl.create(:media_object) }
 
-    it "should redirect to sign in page with a notice when unauthenticated" do   
-      get 'edit', id: media_object.pid
-      expect(flash[:notice]).not_to be_nil
-      expect(response).to redirect_to(new_user_session_path)
-    end
-  
-    it "should redirect to show page with a notice when authenticated but unauthorized" do
-      login_as :user
-      
-      get 'edit', id: media_object.pid
-      expect(flash[:notice]).not_to be_nil
-      expect(response).to redirect_to(media_object_path(media_object.pid) )
-    end
-
     it "should redirect to first workflow step if authorized to edit" do
        login_user media_object.collection.managers.first
 
@@ -264,7 +254,7 @@ describe MediaObjectsController, type: :controller do
        expect(response).to be_success
        expect(response).to render_template "_#{HYDRANT_STEPS.first.template}"
      end
-    
+
     it "should not default to the Access Control page" do
       skip "[VOV-1165] Wait for product owner feedback on which step to default to"
     end
@@ -275,7 +265,7 @@ describe MediaObjectsController, type: :controller do
       it "should be able to retrieve an existing record from Fedora" do
         media_object.workflow.last_completed_step = 'resource-description'
         media_object.save
-         
+
         # Set the task so that it can get to the resource-description step
         login_user media_object.collection.managers.first
         get :edit, {id: media_object.pid, step: 'resource-description'}
@@ -287,16 +277,16 @@ describe MediaObjectsController, type: :controller do
       before(:each) { login_user mo.collection.managers.first }
       context "Persisting Permalinks on unpublished mediaobject" do
         subject(:mo) { media_object }
-        it "should persist new permalink on unpublished media_object" do 
-          expect { put 'update', id: mo.pid, step: 'resource-description', 
-                   media_object: { permalink: 'newpermalink', title: 'newtitle', 
+        it "should persist new permalink on unpublished media_object" do
+          expect { put 'update', id: mo.pid, step: 'resource-description',
+                   media_object: { permalink: 'newpermalink', title: 'newtitle',
                                    creator: 'newcreator', date_issued: 'newdateissued' }}
-            .to change { MediaObject.find(mo.pid).permalink } 
+            .to change { MediaObject.find(mo.pid).permalink }
             .to('newpermalink')
         end
-        it "should persist new permalink on unpublished media_object part" do 
+        it "should persist new permalink on unpublished media_object part" do
           part1 = FactoryGirl.create(:master_file, mediaobject: mo)
-          expect {put 'update', id: mo.pid, step: 'file-upload', 
+          expect {put 'update', id: mo.pid, step: 'file-upload',
                   parts: { part1.pid => { permalink: 'newpermalinkpart' }}}
             .to change { MasterFile.find(part1.pid).permalink }
             .to('newpermalinkpart')
@@ -305,15 +295,15 @@ describe MediaObjectsController, type: :controller do
       context "Persisting Permalinks on published mediaobject" do
         subject(:mo) { FactoryGirl.create(:published_media_object, permalink: 'oldpermalink') }
         it "should persist updated permalink on published media_object" do
-          expect { put 'update', id: mo.pid, step: 'resource-description', 
-                   media_object: { permalink: 'newpermalink', title: mo.title, 
+          expect { put 'update', id: mo.pid, step: 'resource-description',
+                   media_object: { permalink: 'newpermalink', title: mo.title,
                                    creator: mo.creator, date_issued: mo.date_issued }}
             .to change { MediaObject.find(mo.pid).permalink }
             .to('newpermalink')
         end
         it "should persist updated permalink on published media_object part" do
           part1 = FactoryGirl.create(:master_file, permalink: 'oldpermalinkpart1', mediaobject: mo)
-          expect { put 'update', id: mo.pid, step: 'file-upload', 
+          expect { put 'update', id: mo.pid, step: 'file-upload',
                    parts: { part1.pid => { permalink: 'newpermalinkpart' }}}
             .to change { MasterFile.find(part1.pid).permalink }
             .to('newpermalinkpart')
@@ -385,7 +375,7 @@ describe MediaObjectsController, type: :controller do
         mopid = media_object.pid
         media_object = MediaObject.find(mopid)
 
-        media_object.parts.collect { |part| 
+        media_object.parts.collect { |part|
           get 'show', id: media_object.pid, format: 'js', content: part.pid
           json_obj = JSON.parse(response.body)
           expect(json_obj['is_video']).to eq(part.is_video?)
@@ -469,16 +459,16 @@ describe MediaObjectsController, type: :controller do
 
     context "correctly handle unfound streams/sections" do
       subject(:mo){FactoryGirl.create(:media_object_with_master_file)}
-      before do 
+      before do
         mo.save(validate: false)
-        login_user mo.collection.managers.first        
+        login_user mo.collection.managers.first
       end
       it "redirects to first stream when currentStream is nil" do
-        expect(get 'show', id: mo.pid, content: 'foo').to redirect_to(media_object_path(id: mo.pid))        
+        expect(get 'show', id: mo.pid, content: 'foo').to redirect_to(media_object_path(id: mo.pid))
       end
       it "responds with 404 when non-existant section is requested" do
         get 'show', id: mo.pid, part: 100
-        expect(response.code).to eq('404')  
+        expect(response.code).to eq('404')
       end
     end
 
@@ -493,7 +483,7 @@ describe MediaObjectsController, type: :controller do
       end
 
       context 'After sign in' do
-        before do 
+        before do
           @user = FactoryGirl.create(:user)
           @media_object = FactoryGirl.create(:media_object, visibility: 'private', read_users: [@user.username] )
         end
@@ -503,7 +493,7 @@ describe MediaObjectsController, type: :controller do
         end
       end
     end
-    
+
     context "Items should not be available to unauthorized users" do
       it "should redirect to sign in when not logged in and item is unpublished" do
         media_object.publish!(nil)
@@ -526,7 +516,7 @@ describe MediaObjectsController, type: :controller do
       let!(:media_object) { FactoryGirl.create(:media_object) }
 
       before do
-	request.headers['Avalon-Api-Key'] = 'secret_token'
+  request.headers['Avalon-Api-Key'] = 'secret_token'
       end
 
       it "should return json for specific media_object" do
@@ -551,13 +541,13 @@ describe MediaObjectsController, type: :controller do
     end
 
   end
-    
+
   describe "#destroy" do
     let!(:collection) { FactoryGirl.create(:collection) }
-    before(:each) do 
+    before(:each) do
       login_user collection.managers.first
     end
-    
+
     it "should remove the MediaObject and MasterFiles from the system" do
       media_object = FactoryGirl.create(:media_object_with_master_file, collection: collection)
       delete :destroy, id: media_object.pid
@@ -569,12 +559,6 @@ describe MediaObjectsController, type: :controller do
     it "should fail when id doesn't exist" do
       delete :destroy, id: 'avalon:this-pid-is-fake'
       expect(response.code).to eq '404'
-    end
-
-    it "should fail if user is not authorized" do
-      media_object = FactoryGirl.create(:media_object)
-      expect(delete :destroy, id: media_object.id).to redirect_to root_path
-      expect(flash[:notice]).to include("permission denied")
     end
 
     it "should remove multiple items" do
@@ -598,7 +582,7 @@ describe MediaObjectsController, type: :controller do
         Permalink.on_generate { |obj| "http://example.edu/permalink" }
       end
       it 'publishes media object' do
-	media_object = FactoryGirl.create(:media_object, collection: collection)
+  media_object = FactoryGirl.create(:media_object, collection: collection)
         get 'update_status', id: media_object.pid, status: 'publish'
         media_object.reload
         expect(media_object).to be_published
@@ -606,25 +590,19 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should fail when id doesn't exist" do
-	get 'update_status', id: 'avalon:this-pid-is-fake', status: 'publish'
-	expect(response.code).to eq '404'
-      end
-
-      it "should fail if user is not authorized" do
-	media_object = FactoryGirl.create(:media_object)
-	expect(get 'update_status', id: media_object.pid, status: 'publish').to be_redirect
-	expect(flash[:notice]).to include("permission denied")
+  get 'update_status', id: 'avalon:this-pid-is-fake', status: 'publish'
+  expect(response.code).to eq '404'
       end
 
       it "should publish multiple items" do
-	media_objects = []
-	3.times { media_objects << FactoryGirl.create(:media_object, collection: collection) }
+  media_objects = []
+  3.times { media_objects << FactoryGirl.create(:media_object, collection: collection) }
         get 'update_status', id: media_objects.map(&:id), status: 'publish'
-	expect(flash[:notice]).to include('3 media objects')
+  expect(flash[:notice]).to include('3 media objects')
         media_objects.each do |mo|
           mo.reload
-	  expect(mo).to be_published
-	  expect(mo.permalink).to be_present
+    expect(mo).to be_published
+    expect(mo.permalink).to be_present
         end
       end
     end
@@ -638,24 +616,18 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should fail when id doesn't exist" do
-	get 'update_status', id: 'avalon:this-pid-is-fake', status: 'unpublish'
-	expect(response.code).to eq '404'
-      end
-
-      it "should fail if user is not authorized" do
-	media_object = FactoryGirl.create(:media_object)
-	expect(get 'update_status', id: media_object.pid, status: 'unpublish').to be_redirect
-	expect(flash[:notice]).to include("permission denied")
+  get 'update_status', id: 'avalon:this-pid-is-fake', status: 'unpublish'
+  expect(response.code).to eq '404'
       end
 
       it "should unpublish multiple items" do
-	media_objects = []
-	3.times { media_objects << FactoryGirl.create(:published_media_object, collection: collection) }
+  media_objects = []
+  3.times { media_objects << FactoryGirl.create(:published_media_object, collection: collection) }
         get 'update_status', id: media_objects.map(&:id), status: 'unpublish'
-	expect(flash[:notice]).to include('3 media objects')
+  expect(flash[:notice]).to include('3 media objects')
         media_objects.each do |mo|
           mo.reload
-	  expect(mo).not_to be_published
+    expect(mo).not_to be_published
         end
       end
     end
@@ -665,7 +637,7 @@ describe MediaObjectsController, type: :controller do
     it 'removes bookmarks that are no longer viewable' do
       media_object = FactoryGirl.create(:published_media_object)
       user = FactoryGirl.create(:public)
-      bookmark = Bookmark.create(document_id: media_object.pid, user_id: user.id) 
+      bookmark = Bookmark.create(document_id: media_object.pid, user_id: user.id)
       login_user media_object.collection.managers.first
       request.env["HTTP_REFERER"] = '/'
       expect {
@@ -685,7 +657,7 @@ describe MediaObjectsController, type: :controller do
       media_object.save( validate: false )
 
       login_user media_object.collection.managers.first
-      
+
       put 'update', :id => media_object.pid, :masterfile_ids => master_file_pids.reverse, :step => 'structure'
       media_object.reload
       expect(media_object.section_pid).to eq master_file_pids.reverse

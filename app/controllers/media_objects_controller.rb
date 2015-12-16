@@ -21,7 +21,7 @@ class MediaObjectsController < ApplicationController
 
   before_filter :authenticate_user!, except: [:show, :show_progress]
   before_filter :authenticate_api!, only: [:show, :show_progress], if: proc{|c| request.format.json?}
-  load_and_authorize_resource instance_name: 'mediaobject'
+  load_and_authorize_resource instance_name: 'mediaobject', except: [:destroy, :update_status]
 
   before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
   before_filter :load_player_context, only: [:show, :show_progress]
