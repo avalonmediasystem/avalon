@@ -29,7 +29,7 @@ class Admin::CollectionsController < ApplicationController
   end
 
   def load_and_authorize_collections
-    @collections = Admin::Collection.accessible_by(current_ability, params[:action].to_sym)
+    @collections = get_user_collections
     authorize!(params[:action].to_sym, Admin::Collection)
   end
 
