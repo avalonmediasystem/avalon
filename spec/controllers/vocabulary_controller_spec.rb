@@ -65,26 +65,12 @@ describe VocabularyController, type: :controller do
   end
  
   describe "#index" do
-    context 'with bad authentication token' do
-      it "should return 403 if bad token passed" do
-        request.headers['Avalon-Api-Key'] = 'badtoken'
-        get 'index', format:'json'
-        expect(response.status).to eq(403)
-      end
-    end
     it "should return vocabulary for entire app" do
       get 'index', format:'json'
       expect(JSON.parse(response.body)).to include('units','note_types','identifier_types')
     end
   end
   describe "#show" do
-    context 'with bad authentication token' do
-      it "should return 403 if bad token passed" do
-        request.headers['Avalon-Api-Key'] = 'badtoken'
-	get 'show', format:'json', id: :units
-	expect(response.status).to eq(403)
-      end
-    end
     it "should return a particular vocabulary" do
       get 'show', format:'json', id: :units
       expect(JSON.parse(response.body)).to include('Default Unit')
@@ -97,13 +83,6 @@ describe VocabularyController, type: :controller do
     end
   end
   describe "#update" do
-    context 'with bad authentication token' do
-      it "should return 403 if bad token passed" do
-        request.headers['Avalon-Api-Key'] = 'badtoken'
-	put 'update', format:'json', id: :units, entry: 'New Unit'
-	expect(response.status).to eq(403)
-      end
-    end
     it "should add unit to controlled vocabulary" do
       put 'update', format:'json', id: :units, entry: 'New Unit'
       expect(Avalon::ControlledVocabulary.vocabulary[:units]).to include("New Unit")

@@ -132,9 +132,6 @@ class Ability
         can :json_create,  Admin::Collection
         can :json_update,  Admin::Collection
         can :manage, Avalon::ControlledVocabulary
-        can :json_index, Avalon::ControlledVocabulary
-        can :json_show, Avalon::ControlledVocabulary
-        can :json_update, Avalon::ControlledVocabulary
       end
 
       cannot :update, MediaObject do |mediaobject|
