@@ -53,8 +53,6 @@ Avalon::Application.routes.draw do
       put :update_status
       # 'delete' has special signifigance so use 'remove' for now
       delete :remove, :action => :destroy
-      get :confirm_reassign_collection
-      put :reassign_collection
     end
   end
   resources :master_files, except: [:new, :index, :update] do

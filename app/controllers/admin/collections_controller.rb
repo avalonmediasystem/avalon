@@ -189,7 +189,7 @@ class Admin::CollectionsController < ApplicationController
     end
   end
 
-  # GET /collections/1/reassign
+  # GET /collections/1/remove
   def remove
     @objects    = @collection.media_objects
     @candidates = get_user_collections.reject { |c| c == @collection }

@@ -21,6 +21,48 @@ describe MediaObjectsController, type: :controller do
     request.env["HTTP_REFERER"] = '/'
   end
 
+   describe 'security' do
+    let(:media_object) { FactoryGirl.create(:media_object) }
+    let(:collection) { FactoryGirl.create(:collection) }
+    describe 'ingest api' do
+      it "all routes should return 401 when no token is present" do
+        expect(get :index, format: 'json').to have_http_status(401)
+        expect(get :show, id: media_object.id, format: 'json').to have_http_status(401) #302
+        expect(post :create, format: 'json').to have_http_status(401)
+        expect(put :update, id: media_object.id, format: 'json').to have_http_status(401)
+      end
+      it "all routes should return 403 when a bad token in present" do
+        request.headers['Avalon-Api-Key'] = 'badtoken'
+        expect(get :index, format: 'json').to have_http_status(403)
+        expect(get :show, id: media_object.id, format: 'json').to have_http_status(403)
+        expect(post :create, format: 'json').to have_http_status(403)
+        expect(put :update, id: media_object.id, format: 'json').to have_http_status(403)
+      end
+    end
+    describe 'normal auth' do
+      context 'with end-user' do
+        before do
+          login_as :user
+        end
+        #New is isolated here due to issues caused by the controller instance not being regenerated
+        it "should redirect to /" do
+          expect(get :new).to redirect_to(root_path)
+        end
+        it "all routes should redirect to /" do
+          expect(get :show, id: media_object.id).to redirect_to(root_path)
+          expect(get :edit, id: media_object.id).to redirect_to(root_path)
+          expect(get :confirm_remove, id: media_object.id).to redirect_to(root_path)
+          expect(post :create).to redirect_to(root_path)
+          expect(put :update, id: media_object.id).to redirect_to(root_path)
+          expect(put :update_status, id: media_object.id).to redirect_to(root_path)
+          expect(get :tree, id: media_object.id).to redirect_to(root_path)
+          expect(get :deliver_content, id: media_object.id, datastream: 'descMetadata').to redirect_to(root_path)
+          expect(delete :destroy, id: media_object.id).to redirect_to(root_path)
+        end
+      end
+    end
+  end 
+
   context "JSON API methods" do
     let!(:collection) { FactoryGirl.create(:collection) }
     let!(:testdir) {'spec/fixtures/'}
@@ -82,13 +124,6 @@ describe MediaObjectsController, type: :controller do
 	before do
 	  request.headers['Avalon-Api-Key'] = 'secret_token'
 	end
-	context 'with bad authentication token' do
-	  it "should return 403 if bad token passed" do
-	    request.headers['Avalon-Api-Key'] = 'badtoken'
-	    post 'create', format: 'json', collection_id: collection.pid
-	    expect(response.status).to eq(403)
-	  end
-	end
 	it "should respond with 422 if collection not found" do
 	  post 'create', collection_id: "avalon:doesnt_exist"
 	  expect(response.status).to eq(422)
@@ -132,13 +167,6 @@ describe MediaObjectsController, type: :controller do
 	it "should route unspecified format to #update" do
 	  assert_routing({ path: 'media_objects/avalon:1', method: :put }, 
 			 { controller: 'media_objects', action: 'update', id: 'avalon:1', format: 'html' })
-	end
-	context 'with bad authentication token' do
-	  it "should return 403 if bad token passed" do
-	    request.headers['Avalon-Api-Key'] = 'badtoken'
-	    put 'json_update', format: 'json', id: media_object.pid, fields: {title: media_object.title}, collection_id: media_object.collection_id
-	    expect(response.status).to eq(403)
-	  end
 	end
 	it "should update a mediaobject's metadata" do
 	  old_title = media_object.title
@@ -297,12 +325,6 @@ describe MediaObjectsController, type: :controller do
   describe "#index" do
     let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
     subject(:json) { JSON.parse(response.body) }
-
-    it "should return 403 if bad token passed" do
-      request.headers['Avalon-Api-Key'] = 'badtoken'
-      get 'index', format:'json'
-      expect(response.status).to eq(403)
-    end
 
     it "should return list of media_objects" do
       request.headers['Avalon-Api-Key'] = 'secret_token'
@@ -505,13 +527,6 @@ describe MediaObjectsController, type: :controller do
 
       before do
 	request.headers['Avalon-Api-Key'] = 'secret_token'
-      end
-      context 'with bad authentication token' do
-	it "should return 403 if bad token passed" do
-	  request.headers['Avalon-Api-Key'] = 'badtoken'
-          get 'show', id: media_object.pid, format:'json'
-          expect(response.status).to eq(403)
-        end
       end
 
       it "should return json for specific media_object" do
