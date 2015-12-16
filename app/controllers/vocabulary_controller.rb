@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class VocabularyController < ApplicationController
+  before_filter :authenticate_user!
+  authorize_resource class: Avalon::ControlledVocabulary
   respond_to :json
 
   before_action :verify_vocabulary_exists, except: [:index]

@@ -20,7 +20,6 @@ class ApplicationController < ActionController::Base
   include Blacklight::Controller  
   # Adds Hydra behaviors into the application controller 
   include Hydra::Controller::ControllerBehavior
-  include AccessControlsHelper
 
   layout 'avalon'
   
@@ -94,14 +93,18 @@ class ApplicationController < ActionController::Base
 
   rescue_from CanCan::AccessDenied do |exception|
     if current_user
-      if exception.subject.class == MediaObject && exception.action == :update
-        redirect_to exception.subject, flash: { notice: 'You are not authorized to edit this document.  You have been redirected to a read-only view.' }
-      else
-        redirect_to root_path, flash: { notice: 'You are not authorized to perform this action.' }
-      end
+      redirect_to root_path, flash: { notice: 'You are not authorized to perform this action.' }
     else
       session[:previous_url] = request.fullpath unless request.xhr?
       redirect_to new_user_session_path, flash: { notice: 'You are not authorized to perform this action. Try logging in.' }
+    end
+  end
+
+  rescue_from ActiveFedora::ObjectNotFoundError do |exception|
+    if request.format == :json
+      render json: {errors: ["#{params[:id]} not found"]}, status: 404
+    else
+      render '/errors/unknown_pid', status: 404
     end
   end
 

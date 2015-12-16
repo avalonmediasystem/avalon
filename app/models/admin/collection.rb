@@ -121,7 +121,7 @@ class Admin::Collection < ActiveFedora::Base
       self.read_users += [user]
       self.inherited_edit_users += [user]
     else
-      raise "UserIsEditor"
+      raise ArgumentError.new("UserIsEditor")
     end
   end
 

@@ -19,7 +19,10 @@ class MediaObjectsController < ApplicationController
   include Avalon::Controller::ControllerBehavior
   include ConditionalPartials
 
-#  before_filter :enforce_access_controls
+  before_filter :authenticate_user!, except: [:show, :show_progress]
+  before_filter :authenticate_api!, only: [:show, :show_progress], if: proc{|c| request.format.json?}
+  load_and_authorize_resource instance_name: 'mediaobject', except: [:destroy, :update_status]
+
   before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
   before_filter :load_player_context, only: [:show, :show_progress]
 
@@ -37,16 +40,12 @@ class MediaObjectsController < ApplicationController
   add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti
   add_conditional_partial :share, :lti_url, partial: 'lti_url',  if: is_editor_or_lti
 
-
-  # Catch exceptions when you try to reference an object that doesn't exist.
-  # Attempt to resolve it to a close match if one exists and offer a link to
-  # the show page for that item. Otherwise ... nothing!
-  rescue_from ActiveFedora::ObjectNotFoundError do |exception|
-    render '/errors/unknown_pid', status: 404
-  end
-
   def can_embed?
     params[:action] == 'show'
+  end
+
+  def authenticate_api!
+    return head :unauthorized if !signed_in?
   end
 
   def new
@@ -63,18 +62,14 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects
   def create
-    @mediaobject = MediaObject.new
+#    @mediaobject = MediaObject.new
     update_mediaobject
   end
 
   # PUT /media_objects/avalon:1.json
   def json_update
-    begin
-      @mediaobject = MediaObject.find(params[:id])
-      update_mediaobject
-    rescue ActiveFedora::ObjectNotFoundError
-      render json: {errors: ["Mediaobject not found for #{params[:id]}"]}, status: 404
-    end
+#    @mediaobject = MediaObject.find(params[:id])
+    update_mediaobject
   end
 
   def update_mediaobject
@@ -134,7 +129,7 @@ class MediaObjectsController < ApplicationController
   end
 
   def custom_edit
-    authorize! :update, @mediaobject
+#    authorize! :update, @mediaobject
     if ['preview', 'structure', 'file-upload'].include? @active_step
       @masterFiles = load_master_files
     end
@@ -163,7 +158,7 @@ class MediaObjectsController < ApplicationController
   end
 
   def custom_update
-    authorize! :update, @mediaobject
+#    authorize! :update, @mediaobject
     flash[:notice] = @notice
   end
 
@@ -178,7 +173,7 @@ class MediaObjectsController < ApplicationController
   def show
     respond_to do |format|
       format.html do
-        authorize! :read, @mediaobject
+ #       authorize! :read, @mediaobject
         if (not @masterFiles.empty? and @currentStream.blank?) then
           redirect_to media_object_path(@mediaobject.pid), flash: { notice: 'That stream was not recognized. Defaulting to the first available stream for the resource' }
         else 
@@ -189,11 +184,7 @@ class MediaObjectsController < ApplicationController
         render json: @currentStreamInfo 
       end
       format.json do
-        begin
-          render json: MediaObject.find(params[:id]).to_json
-        rescue ActiveFedora::ObjectNotFoundError
-          render json: {errors: ["Media Object not found for #{params[:id]}"]}, status: 404
-        end
+        render json: @mediaobject.to_json
       end
     end
   end
@@ -285,7 +276,7 @@ class MediaObjectsController < ApplicationController
   # Sets the published status for the object. If no argument is given then
   # it will just toggle the state.
   def tree
-    @mediaobject = MediaObject.find(params[:id])
+#    @mediaobject = MediaObject.find(params[:id])
     authorize! :inspect, @mediaobject
 
     respond_to do |format|
@@ -326,8 +317,8 @@ class MediaObjectsController < ApplicationController
   def load_player_context
     return if request.format.json? and !params.has_key? :content
 
-    @mediaobject = MediaObject.find(params[:id])
-    authorize! :read, @mediaobject
+#    @mediaobject = MediaObject.find(params[:id])
+#    authorize! :read, @mediaobject
 
     if params[:part]
       index = params[:part].to_i-1

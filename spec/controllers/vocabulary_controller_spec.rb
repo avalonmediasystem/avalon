@@ -29,28 +29,48 @@ describe VocabularyController, type: :controller do
   before do
     request.headers['Avalon-Api-Key'] = 'secret_token'
   end
-  
-  describe "#index" do
-    context 'with bad authentication token' do
-      it "should return 403 if bad token passed" do
+ 
+  describe 'security' do
+    let(:vocab) { :units }
+    describe 'ingest api' do
+      it "all routes should return 401 when no token is present" do
+        request.headers['Avalon-Api-Key'] = nil
+        expect(get :index, format: 'json').to have_http_status(401)
+        expect(get :show, id: vocab, format: 'json').to have_http_status(401)
+        expect(put :update, id: vocab, format: 'json').to have_http_status(401)
+        expect(patch :update, id: vocab, format: 'json').to have_http_status(401)
+      end
+      it "all routes should return 403 when a bad token in present" do
         request.headers['Avalon-Api-Key'] = 'badtoken'
-        get 'index', format:'json'
-        expect(response.status).to eq(403)
+        expect(get :index, format: 'json').to have_http_status(403)
+        expect(get :show, id: vocab, format: 'json').to have_http_status(403)
+        expect(put :update, id: vocab, format: 'json').to have_http_status(403)
+        expect(patch :update, id: vocab, format: 'json').to have_http_status(403)
       end
     end
+    describe 'normal auth' do
+      context 'with end-user' do
+        before do
+          request.headers['Avalon-Api-Key'] = nil
+          login_as :user
+        end
+        it "all routes should redirect to /" do
+          expect(get :index, format: 'json').to redirect_to(root_path)
+          expect(get :show, id: vocab, format: 'json').to redirect_to(root_path)
+          expect(put :update, id: vocab, format: 'json').to redirect_to(root_path)
+          expect(patch :update, id: vocab, format: 'json').to redirect_to(root_path)
+        end
+      end
+    end
+  end
+ 
+  describe "#index" do
     it "should return vocabulary for entire app" do
       get 'index', format:'json'
       expect(JSON.parse(response.body)).to include('units','note_types','identifier_types')
     end
   end
   describe "#show" do
-    context 'with bad authentication token' do
-      it "should return 403 if bad token passed" do
-        request.headers['Avalon-Api-Key'] = 'badtoken'
-	get 'show', format:'json', id: :units
-	expect(response.status).to eq(403)
-      end
-    end
     it "should return a particular vocabulary" do
       get 'show', format:'json', id: :units
       expect(JSON.parse(response.body)).to include('Default Unit')
@@ -63,13 +83,6 @@ describe VocabularyController, type: :controller do
     end
   end
   describe "#update" do
-    context 'with bad authentication token' do
-      it "should return 403 if bad token passed" do
-        request.headers['Avalon-Api-Key'] = 'badtoken'
-	put 'update', format:'json', id: :units, entry: 'New Unit'
-	expect(response.status).to eq(403)
-      end
-    end
     it "should add unit to controlled vocabulary" do
       put 'update', format:'json', id: :units, entry: 'New Unit'
       expect(Avalon::ControlledVocabulary.vocabulary[:units]).to include("New Unit")

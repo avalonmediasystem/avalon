@@ -14,11 +14,12 @@
 
 class Admin::CollectionsController < ApplicationController
   before_filter :authenticate_user!
-  load_and_authorize_resource except: [:remove, :show]
+  load_and_authorize_resource except: [:index]
+  before_filter :load_and_authorize_collections, only: [:index]
   respond_to :html
   
   # Catching a global exception seems like a bad idea here
-  rescue_from Exception do |e|
+  rescue_from ArgumentError do |e|
     if e.message == "UserIsEditor"
       flash[:notice] = "User #{params[:new_depositor]} needs to be removed from manager or editor role first"
       redirect_to @collection
@@ -27,28 +28,24 @@ class Admin::CollectionsController < ApplicationController
     end
   end
 
+  def load_and_authorize_collections
+    @collections = get_user_collections
+    authorize!(params[:action].to_sym, Admin::Collection)
+  end
+
   # GET /collections
   def index
     respond_to do |format|
-      format.html { @collections = get_user_collections }
-      format.json { paginate json: Admin::Collection.all }
+      format.html 
+      format.json { paginate json: @collections }
     end
   end
 
   # GET /collections/1
   def show
-    #authorize! :read, @mediaobject
     respond_to do |format|
-      format.json { 
-        begin
-          render json: Admin::Collection.find(params[:id]).to_json
-        rescue ActiveFedora::ObjectNotFoundError
-          render json: {errors: ["Collection not found for #{params[:id]}"]}, status: 404
-        end
-      }
+      format.json { render json: @collection.to_json }
       format.html {
-        @collection = Admin::Collection.find(params[:id])
-        redirect_to admin_collections_path unless can? :read, @collection
         @groups = @collection.default_local_read_groups
         @users = @collection.default_read_users
         @virtual_groups = @collection.default_virtual_read_groups
@@ -63,7 +60,6 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/new
   def new
-    @collection = Admin::Collection.new
     respond_to do |format|
       format.js   { render json: modal_form_response(@collection) }
       format.html { render 'new' }
@@ -72,7 +68,6 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1/edit
   def edit
-    @collection = Admin::Collection.find(params[:id])
     respond_to do |format|
       format.js   { render json: modal_form_response(@collection) }
     end
@@ -80,12 +75,8 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1/items
   def items
-    begin
-      mos = paginate Admin::Collection.find(params[:id]).media_objects
-      render json: mos.collect{|mo| [mo.pid, mo.to_json] }.to_h
-    rescue ActiveFedora::ObjectNotFoundError
-      render json: {errors: ["Collection not found for #{params[:id]}"]}, status: 404
-    end
+    mos = paginate @collection.media_objects
+    render json: mos.collect{|mo| [mo.pid, mo.to_json] }.to_h
   end
  
   # POST /collections
@@ -108,7 +99,6 @@ class Admin::CollectionsController < ApplicationController
   
   # PUT /collections/1
   def update
-    @collection = Admin::Collection.find(params[:id])
     name_changed = false
     if params[:admin_collection].present?
       if params[:admin_collection][:name].present?
@@ -199,16 +189,15 @@ class Admin::CollectionsController < ApplicationController
     end
   end
 
-  # GET /collections/1/reassign
+  # GET /collections/1/remove
   def remove
-    @collection = Admin::Collection.find(params[:id])
     @objects    = @collection.media_objects
     @candidates = get_user_collections.reject { |c| c == @collection }
   end
 
   # DELETE /collections/1
   def destroy
-    @source_collection = Admin::Collection.find(params[:id])
+    @source_collection = @collection
     target_path = admin_collections_path
     if @source_collection.media_objects.count > 0
       @target_collection = Admin::Collection.find(params[:target_collection_id])
