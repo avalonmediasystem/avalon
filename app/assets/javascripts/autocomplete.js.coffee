@@ -17,27 +17,27 @@
   $t.attr('autocomplete','off')
   mySource = new Bloodhound(
     limit: 10
-    datumTokenizer: (d) ->
-      Bloodhound.tokenizers.whitespace(d.display)
+    datumTokenizer: Bloodhound.tokenizers.whitespace('display')
     queryTokenizer: Bloodhound.tokenizers.whitespace
-    remote: "#{$('body').data('mountpoint')}autocomplete?q=%QUERY&t=#{$t.data('model')}"
+    remote: 
+      url: "#{$('body').data('mountpoint')}autocomplete?q=%QUERY&t=#{$t.data('model')}"
+      wildcard: '%QUERY'
   )
   mySource.initialize()
   $t.typeahead(
     minLength: 2
+    highlight: true
   ,
-    displayKey: (suggestion) ->
+    display: (suggestion) ->
       if suggestion.display is ""
         suggestion.id
       else
         suggestion.display
-    source: mySource.ttAdapter()
-    templates:
-      suggestion: (suggestion) ->
-        "<p>" + suggestion.display + "</p>"
+    source: mySource
   ).on("typeahead:selected typeahead:autocompleted", (event, suggestion, dataset) ->
     target = $("##{$t.data('target')}")
     target.val suggestion["id"]
+    $t.data('matched_val',suggestion["display"])
     return
   ).on("keypress", (e) ->
     if e.which is 13
@@ -48,17 +48,15 @@
     typed = $(this).val()
     if typed is ""
       target.val ""
-    else
-      matches = $.grep(mySource.index.datums, (e) ->
-        e.display.toLowerCase() is typed.toLowerCase()
-      )
-      if matches.length > 0
-        target.val matches[0].id
-      else if !$validate
-        target.val typed
-      else
-        target.val ""
-        $(this).val ""
+    else if $t.data('matched_val') != typed
+      mySource.remote.get typed, (matches) ->
+        if matches.length > 0
+          target.val matches[0].id
+        else if !$validate
+          target.val typed
+        else
+          target.val ""
+          $(this).val ""
       return
 
 $('.typeahead.from-model').each ->

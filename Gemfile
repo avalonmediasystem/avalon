@@ -104,7 +104,7 @@
     gem 'font-awesome-rails', '~> 4.3'
     gem 'bootstrap_form'
     gem 'handlebars_assets'
-    gem 'twitter-typeahead-rails', '=0.10.5'
+    gem 'twitter-typeahead-rails', '~>0.11.1'
   end
 
   group :development do
