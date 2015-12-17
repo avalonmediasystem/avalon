@@ -19,12 +19,12 @@ class MediaObjectsController < ApplicationController
   include Avalon::Controller::ControllerBehavior
   include ConditionalPartials
 
-  before_filter :authenticate_user!, except: [:show, :show_progress]
-  before_filter :authenticate_api!, only: [:show, :show_progress], if: proc{|c| request.format.json?}
+  before_filter :authenticate_user!, except: [:show]
+  before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
   load_and_authorize_resource instance_name: 'mediaobject', except: [:destroy, :update_status]
 
   before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
-  before_filter :load_player_context, only: [:show, :show_progress]
+  before_filter :load_player_context, only: [:show]
 
   def self.is_editor ctx
     ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@mediaobject').collection)
@@ -62,13 +62,11 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects
   def create
-#    @mediaobject = MediaObject.new
     update_mediaobject
   end
 
   # PUT /media_objects/avalon:1.json
   def json_update
-#    @mediaobject = MediaObject.find(params[:id])
     update_mediaobject
   end
 
@@ -129,7 +127,6 @@ class MediaObjectsController < ApplicationController
   end
 
   def custom_edit
-#    authorize! :update, @mediaobject
     if ['preview', 'structure', 'file-upload'].include? @active_step
       @masterFiles = load_master_files
     end
@@ -158,7 +155,6 @@ class MediaObjectsController < ApplicationController
   end
 
   def custom_update
-#    authorize! :update, @mediaobject
     flash[:notice] = @notice
   end
 
@@ -173,7 +169,6 @@ class MediaObjectsController < ApplicationController
   def show
     respond_to do |format|
       format.html do
- #       authorize! :read, @mediaobject
         if (not @masterFiles.empty? and @currentStream.blank?) then
           redirect_to media_object_path(@mediaobject.pid), flash: { notice: 'That stream was not recognized. Defaulting to the first available stream for the resource' }
         else 
@@ -190,11 +185,10 @@ class MediaObjectsController < ApplicationController
   end
 
   def show_progress
-    authorize! :read, @mediaobject
     overall = { :success => 0, :error => 0 }
-
+    
     result = Hash[
-      @masterFiles.collect { |mf| 
+      @mediaobject.parts.collect { |mf| 
         mf_status = {
           :status => mf.status_code,
           :complete => mf.percent_complete.to_i,
@@ -212,7 +206,7 @@ class MediaObjectsController < ApplicationController
         [mf.pid, mf_status]
       }
     ]
-    overall.each { |k,v| overall[k] = [0,[100,v.to_f/@masterFiles.length.to_f].min].max.floor }
+    overall.each { |k,v| overall[k] = [0,[100,v.to_f/@mediaobject.parts.length.to_f].min].max.floor }
 
     if overall[:success]+overall[:error] > 100
       overall[:error] = 100-overall[:success]
@@ -276,7 +270,6 @@ class MediaObjectsController < ApplicationController
   # Sets the published status for the object. If no argument is given then
   # it will just toggle the state.
   def tree
-#    @mediaobject = MediaObject.find(params[:id])
     authorize! :inspect, @mediaobject
 
     respond_to do |format|
@@ -316,9 +309,6 @@ class MediaObjectsController < ApplicationController
 
   def load_player_context
     return if request.format.json? and !params.has_key? :content
-
-#    @mediaobject = MediaObject.find(params[:id])
-#    authorize! :read, @mediaobject
 
     if params[:part]
       index = params[:part].to_i-1

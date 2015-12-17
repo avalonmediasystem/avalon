@@ -47,6 +47,7 @@ describe MediaObjectsController, type: :controller do
         end
         it "all routes should redirect to sign in" do
           expect(get :show, id: media_object.id).to redirect_to(new_user_session_path)
+          expect(get :show_progress, id: media_object.id, format: 'json').to have_http_status(401)
           expect(get :edit, id: media_object.id).to redirect_to(new_user_session_path)
           expect(get :confirm_remove, id: media_object.id).to redirect_to(new_user_session_path)
           expect(post :create).to redirect_to(new_user_session_path)
@@ -67,6 +68,7 @@ describe MediaObjectsController, type: :controller do
         end
         it "all routes should redirect to /" do
           expect(get :show, id: media_object.id).to redirect_to(root_path)
+          expect(get :show_progress, id: media_object.id, format: 'json').to redirect_to(root_path)
           expect(get :edit, id: media_object.id).to redirect_to(root_path)
           expect(get :confirm_remove, id: media_object.id).to redirect_to(root_path)
           expect(post :create).to redirect_to(root_path)
