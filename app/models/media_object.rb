@@ -257,17 +257,22 @@ class MediaObject < ActiveFedora::Base
     missing_attributes.clear
     # Special case the identifiers and their types
     if values[:bibliographic_id].present? and values[:bibliographic_id_label].present?
-      values[:bibliographic_id] = {value: values[:bibliographic_id], attributes: values.delete(:bibliographic_id_label)}
+      values[:bibliographic_id] = {value: values[:bibliographic_id], attributes: values[:bibliographic_id_label]}
     end
+    values.delete(:bibliographic_id_label)
     if values[:related_item_url].present? and values[:related_item_label].present?
-        values[:related_item_url] = values[:related_item_url].zip(values.delete(:related_item_label))
+        values[:related_item_url] = values[:related_item_url].zip(values[:related_item_label])
     end
+    values.delete(:related_item_label)
     if values[:note].present? and values[:note_type].present?
-      values[:note]=values[:note].zip(values.delete(:note_type)).map{|v| {value: v[0], attributes: v[1]}}
+      values[:note]=values[:note].zip(values[:note_type]).map{|v| {value: v[0], attributes: v[1]}}
     end
+    values.delete(:note_type)
     if values[:other_identifier].present? and values[:other_identifier_type].present?
-      values[:other_identifier]=values[:other_identifier].zip(values.delete(:other_identifier_type)).map{|v| {value: v[0], attributes: v[1]}}
+      values[:other_identifier]=values[:other_identifier].zip(values[:other_identifier_type]).map{|v| {value: v[0], attributes: v[1]}}
     end
+    values.delete(:other_identifier_type)
+
     values.each do |k, v|
       # First remove all blank attributes in arrays
       v.keep_if { |item| not item.blank? } if v.instance_of?(Array)
