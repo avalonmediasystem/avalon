@@ -28,8 +28,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   </fieldset>
   <fieldset class='item-access'>
     <legend>Item access</legend>
-      <%= vid.hidden_field :pid %>
-
       <%= label_tag :visibility do %>
       <%= radio_button_tag :visibility, 'public', (@visibility == 'public') %>
         Available to the general public
