@@ -318,8 +318,8 @@ class MasterFile < ActiveFedora::Base
       end
     end
 
-    #Set date ingested to now
-    self.date_ingested = Time.now.utc.iso8601
+    #Set date ingested to now if it wasn't preset (by batch, for example)
+    self.date_ingested ||= Time.now.utc.iso8601
 
     save
 

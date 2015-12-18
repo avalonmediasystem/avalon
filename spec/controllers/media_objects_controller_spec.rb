@@ -102,6 +102,7 @@ describe MediaObjectsController, type: :controller do
       file_format: "Moving image",
       poster_offset: "0:02",
       thumbnail_offset: "0:02",
+      date_ingested: "2015-12-31",
       workflow_name: "avalon",
       percent_complete: "100.0",
       percent_succeeded: "100.0",
@@ -160,6 +161,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.creator).to eq media_object.creator
           expect(new_media_object.date_issued).to eq media_object.date_issued
           expect(new_media_object.parts_with_order).to eq new_media_object.parts
+          expect(new_media_object.parts.first.date_ingested).to eq('2015-12-31T00:00:00Z')
         end
         it "should create a new mediaobject with successful bib import" do
           Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
