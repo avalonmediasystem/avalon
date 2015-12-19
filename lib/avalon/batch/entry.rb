@@ -67,6 +67,15 @@ module Avalon
 
         def file_valid?(file_spec)
           valid = true
+          # Check date_ingested for valid format
+          if file_spec[:date_ingested].present?
+            begin
+              DateTime.parse(file_spec[:date_ingested])
+            rescue ArgumentError
+              @errors.add(:date_ingested, "Invalid date_ingested: #{file_spec[:date_ingested]}. Recommended format: yyyy-mm-dd.")
+              valid = false
+            end
+          end
           # Check file offsets for valid format
           if file_spec[:offset].present? && !Avalon::Batch::Entry.offset_valid?(file_spec[:offset])
             @errors.add(:offset, "Invalid offset: #{file_spec[:offset]}")
@@ -130,7 +139,8 @@ module Avalon
           master_file.absolute_location = file_spec[:absolute_location] if file_spec[:absolute_location].present?
           master_file.label = file_spec[:label] if file_spec[:label].present?
           master_file.poster_offset = file_spec[:offset] if file_spec[:offset].present?
-         
+          master_file.date_ingested = DateTime.parse(file_spec[:date_ingested]).to_time.utc.iso8601 if file_spec[:date_ingested].present?
+
           #Make sure to set content before setting the workflow 
           master_file.set_workflow(file_spec[:skip_transcoding] ? 'skip_transcoding' : nil)
           if master_file.save
