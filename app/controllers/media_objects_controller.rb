@@ -207,7 +207,12 @@ class MediaObjectsController < ApplicationController
         [mf.pid, mf_status]
       }
     ]
-    overall.each { |k,v| overall[k] = [0,[100,v.to_f/@mediaobject.parts.length.to_f].min].max.floor }
+    parts_count = @mediaobject.parts.count
+    if parts_count > 0
+      overall.each { |k,v| overall[k] = [0,[100,v.to_f/parts_count.to_f].min].max.floor }
+    else
+      overall = {success: 0, error: 0}
+    end
 
     if overall[:success]+overall[:error] > 100
       overall[:error] = 100-overall[:success]

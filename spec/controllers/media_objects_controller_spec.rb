@@ -676,4 +676,19 @@ describe MediaObjectsController, type: :controller do
       expect(media_object.descMetadata.media_type).to eq(["video/mp4"])
     end
   end
+
+  describe "#show_progress" do
+    it "should return information about the processing state of the media object's parts" do
+      media_object =  FactoryGirl.create(:media_object_with_master_file)
+      login_as 'administrator'
+      get :show_progress, id: media_object.id, format: 'json'
+      expect(JSON.parse(response.body)["overall"]).to_not be_empty
+    end
+    it "should return something even if the media object has no parts" do
+      media_object = FactoryGirl.create(:media_object)
+      login_as 'administrator'
+      get :show_progress, id: media_object.id, format: 'json'
+      expect(JSON.parse(response.body)["overall"]).to_not be_empty
+    end
+  end
 end
