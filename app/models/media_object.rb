@@ -560,8 +560,8 @@ class MediaObject < ActiveFedora::Base
         ensure_permalink!
         self.parts.each do |master_file| 
           begin
-            master_file.ensure_permalink!
-            master_file.save( validate: false )
+            updated = master_file.ensure_permalink!
+            master_file.save( validate: false ) if updated
           rescue
           	# no-op
           	# Save is called (uncharacteristically) during a destroy.
