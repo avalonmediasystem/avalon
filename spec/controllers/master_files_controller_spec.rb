@@ -118,6 +118,23 @@ describe MasterFilesController do
 
         expect(flash[:errors]).to be_nil
       end
+      it "should not fail when associating with a published mediaobject" do
+        media_object = FactoryGirl.create(:published_media_object)
+        login_user media_object.collection.managers.first
+        @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+        #Work-around for a Rails bug
+        class << @file
+          attr_reader :tempfile
+        end
+   
+        post :create, Filedata: [@file], original: 'any', container_id: media_object.pid
+
+        master_file = MasterFile.all.last
+        expect(media_object.reload.parts).to include master_file
+        expect(master_file.mediaobject.pid).to eq(media_object.pid)
+         
+        expect(flash[:errors]).to be_nil
+      end
     end
   end
   
