@@ -25,7 +25,7 @@ class ApplicationController < ActionController::Base
   
   # Please be sure to implement current_user and user_session. Blacklight depends on 
   # these methods in order to perform user specific actions. 
-  protect_from_forgery
+  protect_from_forgery unless: proc{|c| request.headers['Avalon-Api-Key'].present? }
 
   after_filter :set_access_control_headers
 

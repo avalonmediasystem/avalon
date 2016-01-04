@@ -20,7 +20,6 @@ require 'avalon/controller/controller_behavior'
 class MasterFilesController < ApplicationController
   include Avalon::Controller::ControllerBehavior
 
-  skip_before_filter :verify_authenticity_token, :only => [:update]
   before_filter :authenticate_user!, :only => [:create]
   before_filter :ensure_readable_filedata, :only => [:create]
 
