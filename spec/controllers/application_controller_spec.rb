@@ -15,5 +15,23 @@
 require 'spec_helper'
 
 describe ApplicationController do
+  controller do
+    def create
+      render nothing: true
+    end
+  end
 
+  context "normal auth" do
+    it "should check for authenticity token" do
+      expect(controller).to receive(:verify_authenticity_token)
+      post :create
+    end
+  end
+  context "ingest API" do
+    it "should not check for authenticity token for API requests" do
+      request.headers['Avalon-Api-Key'] = 'secret_token'
+      expect(controller).not_to receive(:verify_authenticity_token)
+      post :create
+    end
+  end
 end
