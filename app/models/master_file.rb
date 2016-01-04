@@ -307,11 +307,16 @@ class MasterFile < ActiveFedora::Base
   end
 
   def update_progress_on_success!(encode)
-    outputs_by_quality = encode.output.group_by {|o| o[:label]}
+    update_derivatives(encode.output)
+    run_hook :after_processing 
+  end
+
+  def update_derivatives(output,unmanaged=false)
+    outputs_by_quality = output.group_by {|o| o[:label]}
    
     outputs_by_quality.each_pair do |quality, outputs|
       existing = derivatives.to_a.find {|d| d.encoding.quality.first == quality}
-      d = Derivative.from_output(outputs)
+      d = Derivative.from_output(outputs,unmanaged)
       d.masterfile = self
       if d.save && existing
         existing.delete
@@ -322,8 +327,6 @@ class MasterFile < ActiveFedora::Base
     self.date_ingested ||= Time.now.utc.iso8601
 
     save
-
-    run_hook :after_processing 
   end
 
   alias_method :'_poster_offset=', :'poster_offset='

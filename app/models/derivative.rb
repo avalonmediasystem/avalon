@@ -35,11 +35,12 @@ class Derivative < ActiveFedora::Base
     d.field :duration, :string
     d.field :track_id, :string
     d.field :hls_track_id, :string
+    d.field :unmanaged, :boolean
   end
 
   has_metadata name: 'derivativeFile', type: UrlDatastream
 
-  has_attributes :location_url, :hls_url, :duration, :track_id, :hls_track_id, datastream: :descMetadata, multiple: false
+  has_attributes :location_url, :hls_url, :duration, :track_id, :hls_track_id, :unmanaged, datastream: :descMetadata, multiple: false
 
   has_metadata name: 'encoding', type: EncodingProfileDocument
 
@@ -53,12 +54,13 @@ class Derivative < ActiveFedora::Base
     end
   end
 
-  def self.from_output(dists)
+  def self.from_output(dists, unmanaged=false)
     #output is an array of 1 or more distributions of the same derivative (e.g. file and HLS segmented file)
     hls_output = dists.delete(dists.find {|o| o[:url].ends_with? "m3u8" })
     output = dists.first || hls_output
 
     derivative = Derivative.new
+    derivative.unmanaged = unmanaged
     derivative.track_id = output[:id]
     derivative.duration = output[:duration]
     derivative.encoding.mime_type = output[:mime_type]
@@ -74,8 +76,9 @@ class Derivative < ActiveFedora::Base
       derivative.hls_track_id = hls_output[:id]
       derivative.hls_url = hls_output[:url]
     end
-
+    derivative.location_url = output[:url]
     derivative.absolute_location = output[:url]
+
     derivative
   end
 
@@ -92,7 +95,7 @@ class Derivative < ActiveFedora::Base
 
   def absolute_location=(value)
     derivativeFile.location = value
-    set_streaming_locations!
+    set_streaming_locations! unless self.unmanaged
     derivativeFile.location
   end
 
