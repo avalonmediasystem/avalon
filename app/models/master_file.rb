@@ -311,12 +311,12 @@ class MasterFile < ActiveFedora::Base
     run_hook :after_processing 
   end
 
-  def update_derivatives(output,unmanaged=false)
+  def update_derivatives(output,managed=true)
     outputs_by_quality = output.group_by {|o| o[:label]}
    
     outputs_by_quality.each_pair do |quality, outputs|
       existing = derivatives.to_a.find {|d| d.encoding.quality.first == quality}
-      d = Derivative.from_output(outputs,unmanaged)
+      d = Derivative.from_output(outputs,managed)
       d.masterfile = self
       if d.save && existing
         existing.delete
