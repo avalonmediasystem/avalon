@@ -29,17 +29,18 @@ class Derivative < ActiveFedora::Base
   # The only meaningful value at the moment is the url, which points to
   # the stream location. The other two are just stored until a migration
   # strategy is required.
-  has_metadata name: "descMetadata", :type => ActiveFedora::SimpleDatastream do |d|
+  has_metadata name: "descMetadata", :type => ActiveFedora::SimpleDatastream, autocreate: true do |d|
     d.field :location_url, :string
     d.field :hls_url, :string
     d.field :duration, :string
     d.field :track_id, :string
     d.field :hls_track_id, :string
+    d.field :managed, :boolean
   end
 
   has_metadata name: 'derivativeFile', type: UrlDatastream
 
-  has_attributes :location_url, :hls_url, :duration, :track_id, :hls_track_id, datastream: :descMetadata, multiple: false
+  has_attributes :location_url, :hls_url, :duration, :track_id, :hls_track_id, :managed, datastream: :descMetadata, multiple: false
 
   has_metadata name: 'encoding', type: EncodingProfileDocument
 
@@ -53,12 +54,19 @@ class Derivative < ActiveFedora::Base
     end
   end
 
-  def self.from_output(dists)
+  def initialize(attrs = nil)
+    attrs ||= {}
+    attrs[:managed] = true
+    super(attrs)
+  end
+
+  def self.from_output(dists, managed=true)
     #output is an array of 1 or more distributions of the same derivative (e.g. file and HLS segmented file)
     hls_output = dists.delete(dists.find {|o| o[:url].ends_with? "m3u8" })
     output = dists.first || hls_output
 
     derivative = Derivative.new
+    derivative.managed = managed
     derivative.track_id = output[:id]
     derivative.duration = output[:duration]
     derivative.encoding.mime_type = output[:mime_type]
@@ -74,15 +82,21 @@ class Derivative < ActiveFedora::Base
       derivative.hls_track_id = hls_output[:id]
       derivative.hls_url = hls_output[:url]
     end
-
+    derivative.location_url = output[:url]
     derivative.absolute_location = output[:url]
+
     derivative
   end
 
   def set_streaming_locations!
-    path = URI.parse(absolute_location).path
-    self.location_url = Avalon::StreamMapper.map(path,'rtmp',self.format)
-    self.hls_url      = Avalon::StreamMapper.map(path,'http',self.format)
+    if !!self.managed
+      path = URI.parse(absolute_location).path
+      self.location_url = Avalon::StreamMapper.map(path,'rtmp',self.format)
+      self.hls_url      = Avalon::StreamMapper.map(path,'http',self.format)
+    else
+      self.location_url = absolute_location
+      self.hls_url      = absolute_location
+    end
     self
   end
   

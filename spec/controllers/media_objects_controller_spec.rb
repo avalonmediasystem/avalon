@@ -86,29 +86,53 @@ describe MediaObjectsController, type: :controller do
     let!(:collection) { FactoryGirl.create(:collection) }
     let!(:testdir) {'spec/fixtures/'}
     let!(:filename) {'videoshort.high.mp4'}
-    let!(:absolute_location) {File.join(testdir, filename)}
+    let!(:absolute_location) {Rails.root.join(File.join(testdir, filename)).to_s}
     let!(:structure) {File.read(File.join(testdir, 'structure.xml'))}
     let!(:bib_id) { '7763100' }
     let!(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
     let!(:sru_response) { File.read(File.expand_path("../../fixtures/#{bib_id}.xml",__FILE__)) }
     let!(:masterfile) {{
-      file_location: absolute_location,
-      label: "Part 1",
-      file_checksum: "7ae24368ccb7a6c6422a14ff73f33c9a",
-      file_size: "199160",
-      duration: "6315",
-      display_aspect_ratio: "1.7777777777777777",
-      original_frame_size: "200x110",
-      file_format: "Moving image",
-      poster_offset: "0:02",
-      thumbnail_offset: "0:02",
-      date_ingested: "2015-12-31",
-      workflow_name: "avalon",
-      percent_complete: "100.0",
-      percent_succeeded: "100.0",
-      percent_failed: "0",
-      status_code: "COMPLETED",
-      structure: structure
+        file_location: absolute_location,
+        label: "Part 1",
+        files: [{label: 'quality-high',
+                  id: 'track-1',
+                  url: absolute_location,
+                  duration: "6315",
+                  mime_type:  "video/mp4",
+                  audio_bitrate: "127716.0",
+                  audio_codec: "AAC",
+                  video_bitrate: "1000000.0",
+                  video_codec: "AVC",
+                  width: "640",
+                  height: "480" },
+                {label: 'quality-medium',
+                  id: 'track-2',
+                  url: absolute_location,
+                  duration: "6315",
+                  mime_type: "video/mp4",
+                  audio_bitrate: "127716.0",
+                  audio_codec: "AAC",
+                  video_bitrate: "1000000.0",
+                  video_codec: "AVC",
+                  width: "640",
+                  height: "480" }
+               ],
+        file_location: absolute_location,
+        file_checksum: "7ae24368ccb7a6c6422a14ff73f33c9a",
+        file_size: "199160",
+        duration: "6315",
+        display_aspect_ratio: "1.7777777777777777",
+        original_frame_size: "640x480",
+        file_format: "Moving image",
+        poster_offset: "0:02",
+        thumbnail_offset: "0:02",
+        date_ingested: "2015-12-31",
+        workflow_name: "avalon",
+        percent_complete: "100.0",
+        percent_succeeded: "100.0",
+        percent_failed: "0",
+        status_code: "COMPLETED",
+        structure: structure
       }}
     let!(:descMetadata_fields) {[
       :title,
@@ -162,7 +186,9 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.date_issued).to eq media_object.date_issued
           expect(new_media_object.parts_with_order).to eq new_media_object.parts
           expect(new_media_object.parts.first.date_ingested).to eq('2015-12-31T00:00:00Z')
-        end
+          expect(new_media_object.parts.first.derivatives.count).to eq(2)
+          expect(new_media_object.parts.first.derivatives.first.location_url).to eq(absolute_location)          
+       end
         it "should create a new mediaobject with successful bib import" do
           Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           FakeWeb.register_uri :get, sru_url, body: sru_response

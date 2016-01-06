@@ -100,12 +100,12 @@ class MediaObjectsController < ApplicationController
       error_messages += ['Failed to create media object:']+@mediaobject.errors.full_messages
     elsif params[:files].respond_to?('each')
       params[:files].each do |file_spec|
-        master_file = MasterFile.new(file_spec.except :structure)
+        master_file = MasterFile.new(file_spec.except(:structure, :files))
         master_file.mediaobject = @mediaobject
         master_file.structuralMetadata.content = file_spec[:structure] if file_spec[:structure].present?
         master_file.label = file_spec[:label] if file_spec[:label].present?
         master_file.date_ingested = file_spec[:date_ingested].present? ? DateTime.parse(file_spec[:date_ingested]).to_time.utc.iso8601 : Time.now.utc.iso8601
-        if master_file.save
+        if master_file.update_derivatives(file_spec[:files], false)
           @mediaobject.parts += [master_file]
         else
           error_messages += ["Problem saving MasterFile for #{file_spec[:file_location] rescue "<unknown>"}:"]+master_file.errors.full_messages
