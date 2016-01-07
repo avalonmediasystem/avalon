@@ -445,6 +445,16 @@ describe MediaObject do
       expect(solr_doc['other_identifier_sim']).to include('12345678','8675309 testing')
       expect(solr_doc['other_identifier_sim']).not_to include('123456788675309 testing')
     end
+    it 'should index identifier for parts' do
+      master_file = FactoryGirl.create(:master_file, mediaobject_id: media_object.pid)
+      master_file.DC.identifier += ["TestOtherID"]
+      master_file.save!
+      media_object.parts += [master_file]
+      media_object.save!
+      media_object.reload
+      solr_doc = media_object.to_solr
+      expect(solr_doc['other_identifier_sim']).to include('TestOtherID')
+    end
   end
 
   describe 'permalink' do
