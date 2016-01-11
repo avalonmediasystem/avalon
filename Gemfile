@@ -2,7 +2,7 @@
 
   # active anno dev
   gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', tag: 'avalon-r5'
-
+  gem 'mysql2', '~>0.3.20'
   gem 'iconv'
   gem 'rails', '~>4.0.3'
   gem 'sprockets', '~>2.11.0'
@@ -59,13 +59,13 @@
 
   platforms :jruby do
     gem 'jruby-openssl'
-    gem 'activerecord-jdbcsqlite3-adapter'
-    gem 'jdbc-sqlite3'
+#    gem 'activerecord-jdbcsqlite3-adapter'
+#    gem 'jdbc-sqlite3'
     gem 'therubyrhino'
   end
 
   platforms :ruby do
-    gem 'sqlite3'
+#    gem 'sqlite3'
     gem 'execjs'
     gem 'therubyracer', '>= 0.12.0'
   end
