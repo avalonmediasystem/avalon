@@ -113,11 +113,17 @@ class MediaObjectsController < ApplicationController
           @mediaobject.destroy
           break
         end
-      end   
-      @mediaobject.parts_with_order = @mediaobject.parts
-      if !@mediaobject.save
-        error_messages += ['Failed to create media object:']+@mediaobject.errors.full_messages
-        @mediaobject.destroy
+      end  
+      if error_messages.empty? 
+        @mediaobject.parts_with_order = @mediaobject.parts
+        #Ensure these are set because sometimes there is a timing issue that prevents the masterfile save from doing it
+        @mediaobject.set_media_types!
+        @mediaobject.set_resource_types!
+        @mediaobject.set_duration!
+        if !@mediaobject.save
+          error_messages += ['Failed to create media object:']+@mediaobject.errors.full_messages
+          @mediaobject.destroy
+        end
       end
     end
     if error_messages.empty?
