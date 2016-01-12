@@ -93,9 +93,6 @@ class Derivative < ActiveFedora::Base
       path = URI.parse(absolute_location).path
       self.location_url = Avalon::StreamMapper.map(path,'rtmp',self.format)
       self.hls_url      = Avalon::StreamMapper.map(path,'http',self.format)
-    else
-      self.location_url = absolute_location
-      self.hls_url      = absolute_location
     end
     self
   end
