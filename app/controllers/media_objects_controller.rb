@@ -84,11 +84,12 @@ class MediaObjectsController < ApplicationController
     populate_from_catalog = !!params[:import_bib_record]
     if populate_from_catalog and Avalon::BibRetriever.configured?
       begin
+        # Try to use Bib Import
         @mediaobject.descMetadata.populate_from_catalog!(Array(params[:fields][:bibliographic_id]).first, 
                                                          Array(params[:fields][:bibliographic_id_label]).first)
       rescue Exception => e
-        render json: {errors: ['Bib import failed', e.message]}, status: 422
-        return
+        # Fall back to MODS as sent if Bib Import fails
+        @mediaobject.update_datastream(:descMetadata, params[:fields]) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
       end
     else
       @mediaobject.update_datastream(:descMetadata, params[:fields]) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
