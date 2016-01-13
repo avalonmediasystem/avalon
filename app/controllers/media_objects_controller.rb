@@ -21,7 +21,7 @@ class MediaObjectsController < ApplicationController
 
   before_filter :authenticate_user!, except: [:show]
   before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
-  load_and_authorize_resource instance_name: 'mediaobject', except: [:destroy, :update_status]
+  load_and_authorize_resource instance_name: 'mediaobject', except: [:destroy, :update_status, :set_session_quality]
 
   before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
   before_filter :load_player_context, only: [:show]
@@ -87,9 +87,11 @@ class MediaObjectsController < ApplicationController
         # Try to use Bib Import
         @mediaobject.descMetadata.populate_from_catalog!(Array(params[:fields][:bibliographic_id]).first, 
                                                          Array(params[:fields][:bibliographic_id_label]).first)
-      rescue Exception => e
-        # Fall back to MODS as sent if Bib Import fails
-        @mediaobject.update_datastream(:descMetadata, params[:fields]) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
+      ensure
+        if !@mediaobject.valid?
+          # Fall back to MODS as sent if Bib Import fails
+          @mediaobject.update_datastream(:descMetadata, params[:fields]) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
+        end
       end
     else
       @mediaobject.update_datastream(:descMetadata, params[:fields]) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)

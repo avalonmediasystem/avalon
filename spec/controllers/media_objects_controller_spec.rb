@@ -51,6 +51,7 @@ describe MediaObjectsController, type: :controller do
           expect(get :edit, id: media_object.id).to redirect_to(new_user_session_path)
           expect(get :confirm_remove, id: media_object.id).to redirect_to(new_user_session_path)
           expect(post :create).to redirect_to(new_user_session_path)
+          expect(post :set_session_quality, quality: 'high').to redirect_to(new_user_session_path)
           expect(put :update, id: media_object.id).to redirect_to(new_user_session_path)
           expect(put :update_status, id: media_object.id).to redirect_to(new_user_session_path)
           expect(get :tree, id: media_object.id).to redirect_to(new_user_session_path)
@@ -203,6 +204,20 @@ describe MediaObjectsController, type: :controller do
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.bibliographic_id).to eq(['local', bib_id])
           expect(new_media_object.title).to eq('245 A : B F G K N P S')
+        end
+        it "should create a new mediaobject with supplied fields when bib import fails" do
+          Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+          FakeWeb.register_uri :get, sru_url, body: nil
+          media_object = FactoryGirl.create(:media_object)
+          fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
+          fields = fields.merge({ bibliographic_id: bib_id })
+          post 'create', format: 'json', import_bib_record: true, fields: fields, files: [masterfile], collection_id: collection.pid
+          expect(response.status).to eq(200)
+          new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+          expect(new_media_object.bibliographic_id).to eq(['local', bib_id])
+          expect(new_media_object.title).to eq media_object.title
+          expect(new_media_object.creator).to eq media_object.creator
+          expect(new_media_object.date_issued).to eq media_object.date_issued
         end
       end
     end
@@ -720,6 +735,14 @@ describe MediaObjectsController, type: :controller do
       login_as 'administrator'
       get :show_progress, id: media_object.id, format: 'json'
       expect(JSON.parse(response.body)["overall"]).to_not be_empty
+    end
+  end
+
+  describe "#set_session_quality" do
+    it "should set the posted quality in the session" do
+      login_as 'administrator'
+      post :set_session_quality, quality: 'crazy_high'
+      expect(@request.session[:quality]).to eq('crazy_high')
     end
   end
 end
