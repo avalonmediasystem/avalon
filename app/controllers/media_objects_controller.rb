@@ -87,6 +87,8 @@ class MediaObjectsController < ApplicationController
         # Try to use Bib Import
         @mediaobject.descMetadata.populate_from_catalog!(Array(params[:fields][:bibliographic_id]).first, 
                                                          Array(params[:fields][:bibliographic_id_label]).first)
+      rescue
+        logger.warn "Failed bib import using bibID #{Array(params[:fields][:bibliographic_id]).first}, #{Array(params[:fields][:bibliographic_id_label]).first}"
       ensure
         if !@mediaobject.valid?
           # Fall back to MODS as sent if Bib Import fails
