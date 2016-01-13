@@ -80,7 +80,7 @@ class Derivative < ActiveFedora::Base
 
     if hls_output
       derivative.hls_track_id = hls_output[:id]
-      derivative.hls_url = hls_output[:url]
+      derivative.hls_url = hls_output[:hls_url].present? ? hls_output[:hls_url] : hls_output[:url]
     end
     derivative.location_url = output[:url]
     derivative.absolute_location = output[:url]
