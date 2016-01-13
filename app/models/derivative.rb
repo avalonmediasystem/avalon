@@ -62,7 +62,7 @@ class Derivative < ActiveFedora::Base
 
   def self.from_output(dists, managed=true)
     #output is an array of 1 or more distributions of the same derivative (e.g. file and HLS segmented file)
-    hls_output = dists.delete(dists.find {|o| o[:url].ends_with? "m3u8" })
+    hls_output = dists.delete(dists.find {|o| o[:url].ends_with? "m3u8" or ( o[:hls_url].present? and o[:hls_url].ends_with? "m3u8" ) })
     output = dists.first || hls_output
 
     derivative = Derivative.new
@@ -80,7 +80,7 @@ class Derivative < ActiveFedora::Base
 
     if hls_output
       derivative.hls_track_id = hls_output[:id]
-      derivative.hls_url = hls_output[:url]
+      derivative.hls_url = hls_output[:hls_url].present? ? hls_output[:hls_url] : hls_output[:url]
     end
     derivative.location_url = output[:url]
     derivative.absolute_location = output[:url]

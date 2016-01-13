@@ -16,6 +16,26 @@ require 'spec_helper'
 
 describe Derivative do
 
+  describe "#from_output" do
+    let!(:api_output){[{ label: 'quality-high',
+                    id: 'track-1',
+                    url: 'rtmp://www.test.com/test.mp4',
+                    hls_url: 'http://www.test.com/test.mp4.m3u8',
+                    duration: "6315",
+                    mime_type:  "video/mp4",
+                    audio_bitrate: "127716.0",
+                    audio_codec: "AAC",
+                    video_bitrate: "1000000.0",
+                    video_codec: "AVC",
+                    width: "640",
+                    height: "480" }]}
+    it "Call from ingest API should populate :url and :hls_url" do
+      d = Derivative.from_output(api_output,false)
+      expect(d.location_url).to eq('rtmp://www.test.com/test.mp4')
+      expect(d.hls_url).to eq('http://www.test.com/test.mp4.m3u8')
+    end
+  end
+
   describe "#destroy" do
     let!(:derivative) {FactoryGirl.create(:derivative)}
 
