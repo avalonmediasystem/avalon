@@ -250,6 +250,13 @@ describe MediaObjectsController, type: :controller do
           media_object.reload
           expect(media_object.parts.count).to eq 2
         end
+        it "should delete existing masterfiles and add a new masterfile to a mediaobject" do
+          put 'json_update', format: 'json', id: media_object.pid, files: [masterfile], collection_id: media_object.collection_id, replace_masterfiles: true
+          expect(JSON.parse(response.body)['id'].class).to eq String
+          expect(JSON.parse(response.body)).not_to include('errors')
+          media_object.reload
+          expect(media_object.parts.count).to eq 1
+        end
         it "should return 404 if media object doesn't exist" do
           allow_any_instance_of(MediaObject).to receive(:save).and_return false
           put 'json_update', format: 'json', id: 'avalon:doesnt_exist', fields: {}, collection_id: media_object.collection_id
