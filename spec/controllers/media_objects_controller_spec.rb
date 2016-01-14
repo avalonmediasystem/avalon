@@ -127,7 +127,7 @@ describe MediaObjectsController, type: :controller do
         file_format: "Moving image",
         poster_offset: "0:02",
         thumbnail_offset: "0:02",
-        date_ingested: "2015-12-31",
+        date_digitized: "2015-12-31",
         workflow_name: "avalon",
         percent_complete: "100.0",
         percent_succeeded: "100.0",
@@ -190,7 +190,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.duration).to eq '6315'
           expect(new_media_object.format).to eq 'video/mp4'
           expect(new_media_object.resource_type).to eq ['moving image']
-          expect(new_media_object.parts.first.date_ingested).to eq('2015-12-31T00:00:00Z')
+          expect(new_media_object.parts.first.date_digitized).to eq('2015-12-31T00:00:00Z')
           expect(new_media_object.parts.first.DC.identifier).to include('40000000045312')
           expect(new_media_object.parts.first.derivatives.count).to eq(2)
           expect(new_media_object.parts.first.derivatives.first.location_url).to eq(absolute_location)          

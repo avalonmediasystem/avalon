@@ -21,7 +21,7 @@ module Avalon
       extend Forwardable
 
       EXTENSIONS = ['csv','xls','xlsx','ods']
-      FILE_FIELDS = [:file,:label,:offset,:skip_transcoding,:absolute_location,:date_ingested]
+      FILE_FIELDS = [:file,:label,:offset,:skip_transcoding,:absolute_location,:date_digitized]
       SKIP_FIELDS = [:collection]
 
       def_delegators :@entries, :each
