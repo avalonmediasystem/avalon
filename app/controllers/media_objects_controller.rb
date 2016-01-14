@@ -104,6 +104,7 @@ class MediaObjectsController < ApplicationController
     if !@mediaobject.save
       error_messages += ['Failed to create media object:']+@mediaobject.errors.full_messages
     elsif params[:files].respond_to?('each')
+      oldparts = @mediaobject.parts.collect{|p|p.pid}
       params[:files].each do |file_spec|
         master_file = MasterFile.new(file_spec.except(:structure, :files, :other_identifier))
         master_file.mediaobject = @mediaobject
@@ -120,6 +121,13 @@ class MediaObjectsController < ApplicationController
         end
       end  
       if error_messages.empty? 
+        if params[:replace_masterfiles]
+          oldparts.each do |mf|
+            p = MasterFile.find(mf)
+            @mediaobject.parts.delete(p)
+            p.destroy
+          end
+        end
         @mediaobject.parts_with_order = @mediaobject.parts
         #Ensure these are set because sometimes there is a timing issue that prevents the masterfile save from doing it
         @mediaobject.set_media_types!
