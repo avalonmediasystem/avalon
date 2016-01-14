@@ -419,10 +419,10 @@ describe MasterFile do
     subject(:master_file) { FactoryGirl.create(:master_file) }
     let(:encode) { double("encode", :output => []) }
 
-    it 'should set the ingested date' do
+    it 'should set the digitized date' do
       master_file.update_progress_on_success!(encode)
       master_file.reload
-      expect(master_file.date_ingested).to_not be_empty
+      expect(master_file.date_digitized).to_not be_empty
     end
     
   end
