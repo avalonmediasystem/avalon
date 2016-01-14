@@ -109,7 +109,7 @@ class MediaObjectsController < ApplicationController
         master_file.mediaobject = @mediaobject
         master_file.structuralMetadata.content = file_spec[:structure] if file_spec[:structure].present?
         master_file.label = file_spec[:label] if file_spec[:label].present?
-        master_file.date_ingested = file_spec[:date_ingested].present? ? DateTime.parse(file_spec[:date_ingested]).to_time.utc.iso8601 : Time.now.utc.iso8601
+        master_file.date_digitized = DateTime.parse(file_spec[:date_digitized]).to_time.utc.iso8601 if file_spec[:date_digitized].present?
         master_file.DC.identifier += Array(file_spec[:other_identifier])
         if master_file.update_derivatives(file_spec[:files], false)
           @mediaobject.parts += [master_file]
