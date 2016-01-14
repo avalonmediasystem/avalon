@@ -132,7 +132,7 @@ describe Avalon::Batch::Ingest do
       expect(master_file.poster_offset.to_i).to eq(500)
       expect(master_file.workflow_name).to eq('avalon')
       expect(master_file.absolute_location).to eq(Avalon::FileResolver.new.path_to(master_file.file_location)) 
-      expect(master_file.date_ingested).to eq('2015-10-30T00:00:00Z')
+      expect(master_file.date_digitized).to eq('2015-10-30T00:00:00Z')
       # if a master file is saved on a media object 
       # it should have workflow name set
       # master_file.workflow_name.should be_nil
@@ -142,7 +142,7 @@ describe Avalon::Batch::Ingest do
       expect(master_file.poster_offset.to_i).to eq(500)
       expect(master_file.workflow_name).to eq('avalon-skip-transcoding')
       expect(master_file.absolute_location).to eq('file:///tmp/sheephead_mountain_master.mov')
-      expect(master_file.date_ingested).to eq('2015-10-31T00:00:00Z')
+      expect(master_file.date_digitized).to eq('2015-10-31T00:00:00Z')
 
       master_file = media_object.parts[2]
       expect(master_file.label).to eq('Audio')
