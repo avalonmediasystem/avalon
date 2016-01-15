@@ -142,6 +142,7 @@ class MediaObjectsController < ApplicationController
     if error_messages.empty?
       render json: {id: @mediaobject.pid}, status: 200
     else
+      logger.warn "update_mediaobject failed for #{params[:fields][:title] rescue '<unknown>'}: #{error_messages}"
       render json: {errors: error_messages}, status: 422
       @mediaobject.destroy
     end
