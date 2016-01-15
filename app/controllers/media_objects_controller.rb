@@ -133,6 +133,7 @@ class MediaObjectsController < ApplicationController
         @mediaobject.set_media_types!
         @mediaobject.set_resource_types!
         @mediaobject.set_duration!
+        @mediaobject.workflow.last_completed_step = HYDRANT_STEPS.last.step
         if !@mediaobject.save
           error_messages += ['Failed to create media object:']+@mediaobject.errors.full_messages
           @mediaobject.destroy

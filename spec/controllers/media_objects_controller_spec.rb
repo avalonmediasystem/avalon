@@ -194,7 +194,8 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.parts.first.DC.identifier).to include('40000000045312')
           expect(new_media_object.parts.first.derivatives.count).to eq(2)
           expect(new_media_object.parts.first.derivatives.first.location_url).to eq(absolute_location)          
-        end
+          expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
+       end
         it "should create a new mediaobject with successful bib import" do
           Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           FakeWeb.register_uri :get, sru_url, body: sru_response
