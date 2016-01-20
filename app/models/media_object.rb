@@ -400,6 +400,7 @@ class MediaObject < ActiveFedora::Base
     solr_doc["title_ssort"] = self.title
     solr_doc["creator_ssort"] = Array(self.creator).join(', ')
     solr_doc["date_digitized_sim"] = parts.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
+    solr_doc["date_ingested_sim"] = Time.parse(self.create_date).strftime "%F"
     #include identifiers for parts
     solr_doc["other_identifier_sim"] += parts.collect {|mf| mf.DC.identifier }.flatten
     #Add all searchable fields to the all_text_timv field
