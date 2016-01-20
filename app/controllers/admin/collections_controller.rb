@@ -93,6 +93,7 @@ class Admin::CollectionsController < ApplicationController
       end
       render json: {id: @collection.pid}, status: 200
     else
+      logger.warn "Failed to create collection #{@collection.name rescue '<unknown>'}: #{@collection.errors.full_messages}"
       render json: {errors: ['Failed to create collection:']+@collection.errors.full_messages}, status: 422
     end
   end
@@ -183,6 +184,7 @@ class Admin::CollectionsController < ApplicationController
         if saved
           render json: {id: @collection.pid}, status: 200
         else
+          logger.warn "Failed to update collection #{@collection.name rescue '<unknown>'}: #{@collection.errors.full_messages}"
           render json: {errors: ['Failed to update collection:']+@collection.errors.full_messages}, status: 422
         end
       end
