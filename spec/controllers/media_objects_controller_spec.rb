@@ -223,11 +223,20 @@ describe MediaObjectsController, type: :controller do
           media_object = FactoryGirl.create(:multiple_entries)
           fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
           fields[:language] = ['???']
+          fields[:related_item_url] = ['???']
+          fields[:note] = ['note']
+          fields[:note_type] = ['???']
+          fields[:date_created] = '???'
+          fields[:copyright_date] = '???'
           post 'create', format: 'json', fields: fields, files: [masterfile], collection_id: collection.pid
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.title).to eq media_object.title
           expect(new_media_object.language).to eq []
+          expect(new_media_object.related_item_url).to eq []
+          expect(new_media_object.note).to eq nil
+          expect(new_media_object.date_created).to eq nil
+          expect(new_media_object.copyright_date).to eq nil
         end
       end
     end
