@@ -222,7 +222,7 @@ describe MediaObjectsController, type: :controller do
         it "should create a new mediaobject, removing invalid data for non-required fields" do
           media_object = FactoryGirl.create(:multiple_entries)
           fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
-          fields[:language] = '???'
+          fields[:language] = ['???']
           post 'create', format: 'json', fields: fields, files: [masterfile], collection_id: collection.pid
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
