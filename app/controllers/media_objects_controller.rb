@@ -92,7 +92,7 @@ class MediaObjectsController < ApplicationController
       ensure
         if !@mediaobject.valid?
           # Fall back to MODS as sent if Bib Import fails
-          @mediaobject.update_datastream(:descMetadata, params[:fields]) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
+          @mediaobject.update_datastream(:descMetadata, params[:fields].slice(*@mediaobject.errors.keys)) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
         end
       end
     else
@@ -105,6 +105,7 @@ class MediaObjectsController < ApplicationController
       invalid_fields = @mediaobject.errors.keys
       required_fields = [:title, :date_issued, :creator]
       if !required_fields.any? { |f| invalid_fields.include? f }
+        #NOTE this will erase all values for fields with multiple values
         invalid_fields.each { |field| @mediaobject[field] = nil }
       end
     end
