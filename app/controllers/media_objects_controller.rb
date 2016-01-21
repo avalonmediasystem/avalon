@@ -105,8 +105,11 @@ class MediaObjectsController < ApplicationController
       invalid_fields = @mediaobject.errors.keys
       required_fields = [:title, :date_issued, :creator]
       if !required_fields.any? { |f| invalid_fields.include? f }
-        #NOTE this will erase all values for fields with multiple values
-        invalid_fields.each { |field| @mediaobject[field] = nil }
+        invalid_fields.each do |field|
+          #NOTE this will erase all values for fields with multiple values
+          logger.warn "Erasing field #{field} with bad value, bibID: #{Array(params[:fields][:bibliographic_id]).first}, avalon ID: #{@mediaobject.pid}" 
+          @mediaobject[field] = nil
+        end
       end
     end
     if !@mediaobject.save
