@@ -60,9 +60,10 @@ class AccessControlStep < Avalon::Workflow::BasicStep
       end
     end
 
-    mediaobject.visibility = context[:visibility] unless context[:visibility].blank? 
-
-    mediaobject.hidden = context[:hidden] == "1"
+    if context["save"].present? or context["save_and_continue"].present?
+      mediaobject.visibility = context[:visibility] unless context[:visibility].blank? 
+      mediaobject.hidden = context[:hidden] == "1"
+    end
 
     mediaobject.save
 
