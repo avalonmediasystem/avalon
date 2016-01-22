@@ -387,6 +387,18 @@ describe MediaObjectsController, type: :controller do
         end
       end
     end
+    
+    context "Hidden Items" do
+      subject(:mo) { FactoryGirl.create(:media_object_with_completed_workflow, hidden: true) }
+      let!(:user) { Faker::Internet.email }
+      before(:each) { login_user mo.collection.managers.first }
+
+      it "should retain the hidden status of an object when other access control settings change" do
+        expect { put 'update', id: mo.pid, step: 'access-control', donot_advance: 'true', 
+                 add_user: user, add_user_display: user, submit_add_user: 'Add' }
+          .not_to change { MediaObject.find(mo.pid).hidden? }
+      end
+    end
   end
 
   describe "#index" do

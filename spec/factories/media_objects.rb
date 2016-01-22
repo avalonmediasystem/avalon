@@ -55,6 +55,12 @@ FactoryGirl.define do
         mo.save
       end
     end
+    factory :media_object_with_completed_workflow do
+      after(:create) do |mo|
+        mo.workflow.last_completed_step = [HYDRANT_STEPS.last.step]
+        mo.save
+      end
+    end
   end
 
   factory :minimal_record, class: MediaObject do
