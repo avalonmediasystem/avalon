@@ -29,7 +29,7 @@ class Derivative < ActiveFedora::Base
   # The only meaningful value at the moment is the url, which points to
   # the stream location. The other two are just stored until a migration
   # strategy is required.
-  has_metadata name: "descMetadata", :type => ActiveFedora::SimpleDatastream, autocreate: true do |d|
+  has_metadata name: "descMetadata", :type => CachingSimpleDatastream.create(self) do |d|
     d.field :location_url, :string
     d.field :hls_url, :string
     d.field :duration, :string

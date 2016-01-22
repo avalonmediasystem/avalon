@@ -448,7 +448,9 @@ describe MediaObjectsController, type: :controller do
         master_file = FactoryGirl.create(:master_file)
         master_file.mediaobject = media_object
         master_file.save
-
+        media_object.parts_with_order = media_object.parts
+        media_object.save 
+        
         mopid = media_object.pid
         media_object = MediaObject.find(mopid)
 

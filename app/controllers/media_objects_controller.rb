@@ -376,14 +376,7 @@ class MediaObjectsController < ApplicationController
   # return a nil value that needs to be handled appropriately by the calling code
   # block
   def set_active_file(file_pid = nil)
-    unless (@mediaobject.parts.blank? or file_pid.blank?)
-      @mediaobject.parts.each do |part|
-        return part if part.pid == file_pid
-      end
-    end
-
-    # If you haven't dropped out by this point return an empty item
-    nil
+    file_pid.nil? ? nil : @mediaobject.parts_with_order.find { |mf| mf.pid == file_pid }
   end 
   
 end
