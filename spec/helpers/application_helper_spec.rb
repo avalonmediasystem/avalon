@@ -104,27 +104,27 @@ describe ApplicationHelper do
   describe "#image_for" do
     # image_for expects hash keys as labels, not strings
     it "should return nil" do
-      doc = {"mods_tesim" => [] }
+      doc = {"resource_types_sim" => [] }
       expect(helper.image_for(doc)).to eq(nil)
     end
     it "should return audio icon" do
-      doc = {"mods_tesim" => ['sound recording 2', 'sound recording 1'] }
+      doc = {"resource_types_sim" => ['sound recording 2', 'sound recording 1'] }
       expect(helper.image_for(doc)).to eq('/assets/audio_icon.png')
     end
     it "should return video icon" do
-      doc = {"mods_tesim" => ['moving image 1'] }
+      doc = {"resource_types_sim" => ['moving image 1'] }
       expect(helper.image_for(doc)).to eq('/assets/video_icon.png')
     end
     it "should return hybrid icon" do
-      doc = {"mods_tesim" => ['moving image 1', 'sound recording 1'] }
+      doc = {"resource_types_sim" => ['moving image 1', 'sound recording 1'] }
       expect(helper.image_for(doc)).to eq('/assets/hybrid_icon.png')
     end
     it "should return nil when only unprocessed video" do
-      doc = {"section_pid_tesim" => ['1'], "mods_tesim" => [] }
+      doc = {"section_pid_tesim" => ['1'], "resource_types_sim" => [] }
       expect(helper.image_for(doc)).to eq(nil)
     end
     it "should return thumbnail" do
-      doc = {"section_pid_tesim" => ['1'], "mods_tesim" => ['moving image 1'] }
+      doc = {"section_pid_tesim" => ['1'], "resource_types_sim" => ['moving image 1'] }
       expect(helper.image_for(doc)).to eq('/master_files/1/thumbnail')
     end
   end
