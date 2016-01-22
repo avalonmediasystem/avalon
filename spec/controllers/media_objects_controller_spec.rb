@@ -493,18 +493,18 @@ describe MediaObjectsController, type: :controller do
       end
       context "LTI login" do
         it "administrators/managers/editors: should include lti, embed, and share" do
-          user = login_lti 'administrator'
+          login_lti 'administrator'
           lti_group = @controller.user_session[:virtual_groups].first
-          mo = FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
+          FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
           get :show, id: media_object.pid
           expect(response).to render_template(:_share_resource)
           expect(response).to render_template(:_embed_resource)
           expect(response).to render_template(:_lti_url)
         end
         it "others: should include only lti" do
-          user = login_lti 'student'
+          login_lti 'student'
           lti_group = @controller.user_session[:virtual_groups].first
-          mo = FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
+          FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
           get :show, id: media_object.pid
           expect(response).to_not render_template(:_share_resource)
           expect(response).to_not render_template(:_embed_resource)
@@ -593,7 +593,7 @@ describe MediaObjectsController, type: :controller do
       let!(:media_object) { FactoryGirl.create(:media_object) }
 
       before do
-  request.headers['Avalon-Api-Key'] = 'secret_token'
+        request.headers['Avalon-Api-Key'] = 'secret_token'
       end
 
       it "should return json for specific media_object" do
@@ -659,7 +659,7 @@ describe MediaObjectsController, type: :controller do
         Permalink.on_generate { |obj| "http://example.edu/permalink" }
       end
       it 'publishes media object' do
-  media_object = FactoryGirl.create(:media_object, collection: collection)
+        media_object = FactoryGirl.create(:media_object, collection: collection)
         get 'update_status', id: media_object.pid, status: 'publish'
         media_object.reload
         expect(media_object).to be_published
@@ -667,19 +667,19 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should fail when id doesn't exist" do
-  get 'update_status', id: 'avalon:this-pid-is-fake', status: 'publish'
-  expect(response.code).to eq '404'
+        get 'update_status', id: 'avalon:this-pid-is-fake', status: 'publish'
+        expect(response.code).to eq '404'
       end
 
       it "should publish multiple items" do
-  media_objects = []
-  3.times { media_objects << FactoryGirl.create(:media_object, collection: collection) }
+        media_objects = []
+        3.times { media_objects << FactoryGirl.create(:media_object, collection: collection) }
         get 'update_status', id: media_objects.map(&:id), status: 'publish'
-  expect(flash[:notice]).to include('3 media objects')
+        expect(flash[:notice]).to include('3 media objects')
         media_objects.each do |mo|
           mo.reload
-    expect(mo).to be_published
-    expect(mo.permalink).to be_present
+          expect(mo).to be_published
+          expect(mo.permalink).to be_present
         end
       end
     end
@@ -693,18 +693,18 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should fail when id doesn't exist" do
-  get 'update_status', id: 'avalon:this-pid-is-fake', status: 'unpublish'
-  expect(response.code).to eq '404'
+        get 'update_status', id: 'avalon:this-pid-is-fake', status: 'unpublish'
+        expect(response.code).to eq '404'
       end
 
       it "should unpublish multiple items" do
-  media_objects = []
-  3.times { media_objects << FactoryGirl.create(:published_media_object, collection: collection) }
+        media_objects = []
+        3.times { media_objects << FactoryGirl.create(:published_media_object, collection: collection) }
         get 'update_status', id: media_objects.map(&:id), status: 'unpublish'
-  expect(flash[:notice]).to include('3 media objects')
+        expect(flash[:notice]).to include('3 media objects')
         media_objects.each do |mo|
           mo.reload
-    expect(mo).not_to be_published
+          expect(mo).not_to be_published
         end
       end
     end
