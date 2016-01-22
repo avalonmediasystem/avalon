@@ -198,8 +198,17 @@ class MediaObject < ActiveFedora::Base
     self.section_pid = master_files.map(&:pid)
   end
 
-  def parts_with_order
-    self.section_pid.map{|pid| MasterFile.find(pid)}
+  def parts_with_order(opts = {})
+    if !!opts[:load_from_solr]
+      pids_with_order = self.section_pid
+      return [] if pids_with_order.empty?
+      pid_list = pids_with_order.uniq.map { |pid| RSolr.solr_escape(pid) }.join ' OR '
+      solr_results = ActiveFedora::SolrService.query("id\:(#{pid_list})", rows: pids_with_order.length)
+      mfs = ActiveFedora::SolrService.reify_solr_results(solr_results, load_from_solr: true)
+      pids_with_order.map { |pid| mfs.find { |mf| mf.pid == pid }}
+    else
+      self.section_pid.map{|pid| MasterFile.find(pid)}
+    end
   end
 
   def section_pid=( pids )

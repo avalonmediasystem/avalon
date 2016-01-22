@@ -342,8 +342,8 @@ class MediaObjectsController < ApplicationController
 
   protected
   
-  def load_master_files
-    @mediaobject.parts_with_order
+  def load_master_files(opts = {})
+    @mediaobject.parts_with_order opts
   end
 
   def load_player_context
@@ -357,7 +357,7 @@ class MediaObjectsController < ApplicationController
       params[:content] = @mediaobject.section_pid[index]
     end
       
-    @masterFiles = load_master_files
+    @masterFiles = load_master_files load_from_solr: true
     @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
     @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.pid)
     # This rescue statement seems a bit dodgy because it catches *all*
@@ -376,14 +376,7 @@ class MediaObjectsController < ApplicationController
   # return a nil value that needs to be handled appropriately by the calling code
   # block
   def set_active_file(file_pid = nil)
-    unless (@mediaobject.parts.blank? or file_pid.blank?)
-      @mediaobject.parts.each do |part|
-        return part if part.pid == file_pid
-      end
-    end
-
-    # If you haven't dropped out by this point return an empty item
-    nil
+    file_pid.nil? ? nil : @mediaobject.parts_with_order.find { |mf| mf.pid == file_pid }
   end 
   
 end
