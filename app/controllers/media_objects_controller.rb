@@ -84,6 +84,8 @@ class MediaObjectsController < ApplicationController
     populate_from_catalog = !!params[:import_bib_record]
     if populate_from_catalog and Avalon::BibRetriever.configured?
       begin
+        # Set other identifiers
+        @mediaobject.update_datastream(:descMetadata, params[:fields].slice(:other_identifier_type, :other_identifier))
         # Try to use Bib Import
         @mediaobject.descMetadata.populate_from_catalog!(Array(params[:fields][:bibliographic_id]).first, 
                                                          Array(params[:fields][:bibliographic_id_label]).first)

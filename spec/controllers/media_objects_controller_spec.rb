@@ -239,6 +239,17 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.date_created).to eq nil
           expect(new_media_object.copyright_date).to eq nil
         end
+        it "should merge supplied other identifiers after bib import" do
+          Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+          FakeWeb.register_uri :get, sru_url, body: sru_response
+          fields = { bibliographic_id: bib_id, other_identifier_type: ['other'], other_identifier: ['12345'] }
+          post 'create', format: 'json', import_bib_record: true, fields: fields, files: [masterfile], collection_id: collection.pid
+          expect(response.status).to eq(200)
+          new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+          expect(new_media_object.bibliographic_id).to eq(['local', bib_id])
+          expect(new_media_object.other_identifier.find {|id_pair| id_pair[0] == 'other'}).not_to be nil
+          expect(new_media_object.other_identifier.find {|id_pair| id_pair[0] == 'other'}[1]).to eq('12345')
+        end
       end
     end
     describe "#update" do

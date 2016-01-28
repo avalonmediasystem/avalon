@@ -212,6 +212,7 @@ class ModsDocument < ActiveFedora::OmDatastream
       if new_record.present?
         old_resource_type = self.resource_type.dup
         old_media_type = self.media_type.dup
+        old_other_identifier = self.other_identifier.type.zip(self.other_identifier)
         self.ng_xml = Nokogiri::XML(new_record)
         [:genre, :topical_subject, :geographic_subject, :temporal_subject, 
          :occupation_subject, :person_subject, :corporate_subject, :family_subject, 
@@ -225,6 +226,11 @@ class ModsDocument < ActiveFedora::OmDatastream
         languages = self.language.collect &:strip
         self.language = nil
         languages.each { |lang| self.add_language(lang) }
+        new_other_identifier = self.other_identifier.type.zip(self.other_identifier)
+        self.other_identifier = nil
+        (old_other_identifier | new_other_identifier).each do |id_pair|
+          self.add_other_identifier(id_pair[1], id_pair[0])
+        end
       end
     end
     self.bibliographic_id = nil
