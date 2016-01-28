@@ -80,6 +80,8 @@
   gem 'equivalent-xml'
   gem 'net-ldap'
 
+  gem 'avalon-wowza'
+
   group :assets, :production do
     gem 'coffee-rails'
     gem 'uglifier', '>= 1.0.3'
