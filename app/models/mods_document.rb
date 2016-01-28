@@ -226,7 +226,9 @@ class ModsDocument < ActiveFedora::OmDatastream
         languages = self.language.collect &:strip
         self.language = nil
         languages.each { |lang| self.add_language(lang) }
-        old_other_identifier.each do |id_pair|
+        new_other_identifier = self.other_identifier.type.zip(self.other_identifier)
+        self.other_identifier = nil
+        (old_other_identifier | new_other_identifier).each do |id_pair|
           self.add_other_identifier(id_pair[1], id_pair[0])
         end
       end
