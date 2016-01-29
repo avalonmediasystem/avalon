@@ -382,7 +382,6 @@ class MediaObject < ActiveFedora::Base
         mf.file_format.downcase
       end
     }.uniq
-    update_attribute_in_metadata(:resource_type, self.resource_types.empty? ? nil : self.resource_types)
   end
 
   def to_solr(solr_doc = Hash.new, opts = {})
