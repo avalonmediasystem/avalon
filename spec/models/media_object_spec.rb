@@ -411,9 +411,9 @@ describe MediaObject do
   describe '#set_resource_types!' do
     let!(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
     it 'sets resource_type on the model' do
-      expect(media_object.descMetadata.resource_type).to eq []
+      expect(media_object.displayMetadata.avalon_resource_type).to eq []
       media_object.set_resource_types!
-      expect(media_object.descMetadata.resource_type).to eq ["moving image"]
+      expect(media_object.displayMetadata.avalon_resource_type).to eq ["moving image"]
     end
   end
  

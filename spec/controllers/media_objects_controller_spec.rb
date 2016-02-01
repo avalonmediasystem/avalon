@@ -189,7 +189,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.parts_with_order).to eq new_media_object.parts
           expect(new_media_object.duration).to eq '6315'
           expect(new_media_object.format).to eq 'video/mp4'
-          expect(new_media_object.resource_type).to eq ['moving image']
+          expect(new_media_object.avalon_resource_type).to eq ['moving image']
           expect(new_media_object.parts.first.date_digitized).to eq('2015-12-31T00:00:00Z')
           expect(new_media_object.parts.first.DC.identifier).to include('40000000045312')
           expect(new_media_object.parts.first.derivatives.count).to eq(2)

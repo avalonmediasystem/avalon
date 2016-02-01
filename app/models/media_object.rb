@@ -166,6 +166,7 @@ class MediaObject < ActiveFedora::Base
   
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
     sds.field :duration, :string
+    sds.field :avalon_resource_type, :string
   end
 
   has_metadata name:'sectionsMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
@@ -173,6 +174,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   has_attributes :duration, datastream: :displayMetadata, multiple: false
+  has_attributes :avalon_resource_type, datastream: :displayMetadata, multiple: true
   has_attributes :section_pid, datastream: :sectionsMetadata, multiple: true
 
   accepts_nested_attributes_for :parts, :allow_destroy => true
@@ -370,7 +372,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def set_resource_types!  
-    resource_types = parts.reject {|mf| mf.file_format.blank? }.collect{ |mf|
+    self.avalon_resource_type = parts.reject {|mf| mf.file_format.blank? }.collect{ |mf|
       case mf.file_format
       when 'Moving image'
         'moving image'
@@ -380,7 +382,6 @@ class MediaObject < ActiveFedora::Base
         mf.file_format.downcase
       end
     }.uniq
-    update_attribute_in_metadata(:resource_type, resource_types.empty? ? nil : resource_types)
   end
 
   def to_solr(solr_doc = Hash.new, opts = {})
@@ -403,6 +404,7 @@ class MediaObject < ActiveFedora::Base
     solr_doc["date_ingested_sim"] = Time.parse(self.create_date).strftime "%F"
     #include identifiers for parts
     solr_doc["other_identifier_sim"] += parts.collect {|mf| mf.DC.identifier }.flatten
+    solr_doc["resource_types_sim"] = self.avalon_resource_type
     #Add all searchable fields to the all_text_timv field
     all_text_values = []
     all_text_values << solr_doc["title_tesi"]
