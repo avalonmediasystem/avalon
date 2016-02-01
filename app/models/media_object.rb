@@ -404,7 +404,6 @@ class MediaObject < ActiveFedora::Base
     solr_doc["date_ingested_sim"] = Time.parse(self.create_date).strftime "%F"
     #include identifiers for parts
     solr_doc["other_identifier_sim"] += parts.collect {|mf| mf.DC.identifier }.flatten
-    solr_doc["resource_types_sim"] = self.avalon_resource_type
     #Add all searchable fields to the all_text_timv field
     all_text_values = []
     all_text_values << solr_doc["title_tesi"]
