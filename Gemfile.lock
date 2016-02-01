@@ -114,7 +114,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: 88c19ee24dbda00cd83259a4a7fd3fe23baa1597
+  revision: b378d477bd1806d7ed803cc92a4f246ef8a67f17
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
@@ -534,7 +534,7 @@ GEM
       activesupport (= 4.0.13)
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
-    rake (10.4.2)
+    rake (10.5.0)
     rb-fsevent (0.9.4)
     rdf (1.1.17.1)
       link_header (~> 0.0, >= 0.0.8)
@@ -821,3 +821,6 @@ DEPENDENCIES
   whenever
   with_locking
   xray-rails
+
+BUNDLED WITH
+   1.10.5
