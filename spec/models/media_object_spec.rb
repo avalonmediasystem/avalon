@@ -325,6 +325,17 @@ describe MediaObject do
     end
   end
 
+  describe "Update datastream with more than one originInfo element" do
+    it "shouldn't error out" do
+      media_object.date_created = '2016'
+      media_object.date_issued = nil
+      media_object.descMetadata.ng_xml.root.add_child('<originInfo/>')
+      expect { media_object.descMetadata.add_date_issued('2017') }.not_to raise_error
+      expect(media_object.date_created).to eq '2016'
+      expect(media_object.date_issued).to eq '2017'
+    end
+  end
+  
   describe "Ingest status" do
     it "should default to unpublished" do
       expect(media_object.workflow.published.first).to eq "false"

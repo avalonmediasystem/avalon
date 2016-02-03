@@ -51,8 +51,8 @@ module ModsTemplates
       end
 
       def get_origin_info
-        node = find_by_terms(:origin_info)
-        if node.empty?
+        node = find_by_terms(:origin_info).first
+        if node.nil?
           node = ng_xml.root.add_child('<originInfo/>')
         end
         node
