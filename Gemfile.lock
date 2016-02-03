@@ -100,8 +100,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-skin-avalon.git
-  revision: 0a1ac038135d107c700805e905be061b4c7ae0a3
-  tag: avalon-r4
+  revision: 47e4f6a026d461ba296a4f11405bd71a595f79f4
   specs:
     mediaelement-skin-avalon (0.0.1)
 
@@ -114,7 +113,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: 88c19ee24dbda00cd83259a4a7fd3fe23baa1597
+  revision: 05552ec0706b9440194434e7cb6d679f961c1b24
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
@@ -534,7 +533,7 @@ GEM
       activesupport (= 4.0.13)
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
-    rake (10.4.2)
+    rake (10.5.0)
     rb-fsevent (0.9.4)
     rdf (1.1.17.1)
       link_header (~> 0.0, >= 0.0.8)
@@ -821,3 +820,6 @@ DEPENDENCIES
   whenever
   with_locking
   xray-rails
+
+BUNDLED WITH
+   1.10.6
