@@ -19,7 +19,7 @@ class MediaObjectsController < ApplicationController
   include Avalon::Controller::ControllerBehavior
   include ConditionalPartials
 
-  before_filter :authenticate_user!, except: [:show]
+  before_filter :authenticate_user!, except: [:show, :set_session_quality]
   before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
   load_and_authorize_resource instance_name: 'mediaobject', except: [:destroy, :update_status, :set_session_quality]
 
