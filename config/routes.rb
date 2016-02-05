@@ -65,6 +65,7 @@ Avalon::Application.routes.draw do
       post 'still',     :to => 'master_files#set_frame', :defaults => { :format => 'html' }
       get :embed
       post 'attach_structure'
+      get 'captions', :action => :deliver_content, defaults: { datastream: 'captions' }, :as => :captions
     end
   end
 

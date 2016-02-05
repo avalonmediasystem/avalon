@@ -21,7 +21,7 @@ class AvalonPlayer
     thumbnail_selector = if removeOpt('thumbnailSelector') then 'thumbnailSelector' else null
     start_time = removeOpt('startTime')
     
-    features = ['playpause','current','progress','duration','volume','qualities',thumbnail_selector,'fullscreen','responsive']
+    features = ['playpause','current','progress','duration','volume','qualities',thumbnail_selector,'fullscreen','responsive','tracks']
     features = (feature for feature in features when feature?)
     player_options =
       mode: 'auto_plugin'

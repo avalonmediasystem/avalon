@@ -234,7 +234,7 @@ class MasterFile < ActiveFedora::Base
     hls = sort_streams hls
 
     poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self) unless poster.new?
-    captions_path = Rails.application.routes.url_helpers.captions_file_path(self) unless captions.empty?
+    captions_path = Rails.application.routes.url_helpers.captions_master_file_path(self) unless captions.empty?
 
     # Returns the hash
     {
@@ -245,7 +245,7 @@ class MasterFile < ActiveFedora::Base
       embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}), 
       stream_flash: flash, 
       stream_hls: hls,
-      captions: captions_path
+      captions_path: captions_path,
       duration: (duration.to_f / 1000).round
     }
   end
