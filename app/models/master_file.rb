@@ -67,6 +67,7 @@ class MasterFile < ActiveFedora::Base
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
+  has_file_datastream name: 'captions'
 
   validates :workflow_name, presence: true, inclusion: { in: Proc.new{ WORKFLOWS } }
   validates_each :poster_offset, :thumbnail_offset do |record, attr, value|
@@ -233,6 +234,7 @@ class MasterFile < ActiveFedora::Base
     hls = sort_streams hls
 
     poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self) unless poster.new?
+    captions_path = Rails.application.routes.url_helpers.captions_file_path(self) unless captions.empty?
 
     # Returns the hash
     {
@@ -243,6 +245,7 @@ class MasterFile < ActiveFedora::Base
       embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}), 
       stream_flash: flash, 
       stream_hls: hls,
+      captions: captions_path
       duration: (duration.to_f / 1000).round
     }
   end
