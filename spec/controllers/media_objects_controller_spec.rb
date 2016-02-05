@@ -51,7 +51,6 @@ describe MediaObjectsController, type: :controller do
           expect(get :edit, id: media_object.id).to redirect_to(new_user_session_path)
           expect(get :confirm_remove, id: media_object.id).to redirect_to(new_user_session_path)
           expect(post :create).to redirect_to(new_user_session_path)
-          expect(post :set_session_quality, quality: 'high').to redirect_to(new_user_session_path)
           expect(put :update, id: media_object.id).to redirect_to(new_user_session_path)
           expect(put :update_status, id: media_object.id).to redirect_to(new_user_session_path)
           expect(get :tree, id: media_object.id).to redirect_to(new_user_session_path)
