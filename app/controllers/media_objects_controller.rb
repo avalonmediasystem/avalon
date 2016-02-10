@@ -378,7 +378,8 @@ class MediaObjectsController < ApplicationController
   # return a nil value that needs to be handled appropriately by the calling code
   # block
   def set_active_file(file_pid = nil)
-    file_pid.nil? ? nil : @mediaobject.parts_with_order.find { |mf| mf.pid == file_pid }
+    @masterFiles ||= load_master_files load_from_solr: true
+    file_pid.nil? ? nil : @masterFiles.find { |mf| mf.pid == file_pid }
   end 
   
 end
