@@ -750,8 +750,11 @@ describe MediaObjectsController, type: :controller do
     it 'updates the order' do
 
       media_object = FactoryGirl.create(:media_object)
-      media_object.parts << FactoryGirl.create(:master_file)
-      media_object.parts << FactoryGirl.create(:master_file)
+      2.times do
+        mf = FactoryGirl.create(:master_file)
+        mf.mediaobject = media_object
+        mf.save
+      end
       master_file_pids = media_object.parts.map(&:id)
       media_object.section_pid = master_file_pids
       media_object.save( validate: false )
