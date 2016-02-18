@@ -160,7 +160,7 @@ class MediaObject < ActiveFedora::Base
   has_attributes :language, datastream: :descMetadata, at: [:language], multiple: true
   has_attributes :terms_of_use, datastream: :descMetadata, at: [:terms_of_use], multiple: false
   has_attributes :table_of_contents, datastream: :descMetadata, at: [:table_of_contents], multiple: true
-  has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: false
+  has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: true
   has_attributes :other_identifier, datastream: :descMetadata, at: [:other_identifier], multiple: true
   has_attributes :record_identifier, datastream: :descMetadata, at: [:record_identifier], multiple: true
   
@@ -438,7 +438,7 @@ class MediaObject < ActiveFedora::Base
     all_text_values << solr_doc["subject_temporal_sim"]
     all_text_values << solr_doc["genre_sim"]
     all_text_values << solr_doc["language_sim"]
-    all_text_values << solr_doc["physical_description_si"]
+    all_text_values << solr_doc["physical_description_sim"]
     all_text_values << solr_doc["date_sim"]
     all_text_values << solr_doc["notes_sim"]
     all_text_values << solr_doc["table_of_contents_sim"]
