@@ -32,7 +32,7 @@ FactoryGirl.define do
         topical_subject {[Faker::Lorem.word]}
         temporal_subject {[Faker::Lorem.word]}
         geographic_subject {[Faker::Address.country]}
-        physical_description {Faker::Lorem.word}
+        physical_description {[Faker::Lorem.word]}
         table_of_contents {[Faker::Lorem.paragraph]}
         after(:create) do |mo|
           mo.update_datastream(:descMetadata, {
