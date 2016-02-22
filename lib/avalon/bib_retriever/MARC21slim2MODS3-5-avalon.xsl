@@ -1052,12 +1052,26 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			<!--Avalon Media System change: always take dateCreated from 008/11-14 if 008/06='r' or 'p', and always take dateIssued from 008/7-10, changed by kdm, 20150113-->
 			<xsl:if test="($controlField008-6='r' or $controlField008-6='p')">
 				<dateCreated encoding="edtf">
-					<xsl:value-of select="$controlField008-11-14"/>
+				        <xsl:choose>
+				                <xsl:when test="$controlField008-11-14='uuuu'">
+					                <xsl:text>unknown/unknown</xsl:text>
+						</xsl:when>
+						<xsl:otherwise>
+					                <xsl:value-of select="$controlField008-11-14"/>
+						</xsl:otherwise>
+					</xsl:choose>
 				</dateCreated>
 			</xsl:if>
 			<xsl:if test="$controlField008-7-10">
 				<dateIssued encoding="edtf">
-					<xsl:value-of select="$controlField008-7-10"/>
+				        <xsl:choose>
+				                <xsl:when test="$controlField008-7-10='uuuu'">
+					                <xsl:text>unknown/unknown</xsl:text>
+						</xsl:when>
+						<xsl:otherwise>
+					                <xsl:value-of select="$controlField008-7-10"/>
+						</xsl:otherwise>
+					</xsl:choose>
 				</dateIssued>
 			</xsl:if>
 
@@ -1119,7 +1133,14 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			<xsl:if test="$controlField008-6='t'">
 				<xsl:if test="$controlField008-11-14">
 					<copyrightDate encoding="iso8601">
-						<xsl:value-of select="$controlField008-11-14"/>
+				                <xsl:choose>
+						        <xsl:when test="$controlField008-11-14='uuuu'">
+					                        <xsl:text>unknown/unknown</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+					                        <xsl:value-of select="$controlField008-11-14"/>
+							</xsl:otherwise>
+						</xsl:choose>
 					</copyrightDate>
 				</xsl:if>
 			</xsl:if>
