@@ -179,7 +179,10 @@ class Admin::CollectionsController < ApplicationController
     end
 
     respond_to do |format|
-      format.html { redirect_to @collection }
+      format.html do
+        flash[:notice] = Array(flash[:notice]) + @collection.errors.full_messages if !saved
+        redirect_to @collection
+      end
       format.json do 
         if saved
           render json: {id: @collection.pid}, status: 200
