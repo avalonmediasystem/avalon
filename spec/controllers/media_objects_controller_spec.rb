@@ -195,6 +195,15 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.parts.first.derivatives.first.location_url).to eq(absolute_location)          
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
        end
+        it "should create a new published mediaobject" do
+          media_object = FactoryGirl.create(:multiple_entries)
+          fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
+          post 'create', format: 'json', fields: fields, files: [masterfile], collection_id: collection.pid, publish: true
+          expect(response.status).to eq(200)
+          new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+          expect(new_media_object.published?).to be_truthy
+          expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
+       end
         it "should create a new mediaobject with successful bib import" do
           Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           FakeWeb.register_uri :get, sru_url, body: sru_response
