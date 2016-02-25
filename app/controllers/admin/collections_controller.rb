@@ -180,7 +180,7 @@ class Admin::CollectionsController < ApplicationController
 
     respond_to do |format|
       format.html do
-        flash[:notice] = Array(flash[:notice]) + @collection.errors.full_messages if !saved
+        flash[:notice] = Array(flash[:notice]) + @collection.errors.full_messages unless @collection.valid?
         redirect_to @collection
       end
       format.json do 

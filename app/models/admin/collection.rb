@@ -36,7 +36,7 @@ class Admin::Collection < ActiveFedora::Base
 
   validates :name, :uniqueness => { :solr_name => 'name_sim'}, presence: true
   validates :unit, presence: true, inclusion: { in: Proc.new{ Admin::Collection.units } }
-  validates :managers, length: {minimum: 1, message: 'Collection requires at least one manager'} 
+  validates :managers, length: {minimum: 1, message: "list can't be empty."} 
 
   has_attributes :name, datastream: :descMetadata, multiple: false
   has_attributes :unit, datastream: :descMetadata, multiple: false
