@@ -79,6 +79,14 @@ describe CatalogController do
         expect(assigns(:document_list).count).to eql(1)
         expect(assigns(:document_list).map(&:id)).to eq([mo.id])
       end
+      it "should show results for items that are hidden and belong to one of my collections" do
+        mo = FactoryGirl.create(:media_object, hidden: true, visibility: 'private', collection: collection)
+        get 'index', :q => ""
+        expect(response).to be_success
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:document_list).count).to eql(1)
+        expect(assigns(:document_list).map(&:id)).to eq([mo.id])
+      end
       it "should not show results for items that do not belong to one of my collections" do
         mo = FactoryGirl.create(:media_object, visibility: 'private')
         get 'index', :q => ""
@@ -86,11 +94,18 @@ describe CatalogController do
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eql(0)
       end
+      it "should not show results for hidden items that do not belong to one of my collections" do
+        mo = FactoryGirl.create(:media_object, hidden: true, visibility: 'private', read_users: [manager.username])
+        get 'index', :q => ""
+        expect(response).to be_success
+        expect(response).to render_template('catalog/index')
+        expect(assigns(:document_list).count).to eql(0)
+      end
     end
-		describe "as an administrator" do
-			let!(:administrator) {login_as(:administrator)}
+    describe "as an administrator" do
+      let!(:administrator) {login_as(:administrator)}
 
-			it "should show results for all items" do
+      it "should show results for all items" do
         mo = FactoryGirl.create(:media_object, visibility: 'private')
         get 'index', :q => ""
         expect(response).to be_success
@@ -98,7 +113,7 @@ describe CatalogController do
         expect(assigns(:document_list).count).to eql(1)
         expect(assigns(:document_list).map(&:id)).to eq([mo.id])
       end
-		end
+    end
     describe "as an lti user" do
       let!(:user) { login_lti 'student' }
       let!(:lti_group) { @controller.user_session[:virtual_groups].first }
