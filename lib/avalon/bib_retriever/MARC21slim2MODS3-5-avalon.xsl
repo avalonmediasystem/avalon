@@ -2119,11 +2119,11 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			</identifier>
 		</xsl:for-each>
 
-		<!--xsl:for-each select="marc:datafield[@tag='035'][marc:subfield[@code='a'][contains(text(), '(OCoLC)')]]">
+		<xsl:for-each select="marc:datafield[@tag='035'][marc:subfield[@code='a'][contains(text(), '(OCoLC)')]]">
 			<identifier type="oclc">
 				<xsl:value-of select="normalize-space(substring-after(marc:subfield[@code='a'], '(OCoLC)'))"/>
 			</identifier>
-		</xsl:for-each-->
+		</xsl:for-each>
 
 		<!--xsl:for-each select="marc:datafield[@tag='037']">
 			<identifier type="stock number">
