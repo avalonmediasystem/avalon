@@ -34,16 +34,10 @@ class MediaObject < ActiveFedora::Base
   has_metadata name: "descMetadata", type: ModsDocument	
 
   after_create :after_create
+  before_save :normalize_desc_metadata!
+  before_save :update_permalink_and_dependents
+  after_save :remove_bookmarks
   
-  # Before saving put the pieces into the right order and validate to make sure that
-  # there are no syntactic errors
-  before_save 'descMetadata.ensure_identifier_exists!'
-  before_save 'descMetadata.update_change_date!'
-  before_save 'descMetadata.reorder_elements!'
-  before_save 'descMetadata.remove_empty_nodes!'
-  before_save 'update_permalink_and_dependents'
-
-  after_save 'remove_bookmarks'
 
   has_model_version 'R4'
 
@@ -570,6 +564,15 @@ class MediaObject < ActiveFedora::Base
   end
 
   private
+    # Put the pieces into the right order and validate to make sure that there are no 
+    # syntactic errors
+    def normalize_desc_metadata!
+      descMetadata.ensure_identifier_exists!
+      descMetadata.update_change_date!
+      descMetadata.reorder_elements!
+      descMetadata.remove_empty_nodes!
+    end
+
     def after_create
       self.DC.identifier = pid
       save

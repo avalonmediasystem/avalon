@@ -77,7 +77,7 @@ class MasterFile < ActiveFedora::Base
   #validates :file_format, presence: true, exclusion: { in: ['Unknown'], message: "The file was not recognized as audio or video." }
 
   has_model_version 'R3'
-  before_save 'update_stills_from_offset!'
+  before_save :update_stills_from_offset!
   around_save :update_media_object!, if: Proc.new { |mf| mf.duration_changed? or mf.file_location_changed? or mf.file_format_changed? }
 
   define_hooks :after_processing
