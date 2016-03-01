@@ -228,12 +228,11 @@ class ModsDocument < ActiveFedora::OmDatastream
         languages.each { |lang| self.add_language(lang) }
         new_other_identifier = self.other_identifier.type.zip(self.other_identifier)
         self.other_identifier = nil
-        (old_other_identifier | new_other_identifier | [[bib_id_label, bib_id]]).each do |id_pair|
+        (old_other_identifier | new_other_identifier).each do |id_pair|
           self.add_other_identifier(id_pair[1], id_pair[0])
         end
-      else
-        self.add_other_identifier(bib_id, bib_id_label) unless old_other_identifiers.include?([bib_id_label, bib_id])
       end
+      self.add_other_identifier(bib_id, bib_id_label) unless self.other_identifier.type.zip(self.other_identifier).include?([bib_id_label, bib_id])
       self.bibliographic_id = nil
       self.add_bibliographic_id(bib_id, bib_id_label)
     end
