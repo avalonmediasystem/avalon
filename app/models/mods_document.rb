@@ -232,10 +232,10 @@ class ModsDocument < ActiveFedora::OmDatastream
           self.add_other_identifier(id_pair[1], id_pair[0])
         end
       end
+      self.add_other_identifier(bib_id, bib_id_label) unless self.other_identifier.type.zip(self.other_identifier).include?([bib_id_label, bib_id])
+      self.bibliographic_id = nil
+      self.add_bibliographic_id(bib_id, bib_id_label)
     end
-    self.bibliographic_id = nil
-    self.add_bibliographic_id(bib_id, bib_id_label)
-    self.add_other_identifier(bib_id, bib_id_label)
 
     # Filter out notes that are not in the configured controlled vocabulary
     notezip = note.zip note.type
