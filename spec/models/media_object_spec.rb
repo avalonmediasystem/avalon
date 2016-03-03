@@ -469,6 +469,8 @@ describe MediaObject do
   end
 
   describe 'permalink' do
+    before { Delayed::Worker.delay_jobs = false }
+    after  { Delayed::Worker.delay_jobs = true  }
 
     let(:media_object){ FactoryGirl.build(:media_object) }
 
