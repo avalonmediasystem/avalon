@@ -21,7 +21,7 @@ class MediaObjectsController < ApplicationController
 
   before_filter :authenticate_user!, except: [:show, :set_session_quality]
   before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
-  load_and_authorize_resource instance_name: 'mediaobject', except: [:destroy, :update_status, :set_session_quality]
+  load_and_authorize_resource instance_name: 'mediaobject', except: [:destroy, :update_status, :set_session_quality, :tree, :deliver_content]
 
   before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
   before_filter :load_player_context, only: [:show]
@@ -314,6 +314,7 @@ class MediaObjectsController < ApplicationController
   # Sets the published status for the object. If no argument is given then
   # it will just toggle the state.
   def tree
+    @mediaobject = MediaObject.find(params[:id])
     authorize! :inspect, @mediaobject
 
     respond_to do |format|
