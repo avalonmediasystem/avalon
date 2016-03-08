@@ -19,9 +19,9 @@ class MediaObjectsController < ApplicationController
   include Avalon::Controller::ControllerBehavior
   include ConditionalPartials
 
-  before_filter :authenticate_user!, except: [:show]
+  before_filter :authenticate_user!, except: [:show, :set_session_quality]
   before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
-  load_and_authorize_resource instance_name: 'mediaobject', except: [:destroy, :update_status, :set_session_quality]
+  load_and_authorize_resource instance_name: 'mediaobject', except: [:destroy, :update_status, :set_session_quality, :tree, :deliver_content]
 
   before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
   before_filter :load_player_context, only: [:show]
@@ -150,6 +150,9 @@ class MediaObjectsController < ApplicationController
         if !@mediaobject.save
           error_messages += ['Failed to create media object:']+@mediaobject.errors.full_messages
           @mediaobject.destroy
+        elsif !!params[:publish]
+          @mediaobject.publish!('REST API')
+          @mediaobject.workflow.publish
         end
       end
     end
@@ -311,6 +314,7 @@ class MediaObjectsController < ApplicationController
   # Sets the published status for the object. If no argument is given then
   # it will just toggle the state.
   def tree
+    @mediaobject = MediaObject.find(params[:id])
     authorize! :inspect, @mediaobject
 
     respond_to do |format|
@@ -378,7 +382,8 @@ class MediaObjectsController < ApplicationController
   # return a nil value that needs to be handled appropriately by the calling code
   # block
   def set_active_file(file_pid = nil)
-    file_pid.nil? ? nil : @mediaobject.parts_with_order.find { |mf| mf.pid == file_pid }
+    @masterFiles ||= load_master_files load_from_solr: true
+    file_pid.nil? ? nil : @masterFiles.find { |mf| mf.pid == file_pid }
   end 
   
 end

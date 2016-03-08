@@ -573,13 +573,44 @@ describe MediaObject do
     end
   end
 
-  describe '#section_pid=' do
+  describe '#section_pid' do
+    before do
+      2.times do
+        mf = FactoryGirl.create(:master_file)
+        mf.mediaobject = media_object
+        mf.save
+      end
+      media_object.save
+    end
+    let(:part_ids) { media_object.part_ids }
+    let(:trap_ids) { media_object.part_ids.reverse }
+
+    it 'should append missing section_pids' do
+      media_object.section_pid = [part_ids.first]
+      expect( media_object.section_pid ).to eq(part_ids)
+
+      media_object.section_pid = [trap_ids.first]
+      expect( media_object.section_pid ).to eq(trap_ids)
+    end
+
+    it 'should remove superfluous section_pids' do
+      nope_ids = trap_ids + ['avalon:nope']
+      media_object.section_pid = nope_ids
+      expect( nope_ids.length ).to eq(3)
+      expect( media_object.section_pid ).to eq(trap_ids)
+    end
+
+    it 'should append missing section_pids and remove superfluous section_pids' do
+      media_object.section_pid = ['avalon:nope']
+      expect( media_object.section_pid ).to eq(part_ids)
+    end
+    
     it 'should report changes' do
       expect( media_object.section_pid_changed? ).to be_falsey
       expect( media_object.changes ).to eq({})
-      media_object.section_pid = ["avalon:test"]
+      media_object.section_pid = trap_ids
       expect( media_object.section_pid_changed? ).to be_truthy
-      expect( media_object.changes ).to eq({"section_pid"=>[[], ["avalon:test"]]})
+      expect( media_object.changes ).to eq({"section_pid"=>[part_ids, trap_ids]})
     end
   end
 end

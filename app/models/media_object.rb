@@ -160,7 +160,7 @@ class MediaObject < ActiveFedora::Base
   has_attributes :language, datastream: :descMetadata, at: [:language], multiple: true
   has_attributes :terms_of_use, datastream: :descMetadata, at: [:terms_of_use], multiple: false
   has_attributes :table_of_contents, datastream: :descMetadata, at: [:table_of_contents], multiple: true
-  has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: false
+  has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: true
   has_attributes :other_identifier, datastream: :descMetadata, at: [:other_identifier], multiple: true
   has_attributes :record_identifier, datastream: :descMetadata, at: [:record_identifier], multiple: true
   
@@ -201,18 +201,29 @@ class MediaObject < ActiveFedora::Base
   end
 
   def parts_with_order(opts = {})
+    pids_with_order = section_pid
     if !!opts[:load_from_solr]
-      pids_with_order = self.section_pid
       return [] if pids_with_order.empty?
       pid_list = pids_with_order.uniq.map { |pid| RSolr.solr_escape(pid) }.join ' OR '
       solr_results = ActiveFedora::SolrService.query("id\:(#{pid_list})", rows: pids_with_order.length)
       mfs = ActiveFedora::SolrService.reify_solr_results(solr_results, load_from_solr: true)
       pids_with_order.map { |pid| mfs.find { |mf| mf.pid == pid }}
     else
-      self.section_pid.map{|pid| MasterFile.find(pid)}
+      pids_with_order.map{|pid| MasterFile.find(pid)}
     end
   end
 
+  def _section_pid
+    self.sectionsMetadata.get_values(:section_pid)
+  end
+  
+  def section_pid
+    ordered_pids = self._section_pid
+    missing_from_order = self.part_ids - ordered_pids
+    missing_parts = ordered_pids - self.part_ids
+    ordered_pids + missing_from_order - missing_parts
+  end
+  
   def section_pid=( pids )
     self.section_pid_will_change!
     self.sectionsMetadata.find_by_terms(:section_pid).each &:remove
@@ -427,7 +438,7 @@ class MediaObject < ActiveFedora::Base
     all_text_values << solr_doc["subject_temporal_sim"]
     all_text_values << solr_doc["genre_sim"]
     all_text_values << solr_doc["language_sim"]
-    all_text_values << solr_doc["physical_description_si"]
+    all_text_values << solr_doc["physical_description_sim"]
     all_text_values << solr_doc["date_sim"]
     all_text_values << solr_doc["notes_sim"]
     all_text_values << solr_doc["table_of_contents_sim"]

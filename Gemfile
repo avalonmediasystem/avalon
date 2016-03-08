@@ -22,10 +22,10 @@
   gem 'kaminari', '~> 0.15.0'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'avalon-r4'
-  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git'#, tag: 'avalon-r4'
+  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r4'
   gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r4'
   gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r4'
-  gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git' #, tag: 'avalon-r4'
+  gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'avalon-r4'
   gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r4'
   gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r4'
   gem 'media-element-logo-plugin'
@@ -104,7 +104,8 @@
     gem 'font-awesome-rails', '~> 4.3'
     gem 'bootstrap_form'
     gem 'handlebars_assets'
-    gem 'twitter-typeahead-rails', '~>0.11.1'
+    #gem 'twitter-typeahead-rails', '~>0.11.1'
+    gem 'twitter-typeahead-rails', '= 0.11.1.pre.corejavascript'
   end
 
   group :development do

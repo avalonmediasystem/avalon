@@ -100,7 +100,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-skin-avalon.git
-  revision: 47e4f6a026d461ba296a4f11405bd71a595f79f4
+  revision: 0a1ac038135d107c700805e905be061b4c7ae0a3
+  tag: avalon-r4
   specs:
     mediaelement-skin-avalon (0.0.1)
 
@@ -113,7 +114,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: 05552ec0706b9440194434e7cb6d679f961c1b24
+  revision: 8df94f1ec5fb8011e2ba307b50d4d02f0d2226b9
+  tag: avalon-r4
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
@@ -688,7 +690,7 @@ GEM
     thread_safe (0.3.5)
     tilt (1.4.1)
     tins (1.6.0)
-    twitter-typeahead-rails (0.11.1)
+    twitter-typeahead-rails (0.11.1.pre.corejavascript)
       actionpack (>= 3.1)
       jquery-rails
       railties (>= 3.1)
@@ -814,7 +816,7 @@ DEPENDENCIES
   sqlite3
   therubyracer (>= 0.12.0)
   therubyrhino
-  twitter-typeahead-rails (~> 0.11.1)
+  twitter-typeahead-rails (= 0.11.1.pre.corejavascript)
   uglifier (>= 1.0.3)
   validates_email_format_of
   whenever
