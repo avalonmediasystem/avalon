@@ -35,7 +35,8 @@ class MediaObject < ActiveFedora::Base
 
   after_create :after_create
   before_save :normalize_desc_metadata!
-  before_save :update_permalink_and_dependents, if: Proc.new { |mo| mo.persisted? && mo.published? }
+  before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }
+  after_save :update_dependent_permalinks, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :remove_bookmarks
   
 
@@ -563,8 +564,14 @@ class MediaObject < ActiveFedora::Base
 
   end
 
-  def _update_permalink_and_dependents
+  def update_permalink
     ensure_permalink!
+    unless self.descMetadata.permalink.include? self.permalink 
+      self.descMetadata.permalink = self.permalink
+    end
+  end
+  
+  def _update_dependent_permalinks
     self.parts.each do |master_file| 
       begin
         updated = master_file.ensure_permalink!
@@ -574,15 +581,11 @@ class MediaObject < ActiveFedora::Base
         # Save is called (uncharacteristically) during a destroy.
       end
     end
-
-    unless self.descMetadata.permalink.include? self.permalink 
-      self.descMetadata.permalink = self.permalink
-    end
   end
-  handle_asynchronously :_update_permalink_and_dependents
+  handle_asynchronously :_update_dependent_permalinks
   
-  def update_permalink_and_dependents
-    self._update_permalink_and_dependents
+  def update_dependent_permalinks
+    self._update_dependent_permalinks
   end
 
   def _remove_bookmarks

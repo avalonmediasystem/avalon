@@ -787,6 +787,10 @@ describe MediaObjectsController, type: :controller do
     end
 
     context 'large objects' do
+      before(:each) do
+        Permalink.on_generate { |obj| sleep(0.5); "http://example.edu/permalink" }
+      end
+
       let!(:media_object) do
         mo = FactoryGirl.create(:published_media_object)
         10.times { FactoryGirl.create(:master_file_with_derivative, mediaobject: mo) }
