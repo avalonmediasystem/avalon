@@ -679,6 +679,9 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#update_status" do
+    before { Delayed::Worker.delay_jobs = false }
+    after  { Delayed::Worker.delay_jobs = true  }
+
     let!(:collection) { FactoryGirl.create(:collection) }
     before(:each) do
       login_user collection.managers.first
@@ -781,6 +784,30 @@ describe MediaObjectsController, type: :controller do
       media_object.save( validate: false )
       media_object.reload
       expect(media_object.descMetadata.media_type).to eq(["video/mp4"])
+    end
+
+    context 'large objects' do
+      before(:each) do
+        Permalink.on_generate { |obj| sleep(0.5); "http://example.edu/permalink" }
+      end
+
+      let!(:media_object) do
+        mo = FactoryGirl.create(:published_media_object)
+        10.times { FactoryGirl.create(:master_file_with_derivative, mediaobject: mo) }
+        mo
+      end
+      
+      it "should update all the labels" do
+        login_user media_object.collection.managers.first
+        part_params = {}
+        media_object.parts_with_order.each_with_index { |mf,i| part_params[mf.pid] = { pid: mf.pid, label: "Part #{i}", permalink: '', poster_offset: '00:00:00.000' } }
+        params = { id: media_object.pid, parts: part_params, save: 'Save', step: 'file-upload', donot_advance: 'true' }
+        patch 'update', params
+        media_object.reload
+        media_object.parts_with_order.each_with_index do |mf,i|
+          expect(mf.label).to eq "Part #{i}"
+        end
+      end
     end
   end
 

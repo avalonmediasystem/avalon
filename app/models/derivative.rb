@@ -44,15 +44,7 @@ class Derivative < ActiveFedora::Base
 
   has_metadata name: 'encoding', type: EncodingProfileDocument
 
-  before_destroy do
-    begin
-      encode = masterfile.encoder_class.find(masterfile.workflow_id)
-      encode.remove_output!(track_id) if track_id.present?
-      encode.remove_output!(hls_track_id) if hls_track_id.present? && track_id != hls_track_id
-    rescue Exception => e
-      logger.warn "Error deleting derivative: #{e.message}"
-    end
-  end
+  before_destroy :retract_distributed_files!
 
   def initialize(attrs = nil)
     attrs ||= {}
@@ -125,7 +117,7 @@ class Derivative < ActiveFedora::Base
         "audio"
       else
         "other"
-      end
+    end
   end
 
   def to_solr(solr_doc = Hash.new)
@@ -133,4 +125,16 @@ class Derivative < ActiveFedora::Base
     solr_doc['stream_path_ssi'] = location_url.split(/:/).last if location_url.present?
     solr_doc
   end
+
+  private
+    def retract_distributed_files!
+      begin
+        encode = masterfile.encoder_class.find(masterfile.workflow_id)
+        encode.remove_output!(track_id) if track_id.present?
+        encode.remove_output!(hls_track_id) if hls_track_id.present? && track_id != hls_track_id
+      rescue Exception => e
+        logger.warn "Error deleting derivative: #{e.message}"
+      end
+    end
+
 end 

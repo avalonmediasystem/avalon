@@ -34,16 +34,11 @@ class MediaObject < ActiveFedora::Base
   has_metadata name: "descMetadata", type: ModsDocument	
 
   after_create :after_create
+  before_save :normalize_desc_metadata!
+  before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }
+  after_save :update_dependent_permalinks, if: Proc.new { |mo| mo.persisted? && mo.published? }
+  after_save :remove_bookmarks
   
-  # Before saving put the pieces into the right order and validate to make sure that
-  # there are no syntactic errors
-  before_save 'descMetadata.ensure_identifier_exists!'
-  before_save 'descMetadata.update_change_date!'
-  before_save 'descMetadata.reorder_elements!'
-  before_save 'descMetadata.remove_empty_nodes!'
-  before_save 'update_permalink_and_dependents'
-
-  after_save 'remove_bookmarks'
 
   has_model_version 'R4'
 
@@ -569,7 +564,50 @@ class MediaObject < ActiveFedora::Base
 
   end
 
+  def update_permalink
+    ensure_permalink!
+    unless self.descMetadata.permalink.include? self.permalink 
+      self.descMetadata.permalink = self.permalink
+    end
+  end
+  
+  def _update_dependent_permalinks
+    self.parts.each do |master_file| 
+      begin
+        updated = master_file.ensure_permalink!
+        master_file.save( validate: false ) if updated
+      rescue
+        # no-op
+        # Save is called (uncharacteristically) during a destroy.
+      end
+    end
+  end
+  handle_asynchronously :_update_dependent_permalinks
+  
+  def update_dependent_permalinks
+    self._update_dependent_permalinks
+  end
+
+  def _remove_bookmarks
+    Bookmark.where(document_id: self.pid).each do |b|
+      b.destroy if ( !User.exists? b.user_id ) or ( Ability.new( User.find b.user_id ).cannot? :read, self )
+    end
+  end
+  
+  def remove_bookmarks
+    self._remove_bookmarks
+  end
+
   private
+    # Put the pieces into the right order and validate to make sure that there are no 
+    # syntactic errors
+    def normalize_desc_metadata!
+      descMetadata.ensure_identifier_exists!
+      descMetadata.update_change_date!
+      descMetadata.reorder_elements!
+      descMetadata.remove_empty_nodes!
+    end
+
     def after_create
       self.DC.identifier = pid
       save
@@ -579,39 +617,12 @@ class MediaObject < ActiveFedora::Base
       self.parts.map{|mf| mf.duration.to_i }.compact.sum
     end
 
-    def update_permalink_and_dependents
-      if self.persisted? && self.published?
-        ensure_permalink!
-        self.parts.each do |master_file| 
-          begin
-            updated = master_file.ensure_permalink!
-            master_file.save( validate: false ) if updated
-          rescue
-          	# no-op
-          	# Save is called (uncharacteristically) during a destroy.
-          end
-        end
-
-        unless self.descMetadata.permalink.include? self.permalink 
-          self.descMetadata.permalink = self.permalink
-        end
+    def collect_ips_for_index ip_strings
+      ips = ip_strings.collect do |ip|
+        addr = IPAddr.new(ip) rescue next
+        addr.to_range.map(&:to_s)
       end
-
-      true
+      ips.flatten.compact.uniq || []
     end
-  
-    def remove_bookmarks
-      Bookmark.where(document_id: self.pid).each do |b|
-        b.destroy if ( !User.exists? b.user_id ) or ( Ability.new( User.find b.user_id ).cannot? :read, self )
-      end
-    end
-
-  def collect_ips_for_index ip_strings
-    ips = ip_strings.collect do |ip|
-      addr = IPAddr.new(ip) rescue next
-      addr.to_range.map(&:to_s)
-    end
-    ips.flatten.compact.uniq || []
-  end
   
 end

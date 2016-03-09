@@ -114,6 +114,22 @@ namespace :avalon do
     end
   end
 
+  namespace :test do
+    desc "Create a test media object"
+    task :media_object => :environment do
+      require 'factory_girl'
+      require 'faker'
+      Dir[Rails.root.join("spec/factories/**/*.rb")].each {|f| require f}
+      
+      mf_count = [ENV['master_files'].to_i,1].max
+      mo = FactoryGirl.create(:media_object)
+      mf_count.times do |i|
+        FactoryGirl.create(:master_file_with_derivative, mediaobject: mo)
+      end
+      puts mo.pid
+    end
+  end
+
   desc "Reindex all Avalon objects"
   task :reindex => :environment do
     query = "pid~#{Avalon::Configuration.lookup('fedora.namespace')}:*"
