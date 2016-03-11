@@ -32,6 +32,7 @@ class AvalonPlayer
       features: features
       startQuality: 'low'
       customError: 'This browser requires Adobe Flash Player to be installed for media playback.'
+      toggleCaptionsButtonWhenOnlyOne: 'true'
       success: (mediaElement, domObject, player) =>
         @boundPrePlay = => if mejs.MediaFeatures.isAndroid then AndroidShim.androidPrePlay(this, player)
         @boundPrePlay()
