@@ -123,6 +123,14 @@ describe Avalon::Batch::Ingest do
       expect(master_file.structuralMetadata.has_content?).to be_truthy
     end
 
+    it 'should ingest captions' do
+      batch_ingest.ingest
+      ingest_batch = IngestBatch.first
+      media_object = MediaObject.find(ingest_batch.media_object_ids.first)
+      master_file = media_object.parts.first
+      expect(master_file.captions.has_content?).to be_truthy
+    end
+
     it 'should set MasterFile details' do
       batch_ingest.ingest
       ingest_batch = IngestBatch.last
