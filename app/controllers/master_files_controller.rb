@@ -126,6 +126,37 @@ class MasterFilesController < ApplicationController
     end
   end
 
+  def attach_captions
+    captions = nil
+    if params[:id].blank? || (not MasterFile.exists?(params[:id]))
+      flash[:notice] = "MasterFile #{params[:id]} does not exist"
+    end
+    @masterfile = MasterFile.find(params[:id])
+    unless flash.empty? and  MediaObject.exists?(@masterfile.mediaobject_id)
+      flash[:notice] = "MediaObject #{@masterfile.mediaobject_id} does not exist"
+    end
+    if flash.empty?
+      media_object = MediaObject.find(@masterfile.mediaobject_id)
+      authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
+      if params[:master_file].present? && params[:master_file][:captions].present?
+        captions = params[:master_file][:captions].open.read
+      end
+      if captions.present?
+        @masterfile.captions.content = captions
+        @masterfile.captions.mimeType = 'text/vtt'
+        flash[:success] = "Captions file succesfully added."
+      else
+        @masterfile.captions.delete
+        flash[:success] = "Captions file succesfully removed."
+      end
+      @masterfile.save
+    end
+    respond_to do |format|
+      format.html { redirect_to edit_media_object_path(@masterfile.mediaobject_id, step: 'structure') }
+      format.json { render json: {captions: captions, flash: flash} }
+    end
+  end
+
   # Creates and Saves a File Asset to contain the the Uploaded file
   # If container_id is provided:
   # * the File Asset will use RELS-EXT to assert that it's a part of the specified container

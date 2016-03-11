@@ -88,6 +88,7 @@ describe MediaObjectsController, type: :controller do
     let!(:filename) {'videoshort.high.mp4'}
     let!(:absolute_location) {Rails.root.join(File.join(testdir, filename)).to_s}
     let!(:structure) {File.read(File.join(testdir, 'structure.xml'))}
+    let!(:captions) {File.read(File.join(testdir, 'dropbox/example_batch_ingest/assets/sheephead_mountain.mov.vtt'))}
     let!(:bib_id) { '7763100' }
     let!(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
     let!(:sru_response) { File.read(File.expand_path("../../fixtures/#{bib_id}.xml",__FILE__)) }
@@ -133,7 +134,8 @@ describe MediaObjectsController, type: :controller do
         percent_failed: "0",
         status_code: "COMPLETED",
         other_identifier: '40000000045312',
-        structure: structure
+        structure: structure,
+        captions: captions
       }}
     let!(:descMetadata_fields) {[
       :title,
@@ -191,6 +193,8 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.avalon_resource_type).to eq ['moving image']
           expect(new_media_object.parts.first.date_digitized).to eq('2015-12-31T00:00:00Z')
           expect(new_media_object.parts.first.DC.identifier).to include('40000000045312')
+          expect(new_media_object.parts.first.structuralMetadata.has_content?).to be_truthy
+          expect(new_media_object.parts.first.captions.has_content?).to be_truthy
           expect(new_media_object.parts.first.derivatives.count).to eq(2)
           expect(new_media_object.parts.first.derivatives.first.location_url).to eq(absolute_location)          
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
