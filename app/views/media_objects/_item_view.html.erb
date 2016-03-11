@@ -88,7 +88,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
       thumbnailSelector: <%= can?(:edit, @mediaobject) ? 'true' : 'false' %>,
       startQuality: '<%= current_quality(@currentStreamInfo) %>',
-      customError: '<%= t("media_objects.player.customError").html_safe %>'
+      customError: '<%= t("media_objects.player.customError").html_safe %>',
+      toggleCaptionsButtonWhenOnlyOne: 'true'
     })
     currentPlayer = avalonPlayer.player;
   </script>
