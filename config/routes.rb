@@ -21,7 +21,7 @@ Avalon::Application.routes.draw do
   root :to => "catalog#index"
 
   devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }, format: false
-  devise_scope :user do 
+  devise_scope :user do
     match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session, via: [:get]
     match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
   end
@@ -65,12 +65,13 @@ Avalon::Application.routes.draw do
       post 'still',     :to => 'master_files#set_frame', :defaults => { :format => 'html' }
       get :embed
       post 'attach_structure'
+      get :captions
     end
   end
 
   match '/media_objects/:media_object_id/section/:id/embed' => 'master_files#embed', via: [:get]
   resources :derivatives, only: [:create]
-  
+
   resources :comments, only: [:index, :create]
 
   #match 'search/index' => 'search#index'
@@ -78,8 +79,8 @@ Avalon::Application.routes.draw do
 
 
   namespace :admin do
-    resources :groups, except: [:show] do 
-      collection do 
+    resources :groups, except: [:show] do
+      collection do
         put 'update_multiple'
       end
       member do
@@ -102,7 +103,7 @@ Avalon::Application.routes.draw do
   end
 
   mount AboutPage::Engine => '/about(.:format)', :as => 'about_page'
-  
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

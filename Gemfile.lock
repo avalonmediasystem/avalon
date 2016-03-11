@@ -100,7 +100,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-skin-avalon.git
-  revision: 47e4f6a026d461ba296a4f11405bd71a595f79f4
+  revision: 78750f1323e5e91d7edddca8b206d8ea2c263166
+  tag: captions
   specs:
     mediaelement-skin-avalon (0.0.1)
 
@@ -113,7 +114,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: 05552ec0706b9440194434e7cb6d679f961c1b24
+  revision: 190246c5a5f986db9d741f9554a92bc3a5e995eb
+  tag: captions
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)

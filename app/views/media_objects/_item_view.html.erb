@@ -34,6 +34,9 @@ Unless required by applicable law or agreed to in writing, software distributed
               <% @currentStreamInfo[:stream_hls].each do |hls| %>
                 <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
               <% end %>
+              <% if @currentStreamInfo[:captions_path].present? %>
+                <track srclang="en" kind="subtitles" type="text/vtt" src="<%= @currentStreamInfo[:captions_path] %>"></track>
+              <% end %>
             </video>
           <% end %>
         <% else %>
