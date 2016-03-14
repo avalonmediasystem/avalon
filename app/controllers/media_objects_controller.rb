@@ -125,6 +125,7 @@ class MediaObjectsController < ApplicationController
         if file_spec[:captions].present?
           master_file.captions.content = file_spec[:captions]
           master_file.captions.mimeType = 'text/vtt'
+          master_file.captions.dsLabel = 'ingest.api'
         end
         master_file.label = file_spec[:label] if file_spec[:label].present?
         master_file.date_digitized = DateTime.parse(file_spec[:date_digitized]).to_time.utc.iso8601 if file_spec[:date_digitized].present?

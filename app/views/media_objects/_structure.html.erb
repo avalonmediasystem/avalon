@@ -78,6 +78,9 @@ Unless required by applicable law or agreed to in writing, software distributed
               <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
 	    <% end %>
           </div>
+	  <% if section.captions.present? %>
+            <div class="structure_view">Uploaded file: <%= section.captions.label %></div>
+          <% end %>
         </div>
       </li>
       <% end %>

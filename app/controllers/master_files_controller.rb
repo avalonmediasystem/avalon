@@ -33,7 +33,7 @@ class MasterFilesController < ApplicationController
     if ds.nil? or ds.new?
       render :text => 'Not Found', :status => :not_found
     else
-      render :text => ds.content, :content_type => ds.mimeType
+      render :text => ds.content, :content_type => ds.mimeType, :label => ds.label
     end
   end
 
@@ -144,6 +144,7 @@ class MasterFilesController < ApplicationController
       if captions.present?
         @masterfile.captions.content = captions
         @masterfile.captions.mimeType = 'text/vtt'
+        @masterfile.captions.dsLabel = params[:master_file][:captions].original_filename
         flash[:success] = "Captions file succesfully added."
       else
         @masterfile.captions.delete

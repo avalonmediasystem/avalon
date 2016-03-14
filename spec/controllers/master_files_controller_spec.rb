@@ -255,5 +255,33 @@ describe MasterFilesController do
       expect(flash[:notice]).to be_nil
     end
   end
+  describe "#attach_captions" do
+    let!(:media_object) {FactoryGirl.create(:media_object_with_master_file)}
+    let!(:content_provider) {login_user media_object.collection.managers.first}
+    let!(:master_file) {media_object.parts.first}
+
+    before(:each) do
+      login_user media_object.collection.managers.first
+    end
+
+    it "should populate captions datastream with text" do
+      # populate the captions datastream with an uploaded vtt file
+      file = fixture_file_upload('/dropbox/example_batch_ingest/assets/sheephead_mountain.mov.vtt', 'text/vtt')
+      post 'attach_captions', master_file: {captions: file}, id: master_file.id
+      master_file.reload
+      expect(master_file.captions.has_content?).to be_truthy
+      expect(master_file.captions.label).to eq('sheephead_mountain.mov.vtt')
+      expect(flash[:errors]).to be_nil
+      expect(flash[:notice]).to be_nil
+    end
+    it "should remove contents of structuralMetadata datastream" do
+      # remove the contents of the datastream
+      post 'attach_captions', id: master_file.id
+      master_file.reload
+      expect(master_file.captions.empty?).to be true
+      expect(flash[:errors]).to be_nil
+      expect(flash[:notice]).to be_nil
+    end
+  end
   
 end

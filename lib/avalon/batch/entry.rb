@@ -128,6 +128,7 @@ module Avalon
           if File.exists? captions_file
             master_file.captions.content=File.open(captions_file)
             master_file.captions.mimeType='text/vtt'
+            master_file.captions.dsLabel=captions_file
           end
       end
 
