@@ -274,7 +274,7 @@ describe MasterFilesController do
       expect(flash[:errors]).to be_nil
       expect(flash[:notice]).to be_nil
     end
-    it "should remove contents of structuralMetadata datastream" do
+    it "should remove contents of captions datastream" do
       # remove the contents of the datastream
       post 'attach_captions', id: master_file.id
       master_file.reload
