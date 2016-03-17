@@ -105,6 +105,7 @@ class MasterFile < ActiveFedora::Base
   def update_media_object!
     yield
     return if mediaobject.nil?
+    mediaobject.reload
     mediaobject.set_duration!
     mediaobject.set_media_types!
     mediaobject.set_resource_types!
