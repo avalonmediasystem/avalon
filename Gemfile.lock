@@ -114,7 +114,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: 190246c5a5f986db9d741f9554a92bc3a5e995eb
+  revision: 7e67e772015a5223ba3154ab929327fdcce1b9a2
   tag: captions
   specs:
     mediaelement_rails (0.5.1)
