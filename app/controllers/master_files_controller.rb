@@ -143,7 +143,7 @@ class MasterFilesController < ApplicationController
       end
       if captions.present?
         @masterfile.captions.content = captions
-        @masterfile.captions.mimeType = 'text/vtt'
+        @masterfile.captions.mimeType = params[:master_file][:captions].content_type
         @masterfile.captions.dsLabel = params[:master_file][:captions].original_filename
         flash[:success] = "Captions file succesfully added."
       else

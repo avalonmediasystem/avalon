@@ -135,7 +135,8 @@ describe MediaObjectsController, type: :controller do
         status_code: "COMPLETED",
         other_identifier: '40000000045312',
         structure: structure,
-        captions: captions
+        captions: captions,
+        captions_type: 'text/vtt'
       }}
     let!(:descMetadata_fields) {[
       :title,
@@ -196,6 +197,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.parts.first.structuralMetadata.has_content?).to be_truthy
           expect(new_media_object.parts.first.captions.has_content?).to be_truthy
           expect(new_media_object.parts.first.captions.label).to eq('ingest.api')
+          expect(new_media_object.parts.first.captions.mimeType).to eq('text/vtt')
           expect(new_media_object.parts.first.derivatives.count).to eq(2)
           expect(new_media_object.parts.first.derivatives.first.location_url).to eq(absolute_location)          
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])

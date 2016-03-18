@@ -271,6 +271,7 @@ describe MasterFilesController do
       master_file.reload
       expect(master_file.captions.has_content?).to be_truthy
       expect(master_file.captions.label).to eq('sheephead_mountain.mov.vtt')
+      expect(master_file.captions.mimeType).to eq('text/vtt')
       expect(flash[:errors]).to be_nil
       expect(flash[:notice]).to be_nil
     end

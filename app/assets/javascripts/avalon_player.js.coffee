@@ -21,7 +21,7 @@ class AvalonPlayer
     thumbnail_selector = if removeOpt('thumbnailSelector') then 'thumbnailSelector' else null
     start_time = removeOpt('startTime')
 
-    features = ['playpause','current','progress','duration','tracks','volume','qualities',thumbnail_selector,'fullscreen','responsive']
+    features = ['playpause','current','progress','duration','volume','qualities',thumbnail_selector,'fullscreen','responsive','tracks']
     features = (feature for feature in features when feature?)
     player_options =
       mode: 'auto_plugin'
@@ -64,7 +64,7 @@ class AvalonPlayer
       for hls in @stream_info.stream_hls
         videoNode.append "<source src='#{hls.url}' data-quality='#{hls.quality}' data-plugin-type='native' type='application/vnd.apple.mpegURL'>"
       if @stream_info.captions_path
-        videoNode.append "<track srclang='en' kind='subtitles' type='text/vtt' src='#{ @stream_info.captions_path }'></track>"
+        videoNode.append "<track srclang='en' kind='subtitles' type='#{ @stream_info.captions_format }' src='#{ @stream_info.captions_path }'></track>"
 
       if @stream_info.poster_image? then @player.setPoster(@stream_info.poster_image)
       initialTime = if @stream_info.t? then (parseFloat(@stream_info.t)||0) else 0
@@ -82,9 +82,9 @@ class AvalonPlayer
         keyboardAccess()
         @boundPrePlay()
 
-
       @player.load()
       @setupCreationTrigger()
+      @player.rebuildtracks()
 
   setStreamInfo: (value) ->
     @stream_info = value
