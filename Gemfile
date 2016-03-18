@@ -5,6 +5,7 @@
   gem 'sprockets', '~>2.11.0'
   #gem 'protected_attributes'
   gem 'builder', '~>3.1.0'
+  gem 'rake', '~>10.4'
 
 #  gem 'hydra', '~>8.0'
   gem 'hydra-head', git: 'https://github.com/avalonmediasystem/hydra-head.git', branch: '8-1-stable'
