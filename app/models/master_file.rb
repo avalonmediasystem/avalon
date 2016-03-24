@@ -79,7 +79,6 @@ class MasterFile < ActiveFedora::Base
 
   has_model_version 'R3'
   before_save :update_stills_from_offset!
-  around_save :update_media_object!, if: Proc.new { |mf| mf.duration_changed? or mf.file_location_changed? or mf.file_format_changed? }
 
   define_hooks :after_processing
   
@@ -101,16 +100,6 @@ class MasterFile < ActiveFedora::Base
   
   EMBED_SIZE = {:medium => 600}
   AUDIO_HEIGHT = 50
-
-  def update_media_object!
-    yield
-    return if mediaobject.nil?
-    mediaobject.reload
-    mediaobject.set_duration!
-    mediaobject.set_media_types!
-    mediaobject.set_resource_types!
-    mediaobject.save(validate: false)
-  end
 
   def save_parent
     unless mediaobject.nil?
