@@ -41,8 +41,12 @@ describe UrlDatastream do
       end
     end
 
+    it "should accept an underscore in the hostname" do
+      expect { subject.location = "nfs://nfs_server.example.edu/share/foo/bar/baz.jpg" }.not_to raise_error
+    end
+    
     it "should require a valid URL" do
-      expect { subject.location = 'blah blah blah' }.to raise_error(URI::InvalidURIError)
+      expect { subject.location = 'http://<invalid>/' }.to raise_error(URI::InvalidURIError)
     end
   end
 
