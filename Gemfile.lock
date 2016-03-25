@@ -725,6 +725,7 @@ DEPENDENCIES
   active_encode!
   activerecord-jdbcsqlite3-adapter
   activerecord-session_store
+  addressable
   api-pagination
   avalon-about!
   avalon-workflow!
