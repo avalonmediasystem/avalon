@@ -20,11 +20,12 @@ module Avalon
       def initialize config
         super
         @config['query'] ||= 'rec.id=%{bib_id}'
+        @config['namespace'] ||= "http://www.loc.gov/zing/srw/"
       end
       
       def get_record(bib_id)
         doc = Nokogiri::XML RestClient.get(url_for(bib_id))
-        record = doc.xpath('//zs:recordData/*', "zs"=>"http://www.loc.gov/zing/srw/").first
+        record = doc.xpath('//zs:recordData/*', "zs"=>@config['namespace']).first
         record.nil? ? nil : marcxml2mods(record.to_s)
       end
       
