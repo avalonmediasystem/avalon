@@ -10,8 +10,8 @@ en:
   release_label: "Release"
   errors:
     lti_auth_error: |
-      If you are an instructor, you cannot view these items in student mode. 
-      Please switch back to instructor mode to view. If you are a student and 
+      If you are an instructor, you cannot view these items in student mode.
+      Please switch back to instructor mode to view. If you are a student and
       receiving this message, please contact us at <a href="mailto:%s">%s</a>.
     messages:
       blank: "field is required."
@@ -23,16 +23,16 @@ en:
     empty_share_section_permalink_notice: "After processing has started the section link will be available."
   metadata_tip:
     abstract: |
-      Summary provides a space for describing the contents of the item. Examples 
-      include liner notes, contents list, or an opera scene abstract. This field 
-      is not meant for cataloger's descriptions but for descriptions that 
-      accompany the item. Depending on the length of the summary it may be 
+      Summary provides a space for describing the contents of the item. Examples
+      include liner notes, contents list, or an opera scene abstract. This field
+      is not meant for cataloger's descriptions but for descriptions that
+      accompany the item. Depending on the length of the summary it may be
       truncated in search results.
     collection: |
-      Collection defines the source or host of the item (for example, the source 
-      of the original record or the collection responsible for entering 
-      information about the item). Collections will be aggregated for browsing 
-      access. Examples: Variations, Indiana University Libraries Film Archive, 
+      Collection defines the source or host of the item (for example, the source
+      of the original record or the collection responsible for entering
+      information about the item). Collections will be aggregated for browsing
+      access. Examples: Variations, Indiana University Libraries Film Archive,
       IUCAT, NUcat.
     contributor: |
       Contributors are persons or bodies associated with the item but not considered
@@ -100,13 +100,13 @@ en:
       letters within the field will bring up permitted matches. Only terms or
       codes from the <a href="http://www.loc.gov/marc/languages/"
       target="_blank">MARC Code List for Languages</a> may be used. This is an
-      optional field. 
+      optional field.
     terms_of_use: |
-      Terms of Use describes the conditions under which content may be used. This is an optional field. 
+      Terms of Use describes the conditions under which content may be used. This is an optional field.
     physical_description: |
-      Physical Description is an optional field that will display information about the original resource being described. 
+      Physical Description is an optional field that will display information about the original resource being described.
     related_item_url: |
-      The label is the text that will be displayed in the item record and will link to the URL entered. Related Item is an optional field. 
+      The label is the text that will be displayed in the item record and will link to the URL entered. Related Item is an optional field.
     note: |
       Note is used to describe aspects of the resource not accounted for in any of the other fields, such as creation or production credits, performers, venue, historical or biographical information, language details, awards given to the performance or the work performed. Recommended use is to provide a separate Contributor field for each person or body associated with the creation of the content and to use a Note to provide more information about such contributions or to provide information about secondary persons or bodies associated with the creation of the content. Type specifies the type of note and is used as a label in the user interface.<br><br>Statement of Responsibility is used to provide information about primary persons or bodies associated with the creation of the content, along with details about their roles. This information can be transcribed from the credits  listed in the resource itself or on its packaging. Recommended use is to provide a separate Contributor field for each person or body listed in the Statement of Responsibility. Statement of Responsibility may be left empty if the use of Contributor fields alone is preferred. Statement of Responsibility is displayed in the user interface appended to the Title field, following a ' / '.
     other_identifier: |
@@ -119,6 +119,8 @@ en:
       The Section Label will be used in an item's listing to identify each file associated with the item.
     permalink: |
       The section Permalink is a URL that links to an individual section of an Item. In addition, the entire item will have a distinct permalink that can be assigned in the Resource Description page. If configured to do so, Avalon will automatically generate a permalink if this field is left blank.
+    datedigitized: |
+      The Date Digitized field reflects when the original media was initially digitized, not ingested into Avalon. This date automatically will be set to the date the ingest process completes unless a date is provided.
     thumbnail: |
       The Thumbnail is a still image that will be displayed in search results. Thumbnails can be grabbed from a video during playback by clicking the 'Create thumbnail' button in the player or by entering a time offset value here in the format 'hh:mm:ss.sss'.
     skip_transcoding: |
@@ -132,21 +134,21 @@ en:
     classlabel: "External Group"
     ipaddresslabel: "IP Address or Range"
     depositor: |
-      Depositors add media to the collection and describe it with metadata. 
-      They can publish items but not unpublish. They can only modify or 
+      Depositors add media to the collection and describe it with metadata.
+      They can publish items but not unpublish. They can only modify or
       delete unpublished items.
     editor: |
-      Editors have supervisory responsibility for the collection building — the 
-      ingest and description process. They can assign depositor roles, change 
-      the name or description of the collection, and can modify the access 
-      controls for individual items in the collection. Editors can also do 
+      Editors have supervisory responsibility for the collection building — the
+      ingest and description process. They can assign depositor roles, change
+      the name or description of the collection, and can modify the access
+      controls for individual items in the collection. Editors can also do
       anything a depositor can do.
     manager: |
-      Managers have overall accountability for the collection. Managers can 
-      create collections and assign editor and depositor roles for those 
-      collections. They set the default access controls for items added to 
-      the collection, and they also step in when a published item needs 
-      revising or deleting. Managers can also do anything an editor or 
+      Managers have overall accountability for the collection. Managers can
+      create collections and assign editor and depositor roles for those
+      collections. They set the default access controls for items added to
+      the collection, and they also step in when a published item needs
+      revising or deleting. Managers can also do anything an editor or
       depositor can do.
     user: |
       Enter a username to grant them access to an item or collection.
@@ -155,7 +157,7 @@ en:
     class: |
       Enter an external group to grant it access to an item or collection. This group might represent students in a course or members of an institution-specific group.
     ipaddress: |
-      An IP Address or subnet. Eg. 255.0.1.10 or 255.0.1.10/21 or 255.0.1.10/255.255.255.0 
+      An IP Address or subnet. Eg. 255.0.1.10 or 255.0.1.10/21 or 255.0.1.10/255.255.255.0
       or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777
       or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00
 

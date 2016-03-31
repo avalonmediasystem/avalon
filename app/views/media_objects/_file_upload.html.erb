@@ -26,6 +26,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="collapse form-tooltip" id="permalink-tooltip">
     <button class="close">&times;</button> <p><%= t("file_upload_tip.permalink").html_safe %></p>
   </div>
+  <div class="collapse form-tooltip" id="datedigitized-tooltip">
+    <button class="close">&times;</button> <p><%= t("file_upload_tip.datedigitized").html_safe %></p>
+  </div>
   <div class="collapse form-tooltip" id="thumbnail-tooltip">
     <button class="close">&times;</button  <p><%= t("file_upload_tip.thumbnail").html_safe %></p>
   </div>
@@ -44,7 +47,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <th>Type</th>
         <th><div class="tooltip-help" data-tooltip="#label-tooltip">Section label</div></th>
 	<th><div class="tooltip-help" data-tooltip="#permalink-tooltip">Permalink</div></th>
-        <th>Date Digitized</th>
+        <th><div class="tooltip-help" data-tooltip="#datedigitized-tooltip">Date Digitized</div></th>
 	<th><div class="tooltip-help" data-tooltip="#thumbnail-tooltip" style='min-width:9em;'>Thumbnail</div></th>
         <th>File name</th>
         <th style="min-width:6em">Size</th>
