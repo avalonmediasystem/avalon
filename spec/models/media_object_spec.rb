@@ -414,7 +414,8 @@ describe MediaObject do
     describe '#set_media_types!' do
       let!(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
       it 'sets format on the model' do
-        media_object.format = nil
+        media_object.update_attribute_in_metadata(:format, nil)
+        expect(media_object.format).to be_nil
         media_object.set_media_types!
         expect(media_object.format).to eq "video/mp4"
       end
@@ -424,6 +425,7 @@ describe MediaObject do
       let!(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
       it 'sets resource_type on the model' do
         media_object.displayMetadata.avalon_resource_type = []
+        expect(media_object.displayMetadata.avalon_resource_type).to be_empty
         media_object.set_resource_types!
         expect(media_object.displayMetadata.avalon_resource_type).to eq ["moving image"]
       end
