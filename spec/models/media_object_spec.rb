@@ -403,31 +403,35 @@ describe MediaObject do
     end
   end
 
-  describe '#set_duration!' do
-    it 'sets duration on the model' do
-      media_object.set_duration!
-      expect(media_object.duration).to eq('0')
+  context "dependent properties" do
+    describe '#set_duration!' do
+      it 'sets duration on the model' do
+        media_object.set_duration!
+        expect(media_object.duration).to eq('0')
+      end
     end
-  end
 
-  describe '#set_media_types!' do
-    let!(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
-    it 'sets format on the model' do
-      expect(media_object.format).to be nil
-      media_object.set_media_types!
-      expect(media_object.format).to eq "video/mp4"
+    describe '#set_media_types!' do
+      let!(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
+      it 'sets format on the model' do
+        media_object.update_attribute_in_metadata(:format, nil)
+        expect(media_object.format).to be_nil
+        media_object.set_media_types!
+        expect(media_object.format).to eq "video/mp4"
+      end
     end
-  end
 
-  describe '#set_resource_types!' do
-    let!(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
-    it 'sets resource_type on the model' do
-      expect(media_object.displayMetadata.avalon_resource_type).to eq []
-      media_object.set_resource_types!
-      expect(media_object.displayMetadata.avalon_resource_type).to eq ["moving image"]
+    describe '#set_resource_types!' do
+      let!(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
+      it 'sets resource_type on the model' do
+        media_object.displayMetadata.avalon_resource_type = []
+        expect(media_object.displayMetadata.avalon_resource_type).to be_empty
+        media_object.set_resource_types!
+        expect(media_object.displayMetadata.avalon_resource_type).to eq ["moving image"]
+      end
     end
   end
- 
+  
   describe '#publish!' do
     describe 'facet' do
       it 'publishes' do

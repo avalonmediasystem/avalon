@@ -35,6 +35,7 @@ class MediaObject < ActiveFedora::Base
 
   after_create :after_create
   before_save :normalize_desc_metadata!
+  before_save :update_dependent_properties!
   before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :update_dependent_permalinks, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :remove_bookmarks
@@ -193,6 +194,8 @@ class MediaObject < ActiveFedora::Base
 
   def parts_with_order= master_files
     self.section_pid = master_files.map(&:pid)
+    self.sectionsMetadata.save if self.persisted?
+    self.section_pid
   end
 
   def parts_with_order(opts = {})
@@ -399,6 +402,12 @@ class MediaObject < ActiveFedora::Base
     }.uniq
   end
 
+  def update_dependent_properties!
+    self.set_duration!
+    self.set_media_types!
+    self.set_resource_types!
+  end
+  
   def to_solr(solr_doc = Hash.new, opts = {})
     solr_doc = super(solr_doc, opts)
     solr_doc[Solrizer.default_field_mapper.solr_name("created_by", :facetable, type: :string)] = self.DC.creator
