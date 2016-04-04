@@ -244,7 +244,6 @@ describe MediaObject do
   end
 
   describe "Required metadata is present" do
-    it {is_expected.to validate_presence_of(:creator)}
     it {is_expected.to validate_presence_of(:date_issued)}
     it {is_expected.to validate_presence_of(:title)}
   end
