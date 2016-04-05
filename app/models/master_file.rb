@@ -437,6 +437,10 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
+  def structural_metadata_labels
+    structuralMetadata.xpath('//@label').collect{|a|a.value}
+  end
+
   protected
 
   def mediainfo
@@ -639,4 +643,5 @@ class MasterFile < ActiveFedora::Base
   def find_encoder_class(klass_name)
     ActiveEncode::Base.descendants.find { |c| c.name == klass_name }
   end
+
 end

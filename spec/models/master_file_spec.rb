@@ -426,4 +426,12 @@ describe MasterFile do
     end
     
   end
+
+  describe "#structural_metadata_labels" do
+    subject(:master_file) { FactoryGirl.create(:master_file_with_structure) }
+    it 'should return correct list of labels' do
+      expect(master_file.structural_metadata_labels.first).to eq 'CD 1'
+    end
+  end
+
 end

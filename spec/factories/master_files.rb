@@ -35,5 +35,11 @@ FactoryGirl.define do
         mf.save
       end
     end
+    factory :master_file_with_structure do
+      after(:create) do |mf|
+        mf.structuralMetadata.content = File.read('spec/fixtures/structure.xml')
+        mf.save
+      end
+    end
   end
 end

@@ -619,4 +619,18 @@ describe MediaObject do
       expect( media_object.changes ).to eq({"section_pid"=>[part_ids, trap_ids]})
     end
   end
+
+  describe '#section_labels' do
+    before do
+      mf = FactoryGirl.create(:master_file_with_structure, label: 'Test Label')
+      mf.mediaobject = media_object
+      mf.save
+      media_object.save
+    end
+    it 'should return correct list of labels' do
+      expect(media_object.section_labels.first).to eq 'CD 1'
+      expect(media_object.section_labels).to include 'Test Label'
+    end
+  end
+
 end
