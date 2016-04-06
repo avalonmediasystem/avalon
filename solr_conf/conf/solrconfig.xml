@@ -55,11 +55,13 @@
         <str name="qf">
           id
           all_text_timv
+	  section_label_timv
           active_fedora_model_ssi
           object_type_si
         </str>
         <str name="pf">
           all_text_timv^10
+	  section_label_timv^10
         </str>
 
        <str name="author_qf">
