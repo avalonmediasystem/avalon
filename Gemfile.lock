@@ -100,7 +100,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-skin-avalon.git
-  revision: 218f65d006e99afdcd6b401d8fb2df43e0c901fc
+  revision: a564874595672d5f751a83ae43685728c247f49e
   tag: captions
   specs:
     mediaelement-skin-avalon (0.0.1)
