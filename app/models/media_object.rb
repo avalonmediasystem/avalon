@@ -434,7 +434,7 @@ class MediaObject < ActiveFedora::Base
     #include identifiers for parts
     solr_doc["other_identifier_sim"] += parts.collect {|mf| mf.DC.identifier }.flatten
     #include labels for parts and their structural metadata
-    solr_doc["section_label_timv"] = section_labels
+    solr_doc["section_label_tesim"] = section_labels
 
     #Add all searchable fields to the all_text_timv field
     all_text_values = []
