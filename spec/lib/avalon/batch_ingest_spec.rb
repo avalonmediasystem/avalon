@@ -256,8 +256,8 @@ describe Avalon::Batch::Ingest do
       expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
       expect(mailer).to receive(:deliver)
       expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
-      expect(batch.errors[4].messages).to have_key(:creator)
-      expect(batch.errors[4].messages[:creator]).to eq(['field is required.'])
+      expect(batch.errors[4].messages).to have_key(:title)
+      expect(batch.errors[4].messages[:title]).to eq(['field is required.'])
     end
 
     it 'should fail if field is not in accepted metadata field list' do

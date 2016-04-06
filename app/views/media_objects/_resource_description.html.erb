@@ -29,13 +29,13 @@ Unless required by applicable law or agreed to in writing, software distributed
              locals: {form: form, field: :title, 
                       options: {required: true}} %>
 
-  <%= render partial: 'text_field',
-             locals: {form: form, field: :creator,
-                      options: {display_label: 'Main contributor(s)', required: true, multivalued: true}} %>
-                    
   <%= render partial: 'text_field', 
              locals: {form: form, field: :date_issued,
                       options: {display_label: 'Publication date', required: true}} %>
+
+  <%= render partial: 'text_field',
+             locals: {form: form, field: :creator,
+                      options: {display_label: 'Main contributor(s)', multivalued: true}} %>
 
   <%= render partial: 'text_field', 
              locals: {form: form, field: :date_created,

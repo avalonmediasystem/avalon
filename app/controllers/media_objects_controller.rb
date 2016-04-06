@@ -105,7 +105,7 @@ class MediaObjectsController < ApplicationController
 
     if !@mediaobject.valid?
       invalid_fields = @mediaobject.errors.keys
-      required_fields = [:title, :date_issued, :creator]
+      required_fields = [:title, :date_issued]
       if !required_fields.any? { |f| invalid_fields.include? f }
         invalid_fields.each do |field|
           #NOTE this will erase all values for fields with multiple values

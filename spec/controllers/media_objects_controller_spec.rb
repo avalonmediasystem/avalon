@@ -232,7 +232,7 @@ describe MediaObjectsController, type: :controller do
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.bibliographic_id).to eq(['local', bib_id])
           expect(new_media_object.title).to eq media_object.title
-          expect(new_media_object.creator).to eq media_object.creator
+          expect(new_media_object.creator).to eq [] #creator no longer required, so supplied value won't be used
           expect(new_media_object.date_issued).to eq media_object.date_issued
         end
         it "should create a new mediaobject, removing invalid data for non-required fields" do

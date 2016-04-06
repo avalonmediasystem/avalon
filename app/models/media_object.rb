@@ -52,7 +52,6 @@ class MediaObject < ActiveFedora::Base
   # title, and date of creation.
 
   validates :title, :presence => true
-  validate  :validate_creator
   validate  :validate_language
   validates :date_issued, :presence => true
   validate  :report_missing_attributes
@@ -72,12 +71,6 @@ class MediaObject < ActiveFedora::Base
 
   def validate_related_items
     Array(related_item_url).each{|i|errors.add(:related_item_url, "Bad URL") unless i[:url] =~ URI::regexp(%w(http https))}
-  end
-
-  def validate_creator
-    if Array(creator).select { |c| c.present? }.empty?
-      errors.add(:creator, I18n.t("errors.messages.blank"))
-    end
   end
 
   def validate_dates
