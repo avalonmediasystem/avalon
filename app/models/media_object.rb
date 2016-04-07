@@ -426,6 +426,9 @@ class MediaObject < ActiveFedora::Base
     solr_doc["date_ingested_sim"] = Time.parse(self.create_date).strftime "%F"
     #include identifiers for parts
     solr_doc["other_identifier_sim"] += parts.collect {|mf| mf.DC.identifier }.flatten
+    #include labels for parts and their structural metadata
+    solr_doc["section_label_tesim"] = section_labels
+
     #Add all searchable fields to the all_text_timv field
     all_text_values = []
     all_text_values << solr_doc["title_tesi"]
@@ -445,7 +448,6 @@ class MediaObject < ActiveFedora::Base
     all_text_values << solr_doc["notes_sim"]
     all_text_values << solr_doc["table_of_contents_sim"]
     all_text_values << solr_doc["other_identifier_sim"]
-
     solr_doc["all_text_timv"] = all_text_values.flatten
     solr_doc.each_pair { |k,v| solr_doc[k] = v.is_a?(Array) ? v.select { |e| e =~ /\S/ } : v }
     return solr_doc

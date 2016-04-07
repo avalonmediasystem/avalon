@@ -178,6 +178,24 @@ describe CatalogController do
         end
       end
     end
+    describe "search structure" do
+      before(:each) do 
+        @media_object = FactoryGirl.create(:fully_searchable_media_object)
+        @master_file = FactoryGirl.create(:master_file_with_structure, mediaobject_id: @media_object.pid, label: 'Test Label')
+        @media_object.parts += [@master_file]
+        @media_object.save!
+      end
+      it "should find results based upon structure" do
+        get 'index', :q => 'CD 1'
+        expect(assigns(:document_list).count).to eq 1
+        expect(assigns(:document_list).map(&:id)). to eq [@media_object.id]
+      end
+      it 'should find results based upon section labels' do
+        get 'index', :q => 'Test Label'
+        expect(assigns(:document_list).count).to eq 1
+        expect(assigns(:document_list).map(&:id)). to eq [@media_object.id]
+      end
+    end
 
     describe "sort fields" do
       let!(:m1) { FactoryGirl.create(:published_media_object, title: 'Yabba', date_issued: '1960', creator: ['Fred'], visibility: 'public') }

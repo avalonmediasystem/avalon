@@ -469,6 +469,16 @@ describe MediaObject do
       solr_doc = media_object.to_solr
       expect(solr_doc['other_identifier_sim']).to include('TestOtherID')
     end
+    it 'should index labels for parts' do
+      master_file = FactoryGirl.create(:master_file_with_structure, mediaobject_id: media_object.pid, label: 'Test Label')
+      master_file.save!
+      media_object.parts += [master_file]
+      media_object.save!
+      media_object.reload
+      solr_doc = media_object.to_solr
+      expect(solr_doc['section_label_tesim']).to include('CD 1')
+      expect(solr_doc['section_label_tesim']).to include('Test Label')
+    end
   end
 
   describe 'permalink' do
