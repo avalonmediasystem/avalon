@@ -54,14 +54,16 @@
        -->
         <str name="qf">
           id
-          all_text_timv
-	  section_label_tesim
+          title_tesi^10.0
+          section_label_tesim^5.0
+          all_text_timv^1.0
           active_fedora_model_ssi
           object_type_si
         </str>
         <str name="pf">
-          all_text_timv^10.0
-	  section_label_tesim^5.0
+          title_tesi^10.0
+          section_label_tesim^5.0
+          all_text_timv^1.0
         </str>
 
        <str name="author_qf">
