@@ -37,9 +37,9 @@ Unless required by applicable law or agreed to in writing, software distributed
       <colgroup>
         <col class="col-md-1">
         <col class="col-md-4">
-        <col class="col-md-4">
-        <col class="col-md-1">
-        <col class="col-md-4">
+        <col class="col-md-3">
+        <col class="col-md-3">
+        <col class="col-md-3">
         <col class="col-md-1">
       </colgroup>
 
@@ -75,7 +75,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <%= text_field_tag "parts[#{part.pid}][permalink]", part.permalink, class: 'form-control' %>
       	</td>
         <td>
-          <%= text_field_tag "parts[#{part.pid}][date_digitized]", part.date_digitized, class: 'form-control' %>
+          <%= text_field_tag "parts[#{part.pid}][date_digitized]", part.date_digitized, class: 'form-control date-input' %>
         </td>
         <td>
           <% if part.is_video? %>
@@ -181,6 +181,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_styles do %>
   <%= stylesheet_link_tag "browse_everything", media: "rel" %>
   <%= stylesheet_link_tag "jasny-bootstrap.min", media: "all" %>
+  <%= stylesheet_link_tag "jquery-ui/datepicker", media: "all" %>
 <% end %>
 
 <% content_for :page_scripts do %>
