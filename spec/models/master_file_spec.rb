@@ -22,6 +22,8 @@ describe MasterFile do
     it {is_expected.to validate_inclusion_of(:workflow_name).in_array(MasterFile::WORKFLOWS)}
     xit {is_expected.to validate_presence_of(:file_format)}
     xit {is_expected.to validate_exclusion_of(:file_format).in_array(['Unknown']).with_message("The file was not recognized as audio or video.")}
+    it {is_expected.to validate_inclusion_of(:date_digitized).in_array([nil, '2016-04-07T15:05:01-05:00', '2016-04-07'])}
+    it {is_expected.to validate_exclusion_of(:date_digitized).in_array(["","2016-14-99","Blergh"]).with_message(//)}
   end
 
   describe "locations" do

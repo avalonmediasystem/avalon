@@ -70,6 +70,15 @@ class MasterFile < ActiveFedora::Base
   has_file_datastream name: 'captions'
 
   validates :workflow_name, presence: true, inclusion: { in: Proc.new{ WORKFLOWS } }
+  validates_each :date_digitized do |record, attr, value|
+    unless value.nil?
+      begin
+        Time.parse(value)
+      rescue Exception => err
+        record.errors.add attr, err.message
+      end
+    end
+  end
   validates_each :poster_offset, :thumbnail_offset do |record, attr, value|
     unless value.nil? or value.to_i.between?(0,record.duration.to_i)
       record.errors.add attr, "must be between 0 and #{record.duration}"
