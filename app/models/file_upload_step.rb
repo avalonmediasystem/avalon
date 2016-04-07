@@ -68,9 +68,9 @@ require 'avalon/dropbox'
             deleted_parts << selected_part
             selected_part.destroy
           else
-            selected_part.label = part[:label].blank? ? nil : part[:label] unless part[:label].nil?
-            selected_part.permalink = part[:permalink].blank? ? nil : part[:permalink] unless part[:permalink].nil?
-            selected_part.poster_offset = part[:poster_offset].blank? ? nil : part[:poster_offset] unless part[:poster_offset].nil?
+            selected_part.label = part[:label] unless part[:label].nil?
+            selected_part.permalink = part[:permalink] unless part[:permalink].nil?
+            selected_part.poster_offset = part[:poster_offset] unless part[:poster_offset].nil?
             selected_part.date_digitized = part[:date_digitized].blank? ? nil : part[:date_digitized] unless part[:date_digitized].nil?
             unless selected_part.save
               context[:error] ||= []
