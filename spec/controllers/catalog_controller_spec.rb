@@ -186,14 +186,20 @@ describe CatalogController do
         @media_object.save!
       end
       it "should find results based upon structure" do
-        get 'index', :q => 'CD 1'
+        get 'index', q: 'CD 1'
         expect(assigns(:document_list).count).to eq 1
-        expect(assigns(:document_list).map(&:id)). to eq [@media_object.id]
+        expect(assigns(:document_list).collect(&:id)). to eq [@media_object.id]
       end
       it 'should find results based upon section labels' do
-        get 'index', :q => 'Test Label'
+        get 'index', q: 'Test Label'
         expect(assigns(:document_list).count).to eq 1
-        expect(assigns(:document_list).map(&:id)). to eq [@media_object.id]
+        expect(assigns(:document_list).collect(&:id)). to eq [@media_object.id]
+      end
+      it 'should find items in correct relevancy order' do
+        media_object_1 = FactoryGirl.create(:fully_searchable_media_object, title: 'Test Label')
+        get 'index', q: 'Test Label'
+        expect(assigns(:document_list).count).to eq 2
+        expect(assigns(:document_list).collect(&:id)).to eq [media_object_1.id, @media_object.id]
       end
     end
 
