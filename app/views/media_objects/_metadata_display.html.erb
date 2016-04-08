@@ -26,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     
 <dl id="creation_metadata">
   <%= display_metadata('Date', combined_display_date(@mediaobject), 'Not provided') %>
-  <%= display_metadata('Main contributor', @mediaobject.creator, 'Not provided') %>
+  <%= display_metadata('Main contributor', @mediaobject.creator) %>
   <% unless @mediaobject.abstract.blank? %>
   <dt>Summary</dt>
   <dd>
