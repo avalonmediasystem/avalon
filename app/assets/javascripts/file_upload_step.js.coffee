@@ -45,3 +45,6 @@ $('.btn-confirmation')
       .popover('hide')
     $(this).popover('show')
     return false
+
+$('.date-input').datepicker
+  dateFormat: 'yy-mm-dd'
