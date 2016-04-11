@@ -1,14 +1,14 @@
 # Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
@@ -25,13 +25,13 @@ class MediaObject < ActiveFedora::Base
   require 'avalon/controlled_vocabulary'
 
   include Kaminari::ActiveFedoraModelExtension
-  
+
   # has_relationship "parts", :has_part
   has_many :parts, :class_name=>'MasterFile', :property=>:is_part_of
   belongs_to :governing_policy, :class_name=>'Admin::Collection', :property=>:is_governed_by
   belongs_to :collection, :class_name=>'Admin::Collection', :property=>:is_member_of_collection
 
-  has_metadata name: "descMetadata", type: ModsDocument	
+  has_metadata name: "descMetadata", type: ModsDocument
 
   after_create :after_create
   before_save :normalize_desc_metadata!
@@ -39,15 +39,15 @@ class MediaObject < ActiveFedora::Base
   before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :update_dependent_permalinks, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :remove_bookmarks
-  
+
 
   has_model_version 'R4'
 
   # Call custom validation methods to ensure that required fields are present and
   # that preferred controlled vocabulary standards are used
-  
+
   # Guarantees that the record is minimally complete - ie that within the descriptive
-  # metadata the title, creator, date of creation, and identifier fields are not 
+  # metadata the title, creator, date of creation, and identifier fields are not
   # blank. Since identifier is set automatically we only need to worry about creator,
   # title, and date of creation.
 
@@ -117,7 +117,7 @@ class MediaObject < ActiveFedora::Base
     }
   end
 
-  
+
   has_attributes :avalon_uploader, datastream: :DC, at: [:creator], multiple: false
   has_attributes :avalon_publisher, datastream: :DC, at: [:publisher], multiple: false
   # Delegate variables to expose them for the forms
@@ -152,7 +152,7 @@ class MediaObject < ActiveFedora::Base
   has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: true
   has_attributes :other_identifier, datastream: :descMetadata, at: [:other_identifier], multiple: true
   has_attributes :record_identifier, datastream: :descMetadata, at: [:record_identifier], multiple: true
-  
+
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
     sds.field :duration, :string
     sds.field :avalon_resource_type, :string
@@ -207,14 +207,14 @@ class MediaObject < ActiveFedora::Base
   def _section_pid
     self.sectionsMetadata.get_values(:section_pid)
   end
-  
+
   def section_pid
     ordered_pids = self._section_pid
     missing_from_order = self.part_ids - ordered_pids
     missing_parts = ordered_pids - self.part_ids
     ordered_pids + missing_from_order - missing_parts
   end
-  
+
   def section_pid=( pids )
     self.section_pid_will_change!
     self.sectionsMetadata.find_by_terms(:section_pid).each &:remove
@@ -229,7 +229,7 @@ class MediaObject < ActiveFedora::Base
 
     self._collection= co
     self.governing_policy = co
-    if (self.read_groups + self.read_users + self.discover_groups + self.discover_users).empty? 
+    if (self.read_groups + self.read_users + self.discover_groups + self.discover_users).empty?
       self.rightsMetadata.content = co.defaultRights.content unless co.nil?
     end
   end
@@ -238,7 +238,7 @@ class MediaObject < ActiveFedora::Base
   # omit the status which will default to unpublished. This makes the act
   # of publishing _explicit_ instead of an accidental side effect.
   def publish!(user_key)
-    self.avalon_publisher = user_key.blank? ? nil : user_key 
+    self.avalon_publisher = user_key.blank? ? nil : user_key
     self.save(validate: false)
   end
 
@@ -302,7 +302,7 @@ class MediaObject < ActiveFedora::Base
         elsif v.is_a?(Array) and v.first.is_a?(Hash)
           vals = []
           attrs = []
-        
+
           v.each do |entry|
             vals << entry[:value]
             attrs << entry[:attributes]
@@ -376,13 +376,13 @@ class MediaObject < ActiveFedora::Base
   end
 
   def set_media_types!
-    mime_types = parts.reject {|mf| mf.file_location.blank? }.collect { |mf| 
-      Rack::Mime.mime_type(File.extname(mf.file_location)) 
+    mime_types = parts.reject {|mf| mf.file_location.blank? }.collect { |mf|
+      Rack::Mime.mime_type(File.extname(mf.file_location))
     }.uniq
     update_attribute_in_metadata(:format, mime_types.empty? ? nil : mime_types)
   end
 
-  def set_resource_types!  
+  def set_resource_types!
     self.avalon_resource_type = parts.reject {|mf| mf.file_format.blank? }.collect{ |mf|
       case mf.file_format
       when 'Moving image'
@@ -400,10 +400,20 @@ class MediaObject < ActiveFedora::Base
     self.set_media_types!
     self.set_resource_types!
   end
-  
+
   def section_labels
     all_labels = parts.collect{|mf|mf.structural_metadata_labels << mf.label}
     all_labels.flatten.uniq.compact
+  end
+
+  # Gets all physical descriptions from master files and returns a uniq array
+  # @return [Array<String>] A unique list of all physical descriptions for the media object
+  def section_physical_descriptions
+    all_pds = []
+    self.parts.each do |master_file|
+      all_pds += master_file.descMetadata.physical_description unless master_file.descMetadata.physical_description.nil?
+    end
+    all_pds.uniq
   end
 
   def to_solr(solr_doc = Hash.new, opts = {})
@@ -428,6 +438,7 @@ class MediaObject < ActiveFedora::Base
     solr_doc["other_identifier_sim"] += parts.collect {|mf| mf.DC.identifier }.flatten
     #include labels for parts and their structural metadata
     solr_doc["section_label_tesim"] = section_labels
+    solr_doc['section_physical_descriptions_tesim'] = section_physical_descriptions
 
     #Add all searchable fields to the all_text_timv field
     all_text_values = []
@@ -458,10 +469,10 @@ class MediaObject < ActiveFedora::Base
       id: pid,
       title: title,
       collection: collection.name,
-      main_contributors: creator, 
-      publication_date: date_created, 
+      main_contributors: creator,
+      publication_date: date_created,
       published_by: avalon_publisher,
-      published: published?, 
+      published: published?,
       summary: abstract
     }
   end
@@ -512,7 +523,7 @@ class MediaObject < ActiveFedora::Base
       return successes, errors
     end
     handle_asynchronously :access_control_bulk
-    
+
     def update_status_bulk documents, user_key, params
       errors = []
       successes = []
@@ -539,7 +550,7 @@ class MediaObject < ActiveFedora::Base
       return successes, errors
     end
     handle_asynchronously :update_status_bulk
-    
+
     def delete_bulk documents, params
       errors = []
       successes = []
@@ -554,7 +565,7 @@ class MediaObject < ActiveFedora::Base
       return successes, errors
     end
     handle_asynchronously :delete_bulk
-    
+
     def move_bulk documents, params
       collection = Admin::Collection.find( params[:target_collection_id] )
       errors = []
@@ -567,7 +578,7 @@ class MediaObject < ActiveFedora::Base
         else
           errors += [media_object]
         end
-      end    
+      end
       return successes, errors
     end
     handle_asynchronously :move_bulk
@@ -576,13 +587,13 @@ class MediaObject < ActiveFedora::Base
 
   def update_permalink
     ensure_permalink!
-    unless self.descMetadata.permalink.include? self.permalink 
+    unless self.descMetadata.permalink.include? self.permalink
       self.descMetadata.permalink = self.permalink
     end
   end
-  
+
   def _update_dependent_permalinks
-    self.parts.each do |master_file| 
+    self.parts.each do |master_file|
       begin
         updated = master_file.ensure_permalink!
         master_file.save( validate: false ) if updated
@@ -593,7 +604,7 @@ class MediaObject < ActiveFedora::Base
     end
   end
   handle_asynchronously :_update_dependent_permalinks
-  
+
   def update_dependent_permalinks
     self._update_dependent_permalinks
   end
@@ -603,13 +614,13 @@ class MediaObject < ActiveFedora::Base
       b.destroy if ( !User.exists? b.user_id ) or ( Ability.new( User.find b.user_id ).cannot? :read, self )
     end
   end
-  
+
   def remove_bookmarks
     self._remove_bookmarks
   end
 
   private
-    # Put the pieces into the right order and validate to make sure that there are no 
+    # Put the pieces into the right order and validate to make sure that there are no
     # syntactic errors
     def normalize_desc_metadata!
       descMetadata.ensure_identifier_exists!
@@ -622,7 +633,7 @@ class MediaObject < ActiveFedora::Base
       self.DC.identifier = pid
       save
     end
-    
+
     def calculate_duration
       self.parts.map{|mf| mf.duration.to_i }.compact.sum
     end
@@ -634,5 +645,5 @@ class MediaObject < ActiveFedora::Base
       end
       ips.flatten.compact.uniq || []
     end
-  
+
 end
