@@ -19,7 +19,7 @@ class CatalogController < ApplicationController
   include Blacklight::Catalog
   # Extend Blacklight::Catalog with Hydra behaviors (primarily editing).
   include Hydra::Controller::ControllerBehavior
-  include Hydra::PolicyAwareAccessControlsEnforcement
+  include Hydra::MultiplePolicyAwareAccessControlsEnforcement
  
   before_filter :save_sticky_settings
 

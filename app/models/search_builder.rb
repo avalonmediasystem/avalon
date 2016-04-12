@@ -1,5 +1,5 @@
 class SearchBuilder < Hydra::SearchBuilder
-  include Hydra::PolicyAwareAccessControlsEnforcement
+  include Hydra::MultiplePolicyAwareAccessControlsEnforcement
 
   def only_wanted_models(solr_parameters)
     solr_parameters[:fq] ||= []
