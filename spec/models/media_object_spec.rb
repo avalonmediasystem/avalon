@@ -1,14 +1,14 @@
 # Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
@@ -85,19 +85,19 @@ describe MediaObject do
           expect(media_object.errors[:date_issued].present?).to be_truthy
         end
       end
-      
+
       it "should accept valid EDTF formatted dates" do
         valid_dates.keys do |d|
           media_object.date_issued = d
           expect(media_object.valid?).to be_truthy
         end
       end
-      
+
       it "should gather the year from a date string" do
         valid_dates.each_pair do |k,v|
-          expect(media_object.descMetadata.send(:gather_years, k)).to eq v        
+          expect(media_object.descMetadata.send(:gather_years, k)).to eq v
         end
-      end 
+      end
     end
 
     describe 'notes' do
@@ -123,7 +123,7 @@ describe MediaObject do
   end
 
   describe 'abilities' do
-    let (:collection) { media_object.collection.reload } 
+    let (:collection) { media_object.collection.reload }
 
     context 'when manager' do
       subject{ ability}
@@ -287,7 +287,7 @@ describe MediaObject do
     xit "should support multiple publishers" do
       media_object.publisher = ['Indiana University']
       expect(media_object.publisher.length).to eq(1)
-      
+
       publishers = ['Indiana University', 'Northwestern University', 'Ohio State University', 'Notre Dame']
       media_object.publisher = publishers
       media_object.save
@@ -295,7 +295,7 @@ describe MediaObject do
       expect(media_object.publisher).to eq(publishers)
     end
   end
-  
+
   describe "Update datastream" do
     it "should handle a complex update" do
       params = {
@@ -334,7 +334,7 @@ describe MediaObject do
       expect(media_object.date_issued).to eq '2017'
     end
   end
-  
+
   describe "Ingest status" do
     it "should default to unpublished" do
       expect(media_object.workflow.published.first).to eq "false"
@@ -344,7 +344,7 @@ describe MediaObject do
     it "should be published when the item is visible" do
       media_object.workflow.publish
 
-      expect(media_object.workflow.published).to eq(['true']) 
+      expect(media_object.workflow.published).to eq(['true'])
       expect(media_object.workflow.last_completed_step.first).to eq(HYDRANT_STEPS.last.step)
     end
 
@@ -373,21 +373,21 @@ describe MediaObject do
 
   describe '#calculate_duration' do
     it 'returns zero if there are zero master files' do
-      expect(media_object.send(:calculate_duration)).to eq(0)      
+      expect(media_object.send(:calculate_duration)).to eq(0)
     end
     it 'returns the correct duration with two master files' do
       media_object.parts << MasterFile.new(duration: '40')
       media_object.parts << MasterFile.new(duration: '40')
-      expect(media_object.send(:calculate_duration)).to eq(80)      
+      expect(media_object.send(:calculate_duration)).to eq(80)
     end
     it 'returns the correct duration with two master files one nil' do
       media_object.parts << MasterFile.new(duration: '40')
       media_object.parts << MasterFile.new(duration: nil)
-      expect(media_object.send(:calculate_duration)).to eq(40)    
+      expect(media_object.send(:calculate_duration)).to eq(40)
     end
     it 'returns the correct duration with one master file that is nil' do
       media_object.parts << MasterFile.new(duration:nil)
-      expect(media_object.send(:calculate_duration)).to eq(0)   
+      expect(media_object.send(:calculate_duration)).to eq(0)
     end
   end
 
@@ -430,7 +430,7 @@ describe MediaObject do
       end
     end
   end
-  
+
   describe '#publish!' do
     describe 'facet' do
       it 'publishes' do
@@ -439,7 +439,7 @@ describe MediaObject do
       end
       it 'unpublishes' do
         media_object.publish!(nil)
-        expect(media_object.to_solr["workflow_published_sim"]).to eq('Unpublished')        
+        expect(media_object.to_solr["workflow_published_sim"]).to eq('Unpublished')
       end
     end
   end
@@ -498,7 +498,7 @@ describe MediaObject do
     end
 
     context 'published' do
-      
+
       before(:each){ media_object.publish!('C.S. Lewis') } # saves the object
 
       it 'responds to permalink' do
@@ -559,7 +559,7 @@ describe MediaObject do
       it 'returns true when updated' do
         expect(media_object).to receive(:ensure_permalink!).at_least(1).times.and_return(false)
         media_object.publish!('C.S. Lewis')
-      end 
+      end
 
       it 'returns false when not updated' do
         media_object.publish!('C.S. Lewis')
@@ -619,7 +619,7 @@ describe MediaObject do
       media_object.section_pid = ['avalon:nope']
       expect( media_object.section_pid ).to eq(part_ids)
     end
-    
+
     it 'should report changes' do
       expect( media_object.section_pid_changed? ).to be_falsey
       expect( media_object.changes ).to eq({})
@@ -639,6 +639,42 @@ describe MediaObject do
     it 'should return correct list of labels' do
       expect(media_object.section_labels.first).to eq 'CD 1'
       expect(media_object.section_labels).to include 'Test Label'
+    end
+  end
+
+  describe '#physical_description' do
+    it 'should return a list of physical descriptions' do
+      mf = FactoryGirl.create(:master_file_with_structure, label: 'Test Label')
+      mf.descMetadata.physical_description = 'stone tablet'
+      mf.mediaobject = media_object
+      mf.save
+      media_object.save
+      expect(media_object.section_physical_descriptions).to match(['stone tablet'])
+    end
+
+    it 'should not return nil physical descriptions' do
+      mf = FactoryGirl.create(:master_file_with_structure, label: 'Test Label')
+      mf.mediaobject = media_object
+      mf.save
+      media_object.save
+      expect(media_object.section_physical_descriptions).to match([])
+    end
+
+    it 'should return a unique list of physical descriptions' do
+      mf = FactoryGirl.create(:master_file_with_structure, label: 'Test Label')
+      mf.descMetadata.physical_description = 'cave paintings'
+      mf.mediaobject = media_object
+      mf.save
+
+      mf2 = FactoryGirl.create(:master_file_with_structure, label: 'Test Label2')
+      mf2.descMetadata.physical_description = 'cave paintings'
+      mf2.mediaobject = media_object
+      mf2.save
+      media_object.save
+
+      expect(media_object.parts.size).to eq(2)
+      expect(media_object.section_physical_descriptions).to match(['cave paintings'])
+
     end
   end
 

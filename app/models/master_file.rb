@@ -45,6 +45,7 @@ class MasterFile < ActiveFedora::Base
     d.field :poster_offset, :string
     d.field :thumbnail_offset, :string
     d.field :date_digitized, :string
+    d.field :physical_description, :string
   end
 
   has_metadata name: 'mhMetadata', :type => CachingSimpleDatastream.create(self) do |d|
