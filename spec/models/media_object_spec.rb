@@ -21,9 +21,7 @@ describe MediaObject do
   describe 'validations' do
     describe 'collection' do
       it 'has errors when not present' do
-        media_object.collection = nil
-        media_object.valid?
-        expect(media_object.errors).to include(:collection)
+        expect{media_object.collection = nil}.to raise_error(ActiveFedora::RecordInvalid)
       end
       it 'does not have errors when present' do
         media_object.valid?
@@ -31,7 +29,7 @@ describe MediaObject do
       end
     end
     describe 'governing_policy' do
-      it {is_expected.to validate_presence_of(:governing_policy)}
+      it {is_expected.to validate_presence_of(:governing_policies)}
     end
     describe 'language' do
       it 'should validate valid language' do

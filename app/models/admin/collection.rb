@@ -31,7 +31,7 @@ class Admin::Collection < ActiveFedora::Base
     sds.field :description, :string
     sds.field :dropbox_directory_name
   end
-  has_metadata name: 'inheritedRights', type: Hydra::Datastream::InheritableRightsMetadata
+  has_metadata name: 'inheritedRights', type: Hydra::Datastream::InheritableRightsMetadata, autocreate: true
   has_metadata name: 'defaultRights', type: Hydra::Datastream::NonIndexedRightsMetadata, autocreate: true
 
   validates :name, :uniqueness => { :solr_name => 'name_sim'}, presence: true
