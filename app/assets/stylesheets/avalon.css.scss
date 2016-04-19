@@ -243,6 +243,15 @@ label {
   .remove:hover, .remove:active {
     @extend .btn-danger;
   }
+  td.access_list_label {
+    width: 55%;
+  }
+  td.access_list_dates {
+    width: 35%;
+  }
+  td.access_list_remove {
+    width: 10%;
+  }
 }
 
 /* UI Fixes */

@@ -1,5 +1,6 @@
 require 'hydra/head' unless defined? Hydra
 require 'hydra/multiple_policy_aware_access_controls_enforcement'
+require 'hydra/multiple_policy_aware_ability'
 
 Hydra.configure do |config|
 

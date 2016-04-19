@@ -15,7 +15,7 @@
 class Ability
   include CanCan::Ability
   include Hydra::Ability
-  include Hydra::PolicyAwareAbility
+  include Hydra::MultiplePolicyAwareAbility
 
   def user_groups
     return @user_groups if @user_groups
@@ -57,7 +57,7 @@ class Ability
   def custom_permissions(user=nil, session=nil)
     unless full_login? and @user_groups.include? "administrator"
       cannot :read, MediaObject do |mediaobject|
-        !mediaobject.published? && !test_edit(mediaobject.pid)
+        !(test_read(mediaobject.pid) && mediaobject.published?) && !test_edit(mediaobject.pid)
       end
 
       can :read, MasterFile do |master_file|

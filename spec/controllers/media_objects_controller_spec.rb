@@ -497,6 +497,25 @@ describe MediaObjectsController, type: :controller do
         }
       end
     end
+    context "Test lease access control" do
+      let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'private') }
+      let!(:user) { FactoryGirl.create(:user) }
+      before :each do
+        login_user user.username
+      end
+      it "should not be available to a user on an inactive lease" do
+        media_object.governing_policies+=[Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, read_users: [user.username])]
+        media_object.save!
+        get 'show', id: media_object.pid
+        expect(response.response_code).not_to eq(200)
+      end
+      it "should be available to a user on an active lease" do
+        media_object.governing_policies+=[Lease.create(begin_time: Date.yesterday, end_time: Date.tomorrow, read_users: [user.username])]
+        media_object.save!
+        get 'show', id: media_object.pid
+        expect(response.response_code).to eq(200)
+      end
+    end
 
     context "Conditional Share partials should be rendered" do
       context "Normal login" do
@@ -813,6 +832,77 @@ describe MediaObjectsController, type: :controller do
         media_object.reload
         media_object.parts_with_order.each_with_index do |mf,i|
           expect(mf.label).to eq "Part #{i}"
+        end
+      end
+    end
+
+    context "access controls" do
+      let!(:media_object) { FactoryGirl.create(:media_object) }
+      let!(:user) { Faker::Internet.email }
+      let!(:group) { Faker::Lorem.word }
+      let!(:classname) { Faker::Lorem.word }
+      let!(:ipaddr) { Faker::Internet.ip_v4_address }
+      before(:each) { login_user media_object.collection.managers.first }
+
+      context "grant and revoke special read access" do
+        it "grants and revokes special read access to users" do
+          expect { put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add' }.to change { media_object.reload.read_users }.from([]).to([user])
+          expect {put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', remove_user: user, submit_remove_user: 'Remove' }.to change { media_object.reload.read_users }.from([user]).to([]) 
+        end
+        it "grants and revokes special read access to groups" do
+          expect { put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_group: group, submit_add_group: 'Add' }.to change { media_object.reload.read_groups }.from([]).to([group])
+          expect { put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', remove_group: group, submit_remove_group: 'Remove' }.to change { media_object.reload.read_groups }.from([group]).to([])
+        end
+        it "grants and revokes special read access to external groups" do
+          expect { put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_class: classname, submit_add_class: 'Add' }.to change { media_object.reload.read_groups }.from([]).to([classname])
+          expect { put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', remove_class: classname, submit_remove_class: 'Remove' }.to change { media_object.reload.read_groups }.from([classname]).to([])
+        end
+        it "grants and revokes special read access to ips" do
+          expect { put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_ipaddress: ipaddr, submit_add_ipaddress: 'Add' }.to change { media_object.reload.read_groups }.from([]).to([ipaddr])
+          expect { put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', remove_ipaddress: ipaddr, submit_remove_ipaddress: 'Remove' }.to change { media_object.reload.read_groups }.from([ipaddr]).to([])
+        end
+      end
+
+      context "grant and revoke time-based special read access" do
+        it "should grant and revoke time-based access for users" do 
+          expect {
+            put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.yesterday, add_user_end: Date.tomorrow
+            media_object.reload
+          }.to change{media_object.governing_policies.count}.by(1)
+          expect(media_object.governing_policies.last.class).to eq(Lease)
+          lease_pid = media_object.reload.governing_policies.last.pid
+          expect {
+            put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', remove_lease: lease_pid
+            media_object.reload
+          }.to change{media_object.governing_policies.count}.by(-1)
+        end
+      end
+
+      context "must validate lease date ranges" do
+        it "should accept valid date range for lease" do
+          expect { 
+            put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.today, add_user_end: Date.tomorrow 
+            media_object.reload
+          }.to change{media_object.governing_policies.count}.by(1)
+        end
+        it "should reject reverse date range for lease" do
+          expect { 
+            put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.tomorrow, add_user_end: Date.today
+            media_object.reload
+          }.not_to change{media_object.governing_policies.count} 
+        end
+        it "should accept missing begin date and set it to today" do
+          expect { 
+            put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: '', add_user_end: Date.tomorrow
+            media_object.reload
+          }.to change{media_object.governing_policies.count}.by(1) 
+          expect(media_object.governing_policies.last.begin_time).to eq(Date.today)
+        end
+        it "should reject missing end date" do
+          expect { 
+            put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.tomorrow, add_user_end: ''
+            media_object.reload
+          }.not_to change{media_object.governing_policies.count} 
         end
       end
     end

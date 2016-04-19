@@ -188,9 +188,13 @@ class MediaObjectsController < ApplicationController
 
     if 'access-control' == @active_step 
       @groups = @mediaobject.local_read_groups
+      @group_leases = @mediaobject.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="local" }
       @users = @mediaobject.read_users
+      @user_leases = @mediaobject.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="user" }
       @virtual_groups = @mediaobject.virtual_read_groups
+      @virtual_leases = @mediaobject.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="external" }
       @ip_groups = @mediaobject.ip_read_groups
+      @ip_leases = @mediaobject.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="ip" }
       @visibility = @mediaobject.visibility
 
       @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }

@@ -14,9 +14,17 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-  <%= render "modules/access_control", {object: @mediaobject, visibility: @mediaobject.visibility, hidden: @mediaobject.hidden?} %>	
-  <%= render "workflow_buttons", form: 'access_control_form' %>	
+  <%= render 'modules/access_control', {object: @mediaobject, visibility: @mediaobject.visibility, hidden: @mediaobject.hidden?} %>	
+  <%= render 'workflow_buttons', form: 'access_control_form' %>	
 
 <% content_for :page_scripts do %>
+
+<% end %>
+<% content_for :page_styles do %>
+  <%= stylesheet_link_tag 'jquery-ui/datepicker', media: 'all' %>
+<% end %>
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'access_control_step' %>
   <%= javascript_include_tag 'autocomplete' %>
 <% end %>
