@@ -14,7 +14,7 @@
 
 
 class User < ActiveRecord::Base
-  
+  include Blacklight::Folders::User  
 # Connects this user object to Hydra behaviors. 
   include Hydra::User
 # Connects this user object to Blacklights Bookmarks and Folders. 

@@ -14,7 +14,7 @@
 
 # -*- encoding : utf-8 -*-
 class SolrDocument 
-
+  include Blacklight::Folders::SolrDocument
   include Blacklight::Solr::Document
   
   # The following shows how to setup this blacklight document to display marc documents

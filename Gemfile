@@ -14,6 +14,7 @@
   gem 'solrizer', '~> 3.3.0'
   gem 'rsolr', '~> 1.0.12'
   gem 'blacklight', '~> 5.10'
+  gem 'blacklight_folders', git: 'https://github.com/projectblacklight/blacklight_folders.git', branch: 'oa_support'
   gem 'nokogiri', '~> 1.6.5'
   gem 'rubydora', '~> 1.8.1'
   gem 'nom-xml', '~> 0.5.2'
