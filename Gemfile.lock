@@ -157,7 +157,7 @@ GIT
 
 GIT
   remote: https://github.com/projectblacklight/blacklight_folders.git
-  revision: eb24d61b0b39939238abca2be94e04b3d72ec104
+  revision: ca66fb07413b0844164a0a9394c9949ab4b48752
   branch: oa_support
   specs:
     blacklight_folders (1.0.1)
