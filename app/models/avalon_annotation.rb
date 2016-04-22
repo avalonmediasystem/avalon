@@ -14,6 +14,7 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   def initialize(master_file: master_file)
     super
     @master_file = master_file
+    self.source = @master_file
     selector_default!
     # title_default!
     self
@@ -27,7 +28,7 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
     # TODO: User Key via parsing of User URI
     # TODO: Turn me on when mbk has label implemented
     # solr_hash[:title_ssi] = title
-    solr_hash[:master_file_uri_ssi] = @master_file.rdf_uri
+    solr_hash[:master_file_uri_ssi] = @master_file.send(:rdf_uri)
     solr_hash[:master_file_rdf_type_ssi] = @master_file.rdf_type
     solr_hash[:start_time_fsi] = start_time
     solr_hash[:end_time_fsi] = end_time
