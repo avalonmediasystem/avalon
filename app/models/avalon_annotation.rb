@@ -1,5 +1,7 @@
 # TODO: Class level yardoc
 class AvalonAnnotation < ActiveAnnotations::Annotation
+  attr_accessor :master_file
+
   alias_method :comment, :content
   alias_method :comment=, :content=
 
@@ -9,7 +11,7 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
 
   # Intialize an annotation with the start and end time set to the lengths of the master_file by default
   # @param [MasterFile] :source the master file referenced by the annotation
-  def initialize(source: master_file)
+  def initialize(master_file: master_file)
     super
     @master_file = master_file
     selector_default!
@@ -56,8 +58,8 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   # Calcuates the mediafragment_uri based on either the internal fragment value or start and end times
   # @return [String] the uri with time bounding
   def mediafragment_uri
-    rdf_uri + "?#{internal.fragment_value}"
+    @master_file.send(:rdf_uri) + "?#{internal.fragment_value}"
   rescue
-    rdf_uri + "?t#{start_time},#{end_time}"
+    @master_file.send(:rdf_uri) + "?t#{start_time},#{end_time}"
   end
 end
