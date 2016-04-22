@@ -654,4 +654,17 @@ class MasterFile < ActiveFedora::Base
     ActiveEncode::Base.descendants.find { |c| c.name == klass_name }
   end
 
+  # Supplies the route to the master_file as an rdf formatted URI
+  # @return [String] the route as a uri
+  # @example uri for a mf on avalon.iu.edu with a pid of: avalon:1820
+  #   "my_masterfile.rdf_uri" #=> "https://www.avalon.iu.edu/master_files/avalon:1820"
+  def rdf_uri
+    master_file_url(pid)
+  end
+
+  # Returns the dctype of the master_file
+  # @return [String] either 'dctypes:MovingImage' or 'dctypes:Sound'
+  def rdf_type
+    is_video? ? 'dctypes:MovingImage' : 'dctypes:Sound'
+  end
 end
