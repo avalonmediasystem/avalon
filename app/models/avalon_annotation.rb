@@ -28,7 +28,7 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
     # TODO: User Key via parsing of User URI
     # TODO: Turn me on when mbk has label implemented
     # solr_hash[:title_ssi] = title
-    solr_hash[:master_file_uri_ssi] = @master_file.send(:rdf_uri)
+    solr_hash[:master_file_uri_ssi] = @master_file.rdf_uri
     solr_hash[:master_file_rdf_type_ssi] = @master_file.rdf_type
     solr_hash[:start_time_fsi] = start_time
     solr_hash[:end_time_fsi] = end_time
@@ -59,8 +59,8 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   # Calcuates the mediafragment_uri based on either the internal fragment value or start and end times
   # @return [String] the uri with time bounding
   def mediafragment_uri
-    @master_file.send(:rdf_uri) + "?#{internal.fragment_value}"
+    @master_file.rdf_uri + "?#{internal.fragment_value}"
   rescue
-    @master_file.send(:rdf_uri) + "?t#{start_time},#{end_time}"
+    @master_file.rdf_uri + "?t#{start_time},#{end_time}"
   end
 end
