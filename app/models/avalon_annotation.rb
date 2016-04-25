@@ -5,9 +5,8 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   alias_method :comment, :content
   alias_method :comment=, :content=
 
-  # TODO: Turn me on when label is implemented
-  # alias_method :title, :label
-  # alias_method :title=, :label=
+  alias_method :title, :label
+  alias_method :title=, :label=
 
   # Intialize an annotation with the start and end time set to the lengths of the master_file by default
   # @param [MasterFile] :source the master file referenced by the annotation
@@ -16,7 +15,7 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
     @master_file = master_file
     self.source = @master_file
     selector_default!
-    # title_default!
+    title_default!
     self
   end
 
@@ -26,8 +25,7 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
     init_masterfile if @master_file.nil?
     solr_hash = {}
     # TODO: User Key via parsing of User URI
-    # TODO: Turn me on when mbk has label implemented
-    # solr_hash[:title_ssi] = title
+    solr_hash[:title_ssi] = title
     solr_hash[:master_file_uri_ssi] = @master_file.rdf_uri
     solr_hash[:master_file_rdf_type_ssi] = @master_file.rdf_type
     solr_hash[:start_time_fsi] = start_time
@@ -47,7 +45,6 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
 
   # Set the default title to be the label of the master_file
   def title_default!
-    #TODO: Make sure mbklein has used .title for the accessor here
     self.title = @master_file.label
   end
 
