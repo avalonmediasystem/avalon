@@ -37,8 +37,8 @@ class Users::ProvidersController < ApplicationController
       logger.info "signing in as user #{user.inspect}"
       if user[0].email != email
         logger.info "email from ldap #{email} doesn't match email in this app #{user[0].email}, update."
-        user.email = email
-        user.save!
+        user[0].email = email
+        user[0].save!
       end
       flash[:notice] = "Signed in successfully via #{provider.upcase} as #{username} with email #{email}."
       sign_in_and_redirect(user[0]) and return
