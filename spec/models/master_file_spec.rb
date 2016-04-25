@@ -437,7 +437,25 @@ describe MasterFile do
   end
 
   describe 'rdf formatted information' do
-    #TODO: Write me
+    subject(:video_master_file) { FactoryGirl.create(:master_file) }
+    subject(:sound_master_file) { FactoryGirl.create(:master_file_sound) }
+    describe 'type' do
+      it 'returns dctypes:MovingImage when the file is a video' do
+        expect(video_master_file.rdf_type).to match('dctypes:MovingImage')
+      end
+      it 'return dctypes:Sound when the file is audio' do
+        expect(sound_master_file.rdf_type).to match('dctypes:Sound')
+      end
+    end
+    describe 'uri' do
+      it 'returns a uri for a sound master file' do
+        expect(sound_master_file.rdf_uri.class).to eq(String)
+        expect { URI.parse(sound_master_file.rdf_uri) }.not_to raise_error
+      end
+      it 'returns a uri for a video master file' do
+        expect(video_master_file.rdf_uri.class).to eq(String)
+        expect { URI.parse(video_master_file.rdf_uri) }.not_to raise_error
+      end
+    end
   end
-
 end
