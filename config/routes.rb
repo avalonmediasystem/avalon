@@ -20,11 +20,18 @@ Avalon::Application.routes.draw do
 
   root :to => "catalog#index"
 
-  devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }, format: false
+  #devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }, format: false
+  #devise_scope :user do 
+  #  match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session, via: [:get]
+  #  match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
+  #end
+
+  devise_for :users
   devise_scope :user do 
-    match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session, via: [:get]
-    match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
+    match 'users/auth/:provider/callback', :to => "users/providers#login", via: [:get]
+    match '/users/sign_out', :to => "users/providers#logout", :as => :destroy_user_session, via: [:get]
   end
+
   match "/authorize", to: 'derivatives#authorize', via: [:get, :post]
   match "/authorize/:path", to: 'derivatives#authorize', via: [:get, :post]
   match "/autocomplete", to: 'object#autocomplete', via: [:get]

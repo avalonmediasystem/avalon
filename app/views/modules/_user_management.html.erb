@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <%# The containers for the links need to be defined by the calling partial %>
     <% if user_signed_in? %>
-      <%= user_key %> <%= link_to t('auth.sign_out'), destroy_user_session_path %>
+      <%= user_key %> <%= "  #{current_user.email}" %><%= link_to t('auth.sign_out'), destroy_user_session_path %>
     <% else %>
-      <%= link_to t('auth.sign_in'), new_user_session_path %>
+      <%= link_to t('auth.sign_in'), "users/auth/cas" %>
     <% end %>
