@@ -27,37 +27,4 @@ class Users::SessionsController < Devise::SessionsController
     flash[:success] = flash[:notice]
     flash[:notice] = nil
   end
-
-  def login
-    logger.info "in omniauth callback after logging in"
-    
-    params[:provider] ? provider = params[:provider] : provider = ""
-    user_info = getExtraFromLDAP(request.env["omniauth.auth"].uid)
-    user_info["mail"] ? email = user_info["mail"][0] : email = ""
-    user_info["uid"] ? uid = user_info["uid"][0] : uid = ""
-    logger.info "provider: #{provider}"
-    logger.info "email: #{email}"
-    logger.info "uid: #{uid}"
-    redirect_to root_path
-  end
-
-  def logout
-    logger.info "logging out of cas"
-    redirect_to 'https://secure.its.yale.edu/cas/logout'
-  end
-
-  protected
-
-  def getExtraFromLDAP(netid)
-    begin
-      require 'net/ldap'
-      ldap = Net::LDAP.new( :host =>"directory.yale.edu" , :port =>"389" )
-      f = Net::LDAP::Filter.eq('uid', netid)
-      b = 'ou=People,o=yale.edu'
-      p = ldap.search(:base => b, :filter => f, :return_result => true).first
-    rescue Exception => e
-      return
-    end
-    return p
-  end
 end
