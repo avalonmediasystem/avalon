@@ -28,8 +28,8 @@ Avalon::Application.routes.draw do
 
   devise_for :users
   devise_scope :user do 
-    match 'users/auth/:provider/callback', :to => "users/sessions#login", via: [:get]
-    match '/users/sign_out', :to => "users/sessions#logout", via: [:get]
+    match 'users/auth/:provider/callback', :to => "users/providers#login", via: [:get]
+    match '/users/sign_out', :to => "users/providers#logout", :as => :destroy_user_session, via: [:get]
   end
 
   match "/authorize", to: 'derivatives#authorize', via: [:get, :post]
