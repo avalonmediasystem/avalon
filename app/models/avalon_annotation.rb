@@ -1,5 +1,7 @@
 # TODO: Class level yardoc
 class AvalonAnnotation < ActiveAnnotations::Annotation
+  after_save :update_index
+
   attr_accessor :master_file
 
   alias_method :comment, :content
@@ -35,6 +37,11 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
     solr_hash[:referenced_source_type_ssi] = 'MasterFile'
     solr_hash[:reference_type] = 'MediaFragment'
     solr_hash
+  end
+
+  # Solrize the Avalon Annotation in the application's solr core
+  def update_index
+    SolrService.add(to_solr, softCommit: true)
   end
 
   # Sets the default selector to a start time of 0 and an end time of the master file length
