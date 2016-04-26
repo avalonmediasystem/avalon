@@ -13,7 +13,7 @@ before_install:
 before_script:
   - bundle exec rake jetty:unzip jetty:config jetty:start delayed_job:start
   - bundle exec rake db:migrate
-  - rails generate active_annotations:install
+  - bundle exec rake avalon:db_migrate
 notifications:
   irc: "chat.freenode.net#projectvov"
 language: ruby
