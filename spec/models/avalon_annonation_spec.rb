@@ -80,7 +80,13 @@ describe AvalonAnnotation do
       expect{ annotation.mediafragment_uri }.not_to raise_error
     end
   end
-  it 'can create a solr hash' do
-    expect(annotation.to_solr.class).to eq(Hash)
+  describe 'solr' do
+    it 'can create a solr hash' do
+      expect(annotation.to_solr.class).to eq(Hash)
+    end
+    it 'can save the document and solrizer it' do
+      expect { annotation.save }.not_to raise_error
+    end
   end
+
 end

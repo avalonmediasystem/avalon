@@ -27,6 +27,8 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
     init_masterfile if @master_file.nil?
     solr_hash = {}
     # TODO: User Key via parsing of User URI
+    #byebug
+    solr_hash[:id] = uuid.split(':').last
     solr_hash[:title_ssi] = title
     solr_hash[:master_file_uri_ssi] = @master_file.rdf_uri
     solr_hash[:master_file_rdf_type_ssi] = @master_file.rdf_type
@@ -35,13 +37,13 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
     solr_hash[:mediafragment_uri_ssi] = mediafragment_uri
     solr_hash[:comment_ssi] = comment unless comment.nil?
     solr_hash[:referenced_source_type_ssi] = 'MasterFile'
-    solr_hash[:reference_type] = 'MediaFragment'
+    solr_hash[:reference_type_ssi] = 'MediaFragment'
     solr_hash
   end
 
   # Solrize the Avalon Annotation in the application's solr core
   def update_index
-    SolrService.add(to_solr, softCommit: true)
+    ActiveFedora::SolrService.add(to_solr, softCommit: true)
   end
 
   # Sets the default selector to a start time of 0 and an end time of the master file length
