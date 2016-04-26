@@ -84,8 +84,14 @@ describe AvalonAnnotation do
     it 'can create a solr hash' do
       expect(annotation.to_solr.class).to eq(Hash)
     end
-    it 'can save the document and solrizer it' do
+    it 'can save the annotation and solrize it' do
+      expect(annotation).to receive(:post_to_solr).once
       expect { annotation.save }.not_to raise_error
+    end
+    it 'can destroy annotation and remove it from solr' do
+      annotation.save!
+      expect(annotation).to receive(:delete_from_solr).once
+      expect { annotation.destroy }.not_to raise_error
     end
   end
 
