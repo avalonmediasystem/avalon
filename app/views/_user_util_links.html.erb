@@ -34,14 +34,14 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     </li>
     <% end %>
-    <% if render_folders_control? %>
+    <%# if render_folders_control? %>
     <li class=<%= active_for_controller('folders') %>>
       <%= link_to blacklight_folders.folders_path, id:'folders_nav' do %>
         <%= t('blacklight.header_links.folders') %>
 	(<span data-role='bookmark-counter'><%= current_or_guest_user.folders.count %></span>)
       <% end %>
     </li>
-    <% end %>
+    <%# end %>
     <li class="divider desktop-hidden" />
     <%= link_to_if user_signed_in?, 'Sign out', destroy_user_session_path do %>
     <%# Fallback if the test above fails %>

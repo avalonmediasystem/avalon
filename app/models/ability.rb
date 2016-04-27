@@ -176,11 +176,11 @@ class Ability
     def folder_permissions(user)
       can_manage_my_own_folders(user)
       can_read_public_folders(user)
-      can :index, Blacklight::Folders::Folder, user_id: user.id if user.persisted?
+      can :index, Blacklight::Folders::Folder, user_id: user.try(:id)
     end
 
     def can_manage_my_own_folders(user)
-      return unless user.persisted?
+      return unless user
       can [:update_bookmarks], Blacklight::Folders::Folder, user_id: user.id
       if user.guest?
         guest_permissions(user)
@@ -197,9 +197,10 @@ class Ability
 
 
     def guest_permissions(user)
-      return unless user.persisted?
-      can [:read, :update], Blacklight::Folders::Folder, ['user_id = ? AND id IS NOT NULL', user.id] do |f|
-        f.user_id == user.id && f.persisted?
+      if user.persisted?
+        can [:read, :update], Blacklight::Folders::Folder, ['user_id = ? AND id IS NOT NULL', user.id] do |f|
+          f.user_id == user.id && f.persisted?
+        end
       end
     end
 
