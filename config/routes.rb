@@ -1,5 +1,4 @@
 Avalon::Application.routes.draw do
-  mount Blacklight::Folders::Engine, at: "blacklight"
   mount BrowseEverything::Engine => '/browse'
 #  HydraHead.add_routes(self)
 

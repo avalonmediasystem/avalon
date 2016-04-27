@@ -164,18 +164,6 @@ GIT
       rest-client
 
 GIT
-  remote: https://github.com/projectblacklight/blacklight_folders.git
-  revision: eb24d61b0b39939238abca2be94e04b3d72ec104
-  branch: oa_support
-  specs:
-    blacklight_folders (1.0.1)
-      acts_as_list (>= 0.4.0)
-      blacklight (>= 5.16.4, < 6)
-      cancancan (~> 1.9)
-      rails (>= 4.0.1, < 5)
-      select2-rails (~> 3.5.9.1)
-
-GIT
   remote: https://github.com/projecthydra-labs/active_encode.git
   revision: d95ce45651f77acc220968c1169e9863bedd31de
   specs:
@@ -228,8 +216,6 @@ GEM
       multi_json (~> 1.3)
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
-    acts_as_list (0.7.4)
-      activerecord (>= 3.0)
     addressable (2.3.7)
     api-pagination (4.1.1)
     arel (4.0.2)
@@ -653,8 +639,6 @@ GEM
       sprockets (~> 2.8, <= 2.11.0)
       sprockets-rails (~> 2.0)
     scrub_rb (1.0.1)
-    select2-rails (3.5.9.3)
-      thor (~> 0.14)
     shoulda-matchers (2.8.0)
       activesupport (>= 3.0.0)
     signet (0.6.0)
@@ -759,7 +743,6 @@ DEPENDENCIES
   better_errors
   binding_of_caller
   blacklight (~> 5.10)
-  blacklight_folders!
   bootstrap-sass (= 3.3.3)
   bootstrap_form
   browse-everything (= 0.6.3)
