@@ -18,7 +18,7 @@ class ApplicationController < ActionController::Base
 
   # Adds a few additional behaviors into the application controller 
   include Blacklight::Controller  
-#  include Blacklight::Folders::ApplicationControllerBehavior
+  include Blacklight::Folders::ApplicationControllerBehavior
   # Adds Hydra behaviors into the application controller 
   include Hydra::Controller::ControllerBehavior
 
