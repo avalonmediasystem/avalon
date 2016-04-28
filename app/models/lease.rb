@@ -91,4 +91,16 @@ class Lease < ActiveFedora::Base
   def end_of_day(time)
     DateTime.parse(time.to_s).utc.end_of_day.iso8601
   end
+
+  # Calculate lease type by inspecting read_users and read_groups values, each of which are assumed to contain a single value
+  # @return [String] "user" for user lease, "ip" for ip group lease, "local" for local group lease, "external" for external group lease, nil for others
+  def lease_type
+    return "user" if self.read_users.present?
+    group = self.read_groups.first
+    return nil if group.nil?
+    return "ip" if IPAddr.new(group) rescue false
+    return "local" if Admin::Group.exists? group
+    return "external"
+  end
+
 end

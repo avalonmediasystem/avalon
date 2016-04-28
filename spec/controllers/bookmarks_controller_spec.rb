@@ -150,6 +150,17 @@ describe BookmarksController, type: :controller do
             expect(mo.read_users).to include 'cjcolvar'
           end
         end
+	it 'adds a time-based user to the selected items' do
+          post 'update_access_control', submit_add_user: 'Add', add_user_begin: Date.yesterday, add_user_end: Date.today, user: 'cjcolvar'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.governing_policies[1].read_users).to include 'cjcolvar'
+            expect(mo.governing_policies[1].begin_time).to eq DateTime.parse(Date.yesterday.to_s).utc.beginning_of_day.iso8601
+            expect(mo.governing_policies[1].end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
+          end
+        end
+
 	it 'removes a user from the selected items' do
           media_objects.each do |mo|
             mo.read_users += ["john.doe"]
@@ -163,6 +174,19 @@ describe BookmarksController, type: :controller do
             expect(mo.read_users).not_to include 'john.doe'
           end
         end
+	it 'removes a time-based user from the selected items' do
+          media_objects.each do |mo|
+            mo.governing_policies += [Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, read_users: ['jane.doe'])]
+            mo.save
+            mo.reload
+          end
+          post 'update_access_control', submit_remove_user: 'Remove', user: 'john.doe'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.governing_policies.collect{|p|p.read_users}.flatten.uniq.compact).not_to include 'john.doe'
+          end
+        end
       end
       context 'groups' do
 	it 'adds a group to the selected items' do
@@ -171,6 +195,16 @@ describe BookmarksController, type: :controller do
           media_objects.each do |mo|
             mo.reload
             expect(mo.read_groups).to include 'students'
+          end
+        end
+	it 'adds a time-based group to the selected items' do
+          post 'update_access_control', submit_add_group: 'Add', add_group_begin: Date.yesterday, add_group_end: Date.today, group: 'students'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.governing_policies[1].read_groups).to include 'students'
+            expect(mo.governing_policies[1].begin_time).to eq DateTime.parse(Date.yesterday.to_s).utc.beginning_of_day.iso8601
+            expect(mo.governing_policies[1].end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
           end
         end
 	it 'removes a group from the selected items' do
@@ -186,6 +220,19 @@ describe BookmarksController, type: :controller do
             expect(mo.read_groups).not_to include 'test-group'
           end
         end
+	it 'removes a time-based group from the selected items' do
+          media_objects.each do |mo|
+            mo.governing_policies += [Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, read_groups: ['test-group'])]
+            mo.save
+            mo.reload
+          end
+          post 'update_access_control', submit_remove_group: 'Remove', group: 'test-group'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.governing_policies.collect{|p|p.read_groups}.flatten.uniq.compact).not_to include 'test-group'
+          end
+        end
       end
       context 'external groups' do
 	it 'adds an external group to the selected items' do
@@ -194,6 +241,16 @@ describe BookmarksController, type: :controller do
           media_objects.each do |mo|
             mo.reload
             expect(mo.read_groups).to include 'ECON-101'
+          end
+        end
+	it 'adds a time-based external group to the selected items' do
+          post 'update_access_control', submit_add_class: 'Add', add_class_begin: Date.yesterday, add_class_end: Date.today, class: 'ECON-101'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.governing_policies[1].read_groups).to include 'ECON-101'
+            expect(mo.governing_policies[1].begin_time).to eq DateTime.parse(Date.yesterday.to_s).utc.beginning_of_day.iso8601
+            expect(mo.governing_policies[1].end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
           end
         end
 	it 'removes an external group from the selected items' do
@@ -207,6 +264,65 @@ describe BookmarksController, type: :controller do
           media_objects.each do |mo|
             mo.reload
             expect(mo.read_groups).not_to include 'MUSIC-101'
+          end
+        end
+	it 'removes a time-based external group from the selected items' do
+          media_objects.each do |mo|
+            mo.governing_policies += [Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, read_groups: ['MUSIC-101'])]
+            mo.save
+            mo.reload
+          end
+          post 'update_access_control', submit_remove_class: 'Remove', class: 'MUSIC-101'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.governing_policies.collect{|p|p.read_groups}.flatten.uniq.compact).not_to include 'MUSIC-101'
+          end
+        end
+      end
+      context 'ip groups' do
+	it 'adds an ip group to the selected items' do
+          post 'update_access_control', submit_add_ipaddress: 'Add', ipaddress: '127.0.0.127'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.read_groups).to include '127.0.0.127'
+          end
+        end
+	it 'adds a time-based ip group to the selected items' do
+          post 'update_access_control', submit_add_ipaddress: 'Add', add_ipaddress_begin: Date.yesterday, add_ipaddress_end: Date.today, ipaddress: '127.0.0.127'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.governing_policies[1].read_groups).to include '127.0.0.127'
+            expect(mo.governing_policies[1].begin_time).to eq DateTime.parse(Date.yesterday.to_s).utc.beginning_of_day.iso8601
+            expect(mo.governing_policies[1].end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
+          end
+        end
+	it 'removes an ip group from the selected items' do
+          media_objects.each do |mo|
+            mo.read_groups += ["127.0.0.127"]
+            mo.save
+            mo.reload
+          end
+          post 'update_access_control', submit_remove_ipaddress: 'Remove', ipaddress: '127.0.0.127'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.read_groups).not_to include '127.0.0.127'
+          end
+        end
+	it 'removes a time-based ip group from the selected items' do
+          media_objects.each do |mo|
+            mo.governing_policies += [Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, read_groups: ['127.0.0.127'])]
+            mo.save
+            mo.reload
+          end
+          post 'update_access_control', submit_remove_ipaddress: 'Remove', ipaddress: '127.0.0.127'
+          expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
+          media_objects.each do |mo|
+            mo.reload
+            expect(mo.governing_policies.collect{|p|p.read_groups}.flatten.uniq.compact).not_to include '127.0.0.127'
           end
         end
       end

@@ -494,14 +494,46 @@ class MediaObject < ActiveFedora::Base
         # Limited access stuff
         ["group", "class", "user", "ipaddress"].each do |title|
           if params["submit_add_#{title}"].present?
+            begin_time = params["add_#{title}_begin"].blank? ? nil : params["add_#{title}_begin"] 
+            end_time = params["add_#{title}_end"].blank? ? nil : params["add_#{title}_end"]
+            create_lease = begin_time.present? || end_time.present?
+
             if params[title].present?
               val = params[title].strip
               if title=='user'
-                media_object.read_users += [val]
+                if create_lease
+                  begin
+                    media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, read_users: [val]) ]
+                  rescue Exception => e
+                    errors += [media_object]
+                  end
+                else
+                  media_object.read_users += [val]
+                end
               elsif title=='ipaddress'
-                media_object.read_groups += [val] if ( IPAddr.new(val) rescue false )
+                if ( IPAddr.new(val) rescue false )
+                  if create_lease
+                    begin
+                      media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, read_groups: [val]) ]
+                    rescue Exception => e
+                      errors += [media_object]
+                    end
+                  else
+                    media_object.read_groups += [val]
+                  end
+                else
+                  context[:error] = "IP Address #{val} is invalid. Valid examples: 124.124.10.10, 124.124.0.0/16, 124.124.0.0/255.255.0.0"
+                end
               else
-                media_object.read_groups += [val]
+                if create_lease
+                  begin
+                    media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, read_groups: [val]) ]
+                  rescue Exception => e
+                    errors += [media_object]
+                  end
+                else
+                  media_object.read_groups += [val]
+                end
               end
             end
           end
@@ -509,13 +541,25 @@ class MediaObject < ActiveFedora::Base
             if params[title].present?
               if ["group", "class", "ipaddress"].include? title
                 media_object.read_groups -= [params[title]]
+                media_object.governing_policies.each do |policy|
+                  if policy.class==Lease && policy.read_groups.include?(params[title])
+                    media_object.governing_policies.delete policy
+                    policy.destroy
+                  end
+                end
               else
                 media_object.read_users -= [params[title]]
+                media_object.governing_policies.each do |policy|
+                  if policy.class==Lease && policy.read_users.include?(params[title])
+                    media_object.governing_policies.delete policy
+                    policy.destroy
+                  end
+                end
               end
             end
           end
         end
-        if media_object.save
+        if errors.empty? && media_object.save
           successes += [media_object]
         else
           errors += [media_object]
