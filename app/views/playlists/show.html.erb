@@ -1,19 +1,41 @@
-<p id="notice"><%= notice %></p>
+<div class="playlist-view">
+  <p id="notice"><%= notice %></p>
 
-<p>
-  <strong>Title:</strong>
-  <%= @playlist.title %>
-</p>
+ <% if can? :edit, @playlist %>
+    <div class="primary-actions">
+      <%= link_to edit_playlist_path(@playlist), class: 'btn btn-default' do %>
+        <span class="glyphicon glyphicon-pencil"></span> Edit
+      <% end %>
+     </div>
+  <% end %>
+  <h1><%= @playlist.title %></h1>
+  <div>
+    <span class="owner-label"><%= t("playlist.user", scope: "helpers.label") %>:</span> <span class="owner"><%= @playlist.user %></span>
+  </div>
 
-<p>
-  <strong>Comment:</strong>
-  <%= @playlist.comment %>
-</p>
+  <div>
+    <span class="visibility-label"><%= t("playlist.visibility", scope: "helpers.label") %>:</span> <span class="visibility"><%= human_friendly_visibility(@playlist.visibility) %></span>
+  </div>
 
-<p>
-  <strong>Visibility:</strong>
-  <%= @playlist.visibility %>
-</p>
+  <div>
+    <span class="created-label">
+      <%= t("playlist.created", scope: "helpers.label") %>:
+    </span>
+    <span class="created" title="<%= @playlist.created_at %>">
+      <%= t('playlist.ago', time: time_ago_in_words(@playlist.created_at)) %>
+    </span>
+  </div>
 
-<%= link_to 'Edit', edit_playlist_path(@playlist) %> |
-<%= link_to 'Back', playlists_path %>
+  <div>
+    <span class="updated-label">
+      <%= t("playlist.updated", scope: "helpers.label") %>:
+    </span>
+    <span class="updated" title="<%= @playlist.updated_at %>">
+      <%= t('playlist.ago', time: time_ago_in_words(@playlist.updated_at)) %>
+    </span>
+  </div>
+
+  <div id="annotations">
+    <%= render partial: 'playlist_item', collection: @playlist.items, locals: { annotations: @playlist.annotations } %>
+  </div>
+</div>
