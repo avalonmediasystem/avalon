@@ -43,7 +43,11 @@ class AvalonAnnotationController < ApplicationController
   #    app.post('/avalon_annotation/', {master_file: 'avalon:20'})
   def create
     fail ArgumentError, 'Master File Not Supplied' if params[:master_file].nil?
-    mf = MasterFile.find(params[:master_file])
+    begin
+      mf = MasterFile.find(params[:master_file])
+    rescue
+      mf = nil
+    end
     not_found(item: :master_file) if mf.nil?
     @annotation = AvalonAnnotation.create(master_file: mf)
     selected_key_updates
@@ -74,7 +78,7 @@ class AvalonAnnotationController < ApplicationController
     lookup_annotation
     id = @annotation.uuid
     @annotation.destroy
-    render json: { action: 'destroy', id: id, sucess: true }
+    render json: { action: 'destroy', id: id, success: true }
   end
 
   # Looks up an annotation using the id key in params and sets @annotation
@@ -89,7 +93,7 @@ class AvalonAnnotationController < ApplicationController
     @attr_keys.each do |key|
       updates[key] = params[key] unless params[key].nil?
     end
-    @annotation.update(updates) unless updates.keys.nil?
+    @annotation.update(updates) unless updates.keys.size == 0
     @annotation.reload
   end
 
