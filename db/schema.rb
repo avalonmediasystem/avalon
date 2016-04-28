@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160427165749) do
+ActiveRecord::Schema.define(version: 20160428133859) do
 
   create_table "blacklight_folders_folder_items", force: true do |t|
     t.integer  "folder_id",   null: false
@@ -88,6 +88,17 @@ ActiveRecord::Schema.define(version: 20160427165749) do
     t.datetime "updated_at"
     t.string   "name",             limit: 50
   end
+
+  create_table "playlist_items", force: true do |t|
+    t.integer  "playlist_id",   null: false
+    t.integer  "annotation_id", null: false
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "playlist_items", ["annotation_id"], name: "index_playlist_items_on_annotation_id"
+  add_index "playlist_items", ["playlist_id"], name: "index_playlist_items_on_playlist_id"
 
   create_table "playlists", force: true do |t|
     t.string   "title"

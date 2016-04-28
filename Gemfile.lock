@@ -216,6 +216,8 @@ GEM
       multi_json (~> 1.3)
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
+    acts_as_list (0.7.4)
+      activerecord (>= 3.0)
     addressable (2.3.7)
     api-pagination (4.1.1)
     arel (4.0.2)
@@ -735,6 +737,7 @@ DEPENDENCIES
   active_encode!
   activerecord-jdbcsqlite3-adapter
   activerecord-session_store
+  acts_as_list
   addressable
   api-pagination
   avalon-about!

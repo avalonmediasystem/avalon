@@ -8,9 +8,9 @@ class Playlist < ActiveRecord::Base
   after_initialize :default_values
 
   # TODO: uncomment these when the PlaylistItem model has been created
-  # has_many :items, -> { order('position ASC') }, class_name: 'PlaylistItem', dependent: :destroy
-  # has_many :avalon_annotations, -> { order('playlist_items.position ASC') }, through: :items
-  # accepts_nested_attributes_for :items, allow_destroy: true
+  has_many :items, -> { order('position ASC') }, class_name: PlaylistItem, dependent: :destroy
+  has_many :annotations, -> { order('playlist_items.position ASC') }, class_name: AvalonAnnotation, through: :items
+  accepts_nested_attributes_for :items, allow_destroy: true
 
   # visibility
   PUBLIC = 'public'

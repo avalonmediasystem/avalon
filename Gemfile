@@ -44,6 +44,7 @@
   gem 'rubyzip', '0.9.9'
   gem 'hooks'
   gem 'addressable'
+  gem 'acts_as_list'
 
   # microdata
   gem 'ruby-duration'
