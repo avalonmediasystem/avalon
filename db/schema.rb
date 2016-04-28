@@ -11,7 +11,30 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150625121750) do
+ActiveRecord::Schema.define(version: 20160427165749) do
+
+  create_table "blacklight_folders_folder_items", force: true do |t|
+    t.integer  "folder_id",   null: false
+    t.integer  "bookmark_id", null: false
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "blacklight_folders_folder_items", ["bookmark_id"], name: "index_blacklight_folders_folder_items_on_bookmark_id"
+  add_index "blacklight_folders_folder_items", ["folder_id"], name: "index_blacklight_folders_folder_items_on_folder_id"
+
+  create_table "blacklight_folders_folders", force: true do |t|
+    t.string   "name"
+    t.integer  "user_id",                       null: false
+    t.string   "user_type",                     null: false
+    t.string   "visibility"
+    t.integer  "number_of_members", default: 0, null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "blacklight_folders_folders", ["user_id", "user_type"], name: "index_blacklight_folders_folders_on_user_id_and_user_type"
 
   create_table "bookmarks", force: true do |t|
     t.integer  "user_id",       null: false
@@ -66,6 +89,17 @@ ActiveRecord::Schema.define(version: 20150625121750) do
     t.string   "name",             limit: 50
   end
 
+  create_table "playlists", force: true do |t|
+    t.string   "title"
+    t.integer  "user_id",    null: false
+    t.string   "comment"
+    t.string   "visibility"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "playlists", ["user_id"], name: "index_playlists_on_user_id"
+
   create_table "role_maps", force: true do |t|
     t.string  "entry"
     t.integer "parent_id"
@@ -82,8 +116,8 @@ ActiveRecord::Schema.define(version: 20150625121750) do
   add_index "searches", ["user_id"], name: "index_searches_on_user_id"
 
   create_table "sessions", force: true do |t|
-    t.string   "session_id", null: false
-    t.text     "data"
+    t.string   "session_id",                  null: false
+    t.text     "data",       limit: 16777215
     t.datetime "created_at"
     t.datetime "updated_at"
   end
