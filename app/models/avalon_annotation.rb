@@ -79,8 +79,8 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   # Calcuates the mediafragment_uri based on either the internal fragment value or start and end times
   # @return [String] the uri with time bounding
   def mediafragment_uri
-    @master_file.rdf_uri + "?#{internal.fragment_value}"
+    @master_file.rdf_uri + "?#{internal.fragment_value.object}"
   rescue
-    @master_file.rdf_uri + "?t#{start_time},#{end_time}"
+    @master_file.rdf_uri + "?t=#{start_time},#{end_time}"
   end
 end

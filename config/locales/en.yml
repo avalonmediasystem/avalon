@@ -181,3 +181,5 @@ en:
       title: '%{media_object_title} - %{application_name}'
     player:
       customError: 'Your browser requires Adobe Flash Player in order to play this item. For more information, see <a href="https://helpx.adobe.com/flash-player.html" target="_blank">Adobe Flash Player Help</a>.'
+  playlist:
+    ago: "%{time} ago"
