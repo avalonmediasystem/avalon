@@ -74,7 +74,7 @@ Avalon::Application.routes.draw do
   match '/media_objects/:media_object_id/section/:id/embed' => 'master_files#embed', via: [:get]
   resources :derivatives, only: [:create]
   resources :playlists
-  resources :avalon_annotation
+  resources :avalon_annotation, only: [:create, :show, :update, :destroy]
 
   resources :comments, only: [:index, :create]
 
