@@ -166,4 +166,22 @@ describe Lease do
       expect(solr_hash[@begin_time_field].size).to eq(@lenght_of_a_iso8601_time)
     end
   end
+  describe '#lease_type' do
+    it 'identifies user lease_type' do
+      lease.read_users = [Faker::Internet.email]
+      expect(lease.lease_type).to eq "user"
+    end
+    it 'identifies group lease_type' do
+      lease.read_groups = [FactoryGirl.create(:group).name]
+      expect(lease.lease_type).to eq "local"
+    end
+    it 'identifies external_group lease_type' do
+      lease.read_groups = ["ExternalGroup"]
+      expect(lease.lease_type).to eq "external"
+    end
+    it 'identifies ip lease_type' do
+      lease.read_groups = [Faker::Internet.ip_v4_address]
+      expect(lease.lease_type).to eq "ip"
+    end
+  end
 end
