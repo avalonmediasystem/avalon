@@ -18,6 +18,14 @@ GIT
       rugged
 
 GIT
+  remote: https://github.com/avalonmediasystem/active_annotations.git
+  revision: 284c69d0f314340fc2e9e4244a3560d1a5409768
+  specs:
+    active_annotations (0.1.0)
+      json-ld
+      rdf-vocab
+
+GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
   revision: 4bb6dda8426bfdad0969bbadb8f921c633d1cda0
   tag: avalon-r4
@@ -208,6 +216,8 @@ GEM
       multi_json (~> 1.3)
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
+    acts_as_list (0.7.4)
+      activerecord (>= 3.0)
     addressable (2.3.7)
     api-pagination (4.1.1)
     arel (4.0.2)
@@ -463,7 +473,7 @@ GEM
     modal_logic (0.0.8)
       handlebars_assets (= 0.14.1)
       rails (>= 4)
-    multi_json (1.11.2)
+    multi_json (1.11.3)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
     net-http-digest_auth (1.4)
@@ -571,6 +581,8 @@ GEM
     rdf-turtle (1.1.8.1)
       ebnf (~> 1.0)
       rdf (~> 1.1, >= 1.1.10, < 1.99)
+    rdf-vocab (0.8.8)
+      rdf (~> 1.1, >= 1.1.10)
     rdf-xsd (1.1.5.1)
       rdf (~> 1.1, >= 1.1.9, < 1.99)
     ref (1.0.5)
@@ -721,9 +733,11 @@ PLATFORMS
 DEPENDENCIES
   about_page!
   active-fedora (~> 8.1.0)
+  active_annotations!
   active_encode!
   activerecord-jdbcsqlite3-adapter
   activerecord-session_store
+  acts_as_list
   addressable
   api-pagination
   avalon-about!

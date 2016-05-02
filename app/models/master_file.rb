@@ -19,6 +19,8 @@ require 'avalon/file_resolver'
 require 'avalon/m3u8_reader'
 
 class MasterFile < ActiveFedora::Base
+
+
   include ActiveFedora::Associations
   include Hydra::ModelMethods
   include Hydra::AccessControls::Permissions
@@ -451,6 +453,20 @@ class MasterFile < ActiveFedora::Base
     structuralMetadata.xpath('//@label').collect{|a|a.value}
   end
 
+  # Supplies the route to the master_file as an rdf formatted URI
+  # @return [String] the route as a uri
+  # @example uri for a mf on avalon.iu.edu with a pid of: avalon:1820
+  #   "my_masterfile.rdf_uri" #=> "https://www.avalon.iu.edu/master_files/avalon:1820"
+  def rdf_uri
+    master_file_url(pid)
+  end
+
+  # Returns the dctype of the master_file
+  # @return [String] either 'dctypes:MovingImage' or 'dctypes:Sound'
+  def rdf_type
+    is_video? ? 'dctypes:MovingImage' : 'dctypes:Sound'
+  end
+
   protected
 
   def mediainfo
@@ -653,5 +669,4 @@ class MasterFile < ActiveFedora::Base
   def find_encoder_class(klass_name)
     ActiveEncode::Base.descendants.find { |c| c.name == klass_name }
   end
-
 end

@@ -1,14 +1,14 @@
 # Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
@@ -27,8 +27,8 @@ describe MasterFile do
   end
 
   describe "locations" do
-    subject { 
-      mf = MasterFile.new 
+    subject {
+      mf = MasterFile.new
       mf.file_location = '/foo/bar/baz/quux.mp4'
       mf.save
       mf
@@ -40,21 +40,21 @@ describe MasterFile do
     end
 
     it "should know where its (Samba remote) masterfile is" do
-      allow_any_instance_of(Avalon::FileResolver).to receive(:mounts) { 
+      allow_any_instance_of(Avalon::FileResolver).to receive(:mounts) {
         ["//user@some.server.at.an.example.edu/stuff on /foo/bar (smbfs, nodev, nosuid, mounted by user)"]
       }
       expect(subject.absolute_location).to eq 'smb://some.server.at.an.example.edu/stuff/baz/quux.mp4'
     end
 
     it "should know where its (CIFS remote) masterfile is" do
-      allow_any_instance_of(Avalon::FileResolver).to receive(:mounts) { 
+      allow_any_instance_of(Avalon::FileResolver).to receive(:mounts) {
         ["//user@some.server.at.an.example.edu/stuff on /foo/bar (cifs, nodev, nosuid, mounted by user)"]
       }
       expect(subject.absolute_location).to eq 'cifs://some.server.at.an.example.edu/stuff/baz/quux.mp4'
     end
 
     it "should know where its (NFS remote) masterfile is" do
-      allow_any_instance_of(Avalon::FileResolver).to receive(:mounts) { 
+      allow_any_instance_of(Avalon::FileResolver).to receive(:mounts) {
         ["some.server.at.an.example.edu:/stuff on /foo/bar (nfs, nodev, nosuid, mounted by user)"]
       }
       expect(subject.absolute_location).to eq 'nfs://some.server.at.an.example.edu/stuff/baz/quux.mp4'
@@ -231,7 +231,7 @@ describe MasterFile do
           master_file.file_format = 'Moving image'
           master_file.set_workflow
           expect(master_file.workflow_name).to eq('avalon')
-        end 
+        end
         it "should use the skipped transcoding workflow for video" do
           master_file.file_format = 'Moving image'
           master_file.set_workflow('skip_transcoding')
@@ -244,7 +244,7 @@ describe MasterFile do
           master_file.file_format = 'Sound'
           master_file.set_workflow
           expect(master_file.workflow_name).to eq('fullaudio')
-        end 
+        end
         it "should use the skipped transcoding workflow for video" do
           master_file.file_format = 'Sound'
           master_file.set_workflow('skip_transcoding')
@@ -257,7 +257,7 @@ describe MasterFile do
         master_file.file_format = 'Moving image'
         master_file.set_workflow
         expect(master_file.workflow_name).to eq('avalon')
-      end 
+      end
     end
     describe "audio" do
       it "should use the fullaudio workflow" do
@@ -309,29 +309,29 @@ describe MasterFile do
         let(:tempfile)   { File.join(tempdir, 'RackMultipart20130816-2519-y2wzc7') }
         let(:media_path) { File.expand_path("../../masterfiles-#{SecureRandom.uuid}",__FILE__)}
         let(:upload)     { ActionDispatch::Http::UploadedFile.new :tempfile => File.open(tempfile), :filename => original, :type => 'video/mp4' }
-        subject { 
+        subject {
           mf = MasterFile.new
           mf.setContent(upload)
           mf
         }
-        
+
         before(:each) do
           @old_media_path = Avalon::Configuration.lookup('matterhorn.media_path')
           FileUtils.mkdir_p media_path
           FileUtils.cp fixture, tempfile
         end
-        
+
         after(:each) do
           Avalon::Configuration['matterhorn']['media_path'] = @old_media_path
           File.unlink subject.file_location
           FileUtils.rm_rf media_path
         end
-        
+
         it "should rename an uploaded file in place" do
           Avalon::Configuration['matterhorn'].delete('media_path')
           expect(subject.file_location).to eq(File.join(tempdir,original))
         end
-        
+
         it "should copy an uploaded file to the media path" do
           Avalon::Configuration['matterhorn']['media_path'] = media_path
           expect(subject.file_location).to eq(File.join(media_path,original))
@@ -342,37 +342,37 @@ describe MasterFile do
 
   describe "#encoder_class" do
     subject { FactoryGirl.create(:master_file) }
-    
+
     before :all do
       class WorkflowEncoder < ActiveEncode::Base
       end
-      
+
       module EncoderModule
         class MyEncoder < ActiveEncode::Base
         end
       end
     end
-    
+
     after :all do
       EncoderModule.send(:remove_const, :MyEncoder)
       Object.send(:remove_const, :EncoderModule)
       Object.send(:remove_const, :WorkflowEncoder)
     end
-    
+
     it "should default to ActiveEncode::Base" do
       expect(subject.encoder_class).to eq(ActiveEncode::Base)
     end
-    
+
     it "should infer the class from a workflow name" do
       subject.workflow_name = 'workflow_encoder'
       expect(subject.encoder_class).to eq(WorkflowEncoder)
     end
-    
+
     it "should fall back to ActiveEncode::Base when a workflow class can't be resolved" do
       subject.workflow_name = 'nonexistent_workflow_encoder'
       expect(subject.encoder_class).to eq(ActiveEncode::Base)
     end
-    
+
     it "should resolve an explicitly named encoder class" do
       subject.encoder_classname = 'EncoderModule::MyEncoder'
       expect(subject.encoder_class).to eq(EncoderModule::MyEncoder)
@@ -382,12 +382,12 @@ describe MasterFile do
       subject.encoder_classname = 'EncoderModule::NonexistentEncoder'
       expect(subject.encoder_class).to eq(ActiveEncode::Base)
     end
-    
+
     it "should correctly set the encoder classname from the encoder" do
       subject.encoder_class = EncoderModule::MyEncoder
       expect(subject.encoder_classname).to eq('EncoderModule::MyEncoder')
     end
-    
+
     it "should reject an invalid encoder class" do
       expect { subject.encoder_class = Object }.to raise_error(ArgumentError)
     end
@@ -426,7 +426,7 @@ describe MasterFile do
       master_file.reload
       expect(master_file.date_digitized).to_not be_empty
     end
-    
+
   end
 
   describe "#structural_metadata_labels" do
@@ -436,4 +436,26 @@ describe MasterFile do
     end
   end
 
+  describe 'rdf formatted information' do
+    subject(:video_master_file) { FactoryGirl.create(:master_file) }
+    subject(:sound_master_file) { FactoryGirl.create(:master_file_sound) }
+    describe 'type' do
+      it 'returns dctypes:MovingImage when the file is a video' do
+        expect(video_master_file.rdf_type).to match('dctypes:MovingImage')
+      end
+      it 'return dctypes:Sound when the file is audio' do
+        expect(sound_master_file.rdf_type).to match('dctypes:Sound')
+      end
+    end
+    describe 'uri' do
+      it 'returns a uri for a sound master file' do
+        expect(sound_master_file.rdf_uri.class).to eq(String)
+        expect { URI.parse(sound_master_file.rdf_uri) }.not_to raise_error
+      end
+      it 'returns a uri for a video master file' do
+        expect(video_master_file.rdf_uri.class).to eq(String)
+        expect { URI.parse(video_master_file.rdf_uri) }.not_to raise_error
+      end
+    end
+  end
 end

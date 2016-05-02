@@ -26,7 +26,7 @@ explore the out-of-the-box functionality or do basic development.
 * ```cp config/secrets.yml.example config/secrets.yml```
 * ```rake secret```
 * ```rake avalon:services:start```
-* ```rake db:migrate```
+* ```rake avalon:db_migrate```
 * ```rake db:test:prepare```
 * ```rake spec```
 * ```rails s```

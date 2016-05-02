@@ -1,5 +1,8 @@
   source 'http://rubygems.org'
 
+  # active anno dev
+  gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git'
+
   gem 'iconv'
   gem 'rails', '~>4.0.3'
   gem 'sprockets', '~>2.11.0'
@@ -41,7 +44,8 @@
   gem 'rubyzip', '0.9.9'
   gem 'hooks'
   gem 'addressable'
-  
+  gem 'acts_as_list'
+
   # microdata
   gem 'ruby-duration'
   gem 'edtf'
