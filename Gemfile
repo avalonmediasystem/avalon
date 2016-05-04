@@ -79,13 +79,8 @@
   #gem 'devise-guests'
   gem 'haml'
 
-<<<<<<< HEAD
   gem 'active_encode', git: "https://github.com/projecthydra-labs/active_encode.git", tag: 'v0.0.3'
   gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r5'
-=======
-  gem 'active-encode', git: "https://github.com/projecthydra-labs/active-encode.git"
-  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
->>>>>>> omniauth shibboleth strategy added for CCID handling
   gem 'validates_email_format_of'
   gem 'loofah'
   gem 'omniauth-identity'
@@ -102,11 +97,8 @@
   gem 'equivalent-xml'
   gem 'net-ldap'
 
-<<<<<<< HEAD
   gem 'api-pagination'
 
-=======
->>>>>>> omniauth shibboleth strategy added for CCID handling
   group :assets, :production do
     gem 'coffee-rails'
     gem 'uglifier', '>= 1.0.3'
@@ -160,7 +152,9 @@
     gem 'factory_girl_rails'
     gem 'mime-types', ">=1.1"
     gem "headless"
-    gem 'simplecov'
+    gem "rspec_junit_formatter"
+    gem 'rspec-its'
+#    gem 'simplecov'
     gem 'email_spec'
     gem 'capybara'
     gem 'shoulda-matchers'
