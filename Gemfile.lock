@@ -652,8 +652,6 @@ GEM
       sprockets (~> 2.8, <= 2.11.0)
       sprockets-rails (~> 2.0)
     scrub_rb (1.0.1)
-    shoulda-matchers (2.8.0)
-      activesupport (>= 3.0.0)
     signet (0.6.0)
       addressable (~> 2.3)
       extlib (~> 0.9)
@@ -818,7 +816,6 @@ DEPENDENCIES
   rubyzip (= 0.9.9)
   rvm-capistrano
   sass-rails (= 4.0.3)
-  shoulda-matchers
   sprockets (~> 2.11.0)
   sqlite3
   therubyracer (>= 0.12.0)
