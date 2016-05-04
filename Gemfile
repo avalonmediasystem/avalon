@@ -3,7 +3,6 @@
   # active anno dev
   gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', tag: 'avalon-r5'
   gem 'mysql2', '~>0.3.20'
-
   gem 'iconv'
   gem 'rails', '~>4.0.3'
   gem 'sprockets', '~>2.11.0'
@@ -60,13 +59,13 @@
 
   platforms :jruby do
     gem 'jruby-openssl'
-    gem 'activerecord-jdbcsqlite3-adapter'
-    gem 'jdbc-sqlite3'
+#    gem 'activerecord-jdbcsqlite3-adapter'
+#    gem 'jdbc-sqlite3'
     gem 'therubyrhino'
   end
 
   platforms :ruby do
-    gem 'sqlite3'
+#    gem 'sqlite3'
     gem 'execjs'
     gem 'therubyracer', '>= 0.12.0'
   end
@@ -85,9 +84,8 @@
   gem 'loofah'
   gem 'omniauth-identity'
   gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
-#  gem 'omniauth-shibboleth', git: "https://github.com/uvalib/omniauth-shibboleth.git", tag: 'v0.2.0'
-  gem 'omniauth-shibboleth' 
- 
+  gem 'omniauth-shibboleth'
+
   gem 'mediainfo'
   gem 'delayed_job', '=4.0.4'
   gem 'delayed_job_active_record'
@@ -98,6 +96,7 @@
   gem 'net-ldap'
 
   gem 'api-pagination'
+  gem 'avalon-wowza'
 
   group :assets, :production do
     gem 'coffee-rails'
@@ -154,10 +153,10 @@
     gem "headless"
     gem "rspec_junit_formatter"
     gem 'rspec-its'
-#    gem 'simplecov'
+    gem 'simplecov'
     gem 'email_spec'
     gem 'capybara'
-#    gem 'shoulda-matchers'
+    gem 'shoulda-matchers'
     gem 'faker'
     gem 'fakefs', require: "fakefs/safe"
     gem 'fakeweb'
