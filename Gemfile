@@ -136,7 +136,7 @@
     gem "headless"
     gem "rspec_junit_formatter"
     gem 'rspec-its'
-    gem 'simplecov'
+#    gem 'simplecov'
     gem 'email_spec'
     gem 'capybara'
     gem 'shoulda-matchers'
