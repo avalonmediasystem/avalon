@@ -637,21 +637,28 @@ class MediaObject < ActiveFedora::Base
     end
   end
 
+  class << self
+    def update_dependent_permalinks pid
+      mo = self.find(pid)
+      mo._update_dependent_permalinks
+    end
+    handle_asynchronously :update_dependent_permalinks
+  end
+
   def _update_dependent_permalinks
     self.parts.each do |master_file|
       begin
-        updated = master_file.ensure_permalink!
-        master_file.save( validate: false ) if updated
+	updated = master_file.ensure_permalink!
+	master_file.save( validate: false ) if updated
       rescue
-        # no-op
-        # Save is called (uncharacteristically) during a destroy.
+	# no-op
+	# Save is called (uncharacteristically) during a destroy.
       end
     end
   end
-  handle_asynchronously :_update_dependent_permalinks
 
   def update_dependent_permalinks
-    self._update_dependent_permalinks
+    self.class.update_dependent_permalinks self.pid
   end
 
   def _remove_bookmarks
