@@ -46,7 +46,7 @@ Devise.setup do |config|
   # config.params_authenticatable = true
 
   # Tell if authentication through HTTP Basic Auth is enabled. False by default.
-  config.http_authenticatable = true
+  #config.http_authenticatable = true
 
   # If http headers should be returned for AJAX requests. True by default.
   # config.http_authenticatable_on_xhr = true
@@ -235,4 +235,32 @@ Devise.setup do |config|
   # CAS, uncomment the following line.
   # config.cas_create_user = false  
   OmniAuth.config.logger = Rails.logger
+  
+  # ==> OmniAuth
+  # Add a new OmniAuth provider. Check the wiki for more information on setting
+  # up on your models and hooks.
+  # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
+  config.omniauth :shibboleth, {
+    :uid_field => 'uid',
+    :name_field => 'displayName',
+    :info_fields => {
+      :name => 'givenName', 
+      :last_name => 'sn', 
+      :email => ->(request) {request.call('mail')}
+    }
+    #    ,
+    #    :debug => true
+  }
+
+# unless Rails.env.development?
+#  config.omniauth :shibboleth, {
+#    :uid_field => ->(request) {request.call('uid') || request.call('eppn').gsub(/@.*/, '')},
+#    :info_fields => {:name => 'givenName', :last_name => 'sn'}
+#  } if Rails.env.development?
+
+#  config.omniauth :shibboleth, {:uid_field => 'eppn',
+#    :info_fields => {:email => 'mail', :name => 'cn', :last_name => 'sn'},
+#    :extra_fields => [:schacHomeOrganization]
+#  }
+  
 end

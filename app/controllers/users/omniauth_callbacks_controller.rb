@@ -59,7 +59,12 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         user_session[:virtual_groups] += [user_session[:lti_group]]
         user_session[:full_login] = false
       end
-
+      
+      if auth_type == 'shibboleth'
+#        user_session[:virtual_groups] = request.env["omniauth.auth"].extra.affiliations
+        logger.debug "Add virtual groups from shib attributes:"
+      end
+      
     end
 
     if request['target_id']
@@ -68,6 +73,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_to session.delete :previous_url
     elsif auth_type == 'lti' && user_session[:virtual_groups].present?
       redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])
+      
+
     else
       redirect_to root_url
     end
@@ -80,4 +87,21 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     notice_text = I18n.t('errors.lti_auth_error') % [support_email, support_email]
     redirect_to root_path, flash: { error: notice_text.html_safe }
   end
+
+#  def shibboleth
+#    auth = request.env['omniauth.auth']
+#    unless @current_user.present?
+    #  @user = User.from_omniauth(auth).first
+    #  @user.associate_auth(auth) if @user && @user.ccid.nil?
+    #  @user ||= User.create_from_omniauth(auth)
+#    else
+#      @user = @current_user
+#      @user.associate_auth(auth)
+#    end
+    #flash[:notice] = I18n.t('devise.omniauth_callbacks.success', :kind => 'Shibboleth')
+    #sign_in_and_redirect @user, :event => :authentication
+#  end
+  
+
+
 end

@@ -57,6 +57,26 @@ class User < ActiveRecord::Base
       User.create(:username => auth_hash.uid, :email => auth_hash.info.email)
   end
 
+  def self.find_for_shibboleth(auth_hash, signed_in_resource=nil)
+
+    logger.debug("User.rb logging begins")
+    logger.debug "#{auth_hash.inspect}"
+
+    if auth_hash.uid.blank?
+      raise Avalon::MissingUserId 
+    end
+    
+
+    auth_hash.info.email = "#{auth_hash.uid}" + "@ualberta.ca"
+    auth_hash.uid = "#{auth_hash.uid}" + "@ualberta.ca"
+
+    result = 
+      User.find_by_username(auth_hash.uid) ||
+      User.find_by_email(auth_hash.info.email) ||
+      User.create(:username => auth_hash.uid, :email => auth_hash.info.email)
+
+  end
+
   def self.autocomplete(query)
     self.where("username LIKE :q OR email LIKE :q", q: "%#{query}%").collect { |user|
       { id: user.user_key, display: user.user_key }
