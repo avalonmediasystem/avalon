@@ -1,29 +1,80 @@
-<%= form_for(@playlist) do |f| %>
-  <% if @playlist.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@playlist.errors.count, "error") %> prohibited this playlist from being saved:</h2>
+<%= form_for(@playlist, html: { class: 'form-horizontal' }) do |f| %>
+<div class="row">
+  <div class="col-sm-6">
+    <% if @playlist.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@playlist.errors.count, "error") %> prohibited this playlist from being saved:</h2>
 
-      <ul>
-      <% @playlist.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
+        <ul>
+        <% @playlist.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="form-group">
+
+      <%= f.label "Name", class: 'col-sm-2 control-label' %>
+      <div class="col-sm-10">
+        <%= f.text_field :title, class: 'form-control' %>
+      </div>
+
+      <%= f.label :comment, class: 'col-sm-2 control-label' %>
+      <div class="col-sm-10">
+        <%= f.text_field :comment, class: 'form-control' %>
+      </div>
     </div>
-  <% end %>
 
-  <div class="field">
-    <%= f.label :title %><br>
-    <%= f.text_field :title %>
+    <div class="form-group">
+      <div class="col-sm-10">
+
+        <label class="radio-inline">
+          <%= f.radio_button(:visibility, "public") %>
+          <%= f.label "Public" %>
+        </label>
+
+        <label class="radio-inline">
+          <%= f.radio_button(:visibility, "private") %>
+          <%= f.label "Private" %>
+        </label>
+      </div>
+    </div>
   </div>
-  <div class="field">
-    <%= f.label :comment %><br>
-    <%= f.text_field :comment %>
+  <div class="col-sm-6 pull-right">
+    <div><%= f.submit class: 'btn btn-primary' %></div>
+    <% if @playlist.persisted? && can?(:destroy, @playlist) %>
+      <% #= link_to action_label(@folder, :delete), folder_path(@folder), method: :delete, class: 'btn btn-danger', data: { confirm: "Are you sure you want to delete this folder and all its contents?" } %>
+    <% end %>
   </div>
-  <div class="field">
-    <%= f.label :visibility %><br>
-    <%= f.text_field :visibility %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
+</div>
+
+  <div class="dd" data-folder_id="<%= f.object.id %>">
+    <ol id="items" class="dd-list">
+      <%= f.fields_for :items, @playlist.items do |i| %>
+        <li class="row dd-item" data-id="<%= i.object.id %>">
+
+          <div class="col-sm-2">
+            <span class="pull-left hidden dd-handle glyphicon glyphicon-resize-vertical"></span>
+              <%= i.text_field :annotation_id, class: 'form-control position-input'  %>
+          </div>
+          <div class="col-sm-6 title">
+            <%= link_to i.object.annotation.title, avalon_annotation_path( i.object.annotation ) %>
+          </div>
+          <div class="col-sm-2 title">
+            <% #options_for_select = options_for_folder_select(without: document) %>
+            <% #unless options_for_select.empty? %>
+              <% #= i.select :folder_id, options_for_select, { include_blank: "Move to..." }, class: "form-control"  %>
+            <% #end %>
+          </div>
+          <div class="col-sm-2 checkbox">
+            <label>
+              <%= i.check_box :_destroy %>
+              Delete
+            </label>
+          </div>
+        </li>
+      <% end %>
+    </ol>
   </div>
 <% end %>
