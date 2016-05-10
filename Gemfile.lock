@@ -714,9 +714,8 @@ GEM
       railties (>= 3.1)
     tzinfo (0.3.44)
     uber (0.0.13)
-    uglifier (2.7.1)
-      execjs (>= 0.3.0)
-      json (>= 1.8.0)
+    uglifier (3.0.0)
+      execjs (>= 0.3.0, < 3)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.1)
@@ -828,11 +827,8 @@ DEPENDENCIES
   therubyracer (>= 0.12.0)
   therubyrhino
   twitter-typeahead-rails (= 0.10.5)
-  uglifier (>= 1.0.3)
+  uglifier (>= 2.7.3)
   validates_email_format_of
   whenever
   with_locking
   xray-rails
-
-BUNDLED WITH
-   1.11.2
