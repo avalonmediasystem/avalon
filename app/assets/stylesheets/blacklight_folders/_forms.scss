@@ -1,0 +1,10 @@
+.actions {
+  padding: 1px;
+  margin-top: 1em;
+  @extend .clearfix;
+}
+
+.primary-actions {
+  margin-top: 3px;
+  @extend .pull-right;
+}
