@@ -60,7 +60,7 @@
   gem 'about_page', git: "https://github.com/avalonmediasystem/about_page.git", tag: 'avalon-r4'
 
   # You are free to implement your own User/Authentication solution in its place.
-  gem 'devise', '~>3.2.0'
+  gem 'devise', '~>3.5.9'
   #gem 'devise-guests'
   gem 'haml'
 
