@@ -410,7 +410,7 @@ GEM
       childprocess
       i18n
       logger
-    jquery-rails (3.1.1)
+    jquery-rails (3.1.4)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (5.0.0)
@@ -783,7 +783,7 @@ DEPENDENCIES
   hydra-access-controls!
   iconv
   jettywrapper
-  jquery-rails (= 3.1.1)
+  jquery-rails (~> 3.1.4)
   jquery-ui-rails (= 5.0.0)
   jruby-openssl
   kaminari (~> 0.15.0)

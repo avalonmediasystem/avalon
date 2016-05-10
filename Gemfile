@@ -86,7 +86,7 @@
   group :assets, :production do
     gem 'coffee-rails'
     gem 'uglifier', '>=1.3.0'
-    gem 'jquery-rails', '3.1.1'
+    gem 'jquery-rails', '~>3.1.4'
     gem 'jquery-ui-rails', '5.0.0'
     gem 'compass-rails'
     gem 'compass-susy-plugin', '~> 0.9.0', require: 'susy'
