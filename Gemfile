@@ -4,7 +4,7 @@
   gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', tag: 'avalon-r5'
   gem 'mysql2', '~>0.3.20'
   gem 'iconv'
-  gem 'rails', '~>4.0.3'
+  gem 'rails', '~>4.1'
   gem 'sprockets', '~>2.11.3'
   #gem 'protected_attributes'
   gem 'builder', '~>3.1.0'
