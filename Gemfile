@@ -5,7 +5,7 @@
   gem 'mysql2', '~>0.3.20'
   gem 'iconv'
   gem 'rails', '~>4.0.3'
-  gem 'sprockets', '~>2.11.0'
+  gem 'sprockets', '~>2.11.3'
   #gem 'protected_attributes'
   gem 'builder', '~>3.1.0'
   gem 'rake', '~>10.4'
@@ -109,7 +109,7 @@
     # For overriding the default interface with Twitter Bootstrap
     # This is now inherited from Blacklight
     gem 'bootstrap-sass', '=3.3.3'
-    gem 'sass-rails', '=4.0.3'
+    gem 'sass-rails', '~>4.0.5'
     gem 'font-awesome-rails', '~> 4.3'
     gem 'bootstrap_form'
     gem 'handlebars_assets'
