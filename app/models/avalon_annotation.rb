@@ -17,8 +17,8 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   # @param [MasterFile] :source the master file referenced by the annotation
   def initialize(master_file: master_file)
     super
-    @master_file = master_file
-    self.source = @master_file
+    self.master_file = master_file
+    self.source = self.master_file
     selector_default!
     title_default!
     self
