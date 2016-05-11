@@ -28,7 +28,7 @@
   gem 'roo', git: 'https://github.com/Empact/roo', ref: '9e1b969762cbb80b1c52cfddd848e489f22f468f'
 
   gem 'multipart-post'  
-  gem 'modal_logic'
+  gem 'modal_logic', git: 'https://github.com/ualbertalib/modal_logic.git', branch: 'master'
   
   gem 'rubyzip', '0.9.9'
   gem 'hooks'
