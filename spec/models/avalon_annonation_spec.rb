@@ -20,11 +20,8 @@ describe AvalonAnnotation do
   let(:annotation) { AvalonAnnotation.new(master_file: video_master_file) }
 
   describe 'creating an annotation' do
-    before :each do
-      annotation = AvalonAnnotation.new(master_file: video_master_file)
-    end
     it 'sets the master file when creating the object' do
-      expect(annotation.master_file.id).to eq(video_master_file.id)
+      expect(annotation.master_file.pid).to eq(video_master_file.pid)
     end
     it 'sets the source uri' do
       expect(annotation.source).not_to be_nil
@@ -42,6 +39,12 @@ describe AvalonAnnotation do
     end
     it 'sets the title to the master_file label by default' do
       expect(annotation.title).to match(video_master_file.label)
+    end
+    
+    it 'loads the master_file' do
+      annotation.save
+      new_instance = AvalonAnnotation.find_by(id: annotation.id)
+      expect(new_instance.master_file.pid).to eq(video_master_file.pid)
     end
   end
   describe 'aliases for Avalon Annotation' do
@@ -71,8 +74,8 @@ describe AvalonAnnotation do
     end
   end
   it 'can load the master_file based on the uri' do
-    mf = annotation.init_masterfile
-    expect(mf.id).to eq(video_master_file.id)
+    mf = annotation.master_file
+    expect(mf.pid).to eq(video_master_file.pid)
   end
   describe 'selector' do
     it 'can create the selector using the start and end time' do
@@ -94,5 +97,4 @@ describe AvalonAnnotation do
       expect { annotation.destroy }.not_to raise_error
     end
   end
-
 end
