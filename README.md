@@ -30,3 +30,6 @@ explore the out-of-the-box functionality or do basic development.
 * ```rake db:test:prepare```
 * ```rake spec```
 * ```rails s```
+
+# Browser Testing
+Testing support for Avalon Media System is provided by [BrowserStack](https://www.browserstack.com).

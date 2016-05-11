@@ -11,30 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160428133859) do
+ActiveRecord::Schema.define(version: 20160511155417) do
 
-  create_table "blacklight_folders_folder_items", force: true do |t|
-    t.integer  "folder_id",   null: false
-    t.integer  "bookmark_id", null: false
-    t.integer  "position"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+  create_table "annotations", force: true do |t|
+    t.string "uuid"
+    t.string "source_uri"
+    t.text   "annotation"
   end
-
-  add_index "blacklight_folders_folder_items", ["bookmark_id"], name: "index_blacklight_folders_folder_items_on_bookmark_id"
-  add_index "blacklight_folders_folder_items", ["folder_id"], name: "index_blacklight_folders_folder_items_on_folder_id"
-
-  create_table "blacklight_folders_folders", force: true do |t|
-    t.string   "name"
-    t.integer  "user_id",                       null: false
-    t.string   "user_type",                     null: false
-    t.string   "visibility"
-    t.integer  "number_of_members", default: 0, null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "blacklight_folders_folders", ["user_id", "user_type"], name: "index_blacklight_folders_folders_on_user_id_and_user_type"
 
   create_table "bookmarks", force: true do |t|
     t.integer  "user_id",       null: false
