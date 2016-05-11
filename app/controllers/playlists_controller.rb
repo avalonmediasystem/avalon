@@ -23,7 +23,6 @@ class PlaylistsController < ApplicationController
   # POST /playlists
   def create
     @playlist = Playlist.new(playlist_params.merge(user: current_user))
-
     if @playlist.save
       redirect_to @playlist, notice: 'Playlist was successfully created.'
     else
@@ -32,7 +31,7 @@ class PlaylistsController < ApplicationController
   end
 
   # PATCH/PUT /playlists/1
-  def update
+  def update 
     if @playlist.update(playlist_params)
       redirect_to @playlist, notice: 'Playlist was successfully updated.'
     else
@@ -57,4 +56,5 @@ class PlaylistsController < ApplicationController
   def playlist_params
     params.require(:playlist).permit(:title, :comment, :visibility)
   end
+
 end
