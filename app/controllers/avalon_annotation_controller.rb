@@ -93,7 +93,7 @@ class AvalonAnnotationController < ApplicationController
     @attr_keys.each do |key|
       updates[key] = params[key] unless params[key].nil?
     end
-    @annotation.update(updates) unless updates.keys.size == 0
+    @annotation.update(updates) unless updates.keys.empty?
     @annotation.reload
   end
 
