@@ -50,62 +50,63 @@
       <% end %>
     </div>
   </div>
+  <% end %>
 
   <% unless @playlist.new_record? %>
-  <div class="container col-lg-12">
-    <div class="pull-right">
-      <div class="form-group select-delete">
-        <div class="btn-group">
-          <label>
-            <%= check_box_tag 'select_all', class: "toggle_bookmark" %>
-            Select All
-          </label>
-        </div>
-        <div class="btn-group" role="group">
-          <div class="btn-group bootstrap-select">
-            <%= button_tag( { type: 'button', class: "btn btn-default dropdown-toggle", data: { toggle: "dropdown"} } ) do %>
-              <span class="filter-option pull-left">Move to..</span>
-              <span class="bs-caret">
-                <span class="caret"></span>
-              </span>
-            <% end %>
-            <ul class="dropdown-menu">
-              <% @playlists.each do |p| %>
-                <li><a href="#"><%= p.title %></a></li>
-              <% end %>
-            </ul>
+    <%= form_for(@playlist,url: { action: "update_multiple" }, html: { class: 'form-horizontal playlist_actions' }) do |f| %>
+    <div class="container row">
+      <div class="pull-right">
+        <div class="form-group select-delete">
+          <div class="btn-group">
+            <label>
+              <%= check_box_tag 'select_all', class: "toggle_bookmark" %>
+              Select All
+            </label>
           </div>
-          <%= button_tag( "Update", { type: 'button', class: "btn btn-default"}) %>
-          <%= button_tag( { type: 'button', class: "btn btn-default"}) do %>
-            <span class="glyphicon glyphicon-remove"></span>Delete
-          <% end %>
+          <div class="btn-group" role="group">
+            <div class="btn-group bootstrap-select">
+              <%= button_tag( { type: 'button', class: "btn btn-default dropdown-toggle", data: { toggle: "dropdown"} } ) do %>
+                <span class="filter-option pull-left">Move to..</span>
+                <span class="bs-caret">
+                  <span class="caret"></span>
+                </span>
+              <% end %>
+              <ul class="dropdown-menu">
+                <% @playlists.each do |p| %>
+                  <li><a href="#"><%= p.title %></a></li>
+                <% end %>
+              </ul>
+            </div>
+            <%#= button_tag( "Update", { type: 'button', class: "btn btn-default"}) %>
+            <%= f.submit "Delete Items", class: 'btn btn-default' %>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-  <% end %>
 
-  <div class="dd" data-playlist_id="<%= f.object.id %>">
-    <ol id="items" class="dd-list" style="list-style: none">
-      <%= f.fields_for :items do |i| %>
-        <li class="row dd-item" data-id="<%= i.object.id %>">
 
-          <div class="col-sm-2">
-            <span class="glyphicon glyphicon-resize-vertical hidden pull-left dd-handle"></span>
-              <%= i.text_field :position, class: 'form-control position-input'  %>
-          </div>
-          <div class="col-sm-6 title">
-            <%= link_to i.object.annotation.title, i.object.annotation.mediafragment_uri %>
-          </div>
-          <div class="col-sm-2 checkbox">
-            <label>
-              <%= check_box_tag 'selected' %>
-              Select
-            </label>
-          </div>
-        </li>
-      <% end %>
-    </ol>
-  </div>
+    <div class="dd" data-playlist_id="<%= f.object.id %>">
+      <ol id="items" class="dd-list" style="list-style: none">
+        <%= f.fields_for :items do |i| %>
+          <li class="row dd-item" data-id="<%= i.object.id %>">
+
+            <div class="col-sm-2">
+              <span class="glyphicon glyphicon-resize-vertical hidden pull-left dd-handle"></span>
+                <%= i.text_field :position, class: 'form-control position-input'  %>
+            </div>
+            <div class="col-sm-6 title">
+              <%= link_to i.object.annotation.title, i.object.annotation.mediafragment_uri %>
+            </div>
+            <div class="col-sm-2 checkbox">
+              <label>
+                <%= check_box_tag 'annotation_ids[]', i.object.id %>
+                Select
+              </label>
+            </div>
+          </li>
+        <% end %>
+      </ol>
+    </div>
+    <% end %>
   <% end %>
 </div>
