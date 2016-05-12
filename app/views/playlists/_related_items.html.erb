@@ -18,7 +18,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% @related_annotations.sort_by { |hash| hash['start_time'].to_i}.each do |annotation| %>
     <% position = PlaylistItem.where("playlist_id == :p_id AND annotation_id == :a_id", { p_id: @playlist.id, a_id: annotation.id}).first.position %>
     <li class='related_item'>
-      <%= link_to playlist_path(@playlist, position: 3) do %>
+      <%= link_to playlist_path(@playlist, position: position) do %>
         <span class='annotation_title'><%= annotation.title %></span>
         <span class='annotation_start_time'>Start: <%= pretty_time(annotation.start_time) %></span>
         <span class='annotation_end_time'>End: <%= pretty_time(annotation.end_time) %></span>

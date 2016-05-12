@@ -1,5 +1,4 @@
 <% annotation = AvalonAnnotation.find(@playlist.items[playlist_item_counter].annotation_id) %>
-<% annotation.init_masterfile %>
 <% item_class = (@playlist.items[playlist_item_counter] == @current_playlist_item)? 'now_playing' : 'queue' %>
 <% item_type = (annotation.master_file.file_format=='Moving image')? 'glyphicon-film' : 'glyphicon-music' %> 
 <li class="<%= item_class %>">
