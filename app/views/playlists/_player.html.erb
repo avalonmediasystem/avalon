@@ -14,13 +14,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<% f_start = @current_annotation.start_time /1000.0 %>
-<% f_end = @current_annotation.end_time / 1000.0%>
+<% f_start = @current_annotation.start_time / 1000.0 %>
+<% f_end = @current_annotation.end_time / 1000.0 %>
 <% @currentStream = @current_masterfile %>
 <% @token = StreamToken.find_or_create_session_token(session, @currentStream.pid) %>
 <% @currentStreamInfo = @currentStream.stream_details(@token, ApplicationController.default_url_options[:host]) %>
 <% @currentStreamInfo['t'] = "#{f_start},#{f_end}" %>
-<% @currentStreamInfo['startTime'] = f_start %>
 
     <section id="content" class="avalon-player" style="width: 100%; visibility: hidden;" tabIndex="-1">
       <% if @currentStream.present? and @currentStream.derivatives.present? %>
@@ -73,7 +72,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
       mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
       thumbnailSelector: 'false',
-      startQuality: '<%= MediaObjectsHelper.current_quality(@currentStreamInfo) %>',
+      startQuality: '<%= current_quality(@currentStreamInfo) %>',
       customError: '<%= t("media_objects.player.customError").html_safe %>'
     })
     currentPlayer = avalonPlayer.player;
