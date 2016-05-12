@@ -1,6 +1,6 @@
 class PlaylistsController < ApplicationController
   # TODO: rewrite this to use cancancan's authorize_and_load_resource
-  before_action :set_playlist, only: [:show, :edit, :update, :destroy]
+  before_action :set_playlist, only: [:show, :edit, :update, :destroy, :update_multiple]
   before_action :get_all_playlists, only: [:index, :edit]
 
   # GET /playlists
@@ -41,6 +41,15 @@ class PlaylistsController < ApplicationController
     end
   end
 
+  def update_multiple
+    @playlist.items.each do |item|
+      if (item.id.to_s.in? params[:annotation_ids])
+        @playlist.items.delete(item)
+      end
+    end
+    redirect_to @playlist, notice: 'Playlist was successfully updated.'
+  end
+
   # DELETE /playlists/1
   def destroy
     @playlist.destroy
@@ -61,7 +70,7 @@ class PlaylistsController < ApplicationController
 
   # Only allow a trusted parameter "white list" through.
   def playlist_params
-    params.require(:playlist).permit(:title, :comment, :visibility)
+    params.require(:playlist).permit(:title, :comment, :visibility, :annotation_ids)
   end
 
 end
