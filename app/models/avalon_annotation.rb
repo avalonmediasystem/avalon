@@ -83,10 +83,4 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   rescue
     master_file.rdf_uri + "?t=#{start_time},#{end_time}"
   end
-
-  def duration
-    duration = (end_time-start_time)/1000
-    Time.at(duration).utc.strftime(duration<3600?'%M:%S':'%H:%M:%S')
-  end
-
 end
