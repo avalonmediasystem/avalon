@@ -14,8 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div id="related_items">
-  <% related_annotations = playlist.related_annotations_time_contrained(current_item)%>
-  <% div_for related_annotations do |annotation| %>
+  <% div_for @related_annotations do |annotation| %>
     <% annotation.title %>
     <% annotation.source %>
   <% end %>
