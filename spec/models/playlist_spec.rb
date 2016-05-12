@@ -26,7 +26,7 @@ RSpec.describe Playlist, type: :model do
       # Move the annotation outside of the time range
       v_two_annotation.start_time = 2
       v_two_annotation.end_time = 3
-      v_two_annotation.save
+      v_two_annotation.save!
       expect(@playlist.related_annotations_time_contrained(PlaylistItem.first).size).to eq(0)
     end
     def setup_playlist
@@ -44,7 +44,7 @@ RSpec.describe Playlist, type: :model do
         @pi.playlist_id = @playlist.id
         @pi.annotation_id = a.id
         @pi.position = pos
-        @pi.save
+        @pi.save!
         pos += 1
       end
     end
