@@ -46,6 +46,15 @@ describe AvalonAnnotation do
       new_instance = AvalonAnnotation.find_by(id: annotation.id)
       expect(new_instance.master_file.pid).to eq(video_master_file.pid)
     end
+    
+    it 'can store start and end times' do
+      annotation.start_time = 0.5
+      annotation.end_time = 2.5
+      annotation.save
+      annotation.reload
+      expect(annotation.start_time).to eq(0.5)
+      expect(annotation.end_time).to eq(2.5)
+    end
   end
   describe 'aliases for Avalon Annotation' do
     describe 'aliasing content with comment' do
