@@ -1,4 +1,4 @@
-// This is for the folders edit page
+// This is for the playlists edit page
 Blacklight.onLoad(function(){
 
   // Display the drag handle
@@ -12,7 +12,7 @@ Blacklight.onLoad(function(){
   } });
 
   var reorderItems = function(data, container) {
-    var folderId = container.data('folder_id');
+    var playlistId = container.data('playlist_id');
     var items = data;
     for(var i in data){
       items[i]['position'] = (parseInt(i) + 1).toString();
@@ -20,8 +20,8 @@ Blacklight.onLoad(function(){
 
     $.ajax({
       type: "PATCH",
-      url: '/blacklight/folders/' + folderId + '.json',
-      data: { folder: {items_attributes: items}},
+      url: '/playlists/' + playlistId + '.json',
+      data: { playlist: {items_attributes: items}},
       success: function(data, status){
       }
     });
