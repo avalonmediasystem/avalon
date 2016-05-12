@@ -53,6 +53,8 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end %>
       <% end %>
     </section>
+
+    <%= render file: '_add_to_playlist.html.erb' %>
     <%= render 'workflow_progress' %>
     <%= render 'share' if will_partial_list_render? :share %>
     <%= render partial: 'sections',
@@ -76,10 +78,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= javascript_include_tag 'me-thumb-selector' %>
   <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
   <%= javascript_include_tag 'avalon_player' %>
+  <%= javascript_include_tag 'me-add-to-playlist' %>
 
   <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
   <%= stylesheet_link_tag 'me-thumb-selector' %>
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
+  <%= stylesheet_link_tag 'me-add-to-playlist' %>
 
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>

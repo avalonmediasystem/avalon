@@ -160,4 +160,13 @@ RSpec.describe PlaylistsController, type: :controller do
       expect(response).to redirect_to(playlists_url)
     end
   end
+
+  describe 'GET #edit' do
+    it 'assigns the requested playlist as @playlist' do
+      playlist = Playlist.create! valid_attributes
+      get :edit, { id: playlist.to_param }, valid_session
+      expect(assigns(:playlist)).to eq(playlist)
+    end
+  end
+
 end
