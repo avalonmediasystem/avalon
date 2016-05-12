@@ -38,9 +38,9 @@ describe AvalonAnnotation do
       expect(annotation_with_duration.end_time).to eq(100)
     end
     it 'sets the title to the master_file label by default' do
-      expect(annotation.title).to match(video_master_file.label)
+      expect(annotation.title).to match(video_master_file.embed_title)
     end
-    
+
     it 'loads the master_file' do
       annotation.save
       new_instance = AvalonAnnotation.find_by(id: annotation.id)

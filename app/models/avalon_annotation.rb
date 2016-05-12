@@ -64,7 +64,7 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
 
   # Set the default title to be the label of the master_file
   def title_default!
-    self.title = master_file.label
+    self.title = master_file.embed_title
   end
 
   # Sets the class variable @master_file by finding the master referenced in the source uri
@@ -75,7 +75,7 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   def master_file=(value)
     @master_file = value
   end
-  
+
   # Calcuates the mediafragment_uri based on either the internal fragment value or start and end times
   # @return [String] the uri with time bounding
   def mediafragment_uri
