@@ -18,7 +18,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% f_end = @current_annotation.end_time %>
 <% @currentStream = @current_masterfile %>
 <% @token = StreamToken.find_or_create_session_token(session, @currentStream.pid) %>
-<% @currentStreamInfo = @currentStream.stream_details(@token, default_url_options[:host]) %>
+<% @currentStreamInfo = @currentStream.stream_details(@token, ApplicationController.default_url_options[:host]) %>
 <% @currentStreamInfo['t'] = "#{f_start}:#{f_end}" %>
 
     <section id="content" class="avalon-player" style="width: 100%; visibility: hidden;" tabIndex="-1">
