@@ -133,6 +133,14 @@ module ApplicationHelper
     output
   end
   
+  # display millisecond times in HH:MM:SS format
+  # @param [Float] milliseconds the time to convert
+  # @return [String] time in HH:MM:SS
+  def pretty_time( milliseconds )
+    duration = milliseconds/1000
+    Time.at(duration).utc.strftime(duration<3600?'%M:%S':'%H:%M:%S')
+  end
+
   def git_commit_info pattern="%s %s [%s]"
     begin
       repo = Grit::Repo.new(Rails.root)
