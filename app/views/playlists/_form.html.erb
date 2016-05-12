@@ -46,7 +46,7 @@
     <div class="col-sm-6 pull-right">
       <div><%= f.submit class: 'btn btn-primary' %></div>
       <% if @playlist.persisted? && can?(:destroy, @playlist) %>
-        <%= button_to "Delete Playlist", { action: "destroy", id: @playlist.id }, { method: :delete, class: 'btn btn-danger', data: { confirm: "Are you sure you want to delete this playlist and all its contents?"}} %>
+        <div><%= link_to "Delete Playlist", { action: "destroy", id: @playlist.id }, { method: :delete, class: 'btn btn-danger', data: { confirm: "Are you sure you want to delete this playlist and all its contents?"}} %></div>
       <% end %>
     </div>
   </div>
@@ -95,9 +95,7 @@
               <%= i.text_field :position, class: 'form-control position-input'  %>
           </div>
           <div class="col-sm-6 title">
-            <% byebug %>
-            <%= link_to i.object.annotation.title, avalon_annotation_path(i.object.annotation)   %>
-            <% #i.object.annotation.mediafragment_uri %>
+            <%= link_to i.object.annotation.title, i.object.annotation.mediafragment_uri %>
           </div>
           <div class="col-sm-2 checkbox">
             <label>
