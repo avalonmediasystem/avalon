@@ -20,33 +20,6 @@ class Playlist < ActiveRecord::Base
     self.visibility ||= Playlist::PRIVATE
   end
 
-  # Returns all other playlist items on the same playlist that share a master file
-  # @param [PlaylistItem] current_item The playlist item you want to find matches for
-  # @return [Array <PlaylistItem>] an array of all other playlist items that reference the same master file
-  def related_items(current_item)
-    uri = AvalonAnnotation.where(id: current_item.annotation_id)[0].source
-    items = PlaylistItem.joins(:annotation).where('annotations.source_uri' => uri).where(playlist: self)
-    # remove the current item
-    return_items = []
-    items.each do |item|
-      return_items << item unless item.annotation_id == current_item.annotation_id
-    end
-    return_items
-  end
-
-  # Returns a list of annotations who are on the same playlist, share the same masterfile, and whose start time falls within the start and end time of the current playlist item
-  # @param [PlaylistItem] current_item The playlist item to match against
-  # @return [Array <AvalonAnnotation>] all annotations matching the constraints
-  def related_annotations_time_contrained(current_item)
-    current_anno = AvalonAnnotation.where(id: current_item.annotation_id)[0]
-    annos = []
-    related_items(current_item).each do |item|
-      anno = AvalonAnnotation.where(id: item.annotation_id)[0]
-      annos << anno if anno.start_time <= current_anno.end_time && anno.start_time >= current_anno.start_time
-    end
-    annos
-  end
-
   class << self
     # Find the playlists that belong to this user/ability
     def for_ability(ability)

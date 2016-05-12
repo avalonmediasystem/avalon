@@ -1,85 +1,41 @@
-<%#
-Copyright 2011-2015, The Trustees of Indiana University and Northwestern
-  University.  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-
-You may obtain a copy of the License at
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software distributed
-  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-  CONDITIONS OF ANY KIND, either express or implied. See the License for the
-  specific language governing permissions and limitations under the License.
----  END LICENSE_HEADER BLOCK  ---
-%>
-<% @page_title = t('media_objects.show.title', :media_object_title => @playlist.title, :application_name => application_name) %>
-<% @current_playlist_item = @playlist.items.first %>
-<% @current_annotation = AvalonAnnotation.find(@current_playlist_item.annotation_id) %>
-<% @current_masterfile = MasterFile.find(@playlist.items.first.annotation.source.split('/').last) %>
-<% @current_mediaobject = MediaObject.find(@current_masterfile.mediaobject_id) %>
-<div class="playlist-view container-fluid" >
+<div class="playlist-view">
   <p id="notice"><%= notice %></p>
-  <div class="container-fluid" >
-    <div class="row">
-      <div class="col-sm-8" id="left_column">
-        <%= render 'player' %>
-        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-          <div class="panel panel-default">
-            <div class="panel-heading" role="tab" id="heading0" style="border-bottom: 1px solid #ddd;">
-              <h4 class="panel-title">
-                <span class="now-playing-title"> <i class="material-icons md-hdr">equalizer</i> <%= @current_annotation.title %> <span>[<%= @current_annotation.duration %>]</span></span>
-	        <button class="btn btn-primary btn-xs" id="expand_button">Expand All</button>
-	        <button class="btn btn-primary btn-xs hidden" id="collapse_button">Collapse All</button>
-	        <br class="clear"/>
-              </h4>
-            </div>
-            <div class="panel-heading" role="tab" id="heading2">
-              <h5 class="panel-title ">
-                <a href="#" class="pull-left" data-toggle="collapse"  data-toggle="collapse" data-target="#section2" aria-expanded="false" aria-controls="collapse2"><i class="indicator glyphicon glyphicon-chevron-down  pull-left"></i>Details</a>  </span>
-              </h5>
-            </div>
-            <div id="section2" class="panel-collapse collapse collapsed" role="tabpanel" aria-labelledby="heading2">
-              <div class="panel-body">
-                <%= render 'current_item' %>
-              </div>
-            </div>
-            <div class="panel-heading" role="tab" id="heading0">
-              <h5 class="panel-title ">
-                <a href="#"  class="pull-left" data-toggle="collapse"  data-toggle="collapse" data-target="#section0" aria-expanded="true" aria-controls="collapse0"><i class="indicator glyphicon glyphicon-chevron-down  pull-left"></i>Master File</a>
-                <span class="pull-right">[<%= Time.at(@current_masterfile.duration.to_i/1000).utc.strftime(@current_masterfile.duration.to_i/1000<3600?'%M:%S':'%H:%M:%S') %>]</span>
-              </h5>
-            </div>
-            <div id="section0" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading0">
-              <div class="panel-body">
-                <%= render 'current_masterfile' %>
-              </div>
-            </div>
-            <% @related_annotations = @playlist.related_annotations_time_contrained(@current_playlist_item)%>
-            <% unless @related_annotations.empty? %>
-              <div class="panel-heading" role="tab" id="heading1">
-                <h5 class="panel-title ">
-                  <a href="#"  class="pull-left" data-toggle="collapse"  data-toggle="collapse" data-target="#section1" aria-expanded="true" aria-controls="collapse1"><i class="indicator glyphicon glyphicon-chevron-down  pull-left"></i>Related</a>
-                </h5>
-              </div>
-              <div id="section1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading1">
-                <div class="panel-body">
-                  <%= render 'related_items' %>
-                </div>
-              </div>
-            <% end %>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm-4" id="right-column">
-        <%= render 'item_list' %>
-      </div>
-    </div>
+
+ <% if can? :edit, @playlist %>
+    <div class="primary-actions">
+      <%= link_to edit_playlist_path(@playlist), class: 'btn btn-default' do %>
+        <span class="glyphicon glyphicon-pencil"></span> Edit
+      <% end %>
+     </div>
+  <% end %>
+  <h1><%= @playlist.title %></h1>
+  <div>
+    <span class="owner-label"><%= t("playlist.user", scope: "helpers.label") %>:</span> <span class="owner"><%= @playlist.user %></span>
+  </div>
+
+  <div>
+    <span class="visibility-label"><%= t("playlist.visibility", scope: "helpers.label") %>:</span> <span class="visibility"><%= human_friendly_visibility(@playlist.visibility) %></span>
+  </div>
+
+  <div>
+    <span class="created-label">
+      <%= t("playlist.created", scope: "helpers.label") %>:
+    </span>
+    <span class="created" title="<%= @playlist.created_at %>">
+      <%= t('playlist.ago', time: time_ago_in_words(@playlist.created_at)) %>
+    </span>
+  </div>
+
+  <div>
+    <span class="updated-label">
+      <%= t("playlist.updated", scope: "helpers.label") %>:
+    </span>
+    <span class="updated" title="<%= @playlist.updated_at %>">
+      <%= t('playlist.ago', time: time_ago_in_words(@playlist.updated_at)) %>
+    </span>
+  </div>
+
+  <div id="annotations">
+    <%= render partial: 'playlist_item', collection: @playlist.items, locals: { annotations: @playlist.annotations } %>
   </div>
 </div>
-
-<% content_for :page_scripts do %>
-<%= stylesheet_link_tag "https://fonts.googleapis.com/icon?family=Material+Icons" %>
-<%= stylesheet_link_tag "https://code.getmdl.io/1.1.3/material.indigo-pink.min.css" %>
-<%= javascript_include_tag "https://code.getmdl.io/1.1.3/material.min.js" =%>
-<% end %>

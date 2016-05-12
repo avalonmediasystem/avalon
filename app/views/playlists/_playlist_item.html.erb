@@ -1,13 +1,28 @@
-<% annotation = AvalonAnnotation.find(@playlist.items[playlist_item_counter].annotation_id) %>
+<% annotation = annotations[playlist_item_counter]%>
 <% annotation.init_masterfile %>
-<% item_class = (@playlist.items[playlist_item_counter] == @current_playlist_item)? 'now_playing' : 'queue' %>
-<% item_type = (annotation.master_file.file_format=='Moving image')? 'glyphicon-film' : 'glyphicon-music' %> 
-<li class="<%= item_class %>">
-  <% if item_class == 'now_playing' %>
-    <a href="#" class="md-icon-container"><i class="material-icons md-18">equalizer</i>
-  <% else %>
-    <a href="#">
-  <% end %>
-  <%= annotation.title %></a> 
-  <span class="pull-right"> <span class="glyphicon <%= item_type %>"></span> <%= annotation.duration %></span>
-</li>
+<div class="playlist-item-view">
+  <div>
+    <span class="playlist-item-title-label">
+      <%= t("playlist.item.title", scope: "helpers.label") %>:
+    </span>
+    <span class="playlist-item-title" %>
+       <%= annotation.title %>
+    </span>
+  </div>
+  <div>
+    <span class="playlist-item-comment-label">
+      <%= t("playlist.item.comment", scope: "helpers.label") %>:
+    </span>
+    <span class="playlist-item-comment" %>
+       <%= annotation.comment %>
+    </span>
+  </div>
+  <div>
+    <span class="playlist-item-mediafragment-label">
+      <%= t("playlist.item.mediafragment", scope: "helpers.label") %>:
+    </span>
+    <span class="playlist-item-mediafragment" %>
+       <a href="<%= annotation.mediafragment_uri %>"><%= annotation.mediafragment_uri %></a>
+    </span>
+  </div>
+</div>
