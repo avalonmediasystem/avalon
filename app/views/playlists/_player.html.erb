@@ -14,7 +14,13 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<% f_start, f_end = parse_media_fragment params['t'] %>
+<% f_start = @current_annotation.start_time %>
+<% f_end = @current_annotation.end_time %>
+<% @currentStream = @current_masterfile %>
+<% @token = StreamToken.find_or_create_session_token(session, @currentStream.pid) %>
+<% @currentStreamInfo = @currentStream.stream_details(@token, default_url_options[:host]) %>
+<% @currentStreamInfo['t'] = "#{f_start}:#{f_end}" %>
+
     <section id="content" class="avalon-player" style="width: 100%; visibility: hidden;" tabIndex="-1">
       <% if @currentStream.present? and @currentStream.derivatives.present? %>
         <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>
