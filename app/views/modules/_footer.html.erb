@@ -13,16 +13,35 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-   <div class="container-fluid">
-	  <footer>
-	   <ul>
-	   	 <li><%= image_tag "AvalonMediaSystem_Logo_A.png", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
-	     <li><a href="http://www.avalonmediasystem.org">Avalon Media System Project Website</a> </li>
-	     <li><%= link_to "Contact Us", comments_path %></li>
-	   </ul>
-	   <div class="release">
-	   	<%=release_text%>
-	   	<%= git_commit_info(" (%s %s [%s])") if Rails.env == 'development' %>
-	   </div>
-       </footer>
+
+
+     <div class="footer dark containter-fluid">
+        <div class="container">
+     	<div class="row">
+       <div class="col-sm-4 hidden-xs">
+            <h2>Quick Links</h2>
+            <ul>
+                <li><a href="/users/sign_in">Login</a></li>
+				<li><a href="/browse">Browse</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-4 hidden-xs">
+            <h2>Policies</h2>
+            <ul>
+                <li><a href="https://era.library.ualberta.ca/about">About ERA</a></li>
+                <li><a href="https://era.library.ualberta.ca/policies">Policies</a></li>
+		<li><a href="https://era.library.ualberta.ca/technology">Technology and Partnerships</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-4">
+            <h2>Get Help</h2>
+            <ul>
+                <li><a href="https://era.library.ualberta.ca/contact">Contact Us</a></li>
+                <li><a href="https://era.library.ualberta.ca/deposit">How to Deposit</a></li>
+            </ul>
+        </div>
     </div>
+        <div class="row copyright">&copy; <a href="https://library.ualberta.ca">University of Alberta Libraries</a> | University of Alberta, Edmonton, AB, Canada T6G 2R3 | Web Site Privacy Policy
+</div>
+</div>
+</div>

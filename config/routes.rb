@@ -114,6 +114,7 @@ Avalon::Application.routes.draw do
       delete :bulk_delete
     end
   end
+  resources :identities
 
   mount AboutPage::Engine => '/about(.:format)', :as => 'about_page'
 
