@@ -18,6 +18,7 @@ class MediaObjectsController < ApplicationController
   include Avalon::Workflow::WorkflowControllerBehavior
   include Avalon::Controller::ControllerBehavior
   include ConditionalPartials
+  include MediaObjectsHelper
 
   before_filter :authenticate_user!, except: [:show, :set_session_quality]
   before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
@@ -379,7 +380,7 @@ class MediaObjectsController < ApplicationController
     # exceptions. It might be worth refactoring when there are some extra
     # cycles available.
     @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
-    @currentStreamInfo['t'] = params[:t] # add MediaFragment from params
+    @currentStreamInfo['t'] = parse_media_fragment(params[:t]) # add MediaFragment from params
  end
 
   # The goal of this method is to determine which stream to provide to the interface
