@@ -54,7 +54,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     </section>
 
-    <%= render file: '_add_to_playlist.html.erb' %>
+    <%= render file: '_add_to_playlist.html.erb' if current_user.present? %>
     <%= render 'workflow_progress' %>
     <%= render 'share' if will_partial_list_render? :share %>
     <%= render partial: 'sections',
@@ -91,6 +91,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
       mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
       thumbnailSelector: <%= can?(:edit, @mediaobject) ? 'true' : 'false' %>,
+      //addToPlaylist: <%= can?(:create, Playlist) ? 'true' : 'false' %>,
+      addToPlaylist: <%= current_user.present? ? 'true' : 'false' %>,
       startQuality: '<%= current_quality(@currentStreamInfo) %>',
       customError: '<%= t("media_objects.player.customError").html_safe %>'
     })
