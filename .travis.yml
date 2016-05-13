@@ -15,7 +15,7 @@ before_script:
   - bundle exec rake db:migrate
   - bundle exec rake avalon:db_migrate
 notifications:
-  irc: "chat.freenode.net#projectvov"
+  irc: "chat.freenode.net#projectvov-updates"
 language: ruby
 rvm:
   - 2.1.7
