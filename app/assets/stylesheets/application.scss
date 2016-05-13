@@ -23,7 +23,6 @@
 @import "blacklight/blacklight";
 @import "about_page";
 @import "typeahead";
-
 /*
  * This is the default theme. You can modify many of the settings 
  * by editing your local app/assets/stylesheets/blacklight_themes/standard.css
@@ -46,7 +45,9 @@
  *
  * require_tree .
  *= require 'avalon-engage'
- *= require self
+ *= require_self
+ *= require 'era_custom'
 */
 //= require rails_bootstrap_forms
 @import "avalon";
+@import "era_custom";

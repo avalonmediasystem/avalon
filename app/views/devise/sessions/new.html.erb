@@ -17,12 +17,36 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="alert alert-danger"><%= flash[:alert] %></div>
 <% end %>
 
-<h2 style="text-align: center">Select an Authentication Provider</h2>
-<ul class="login">
-  <% Avalon::Authentication::VisibleProviders.each do |provider| %>
-  <li class="btn btn-large">
-    <% provider_logo = provider[:logo] || 'signin_local.png' %>
-    <%= link_to image_tag(provider_logo, :title => provider[:name], :class => 'logo') + " #{provider[:name]}", user_omniauth_authorize_path(provider[:provider]) %>
-  </li>
-  <% end %>
-</ul>
+<h2>Login to ERA Audio+Video</h2>
+<p class="login-instruct">ERA Audio+Video is now a <a href="https://ist.ualberta.ca/services/ccid-passwords/campus-computing-id">CCID</a> (Campus Computing ID) enabled service. If you have a CCID please use it to log in to ERA.</p>
+<h3>Do you have a University of Alberta CCID (Campus Computing ID)?</h3>
+<%- if devise_mapping.omniauthable? %>
+  <%- resource_class.omniauth_providers.each do |provider| %>
+    <%- if provider.to_s == "shibboleth" %>
+      <div class="col-sm-8 col-sm-offset-2">
+        <%= link_to "Yes, I have a CCID",(omniauth_authorize_path(resource_name, provider)), :class => "btn btn-ccid" %>
+      </div>
+    <%- elsif provider.to_s == "identity" %>
+      <div class="col-sm-4 col-sm-offset-4">
+        <a href="#" class="btn btn-noccid">NO, I do not have a CCID</a>
+        <div id="era-login">
+        <p>
+          <strong>Don&rsquo;t have a CCID?</strong>
+          <%= link_to "Create an account", new_identity_path %> or login below.
+        </p>
+        <%= form_tag "/users/auth/identity/callback" do %>
+          <div class="field">
+             <%= label_tag :auth_key, "Email" %><br>
+             <%= text_field_tag :auth_key %>
+          </div>
+          <div class="field">
+            <%= label_tag :password %><br>
+            <%= password_field_tag :password %>
+          </div>
+          <div class="actions"><%= submit_tag "Login" %></div>
+        <% end %>
+        </div>
+      </div>
+    <% end -%>
+  <% end -%>
+<% end -%>
