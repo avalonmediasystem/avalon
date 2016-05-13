@@ -86,7 +86,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
-  revision: 330da2e83922b773bdbd04d15df434d7b0b90899
+  revision: affcba4bdfb64eb583d2d690ff6844a77ccd1d19
   specs:
     media_element_add_to_playlist (0.0.1)
       rails (~> 4.0.13)
@@ -129,7 +129,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: 00523c00966d3382fcf9aeae9cf75ec115cf9a8c
+  revision: 8bb5ddad7abd2249ecb0f2891903728fc627e04b
   tag: captions
   specs:
     mediaelement_rails (0.5.1)
