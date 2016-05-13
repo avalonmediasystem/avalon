@@ -1,6 +1,6 @@
 development:
   user: fedoraAdmin
-  password: fedoraAdmin
+  password: fedoraPassword
   url: http://127.0.0.1:8983/fedora
 test: &TEST  
   user: fedoraAdmin

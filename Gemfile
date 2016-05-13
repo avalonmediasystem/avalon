@@ -1,8 +1,9 @@
   source 'http://rubygems.org'
 
+  gem 'mysql2', '~>0.3.20'
   gem 'iconv'
-  gem 'rails', '~>4.0.3'
-  gem 'sprockets', '~>2.11.0'
+  gem 'rails', '~>4.1'
+  gem 'sprockets', '~>2.11.3'
   #gem 'protected_attributes'
   gem 'builder', '~>3.1.0'
 
@@ -27,7 +28,7 @@
   gem 'roo', git: 'https://github.com/Empact/roo', ref: '9e1b969762cbb80b1c52cfddd848e489f22f468f'
 
   gem 'multipart-post'  
-  gem 'modal_logic'
+  gem 'modal_logic', git: 'https://github.com/ualbertalib/modal_logic.git', branch: 'master'
   
   gem 'rubyzip', '0.9.9'
   gem 'hooks'
@@ -44,13 +45,13 @@
   
   platforms :jruby do
     gem 'jruby-openssl'
-    gem 'activerecord-jdbcsqlite3-adapter'
-    gem 'jdbc-sqlite3'
+#    gem 'activerecord-jdbcsqlite3-adapter'
+#    gem 'jdbc-sqlite3'
     gem 'therubyrhino'
   end
 
   platforms :ruby do
-    gem 'sqlite3'
+#    gem 'sqlite3'
     gem 'execjs'
     gem 'therubyracer', '>= 0.12.0'
   end
@@ -59,16 +60,17 @@
   gem 'about_page', git: "https://github.com/avalonmediasystem/about_page.git", tag: 'avalon-r4'
 
   # You are free to implement your own User/Authentication solution in its place.
-  gem 'devise', '~>3.2.0'
+  gem 'devise', '~>3.5.9'
   #gem 'devise-guests'
   gem 'haml'
 
-  gem 'active-encode', git: "https://github.com/projecthydra-labs/active-encode.git"
+  gem 'active_encode', git: "https://github.com/projecthydra-labs/active_encode.git"
   gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
   gem 'validates_email_format_of'
   gem 'loofah'
   gem 'omniauth-identity'
   gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
+  gem 'omniauth-shibboleth'
 
   gem 'mediainfo'
   gem 'delayed_job', '=4.0.4'
@@ -79,10 +81,12 @@
   gem 'equivalent-xml'
   gem 'net-ldap'
 
+  gem 'avalon-wowza'
+
   group :assets, :production do
     gem 'coffee-rails'
-    gem 'uglifier', '>= 1.0.3'
-    gem 'jquery-rails', '3.1.1'
+    gem 'uglifier', '>=1.3.0'
+    gem 'jquery-rails', '~>3.1.4'
     gem 'jquery-ui-rails', '5.0.0'
     gem 'compass-rails'
     gem 'compass-susy-plugin', '~> 0.9.0', require: 'susy'
@@ -90,7 +94,7 @@
     # For overriding the default interface with Twitter Bootstrap
     # This is now inherited from Blacklight
     gem 'bootstrap-sass', '=3.3.3'
-    gem 'sass-rails', '=4.0.3'
+    gem 'sass-rails', '~>4.0.5'
     gem 'font-awesome-rails', '~> 4.3'
     gem 'bootstrap_form'
     gem 'handlebars_assets'

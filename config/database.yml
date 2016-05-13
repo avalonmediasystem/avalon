@@ -1,8 +1,9 @@
-# SQLite version 3.x
-#   gem install sqlite3
 development:
-  adapter: sqlite3
-  database: db/development.sqlite3
+  adapter: mysql2
+  host: localhost
+  database: rails
+  username: rails
+  password: rails
   pool: 5
   timeout: 5000
 
