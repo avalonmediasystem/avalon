@@ -34,8 +34,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     </li>
     <% end %>
-    <% if user_signed_in? %>
-    <li>
+    <% if current_ability.can? :manage, Playlist %>
+    <li class=<%= active_for_controller('playlists') %>>
       <%= link_to 'Playlists', playlists_path, id:'playlists_nav' %> 
     </li>
     <% end %>
