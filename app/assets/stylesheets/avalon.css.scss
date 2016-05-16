@@ -1110,7 +1110,8 @@ h5.panel-title {
 }
 
 .mejs-time-annotation {
-  background: linear-gradient(#00F,#0FF);
+  background: linear-gradient(#00F,#00F);
   opacity: .75;
-  height: 2px !important;
+  height: 4px !important;
+  top: 2px !important;
 }
