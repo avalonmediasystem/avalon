@@ -151,15 +151,16 @@ en:
       revising or deleting. Managers can also do anything an editor or
       depositor can do.
     user: |
-      Enter a username to grant them access to an item or collection.
+      Enter a username to grant them access to an item or collection. Start and end dates are not required; if included, access for the specified user will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified user.
     group: |
-      Select an Avalon group from the dropdown list below to grant it access to an item or collection.
+      Select an Avalon group from the dropdown list below to grant it access to an item or collection.  Start and end dates are not required; if included, access for the specified group will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified group.
     class: |
-      Enter an external group to grant it access to an item or collection. This group might represent students in a course or members of an institution-specific group.
+      Enter an external group to grant it access to an item or collection. This group might represent students in a course or members of an institution-specific group. Start and end dates are not required; if included, access for the specified group will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified group.
     ipaddress: |
       An IP Address or subnet. Eg. 255.0.1.10 or 255.0.1.10/21 or 255.0.1.10/255.255.255.0
       or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777
       or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00
+      Start and end dates are not required; if included, access for the specified IP Address(es) will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified IP Address(es).
 
   contact:
     title: 'Contact Us - %{application_name}'
