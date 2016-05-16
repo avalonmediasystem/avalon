@@ -20,7 +20,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @current_masterfile = MasterFile.find(@current_playlist_item.annotation.source.split('/').last) %>
 <% @current_mediaobject = MediaObject.find(@current_masterfile.mediaobject_id) %>
 <div class="playlist-view container-fluid" >
-  <p id="notice"><%= notice %></p>
   <div class="container-fluid" >
     <div class="row">
       <div class="col-sm-8" id="left_column">
@@ -29,15 +28,19 @@ Unless required by applicable law or agreed to in writing, software distributed
           <div class="panel panel-default">
             <div class="panel-heading" role="tab" id="heading0" style="border-bottom: 1px solid #ddd;">
               <h4 class="panel-title">
-                <span class="now-playing-title"> <i class="material-icons md-hdr">equalizer</i> <%= @current_annotation.title %> <span>[<%= @current_annotation.duration %>]</span></span>
-	        <button class="btn btn-primary btn-xs" id="expand_button">Expand All</button>
-	        <button class="btn btn-primary btn-xs hidden" id="collapse_button">Collapse All</button>
+                <%= link_to media_object_path(@current_mediaobject) do %>
+                  <span><%= @current_annotation.title %></span>
+                <% end %>
+                <span>[<%= @current_annotation.duration %>]</span>
 	        <br class="clear"/>
               </h4>
+              <div>
+                <%= @current_annotation.comment %>
+              </div>
             </div>
             <div class="panel-heading" role="tab" id="heading2">
               <h5 class="panel-title ">
-                <a href="#" class="pull-left" data-toggle="collapse"  data-toggle="collapse" data-target="#section2" aria-expanded="false" aria-controls="collapse2"><i class="indicator glyphicon glyphicon-chevron-down  pull-left"></i>Details</a>  </span>
+                <a href="#" class="pull-left" data-toggle="collapse"  data-toggle="collapse" data-target="#section2" aria-expanded="false" aria-controls="collapse2"><i class="indicator glyphicon glyphicon-chevron-down  pull-left"></i>Mediaobject Details</a>  </span>
               </h5>
             </div>
             <div id="section2" class="panel-collapse collapse collapsed" role="tabpanel" aria-labelledby="heading2">
@@ -45,22 +48,11 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <%= render 'current_item' %>
               </div>
             </div>
-            <div class="panel-heading" role="tab" id="heading0">
-              <h5 class="panel-title ">
-                <a href="#"  class="pull-left" data-toggle="collapse"  data-toggle="collapse" data-target="#section0" aria-expanded="true" aria-controls="collapse0"><i class="indicator glyphicon glyphicon-chevron-down  pull-left"></i>Master File</a>
-                <span class="pull-right">[<%= Time.at(@current_masterfile.duration.to_i/1000).utc.strftime(@current_masterfile.duration.to_i/1000<3600?'%M:%S':'%H:%M:%S') %>]</span>
-              </h5>
-            </div>
-            <div id="section0" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading0">
-              <div class="panel-body">
-                <%= render 'current_masterfile' %>
-              </div>
-            </div>
             <% @related_annotations = @playlist.related_annotations_time_contrained(@current_playlist_item)%>
             <% unless @related_annotations.empty? %>
               <div class="panel-heading" role="tab" id="heading1">
                 <h5 class="panel-title ">
-                  <a href="#"  class="pull-left" data-toggle="collapse"  data-toggle="collapse" data-target="#section1" aria-expanded="true" aria-controls="collapse1"><i class="indicator glyphicon glyphicon-chevron-down  pull-left"></i>Related</a>
+                  <a href="#" class="pull-left" data-toggle="collapse"  data-toggle="collapse" data-target="#section1" aria-expanded="true" aria-controls="collapse1"><i class="indicator glyphicon glyphicon-chevron-down  pull-left"></i>Related</a>
                 </h5>
               </div>
               <div id="section1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading1">
