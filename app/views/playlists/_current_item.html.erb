@@ -15,14 +15,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <section id="metadata">
 <div id="metadata_header">
-  <legend>
+  <h3>
     <% unless @current_mediaobject.title.blank? %>
       <%= @current_mediaobject.title %>
     <% else %>
       <%= @current_mediaobject.pid %>
     <% end %>
     <%= "/ #{@current_mediaobject.statement_of_responsibility}" if @current_mediaobject.statement_of_responsibility.present? %>
-  </legend>
+  </h3>
 </div>
     
 <dl id="creation_metadata">
@@ -50,10 +50,4 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= display_metadata('Other Identifier', display_other_identifiers(@current_mediaobject)) %>
 
 </dl>
-<% if can? :inspect, @current_mediaobject %>
-  <%= link_to 'View Raw Metadata', inspect_media_object_path(@current_mediaobject.pid, 'descMetadata'), :target => 'blank', :class => "btn btn-default btn-small" %>
-  <%= link_to 'View Fedora Objects', tree_media_object_path(@current_mediaobject.pid), :id => 'show_object_tree', :target => 'blank', :class => "btn btn-default btn-small" %>
-  <div id="object_tree" data-src="<%=tree_media_object_path(@current_mediaobject.pid)%>">
-  </div>
-<% end %>
 </section>

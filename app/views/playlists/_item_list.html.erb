@@ -13,20 +13,28 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-
- <h3 class="playlist-title"> <span class="glyphicon glyphicon-lock"></span> Playlist</h3> 
+<% if current_ability.can? :edit, @playlist %>
  <div class="btn-group pull-right">
-   <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-     Actions <span class="caret"></span>
-   </button>
-   <ul class="dropdown-menu pull-right">
-     <li><a class="md-icon-container"><i class="material-icons md-18">playlist_play</i>Play Playlist</a></li>
-     <li><a class="md-icon-container"><i class="material-icons md-18">info_outline</i>Playlist Details</a></li>
-     <li><a class="md-icon-container"><i class="material-icons md-18">mode_edit</i>Edit Playlist</a></li>
-     <li role="separator" class="divider"></li>
-     <li><a class="md-icon-container"><i class="material-icons md-18">content_copy</i>Clone Playlist</a></li>
-   </ul>
+  <%= link_to edit_playlist_path(@playlist) do %>
+    <button type="button" class="btn btn-default" style="display:block;" >
+      <span class="fa fa-edit"> Edit Playlist</span>
+    </button>
+  <% end %>
  </div>
- <ol class="side-playlist">
-   <%= render partial: 'playlist_item', collection: @playlist.items, locals: { annotations: @playlist.annotations } %>
- </ol>
+<% end %>
+<h3 class="playlist-title">
+  <% if @playlist.visibility=='private' %>
+    <span class="fa fa-lock" alt="<%= t('playlist.lockAltText') %>" title="<%= t('playlist.lockAltText') %>"></span>
+  <% else %>
+    <span class="fa fa-unlock-alt" alt="<%= t('playlist.unlockAltText') %>" title="<%= t('playlist.unlockAltText') %>"></span>
+  <% end %>
+  <%= @playlist.title %>
+</h3>
+<% if @playlist.comment.present? %>
+  <div class="playlist-description">
+    <%= @playlist.comment %>
+  </div>
+<% end %>
+<ol class="side-playlist">
+  <%= render partial: 'playlist_item', collection: @playlist.items, locals: { annotations: @playlist.annotations } %>
+</ol>
