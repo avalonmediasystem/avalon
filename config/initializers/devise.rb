@@ -246,7 +246,7 @@ Devise.setup do |config|
     :info_fields => {
       :name => 'givenName', 
       :last_name => 'sn', 
-      :email => ->(request) {request.call('mail')}
+      :email => 'mail'}
     }
     #    ,
     #    :debug => true
