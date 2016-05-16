@@ -74,7 +74,7 @@ class AvalonPlayer
         @player.buildqualities(@player, @player.controls, @player.layers, @player.media)
 
       initialize_view = =>
-        if _this.stream_info.hasOwnProperty('t')
+        if _this.stream_info.hasOwnProperty('t') and _this.player.options.displayMediaFragment
           duration = _this.stream_info.duration
           t = _this.stream_info.t.split(',')
           start_percent = Math.round(if isNaN(parseFloat(t[0])) then 0 else (100*parseFloat(t[0]) / duration))
