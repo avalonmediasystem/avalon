@@ -16,12 +16,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 <section id="metadata">
 <div id="metadata_header">
   <h3>
-    <% unless @current_mediaobject.title.blank? %>
-      <%= @current_mediaobject.title %>
-    <% else %>
-      <%= @current_mediaobject.pid %>
+    <%= link_to media_object_path(@current_mediaobject) do %>
+      <% unless @current_mediaobject.title.blank? %>
+        <%= @current_mediaobject.title %>
+      <% else %>
+        <%= @current_mediaobject.pid %>
+      <% end %>
+      <%= "/ #{@current_mediaobject.statement_of_responsibility}" if @current_mediaobject.statement_of_responsibility.present? %>
     <% end %>
-    <%= "/ #{@current_mediaobject.statement_of_responsibility}" if @current_mediaobject.statement_of_responsibility.present? %>
   </h3>
 </div>
     
