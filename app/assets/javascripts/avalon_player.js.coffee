@@ -73,7 +73,17 @@ class AvalonPlayer
       if @player.qualities? && @player.qualities.length > 0
         @player.buildqualities(@player, @player.controls, @player.layers, @player.media)
 
-      initialize_view = => @player.setCurrentTime(initialTime)
+      initialize_view = =>
+        if _this.stream_info.hasOwnProperty('t') and _this.player.options.displayMediaFragment
+          duration = _this.stream_info.duration
+          t = _this.stream_info.t.split(',')
+          start_percent = Math.round(if isNaN(parseFloat(t[0])) then 0 else (100*parseFloat(t[0]) / duration))
+          end_percent = Math.round(if t.length < 2 or isNaN(parseFloat(t[1])) then 100 else (100*parseFloat(t[1]) / duration))
+          annotation_span = $('<span />').addClass('mejs-time-annotation')
+          annotation_span.css 'left', start_percent+'%'
+          annotation_span.css 'width', end_percent-start_percent+'%'
+          $('.mejs-time-total').append annotation_span
+        @player.setCurrentTime initialTime
 
       $(@player).one 'created', =>
         $(@player.media).on 'timeupdate', => @setActiveSection()

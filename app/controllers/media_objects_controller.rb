@@ -379,7 +379,7 @@ class MediaObjectsController < ApplicationController
     # exceptions. It might be worth refactoring when there are some extra
     # cycles available.
     @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
-    @currentStreamInfo['t'] = params[:t] # add MediaFragment from params
+    @currentStreamInfo['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
  end
 
   # The goal of this method is to determine which stream to provide to the interface

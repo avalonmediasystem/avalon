@@ -1091,22 +1091,24 @@ h5.panel-title {
    left: 0 ;
    position: absolute;
 }
-
 .annotation_start_time {
   position: absolute;
   right: 240px;
 }
-
 .annotation_end_time {
   position: absolute;
   right: 130px;
-
 }
-
 .annotation_position {
   position: absolute;
   right: 0;
 }
 .related_item {
   position: relative;
+}
+
+.mejs-time-annotation {
+  background: linear-gradient(#00F,#0FF);
+  opacity: .75;
+  height: 8px;
 }
