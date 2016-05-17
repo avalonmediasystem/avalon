@@ -13,6 +13,9 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   alias_method :title, :label
   alias_method :title=, :label=
 
+  validates :start_time, numericality: true
+  validates :end_time, numericality: true
+
   after_initialize do
     self.source = master_file unless master_file.nil?
     selector_default!
