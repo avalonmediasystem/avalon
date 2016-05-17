@@ -5,11 +5,15 @@ RSpec.describe PlaylistItemsController, type: :controller do
   # PlaylistItem. As you add validations to PlaylistItem, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) do
-    { title: Faker::Lorem.word, start_time: 0.0, end_time: 100.0, master_file_id: master_file.pid }
+    { title: Faker::Lorem.word, start_time: 0.0, end_time: "00:01:37", master_file_id: master_file.pid }
   end
 
   let(:invalid_attributes) do
     { playlist_id: 'not-a-playlist-id', master_file_id: 'avalon:bad-pid', start_time: 'not-a-time', end_time: 'not-a-time' }
+  end
+
+  let(:invalid_times) do
+    { title: Faker::Lorem.word, start_time: 0.0, end_time: 'not-a-time', master_file_id: master_file.pid }
   end
 
   # This should return the minimal set of values that should be in the session
@@ -35,6 +39,8 @@ RSpec.describe PlaylistItemsController, type: :controller do
         expect do
           post :create, { playlist_id: playlist.to_param, playlist_item: valid_attributes }, valid_session
         end.to change(AvalonAnnotation, :count).by(1)
+        expect(AvalonAnnotation.last.start_time).to eq (0.0)
+        expect(AvalonAnnotation.last.end_time).to eq (97000.0)
       end
 
       it 'adds the Playlist Item to the playlist' do
@@ -57,7 +63,11 @@ RSpec.describe PlaylistItemsController, type: :controller do
     end
 
     context 'with invalid params' do
-      xit 'responds with a 400 BAD REQUEST' do
+      it 'invalid times respond with a 400 BAD REQUEST' do
+        post :create, { playlist_id: playlist.to_param, playlist_item: invalid_times }, valid_session
+        expect(response).to have_http_status(:bad_request)
+      end
+      it 'invalid playlist_id responds with a 400 BAD REQUEST' do
         post :create, { playlist_id: playlist.to_param, playlist_item: invalid_attributes }, valid_session
         expect(response).to have_http_status(:bad_request)
       end

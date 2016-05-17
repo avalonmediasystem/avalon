@@ -4,12 +4,27 @@ class PlaylistItemsController < ApplicationController
 
   # POST /playlists/1/items
   def create
+    title =  playlist_item_params[:title]
+    comment = playlist_item_params[:comment]
+    start_time = time_str_to_milliseconds playlist_item_params[:start_time]
+    end_time = time_str_to_milliseconds playlist_item_params[:end_time]
+    messages = []
+    messages << 'Title is required.' if title.blank?
+    messages << "Specified start time not valid." unless numeric?(start_time)
+    messages << "Specified end time not valid." unless numeric?(end_time)
+    unless messages.empty?
+      flash[:alert] = messages.join(' ')
+      render nothing: true, status: 400 and return
+    end
     annotation = AvalonAnnotation.new(master_file: MasterFile.find(playlist_item_params[:master_file_id]))
-    annotation.title = playlist_item_params[:title]
-    annotation.comment = playlist_item_params[:comment]
-    annotation.start_time = playlist_item_params[:start_time]
-    annotation.end_time = playlist_item_params[:end_time]
-    annotation.save!
+    annotation.title = title
+    annotation.comment = comment
+    annotation.start_time = start_time
+    annotation.end_time = end_time
+    unless annotation.save!
+      flash[:alert] = "Item was not created: #{annotation.errors.full_messages}"
+      render nothing: true, status: 500 and return
+    end
     if PlaylistItem.create(playlist: @playlist, annotation: annotation)
       flash[:success] = "Add to playlist was successful. See it here: #{view_context.link_to("here", playlist_url(@playlist))}"
       render nothing: true, status: 201 and return
@@ -18,6 +33,10 @@ class PlaylistItemsController < ApplicationController
   end
 
   private
+
+  def numeric? n
+    Float(n) != nil rescue false
+  end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_playlist
@@ -28,4 +47,21 @@ class PlaylistItemsController < ApplicationController
     params.require(:playlist_item).permit(:title, :comment, :master_file_id, :start_time, :end_time)
   end
 
+  def time_str_to_milliseconds value
+    if value.is_a?(Numeric)
+      value.floor
+    elsif value.is_a?(String)
+      result = 0
+      segments = value.split(/:/).reverse
+      begin
+        segments.each_with_index { |v,i| result += i > 0 ? Float(v) * (60**i) * 1000 : (Float(v) * 1000) }
+        result.to_i
+      rescue
+        return value
+      end
+    else
+      value
+    end    
+  end
+  
 end
