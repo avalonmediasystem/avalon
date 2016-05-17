@@ -19,7 +19,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/active_annotations.git
-  revision: 284c69d0f314340fc2e9e4244a3560d1a5409768
+  revision: f49282ea634545b2b452db1747f31d221cf8e272
   specs:
     active_annotations (0.1.0)
       json-ld
