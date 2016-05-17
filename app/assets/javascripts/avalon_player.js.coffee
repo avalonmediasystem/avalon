@@ -86,7 +86,6 @@ class AvalonPlayer
         @player.setCurrentTime initialTime
 
       @player.options.playlistItemDefaultTitle = @stream_info.embed_title
-      initialize_view = => @player.setCurrentTime(initialTime)
 
       $(@player).one 'created', =>
         $(@player.media).on 'timeupdate', => @setActiveSection()
