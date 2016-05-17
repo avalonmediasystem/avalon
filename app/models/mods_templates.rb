@@ -244,6 +244,14 @@ module ModsTemplates
         }
       end
 
+      # ua: probably obsolete, clean up
+      define_template :_access_restrictions do |xml,text,license|
+        license = ModsDocument::LICENSE_TYPES.keys.first if license.empty?
+        xml.recordIdentifier(:license => license) {
+          xml.text(text)
+        }
+      end
+      
       def get_record_info
         node = find_by_terms(:record_info)
         if node.empty?
@@ -252,6 +260,15 @@ module ModsTemplates
         Array(node).first
       end
 
+      # ua: probably obsolete, clean up
+      def get_accessCondition_info
+        node = find_by_terms(:accessCondition)
+        if node.empty?
+          node = ng_xml.root.add_child('<accessCondition/>')
+        end
+        Array(node).first
+      end
+      
       def add_bibliographic_id(content, attrs={})
         add_child_node(get_record_info, :_record_identifier, content, attrs)
       end
@@ -260,6 +277,16 @@ module ModsTemplates
         add_child_node(get_record_info, :_record_identifier, content, "Fedora")
       end
 
+      # ua: probably obsolete, clean up
+      def add_access_restrictions(content, attrs={})
+        add_child_node(get_accessCondition_info, :_access_restrictions, content)
+      end
+
+      # ua: probably obsolete, clean up
+      def add_access_restrictions_customtext(content)
+        add_child_node(get_accessCondition_info, :_access_restrictions_customtext, content)
+      end
+      
     end
   end
 
