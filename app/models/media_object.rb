@@ -51,8 +51,12 @@ class MediaObject < ActiveFedora::Base
   # blank. Since identifier is set automatically we only need to worry about creator,
   # title, and date of creation.
 
+  # For Era audio + video, additional mandatory elements.
+  
   validates :title, :presence => true
-  validate  :validate_language
+  validate  :validate_creator
+  validate  :validate_language, :presence => true
+  validates  :language, :presence => true
   validates :date_issued, :presence => true
   validate  :report_missing_attributes
   validates :collection, presence: true
@@ -60,7 +64,18 @@ class MediaObject < ActiveFedora::Base
   validate  :validate_related_items
   validate  :validate_dates
   validate  :validate_note_type
+  validates  :topical_subject, presence: true
+  validates  :access_restrictions_license, presence: true
+  validate  :validate_access_restrictions_rights
 
+  def validate_access_restrictions_rights
+    if :license_type == 'User_Defined_Rights_Statement'
+      if :access_restrictions_rights.empty?
+        errors.add(:access_restrictions_rights, "A custom license statement is required")
+      end
+    end
+  end
+  
   def validate_note_type
     Array(note).each{|i|errors.add(:note, "Note type (#{i[0]}) not in controlled vocabulary") unless ModsDocument::NOTE_TYPES.keys.include? i[0] }
   end
@@ -114,6 +129,8 @@ class MediaObject < ActiveFedora::Base
     :physical_description => :physical_description,
     :other_identifier => :other_identifier,
     :record_identifier => :record_identifier,
+    :access_restrictions_rights => :access_restrictions_rights,
+    :access_restrictions_license => :access_restrictions_license,
     }
   end
 
@@ -153,6 +170,9 @@ class MediaObject < ActiveFedora::Base
   has_attributes :other_identifier, datastream: :descMetadata, at: [:other_identifier], multiple: true
   has_attributes :record_identifier, datastream: :descMetadata, at: [:record_identifier], multiple: true
 
+  has_attributes :access_restrictions_rights, datastream: :descMetadata, at: [:access_restrictions_rights], multiple: false
+  has_attributes :access_restrictions_license, datastream: :descMetadata, at: [:access_restrictions_license], multiple: false
+  
   has_metadata name:'displayMetadata', :type =>  ActiveFedora::SimpleDatastream do |sds|
     sds.field :duration, :string
     sds.field :avalon_resource_type, :string
@@ -286,6 +306,31 @@ class MediaObject < ActiveFedora::Base
       values[:other_identifier]=values[:other_identifier].zip(values[:other_identifier_type]).map{|v| {value: v[0], attributes: v[1]}}
     end
     values.delete(:other_identifier_type)
+
+    # Special case the access license/rights entry
+    if values[:access_restrictions_license]
+      # If the license type is Custom:
+      #  - delete access_restrictions_license 
+      #  - access_restrictions_rights value (from text area input) go in to metadata
+      # If the license type is not Custom:
+      #  - license_type goes on directly to access_restrictions_license
+
+      if values[:license_type] != 'User_Defined_Rights_Statement'
+        values.delete(:access_restrictions_rights)
+        values[:access_restrictions_license] = values.delete(:license_type)
+      else 
+        #values.delete(:access_restrictions_license)
+        values[:access_restrictions_license] = values.delete(:license_type)
+
+        #values.delete(:access_restrictions_license)
+      end
+
+
+      
+      #else
+      #  values[:access_restrictions] = {value: values[:access_restrictions], attributes: values.delete(:license_type)}
+      #end
+    end
 
     values.each do |k, v|
       # First remove all blank attributes in arrays

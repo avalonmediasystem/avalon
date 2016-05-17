@@ -21,6 +21,8 @@ class ModsDocument < ActiveFedora::OmDatastream
   
   IDENTIFIER_TYPES = Avalon::ControlledVocabulary.find_by_name(:identifier_types) || {"other" => "Local"}
   NOTE_TYPES = Avalon::ControlledVocabulary.find_by_name(:note_types) || {"local" => "Local Note"}
+  LICENSE_TYPES = Avalon::ControlledVocabulary.find_by_name(:license_types) || {"local" => "Local License"}
+  LICENSE_DESCRIPTIONS = Avalon::ControlledVocabulary.find_by_name(:license_descriptions) || {"other" => "Local"}
   
   set_terminology do |t|
     t.root(:path=>'mods',
@@ -152,11 +154,22 @@ class ModsDocument < ActiveFedora::OmDatastream
     t.location_url(:ref => [:location, :url])
     t.permalink(:ref => [:location, :url_with_context])
 
+#    t.accessCondition(:path => 'accessCondition') do
+#      t.access_restrictions(:path => 'license')
+#      t.access_restrictions_customtext(:path => 'customLicenseText')
+#    end
+    
     t.usage(:path => 'accessCondition')
     t.terms_of_use(:path => 'accessCondition', :attributes => { :type => 'use and reproduction' })
     t.table_of_contents(:path => 'tableOfContents')
-    t.access_restrictions(:path => 'accessCondition', :attributes => { :type => 'restrictions on access' })
+#    t.access_restrictions(:path => 'accessCondition', :attributes => { :type => 'restrictions on access' })
+#    t.access_restrictions(:proxy => [:accessCondition, :access_restrictions])
+#    t.access_restrictions_customtext(:proxy => [:accessCondition, :access_restrictions_customtext])
+#    t.access_restrictions(:proxy => [:accessCondition, :access_restrictions]);
+    t.access_restrictions_license(:path => 'accessCondition', :attributes => { :type => 'license' })
+    t.access_restrictions_rights(:path => 'accessCondition', :attributes => { :type => 'rights' })
 
+    
     t.record_info(:path => 'recordInfo') do
       t.origin(:path => 'recordOrigin')
       t.content_source(:path => 'recordContentSource')

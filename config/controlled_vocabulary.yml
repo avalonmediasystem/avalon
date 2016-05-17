@@ -1,0 +1,41 @@
+units:
+ - Default Unit
+identifier_types:
+ local: Catalog Key
+ oclc: OCLC
+ lccn: LCCN
+ issue number: Issue Number
+ matrix number: Matrix Number
+ music publisher: Music Publisher/Label
+ videorecording identifier: Videorecording Identifier
+ other: Other
+note_types:
+ general: General Note
+ awards: Awards
+ biographical/historical: Bibliographical/Historical Note
+ creation/production credits: Creation/Production Credits
+ language: Language Note
+ local: Local Note
+ performers: Performers
+ statement of responsibility: Statement of Responsibility
+ venue: Venue/Event Date
+license_types:
+ Attribution_4.0_International: Attribution 4.0 International
+ Attribution-ShareAlike_4.0_International: Attribution-ShareAlike 4.0 International
+ Attribution-NonCommercial_4.0_International: Attribution-NonCommercial 4.0 International
+ Attribution-NoDerivs_4.0_International: Attribution-NoDerivs 4.0 International
+ Attribution-NonCommercial-NoDerivs_4.0_International: Attribution-NonCommercial-NoDerivs 4.0 International
+ Attribution-NonCommercial-ShareAlike_4.0_International: Attribution-NonCommercial-ShareAlike 4.0 International
+ Public_Domain_Mark_1.0: Public Domain Mark 1.0
+ CC0_1.0_Universal: CC0 1.0 Universal
+ User_Defined_Rights_Statement: Enter my own license terms...
+license_descriptions:
+ Attribution_4.0_International: With this license you allow others to "distribute, remix, tweak, and build" on your deposited content, including for commercial uses, provided they attribute you as the original creator.
+ Attribution-ShareAlike_4.0_International: With this license you allow others to "remix, tweak, and build" on your deposited content, including for commercial uses, provided they attribute you as the original creator AND incorporate the same level of licensing for the newly resulting creation. "All new works based on yours will carry the same license, so any derivatives will also allow commercial use."
+ Attribution-NonCommercial_4.0_International: With this license you allow others to "remix, tweak, and build" on your content in non-commercial ways. While they must credit you as the original creator and while the remixed, tweaked, or expanded upon content must remain non-commercial, they do not have to apply identical license terms on the new content.
+ Attribution-NoDerivs_4.0_International: With this license you share your work with others and allow them to download your work, provided they attribute you as the creator and refrain from changing the content in any way.
+ Attribution-NonCommercial-NoDerivs_4.0_International: With this license you share your work with others and allow them to download your work, provided they attribute you as the creator and refrain from changing the content in any way, including for commercial means.
+ Attribution-NonCommercial-ShareAlike_4.0_International: With this license you allow others to "remix, tweak, and build" on your content in non-commercial ways, provided they attribute you as the original creator AND incorporate the same level of licensing for the newly resulting creation. "All new works based on yours will carry the same license, so any derivatives will also allow commercial use."
+ Public_Domain_Mark_1.0: When content is in the public domain, it has no known copyright owner.
+ CC0_1.0_Universal: With this license you are waiving your rights as copyright owner to the content you upload. This means your content may be distributed and reused without attribution, without restriction. CC0 is a license that one applies to one's own work; rarely does one apply it to another's work, unless one has the appropriate rights to do so.
+ User_Defined_Rights_Statement: If you wish to make your own license statement, or if you are required to attach an existing publisher's license, please enter it in the text area below.

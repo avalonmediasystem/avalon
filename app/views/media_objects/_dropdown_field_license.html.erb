@@ -26,4 +26,9 @@ Unless required by applicable law or agreed to in writing, software distributed
 		  <li><a><%= display %></a><span class="hidden"><%= value %></li>
 	  <% end %>
   </ul>
+  <ul class="hidden">
+	  <% options[:dropdown_descriptions].each_pair do |value, display| %>
+		  <li class="hidden license_description"><a class="hidden"><%= display %></a><span class="hidden"><%= value %></li>
+	  <% end %>
+  </ul>
 </div>

@@ -53,4 +53,8 @@ Avalon::Application.configure do
   config.eager_load = false
 
   #config.middleware.insert_before Rails::Rack::Logger, DisableAssetsLogger
+
+  BetterErrors::Middleware.allow_ip! "10.0.2.2"
+
+
 end
