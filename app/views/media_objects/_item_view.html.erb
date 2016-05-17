@@ -94,7 +94,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       //addToPlaylist: <%= can?(:create, Playlist) ? 'true' : 'false' %>,
       addToPlaylist: <%= current_user.present? ? 'true' : 'false' %>,
       startQuality: '<%= current_quality(@currentStreamInfo) %>',
-      customError: '<%= t("media_objects.player.customError").html_safe %>'
+      customError: '<%= t("media_objects.player.customError").html_safe %>',
+      playlistItemDefaultTitle: <%= @currentStream.embed_title %>
     })
     currentPlayer = avalonPlayer.player;
   </script>
