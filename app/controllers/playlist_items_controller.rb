@@ -24,7 +24,7 @@ class PlaylistItemsController < ApplicationController
       render json: { message: "Item was not created: #{annotation.errors.full_messages}" }, status: 500 and return
     end
     if PlaylistItem.create(playlist: @playlist, annotation: annotation)
-      render json: { message: "Add to playlist was successful. See it here: #{view_context.link_to("here", playlist_url(@playlist))}" }, status: 201 and return
+      render json: { message: "Add to playlist was successful. See it: #{view_context.link_to("here", playlist_url(@playlist))}" }, status: 201 and return
     end
     render nothing: true, status: 500 and return
   end
