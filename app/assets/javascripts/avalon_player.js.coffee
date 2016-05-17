@@ -85,6 +85,8 @@ class AvalonPlayer
           $('.mejs-time-total').append annotation_span
         @player.setCurrentTime initialTime
 
+      @player.options.playlistItemDefaultTitle = @stream_info.embed_title
+
       $(@player).one 'created', =>
         $(@player.media).on 'timeupdate', => @setActiveSection()
         @container.find('#content').css('visibility','visible')
@@ -98,6 +100,7 @@ class AvalonPlayer
       @setupCreationTrigger()
       @player.cleartracks(@player, null, null, null)
       @player.rebuildtracks()
+
 
   setStreamInfo: (value) ->
     @stream_info = value
@@ -160,4 +163,3 @@ class AvalonPlayer
           $.getJSON uri, params.join('&'), (data) => @setStreamInfo(data)
 
 (exports ? this).AvalonPlayer = AvalonPlayer
-

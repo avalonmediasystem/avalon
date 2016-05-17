@@ -250,7 +250,8 @@ class MasterFile < ActiveFedora::Base
       stream_hls: hls,
       captions_path: captions_path,
       captions_format: captions_format,
-      duration: (duration.to_f / 1000).round
+      duration: (duration.to_f / 1000).round,
+      embed_title: embed_title
     }
   end
 
