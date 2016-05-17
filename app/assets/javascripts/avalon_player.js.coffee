@@ -73,6 +73,7 @@ class AvalonPlayer
       if @player.qualities? && @player.qualities.length > 0
         @player.buildqualities(@player, @player.controls, @player.layers, @player.media)
 
+      @player.options.playlistItemDefaultTitle = @stream_info.embed_title
       initialize_view = => @player.setCurrentTime(initialTime)
 
       $(@player).one 'created', =>
@@ -88,6 +89,7 @@ class AvalonPlayer
       @setupCreationTrigger()
       @player.cleartracks(@player, null, null, null)
       @player.rebuildtracks()
+
 
   setStreamInfo: (value) ->
     @stream_info = value
@@ -150,4 +152,3 @@ class AvalonPlayer
           $.getJSON uri, params.join('&'), (data) => @setStreamInfo(data)
 
 (exports ? this).AvalonPlayer = AvalonPlayer
-
