@@ -247,10 +247,9 @@ Devise.setup do |config|
       :name => 'givenName', 
       :last_name => 'sn', 
       :email => 'mail'}
-    }
+  }
     #    ,
     #    :debug => true
-  }
 
 # unless Rails.env.development?
 #  config.omniauth :shibboleth, {
