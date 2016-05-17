@@ -13,8 +13,7 @@ class PlaylistItemsController < ApplicationController
     messages << "Specified start time not valid." unless numeric?(start_time)
     messages << "Specified end time not valid." unless numeric?(end_time)
     unless messages.empty?
-      flash[:alert] = messages.join(' ')
-      render nothing: true, status: 400 and return
+      render json: { message: messages.join(' ') }, status: 400 and return
     end
     annotation = AvalonAnnotation.new(master_file: MasterFile.find(playlist_item_params[:master_file_id]))
     annotation.title = title
@@ -22,12 +21,10 @@ class PlaylistItemsController < ApplicationController
     annotation.start_time = start_time
     annotation.end_time = end_time
     unless annotation.save!
-      flash[:alert] = "Item was not created: #{annotation.errors.full_messages}"
-      render nothing: true, status: 500 and return
+      render json: { message: "Item was not created: #{annotation.errors.full_messages}" }, status: 500 and return
     end
     if PlaylistItem.create(playlist: @playlist, annotation: annotation)
-      flash[:success] = "Add to playlist was successful. See it here: #{view_context.link_to("here", playlist_url(@playlist))}"
-      render nothing: true, status: 201 and return
+      render json: { message: "Add to playlist was successful. See it here: #{view_context.link_to("here", playlist_url(@playlist))}" }, status: 201 and return
     end
     render nothing: true, status: 500 and return
   end
