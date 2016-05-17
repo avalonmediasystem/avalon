@@ -56,9 +56,8 @@ RSpec.describe PlaylistItemsController, type: :controller do
 
       it 'responds with a flash message with link to playlist' do
         post :create, { playlist_id: playlist.to_param, playlist_item: valid_attributes }, valid_session
-        expect(flash[:success]).to be_present
-        expect(flash[:success]).to include("success")
-        expect(flash[:success]).to include(playlist_url(playlist))
+        expect(JSON.parse(response.body)['message']).to include('Add to playlist was successful.')
+        expect(JSON.parse(response.body)['message']).to include(playlist_url(playlist))
       end
     end
 
