@@ -24,28 +24,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%- resource_class.omniauth_providers.each do |provider| %>
     <%- if provider.to_s == "shibboleth" %>
       <div class="col-sm-8 col-sm-offset-2">
-        <%= link_to "Yes, I have a CCID",(omniauth_authorize_path(resource_name, provider)), :class => "btn btn-ccid" %>
-      </div>
-    <%- elsif provider.to_s == "identity" %>
-      <div class="col-sm-4 col-sm-offset-4">
-        <a href="#" class="btn btn-noccid">NO, I do not have a CCID</a>
-        <div id="era-login">
-        <p>
-          <strong>Don&rsquo;t have a CCID?</strong>
-          <%= link_to "Create an account", new_identity_path %> or login below.
-        </p>
-        <%= form_tag "/users/auth/identity/callback" do %>
-          <div class="field">
-             <%= label_tag :auth_key, "Email" %><br>
-             <%= text_field_tag :auth_key %>
-          </div>
-          <div class="field">
-            <%= label_tag :password %><br>
-            <%= password_field_tag :password %>
-          </div>
-          <div class="actions"><%= submit_tag "Login" %></div>
-        <% end %>
-        </div>
+        <%= link_to "Login with my CCID",(omniauth_authorize_path(resource_name, provider)), :class => "btn btn-ccid" %>
       </div>
     <% end -%>
   <% end -%>
