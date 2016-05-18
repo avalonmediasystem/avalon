@@ -1,10 +1,10 @@
 class PlaylistsController < ApplicationController
   # TODO: rewrite this to use cancancan's authorize_and_load_resource
-  before_action :set_playlist, only: [:show, :edit, :update, :destroy]
+  before_action :set_playlist, only: [:show, :edit, :update, :destroy, :update_multiple]
+  before_action :get_all_playlists, only: [:index, :edit]
 
   # GET /playlists
   def index
-    @playlists = Playlist.for_ability(current_ability).to_a
   end
 
   # GET /playlists/1
@@ -18,6 +18,8 @@ class PlaylistsController < ApplicationController
 
   # GET /playlists/1/edit
   def edit
+    # We are already editing our playlist, we don't need it to show up in this array as well
+    @playlists.delete( @playlist )
   end
 
   # POST /playlists
@@ -39,6 +41,15 @@ class PlaylistsController < ApplicationController
     end
   end
 
+  def update_multiple
+    @playlist.items.each do |item|
+      if (item.id.to_s.in? params[:annotation_ids])
+        @playlist.items.delete(item)
+      end
+    end
+    redirect_to @playlist, notice: 'Playlist was successfully updated.'
+  end
+
   # DELETE /playlists/1
   def destroy
     @playlist.destroy
@@ -52,9 +63,14 @@ class PlaylistsController < ApplicationController
     @playlist = Playlist.find(params[:id])
   end
 
+  # Use callbacks to share common setup or constraints between actions.
+  def get_all_playlists
+    @playlists = Playlist.for_ability(current_ability).to_a
+  end
+
   # Only allow a trusted parameter "white list" through.
   def playlist_params
-    params.require(:playlist).permit(:title, :comment, :visibility)
+    params.require(:playlist).permit(:title, :comment, :visibility, :annotation_ids, items_attributes: [:id, :position])
   end
 
 end
