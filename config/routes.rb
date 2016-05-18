@@ -116,8 +116,14 @@ Avalon::Application.routes.draw do
   end
   resources :identities
 
-  mount AboutPage::Engine => '/about(.:format)', :as => 'about_page'
+  #mount AboutPage::Engine => '/about(.:format)', :as => 'about_page'
 
+  get 'policies' => 'pages#policies', id: 'policies_page'
+  get 'technology' => 'pages#technology', id: 'technology_page'
+  get 'deposit' => 'pages#deposit', id: 'deposit_page'
+  get 'contact' => 'pages#contact', id: 'contact_page'
+  get 'about' => 'pages#about', id: 'about_page'
+ 
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
