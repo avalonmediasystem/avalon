@@ -41,7 +41,7 @@
   </div>
   <% end %>
 
-  <% unless @playlist.new_record? %>
+  <% unless @playlist.items.empty? %>
     <%= form_for(@playlist,url: { action: "update_multiple" }, html: { class: 'form-horizontal playlist_actions' }) do |f| %>
     <div class="container row">
       <div class="pull-right">
