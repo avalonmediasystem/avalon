@@ -19,9 +19,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="container-fluid" >
     <div class="row">
 <% if @playlist.items.empty? %>
-      <div class="col-sm-8" id="left_column">
+      <div class="col-sm-4" id="left_column">
+        <%= render 'item_list' %>
         This playlist currently has no items.
-        <%= link_to 'Edit playlist.', edit_playlist_path(@playlist) %>
       </div>
 <% else %>
   <% @current_playlist_item = @playlist.items.where(position: position).first %>
