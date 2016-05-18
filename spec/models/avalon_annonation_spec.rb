@@ -125,9 +125,10 @@ describe AvalonAnnotation do
     end
 
     def stub_playlist
+      user.save!
       @playlist = Playlist.new
       @playlist.title = 'whatever'
-      @playlist.user_id = 1
+      @playlist.user_id = User.last.id
       @playlist.save!
       pos = 1
       [annotation, second_annotation].each do |a|
