@@ -55,7 +55,7 @@ class Ability
   end
 
   def custom_permissions(user=nil, session=nil)
-    playlist_permissions(user, session)
+    playlist_permissions
     unless full_login? and @user_groups.include? "administrator"
       cannot :read, MediaObject do |mediaobject|
         !(test_read(mediaobject.pid) && mediaobject.published?) && !test_edit(mediaobject.pid)
@@ -144,9 +144,11 @@ class Ability
     end
   end
 
-  def playlist_permissions(user, session)
-    can :manage, Playlist, user_id: @user.id
-    #can [:create, :destroy], PlaylistItem, folder: { user_id: user.id }
+  def playlist_permissions
+    if @user.id.present? #logged in user
+      can [:manage,:update,:destroy], Playlist, user: @user
+      can :create, Playlist
+    end
     can :show, Playlist, visibility: Playlist::PUBLIC
   end
 
