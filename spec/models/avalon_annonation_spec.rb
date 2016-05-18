@@ -42,15 +42,15 @@ describe AvalonAnnotation do
     end
 
     it 'loads the master_file' do
-      annotation.save
+      annotation.save!
       new_instance = AvalonAnnotation.find_by(id: annotation.id)
       expect(new_instance.master_file.pid).to eq(video_master_file.pid)
     end
-    
+
     it 'can store start and end times' do
       annotation.start_time = 0.5
       annotation.end_time = 2.5
-      annotation.save
+      annotation.save!
       annotation.reload
       expect(annotation.start_time).to eq(0.5)
       expect(annotation.end_time).to eq(2.5)
@@ -61,24 +61,28 @@ describe AvalonAnnotation do
       it 'sets content using comment=' do
         content = 'Big Two, Little Eight'
         annotation.comment = content
-        expect(annotation.content).to match(content)
+        annotation.save!
+        expect(annotation.reload.content).to match(content)
       end
       it 'accesses content using comment' do
         content = '1817'
         annotation.content = content
-        expect(annotation.comment).to match(content)
+        annotation.save!
+        expect(annotation.reload.comment).to match(content)
       end
     end
     describe 'aliasing label with title' do
       it 'sets label using title=' do
         title = 'Astrolounge'
         annotation.title = title
-        expect(annotation.label).to match(title)
+        annotation.save!
+        expect(annotation.reload.label).to match(title)
       end
       it 'accesses label using title' do
         title = 'Defeat You'
         annotation.label = title
-        expect(annotation.title).to match(title)
+        annotation.save!
+        expect(annotation.reload.title).to match(title)
       end
     end
   end
@@ -104,6 +108,38 @@ describe AvalonAnnotation do
       annotation.save!
       expect(annotation).to receive(:delete_from_solr).once
       expect { annotation.destroy }.not_to raise_error
+    end
+  end
+  describe 'related annotations' do
+    let(:second_annotation) { AvalonAnnotation.new(master_file: video_master_file) }
+    let!(:user) {FactoryGirl.build(:user)}
+    it 'returns nil when there are no related annotations' do
+      allow(PlaylistItem).to receive(:where).and_return([])
+      expect(annotation.playlist_position(1)).to be_nil
+    end
+    it 'returns position when there is a related annotation' do
+      #byebug
+      stub_playlist
+      expect(annotation.playlist_position(@playlist.id)).to eq(1)
+      expect(second_annotation.playlist_position(@playlist.id)).to eq(2)
+    end
+
+    def stub_playlist
+      user.save!
+      @playlist = Playlist.new
+      @playlist.title = 'whatever'
+      @playlist.user_id = User.last.id
+      @playlist.save!
+      pos = 1
+      [annotation, second_annotation].each do |a|
+        a.save!
+        @pi = PlaylistItem.new
+        @pi.playlist_id = @playlist.id
+        @pi.annotation_id = a.id
+        @pi.position = pos
+        @pi.save!
+        pos += 1
+      end
     end
   end
 end

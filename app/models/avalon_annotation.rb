@@ -51,6 +51,17 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
     ActiveFedora::SolrService.instance.conn.delete_by_id(solr_id, softCommit: true)
   end
 
+  # Find the annotation's position on a playlist
+  # This returns with 1, not 0, as the array start point due to the acts as order gems used on playlist item
+  # @param [Int] playlist_id The ID of the playlist
+  # @return [Int] the position
+  # @return [Nil] if the annotation is not on the specified playlist
+  def playlist_position(playlist_id)
+    p_item = PlaylistItem.where(playlist_id: playlist_id, annotation_id: id)[0]
+    return p_item if p_item.nil?
+    p_item['position']
+  end
+
   # Return the uuid of an active annotaton, with the urn:uuid removed
   # @return [String] the uuid of the annotation
   def solr_id
@@ -89,5 +100,4 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
     duration = (end_time-start_time)/1000
     Time.at(duration).utc.strftime(duration<3600?'%M:%S':'%H:%M:%S')
   end
-
 end
