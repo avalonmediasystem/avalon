@@ -1,26 +1,15 @@
 <div class="col-md-9">
-  <%= form_for(@playlist, html: { class: 'form-horizontal playlist_actions' }) do |f| %>
+  <%= form_for(@playlist, html: { id: 'playlist_form', class: 'form-horizontal playlist_actions' }) do |f| %>
   <div class="row">
     <div class="col-sm-6">
-      <% if @playlist.errors.any? %>
-        <div id="error_explanation">
-          <h2><%= pluralize(@playlist.errors.count, "error") %> prohibited this playlist from being saved:</h2>
 
-          <ul>
-          <% @playlist.errors.full_messages.each do |msg| %>
-            <li><%= msg %></li>
-          <% end %>
-          </ul>
-        </div>
-      <% end %>
-
-      <div class="form-group">
-
+      <div class="form-group <% if @playlist.errors[:title].any? %>has-error<% end %>">
         <%= f.label "Name", class: 'col-sm-2 control-label' %>
         <div class="col-sm-10">
           <%= f.text_field :title, class: 'form-control' %>
         </div>
-
+      </div>
+      <div class="form-group">
         <%= f.label :comment, class: 'col-sm-2 control-label' %>
         <div class="col-sm-10">
           <%= f.text_field :comment, class: 'form-control' %>
@@ -92,7 +81,8 @@
 
             <div class="col-sm-2">
               <span class="glyphicon glyphicon-resize-vertical hidden pull-left dd-handle"></span>
-                <%= i.text_field :position, class: 'form-control position-input'  %>
+                <%= i.text_field :position, class: 'form-control position-input', form: 'playlist_form'  %>
+                <%= i.hidden_field :id, form: 'playlist_form', value: i.object.id  %>
             </div>
             <div class="col-sm-6 title">
               <%= link_to i.object.annotation.title, i.object.annotation.mediafragment_uri %>
