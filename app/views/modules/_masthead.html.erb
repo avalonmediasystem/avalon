@@ -1,0 +1,34 @@
+<div id="masthead" class="container">
+  <div class="row visible-xs">
+    <div class="lib-logo col-xs-8">
+      <%= link_to "", "https://library.ualberta.ca", :class => 'logo' %>
+      </div>
+      <div class="col-xs-4 user-util">
+       <!-- <%= render partial: "/user_util_links"%> -->
+      </div>
+  </div>
+  <div class="row">
+    <div class="lib-logo col-sm-3 hidden-xs">
+      <%= link_to "", "https://library.ualberta.ca", :class => 'logo' %>
+    </div>
+    <div class="mast-branding col-sm-5">
+      <h2 class="hidden-xs">education &amp; research archive</h2>
+      <h1><a href="/">ERA</a></h1>
+    </div>
+    <div class="col-sm-4">
+      <form accept-charset="UTF-8" action="/catalog" id="search-form-header" method="get" role="search" class="form-inline hidden-xs mast-sm-search">
+        <div style="display:none"><input name="utf8" type="hidden" value="✓"></div>
+        <div class="form-group">
+          <input type="text" class="form-control q" id="search-field-header" name="q" placeholder="enter search terms">
+        </div>
+        <button type="submit" class="btn btn-default sm-search"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>Search ERA</button>
+      </form>
+      <div class="col-md-12 user-util hidden-xs">
+       <!--  <%= render partial: "/user_util_links"%> --> 
+      </div>
+    </div>
+  </div>
+</div>
+<div class="col-xs-12 visible-xs mobile-search">
+  <!--<%= render partial: "/front_search_form"%> -->
+</div>

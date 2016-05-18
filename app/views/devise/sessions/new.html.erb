@@ -18,8 +18,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <h2>Login to ERA Audio+Video</h2>
-<p class="login-instruct">ERA Audio+Video is now a <a href="https://ist.ualberta.ca/services/ccid-passwords/campus-computing-id">CCID</a> (Campus Computing ID) enabled service. If you have a CCID please use it to log in to ERA.</p>
-<h3>Do you have a University of Alberta CCID (Campus Computing ID)?</h3>
+<p class="login-instruct">ERA Audio+Video is a <a href="https://ist.ualberta.ca/services/ccid-passwords/campus-computing-id">CCID</a> (Campus Computing ID) enabled service. If you have a CCID please use it to log in to ERA.</p>
 <%- if devise_mapping.omniauthable? %>
   <%- resource_class.omniauth_providers.each do |provider| %>
     <%- if provider.to_s == "shibboleth" %>
