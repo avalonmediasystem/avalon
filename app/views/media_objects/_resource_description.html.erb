@@ -136,6 +136,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 				   display_label: 'Note(s)',
 				   dropdown_field: :note_type,
 				   dropdown_options: ModsDocument::NOTE_TYPES }} %>
+		<div>
+			<input id="agreement_checkbox" type="checkbox" checked="false" name="deposit_agreement">
+			I have read and do agree to the
+			<a target="_blank" href="https://era.library.ualberta.ca/agreement/">University of Alberta ERA Audio + Video Deposit and Distribution Agreement</a>
+			</input><br />
+		</div>
 		
 		<%= render 'workflow_buttons' %>
 	<% end %>
