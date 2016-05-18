@@ -23,7 +23,7 @@ Unless required by applicable law or agreed to in writing, software distributed
  </div>
 <% end %>
 <h3 class="playlist-title">
-  <% if @playlist.visibility=='private' %>
+  <% if @playlist.visibility==Playlist::PRIVATE %>
     <span class="fa fa-lock" alt="<%= t('playlist.lockAltText') %>" title="<%= t('playlist.lockAltText') %>"></span>
   <% else %>
     <span class="fa fa-unlock-alt" alt="<%= t('playlist.unlockAltText') %>" title="<%= t('playlist.unlockAltText') %>"></span>
