@@ -110,6 +110,38 @@ describe AvalonAnnotation do
       expect { annotation.destroy }.not_to raise_error
     end
   end
+  describe 'time validation' do
+    describe 'negative times' do
+      it 'raises an ArgumentError when start_time is negative' do
+        annotation.start_time = -1
+        expect { annotation.save }.to raise_error(ArgumentError)
+      end
+      it 'raises an ArgumentError when end_time is negative' do
+        annotation.end_time = -1
+        expect { annotation.save }.to raise_error(ArgumentError)
+      end
+    end
+    describe 'start and end time spacing' do
+      it 'raises an error when the end time preceeds the start time' do
+        annotation.end_time = 0
+        annotation.start_time = 1
+        expect { annotation.save }.to raise_error(ArgumentError)
+      end
+      it 'raises an error when the end time equals the start time' do
+        annotation.end_time = 0
+        annotation.start_time = 0
+        expect { annotation.save }.to raise_error(ArgumentError)
+      end
+    end
+    describe 'duration' do
+      it 'raises an error when end time exceeds the duration' do
+        annotation.master_file.duration = '8'
+        annotation.master_file.save!
+        annotation.end_time = 60
+        expect { annotation.save }.to raise_error(ArgumentError)
+      end
+    end
+  end
   describe 'related annotations' do
     let(:second_annotation) { AvalonAnnotation.new(master_file: video_master_file) }
     let!(:user) {FactoryGirl.build(:user)}
