@@ -19,7 +19,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/active_annotations.git
-  revision: f49282ea634545b2b452db1747f31d221cf8e272
+  revision: 63c683fdf9f8d629116a28b9e8439b7e2269c265
   specs:
     active_annotations (0.1.0)
       json-ld
@@ -847,4 +847,4 @@ DEPENDENCIES
   xray-rails
 
 BUNDLED WITH
-   1.11.2
+   1.12.4
