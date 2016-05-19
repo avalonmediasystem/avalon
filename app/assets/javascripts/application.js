@@ -59,7 +59,6 @@
  */
 //= require avalon
 //= require keyboard_access
-//= require avalon_playlists/playlist_items
 //= require pop_help
 //= require input_form_attribute_support
 //= require_self
