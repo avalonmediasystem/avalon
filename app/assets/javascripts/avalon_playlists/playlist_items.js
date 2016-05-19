@@ -1,6 +1,10 @@
 // This is for the playlists edit page
 Blacklight.onLoad(function(){
 
+  $('#select_all').change(function() {
+    $('input:checkbox').prop('checked', $(this).prop('checked'))
+  })
+
   // Display the drag handle
   $('.dd-handle').removeClass('hidden');
 
