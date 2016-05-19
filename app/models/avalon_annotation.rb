@@ -4,6 +4,7 @@
 class AvalonAnnotation < ActiveAnnotations::Annotation
   after_save :post_to_solr
   after_destroy :delete_from_solr
+  before_save :validate_times
 
   attr_accessor :master_file
 
@@ -99,5 +100,13 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   def duration
     duration = (end_time-start_time)/1000
     Time.at(duration).utc.strftime(duration<3600?'%M:%S':'%H:%M:%S')
+  end
+
+  def validate_times
+    master_file.reload unless master_file.nil?
+    master_file = MasterFile.find( self.source.split('/').last) if master_file.nil?
+    raise ArgumentError, 'Times cannot be negative numbers' if start_time < 0 || end_time < 0
+    raise ArgumentError, 'End Time must be greater than Start Time' if end_time <= start_time
+    raise ArgumentError, "End Time cannot exceed the source file's duration" if !master_file.duration.nil? && end_time > master_file.duration.to_f
   end
 end
