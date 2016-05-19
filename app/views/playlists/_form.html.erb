@@ -58,7 +58,7 @@
         <div class="form-group select-delete">
           <div class="btn-group">
             <label>
-              <%= check_box_tag 'select_all', class: "toggle_bookmark" %>
+              <%= check_box_tag 'select_all', "Select All", false, class: "toggle_bookmark", form:"edit_playlist_#{@playlist.id}" %>
               Select All
             </label>
           </div>
@@ -76,8 +76,8 @@
                 <% end %>
               </ul>
             </div>
-            <%#= button_tag( "Update", { type: 'button', class: "btn btn-default"}) %>
-            <%= f.submit "Delete Items", class: 'btn btn-default' %>
+            <%#= button_tag( "Update", { type: 'button', class: "btn btn-default", form:"edit_playlist_#{@playlist.id}"}) %>
+            <%= f.submit "Delete Items", class: 'btn btn-default', form:"edit_playlist_#{@playlist.id}" %>
           </div>
         </div>
       </div>
@@ -102,7 +102,7 @@
               </div>
               <div class="col-sm-2 checkbox">
 		<label>
-                  <%= check_box_tag 'annotation_ids[]', i.object.id %>
+                  <%= check_box_tag 'annotation_ids[]', i.object.id, false, form:"edit_playlist_#{@playlist.id}" %>
                   Select
 		</label>
               </div>
@@ -110,34 +110,34 @@
 	    <div id="playlist_item_edit_<%= i.object.id %>" class="row collapse">
 	      <div class="col-sm-3"></div>
 	      <div style="background-color:gray;padding: 10px;" class="col-sm-6">
-		<%= form_for(i.object.annotation, html: { id: 'playlist_item_form' }) do |pif| %>
+		<%= form_for(i.object.annotation, html: { id: "playlist_item_form_#{i.object.id}" }) do |pif| %>
 		<div class="form-group">
                   <%= pif.label :title, class: 'col-sm-2 control-label' %>
 		  <div class="col-sm-10">
-                    <%= pif.text_field :title, class: 'form-control' %>
+                    <%= pif.text_field :title, class: 'form-control', form:"playlist_item_form_#{i.object.id}" %>
 		  </div>
 		</div>
 		<div class="form-group">
                   <%= pif.label :start_time, class: 'col-sm-2 control-label' %>
 		  <div class="col-sm-10">
-		    <%= pif.text_field :start_time, class: 'form-control' %>
+		    <%= pif.text_field :start_time, class: 'form-control', form:"playlist_item_form_#{i.object.id}" %>
 		  </div>
 		</div>
 		<div class="form-group">
                   <%= pif.label :end_time, class: 'col-sm-2 control-label' %>
 		  <div class="col-sm-10">
-		    <%= pif.text_field :end_time, class: 'form-control' %>
+		    <%= pif.text_field :end_time, class: 'form-control', form:"playlist_item_form_#{i.object.id}" %>
 		  </div>
 		</div>
 		<div class="form-group">
                   <%= pif.label :comment, class: 'col-sm-2 control-label' %>
 		  <div class="col-sm-10">
-	            <%= pif.text_area :comment, class: 'form-control' %>
+	            <%= pif.text_area :comment, class: 'form-control', form:"playlist_item_form_#{i.object.id}" %>
 		  </div>
 		</div>
 		<div class="form-group">
 		  <div class="col-sm-2"></div>
-		  <%= pif.submit "Save Changes", class: 'btn btn-sm btn-primary' %>
+		  <%= pif.submit "Save Changes", class: 'btn btn-sm btn-primary', form:"playlist_item_form_#{i.object.id}" %>
 		</div>
 		<% end %>
 	      </div>
