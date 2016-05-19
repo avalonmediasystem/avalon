@@ -91,60 +91,60 @@
           <li class="row dd-item" data-id="<%= i.id %>">
             <div class="row">
               <div class="col-sm-2">
-		<span class="glyphicon glyphicon-resize-vertical hidden pull-left dd-handle"></span>
+                <span class="glyphicon glyphicon-resize-vertical hidden pull-left dd-handle"></span>
                 <%= text_field_tag "playlist_items_attributes_#{index}_position", i.position, class: 'form-control position-input', form: 'playlist_form'  %>
                 <%= hidden_field_tag "playlist_items_attributes_#{index}_id", i.id, form: 'playlist_form'  %>
               </div>
               <div class="col-sm-6 title">
-		<%= link_to i.annotation.title, i.annotation.mediafragment_uri %>
+		            <%= link_to i.annotation.title, i.annotation.mediafragment_uri %>
               </div>
               <div class="col-sm-1">
-		<a id="playlist_item_edit_button" data-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" aria-controls="collapseExample" class="fa fa-edit"></a>
+		            <a id="playlist_item_edit_button" data-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" aria-controls="collapseExample" class="fa fa-edit"></a>
               </div>
               <div class="col-sm-2 checkbox">
-		<label>
+                <label>
                   <%= check_box_tag 'annotation_ids[]', i.id, false, form:"edit_playlist_#{@playlist.id}" %>
-                  Select
-		</label>
+                    Select
+                </label>
               </div>
-	    </div>
-	    <div id="playlist_item_edit_<%= i.id %>" class="row collapse">
-	      <div class="col-sm-3"></div>
-	      <div style="background-color:gray;padding: 10px;" class="col-sm-6">
-		<%= form_for(i, html: { id: "playlist_item_form_#{i.id}" }) do |pif| %>
+            </div>
+            <div id="playlist_item_edit_<%= i.id %>" class="row collapse playlist_item_edit">
+              <div class="col-sm-3"></div>
+            <div>
+              <%= form_for(i, html: { id: "playlist_item_form_#{i.id}" }) do |pif| %>
                 <%= hidden_field_tag "playlist_id", @playlist.id, form: "playlist_item_form_#{i.id}" %>
-		<div class="form-group">
+                <div class="form-group">
                   <%= pif.label :title, class: 'col-sm-2 control-label' %>
-		  <div class="col-sm-10">
+                  <div class="col-sm-10">
                     <%= text_field_tag :title, i.title, class: 'form-control', id: "avalon_annotation_title_#{i.id}", form:"playlist_item_form_#{i.id}" %>
-		  </div>
-		</div>
-		<div class="form-group">
-                  <%= pif.label :start_time, class: 'col-sm-2 control-label' %>
-		  <div class="col-sm-10">
-		    <%= text_field_tag :start_time, pretty_time(i.start_time), class: 'form-control', id: "avalon_annotation_start_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
-		  </div>
-		</div>
-		<div class="form-group">
-                  <%= pif.label :end_time, class: 'col-sm-2 control-label' %>
-		  <div class="col-sm-10">
-		    <%= text_field_tag :end_time, pretty_time(i.end_time), class: 'form-control', id: "avalon_annotation_end_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
-		  </div>
-		</div>
-		<div class="form-group">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="col-sm-2" style="text-align:right;margin-top:2pt"><%= pif.label :start_time, class: 'control-label' %></div>
+                  <div class="col-sm-4">
+                    <%= text_field_tag :start_time, pretty_time(i.start_time), class: 'form-control', id: "avalon_annotation_start_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                  </div>
+                  <div class="col-sm-2" style="text-align:right;margin-top:2pt">
+                    <%= pif.label :end_time, class: 'control-label' %>
+                  </div>
+                  <div class="col-sm-4">
+                    <%= text_field_tag :end_time, pretty_time(i.end_time), class: 'form-control', id: "avalon_annotation_end_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                  </div>
+                </div>
+                <div class="form-group">
                   <%= pif.label :comment, class: 'col-sm-2 control-label' %>
-		  <div class="col-sm-10">
-	            <%= text_area_tag :comment, i.comment, class: 'form-control', id: "avalon_annotation_comment_#{i.id}", form:"playlist_item_form_#{i.id}" %>
-		  </div>
-		</div>
-		<div class="form-group">
-		  <div class="col-sm-2"></div>
-		  <%= pif.submit "Save Changes", class: 'btn btn-sm btn-primary', form:"playlist_item_form_#{i.id}" %>
-		</div>
-		<% end %>
-	      </div>
-	    </div>
-          </li>
+                  <div class="col-sm-10">
+                    <%= text_area_tag :comment, i.comment, class: 'form-control', id: "avalon_annotation_comment_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10"><%= pif.submit "Save Changes", class: 'btn btn-sm btn-primary', form:"playlist_item_form_#{i.id}" %></div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+            </li>
         <% end %>
       </ol>
     </div>
