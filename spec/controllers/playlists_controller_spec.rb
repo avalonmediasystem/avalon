@@ -127,7 +127,7 @@ RSpec.describe PlaylistsController, type: :controller do
       it 'redirects to the playlist' do
         playlist = Playlist.create! valid_attributes
         put :update, { id: playlist.to_param, playlist: valid_attributes }, valid_session
-        expect(response).to redirect_to(playlist)
+        expect(response).to redirect_to(edit_playlist_path(playlist))
       end
     end
 
