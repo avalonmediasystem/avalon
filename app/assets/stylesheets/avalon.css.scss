@@ -1053,9 +1053,12 @@ h5.panel-title {
     font-size:.7em;
   }
 }
-
+.playlist_actions {
+  textarea {
+    resize: vertical;
+  }
+}
 .playlist_item_edit {
-
   border: 2pt solid $gray;
   border-top: 1pt solid $gray;
   border-left: 1pt solid $gray;
@@ -1065,21 +1068,17 @@ h5.panel-title {
   padding: 10pt;
   margin-top: 2pt;
   margin-bottom: 10pt;
-
   label {
     text-align: right;
     margin-top: 2pt;
   }
-
   input, textarea {
     margin-bottom: 4pt;
   }
-
   textarea {
     resize: vertical;
   }
 }
-
 .annotation_title {
    font-weight: bold;
    left: 0 ;
