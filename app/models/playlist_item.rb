@@ -8,6 +8,7 @@ class PlaylistItem < ActiveRecord::Base
 
   belongs_to :annotation, class_name: AvalonAnnotation, dependent: :destroy
   validates :annotation, presence: true
+  delegate :title, :comment, :start_time, :end_time, to: :annotation
 
 #  def recount_folders
 #    Array(changes['folder_id']).compact.each do |folder_id|

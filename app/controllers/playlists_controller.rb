@@ -50,10 +50,19 @@ class PlaylistsController < ApplicationController
   end
 
   def update_multiple
-    @playlist.items.each do |item|
-      if (item.id.to_s.in? params[:annotation_ids])
-        @playlist.items.delete(item)
+    if params[:commit] == "Delete Items"
+      @playlist.items.each do |item|
+        if (item.id.to_s.in? params[:annotation_ids])
+          @playlist.items.delete(item)
+        end
       end
+    elsif params[:new_playlist_id].present? and params[:annotation_ids]
+      @new_playlist = Playlist.find(params[:new_playlist_id])
+      pis = PlaylistItem.where(id: params[:annotation_ids])
+      @new_playlist.items += pis
+      @playlist.items -= pis
+      @new_playlist.save!
+      @playlist.save!
     end
     redirect_to edit_playlist_path(@playlist), notice: 'Playlist was successfully updated.'
   end

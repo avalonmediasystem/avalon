@@ -1,6 +1,6 @@
 class PlaylistItemsController < ApplicationController
   # TODO: rewrite this to use cancancan's authorize_and_load_resource
-  before_action :set_playlist, only: [:create]
+  before_action :set_playlist, only: [:create, :update]
 
   # POST /playlists/1/items
   def create
@@ -27,6 +27,21 @@ class PlaylistItemsController < ApplicationController
       render json: { message: "Add to playlist was successful. See it: #{view_context.link_to("here", playlist_url(@playlist))}" }, status: 201 and return
     end
     render nothing: true, status: 500 and return
+  end
+
+  def update
+    playlist_item = PlaylistItem.find(params['id'])
+    annotation = AvalonAnnotation.find(playlist_item.annotation.id)
+    annotation.title =  params[:title]
+    annotation.comment = params[:comment]
+    annotation.start_time = time_str_to_milliseconds params[:start_time]
+    annotation.end_time = time_str_to_milliseconds params[:end_time]
+    if annotation.save!
+      flash[:success] = "Playlist item details saved successfully."
+    else
+      flash[:error] = "Playlist item details could not be saved: #{annotation.errors.full_messages}"
+    end
+    redirect_to edit_playlist_path(@playlist)
   end
 
   private
