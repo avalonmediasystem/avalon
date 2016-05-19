@@ -55,7 +55,7 @@ class PlaylistsController < ApplicationController
         @playlist.items.delete(item)
       end
     end
-    redirect_to @playlist, notice: 'Playlist was successfully updated.'
+    redirect_to edit_playlist_path(@playlist), notice: 'Playlist was successfully updated.'
   end
 
   # DELETE /playlists/1
