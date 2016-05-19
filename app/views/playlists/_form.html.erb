@@ -110,29 +110,30 @@
 	    <div id="playlist_item_edit_<%= i.id %>" class="row collapse">
 	      <div class="col-sm-3"></div>
 	      <div style="background-color:gray;padding: 10px;" class="col-sm-6">
-		<%= form_for(i.annotation, html: { id: "playlist_item_form_#{i.id}" }) do |pif| %>
+		<%= form_for(i, html: { id: "playlist_item_form_#{i.id}" }) do |pif| %>
+                <%= hidden_field_tag "playlist_id", @playlist.id, form: "playlist_item_form_#{i.id}" %>
 		<div class="form-group">
                   <%= pif.label :title, class: 'col-sm-2 control-label' %>
 		  <div class="col-sm-10">
-                    <%= pif.text_field :title, class: 'form-control', id: "avalon_annotation_title_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                    <%= text_field_tag :title, i.title, class: 'form-control', id: "avalon_annotation_title_#{i.id}", form:"playlist_item_form_#{i.id}" %>
 		  </div>
 		</div>
 		<div class="form-group">
                   <%= pif.label :start_time, class: 'col-sm-2 control-label' %>
 		  <div class="col-sm-10">
-		    <%= pif.text_field :start_time, class: 'form-control', id: "avalon_annotation_start_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+		    <%= text_field_tag :start_time, pretty_time(i.start_time), class: 'form-control', id: "avalon_annotation_start_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
 		  </div>
 		</div>
 		<div class="form-group">
                   <%= pif.label :end_time, class: 'col-sm-2 control-label' %>
 		  <div class="col-sm-10">
-		    <%= pif.text_field :end_time, class: 'form-control', id: "avalon_annotation_end_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+		    <%= text_field_tag :end_time, pretty_time(i.end_time), class: 'form-control', id: "avalon_annotation_end_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
 		  </div>
 		</div>
 		<div class="form-group">
                   <%= pif.label :comment, class: 'col-sm-2 control-label' %>
 		  <div class="col-sm-10">
-	            <%= pif.text_area :comment, class: 'form-control', id: "avalon_annotation_comment_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+	            <%= text_area_tag :comment, i.comment, class: 'form-control', id: "avalon_annotation_comment_#{i.id}", form:"playlist_item_form_#{i.id}" %>
 		  </div>
 		</div>
 		<div class="form-group">
