@@ -124,7 +124,7 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(assigns(:playlist)).to eq(playlist)
       end
 
-      it 'redirects to the playlist' do
+      it 'redirects to edit playlist' do
         playlist = Playlist.create! valid_attributes
         put :update, { id: playlist.to_param, playlist: valid_attributes }, valid_session
         expect(response).to redirect_to(edit_playlist_path(playlist))
@@ -142,6 +142,16 @@ RSpec.describe PlaylistsController, type: :controller do
         playlist = Playlist.create! valid_attributes
         put :update, { id: playlist.to_param, playlist: invalid_attributes }, valid_session
         expect(response).to render_template('edit')
+      end
+    end
+  end
+
+  describe 'PUT #update_multiple' do
+    context 'delete' do
+      it 'redirects to edit playlist' do
+        playlist = Playlist.create! valid_attributes
+        put :update_multiple, { id: playlist.to_param, annotation_ids: [] }, valid_session
+        expect(response).to redirect_to(edit_playlist_path(playlist))
       end
     end
   end
