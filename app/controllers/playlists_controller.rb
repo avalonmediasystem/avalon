@@ -56,15 +56,13 @@ class PlaylistsController < ApplicationController
           @playlist.items.delete(item)
         end
       end
-    else
-      @new_playlist = Playlist.find(params[:new_playlist_id]) if params[:new_playlist_id].present?
-      params[:annotation_ids].each do |playlist_item_id|
-        pi = PlaylistItem.find(playlist_item_id)
-        @new_playlist.items += [pi]
-        @playlist.items -= [pi]
-      end
-      @new_playlist.save
-      @playlist.save
+    elsif params[:new_playlist_id].present? and params[:annotation_ids]
+      @new_playlist = Playlist.find(params[:new_playlist_id])
+      pis = PlaylistItem.where(id: params[:annotation_ids])
+      @new_playlist.items += pis
+      @playlist.items -= pis
+      @new_playlist.save!
+      @playlist.save!
     end
     redirect_to @playlist, notice: 'Playlist was successfully updated.'
   end
