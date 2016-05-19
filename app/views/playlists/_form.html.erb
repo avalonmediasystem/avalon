@@ -65,6 +65,7 @@
           <div class="btn-group" role="group">
             <div class="btn-group bootstrap-select">
               <%= button_tag( { type: 'button', class: "btn btn-default dropdown-toggle", data: { toggle: "dropdown"} } ) do %>
+              <%= hidden_field_tag "new_playlist_id", @playlist.id, form:"edit_playlist_#{@playlist.id}" %>
                 <span class="filter-option pull-left">Move to..</span>
                 <span class="bs-caret">
                   <span class="caret"></span>
@@ -72,7 +73,7 @@
               <% end %>
               <ul class="dropdown-menu">
                 <% @playlists.each do |p| %>
-                  <li><a href="#"><%= p.title %></a></li>
+                  <li><a data-id="<%= p.id %>" style="text-decoration:underline" class="move_to_playlist" form="edit_playlist_<%= @playlist.id %>"><%= p.title %></a></li>
                 <% end %>
               </ul>
             </div>
@@ -151,3 +152,12 @@
   <hr>
   <%= link_to "View Playlist", @playlist, { class: 'btn btn-primary'} %>
 </div>
+
+<% content_for :page_scripts do %>
+  <script>
+    $('.move_to_playlist').click(function(event) {
+      $('#new_playlist_id').val($(this).data('id'));
+      $('#'+$(this).attr('form')).submit();
+    });
+  </script>
+<% end %>

@@ -32,13 +32,12 @@ class PlaylistItemsController < ApplicationController
   def update
     playlist_item = PlaylistItem.find(params['id'])
     annotation = AvalonAnnotation.find(playlist_item.annotation.id)
-    binding.pry
     annotation.title =  params[:title]
     annotation.comment = params[:comment]
     annotation.start_time = time_str_to_milliseconds params[:start_time]
     annotation.end_time = time_str_to_milliseconds params[:end_time]
     if annotation.save!
-      flash[:success] = "Playlist item details save successfully."
+      flash[:success] = "Playlist item details saved successfully."
     else
       flash[:error] = "Playlist item details could not be saved: #{annotation.errors.full_messages}"
     end
