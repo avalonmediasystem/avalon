@@ -12,7 +12,7 @@
       <div class="form-group">
         <%= f.label :comment, class: 'col-sm-2 control-label' %>
         <div class="col-sm-10">
-          <%= f.text_field :comment, class: 'form-control' %>
+          <%= f.text_area :comment, class: 'form-control' %>
         </div>
       </div>
 
@@ -32,17 +32,27 @@
         </div>
       </div>
     </div>
-    <div class="col-sm-6 pull-right">
-      <div><%= f.submit class: 'btn btn-primary' %></div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <div><%= f.submit class: 'btn btn-primary', value: 'Save Changes' %>
       <% if @playlist.persisted? && can?(:destroy, @playlist) %>
-        <div><%= link_to "Delete Playlist", { action: "destroy", id: @playlist.id }, { method: :delete, class: 'btn btn-danger', data: { confirm: "Are you sure you want to delete this playlist and all its contents?"}} %></div>
+        <%= link_to "Delete Playlist", { action: "destroy", id: @playlist.id }, { method: :delete, class: 'btn btn-danger', data: { confirm: "Are you sure you want to delete this playlist and all its contents?"}} %>
       <% end %>
+      </div>
     </div>
   </div>
   <% end %>
-
-  <% unless @playlist.items.empty? %>
+  <hr>
+  <% if @playlist.items.empty? %>
+    <div><p>There are currently no items in this playlist.</p></div>
+  <% else %>
     <%= form_for(@playlist,url: { action: "update_multiple" }, html: { class: 'form-horizontal playlist_actions' }) do |f| %>
+    <div class="container row">
+      <div class="col-sm-12">
+        <h3>Playlist Items</h3>
+      </div>
+    </div>
     <div class="container row">
       <div class="pull-right">
         <div class="form-group select-delete">
@@ -78,25 +88,66 @@
       <ol id="items" class="dd-list" style="list-style: none">
         <%= f.fields_for :items do |i| %>
           <li class="row dd-item" data-id="<%= i.object.id %>">
-
-            <div class="col-sm-2">
-              <span class="glyphicon glyphicon-resize-vertical hidden pull-left dd-handle"></span>
+            <div class="row">
+              <div class="col-sm-2">
+		<span class="glyphicon glyphicon-resize-vertical hidden pull-left dd-handle"></span>
                 <%= i.text_field :position, class: 'form-control position-input', form: 'playlist_form'  %>
                 <%= i.hidden_field :id, form: 'playlist_form', value: i.object.id  %>
-            </div>
-            <div class="col-sm-6 title">
-              <%= link_to i.object.annotation.title, i.object.annotation.mediafragment_uri %>
-            </div>
-            <div class="col-sm-2 checkbox">
-              <label>
-                <%= check_box_tag 'annotation_ids[]', i.object.id %>
-                Select
-              </label>
-            </div>
+              </div>
+              <div class="col-sm-6 title">
+		<%= link_to i.object.annotation.title, i.object.annotation.mediafragment_uri %>
+              </div>
+              <div class="col-sm-1">
+		<a id="playlist_item_edit_button" data-toggle="collapse" href="#playlist_item_edit_<%= i.object.id %>" aria-expanded="false" aria-controls="collapseExample" class="fa fa-edit"></a>
+              </div>
+              <div class="col-sm-2 checkbox">
+		<label>
+                  <%= check_box_tag 'annotation_ids[]', i.object.id %>
+                  Select
+		</label>
+              </div>
+	    </div>
+	    <div id="playlist_item_edit_<%= i.object.id %>" class="row collapse">
+	      <div class="col-sm-3"></div>
+	      <div style="background-color:gray;padding: 10px;" class="col-sm-6">
+		<%= form_for(i.object.annotation, html: { id: 'playlist_item_form' }) do |pif| %>
+		<div class="form-group">
+                  <%= pif.label :title, class: 'col-sm-2 control-label' %>
+		  <div class="col-sm-10">
+                    <%= pif.text_field :title, class: 'form-control' %>
+		  </div>
+		</div>
+		<div class="form-group">
+                  <%= pif.label :start_time, class: 'col-sm-2 control-label' %>
+		  <div class="col-sm-10">
+		    <%= pif.text_field :start_time, class: 'form-control' %>
+		  </div>
+		</div>
+		<div class="form-group">
+                  <%= pif.label :end_time, class: 'col-sm-2 control-label' %>
+		  <div class="col-sm-10">
+		    <%= pif.text_field :end_time, class: 'form-control' %>
+		  </div>
+		</div>
+		<div class="form-group">
+                  <%= pif.label :comment, class: 'col-sm-2 control-label' %>
+		  <div class="col-sm-10">
+	            <%= pif.text_area :comment, class: 'form-control' %>
+		  </div>
+		</div>
+		<div class="form-group">
+		  <div class="col-sm-2"></div>
+		  <%= pif.submit "Save Changes", class: 'btn btn-sm btn-primary' %>
+		</div>
+		<% end %>
+	      </div>
+	    </div>
           </li>
         <% end %>
       </ol>
     </div>
     <% end %>
   <% end %>
+  <hr>
+  <%= link_to "View Playlist", @playlist, { class: 'btn btn-primary'} %>
 </div>
