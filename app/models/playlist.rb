@@ -34,6 +34,17 @@ class Playlist < ActiveRecord::Base
     return_items
   end
 
+  # Returns all other annotations on the same playlist that share a master file
+  # @param [PlaylistItem] current_item The playlist item you want to find matches for
+  # @return [Array <AvalonAnnotation>] an array of all other annotations items that reference the same master file
+  def related_annotations(current_item)
+    annotations = []
+    related_items(current_item).each do |item|
+      annotations << AvalonAnnotation.find(item.annotation_id)
+    end
+    annotations
+  end
+
   # Returns a list of annotations who are on the same playlist, share the same masterfile, and whose start time falls within the start and end time of the current playlist item
   # @param [PlaylistItem] current_item The playlist item to match against
   # @return [Array <AvalonAnnotation>] all annotations matching the constraints
