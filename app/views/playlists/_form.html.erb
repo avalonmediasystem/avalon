@@ -86,24 +86,20 @@
               Select All
             </label>
           </div>
-          <div class="btn-group" role="group">
-            <div class="btn-group bootstrap-select">
-              <%= button_tag( { type: 'button', class: "btn btn-default dropdown-toggle", data: { toggle: "dropdown"} } ) do %>
-              <%= hidden_field_tag "new_playlist_id", @playlist.id, form:"edit_playlist_#{@playlist.id}" %>
-                <span class="filter-option pull-left">Move to..</span>
-                <span class="bs-caret">
-                  <span class="caret"></span>
-                </span>
+	  <% if @playlists.present? %>
+            <div class="btn-group bootstrap-select" id="move_to">
+              <%= button_tag( { type: 'button', class: "btn btn-default btn-xs dropdown-toggle", data: { toggle: "dropdown"}, disabled:'disabled' } ) do %>
+                <%= hidden_field_tag "new_playlist_id", @playlist.id, form:"edit_playlist_#{@playlist.id}" %>
+                <span class="filter-option pull-left">Move to... </span><span class="fa fa-caret-down"></span>
               <% end %>
               <ul class="dropdown-menu">
-                <% @playlists.each do |p| %>
-                  <li><a data-id="<%= p.id %>" style="text-decoration:underline" class="move_to_playlist" form="edit_playlist_<%= @playlist.id %>"><%= p.title %></a></li>
-                <% end %>
+		<% @playlists.each do |p| %>
+		 <li><a data-id="<%= p.id %>" style="text-decoration:underline" class="move_to_playlist" form="edit_playlist_<%= @playlist.id %>"><%= p.title %></a></li>
+		<% end %>
               </ul>
             </div>
-            <%#= button_tag( "Update", { type: 'button', class: "btn btn-default", form:"edit_playlist_#{@playlist.id}"}) %>
-            <%= f.submit "Delete Items", class: 'btn btn-default btn-confirmation', form:"edit_playlist_#{@playlist.id}", data: { placement: 'bottom' } %>
-          </div>
+	  <% end %>
+          <%= f.submit "Delete Items", class: 'btn btn-danger btn-confirmation btn-xs', form:"edit_playlist_#{@playlist.id}", data: { placement: 'bottom' }, disabled:'disabled' %>
         </div>
       </div>
     </div>
@@ -127,7 +123,7 @@
               </div>
               <div class="col-sm-2 checkbox">
                 <label>
-                  <%= check_box_tag 'annotation_ids[]', i.id, false, form:"edit_playlist_#{@playlist.id}" %>
+                  <%= check_box_tag 'annotation_ids[]', i.id, false, form:"edit_playlist_#{@playlist.id}", class:"playlist_item_select" %>
                     Select
                 </label>
               </div>
@@ -189,6 +185,10 @@
       <% else %>
         $('#playlist_form #playlist_visibility_public').prop('checked', true);
       <% end %>
+    });
+    $('.playlist_item_select, #select_all').click(function(event) {
+      $('#edit_playlist_<%= @playlist.id %> :submit').prop('disabled',  $( ".playlist_item_select:checked" ).length < 1  );
+      $('#move_to button').prop('disabled', $( ".playlist_item_select:checked" ).length < 1 )
     });
   </script>
 <% end %>
