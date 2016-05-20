@@ -20,6 +20,11 @@ RSpec.describe Playlist, type: :model do
       expect(@playlist.related_items(PlaylistItem.first).size).to eq(1)
       expect(@playlist.related_items(PlaylistItem.last).size).to eq(0)
     end
+    it 'returns a list of playlist annotations on the current playlist related to a playlist item' do
+      setup_playlist
+      expect(@playlist.related_annotations(PlaylistItem.first).size).to eq(1)
+      expect(@playlist.related_annotations(PlaylistItem.last).size).to eq(0)
+    end
     it 'returns a list of annotations who start time falls within the time range of the current playlist item' do
       setup_playlist
       expect(@playlist.related_annotations_time_contrained(PlaylistItem.first).size).to eq(1)
