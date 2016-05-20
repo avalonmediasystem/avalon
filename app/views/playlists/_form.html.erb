@@ -61,7 +61,10 @@
     </div>
     <div class="row">
       <div class="col-sm-offset-2 col-sm-10">
-	<div><%= f.submit class: 'btn btn-primary btn-xs', value: 'Save Changes' %></div>
+	<div>
+	  <%= f.submit class: 'btn btn-primary btn-xs', value: 'Save Changes' %>
+	  <a id="playlist_edit_cancel" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#playlist_edit_div, #playlist_view_div">Cancel</a>
+	</div>
       </div>
     </div>
     <% end %>
@@ -99,7 +102,7 @@
               </ul>
             </div>
             <%#= button_tag( "Update", { type: 'button', class: "btn btn-default", form:"edit_playlist_#{@playlist.id}"}) %>
-            <%= f.submit "Delete Items", class: 'btn btn-default', form:"edit_playlist_#{@playlist.id}" %>
+            <%= f.submit "Delete Items", class: 'btn btn-default btn-confirmation', form:"edit_playlist_#{@playlist.id}", data: { placement: 'bottom' } %>
           </div>
         </div>
       </div>
@@ -160,7 +163,7 @@
               </div>
               <div class="form-group">
                 <div class="col-sm-2"></div>
-                <div class="col-sm-10"><%= pif.submit "Save Changes", class: 'btn btn-sm btn-primary', form:"playlist_item_form_#{i.id}" %></div>
+                <div class="col-sm-10"><%= pif.submit "Save Item", class: 'btn btn-sm btn-primary', form:"playlist_item_form_#{i.id}" %></div>
               </div>
             <% end %>
           </div>
@@ -177,6 +180,15 @@
     $('.move_to_playlist').click(function(event) {
       $('#new_playlist_id').val($(this).data('id'));
       $('#'+$(this).attr('form')).submit();
+    });
+    $('#playlist_edit_cancel').click(function(event) {
+      $('#playlist_form #playlist_title').val('<%= @playlist.title %>');
+      $('#playlist_form #playlist_comment').val('<%= @playlist.comment %>');
+      <% if @playlist.visibility==Playlist::PRIVATE %>
+        $('#playlist_form #playlist_visibility_private').prop('checked', true);
+      <% else %>
+        $('#playlist_form #playlist_visibility_public').prop('checked', true);
+      <% end %>
     });
   </script>
 <% end %>
