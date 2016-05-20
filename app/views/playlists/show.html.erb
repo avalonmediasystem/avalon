@@ -52,7 +52,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <%= render 'current_item' %>
               </div>
             </div>
-            <% @related_annotations = @playlist.related_annotations_time_contrained(@current_playlist_item)%>
+            <% @related_annotations = @playlist.related_annotations(@current_playlist_item)%>
             <% unless @related_annotations.empty? %>
               <div class="panel-heading" role="tab" id="heading1">
                 <h5 class="panel-title ">
