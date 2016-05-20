@@ -31,6 +31,26 @@ $(document).ready(function() {
 
   $( document ).on('click', '.btn-stateful-loading', function() { $(this).button('loading'); });    
 
+  $(document).on("click", ".btn-confirmation+.popover .btn", function() {
+      $('.btn-confirmation').popover('hide');
+      return true;
+  });
+
+  $('.btn-confirmation').popover({
+      trigger: 'manual',
+      html: true,
+      content: function() {
+        return "<p>Are you sure?</p> <a href='" + ($(this).attr('href')) + "' class='btn btn-xs btn-danger btn-confirm' data-method='delete' rel='nofollow'>Yes, Delete</a> <a href='#' class='btn btn-xs btn-primary' id='special_button_color'>No, Cancel</a>";
+    }
+  }).click(function() {
+    var t = this;
+    $('.btn-confirmation').filter(function() {
+      return this !== t;
+    }).popover('hide');
+    $(this).popover('show');
+    return false;
+  });
+
   $('.popover-target').popover({
     placement: 'top',
     html: true,
