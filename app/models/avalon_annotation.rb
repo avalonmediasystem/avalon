@@ -4,7 +4,6 @@
 class AvalonAnnotation < ActiveAnnotations::Annotation
   after_save :post_to_solr
   after_destroy :delete_from_solr
-  before_save :validate_times
 
   attr_accessor :master_file
 
@@ -14,8 +13,9 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   alias_method :title, :label
   alias_method :title=, :label=
 
-  validates :start_time, numericality: true
-  validates :end_time, numericality: true
+  validates :master_file, :title, :start_time, presence: true
+  validates :start_time, numericality: { greater_than_or_equal_to: 0, message: "must be greater than or equal to 0"}
+  validates :end_time, numericality: { greater_than: Proc.new {|a| Float(a.start_time) rescue 0}, less_than_or_equal_to: Proc.new {|a| a.master_file.duration.to_f }, message: "must be between start time and end of section"}
 
   after_initialize do
     self.source = master_file unless master_file.nil?
@@ -102,11 +102,4 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
     Time.at(duration).utc.strftime(duration<3600?'%M:%S':'%H:%M:%S')
   end
 
-  def validate_times
-    master_file.reload unless master_file.nil?
-    master_file = MasterFile.find( self.source.split('/').last) if master_file.nil?
-    raise ArgumentError, 'Times cannot be negative numbers' if start_time < 0 || end_time < 0
-    raise ArgumentError, 'End Time must be greater than Start Time' if end_time <= start_time
-    raise ArgumentError, "End Time cannot exceed the source file's duration" if !master_file.duration.nil? && end_time > master_file.duration.to_f
-  end
 end

@@ -5,11 +5,11 @@ RSpec.describe PlaylistItemsController, type: :controller do
   # PlaylistItem. As you add validations to PlaylistItem, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) do
-    { title: Faker::Lorem.word, start_time: 0.0, end_time: "00:01:37", master_file_id: master_file.pid }
+    { title: Faker::Lorem.word, start_time: "00:00:00", end_time: "00:01:37", master_file_id: master_file.pid }
   end
 
   let(:invalid_attributes) do
-    { playlist_id: 'not-a-playlist-id', master_file_id: 'avalon:bad-pid', start_time: 'not-a-time', end_time: 'not-a-time' }
+    { title: "", start_time: 'not-a-time', end_time: 'not-a-time' }
   end
 
   let(:invalid_times) do
@@ -23,7 +23,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
 
   let(:user) { login_as :user }
   let(:playlist) { Playlist.create!({ title: Faker::Lorem.word, visibility: Playlist::PUBLIC, user: user }) }
-  let(:master_file) { FactoryGirl.create(:master_file) }
+  let(:master_file) { FactoryGirl.create(:master_file, duration: "100000") }
 
 
   describe 'POST #create' do
@@ -66,14 +66,10 @@ RSpec.describe PlaylistItemsController, type: :controller do
         post :create, { playlist_id: playlist.to_param, playlist_item: invalid_times }, valid_session
         expect(response).to have_http_status(:bad_request)
       end
-      it 'invalid playlist_id responds with a 400 BAD REQUEST' do
-        post :create, { playlist_id: playlist.to_param, playlist_item: invalid_attributes }, valid_session
-        expect(response).to have_http_status(:bad_request)
-      end
     end
   end
   describe 'PATCH #update' do
-    let!(:video_master_file) { FactoryGirl.create(:master_file) }
+    let!(:video_master_file) { FactoryGirl.create(:master_file, duration: "200000") }
     let!(:annotation) { AvalonAnnotation.create(master_file: video_master_file, title: Faker::Lorem.word, comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
     let!(:playlist_item) { PlaylistItem.create!(playlist_id: playlist.id, annotation_id: annotation.id) }
 
