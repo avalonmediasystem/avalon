@@ -91,7 +91,7 @@ class PlaylistsController < ApplicationController
   end
 
   def update_playlist(playlist)
-    playlist.assign_attributes(playlist_params)
+    playlist.assign_attributes(playlist_params) if params['playlist_params'].present?
     reorder_items(playlist)
     playlist.save
   end
@@ -112,7 +112,6 @@ class PlaylistsController < ApplicationController
 	  :unchanged
 	end
     end.values_at(:changed_playlist, :new, :changed_position, :unchanged).map(&:to_a)
-
     # items that will be in this playlist
     unmoved_items = unchanged
     # place items whose positions were specified
