@@ -15,7 +15,7 @@
 require 'spec_helper'
 
 describe AvalonAnnotation do
-  subject(:video_master_file) { FactoryGirl.create(:master_file) }
+  subject(:video_master_file) { FactoryGirl.create(:master_file, duration: "1") }
   #subject(:sound_master_file) { FactoryGirl.create(:master_file_sound) }
   let(:annotation) { AvalonAnnotation.new(master_file: video_master_file) }
 
@@ -49,11 +49,11 @@ describe AvalonAnnotation do
 
     it 'can store start and end times' do
       annotation.start_time = 0.5
-      annotation.end_time = 2.5
+      annotation.end_time = 0.75
       annotation.save!
       annotation.reload
       expect(annotation.start_time).to eq(0.5)
-      expect(annotation.end_time).to eq(2.5)
+      expect(annotation.end_time).to eq(0.75)
     end
   end
   describe 'aliases for Avalon Annotation' do
@@ -114,23 +114,23 @@ describe AvalonAnnotation do
     describe 'negative times' do
       it 'raises an ArgumentError when start_time is negative' do
         annotation.start_time = -1
-        expect { annotation.save }.to raise_error(ArgumentError)
+        expect(annotation).not_to be_valid
       end
       it 'raises an ArgumentError when end_time is negative' do
         annotation.end_time = -1
-        expect { annotation.save }.to raise_error(ArgumentError)
+        expect(annotation).not_to be_valid
       end
     end
     describe 'start and end time spacing' do
       it 'raises an error when the end time preceeds the start time' do
         annotation.end_time = 0
         annotation.start_time = 1
-        expect { annotation.save }.to raise_error(ArgumentError)
+        expect(annotation).not_to be_valid
       end
       it 'raises an error when the end time equals the start time' do
         annotation.end_time = 0
         annotation.start_time = 0
-        expect { annotation.save }.to raise_error(ArgumentError)
+        expect(annotation).not_to be_valid
       end
     end
     describe 'duration' do
@@ -138,7 +138,7 @@ describe AvalonAnnotation do
         annotation.master_file.duration = '8'
         annotation.master_file.save!
         annotation.end_time = 60
-        expect { annotation.save }.to raise_error(ArgumentError)
+        expect(annotation).not_to be_valid
       end
     end
   end
