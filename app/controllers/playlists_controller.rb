@@ -112,7 +112,6 @@ class PlaylistsController < ApplicationController
 	  :unchanged
 	end
     end.values_at(:changed_playlist, :new, :changed_position, :unchanged).map(&:to_a)
-
     # items that will be in this playlist
     unmoved_items = unchanged
     # place items whose positions were specified
