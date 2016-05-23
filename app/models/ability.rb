@@ -158,8 +158,8 @@ class Ability
         can? :manage, playlist_item.playlist
       end
       can :read, PlaylistItem do |playlist_item|
-        can? :read, playlist_item.playlist
-        can? :read, playlist_item.annotation.master_file
+        (can? :read, playlist_item.playlist) &&
+        (can? :read, playlist_item.annotation.master_file)
       end
     end
   end
