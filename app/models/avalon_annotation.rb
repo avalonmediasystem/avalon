@@ -72,17 +72,23 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   # Sets the default selector to a start time of 0 and an end time of the master file length
   def selector_default!
     self.start_time = 0 if self.start_time.nil?
-    self.end_time = (master_file.duration || 1) if self.end_time.nil?
+    if self.end_time.nil?
+      if master_file.present? && master_file.duration.present?
+        self.end_time = master_file.duration
+      else
+        self.end_time = 1
+      end
+    end
   end
 
   # Set the default title to be the label of the master_file
   def title_default!
-    self.title = master_file.embed_title if self.title.nil?
+    self.title = master_file.embed_title if self.title.nil? && master_file.present?
   end
 
   # Sets the class variable @master_file by finding the master referenced in the source uri
   def master_file
-    @master_file ||= MasterFile.find(source.split('/').last)
+    @master_file ||= MasterFile.find(source.split('/').last) if source
   end
 
   def master_file=(value)
