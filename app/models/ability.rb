@@ -145,11 +145,23 @@ class Ability
   end
 
   def playlist_permissions
-    if @user.id.present? #logged in user
-      can [:manage,:update,:destroy], Playlist, user: @user
-      can :create, Playlist
+    if @user.id.present?
+      can :manage, Playlist, user: @user
+      # can :create, Playlist
     end
-    can :show, Playlist, visibility: Playlist::PUBLIC
+    can :read, Playlist, visibility: Playlist::PUBLIC
+  end
+
+  def playlist_items
+    if @user.id.present?
+      can :manage, PlaylistItem do |playlist_item|
+        can? :manage, playlist_item.playlist
+      end
+      can :read, PlaylistItem do |playlist_item|
+        can? :read, playlist_item.playlist
+        can? :read, playlist_item.annotation.master_file
+      end
+    end
   end
 
   def is_member_of?(collection)
