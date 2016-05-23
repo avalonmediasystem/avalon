@@ -29,16 +29,17 @@ class PlaylistItemsController < ApplicationController
   def update
     playlist_item = PlaylistItem.find(params['id'])
     annotation = AvalonAnnotation.find(playlist_item.annotation.id)
-    annotation.title =  params[:title]
-    annotation.comment = params[:comment]
-    annotation.start_time = time_str_to_milliseconds params[:start_time]
-    annotation.end_time = time_str_to_milliseconds params[:end_time]
+    annotation.title =  playlist_item_params[:title]
+    annotation.comment = playlist_item_params[:comment]
+    annotation.start_time = time_str_to_milliseconds playlist_item_params[:start_time]
+    annotation.end_time = time_str_to_milliseconds playlist_item_params[:end_time]
     if annotation.save
-      flash[:success] = "Playlist item details saved successfully."
+      render json: { message: "Item was updated successfully." }, status: 201 and return
     else
-      flash[:error] = "Playlist item details could not be saved: #{annotation.errors.full_messages}"
+      render json: { message: "Item was not updated: #{annotation.errors.full_messages.join(', ')}" }, status: 500 and return
     end
-    redirect_to edit_playlist_path(@playlist)
+  rescue StandardError => error
+    render json: { message: "Item was not updated: #{error.message}" }, status: 500 and return
   end
 
   private
