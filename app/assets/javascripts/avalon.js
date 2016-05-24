@@ -40,7 +40,14 @@ $(document).ready(function() {
       trigger: 'manual',
       html: true,
       content: function() {
-        return "<p>Are you sure?</p> <a href='" + ($(this).attr('href')) + "' class='btn btn-xs btn-danger btn-confirm' data-method='delete' rel='nofollow'>Yes, Delete</a> <a href='#' class='btn btn-xs btn-primary' id='special_button_color'>No, Cancel</a>";
+        var button;
+	if ( typeof $(this).attr('form') === typeof undefined) {
+	    button = "<a href='" + ($(this).attr('href')) + "' class='btn btn-xs btn-danger btn-confirm' data-method='delete' rel='nofollow'>Yes, Delete</a>";
+        } else {
+            button = '<input class="btn btn-xs btn-danger btn-confirm" form="'+$(this).attr('form')+'" type="submit">';
+            $('#'+$(this).attr('form')).find("[name='_method']").val("delete");
+	}
+        return "<p>Are you sure?</p> "+button+" <a href='#' class='btn btn-xs btn-primary' id='special_button_color'>No, Cancel</a>";
     }
   }).click(function() {
     var t = this;

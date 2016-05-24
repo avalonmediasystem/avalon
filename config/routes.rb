@@ -77,6 +77,7 @@ Avalon::Application.routes.draw do
     resources :playlist_items, path: 'items', only: [:create, :update]
     member do
       patch 'update_multiple'
+      delete 'update_multiple'
     end
   end
 
