@@ -255,6 +255,48 @@
       });
     });
 
+    // Handle playlist item edit form submission
+    $('.playlist_item_form_submit').click(function(event) {
+      event.preventDefault();
+      var $btn = $(this).button('loading');
+      var $form = $(this).closest('form');
+      var id = $(this).data('id');
+      return $.ajax({
+        url: '/playlist_items/' + id + '.json',
+        type: 'PATCH',
+        data: {
+          playlist_id: $('#playlist_id').val(),
+          playlist_item: {
+            title: $('#avalon_annotation_title_'+id).val(),
+            comment: $('#avalon_annotation_comment_'+id).val(),
+            start_time: $('#avalon_annotation_start_time_'+id).val(),
+            end_time: $('#avalon_annotation_end_time_'+id).val(),
+          }
+        },
+        success: function(response) {
+          // alert success
+          var alert = "<div class='alert alert-success' style='padding:0 10px; margin-bottom: 0;'>";
+          alert += "<button type='button' class='close' data-dismiss='alert'>&times;</button>";
+          alert += "<span>"+response.message+"</span></div>";
+	  $('#playlist_item_edit_alert_'+id).html(alert)
+          // update original values with those newly saved in case of future cancel
+          $form.find('.title_original').data('value',$('#avalon_annotation_title_'+id).val());
+          $form.find('.comment_original').data('value',$('#avalon_annotation_comment_'+id).val());
+          $form.find('.start_time_original').data('value',$('#avalon_annotation_start_time_'+id).val());
+          $form.find('.end_time_original').data('value',$('#avalon_annotation_end_time_'+id).val());
+          $btn.button('reset')
+        },
+        error: function(response) {
+          // alert failure
+          var alert = "<div class='alert alert-danger' style='padding:0 10px; margin-bottom: 0;'>";
+          alert += "<button type='button' class='close' data-dismiss='alert'>&times;</button>";
+          alert += "<span>"+response.responseJSON.message+"</span></div>";
+	  $('#playlist_item_edit_alert_'+id).html(alert)
+          $btn.button('reset')
+        }
+      });
+    });
+
     // Cancel playlist item editing
     $('.playlist_item_edit_cancel').click(function(event){
       var $form = $(this).closest('form');
