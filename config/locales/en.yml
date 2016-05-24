@@ -194,3 +194,4 @@ en:
     attributes:
       playlist:
         title: "Name"
+        comment: "Description"
