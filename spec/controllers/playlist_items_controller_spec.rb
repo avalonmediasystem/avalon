@@ -76,14 +76,14 @@ RSpec.describe PlaylistItemsController, type: :controller do
     context 'with valid params' do
       it 'updates Playlist Item' do
         expect do
-          patch :update, { playlist_id: playlist.id, id: playlist_item.id, title: Faker::Lorem.word, start_time:'00:20', end_time:'1:20' }, valid_session
+          patch :update, { playlist_id: playlist.id, id: playlist_item.id, playlist_item: { title: Faker::Lorem.word, start_time:'00:20', end_time:'1:20' }}, valid_session
         end.to change{ playlist_item.reload.title }
       end
     end
     context 'with invalid params' do
       it 'fails to update Playlist Item' do
         expect do
-          patch :update, { playlist_id: playlist.id, id: playlist_item.id, title: Faker::Lorem.word, start_time:'00:20', end_time:'not-a-time' }, valid_session
+          patch :update, { playlist_id: playlist.id, id: playlist_item.id, playlist_item: { title: Faker::Lorem.word, start_time:'00:20', end_time:'not-a-time' }}, valid_session
         end.not_to change{ playlist_item.reload.title }
       end
     end

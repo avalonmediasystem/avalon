@@ -187,3 +187,5 @@ en:
     ago: "%{time} ago"
     lockAltText: "This playlist is private."
     unlockAltText: "This playlist is public."
+    lockText: "Private"
+    unlockText: "Public"
