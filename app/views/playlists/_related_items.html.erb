@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <div id="related_items">
   <ul>
-  <% @related_annotations.sort_by { |hash| hash['start_time'].to_i}.each do |annotation| %>
+  <% @related_annotations.accessible_by(current_ability).sort_by { |hash| hash['start_time'].to_i}.each do |annotation| %>
     <% position = annotation.playlist_position(@playlist.id) %>
     <li class='related_item'>
       <%= link_to playlist_path(@playlist, position: position) do %>
