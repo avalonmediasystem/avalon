@@ -84,7 +84,7 @@ Avalon::Application.routes.draw do
 
   resources :comments, only: [:index, :create]
 
-  resources :playlist_items, only: [:update]
+  resources :playlist_items, only: [:update], :constraints => {:format => /(js|json)/}
 
   #match 'search/index' => 'search#index'
   #match 'search/facet/:id' => 'search#facet'
