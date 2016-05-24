@@ -1030,8 +1030,10 @@ h5.panel-title {
 }
 .side-playlist{
   border-top:1px solid $gray;
+  padding-top: .6em;
   li {
-    float:left;
+    margin-top: .2em;
+    float: left;
     width:100%;
   }
   .pull-right {
@@ -1108,6 +1110,6 @@ h5.panel-title {
 }
 
 .playlist-description {
-  margin-top: .3em;
-  margin-bottom: .3em;
+  margin-top: .6em;
+  margin-bottom: .4em;
 }
