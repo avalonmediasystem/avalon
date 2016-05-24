@@ -91,7 +91,7 @@ class PlaylistsController < ApplicationController
   end
 
   def update_playlist(playlist)
-    playlist.assign_attributes(playlist_params) if params['playlist_params'].present?
+    playlist.assign_attributes(playlist_params)
     reorder_items(playlist)
     playlist.save
   end
