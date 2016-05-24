@@ -33,15 +33,13 @@ class PlaylistItemsController < ApplicationController
     annotation.comment = playlist_item_params[:comment]
     annotation.start_time = time_str_to_milliseconds playlist_item_params[:start_time]
     annotation.end_time = time_str_to_milliseconds playlist_item_params[:end_time]
-    begin
-      if annotation.save
-        render json: { message: "Item was updated successfully." }, status: 201 and return
-      else
-        render json: { message: "Item was not updated: #{annotation.errors.full_messages.join(', ')}" }, status: 500 and return
-      end
-    rescue Exception => e
-      render json: { message: "Item was not updated: #{e.message}" }, status: 500 and return
+    if annotation.save
+      render json: { message: "Item was updated successfully." }, status: 201 and return
+    else
+      render json: { message: "Item was not updated: #{annotation.errors.full_messages.join(', ')}" }, status: 500 and return
     end
+  rescue StandardError => error
+    render json: { message: "Item was not updated: #{error.message}" }, status: 500 and return
   end
 
   private

@@ -199,8 +199,9 @@
       <% end %>
     });
 
-    // Handle select all checkbos (enable/disable move and delete buttons)
+    // Handle select all checkbox (enable/disable move and delete buttons)
     $('#select_all').click(function(event) {
+      $('input:checkbox').prop('checked', $(this).prop('checked'))
       $('#edit_playlist_<%= @playlist.id %> :submit').prop('disabled', !$(this).prop('checked') );
       $('#move_to button').prop('disabled', !$(this).prop('checked') )
     });
@@ -208,7 +209,8 @@
     // Handle selection of playlist item (enable/disable move and delete buttons)
     $('.playlist_item_select').click(function(event) {
       $('#edit_playlist_<%= @playlist.id %> :submit').prop('disabled',  $( ".playlist_item_select:checked" ).length < 1  );
-      $('#move_to button').prop('disabled', $( ".playlist_item_select:checked" ).length < 1 )
+      $('#move_to button').prop('disabled', $( ".playlist_item_select:checked" ).length < 1 );
+      $('#select_all').prop('checked', $( ".playlist_item_select:checked" ).length > 0 );
     });
 
     // Handle playlist item edit form submission
