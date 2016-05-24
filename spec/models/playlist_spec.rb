@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'cancan/matchers'
 
 RSpec.describe Playlist, type: :model do
   describe 'validations' do
@@ -6,6 +7,32 @@ RSpec.describe Playlist, type: :model do
     it { is_expected.to validate_presence_of(:user) }
     it { is_expected.to validate_presence_of(:visibility) }
     it { is_expected.to validate_inclusion_of(:visibility).in_array([Playlist::PUBLIC, Playlist::PRIVATE]) }
+  end
+
+  describe 'abilities' do
+    subject{ ability }
+    let(:ability){ Ability.new(user) }
+    let(:user){ FactoryGirl.create(:user) }
+
+    context 'when owner' do
+      let(:playlist) { FactoryGirl.create(:playlist, user: user) }
+
+      it{ is_expected.to be_able_to(:manage, playlist) }
+      it{ is_expected.to be_able_to(:create, playlist) }
+      it{ is_expected.to be_able_to(:read, playlist) }
+      it{ is_expected.to be_able_to(:update, playlist) }
+      it{ is_expected.to be_able_to(:delete, playlist) }
+    end
+
+    context 'when other user' do
+      let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
+
+      it{ is_expected.not_to be_able_to(:manage, playlist) }
+      it{ is_expected.not_to be_able_to(:create, playlist) }
+      it{ is_expected.to be_able_to(:read, playlist) }
+      it{ is_expected.not_to be_able_to(:update, playlist) }
+      it{ is_expected.not_to be_able_to(:delete, playlist) }
+    end
   end
 
   describe 'related items' do

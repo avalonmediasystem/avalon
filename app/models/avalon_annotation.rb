@@ -5,8 +5,6 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   after_save :post_to_solr
   after_destroy :delete_from_solr
 
-  attr_accessor :master_file
-
   alias_method :comment, :content
   alias_method :comment=, :content=
 
@@ -15,10 +13,9 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
 
   validates :master_file, :title, :start_time, presence: true
   validates :start_time, numericality: { greater_than_or_equal_to: 0, message: "must be greater than or equal to 0"}
-  validates :end_time, numericality: { greater_than: Proc.new {|a| Float(a.start_time) rescue 0}, less_than_or_equal_to: Proc.new {|a| a.master_file.duration.to_f }, message: "must be between start time and end of section"}
+  validates :end_time, numericality: { greater_than: Proc.new {|a| Float(a.start_time) rescue 0}, less_than_or_equal_to: Proc.new {|a| a.master_file.duration.to_f rescue -1}, message: "must be between start time and end of section"}
 
   after_initialize do
-    self.source = master_file unless master_file.nil?
     selector_default!
     title_default!
   end
@@ -72,21 +69,29 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   # Sets the default selector to a start time of 0 and an end time of the master file length
   def selector_default!
     self.start_time = 0 if self.start_time.nil?
-    self.end_time = (master_file.duration || 1) if self.end_time.nil?
+    if self.end_time.nil?
+      if master_file.present? && master_file.duration.present?
+        self.end_time = master_file.duration
+      else
+        self.end_time = 1
+      end
+    end
   end
 
   # Set the default title to be the label of the master_file
   def title_default!
-    self.title = master_file.embed_title if self.title.nil?
+    self.title = master_file.embed_title if self.title.nil? && master_file.present?
   end
 
   # Sets the class variable @master_file by finding the master referenced in the source uri
   def master_file
-    @master_file ||= MasterFile.find(source.split('/').last)
+    @master_file ||= MasterFile.find(self.source.split('/').last) if self.source
   end
 
   def master_file=(value)
     @master_file = value
+    self.source = @master_file
+    @master_file
   end
 
   # Calcuates the mediafragment_uri based on either the internal fragment value or start and end times

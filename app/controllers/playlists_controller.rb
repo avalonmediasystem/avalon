@@ -1,6 +1,8 @@
 class PlaylistsController < ApplicationController
   # TODO: rewrite this to use cancancan's authorize_and_load_resource
-  before_action :set_playlist, only: [:show, :edit, :update, :destroy, :update_multiple]
+  before_action :authenticate_user!, except: [:show]
+  load_and_authorize_resource 
+
   before_action :get_all_playlists, only: [:index, :edit, :update]
 
   # GET /playlists
@@ -74,11 +76,6 @@ class PlaylistsController < ApplicationController
   end
 
   private
-
-  # Use callbacks to share common setup or constraints between actions.
-  def set_playlist
-    @playlist = Playlist.find(params[:id])
-  end
 
   # Use callbacks to share common setup or constraints between actions.
   def get_all_playlists
