@@ -18,7 +18,6 @@ RSpec.describe PlaylistItem, type: :model do
     context 'when owner' do
       let(:playlist) { FactoryGirl.create(:playlist, user: user) }
 
-      it{ is_expected.to be_able_to(:manage, playlist_item) }
       it{ is_expected.to be_able_to(:create, playlist_item) }
       it{ is_expected.to be_able_to(:update, playlist_item) }
       it{ is_expected.to be_able_to(:delete, playlist_item) }
@@ -28,8 +27,9 @@ RSpec.describe PlaylistItem, type: :model do
       end
 
       context 'when master file is readable by user' do
-        let(:media_object) { FactoryGirl.create(:media_object, visibility: 'public') }
+        let(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
         let(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
+
         it{ is_expected.to be_able_to(:read, playlist_item) }
       end
     end
@@ -37,7 +37,6 @@ RSpec.describe PlaylistItem, type: :model do
     context 'when other user' do
       let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
 
-      it{ is_expected.not_to be_able_to(:manage, playlist_item) }
       it{ is_expected.not_to be_able_to(:create, playlist_item) }
       it{ is_expected.not_to be_able_to(:update, playlist_item) }
       it{ is_expected.not_to be_able_to(:delete, playlist_item) }
@@ -47,8 +46,9 @@ RSpec.describe PlaylistItem, type: :model do
       end
 
       context 'when master file is readable by user' do
-        let(:media_object) { FactoryGirl.create(:media_object, visibility: 'public') }
+        let(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
         let(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
+
         it{ is_expected.to be_able_to(:read, playlist_item) }
       end
     end

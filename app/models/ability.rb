@@ -156,12 +156,12 @@ class Ability
 
   def playlist_item_permissions
     if @user.id.present?
-      can :manage, PlaylistItem do |playlist_item|
+      can [:create, :update, :delete], PlaylistItem do |playlist_item|
         can? :manage, playlist_item.playlist
       end
       can :read, PlaylistItem do |playlist_item|
         (can? :read, playlist_item.playlist) &&
-        (can? :read, playlist_item.annotation.master_file)
+        (can? :read, playlist_item.master_file)
       end
     end
   end
