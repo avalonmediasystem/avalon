@@ -150,9 +150,11 @@ class Ability
       # can :create, Playlist
     end
     can :read, Playlist, visibility: Playlist::PUBLIC
+
+    playlist_item_permissions
   end
 
-  def playlist_items
+  def playlist_item_permissions
     if @user.id.present?
       can :manage, PlaylistItem do |playlist_item|
         can? :manage, playlist_item.playlist

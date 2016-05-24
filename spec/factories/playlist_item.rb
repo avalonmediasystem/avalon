@@ -15,7 +15,7 @@
 FactoryGirl.define do
   factory :playlist_item do
     playlist
-    avalon_annotation
+    association :annotation, factory: :avalon_annotation
     #title { Faker::Lorem.word }
     #comment { Faker::Lorem.sentence }
     #start_time { 0.0 }

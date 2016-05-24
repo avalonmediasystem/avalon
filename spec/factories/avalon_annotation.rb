@@ -14,7 +14,7 @@
 
 FactoryGirl.define do
   factory :avalon_annotation do
-    master_file
+    master_file { FactoryGirl.create(:master_file) }
     title { Faker::Lorem.word }
     comment { Faker::Lorem.sentence }
     start_time { 0.0 }

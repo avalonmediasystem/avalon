@@ -19,7 +19,7 @@ FactoryGirl.define do
     percent_complete {"#{rand(100)}"}
     workflow_name 'avalon'
     duration {'100'}
-    mediaobject {FactoryGirl.create(:media_object)}
+    association :mediaobject, factory: :media_object
 
     factory :master_file_with_derivative do
       workflow_name 'avalon'
