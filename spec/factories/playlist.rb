@@ -17,6 +17,6 @@ FactoryGirl.define do
     user
     title { Faker::Lorem.word }
     comment { Faker::Lorem.sentence }
-    visibility { Playlist::PUBLIC }
+    visibility { Playlist::PRIVATE }
   end
 end
