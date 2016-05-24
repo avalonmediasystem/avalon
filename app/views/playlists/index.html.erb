@@ -41,7 +41,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <th>Visibility</th>
                 <th>Created</th>
                 <th>Updated</th>
-                <th class="text-center">Actions</th>
+                <th class="text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -58,7 +58,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                     <span class="fa fa-lock"></span> Only me
                   <% end %>
                   <% if playlist.visibility !='private' %>
-                    <span class="fa fa-unlock-alt"></span> Public
+                    <span class="glyphicon glyphicon-unlock"></span> Public
                   <% end %>
                 </td>
                 <td>
@@ -67,7 +67,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <td>
                   <span title= <%= playlist.updated_at.utc.iso8601%> ><%= time_ago_in_words(playlist.updated_at)%></span>
                 </td>
-                <td class="text-right">
+                <td align="right">
                   <%= link_to(edit_playlist_path(playlist) ) do %>
                     <span class="btn btn-default">
                       <span class="glyphicon glyphicon-pencil"></span>

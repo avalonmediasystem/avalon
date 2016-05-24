@@ -26,7 +26,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% if @playlist.visibility==Playlist::PRIVATE %>
     <span class="fa fa-lock" alt="<%= t('playlist.lockAltText') %>" title="<%= t('playlist.lockAltText') %>"></span>
   <% else %>
-    <span class="fa fa-unlock-alt" alt="<%= t('playlist.unlockAltText') %>" title="<%= t('playlist.unlockAltText') %>"></span>
+    <span class="glyphicon glyphicon-unlock" alt="<%= t('playlist.unlockAltText') %>" title="<%= t('playlist.unlockAltText') %>"></span>
   <% end %>
   <%= @playlist.title %>
 </h3>
