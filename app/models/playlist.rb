@@ -2,6 +2,7 @@ class Playlist < ActiveRecord::Base
   belongs_to :user
   validates :user, presence: true
   validates :title, presence: true
+  validates :comment, length: { maximum: 255 }
   validates :visibility, presence: true
   validates :visibility, inclusion: { in: proc { [PUBLIC, PRIVATE] } }
 
