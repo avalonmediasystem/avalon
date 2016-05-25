@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @token = StreamToken.find_or_create_session_token(session, @currentStream.pid) %>
 <% @currentStreamInfo = @currentStream.stream_details(@token, ApplicationController.default_url_options[:host]) %>
 <% @currentStreamInfo['t'] = "#{f_start},#{f_end}" %>
-
+<% if can? :read, @current_masterfile %>
     <section id="content" class="avalon-player" style="width: 100%; visibility: hidden;" tabIndex="-1">
       <% if @currentStream.present? and @currentStream.derivatives.present? %>
         <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>
@@ -53,7 +53,11 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end %>
       <% end %>
     </section>
-
+<% end %>
+<% unless can? :read, @current_masterfile %>
+  <span class = 'show_playlist_player_denied_title'>Restricted Access</span>
+  <span class = 'show_playlist_player_denied_message'>You do not have permissiont to playback item <%= @current_masterfile.mediaobject_id %></span>
+<% end %>
 <% content_for :page_scripts do %>
   <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
   <%= javascript_include_tag 'android_pre_play' %>
