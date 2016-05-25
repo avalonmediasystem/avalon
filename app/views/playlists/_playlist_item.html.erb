@@ -22,7 +22,7 @@
     <% if item_class == 'now_playing' %>
       <i class="fa fa-arrow-circle-right"></i>
     <% end %>
-    <i class="fa fa-hand-paper-o"></i>
+    <i class="fa fa-lock"></i>
     <span title="You do not playback permission for the source item, <%=annotation.master_file.mediaobject_id%>, this playlist item references.">[Inaccessible Item] <%=annotation.master_file.mediaobject_id%></span>
     <span class="pull-right"> <span class="fa <%= item_type %>"></span> <%= annotation.duration %></span>
   </li>
