@@ -52,12 +52,8 @@ class PlaylistsController < ApplicationController
   end
 
   def update_multiple
-    if params[:commit] == "Delete Items"
-      @playlist.items.each do |item|
-        if (item.id.to_s.in? params[:annotation_ids])
-          @playlist.items.delete(item)
-        end
-      end
+    if request.request_method=='DELETE'
+      PlaylistItem.where(id: params[:annotation_ids]).to_a.map(&:destroy)
     elsif params[:new_playlist_id].present? and params[:annotation_ids]
       @new_playlist = Playlist.find(params[:new_playlist_id])
       pis = PlaylistItem.where(id: params[:annotation_ids])
