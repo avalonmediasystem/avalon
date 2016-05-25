@@ -1,7 +1,7 @@
 class PlaylistsController < ApplicationController
   # TODO: rewrite this to use cancancan's authorize_and_load_resource
   before_action :authenticate_user!, except: [:show]
-  load_and_authorize_resource 
+  load_and_authorize_resource
 
   before_action :get_all_playlists, only: [:index, :edit, :update]
 
@@ -30,12 +30,13 @@ class PlaylistsController < ApplicationController
     if @playlist.save
       redirect_to @playlist, notice: 'Playlist was successfully created.'
     else
+      flash.now[:error] = @playlist.errors.full_messages.to_sentence
       render action: 'new'
     end
   end
 
   # PATCH/PUT /playlists/1
-  def update 
+  def update
     if update_playlist(@playlist)
       respond_to do |format|
         format.html do
