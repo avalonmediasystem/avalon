@@ -18,12 +18,11 @@
 <% unless can? :read, item %>
   <% denied_class = item_class %>
   <% denied_class = 'denied_item' unless denied_class == 'now_playing'%>
-  <li class= "<%= denied_class %>">
+  <li class= "<%= denied_class %> playlist_item_denied">
     <% if item_class == 'now_playing' %>
       <i class="fa fa-arrow-circle-right"></i>
-    <% else %>
-      <i class="fa-hand-paper-o"></i>
     <% end %>
+    <i class="fa fa-hand-paper-o"></i>
     <span title="You do not playback permission for the source item, <%=annotation.master_file.mediaobject_id%>, this playlist item references.">[Inaccessible Item] <%=annotation.master_file.mediaobject_id%></span>
     <span class="pull-right"> <span class="fa <%= item_type %>"></span> <%= annotation.duration %></span>
   </li>
