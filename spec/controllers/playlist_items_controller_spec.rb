@@ -22,8 +22,28 @@ RSpec.describe PlaylistItemsController, type: :controller do
   let(:valid_session) { {} }
 
   let(:user) { login_as :user }
-  let(:playlist) { Playlist.create!({ title: Faker::Lorem.word, visibility: Playlist::PUBLIC, user: user }) }
+  let(:playlist) { FactoryGirl.create(:playlist, user: user) }
   let(:master_file) { FactoryGirl.create(:master_file, duration: "100000") }
+
+  describe 'security' do
+    let(:playlist) { FactoryGirl.create(:playlist) }
+    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist) }
+    context 'with unauthenticated user' do
+      it "all routes should redirect to sign in" do
+        expect(post :create, playlist_id: playlist.to_param, playlist_item: valid_attributes).to redirect_to(new_user_session_path)
+        expect(put :update, playlist_id: playlist.to_param, id: playlist_item.id).to redirect_to(new_user_session_path)
+      end
+    end
+    context 'with end-user' do
+      before do
+        login_as :user
+      end
+     it "all routes should redirect to /" do
+        expect(post :create, playlist_id: playlist.to_param, playlist_item: valid_attributes).to have_http_status(:unauthorized)
+        expect(put :update, playlist_id: playlist.to_param, id: playlist_item.id).to have_http_status(:unauthorized)
+      end
+    end
+  end
 
 
   describe 'POST #create' do
