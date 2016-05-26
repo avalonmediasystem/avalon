@@ -107,6 +107,9 @@ RSpec.describe PlaylistsController, type: :controller do
   end
 
   describe 'GET #new' do
+    before do
+      login_as :user
+    end
     it 'assigns a new playlist as @playlist' do
       get :new, {}, valid_session
       expect(assigns(:playlist)).to be_a_new(Playlist)
@@ -142,6 +145,9 @@ RSpec.describe PlaylistsController, type: :controller do
     end
 
     context 'with invalid params' do
+      before do
+        login_as :user
+      end
       it 'assigns a newly created but unsaved playlist as @playlist' do
         post :create, { playlist: invalid_attributes }, valid_session
         expect(assigns(:playlist)).to be_a_new(Playlist)

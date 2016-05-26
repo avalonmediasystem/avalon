@@ -1,9 +1,12 @@
 class PlaylistItemsController < ApplicationController
-  # TODO: rewrite this to use cancancan's authorize_and_load_resource
   before_action :set_playlist, only: [:create, :update]
+  before_action :authenticate_user!
 
   # POST /playlists/1/items
   def create
+    unless (can? :create, PlaylistItem) && (can? :edit, @playlist)
+      render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return  
+    end
     title =  playlist_item_params[:title]
     comment = playlist_item_params[:comment]
     start_time = time_str_to_milliseconds playlist_item_params[:start_time]
@@ -28,6 +31,9 @@ class PlaylistItemsController < ApplicationController
 
   def update
     playlist_item = PlaylistItem.find(params['id'])
+    unless (can? :update, playlist_item)
+      render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return  
+    end
     annotation = AvalonAnnotation.find(playlist_item.annotation.id)
     annotation.title =  playlist_item_params[:title]
     annotation.comment = playlist_item_params[:comment]
