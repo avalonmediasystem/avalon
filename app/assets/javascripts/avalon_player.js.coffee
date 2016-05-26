@@ -21,6 +21,7 @@ class AvalonPlayer
     thumbnail_selector = if removeOpt('thumbnailSelector') then 'thumbnailSelector' else null
     add_to_playlist = if removeOpt('addToPlaylist') then 'addToPlaylist' else null
     start_time = removeOpt('startTime')
+    success_callback = removeOpt('success')
 
     features = ['playpause','current','progress','duration','volume','tracks','qualities',thumbnail_selector, add_to_playlist, 'fullscreen','responsive']
     features = (feature for feature in features when feature?)
@@ -38,6 +39,7 @@ class AvalonPlayer
       success: (mediaElement, domObject, player) =>
         @boundPrePlay = => if mejs.MediaFeatures.isAndroid then AndroidShim.androidPrePlay(this, player)
         @boundPrePlay()
+        if success_callback then success_callback()
 
     player_options[key] = val for key, val of opts
     @player = new MediaElementPlayer element, player_options
@@ -95,6 +97,8 @@ class AvalonPlayer
         $(@player.media).one 'loadeddata', initialize_view
         keyboardAccess()
         @boundPrePlay()
+        if @player.options.autostart
+          @player.media.play()
 
       @player.load()
       @setupCreationTrigger()
