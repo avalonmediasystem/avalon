@@ -53,7 +53,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               </div>
             </div>
             <% @related_annotations = @playlist.related_annotations(@current_playlist_item)%>
-            <% unless @related_annotations.empty? %>
+            <% unless @related_annotations.empty? || (cannot? :read, @current_masterfile) %>
               <div class="panel-heading" role="tab" id="heading1">
                 <h5 class="panel-title ">
                   <a href="#" class="pull-left" data-toggle="collapse"  data-toggle="collapse" data-target="#section1" aria-expanded="true" aria-controls="collapse1"><i class="indicator glyphicon glyphicon-chevron-down  pull-left"></i>Related</a>
