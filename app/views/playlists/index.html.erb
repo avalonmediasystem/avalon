@@ -26,12 +26,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="row">
     <div class="col-lg-10">
       <h1 class=>Playlists <small>(<%= playlists.size %> total)</small></h1>
-      <div class="table-responsive">
-        <% if playlists.empty? %>
-            You currently have no playlists.
-            <%= link_to 'Create a playlist.', new_playlist_path %>
-        <% end %>
-    </div>
       <% unless playlists.empty? %>
         <table id="Playlists" class="table">
             <thead>
