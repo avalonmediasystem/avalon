@@ -79,20 +79,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       addToPlaylist: false,
       startQuality: '<%= current_quality(@currentStreamInfo) %>',
       customError: '<%= t("media_objects.player.customError").html_safe %>',
-      displayMediaFragment: true,
-      autostart: <%= @position == 1 ? 'false' : 'true' %>,
-      success: function(mediaElement, domObject) {
-        avalonPlayer.player.media.addEventListener('timeupdate', function(e) {
-          if (avalonPlayer.player.getCurrentTime() > avalonPlayer.stream_info.t.split(',')[1]) {
-            avalonPlayer.player.media.stop();
-            nextUrl = $('li.now_playing').next().find('a').attr('href');
-            if (nextUrl) {
-              window.location = nextUrl;
-            }
-          }
-        }, false);
-      }
-    });
+      displayMediaFragment: true
+    })
     currentPlayer = avalonPlayer.player;
   </script>
   <% end %>
