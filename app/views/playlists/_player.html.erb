@@ -55,7 +55,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </section>
 <% end %>
 <% unless can? :read, @current_masterfile %>
-  <span class = 'show_playlist_player_denied_title'><h2>Restricted Access<h2></span>
+  <span class = 'show_playlist_player_denied_title'><h2>Restricted Access</h2></span>
   <span class = 'playlist_item_denied'>You do not have permissiont to playback item <%= @current_masterfile.mediaobject_id %></span>
 <% end %>
 <% content_for :page_scripts do %>
