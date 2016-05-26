@@ -1,24 +1,27 @@
 # Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class BookmarksController < CatalogController
+
+  before_action :authenticate_user!
+
   include Blacklight::Bookmarks
 
   #HACK next two lines are a hack for problems in the puppet VM tomcat/solr
   BookmarksController.search_params_logic -= [:add_query_to_solr]
   BookmarksController.search_params_logic += [:rewrite_bookmarks_search]
-  
+
   blacklight_config.show.document_actions[:email].if = false if blacklight_config.show.document_actions[:email]
   blacklight_config.show.document_actions[:citation].if = false if blacklight_config.show.document_actions[:citation]
 
@@ -47,7 +50,7 @@ class BookmarksController < CatalogController
         val.gsub("'", "\\\\\'").gsub('"', "\\\\\"") +
         options[:quote]
     end
-    return val 
+    return val
   end
 
 
@@ -72,7 +75,7 @@ class BookmarksController < CatalogController
   def index
     @bookmarks = token_or_current_or_guest_user.bookmarks
     bookmark_ids = @bookmarks.collect { |b| b.document_id.to_s }
-  
+
     @response, @document_list = get_solr_response_for_document_ids(bookmark_ids, defType: 'edismax')
 
     respond_to do |format|
@@ -168,7 +171,7 @@ class BookmarksController < CatalogController
         else
           success_ids << id
         end
-      end    
+      end
       flash[:success] = t("blacklight.move.success", count: success_ids.count, collection_name: collection.name) if success_ids.count > 0
       flash[:alert] = "#{t('blacklight.move.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
       MediaObject.move_bulk success_ids, params
