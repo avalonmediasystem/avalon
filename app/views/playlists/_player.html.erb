@@ -75,7 +75,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     function advancePlaylist() {
       nextUrl = $('li.now_playing').nextAll('li.queue:first').find('a').attr('href');
       if (nextUrl) {
-        window.location = nextUrl;
+        window.location = nextUrl + "&autostart=true";
       }
     }
 
@@ -89,7 +89,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 	startQuality: '<%= current_quality(@currentStreamInfo) %>',
 	customError: '<%= t("media_objects.player.customError").html_safe %>',
 	displayMediaFragment: true,
-	autostart: <%= @position == 1 ? 'false' : 'true' %>,
+        autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
 	success: function(mediaElement, domObject) {
 	  avalonPlayer.player.media.addEventListener('timeupdate', function(e) {
 	    if (avalonPlayer.player.getCurrentTime() > avalonPlayer.stream_info.t.split(',')[1]) {
