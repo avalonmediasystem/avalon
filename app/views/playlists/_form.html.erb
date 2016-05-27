@@ -134,6 +134,12 @@
                 <i class="fa fa-lock" title="You don't have permission to view this item"></i> 
                 <span class="playlist_item_denied">[inaccessible item] <%= i.annotation.master_file.mediaobject.pid %></span>
               </div>
+              <div class="col-sm-1 checkbox text-right">
+                <label>
+                  <%= check_box_tag 'annotation_ids[]', i.id, false, form:"edit_playlist_#{@playlist.id}", class:"playlist_item_select" %>
+                  Select
+                </label>
+              </div>
             <% end %>
           </div>
           <div id="playlist_item_edit_<%= i.id %>" class="row collapse">

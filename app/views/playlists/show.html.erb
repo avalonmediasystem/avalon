@@ -30,6 +30,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% @current_mediaobject = MediaObject.find(@current_masterfile.mediaobject_id) %>
       <div class="col-sm-8" id="left_column">
         <%= render 'player' %>
+        <% if can? :read, @current_masterfile %>
         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
           <div class="panel panel-default">
             <div class="panel-heading" role="tab" id="heading0" style="border-bottom: 1px solid #ddd;">
@@ -47,7 +48,6 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <a href="#" class="pull-left" data-toggle="collapse"  data-toggle="collapse" data-target="#section2" aria-expanded="false" aria-controls="collapse2"><i class="indicator glyphicon glyphicon-chevron-down  pull-left"></i>Source Item Details</a>  </span>
               </h5>
             </div>
-            <% unless cannot? :read, @current_masterfile %>
               <div id="section2" class="panel-collapse collapse collapsed" role="tabpanel" aria-labelledby="heading2">
                 <div class="panel-body">
                   <%= render 'current_item' %>
@@ -66,9 +66,9 @@ Unless required by applicable law or agreed to in writing, software distributed
                   </div>
                 </div>
               <% end %>
-            <% end %>
           </div>
         </div>
+        <% end %>
       </div>
       <div class="col-sm-4" id="right-column">
         <%= render 'item_list' %>
