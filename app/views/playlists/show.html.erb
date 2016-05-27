@@ -47,7 +47,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <a href="#" class="pull-left" data-toggle="collapse"  data-toggle="collapse" data-target="#section2" aria-expanded="false" aria-controls="collapse2"><i class="indicator glyphicon glyphicon-chevron-down  pull-left"></i>Source Item Details</a>  </span>
               </h5>
             </div>
-            <% unless cannot? :read, @current_masterfile) %>
+            <% unless cannot? :read, @current_masterfile %>
               <div id="section2" class="panel-collapse collapse collapsed" role="tabpanel" aria-labelledby="heading2">
                 <div class="panel-body">
                   <%= render 'current_item' %>
@@ -78,9 +78,3 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   </div>
 </div>
-
-<% content_for :page_scripts do %>
-<%= stylesheet_link_tag "https://fonts.googleapis.com/icon?family=Material+Icons" %>
-<%= stylesheet_link_tag "https://code.getmdl.io/1.1.3/material.indigo-pink.min.css" %>
-<%= javascript_include_tag "https://code.getmdl.io/1.1.3/material.min.js" =%>
-<% end %>
