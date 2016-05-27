@@ -189,6 +189,10 @@ en:
     unlockAltText: "This playlist is public."
     lockText: "Private"
     unlockText: "Public"
+    new:
+      action: "Create"
+    edit:
+      action: "Save Changes"
 
   activerecord:
     attributes:
