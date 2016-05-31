@@ -6,8 +6,6 @@
   <li class="<%= item_class %>">
     <% if item_class == 'now_playing' %>
       <i class="fa fa-arrow-circle-right"></i>
-    <% else %>
-      <a href="#">
     <% end %>
     <%= link_to playlist_path(@playlist, position: item.position) do %>
       <%= annotation.title %></a>

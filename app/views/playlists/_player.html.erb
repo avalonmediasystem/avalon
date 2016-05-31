@@ -72,16 +72,40 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
-    avalonPlayer = new AvalonPlayer($('#left_column'), <%= @currentStreamInfo.to_json.html_safe %>, {
-      audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
-      mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
-      thumbnailSelector: false,
-      addToPlaylist: false,
-      startQuality: '<%= current_quality(@currentStreamInfo) %>',
-      customError: '<%= t("media_objects.player.customError").html_safe %>',
-      displayMediaFragment: true
-    })
-    currentPlayer = avalonPlayer.player;
+    function advancePlaylist() {
+      nextUrl = $('li.now_playing').nextAll('li.queue:first').find('a').attr('href');
+      if (nextUrl) {
+        window.location = nextUrl + "&autostart=true";
+      }
+    }
+
+    <% if can? :read, @current_masterfile %>
+
+      avalonPlayer = new AvalonPlayer($('#left_column'), <%= @currentStreamInfo.to_json.html_safe %>, {
+	audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
+	mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
+	thumbnailSelector: false,
+	addToPlaylist: false,
+	startQuality: '<%= current_quality(@currentStreamInfo) %>',
+	customError: '<%= t("media_objects.player.customError").html_safe %>',
+	displayMediaFragment: true,
+        autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
+	success: function(mediaElement, domObject) {
+	  avalonPlayer.player.media.addEventListener('timeupdate', function(e) {
+	    if (avalonPlayer.player.getCurrentTime() > avalonPlayer.stream_info.t.split(',')[1]) {
+	      avalonPlayer.player.media.stop();
+	      advancePlaylist();
+	    }
+	  }, false);
+	}
+      });
+      currentPlayer = avalonPlayer.player;
+
+    <% else %>
+
+      window.setTimeout(advancePlaylist, 5000);
+
+    <% end %>
   </script>
   <% end %>
 <% end %>
