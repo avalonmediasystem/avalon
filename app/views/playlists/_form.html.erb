@@ -1,4 +1,4 @@
-  <div id="playlist_edit_div" class="container collapse <%= 'in' if !@playlist.persisted? %>">
+  <div id="playlist_edit_div" class="container collapse <%= 'in' if !@playlist.persisted? || !@playlist.errors.empty? %>">
     <%= form_for(@playlist, html: { id: 'playlist_form', class: 'form-horizontal playlist_actions' }) do |f| %>
     <div class="row form-group <% if @playlist.errors[:title].any? %>has-error<% end %>">
       <%= f.label "Name", class: 'col-sm-2 control-label' %>
@@ -25,7 +25,9 @@
       <div class="col-sm-offset-2 col-sm-10">
 	<div>
 	  <%= f.submit class: 'btn btn-primary btn-xs', value: t("playlist.#{params[:action]}.action") %>
-	  <a id="playlist_edit_cancel" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#playlist_edit_div, #playlist_view_div">Cancel</a>
+          <% if params[:action] == "edit" || params[:action] == "update" %>
+            <a id="playlist_edit_cancel" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#playlist_edit_div, #playlist_view_div">Cancel</a>
+          <% end %>
 	</div>
       </div>
     </div>
