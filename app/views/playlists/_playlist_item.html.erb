@@ -14,8 +14,7 @@
     <% end %>
     <span class="pull-right"> <span class="fa <%= item_type %>"></span> <%= annotation.duration %></span>
   </li>
-<% end %>
-<% unless can? :read, item %>
+<% else %>
   <% denied_class = item_class %>
   <% denied_class = 'denied_item' unless denied_class == 'now_playing'%>
   <li class= "<%= denied_class %> playlist_item_denied">
