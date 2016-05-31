@@ -88,7 +88,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
     function advancePlaylist() {
-      nextUrl = $('a.playable:not(a.current-stream):first').attr('href')
+      nextUrl = $('div.panel-heading').has('a.current-stream').next().find('a.playable').attr('href');
       if (nextUrl) {
         window.location = nextUrl + "?autostart=true";
       }
