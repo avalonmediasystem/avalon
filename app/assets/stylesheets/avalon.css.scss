@@ -1017,6 +1017,13 @@ h5.panel-title {
 .panel-heading {
   border-top:1px solid $gray;
 }
+.panel-heading .accordion-toggle:before {
+    font-family: 'FontAwesome';
+    content: "\f078";
+}
+.panel-heading .accordion-toggle.collapsed:before {
+    content: "\f054";
+}
 #metadata_header h3 {
   font-size:18px;
 }
