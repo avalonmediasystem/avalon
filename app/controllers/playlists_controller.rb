@@ -47,7 +47,7 @@ class PlaylistsController < ApplicationController
         end
       end
     else
-      flash.now[:error] = 'There are errors with your submission.'
+      flash.now[:error] = "There are errors with your submission.  #{@playlist.errors.full_messages.join(', ')}"
       render action: 'edit'
     end
   end

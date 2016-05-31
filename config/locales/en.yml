@@ -191,7 +191,11 @@ en:
     unlockText: "Public"
     new:
       action: "Create"
+    create:
+      action: "Create"
     edit:
+      action: "Save Changes"
+    update:
       action: "Save Changes"
 
   activerecord:
