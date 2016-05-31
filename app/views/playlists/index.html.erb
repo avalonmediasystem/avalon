@@ -44,34 +44,29 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <td>
                   <%= link_to(playlist.title, playlist_path(playlist), title: playlist.comment)%>
                 </td>
-                <td>
+                <td class='nowrap'>
                   <%= PlaylistItem.where(playlist_id: playlist.id).size %> items
                 </td>
-                <td>
+                <td class='nowrap'>
                   <% if playlist.visibility =='private' %>
-                    <span class="fa fa-lock"></span> Only me
+                    <span class="fa fa-lock fa-lg"></span> Only me
                   <% end %>
                   <% if playlist.visibility !='private' %>
-                    <span class="glyphicon glyphicon-unlock"></span> Public
+                    <span class="fa fa-globe fa-lg"></span> Public
                   <% end %>
                 </td>
-                <td>
+                <td class='nowrap'>
                   <span title= <%= playlist.created_at.utc.iso8601%> ><%= time_ago_in_words(playlist.created_at)%></span>
                 </td>
-                <td>
+                <td class='nowrap'>
                   <span title= <%= playlist.updated_at.utc.iso8601%> ><%= time_ago_in_words(playlist.updated_at)%></span>
                 </td>
-                <td align="right">
-                  <%= link_to(edit_playlist_path(playlist) ) do %>
-                    <span class="btn btn-default">
-                      <span class="glyphicon glyphicon-pencil"></span>
-                      Edit
-                    </span>
+                <td align="right" class='nowrap'>
+                  <%= link_to(edit_playlist_path(playlist), class: 'btn btn-default btn-xs') do %>
+                    <span class='fa fa-edit'> Edit</span>
                   <% end %>
-                  <%= link_to(playlist_path(playlist), method: :delete, data: {confirm: "Are you sure you want to delete playlist #{playlist.title} and all its contents?"} ) do %>
-                    <span class="btn icon-cancel-1 btn-default">
-                      <span class="glyphicon glyphicon-remove"><!-- --></span>Delete
-                    </span>
+                  <%= link_to(playlist_path(playlist), method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'}) do %>
+                    <span class='fa fa-times'> Delete</span>
                   <% end %>
                 </td>
               </tr>
@@ -80,13 +75,13 @@ Unless required by applicable law or agreed to in writing, software distributed
         </table>
         <div> </div>
       <% end %>
-      <%= link_to(new_playlist_path) do %>
       <div>
-	<span class="btn btn-primary outline_on">
-          Create New Playlist
-	</span>
+        <%= link_to(new_playlist_path) do %>
+	  <span class="btn btn-primary outline_on">
+            Create New Playlist
+	  </span>
+        <% end %>
       </div>
-      <% end %>
     </div>
   </div>
   </div>
