@@ -16,7 +16,7 @@ class SearchBuilder < Hydra::SearchBuilder
   def limit_to_non_hidden_items(solr_parameters)
     if current_ability.cannot? :discover_everything, MediaObject
       solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << [policy_clauses,"(!hidden_bsi:true)"].compact.join(" OR ")
+      solr_parameters[:fq] << [policy_clauses,"(*:* NOT hidden_bsi:true)"].compact.join(" OR ")
     end
   end
 

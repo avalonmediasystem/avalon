@@ -87,14 +87,14 @@ describe CatalogController do
         expect(assigns(:document_list).count).to eql(1)
         expect(assigns(:document_list).map(&:id)).to eq([mo.id])
       end
-      it "should show results for items that are not hidden and do not belong to one of my collections along with items that belong to my collections" do
+      it "should show results for items that are not hidden and do not belong to one of my collections along with hidden items that belong to my collections" do
         mo = FactoryGirl.create(:media_object, hidden: true, visibility: 'private', collection: collection)
-        mo2 = FactoryGirl.create(:published_media_object)
+        mo2 = FactoryGirl.create(:fully_searchable_media_object)
         get 'index', :q => ""
         expect(response).to be_success
         expect(response).to render_template('catalog/index')
         expect(assigns(:document_list).count).to eql(2)
-        expect(assigns(:document_list).map(&:id)).to eq([mo.id, mo2.id])
+        expect(assigns(:document_list).map(&:id)).to match_array([mo.id, mo2.id])
       end
       it "should not show results for items that do not belong to one of my collections" do
         mo = FactoryGirl.create(:media_object, visibility: 'private')
