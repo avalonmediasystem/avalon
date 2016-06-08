@@ -13,7 +13,7 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
 
   validates :master_file, :title, :start_time, presence: true
   validates :start_time, numericality: { greater_than_or_equal_to: 0, message: "must be greater than or equal to 0"}
-  validates :end_time, numericality: { greater_than: Proc.new {|a| Float(a.start_time) rescue 0}, less_than_or_equal_to: Proc.new {|a| a.master_file.duration.to_f rescue -1}, message: "must be between start time and end of section"}
+  validates :end_time, numericality: { greater_than: Proc.new {|a| Float(a.start_time) rescue 0}, less_than_or_equal_to: Proc.new {|a| a.master_file.derivatives.map {|d| d.duration.to_f }.max rescue -1}, message: "must be between start time and end of section"}
 
   after_initialize do
     selector_default!
