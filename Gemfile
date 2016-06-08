@@ -123,6 +123,7 @@
     gem 'meta_request'
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano', require: false
+    gem 'rubocop', '~> 0.40.0', require: false
   end
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
