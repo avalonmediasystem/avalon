@@ -15,7 +15,7 @@
 require 'spec_helper'
 
 describe AvalonAnnotationController do
-  subject(:video_master_file) { FactoryGirl.create(:master_file) }
+  subject(:video_master_file) { FactoryGirl.create(:master_file_with_derivative) }
   let(:annotation) { AvalonAnnotation.new(master_file: video_master_file) }
 
   before :all do
