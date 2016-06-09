@@ -28,7 +28,7 @@ describe Users::OmniauthCallbacksController do
 
     before :each do
       hide_const("Avalon::GROUP_LDAP")
-      IMS::LTI::ToolProvider.any_instance.stub(:valid_request!) { true }
+      allow_any_instance_of(IMS::LTI::ToolProvider).to receive(:valid_request!) { true }
       @old_config = Devise.omniauth_configs[:lti].options[:consumers]
       Devise.omniauth_configs[:lti].options[:consumers] = Devise.omniauth_configs[:lti].strategy[:consumers] = lti_config
     end
@@ -65,7 +65,7 @@ describe Users::OmniauthCallbacksController do
       subject { Hash.new }
 
       before :each do
-        Users::OmniauthCallbacksController.any_instance.stub(:user_session) { subject }
+        allow_any_instance_of(Users::OmniauthCallbacksController).to receive(:user_session) { subject }
         post '/users/auth/lti/callback', foo_hash
       end
 
@@ -84,7 +84,7 @@ describe Users::OmniauthCallbacksController do
       subject { Hash.new }
 
       before :each do
-        Users::OmniauthCallbacksController.any_instance.stub(:user_session) { subject }
+        allow_any_instance_of(Users::OmniauthCallbacksController).to receive(:user_session) { subject }
         foo_hash.delete('lis_person_sourcedid')
         post '/users/auth/lti/callback', foo_hash
       end      
@@ -102,14 +102,14 @@ describe Users::OmniauthCallbacksController do
       subject { post '/users/auth/lti/callback', foo_hash }
       let(:user_session) { Hash.new }
       before :each do
-        Users::OmniauthCallbacksController.any_instance.stub(:user_session) { user_session }
+        allow_any_instance_of(Users::OmniauthCallbacksController).to receive(:user_session) { user_session }
       end
       it "should redirect to the external group facet applied for the lti group" do
         expect(subject).to redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])
       end
       context 'when there are other external groups' do
         before do
-          User.any_instance.stub(:ldap_groups) { [Faker::Lorem.word] }
+          allow_any_instance_of(User).to receive(:ldap_groups) { [Faker::Lorem.word] }
         end
         it "should redirect to the external group facet applied for the lti group" do
           expect(subject).to redirect_to catalog_index_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])

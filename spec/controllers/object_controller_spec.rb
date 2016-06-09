@@ -18,25 +18,25 @@ describe ObjectController do
   describe "#show" do
     it "should redirect you to root if no object is found" do
       get :show, id: 'avalon:bad-pid'
-      response.should redirect_to root_path
+      expect(response).to redirect_to root_path
     end
 
     it "should redirect you to the object show page" do
       obj = FactoryGirl.create(:media_object)
       get :show, id: obj.pid
-      response.should redirect_to(media_object_path(obj)) 
+      expect(response).to redirect_to(media_object_path(obj)) 
     end
 
     it "should pass along request params" do
       obj = FactoryGirl.create(:media_object)
       get :show, id: obj.pid, foo: 'bar'
-      response.should redirect_to(media_object_path(obj, {foo: 'bar'}))
+      expect(response).to redirect_to(media_object_path(obj, {foo: 'bar'}))
     end
     
     it "should redirect to appended url" do
       obj = FactoryGirl.create(:media_object)
       get :show, id: obj.pid, urlappend: 'test'
-      response.should redirect_to(media_object_path(obj)+"/test")
+      expect(response).to redirect_to(media_object_path(obj)+"/test")
     end
   end
 

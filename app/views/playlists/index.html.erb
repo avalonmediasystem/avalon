@@ -1,0 +1,93 @@
+<%#
+Copyright 2011-2015, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<% if current_user.nil? %>
+<%= link_to 'Please login to view your playlists.', new_user_session_path %>
+<% end %>
+<% unless current_user.nil? %>
+  <% playlists = Playlist.where(user_id: current_user.id) %>
+  <div class="container-fluid">
+  <div class="row">
+  <div class="container">
+  <div class="Playlist-index">
+  <div class="row">
+    <div class="col-lg-10">
+      <h1 class=>Playlists <small>(<%= playlists.size %> total)</small></h1>
+      <% unless playlists.empty? %>
+        <table id="Playlists" class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Size</th>
+                <th>Visibility</th>
+                <th>Created</th>
+                <th>Updated</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% playlists.each do |playlist| %>
+              <tr>
+                <td>
+                  <%= link_to(playlist.title, playlist_path(playlist), title: playlist.comment)%>
+                </td>
+                <td class='nowrap'>
+                  <%= PlaylistItem.where(playlist_id: playlist.id).size %> items
+                </td>
+                <td class='nowrap'>
+                  <% if playlist.visibility =='private' %>
+                    <span class="fa fa-lock fa-lg"></span> Only me
+                  <% end %>
+                  <% if playlist.visibility !='private' %>
+                    <span class="fa fa-globe fa-lg"></span> Public
+                  <% end %>
+                </td>
+                <td class='nowrap'>
+                  <span title= <%= playlist.created_at.utc.iso8601%> ><%= time_ago_in_words(playlist.created_at)%></span>
+                </td>
+                <td class='nowrap'>
+                  <span title= <%= playlist.updated_at.utc.iso8601%> ><%= time_ago_in_words(playlist.updated_at)%></span>
+                </td>
+                <td align="right" class='nowrap'>
+                  <%= link_to(edit_playlist_path(playlist), class: 'btn btn-default btn-xs') do %>
+                    <span class='fa fa-edit'> Edit</span>
+                  <% end %>
+                  <%= link_to(playlist_path(playlist), method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'}) do %>
+                    <span class='fa fa-times'> Delete</span>
+                  <% end %>
+                </td>
+              </tr>
+              <%end%>
+          </tbody>
+        </table>
+        <div> </div>
+      <% end %>
+      <div>
+        <%= link_to(new_playlist_path) do %>
+	  <span class="btn btn-primary outline_on">
+            Create New Playlist
+	  </span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  <% unless playlists.empty? %>
+  <% end %>
+<% end %>

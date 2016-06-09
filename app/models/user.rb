@@ -57,6 +57,12 @@ class User < ActiveRecord::Base
       User.create(:username => auth_hash.uid, :email => auth_hash.info.email)
   end
 
+#  def self.find_for_api(username, email, signed_in_resource=nil)
+#    User.find_by_username(username) ||
+#    User.find_by_email(email) ||
+#    User.create(:username => username, :email => email)
+#  end
+
   def self.autocomplete(query)
     self.where("username LIKE :q OR email LIKE :q", q: "%#{query}%").collect { |user|
       { id: user.user_key, display: user.user_key }
@@ -88,6 +94,11 @@ class User < ActiveRecord::Base
       User.walk_ldap_groups(User.ldap_member_of(g), seen)
     end
     seen
+  end
+
+  def destroy
+    Bookmark.where(user_id: self.id).destroy_all
+    super
   end
 
 end

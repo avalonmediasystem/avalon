@@ -31,12 +31,12 @@ class Admin::Collection < ActiveFedora::Base
     sds.field :description, :string
     sds.field :dropbox_directory_name
   end
-  has_metadata name: 'inheritedRights', type: Hydra::Datastream::InheritableRightsMetadata
+  has_metadata name: 'inheritedRights', type: Hydra::Datastream::InheritableRightsMetadata, autocreate: true
   has_metadata name: 'defaultRights', type: Hydra::Datastream::NonIndexedRightsMetadata, autocreate: true
 
   validates :name, :uniqueness => { :solr_name => 'name_sim'}, presence: true
   validates :unit, presence: true, inclusion: { in: Proc.new{ Admin::Collection.units } }
-  validates :managers, length: {minimum: 1, message: 'Collection requires at least one manager'} 
+  validates :managers, length: {minimum: 1, message: "list can't be empty."} 
 
   has_attributes :name, datastream: :descMetadata, multiple: false
   has_attributes :unit, datastream: :descMetadata, multiple: false
@@ -45,7 +45,7 @@ class Admin::Collection < ActiveFedora::Base
   
   delegate :read_groups, :read_groups=, :read_users, :read_users=,
            :visibility, :visibility=, :hidden?, :hidden=, 
-           :local_read_groups, :virtual_read_groups, 
+           :local_read_groups, :virtual_read_groups, :ip_read_groups,
            to: :defaultRights, prefix: :default
 
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
@@ -121,7 +121,7 @@ class Admin::Collection < ActiveFedora::Base
       self.read_users += [user]
       self.inherited_edit_users += [user]
     else
-      raise "UserIsEditor"
+      raise ArgumentError.new("UserIsEditor")
     end
   end
 
@@ -178,12 +178,35 @@ class Admin::Collection < ActiveFedora::Base
     solr_doc
   end
 
+  def as_json(options={})
+    { 
+      id: pid, 
+      name: name, 
+      unit: unit, 
+      description: description,
+      object_count: { 
+        total: media_objects.count, 
+        published: media_objects.reject{|mo| !mo.published?}.count,
+        unpublished: media_objects.reject{|mo| mo.published?}.count
+      }, 
+      roles: { 
+        managers: managers, 
+        editors: editors, 
+        depositors: depositors 
+      } 
+    }
+  end
+
   def dropbox
     Avalon::Dropbox.new( dropbox_absolute_path, self )
   end
 
   def dropbox_absolute_path( name = nil )
     File.join(Avalon::Configuration.lookup('dropbox.path'), name || dropbox_directory_name)
+  end
+
+  def media_objects_to_json
+    media_objects.collect{|mo| [mo.pid, mo.to_json] }.to_h
   end
 
   private

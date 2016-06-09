@@ -23,20 +23,20 @@ describe 'Batch Ingest Email' do
   it 'has an error if media object has not been set' do
     ingest_batch = IngestBatch.create
     @email = IngestBatchMailer.status_email( ingest_batch.id  )
-    @email.should have_body_text('There was an error.  It appears no files have been submitted')
+    expect(@email).to have_body_text('There was an error.  It appears no files have been submitted')
   end
 
   it 'has an error if there are no media objects present' do
     @ingest_batch = IngestBatch.create( media_object_ids: [])
     @email = IngestBatchMailer.status_email( @ingest_batch.id )
-    @email.should have_body_text('There was an error.  It appears no files have been submitted')
+    expect(@email).to have_body_text('There was an error.  It appears no files have been submitted')
   end
 
   it 'shows the title of one media object' do
     media_object = FactoryGirl.create(:media_object)
     ingest_batch = IngestBatch.create(media_object_ids: [media_object.id])
     @email = IngestBatchMailer.status_email(ingest_batch.id)
-    @email.should have_body_text(media_object.title)
+    expect(@email).to have_body_text(media_object.title)
   end
 
   it 'has the status of the master file in a first row' do
@@ -50,8 +50,8 @@ describe 'Batch Ingest Email' do
 
     # Ideally a within block would be nice here
     fragment = email_message.find("table > tbody > tr:nth-child(1)")
-    fragment.find('.master-file').should have_content(File.basename(master_file.file_location))
-    fragment.find('.percent-complete').should have_content(master_file.percent_complete)
-    fragment.find('.status-code').should have_content(master_file.status_code.downcase.titleize)
+    expect(fragment.find('.master-file')).to have_content(File.basename(master_file.file_location))
+    expect(fragment.find('.percent-complete')).to have_content(master_file.percent_complete)
+    expect(fragment.find('.status-code')).to have_content(master_file.status_code.downcase.titleize)
   end
 end

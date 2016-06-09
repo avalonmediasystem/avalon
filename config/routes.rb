@@ -1,4 +1,5 @@
 Avalon::Application.routes.draw do
+
   mount BrowseEverything::Engine => '/browse'
 #  HydraHead.add_routes(self)
 
@@ -21,7 +22,7 @@ Avalon::Application.routes.draw do
   root :to => "catalog#index"
 
   devise_for :users, :controllers => { :omniauth_callbacks => "users/omniauth_callbacks" }, format: false
-  devise_scope :user do 
+  devise_scope :user do
     match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session, via: [:get]
     match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
   end
@@ -31,8 +32,14 @@ Avalon::Application.routes.draw do
   match "/oembed", to: 'master_files#oembed', via: [:get]
 
   match "object/:id", to: 'object#show', via: [:get], :as => :object
-  resources :media_objects, except: [:create] do
+
+  resources :vocabulary, except: [:create, :destroy, :new, :edit]
+
+  resources :media_objects, except: [:create, :update] do
     member do
+      put :update, action: :update, defaults: { format: 'html' }, constraints: { format: 'html' }
+      put :update, action: :json_update, constraints: { format: 'json' }
+      patch :update, action: :update, defaults: { format: 'html' }, constraints: { format: 'html' }
       put :update_status
       get :progress, :action => :show_progress
       get 'content/:datastream', :action => :deliver_content, :as => :inspect
@@ -42,12 +49,11 @@ Avalon::Application.routes.draw do
       get :confirm_remove
     end
     collection do
+      post :create, action: :create, constraints: { format: 'json' }
       get :confirm_remove
       put :update_status
       # 'delete' has special signifigance so use 'remove' for now
       delete :remove, :action => :destroy
-      get :confirm_reassign_collection
-      put :reassign_collection
     end
   end
   resources :master_files, except: [:new, :index, :update] do
@@ -60,21 +66,34 @@ Avalon::Application.routes.draw do
       post 'still',     :to => 'master_files#set_frame', :defaults => { :format => 'html' }
       get :embed
       post 'attach_structure'
+      post 'attach_captions'
+      get :captions
     end
   end
 
   match '/media_objects/:media_object_id/section/:id/embed' => 'master_files#embed', via: [:get]
   resources :derivatives, only: [:create]
-  
+  resources :playlists do
+    resources :playlist_items, path: 'items', only: [:create, :update]
+    member do
+      patch 'update_multiple'
+      delete 'update_multiple'
+    end
+  end
+
+  resources :avalon_annotation, only: [:create, :show, :update, :destroy]
+
   resources :comments, only: [:index, :create]
+
+  resources :playlist_items, only: [:update], :constraints => {:format => /(js|json)/}
 
   #match 'search/index' => 'search#index'
   #match 'search/facet/:id' => 'search#facet'
 
 
   namespace :admin do
-    resources :groups, except: [:show] do 
-      collection do 
+    resources :groups, except: [:show] do
+      collection do
         put 'update_multiple'
       end
       member do
@@ -85,6 +104,7 @@ Avalon::Application.routes.draw do
       member do
         get 'edit'
         get 'remove'
+        get 'items'
       end
     end
   end
@@ -96,7 +116,7 @@ Avalon::Application.routes.draw do
   end
 
   mount AboutPage::Engine => '/about(.:format)', :as => 'about_page'
-  
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

@@ -34,6 +34,11 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     </li>
     <% end %>
+    <% if current_ability.can? :create, Playlist %>
+    <li class=<%= active_for_controller('playlists') %>>
+      <%= link_to 'Playlists', playlists_path, id:'playlists_nav' %> 
+    </li>
+    <% end %>
     <li class="divider desktop-hidden" />
     <%= link_to_if user_signed_in?, 'Sign out', destroy_user_session_path do %>
     <%# Fallback if the test above fails %>

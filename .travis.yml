@@ -3,6 +3,7 @@ git:
   submodules: false
 bundler_args: --without development debug
 before_install:
+  - sudo apt-get update
   - sudo apt-get install mediainfo
   - sudo ln -s /usr/bin/lsof /usr/sbin/lsof
   - cp spec/config/*.yml config
@@ -12,9 +13,14 @@ before_install:
 before_script:
   - bundle exec rake jetty:unzip jetty:config jetty:start delayed_job:start
   - bundle exec rake db:migrate
+  - bundle exec rake avalon:db_migrate
 notifications:
-  irc: "chat.freenode.net#projectvov"
+  irc: "chat.freenode.net#projectvov-updates"
 language: ruby
 rvm:
-  - 2.0.0
-  - 2.1.5
+  - 2.1.9
+  - 2.2.5
+  - 2.3.1
+addons:
+  code_climate:
+    repo_token: 1fb78f221b36e5615428f2ada12950b39a3b702b23fdd41e1b980dc4b47d0233

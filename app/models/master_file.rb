@@ -1,14 +1,14 @@
 # Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
@@ -19,6 +19,8 @@ require 'avalon/file_resolver'
 require 'avalon/m3u8_reader'
 
 class MasterFile < ActiveFedora::Base
+
+
   include ActiveFedora::Associations
   include Hydra::ModelMethods
   include Hydra::AccessControls::Permissions
@@ -28,13 +30,13 @@ class MasterFile < ActiveFedora::Base
   include VersionableModel
 
   has_metadata name: "structuralMetadata", :type => StructuralMetadata
-  
+
   WORKFLOWS = ['fullaudio', 'avalon', 'avalon-skip-transcoding', 'avalon-skip-transcoding-audio']
 
   belongs_to :mediaobject, :class_name=>'MediaObject', :property=>:is_part_of
   has_many :derivatives, :class_name=>'Derivative', :property=>:is_derivation_of
 
-  has_metadata name: 'descMetadata', :type => ActiveFedora::SimpleDatastream do |d|
+  has_metadata name: 'descMetadata', :type => CachingSimpleDatastream.create(self) do |d|
     d.field :file_location, :string
     d.field :file_checksum, :string
     d.field :file_size, :string
@@ -44,9 +46,11 @@ class MasterFile < ActiveFedora::Base
     d.field :file_format, :string
     d.field :poster_offset, :string
     d.field :thumbnail_offset, :string
+    d.field :date_digitized, :string
+    d.field :physical_description, :string
   end
 
-  has_metadata name: 'mhMetadata', :type => ActiveFedora::SimpleDatastream do |d|
+  has_metadata name: 'mhMetadata', :type => CachingSimpleDatastream.create(self) do |d|
     d.field :workflow_id, :string
     d.field :workflow_name, :string
     d.field :percent_complete, :string
@@ -61,13 +65,23 @@ class MasterFile < ActiveFedora::Base
 
   has_metadata name: 'masterFile', type: UrlDatastream
 
-  has_attributes :file_location, :file_checksum, :file_size, :duration, :display_aspect_ratio, :original_frame_size, :file_format, :poster_offset, :thumbnail_offset, datastream: :descMetadata, multiple: false
+  has_attributes :file_location, :physical_description, :file_checksum, :file_size, :duration, :display_aspect_ratio, :original_frame_size, :file_format, :poster_offset, :thumbnail_offset, :date_digitized, datastream: :descMetadata, multiple: false
   has_attributes :workflow_id, :workflow_name, :encoder_classname, :percent_complete, :percent_succeeded, :percent_failed, :status_code, :operation, :error, :failures, datastream: :mhMetadata, multiple: false
 
   has_file_datastream name: 'thumbnail'
   has_file_datastream name: 'poster'
+  has_file_datastream name: 'captions'
 
   validates :workflow_name, presence: true, inclusion: { in: Proc.new{ WORKFLOWS } }
+  validates_each :date_digitized do |record, attr, value|
+    unless value.nil?
+      begin
+        Time.parse(value)
+      rescue Exception => err
+        record.errors.add attr, err.message
+      end
+    end
+  end
   validates_each :poster_offset, :thumbnail_offset do |record, attr, value|
     unless value.nil? or value.to_i.between?(0,record.duration.to_i)
       record.errors.add attr, "must be between 0 and #{record.duration}"
@@ -76,11 +90,10 @@ class MasterFile < ActiveFedora::Base
   #validates :file_format, presence: true, exclusion: { in: ['Unknown'], message: "The file was not recognized as audio or video." }
 
   has_model_version 'R3'
-  before_save 'update_stills_from_offset!'
-  around_save :update_media_object!, if: Proc.new { |mf| mf.duration_changed? or mf.file_location_changed? or mf.file_format_changed? }
+  before_save :update_stills_from_offset!
 
   define_hooks :after_processing
-  
+
   after_processing :post_processing_file_management
   after_processing :update_ingest_batch
 
@@ -96,22 +109,13 @@ class MasterFile < ActiveFedora::Base
   UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
   QUALITY_ORDER = { "high" => 1, "medium" => 2, "low" => 3 }
   END_STATES = ['CANCELLED', 'COMPLETED', 'FAILED']
-  
+
   EMBED_SIZE = {:medium => 600}
   AUDIO_HEIGHT = 50
 
-  def update_media_object!
-    yield
-    return if mediaobject.nil?
-    mediaobject.set_duration!
-    mediaobject.set_media_types!
-    mediaobject.set_resource_types!
-    mediaobject.save(validate: false)
-  end
-
   def save_parent
     unless mediaobject.nil?
-      mediaobject.save(validate: false)  
+      mediaobject.save(validate: false)
     end
   end
 
@@ -133,7 +137,7 @@ class MasterFile < ActiveFedora::Base
       workflow = case self.file_format
                  when 'Moving image'
                   'avalon-skip-transcoding'
-                 when 'Sound' 
+                 when 'Sound'
                   'avalon-skip-transcoding-audio'
                  else
                   nil
@@ -165,7 +169,7 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def destroy 
+  def destroy
     mo = self.mediaobject
     self.mediaobject = nil
 
@@ -176,7 +180,7 @@ class MasterFile < ActiveFedora::Base
     self.derivatives.map(&:destroy)
 
     clear_association_cache
-    
+
     super
 
     #Only save the media object if the master file was successfully deleted
@@ -219,12 +223,12 @@ class MasterFile < ActiveFedora::Base
 
   def stream_details(token,host=nil)
     flash, hls = [], []
-    derivatives.each do |d|
+    ActiveFedora::SolrService.reify_solr_results(derivatives.load_from_solr, load_from_solr: true).each do |d|
       common = { quality: d.encoding.quality.first,
                  mimetype: d.encoding.mime_type.first,
-                 format: d.format } 
+                 format: d.format }
       flash << common.merge(url: Avalon.rehost(d.tokenized_url(token, false),host))
-      hls << common.merge(url: Avalon.rehost(d.tokenized_url(token, true),host)) 
+      hls << common.merge(url: Avalon.rehost(d.tokenized_url(token, true),host))
     end
 
     # Sorts the streams in order of quality, note: Hash order only works in Ruby 1.9 or later
@@ -232,6 +236,8 @@ class MasterFile < ActiveFedora::Base
     hls = sort_streams hls
 
     poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self) unless poster.new?
+    captions_path = Rails.application.routes.url_helpers.captions_master_file_path(self) unless captions.empty?
+    captions_format = self.captions.mimeType
 
     # Returns the hash
     {
@@ -239,10 +245,13 @@ class MasterFile < ActiveFedora::Base
       label: label,
       is_video: is_video?,
       poster_image: poster_path,
-      embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}), 
-      stream_flash: flash, 
+      embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}),
+      stream_flash: flash,
       stream_hls: hls,
-      duration: (duration.to_f / 1000).round
+      captions_path: captions_path,
+      captions_format: captions_format,
+      duration: (duration.to_f / 1000).round,
+      embed_title: embed_title
     }
   end
 
@@ -259,7 +268,7 @@ class MasterFile < ActiveFedora::Base
       end
       height = is_video? ? (width/display_aspect_ratio.to_f).floor : AUDIO_HEIGHT
       "<iframe title=\"#{ embed_title }\" src=\"#{url}\" width=\"#{width}\" height=\"#{height}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
-    rescue 
+    rescue
       ""
     end
   end
@@ -306,11 +315,20 @@ class MasterFile < ActiveFedora::Base
   end
 
   def update_progress_on_success!(encode)
-    outputs_by_quality = encode.output.group_by {|o| o[:label]}
-   
+    #Set date ingested to now if it wasn't preset (by batch, for example)
+    #TODO pull this from the encode
+    self.date_digitized ||= Time.now.utc.iso8601
+
+    update_derivatives(encode.output)
+    run_hook :after_processing
+  end
+
+  def update_derivatives(output,managed=true)
+    outputs_by_quality = output.group_by {|o| o[:label]}
+
     outputs_by_quality.each_pair do |quality, outputs|
       existing = derivatives.to_a.find {|d| d.encoding.quality.first == quality}
-      d = Derivative.from_output(outputs)
+      d = Derivative.from_output(outputs,managed)
       d.masterfile = self
       if d.save && existing
         existing.delete
@@ -318,8 +336,6 @@ class MasterFile < ActiveFedora::Base
     end
 
     save
-
-    run_hook :after_processing 
   end
 
   alias_method :'_poster_offset=', :'poster_offset='
@@ -345,7 +361,7 @@ class MasterFile < ActiveFedora::Base
     else
       value.to_i
     end
-    
+
     return milliseconds if milliseconds == self.send("#{type}_offset").to_i
 
     @stills_to_update ||= []
@@ -423,7 +439,7 @@ class MasterFile < ActiveFedora::Base
   def encoder_class
     find_encoder_class(encoder_classname) || find_encoder_class(workflow_name.to_s.classify) || ActiveEncode::Base
   end
-  
+
   def encoder_class=(value)
     if value.nil?
       mhMetadata.encoder_classname = nil
@@ -433,7 +449,25 @@ class MasterFile < ActiveFedora::Base
       raise ArgumentError, '#encoder_class must be a descendant of ActiveEncode::Base'
     end
   end
-  
+
+  def structural_metadata_labels
+    structuralMetadata.xpath('//@label').collect{|a|a.value}
+  end
+
+  # Supplies the route to the master_file as an rdf formatted URI
+  # @return [String] the route as a uri
+  # @example uri for a mf on avalon.iu.edu with a pid of: avalon:1820
+  #   "my_masterfile.rdf_uri" #=> "https://www.avalon.iu.edu/master_files/avalon:1820"
+  def rdf_uri
+    master_file_url(pid)
+  end
+
+  # Returns the dctype of the master_file
+  # @return [String] either 'dctypes:MovingImage' or 'dctypes:Sound'
+  def rdf_type
+    is_video? ? 'dctypes:MovingImage' : 'dctypes:Sound'
+  end
+
   protected
 
   def mediainfo
@@ -531,13 +565,13 @@ class MasterFile < ActiveFedora::Base
              when /^Distributing/ then :distribution
              else :other
              end
-      { :description => op['description'], :state => op['state'], :type => type } 
+      { :description => op['description'], :state => op['state'], :type => type }
     }
 
     result = Hash.new { |h,k| h[k] = 0 }
     operations.each { |op|
       op[:pct] = (totals[op[:type]].to_f / operations.select { |o| o[:type] == op[:type] }.count.to_f)
-      state = op[:state].downcase.to_sym 
+      state = op[:state].downcase.to_sym
       result[state] += op[:pct]
       result[:complete] += op[:pct] if END_STATES.include?(op[:state])
     }
@@ -559,7 +593,7 @@ class MasterFile < ActiveFedora::Base
         File.rename(realpath, newpath)
       end
       self.file_location = newpath
-    else 
+    else
       self.file_location = realpath
     end
     self.file_size = file.size.to_s
@@ -586,7 +620,7 @@ class MasterFile < ActiveFedora::Base
     rescue
       nil
     end
-  
+
     unless mediainfo.video.streams.empty?
       display_aspect_ratio_s = mediainfo.video.streams.first.display_aspect_ratio
       if ':'.in? display_aspect_ratio_s
@@ -619,7 +653,7 @@ class MasterFile < ActiveFedora::Base
     prefix = options[:pid].gsub(":","_")
     if oldpath.start_with?(prefix)
       oldpath
-    else 
+    else
       "#{prefix}-#{File.basename(oldpath)}"
     end
   end

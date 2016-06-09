@@ -16,6 +16,26 @@ require 'spec_helper'
 
 describe Derivative do
 
+  describe "#from_output" do
+    let!(:api_output){[{ label: 'quality-high',
+                    id: 'track-1',
+                    url: 'rtmp://www.test.com/test.mp4',
+                    hls_url: 'http://www.test.com/test.mp4.m3u8',
+                    duration: "6315",
+                    mime_type:  "video/mp4",
+                    audio_bitrate: "127716.0",
+                    audio_codec: "AAC",
+                    video_bitrate: "1000000.0",
+                    video_codec: "AVC",
+                    width: "640",
+                    height: "480" }]}
+    it "Call from ingest API should populate :url and :hls_url" do
+      d = Derivative.from_output(api_output,false)
+      expect(d.location_url).to eq('rtmp://www.test.com/test.mp4')
+      expect(d.hls_url).to eq('http://www.test.com/test.mp4.m3u8')
+    end
+  end
+
   describe "#destroy" do
     let!(:derivative) {FactoryGirl.create(:derivative)}
 
@@ -54,25 +74,25 @@ describe Derivative do
       it "RTMP video" do
         derivative.encoding.video = 'true'
         derivative.absolute_location = location
-        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+        expect(derivative.streaming_url(false)).to eq("#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content")
       end
 
       it "RTMP audio" do
         derivative.encoding.audio = 'true'
         derivative.absolute_location = location
-        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+        expect(derivative.streaming_url(false)).to eq("#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content")
       end
 
       it "HTTP video" do
         derivative.encoding.video = 'true'
         derivative.absolute_location = location
-        derivative.streaming_url(true).should == "#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+        expect(derivative.streaming_url(true)).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
       end
 
       it "HTTP audio" do
         derivative.encoding.audio = 'true'
         derivative.absolute_location = location
-        derivative.streaming_url(true).should == "#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+        expect(derivative.streaming_url(true)).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
       end
     end
 
@@ -84,25 +104,25 @@ describe Derivative do
       it "RTMP video" do
         derivative.encoding.video = 'true'
         derivative.absolute_location = location
-        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+        expect(derivative.streaming_url(false)).to eq("#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content")
       end
 
       it "RTMP audio" do
         derivative.encoding.audio = 'true'
         derivative.absolute_location = location
-        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+        expect(derivative.streaming_url(false)).to eq("#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content")
       end
 
       it "HTTP video" do
         derivative.encoding.video = 'true'
         derivative.absolute_location = location
-        derivative.streaming_url(true).should == "#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+        expect(derivative.streaming_url(true)).to eq("#{http_base}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
       end
 
       it "HTTP audio" do
         derivative.encoding.audio = 'true'
         derivative.absolute_location = location
-        derivative.streaming_url(true).should == "#{http_base}/audio-only/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8"
+        expect(derivative.streaming_url(true)).to eq("#{http_base}/audio-only/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4.m3u8")
       end
     end
 
@@ -114,25 +134,25 @@ describe Derivative do
       it "RTMP video" do
         derivative.encoding.video = 'true'
         derivative.absolute_location = location
-        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+        expect(derivative.streaming_url(false)).to eq("#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content")
       end
 
       it "RTMP audio" do
         derivative.encoding.audio = 'true'
         derivative.absolute_location = location
-        derivative.streaming_url(false).should == "#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content"
+        expect(derivative.streaming_url(false)).to eq("#{rtmp_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content")
       end
 
       it "HTTP video" do
         derivative.encoding.video = 'true'
         derivative.absolute_location = location
-        derivative.streaming_url(true).should == "#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8"
+        expect(derivative.streaming_url(true)).to eq("#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8")
       end
 
       it "HTTP audio" do
         derivative.encoding.audio = 'true'
         derivative.absolute_location = location
-        derivative.streaming_url(true).should == "#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8"
+        expect(derivative.streaming_url(true)).to eq("#{http_base}/mp4:c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4/playlist.m3u8")
       end
     end
   end

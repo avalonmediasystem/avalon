@@ -46,6 +46,8 @@ Removed 041 subfields except for $d and $j. kdm 20150429
 Replaced use of 003 value for recordInfo\recordIdentifer@source with "local". kdm 20150430
 Added type="other" for 024 ind1=8. kdm 20150501
 Removed identifiers except <identifier  type="issue number | matrix number | music publisher | videorecording identifer"> to <relatedItem@type="identifer">. kdm 20150514
+Added check that controlField008-35-37 variable is not set to 'N/A' from old cataloging practices. jlh 20151109
+Convert unknown dates (uuuu) to EDTF (unknown/unknown). bwk 20160223
 -->
 	<!-- Maintenance note: For each revision, change the content of <recordInfo><recordOrigin> to reflect the new revision number.
 	MARC21slim2MODS3-5 (Revision 1.106) 20141219
@@ -1049,14 +1051,29 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 			<!-- tmee 1.35 and 1.36 and 1.84-->
 			<!--Avalon Media System change: always take dateCreated from 008/11-14 if 008/06='r' or 'p', and always take dateIssued from 008/7-10, changed by kdm, 20150113-->
+			<!--Avalon Media System change: convert unknown dates (uuuu) to EDTF (unknown/unknown). (dateCreated, dateIssued, copyrightDate) changed by bwk, 20160223 -->
 			<xsl:if test="($controlField008-6='r' or $controlField008-6='p')">
 				<dateCreated encoding="edtf">
-					<xsl:value-of select="$controlField008-11-14"/>
+				        <xsl:choose>
+				                <xsl:when test="$controlField008-11-14='uuuu'">
+					                <xsl:text>unknown/unknown</xsl:text>
+						</xsl:when>
+						<xsl:otherwise>
+					                <xsl:value-of select="$controlField008-11-14"/>
+						</xsl:otherwise>
+					</xsl:choose>
 				</dateCreated>
 			</xsl:if>
 			<xsl:if test="$controlField008-7-10">
 				<dateIssued encoding="edtf">
-					<xsl:value-of select="$controlField008-7-10"/>
+				        <xsl:choose>
+				                <xsl:when test="$controlField008-7-10='uuuu'">
+					                <xsl:text>unknown/unknown</xsl:text>
+						</xsl:when>
+						<xsl:otherwise>
+					                <xsl:value-of select="$controlField008-7-10"/>
+						</xsl:otherwise>
+					</xsl:choose>
 				</dateIssued>
 			</xsl:if>
 
@@ -1118,7 +1135,14 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			<xsl:if test="$controlField008-6='t'">
 				<xsl:if test="$controlField008-11-14">
 					<copyrightDate encoding="iso8601">
-						<xsl:value-of select="$controlField008-11-14"/>
+				                <xsl:choose>
+						        <xsl:when test="$controlField008-11-14='uuuu'">
+					                        <xsl:text>unknown/unknown</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+					                        <xsl:value-of select="$controlField008-11-14"/>
+							</xsl:otherwise>
+						</xsl:choose>
 					</copyrightDate>
 				</xsl:if>
 			</xsl:if>
@@ -1413,7 +1437,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 		<!-- language 041 -->
 		<xsl:variable name="controlField008-35-37"
-			select="normalize-space(translate(substring($controlField008,36,3),'|#',''))"/>
+			select="normalize-space(translate(substring($controlField008,36,3),'|#','')) != 'N/A'"/>
 		<xsl:if test="$controlField008-35-37">
 			<language>
 				<languageTerm authority="iso639-2b" type="code">
@@ -2095,11 +2119,11 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 			</identifier>
 		</xsl:for-each>
 
-		<!--xsl:for-each select="marc:datafield[@tag='035'][marc:subfield[@code='a'][contains(text(), '(OCoLC)')]]">
+		<xsl:for-each select="marc:datafield[@tag='035'][marc:subfield[@code='a'][contains(text(), '(OCoLC)')]]">
 			<identifier type="oclc">
 				<xsl:value-of select="normalize-space(substring-after(marc:subfield[@code='a'], '(OCoLC)'))"/>
 			</identifier>
-		</xsl:for-each-->
+		</xsl:for-each>
 
 		<!--xsl:for-each select="marc:datafield[@tag='037']">
 			<identifier type="stock number">

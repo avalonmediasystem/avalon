@@ -32,7 +32,7 @@ FactoryGirl.define do
         topical_subject {[Faker::Lorem.word]}
         temporal_subject {[Faker::Lorem.word]}
         geographic_subject {[Faker::Address.country]}
-        physical_description {Faker::Lorem.word}
+        physical_description {[Faker::Lorem.word]}
         table_of_contents {[Faker::Lorem.paragraph]}
         after(:create) do |mo|
           mo.update_datastream(:descMetadata, {
@@ -52,6 +52,12 @@ FactoryGirl.define do
         mf.mediaobject = mo
         mf.save
         mo.parts += [mf]
+        mo.save
+      end
+    end
+    factory :media_object_with_completed_workflow do
+      after(:create) do |mo|
+        mo.workflow.last_completed_step = [HYDRANT_STEPS.last.step]
         mo.save
       end
     end
@@ -78,8 +84,9 @@ FactoryGirl.define do
   factory :multiple_entries, class: MediaObject do
     title 'Multiple contributors'
     creator ['RSpec']
-    date_issued '#{Date.today.edtf}'
+    date_issued {"#{Date.today.edtf}"}
     abstract 'A record with multiple contributors, publishers, and search terms'
+    collection {FactoryGirl.create(:collection)}
     
     contributor ['Chris Colvard', 'Nathan Rogers', 'Phuong Dinh']
     publisher ['Mark Notess', 'Jon Dunn', 'Stu Baker']

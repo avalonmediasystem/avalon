@@ -31,6 +31,33 @@ $(document).ready(function() {
 
   $( document ).on('click', '.btn-stateful-loading', function() { $(this).button('loading'); });    
 
+  $(document).on("click", ".btn-confirmation+.popover .btn", function() {
+      $('.btn-confirmation').popover('hide');
+      return true;
+  });
+
+  $('.btn-confirmation').popover({
+      trigger: 'manual',
+      html: true,
+      content: function() {
+        var button;
+	if ( typeof $(this).attr('form') === typeof undefined) {
+	    button = "<a href='" + ($(this).attr('href')) + "' class='btn btn-xs btn-danger btn-confirm' data-method='delete' rel='nofollow'>Yes, Delete</a>";
+        } else {
+            button = '<input class="btn btn-xs btn-danger btn-confirm" form="'+$(this).attr('form')+'" type="submit">';
+            $('#'+$(this).attr('form')).find("[name='_method']").val("delete");
+	}
+        return "<p>Are you sure?</p> "+button+" <a href='#' class='btn btn-xs btn-primary' id='special_button_color'>No, Cancel</a>";
+    }
+  }).click(function() {
+    var t = this;
+    $('.btn-confirmation').filter(function() {
+      return this !== t;
+    }).popover('hide');
+    $(this).popover('show');
+    return false;
+  });
+
   $('.popover-target').popover({
     placement: 'top',
     html: true,

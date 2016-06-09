@@ -71,7 +71,7 @@ module ModsBehaviors
     # Right now, everything's English.
     solr_doc['language_sim'] = gather_terms(self.find_by_terms(:language_text))
     solr_doc['language_code_sim'] = gather_terms(self.find_by_terms(:language_code))
-    solr_doc['physical_description_si'] = self.find_by_terms(:physical_description).text
+    solr_doc['physical_description_sim'] = gather_terms(self.find_by_terms(:physical_description))
     solr_doc['related_item_url_sim'] = gather_terms(self.find_by_terms(:related_item_url))
     solr_doc['related_item_label_sim'] = gather_terms(self.find_by_terms(:related_item_label))
     solr_doc['terms_of_use_si'] = self.find_by_terms(:terms_of_use).text
@@ -174,7 +174,10 @@ module ModsBehaviors
   def gather_years(date)
     parsed = Date.edtf(date)
     return Array.new if parsed.nil?
-    years = if parsed.respond_to?(:map)
+    years = 
+    if parsed.respond_to?(:unknown?) && parsed.unknown?
+      ['Unknown']
+    elsif parsed.respond_to?(:map)
       parsed.map(&:year_precision!)
       parsed.map(&:year)
     elsif parsed.unspecified?(:year)

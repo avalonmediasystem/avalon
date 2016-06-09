@@ -1,18 +1,23 @@
 # Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
 namespace :avalon do
+  desc 'migrate databases for the rails app and the active annotations gem'
+  task :db_migrate do
+    `rake db:migrate`
+    `rails generate active_annotations:install`
+  end
   namespace :services do
     services = ["jetty", "felix", "delayed_job"]
     desc "Start Avalon's dependent services"
@@ -31,15 +36,24 @@ namespace :avalon do
     task :restart do
       services.map { |service| Rake::Task["#{service}:restart"].invoke }
     end
-   end  
-  namespace :assets do 
+   end
+  namespace :assets do
    desc "Clears javascripts/cache and stylesheets/cache"
-   task :clear => :environment do      
+   task :clear => :environment do
      FileUtils.rm(Dir['public/javascripts/cache/[^.]*'])
      FileUtils.rm(Dir['public/stylesheets/cache/[^.]*'])
    end
   end
-  namespace :batch do 
+  namespace :derivative do
+   desc "Sets streaming urls for derivatives based on configured content_path in avalon.yml"
+   task :set_streams => :environment do
+     Derivative.find_each({},{batch_size:5}) do |derivative|
+       derivative.set_streaming_locations!
+       derivative.save!
+     end
+   end
+  end
+  namespace :batch do
     desc "Starts Avalon batch ingest"
     task :ingest => :environment do
       # Starts the ingest process
@@ -51,7 +65,7 @@ namespace :avalon do
         end
       end
     end
-  end  
+  end
   namespace :user do
     desc "Create user (assumes identity authentication)"
     task :create => :environment do
@@ -63,7 +77,7 @@ namespace :avalon do
       username = ENV['avalon_username'].dup
       password = ENV['avalon_password']
       groups = ENV['avalon_groups'].split(",")
-     
+
       Identity.create!(email: username, password: password, password_confirmation: password)
       User.create!(username: username, email: username)
       groups.each do |group|
@@ -92,7 +106,7 @@ namespace :avalon do
       puts "Deleted user #{username} and removed them from groups #{groups}"
     end
     desc "Change password (assumes identity authentication)"
-    task :passwd => :environment do  
+    task :passwd => :environment do
       if ENV['avalon_username'].nil? or ENV['avalon_password'].nil?
         abort "You must specify a username and password.  Example: rake avalon:user:passwd avalon_username=user@example.edu avalon_password=password"
       end
@@ -102,6 +116,22 @@ namespace :avalon do
       Identity.where(email: username).each {|identity| identity.password = password; identity.save}
 
       puts "Updated password for user #{username}"
+    end
+  end
+
+  namespace :test do
+    desc "Create a test media object"
+    task :media_object => :environment do
+      require 'factory_girl'
+      require 'faker'
+      Dir[Rails.root.join("spec/factories/**/*.rb")].each {|f| require f}
+
+      mf_count = [ENV['master_files'].to_i,1].max
+      mo = FactoryGirl.create(:media_object)
+      mf_count.times do |i|
+        FactoryGirl.create(:master_file_with_derivative, mediaobject: mo)
+      end
+      puts mo.pid
     end
   end
 

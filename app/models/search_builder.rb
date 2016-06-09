@@ -1,5 +1,5 @@
 class SearchBuilder < Hydra::SearchBuilder
-  include Hydra::PolicyAwareAccessControlsEnforcement
+  include Hydra::MultiplePolicyAwareAccessControlsEnforcement
 
   def only_wanted_models(solr_parameters)
     solr_parameters[:fq] ||= []
@@ -14,11 +14,11 @@ class SearchBuilder < Hydra::SearchBuilder
   end
 
   def limit_to_non_hidden_items(solr_parameters)
-    if current_ability.cannot? :create, MediaObject
+    if current_ability.cannot? :discover_everything, MediaObject
       solr_parameters[:fq] ||= []
-      solr_parameters[:fq] << '!hidden_bsi:true'
+      solr_parameters[:fq] << [policy_clauses,"(*:* NOT hidden_bsi:true)"].compact.join(" OR ")
     end
-    end
+  end
 
   def add_access_controls_to_solr_params_if_not_admin(solr_parameters)
     if current_ability.cannot? :discover_everything, MediaObject

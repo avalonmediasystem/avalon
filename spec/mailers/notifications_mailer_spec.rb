@@ -39,38 +39,38 @@ describe 'NotificationsMailer' do
     end
     
     it 'has correct e-mail address' do
-      @email.should deliver_to(@admin_user.email)
+      expect(@email).to deliver_to(@admin_user.email)
     end
 
     context 'subject' do
       it 'has collection name' do
-        @email.should have_subject(/#{@collection.name}/)
+        expect(@email).to have_subject(/#{@collection.name}/)
       end
     end
     
     context 'body' do
       it 'has link to collection' do
-        @email.should have_body_text(admin_collection_url(@collection))
+        expect(@email).to have_body_text(admin_collection_url(@collection))
       end
 
       it 'has collection name' do
-        @email.should have_body_text(@collection.name)
+        expect(@email).to have_body_text(@collection.name)
       end
       
       it 'has old collection name' do
-        @email.should have_body_text(@old_name)
+        expect(@email).to have_body_text(@old_name)
       end
 
       it 'has updater e-mail' do
-        @email.should have_body_text(@updater.email)
+        expect(@email).to have_body_text(@updater.email)
       end
 
       it 'has collection description' do
-        @email.should have_body_text(@collection.description)
+        expect(@email).to have_body_text(@collection.description)
       end
 
       it 'has unit name' do
-        @email.should have_body_text(@collection.unit)
+        expect(@email).to have_body_text(@collection.unit)
       end
 
       it 'has dropbox absolute path' do
@@ -94,30 +94,30 @@ describe 'NotificationsMailer' do
     end
     
     it 'has correct e-mail address' do
-      @email.should deliver_to(@admin_user.email)
+      expect(@email).to deliver_to(@admin_user.email)
     end
 
     context 'subject' do
       it 'has collection name' do
-        @email.should have_subject(/#{@collection.name}/)
+        expect(@email).to have_subject(/#{@collection.name}/)
       end
     end
     
     context 'body' do
       it 'has collection name' do
-        @email.should have_body_text(@collection.name)
+        expect(@email).to have_body_text(@collection.name)
       end
       
       it 'has creator e-mail' do
-        @email.should have_body_text(@creator.email)
+        expect(@email).to have_body_text(@creator.email)
       end
 
       it 'has collection description' do
-        @email.should have_body_text(@collection.description)
+        expect(@email).to have_body_text(@collection.description)
       end
 
       it 'has unit name' do
-        @email.should have_body_text(@collection.unit)
+        expect(@email).to have_body_text(@collection.unit)
       end
 
       it 'has dropbox absolute path' do

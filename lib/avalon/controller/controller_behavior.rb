@@ -21,15 +21,12 @@ module Avalon
 
       def deliver_content
         @obj = ActiveFedora::Base.find(params[:id], :cast => true)
-        if can? :inspect, @obj
-          ds = @obj.datastreams[params[:datastream]]
-          if ds.nil? or ds.new?
-            render :text => 'Not Found', :status => :not_found
-          else
-            render :text => ds.content, :content_type => ds.mimeType
-          end
+        authorize! :inspect, @obj
+        ds = @obj.datastreams[params[:datastream]]
+        if ds.nil? or ds.new?
+          render :text => 'Not Found', :status => :not_found
         else
-          render :text => 'Unauthorized', :status => :unauthorized
+          render :text => ds.content, :content_type => ds.mimeType
         end
       end
 

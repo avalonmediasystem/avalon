@@ -1,0 +1,111 @@
+<%#
+Copyright 2011-2015, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<% f_start = @current_annotation.start_time / 1000.0 %>
+<% f_end = @current_annotation.end_time / 1000.0 %>
+<% @currentStream = @current_masterfile %>
+<% @token = StreamToken.find_or_create_session_token(session, @currentStream.pid) %>
+<% @currentStreamInfo = @currentStream.stream_details(@token, ApplicationController.default_url_options[:host]) %>
+<% @currentStreamInfo['t'] = "#{f_start},#{f_end}" %>
+<% if can? :read, @current_masterfile %>
+    <section id="content" class="avalon-player" style="width: 100%; visibility: hidden;" tabIndex="-1">
+      <% if @currentStream.present? and @currentStream.derivatives.present? %>
+        <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>
+
+        <% if @currentStreamInfo[:is_video] %>
+          <%= master_file_meta_properties(@currentStream) do %>
+            <video class="mejs-avalon" controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] if f_start == 0 %>" preload="auto">
+              <% @currentStreamInfo[:stream_flash].each do |flash| %>
+                <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
+              <% end %>
+              <% @currentStreamInfo[:stream_hls].each do |hls| %>
+                <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
+              <% end %>
+              <% if @currentStreamInfo[:captions_path].present? %>
+                <track srclang="en" kind="subtitles" type="<%= @currentStreamInfo[:captions_format] %>" src="<%= @currentStreamInfo[:captions_path] %>"></track>
+              <% end %>
+            </video>
+          <% end %>
+        <% else %>
+          <%= master_file_meta_properties(@currentStream) do %>
+            <audio class="mejs-avalon" controls style="width: 100%;" id="video-tag" preload="true">
+              <% @currentStreamInfo[:stream_flash].each do |flash| %>
+                <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
+              <% end %>
+              <% @currentStreamInfo[:stream_hls].each do |hls| %>
+                <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
+              <% end %>
+            </audio>
+          <% end %>
+        <% end %>
+      <% end %>
+    </section>
+<% end %>
+<% unless can? :read, @current_masterfile %>
+  <span class = 'show_playlist_player_denied_title'><h2>Restricted Access</h2></span>
+  <span class = 'playlist_item_denied'>You do not have permission to playback item <%= @current_masterfile.mediaobject_id %></span>
+<% end %>
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
+  <%= javascript_include_tag 'android_pre_play' %>
+  <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %>
+  <%= javascript_include_tag 'me-thumb-selector' %>
+  <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
+  <%= javascript_include_tag 'avalon_player' %>
+
+  <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
+  <%= stylesheet_link_tag 'me-thumb-selector' %>
+  <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
+
+  <% if @currentStream.present? and @currentStream.derivatives.present? %>
+  <script>
+    function advancePlaylist() {
+      nextUrl = $('li.now_playing').nextAll('li.queue:first').find('a').attr('href');
+      if (nextUrl) {
+        window.location = nextUrl + "&autostart=true";
+      }
+    }
+
+    <% if can? :read, @current_masterfile %>
+
+      avalonPlayer = new AvalonPlayer($('#left_column'), <%= @currentStreamInfo.to_json.html_safe %>, {
+	audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
+	mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
+	thumbnailSelector: false,
+	addToPlaylist: false,
+	startQuality: '<%= current_quality(@currentStreamInfo) %>',
+	customError: '<%= t("media_objects.player.customError").html_safe %>',
+	displayMediaFragment: true,
+        autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
+	success: function(mediaElement, domObject) {
+	  avalonPlayer.player.media.addEventListener('timeupdate', function(e) {
+	    if (avalonPlayer.player.getCurrentTime() > avalonPlayer.stream_info.t.split(',')[1]) {
+	      avalonPlayer.player.media.stop();
+	      advancePlaylist();
+	    }
+	  }, false);
+	}
+      });
+      currentPlayer = avalonPlayer.player;
+
+    <% else %>
+
+      window.setTimeout(advancePlaylist, 5000);
+
+    <% end %>
+  </script>
+  <% end %>
+<% end %>

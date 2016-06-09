@@ -1,4 +1,6 @@
 require 'hydra/head' unless defined? Hydra
+require 'hydra/multiple_policy_aware_access_controls_enforcement'
+require 'hydra/multiple_policy_aware_ability'
 
 Hydra.configure do |config|
 
@@ -32,6 +34,6 @@ Hydra.configure do |config|
   config.permissions.inheritable.read.individual = ActiveFedora::SolrService.solr_name("inheritable_read_access_person", :symbol)
   config.permissions.inheritable.edit.group = ActiveFedora::SolrService.solr_name("inheritable_edit_access_group", :symbol)
   config.permissions.inheritable.edit.individual = ActiveFedora::SolrService.solr_name("inheritable_edit_access_person", :symbol)
-  config.permissions.policy_class = Admin::Collection
- 
+  #config.permissions.policy_class = Admin::Collection
+  config.permissions.policy_class = {Admin::Collection => {}, Lease => {clause: " AND begin_time_dti:[* TO NOW] AND end_time_dti:[NOW TO *]"}}
 end

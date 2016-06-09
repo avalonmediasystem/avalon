@@ -1,14 +1,14 @@
 # Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
@@ -20,9 +20,22 @@ require 'avalon/controller/controller_behavior'
 class MasterFilesController < ApplicationController
   include Avalon::Controller::ControllerBehavior
 
-  skip_before_filter :verify_authenticity_token, :only => [:update]
   before_filter :authenticate_user!, :only => [:create]
   before_filter :ensure_readable_filedata, :only => [:create]
+
+
+  # Renders the captions content for an object or alerts the user that no caption content is present with html present
+  # @return [String] The rendered template
+  def captions
+    @masterfile = MasterFile.find(params[:id])
+    authorize! :read, @masterfile
+    ds = @masterfile.datastreams['captions']
+    if ds.nil? or ds.new?
+      render :text => 'Not Found', :status => :not_found
+    else
+      render :text => ds.content, :content_type => ds.mimeType, :label => ds.label
+    end
+  end
 
   def can_embed?
     params[:action] == 'embed'
@@ -41,8 +54,8 @@ class MasterFilesController < ApplicationController
     end
     respond_to do |format|
       format.html do
-        response.headers.delete "X-Frame-Options" 
-        render :layout => 'embed' 
+        response.headers.delete "X-Frame-Options"
+        render :layout => 'embed'
       end
     end
   end
@@ -113,22 +126,54 @@ class MasterFilesController < ApplicationController
     end
   end
 
-  # Creates and Saves a File Asset to contain the the Uploaded file 
+  def attach_captions
+    captions = nil
+    if params[:id].blank? || (not MasterFile.exists?(params[:id]))
+      flash[:notice] = "MasterFile #{params[:id]} does not exist"
+    end
+    @masterfile = MasterFile.find(params[:id])
+    unless flash.empty? and  MediaObject.exists?(@masterfile.mediaobject_id)
+      flash[:notice] = "MediaObject #{@masterfile.mediaobject_id} does not exist"
+    end
+    if flash.empty?
+      media_object = MediaObject.find(@masterfile.mediaobject_id)
+      authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
+      if params[:master_file].present? && params[:master_file][:captions].present?
+        captions = params[:master_file][:captions].open.read
+      end
+      if captions.present?
+        @masterfile.captions.content = captions
+        @masterfile.captions.mimeType = params[:master_file][:captions].content_type
+        @masterfile.captions.dsLabel = params[:master_file][:captions].original_filename
+        flash[:success] = "Captions file succesfully added."
+      else
+        @masterfile.captions.delete
+        flash[:success] = "Captions file succesfully removed."
+      end
+      @masterfile.save
+    end
+    respond_to do |format|
+      format.html { redirect_to edit_media_object_path(@masterfile.mediaobject_id, step: 'structure') }
+      format.json { render json: {captions: captions, flash: flash} }
+    end
+  end
+
+  # Creates and Saves a File Asset to contain the the Uploaded file
   # If container_id is provided:
   # * the File Asset will use RELS-EXT to assert that it's a part of the specified container
   # * the method will redirect to the container object's edit view after saving
   def create
     if params[:container_id].blank? || (not MediaObject.exists?(params[:container_id]))
       flash[:notice] = "MediaObject #{params[:container_id]} does not exist"
-      redirect_to :back 
+      redirect_to :back
       return
     end
 
     media_object = MediaObject.find(params[:container_id])
     authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
-    
+
     format_errors = "The file was not recognized as audio or video - "
-    
+
     if params.has_key?(:Filedata) and params.has_key?(:original)
       @master_files = []
       params[:Filedata].each do |file|
@@ -157,7 +202,7 @@ class MasterFilesController < ApplicationController
         else
           flash[:notice] = create_upload_notice(master_file.file_format)
         end
-	
+
         unless master_file.save
           flash[:error] = "There was a problem storing the file"
         else
@@ -165,7 +210,7 @@ class MasterFilesController < ApplicationController
           master_file.process
           @master_files << master_file
         end
-        
+
       end
     elsif params.has_key?(:selected_files)
       @master_files = []
@@ -176,7 +221,7 @@ class MasterFilesController < ApplicationController
         master_file.mediaobject = media_object
         master_file.setContent(File.open(file_path, 'rb'))
         master_file.set_workflow(params[:workflow])
-        
+
         unless master_file.save
           flash[:error] = "There was a problem storing the file"
         else
@@ -188,7 +233,7 @@ class MasterFilesController < ApplicationController
     else
       flash[:notice] = "You must specify a file to upload"
     end
-    
+
     respond_to do |format|
     	format.html { redirect_to edit_media_object_path(params[:container_id], step: 'file-upload') }
     	format.js { }
@@ -199,7 +244,7 @@ class MasterFilesController < ApplicationController
   def destroy
     master_file = MasterFile.find(params[:id])
     media_object = master_file.mediaobject
-    
+
     authorize! :edit, media_object, message: "You do not have sufficient privileges to delete files"
 
     filename = File.basename(master_file.file_location)
@@ -208,16 +253,16 @@ class MasterFilesController < ApplicationController
     media_object.set_media_types!
     media_object.set_duration!
     media_object.save( validate: false )
-    
+
     flash[:notice] = "#{filename} has been deleted from the system"
 
     redirect_to edit_media_object_path(media_object.pid, step: "file-upload")
   end
- 
+
   def set_frame
     master_file = MasterFile.find(params[:id])
     parent = master_file.mediaobject
-    
+
     authorize! :read, parent, message: "You do not have sufficient privileges to edit this file"
     opts = { :type => params[:type], :size => params[:size], :offset => params[:offset].to_f*1000, :preview => params[:preview] }
     respond_to do |format|
@@ -253,15 +298,15 @@ class MasterFilesController < ApplicationController
   end
 
 protected
-  def create_upload_notice(format) 
+  def create_upload_notice(format)
     case format
       when /^Sound$/
        text = 'The uploaded content appears to be audio';
-      when /^Moving image$/ 
+      when /^Moving image$/
        text = 'The uploaded content appears to be video';
       else
        text = 'The uploaded content could not be identified';
-      end 
+      end
     return text
   end
 

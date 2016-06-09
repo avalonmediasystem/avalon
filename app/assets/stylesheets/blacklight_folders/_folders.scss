@@ -1,0 +1,55 @@
+$table-border-color: #dddddd;
+$table_border: 1px dotted $table-border-color;
+
+.folder-index {
+  #sort-tool {
+    margin-top: 30px
+  }
+}
+
+.folder-view {
+  .bookmarkTools {
+    margin-top: 20px;
+  }
+}
+
+.blacklight-folders-edit {
+  ol {
+    list-style-type: none;
+    border: 1px solid $table-border-color;
+    padding: 0;
+    margin-top: 20px;
+
+    li {
+      padding: 5px;
+      margin: 0;
+      border-top:    $table_border;
+
+      .title {
+        padding-top: 6px;
+        padding-left: 0;
+      }
+    }
+
+    li:first-child {
+      border-top: none;
+    }
+  }
+}
+
+.glyphicon-unlock:before {
+  // The Bootstrap halflings doesn't have the unlock icon, so we'll use the globe
+  // You should be able to override this if you meet the license terms for
+  // glyphicons. See: http://glyphicons.com/license/
+  content: "\e135"
+}
+
+#folder-tools {
+  margin-top: 5px;
+  height: 25px;
+}
+
+.position-input {
+  width: 40%;
+  text-align: center;
+}

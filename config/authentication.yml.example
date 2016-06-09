@@ -5,6 +5,13 @@
     :fields:
     - :email
 
+#- :name: Avalon JSON Api
+#  :id: :api
+#  :tokens:
+#    token:
+#      :username: system_account_name
+#      :email: system@example.edu
+#
 #- :name: Avalon Lti OAuth
 #  :provider: :lti
 #  :hidden: true

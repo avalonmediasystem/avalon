@@ -1,0 +1,255 @@
+<div class="col-md-9">
+  <div class="row">
+    <div class="col-sm-12">
+      <%= link_to "View Playlist", @playlist, { class: 'btn btn-xs btn-primary'} %>
+      <% if can?(:destroy, @playlist) %>
+        <%= link_to "Delete Playlist", @playlist, method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'} %>
+      <% end %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <h3 style="display:inline-block">Playlist Details</h3>
+      <a id="playlist_edit_button" data-toggle="collapse" data-target="#playlist_edit_div, #playlist_view_div" class="fa fa-edit btn btn-sm"></a>
+    </div>
+  </div>
+  <div id="playlist_view_div" class="container collapse <%= 'in' if @playlist.errors.empty? %>">
+    <div class="row">
+      <div class="col-sm-2">Name</div>
+      <div class="col-sm-10"><%= @playlist.title %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-2">Description</div>
+      <div class="col-sm-10"><%= @playlist.comment %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-2"><%= t("blacklight/folders/folder.visibility", scope: "helpers.label") %></div>
+      <div class="col-sm-10">
+        <% if @playlist.visibility==Playlist::PUBLIC %>
+          <%= human_friendly_visibility Playlist::PUBLIC %>
+        <% else %>
+          <%= human_friendly_visibility Playlist::PRIVATE %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+ 
+  <%= render 'form' %> 
+
+  <hr>
+  <% if @playlist.items.empty? %>
+    <div><p>There are currently no items in this playlist.</p></div>
+  <% else %>
+    <%= form_for(@playlist,url: { action: "update_multiple" }, html: { class: 'form-horizontal playlist_actions' }) do |f| %>
+    <div class="row">
+      <div class="col-sm-8">
+        <h3>Playlist Items</h3>
+      </div>
+      <div class="col-sm-3 text-right">
+        <div class="form-group select-delete" style="margin-top:20px">
+          <% if @playlists.present? %>
+            <div class="btn-group bootstrap-select" id="move_to">
+              <%= hidden_field_tag "new_playlist_id", @playlist.id, form:"edit_playlist_#{@playlist.id}" %>
+              <%= button_tag( { type: 'button', class: "btn btn-default btn-xs dropdown-toggle", data: { toggle: "dropdown"}, disabled:'disabled' } ) do %>
+                <span class="filter-option pull-left">Move to... </span><span class="fa fa-caret-down"></span>
+              <% end # button_tag %>
+              <ul class="dropdown-menu">
+                <% @playlists.each do |p| %>
+                <li><a data-id="<%= p.id %>" style="text-decoration:underline" class="move_to_playlist" form="edit_playlist_<%= @playlist.id %>"><%= p.title %></a></li>
+                <% end # @playlist.each%>
+              </ul>
+            </div>
+          <% end # playlists.prsent?%>
+          <%= f.submit "Delete Selected", class: 'btn btn-danger btn-confirmation btn-xs', form:"edit_playlist_#{@playlist.id}", data: { placement: 'bottom' }, disabled:'disabled' %>
+        </div>
+      </div>
+      <div class="col-sm-1 text-right">
+        <div class="form-group" style="margin-top:20px">
+            <%= check_box_tag 'select_all', "Select All", false, form:"edit_playlist_#{@playlist.id}" %>
+            Select All
+        </div>
+      </div>
+    </div>
+    <% end #form_for update_multiple %>
+
+    <%= form_for(@playlist, html: { id: 'playlist_sort_form', class: 'form-horizontal playlist_actions' }) do |fs| %>
+    <div class="dd" data-playlist_id="<%= @playlist.id %>">
+      <ol id="items" class="dd-list" style="list-style: none">
+        <% @playlist.items.each_with_index do |i, index| %>
+        <li class="container dd-item" data-id="<%= i.id %>">
+          <div class="row">
+            <div class="col-sm-2">
+              <span class="glyphicon glyphicon-resize-vertical hidden pull-left dd-handle"></span>
+              <%= text_field_tag "playlist[items_attributes[#{index}[position]]]", i.position, class: 'form-control position-input', form: 'playlist_sort_form' %>
+              <%= hidden_field_tag "playlist[items_attributes[#{index}[id]]]", i.id, form: 'playlist_sort_form' %>
+            </div>
+            <% if can? :read, i.annotation.master_file %>
+              <div class="col-sm-8 title" style="margin-top:5px">
+                <%= link_to i.annotation.title, i.annotation.mediafragment_uri, id: "playlist_item_title_label_#{i.id}" %>
+              </div>
+              <div class="col-sm-1 text-right" style="margin-top:5px">
+                <a id="playlist_item_edit_button" data-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" aria-controls="collapseExample" class="fa fa-edit btn btn-sm"></a>
+              </div>
+              <div class="col-sm-1 checkbox text-right">
+                <label>
+                  <%= check_box_tag 'annotation_ids[]', i.id, false, form:"edit_playlist_#{@playlist.id}", class:"playlist_item_select" %>
+                  Select
+                </label>
+              </div>
+            <% else %>
+              <div class="col-sm-9 title" style="margin-top:5px">
+                <i class="fa fa-lock" title="You don't have permission to view this item"></i> 
+                <span class="playlist_item_denied">[inaccessible item] <%= i.annotation.master_file.mediaobject.pid %></span>
+              </div>
+              <div class="col-sm-1 checkbox text-right">
+                <label>
+                  <%= check_box_tag 'annotation_ids[]', i.id, false, form:"edit_playlist_#{@playlist.id}", class:"playlist_item_select" %>
+                  Select
+                </label>
+              </div>
+            <% end %>
+          </div>
+          <div id="playlist_item_edit_<%= i.id %>" class="row collapse">
+            <div class="col-sm-9 col-sm-offset-2 playlist_item_edit">
+              <%= bootstrap_form_for i, remote: true, html: { id: "playlist_item_form_#{i.id}", class: "playlist_item_edit_form" }, format: 'json' do |pif| %>
+                <%= hidden_field_tag "playlist_id", @playlist.id, form: "playlist_item_form_#{i.id}" %>
+                <div class="row form-group">
+                  <%= pif.label :title, class: 'col-sm-2 control-label' %>
+                  <div class="col-sm-10">
+                    <%= text_field_tag :title, i.title, class: 'form-control', id: "avalon_annotation_title_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                    <span style='display:none' class='title_original' data-value="<%= i.title %>"></span>
+                  </div>
+                </div>
+                <div class="row form-group">
+                  <div class="col-sm-2" style="text-align:right;margin-top:2pt"><%= pif.label :start_time, class: 'control-label' %></div>
+                  <div class="col-sm-4">
+                    <%= text_field_tag :start_time, pretty_time(i.start_time), class: 'form-control', id: "avalon_annotation_start_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                    <span style='display:none' class='start_time_original' data-value="<%= pretty_time(i.start_time) %>"></span>
+                  </div>
+                  <div class="col-sm-2" style="text-align:right;margin-top:2pt">
+                    <%= pif.label :end_time, class: 'control-label' %>
+                  </div>
+                  <div class="col-sm-4">
+                    <%= text_field_tag :end_time, pretty_time(i.end_time), class: 'form-control', id: "avalon_annotation_end_time_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                    <span style='display:none' class='end_time_original' data-value="<%= pretty_time(i.end_time) %>"></span>
+                  </div>
+                </div>
+                <div class="row form-group">
+                  <%= pif.label :comment, class: 'col-sm-2 control-label' %>
+                  <div class="col-sm-10">
+                    <%= text_area_tag :comment, i.comment, class: 'form-control', id: "avalon_annotation_comment_#{i.id}", form:"playlist_item_form_#{i.id}" %>
+                    <span style='display:none' class='comment_original' data-value="<%= i.comment %>"></span>
+                  </div>
+                </div>
+                <div class="row form-group">
+                  <div class="col-sm-3 col-sm-offset-2">
+                    <button class='btn btn-xs btn-primary playlist_item_form_submit'  data-loading-text="Saving..." data-id="<%= i.id %>" form="playlist_item_form_<%= i.id %>">Save Item</button>
+                    <span id="playlist_item_edit_cancel_<%= i.id %>" class="btn btn-default btn-xs playlist_item_edit_cancel" data-id="<%= i.id %>" data-target="playlist_item_edit_<%= i.id %>">Cancel</span>
+                  </div>
+                  <div class="col-sm-7" id="playlist_item_edit_alert_<%= i.id %>"></div>
+                </div>
+              <% end #bootstrap_form_for playlist_item_edit %>
+            </div>
+          </div>
+        </li>
+        <% end #playlist.items.each %>
+      </ol>
+    </div>
+    <%= fs.submit class: 'btn btn-primary btn-xs', value: 'Save Changes', form: 'playlist_sort_form', style: 'visibility:hidden' %>
+    <% end #form_for playlist_sort_form %>
+  <% end #playlist empty else%>
+</div>
+
+<% content_for :page_scripts do %>
+  <script>
+
+    // Handle move selected items to new playlist
+    $('.move_to_playlist').click(function(event) {
+      $('#new_playlist_id').val($(this).data('id'));
+      $('#'+$(this).attr('form')).submit();
+    });
+
+    // Handle playlist edit cancel
+    $('#playlist_edit_cancel').click(function(event) {
+      $('#playlist_form #playlist_title').val('<%= @playlist.title %>');
+      $('#playlist_form #playlist_comment').val('<%= @playlist.comment %>');
+      <% if @playlist.visibility==Playlist::PRIVATE %>
+        $('#playlist_form #playlist_visibility_private').prop('checked', true);
+      <% else %>
+        $('#playlist_form #playlist_visibility_public').prop('checked', true);
+      <% end %>
+    });
+
+    // Handle select all checkbox (enable/disable move and delete buttons)
+    $('#select_all').click(function(event) {
+      $('input:checkbox').prop('checked', $(this).prop('checked'))
+      $('#edit_playlist_<%= @playlist.id %> :submit').prop('disabled', !$(this).prop('checked') );
+      $('#move_to button').prop('disabled', !$(this).prop('checked') )
+    });
+
+    // Handle selection of playlist item (enable/disable move and delete buttons)
+    $('.playlist_item_select').click(function(event) {
+      $('#edit_playlist_<%= @playlist.id %> :submit').prop('disabled',  $( ".playlist_item_select:checked" ).length < 1  );
+      $('#move_to button').prop('disabled', $( ".playlist_item_select:checked" ).length < 1 );
+      $('#select_all').prop('checked', $( ".playlist_item_select:checked" ).length == <%= @playlist.items.length %> );
+    });
+
+    // Handle playlist item edit form submission
+    $('.playlist_item_form_submit').click(function(event) {
+      event.preventDefault();
+      var $btn = $(this).button('loading');
+      var $form = $(this).closest('form');
+      var id = $(this).data('id');
+      return $.ajax({
+        url: '/playlist_items/' + id + '.json',
+        type: 'PATCH',
+        data: {
+          playlist_id: $('#playlist_id').val(),
+          playlist_item: {
+            title: $('#avalon_annotation_title_'+id).val(),
+            comment: $('#avalon_annotation_comment_'+id).val(),
+            start_time: $('#avalon_annotation_start_time_'+id).val(),
+            end_time: $('#avalon_annotation_end_time_'+id).val(),
+          }
+        },
+        success: function(response) {
+          // alert success
+          var alert = "<div class='alert alert-success' style='padding:0 10px; margin-bottom: 0;'>";
+          alert += "<button type='button' class='close' data-dismiss='alert'>&times;</button>";
+          alert += "<span>"+response.message+"</span></div>";
+	  $('#playlist_item_edit_alert_'+id).html(alert)
+          // update original values with those newly saved in case of future cancel
+          $form.find('.title_original').data('value',$('#avalon_annotation_title_'+id).val());
+          $form.find('.comment_original').data('value',$('#avalon_annotation_comment_'+id).val());
+          $form.find('.start_time_original').data('value',$('#avalon_annotation_start_time_'+id).val());
+          $form.find('.end_time_original').data('value',$('#avalon_annotation_end_time_'+id).val());
+          $('#playlist_item_title_label_'+id).html($('#avalon_annotation_title_'+id).val());
+          $btn.button('reset')
+        },
+        error: function(response) {
+          // alert failure
+          var alert = "<div class='alert alert-danger' style='padding:0 10px; margin-bottom: 0;'>";
+          alert += "<button type='button' class='close' data-dismiss='alert'>&times;</button>";
+          alert += "<span>"+response.responseJSON.message+"</span></div>";
+	  $('#playlist_item_edit_alert_'+id).html(alert)
+          $btn.button('reset')
+        }
+      });
+    });
+
+    // Cancel playlist item editing
+    $('.playlist_item_edit_cancel').click(function(event){
+      var $form = $(this).closest('form');
+      var id = $(this).data('id');
+      // reset form to original values
+      $('#avalon_annotation_title_'+id).val($form.find('.title_original').data('value'));
+      $('#avalon_annotation_comment_'+id).val($form.find('.comment_original').data('value'));
+      $('#avalon_annotation_start_time_'+id).val($form.find('.start_time_original').data('value'));
+      $('#avalon_annotation_end_time_'+id).val($form.find('.end_time_original').data('value'));
+      $('#playlist_item_edit_alert_'+id).html('');
+      $('#'+$(this).data('target')).removeClass('in');
+    });
+
+  </script>
+
+<% end %>

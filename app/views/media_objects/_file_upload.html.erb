@@ -7,9 +7,9 @@ You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed 
+Unless required by applicable law or agreed to in writing, software distributed
   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
@@ -26,24 +26,28 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="collapse form-tooltip" id="permalink-tooltip">
     <button class="close">&times;</button> <p><%= t("file_upload_tip.permalink").html_safe %></p>
   </div>
+  <div class="collapse form-tooltip" id="datedigitized-tooltip">
+    <button class="close">&times;</button> <p><%= t("file_upload_tip.datedigitized").html_safe %></p>
+  </div>
   <div class="collapse form-tooltip" id="thumbnail-tooltip">
     <button class="close">&times;</button  <p><%= t("file_upload_tip.thumbnail").html_safe %></p>
   </div>
-      
+
     <table class="table table-striped">
       <colgroup>
         <col class="col-md-1">
         <col class="col-md-4">
-        <col class="col-md-4">
-        <col class="col-md-1">
-        <col class="col-md-4">
+        <col class="col-md-3">
+        <col class="col-md-3">
+        <col class="col-md-3">
         <col class="col-md-1">
       </colgroup>
-      
+
       <thead>
         <th>Type</th>
         <th><div class="tooltip-help" data-tooltip="#label-tooltip">Section label</div></th>
 	<th><div class="tooltip-help" data-tooltip="#permalink-tooltip">Permalink</div></th>
+        <th><div class="tooltip-help" data-tooltip="#datedigitized-tooltip">Date Digitized</div></th>
 	<th><div class="tooltip-help" data-tooltip="#thumbnail-tooltip" style='min-width:9em;'>Thumbnail</div></th>
         <th>File name</th>
         <th style="min-width:6em">Size</th>
@@ -67,9 +71,12 @@ Unless required by applicable law or agreed to in writing, software distributed
         <td>
           <%= text_field_tag "parts[#{part.pid}][label]", part.label, class: 'form-control' %>
         </td>
-	<td>
+        <td>
           <%= text_field_tag "parts[#{part.pid}][permalink]", part.permalink, class: 'form-control' %>
-	</td>
+      	</td>
+        <td>
+          <%= text_field_tag "parts[#{part.pid}][date_digitized]", part.date_digitized, class: 'form-control date-input' %>
+        </td>
         <td>
           <% if part.is_video? %>
             <%= text_field_tag "parts[#{part.pid}][poster_offset]",
@@ -90,10 +97,11 @@ Unless required by applicable law or agreed to in writing, software distributed
                  <%# On a Rails level this needs to be folded into the masterfiles
                    # controller's destroy method to help remove more vestiges of the
                    # catalog controller %>
-              <%= link_to '&times;'.html_safe, 
+              <%= link_to '&times;'.html_safe,
                  master_file_path(part.pid),
 		 title: 'Delete',
                  class: 'btn btn-xs btn-danger btn-confirmation',
+                 data: { placement: 'left' },
                  method: :delete %>
           <% end %>
         </td>
@@ -120,14 +128,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <div class="fileinput fileinput-new input-group" data-provides="fileinput">
           <div class="form-control" data-trigger="fileinput">
-            <i class="glyphicon glyphicon-file fileinput-exists"></i> 
+            <i class="glyphicon glyphicon-file fileinput-exists"></i>
             <span class="fileinput-filename"></span>
           </div>
           <span class="fileinput-submit fileinput-exists input-group-addon btn btn-default btn-file">
             <input type="hidden" name="upload_file" value="upload_file"></input>
             <a href="#" data-trigger="submit">Upload</a>
           </span>
-          <span class="input-group-addon btn btn-default btn-file"> 
+          <span class="input-group-addon btn btn-default btn-file">
             <span class="fileinput-new">Select file</span>
             <span class="fileinput-exists">Change</span>
             <input type="file" name="Filedata[]"></input>
@@ -137,18 +145,18 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= check_box_tag(:workflow, 'skip_transcoding', false)%>
             <%= label_tag(:skip_transcoding) do %>
               <div style="font-size: inherit;" class="tooltip-help" data-title="Skip Transcoding" data-tooltip="#skip-transcoding-tooltip">
-                Skip transcoding                    
+                Skip transcoding
               </div>
             <% end %>
-          </span> 
+          </span>
         </div>
-        
+
         <%= hidden_field_tag(:new_asset, true, :id => "files_new_asset") if params[:new_asset] %>
         <%= hidden_field_tag("id",params[:id], :id => "file_upload_id") if params[:id] %>
         <%= hidden_field_tag(:original, params[:original], :id => "files_original") %>
       <% end %>
   </fieldset>
-  
+
   <div class="collapse form-tooltip equal-height" id="skip-transcoding-tooltip">
     <button class="close">&times;</button>
     <p><%= t("file_upload_tip.skip_transcoding").html_safe %></p>
@@ -174,6 +182,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_styles do %>
   <%= stylesheet_link_tag "browse_everything", media: "rel" %>
   <%= stylesheet_link_tag "jasny-bootstrap.min", media: "all" %>
+  <%= stylesheet_link_tag "jquery-ui/datepicker", media: "all" %>
 <% end %>
 
 <% content_for :page_scripts do %>

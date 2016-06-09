@@ -67,6 +67,15 @@ module Avalon
 
         def file_valid?(file_spec)
           valid = true
+          # Check date_digitized for valid format
+          if file_spec[:date_digitized].present?
+            begin
+              DateTime.parse(file_spec[:date_digitized])
+            rescue ArgumentError
+              @errors.add(:date_digitized, "Invalid date_digitized: #{file_spec[:date_digitized]}. Recommended format: yyyy-mm-dd.")
+              valid = false
+            end
+          end
           # Check file offsets for valid format
           if file_spec[:offset].present? && !Avalon::Batch::Entry.offset_valid?(file_spec[:offset])
             @errors.add(:offset, "Invalid offset: #{file_spec[:offset]}")
@@ -110,10 +119,16 @@ module Avalon
           true
         end
 
-      def self.attach_structure_to_master_file( master_file, filename )
+      def self.attach_datastreams_to_master_file( master_file, filename )
           structural_file = "#{filename}.structure.xml"
           if File.exists? structural_file
             master_file.structuralMetadata.content=File.open(structural_file)
+          end
+          captions_file = "#{filename}.vtt"
+          if File.exists? captions_file
+            master_file.captions.content=File.open(captions_file)
+            master_file.captions.mimeType='text/vtt'
+            master_file.captions.dsLabel=captions_file
           end
       end
 
@@ -125,12 +140,13 @@ module Avalon
           master_file.save(validate: false) #required: need pid before setting mediaobject
           master_file.mediaobject = media_object
           files = self.class.gatherFiles(file_spec[:file])
-          self.class.attach_structure_to_master_file(master_file, file_spec[:file])
+          self.class.attach_datastreams_to_master_file(master_file, file_spec[:file])
           master_file.setContent(files)
           master_file.absolute_location = file_spec[:absolute_location] if file_spec[:absolute_location].present?
           master_file.label = file_spec[:label] if file_spec[:label].present?
           master_file.poster_offset = file_spec[:offset] if file_spec[:offset].present?
-         
+          master_file.date_digitized = DateTime.parse(file_spec[:date_digitized]).to_time.utc.iso8601 if file_spec[:date_digitized].present?
+
           #Make sure to set content before setting the workflow 
           master_file.set_workflow(file_spec[:skip_transcoding] ? 'skip_transcoding' : nil)
           if master_file.save

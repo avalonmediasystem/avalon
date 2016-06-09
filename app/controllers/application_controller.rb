@@ -14,18 +14,18 @@
 
 class ApplicationController < ActionController::Base
   before_filter :store_location
+  around_action :handle_api_request, if: proc{|c| request.format.json?}
 
   # Adds a few additional behaviors into the application controller 
   include Blacklight::Controller  
   # Adds Hydra behaviors into the application controller 
   include Hydra::Controller::ControllerBehavior
-  include AccessControlsHelper
 
   layout 'avalon'
   
   # Please be sure to implement current_user and user_session. Blacklight depends on 
   # these methods in order to perform user specific actions. 
-  protect_from_forgery
+  protect_from_forgery unless: proc{|c| request.headers['Avalon-Api-Key'].present? }
 
   after_filter :set_access_control_headers
 
@@ -42,12 +42,40 @@ class ApplicationController < ActionController::Base
   end
 
   def current_ability
-    @current_ability ||= Ability.new(current_user, user_session)
+    session_opts ||= user_session
+    session_opts ||= {}
+    @current_ability ||= Ability.new(current_user, session_opts.merge(remote_ip: request.remote_ip))
   end
 
   def store_location
     if request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?
       session[:previous_url] = root_path + "self_closing.html"
+    end
+  end
+
+  def handle_api_request
+    if request.headers['Avalon-Api-Key'].present?
+      token = request.headers['Avalon-Api-Key']
+      #verify token (and IP)
+      apiauth = Avalon::Authentication::Config.find {|p| p[:id] == :api }
+      if apiauth[:tokens].include? token
+        token_creds = apiauth[:tokens][token]
+#        user = User.find_by_api(token_creds[:username], token_creds[:email])
+        user = User.find_by_username(token_creds[:username]) ||
+               User.find_by_email(token_creds[:email]) ||
+               User.create(:username => token_creds[:username], :email => token_creds[:email])
+
+        sign_in user, event: :authentication
+        user_session[:json_api_login] = true
+        user_session[:full_login] = false
+      else
+        render json: {errors: ["Permission denied."]}, status: 403
+        return
+      end
+    end
+    yield
+    if user_session.present? && !!user_session[:json_api_login]
+      sign_out current_user
     end
   end
 
@@ -65,14 +93,18 @@ class ApplicationController < ActionController::Base
 
   rescue_from CanCan::AccessDenied do |exception|
     if current_user
-      if exception.subject.class == MediaObject && exception.action == :update
-        redirect_to exception.subject, flash: { notice: 'You are not authorized to edit this document.  You have been redirected to a read-only view.' }
-      else
-        redirect_to root_path, flash: { notice: 'You are not authorized to perform this action.' }
-      end
+      redirect_to root_path, flash: { notice: 'You are not authorized to perform this action.' }
     else
       session[:previous_url] = request.fullpath unless request.xhr?
       redirect_to new_user_session_path, flash: { notice: 'You are not authorized to perform this action. Try logging in.' }
+    end
+  end
+
+  rescue_from ActiveFedora::ObjectNotFoundError do |exception|
+    if request.format == :json
+      render json: {errors: ["#{params[:id]} not found"]}, status: 404
+    else
+      render '/errors/unknown_pid', status: 404
     end
   end
 

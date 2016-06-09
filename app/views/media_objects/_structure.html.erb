@@ -7,9 +7,9 @@ You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed 
+Unless required by applicable law or agreed to in writing, software distributed
   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
@@ -24,7 +24,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% else %>
   <div id="mediaobject_structure">
     <ul class="header">
-      <li>Type</li><li>Section label</li><li>File name</li><li>Size</li><li>Structure</li>
+      <li>Type</li><li>Section label</li><li>File name</li><li>Size</li><li>Structure</li><li>Captions</li>
     </ul>
     <ul class="sortable">
       <% @masterFiles.each_with_index do |section, index| %>
@@ -50,10 +50,16 @@ Unless required by applicable law or agreed to in writing, software distributed
 	      <i class="fa fa-plus-square"></i>
 	      <i class="fa fa-minus-square hidden"></i>
 	    </a>
+	  </li><li>
+	    <a href="#captions" class="captions_toggle" data-target="captions_<%= index %>" >
+	      <i class="fa fa-plus-square"></i>
+	      <i class="fa fa-minus-square hidden"></i>
+	    </a>
 	  </li>
 	</ul>
-        <div id="structure_<%= index %>" class="hidden structure_xml" >
-	  <div class="structure_actions">
+        <div id="structure_<%= index %>" class="hidden structure_tool" >
+	  <div class="tool_actions">
+	    <span class="tool_label">Structure</span>
 	    <%= form_for section, :url => attach_structure_master_file_path(section.pid), html: {method: "post"} do |form| %>
 	      <%= form.file_field :structure, class: "filedata", style: "height:0px;width:0px;" %>
 	      <input type="button" class="btn btn-primary btn-xs" onclick="$('#structure_<%= index %> .filedata').click();" value="Upload" />
@@ -61,7 +67,20 @@ Unless required by applicable law or agreed to in writing, software distributed
               <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
 	    <% end %>
           </div>
-	  <div class="structure_view"/>
+	  <div class="structure_view"></div>
+        </div>
+        <div id="captions_<%= index %>" class="hidden structure_tool" >
+	  <div class="tool_actions">
+	    <span class="tool_label">Captions</span>
+	    <%= form_for section, :url => attach_captions_master_file_path(section.pid), html: {method: "post"} do |form| %>
+	      <%= form.file_field :captions, class: "filedata", style: "height:0px;width:0px;" %>
+	      <input type="button" class="btn btn-primary btn-xs" onclick="$('#captions_<%= index %> .filedata').click();" value="Upload" />
+              <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
+	    <% end %>
+          </div>
+	  <% if section.captions.present? %>
+            <div class="structure_view">Uploaded file: <%= section.captions.label %></div>
+          <% end %>
         </div>
       </li>
       <% end %>
@@ -75,7 +94,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <% @masterFiles.each_with_index do |section, index| %>
-  <% default_structure="<Item label='#{stream_label_for(section)}'></Item>" %>
+  <% default_structure="<Item label='#{html_escape(stream_label_for(section))}'></Item>" %>
   <div id="edit_structure_<%= index %>" class="structure_edit modal fade" data-backdrop="false" data-submit_url="<%= attach_structure_master_file_path(section.pid) %>">
     <div class="modal-dialog modal-lg">
       <div class="modal-content col-md-12">
@@ -150,11 +169,17 @@ function parse_node(node, tracknumber){
   }
 }
 
-$('.structure_toggle').on('click', function (e) { 
+$('.structure_toggle').on('click', function (e) {
   $(this).find('i.fa').toggleClass('hidden');
   target = $(this).data('target')
   section_index = parseInt(target.split('_')[1]);
   populate_structure_preview(section_index)
+  $('#'+target).toggleClass('hidden');
+});
+
+$('.captions_toggle').on('click', function (e) {
+  $(this).find('i.fa').toggleClass('hidden');
+  target = $(this).data('target')
   $('#'+target).toggleClass('hidden');
 });
 

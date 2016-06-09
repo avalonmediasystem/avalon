@@ -11,7 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150625121750) do
+ActiveRecord::Schema.define(version: 20160511155417) do
+
+  create_table "annotations", force: true do |t|
+    t.string "uuid"
+    t.string "source_uri"
+    t.text   "annotation"
+  end
 
   create_table "bookmarks", force: true do |t|
     t.integer  "user_id",       null: false
@@ -66,6 +72,28 @@ ActiveRecord::Schema.define(version: 20150625121750) do
     t.string   "name",             limit: 50
   end
 
+  create_table "playlist_items", force: true do |t|
+    t.integer  "playlist_id",   null: false
+    t.integer  "annotation_id", null: false
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "playlist_items", ["annotation_id"], name: "index_playlist_items_on_annotation_id"
+  add_index "playlist_items", ["playlist_id"], name: "index_playlist_items_on_playlist_id"
+
+  create_table "playlists", force: true do |t|
+    t.string   "title"
+    t.integer  "user_id",    null: false
+    t.string   "comment"
+    t.string   "visibility"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "playlists", ["user_id"], name: "index_playlists_on_user_id"
+
   create_table "role_maps", force: true do |t|
     t.string  "entry"
     t.integer "parent_id"
@@ -82,8 +110,8 @@ ActiveRecord::Schema.define(version: 20150625121750) do
   add_index "searches", ["user_id"], name: "index_searches_on_user_id"
 
   create_table "sessions", force: true do |t|
-    t.string   "session_id", null: false
-    t.text     "data"
+    t.string   "session_id",                  null: false
+    t.text     "data",       limit: 16777215
     t.datetime "created_at"
     t.datetime "updated_at"
   end

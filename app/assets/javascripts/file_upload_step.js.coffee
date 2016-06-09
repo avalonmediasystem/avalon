@@ -25,23 +25,5 @@ $('input[type=text]',section_form).each () ->
     double.val($(this).val())
 $('input[type=submit]',section_form).hide()
 
-$(document).on "click", ".btn-confirmation+.popover .btn", ->
-  $('.btn-confirmation').popover('hide')
-  return true
-
-$('.btn-confirmation')
-  .popover
-    trigger: 'manual',
-    html: true,
-    content: () ->
-      "<p>Are you sure?</p>
-      <a href='#{$(this).attr('href')}' class='btn btn-xs btn-danger btn-confirm' data-method='delete' rel='nofollow'>Yes, Delete</a>
-      <a href='#' class='btn btn-xs btn-primary'  id='special_button_color'>No, Cancel</a>"
-    placement: 'left'
-  .click () -> 
-    t = this
-    $('.btn-confirmation')
-      .filter(() -> this isnt t)
-      .popover('hide')
-    $(this).popover('show')
-    return false
+$('.date-input').datepicker
+  dateFormat: 'yy-mm-dd'

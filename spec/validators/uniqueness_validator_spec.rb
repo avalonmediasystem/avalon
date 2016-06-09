@@ -21,7 +21,7 @@ describe "UniquenessValidator" do
 
   before(:each) do
     @record = double(pid:"avalon:1")
-    @record.stub("errors").and_return([])
+    allow(@record).to receive("errors").and_return([])
   end
 
   it "should raise an exception if solr_name option is missing" do
@@ -29,22 +29,22 @@ describe "UniquenessValidator" do
   end
 
   it "should not return errors when field is unique" do
-    validator.stub("find_doc").and_return(nil)
-    @record.should_not_receive('errors')  
+    allow(validator).to receive("find_doc").and_return(nil)
+    expect(@record).not_to receive('errors')  
     validator.validate_each(@record, "title", "new_title")
   end
 
   it "should not return errors when field is unique but record is the same" do
     doc = double(pid: "avalon:1")
-    validator.stub("find_doc").and_return(doc)
-    @record.should_not_receive('errors')
+    allow(validator).to receive("find_doc").and_return(doc)
+    expect(@record).not_to receive('errors')
     validator.validate_each(@record, "title", "new_title")
   end
 
   it "should return erros when field is not unique" do
     doc = double(pid: "avalon:2")
-    validator.stub("find_doc").and_return(doc)
-    @record.errors.should_receive('add')
+    allow(validator).to receive("find_doc").and_return(doc)
+    expect(@record.errors).to receive('add')
     validator.validate_each(@record, "title", "old_title")
   end  
 
@@ -54,22 +54,22 @@ describe "UniquenessValidator" do
 
     it "should use the solr field name and supplied values" do
       relation = double()
-      relation.stub("first")
-      klass.should_receive("where").once.with(solr_field => value).and_return(relation)
+      allow(relation).to receive("first")
+      expect(klass).to receive("where").once.with(solr_field => value).and_return(relation)
       validator.find_doc(klass, value)
     end
     it "should return one record when present" do
       doc = double(pid: "avalon:1")
       relation = double()
-      relation.stub("first").and_return(doc)
-      klass.stub("where").and_return(relation)
-      validator.find_doc(klass, value).should be_an_instance_of klass
+      allow(relation).to receive("first").and_return(doc)
+      allow(klass).to receive("where").and_return(relation)
+      expect(validator.find_doc(klass, value)).to be_an_instance_of klass
     end
     it "should return nil when not present" do
       relation = double()
-      relation.stub("first").and_return(nil)
-      klass.stub("where").and_return(relation)
-      validator.find_doc(klass, value).should be_nil
+      allow(relation).to receive("first").and_return(nil)
+      allow(klass).to receive("where").and_return(relation)
+      expect(validator.find_doc(klass, value)).to be_nil
     end
   end
 end

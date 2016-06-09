@@ -28,8 +28,9 @@ describe Avalon::AccessControls::VirtualGroups do
   describe 'virtual groups' do
     let!(:local_groups) {[FactoryGirl.create(:group).name, FactoryGirl.create(:group).name]}
     let(:virtual_groups) {["vgroup1", "vgroup2"]}
+    let(:ip_groups) {[Faker::Internet.ip_v4_address, Faker::Internet.ip_v6_address, Faker::Internet.ip_v4_address + "/24"]}
     before(:each) do
-      subject.read_groups = local_groups + virtual_groups
+      subject.read_groups = local_groups + virtual_groups + ip_groups
     end
 
     describe '#local_group_exceptions' do
@@ -41,6 +42,12 @@ describe Avalon::AccessControls::VirtualGroups do
     describe '#virtual_group_exceptions' do
       it 'should have only non-local groups' do
         expect(subject.virtual_read_groups).to eq(virtual_groups)
+      end
+    end
+
+    describe '#ip_group_exceptions' do
+      it 'should have only ip groups' do
+        expect(subject.ip_read_groups).to eq(ip_groups)
       end
     end
   end

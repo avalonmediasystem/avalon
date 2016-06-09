@@ -33,11 +33,11 @@ describe MasterFilesController do
       request.env["HTTP_REFERER"] = "/"
             
       @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-      @file.stub(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2^21)  
+      allow(@file).to receive(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2^21)  
      
       expect { post :create, Filedata: [@file], original: 'any', container_id: media_object.pid}.not_to change { MasterFile.count }
      
-      flash[:error].should_not be_nil
+      expect(flash[:error]).not_to be_nil
      end
     end
      
@@ -50,9 +50,9 @@ describe MasterFilesController do
           container_id: media_object.pid 
 
         master_file = media_object.reload.parts.first
-        master_file.file_format.should eq "Moving image" 
+        expect(master_file.file_format).to eq "Moving image" 
              
-        flash[:errors].should be_nil
+        expect(flash[:errors]).to be_nil
       end
            
      it "should recognize an audio format" do
@@ -63,7 +63,7 @@ describe MasterFilesController do
          container_id: media_object.pid 
 
        master_file = media_object.reload.parts.first
-       master_file.file_format.should eq "Sound" 
+       expect(master_file.file_format).to eq "Sound" 
      end
        
      it "should reject non audio/video format" do
@@ -73,7 +73,7 @@ describe MasterFilesController do
 
        expect { post :create, Filedata: [@file], original: 'any', container_id: media_object.pid }.not_to change { MasterFile.count }
      
-       flash[:error].should_not be_nil
+       expect(flash[:error]).not_to be_nil
      end
     
      it "should recognize audio/video based on extension when MIMETYPE is of unknown format" do
@@ -84,9 +84,9 @@ describe MasterFilesController do
          original: 'any', 
          container_id: media_object.pid 
        master_file = MasterFile.all.last
-       master_file.file_format.should eq "Moving image" 
+       expect(master_file.file_format).to eq "Moving image" 
              
-       flash[:errors].should be_nil
+       expect(flash[:errors]).to be_nil
      end
     end
      
@@ -101,22 +101,39 @@ describe MasterFilesController do
         post :create, Filedata: [@file], original: 'any', container_id: media_object.pid
          
         master_file = MasterFile.all.last
-        media_object.reload.parts.should include master_file
-        master_file.mediaobject.pid.should eq(media_object.pid)
+        expect(media_object.reload.parts).to include master_file
+        expect(master_file.mediaobject.pid).to eq(media_object.pid)
          
-        flash[:errors].should be_nil        
+        expect(flash[:errors]).to be_nil        
       end
       it "should associate a dropbox file" do
         skip
-        Avalon::Dropbox.any_instance.stub(:find).and_return "spec/fixtures/videoshort.mp4"
+        allow_any_instance_of(Avalon::Dropbox).to receive(:find).and_return "spec/fixtures/videoshort.mp4"
         post :create, dropbox: [{id: 1}], original: 'any', container_id: media_object.pid
 
         master_file = MasterFile.all.last
         media_object.reload
-        media_object.parts.should include master_file
-        master_file.mediaobject.pid.should eq(media_object.pid)
+        expect(media_object.parts).to include master_file
+        expect(master_file.mediaobject.pid).to eq(media_object.pid)
 
-        flash[:errors].should be_nil
+        expect(flash[:errors]).to be_nil
+      end
+      it "should not fail when associating with a published mediaobject" do
+        media_object = FactoryGirl.create(:published_media_object)
+        login_user media_object.collection.managers.first
+        @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+        #Work-around for a Rails bug
+        class << @file
+          attr_reader :tempfile
+        end
+   
+        post :create, Filedata: [@file], original: 'any', container_id: media_object.pid
+
+        master_file = MasterFile.all.last
+        expect(media_object.reload.parts).to include master_file
+        expect(master_file.mediaobject.pid).to eq(media_object.pid)
+         
+        expect(flash[:errors]).to be_nil
       end
     end
   end
@@ -137,7 +154,7 @@ describe MasterFilesController do
     context "should no longer be associated with its parent object" do
       it "should create then remove a file from a video object" do
         expect { post :destroy, id: master_file.pid }.to change { MasterFile.count }.by(-1)
-        master_file.mediaobject.reload.parts.should_not include master_file         
+        expect(master_file.mediaobject.reload.parts).not_to include master_file         
       end
     end
   end
@@ -146,7 +163,7 @@ describe MasterFilesController do
     let!(:master_file) {FactoryGirl.create(:master_file)}
     it "should redirect you to the media object page with the correct section" do
       get :show, id: master_file.pid, t:'10' 
-      response.should redirect_to("#{pid_section_media_object_path(master_file.mediaobject.pid, master_file.pid)}?t=10") 
+      expect(response).to redirect_to("#{pid_section_media_object_path(master_file.mediaobject.pid, master_file.pid)}?t=10") 
     end
   end
 
@@ -234,6 +251,35 @@ describe MasterFilesController do
       expect(master_file.structuralMetadata.new?).to be true
       expect(master_file.structuralMetadata.empty?).to be true
       expect(master_file.structuralMetadata.valid?).to be false
+      expect(flash[:errors]).to be_nil
+      expect(flash[:notice]).to be_nil
+    end
+  end
+  describe "#attach_captions" do
+    let!(:media_object) {FactoryGirl.create(:media_object_with_master_file)}
+    let!(:content_provider) {login_user media_object.collection.managers.first}
+    let!(:master_file) {media_object.parts.first}
+
+    before(:each) do
+      login_user media_object.collection.managers.first
+    end
+
+    it "should populate captions datastream with text" do
+      # populate the captions datastream with an uploaded vtt file
+      file = fixture_file_upload('/dropbox/example_batch_ingest/assets/sheephead_mountain.mov.vtt', 'text/vtt')
+      post 'attach_captions', master_file: {captions: file}, id: master_file.id
+      master_file.reload
+      expect(master_file.captions.has_content?).to be_truthy
+      expect(master_file.captions.label).to eq('sheephead_mountain.mov.vtt')
+      expect(master_file.captions.mimeType).to eq('text/vtt')
+      expect(flash[:errors]).to be_nil
+      expect(flash[:notice]).to be_nil
+    end
+    it "should remove contents of captions datastream" do
+      # remove the contents of the datastream
+      post 'attach_captions', id: master_file.id
+      master_file.reload
+      expect(master_file.captions.empty?).to be true
       expect(flash[:errors]).to be_nil
       expect(flash[:notice]).to be_nil
     end

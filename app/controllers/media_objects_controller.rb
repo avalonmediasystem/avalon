@@ -19,9 +19,12 @@ class MediaObjectsController < ApplicationController
   include Avalon::Controller::ControllerBehavior
   include ConditionalPartials
 
-#  before_filter :enforce_access_controls
-  before_filter :inject_workflow_steps, only: [:edit, :update]
-  before_filter :load_player_context, only: [:show, :show_progress]
+  before_filter :authenticate_user!, except: [:show, :set_session_quality]
+  before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
+  load_and_authorize_resource instance_name: 'mediaobject', except: [:destroy, :update_status, :set_session_quality, :tree, :deliver_content]
+
+  before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
+  before_filter :load_player_context, only: [:show]
 
   def self.is_editor ctx
     ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@mediaobject').collection)
@@ -37,16 +40,12 @@ class MediaObjectsController < ApplicationController
   add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti
   add_conditional_partial :share, :lti_url, partial: 'lti_url',  if: is_editor_or_lti
 
-
-  # Catch exceptions when you try to reference an object that doesn't exist.
-  # Attempt to resolve it to a close match if one exists and offer a link to
-  # the show page for that item. Otherwise ... nothing!
-  rescue_from ActiveFedora::ObjectNotFoundError do |exception|
-    render '/errors/unknown_pid', status: 404
-  end
-
   def can_embed?
     params[:action] == 'show'
+  end
+
+  def authenticate_api!
+    return head :unauthorized if !signed_in?
   end
 
   def new
@@ -61,8 +60,117 @@ class MediaObjectsController < ApplicationController
     redirect_to edit_media_object_path(@mediaobject)
   end
 
+  # POST /media_objects
+  def create
+    update_mediaobject
+  end
+
+  # PUT /media_objects/avalon:1.json
+  def json_update
+    update_mediaobject
+  end
+
+  def update_mediaobject
+    begin
+      collection = Admin::Collection.find(params[:collection_id])
+    rescue ActiveFedora::ObjectNotFoundError
+      render json: {errors: ["Collection not found for #{params[:collection_id]}"]}, status: 422
+      return
+    end
+
+    @mediaobject.collection = collection
+    @mediaobject.avalon_uploader = 'REST API'
+
+    populate_from_catalog = !!params[:import_bib_record]
+    if populate_from_catalog and Avalon::BibRetriever.configured?
+      begin
+        # Set other identifiers
+        @mediaobject.update_datastream(:descMetadata, params[:fields].slice(:other_identifier_type, :other_identifier))
+        # Try to use Bib Import
+        @mediaobject.descMetadata.populate_from_catalog!(Array(params[:fields][:bibliographic_id]).first, 
+                                                         Array(params[:fields][:bibliographic_id_label]).first)
+      rescue
+        logger.warn "Failed bib import using bibID #{Array(params[:fields][:bibliographic_id]).first}, #{Array(params[:fields][:bibliographic_id_label]).first}"
+      ensure
+        if !@mediaobject.valid?
+          # Fall back to MODS as sent if Bib Import fails
+          @mediaobject.update_datastream(:descMetadata, params[:fields].slice(*@mediaobject.errors.keys)) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
+        end
+      end
+    else
+      @mediaobject.update_datastream(:descMetadata, params[:fields]) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
+    end
+
+    error_messages = []
+
+    if !@mediaobject.valid?
+      invalid_fields = @mediaobject.errors.keys
+      required_fields = [:title, :date_issued]
+      if !required_fields.any? { |f| invalid_fields.include? f }
+        invalid_fields.each do |field|
+          #NOTE this will erase all values for fields with multiple values
+          logger.warn "Erasing field #{field} with bad value, bibID: #{Array(params[:fields][:bibliographic_id]).first}, avalon ID: #{@mediaobject.pid}" 
+          @mediaobject[field] = nil
+        end
+      end
+    end
+    if !@mediaobject.save
+      error_messages += ['Failed to create media object:']+@mediaobject.errors.full_messages
+    elsif params[:files].respond_to?('each')
+      oldparts = @mediaobject.parts.collect{|p|p.pid}
+      params[:files].each do |file_spec|
+        master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier))
+        master_file.mediaobject = @mediaobject
+        master_file.structuralMetadata.content = file_spec[:structure] if file_spec[:structure].present?
+        if file_spec[:captions].present?
+          master_file.captions.content = file_spec[:captions]
+          master_file.captions.mimeType = file_spec[:captions_type]
+          master_file.captions.dsLabel = 'ingest.api'
+        end
+        master_file.label = file_spec[:label] if file_spec[:label].present?
+        master_file.date_digitized = DateTime.parse(file_spec[:date_digitized]).to_time.utc.iso8601 if file_spec[:date_digitized].present?
+        master_file.DC.identifier += Array(file_spec[:other_identifier])
+        if master_file.update_derivatives(file_spec[:files], false)
+          @mediaobject.parts += [master_file]
+        else
+          error_messages += ["Problem saving MasterFile for #{file_spec[:file_location] rescue "<unknown>"}:"]+master_file.errors.full_messages
+          @mediaobject.destroy
+          break
+        end
+      end  
+      if error_messages.empty? 
+        if params[:replace_masterfiles]
+          oldparts.each do |mf|
+            p = MasterFile.find(mf)
+            @mediaobject.parts.delete(p)
+            p.destroy
+          end
+        end
+        @mediaobject.parts_with_order = @mediaobject.parts
+        #Ensure these are set because sometimes there is a timing issue that prevents the masterfile save from doing it
+        @mediaobject.set_media_types!
+        @mediaobject.set_resource_types!
+        @mediaobject.set_duration!
+        @mediaobject.workflow.last_completed_step = HYDRANT_STEPS.last.step
+        if !@mediaobject.save
+          error_messages += ['Failed to create media object:']+@mediaobject.errors.full_messages
+          @mediaobject.destroy
+        elsif !!params[:publish]
+          @mediaobject.publish!('REST API')
+          @mediaobject.workflow.publish
+        end
+      end
+    end
+    if error_messages.empty?
+      render json: {id: @mediaobject.pid}, status: 200
+    else
+      logger.warn "update_mediaobject failed for #{params[:fields][:title] rescue '<unknown>'}: #{error_messages}"
+      render json: {errors: error_messages}, status: 422
+      @mediaobject.destroy
+    end
+  end
+
   def custom_edit
-    authorize! :update, @mediaobject
     if ['preview', 'structure', 'file-upload'].include? @active_step
       @masterFiles = load_master_files
     end
@@ -80,8 +188,13 @@ class MediaObjectsController < ApplicationController
 
     if 'access-control' == @active_step 
       @groups = @mediaobject.local_read_groups
+      @group_leases = @mediaobject.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="local" }
       @users = @mediaobject.read_users
+      @user_leases = @mediaobject.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="user" }
       @virtual_groups = @mediaobject.virtual_read_groups
+      @virtual_leases = @mediaobject.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="external" }
+      @ip_groups = @mediaobject.ip_read_groups
+      @ip_leases = @mediaobject.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="ip" }
       @visibility = @mediaobject.visibility
 
       @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }
@@ -90,32 +203,40 @@ class MediaObjectsController < ApplicationController
   end
 
   def custom_update
-    authorize! :update, @mediaobject
     flash[:notice] = @notice
   end
 
+  def index
+    respond_to do |format|
+      format.json { 
+        paginate json: MediaObject.all
+      }
+    end
+  end
+
   def show
-    authorize! :read, @mediaobject
     respond_to do |format|
       format.html do
-	if (not @masterFiles.empty? and @currentStream.blank?) then
+        if (not @masterFiles.empty? and @currentStream.blank?) then
           redirect_to media_object_path(@mediaobject.pid), flash: { notice: 'That stream was not recognized. Defaulting to the first available stream for the resource' }
         else 
           render
         end
       end
+      format.js do
+        render json: @currentStreamInfo 
+      end
       format.json do
-        render :json => @currentStreamInfo 
+        render json: @mediaobject.to_json
       end
     end
   end
 
   def show_progress
-    authorize! :read, @mediaobject
     overall = { :success => 0, :error => 0 }
-
+    
     result = Hash[
-      @masterFiles.collect { |mf| 
+      @mediaobject.parts.collect { |mf| 
         mf_status = {
           :status => mf.status_code,
           :complete => mf.percent_complete.to_i,
@@ -133,7 +254,12 @@ class MediaObjectsController < ApplicationController
         [mf.pid, mf_status]
       }
     ]
-    overall.each { |k,v| overall[k] = [0,[100,v.to_f/@masterFiles.length.to_f].min].max.floor }
+    parts_count = @mediaobject.parts.count
+    if parts_count > 0
+      overall.each { |k,v| overall[k] = [0,[100,v.to_f/parts_count.to_f].min].max.floor }
+    else
+      overall = {success: 0, error: 0}
+    end
 
     if overall[:success]+overall[:error] > 100
       overall[:error] = 100-overall[:success]
@@ -231,12 +357,12 @@ class MediaObjectsController < ApplicationController
 
   protected
   
-  def load_master_files
-    @mediaobject.parts_with_order
+  def load_master_files(opts = {})
+    @mediaobject.parts_with_order opts
   end
 
   def load_player_context
-    @mediaobject = MediaObject.find(params[:id])
+    return if request.format.json? and !params.has_key? :content
 
     if params[:part]
       index = params[:part].to_i-1
@@ -246,14 +372,14 @@ class MediaObjectsController < ApplicationController
       params[:content] = @mediaobject.section_pid[index]
     end
       
-    @masterFiles = load_master_files
+    @masterFiles = load_master_files load_from_solr: true
     @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
     @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.pid)
     # This rescue statement seems a bit dodgy because it catches *all*
     # exceptions. It might be worth refactoring when there are some extra
     # cycles available.
     @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
-    @currentStreamInfo['t'] = params[:t] # add MediaFragment from params
+    @currentStreamInfo['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
  end
 
   # The goal of this method is to determine which stream to provide to the interface
@@ -265,13 +391,8 @@ class MediaObjectsController < ApplicationController
   # return a nil value that needs to be handled appropriately by the calling code
   # block
   def set_active_file(file_pid = nil)
-    unless (@mediaobject.parts.blank? or file_pid.blank?)
-      @mediaobject.parts.each do |part|
-        return part if part.pid == file_pid
-      end
-    end
-
-    # If you haven't dropped out by this point return an empty item
-    nil
+    @masterFiles ||= load_master_files load_from_solr: true
+    file_pid.nil? ? nil : @masterFiles.find { |mf| mf.pid == file_pid }
   end 
+  
 end

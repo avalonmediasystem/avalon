@@ -20,27 +20,27 @@ describe User do
   let!(:list) {0.upto(rand(5)).collect { Faker::Internet.email }}
 
   describe "validations" do
-    it {should validate_presence_of(:username)}
-    it {should validate_uniqueness_of(:username)}
-    it {should validate_presence_of(:email)}
-    it {should validate_uniqueness_of(:email)}
+    it {is_expected.to validate_presence_of(:username)}
+    it {is_expected.to validate_uniqueness_of(:username)}
+    it {is_expected.to validate_presence_of(:email)}
+    it {is_expected.to validate_uniqueness_of(:email)}
   end
 
   describe "Membership" do
     it "should be a member if its key is in the list" do
-      user.should be_in(list,[user.user_key])
-      user.should be_in(list+[user.user_key])
+      expect(user).to be_in(list,[user.user_key])
+      expect(user).to be_in(list+[user.user_key])
     end
 
     it "should not be a member if its key is not in the list" do
-      user.should_not be_in(list)
+      expect(user).not_to be_in(list)
     end
   end
 
   describe "#groups" do
     let(:groups)  { ["foorole"] }
     it "should return groups from the role map" do
-      RoleMapper.should_receive(:roles).and_return(groups)
+      expect(RoleMapper).to receive(:roles).and_return(groups)
       expect(user.groups).to eq(groups)
     end
   end
@@ -62,6 +62,15 @@ describe User do
     it "should return results of same type as user_key (email xor username)" do
       user.save(validate: false)
       expect(User.autocomplete(user.user_key)).to eq([{id: user.user_key, display: user.user_key}])
+    end
+  end
+
+  describe "#destroy" do
+    it 'removes bookmarks for user' do
+      media_object = FactoryGirl.create(:published_media_object)
+      user = FactoryGirl.create(:public)
+      bookmark = Bookmark.create(document_id: media_object.pid, user_id: user.id) 
+      expect { user.destroy }.to change { Bookmark.exists? bookmark }.from( true ).to( false )
     end
   end
 

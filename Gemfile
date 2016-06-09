@@ -1,36 +1,51 @@
   source 'http://rubygems.org'
 
+  # active anno dev
+  gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', tag: 'avalon-r5'
+
   gem 'iconv'
   gem 'rails', '~>4.0.3'
   gem 'sprockets', '~>2.11.0'
   #gem 'protected_attributes'
   gem 'builder', '~>3.1.0'
+  gem 'rake', '~>10.4'
 
-  gem 'hydra', '~>8.0'
-  gem 'hydra-access-controls', git: 'https://github.com/projecthydra/hydra-head.git', branch: '8-1-stable'
+#  gem 'hydra', '~>8.0'
+  gem 'hydra-head', git: 'https://github.com/avalonmediasystem/hydra-head.git', branch: '8-1-stable'
+  gem 'active-fedora', '~> 8.1.0'
+  gem 'om', '~> 3.1.0'
+  gem 'solrizer', '~> 3.3.0'
+  gem 'rsolr', '~> 1.0.12'
+  gem 'blacklight', '~> 5.10'
+  gem 'nokogiri', '~> 1.6.5'
+  gem 'rubydora', '~> 1.8.1'
+  gem 'nom-xml', '~> 0.5.2'
 
   gem 'activerecord-session_store'
   gem 'bcrypt-ruby', '~> 3.1.0'
   gem 'kaminari', '~> 0.15.0'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'avalon-r4'
-  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r4'
+  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r5'
   gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r4'
   gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r4'
-  gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'avalon-r4'
+  gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'avalon-r5'
   gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r4'
   gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r4'
   gem 'media-element-logo-plugin'
+  gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r5'
 
   gem 'browse-everything', '0.6.3'
-  
+
   gem 'roo', git: 'https://github.com/Empact/roo', ref: '9e1b969762cbb80b1c52cfddd848e489f22f468f'
 
-  gem 'multipart-post'  
+  gem 'multipart-post'
   gem 'modal_logic'
-  
+
   gem 'rubyzip', '0.9.9'
   gem 'hooks'
+  gem 'addressable'
+  gem 'acts_as_list'
 
   # microdata
   gem 'ruby-duration'
@@ -41,7 +56,7 @@
 #  gem 'zoom', '~>0.4.1', :git => 'https://github.com/bricestacey/ruby-zoom.git'
 
   gem 'marc'
-  
+
   platforms :jruby do
     gem 'jruby-openssl'
     gem 'activerecord-jdbcsqlite3-adapter'
@@ -63,8 +78,8 @@
   #gem 'devise-guests'
   gem 'haml'
 
-  gem 'active-encode', git: "https://github.com/projecthydra-labs/active-encode.git"
-  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
+  gem 'active_encode', git: "https://github.com/projecthydra-labs/active_encode.git", tag: 'v0.0.3'
+  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r5'
   gem 'validates_email_format_of'
   gem 'loofah'
   gem 'omniauth-identity'
@@ -78,6 +93,8 @@
 
   gem 'equivalent-xml'
   gem 'net-ldap'
+
+  gem 'api-pagination'
 
   group :assets, :production do
     gem 'coffee-rails'
@@ -94,7 +111,8 @@
     gem 'font-awesome-rails', '~> 4.3'
     gem 'bootstrap_form'
     gem 'handlebars_assets'
-    gem 'twitter-typeahead-rails', '=0.10.5'
+    #gem 'twitter-typeahead-rails', '~>0.11.1'
+    gem 'twitter-typeahead-rails', '= 0.11.1.pre.corejavascript'
   end
 
   group :development do
@@ -113,7 +131,7 @@
     gem 'felixwrapper', git: "https://github.com/avalonmediasystem/felixwrapper.git", tag: 'avalon-r4'
     gem 'red5wrapper', git: "https://github.com/avalonmediasystem/red5wrapper.git", tag: 'avalon-r4'
     gem 'daemons'
-    gem 'rspec-rails', '~>2.9'
+    gem 'rspec-rails'
     gem 'puma'
     gem 'rb-fsevent', '~> 0.9.1'
     gem 'letter_opener'
@@ -131,8 +149,6 @@
     gem 'factory_girl_rails'
     gem 'mime-types', ">=1.1"
     gem "headless"
-    gem "rspec_junit_formatter"
-    gem 'rspec-its'
     gem 'simplecov'
     gem 'email_spec'
     gem 'capybara'
@@ -141,6 +157,7 @@
     gem 'fakefs', require: "fakefs/safe"
     gem 'fakeweb'
     gem 'hashdiff'
+    gem 'coveralls'
   end
 
   extra_gems = File.expand_path("../Gemfile.local",__FILE__)

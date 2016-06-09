@@ -38,11 +38,11 @@ describe R2GroupMigration do
     end
 
     it "should create the administrator group" do
-      Admin::Group.find('administrator').should be_nil
+      expect(Admin::Group.find('administrator')).to be_nil
       R2GroupMigration.new.up
       admin_group = Admin::Group.find('administrator')
-      admin_group.should_not be_nil
-      admin_group.users.should include(Admin::Group.find('group_manager').users.first)
+      expect(admin_group).not_to be_nil
+      expect(admin_group.users).to include(Admin::Group.find('group_manager').users.first)
     end
   end
 

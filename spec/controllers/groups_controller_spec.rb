@@ -23,8 +23,8 @@ describe Admin::GroupsController do
   describe "creating a new group" do
   	it "should redirect to sign in page with a notice when unauthenticated" do
   	  expect { get 'new' }.not_to change { Admin::Group.all.count }
-  	  flash[:notice].should_not be_nil
-  	  response.should redirect_to(new_user_session_path)
+  	  expect(flash[:notice]).not_to be_nil
+  	  expect(response).to redirect_to(new_user_session_path)
   	end
 	
     it "should redirect to home page with a notice when authenticated but unauthorized" do
@@ -38,8 +38,8 @@ describe Admin::GroupsController do
       group = FactoryGirl.create(:group)
       login_as('policy_editor')
       expect { post 'create', admin_group: group.name }.not_to change {Admin::Group.all.count }
-      flash[:error].should_not be_nil
-      response.should redirect_to(admin_groups_path)
+      expect(flash[:error]).not_to be_nil
+      expect(response).to redirect_to(admin_groups_path)
     end
 
     context "Default permissions should be applied" do
@@ -47,8 +47,8 @@ describe Admin::GroupsController do
         login_as('policy_editor')
         expect { post 'create', admin_group: test_group }.to change { Admin::Group.all.count }
         g = Admin::Group.find(test_group)
-        g.should_not be_nil
-        response.should redirect_to(edit_admin_group_path(g))
+        expect(g).not_to be_nil
+        expect(response).to redirect_to(edit_admin_group_path(g))
       end
     end
     
@@ -64,16 +64,16 @@ describe Admin::GroupsController do
     context "editing a group" do
       it "should redirect to sign in page with a notice on when unauthenticated" do    
         get 'edit', id: group.name
-        flash[:notice].should_not be_nil
-        response.should redirect_to(new_user_session_path)
+        expect(flash[:notice]).not_to be_nil
+        expect(response).to redirect_to(new_user_session_path)
       end
     
       it "should redirect to home page with a notice when authenticated but unauthorized" do
         login_as('student')
       
         get 'edit', id: group.name
-        flash[:notice].should_not be_nil
-        response.should redirect_to(root_path)
+        expect(flash[:notice]).not_to be_nil
+        expect(response).to redirect_to(root_path)
       end
     
       it "should be able to change group users when authenticated and authorized" do
@@ -84,9 +84,9 @@ describe Admin::GroupsController do
 
         group_name = group.name
         group = Admin::Group.find(group_name)
-        group.users.should include(new_user)
-        flash[:notice].should_not be_nil
-        response.should redirect_to(edit_admin_group_path(Admin::Group.find(group.name)))
+        expect(group.users).to include(new_user)
+        expect(flash[:notice]).not_to be_nil
+        expect(response).to redirect_to(edit_admin_group_path(Admin::Group.find(group.name)))
       end
     
       it "should be able to change group name when authenticated and authorized" do
@@ -96,18 +96,18 @@ describe Admin::GroupsController do
         put 'update', group_name: new_group_name, id: group.name
     
         new_group = Admin::Group.find(new_group_name)
-        new_group.should_not be_nil
-        new_group.users.should == group.users
-        flash[:notice].should_not be_nil
-        response.should redirect_to(edit_admin_group_path(new_group))
+        expect(new_group).not_to be_nil
+        expect(new_group.users).to eq(group.users)
+        expect(flash[:notice]).not_to be_nil
+        expect(response).to redirect_to(edit_admin_group_path(new_group))
       end
       
       it "should not be able to rename system groups" do
         login_as('administrator')
         put 'update', group_name: Faker::Lorem.word, id: 'manager'
         
-        Admin::Group.find('manager').should_not be_nil
-        flash[:error].should_not be_nil
+        expect(Admin::Group.find('manager')).not_to be_nil
+        expect(flash[:error]).not_to be_nil
       end
 
       it "should be able to remove users from a group" do
@@ -116,8 +116,8 @@ describe Admin::GroupsController do
         
         put 'update_users', id: group.name, user_ids: Admin::Group.find(group.name).users
 
-        Admin::Group.find(group.name).users.should be_empty
-        flash[:error].should be_nil
+        expect(Admin::Group.find(group.name).users).to be_empty
+        expect(flash[:error]).to be_nil
       end
 
       it "should not remove users from the manager group if they are sole managers of a collection" do
@@ -129,7 +129,7 @@ describe Admin::GroupsController do
         put 'update_users', id: 'manager', user_ids: [manager_name]
 
         expect(Admin::Group.find('manager').users).to include(manager_name)
-        flash[:error].should_not be_nil
+        expect(flash[:error]).not_to be_nil
       end
 
       ['administrator','group_manager'].each do |g|
@@ -139,9 +139,9 @@ describe Admin::GroupsController do
 
           put 'update', id: g, new_user: new_user
           group = Admin::Group.find(g)
-          group.users.should include(new_user)
-          flash[:notice].should_not be_nil
-          response.should redirect_to(edit_admin_group_path(Admin::Group.find(group.name)))
+          expect(group.users).to include(new_user)
+          expect(flash[:notice]).not_to be_nil
+          expect(response).to redirect_to(edit_admin_group_path(Admin::Group.find(group.name)))
         end
 
         it "should not be able to manage #{g} group as a group_manager" do
@@ -150,9 +150,9 @@ describe Admin::GroupsController do
 
           put 'update', id: g, new_user: new_user
           group = Admin::Group.find(g)
-          group.users.should_not include(new_user)
-          flash[:error].should_not be_nil
-          response.should redirect_to(admin_groups_path)
+          expect(group.users).not_to include(new_user)
+          expect(flash[:error]).not_to be_nil
+          expect(response).to redirect_to(admin_groups_path)
         end
       end
     end
@@ -161,24 +161,24 @@ describe Admin::GroupsController do
       it "should redirect to sign in page with a notice on when unauthenticated" do    
         
         expect { put 'update_multiple', group_ids: [group.name] }.not_to change { RoleControls.users(group.name) }
-        flash[:notice].should_not be_nil
-        response.should redirect_to(new_user_session_path)
+        expect(flash[:notice]).not_to be_nil
+        expect(response).to redirect_to(new_user_session_path)
       end
     
       it "should redirect to home page with a notice when authenticated but unauthorized" do
         login_as('student')
       
         expect { put 'update_multiple', group_ids: [group.name] }.not_to change { RoleControls.users(group.name) }
-        flash[:notice].should_not be_nil
-        response.should redirect_to(root_path)
+        expect(flash[:notice]).not_to be_nil
+        expect(response).to redirect_to(root_path)
       end
     
       it "should be able to change group users when authenticated and authorized" do
         login_as('policy_editor')
       
         expect { put 'update_multiple', group_ids: [group.name] }.to change { RoleControls.users(group.name) }
-        flash[:notice].should_not be_nil
-        response.should redirect_to(admin_groups_path)
+        expect(flash[:notice]).not_to be_nil
+        expect(response).to redirect_to(admin_groups_path)
       end
     end
   end

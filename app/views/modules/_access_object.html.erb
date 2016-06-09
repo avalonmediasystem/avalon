@@ -13,17 +13,19 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div class="access-block col-lg-4 col-md-12" id="<%= access_object %>_management">
+<% is_leasable = !(object.class==Admin::Collection) %>
+<div class="access-block col-lg-10" id="<%= access_object %>_management">
 <%= bootstrap_form_for object do |form| %>
   <input id="step" name="step" type="hidden" value="access-control"/>
   <input id="donot_advance" name="donot_advance" type="hidden" value="true"/>
     <div class="form-group"> 
-      <%# ----------- Title and tooltip ---------------------------------%>
-      <%= render partial: "modules/tooltip", locals: { form: form, field: access_object, tooltip: t("access_control.#{access_object}"), options: {display_label: t("access_control.#{access_object}label").html_safe} } %>
-
-      <%#------------ Add access item text field and submit button ------------ %>
       <div class="form-group row">
-        <div class="col-xs-10">
+        <% if is_leasable %>
+          <div class="col-xs-5">
+        <% else %>
+          <div class="col-xs-11">
+        <% end %>
+        <%= render partial: "modules/tooltip", locals: { form: form, field: access_object, tooltip: t("access_control.#{access_object}"), options: {display_label: (t("access_control.#{access_object}label")+'*').html_safe} } %><br/>
 	<% if defined?(dropdown_values) && dropdown_values.present? %>
 	  <%= select_tag "add_#{access_object}", 
 	    options_from_collection_for_select(*dropdown_values), 
@@ -36,43 +38,87 @@ Unless required by applicable law or agreed to in writing, software distributed
 	    disabled: input_disabled %>
 	<% else %>
 	  <%= text_field_tag "add_#{access_object}", nil,
+            class: "form-control",
 	    disabled: input_disabled  %>
 	<% end %>
         </div>
-        <%= button_tag "Add", name: "submit_add_#{access_object}", type: "submit",
-          class: "btn btn-default col-xs-2", disabled: input_disabled, value: "Add" %>
+	<% if is_leasable %>
+        <div class="col-xs-3">
+          <label class="control-label" for="add_#{access_object}_begin">
+            <span class="tooltip-label" data-title="Begin Date">Begin Date</span>
+          </label>
+          <%= text_field_tag "add_#{access_object}_begin", nil, placeholder: 'Begin Date (yyyy-mm-dd)', class: 'form-control date-input' %>
+        </div>
+        <div class="col-xs-3">
+          <label class="control-label" for="add_#{access_object}_end">
+            <span class="tooltip-label" data-title="End Date">End Date</span>
+          </label>
+          <%= text_field_tag "add_#{access_object}_end", nil, placeholder: 'End Date (yyyy-mm-dd)', class: 'form-control date-input' %>
+        </div>
+        <% end %>
+        <div class="col-xs-1">
+          <%= button_tag "Add", name: "submit_add_#{access_object}", type: "submit",
+            class: "btn btn-default btn-sm", style: 'margin-top:2.1em', disabled: input_disabled, value: "Add" %>
+        </div>
       </div>
     </div>
 
     <%#----------- Access item list --------------- %>
     <table class="table table-striped table-hover">
-      <% if members.present? %>
-      <tbody
-        <% members.each do |member_object| %>
-        <tr>
-          <td>
-            <%= label_tag do %>
-              <% if defined?(display_helper) && display_helper.present? %>
-                <%= self.send(display_helper, member_object) %>
-              <% else %>
-                <%= member_object %>
+      <% if members.present? || defined?(leases) && leases.present? %>
+      <tbody>
+	<% if members.present? %>
+          <% members.each do |member_object| %>
+          <tr>
+            <td class='access_list_label'>
+              <%= label_tag do %>
+                <% if defined?(display_helper) && display_helper.present? %>
+                  <%= self.send(display_helper, member_object) %>
+                <% else %>
+                  <%= member_object %>
+                <% end %>
               <% end %>
+            </td>
+	    <td class='access_list_dates'></td>
+            <% if !input_disabled %>
+            <td class='access_list_remove'>
+              <%= link_to "×",
+                polymorphic_path(object, "remove_#{access_object}".to_sym => member_object, step: @active_step, donot_advance: true), 
+                method: "put",
+                class: "btn btn-xs close remove" %>
+            </td>
             <% end %>
-          </td>
-          <% if !input_disabled %>
-          <td>
-            <%= link_to "×",
-              polymorphic_path(object, 
-                "remove_#{access_object}".to_sym => member_object, 
-                step: @active_step, donot_advance: true), method: "put",
-              class: "btn btn-xs close remove" %>
-          </td>
+          </tr>
           <% end %>
-        </tr>
+        <% end %>
+        <% if is_leasable and defined?(leases) and leases.present? %>
+          <% leases.each do |lease_object| %>
+          <tr>
+            <td class='access_list_label'>
+              <%= label_tag do %>
+                <% if defined?(display_helper) && display_helper.present? %>
+                  <%= self.send(display_helper, (lease_object.read_groups+lease_object.read_users).first) %>
+                <% else %>
+                  <%= (lease_object.read_groups+lease_object.read_users).first %>
+                <% end %>
+              <% end %>
+            </td>
+            <td class='access_list_dates'>
+              Effective <%= lease_object.begin_time.strftime('%F') %> to <%= lease_object.end_time.strftime('%F') %>
+            </td>
+            <% if !input_disabled %>
+            <td class='access_list_remove'>
+              <%= link_to "×",
+                polymorphic_path(object, "remove_lease".to_sym => lease_object, step: @active_step, donot_advance: true), 
+                method: "put",
+                class: "btn btn-xs close remove" %>
+            </td>
+            <% end %>
+          </tr>
+          <% end %>
         <% end %>
       </tbody>
       <% end %>
     </table> 
-
-<% end %> 
+  <% end %> 
 </div>

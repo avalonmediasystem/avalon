@@ -7,16 +7,16 @@ You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed 
+Unless required by applicable law or agreed to in writing, software distributed
   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
     <section id="content" class="avalon-player" style="width: 100%" tabIndex="-1">
       <% if @masterfile.present? and @masterfile.succeeded? %>
-        <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
-        
+        <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>
+
         <% if @stream_info[:is_video] %>
           <video class="mejs-avalon" controls id="video-tag" poster="<%= @stream_info[:poster_image] %>" preload="true">
             <% @stream_info[:stream_flash].each do |flash| %>
@@ -24,6 +24,9 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% end %>
             <% @stream_info[:stream_hls].each do |hls| %>
               <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
+            <% end %>
+            <% if @stream_info[:captions_path].present? %>
+              <track srclang="en" kind="subtitles" type="<%= @stream_info[:captions_format] %>" src="<%= @stream_info[:captions_path] %>"></track>
             <% end %>
           </video>
         <% else %>
@@ -46,9 +49,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
   <%= stylesheet_link_tag "mediaelement-title/mejs-title" =%>
   <%= stylesheet_link_tag "me-logo" %>
+  <%= stylesheet_link_tag "font-awesome" %>
 
-  <% features = ['playpause','current','progress','duration','volume','responsive', 'title'] %>
-  
+  <% features = ['playpause','current','progress','duration','tracks','volume','responsive', 'title'] %>
+
   <% if @masterfile.is_video? %>
     <% features << 'qualities' %>
   <% else %>
@@ -74,13 +78,14 @@ Unless required by applicable law or agreed to in writing, software distributed
       titleLink: '<%= media_object_url(@masterfile.mediaobject) %>',
       logoAction: 'popup',
       logoURL: '<%= pid_section_media_object_url(@masterfile.mediaobject.pid, @masterfile.pid).html_safe %>',
-      logoTitle: 'View in repository'
+      logoTitle: 'View in repository',
+      customError: '<%= t("media_objects.player.customError").html_safe %>'
     })
     currentPlayer = avalonPlayer.player;
   </script>
 
   <style>
-a { text-decoration: none; } 
-a:hover { text-decoration: underline } 
+a { text-decoration: none; }
+a:hover { text-decoration: underline }
   </style>
 <% end %>

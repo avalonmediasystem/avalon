@@ -15,18 +15,33 @@
 module Avalon
   class ControlledVocabulary
 
+    @@path = Rails.root.join(Avalon::Configuration.lookup('controlled_vocabulary.path'))
+
     def self.vocabulary
       vocabulary = {}
-      path = Rails.root.join(Avalon::Configuration.lookup('controlled_vocabulary.path'))
-      if File.file?(path)
-        yaml = YAML::load(File.read(path))
+      if File.file?(@@path)
+        yaml = YAML::load(File.read(@@path))
         vocabulary = yaml.symbolize_keys if yaml.present?
       end
       vocabulary
     end
 
+    # Threadsafe writing to controlled vocabulary yaml
+    # @param [Hash] vocabulary The new vocabulary to save
+    # @returns [Hash, false] The newly saved vocabulary, or false if save unable to obtain lock
+    def self.vocabulary= vocabulary
+      f = File.open(@@path, File::RDWR|File::TRUNC|File::CREAT, 0644)
+      if f.flock(File::LOCK_NB|File::LOCK_EX)
+        YAML.dump(vocabulary, f)
+        f.flock(File::LOCK_UN)
+      else
+        false
+      end
+    end
+
     def self.find_by_name( name )
       vocabulary[name.to_sym]
     end
+
   end
 end

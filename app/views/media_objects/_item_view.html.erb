@@ -7,9 +7,9 @@ You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed 
+Unless required by applicable law or agreed to in writing, software distributed
   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
@@ -23,8 +23,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="col-sm-8" id="left_column">
     <section id="content" class="avalon-player" style="width: 100%; visibility: hidden;" tabIndex="-1">
       <% if @currentStream.present? and @currentStream.derivatives.present? %>
-        <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>   
-        
+        <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>
+
         <% if @currentStreamInfo[:is_video] %>
           <%= master_file_meta_properties(@currentStream) do %>
             <video class="mejs-avalon" controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] if f_start == 0 %>" preload="auto">
@@ -33,6 +33,9 @@ Unless required by applicable law or agreed to in writing, software distributed
               <% end %>
               <% @currentStreamInfo[:stream_hls].each do |hls| %>
                 <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
+              <% end %>
+              <% if @currentStreamInfo[:captions_path].present? %>
+                <track srclang="en" kind="subtitles" type="<%= @currentStreamInfo[:captions_format] %>" src="<%= @currentStreamInfo[:captions_path] %>"></track>
               <% end %>
             </video>
           <% end %>
@@ -50,9 +53,11 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% end %>
       <% end %>
     </section>
+
+    <%= render file: '_add_to_playlist.html.erb' if current_user.present? %>
     <%= render 'workflow_progress' %>
     <%= render 'share' if will_partial_list_render? :share %>
-    <%= render partial: 'sections', 
+    <%= render partial: 'sections',
         locals: {mediaobject: @mediaobject,
                  sections: @masterFiles,
                  activeStream: @currentStream} %>
@@ -68,24 +73,43 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
-  <%= javascript_include_tag 'android_pre_play' %> 
-  <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %> 
+  <%= javascript_include_tag 'android_pre_play' %>
+  <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %>
   <%= javascript_include_tag 'me-thumb-selector' %>
   <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
   <%= javascript_include_tag 'avalon_player' %>
+  <%= javascript_include_tag 'me-add-to-playlist' %>
 
-  <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>   
+  <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
   <%= stylesheet_link_tag 'me-thumb-selector' %>
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
+  <%= stylesheet_link_tag 'me-add-to-playlist' %>
 
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
+    function advancePlaylist() {
+      nextUrl = $('div.panel-heading').has('a.current-stream').next().find('a.playable').attr('href');
+      if (nextUrl) {
+        window.location = nextUrl + "?autostart=true";
+      }
+    }
+
     avalonPlayer = new AvalonPlayer($('#left_column'), <%= @currentStreamInfo.to_json.html_safe %>, {
       audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
       mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
       thumbnailSelector: <%= can?(:edit, @mediaobject) ? 'true' : 'false' %>,
-      startQuality: '<%= current_quality(@currentStreamInfo) %>'
-    })
+      //addToPlaylist: <%= can?(:create, Playlist) ? 'true' : 'false' %>,
+      addToPlaylist: <%= current_user.present? ? 'true' : 'false' %>,
+      startQuality: '<%= current_quality(@currentStreamInfo) %>',
+      customError: '<%= t("media_objects.player.customError").html_safe %>',
+      playlistItemDefaultTitle: '<%= @currentStream.embed_title.html_safe %>',
+      autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
+      success: function(mediaElement, domObject) {
+	avalonPlayer.player.media.addEventListener('ended', function(e) {
+	    advancePlaylist();
+	}, false);
+      }
+    });
     currentPlayer = avalonPlayer.player;
   </script>
   <% end %>

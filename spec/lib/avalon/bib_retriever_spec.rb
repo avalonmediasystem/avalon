@@ -41,26 +41,47 @@ describe Avalon::BibRetriever do
   
   describe 'sru' do
     let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=%5E%25#{bib_id}" }
-    let(:sru_response) { File.read(File.expand_path("../../../fixtures/#{bib_id}.xml",__FILE__)) }
+    
+    describe 'default namespace' do
+      let(:sru_response) { File.read(File.expand_path("../../../fixtures/#{bib_id}.xml",__FILE__)) }
 
-    before :each do
-      Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
-      FakeWeb.register_uri :get, sru_url, body: sru_response
+      before :each do
+        Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+        FakeWeb.register_uri :get, sru_url, body: sru_response
+      end
+      
+      after :each do
+        FakeWeb.clean_registry
+      end
+      
+      it 'retrieves proper MODS' do
+        response = Avalon::BibRetriever.instance.get_record("^%#{bib_id}")
+        expect(Nokogiri::XML(response)).to be_equivalent_to(mods)
+      end
     end
     
-    after :each do
-      FakeWeb.clean_registry
-    end
-    
-    it 'retrieves proper MODS' do
-      response = Avalon::BibRetriever.instance.get_record("^%#{bib_id}")
-      expect(Nokogiri::XML(response)).to be_equivalent_to(mods)
+    describe 'alternate namespace' do
+      let(:sru_response) { File.read(File.expand_path("../../../fixtures/#{bib_id}-ns.xml",__FILE__)) }
+
+      before :each do
+        Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'namespace' => 'http://example.edu/fake/sru/namespace/' }
+        FakeWeb.register_uri :get, sru_url, body: sru_response
+      end
+      
+      after :each do
+        FakeWeb.clean_registry
+      end
+      
+      it 'retrieves proper MODS' do
+        response = Avalon::BibRetriever.instance.get_record("^%#{bib_id}")
+        expect(Nokogiri::XML(response)).to be_equivalent_to(mods)
+      end
     end
   end
   
   describe 'zoom' do
     it 'retrieves proper MODS' do
-      pending "need a reasonable way to mock ruby-zoom"
+      skip "need a reasonable way to mock ruby-zoom"
     end
   end
 end

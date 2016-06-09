@@ -243,6 +243,15 @@ label {
   .remove:hover, .remove:active {
     @extend .btn-danger;
   }
+  td.access_list_label {
+    width: 55%;
+  }
+  td.access_list_dates {
+    width: 35%;
+  }
+  td.access_list_remove {
+    width: 10%;
+  }
 }
 
 /* UI Fixes */
@@ -869,7 +878,7 @@ div.status-detail {
     list-style: none;
     padding: 0;
     margin: 0;
-    min-width: 800px;
+    min-width: 920px;
   }
   ul.header {
     background-color: $lightgray;
@@ -890,25 +899,33 @@ div.status-detail {
       &:nth-of-type(2) { width: 30%; }
       &:nth-of-type(3) { width: 40%; }
       &:nth-of-type(4) { width: 75px; text-align: left; }
-      &:nth-of-type(5) { width: 80px; text-align: center; float: right; }
+      &:nth-of-type(5) { width: 75px; text-align: center; }
+      &:nth-of-type(6) { width: 75px; text-align: center; float: right; }
     }
   }
-  div.structure_xml {
+  div.structure_tool {
     padding: 10px 20px;
     border-top: 1px dotted $gray;
     min-height: 40px;
-    div.structure_view ul {
-      padding-left: 20px;
-      li {
-        display: block;
-        width: 100%;
+    div.structure_view {
+      margin-left: 20px;
+      ul {
+        padding-left: 20px;
+        li {
+          display: block;
+          width: 100%;
+        }
       }
     }
-    div.structure_actions {
-      float: right;
+    div.tool_actions {
+      width: 100%;
       form {
         display: inline;
+        float: right;
       }
+    }
+    span.tool_label {
+      font-weight: bold;
     }
   }
 }
@@ -972,4 +989,146 @@ div.structure_edit {
 
 .mejs-overlay-loading {
   border-radius: 50% !important;
+}
+
+.me-cannotplay {
+  @extend .alert;
+  @extend .alert-danger;
+  text-align: center;
+  visibility: visible !important;
+}
+
+/* Playlist show page */
+.queue {
+  opacity:.80;
+  &:hover {
+    opacity:1;
+  }
+}
+.now-playing {
+  padding:0;
+  margin:.25em 0;
+}
+h5.panel-title {
+  font-size:1.15em;
+  padding-left:.4em;
+  min-height: 1em;
+}
+.panel-heading {
+  border-top:1px solid $gray;
+}
+.panel-heading .accordion-toggle:before {
+    font-family: 'FontAwesome';
+    content: "\f078";
+}
+.panel-heading .accordion-toggle.collapsed:before {
+    content: "\f054";
+}
+#metadata_header h3 {
+  font-size:18px;
+}
+.indicator {
+  font-size:18px;
+  padding-right:4px;
+}
+.now-playing-title {
+  width:80%;
+  float:left;
+}
+.side-playlist{
+  border-top:1px solid $gray;
+  padding-top: .6em;
+  li {
+    margin-top: .2em;
+    float: left;
+    width:100%;
+  }
+  .pull-right {
+    text-align:right;
+  }
+}
+.playlist-title {
+  margin:0;padding:0;
+  font-size:1.5em;
+}
+#section-label {
+  float:left;
+}
+.playlist-title {
+  width:100%;
+  border-bottom:1px solid $gray;
+  line-height:2em;
+  .fa {
+    font-size:.7em;
+  }
+}
+.playlist_actions {
+  textarea {
+    resize: vertical;
+  }
+}
+.playlist_item_edit {
+  border: 2pt solid $gray;
+  border-top: 1pt solid $gray;
+  border-left: 1pt solid $gray;
+  border-right: 1pt solid $gray;
+  border-radius: 5pt;
+  background-color: $lightgray;
+  padding: 10pt;
+  margin-top: 2pt;
+  margin-bottom: 10pt;
+  label {
+    text-align: right;
+    margin-top: 2pt;
+  }
+  input, textarea {
+    margin-bottom: 4pt;
+  }
+  textarea {
+    resize: vertical;
+  }
+}
+.annotation_title {
+   font-weight: bold;
+   left: 0 ;
+   position: absolute;
+}
+.annotation_start_time {
+  position: absolute;
+  right: 240px;
+}
+.annotation_end_time {
+  position: absolute;
+  right: 130px;
+}
+.annotation_position {
+  position: absolute;
+  right: 0;
+}
+.related_item {
+  position: relative;
+}
+
+.mejs-time-annotation {
+  background: linear-gradient(#00F,#00F);
+  opacity: .75;
+  height: 4px !important;
+  top: 2px !important;
+}
+
+.playlist-description {
+  margin-top: .6em;
+  margin-bottom: .4em;
+}
+
+.playlist_item_denied {
+  color: gray ;
+}
+
+.show_playlist_player_denied_title {
+  display: block;
+}
+
+.nowrap {
+  white-space: nowrap;
 }
