@@ -20,6 +20,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/active_annotations.git
   revision: 63c683fdf9f8d629116a28b9e8439b7e2269c265
+  tag: avalon-r5
   specs:
     active_annotations (0.1.0)
       json-ld
@@ -86,10 +87,11 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
-  revision: 6060bd75cf4620758166162c75dc755835b7fa85
+  revision: d5a20bc90c93bda2377f2d53e3a3fefb3e7ba4b0
+  tag: avalon-r5
   specs:
     media_element_add_to_playlist (0.0.1)
-      rails (~> 4.0.13)
+      rails (~> 4.0)
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector
@@ -116,7 +118,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-skin-avalon.git
   revision: a564874595672d5f751a83ae43685728c247f49e
-  tag: captions
+  tag: avalon-r5
   specs:
     mediaelement-skin-avalon (0.0.1)
 
@@ -130,7 +132,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
   revision: 8bb5ddad7abd2249ecb0f2891903728fc627e04b
-  tag: captions
+  tag: avalon-r5
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
@@ -160,6 +162,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
   revision: 36f79674d16c555bda0415f34b5d3dabe8885e19
+  tag: avalon-r5
   specs:
     rubyhorn (0.0.6)
       activesupport
@@ -172,7 +175,8 @@ GIT
 
 GIT
   remote: https://github.com/projecthydra-labs/active_encode.git
-  revision: d95ce45651f77acc220968c1169e9863bedd31de
+  revision: 5e68c05fd4023d8bc6655d9a65ae709553c7ab8f
+  tag: v0.0.3
   specs:
     active_encode (0.0.2)
       activesupport
