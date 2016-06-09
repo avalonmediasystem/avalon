@@ -134,11 +134,16 @@ describe AvalonAnnotation do
       end
     end
     describe 'duration' do
+      subject(:video_master_file) { FactoryGirl.create(:master_file, duration: "8", derivatives: [derivative, derivative2]) }
+      let(:derivative) { FactoryGirl.create(:derivative, duration: "12") }
+      let(:derivative2) { FactoryGirl.create(:derivative, duration: "10") }
       it 'raises an error when end time exceeds the duration' do
-        annotation.master_file.duration = '8'
-        annotation.master_file.save!
         annotation.end_time = 60
         expect(annotation).not_to be_valid
+      end
+      it 'allows end times longer than master_file duration but not longer than the longest derivative' do
+        annotation.end_time = 12
+        expect(annotation).to be_valid
       end
     end
   end

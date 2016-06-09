@@ -12,12 +12,28 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   alias_method :title=, :label=
 
   validates :master_file, :title, :start_time, presence: true
-  validates :start_time, numericality: { greater_than_or_equal_to: 0, message: "must be greater than or equal to 0"}
-  validates :end_time, numericality: { greater_than: Proc.new {|a| Float(a.start_time) rescue 0}, less_than_or_equal_to: Proc.new {|a| a.master_file.duration.to_f rescue -1}, message: "must be between start time and end of section"}
+  validates :start_time, numericality: { greater_than_or_equal_to: 0, message: "must be greater than or equal to 0" }
+  validates :end_time, numericality: { 
+    greater_than: Proc.new { |a| Float(a.start_time) rescue 0 }, 
+    less_than_or_equal_to: Proc.new { |a| a.max_time }, 
+    message: "must be between start time and end of section"
+  }
 
   after_initialize do
     selector_default!
     title_default!
+  end
+
+  # This function determines the max time for a masterfile and its derivatives
+  # Used for determining the maximum possible end time for an annotation
+  # @return [float] the largest end time or -1 if no durations present
+  def max_time
+    max = -1
+    max = master_file.duration.to_f if master_file.duration.present?
+    master_file.derivatives.each do |derivative|
+      max = derivative.duration.to_f if derivative.duration.present? && derivative.duration.to_f > max
+    end
+    max
   end
 
   # Mixs in in Avalon specific information from the master_file to a rdf annonation prior and creates a solr document
