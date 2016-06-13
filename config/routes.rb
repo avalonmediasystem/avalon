@@ -27,6 +27,8 @@
       post 'update_access_control'
       post 'publish'#, as: :publish_bookmarks
       post 'unpublish'#, as: :unpublish_bookmarks
+      get 'add_to_playlist'
+      post 'add_to_playlist'
     end
   end
 
