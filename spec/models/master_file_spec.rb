@@ -458,4 +458,20 @@ describe MasterFile do
       end
     end
   end
+
+  describe '#post_processing_move_filename' do
+    let(:pid) { 'avalon:12345' }
+    let(:pid_prefix) { 'avalon_12345' }
+    let(:path) { '/path/to/video.mp4' }
+    it 'prepends the pid' do
+      expect(MasterFile.post_processing_move_filename(path, pid: pid).starts_with?(pid_prefix)).to be_truthy
+    end
+    it 'returns a filename' do
+      expect(File.dirname(MasterFile.post_processing_move_filename(path, pid: pid))).to eq('.')
+    end
+    it 'does not prepend the pid if already present' do
+      path = '/path/to/avalon_12345-video.mp4'
+      expect(MasterFile.post_processing_move_filename(path, pid: pid).include?(pid_prefix + '-' + pid_prefix)).to be_falsey
+    end
+  end
 end
