@@ -25,7 +25,7 @@ describe BookmarksController, type: :controller do
     Delayed::Worker.delay_jobs = false
     login_user collection.managers.first
     3.times do
-      media_objects << mo = FactoryGirl.create(:media_object_with_master_file, collection: collection)
+      media_objects << mo = FactoryGirl.create(:media_object, collection: collection)
       post :create, id: mo.id
     end
   end
@@ -112,15 +112,6 @@ describe BookmarksController, type: :controller do
           expect(mo.collection).to eq(collection2)
         end
       end
-    end
-  end
-
-  describe '#add_to_playlist' do
-    let!(:playlist) { FactoryGirl.create(:playlist) }
-    it 'added selected items to given playlist' do
-      expect { 
-        post 'add_to_playlist', target_playlist_id: playlist.id 
-      }.to change{PlaylistItem.where(playlist_id: playlist.id).count}.by(3)
     end
   end
 
