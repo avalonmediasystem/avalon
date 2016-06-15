@@ -35,6 +35,8 @@ class BookmarksController < CatalogController
 
   self.add_show_tools_partial( :delete, callback: :delete_action, if: Proc.new { |context, config, options| context.controller.user_can? :delete } )
 
+  self.add_show_tools_partial( :add_to_playlist, callback: :add_to_playlist_action )
+
   before_filter :verify_permissions, only: :index
 
   #HACK next two methods are a hack for problems in the puppet VM tomcat/solr
@@ -60,7 +62,7 @@ class BookmarksController < CatalogController
 
   def verify_permissions
     @response, @documents = action_documents
-    @valid_user_actions = [:delete, :unpublish, :publish, :move, :update_access_control]
+    @valid_user_actions = [:delete, :unpublish, :publish, :move, :update_access_control, :add_to_playlist]
     mos = @documents.collect { |doc| MediaObject.find( doc.id ) }
     @documents.each do |doc|
       mo = MediaObject.find(doc.id)
@@ -113,6 +115,17 @@ class BookmarksController < CatalogController
 
     params[:hidden] = params[:hidden] == "true" if params[:hidden].present?
     MediaObject.access_control_bulk success_ids, params
+  end
+
+  def add_to_playlist_action documents
+    playlist = Playlist.find(params[:target_playlist_id])
+    Array(documents.map(&:id)).each do |id|
+      media_object = MediaObject.find(id)
+      media_object.parts.each do |mf|
+        annotation = AvalonAnnotation.create(master_file: mf)
+        PlaylistItem.create(annotation: annotation, playlist: playlist)
+      end
+    end
   end
 
   def status_action documents
