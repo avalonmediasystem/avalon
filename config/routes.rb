@@ -11,8 +11,6 @@ Avalon::Application.routes.draw do
       post '/bookmarks/update_access_control'
       post '/bookmarks/publish', as: :publish_bookmarks
       post '/bookmarks/unpublish', as: :unpublish_bookmarks
-      get '/bookmarks/add_to_playlist', as: :add_to_playlist_bookmarks
-      post '/bookmarks/add_to_playlist'
 
   post '/media_objects/set_session_quality'
 
