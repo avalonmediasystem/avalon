@@ -131,8 +131,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: 8bb5ddad7abd2249ecb0f2891903728fc627e04b
-  tag: avalon-r5
+  revision: 86de64fd02e4982508c07dd6b3412430793e6955
+  tag: captions
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
@@ -716,7 +716,7 @@ GEM
       actionpack (>= 3.1)
       jquery-rails
       railties (>= 3.1)
-    tzinfo (0.3.49)
+    tzinfo (0.3.50)
     uber (0.0.13)
     uglifier (2.7.1)
       execjs (>= 0.3.0)
@@ -849,6 +849,3 @@ DEPENDENCIES
   whenever
   with_locking
   xray-rails
-
-BUNDLED WITH
-   1.12.4
