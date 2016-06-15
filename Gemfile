@@ -1,7 +1,7 @@
   source 'http://rubygems.org'
 
   # active anno dev
-  gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git'
+  gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', tag: 'avalon-r5'
 
   gem 'iconv'
   gem 'rails', '~>4.0.3'
@@ -26,14 +26,14 @@
   gem 'kaminari', '~> 0.15.0'
 
   gem 'avalon-workflow', git: 'https://github.com/avalonmediasystem/avalon-workflow.git', tag: 'avalon-r4'
-  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'captions'
+  gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r5'
   gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r4'
   gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r4'
-  gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'captions'
+  gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'avalon-r5'
   gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r4'
   gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r4'
   gem 'media-element-logo-plugin'
-  gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git'
+  gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r5'
 
   gem 'browse-everything', '0.6.3'
 
@@ -78,8 +78,8 @@
   #gem 'devise-guests'
   gem 'haml'
 
-  gem 'active_encode', git: "https://github.com/projecthydra-labs/active_encode.git"
-  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
+  gem 'active_encode', git: "https://github.com/projecthydra-labs/active_encode.git", tag: 'v0.0.3'
+  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r5'
   gem 'validates_email_format_of'
   gem 'loofah'
   gem 'omniauth-identity'
@@ -123,6 +123,7 @@
     gem 'meta_request'
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano', require: false
+    gem 'rubocop', '~> 0.40.0', require: false
   end
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
