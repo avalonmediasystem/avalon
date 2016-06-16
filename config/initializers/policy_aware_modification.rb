@@ -27,6 +27,6 @@ ActiveFedora::SolrService.instance_eval do
     end
 
   def self.default_http_method
-    ActiveFedora.solr_config.fetch(:http_method, :get).to_sym
+    ActiveFedora.solr_config.fetch(:http_method, :post).to_sym
   end
 end
