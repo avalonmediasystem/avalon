@@ -7,6 +7,7 @@ class PlaylistItem < ActiveRecord::Base
   acts_as_list scope: :playlist
 
   belongs_to :annotation, class_name: AvalonAnnotation, dependent: :destroy
+  has_many :marker, class_name: AvalonMarker, dependent: :destroy
   validates :annotation, presence: true
   delegate :title, :comment, :start_time, :end_time, :title=, :comment=, :start_time=, :end_time=, :master_file, to: :annotation
   before_save do
