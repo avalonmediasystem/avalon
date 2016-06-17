@@ -1,16 +1,15 @@
 require 'acts_as_list'
 
 class PlaylistItem < ActiveRecord::Base
-#  after_save :recount_folders
   belongs_to :playlist, touch: true
   validates :playlist, presence: true
   acts_as_list scope: :playlist
 
-  belongs_to :annotation, class_name: AvalonAnnotation, dependent: :destroy
+  belongs_to :clip, class_name: AvalonClip, dependent: :destroy
   has_many :marker, class_name: AvalonMarker, dependent: :destroy
-  validates :annotation, presence: true
-  delegate :title, :comment, :start_time, :end_time, :title=, :comment=, :start_time=, :end_time=, :master_file, to: :annotation
+  validates :clip, presence: true
+  delegate :title, :comment, :start_time, :end_time, :title=, :comment=, :start_time=, :end_time=, :master_file, to: :clip
   before_save do
-    annotation.save
+    clip.save
   end
 end

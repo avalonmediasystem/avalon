@@ -1,16 +1,16 @@
-<% annotation = AvalonAnnotation.find(@playlist.items[playlist_item_counter].annotation_id) %>
+<% clip = AvalonClip.find(@playlist.items[playlist_item_counter].clip_id) %>
 <% item = @playlist.items[playlist_item_counter] %>
 <% item_class = (item == @current_playlist_item)? 'now_playing' : 'queue' %>
-<% item_type = (annotation.master_file.file_format=='Moving image')? 'fa-film' : 'fa-music' %>
+<% item_type = (clip.master_file.file_format=='Moving image')? 'fa-film' : 'fa-music' %>
 <% if can? :read, item %>
   <li class="<%= item_class %>">
     <% if item_class == 'now_playing' %>
       <i class="fa fa-arrow-circle-right"></i>
     <% end %>
     <%= link_to playlist_path(@playlist, position: item.position) do %>
-      <%= annotation.title %></a>
+      <%= clip.title %></a>
     <% end %>
-    <span class="pull-right"> <span class="fa <%= item_type %>"></span> <%= annotation.duration %></span>
+    <span class="pull-right"> <span class="fa <%= item_type %>"></span> <%= clip.duration %></span>
   </li>
 <% else %>
   <% denied_class = item_class %>
@@ -20,7 +20,7 @@
       <i class="fa fa-arrow-circle-right"></i>
     <% end %>
     <i class="fa fa-lock"></i>
-    <span title="You do not playback permission for the source item, <%=annotation.master_file.mediaobject_id%>, this playlist item references.">[Inaccessible Item] <%=annotation.master_file.mediaobject_id%></span>
-    <span class="pull-right"> <span class="fa <%= item_type %>"></span> <%= annotation.duration %></span>
+    <span title="You do not playback permission for the source item, <%=clip.master_file.mediaobject_id%>, this playlist item references.">[Inaccessible Item] <%=clip.master_file.mediaobject_id%></span>
+    <span class="pull-right"> <span class="fa <%= item_type %>"></span> <%= clip.duration %></span>
   </li>
 <% end %>

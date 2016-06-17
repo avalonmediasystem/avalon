@@ -15,6 +15,6 @@
 FactoryGirl.define do
   factory :playlist_item do
     playlist
-    association :annotation, factory: :avalon_annotation
+    association :clip, factory: :avalon_clip
   end
 end

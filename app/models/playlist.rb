@@ -9,7 +9,7 @@ class Playlist < ActiveRecord::Base
   after_initialize :default_values
 
   has_many :items, -> { order('position ASC') }, class_name: PlaylistItem, dependent: :destroy
-  has_many :annotations, -> { order('playlist_items.position ASC') }, class_name: AvalonAnnotation, through: :items
+  has_many :clips, -> { order('playlist_items.position ASC') }, class_name: AvalonClip, through: :items
   accepts_nested_attributes_for :items, allow_destroy: true
 
   # visibility
@@ -25,38 +25,38 @@ class Playlist < ActiveRecord::Base
   # @param [PlaylistItem] current_item The playlist item you want to find matches for
   # @return [Array <PlaylistItem>] an array of all other playlist items that reference the same master file
   def related_items(current_item)
-    uri = AvalonAnnotation.where(id: current_item.annotation_id)[0].source
-    items = PlaylistItem.joins(:annotation).where('annotations.source_uri' => uri).where(playlist: self)
+    uri = AvalonClip.where(id: current_item.clip_id)[0].source
+    items = PlaylistItem.joins(:clip).where('annotations.source_uri' => uri).where(playlist: self)
     # remove the current item
     return_items = []
     items.each do |item|
-      return_items << item unless item.annotation_id == current_item.annotation_id
+      return_items << item unless item.clip_id == current_item.clip_id
     end
     return_items
   end
 
-  # Returns all other annotations on the same playlist that share a master file
+  # Returns all other clips on the same playlist that share a master file
   # @param [PlaylistItem] current_item The playlist item you want to find matches for
-  # @return [Array <AvalonAnnotation>] an array of all other annotations items that reference the same master file
-  def related_annotations(current_item)
-    annotations = []
+  # @return [Array <AvalonClip>] an array of all other clips items that reference the same master file
+  def related_clips(current_item)
+    clips = []
     related_items(current_item).each do |item|
-      annotations << AvalonAnnotation.find(item.annotation_id)
+      clips << AvalonClip.find(item.clip_id)
     end
-    annotations
+    clips
   end
 
-  # Returns a list of annotations who are on the same playlist, share the same masterfile, and whose start time falls within the start and end time of the current playlist item
+  # Returns a list of clips that are on the same playlist, share the same masterfile, and whose start time falls within the start and end time of the current playlist item
   # @param [PlaylistItem] current_item The playlist item to match against
-  # @return [Array <AvalonAnnotation>] all annotations matching the constraints
-  def related_annotations_time_contrained(current_item)
-    current_anno = AvalonAnnotation.where(id: current_item.annotation_id)[0]
-    annos = []
+  # @return [Array <AvalonClip>] all clips matching the constraints
+  def related_clips_time_contrained(current_item)
+    current_clip = AvalonClip.where(id: current_item.clip_id)[0]
+    clips = []
     related_items(current_item).each do |item|
-      anno = AvalonAnnotation.where(id: item.annotation_id)[0]
-      annos << anno if anno.start_time <= current_anno.end_time && anno.start_time >= current_anno.start_time
+      clip = AvalonClip.where(id: item.clip_id)[0]
+      clips << clip if clip.start_time <= current_clip.end_time && clip.start_time >= current_clip.start_time
     end
-    annos
+    clips
   end
 
   class << self

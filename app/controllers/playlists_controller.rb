@@ -54,10 +54,10 @@ class PlaylistsController < ApplicationController
 
   def update_multiple
     if request.request_method=='DELETE'
-      PlaylistItem.where(id: params[:annotation_ids]).to_a.map(&:destroy)
-    elsif params[:new_playlist_id].present? and params[:annotation_ids]
+      PlaylistItem.where(id: params[:clip_ids]).to_a.map(&:destroy)
+    elsif params[:new_playlist_id].present? and params[:clip_ids]
       @new_playlist = Playlist.find(params[:new_playlist_id])
-      pis = PlaylistItem.where(id: params[:annotation_ids])
+      pis = PlaylistItem.where(id: params[:clip_ids])
       @new_playlist.items += pis
       @playlist.items -= pis
       @new_playlist.save!
@@ -81,7 +81,7 @@ class PlaylistsController < ApplicationController
 
   # Only allow a trusted parameter "white list" through.
   def playlist_params
-    params.require(:playlist).permit(:title, :comment, :visibility, :annotation_ids, items_attributes: [:id, :position])
+    params.require(:playlist).permit(:title, :comment, :visibility, :clip_ids, items_attributes: [:id, :position])
   end
 
   def update_playlist(playlist)
