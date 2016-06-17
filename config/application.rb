@@ -11,9 +11,9 @@ if defined?(Bundler)
 end
 
 module Avalon
-  VERSION = '5.0'
+  VERSION = '5.0.1'
   class MissingUserId < Exception; end
-  
+
   class Application < Rails::Application
     require 'rubyhorn/rest_client/ingest'
     # Settings in config/environments/* take precedence over those specified here.
@@ -61,7 +61,7 @@ module Avalon
 
     # Enable the asset pipeline
     config.assets.enabled = true
-    config.assets.logger = false 
+    config.assets.logger = false
     config.assets.debug = false
 
     # Version of your assets, change this if you want to expire all your assets
@@ -75,8 +75,8 @@ module Avalon
 
     config.secret_key_base = ENV['AVALON_SECRET_KEY_BASE'] || YAML.load(File.open("#{Rails.root}/config/secrets.yml"))[Rails.env]['secret_key_base']
   end
-  
-  # Map config to the local namespace so we can use shorter references in 
+
+  # Map config to the local namespace so we can use shorter references in
   # our YAML file
   def self.config
     Application.config
