@@ -104,8 +104,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       customError: '<%= t("media_objects.player.customError").html_safe %>',
       playlistItemDefaultTitle: '<%= @currentStream.embed_title.html_safe %>',
       autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
-      success: function(mediaElement, domObject) {
-	avalonPlayer.player.media.addEventListener('ended', function(e) {
+      success: function(mediaElement, domObject, player) {
+	player.media.addEventListener('ended', function(e) {
 	    advancePlaylist();
 	}, false);
       }

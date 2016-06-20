@@ -39,7 +39,7 @@ class AvalonPlayer
       success: (mediaElement, domObject, player) =>
         @boundPrePlay = => if mejs.MediaFeatures.isAndroid then AndroidShim.androidPrePlay(this, player)
         @boundPrePlay()
-        if success_callback then success_callback()
+        if success_callback then success_callback(mediaElement, domObject, player)
 
     player_options[key] = val for key, val of opts
     @player = new MediaElementPlayer element, player_options
