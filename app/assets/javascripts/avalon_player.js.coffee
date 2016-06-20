@@ -81,10 +81,10 @@ class AvalonPlayer
           t = _this.stream_info.t.split(',')
           start_percent = Math.round(if isNaN(parseFloat(t[0])) then 0 else (100*parseFloat(t[0]) / duration))
           end_percent = Math.round(if t.length < 2 or isNaN(parseFloat(t[1])) then 100 else (100*parseFloat(t[1]) / duration))
-          annotation_span = $('<span />').addClass('mejs-time-annotation')
-          annotation_span.css 'left', start_percent+'%'
-          annotation_span.css 'width', end_percent-start_percent+'%'
-          $('.mejs-time-total').append annotation_span
+          clip_span = $('<span />').addClass('mejs-time-clip')
+          clip_span.css 'left', start_percent+'%'
+          clip_span.css 'width', end_percent-start_percent+'%'
+          $('.mejs-time-total').append clip_span
         @player.setCurrentTime initialTime
 
       @player.options.playlistItemDefaultTitle = @stream_info.embed_title

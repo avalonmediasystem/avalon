@@ -25,8 +25,8 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
 <% else %>
   <% @current_playlist_item = @playlist.items.where(position: position).first %>
-  <% @current_annotation = AvalonAnnotation.find(@current_playlist_item.annotation_id) %>
-  <% @current_masterfile = MasterFile.find(@current_playlist_item.annotation.source.split('/').last) %>
+  <% @current_clip = AvalonClip.find(@current_playlist_item.clip_id) %>
+  <% @current_masterfile = MasterFile.find(@current_playlist_item.clip.source.split('/').last) %>
   <% @current_mediaobject = MediaObject.find(@current_masterfile.mediaobject_id) %>
       <div class="col-sm-8" id="left_column">
         <%= render 'player' %>
@@ -35,12 +35,12 @@ Unless required by applicable law or agreed to in writing, software distributed
           <div class="panel panel-default">
             <div class="panel-heading" role="tab" id="heading0" style="border-bottom: 1px solid #ddd;">
               <h4 class="panel-title">
-                <span><%= @current_annotation.title %></span>
-                <span>[<%= @current_annotation.duration %>]</span>
+                <span><%= @current_clip.title %></span>
+                <span>[<%= @current_clip.duration %>]</span>
 	        <br class="clear"/>
               </h4>
               <div>
-                <%= @current_annotation.comment %>
+                <%= @current_clip.comment %>
               </div>
             </div>
             <div class="panel-heading">
@@ -54,8 +54,8 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <%= render 'current_item' %>
               </div>
             </div>
-            <% @related_annotations = @playlist.related_annotations(@current_playlist_item)%>
-            <% unless @related_annotations.empty? %>
+            <% @related_clips = @playlist.related_clips(@current_playlist_item)%>
+            <% unless @related_clips.empty? %>
             <div class="panel-heading" role="tab" id="heading1">
               <h5 class="panel-title ">
                 <a href="#section2" class="accordion-toggle collapsed pull-left" data-toggle="collapse">

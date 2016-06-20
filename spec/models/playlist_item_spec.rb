@@ -4,7 +4,7 @@ require 'cancan/matchers'
 RSpec.describe PlaylistItem, type: :model do
   describe 'validations' do
     it { is_expected.to validate_presence_of(:playlist) }
-    it { is_expected.to validate_presence_of(:annotation) }
+    it { is_expected.to validate_presence_of(:clip) }
   end
 
   describe 'abilities' do
@@ -12,8 +12,8 @@ RSpec.describe PlaylistItem, type: :model do
     let(:ability){ Ability.new(user) }
     let(:user){ FactoryGirl.create(:user) }
     let(:master_file) { FactoryGirl.create(:master_file) }
-    let(:avalon_annotation) { FactoryGirl.create(:avalon_annotation, master_file: master_file) }
-    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, annotation: avalon_annotation) }
+    let(:avalon_clip) { FactoryGirl.create(:avalon_clip, master_file: master_file) }
+    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: avalon_clip) }
 
     context 'when owner' do
       let(:playlist) { FactoryGirl.create(:playlist, user: user) }

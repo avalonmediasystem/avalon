@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160511155417) do
+ActiveRecord::Schema.define(version: 20160617182647) do
 
   create_table "annotations", force: true do |t|
     t.string "uuid"
@@ -23,8 +23,8 @@ ActiveRecord::Schema.define(version: 20160511155417) do
     t.integer  "user_id",       null: false
     t.string   "document_id"
     t.string   "title"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
     t.string   "user_type"
     t.string   "document_type"
   end
@@ -34,8 +34,8 @@ ActiveRecord::Schema.define(version: 20160511155417) do
   create_table "courses", force: true do |t|
     t.string   "context_id"
     t.text     "label"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.string   "title"
   end
 
@@ -49,8 +49,8 @@ ActiveRecord::Schema.define(version: 20160511155417) do
     t.datetime "failed_at"
     t.string   "locked_by"
     t.string   "queue"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority"
@@ -58,8 +58,8 @@ ActiveRecord::Schema.define(version: 20160511155417) do
   create_table "identities", force: true do |t|
     t.string   "email"
     t.string   "password_digest"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "ingest_batches", force: true do |t|
@@ -67,20 +67,20 @@ ActiveRecord::Schema.define(version: 20160511155417) do
     t.text     "media_object_ids"
     t.boolean  "finished",                    default: false
     t.boolean  "email_sent",                  default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
     t.string   "name",             limit: 50
   end
 
   create_table "playlist_items", force: true do |t|
-    t.integer  "playlist_id",   null: false
-    t.integer  "annotation_id", null: false
+    t.integer  "playlist_id", null: false
+    t.integer  "clip_id",     null: false
     t.integer  "position"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  add_index "playlist_items", ["annotation_id"], name: "index_playlist_items_on_annotation_id"
+  add_index "playlist_items", ["clip_id"], name: "index_playlist_items_on_clip_id"
   add_index "playlist_items", ["playlist_id"], name: "index_playlist_items_on_playlist_id"
 
   create_table "playlists", force: true do |t|
@@ -102,8 +102,8 @@ ActiveRecord::Schema.define(version: 20160511155417) do
   create_table "searches", force: true do |t|
     t.text     "query_params"
     t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
     t.string   "user_type"
   end
 
@@ -112,8 +112,8 @@ ActiveRecord::Schema.define(version: 20160511155417) do
   create_table "sessions", force: true do |t|
     t.string   "session_id",                  null: false
     t.text     "data",       limit: 16777215
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
   end
 
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id"
@@ -131,8 +131,8 @@ ActiveRecord::Schema.define(version: 20160511155417) do
 
   create_table "users", force: true do |t|
     t.string   "username",   default: "", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
     t.string   "provider"
     t.string   "uid"
     t.string   "email"

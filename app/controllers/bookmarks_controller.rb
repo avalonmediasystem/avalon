@@ -122,8 +122,8 @@ class BookmarksController < CatalogController
     Array(documents.map(&:id)).each do |id|
       media_object = MediaObject.find(id)
       media_object.parts.each do |mf|
-        annotation = AvalonAnnotation.create(master_file: mf)
-        PlaylistItem.create(annotation: annotation, playlist: playlist)
+        clip = AvalonClip.create(master_file: mf)
+        PlaylistItem.create(clip: clip, playlist: playlist)
       end
     end
   end
