@@ -90,8 +90,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 	customError: '<%= t("media_objects.player.customError").html_safe %>',
 	displayMediaFragment: true,
         autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
-	success: function(mediaElement, domObject) {
-	  avalonPlayer.player.media.addEventListener('timeupdate', function(e) {
+	success: function(mediaElement, domObject, player) {
+	  player.media.addEventListener('timeupdate', function(e) {
 	    if (avalonPlayer.player.getCurrentTime() > avalonPlayer.stream_info.t.split(',')[1]) {
 	      avalonPlayer.player.media.stop();
 	      advancePlaylist();
