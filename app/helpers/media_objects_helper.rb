@@ -184,8 +184,8 @@ EOF
        # If there are no subsections within the structure, return just the header with the single section
        else
          tracknumber = index
-         wrapperopen = "#{headeropen}<span><ul>"
-         wrapperclose = "</ul></span>#{headerclose}"
+         wrapperopen = "#{headeropen}<ul>"
+         wrapperclose = "</ul>#{headerclose}"
        end
        contents, tracknumber = parse_section section, sectionnode.first, tracknumber
        "#{wrapperopen}#{contents}#{wrapperclose}"
@@ -224,7 +224,7 @@ EOF
          url = "#{share_link_for( section )}?t=#{start},#{stop}"
          data =  {segment: section.pid, is_video: section.is_video?, native_url: native_url, fragmentbegin: start, fragmentend: stop}
          link = link_to label, url, data: data, class: 'playable wrap'+(is_current_section?(section) ? ' current-stream' : '' )
-         return "<li class='stream-li'>#{link}</li>", tracknumber
+         return "<li>#{link}</li>", tracknumber
        end
      end
 
