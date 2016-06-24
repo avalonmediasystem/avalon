@@ -96,20 +96,20 @@ describe AvalonClip do
       expect{ clip.mediafragment_uri }.not_to raise_error
     end
   end
-#  describe 'solr' do
-#    it 'can create a solr hash' do
-#      expect(clip.to_solr.class).to eq(Hash)
-#    end
-#    it 'can save the clip and solrize it' do
-#      expect(clip).to receive(:post_to_solr).once
-#      expect { clip.save }.not_to raise_error
-#    end
-#    it 'can destroy clip and remove it from solr' do
-#      clip.save!
-#      expect(clip).to receive(:delete_from_solr).once
-#      expect { clip.destroy }.not_to raise_error
-#    end
-#  end
+  describe 'solr' do
+    it 'can create a solr hash' do
+      expect(clip.to_solr.class).to eq(Hash)
+    end
+    it 'can save the clip and solrize it' do
+      expect(clip).to receive(:post_to_solr).once
+      expect { clip.save }.not_to raise_error
+    end
+    it 'can destroy clip and remove it from solr' do
+      clip.save!
+      expect(clip).to receive(:delete_from_solr).once
+      expect { clip.destroy }.not_to raise_error
+    end
+  end
   describe 'time validation' do
     describe 'negative times' do
       it 'raises an ArgumentError when start_time is negative' do

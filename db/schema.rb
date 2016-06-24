@@ -11,92 +11,64 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160624170028) do
+ActiveRecord::Schema.define(version: 20160617182647) do
 
   create_table "annotations", force: true do |t|
-    t.string  "uuid"
-    t.string  "source_uri"
-    t.text    "annotation"
-    t.string  "type"
-    t.integer "playlist_item_id"
+    t.string "uuid"
+    t.string "source_uri"
+    t.text   "annotation"
   end
-
-  add_index "annotations", ["playlist_item_id"], name: "index_annotations_on_playlist_item_id"
-  add_index "annotations", ["type"], name: "index_annotations_on_type"
-
-  create_table "blacklight_folders_folder_items", force: true do |t|
-    t.integer  "folder_id",   null: false
-    t.integer  "bookmark_id", null: false
-    t.integer  "position"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "blacklight_folders_folder_items", ["bookmark_id"], name: "index_blacklight_folders_folder_items_on_bookmark_id"
-  add_index "blacklight_folders_folder_items", ["folder_id"], name: "index_blacklight_folders_folder_items_on_folder_id"
-
-  create_table "blacklight_folders_folders", force: true do |t|
-    t.string   "name"
-    t.integer  "user_id",                       null: false
-    t.string   "user_type",                     null: false
-    t.string   "visibility"
-    t.integer  "number_of_members", default: 0, null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "blacklight_folders_folders", ["user_id", "user_type"], name: "index_blacklight_folders_folders_on_user_id_and_user_type"
 
   create_table "bookmarks", force: true do |t|
-    t.integer  "user_id",                   null: false
-    t.string   "document_id",   limit: nil
-    t.string   "title",         limit: nil
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "user_type",     limit: nil
-    t.string   "document_type", limit: nil
+    t.integer  "user_id",       null: false
+    t.string   "document_id"
+    t.string   "title"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.string   "user_type"
+    t.string   "document_type"
   end
 
   add_index "bookmarks", ["user_id"], name: "index_bookmarks_on_user_id"
 
   create_table "courses", force: true do |t|
-    t.string   "context_id", limit: nil
+    t.string   "context_id"
     t.text     "label"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "title",      limit: nil
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string   "title"
   end
 
   create_table "delayed_jobs", force: true do |t|
-    t.integer  "priority",               default: 0
-    t.integer  "attempts",               default: 0
+    t.integer  "priority",   default: 0
+    t.integer  "attempts",   default: 0
     t.text     "handler"
     t.text     "last_error"
     t.datetime "run_at"
     t.datetime "locked_at"
     t.datetime "failed_at"
-    t.string   "locked_by",  limit: nil
-    t.string   "queue",      limit: nil
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.string   "locked_by"
+    t.string   "queue"
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority"
 
   create_table "identities", force: true do |t|
-    t.string   "email",           limit: nil
-    t.string   "password_digest", limit: nil
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.string   "email"
+    t.string   "password_digest"
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
   end
 
   create_table "ingest_batches", force: true do |t|
-    t.string   "email",            limit: nil
+    t.string   "email"
     t.text     "media_object_ids"
-    t.boolean  "finished",                     default: false
-    t.boolean  "email_sent",                   default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.boolean  "finished",                    default: false
+    t.boolean  "email_sent",                  default: false
+    t.datetime "created_at",                                  null: false
+    t.datetime "updated_at",                                  null: false
     t.string   "name",             limit: 50
   end
 
@@ -123,16 +95,16 @@ ActiveRecord::Schema.define(version: 20160624170028) do
   add_index "playlists", ["user_id"], name: "index_playlists_on_user_id"
 
   create_table "role_maps", force: true do |t|
-    t.string  "entry",     limit: nil
+    t.string  "entry"
     t.integer "parent_id"
   end
 
   create_table "searches", force: true do |t|
     t.text     "query_params"
     t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "user_type",    limit: nil
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+    t.string   "user_type"
   end
 
   add_index "searches", ["user_id"], name: "index_searches_on_user_id"
@@ -140,16 +112,16 @@ ActiveRecord::Schema.define(version: 20160624170028) do
   create_table "sessions", force: true do |t|
     t.string   "session_id",                  null: false
     t.text     "data",       limit: 16777215
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
   end
 
   add_index "sessions", ["session_id"], name: "index_sessions_on_session_id"
   add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at"
 
   create_table "stream_tokens", force: true do |t|
-    t.string   "token",   limit: nil
-    t.string   "target",  limit: nil
+    t.string   "token"
+    t.string   "target"
     t.datetime "expires"
   end
 
@@ -158,13 +130,13 @@ ActiveRecord::Schema.define(version: 20160624170028) do
   end
 
   create_table "users", force: true do |t|
-    t.string   "username",   limit: nil, default: "", null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.string   "provider",   limit: nil
-    t.string   "uid",        limit: nil
-    t.string   "email",      limit: nil
-    t.string   "guest",      limit: nil
+    t.string   "username",   default: "", null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+    t.string   "provider"
+    t.string   "uid"
+    t.string   "email"
+    t.string   "guest"
   end
 
   add_index "users", ["username"], name: "index_users_on_username", unique: true
