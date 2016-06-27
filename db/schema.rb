@@ -24,29 +24,6 @@ ActiveRecord::Schema.define(version: 20160624170028) do
   add_index "annotations", ["playlist_item_id"], name: "index_annotations_on_playlist_item_id"
   add_index "annotations", ["type"], name: "index_annotations_on_type"
 
-  create_table "blacklight_folders_folder_items", force: true do |t|
-    t.integer  "folder_id",   null: false
-    t.integer  "bookmark_id", null: false
-    t.integer  "position"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "blacklight_folders_folder_items", ["bookmark_id"], name: "index_blacklight_folders_folder_items_on_bookmark_id"
-  add_index "blacklight_folders_folder_items", ["folder_id"], name: "index_blacklight_folders_folder_items_on_folder_id"
-
-  create_table "blacklight_folders_folders", force: true do |t|
-    t.string   "name"
-    t.integer  "user_id",                       null: false
-    t.string   "user_type",                     null: false
-    t.string   "visibility"
-    t.integer  "number_of_members", default: 0, null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "blacklight_folders_folders", ["user_id", "user_type"], name: "index_blacklight_folders_folders_on_user_id_and_user_type"
-
   create_table "bookmarks", force: true do |t|
     t.integer  "user_id",                   null: false
     t.string   "document_id",   limit: nil
