@@ -132,7 +132,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
   revision: 86de64fd02e4982508c07dd6b3412430793e6955
-  branch: captions
+  tag: captions
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
@@ -440,6 +440,7 @@ GEM
       addressable (~> 2.3)
     letter_opener (1.3.0)
       launchy (~> 2.2)
+    libv8 (3.16.14.7)
     license_header (0.0.4)
       highline
     link_header (0.0.8)
@@ -479,7 +480,7 @@ GEM
     method_source (0.8.2)
     mime-types (2.99.1)
     mimemagic (0.2.1)
-    mini_portile2 (2.1.0)
+    mini_portile2 (2.0.0)
     minitest (4.7.5)
     modal_logic (0.0.8)
       handlebars_assets (= 0.14.1)
@@ -498,9 +499,8 @@ GEM
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
     netrc (0.10.3)
-    nokogiri (1.6.8)
-      mini_portile2 (~> 2.1.0)
-      pkg-config (~> 1.1.7)
+    nokogiri (1.6.7.2)
+      mini_portile2 (~> 2.0.0.rc2)
     nom-xml (0.5.2)
       activesupport (>= 3.2.18)
       i18n
@@ -512,7 +512,7 @@ GEM
       multi_json (~> 1.3)
       multi_xml (~> 0.5)
       rack (~> 1.2)
-    om (3.1.1)
+    om (3.1.0)
       activemodel
       activesupport
       nokogiri (>= 1.4.2)
@@ -526,7 +526,6 @@ GEM
     orm_adapter (0.5.0)
     parser (2.3.1.2)
       ast (~> 2.2)
-    pkg-config (1.1.7)
     powerpack (0.1.1)
     pry (0.10.1)
       coderay (~> 1.1.0)
@@ -602,6 +601,7 @@ GEM
       rdf (~> 1.1, >= 1.1.10)
     rdf-xsd (1.1.5.1)
       rdf (~> 1.1, >= 1.1.9, < 1.99)
+    ref (1.0.5)
     rest-client (1.8.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
@@ -713,10 +713,13 @@ GEM
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
     sqlite3 (1.3.10)
-    stomp (1.4.0)
+    stomp (1.3.4)
     sxp (0.1.5)
     term-ansicolor (1.3.2)
       tins (~> 1.0)
+    therubyracer (0.12.1)
+      libv8 (~> 3.16.14.0)
+      ref
     thor (0.19.1)
     thread_safe (0.3.5)
     tilt (1.4.1)
@@ -852,6 +855,7 @@ DEPENDENCIES
   solrizer (~> 3.3.0)
   sprockets (~> 2.11.0)
   sqlite3
+  therubyracer (>= 0.12.0)
   therubyrhino
   twitter-typeahead-rails (= 0.11.1.pre.corejavascript)
   uglifier (>= 1.0.3)
@@ -859,6 +863,3 @@ DEPENDENCIES
   whenever
   with_locking
   xray-rails
-
-BUNDLED WITH
-   1.12.5
