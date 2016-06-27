@@ -27,6 +27,12 @@
   }
 }
 
+.sm-hidden {
+  @media (max-width: $screen-sm-max) {
+    display: none !important;
+  }
+}
+
 .desktop-hidden {
   @media (min-width: $screen-sm-min) {
     display: none !important;
