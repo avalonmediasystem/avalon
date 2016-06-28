@@ -1,5 +1,5 @@
 # An AvalonAnnotation that represents a 'marker', an annotated time-point on a masterfile
 # @since 5.0.1
 class AvalonMarker < AvalonAnnotation
-  belongs_to :PlaylistItem
+  belongs_to :playlist_item, class_name: PlaylistItem
 end

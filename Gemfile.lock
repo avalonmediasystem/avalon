@@ -132,7 +132,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
   revision: 86de64fd02e4982508c07dd6b3412430793e6955
-  tag: captions
+  branch: captions
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
@@ -863,3 +863,6 @@ DEPENDENCIES
   whenever
   with_locking
   xray-rails
+
+BUNDLED WITH
+   1.12.4
