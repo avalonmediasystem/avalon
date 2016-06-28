@@ -25,9 +25,11 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   # @return [float] the largest end time or -1 if no durations present
   def max_time
     max = -1
-    max = master_file.duration.to_f if master_file.duration.present?
-    master_file.derivatives.each do |derivative|
-      max = derivative.duration.to_f if derivative.duration.present? && derivative.duration.to_f > max
+    max = master_file.duration.to_f if master_file.present? && master_file.duration.present?
+    if master_file.present?
+      master_file.derivatives.each do |derivative|
+        max = derivative.duration.to_f if derivative.present? && derivative.duration.present? && derivative.duration.to_f > max
+      end
     end
     max
   end
