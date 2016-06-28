@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'spec_helper'
+require 'cancan/matchers'
 
 describe AvalonMarker, type: :model do
   describe 'abilities' do
@@ -20,8 +21,9 @@ describe AvalonMarker, type: :model do
     let(:ability) { Ability.new(user) }
     let(:user) { FactoryGirl.create(:user) }
     let(:master_file) { FactoryGirl.create(:master_file) }
-    let(:avalon_marker) { FactoryGirl.create(:avalon_marker, playlist_item: playlist_item) }
-    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist) }
+    let(:avalon_clip) { FactoryGirl.create(:avalon_clip, master_file: master_file) }
+    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: avalon_clip) }
+    let(:avalon_marker) { FactoryGirl.create(:avalon_marker, playlist_item: playlist_item, master_file: master_file) }
 
     context 'when owner' do
       let(:playlist) { FactoryGirl.create(:playlist, user: user) }
