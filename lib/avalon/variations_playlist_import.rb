@@ -71,16 +71,22 @@ module Avalon
         start_time = content_interval.attribute('begin')
         end_time = content_interval.attribute('end')
         referenced_file = content_interval.attribute('mediaRef').text
-        master_file = #TODO: map referenced file to a master_file
+        # master_file = TODO: map referenced file to a master_file
         #TODO: create a new playlist item using the above and @avalon_playlist
+        #TODO:  Add this to the objects_created list if it worked
+        #TODO: Add an error saying we failed to make this playlist item if it failed
       end
     end
 
     # Gets the title for the playlist item from a chunk
+    # @param [] the chunk to get the title from
+    # @return [String] the title
     def playlistitem_title(chunk)
       # TODO: Handle errors when there is no label attribute or the text cannot be read
       # TODO: Set a default if the label text is nil
       chunk.attribute('label').text
     end
+
+
   end
 end
