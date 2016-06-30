@@ -70,14 +70,12 @@ describe Avalon::VariationsPlaylistImport do
     end
   end
   describe 'creating playlist items' do
-    # Create a playlist via FactoryGirl for all the playlist items
-    # Set this playlist to the class variable @avalon_playlist
-    it 'can create a playlist item' do
-      byebug
+    # TODO Create a playlist via FactoryGirl for all the playlist items
+    # TODO Set this playlist to the class variable @avalon_playlist
+    xit 'can create a playlist item' do
+      # Don't try to get me running yet, the mapper hasn't been written so I can't work
     end
-
   end
-
 end
 
 def full_fixture_path(filename)
