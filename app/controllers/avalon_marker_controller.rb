@@ -26,9 +26,9 @@ class AvalonMarkerController < ApplicationController
   #   @attr_keys = [:title, :start_time]
   # end
 
-  # Finds the marker based on passed uuid and renders the marker's json
+  # Finds the marker based on passed id or uuid and renders the marker's json
   # @param [Hash] params the parameters used by the controller
-  # @option params [String] :id the uuid of the marker you wish to render
+  # @option params [String] :id the id or uuid of the marker you wish to render
   # @example Rails Console Call To Show Marker that is resolved by AvalonMarker.where(uuid: '56')[0]
   #    app.get('/avalon_marker/56')
   def show
@@ -85,14 +85,15 @@ class AvalonMarkerController < ApplicationController
   # Looks up a marker using the id key in params and sets @marker
   def set_marker
     @marker = AvalonMarker.find(params[:id]) || AvalonMarker.find_by_uuid(params[:id])
+  rescue StandardError => error
+    render json: { message: "Marker not found: #{error.message}" }, status: 500 and return
   end
 
   def marker_params
-    return @marker_params if @marker_params.present?
     @marker_params = params.require(:marker).permit(:master_file_id, :playlist_item_id, :title, :start_time)
-    @marker_params[:start_time] = time_str_to_milliseconds marker_params[:start_time] if marker_params[:start_time].present?
-    @marker_params[:playlist_item] = PlaylistItem.find(marker_params.delete(:playlist_item_id)) if marker_params[:playlist_item_id].present?
-    @marker_params[:master_file] = MasterFile.find(marker_params.delete(:master_file_id)) if marker_params[:master_file_id].present?
+    @marker_params[:start_time] = time_str_to_milliseconds @marker_params[:start_time] if @marker_params[:start_time].present?
+    @marker_params[:playlist_item] = PlaylistItem.find(@marker_params.delete(:playlist_item_id)) if @marker_params[:playlist_item_id].present?
+    @marker_params[:master_file] = MasterFile.find(@marker_params.delete(:master_file_id)) if @marker_params[:master_file_id].present?
     @marker_params
   end
 

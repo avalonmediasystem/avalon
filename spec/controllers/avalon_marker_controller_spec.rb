@@ -37,23 +37,26 @@ describe AvalonMarkerController do
       expect(post 'create', marker:{ playlist_item_id: playlist_item.id } ).to have_http_status(400)
     end
     it 'returns an error when the master file cannot be found' do
-      expect(post 'create', amarker:{ master_file_id: 'OC', playlist_item_id: playlist_item.id }).to have_http_status(400)
+      expect(post 'create', marker:{ master_file_id: 'OC', playlist_item_id: playlist_item.id }).to have_http_status(500)
     end
     it 'returns an error when the playlist item is not supplied' do
       expect(post 'create', marker:{ master_file_id: master_file.id }).to have_http_status(400)
     end
     it 'returns an error when the playlist item cannot be found' do
-      expect(post 'create', marker:{ master_file_id: master_file.id, playlist_item_id: 'OC' }).to have_http_status(400)
+      expect(post 'create', marker:{ master_file_id: master_file.id, playlist_item_id: 'OC' }).to have_http_status(500)
     end
   end
   describe 'updating a marker' do
     it 'can update a marker and display it as JSON' do
       avalon_marker.save!
-      put 'update', id: avalon_marker.id, avalon_marker:{start_time: '60', title: '30 Seconds of Fun'}
+      put 'update', id: avalon_marker.id, marker:{start_time: '60', title: '30 Seconds of Fun'}
       expect { JSON.parse(response.body) }.not_to raise_error
+      marker = AvalonMarker.find(avalon_marker.id)
+      expect(marker.start_time).to eq(60000.0)
+      expect(marker.title).to eq('30 Seconds of Fun')
     end
     it 'raises an error when the marker cannot be found' do
-      expect { put 'update', id: 'OC' }.to raise_error(ActionController::RoutingError, 'Marker Not Found')
+      expect(put 'update', id: 'OC').to have_http_status(500)
     end
   end
 
@@ -67,46 +70,8 @@ describe AvalonMarkerController do
       expect(resp['success']).to be_truthy
     end
     it 'raises an error when the marker is not found to destroy' do
-      expect { delete 'destroy', id: 'OC' }.to raise_error(ActionController::RoutingError, 'Marker Not Found')
+      expect(delete 'destroy', id: 'OC').to have_http_status(500)
     end
   end
 
-  describe 'selected key updates' do
-    it 'updates multiple fields' do
-      avalon_marker.save!
-      @controller.stub(:params).and_return(id: avalon_marker.id, 'avalon_marker'=>{start_time: '17', title: 'Detroit'})
-      @controller.lookup_marker
-      expect(@controller.instance_variable_get(:@marker)).to receive(:update).once
-      expect { @controller.selected_key_updates }.not_to raise_error
-    end
-    it 'does not update the marker when no valid keys are passed' do
-      avalon_marker.save!
-      @controller.stub(:params).and_return(id: avalon_marker.id, 'avalon_marker'=>{s_time: '17', name: 'Detroit', stuff: 'The founding'})
-      @controller.lookup_marker
-      expect(@controller.instance_variable_get(:@marker)).not_to receive(:update)
-      expect { @controller.selected_key_updates }.not_to raise_error
-    end
-  end
-  describe 'looking up markers' do
-    it 'raises an error when it cannot find a marker' do
-      @controller.stub(:params).and_return(id: '1817')
-      expect { @controller.lookup_marker }.to raise_error
-    end
-    it 'sets the marker class variable when it finds a marker' do
-      avalon_marker.save!
-      @controller.stub(:params).and_return(id: avalon_marker.id)
-      expect { @controller.lookup_marker }.not_to raise_error
-    end
-  end
-  describe 'raising errors' do
-    it 'raises ActionController::RoutingError referencing marker by default' do
-      expect { @controller.not_found }.to raise_error(ActionController::RoutingError, 'Marker Not Found')
-    end
-    it 'raises ActionController::RoutingError referencing marker when passed :marker' do
-      expect { @controller.not_found(item: :marker) }.to raise_error(ActionController::RoutingError, 'Marker Not Found')
-    end
-    it 'raises ActionController::RoutingError referencing master_file when passed :master_file' do
-      expect { @controller.not_found(item: :master_file) }.to raise_error(ActionController::RoutingError, 'Master File Not Found')
-    end
-  end
 end

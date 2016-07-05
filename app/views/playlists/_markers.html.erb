@@ -45,10 +45,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     var button = $(this);
     var form = button.closest('form')
     var txt = form.find('.marker_title');
-    txt.after($("<input type='text' name='avalon_marker[title]' style='width:100%' />").val(txt.text()));
+    txt.after($("<input type='text' name='marker[title]' style='width:100%' />").val(txt.text()));
     txt.hide();
     txt = form.find('.marker_start_time');
-    txt.after($("<input type='text' name='avalon_marker[start_time]' style='width:100%'/>").val(txt.text()));
+    txt.after($("<input type='text' name='marker[start_time]' style='width:100%'/>").val(txt.text()));
     txt.hide();
     button.after($("<button type='submit' name='marker_edit_save' class='btn btn-default btn-xs fa fa-check'> Save</button>"));
     button.hide();
@@ -61,11 +61,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   function disableMarkerEditForm(id){
     var row = $('#marker_row_'+id);
-    var input = row.find('input[name = "avalon_marker[title]"]')
+    var input = row.find('input[name = "marker[title]"]')
     var txt = row.find('.marker_title').text(input.val());
     txt.show();
     input.remove();
-    var input = row.find('input[name = "avalon_marker[start_time]"]')
+    var input = row.find('input[name = "marker[start_time]"]')
     var txt = row.find('.marker_start_time').text(input.val());
     txt.show();
     input.remove();
@@ -81,11 +81,11 @@ Unless required by applicable law or agreed to in writing, software distributed
   function cancelMarkerEdit(event){
     var button = $(this);
     var form = button.closest('form')
-    var input = form.find('input[name = "avalon_marker[title]"]')
+    var input = form.find('input[name = "marker[title]"]')
     var txt = form.find('.marker_title');
     txt.show();
     input.remove();
-    var input = form.find('input[name = "avalon_marker[start_time]"]')
+    var input = form.find('input[name = "marker[start_time]"]')
     var txt = form.find('.marker_start_time');
     txt.show();
     input.remove();
