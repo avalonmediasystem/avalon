@@ -15,13 +15,16 @@
 # Controller class for the AvalonMarker Model
 # Implements show, create, update, and delete
 class AvalonMarkerController < ApplicationController
-  # after_action:
-  def initialize
-    @not_found_messages = { marker: 'Marker Not Found',
-                            master_file: 'Master File Not Found',
-                            playlist_item: 'Playlist Item Not Found' }
-    @attr_keys = [:title, :start_time]
-  end
+  before_action :set_marker, except: [:create]
+  #before_action :authenticate_user!
+
+  # # after_action:
+  # def initialize
+  #   @not_found_messages = { marker: 'Marker Not Found',
+  #                           master_file: 'Master File Not Found',
+  #                           playlist_item: 'Playlist Item Not Found' }
+  #   @attr_keys = [:title, :start_time]
+  # end
 
   # Finds the marker based on passed uuid and renders the marker's json
   # @param [Hash] params the parameters used by the controller
@@ -29,8 +32,7 @@ class AvalonMarkerController < ApplicationController
   # @example Rails Console Call To Show Marker that is resolved by AvalonMarker.where(uuid: '56')[0]
   #    app.get('/avalon_marker/56')
   def show
-    lookup_marker
-    render json: @marker.pretty_annotation
+    render json: @marker.to_json
   end
 
   # Creates a marker and renders it as JSON
@@ -42,22 +44,14 @@ class AvalonMarkerController < ApplicationController
   # @example Rails Console command to create a marker based of the MasterFile whose pid is avalon:20 and default values for all other fields in the marker
   #    app.post('/avalon_marker/', {master_file: 'avalon:20'})
   def create
-    marker_params = params['avalon_marker']
-    render json: { message: 'Masterfile Not Supplied' }, status: 400 and return if marker_params[:master_file].nil?
-    render json: { message: 'Playlist Item Not Supplied' }, status: 400 and return if marker_params[:playlist_item].nil?
-    mf = MasterFile.where(id: marker_params[:master_file])[0]
-    render json: { message: @not_found_messages[:master_file] }, status: 400 and return if mf.nil?
-    pi = PlaylistItem.where(id: marker_params[:playlist_item])[0]
-    render json: { message: @not_found_messages[:playlist_item] }, status: 400 and return if pi.nil?
-
-    @marker = AvalonMarker.create(master_file: mf, playlist_item: pi)
-    selected_key_updates
-
+    @marker = AvalonMarker.create(marker_params)
     if @marker.persisted?
-      render json: { id: @marker.id, marker: {title: @marker.title, start_time: @marker.start_time}, message: "Add marker to playlist item was successful." }, status: 201 and return
+      render json: @marker.to_json.merge(message: 'Add marker to playlist item was successful.'), status: 201 and return
     else
       render json: { message: @marker.errors.full_messages }, status: 400 and return
     end
+  rescue StandardError => error
+    render json: { message: "Marker was not created: #{error.message}" }, status: 500 and return
   end
 
   # Updates a marker and renders it as JSON
@@ -68,9 +62,10 @@ class AvalonMarkerController < ApplicationController
    # @example Rails Console command to update the title of the marker with a uuid of 56 to be 'Hail'
   #    app.put('/avalon_marker/56', {title: 'Hail'})
   def update
-    lookup_marker
-    selected_key_updates
-    render json: {id: @marker.id, marker: @marker.pretty_annotation}
+    @marker.update(marker_params)
+    render json: @marker.to_json
+  rescue StandardError => error
+    render json: { message: "Marker was not updated: #{error.message}" }, status: 500 and return
   end
 
   # Destroy a marker based on uuid
@@ -79,38 +74,46 @@ class AvalonMarkerController < ApplicationController
   # @example Rails Console command to destroy the marker with an uuid of 56
   #    app.delete('/avalon_marker/56')
   def destroy
-    lookup_marker
     @marker.destroy
-    render json: { action: 'destroy', id: @marker.id, success: true }
-  end
-
-  # Looks up a marker using the id key in params and sets @marker
-  def lookup_marker
-    @marker = AvalonMarker.where(uuid: params[:id])[0]
-    @marker = AvalonMarker.where(id: params[:id])[0] if @marker.nil?
-    not_found if @marker.nil?
-  end
-
-  # Using the params passed into the controller, update the marker and reload it
-  def selected_key_updates
-    marker_params = params['avalon_marker']
-    marker_params[:start_time] = time_str_to_milliseconds marker_params[:start_time] if marker_params[:start_time].present?
-    updates = {}
-    @attr_keys.each do |key|
-      updates[key] = marker_params[key] unless marker_params[key].nil?
-    end
-    @marker.update(updates) unless updates.keys.empty?
-    @marker.reload
-  end
-
-  # Raises a 404 error when a marker or master_file cannot be Found
-  # @param [Symbol] The object that cannot be found (:marker or :master_file)
-  # @raise ActionController::RoutingError resolves as a 404 in browser
-  def not_found(item: :marker)
-    raise ActionController::RoutingError.new(@not_found_messages[item])
+    render json: @marker.to_json.merge(action: 'destroy', success: true)
+  rescue StandardError => error
+    render json: { message: "Marker was not destroyed: #{error.message}" }, status: 500 and return
   end
 
   private
+
+  # Looks up a marker using the id key in params and sets @marker
+  def set_marker
+    @marker = AvalonMarker.find(params[:id]) || AvalonMarker.find_by_uuid(params[:id])
+  end
+
+  def marker_params
+    return @marker_params if @marker_params.present?
+    @marker_params = params.require(:marker).permit(:master_file_id, :playlist_item_id, :title, :start_time)
+    @marker_params[:start_time] = time_str_to_milliseconds marker_params[:start_time] if marker_params[:start_time].present?
+    @marker_params[:playlist_item] = PlaylistItem.find(marker_params.delete(:playlist_item_id)) if marker_params[:playlist_item_id].present?
+    @marker_params[:master_file] = MasterFile.find(marker_params.delete(:master_file_id)) if marker_params[:master_file_id].present?
+    @marker_params
+  end
+
+  # # Using the params passed into the controller, update the marker and reload it
+  # def selected_key_updates
+  #   marker_params = params['avalon_marker']
+  #   marker_params[:start_time] = time_str_to_milliseconds marker_params[:start_time] if marker_params[:start_time].present?
+  #   updates = {}
+  #   @attr_keys.each do |key|
+  #     updates[key] = marker_params[key] unless marker_params[key].nil?
+  #   end
+  #   @marker.update(updates) unless updates.keys.empty?
+  #   @marker.reload
+  # end
+
+  # # Raises a 404 error when a marker or master_file cannot be Found
+  # # @param [Symbol] The object that cannot be found (:marker or :master_file)
+  # # @raise ActionController::RoutingError resolves as a 404 in browser
+  # def not_found(item: :marker)
+  #   raise ActionController::RoutingError.new(@not_found_messages[item])
+  # end
 
   # Returns milliseconds from a time string of format h:m:s.s or m:s.s or s.s
   # @param [String] The time string
@@ -129,7 +132,7 @@ class AvalonMarkerController < ApplicationController
       end
     else
       value
-    end    
+    end
   end
 
 end

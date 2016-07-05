@@ -30,20 +30,20 @@ describe AvalonMarkerController do
   describe 'creating a marker and displaying it' do
     it 'can create a marker and display it as JSON' do
       allow(MasterFile).to receive(:find).and_return(master_file)
-      post 'create', avalon_marker:{ master_file: master_file.id, playlist_item: playlist_item.id }
+      post 'create', marker:{ master_file_id: master_file.id, playlist_item_id: playlist_item.id }
       expect { JSON.parse(response.body) }.not_to raise_error
     end
     it 'returns an error when the master file is not supplied' do
-      expect(post 'create', avalon_marker:{ playlist_item: playlist_item.id } ).to have_http_status(400)
+      expect(post 'create', marker:{ playlist_item_id: playlist_item.id } ).to have_http_status(400)
     end
     it 'returns an error when the master file cannot be found' do
-      expect(post 'create', avalon_marker:{ master_file: 'OC', playlist_item: playlist_item.id }).to have_http_status(400)
+      expect(post 'create', amarker:{ master_file_id: 'OC', playlist_item_id: playlist_item.id }).to have_http_status(400)
     end
     it 'returns an error when the playlist item is not supplied' do
-      expect(post 'create', avalon_marker:{ master_file: master_file.id }).to have_http_status(400)
+      expect(post 'create', marker:{ master_file_id: master_file.id }).to have_http_status(400)
     end
     it 'returns an error when the playlist item cannot be found' do
-      expect(post 'create', avalon_marker:{ master_file: master_file.id, playlist_item: 'OC' }).to have_http_status(400)
+      expect(post 'create', marker:{ master_file_id: master_file.id, playlist_item_id: 'OC' }).to have_http_status(400)
     end
   end
   describe 'updating a marker' do
