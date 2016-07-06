@@ -14,38 +14,55 @@
 
 require 'spec_helper'
 
-describe AvalonMarkerController do
+describe AvalonMarkerController, type: :controller do
 
+  let(:valid_session) { {} }
   let(:master_file) { FactoryGirl.create(:master_file_with_derivative) }
   let(:avalon_clip) { FactoryGirl.create(:avalon_clip, master_file: master_file) }
-  let(:user) { FactoryGirl.create(:user) }
+  let(:user) { login_as :user }
   let(:playlist) { FactoryGirl.create(:playlist, user: user) }
   let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: avalon_clip) }
   let(:avalon_marker) { FactoryGirl.create(:avalon_marker, playlist_item: playlist_item, master_file: master_file) }
 
-  before :all do
-    @controller = AvalonMarkerController.new
+  describe 'security' do
+    let(:playlist) { FactoryGirl.create(:playlist) }
+    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist) }
+    context 'with unauthenticated user' do
+      it "all routes should redirect to sign in" do
+        expect(post :create, marker: { playlist_item_id: playlist_item.id, master_file_id: master_file.id, title: Faker::Lorem.word, start_time: 0.0 }).to redirect_to(new_user_session_path)
+        expect(put :update, id: avalon_marker.id, marker: { title: Faker::Lorem.word }).to redirect_to(new_user_session_path)
+      end
+    end
+    context 'with end-user' do
+      before do
+        login_as :user
+      end
+      it "all routes should redirect to /" do
+        expect(post :create, marker: { playlist_item_id: playlist_item.id, master_file_id: master_file.id, title: Faker::Lorem.word, start_time: 0.0 }).to have_http_status(:unauthorized)
+        expect(put :update, id: avalon_marker.id, marker: { title: Faker::Lorem.word }).to have_http_status(:unauthorized)
+      end
+    end
   end
 
   describe 'creating a marker and displaying it' do
     it 'can create a marker and display it as JSON' do
-      allow(MasterFile).to receive(:find).and_return(master_file)
-      post 'create', marker:{ master_file_id: master_file.id, playlist_item_id: playlist_item.id }
+      post 'create', marker:{ playlist_item_id: playlist_item.id, master_file_id: master_file.id }
       expect { JSON.parse(response.body) }.not_to raise_error
     end
     it 'returns an error when the master file is not supplied' do
-      expect(post 'create', marker:{ playlist_item_id: playlist_item.id } ).to have_http_status(400)
+      expect(post 'create', marker:{ playlist_item_id: playlist_item.id }).to have_http_status(400)
     end
     it 'returns an error when the master file cannot be found' do
       expect(post 'create', marker:{ master_file_id: 'OC', playlist_item_id: playlist_item.id }).to have_http_status(500)
     end
-    it 'returns an error when the playlist item is not supplied' do
-      expect(post 'create', marker:{ master_file_id: master_file.id }).to have_http_status(400)
+    xit 'returns an error when the playlist item is not supplied' do
+      expect(post 'create', marker:{ master_file_id: master_file.id }).to have_http_status(401)
     end
-    it 'returns an error when the playlist item cannot be found' do
+    xit 'returns an error when the playlist item cannot be found' do
       expect(post 'create', marker:{ master_file_id: master_file.id, playlist_item_id: 'OC' }).to have_http_status(500)
     end
   end
+
   describe 'updating a marker' do
     it 'can update a marker and display it as JSON' do
       avalon_marker.save!

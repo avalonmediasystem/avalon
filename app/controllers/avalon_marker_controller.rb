@@ -16,15 +16,7 @@
 # Implements show, create, update, and delete
 class AvalonMarkerController < ApplicationController
   before_action :set_marker, except: [:create]
-  #before_action :authenticate_user!
-
-  # # after_action:
-  # def initialize
-  #   @not_found_messages = { marker: 'Marker Not Found',
-  #                           master_file: 'Master File Not Found',
-  #                           playlist_item: 'Playlist Item Not Found' }
-  #   @attr_keys = [:title, :start_time]
-  # end
+  before_action :authenticate_user!
 
   # Finds the marker based on passed id or uuid and renders the marker's json
   # @param [Hash] params the parameters used by the controller
@@ -44,7 +36,11 @@ class AvalonMarkerController < ApplicationController
   # @example Rails Console command to create a marker based of the MasterFile whose pid is avalon:20 and default values for all other fields in the marker
   #    app.post('/avalon_marker/', {master_file: 'avalon:20'})
   def create
-    @marker = AvalonMarker.create(marker_params)
+    marker_params
+    unless can? :update, @marker_params[:playlist_item]
+      render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return
+    end
+    @marker = AvalonMarker.create(@marker_params)
     if @marker.persisted?
       render json: @marker.to_json.merge(message: 'Add marker to playlist item was successful.'), status: 201 and return
     else
@@ -59,9 +55,12 @@ class AvalonMarkerController < ApplicationController
   # @option params [String] :id the id of the marker to update
   # @option params [String] :title the title to use for the marker
   # @option params [String] :start_time the time point the marker
-   # @example Rails Console command to update the title of the marker with a uuid of 56 to be 'Hail'
+  # @example Rails Console command to update the title of the marker with a uuid of 56 to be 'Hail'
   #    app.put('/avalon_marker/56', {title: 'Hail'})
   def update
+    unless can? :update, @marker
+      render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return
+    end
     @marker.update(marker_params)
     render json: @marker.to_json
   rescue StandardError => error
@@ -74,6 +73,9 @@ class AvalonMarkerController < ApplicationController
   # @example Rails Console command to destroy the marker with an uuid of 56
   #    app.delete('/avalon_marker/56')
   def destroy
+    unless can? :delete, @marker
+      render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return
+    end
     @marker.destroy
     render json: @marker.to_json.merge(action: 'destroy', success: true)
   rescue StandardError => error
@@ -97,36 +99,17 @@ class AvalonMarkerController < ApplicationController
     @marker_params
   end
 
-  # # Using the params passed into the controller, update the marker and reload it
-  # def selected_key_updates
-  #   marker_params = params['avalon_marker']
-  #   marker_params[:start_time] = time_str_to_milliseconds marker_params[:start_time] if marker_params[:start_time].present?
-  #   updates = {}
-  #   @attr_keys.each do |key|
-  #     updates[key] = marker_params[key] unless marker_params[key].nil?
-  #   end
-  #   @marker.update(updates) unless updates.keys.empty?
-  #   @marker.reload
-  # end
-
-  # # Raises a 404 error when a marker or master_file cannot be Found
-  # # @param [Symbol] The object that cannot be found (:marker or :master_file)
-  # # @raise ActionController::RoutingError resolves as a 404 in browser
-  # def not_found(item: :marker)
-  #   raise ActionController::RoutingError.new(@not_found_messages[item])
-  # end
-
   # Returns milliseconds from a time string of format h:m:s.s or m:s.s or s.s
   # @param [String] The time string
   # @return [float] the time string converted to milliseconds
-  def time_str_to_milliseconds value
+  def time_str_to_milliseconds(value)
     if value.is_a?(Numeric)
       value.floor
     elsif value.is_a?(String)
       result = 0
       segments = value.split(/:/).reverse
       begin
-        segments.each_with_index { |v,i| result += i > 0 ? Float(v) * (60**i) * 1000 : (Float(v) * 1000) }
+        segments.each_with_index { |v, i| result += i > 0 ? Float(v) * (60**i) * 1000 : (Float(v) * 1000) }
         result.to_i
       rescue
         return value
@@ -135,5 +118,4 @@ class AvalonMarkerController < ApplicationController
       value
     end
   end
-
 end
