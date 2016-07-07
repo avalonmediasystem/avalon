@@ -87,7 +87,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
-  revision: 5685ea319358604b90a28f418eed9ad70adff123
+  revision: 2aed97bd4f17cd349e0508fb25f0d3943e9e7074
   branch: master
   specs:
     media_element_add_to_playlist (0.0.1)
@@ -728,7 +728,7 @@ GEM
       actionpack (>= 3.1)
       jquery-rails
       railties (>= 3.1)
-    tzinfo (0.3.50)
+    tzinfo (0.3.51)
     uber (0.0.13)
     uglifier (2.7.1)
       execjs (>= 0.3.0)
