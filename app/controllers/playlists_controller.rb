@@ -72,6 +72,19 @@ class PlaylistsController < ApplicationController
     redirect_to playlists_url, notice: 'Playlist was successfully destroyed.'
   end
 
+  def import_variations_playlist
+    result = VariationsPlaylistImporter.new.import_variations_playlist(params[:Filedata], current_user)
+    if result[:playlist].persisted?
+      redirect_to @playlist, notice: 'Variations playlist was successfully imported.'
+    else
+      @playlist = result[:playlist]
+      @playlist_items = result[:playlist_items]
+      render 'import_variations_playlist'
+    end
+  rescue StandardError => e
+    redirect_to playlists_url, flash: { error: "Import failed: #{e.message}" }
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
