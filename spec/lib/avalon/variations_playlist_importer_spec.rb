@@ -16,6 +16,11 @@ require 'spec_helper'
 require 'avalon/variations_playlist_importer'
 
 describe Avalon::VariationsPlaylistImporter do
+  before(:all) do
+    Avalon::Configuration['variations'] = { 'media_object_id_map_file' => 'spec/fixtures/variations_playlists/variations_media_object_id_map.yml' }
+    Avalon::VariationsMappingService::MEDIA_OBJECT_ID_MAP = YAML.load_file(Avalon::Configuration['variations']['media_object_id_map_file']).freeze rescue {}
+  end
+
   subject { Avalon::VariationsPlaylistImporter.new }
   let(:fixture) { full_fixture_path('T351.v2p') }
   let(:fixture_file) { File.new(fixture) }

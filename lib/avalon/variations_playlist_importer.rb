@@ -12,6 +12,8 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+require 'avalon/variations_mapping_service'
+
 # A tool for converting a variations v2p file to an Avalon Playlist
 # @since 5.1.0
 module Avalon
@@ -105,12 +107,12 @@ module Avalon
     # @param [] the chunk to get the title from
     # @return [String] the title
     def extract_playlist_item_title(chunk_xml)
-      chunk_xml.xpath('@label').text
+      chunk_xml.attr('label')
     end
 
+    # lookup masterfile from Variations media object id
     def find_master_file(content_interval_xml)
-      # TODO: Make service object to do this!
-      # TODO: lookup masterfile from Variations media object id
+      VariationsMappingService.new.find_master_file(content_interval_xml.attr('mediaRef')) rescue nil
     end
   end
 end
