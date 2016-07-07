@@ -49,7 +49,8 @@ module Avalon
       ci_count = chunk_xml.xpath('ContentInterval').size
       chunk_xml.xpath('ContentInterval').collect.with_index do |content_interval_xml, i|
         # If we have the use the same title multiple times because it spans on master file, increment the title
-        clip_title = "#{chunk_title} - #{i + 1}" if ci_count > 1
+        clip_title = chunk_title
+        clip_title << " - #{i + 1}" if ci_count > 1
         start_time = content_interval_xml.attr('begin')
         end_time = content_interval_xml.attr('end')
         master_file = find_master_file(content_interval_xml)
@@ -89,7 +90,6 @@ module Avalon
       playlist_title = extract_playlist_title(playlist_xml)
       if playlist_title.blank?
         playlist_title = Avalon::VariationsPlaylistImporter::DEFAULT_PLAYLIST_TITLE # " - #{File.basename(playlist_filename)}"
-        # playlist.errors.messages[:title] = "Could not determine the playlist's title, it has been given the default title"
       end
       playlist_title
     end
@@ -102,10 +102,10 @@ module Avalon
 
     def construct_playlist_item_title(chunk_xml)
       playlist_item_title = extract_playlist_item_title(chunk_xml)
-      if playlist_item_title.blank?
-        playlist_item_title = '' # TODO: default playlist item title
-        # playlist.errors.messages[:title] = "Could not determine the playlist's title, it has been given the default title"
-      end
+      # AvalonClip will supply a defualt title from the masterfile if none is found here
+      # if playlist_item_title.blank?
+      #   playlist_item_title = '' # TODO: default playlist item title
+      # end
       playlist_item_title
     end
 
@@ -118,7 +118,10 @@ module Avalon
 
     # lookup masterfile from Variations media object id
     def find_master_file(content_interval_xml)
-      VariationsMappingService.new.find_master_file(content_interval_xml.attr('mediaRef')) rescue nil
+      VariationsMappingService.new.find_master_file(content_interval_xml.attr('mediaRef'))
+    rescue StandardError => e
+      Rails.logger.warn "VariationsPlaylistImporter: Error finding MasterFile: #{e.message}"
+      return nil
     end
   end
 end
