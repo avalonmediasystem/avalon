@@ -20,10 +20,11 @@ class AvalonPlayer
     removeOpt = (key) -> value = opts[key]; delete opts[key]; value
     thumbnail_selector = if removeOpt('thumbnailSelector') then 'thumbnailSelector' else null
     add_to_playlist = if removeOpt('addToPlaylist') then 'addToPlaylist' else null
+    add_marker = if removeOpt('addMarker') then 'addMarkerToPlaylistItem' else null
     start_time = removeOpt('startTime')
     success_callback = removeOpt('success')
 
-    features = ['playpause','current','progress','duration','volume','tracks','qualities',thumbnail_selector, add_to_playlist, 'fullscreen','responsive']
+    features = ['playpause','current','progress','duration','volume','tracks','qualities',thumbnail_selector, add_to_playlist, add_marker, 'fullscreen','responsive']
     features = (feature for feature in features when feature?)
     player_options =
       mode: 'auto_plugin'
@@ -32,6 +33,7 @@ class AvalonPlayer
       thumbnailSelectorUpdateURL: '/update-url'
       thumbnailSelectorEnabled: true
       addToPlaylistEnabled: true
+      addMarkerToPlaylistItemEnabled: true
       features: features
       startQuality: 'low'
       customError: 'This browser requires Adobe Flash Player to be installed for media playback.'

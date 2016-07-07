@@ -1,0 +1,121 @@
+<%#
+Copyright 2011-2015, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<div id="markers" class="container">
+  <div class="row marker_header">
+    <div class="col-xs-8">Name</div>
+    <div class="col-xs-2 col-md-1">Time</div>
+    <div class="col-xs-2 col-md-3">Actions</div>
+  </div>
+  <% @markers.sort_by { |hash| hash['start_time'].to_i}.each do |marker| %>
+    <% if can? :read, marker.master_file %>
+    <%   start = marker.start_time.to_f/1000 %>
+  <div class="row marker" id="marker_row_<%= marker.id %>">
+    <%= form_for(marker, remote: true) do |f| %>
+      <div class="col-xs-8">
+        <a class='marker_title' data-offset='<%= start %>'><%= marker.title %></a>
+      </div>
+      <div class="col-xs-2 col-md-1">
+        <span class='marker_start_time'><%= pretty_time(marker.start_time) %></span>
+      </div>
+      <div class="col-xs-2 col-md-3">
+        <%= button_tag "Edit", name: 'edit_marker', id: "edit_marker_#{marker.id}", class:'btn btn-default btn-xs edit_marker fa fa-edit', type: 'button' %>
+        <%= button_tag "Delete", name: 'delete_marker', class:'btn btn-danger btn-xs btn-confirmation fa fa-times', form: "edit_avalon_marker_#{marker.id}", data: {placement: 'top'} %>
+      </div>
+    <% end %>
+  </div>
+    <% end %>
+  <% end %>
+</div>
+<% content_for :page_scripts do %>
+<script>
+  function enableMarkerEditForm(event) {
+    var button = $(this);
+    var form = button.closest('form')
+    var txt = form.find('.marker_title');
+    txt.after($("<input type='text' name='marker[title]' style='width:100%' />").val(txt.text()));
+    txt.hide();
+    txt = form.find('.marker_start_time');
+    txt.after($("<input type='text' name='marker[start_time]' style='width:100%'/>").val(txt.text()));
+    txt.hide();
+    button.after($("<button type='submit' name='marker_edit_save' class='btn btn-default btn-xs fa fa-check'> Save</button>"));
+    button.hide();
+    var deleteButton = form.find('button[name="delete_marker"]');
+    var cancelButton = $("<button type='button' name='marker_edit_cancel' class='btn btn-danger btn-xs fa fa-times'> Cancel</button>");
+    deleteButton.after(cancelButton);
+    cancelButton.click(cancelMarkerEdit);
+    deleteButton.hide();
+  }
+
+  function disableMarkerEditForm(id){
+    var row = $('#marker_row_'+id);
+    var input = row.find('input[name = "marker[title]"]')
+    var txt = row.find('.marker_title').text(input.val());
+    txt.show();
+    input.remove();
+    var input = row.find('input[name = "marker[start_time]"]')
+    var txt = row.find('.marker_start_time').text(input.val());
+    txt.show();
+    input.remove();
+    var button = row.find('#edit_marker_'+id);
+    button.show();
+    row.find('button[name="marker_edit_save"]').remove();
+    row.find('button[name="delete_marker"]').show();
+    row.find('button[name="marker_edit_cancel"]').remove();
+  }
+
+  $('button.edit_marker').click(enableMarkerEditForm);
+
+  function cancelMarkerEdit(event){
+    var button = $(this);
+    var form = button.closest('form')
+    var input = form.find('input[name = "marker[title]"]')
+    var txt = form.find('.marker_title');
+    txt.show();
+    input.remove();
+    var input = form.find('input[name = "marker[start_time]"]')
+    var txt = form.find('.marker_start_time');
+    txt.show();
+    input.remove();
+    form.find('button[name="edit_marker"]').show();
+    form.find('button[name="marker_edit_save"]').remove();
+    form.find('button[name="delete_marker"]').show();
+    form.find('button[name="marker_edit_cancel"]').remove();
+  };
+
+  $('.marker_title').click(function(e){
+    if(typeof(currentPlayer)!=typeof(undefined)){
+      currentPlayer.setCurrentTime(parseFloat(this.dataset['offset'])||0);
+    }
+  });
+
+  function handle_edit_save(e, data, status, xhr){
+    var response = $.parseJSON(xhr.responseText);
+    if (response['action']=='destroy') {
+      //respond to destroy
+      $('#marker_row_'+response['id']).remove();
+    } else {
+      //respond to edit
+      disableMarkerEditForm(response['id']);
+    }
+  }
+
+  $('.edit_avalon_marker').on("ajax:success", handle_edit_save).on("ajax:error", function(e, xhr, status, error){
+    alert('Request failed.');
+  })
+
+</script>
+<% end %>
+

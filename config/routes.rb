@@ -83,7 +83,7 @@ Avalon::Application.routes.draw do
     end
   end
 
-  resources :avalon_clip, only: [:create, :show, :update, :destroy]
+  resources :avalon_marker, only: [:create, :show, :update, :destroy]
 
   resources :comments, only: [:index, :create]
 

@@ -87,8 +87,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
-  revision: d5a20bc90c93bda2377f2d53e3a3fefb3e7ba4b0
-  tag: avalon-r5
+  revision: 5685ea319358604b90a28f418eed9ad70adff123
+  branch: master
   specs:
     media_element_add_to_playlist (0.0.1)
       rails (~> 4.0)
@@ -478,7 +478,7 @@ GEM
       rack-contrib (~> 1.1)
       railties (>= 3.0.0, < 5.0.0)
     method_source (0.8.2)
-    mime-types (2.99.1)
+    mime-types (2.99.2)
     mimemagic (0.2.1)
     mini_portile2 (2.0.0)
     minitest (4.7.5)
@@ -865,4 +865,4 @@ DEPENDENCIES
   xray-rails
 
 BUNDLED WITH
-   1.12.4
+   1.12.5
