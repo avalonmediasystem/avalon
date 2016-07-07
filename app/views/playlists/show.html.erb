@@ -46,13 +46,13 @@ Unless required by applicable law or agreed to in writing, software distributed
             </div>
             <% @markers = @current_playlist_item.marker %>
             <% unless @markers.empty? %>
-            <div class="panel-heading" role="tab" id="heading1">
+            <div class="panel-heading" role="tab" id="markers_heading">
               <h5 class="panel-title ">
-                <a href="#section2" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
+                <a href="#markers_section" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
                   Markers</a>
               </h5>
             </div>
-            <div id="section2" class="panel-collapse collapse" role="tabpanel">
+            <div id="markers_section" class="panel-collapse collapse" role="tabpanel">
               <div class="panel-body">
                 <%= render 'markers' %>
               </div>
@@ -95,3 +95,6 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   </div>
 </div>
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'marker' %>
+<% end %>
