@@ -22,12 +22,18 @@ module Avalon
     DEFAULT_PLAYLIST_TITLE = 'Imported Variations Playlist'.freeze
 
     # Same as build_playlist but will attempt to save the playlist, all playlist items, clips, and markers
-    def import_playlist!(playlist_filename, user)
+    def import_playlist(playlist_filename, user)
       playlist_xml = parse_playlist(File.new(playlist_filename))
       result = build_playlist(playlist_xml, user)
-      # TODO: collect errors from playlist and descendant objects
-      # save_playlist! unless errors   # Within a transaction
-      result[:playlist]
+      Playlist.transaction do
+        result[:playlist].save
+        result[:playlist_items].map(&:save)
+        has_error = false
+        has_error ||= !result[:playlist].errors.empty?
+        has_error ||= result[:playlist_items].any? { |pi| !pi.errors.empty? || !pi.clip.errors.empty? }
+        raise ActiveRecord::Rollback if has_error
+      end
+      result
     end
 
     def build_playlist(playlist_xml, user)

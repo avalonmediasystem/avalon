@@ -26,21 +26,25 @@ describe Avalon::VariationsPlaylistImporter do
   let(:fixture_file) { File.new(fixture) }
   let(:user) { FactoryGirl.create(:user) }
 
-  describe '#import_playlist!' do
-    it 'returns a playlist' do
-      expect(subject.import_playlist!(fixture, user)).to be_a Playlist
+  describe '#import_playlist' do
+    it 'returns a playlist and playlist items' do
+      result = subject.import_playlist(fixture, user)
+      expect(result).to be_a Hash
+      expect(result[:playlist]).to be_a Playlist
+      expect(result[:playlist_items]).to be_a Array
+      expect(result[:playlist_items].map(&:class).uniq).to eq [PlaylistItem]
     end
 
     context 'with invalid playlist xml' do
       let(:fixture) { full_fixture_path('T351-broken.v2p') }
       it 'raises an ArgumentError when it cannot parse a playlist' do
-        expect { subject.import_playlist!(fixture, user) }.to raise_error(ArgumentError)
+        expect { subject.import_playlist(fixture, user) }.to raise_error(ArgumentError)
       end
     end
     context 'with valid xml that is not a playlist' do
       let(:fixture) { full_fixture_path('not-a-playlist.xml') }
       xit 'raises an ArgumentError when there is no ContainerStructure structure object' do
-        expect { subject.import_playlist!(fixture, user) }.to raise_error(ArgumentError)
+        expect { subject.import_playlist(fixture, user) }.to raise_error(ArgumentError)
       end
     end
   end
