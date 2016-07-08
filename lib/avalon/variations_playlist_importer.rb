@@ -28,13 +28,16 @@ module Avalon
       if skip_errors
         result[:playlist].save
         result[:playlist_items].select! { |pi| pi.save }
+        result[:markers].select! { |m| m.save }
       else
         Playlist.transaction do
           result[:playlist].save
           result[:playlist_items].map(&:save)
+          result[:markers].map(&:save)
           has_error = false
           has_error ||= !result[:playlist].errors.empty?
           has_error ||= result[:playlist_items].any? { |pi| !pi.errors.empty? || !pi.clip.errors.empty? }
+          has_error ||= result[:markers].any? { |m| !m.errors.empty? }
           raise ActiveRecord::Rollback if has_error
         end
       end
@@ -44,7 +47,8 @@ module Avalon
     def build_playlist(playlist_xml, user)
       playlist = initialize_playlist(playlist_xml, user)
       items = playlist_xml.xpath('//ContainerStructure/Item/Chunk').collect { |chunk_xml| build_playlist_items(chunk_xml, playlist) }.flatten
-      { playlist: playlist, playlist_items: items }
+      markers = playlist_xml.xpath('//BookmarkTree/PlaylistBookmark').collect { |bookmark_xml| build_marker(bookmark_xml, playlist_items) }
+      { playlist: playlist, playlist_items: items, markers: markers }
     end
 
     # Creates a playlist item from a ContainerStructure Chunk
@@ -64,8 +68,13 @@ module Avalon
       end
     end
 
-    def build_markers(playlist_xml, playlist_items)
-      # TODO: implement me!
+    def build_markers(bookmark_xml, playlist_items)
+      marker_title = construct_marker_title(bookmark_xml)
+      playlist_offset = bookmark_xml.xpath('Offset').text
+      playlist_item = find_associated_playlist_item(playlist_offset, playlist_items)
+      start_time = construct_marker_start_time(playlist_offset, playlist_items)
+      master_file = playlist_item.clip.master_file rescue nil
+      AvalonMarker.new(title: marker_title, start_time: start_time, playlist_item: playlist_item, master_file: master_file)
     end
 
     private
@@ -127,6 +136,36 @@ module Avalon
     rescue StandardError => e
       Rails.logger.warn "VariationsPlaylistImporter: Error finding MasterFile: #{e.message}"
       return nil
+    end
+
+    def construct_marker_title(bookmark_xml)
+      marker_title = extract_marker_title(bookmark_xml)
+      # AvalonMarker will supply a defualt title from the masterfile if none is found here
+      # if marker_title.blank?
+      #   marker_title = '' # TODO: default marker title
+      # end
+      marker_title
+    end
+
+    def extract_marker_title(bookmark_xml)
+      bookmark_xml.attr('name')
+    end
+
+    def find_associated_playlist_item(playlist_offset, playlist_items)
+
+    end
+
+    def construct_marker_start_time(playlist_offset, playlist_items)
+      # TODO: find the playlist offset for the start of the playlist_item then subtract that from the
+
+    end
+
+    def playlist_offsets(playlist_items)
+      offsets = []
+      playlist_items.each { |pi| offsets << offsets.last + (pi.end_time - pi.start_time) }
+      offsets
+    rescue
+      []
     end
   end
 end

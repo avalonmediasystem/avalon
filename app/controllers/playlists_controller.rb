@@ -77,6 +77,7 @@ class PlaylistsController < ApplicationController
     result = Avalon::VariationsPlaylistImporter.new.import_playlist(params[:Filedata], current_user, params.has_key?(:skip_errors))
     @playlist = result[:playlist]
     @playlist_items = result[:playlist_items]
+    @markers = result[:markers]
 
     if result[:playlist].persisted?
       redirect_to @playlist, notice: 'Variations playlist was successfully imported.'
