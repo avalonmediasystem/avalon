@@ -22,33 +22,30 @@ module Avalon
     DEFAULT_PLAYLIST_TITLE = 'Imported Variations Playlist'.freeze
 
     # Same as build_playlist but will attempt to save the playlist, all playlist items, clips, and markers
-    def import_playlist(playlist_file, user, skip_errors)
+    def import_playlist(playlist_file, user, skip_errors = false)
       playlist_xml = parse_playlist(playlist_file)
-      result = build_playlist(playlist_xml, user)
+      playlist = build_playlist(playlist_xml, user)
       if skip_errors
-        result[:playlist].save
-        result[:playlist_items].select! { |pi| pi.save }
-        result[:markers].select! { |m| m.save }
+        playlist.save.reload # Clean out unpersisted objects
       else
         Playlist.transaction do
-          result[:playlist].save
-          result[:playlist_items].map(&:save)
-          result[:markers].map(&:save)
+          playlist.save
           has_error = false
-          has_error ||= !result[:playlist].errors.empty?
-          has_error ||= result[:playlist_items].any? { |pi| !pi.errors.empty? || !pi.clip.errors.empty? }
-          has_error ||= result[:markers].any? { |m| !m.errors.empty? }
+          has_error ||= !playlist.errors.empty?
+          has_error ||= playlist.items.any? { |pi| !pi.errors.empty? || !pi.clip.errors.empty? }
+          has_error ||= playlist.items.any? { |pi| pi.marker.any? { |m| !m.errors.empty? } }
           raise ActiveRecord::Rollback if has_error
         end
       end
-      result
+      playlist
     end
 
     def build_playlist(playlist_xml, user)
       playlist = initialize_playlist(playlist_xml, user)
-      items = playlist_xml.xpath('//ContainerStructure/Item/Chunk').collect { |chunk_xml| build_playlist_items(chunk_xml, playlist) }.flatten
-      markers = playlist_xml.xpath('//BookmarkTree/PlaylistBookmark').collect { |bookmark_xml| build_marker(bookmark_xml, playlist_items) }
-      { playlist: playlist, playlist_items: items, markers: markers }
+      playlist.items = playlist_xml.xpath('//ContainerStructure/Item/Chunk').collect { |chunk_xml| build_playlist_items(chunk_xml, playlist) }.flatten
+      markers = playlist_xml.xpath('//BookmarkTree/PlaylistBookmark').collect { |bookmark_xml| build_marker(bookmark_xml, playlist.items) }
+      markers.each { |m| m.playlist_item.marker += [m] if m.playlist_item } # Make the playlist items aware of the markers
+      playlist
     end
 
     # Creates a playlist item from a ContainerStructure Chunk
@@ -68,11 +65,11 @@ module Avalon
       end
     end
 
-    def build_markers(bookmark_xml, playlist_items)
+    def build_marker(bookmark_xml, playlist_items)
       marker_title = construct_marker_title(bookmark_xml)
-      playlist_offset = bookmark_xml.xpath('Offset').text
+      playlist_offset = bookmark_xml.xpath('Offset').text.to_f
       playlist_item = find_associated_playlist_item(playlist_offset, playlist_items)
-      start_time = construct_marker_start_time(playlist_offset, playlist_items)
+      start_time = construct_marker_start_time(playlist_offset, playlist_item, playlist_items)
       master_file = playlist_item.clip.master_file rescue nil
       AvalonMarker.new(title: marker_title, start_time: start_time, playlist_item: playlist_item, master_file: master_file)
     end
@@ -152,18 +149,27 @@ module Avalon
     end
 
     def find_associated_playlist_item(playlist_offset, playlist_items)
-
+      offsets = playlist_offsets(playlist_items)
+      playlist_item_offset = offsets.reverse.bsearch { |x| x <= playlist_offset }
+      item_index = offsets.index(playlist_item_offset)
+      playlist_items.at(item_index)
+    rescue
+      nil
     end
 
-    def construct_marker_start_time(playlist_offset, playlist_items)
-      # TODO: find the playlist offset for the start of the playlist_item then subtract that from the
-
+    def construct_marker_start_time(playlist_offset, associated_playlist_item, playlist_items)
+      offsets = playlist_offsets(playlist_items)
+      item_index = playlist_items.index(associated_playlist_item)
+      playlist_item_offset = playlist_offset - offsets[item_index]
+      playlist_item_offset + associated_playlist_item.start_time
+    rescue
+      -1
     end
 
     def playlist_offsets(playlist_items)
-      offsets = []
+      offsets = [0]
       playlist_items.each { |pi| offsets << offsets.last + (pi.end_time - pi.start_time) }
-      offsets
+      offsets.slice(0..-2)
     rescue
       []
     end

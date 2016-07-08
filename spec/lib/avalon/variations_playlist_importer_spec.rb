@@ -27,11 +27,9 @@ describe Avalon::VariationsPlaylistImporter do
 
   describe '#import_playlist' do
     it 'returns a playlist and playlist items' do
-      result = subject.import_playlist(fixture, user)
-      expect(result).to be_a Hash
-      expect(result[:playlist]).to be_a Playlist
-      expect(result[:playlist_items]).to be_a Array
-      expect(result[:playlist_items].map(&:class).uniq).to eq [PlaylistItem]
+      playlist = subject.import_playlist(fixture, user)
+      expect(playlist).not_to be_blank
+      expect(playlist.items).not_to be_blank
     end
 
     context 'with invalid playlist xml' do
@@ -49,32 +47,34 @@ describe Avalon::VariationsPlaylistImporter do
   end
 
   describe '#build_playlist' do
-    let(:fixture_xml) { Nokogiri::XML(fixture_file, &:strict) }
-    let(:result) { subject.build_playlist(fixture_xml, user) }
-    let(:result_playlist) { result[:playlist] }
-    let(:result_playlist_items) { result[:playlist_items] }
+    let(:fixture_xml) { Nokogiri::XML(fixture, &:strict) }
+    let(:playlist) { subject.build_playlist(fixture_xml, user) }
 
     it 'returns playlist and items' do
-      expect(result).to be_a Hash
+      expect(playlist).not_to be_blank
     end
 
     it 'sets the title' do
-      expect(result_playlist.title).to eq 'T351 Module 3 Week 12'
+      expect(playlist.title).to eq 'T351 Module 3 Week 12'
     end
 
     context 'with unreadable ContainerStructure label' do
       let(:fixture) { File.new(full_fixture_path('unreadable-title.v2p')) }
       xit 'provides a default title if necessary' do
-        expect(result_playlist.title).to eq Avalon::VariationsPlaylistImporter::DEFAULT_PLAYLIST_TITLE
+        expect(playlist.title).to eq Avalon::VariationsPlaylistImporter::DEFAULT_PLAYLIST_TITLE
       end
     end
 
     it 'sets the user' do
-      expect(result_playlist.user).to eq user
+      expect(playlist.user).to eq user
     end
 
     it 'creates playlist items' do
-      expect(result_playlist_items.count).to eq 7
+      expect(playlist.items.to_a.size).to eq 7
+    end
+
+    it 'creates playlist markers' do
+      expect(playlist.items.collect { |pi| pi.marker.to_a.size }.sum).to eq 3
     end
   end
 end
