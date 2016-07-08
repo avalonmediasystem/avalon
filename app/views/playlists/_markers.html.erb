@@ -19,10 +19,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="col-xs-2 col-md-1">Time</div>
     <div class="col-xs-2 col-md-3">Actions</div>
   </div>
-  <% @markers.sort_by { |hash| hash['start_time'].to_i}.each do |marker| %>
+  <% @markers.sort_by(&:start_time).each do |marker| %>
     <% if can? :read, marker.master_file %>
     <%   start = marker.start_time.to_f/1000 %>
-  <div class="row marker" id="marker_row_<%= marker.id %>">
+  <div class="row marker" id="marker_row_<%= marker.id %>" data-offset='<%= start %>'>
     <%= form_for(marker, remote: true) do |f| %>
       <div class="col-xs-8">
         <a class='marker_title' data-offset='<%= start %>'><%= marker.title %></a>
