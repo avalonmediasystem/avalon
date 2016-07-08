@@ -26,7 +26,10 @@ module Avalon
       playlist_xml = parse_playlist(playlist_file)
       playlist = build_playlist(playlist_xml, user)
       if skip_errors
-        playlist.save.reload # Clean out unpersisted objects
+        # Clean out invalid objects
+        playlist.items.each { |pi| pi.marker = pi.marker.select(&:valid?) }
+        playlist.items = playlist.items.select { |pi| pi.valid? && pi.clip.valid? }
+        playlist.save
       else
         Playlist.transaction do
           playlist.save

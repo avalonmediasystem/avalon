@@ -30,6 +30,28 @@ describe Avalon::VariationsPlaylistImporter do
       playlist = subject.import_playlist(fixture, user)
       expect(playlist).not_to be_blank
       expect(playlist.items).not_to be_blank
+      expect(playlist.items.collect(&:marker).flatten).not_to be_blank
+    end
+
+    it 'attempts to save the playlist, items, and markers and reports errors' do
+      playlist = subject.import_playlist(fixture, user)
+      expect(playlist.errors).not_to be_blank
+      expect(playlist.persisted?).to be_falsy
+      expect(playlist.items.any?(&:persisted?)).to be_falsy
+      expect(playlist.items.collect(&:marker).flatten.any?(&:persisted?)).to be_falsy
+    end
+
+    context 'with skip errors' do
+      before do
+        media_object = FactoryGirl.create(:media_object, title: 'Amériques Offrandes ; Hyperprism ; Octandre ; Arcana')
+        master_file = FactoryGirl.create(:master_file, duration: '3649026', label: 'ADU7077A', mediaobject: media_object)
+        master_file.DC.identifier += ['ADU7077A']
+        master_file.save
+      end
+
+      it 'returns only objects that successfully saved' do
+        expect(subject.import_playlist(fixture, user, true).items.count).to eq 1
+      end
     end
 
     context 'with invalid playlist xml' do
