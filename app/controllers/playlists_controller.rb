@@ -1,5 +1,6 @@
+require 'avalon/variations_playlist_importer'
+
 class PlaylistsController < ApplicationController
-  # TODO: rewrite this to use cancancan's authorize_and_load_resource
   before_action :authenticate_user!, except: [:show]
   load_and_authorize_resource
 
@@ -73,12 +74,13 @@ class PlaylistsController < ApplicationController
   end
 
   def import_variations_playlist
-    result = VariationsPlaylistImporter.new.import_variations_playlist(params[:Filedata], current_user)
+    result = Avalon::VariationsPlaylistImporter.new.import_playlist(params[:Filedata], current_user, params.has_key?(:skip_errors))
+    @playlist = result[:playlist]
+    @playlist_items = result[:playlist_items]
+
     if result[:playlist].persisted?
       redirect_to @playlist, notice: 'Variations playlist was successfully imported.'
     else
-      @playlist = result[:playlist]
-      @playlist_items = result[:playlist_items]
       render 'import_variations_playlist'
     end
   rescue StandardError => e

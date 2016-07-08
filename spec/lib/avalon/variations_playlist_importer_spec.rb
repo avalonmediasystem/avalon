@@ -22,8 +22,7 @@ describe Avalon::VariationsPlaylistImporter do
   end
 
   subject { Avalon::VariationsPlaylistImporter.new }
-  let(:fixture) { full_fixture_path('T351.v2p') }
-  let(:fixture_file) { File.new(fixture) }
+  let(:fixture) { File.new(full_fixture_path('T351.v2p')) }
   let(:user) { FactoryGirl.create(:user) }
 
   describe '#import_playlist' do
@@ -36,13 +35,13 @@ describe Avalon::VariationsPlaylistImporter do
     end
 
     context 'with invalid playlist xml' do
-      let(:fixture) { full_fixture_path('T351-broken.v2p') }
+      let(:fixture) { File.new(full_fixture_path('T351-broken.v2p')) }
       it 'raises an ArgumentError when it cannot parse a playlist' do
         expect { subject.import_playlist(fixture, user) }.to raise_error(ArgumentError)
       end
     end
     context 'with valid xml that is not a playlist' do
-      let(:fixture) { full_fixture_path('not-a-playlist.xml') }
+      let(:fixture) { File.new(full_fixture_path('not-a-playlist.xml')) }
       xit 'raises an ArgumentError when there is no ContainerStructure structure object' do
         expect { subject.import_playlist(fixture, user) }.to raise_error(ArgumentError)
       end
@@ -64,7 +63,7 @@ describe Avalon::VariationsPlaylistImporter do
     end
 
     context 'with unreadable ContainerStructure label' do
-      let(:fixture) { full_fixture_path('unreadable-title.v2p') }
+      let(:fixture) { File.new(full_fixture_path('unreadable-title.v2p')) }
       xit 'provides a default title if necessary' do
         expect(result_playlist.title).to eq Avalon::VariationsPlaylistImporter::DEFAULT_PLAYLIST_TITLE
       end
