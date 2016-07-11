@@ -13,4 +13,38 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div><h1>Here!</h1></div>
+<div><h1>Import Errors</h1></div>
+<% playlist.items.select{|i|!i.valid?}.each do |item| %>
+<div>
+  <p><%= item.title %></p>
+  <ul>
+    <li>
+      <ul>
+        <% item.errors.full_messages.each do |m| %>
+          <li><%= m %></li>
+        <% end %>
+      </ul>
+    </li>
+    <li>
+      <ul>
+        <li>Markers</li>
+        <li>
+          <ul>
+            <% item.marker.select{|m|!m.valid?}.each do |marker| %>
+            <li><%= marker.title %></li>
+            <li>
+              <ul>
+                <% marker.errors.full_messages.each do |m| %>
+                  <li><%= m %></li>
+                <% end %>
+              </ul>
+            </li>
+            <% end %>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+<% end %>
+

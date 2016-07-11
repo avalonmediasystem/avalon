@@ -79,7 +79,7 @@ class PlaylistsController < ApplicationController
     if playlist.persisted?
       redirect_to playlist, notice: 'Variations playlist was successfully imported.'
     else
-      render 'import_variations_playlist'
+      render 'import_variations_playlist', locals: { playlist: playlist }
     end
   rescue StandardError => e
     redirect_to playlists_url, flash: { error: "Import failed: #{e.message}" }
