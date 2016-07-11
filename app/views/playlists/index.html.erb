@@ -82,10 +82,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 	  </span>
         <% end %>
 	<% if Avalon::Configuration.has_key?('variations') %>
-          <form action="<%= import_variations_playlist_playlists_path %>" method="post" enctype="mulitpart/form-data"  style="display:inline">
+          <%= form_tag(import_variations_playlist_playlists_path, method:"post", enctype:"mulitpart/form-data", style:"display:inline") do %>
             <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
             <input type="button" class="btn btn-primary outline_on" id="variations_import" onclick="$(this).closest('form').find('.filedata').click();" value="Import Variations Playlist" />
-          </form>
+          <% end %>
         <% end %>
       </div>
     </div>
