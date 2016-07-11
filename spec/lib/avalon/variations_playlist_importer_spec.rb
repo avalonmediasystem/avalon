@@ -21,6 +21,28 @@ describe Avalon::VariationsPlaylistImporter do
     Avalon::VariationsMappingService::MEDIA_OBJECT_ID_MAP = YAML.load_file(Avalon::Configuration['variations']['media_object_id_map_file']).freeze rescue {}
   end
 
+  let(:master_file_fixture_info) do
+    {
+      'ABU3086A' => { duration: '3509000', mo_title: 'Electro acoustic music classics.' },
+      'AAW7788B' => { duration: '4094293', mo_title: 'St. Luke\'s Passion ; Threnody ; Polymorphy ; String quartet ; Psalms of David ; Dimensions of time and silence' },
+      'ABF5897A' => { duration: '3384266', mo_title: 'Early works' },
+      'VAB7265A' => { duration: '3731599', mo_title: 'From the kitchen archives no. 2 Steve Reich and musicians, live 1977.' },
+      'ABD4563A' => { duration: '1965666', mo_title: 'Nixon in China' },
+      'ADU7077A' => { duration: '3649026', mo_title: 'Amériques Offrandes ; Hyperprism ; Octandre ; Arcana' }
+    }
+  end
+  let(:master_file_fixtures) do
+    master_files = []
+    master_file_fixture_info.each_pair do |id, info|
+      media_object = FactoryGirl.create(:media_object, title: info[:mo_title])
+      master_file = FactoryGirl.create(:master_file, duration: info[:duration], label: id, mediaobject: media_object)
+      master_file.DC.identifier += [id]
+      master_file.save
+      master_files << master_file.reload
+    end
+    master_files
+  end
+
   subject { Avalon::VariationsPlaylistImporter.new }
   let(:fixture) { File.new(full_fixture_path('T351.v2p')) }
   let(:user) { FactoryGirl.create(:user) }
@@ -38,19 +60,44 @@ describe Avalon::VariationsPlaylistImporter do
       expect(playlist.errors).not_to be_blank
       expect(playlist.persisted?).to be_falsy
       expect(playlist.items.any?(&:persisted?)).to be_falsy
+      expect(playlist.items.collect(&:clip).flatten.any?(&:persisted?)).to be_falsy
       expect(playlist.items.collect(&:marker).flatten.any?(&:persisted?)).to be_falsy
     end
 
     context 'with skip errors' do
+      let(:master_file_notis_id) { 'ADU7077A' }
       before do
-        media_object = FactoryGirl.create(:media_object, title: 'Amériques Offrandes ; Hyperprism ; Octandre ; Arcana')
-        master_file = FactoryGirl.create(:master_file, duration: '3649026', label: 'ADU7077A', mediaobject: media_object)
-        master_file.DC.identifier += ['ADU7077A']
+        mf_info = master_file_fixture_info[master_file_notis_id]
+        media_object = FactoryGirl.create(:media_object, title: mf_info[:mo_title])
+        master_file = FactoryGirl.create(:master_file, duration: mf_info[:duration], label: master_file_notis_id, mediaobject: media_object)
+        master_file.DC.identifier += [master_file_notis_id]
         master_file.save
       end
 
       it 'returns only objects that successfully saved' do
-        expect(subject.import_playlist(fixture, user, true).items.count).to eq 1
+        playlist = subject.import_playlist(fixture, user, true)
+        expect(playlist.persisted?).to be_truthy
+        expect(playlist.items.count).to eq 1
+        expect(playlist.items.all?(&:persisted?)).to be_truthy
+        expect(playlist.items.all? { |pi| pi.clip.persisted? }).to be_truthy
+        expect(playlist.items.first.marker.count).to eq 2
+        expect(playlist.items.first.marker.all?(&:persisted?)).to be_truthy
+      end
+    end
+
+    context 'with all fixtures' do
+      before do
+        master_file_fixtures
+      end
+
+      it 'successfully saves the whole playlist tree' do
+        playlist = subject.import_playlist(fixture, user, true)
+        expect(playlist.persisted?).to be_truthy
+        expect(playlist.items.count).to eq 7
+        expect(playlist.items.all?(&:persisted?)).to be_truthy
+        expect(playlist.items.all? { |pi| pi.clip.persisted? }).to be_truthy
+        expect(playlist.items.collect(&:marker).flatten.size).to eq 3
+        expect(playlist.items.collect(&:marker).flatten.all?(&:persisted?)).to be_truthy
       end
     end
 
