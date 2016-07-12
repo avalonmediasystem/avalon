@@ -13,41 +13,40 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div><h1>Import Errors</h1></div>
-<% playlist.items.select{|i|!i.valid?}.each do |item| %>
-<div>
-  <p><%= item.title %></p>
-  <ul>
-    <li>
-      <ul>
-        <% item.errors.full_messages.each do |m| %>
-          <li><%= m %></li>
-        <% end %>
-        <% item.clip.errors.full_messages.each do |m| %>
-          <li><%= m %></li>
-        <% end if !item.clip.valid?%>
-      </ul>
-    </li>
-    <li>
-      <ul>
-        <li>Markers</li>
-        <li>
-          <ul>
+<div><h1>Import Results</h1></div>
+<% playlist.items.each do |item| %>
+  <% if item.clip.valid? && item.valid? %>
+    <div><p style="font-weight: bold"><i class='fa fa-plus-circle' style='color:green'></i> <%= item.title %></p></div>
+  <% else %>
+    <div>
+      <p style="font-weight: bold"><i class='fa fa-times-circle' style='color:red'></i> <%= item.title %></p>
+      <% if item.clip.errors.full_messages.include? "Master file field is required." %>
+        <ul><li>Master file field is required.</li></ul>
+      <% else %>
+        <ul>
+          <% item.errors.full_messages.select{|m|m!="Marker is invalid"}.each do |m| %>
+            <li><%= m %></li>
+          <% end %>
+          <% item.clip.errors.full_messages.each do |m| %>
+            <li><%= m %></li>
+          <% end if !item.clip.valid?%>
+          <% if item.errors.full_messages.include? "Marker is invalid" %>
             <% item.marker.select{|m|!m.valid?}.each do |marker| %>
-            <li><%= marker.title %></li>
-            <li>
-              <ul>
-                <% marker.errors.full_messages.each do |m| %>
-                  <li><%= m %></li>
+              <li>Marker: <%= marker.title %>
+                <% if marker.errors.full_messages.include? "Master file field is required." %>
+                  <ul><li>Master file field is required.</li></ul>
+                <% else %>
+                  <ul>
+                    <% marker.errors.full_messages.each do |m| %>
+                      <li><%= m %></li>
+                    <% end %>
+                  </ul>
                 <% end %>
-              </ul>
-            </li>
+              </li>
             <% end %>
-          </ul>
-        </li>
-      </ul>
-    </li>
-  </ul>
-</div>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+  <% end %>
 <% end %>
-
