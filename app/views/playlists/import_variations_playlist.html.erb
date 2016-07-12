@@ -13,47 +13,60 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div><h1>Import Results</h1></div>
-<% playlist.items.each do |item| %>
-  <% if item.clip.valid? && item.valid? %>
-    <div><p style="font-weight: bold"><i class='fa fa-plus-circle success-color'></i> <%= item.title %></p></div>
-  <% else %>
-    <div>
-      <p style="font-weight: bold"><i class='fa fa-times-circle danger-color'></i> <%= item.title %></p>
-      <% if item.clip.errors.full_messages.include? "Master file field is required." %>
-        <ul><li>Master file field is required.</li></ul>
-      <% else %>
-        <ul>
-          <% item.errors.full_messages.select{|m|m!="Marker is invalid"}.each do |m| %>
-            <li><%= m %></li>
-          <% end %>
-          <% item.clip.errors.full_messages.each do |m| %>
-            <li><%= m %></li>
-          <% end if !item.clip.valid?%>
-          <% if item.errors.full_messages.include? "Marker is invalid" %>
-            <% item.marker.select{|m|!m.valid?}.each do |marker| %>
-              <li>Marker: <%= marker.title %>
-                <% if marker.errors.full_messages.include? "Master file field is required." %>
-                  <ul><li>Master file field is required.</li></ul>
-                <% else %>
-                  <ul>
-                    <% marker.errors.full_messages.each do |m| %>
-                      <li><%= m %></li>
-                    <% end %>
-                  </ul>
+<div class="col-md-9 col-sm-8">
+  <h1>Import Results</h1>
+  <p>The following errors were encountered in the playlist file.</p>
+  <div class="panel panel-default" style="background-color:#F9F9F9;">
+    <div class="panel-body">
+      <% playlist.items.each do |item| %>
+        <% if item.clip.valid? && item.valid? %>
+          <div><p style="font-weight: bold"><i class='fa fa-plus-circle success-color'></i> <%= item.title %></p></div>
+        <% else %>
+          <div>
+            <p style="font-weight: bold"><i class='fa fa-times-circle danger-color'></i> <%= item.title %></p>
+            <% if item.clip.errors.full_messages.include? "Master file field is required." %>
+              <ul><li>Master file field is required.</li></ul>
+            <% else %>
+              <ul>
+                <% item.errors.full_messages.select{|m|m!="Marker is invalid"}.each do |m| %>
+                  <li><%= m %></li>
                 <% end %>
-              </li>
+                <% item.clip.errors.full_messages.each do |m| %>
+                  <li><%= m %></li>
+                <% end if !item.clip.valid?%>
+                <% if item.errors.full_messages.include? "Marker is invalid" %>
+                  <% item.marker.select{|m|!m.valid?}.each do |marker| %>
+                    <li>Marker: <%= marker.title %>
+                      <% if marker.errors.full_messages.include? "Master file field is required." %>
+                        <ul><li>Master file field is required.</li></ul>
+                      <% else %>
+                        <ul>
+                          <% marker.errors.full_messages.each do |m| %>
+                            <li><%= m %></li>
+                          <% end %>
+                        </ul>
+                      <% end %>
+                    </li>
+                  <% end %>
+                <% end %>
+              </ul>
             <% end %>
-          <% end %>
-        </ul>
+          </div>
+        <% end %>
       <% end %>
     </div>
-  <% end %>
-<% end %>
-<a href="/playlists/" class="btn btn-primary outline_on">
-        Cancel
-</a>
-<%= form_tag(import_variations_playlist_playlists_path, method:"post", style:"display:inline") do %>
-  <input type="submit" class="btn btn-primary outline_on" value="Import (Skip broken playlist items)"/>
-  <input type="hidden" name="skip_errors" value="true"/>
-<% end %>
+  </div>
+  <br>
+  <div class="col-lg-7">
+    <p>You can still import this playlist, but due to the errors listed above, your new playlist will not contain items marked with <i class="fa fa-lg fa-times-circle danger-color"></i>.</p>
+    <p>For technical assistance regarding these errors please use our <strong><a href="/comments">contact form</a></strong>.</p>
+    <br>
+  </div>
+  <div class = "col-lg-7">
+    <%= form_tag(import_variations_playlist_playlists_path, method:"post", style:"display:inline") do %>
+      <input type="submit" class="btn btn-danger outline_on" value="Import (Skip broken playlist items)"/>
+      <input type="hidden" name="skip_errors" value="true"/>
+    <% end %>
+    <a href="/playlists/" class="btn btn-default outline_on">Cancel</a>
+  </div>
+</div>
