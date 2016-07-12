@@ -3,7 +3,7 @@ require 'avalon/variations_playlist_importer'
 class PlaylistsController < ApplicationController
   before_action :authenticate_user!, except: [:show]
   load_and_authorize_resource
-  skip_load_and_authorize_resource only: :import_variations_playlist 
+  skip_load_and_authorize_resource only: :import_variations_playlist
   before_action :get_all_playlists, only: [:index, :edit, :update]
 
   # GET /playlists
@@ -74,11 +74,18 @@ class PlaylistsController < ApplicationController
   end
 
   def import_variations_playlist
-    playlist = Avalon::VariationsPlaylistImporter.new.import_playlist(params[:Filedata], current_user, params.has_key?(:skip_errors))
-
+    playlist_file = params[:Filedata]
+    if params.key?(:skip_errors)
+      t = Tempfile.new('v2p')
+      t.write(session.delete(:variations_playlist))
+      t.flush.rewind
+      playlist_file = t
+    end
+    playlist = Avalon::VariationsPlaylistImporter.new.import_playlist(playlist_file, current_user, params.key?(:skip_errors))
     if playlist.persisted?
       redirect_to playlist, notice: 'Variations playlist was successfully imported.'
     else
+      session[:variations_playlist] = File.read(params[:Filedata].tempfile)
       render 'import_variations_playlist', locals: { playlist: playlist }
     end
   rescue StandardError => e
