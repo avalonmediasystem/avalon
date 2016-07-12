@@ -132,8 +132,8 @@ describe Avalon::VariationsPlaylistImporter do
     end
 
     context 'with unreadable ContainerStructure label' do
-      let(:fixture) { File.new(full_fixture_path('unreadable-title.v2p')) }
-      xit 'provides a default title if necessary' do
+      let(:fixture) { File.new(full_fixture_path('unreadable-playlist-title.v2p')) }
+      it 'provides a default title if necessary' do
         expect(playlist.title).to eq Avalon::VariationsPlaylistImporter::DEFAULT_PLAYLIST_TITLE
       end
     end
