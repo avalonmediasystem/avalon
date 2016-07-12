@@ -23,6 +23,9 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% item.errors.full_messages.each do |m| %>
           <li><%= m %></li>
         <% end %>
+        <% item.clip.errors.full_messages.each do |m| %>
+          <li><%= m %></li>
+        <% end if !item.clip.valid?%>
       </ul>
     </li>
     <li>
