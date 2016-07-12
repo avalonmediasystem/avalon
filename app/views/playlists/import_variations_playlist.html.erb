@@ -50,3 +50,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   <% end %>
 <% end %>
+<a href="/playlists/" class="btn btn-primary outline_on">
+        Cancel
+</a>
+<%= form_tag(import_variations_playlist_playlists_path, method:"post", style:"display:inline") do %>
+  <input type="submit" class="btn btn-primary outline_on" value="Import (Skip broken playlist items)"/>
+  <input type="hidden" name="skip_errors" value="true"/>
+<% end %>
