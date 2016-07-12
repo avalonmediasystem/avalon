@@ -18,7 +18,11 @@ require 'avalon/variations_playlist_importer'
 describe Avalon::VariationsPlaylistImporter do
   before(:all) do
     Avalon::Configuration['variations'] = { 'media_object_id_map_file' => 'spec/fixtures/variations_playlists/variations_media_object_id_map.yml' }
-    Avalon::VariationsMappingService::MEDIA_OBJECT_ID_MAP = YAML.load_file(Avalon::Configuration['variations']['media_object_id_map_file']).freeze rescue {}
+    Avalon::VariationsMappingService::MEDIA_OBJECT_ID_MAP = begin
+                                                              YAML.load_file(Avalon::Configuration['variations']['media_object_id_map_file']).freeze
+                                                            rescue
+                                                              {}
+                                                            end
   end
 
   let(:master_file_fixture_info) do
@@ -142,10 +146,57 @@ describe Avalon::VariationsPlaylistImporter do
       expect(playlist.items.to_a.size).to eq 7
     end
 
+    it 'checks if playlist title is string' do
+      expect(playlist.items.first.title). to be_a(String)
+    end
+    it 'finds particular title' do
+      expect(playlist.items.map(&:title)).to include 'Varèse, Hyperprism (1923)'
+    end
+
+    it 'finds particular start time' do
+      expect(playlist.items.first.start_time).to eq 1_874_827.0
+    end
+
+    it 'doesnt find title which is not there' do
+      expect(playlist.items.map(&:title)).not_to include 'Test title for Avalon'
+    end
+
+    it 'doesnt find start time which is not present' do
+      expect(playlist.items.first.start_time).not_to eq 300_000.0
+    end
+
     it 'creates playlist markers' do
       expect(playlist.items.collect { |pi| pi.marker.to_a.size }.sum).to eq 3
     end
+
+    it 'finds particular marker title' do
+      expect(playlist.items.first.marker.map(&:title)).to include 'Varèse, Hyperprism (1923) 1:25'
+    end
+
+    it 'doesnt find title which doesnt have marker' do
+      expect(playlist.items.first.marker.map(&:title)).not_to include 'Reich, Early Works, Clapping Music'
+    end
+
+    it 'finds offset' do
+      # Got this value after running the test
+      expect(playlist.items.first.marker.first.start_time).to eq 1959827.0
+    end
   end
+
+  describe'#build_markers' do
+    let(:bookmark_xml) { Nokogiri::XML(fixture, &:strict)}
+    let(:marker) { subject.build_marker(bookmark_xml, [playlist_item])}
+    let(:playlist_item) {FactoryGirl.create(playlist_item)}
+
+    it 'returns marker and items' do
+      expect(marker).not_to be_blank
+    end
+
+    it 'sets the user' do
+      expect(marker.user).to eq user
+    end
+  end
+
 end
 
 def full_fixture_path(filename)
