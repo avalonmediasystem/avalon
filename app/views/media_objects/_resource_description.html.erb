@@ -147,11 +147,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 	<% end %>
 </div>
 
-  <%= render partial: 'text_field',
-             locals: {form: form, field: :physical_description,
-                      options: {display_label: "Physical Description",
-                                multivalued: true}} %>
-
   <% content_for :page_scripts do %>
 	<%= javascript_include_tag 'autocomplete' %>
 	<%= javascript_include_tag 'dynamic_fields' %>

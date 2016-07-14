@@ -76,6 +76,9 @@ class MediaObject < ActiveFedora::Base
     end
   end
   
+  def validate_creator
+  end
+
   def validate_note_type
     Array(note).each{|i|errors.add(:note, "Note type (#{i[0]}) not in controlled vocabulary") unless ModsDocument::NOTE_TYPES.keys.include? i[0] }
   end
