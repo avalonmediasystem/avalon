@@ -186,14 +186,10 @@ describe Avalon::VariationsPlaylistImporter do
   describe'#build_markers' do
     let(:bookmark_xml) { Nokogiri::XML(fixture, &:strict)}
     let(:marker) { subject.build_marker(bookmark_xml, [playlist_item])}
-    let(:playlist_item) {FactoryGirl.create(playlist_item)}
+    let(:playlist_item) {FactoryGirl.create(:playlist_item)}
 
     it 'returns marker and items' do
       expect(marker).not_to be_blank
-    end
-
-    it 'sets the user' do
-      expect(marker.user).to eq user
     end
   end
 
