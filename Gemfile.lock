@@ -87,7 +87,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
-  revision: 1def8459ab5a25386743c58ab03870efc87f7996
+  revision: 5a444f7b41e709aca71ae42b3b09f9c6ea4b991c
   branch: master
   specs:
     media_element_add_to_playlist (0.0.1)

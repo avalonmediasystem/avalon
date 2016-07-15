@@ -69,7 +69,7 @@
   response = $.parseJSON(xhr.responseText)
   if response['action'] == 'destroy'
     #respond to destroy
-    $('.scrubber-marker')[$('.marker.row').index($('#marker_row_'+response['id']))].remove()
+    $('.scrubber-marker[data-marker="'+response['id']+'"]').remove()
     $('#marker_row_' + response['id']).remove()
     if $('.row .marker').length == 0
       $('#markers_heading').remove()
