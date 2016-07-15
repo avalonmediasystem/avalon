@@ -15,24 +15,28 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <div id="markers" class="container">
   <div class="row marker_header">
-    <div class="col-xs-8">Name</div>
+    <div class="col-xs-7 col-md-8">Name</div>
     <div class="col-xs-2 col-md-1">Time</div>
-    <div class="col-xs-2 col-md-3">Actions</div>
+    <div class="col-xs-3 col-md-3 text-right">Actions</div>
   </div>
   <% @markers.sort_by(&:start_time).each do |marker| %>
     <% if can? :read, marker.master_file %>
     <%   start = marker.start_time.to_f/1000 %>
   <div class="row marker" id="marker_row_<%= marker.id %>" data-offset='<%= start %>'>
     <%= form_for(marker, remote: true) do |f| %>
-      <div class="col-xs-8">
+      <div class="col-xs-7 col-md-8">
         <a class='marker_title' data-offset='<%= start %>'><%= marker.title %></a>
       </div>
       <div class="col-xs-2 col-md-1">
         <span class='marker_start_time'><%= pretty_time(marker.start_time) %></span>
       </div>
-      <div class="col-xs-2 col-md-3">
-        <%= button_tag "Edit", name: 'edit_marker', id: "edit_marker_#{marker.id}", class:'btn btn-default btn-xs edit_marker fa fa-edit', type: 'button' %>
-        <%= button_tag "Delete", name: 'delete_marker', class:'btn btn-danger btn-xs btn-confirmation fa fa-times', form: "edit_avalon_marker_#{marker.id}", data: {placement: 'top'} %>
+      <div class="col-xs-3 col-md-3 text-right">
+        <%= button_tag name: 'edit_marker', id: "edit_marker_#{marker.id}", class:'btn btn-default btn-xs edit_marker', type: 'button' do %>
+          <i class='fa fa-edit' title='Edit'></i> <span class='sm-hidden'>Edit</span>
+        <% end %>
+        <%= button_tag name: 'delete_marker', class:'btn btn-danger btn-xs btn-confirmation', form: "edit_avalon_marker_#{marker.id}", data: {placement: 'top'} do %>
+          <i class='fa fa-times' title='Delete'></i> <span class='sm-hidden'>Delete</span>
+        <% end %>
       </div>
     <% end %>
   </div>

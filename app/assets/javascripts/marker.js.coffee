@@ -21,10 +21,10 @@
   txt = form.find('.marker_start_time')
   txt.after $('<input type=\'text\' name=\'marker[start_time]\' style=\'width:100%\'/>').val(txt.text())
   txt.hide()
-  button.after $('<button type=\'submit\' name=\'marker_edit_save\' class=\'btn btn-default btn-xs fa fa-check\'> Save</button>')
+  button.after $('<button type=\'submit\' name=\'marker_edit_save\' class=\'btn btn-default btn-xs\'><i class=\'fa fa-check\' title=\'Save\'></i> <span class=\'sm-hidden\'>Save</span></button>')
   button.hide()
   deleteButton = form.find('button[name="delete_marker"]')
-  cancelButton = $('<button type=\'button\' name=\'marker_edit_cancel\' class=\'btn btn-danger btn-xs fa fa-times\'> Cancel</button>')
+  cancelButton = $('<button type=\'button\' name=\'marker_edit_cancel\' class=\'btn btn-danger btn-xs\'><i class=\'fa fa-times\' title=\'Cancel\'> <span class=\'sm-hidden\'>Cancel</span></button>')
   deleteButton.after cancelButton
   cancelButton.click cancelMarkerEdit
   deleteButton.hide()
