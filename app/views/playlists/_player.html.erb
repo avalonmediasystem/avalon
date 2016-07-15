@@ -92,6 +92,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 	startQuality: '<%= current_quality(@currentStreamInfo) %>',
 	customError: '<%= t("media_objects.player.customError").html_safe %>',
 	displayMediaFragment: true,
+        displayMarkers: true,
         autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
 	success: function(mediaElement, domObject, player) {
 	  player.media.addEventListener('timeupdate', function(e) {
