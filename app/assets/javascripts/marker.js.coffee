@@ -33,7 +33,8 @@
 @disableMarkerEditForm = (id) ->
   row = $('#marker_row_' + id)
   title_input = row.find('input[name = "marker[title]"]')
-  title_txt = row.find('.marker_title').text(title_input.val())
+  title_val = title_input.val()
+  title_txt = row.find('.marker_title').text(title_val)
   start_input = row.find('input[name = "marker[start_time]"]')
   offset = timeCodeToSeconds(start_input.val())
   title_txt[0].dataset['offset']=offset
@@ -49,6 +50,7 @@
   row.find('button[name="delete_marker"]').show()
   row.find('button[name="marker_edit_cancel"]').remove()
   $('.scrubber-marker[data-marker="'+id+'"]').css('left',Math.round(if isNaN(parseFloat(offset)) then 0 else (100*offset / currentPlayer.media.duration))+'%')
+  $('.scrubber-marker[data-marker="'+id+'"]').attr('title',title_val)
   return
 
 @cancelMarkerEdit = (event) ->
