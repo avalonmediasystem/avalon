@@ -35,7 +35,9 @@
   title_input = row.find('input[name = "marker[title]"]')
   title_txt = row.find('.marker_title').text(title_input.val())
   start_input = row.find('input[name = "marker[start_time]"]')
-  title_txt[0].dataset['offset']=timeCodeToSeconds(start_input.val())
+  offset = timeCodeToSeconds(start_input.val())
+  title_txt[0].dataset['offset']=offset
+  row[0].dataset['offset']=offset
   title_input.remove()
   title_txt.show()
   start_txt = row.find('.marker_start_time').text(start_input.val())
@@ -46,6 +48,7 @@
   row.find('button[name="marker_edit_save"]').remove()
   row.find('button[name="delete_marker"]').show()
   row.find('button[name="marker_edit_cancel"]').remove()
+  $('.scrubber-marker[data-marker="'+id+'"]').css('left',Math.round(if isNaN(parseFloat(offset)) then 0 else (100*offset / currentPlayer.media.duration))+'%')
   return
 
 @cancelMarkerEdit = (event) ->
