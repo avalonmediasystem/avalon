@@ -24,7 +24,7 @@
   button.after $('<button type=\'submit\' name=\'marker_edit_save\' class=\'btn btn-default btn-xs\'><i class=\'fa fa-check\' title=\'Save\'></i> <span class=\'sm-hidden\'>Save</span></button>')
   button.hide()
   deleteButton = form.find('button[name="delete_marker"]')
-  cancelButton = $('<button type=\'button\' name=\'marker_edit_cancel\' class=\'btn btn-danger btn-xs\'><i class=\'fa fa-times\' title=\'Cancel\'> <span class=\'sm-hidden\'>Cancel</span></button>')
+  cancelButton = $('<button type=\'button\' name=\'marker_edit_cancel\' class=\'btn btn-danger btn-xs\'><i class=\'fa fa-times\' title=\'Cancel\'></i> <span class=\'sm-hidden\'>Cancel</span></button>')
   deleteButton.after cancelButton
   cancelButton.click cancelMarkerEdit
   deleteButton.hide()
@@ -69,6 +69,7 @@
   response = $.parseJSON(xhr.responseText)
   if response['action'] == 'destroy'
     #respond to destroy
+    $('.scrubber-marker[data-marker="'+response['id']+'"]').remove()
     $('#marker_row_' + response['id']).remove()
     if $('.row .marker').length == 0
       $('#markers_heading').remove()

@@ -22,7 +22,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% @markers.sort_by(&:start_time).each do |marker| %>
     <% if can? :read, marker.master_file %>
     <%   start = marker.start_time.to_f/1000 %>
-  <div class="row marker" id="marker_row_<%= marker.id %>" data-offset='<%= start %>'>
+  <div class="row marker" id="marker_row_<%= marker.id %>" data-offset='<%= start %>' data-marker='<%= marker.id %>'>
     <%= form_for(marker, remote: true) do |f| %>
       <div class="col-xs-7 col-md-8">
         <a class='marker_title' data-offset='<%= start %>'><%= marker.title %></a>
