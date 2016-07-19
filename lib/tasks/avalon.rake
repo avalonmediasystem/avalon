@@ -156,4 +156,78 @@ namespace :avalon do
     MediaObject.find_each({},{batch_size:5}) {|mo| puts "#{mo.pid}: #{mo.errors.full_messages}" if !mo.valid? }
   end
 
+  namespace :variations do
+    desc "Import playlists/boomarks from Variation export"
+    task :import => :environment do
+      if ENV['filename'].nil?
+        abort "You must specify a file. Example: rake avalon:variations:import filename=export.json"
+      end
+      puts "Importing JSON file: #{ENV['filename']}"
+      unless File.file?(ENV['filename'])
+        abort "Could not find specified file"
+      end
+      require 'json'
+      f = File.open(ENV['filename'])
+      s = f.read()
+      j = JSON.parse(s)
+      user_count = 0
+      new_user_count = 0
+      new_playlist_count = 0
+      item_count = 0
+      new_item_count = 0
+      bookmark_count = 0
+      new_bookmark_count = 0
+      j.each do |user|
+        user_obj = User.find_by_username(user['username'])
+        unless user_obj.present?
+          user_obj = User.create(username: user['username'], email: "#{user['username']}@indiana.edu")
+          new_user_count += 1
+        end
+        user_count += 1
+        playlist_name = user['playlist_name']
+        puts "Importing user #{user['username']}"
+        puts "  playlist name: #{playlist_name}"
+
+        playlist_obj = Playlist.where(user_id: user_obj, title: playlist_name)
+        unless playlist_obj.present?
+          playlist_obj = Playlist.create(user: user_obj, title: playlist_name, visibility: 'private')
+          new_playlist_count += 1
+        end
+
+        user['playlist_item'].each do |playlist_item|
+          container = playlist_item['container_string']
+          comment = playlist_item['comment']
+          mf_obj = MasterFile.where("dc_identifier_tesim:#{container}").first
+          next unless mf_obj.present?
+          puts "  Importing playlist item #{playlist_item['name']}"
+          puts "    comment: #{comment}"
+        
+          pi_obj = PlaylistItem.where(playlist: playlist_obj, master_file: mf_obj).first
+          unless pi_obj.present?
+            clip_obj = AvalonClip.create(title: playlist_item['name'], mf_obj: master_file, start_time: 0)
+            pi_obj = PlaylistItem.create(clip: clip_obj, playlist: playlist_obj)
+            new_item_count += 1
+          end
+          item_count += 1
+
+          playlist_item['bookmark'].each do |bookmark|
+            bookmark_obj = nil #AvalonMarker.where(playlist_item: pi_obj, title: bookmark['name']).first
+            unless pi_obj.present?
+              marker_obj = AvalonMarker.create(title: bookmark['name'], mf_obj: master_file, start_time: bookmark['start_time'])
+              new_bookmark_count += 1
+            end
+            bookmark_count += 1
+            puts "    Importing bookmark #{bookmark['name']} (#{bookmark['start_time']})"
+          end
+        end
+      end
+      puts "------------------------------------------------------------------------------------"
+      puts "Imported #{user_count} users with #{bookmark_count} bookmarks in #{item_count} items"
+      puts " Created #{new_user_count} new users"
+      puts " Created #{new_playlist_count} new playlists"
+      puts " Created #{new_item_count} new playlist items"
+      puts " Created #{new_bookmark_count} new bookmarks"
+      puts "------------------------------------------------------------------------------------"
+    end
+  end
 end
