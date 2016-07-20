@@ -819,7 +819,7 @@ $accordionPadding: 20px;
   i.now-playing {
     position: absolute;
     color: $linkColor;
-    left: $accordionPadding;
+    left: accordion-indent(1);
   }
   .panel-heading {
     border-bottom: 1px solid #dddddd;

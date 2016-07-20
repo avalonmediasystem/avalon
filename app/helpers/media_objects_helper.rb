@@ -155,7 +155,7 @@ EOF
        if section.structuralMetadata.empty?
          label = "#{index+1}. #{stream_label_for(section)} #{duration}".html_safe
          link = link_to label, share_link_for( section ), data: data, class: 'playable wrap' + (current ? ' current-stream current-section' : '')
-         return "#{headeropen}<ul><li>#{link}</li></ul>#{headerclose}"
+         return "#{headeropen}<ul><li class='stream-li'>#{link}</li></ul>#{headerclose}"
        end
 
        sectionnode = section.structuralMetadata.xpath('//Item')
