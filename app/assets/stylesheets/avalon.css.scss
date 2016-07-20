@@ -813,6 +813,9 @@ $accordionPadding: 20px;
   ul, li {
     list-style: none;
   }
+  li ul li.stream-li {
+    position: relative  
+  }
   i.now-playing {
     position: absolute;
     color: $linkColor;
