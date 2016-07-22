@@ -58,15 +58,15 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <br>
   <div class="col-lg-7">
-    <p><i class="fa fa-lg fa-times-circle danger-color"></i> This playlist is still able to be imported, but due to these errors will not contain the items above; other problems may be present as a result.</p>
+    <p>This playlist is still able to be imported, but due to these errors will not contain the items above; other problems may be present as a result.</p>
     <p>For technical assistance regarding these errors please use our <strong><a href="/comments">contact form</a></strong>.</p>
     <br>
   </div>
   <div class = "col-lg-7">
+    <a href="/playlists/" class="btn btn-default outline_on">Cancel</a>
     <%= form_tag(import_variations_playlist_playlists_path, method:"post", style:"display:inline") do %>
-      <input type="submit" class="btn btn-danger outline_on" value="Import (Skip broken playlist items)"/>
+      <input type="submit" class="btn btn-danger outline_on" value="Import"/>
       <input type="hidden" name="skip_errors" value="true"/>
     <% end %>
-    <a href="/playlists/" class="btn btn-default outline_on">Cancel</a>
   </div>
 </div>
