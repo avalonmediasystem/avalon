@@ -157,7 +157,7 @@ namespace :avalon do
   end
 
   namespace :variations do
-    desc "Import playlists/boomarks from Variation export"
+    desc "Import playlists/bookmarks from Variation export"
     task :import => :environment do
       if ENV['filename'].nil?
         abort "You must specify a file. Example: rake avalon:variations:import filename=export.json"
@@ -173,11 +173,15 @@ namespace :avalon do
       f.close()
       user_count = 0
       new_user_count = 0
+      user_errors = []
       new_playlist_count = 0
+      playlist_errors = []
       item_count = 0
       new_item_count = 0
+      item_errors = []
       bookmark_count = 0
       new_bookmark_count = 0
+      bookmark_errors = []
 
       # Setup temporary tables to hold existing playlist data. Allows for re-importing of bookmark data without creating duplicates.
       conn = ActiveRecord::Base.connection
@@ -189,9 +193,11 @@ namespace :avalon do
       conn.execute("CREATE TABLE temp_marker (id int primary key, playlist_item_id int, master_file string, title string, start_time int)")
 
       # Save existing playlist/item/marker data for users being imported
+      puts "Compiling existing avalon marker data"
       usernames = import_json.collect{|user|user['username']}
       Playlist.where(user_id: User.where(username: usernames)).each do |playlist|
-        conn.execute("INSERT INTO temp_playlist VALUES (#{playlist.id}, '#{playlist.title}', #{playlist.user_id})")
+        sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_playlist VALUES (?, ?, ?)", playlist.id, playlist.title, playlist.user_id])
+        conn.execute(sql)
         playlist.items.each do |item|
           sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_playlist_item VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", item.id, item.playlist_id, playlist.user_id, item.clip_id, item.master_file.pid, item.position, item.title, item.start_time, item.end_time])
           conn.execute(sql)
@@ -204,12 +210,15 @@ namespace :avalon do
 
       # Import each user's playlist
       import_json.each do |user|
+        user_count += 1
         user_obj = User.find_by_username(user['username'])
         unless user_obj.present?
           user_obj = User.create(username: user['username'], email: "#{user['username']}@indiana.edu")
+          unless user_obj.persisted?
+            user_errors += [{username: user['username'], errors: user_obj.errors.full_messages}]
+          end
           new_user_count += 1
         end
-        user_count += 1
         playlist_name = user['playlist_name']
         puts "Importing user #{user['username']}"
         puts "  playlist name: #{playlist_name}"
@@ -217,6 +226,9 @@ namespace :avalon do
         playlist_obj = Playlist.where(user_id: user_obj, title: playlist_name).first
         unless playlist_obj.present?
           playlist_obj = Playlist.create(user: user_obj, title: playlist_name, visibility: 'private')
+          unless playlist_obj.persisted?
+            playlist_errors += [{username: user['username'], title: playlist_name, errors: playlist_obj.errors.full_messages}]
+          end
           new_playlist_count += 1
         end
 
@@ -224,31 +236,38 @@ namespace :avalon do
           container = playlist_item['container_string']
           comment = playlist_item['comment']
           mf_obj = MasterFile.where("dc_identifier_tesim:#{container}").first
-          next unless mf_obj.present?
-          puts "  Importing playlist item #{playlist_item['name']}"
-          puts "    comment: #{comment}"
-          sql = ActiveRecord::Base.send(:sanitize_sql_array, ["SELECT id FROM temp_playlist_item WHERE playlist_id=? and master_file=?", playlist_obj.id, mf_obj.pid])
-          playlist_item_id = conn.execute(sql)
-          pi_obj = playlist_item_id.present? ? PlaylistItem.find(playlist_item_id[0]['id']) : []
-          unless pi_obj.present?
-            clip_obj = AvalonClip.create(title: playlist_item['name'], master_file: mf_obj, start_time: 0)
-            pi_obj = PlaylistItem.create(clip: clip_obj, playlist: playlist_obj)
-            new_item_count += 1
+          unless mf_obj.present?
+            item_errors += [{username: user['username'], playlist_id: playlist_obj.id, container: container, title: playlist_item['name'], errors: ['Masterfile not found']}]
+            next 
           end
           item_count += 1
+          puts "  Importing playlist item #{playlist_item['name']}"
+          sql = ActiveRecord::Base.send(:sanitize_sql_array, ["SELECT id FROM temp_playlist_item WHERE playlist_id=? and master_file=? and title=?", playlist_obj.id, mf_obj.pid, playlist_item['name']])
+          playlist_item_id = conn.execute(sql)
+          puts "#{sql}: #{playlist_item_id}"
+          pi_obj = playlist_item_id.present? ? PlaylistItem.find(playlist_item_id[0]['id']) : []
+          unless pi_obj.present?
+            clip_obj = AvalonClip.create(title: playlist_item['name'], master_file: mf_obj, start_time: 0, comment: comment)
+            pi_obj = PlaylistItem.create(clip: clip_obj, playlist: playlist_obj)
+            unless pi_obj.persisted?
+              item_errors += [{username: user['username'], playlist_id: playlist_obj.id, container: container, title: playlist_item['name'], errors: pi_obj.errors.full_messages}]
+              next
+            end
+            new_item_count += 1
+          end
           playlist_item['bookmark'].each do |bookmark|
+            bookmark_count += 1
             sql = ActiveRecord::Base.send(:sanitize_sql_array, ["SELECT id FROM temp_marker WHERE playlist_item_id=? and title=? and start_time=?", pi_obj.id, bookmark['name'], bookmark['start_time']])
             bookmark_id = conn.execute(sql)
 	    bookmark_obj = bookmark_id.present? ? AvalonMarker.find(bookmark_id[0]['id']) : []
             unless bookmark_obj.present?
               marker_obj = AvalonMarker.create(playlist_item: pi_obj, title: bookmark['name'], master_file: mf_obj, start_time: bookmark['start_time'])
-
-# TODO: handle marker_obj.errors
-
+              unless marker_obj.persisted?
+                bookmark_errors += [{username: user['username'], playlist_id: playlist_obj.id, playlist_item_id: pi_obj.id, container: container, playlist_item_title: playlist_item['name'], bookmark_title: bookmark['name'], bookmark_start_time: bookmark['start_time'], errors: marker_obj.errors.full_messages}]
+                next
+              end
               new_bookmark_count += 1
-binding.pry
             end
-            bookmark_count += 1
             puts "    Importing bookmark #{bookmark['name']} (#{bookmark['start_time']})"
           end
         end
@@ -257,12 +276,17 @@ binding.pry
       conn.execute("DROP TABLE IF EXISTS temp_playlist_item")
       conn.execute("DROP TABLE IF EXISTS temp_marker")
       puts "------------------------------------------------------------------------------------"
-      puts "Imported #{user_count} users with #{bookmark_count} bookmarks in #{item_count} items"
-      puts " Created #{new_user_count} new users"
-      puts " Created #{new_playlist_count} new playlists"
-      puts " Created #{new_item_count} new playlist items"
-      puts " Created #{new_bookmark_count} new bookmarks"
+      puts "Errors"
+      puts " user_errors = #{user_errors}" if user_errors.present?
+      puts " playlist_errors = #{playlist_errors}" if playlist_errors.present?
+      puts " item_errors = #{item_errors}" if item_errors.present?
+      puts " bookmark_errors = #{bookmark_errors}" if bookmark_errors.present?
       puts "------------------------------------------------------------------------------------"
+      puts "Imported #{user_count} users with #{bookmark_count} bookmarks in #{item_count} valid playlist items"
+      puts " Created #{new_user_count} new users (#{user_errors.length} errors)"
+      puts " Created #{new_playlist_count} new playlists (#{playlist_errors.length} errors)"
+      puts " Created #{new_item_count} new playlist items (#{item_errors.length} errors)"
+      puts " Created #{new_bookmark_count} new bookmarks (#{bookmark_errors.length} errors)"
     end
   end
 end
