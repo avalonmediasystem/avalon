@@ -81,9 +81,14 @@ Avalon::Application.routes.draw do
       patch 'update_multiple'
       delete 'update_multiple'
     end
+    collection do
+      if Avalon::Configuration.has_key?('variations')
+        post 'import_variations_playlist'
+      end
+    end
   end
 
-  resources :avalon_clip, only: [:create, :show, :update, :destroy]
+  resources :avalon_marker, only: [:create, :show, :update, :destroy]
 
   resources :comments, only: [:index, :create]
 

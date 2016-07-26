@@ -30,6 +30,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% @current_mediaobject = MediaObject.find(@current_masterfile.mediaobject_id) %>
       <div class="col-sm-8" id="left_column">
         <%= render 'player' %>
+        <%= render file: '_add_to_playlist.html.erb' if current_user.present? %>
         <% if can? :read, @current_masterfile %>
         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
           <div class="panel panel-default">
@@ -43,6 +44,20 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <%= @current_clip.comment %>
               </div>
             </div>
+            <% @markers = @current_playlist_item.marker %>
+            <% unless @markers.empty? %>
+            <div class="panel-heading" role="tab" id="markers_heading">
+              <h5 class="panel-title ">
+                <a href="#markers_section" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
+                  Markers</a>
+              </h5>
+            </div>
+            <div id="markers_section" class="panel-collapse collapse" role="tabpanel">
+              <div class="panel-body">
+                <%= render 'markers' %>
+              </div>
+            </div>
+            <% end %>
             <div class="panel-heading">
               <h5 class="panel-title">
                 <a href="#section1" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
@@ -80,3 +95,6 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
   </div>
 </div>
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'marker' %>
+<% end %>

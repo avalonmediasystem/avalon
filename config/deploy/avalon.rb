@@ -39,6 +39,7 @@ set(:shared_children) {
     config/role_map_#{fetch(:rails_env)}.yml 
     config/secrets.yml
     config/solr.yml
+    config/variations_media_object_id_map.yml
     Gemfile.local 
     log 
     tmp/pids

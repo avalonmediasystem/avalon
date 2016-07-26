@@ -1,8 +1,9 @@
+require 'avalon/variations_playlist_importer'
+
 class PlaylistsController < ApplicationController
-  # TODO: rewrite this to use cancancan's authorize_and_load_resource
   before_action :authenticate_user!, except: [:show]
   load_and_authorize_resource
-
+  skip_load_and_authorize_resource only: :import_variations_playlist
   before_action :get_all_playlists, only: [:index, :edit, :update]
 
   # GET /playlists
@@ -70,6 +71,25 @@ class PlaylistsController < ApplicationController
   def destroy
     @playlist.destroy
     redirect_to playlists_url, notice: 'Playlist was successfully destroyed.'
+  end
+
+  def import_variations_playlist
+    playlist_file = params[:Filedata]
+    if params.key?(:skip_errors)
+      t = Tempfile.new('v2p')
+      t.write(session.delete(:variations_playlist))
+      t.flush.rewind
+      playlist_file = t
+    end
+    playlist = Avalon::VariationsPlaylistImporter.new.import_playlist(playlist_file, current_user, params.key?(:skip_errors))
+    if playlist.persisted?
+      redirect_to playlist, notice: 'Variations playlist was successfully imported.'
+    else
+      session[:variations_playlist] = File.read(params[:Filedata].tempfile)
+      render 'import_variations_playlist', locals: { playlist: playlist }
+    end
+  rescue StandardError => e
+    redirect_to playlists_url, flash: { error: "Import failed: #{e.message}" }
   end
 
   private

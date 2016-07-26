@@ -20,10 +20,11 @@ class AvalonPlayer
     removeOpt = (key) -> value = opts[key]; delete opts[key]; value
     thumbnail_selector = if removeOpt('thumbnailSelector') then 'thumbnailSelector' else null
     add_to_playlist = if removeOpt('addToPlaylist') then 'addToPlaylist' else null
+    add_marker = if removeOpt('addMarker') then 'addMarkerToPlaylistItem' else null
     start_time = removeOpt('startTime')
     success_callback = removeOpt('success')
 
-    features = ['playpause','current','progress','duration','volume','tracks','qualities',thumbnail_selector, add_to_playlist, 'fullscreen','responsive']
+    features = ['playpause','current','progress','duration','volume','tracks','qualities',thumbnail_selector, add_to_playlist, add_marker, 'fullscreen','responsive']
     features = (feature for feature in features when feature?)
     player_options =
       mode: 'auto_plugin'
@@ -32,6 +33,7 @@ class AvalonPlayer
       thumbnailSelectorUpdateURL: '/update-url'
       thumbnailSelectorEnabled: true
       addToPlaylistEnabled: true
+      addMarkerToPlaylistItemEnabled: true
       features: features
       startQuality: 'low'
       customError: 'This browser requires Adobe Flash Player to be installed for media playback.'
@@ -85,6 +87,17 @@ class AvalonPlayer
           clip_span.css 'left', start_percent+'%'
           clip_span.css 'width', end_percent-start_percent+'%'
           $('.mejs-time-total').append clip_span
+        if _this.player.options.displayMarkers
+          duration = _this.stream_info.duration 
+          scrubber = $('.mejs-time-rail')
+          scrubber.css('position', 'relative')
+          $('.row.marker').each (i,value) ->
+            offset = $(this)[0].dataset['offset']
+            start_str = " ["+mejs.Utility.secondsToTimeCode(offset)+"]" 
+            marker_id = $(this)[0].dataset['marker']
+            title = $(this).find('.marker_title')[0].text
+            offset_percent = Math.round(if isNaN(parseFloat(offset)) then 0 else (100*offset / duration))
+            scrubber.append('<span class="fa fa-chevron-up scrubber-marker" style="left: '+offset_percent+'%" title="'+title+start_str+'" data-marker="'+marker_id+'"></span>')
         @player.setCurrentTime initialTime
 
       @player.options.playlistItemDefaultTitle = @stream_info.embed_title
