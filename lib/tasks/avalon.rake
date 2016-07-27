@@ -167,6 +167,7 @@ namespace :avalon do
         abort "Could not find specified file"
       end
       require 'json'
+      require 'htmlentities'
       f = File.open(ENV['filename'])
       s = f.read()
       import_json = JSON.parse(s)
@@ -234,8 +235,8 @@ namespace :avalon do
 
         user['playlist_item'].each do |playlist_item|
           container = playlist_item['container_string']
-          comment = playlist_item['comment'].encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
-          title = playlist_item['name'].encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
+          comment = HTMLEntities.new.decode(playlist_item['comment'].encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: ''))
+          title = HTMLEntities.new.decode(playlist_item['name'].encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: ''))
           mf_obj = MasterFile.where("dc_identifier_tesim:#{container}").first
           unless mf_obj.present?
             item_errors += [{username: user['username'], playlist_id: playlist_obj.id, container: container, title: title, errors: ['Masterfile not found']}]
@@ -257,7 +258,7 @@ namespace :avalon do
           end
           playlist_item['bookmark'].each do |bookmark|
             bookmark_count += 1
-            bookmark_name = bookmark['name'].encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
+            bookmark_name = HTMLEntities.new.decode(bookmark['name'].encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: ''))
             sql = ActiveRecord::Base.send(:sanitize_sql_array, ["SELECT id FROM temp_marker WHERE playlist_item_id=? and title=? and start_time=?", pi_obj.id, bookmark_name, bookmark['start_time']])
             bookmark_id = conn.exec_query(sql)
             bookmark_obj = !bookmark_id.empty? ? AvalonMarker.find(bookmark_id.first['id']) : []
