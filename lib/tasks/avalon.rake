@@ -167,6 +167,7 @@ namespace :avalon do
         abort "Could not find specified file"
       end
       require 'json'
+      require 'htmlentities'
       f = File.open(ENV['filename'])
       s = f.read()
       import_json = JSON.parse(s)
@@ -188,9 +189,9 @@ namespace :avalon do
       conn.execute("DROP TABLE IF EXISTS temp_playlist")
       conn.execute("DROP TABLE IF EXISTS temp_playlist_item")
       conn.execute("DROP TABLE IF EXISTS temp_marker")
-      conn.execute("CREATE TABLE temp_playlist (id int primary key, title string, user_id integer)")
-      conn.execute("CREATE TABLE temp_playlist_item (id int primary key, playlist_id int, user_id int, clip_id int, master_file string, position int, title string, start_time int, end_time int)")
-      conn.execute("CREATE TABLE temp_marker (id int primary key, playlist_item_id int, master_file string, title string, start_time int)")
+      conn.execute("CREATE TABLE temp_playlist (id int primary key, title text, user_id int)")
+      conn.execute("CREATE TABLE temp_playlist_item (id int primary key, playlist_id int, user_id int, clip_id int, master_file text, position int, title text, start_time int, end_time int)")
+      conn.execute("CREATE TABLE temp_marker (id int primary key, playlist_item_id int, master_file text, title text, start_time int)")
 
       # Save existing playlist/item/marker data for users being imported
       puts "Compiling existing avalon marker data"
@@ -234,41 +235,42 @@ namespace :avalon do
 
         user['playlist_item'].each do |playlist_item|
           container = playlist_item['container_string']
-          comment = playlist_item['comment']
+          comment = HTMLEntities.new.decode(playlist_item['comment'].encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: ''))
+          title = HTMLEntities.new.decode(playlist_item['name'].encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: ''))
           mf_obj = MasterFile.where("dc_identifier_tesim:#{container}").first
           unless mf_obj.present?
-            item_errors += [{username: user['username'], playlist_id: playlist_obj.id, container: container, title: playlist_item['name'], errors: ['Masterfile not found']}]
+            item_errors += [{username: user['username'], playlist_id: playlist_obj.id, container: container, title: title, errors: ['Masterfile not found']}]
             next 
           end
           item_count += 1
-          puts "  Importing playlist item #{playlist_item['name']}"
-          sql = ActiveRecord::Base.send(:sanitize_sql_array, ["SELECT id FROM temp_playlist_item WHERE playlist_id=? and master_file=? and title=?", playlist_obj.id, mf_obj.pid, playlist_item['name']])
-          playlist_item_id = conn.execute(sql)
-          puts "#{sql}: #{playlist_item_id}"
-          pi_obj = playlist_item_id.present? ? PlaylistItem.find(playlist_item_id[0]['id']) : []
+          puts "  Importing playlist item #{title}"
+          sql = ActiveRecord::Base.send(:sanitize_sql_array, ["SELECT id FROM temp_playlist_item WHERE playlist_id=? and master_file=? and title=?", playlist_obj.id, mf_obj.pid, title])
+          playlist_item_id = conn.exec_query(sql)
+          pi_obj = !playlist_item_id.empty? ? PlaylistItem.find(playlist_item_id.first['id']) : []
           unless pi_obj.present?
-            clip_obj = AvalonClip.create(title: playlist_item['name'], master_file: mf_obj, start_time: 0, comment: comment)
+            clip_obj = AvalonClip.create(title: title, master_file: mf_obj, start_time: 0, comment: comment)
             pi_obj = PlaylistItem.create(clip: clip_obj, playlist: playlist_obj)
             unless pi_obj.persisted?
-              item_errors += [{username: user['username'], playlist_id: playlist_obj.id, container: container, title: playlist_item['name'], errors: pi_obj.errors.full_messages}]
+              item_errors += [{username: user['username'], playlist_id: playlist_obj.id, container: container, title: title, errors: pi_obj.errors.full_messages}]
               next
             end
             new_item_count += 1
           end
           playlist_item['bookmark'].each do |bookmark|
             bookmark_count += 1
-            sql = ActiveRecord::Base.send(:sanitize_sql_array, ["SELECT id FROM temp_marker WHERE playlist_item_id=? and title=? and start_time=?", pi_obj.id, bookmark['name'], bookmark['start_time']])
-            bookmark_id = conn.execute(sql)
-	    bookmark_obj = bookmark_id.present? ? AvalonMarker.find(bookmark_id[0]['id']) : []
+            bookmark_name = HTMLEntities.new.decode(bookmark['name'].encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: ''))
+            sql = ActiveRecord::Base.send(:sanitize_sql_array, ["SELECT id FROM temp_marker WHERE playlist_item_id=? and title=? and start_time=?", pi_obj.id, bookmark_name, bookmark['start_time']])
+            bookmark_id = conn.exec_query(sql)
+            bookmark_obj = !bookmark_id.empty? ? AvalonMarker.find(bookmark_id.first['id']) : []
             unless bookmark_obj.present?
-              marker_obj = AvalonMarker.create(playlist_item: pi_obj, title: bookmark['name'], master_file: mf_obj, start_time: bookmark['start_time'])
+              marker_obj = AvalonMarker.create(playlist_item: pi_obj, title: bookmark_name, master_file: mf_obj, start_time: bookmark['start_time'])
               unless marker_obj.persisted?
-                bookmark_errors += [{username: user['username'], playlist_id: playlist_obj.id, playlist_item_id: pi_obj.id, container: container, playlist_item_title: playlist_item['name'], bookmark_title: bookmark['name'], bookmark_start_time: bookmark['start_time'], errors: marker_obj.errors.full_messages}]
+                bookmark_errors += [{username: user['username'], playlist_id: playlist_obj.id, playlist_item_id: pi_obj.id, container: container, playlist_item_title: title, bookmark_title: bookmark_name, bookmark_start_time: bookmark['start_time'], errors: marker_obj.errors.full_messages}]
                 next
               end
               new_bookmark_count += 1
             end
-            puts "    Importing bookmark #{bookmark['name']} (#{bookmark['start_time']})"
+            puts "    Importing bookmark #{bookmark_name} (#{bookmark['start_time']})"
           end
         end
       end
