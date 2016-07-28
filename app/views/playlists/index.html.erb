@@ -81,6 +81,12 @@ Unless required by applicable law or agreed to in writing, software distributed
             Create New Playlist
 	  </span>
         <% end %>
+	<% if Avalon::Configuration.has_key?('variations') %>
+          <%= form_tag(import_variations_playlist_playlists_path, method:"post", enctype:"multipart/form-data", style:"display:inline") do %>
+            <input type="file" name="Filedata" class="filedata" style="visibility:hidden; display:inline; width:0;" />
+            <input type="button" class="btn btn-primary outline_on" id="variations_import" onclick="$(this).closest('form').find('.filedata').click();" value="Import Variations Playlist" />
+          <% end %>
+        <% end %>
       </div>
     </div>
   </div>
@@ -90,4 +96,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <% unless playlists.empty? %>
   <% end %>
+<% end %>
+
+<% content_for :page_scripts do %>
+<script>
+$( '.filedata' ).change(function() {
+  $(this).closest('form').submit();
+});
+</script>
 <% end %>

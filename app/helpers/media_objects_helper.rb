@@ -153,9 +153,9 @@ EOF
 
        # If there is no structural metadata associated with this masterfile return the stream info
        if section.structuralMetadata.empty?
-         label = "<ul><li><span>#{index+1}. #{stream_label_for(section)} #{duration}</span></li></ul>".html_safe
-         link = link_to label, share_link_for( section ), data: data, class: current ? 'current-stream current-section playable' : 'playable'
-         return "#{headeropen}#{link}#{headerclose}"
+         label = "#{index+1}. #{stream_label_for(section)} #{duration}".html_safe
+         link = link_to label, share_link_for( section ), data: data, class: 'playable wrap' + (current ? ' current-stream current-section' : '')
+         return "#{headeropen}<ul><li class='stream-li'>#{link}</li></ul>#{headerclose}"
        end
 
        sectionnode = section.structuralMetadata.xpath('//Item')
@@ -163,13 +163,13 @@ EOF
        # If there are subsections within structure, build a collapsible panel with the contents
        if sectionnode.children.present?
          tracknumber = 0
-         label = "<ul><li><span>#{index+1}. #{sectionnode.attribute('label').value} #{duration}</span></li></ul>".html_safe
-         link = link_to label, share_link_for( section ), data: data, class: current ? 'current-stream current-section' : nil
+         label = "#{index+1}. #{sectionnode.attribute('label').value} #{duration}".html_safe
+         link = link_to label, share_link_for( section ), data: data, class: 'playable wrap' + (current ? ' current-stream current-section' : '')
          wrapperopen = <<EOF
           #{headeropen}
           <button class="fa fa-minus-square #{current ? '' : 'hidden'}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
           <button class="fa fa-plus-square #{current ? 'hidden' : ''}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
-          #{link}
+          <ul><li>#{link}</li></ul>
           #{headerclose}
 
     <div id="section#{index}" class="panel-collapse collapse #{current ? 'in' : ''}" role="tabpanel" aria-labelledby="heading#{index}">
@@ -184,8 +184,8 @@ EOF
        # If there are no subsections within the structure, return just the header with the single section
        else
          tracknumber = index
-         wrapperopen = "#{headeropen}<a href='#{share_link_for( section )}'><span><ul>"
-         wrapperclose = "</ul></span></a>#{headerclose}"
+         wrapperopen = "#{headeropen}<ul>"
+         wrapperclose = "</ul>#{headerclose}"
        end
        contents, tracknumber = parse_section section, sectionnode.first, tracknumber
        "#{wrapperopen}#{contents}#{wrapperclose}"
@@ -223,7 +223,7 @@ EOF
          native_url = "#{pid_section_media_object_path(@mediaobject, section.pid)}?t=#{start},#{stop}"
          url = "#{share_link_for( section )}?t=#{start},#{stop}"
          data =  {segment: section.pid, is_video: section.is_video?, native_url: native_url, fragmentbegin: start, fragmentend: stop}
-         link = link_to label, url, data: data, class: is_current_section?(section) ? 'current-stream playable' : 'playable'
+         link = link_to label, url, data: data, class: 'playable wrap'+(is_current_section?(section) ? ' current-stream' : '' )
          return "<li class='stream-li'>#{link}</li>", tracknumber
        end
      end
