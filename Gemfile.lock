@@ -728,11 +728,7 @@ GEM
       actionpack (>= 3.1)
       jquery-rails
       railties (>= 3.1)
-<<<<<<< HEAD
-    tzinfo (0.3.50)
-=======
     tzinfo (0.3.51)
->>>>>>> origin/staging
     uber (0.0.13)
     uglifier (2.7.1)
       execjs (>= 0.3.0)
