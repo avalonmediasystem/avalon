@@ -11,7 +11,7 @@ if defined?(Bundler)
 end
 
 module Avalon
-  VERSION = '5.0.1'
+  VERSION = '5.1.0'
   class MissingUserId < Exception; end
 
   class Application < Rails::Application
