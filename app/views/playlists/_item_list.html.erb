@@ -36,5 +36,5 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 <% end %>
 <ol class="side-playlist">
-  <%= render partial: 'playlist_item', collection: @playlist.items, locals: { annotations: @playlist.annotations } %>
+  <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clips: @playlist.clips } %>
 </ol>

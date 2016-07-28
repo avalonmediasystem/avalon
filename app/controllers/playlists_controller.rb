@@ -1,8 +1,9 @@
+require 'avalon/variations_playlist_importer'
+
 class PlaylistsController < ApplicationController
-  # TODO: rewrite this to use cancancan's authorize_and_load_resource
   before_action :authenticate_user!, except: [:show]
   load_and_authorize_resource
-
+  skip_load_and_authorize_resource only: :import_variations_playlist
   before_action :get_all_playlists, only: [:index, :edit, :update]
 
   # GET /playlists
@@ -54,10 +55,10 @@ class PlaylistsController < ApplicationController
 
   def update_multiple
     if request.request_method=='DELETE'
-      PlaylistItem.where(id: params[:annotation_ids]).to_a.map(&:destroy)
-    elsif params[:new_playlist_id].present? and params[:annotation_ids]
+      PlaylistItem.where(id: params[:clip_ids]).to_a.map(&:destroy)
+    elsif params[:new_playlist_id].present? and params[:clip_ids]
       @new_playlist = Playlist.find(params[:new_playlist_id])
-      pis = PlaylistItem.where(id: params[:annotation_ids])
+      pis = PlaylistItem.where(id: params[:clip_ids])
       @new_playlist.items += pis
       @playlist.items -= pis
       @new_playlist.save!
@@ -72,6 +73,25 @@ class PlaylistsController < ApplicationController
     redirect_to playlists_url, notice: 'Playlist was successfully destroyed.'
   end
 
+  def import_variations_playlist
+    playlist_file = params[:Filedata]
+    if params.key?(:skip_errors)
+      t = Tempfile.new('v2p')
+      t.write(session.delete(:variations_playlist))
+      t.flush.rewind
+      playlist_file = t
+    end
+    playlist = Avalon::VariationsPlaylistImporter.new.import_playlist(playlist_file, current_user, params.key?(:skip_errors))
+    if playlist.persisted?
+      redirect_to playlist, notice: 'Variations playlist was successfully imported.'
+    else
+      session[:variations_playlist] = File.read(params[:Filedata].tempfile)
+      render 'import_variations_playlist', locals: { playlist: playlist }
+    end
+  rescue StandardError => e
+    redirect_to playlists_url, flash: { error: "Import failed: #{e.message}" }
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
@@ -81,7 +101,7 @@ class PlaylistsController < ApplicationController
 
   # Only allow a trusted parameter "white list" through.
   def playlist_params
-    params.require(:playlist).permit(:title, :comment, :visibility, :annotation_ids, items_attributes: [:id, :position])
+    params.require(:playlist).permit(:title, :comment, :visibility, :clip_ids, items_attributes: [:id, :position])
   end
 
   def update_playlist(playlist)

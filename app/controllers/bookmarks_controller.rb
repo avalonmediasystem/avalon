@@ -115,6 +115,17 @@ class BookmarksController < CatalogController
     MediaObject.access_control_bulk success_ids, params
   end
 
+  def add_to_playlist_action documents
+    playlist = Playlist.find(params[:target_playlist_id])
+    Array(documents.map(&:id)).each do |id|
+      media_object = MediaObject.find(id)
+      media_object.parts.each do |mf|
+        clip = AvalonClip.create(master_file: mf)
+        PlaylistItem.create(clip: clip, playlist: playlist)
+      end
+    end
+  end
+
   def status_action documents
     errors = []
     success_ids = []

@@ -152,6 +152,7 @@ class Ability
     can :read, Playlist, visibility: Playlist::PUBLIC
 
     playlist_item_permissions
+    marker_permissions
   end
 
   def playlist_item_permissions
@@ -162,6 +163,18 @@ class Ability
       can :read, PlaylistItem do |playlist_item|
         (can? :read, playlist_item.playlist) &&
         (can? :read, playlist_item.master_file)
+      end
+    end
+  end
+
+  def marker_permissions
+    if @user.id.present?
+      can [:create, :update, :delete], AvalonMarker do |marker|
+        can? :manage, marker.playlist_item.playlist
+      end
+      can :read, AvalonMarker do |marker|
+        (can? :read, marker.playlist_item.playlist) &&
+        (can? :read, marker.playlist_item.master_file)
       end
     end
   end

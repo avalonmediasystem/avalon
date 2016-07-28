@@ -38,7 +38,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
       before do
         login_as :user
       end
-     it "all routes should redirect to /" do
+      it "all routes should redirect to /" do
         expect(post :create, playlist_id: playlist.to_param, playlist_item: valid_attributes).to have_http_status(:unauthorized)
         expect(put :update, playlist_id: playlist.to_param, id: playlist_item.id).to have_http_status(:unauthorized)
       end
@@ -90,8 +90,8 @@ RSpec.describe PlaylistItemsController, type: :controller do
   end
   describe 'PATCH #update' do
     let!(:video_master_file) { FactoryGirl.create(:master_file, duration: "200000") }
-    let!(:annotation) { AvalonAnnotation.create(master_file: video_master_file, title: Faker::Lorem.word, comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
-    let!(:playlist_item) { PlaylistItem.create!(playlist_id: playlist.id, annotation_id: annotation.id) }
+    let!(:clip) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.word, comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
+    let!(:playlist_item) { PlaylistItem.create!(playlist_id: playlist.id, clip_id: clip.id) }
 
     context 'with valid params' do
       it 'updates Playlist Item' do

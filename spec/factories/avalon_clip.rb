@@ -13,8 +13,11 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 FactoryGirl.define do
-  factory :playlist_item do
-    playlist
-    association :clip, factory: :avalon_clip
+  factory :avalon_clip do
+    master_file { FactoryGirl.create(:master_file) }
+    title { Faker::Lorem.word }
+    comment { Faker::Lorem.sentence }
+    start_time { 0.0 }
+    end_time { 100.0 }
   end
 end

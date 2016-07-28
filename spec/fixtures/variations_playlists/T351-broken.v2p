@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?><!--To open this file with Variations, download the file to your local computer on your desktop or other location. Then start Variations and pick "Open Playlist..." from the File menu. Locate your saved copy of this file and open it.)--><Playlist label="T351 Module 3 Week 12" version="2">
+   <ContainerStructure label="T351 Module 3 Week 12">
+         <Chunk label="Varèse, Hyperprism (1923)">
+            <ContentInterval begin="1874827" end="2115867" mediaRef="IU/MediaObject/18451"/>
+         </Chunk>
+         <Chunk label="Varèse, Poème électronique (1957–58)">
+            <ContentInterval begin="0" end="483067" mediaRef="IU/MediaObject/8733"/>
+         </Chunk>
+         <Chunk label="Penderecki, Threnody for the Victims of Hiroshima (1960)">
+            <ContentInterval begin="1175160" end="1723360" mediaRef="IU/MediaObject/19692"/>
+         </Chunk>
+         <Chunk label="Reich, Come Out (1966)">
+            <ContentInterval begin="0" end="789334" mediaRef="IU/MediaObject/18398"/>
+         </Chunk>
+         <Chunk label="Reich, Violin Phase (1967)">
+            <ContentInterval begin="1447533" end="2543533" mediaRef="IU/MediaObject/455635"/>
+         </Chunk>
+         <Chunk label="Adams, Nixon in China, &#34;News&#34; (from Act I, Scene 1) (1985–87)">
+            <ContentInterval begin="732601" end="1155667" mediaRef="IU/MediaObject/113247"/>
+         </Chunk>
+         <Chunk label="Reich, Early Works, Clapping Music">
+            <ContentInterval begin="2026040" end="2314200" mediaRef="IU/MediaObject/18398"/>
+         </Chunk>
+      </Item>
+   </ContainerStructure>
+   <BookmarkTree>
+      <PlaylistBookmark name="Varèse, Hyperprism (1923) 1:25">
+         <Annotation/>
+         <Offset>85000</Offset>
+      </PlaylistBookmark>
+      <PlaylistBookmark name="Varèse, Hyperprism (1923) 2:42">
+         <Annotation/>
+         <Offset>162196</Offset>
+      </PlaylistBookmark>
+      <PlaylistBookmark name="Penderecki, Threnody for the Victims of Hiroshima (1960) 5:49">
+         <Annotation/>
+         <Offset>1073780</Offset>
+      </PlaylistBookmark>
+   </BookmarkTree>
+   <PlaylistMetadata>
+      <WorkStrings>
+         <WorkInfo>Hyperprism</WorkInfo>
+         <WorkInfo>Poème électronique</WorkInfo>
+         <WorkInfo>Threnody for the Victims of Hiroshima</WorkInfo>
+         <WorkInfo>Come out</WorkInfo>
+         <WorkInfo>Violin Phase</WorkInfo>
+         <WorkInfo>Nixon in China, "News" (from Act I, Scene 1)</WorkInfo>
+         <WorkInfo>Clapping music</WorkInfo>
+      </WorkStrings>
+      <ComposerStrings>
+         <ComposerInfo>Edgar Varèse (1883–1965)</ComposerInfo>
+         <ComposerInfo>Edgar Varèse (1883–1965)</ComposerInfo>
+         <ComposerInfo>Krzysztof Penderecki (b. 1933)</ComposerInfo>
+         <ComposerInfo>Steve Reich (b. 1936)</ComposerInfo>
+         <ComposerInfo>Steve Reich (b. 1936)</ComposerInfo>
+         <ComposerInfo>John Adams (b. 1947)</ComposerInfo>
+         <ComposerInfo>Reich, Steve</ComposerInfo>
+      </ComposerStrings>
+      <OtherStrings>
+         <OtherInfo/>
+         <OtherInfo/>
+         <OtherInfo/>
+         <OtherInfo/>
+         <OtherInfo/>
+         <OtherInfo/>
+         <OtherInfo/>
+      </OtherStrings>
+      <OtherStrings2>
+         <OtherInfo2/>
+         <OtherInfo2/>
+         <OtherInfo2/>
+         <OtherInfo2/>
+         <OtherInfo2/>
+         <OtherInfo2/>
+         <OtherInfo2/>
+      </OtherStrings2>
+      <OtherStringsLabel>Optional Field 1</OtherStringsLabel>
+      <OtherStringsLabel2>Optional Field 2</OtherStringsLabel2>
+      <DateStrings>
+         <DateInfo>1923</DateInfo>
+         <DateInfo>1957–58</DateInfo>
+         <DateInfo>1960</DateInfo>
+         <DateInfo>1966</DateInfo>
+         <DateInfo>1967</DateInfo>
+         <DateInfo>1985–87</DateInfo>
+         <DateInfo/>
+      </DateStrings>
+      <DrillType>1</DrillType>
+      <StartOptions>2</StartOptions>
+      <TestMeOnTrack>true</TestMeOnTrack>
+      <TestMeOnWork>false</TestMeOnWork>
+      <TestMeOnComposer>false</TestMeOnComposer>
+      <TestMeOnDate>false</TestMeOnDate>
+      <TestMeOnOther>false</TestMeOnOther>
+      <TestMeOnOther2>false</TestMeOnOther2>
+      <ShowOnFrontTrack>false</ShowOnFrontTrack>
+      <ShowOnFrontWork>false</ShowOnFrontWork>
+      <ShowOnFrontComposer>false</ShowOnFrontComposer>
+      <ShowOnFrontDate>false</ShowOnFrontDate>
+      <ShowOnFrontOther>false</ShowOnFrontOther>
+      <ShowOnFrontOther2>false</ShowOnFrontOther2>
+      <StopOptions>0</StopOptions>
+      <ExcerptDurations>20</ExcerptDurations>
+   </PlaylistMetadata>
+</Playlist>

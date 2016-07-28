@@ -14,8 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<% f_start = @current_annotation.start_time / 1000.0 %>
-<% f_end = @current_annotation.end_time / 1000.0 %>
+<% f_start = @current_clip.start_time / 1000.0 %>
+<% f_end = @current_clip.end_time / 1000.0 %>
 <% @currentStream = @current_masterfile %>
 <% @token = StreamToken.find_or_create_session_token(session, @currentStream.pid) %>
 <% @currentStreamInfo = @currentStream.stream_details(@token, ApplicationController.default_url_options[:host]) %>
@@ -27,7 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
         <% if @currentStreamInfo[:is_video] %>
           <%= master_file_meta_properties(@currentStream) do %>
-            <video class="mejs-avalon" controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] if f_start == 0 %>" preload="auto">
+            <video class="mejs-avalon" controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] if f_start == 0 %>" preload="auto" data-current-playlist-item="<%= @current_playlist_item.id %>">
               <% @currentStreamInfo[:stream_flash].each do |flash| %>
                 <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
               <% end %>
@@ -41,7 +41,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% end %>
         <% else %>
           <%= master_file_meta_properties(@currentStream) do %>
-            <audio class="mejs-avalon" controls style="width: 100%;" id="video-tag" preload="true">
+            <audio class="mejs-avalon" controls style="width: 100%;" id="video-tag" preload="true" data-current-playlist-item="<%= @current_playlist_item.id %>">
               <% @currentStreamInfo[:stream_flash].each do |flash| %>
                 <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
               <% end %>
@@ -65,10 +65,12 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= javascript_include_tag 'me-thumb-selector' %>
   <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
   <%= javascript_include_tag 'avalon_player' %>
+  <%= javascript_include_tag 'me-add-to-playlist' %>
 
   <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
   <%= stylesheet_link_tag 'me-thumb-selector' %>
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
+  <%= stylesheet_link_tag 'me-add-to-playlist' %>
 
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
@@ -86,9 +88,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 	mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
 	thumbnailSelector: false,
 	addToPlaylist: false,
+	addMarker: <%= current_user.present? ? 'true' : 'false' %>,
 	startQuality: '<%= current_quality(@currentStreamInfo) %>',
 	customError: '<%= t("media_objects.player.customError").html_safe %>',
 	displayMediaFragment: true,
+        displayMarkers: true,
         autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
 	success: function(mediaElement, domObject, player) {
 	  player.media.addEventListener('timeupdate', function(e) {

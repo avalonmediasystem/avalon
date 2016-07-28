@@ -11,18 +11,18 @@ class PlaylistItemsController < ApplicationController
     comment = playlist_item_params[:comment]
     start_time = time_str_to_milliseconds playlist_item_params[:start_time]
     end_time = time_str_to_milliseconds playlist_item_params[:end_time]
-    annotation = AvalonAnnotation.new(master_file: MasterFile.find(playlist_item_params[:master_file_id]))
-    annotation.title = title
-    annotation.comment = comment
-    annotation.start_time = start_time
-    annotation.end_time = end_time
-    unless annotation.valid?
-      render json: { message: annotation.errors.full_messages }, status: 400 and return
+    clip = AvalonClip.new(master_file: MasterFile.find(playlist_item_params[:master_file_id]))
+    clip.title = title
+    clip.comment = comment
+    clip.start_time = start_time
+    clip.end_time = end_time
+    unless clip.valid?
+      render json: { message: clip.errors.full_messages }, status: 400 and return
     end
-    unless annotation.save
-      render json: { message: "Item was not created: #{annotation.errors.full_messages}" }, status: 500 and return
+    unless clip.save
+      render json: { message: "Item was not created: #{clip.errors.full_messages}" }, status: 500 and return
     end
-    if PlaylistItem.create(playlist: @playlist, annotation: annotation)
+    if PlaylistItem.create(playlist: @playlist, clip: clip)
       render json: { message: "Add to playlist was successful. See it: #{view_context.link_to("here", playlist_url(@playlist))}" }, status: 201 and return
     end
   rescue StandardError => error
@@ -34,15 +34,15 @@ class PlaylistItemsController < ApplicationController
     unless (can? :update, playlist_item)
       render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return  
     end
-    annotation = AvalonAnnotation.find(playlist_item.annotation.id)
-    annotation.title =  playlist_item_params[:title]
-    annotation.comment = playlist_item_params[:comment]
-    annotation.start_time = time_str_to_milliseconds playlist_item_params[:start_time]
-    annotation.end_time = time_str_to_milliseconds playlist_item_params[:end_time]
-    if annotation.save
+    clip = AvalonClip.find(playlist_item.clip.id)
+    clip.title =  playlist_item_params[:title]
+    clip.comment = playlist_item_params[:comment]
+    clip.start_time = time_str_to_milliseconds playlist_item_params[:start_time]
+    clip.end_time = time_str_to_milliseconds playlist_item_params[:end_time]
+    if clip.save
       render json: { message: "Item was updated successfully." }, status: 201 and return
     else
-      render json: { message: "Item was not updated: #{annotation.errors.full_messages.join(', ')}" }, status: 500 and return
+      render json: { message: "Item was not updated: #{clip.errors.full_messages.join(', ')}" }, status: 500 and return
     end
   rescue StandardError => error
     render json: { message: "Item was not updated: #{error.message}" }, status: 500 and return
