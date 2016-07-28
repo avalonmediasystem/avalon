@@ -255,6 +255,10 @@ Devise.setup do |config|
     end
     config.omniauth provider[:provider], provider[:params]
   end
+  if ENV['LTI_AUTH_KEY']
+    config.omniauth :lti, consumers: Avalon::Lti::Configuration, 
+      oauth_credentials: { ENV['LTI_AUTH_KEY'] => ENV['LTI_AUTH_SECRET'] }
+  end
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

@@ -78,7 +78,7 @@ module Avalon
           {"strategy"=>ENV['MASTER_FILE_STRATEGY'],
            "path"=>ENV['MASTER_FILE_PATH']},
          "name"=>ENV['APP_NAME'],
-         "groups"=>ENV['SYSTEM_GROUPS'].to_s.split(/[,;:]\s*/)}
+         "groups"=>{'system_groups' => ENV['SYSTEM_GROUPS'].to_s.split(/[,;:]\s*/)}}
            
       if ENV['AVALON_URL'].present?
         avalon_url = URI.parse(ENV['AVALON_URL'])
