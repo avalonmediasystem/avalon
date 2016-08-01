@@ -62,5 +62,25 @@ describe AvalonMarker, type: :model do
         it { is_expected.to be_able_to(:read, avalon_marker) }
       end
     end
+
+    context 'when not logged in' do
+      let(:ability) { Ability.new(nil) }
+      let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
+
+      it { is_expected.not_to be_able_to(:create, avalon_marker) }
+      it { is_expected.not_to be_able_to(:update, avalon_marker) }
+      it { is_expected.not_to be_able_to(:delete, avalon_marker) }
+
+      context 'when master file is NOT readable by public' do
+        it { is_expected.not_to be_able_to(:read, avalon_marker) }
+      end
+
+      context 'when master file is readable by public' do
+        let(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
+        let(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
+
+        it { is_expected.to be_able_to(:read, avalon_marker) }
+      end
+    end
   end
 end
