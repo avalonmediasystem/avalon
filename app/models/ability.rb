@@ -160,10 +160,10 @@ class Ability
       can [:create, :update, :delete], PlaylistItem do |playlist_item|
         can? :manage, playlist_item.playlist
       end
-      can :read, PlaylistItem do |playlist_item|
-        (can? :read, playlist_item.playlist) &&
-        (can? :read, playlist_item.master_file)
-      end
+    end
+    can :read, PlaylistItem do |playlist_item|
+      (can? :read, playlist_item.playlist) &&
+      (can? :read, playlist_item.master_file)
     end
   end
 
@@ -172,10 +172,10 @@ class Ability
       can [:create, :update, :delete], AvalonMarker do |marker|
         can? :manage, marker.playlist_item.playlist
       end
-      can :read, AvalonMarker do |marker|
-        (can? :read, marker.playlist_item.playlist) &&
-        (can? :read, marker.playlist_item.master_file)
-      end
+    end
+    can :read, AvalonMarker do |marker|
+      (can? :read, marker.playlist_item.playlist) &&
+      (can? :read, marker.playlist_item.master_file)
     end
   end
 
