@@ -504,7 +504,7 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0221)
     mimemagic (0.3.1)
-    mini_portile2 (2.0.0)
+    mini_portile2 (2.1.0)
     minitest (5.8.4)
     multi_json (1.12.0)
     multi_xml (0.5.5)
@@ -520,8 +520,9 @@ GEM
     net-ssh (3.1.1)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
-    nokogiri (1.6.7.2)
-      mini_portile2 (~> 2.0.0.rc2)
+    nokogiri (1.6.8)
+      mini_portile2 (~> 2.1.0)
+      pkg-config (~> 1.1.7)
     nom-xml (0.5.4)
       activesupport (>= 3.2.18)
       i18n
@@ -548,6 +549,7 @@ GEM
       omniauth (>= 1.0.0)
     orm_adapter (0.5.0)
     os (0.9.6)
+    pkg-config (1.1.7)
     pry (0.10.3)
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
@@ -840,7 +842,7 @@ DEPENDENCIES
   multipart-post
   mysql2 (~> 0.3.20)
   net-ldap
-  nokogiri (~> 1.6.5)
+  nokogiri (~> 1.6.8)
   nom-xml (~> 0.5.2)
   om (~> 3.1.0)
   omniauth-identity
