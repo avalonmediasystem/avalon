@@ -3,8 +3,6 @@
 
 [![Build Status](https://travis-ci.org/avalonmediasystem/avalon.svg?branch=develop)](https://travis-ci.org/avalonmediasystem/avalon)
 
-[![Stories in Ready](https://badge.waffle.io/avalonmediasystem/avalon.png?label=ready&title=Ready)](https://waffle.io/avalonmediasystem/avalon)
-
 [![Coverage Status](https://coveralls.io/repos/avalonmediasystem/avalon/badge.svg?branch=master&service=github)](https://coveralls.io/github/avalonmediasystem/avalon?branch=master)
 
 For more information and regular project updates visit the [Avalon blog](http://www.avalonmediasystem.org/blog).
