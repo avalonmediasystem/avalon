@@ -65,18 +65,31 @@ class MediaObject < ActiveFedora::Base
   validate  :validate_dates
   validate  :validate_note_type
   validates  :topical_subject, presence: true
-  validates  :access_restrictions_license, presence: true
+#  validate  :validate_access_restrictions_license, :presence => true
+  validate  :validate_access_restrictions_license, :presence => true
   validate  :validate_access_restrictions_rights
 
   def validate_access_restrictions_rights
-    if :license_type == 'User_Defined_Rights_Statement'
-      if :access_restrictions_rights.empty?
-        errors.add(:access_restrictions_rights, "A custom license statement is required")
+    if access_restrictions_license == 'User_Defined_Rights_Statement'
+      if access_restrictions_rights.empty?
+        Rails.logger.debug "VALIDATING ARR empty."
+        errors.add(:access_restrictions_license, "A custom license statement is required, please enter it in the Custom License text area.")
       end
     end
   end
   
   def validate_creator
+  end
+
+  def validate_access_restrictions_license
+    Rails.logger.debug "VALIDATING ARL begin."
+    Rails.logger.debug "in Validator: val_ARL is: #{access_restrictions_license}"
+    unless access_restrictions_license.nil?
+      if access_restrictions_license.empty?
+        Rails.logger.debug "VALIDATING ARL empty."
+        errors.add(:access_restrictions_license, "Please choose an access license from the menu.")
+      end
+    end
   end
 
   def validate_note_type
@@ -88,7 +101,9 @@ class MediaObject < ActiveFedora::Base
   end
 
   def validate_related_items
-    Array(related_item_url).each{|i|errors.add(:related_item_url, "Bad URL") unless i[:url] =~ URI::regexp(%w(http https))}
+    Array(related_item_url).each{
+      |i|errors.add(:related_item_url, "Bad URL") unless i[:url] =~ URI::regexp(%w(http https))
+    }
   end
 
   def validate_dates
@@ -314,25 +329,38 @@ class MediaObject < ActiveFedora::Base
     if values[:access_restrictions_license]
       # If the license type is Custom:
       #  - delete access_restrictions_license 
-      #  - access_restrictions_rights value (from text area input) go in to metadata
+      #  - access_restrictions_rights value (from text area input) goes in to metadata
       # If the license type is not Custom:
       #  - license_type goes on directly to access_restrictions_license
 
       if values[:license_type] != 'User_Defined_Rights_Statement'
-        values.delete(:access_restrictions_rights)
+        Rails.logger.debug "pre updateDataStream: val_ARL is: #{values[:access_restrictions_license]}"
+        Rails.logger.debug "pre updateDataStream: val_LT is: #{values[:license_type]}"
+        # For GUI case, values[:license_type] is populated with a controlled vocab key 
+        # from the menu selection process.
+        # For the batch ingest case, values[:license_type] is not set and
+        # values[access_restrictions_license] is set directly. 
+        # Therefore switch here to allow both GUI menu function, AND batch ingest
+        # with a direct "Access Restrictions License" column heading in the manifest.
+        if values[:license_type].present?
+          # GUI case
+          values.delete(:access_restrictions_rights)
+          values[:access_restrictions_license] = values.delete(:license_type)
+        else
+          # Batch case
+        end
+        Rails.logger.debug "post updateDataStream: val_ARL is: #{values[:access_restrictions_license]}"
+        Rails.logger.debug "post updateDataStream: val_LT is: #{values[:license_type]}"
+      else
+        # user defined case
+        Rails.logger.debug "pre UDRS updateDataStream: val_ARL is: #{values[:access_restrictions_license]}"
+        Rails.logger.debug "pre UDRS updateDataStream: val_LT is: #{values[:license_type]}"
+        Rails.logger.debug "pre UDRS updateDataStream: val_ARR is: #{values[:access_restrictions_rights]}"
         values[:access_restrictions_license] = values.delete(:license_type)
-      else 
-        #values.delete(:access_restrictions_license)
-        values[:access_restrictions_license] = values.delete(:license_type)
-
-        #values.delete(:access_restrictions_license)
+        Rails.logger.debug "post UDRS updateDataStream: val_ARL is: #{values[:access_restrictions_license]}"
+        Rails.logger.debug "post UDRS updateDataStream: val_LT is: #{values[:license_type]}"
+        Rails.logger.debug "post UDRS updateDataStream: val_ARR is: #{values[:access_restrictions_rights]}"
       end
-
-
-      
-      #else
-      #  values[:access_restrictions] = {value: values[:access_restrictions], attributes: values.delete(:license_type)}
-      #end
     end
 
     values.each do |k, v|
