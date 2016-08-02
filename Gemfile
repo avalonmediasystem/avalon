@@ -1,8 +1,8 @@
   source 'http://rubygems.org'
+  gem 'mysql2', '~>0.3.20'
 
   # active anno dev
   gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', tag: 'avalon-r5'
-  gem 'mysql2', '~>0.3.20'
   gem 'iconv'
   gem 'rails', '~>4.1'
   gem 'sprockets', '~>2.11.3'
@@ -17,7 +17,7 @@
   gem 'solrizer', '~> 3.3.0'
   gem 'rsolr', '~> 1.0.12'
   gem 'blacklight', '~> 5.10'
-  gem 'nokogiri', '~> 1.6.5'
+  gem 'nokogiri', '~> 1.6.8'
   gem 'rubydora', '~> 1.8.1'
   gem 'nom-xml', '~> 0.5.2'
 
@@ -119,8 +119,10 @@
 
   group :development do
     gem 'xray-rails'
-    gem 'better_errors',   platforms: [:mri_20, :mri_21]
-    gem 'binding_of_caller',   platforms: [:mri_20, :mri_21]
+#    gem 'better_errors',   platforms: [:mri_20, :mri_21]
+    gem 'better_errors'
+#    gem 'binding_of_caller',   platforms: [:mri_20, :mri_21]
+    gem 'binding_of_caller'
     gem 'license_header'
     gem 'meta_request'
     gem 'capistrano', '~>2.12.0'
