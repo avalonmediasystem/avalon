@@ -42,7 +42,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 	  </li><li>
             <%= section.label.blank? ? '&#8212;'.html_safe : section.label %>
 	  </li><li>
-            <%= truncate_center(File.basename(section.file_location), 50, 20) %>
+            <% if part.file_location.present? %>
+              <%= truncate_center(File.basename(section.file_location), 50, 20) %>
+            <% else %>
+              -
+            <% end %>
 	  </li><li>
             <%= number_to_human_size(section.file_size) %>
 	  </li><li>
