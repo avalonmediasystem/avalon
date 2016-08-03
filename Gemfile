@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'hydra', '10.0.0'
+gem 'hydra', git: 'https://github.com/projecthydra/hydra.git'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.6'
