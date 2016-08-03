@@ -24,6 +24,9 @@ module Avalon
       property :isManaged,
         "rdfs:isDefinedBy" => %(avalon:).freeze,
         type: "rdfs:Class".freeze
+      property :derivativeFile,
+          "rdfs:isDefinedBy" => %(avalon:).freeze,
+          type: "rdfs:Class".freeze
     end
   end
 end

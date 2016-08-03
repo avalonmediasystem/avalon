@@ -33,6 +33,8 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+gem 'active_encode', git: "https://github.com/projecthydra-labs/active_encode.git", tag: 'v0.0.3'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
@@ -62,3 +64,14 @@ end
 
 gem 'iconv'
 gem 'mediainfo'
+
+group :test do
+  gem 'factory_girl_rails'
+  gem 'simplecov'
+  gem 'faker'
+  gem 'database_cleaner'
+  gem 'coveralls'
+  # gem 'fakefs', require: 'fakefs/safe'
+  # gem 'fakeweb'
+  # gem 'hashdiff'
+end

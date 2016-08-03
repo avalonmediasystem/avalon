@@ -17,7 +17,7 @@ require 'avalon/stream_mapper'
 class Derivative < ActiveFedora::Base
   include ActiveFedora::Associations
 
-  belongs_to :masterfile, class_name:'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
+  # belongs_to :masterfile, class_name:'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
 
   # These fields do not fit neatly into the Dublin Core so until a long
   # term solution is found they are stored in a simple datastream in a
@@ -32,8 +32,7 @@ class Derivative < ActiveFedora::Base
   property :track_id, predicate: Avalon::RDFVocab::Derivative.trackID, multiple: false
   property :hls_track_id, predicate: Avalon::RDFVocab::Derivative.hlsTrackID, multiple: false
   property :managed, predicate: Avalon::RDFVocab::Derivative.isManaged, multiple: false
-
-  has_subresource 'derivativeFile', class_name: 'UrlDatastream'
+  property :derivativeFile, predicate: Avalon::RDFVocab::Derivative.derivativeFile, multiple: false
 
   has_subresource 'encoding', class_name: 'EncodingProfileDocument'
 
@@ -82,13 +81,13 @@ class Derivative < ActiveFedora::Base
   end
 
   def absolute_location
-    derivativeFile.location
+    derivativeFile
   end
 
   def absolute_location=(value)
-    derivativeFile.location = value
+    derivativeFile = value
     set_streaming_locations!
-    derivativeFile.location
+    derivativeFile
   end
 
   def tokenized_url(token, mobile=false)
@@ -112,21 +111,19 @@ class Derivative < ActiveFedora::Base
     end
   end
 
-  def to_solr(solr_doc = Hash.new)
+  def to_solr(solr_doc = {})
     super(solr_doc)
     solr_doc['stream_path_ssi'] = location_url.split(/:/).last if location_url.present?
     solr_doc
   end
 
   private
-    def retract_distributed_files!
-      begin
-        encode = masterfile.encoder_class.find(masterfile.workflow_id)
-        encode.remove_output!(track_id) if track_id.present?
-        encode.remove_output!(hls_track_id) if hls_track_id.present? && track_id != hls_track_id
-      rescue Exception => e
-        logger.warn "Error deleting derivative: #{e.message}"
-      end
-    end
 
+    def retract_distributed_files!
+      encode = masterfile.encoder_class.find(masterfile.workflow_id)
+      encode.remove_output!(track_id) if track_id.present?
+      encode.remove_output!(hls_track_id) if hls_track_id.present? && track_id != hls_track_id
+    rescue StandardError => e
+      logger.warn "Error deleting derivative: #{e.message}"
+    end
 end

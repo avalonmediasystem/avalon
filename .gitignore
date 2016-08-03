@@ -16,3 +16,18 @@
 !/log/.keep
 /tmp
 .rbenv
+
+## PROJECT::SPECIFIC
+config/authentication.yml
+config/avalon.yml
+config/matterhorn.yml
+config/role_map_development.yml
+config/initializers/rubyhorn.rb
+config/secrets.yml
+
+public/media_objects
+public/streams
+public/**/*.m3u8
+public/**/*.ts
+
+/coverage
