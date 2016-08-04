@@ -40,8 +40,24 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <li><a href="/deposit">How to Deposit</a></li>
             </ul>
         </div>
-    </div>
+	</div>
         <div class="row copyright">&copy; <a href="https://library.ualberta.ca">University of Alberta Libraries</a> | University of Alberta, Edmonton, AB, Canada T6G 2R3 | <a href="https://library.ualberta.ca/about-us/policies/privacy-policy">Web Site Privacy Policy</a>
-</div>
-</div>
-</div>
+	</div>
+	</div>
+
+	<% if Rails.env.production? %>
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	  
+	  ga('create', 'UA-77935097-1', 'auto');
+	  ga('send', 'pageview');
+	</script>
+	<% end %>
+	
+
+
+
+     </div>
