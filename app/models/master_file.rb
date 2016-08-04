@@ -33,30 +33,30 @@ class MasterFile < ActiveFedora::Base
   has_subresource 'poster', class_name: 'ActiveFedora::File'
   has_subresource 'captions', class_name: 'ActiveFedora::File'
 
-  property :file_location, predicate: Avalon::RDFVocab::MasterFile.file_location, multiple: false
-  property :file_checksum, predicate: Avalon::RDFVocab::MasterFile.file_checksum, multiple: false
-  property :file_size, predicate: Avalon::RDFVocab::MasterFile.file_size, multiple: false
+  property :file_location, predicate: Avalon::RDFVocab::MasterFile.fileLocation, multiple: false
+  property :file_checksum, predicate: Avalon::RDFVocab::MasterFile.fileChecksum, multiple: false
+  property :file_size, predicate: Avalon::RDFVocab::MasterFile.fileSize, multiple: false
   property :duration, predicate: Avalon::RDFVocab::MasterFile.duration, multiple: false
-  property :display_aspect_ratio, predicate: Avalon::RDFVocab::MasterFile.display_aspect_ratio, multiple: false
-  property :original_frame_size, predicate: Avalon::RDFVocab::MasterFile.original_frame_size, multiple: false
-  property :file_format, predicate: Avalon::RDFVocab::MasterFile.file_format, multiple: false
-  property :poster_offset, predicate: Avalon::RDFVocab::MasterFile.poster_offset, multiple: false
-  property :thumbnail_offset, predicate: Avalon::RDFVocab::MasterFile.thumbnail_offset, multiple: false
-  property :date_digitized, predicate: Avalon::RDFVocab::MasterFile.date_digitized, multiple: false
-  property :physical_description, predicate: Avalon::RDFVocab::MasterFile.physical_description, multiple: false
+  property :display_aspect_ratio, predicate: Avalon::RDFVocab::MasterFile.displayAspectRatio, multiple: false
+  property :original_frame_size, predicate: Avalon::RDFVocab::MasterFile.originalFrameSize, multiple: false
+  property :file_format, predicate: Avalon::RDFVocab::MasterFile.fileFormat, multiple: false
+  property :poster_offset, predicate: Avalon::RDFVocab::MasterFile.posterOffset, multiple: false
+  property :thumbnail_offset, predicate: Avalon::RDFVocab::MasterFile.thumbnailOffset, multiple: false
+  property :date_digitized, predicate: Avalon::RDFVocab::MasterFile.dateDigitized, multiple: false
+  property :physical_description, predicate: Avalon::RDFVocab::MasterFile.physicalDescription, multiple: false
   property :masterFile, predicate: Avalon::RDFVocab::MasterFile.masterFile, multiple: false
 
   # Workflow status properties
-  property :workflow_id, predicate: Avalon::RDFVocab::MasterFile.workflow_id, multiple: false
-  property :workflow_name, predicate: Avalon::RDFVocab::MasterFile.workflow_name, multiple: false
-  property :percent_complete, predicate: Avalon::RDFVocab::MasterFile.percent_complete, multiple: false
-  property :percent_succeeded, predicate: Avalon::RDFVocab::MasterFile.percent_succeeded, multiple: false
-  property :percent_failed, predicate: Avalon::RDFVocab::MasterFile.percent_failed, multiple: false
-  property :status_code, predicate: Avalon::RDFVocab::MasterFile.status_code, multiple: false
-  property :operation, predicate: Avalon::RDFVocab::MasterFile.operation, multiple: false
-  property :error, predicate: Avalon::RDFVocab::MasterFile.error, multiple: false
-  property :failures, predicate: Avalon::RDFVocab::MasterFile.failures, multiple: false
-  property :encoder_classname, predicate: Avalon::RDFVocab::MasterFile.encoder_classname, multiple: false
+  property :workflow_id, predicate: Avalon::RDFVocab::Transcoding.workflowId, multiple: false
+  property :workflow_name, predicate: Avalon::RDFVocab::Transcoding.workflowName, multiple: false
+  property :percent_complete, predicate: Avalon::RDFVocab::Transcoding.percentComplete, multiple: false
+  property :percent_succeeded, predicate: Avalon::RDFVocab::Transcoding.percentSucceeded, multiple: false
+  property :percent_failed, predicate: Avalon::RDFVocab::Transcoding.percentFailed, multiple: false
+  property :status_code, predicate: Avalon::RDFVocab::Transcoding.statusCode, multiple: false
+  property :operation, predicate: Avalon::RDFVocab::Transcoding.operation, multiple: false
+  property :error, predicate: Avalon::RDFVocab::Transcoding.error, multiple: false
+  property :failures, predicate: Avalon::RDFVocab::Transcoding.failures, multiple: false
+  property :encoder_classname, predicate: Avalon::RDFVocab::Transcoding.encoderClassname, multiple: false
 
   validates :workflow_name, presence: true, inclusion: { in: Proc.new{ WORKFLOWS } }
   validates_each :date_digitized do |record, attr, value|

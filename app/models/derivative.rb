@@ -27,14 +27,14 @@ class Derivative < ActiveFedora::Base
   property :managed, predicate: Avalon::RDFVocab::Derivative.isManaged, multiple: false
   property :derivativeFile, predicate: Avalon::RDFVocab::Derivative.derivativeFile, multiple: false
 
-  # Encoding datastram properties
-  property :quality, predicate: Avalon::RDFVocab::Derivative.quality, multiple: false
-  property :mime_type, predicate: Avalon::RDFVocab::Derivative.mime_type, multiple: false
-  property :audio_bitrate, predicate: Avalon::RDFVocab::Derivative.audio_bitrate, multiple: false
-  property :audio_codec, predicate: Avalon::RDFVocab::Derivative.audio_codec, multiple: false
-  property :video_bitrate, predicate: Avalon::RDFVocab::Derivative.video_bitrate, multiple: false
-  property :video_codec, predicate: Avalon::RDFVocab::Derivative.video_codec, multiple: false
-  property :resolution, predicate: Avalon::RDFVocab::Derivative.resolution, multiple: false
+  # Encoding datastream properties
+  property :quality, predicate: Avalon::RDFVocab::Encoding.quality, multiple: false
+  property :mime_type, predicate: Avalon::RDFVocab::Encoding.mimeType, multiple: false
+  property :audio_bitrate, predicate: Avalon::RDFVocab::Encoding.audioBitrate, multiple: false
+  property :audio_codec, predicate: Avalon::RDFVocab::Encoding.audioCodec, multiple: false
+  property :video_bitrate, predicate: Avalon::RDFVocab::Encoding.videoBitrate, multiple: false
+  property :video_codec, predicate: Avalon::RDFVocab::Encoding.videoCodec, multiple: false
+  property :resolution, predicate: Avalon::RDFVocab::Encoding.resolution, multiple: false
 
   before_destroy :retract_distributed_files!
 

@@ -46,6 +46,10 @@ module Permalink
     @@generator.permalink_for(obj)
   end
   
+  included do
+    property :permalink, predicate: Avalon::RDFVocab::Permalink.hasPermalink, multiple: false
+  end
+  
   def self.url_for(obj)
     @@generator.avalon_url_for(obj)
   end
@@ -58,19 +62,12 @@ module Permalink
     @@generator.proc = block
   end
 
-  def permalink(query_vars = {})
-    val = self.relationships(:has_permalink).first
+  def permalink_with_query(query_vars = {})
+    val = self.attributes['permalink']
     if val && query_vars.present?
       val = "#{val}?#{query_vars.to_query}"
     end
     val ? val.to_s : nil
-  end
-
-  def permalink=(value)
-    self.remove_relationship(:has_permalink, nil)
-    if value.present?
-      self.add_relationship(:has_permalink, value, true)
-    end
   end
 
   # wrap this method; do not use this method as a callback
