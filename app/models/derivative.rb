@@ -19,13 +19,6 @@ class Derivative < ActiveFedora::Base
 
   belongs_to :masterfile, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
 
-  # These fields do not fit neatly into the Dublin Core so until a long
-  # term solution is found they are stored in a simple datastream in a
-  # relatively flat structure.
-  #
-  # The only meaningful value at the moment is the url, which points to
-  # the stream location. The other two are just stored until a migration
-  # strategy is required.
   property :location_url, predicate: Avalon::RDFVocab::Derivative.locationURL, multiple: false
   property :hls_url, predicate: Avalon::RDFVocab::Derivative.hlsURL, multiple: false
   property :duration, predicate: Avalon::RDFVocab::Derivative.duration, multiple: false

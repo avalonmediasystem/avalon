@@ -33,12 +33,25 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+gem 'rsolr', '~> 1.0'
+gem 'devise'
+gem 'devise-guests', '~> 0.3'
+
+# Avalon-specific
 gem 'active_encode', git: "https://github.com/projecthydra-labs/active_encode.git", tag: 'v0.0.3'
+gem 'hooks'
+gem 'iconv'
+gem 'mediainfo'
+gem 'delayed_job', '~> 4.1.0'
+gem 'delayed_job_active_record'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
   gem 'pry-rails'
+  gem 'solr_wrapper', '>= 0.3'
+  gem 'fcrepo_wrapper'
+  gem 'rspec-rails'
 end
 
 group :development do
@@ -49,22 +62,6 @@ group :development do
   gem 'spring'
   gem 'rubocop', '~> 0.40.0', require: false
 end
-
-
-group :development, :test do
-  gem 'solr_wrapper', '>= 0.3'
-end
-
-gem 'rsolr', '~> 1.0'
-gem 'devise'
-gem 'devise-guests', '~> 0.3'
-group :development, :test do
-  gem 'fcrepo_wrapper'
-  gem 'rspec-rails'
-end
-
-gem 'iconv'
-gem 'mediainfo'
 
 group :test do
   gem 'factory_girl_rails'

@@ -128,6 +128,11 @@ GEM
     daemons (1.2.4)
     database_cleaner (1.5.3)
     debug_inspector (0.0.2)
+    delayed_job (4.1.2)
+      activesupport (>= 3.0, < 5.1)
+    delayed_job_active_record (4.1.1)
+      activerecord (>= 3.0, < 5.1)
+      delayed_job (>= 3.0, < 5)
     deprecation (1.0.0)
       activesupport
     devise (4.2.0)
@@ -162,6 +167,8 @@ GEM
       activesupport (>= 4.1.0)
     haml (4.0.7)
       tilt
+    hooks (0.4.1)
+      uber (~> 0.0.14)
     htmlentities (4.3.4)
     http_logger (0.5.1)
     hydra-access-controls (10.0.2)
@@ -434,6 +441,7 @@ GEM
       railties (>= 3.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    uber (0.0.15)
     uglifier (3.0.1)
       execjs (>= 0.3.0, < 3)
     unicode-display_width (1.1.0)
@@ -455,11 +463,14 @@ DEPENDENCIES
   coffee-rails (~> 4.1.0)
   coveralls
   database_cleaner
+  delayed_job (~> 4.1.0)
+  delayed_job_active_record
   devise
   devise-guests (~> 0.3)
   factory_girl_rails
   faker
   fcrepo_wrapper
+  hooks
   hydra!
   iconv
   jbuilder (~> 2.0)
