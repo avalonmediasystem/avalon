@@ -86,7 +86,11 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% end %>
         </td>
         <td class="section-filename">
-          <%= truncate_center(File.basename(part.file_location), 50, 20) %>
+          <% if part.file_location.present? %>
+            <%= truncate_center(File.basename(part.file_location), 50, 20) %>
+          <% else %>
+            -
+          <% end %>
         </td>
         <td>
           <%= number_to_human_size(part.file_size) %>
