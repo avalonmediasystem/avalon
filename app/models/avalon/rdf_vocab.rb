@@ -27,6 +27,27 @@ module Avalon
       property :derivativeFile,
           "rdfs:isDefinedBy" => %(avalon:).freeze,
           type: "rdfs:Class".freeze
+      property :quality,
+          "rdfs:isDefinedBy" => %(avalon:).freeze,
+          type: "rdfs:Class".freeze
+      property :mime_type,
+          "rdfs:isDefinedBy" => %(avalon:).freeze,
+          type: "rdfs:Class".freeze
+      property :audio_codec,
+          "rdfs:isDefinedBy" => %(avalon:).freeze,
+          type: "rdfs:Class".freeze
+      property :audio_bitrate,
+          "rdfs:isDefinedBy" => %(avalon:).freeze,
+          type: "rdfs:Class".freeze
+      property :video_codec,
+          "rdfs:isDefinedBy" => %(avalon:).freeze,
+          type: "rdfs:Class".freeze
+      property :video_bitrate,
+          "rdfs:isDefinedBy" => %(avalon:).freeze,
+          type: "rdfs:Class".freeze
+      property :resolution,
+          "rdfs:isDefinedBy" => %(avalon:).freeze,
+          type: "rdfs:Class".freeze
     end
   end
 end

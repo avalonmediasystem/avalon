@@ -17,7 +17,7 @@ require 'avalon/stream_mapper'
 class Derivative < ActiveFedora::Base
   include ActiveFedora::Associations
 
-  # belongs_to :masterfile, class_name:'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
+  belongs_to :masterfile, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
 
   # These fields do not fit neatly into the Dublin Core so until a long
   # term solution is found they are stored in a simple datastream in a
@@ -34,7 +34,14 @@ class Derivative < ActiveFedora::Base
   property :managed, predicate: Avalon::RDFVocab::Derivative.isManaged, multiple: false
   property :derivativeFile, predicate: Avalon::RDFVocab::Derivative.derivativeFile, multiple: false
 
-  has_subresource 'encoding', class_name: 'EncodingProfileDocument'
+  # Encoding datastram properties
+  property :quality, predicate: Avalon::RDFVocab::Derivative.quality, multiple: false
+  property :mime_type, predicate: Avalon::RDFVocab::Derivative.mime_type, multiple: false
+  property :audio_bitrate, predicate: Avalon::RDFVocab::Derivative.audio_bitrate, multiple: false
+  property :audio_codec, predicate: Avalon::RDFVocab::Derivative.audio_codec, multiple: false
+  property :video_bitrate, predicate: Avalon::RDFVocab::Derivative.video_bitrate, multiple: false
+  property :video_codec, predicate: Avalon::RDFVocab::Derivative.video_codec, multiple: false
+  property :resolution, predicate: Avalon::RDFVocab::Derivative.resolution, multiple: false
 
   before_destroy :retract_distributed_files!
 
@@ -43,23 +50,23 @@ class Derivative < ActiveFedora::Base
     self.managed = true
   end
 
-  def self.from_output(dists, managed=true)
-    #output is an array of 1 or more distributions of the same derivative (e.g. file and HLS segmented file)
-    hls_output = dists.delete(dists.find {|o| o[:url].ends_with? "m3u8" or ( o[:hls_url].present? and o[:hls_url].ends_with? "m3u8" ) })
+  def self.from_output(dists, managed = true)
+    # output is an array of 1 or more distributions of the same derivative (e.g. file and HLS segmented file)
+    hls_output = dists.delete(dists.find { |o| (o[:url].ends_with? 'm3u8') || (o[:hls_url].present? && o[:hls_url].ends_with?('m3u8')) })
     output = dists.first || hls_output
 
     derivative = Derivative.new
     derivative.managed = managed
     derivative.track_id = output[:id]
     derivative.duration = output[:duration]
-    derivative.encoding.mime_type = output[:mime_type]
-    derivative.encoding.quality = output[:label].sub(/quality-/, '')
+    derivative.mime_type = output[:mime_type]
+    derivative.quality = output[:label].sub(/quality-/, '')
 
-    derivative.encoding.audio.audio_bitrate = output[:audio_bitrate]
-    derivative.encoding.audio.audio_codec = output[:audio_codec]
-    derivative.encoding.video.video_bitrate = output[:video_bitrate]
-    derivative.encoding.video.video_codec = output[:video_codec]
-    derivative.encoding.video.resolution = "#{output[:width]}x#{output[:height]}" if output[:width] && output[:height]
+    derivative.audio_bitrate = output[:audio_bitrate]
+    derivative.audio_codec = output[:audio_codec]
+    derivative.video_bitrate = output[:video_bitrate]
+    derivative.video_codec = output[:video_codec]
+    derivative.resolution = "#{output[:width]}x#{output[:height]}" if output[:width] && output[:height]
 
     if hls_output
       derivative.hls_track_id = hls_output[:id]
@@ -72,10 +79,10 @@ class Derivative < ActiveFedora::Base
   end
 
   def set_streaming_locations!
-    if !!self.managed
+    if managed
       path = URI.parse(absolute_location).path
-      self.location_url = Avalon::StreamMapper.map(path,'rtmp',self.format)
-      self.hls_url      = Avalon::StreamMapper.map(path,'http',self.format)
+      self.location_url = Avalon::StreamMapper.map(path, 'rtmp', format)
+      self.hls_url      = Avalon::StreamMapper.map(path, 'http', format)
     end
     self
   end
@@ -85,45 +92,43 @@ class Derivative < ActiveFedora::Base
   end
 
   def absolute_location=(value)
-    derivativeFile = value
+    self.derivativeFile = value
     set_streaming_locations!
     derivativeFile
   end
 
-  def tokenized_url(token, mobile=false)
-    #uri = URI.parse(url.first)
+  def tokenized_url(token, mobile = false)
     uri = streaming_url(mobile)
-    "#{uri.to_s}?token=#{token}".html_safe
+    "#{uri}?token=#{token}".html_safe
   end
 
-  def streaming_url(is_mobile=false)
-    is_mobile ? self.hls_url : self.location_url
+  def streaming_url(is_mobile = false)
+    is_mobile ? hls_url : location_url
   end
 
   def format
-    case
-      when (not encoding.video.empty?)
-        "video"
-      when (not encoding.audio.empty?)
-        "audio"
-      else
-        "other"
+    if video_codec.present?
+      'video'
+    elsif audio_codec.present?
+      'audio'
+    else
+      'other'
     end
   end
 
-  def to_solr(solr_doc = {})
-    super(solr_doc)
-    solr_doc['stream_path_ssi'] = location_url.split(/:/).last if location_url.present?
-    solr_doc
+  def to_solr
+    super.tap do |solr_doc|
+      solr_doc['stream_path_ssi'] = location_url.split(/:/).last if location_url.present?
+    end
   end
 
   private
 
-    def retract_distributed_files!
-      encode = masterfile.encoder_class.find(masterfile.workflow_id)
-      encode.remove_output!(track_id) if track_id.present?
-      encode.remove_output!(hls_track_id) if hls_track_id.present? && track_id != hls_track_id
-    rescue StandardError => e
-      logger.warn "Error deleting derivative: #{e.message}"
-    end
+  def retract_distributed_files!
+    encode = masterfile.encoder_class.find(masterfile.workflow_id)
+    encode.remove_output!(track_id) if track_id.present?
+    encode.remove_output!(hls_track_id) if hls_track_id.present? && track_id != hls_track_id
+  rescue StandardError => e
+    logger.warn "Error deleting derivative: #{e.message}"
+  end
 end
