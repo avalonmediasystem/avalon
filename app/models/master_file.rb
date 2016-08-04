@@ -405,16 +405,16 @@ class MasterFile < ActiveFedora::Base
   end
 
   def absolute_location
-    masterFile.location
+    masterFile
   end
 
   def absolute_location=(value)
-    masterFile.location = value
+    self.masterFile = value
   end
 
   def file_location=(value)
     file_location_will_change!
-    descMetadata.file_location = value
+    resource.file_location = [value]
     if value.blank?
       self.absolute_location = value
     else
@@ -428,9 +428,9 @@ class MasterFile < ActiveFedora::Base
 
   def encoder_class=(value)
     if value.nil?
-      mhMetadata.encoder_classname = nil
+      self.encoder_classname = nil
     elsif value.is_a?(Class) and value.ancestors.include?(ActiveEncode::Base)
-      mhMetadata.encoder_classname = value.name
+      self.encoder_classname = value.name
     else
       raise ArgumentError, '#encoder_class must be a descendant of ActiveEncode::Base'
     end

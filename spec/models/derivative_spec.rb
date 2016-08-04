@@ -54,7 +54,7 @@ describe Derivative do
     it "should delete even if retraction fails" do
       encode = ActiveEncode::Base.new(nil)
       expect(ActiveEncode::Base).to receive(:find).and_return(encode)
-      expect(encode).to receive(:remove_output!).and_raise Exception
+      expect(encode).to receive(:remove_output!).and_raise StandardError
       expect{derivative.destroy}.to change{Derivative.count}.by(-1)
     end
   end
