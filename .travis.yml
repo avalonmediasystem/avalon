@@ -11,9 +11,6 @@ before_install:
 before_script:
   - bundle exec rake delayed_job:start
   - bundle exec rake db:migrate
-  - bundle exec rake avalon:db_migrate
-notifications:
-  irc: "chat.freenode.net#projectvov-updates"
 language: ruby
 rvm:
   - 2.2.5
