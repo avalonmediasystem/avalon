@@ -15,8 +15,6 @@
 require 'avalon/stream_mapper'
 
 class Derivative < ActiveFedora::Base
-  include ActiveFedora::Associations
-
   belongs_to :masterfile, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
 
   property :location_url, predicate: Avalon::RDFVocab::Derivative.locationURL, multiple: false
@@ -41,34 +39,6 @@ class Derivative < ActiveFedora::Base
   def initialize(*args)
     super(*args)
     self.managed = true
-  end
-
-  def self.from_output(dists, managed = true)
-    # output is an array of 1 or more distributions of the same derivative (e.g. file and HLS segmented file)
-    hls_output = dists.delete(dists.find { |o| (o[:url].ends_with? 'm3u8') || (o[:hls_url].present? && o[:hls_url].ends_with?('m3u8')) })
-    output = dists.first || hls_output
-
-    derivative = Derivative.new
-    derivative.managed = managed
-    derivative.track_id = output[:id]
-    derivative.duration = output[:duration]
-    derivative.mime_type = output[:mime_type]
-    derivative.quality = output[:label].sub(/quality-/, '')
-
-    derivative.audio_bitrate = output[:audio_bitrate]
-    derivative.audio_codec = output[:audio_codec]
-    derivative.video_bitrate = output[:video_bitrate]
-    derivative.video_codec = output[:video_codec]
-    derivative.resolution = "#{output[:width]}x#{output[:height]}" if output[:width] && output[:height]
-
-    if hls_output
-      derivative.hls_track_id = hls_output[:id]
-      derivative.hls_url = hls_output[:hls_url].present? ? hls_output[:hls_url] : hls_output[:url]
-    end
-    derivative.location_url = output[:url]
-    derivative.absolute_location = output[:url]
-
-    derivative
   end
 
   def set_streaming_locations!
@@ -115,8 +85,38 @@ class Derivative < ActiveFedora::Base
     end
   end
 
+  # TODO: move this into a service class along with masterfile#update_progress_*
+  def self.from_output(dists, managed = true)
+    # output is an array of 1 or more distributions of the same derivative (e.g. file and HLS segmented file)
+    hls_output = dists.delete(dists.find { |o| (o[:url].ends_with? 'm3u8') || (o[:hls_url].present? && o[:hls_url].ends_with?('m3u8')) })
+    output = dists.first || hls_output
+
+    derivative = Derivative.new
+    derivative.managed = managed
+    derivative.track_id = output[:id]
+    derivative.duration = output[:duration]
+    derivative.mime_type = output[:mime_type]
+    derivative.quality = output[:label].sub(/quality-/, '')
+
+    derivative.audio_bitrate = output[:audio_bitrate]
+    derivative.audio_codec = output[:audio_codec]
+    derivative.video_bitrate = output[:video_bitrate]
+    derivative.video_codec = output[:video_codec]
+    derivative.resolution = "#{output[:width]}x#{output[:height]}" if output[:width] && output[:height]
+
+    if hls_output
+      derivative.hls_track_id = hls_output[:id]
+      derivative.hls_url = hls_output[:hls_url].present? ? hls_output[:hls_url] : hls_output[:url]
+    end
+    derivative.location_url = output[:url]
+    derivative.absolute_location = output[:url]
+
+    derivative
+  end
+
   private
 
+  # TODO: move this into a service class
   def retract_distributed_files!
     encode = masterfile.encoder_class.find(masterfile.workflow_id)
     encode.remove_output!(track_id) if track_id.present?
