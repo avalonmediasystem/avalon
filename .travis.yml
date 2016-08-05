@@ -9,7 +9,7 @@ before_install:
   - cp spec/config/*.yml config
   - bundle config without development:production
 before_script:
-  - bundle exec rake jetty:unzip jetty:config jetty:start delayed_job:start
+  - bundle exec rake delayed_job:start
   - bundle exec rake db:migrate
   - bundle exec rake avalon:db_migrate
 notifications:
