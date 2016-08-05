@@ -11,9 +11,6 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
-
-require 'net/http/digest_auth'
-
 class DerivativesController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:authorize]
 
