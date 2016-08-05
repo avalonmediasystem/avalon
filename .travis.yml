@@ -9,6 +9,7 @@ before_install:
   - cp spec/config/*.yml config
   - bundle config without development:production
 before_script:
+  - jdk_switcher use oraclejdk8
   - bundle exec rake delayed_job:start
   - bundle exec rake db:migrate
 language: ruby
