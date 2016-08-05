@@ -7,8 +7,6 @@ before_install:
   - sudo apt-get install mediainfo
   - sudo ln -s /usr/bin/lsof /usr/sbin/lsof
   - cp spec/config/*.yml config
-  - git submodule init
-  - git submodule update --depth=10 -- red5
   - bundle config without development:production
 before_script:
   - bundle exec rake jetty:unzip jetty:config jetty:start delayed_job:start
