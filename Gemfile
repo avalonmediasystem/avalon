@@ -44,6 +44,8 @@ gem 'iconv'
 gem 'mediainfo'
 gem 'delayed_job', '~> 4.1.0'
 gem 'delayed_job_active_record'
+gem 'omniauth-identity'
+gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

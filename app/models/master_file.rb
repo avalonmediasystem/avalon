@@ -58,7 +58,7 @@ class MasterFile < ActiveFedora::Base
   property :failures, predicate: Avalon::RDFVocab::Transcoding.failures, multiple: false
   property :encoder_classname, predicate: Avalon::RDFVocab::Transcoding.encoderClassname, multiple: false
 
-  validates :workflow_name, presence: true, inclusion: { in: Proc.new{ WORKFLOWS } }
+  validates :workflow_name, presence: true, inclusion: { in: proc { WORKFLOWS } }
   validates_each :date_digitized do |record, attr, value|
     unless value.nil?
       begin
@@ -223,7 +223,7 @@ class MasterFile < ActiveFedora::Base
 
     poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self) unless poster.new?
     captions_path = Rails.application.routes.url_helpers.captions_master_file_path(self) unless captions.empty?
-    captions_format = self.captions.mimeType
+    captions_format = self.captions.mime_type
 
     # Returns the hash
     {
@@ -387,7 +387,7 @@ class MasterFile < ActiveFedora::Base
         ds = self.datastreams[type]
         result = extract_frame(options.merge(:size => frame_size))
         unless options[:preview]
-          ds.mimeType = 'image/jpeg'
+          ds.mime_type = 'image/jpeg'
           ds.content = StringIO.new(result)
         end
       end
