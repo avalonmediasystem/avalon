@@ -39,13 +39,13 @@ class MasterFilesController < ApplicationController
 
   def show
     masterfile = MasterFile.find(params[:id])
-    redirect_to pid_section_media_object_path(masterfile.mediaobject_id, masterfile.pid, params.except(:id, :action, :controller))
+    redirect_to id_section_media_object_path(masterfile.mediaobject_id, masterfile.id, params.except(:id, :action, :controller))
   end
 
   def embed
     @masterfile = MasterFile.find(params[:id])
-    if can? :read, @masterfile.mediaobject
-      @token = @masterfile.nil? ? "" : StreamToken.find_or_create_session_token(session, @masterfile.pid)
+    if can? :read, @masterfile
+      @token = @masterfile.nil? ? "" : StreamToken.find_or_create_session_token(session, @masterfile.id)
       @stream_info = @masterfile.stream_details(@token, default_url_options[:host])
     end
     respond_to do |format|
@@ -58,9 +58,9 @@ class MasterFilesController < ApplicationController
 
   def oembed
     if params[:url].present?
-      pid = params[:url].split('?')[0].split('/').last
-      mf = MasterFile.where("dc_identifier_tesim:\"#{pid}\"").first
-      mf ||= MasterFile.find(pid) rescue nil
+      id = params[:url].split('?')[0].split('/').last
+      mf = MasterFile.where("dc_identifier_tesim:\"#{id}\"").first
+      mf ||= MasterFile.find(id) rescue nil
       if mf.present?
         width = params[:maxwidth] || MasterFile::EMBED_SIZE[:medium]
         height = mf.is_video? ? (width.to_f/mf.display_aspect_ratio.to_f).floor : MasterFile::AUDIO_HEIGHT
@@ -92,12 +92,8 @@ class MasterFilesController < ApplicationController
       flash[:notice] = "MasterFile #{params[:id]} does not exist"
     end
     @masterfile = MasterFile.find(params[:id])
-    unless flash.empty? and  MediaObject.exists?(@masterfile.mediaobject_id)
-      flash[:notice] = "MediaObject #{@masterfile.mediaobject_id} does not exist"
-    end
     if flash.empty?
-      media_object = MediaObject.find(@masterfile.mediaobject_id)
-      authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
+      authorize! :edit, @masterfile, message: "You do not have sufficient privileges to add files"
       structure = request.format.json? ? params[:xml_content] : nil
       if params[:master_file].present? && params[:master_file][:structure].present?
         structure = params[:master_file][:structure].open.read
@@ -128,12 +124,8 @@ class MasterFilesController < ApplicationController
       flash[:notice] = "MasterFile #{params[:id]} does not exist"
     end
     @masterfile = MasterFile.find(params[:id])
-    unless flash.empty? and  MediaObject.exists?(@masterfile.mediaobject_id)
-      flash[:notice] = "MediaObject #{@masterfile.mediaobject_id} does not exist"
-    end
     if flash.empty?
-      media_object = MediaObject.find(@masterfile.mediaobject_id)
-      authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
+      authorize! :edit, @masterfile, message: "You do not have sufficient privileges to add files"
       if params[:master_file].present? && params[:master_file][:captions].present?
         captions = params[:master_file][:captions].open.read
       end
@@ -239,58 +231,50 @@ class MasterFilesController < ApplicationController
   # When destroying a file asset be sure to stop it first
   def destroy
     master_file = MasterFile.find(params[:id])
-    media_object = master_file.mediaobject
+    authorize! :delete, master_file, message: "You do not have sufficient privileges to delete files"
 
-    authorize! :edit, media_object, message: "You do not have sufficient privileges to delete files"
-
-    filename = File.basename(master_file.file_location)
     master_file.destroy
-
-    media_object.set_media_types!
-    media_object.set_duration!
-    media_object.save( validate: false )
-
+    filename = File.basename(master_file.file_location) if master_file.file_location.present?
+    filename ||= master_file.id
     flash[:notice] = "#{filename} has been deleted from the system"
 
-    redirect_to edit_media_object_path(media_object.pid, step: "file-upload")
+    redirect_to edit_media_object_path(master_file.media_object.id, step: "file-upload")
   end
 
   def set_frame
     master_file = MasterFile.find(params[:id])
-    parent = master_file.mediaobject
 
-    authorize! :read, parent, message: "You do not have sufficient privileges to edit this file"
+    authorize! :read, master_file, message: "You do not have sufficient privileges to edit this file"
     opts = { :type => params[:type], :size => params[:size], :offset => params[:offset].to_f*1000, :preview => params[:preview] }
     respond_to do |format|
       format.jpeg do
         data = master_file.extract_still(opts)
-        send_data data, :filename => "#{opts[:type]}-#{master_file.pid.split(':')[1]}", :disposition => :inline, :type => 'image/jpeg'
+        send_data data, :filename => "#{opts[:type]}-#{master_file.id.split(':')[1]}", :disposition => :inline, :type => 'image/jpeg'
       end
       format.all do
         master_file.poster_offset = opts[:offset]
         unless master_file.save
           flash[:notice] = master_file.errors.to_a.join('<br/>')
         end
-        redirect_to edit_media_object_path(parent.pid, step: "file-upload")
+        redirect_to edit_media_object_path(master_file.mediaobject_id, step: "file-upload")
       end
     end
   end
 
   def get_frame
     master_file = MasterFile.find(params[:id])
-    parent = master_file.mediaobject
     mimeType = "image/jpeg"
     content = if params[:offset]
-      authorize! :edit, parent, message: "You do not have sufficient privileges to view this file"
+      authorize! :edit, master_file, message: "You do not have sufficient privileges to view this file"
       opts = { :type => params[:type], :size => params[:size], :offset => params[:offset].to_f*1000, :preview => true }
       master_file.extract_still(opts)
     else
-      authorize! :read, parent, message: "You do not have sufficient privileges to view this file"
+      authorize! :read, master_file, message: "You do not have sufficient privileges to view this file"
       ds = master_file.datastreams[params[:type]]
       mimeType = ds.mimeType
       ds.content
     end
-    send_data content, :filename => "#{params[:type]}-#{master_file.pid.split(':')[1]}", :disposition => :inline, :type => mimeType
+    send_data content, :filename => "#{params[:type]}-#{master_file.id.split(':')[1]}", :disposition => :inline, :type => mimeType
   end
 
 protected

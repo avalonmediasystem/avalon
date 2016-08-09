@@ -19,32 +19,28 @@ FactoryGirl.define do
     percent_complete {"#{rand(100)}"}
     workflow_name 'avalon'
     duration {'100'}
-    association :mediaobject, factory: :media_object
 
-    factory :master_file_with_derivative do
-      workflow_name 'avalon'
+    trait :with_media_object do
+      association :mediaobject, factory: :media_object
+    end
+
+    trait :with_derivative do
       status_code 'COMPLETED'
       after(:create) do |mf|
         mf.derivatives += [FactoryGirl.create(:derivative)]
         mf.save
       end
     end
-    factory :master_file_with_thumbnail do
+    trait :with_thumbnail do
       after(:create) do |mf|
         mf.thumbnail.mime_type = 'image/jpeg'
         mf.thumbnail.content = 'fake image content'
         mf.save
       end
     end
-    factory :master_file_with_structure do
+    trait :with_structure do
       after(:create) do |mf|
         mf.structuralMetadata.content = File.read('spec/fixtures/structure.xml')
-        mf.save
-      end
-    end
-    factory :master_file_sound do
-      after(:create) do |mf|
-        mf.file_format = 'Sound'
         mf.save
       end
     end

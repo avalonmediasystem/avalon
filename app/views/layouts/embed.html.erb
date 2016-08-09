@@ -1,0 +1,37 @@
+<%#
+Copyright 2011-2015, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <%= csrf_meta_tags %>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%= stylesheet_link_tag "embed" %>
+    <%= yield :page_styles %>
+  </head>
+
+  <body>
+    <%= yield %>
+
+    <!-- With this many Javascript files performance will be much better
+         if they are included here. That means the important content will
+         load first; the page will not gag on trying to pull down files
+         from a CDN -->
+    <%= yield :page_scripts %>
+  </body>
+</html>
