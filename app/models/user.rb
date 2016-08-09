@@ -13,8 +13,8 @@ class User < ActiveRecord::Base
   #        :recoverable, :rememberable, :trackable, :validatable
   devise :omniauthable
 
-  validates :username, presence: true, uniqueness: true
-  validates :email, presence: true, uniqueness: true
+  validates :username, presence: true, uniqueness: { case_sensitive: false }
+  validates :email, presence: true, uniqueness: { case_sensitive: false }
 
   # Method added by Blacklight; Blacklight uses #to_s on your
   # user class to get a user-displayable login/identifier for

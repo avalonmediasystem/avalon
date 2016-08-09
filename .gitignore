@@ -16,6 +16,7 @@
 !/log/.keep
 /tmp
 .rbenv
+.byebug_history
 
 ## PROJECT::SPECIFIC
 config/authentication.yml
