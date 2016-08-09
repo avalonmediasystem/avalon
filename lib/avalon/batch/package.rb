@@ -72,7 +72,14 @@ module Avalon
       def process!
         @manifest.start!
         begin
-          media_objects = @manifest.entries.collect { |entry| entry.process! }
+          media_objects = @manifest.entries.collect { |entry|
+            begin
+              entry.process!
+            rescue Exception => e
+              entry.errors.add(:base, "#{e.message}")
+              retry
+            end
+          }
           @manifest.commit!
         rescue Exception
           @manifest.error!

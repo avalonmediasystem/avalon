@@ -41,7 +41,7 @@ module Avalon
             begin
               package.manifest.error!
             ensure
-              IngestBatchMailer.batch_ingest_validation_error( package, ["#{ex.class.name}: #{ex.message}"] ).deliver
+              IngestBatchMailer.batch_ingest_validation_error( package, ["#{ex.class.name}: #{ex.message}: #{ex.backtrace}"] ).deliver
             end
           end
         end

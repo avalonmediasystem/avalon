@@ -133,7 +133,16 @@ module Avalon
       end
 
       def process!
-        media_object.save
+        save_tries = 0
+        begin
+          media_object.save
+        rescue Exception => error
+          save_tries += 1
+          logger.warn "Batch Ingest caught error on #{media_object.id}: #{error.inspect}"
+          raise error if save_tries >=3
+          sleep 3
+          retry
+        end
 
         @files.each do |file_spec|
           master_file = MasterFile.new
@@ -149,8 +158,27 @@ module Avalon
 
           #Make sure to set content before setting the workflow 
           master_file.set_workflow(file_spec[:skip_transcoding] ? 'skip_transcoding' : nil)
-          if master_file.save
-            media_object.save(validate: false)
+          save_tries = 0
+          begin
+            saved = media_object.save
+          rescue Exception => error
+            save_tries +=1
+            logger.warn "Batch Ingest caught error on #{media_object.id}: #{error.inspect}"
+            raise error if save_tries >=3
+            sleep 3
+            retry
+          end
+          if saved
+            save_tries = 0
+            begin
+              media_object.save(validate: false)
+            rescue Exception => error
+              save_tries +=1
+              logger.warn "Batch Ingest caught error on #{media_object.id}: #{error.inspect}"
+              raise error if save_tries >=3
+              sleep 3
+              retry
+            end
             master_file.process(files)
           else
             logger.error "Problem saving MasterFile(#{master_file.pid}): #{master_file.errors.full_messages.to_sentence}"
@@ -164,6 +192,21 @@ module Avalon
           media_object.publish!(@manifest.package.user.user_key)
           media_object.workflow.publish
         end
+
+        begin
+          saved = media_object.save
+        rescue Exception => error
+          save_tries +=1
+          logger.warn "Batch Ingest caught error on #{media_object.id}: #{error.inspect}"
+          raise error if save_tries >=3
+          sleep 3
+          retry
+        end
+
+        unless saved
+          logger.error "Problem saving MediaObject: #{media_object}"
+        end
+
 
         unless media_object.save
           logger.error "Problem saving MediaObject: #{media_object}"
