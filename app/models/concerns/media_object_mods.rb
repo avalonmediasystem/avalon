@@ -233,6 +233,7 @@ module MediaObjectMods
     delete_all_values(:topical_subject)
     Array(value).each { |val| descMetadata.add_topical_subject(val) }
   end
+
   # has_attributes :related_item_url, datastream: :descMetadata, at: [:related_item_url], multiple: true
   def related_item_url
     descMetadata.related_item_url.zip(descMetadata.related_item_label).map{|a|{url: a[0],label: a[1]}}
@@ -244,9 +245,43 @@ module MediaObjectMods
   end
 
   # has_attributes :geographic_subject, datastream: :descMetadata, at: [:geographic_subject], multiple: true
+  def geographic_subject
+    descMetadata.geographic_subject
+  end
+
+  def geographic_subject=(value)
+    delete_all_values(:geographic_subject)
+    Array(value).each { |val| descMetadata.add_geographic_subject(val) }
+  end
+
   # has_attributes :temporal_subject, datastream: :descMetadata, at: [:temporal_subject], multiple: true
+  def temporal_subject
+    descMetadata.temporal_subject
+  end
+
+  def temporal_subject=(value)
+    delete_all_values(:temporal_subject)
+    Array(value).each { |val| descMetadata.add_temporal_subject(val) }
+  end
+
   # has_attributes :topical_subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
+  def topical_subject
+    descMetadata.topical_subject
+  end
+
+  def topical_subject=(value)
+    delete_all_values(:topical_subject)
+    Array(value).each { |val| descMetadata.add_topical_subject(val) }
+  end
+
   # has_attributes :bibliographic_id, datastream: :descMetadata, at: [:bibliographic_id], multiple: false
+  def bibliographic_id
+    descMetadata.bibliographic_id.present? ? [descMetadata.bibliographic_id.source.first,descMetadata.bibliographic_id.first] : nil
+  end
+  def bibliographic_id=(value)
+    delete_all_values(:bibliographic_id)
+    descMetadata.add_bibliographic_id(value)
+  end
 
   # has_attributes :language, datastream: :descMetadata, at: [:language], multiple: true
   def language
@@ -258,10 +293,49 @@ module MediaObjectMods
   end
 
   # has_attributes :terms_of_use, datastream: :descMetadata, at: [:terms_of_use], multiple: false
+  def terms_of_use
+    descMetadata.terms_of_use.first
+  end
+  def terms_of_use=(value)
+    delete_all_values(:terms_of_use)
+    descMetadata.add_terms_of_use(value)
+  end
+
   # has_attributes :table_of_contents, datastream: :descMetadata, at: [:table_of_contents], multiple: true
+  def table_of_contents
+    descMetadata.table_of_contents
+  end
+  def table_of_contents=(value)
+    delete_all_values(:table_of_contents)
+    descMetadata.table_of_contents = value
+  end
+
   # has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: true
+  def physical_description
+    descMetadata.physical_description.first
+  end
+  def physical_description=(value)
+    delete_all_values(:physical_description)
+    Array(value).each { |val| descMetadata.add_physical_description(val) }
+  end
+
   # has_attributes :other_identifier, datastream: :descMetadata, at: [:other_identifier], multiple: true
+  def other_identifier
+    descMetadata.other_identifier.present? ? descMetadata.other_identifier.type.zip(descMetadata.other_identifier) : nil
+  end
+  def other_identifier=(value)
+    delete_all_values(:other_identifier)
+    Array(value).each { |val| descMetadata.add_other_identifier(val) }
+  end
+
   # has_attributes :record_identifier, datastream: :descMetadata, at: [:record_identifier], multiple: true
+  def record_identifier
+    descMetadata.record_identifier
+  end
+  def record_identifier=(value)
+    delete_all_values(:record_identifier)
+    Array(value).each { |val| descMetadata.add_record_identifier(val) }
+  end
 
   # def find_metadata_attribute(attribute)
   #   metadata_attribute = klass_attribute_to_metadata_attribute_map[ attribute.to_sym ]
@@ -320,22 +394,6 @@ module MediaObjectMods
   #       missing_attributes[k.to_sym] = msg.to_s
   #     end
   #   end
-  # end
-  #
-  # def bibliographic_id
-  #   descMetadata.bibliographic_id.present? ? [descMetadata.bibliographic_id.source.first,descMetadata.bibliographic_id.first] : nil
-  # end
-  # def related_item_url
-  #   descMetadata.related_item_url.zip(descMetadata.related_item_label).map{|a|{url: a[0],label: a[1]}}
-  # end
-  # def language
-  #   descMetadata.language.code.zip(descMetadata.language.text).map{|a|{code: a[0],text: a[1]}}
-  # end
-  # def note
-  #   descMetadata.note.present? ? descMetadata.note.type.zip(descMetadata.note) : nil
-  # end
-  # def other_identifier
-  #   descMetadata.other_identifier.present? ? descMetadata.other_identifier.type.zip(descMetadata.other_identifier) : nil
   # end
   #
   #
