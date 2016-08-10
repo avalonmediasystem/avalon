@@ -76,6 +76,7 @@ class MasterFile < ActiveFedora::Base
   # validates :file_format, presence: true, exclusion: { in: ['Unknown'], message: "The file was not recognized as audio or video." }
 
   before_save :update_stills_from_offset!
+  after_destroy :update_parent!
 
   define_hooks :after_processing
 
@@ -140,7 +141,7 @@ class MasterFile < ActiveFedora::Base
 
   alias_method :'_mediaobject=', :'mediaobject='
 
-  # This requires the MasterFile having an actual pid
+  # This requires the MasterFile having an actual id
   def mediaobject=(mo)
     # Removes existing association
     if self.mediaobject.present?
@@ -227,7 +228,7 @@ class MasterFile < ActiveFedora::Base
 
     # Returns the hash
     {
-      id: self.pid,
+      id: self.id,
       label: label,
       is_video: is_video?,
       poster_image: poster_path,
@@ -250,7 +251,7 @@ class MasterFile < ActiveFedora::Base
       if self.permalink
         url = self.permalink(permalink_opts)
       else
-        url = embed_master_file_path(self.pid, only_path: false, protocol: '//')
+        url = embed_master_file_path(self.id, only_path: false, protocol: '//')
       end
       height = is_video? ? (width/display_aspect_ratio.to_f).floor : AUDIO_HEIGHT
       "<iframe title=\"#{ embed_title }\" src=\"#{url}\" width=\"#{width}\" height=\"#{height}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
@@ -359,11 +360,11 @@ class MasterFile < ActiveFedora::Base
   def update_stills_from_offset!
     if @stills_to_update.present?
       # Update stills together
-      self.class.extract_still(self.pid, :type => 'both', :offset => self.poster_offset)
+      self.class.extract_still(self.id, :type => 'both', :offset => self.poster_offset)
 
       # Update stills independently
       # @stills_to_update.each do |type|
-      #   self.class.extract_still(self.pid, :type => type, :offset => self.send("#{type}_offset"))
+      #   self.class.extract_still(self.id, :type => type, :offset => self.send("#{type}_offset"))
       # end
       @stills_to_update = []
     end
@@ -397,8 +398,8 @@ class MasterFile < ActiveFedora::Base
   end
 
   class << self
-    def extract_still(pid, options={})
-      obj = self.find(pid)
+    def extract_still(id, options={})
+      obj = self.find(id)
       obj.extract_still(options)
     end
     handle_asynchronously :extract_still
@@ -442,10 +443,10 @@ class MasterFile < ActiveFedora::Base
 
   # Supplies the route to the master_file as an rdf formatted URI
   # @return [String] the route as a uri
-  # @example uri for a mf on avalon.iu.edu with a pid of: avalon:1820
+  # @example uri for a mf on avalon.iu.edu with a id of: avalon:1820
   #   "my_masterfile.rdf_uri" #=> "https://www.avalon.iu.edu/master_files/avalon:1820"
   def rdf_uri
-    master_file_url(pid)
+    master_file_url(id)
   end
 
   # Returns the dctype of the master_file
@@ -455,7 +456,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def self.post_processing_move_filename(oldpath, options = {})
-    prefix = options[:pid].tr(':', '_')
+    prefix = options[:id].tr(':', '_')
     if File.basename(oldpath).start_with?(prefix)
       File.basename(oldpath)
     else
@@ -476,7 +477,7 @@ class MasterFile < ActiveFedora::Base
     unless File.exists?(response[:source])
       Rails.logger.warn("Masterfile `#{file_location}` not found. Extracting via HLS.")
       begin
-        token = StreamToken.find_or_create_session_token({media_token:nil}, self.pid)
+        token = StreamToken.find_or_create_session_token({media_token:nil}, self.id)
         playlist_url = self.stream_details(token)[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
         playlist = Avalon::M3U8Reader.read(playlist_url)
         details = playlist.at(options[:offset])
@@ -492,7 +493,7 @@ class MasterFile < ActiveFedora::Base
 
   def extract_frame(options={})
     if is_video?
-      base = pid.gsub(/:/,'_')
+      base = id.gsub(/:/,'_')
       offset = options[:offset].to_i
       unless offset.between?(0,self.duration.to_i)
         raise RangeError, "Offset #{offset} not in range 0..#{self.duration}"
@@ -633,12 +634,12 @@ class MasterFile < ActiveFedora::Base
 
     case Avalon::Configuration.lookup('master_file_management.strategy')
     when 'delete'
-      AvalonJobs.delete_masterfile self.pid
+      AvalonJobs.delete_masterfile self.id
     when 'move'
       move_path = Avalon::Configuration.lookup('master_file_management.path')
       raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?
-      newpath = File.join(move_path, MasterFile.post_processing_move_filename(file_location, pid: pid))
-      AvalonJobs.move_masterfile self.pid, newpath
+      newpath = File.join(move_path, MasterFile.post_processing_move_filename(file_location, id: id))
+      AvalonJobs.move_masterfile self.id, newpath
     else
       # Do nothing
     end
@@ -655,5 +656,11 @@ class MasterFile < ActiveFedora::Base
 
   def find_encoder_class(klass_name)
     ActiveEncode::Base.descendants.find { |c| c.name == klass_name }
+  end
+
+  def update_parent!
+    media_object.set_media_types!
+    media_object.set_duration!
+    media_object.save( validate: false )
   end
 end
