@@ -259,6 +259,7 @@ GEM
     multi_json (1.12.1)
     multipart-post (2.0.0)
     net-http-persistent (2.9.4)
+    net-ldap (0.14.0)
     nokogiri (1.6.8)
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
@@ -410,6 +411,8 @@ GEM
     sdoc (0.4.1)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
+    shoulda-matchers (3.1.1)
+      activesupport (>= 4.0.0)
     simplecov (0.12.0)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
@@ -498,6 +501,7 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   jquery-rails
   mediainfo
+  net-ldap
   omniauth-identity
   omniauth-lti!
   pry-rails
@@ -507,6 +511,7 @@ DEPENDENCIES
   rubocop (~> 0.40.0)
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
+  shoulda-matchers
   simplecov
   solr_wrapper (>= 0.3)
   spring
