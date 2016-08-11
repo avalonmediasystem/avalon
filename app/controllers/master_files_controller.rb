@@ -238,7 +238,7 @@ class MasterFilesController < ApplicationController
     filename ||= master_file.id
     flash[:notice] = "#{filename} has been deleted from the system"
 
-    redirect_to edit_media_object_path(master_file.media_object.id, step: "file-upload")
+    redirect_to edit_media_object_path(master_file.mediaobject_id, step: "file-upload")
   end
 
   def set_frame

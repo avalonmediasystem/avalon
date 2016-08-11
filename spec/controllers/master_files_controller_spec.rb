@@ -15,6 +15,17 @@
 require 'rails_helper'
 
 describe MasterFilesController do
+  before do
+    MasterFile.skip_callback(:save, :before, :update_stills_from_offset!)
+    MasterFile.skip_callback(:destroy, :before, :stop_processing!)
+    MasterFile.skip_callback(:destroy, :before, :update_parent!)
+  end
+  after do
+    MasterFile.set_callback(:save, :before, :update_stills_from_offset!)
+    MasterFile.set_callback(:destroy, :before, :stop_processing!)
+    MasterFile.set_callback(:destroy, :before, :update_parent!)
+  end
+
   describe "#create" do
     let(:media_object) { FactoryGirl.create(:media_object) }
     let(:file) { double }
@@ -142,7 +153,7 @@ describe MasterFilesController do
   end
 
   describe "#destroy" do
-    let(:master_file) {FactoryGirl.create(:master_file)}
+    let(:master_file) {FactoryGirl.create(:master_file, :with_media_object)}
     before do
       disableCanCan!
     end

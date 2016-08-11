@@ -172,6 +172,7 @@ module MediaObjectMods
     descMetadata.note = Array(value)
   end
 
+  # TODO: Should this be multivalued given that it stores the mime_types of sections!?!
   # has_attributes :format, datastream: :descMetadata, at: [:media_type], multiple: false
   def format
     descMetadata.media_type.first

@@ -182,7 +182,7 @@ class MediaObject < ActiveFedora::Base
     mime_types = parts.reject {|mf| mf.file_location.blank? }.collect { |mf|
       Rack::Mime.mime_type(File.extname(mf.file_location))
     }.uniq
-    update_attribute_in_metadata(:format, mime_types.empty? ? nil : mime_types)
+    self.format = mime_types.empty? ? nil : mime_types
   end
 
   def set_resource_types!

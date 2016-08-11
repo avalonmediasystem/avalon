@@ -26,7 +26,7 @@ class MasterFile < ActiveFedora::Base
   include Permalink
 
   belongs_to :mediaobject, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
-  has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
+  has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf, dependent: :destroy
 
   has_subresource 'structuralMetadata', class_name: 'StructuralMetadata'
   has_subresource 'thumbnail', class_name: 'ActiveFedora::File'
@@ -76,7 +76,8 @@ class MasterFile < ActiveFedora::Base
   # validates :file_format, presence: true, exclusion: { in: ['Unknown'], message: "The file was not recognized as audio or video." }
 
   before_save :update_stills_from_offset!
-  after_destroy :update_parent!
+  before_destroy :stop_processing!
+  before_destroy :update_parent!
 
   define_hooks :after_processing
 
@@ -139,44 +140,44 @@ class MasterFile < ActiveFedora::Base
     self.workflow_name = workflow
   end
 
-  alias_method :'_mediaobject=', :'mediaobject='
+  # alias_method :'_mediaobject=', :'mediaobject='
+  #
+  # # This requires the MasterFile having an actual id
+  # def mediaobject=(mo)
+  #   # Removes existing association
+  #   if self.mediaobject.present?
+  #     self.mediaobject.parts_with_order_remove self
+  #     self.mediaobject.parts -= [self]
+  #   end
+  #
+  #   self._mediaobject=(mo)
+  #   unless self.mediaobject.nil?
+  #     self.mediaobject.parts_with_order += [self]
+  #     self.mediaobject.parts += [self]
+  #   end
+  # end
 
-  # This requires the MasterFile having an actual id
-  def mediaobject=(mo)
-    # Removes existing association
-    if self.mediaobject.present?
-      self.mediaobject.parts_with_order_remove self
-      self.mediaobject.parts -= [self]
-    end
+  # def destroy
+    # mo = self.mediaobject
+    # self.mediaobject = nil
 
-    self._mediaobject=(mo)
-    unless self.mediaobject.nil?
-      self.mediaobject.parts_with_order += [self]
-      self.mediaobject.parts += [self]
-    end
-  end
+    # # Stops all processing
+    # if workflow_id.present? && !finished_processing?
+    #   encoder_class.find(workflow_id).cancel!
+    # end
+    # self.derivatives.map(&:destroy)
 
-  def destroy
-    mo = self.mediaobject
-    self.mediaobject = nil
+    # clear_association_cache
 
-    # Stops all processing
-    if workflow_id.present? && !finished_processing?
-      encoder_class.find(workflow_id).cancel!
-    end
-    self.derivatives.map(&:destroy)
-
-    clear_association_cache
-
-    super
+    # super
 
     #Only save the media object if the master file was successfully deleted
-    if mo.nil?
-      logger.warn "MasterFile has no owning MediaObject to update upon deletion"
-    else
-      mo.save(validate: false)
-    end
-  end
+    # if mo.nil?
+    #   logger.warn "MasterFile has no owning MediaObject to update upon deletion"
+    # else
+    #   mo.save(validate: false)
+    # end
+  # end
 
   def process file=nil
     raise "MasterFile is already being processed" if status_code.present? && !finished_processing?
@@ -658,9 +659,17 @@ class MasterFile < ActiveFedora::Base
     ActiveEncode::Base.descendants.find { |c| c.name == klass_name }
   end
 
+  def stop_processing!
+    # Stops all processing
+    if workflow_id.present? && !finished_processing?
+      encoder_class.find(workflow_id).cancel!
+    end
+  end
+
   def update_parent!
-    media_object.set_media_types!
-    media_object.set_duration!
-    media_object.save( validate: false )
+    mediaobject.parts -= [self]
+    mediaobject.set_media_types!
+    mediaobject.set_duration!
+    mediaobject.save(validate: false)
   end
 end

@@ -47,6 +47,7 @@ gem 'delayed_job_active_record'
 gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 gem 'net-ldap'
+gem 'edtf'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

@@ -1,14 +1,14 @@
 # Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
@@ -26,10 +26,10 @@ module ModsBehaviors
     # Specific fields for Blacklight export
 
     # Title fields
-    addl_titles = [[:main_title_info, :subtitle], 
-        :alternative_title, [:alternative_title_info, :subtitle], 
-        :translated_title, [:translated_title_info, :subtitle], 
-        :uniform_title, [:uniform_title_info, :subtitle]].collect do |addl_title| 
+    addl_titles = [[:main_title_info, :subtitle],
+        :alternative_title, [:alternative_title_info, :subtitle],
+        :translated_title, [:translated_title_info, :subtitle],
+        :uniform_title, [:uniform_title_info, :subtitle]].collect do |addl_title|
       self.find_by_terms(*addl_title)
     end
     solr_doc['title_addl_sim'] = gather_terms(addl_titles)
@@ -95,7 +95,8 @@ module ModsBehaviors
   end
 
   def ensure_identifier_exists!
-    self.send(:add_record_identifier, self.pid) if self.record_identifier.empty? or self.record_identifier.join.empty?
+    # TODO: check with jlhardes about the identifier stored in the mods document
+    self.send(:add_record_identifier, self.id) if self.record_identifier.empty? or self.record_identifier.join.empty?
   end
 
   def update_change_date!(t=Time.now.iso8601)
@@ -174,7 +175,7 @@ module ModsBehaviors
   def gather_years(date)
     parsed = Date.edtf(date)
     return Array.new if parsed.nil?
-    years = 
+    years =
     if parsed.respond_to?(:unknown?) && parsed.unknown?
       ['Unknown']
     elsif parsed.respond_to?(:map)
@@ -194,7 +195,7 @@ module ModsBehaviors
     years.map(&:to_s).uniq
   end
 
-  # Override NokogiriDatastream#update_term_values to use the explicit 
+  # Override NokogiriDatastream#update_term_values to use the explicit
   # template setter on a TemplateMissingException error
   def update_indexed_attributes(params={}, opts={})
     result = nil
