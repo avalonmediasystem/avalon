@@ -4,7 +4,7 @@
 
 # Installing Avalon 6 For Devs
 
-# create a new directory to clone a free copy of Avalon into
+* create a new directory to clone a free copy of Avalon into
 * switch to Ruby 2.3.1 ``rvm install 2.3.1`` and ``rvm use 2.3.1``
 * ``bundle install``
 * ``rake db:migrate``
