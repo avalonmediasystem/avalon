@@ -5,11 +5,12 @@
 # Installing Avalon 6 For Devs
 
 * create a new directory to clone a free copy of Avalon into
-* switch to Ruby 2.3.1 ``rvm install 2.3.1`` and ``rvm use 2.3.1``
+* switch to Ruby 2.3.1 ``rvm install 2.3.1`` and ``rvm use 2.3.1`` (``rvm --default use 2.3.1`` will also make 2.3.1 your new default)
 * ``bundle install``
+* ``cp config/authentication.yml.example config/authentication.yml``
 * ``rake db:migrate``
 * ``bundle install``
-* ``rake server:development`` or ``rake server:test`` Note: This process will not background itself, it will occupy the terminal you run it in
+* ``bundle exec rake server:development`` or ``bundle exec rake server:test`` Note: This process will not background itself, it will occupy the terminal you run it in
 
 # Nokogiri Problems on OS X
 
