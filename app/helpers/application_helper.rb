@@ -39,7 +39,7 @@ module ApplicationHelper
     master_file_id = document["section_pid_tesim"].try :first
 
     video_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('moving image'.titleize) } rescue 0
-    audio_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('sound recording') } rescue 0
+    audio_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('sound recording'.titleize) } rescue 0
 
     if master_file_id
       if video_count > 0
