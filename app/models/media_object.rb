@@ -205,7 +205,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def section_labels
-    all_labels = parts.collect{|mf|mf.structural_metadata_labels << mf.label}
+    all_labels = parts.collect{|mf|mf.structural_metadata_labels << mf.title}
     all_labels.flatten.uniq.compact
   end
 
@@ -214,7 +214,7 @@ class MediaObject < ActiveFedora::Base
   def section_physical_descriptions
     all_pds = []
     self.parts.each do |master_file|
-      all_pds += master_file.physical_description unless master_file.physical_description.nil?
+      all_pds += Array(master_file.physical_description) unless master_file.physical_description.nil?
     end
     all_pds.uniq
   end
