@@ -14,11 +14,11 @@
 
 module ModsBehaviors
 
-  def prefix
+  def prefix(opts)
     ""
   end
 
-  def to_solr(solr_doc=SolrDocument.new)
+  def to_solr(solr_doc = Hash.new, opts = {})
     solr_doc = super(solr_doc)
 
     solr_doc['title_tesi'] = self.find_by_terms(:main_title).text

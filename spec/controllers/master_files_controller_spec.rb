@@ -28,15 +28,20 @@ describe MasterFilesController do
 
   describe "#create" do
     let(:media_object) { FactoryGirl.create(:media_object) }
-    let(:file) { double }
+    # TODO: fill in the lets below with a legitimate values from mediainfo
+    let(:mediainfo_video) {  }
+    let(:mediainfo_audio) {  }
     before do
-      login_user media_object.collection.managers.first
+      # login_user media_object.collection.managers.first
+      login_as :administrator
+      disableCanCan!
+      allow_any_instance_of(MasterFile).to receive(:mediainfo).and_return(mediainfo_output)
     end
 
     context "must provide a container id" do
       it "should fail if no container id provided" do
         request.env["HTTP_REFERER"] = "/"
-        # @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+        file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
 
         expect { post :create, Filedata: [file], original: 'any'}.not_to change { MasterFile.count }
       end
@@ -46,7 +51,7 @@ describe MasterFilesController do
       it "should provide a warning about the file size" do
         request.env["HTTP_REFERER"] = "/"
 
-        # @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+        file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
         allow(file).to receive(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2^21)
 
         expect { post :create, Filedata: [file], original: 'any', container_id: media_object.id}.not_to change { MasterFile.count }
@@ -182,7 +187,10 @@ describe MasterFilesController do
 
   describe "#embed" do
     let(:master_file) {FactoryGirl.create(:master_file)}
+    let(:media_object) { double }
     before do
+      allow_any_instance_of(MasterFile).to receive(:mediaobject).and_return(media_object)
+      allow(media_object).to receive(:title).and_return("Media Object")
       disableCanCan!
     end
     it "should render embed layout" do
@@ -281,7 +289,7 @@ describe MasterFilesController do
       post 'attach_captions', master_file: {captions: file}, id: master_file.id
       master_file.reload
       expect(master_file.captions.has_content?).to be_truthy
-      expect(master_file.captions.label).to eq('captions.vtt')
+      expect(master_file.captions.original_name).to eq('captions.vtt')
       expect(master_file.captions.mime_type).to eq('text/vtt')
       expect(flash[:errors]).to be_nil
       expect(flash[:notice]).to be_nil

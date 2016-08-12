@@ -25,11 +25,11 @@ class MasterFilesController < ApplicationController
   def captions
     @masterfile = MasterFile.find(params[:id])
     authorize! :read, @masterfile
-    ds = @masterfile.datastreams['captions']
+    ds = @masterfile.captions
     if ds.nil? or ds.new?
       render :text => 'Not Found', :status => :not_found
     else
-      render :text => ds.content, :content_type => ds.mimeType, :label => ds.label
+      render :text => ds.content, :content_type => ds.mime_type, :label => ds.label
     end
   end
 
@@ -131,8 +131,8 @@ class MasterFilesController < ApplicationController
       end
       if captions.present?
         @masterfile.captions.content = captions
-        @masterfile.captions.mimeType = params[:master_file][:captions].content_type
-        @masterfile.captions.dsLabel = params[:master_file][:captions].original_filename
+        @masterfile.captions.mime_type = params[:master_file][:captions].content_type
+        @masterfile.captions.original_name = params[:master_file][:captions].original_filename
         flash[:success] = "Captions file succesfully added."
       else
         @masterfile.captions.delete
@@ -270,8 +270,8 @@ class MasterFilesController < ApplicationController
       master_file.extract_still(opts)
     else
       authorize! :read, master_file, message: "You do not have sufficient privileges to view this file"
-      ds = master_file.datastreams[params[:type]]
-      mimeType = ds.mimeType
+      ds = master_file.send(params[:type].to_sym)
+      mimeType = ds.mime_type
       ds.content
     end
     send_data content, :filename => "#{params[:type]}-#{master_file.id.split(':')[1]}", :disposition => :inline, :type => mimeType

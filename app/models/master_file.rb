@@ -33,6 +33,7 @@ class MasterFile < ActiveFedora::Base
   has_subresource 'poster', class_name: 'ActiveFedora::File'
   has_subresource 'captions', class_name: 'ActiveFedora::File'
 
+  property :title, predicate: Avalon::RDFVocab::MasterFile.title, multiple: false
   property :file_location, predicate: Avalon::RDFVocab::MasterFile.fileLocation, multiple: false
   property :file_checksum, predicate: Avalon::RDFVocab::MasterFile.fileChecksum, multiple: false
   property :file_size, predicate: Avalon::RDFVocab::MasterFile.fileSize, multiple: false
@@ -211,7 +212,8 @@ class MasterFile < ActiveFedora::Base
 
   def stream_details(token,host=nil)
     flash, hls = [], []
-    ActiveFedora::SolrService.reify_solr_results(derivatives.load_from_solr, load_from_solr: true).each do |d|
+    # ActiveFedora::SolrService.reify_solr_results(derivatives.load_from_solr, load_from_solr: true).each do |d|
+    derivatives.each do |d|
       common = { quality: d.quality,
                  mimetype: d.mime_type,
                  format: d.format }
@@ -223,14 +225,14 @@ class MasterFile < ActiveFedora::Base
     flash = sort_streams flash
     hls = sort_streams hls
 
-    poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self) unless poster.new?
+    poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self) unless poster.empty?
     captions_path = Rails.application.routes.url_helpers.captions_master_file_path(self) unless captions.empty?
     captions_format = self.captions.mime_type
 
     # Returns the hash
     {
       id: self.id,
-      label: label,
+      label: title,
       is_video: is_video?,
       poster_image: poster_path,
       embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}),
@@ -244,7 +246,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def embed_title
-    "#{ self.mediaobject.title } - #{ self.label || self.file_location.split( "/" ).last }"
+    "#{ self.mediaobject.title } - #{ self.title || self.file_location.split( "/" ).last }"
   end
 
   def embed_code(width, permalink_opts = {})

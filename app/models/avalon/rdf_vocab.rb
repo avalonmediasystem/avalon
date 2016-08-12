@@ -19,6 +19,7 @@ module Avalon
     end
 
     class MasterFile < RDF::StrictVocabulary("http://avalonmediasystem.org/rdf/vocab/masterfile#")
+      property :title,        "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
       property :fileLocation,        "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
       property :fileChecksum,        "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
       property :fileSize,            "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
