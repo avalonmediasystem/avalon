@@ -108,15 +108,15 @@ describe ApplicationHelper do
       expect(helper.image_for(doc)).to eq(nil)
     end
     it "should return audio icon" do
-      doc = {"avalon_resource_type_ssim" => ['sound recording', 'sound recording'] }
+      doc = {"avalon_resource_type_ssim" => ['Sound Recording', 'Sound Recording'] }
       expect(helper.image_for(doc)).to eq('/assets/audio_icon.png')
     end
     it "should return video icon" do
-      doc = {"avalon_resource_type_ssim" => ['moving image'] }
+      doc = {"avalon_resource_type_ssim" => ['Moving Image'] }
       expect(helper.image_for(doc)).to eq('/assets/video_icon.png')
     end
     it "should return hybrid icon" do
-      doc = {"avalon_resource_type_ssim" => ['moving image', 'sound recording'] }
+      doc = {"avalon_resource_type_ssim" => ['Moving Image', 'Sound Recording'] }
       expect(helper.image_for(doc)).to eq('/assets/hybrid_icon.png')
     end
     it "should return nil when only unprocessed video" do
