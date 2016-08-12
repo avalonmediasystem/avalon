@@ -20,12 +20,13 @@ require 'avalon/m3u8_reader'
 
 class MasterFile < ActiveFedora::Base
   include ActiveFedora::Associations
-  include Hydra::AccessControls::Permissions
+  # TODO: Do we need permissions on master files?
+  # include Hydra::AccessControls::Permissions
   include Hooks
   include Rails.application.routes.url_helpers
   include Permalink
 
-  belongs_to :mediaobject, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
+  belongs_to :media_object, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
   has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf, dependent: :destroy
 
   has_subresource 'structuralMetadata', class_name: 'StructuralMetadata'
@@ -103,8 +104,8 @@ class MasterFile < ActiveFedora::Base
   AUDIO_HEIGHT = 50
 
   def save_parent
-    unless mediaobject.nil?
-      mediaobject.save(validate: false)
+    unless media_object.nil?
+      media_object.save(validate: false)
     end
   end
 
@@ -141,26 +142,26 @@ class MasterFile < ActiveFedora::Base
     self.workflow_name = workflow
   end
 
-  # alias_method :'_mediaobject=', :'mediaobject='
+  # alias_method :'_media_object=', :'media_object='
   #
   # # This requires the MasterFile having an actual id
-  # def mediaobject=(mo)
+  # def media_object=(mo)
   #   # Removes existing association
-  #   if self.mediaobject.present?
-  #     self.mediaobject.parts_with_order_remove self
-  #     self.mediaobject.parts -= [self]
+  #   if self.media_object.present?
+  #     self.media_object.parts_with_order_remove self
+  #     self.media_object.parts -= [self]
   #   end
   #
-  #   self._mediaobject=(mo)
-  #   unless self.mediaobject.nil?
-  #     self.mediaobject.parts_with_order += [self]
-  #     self.mediaobject.parts += [self]
+  #   self._media_object=(mo)
+  #   unless self.media_object.nil?
+  #     self.media_object.parts_with_order += [self]
+  #     self.media_object.parts += [self]
   #   end
   # end
 
   # def destroy
-    # mo = self.mediaobject
-    # self.mediaobject = nil
+    # mo = self.media_object
+    # self.media_object = nil
 
     # # Stops all processing
     # if workflow_id.present? && !finished_processing?
@@ -246,7 +247,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def embed_title
-    "#{ self.mediaobject.title } - #{ self.title || self.file_location.split( "/" ).last }"
+    "#{ self.media_object.title } - #{ self.title || self.file_location.split( "/" ).last }"
   end
 
   def embed_code(width, permalink_opts = {})
@@ -319,7 +320,7 @@ class MasterFile < ActiveFedora::Base
     outputs_by_quality.each_pair do |quality, outputs|
       existing = derivatives.to_a.find {|d| d.quality == quality}
       d = Derivative.from_output(outputs,managed)
-      d.masterfile = self
+      d.master_file = self
       if d.save && existing
         existing.delete
       end
@@ -418,7 +419,7 @@ class MasterFile < ActiveFedora::Base
 
   def file_location=(value)
     file_location_will_change!
-    resource.file_location = [value]
+    resource.file_location = value
     if value.blank?
       self.absolute_location = value
     else
@@ -447,7 +448,7 @@ class MasterFile < ActiveFedora::Base
   # Supplies the route to the master_file as an rdf formatted URI
   # @return [String] the route as a uri
   # @example uri for a mf on avalon.iu.edu with a id of: avalon:1820
-  #   "my_masterfile.rdf_uri" #=> "https://www.avalon.iu.edu/master_files/avalon:1820"
+  #   "my_master_file.rdf_uri" #=> "https://www.avalon.iu.edu/master_files/avalon:1820"
   def rdf_uri
     master_file_url(id)
   end
@@ -596,6 +597,7 @@ class MasterFile < ActiveFedora::Base
       self.file_location = realpath
     end
     self.file_size = file.size.to_s
+  ensure
     file.close
   end
 
@@ -628,7 +630,7 @@ class MasterFile < ActiveFedora::Base
         self.display_aspect_ratio = display_aspect_ratio_s
       end
       self.original_frame_size = mediainfo.video.streams.first.frame_size
-      self.poster_offset = [2000,mediainfo.duration.to_i].min
+      self.poster_offset = [2000,self.duration.to_i].min
     end
   end
 
@@ -637,19 +639,19 @@ class MasterFile < ActiveFedora::Base
 
     case Avalon::Configuration.lookup('master_file_management.strategy')
     when 'delete'
-      AvalonJobs.delete_masterfile self.id
+      AvalonJobs.delete_master_file self.id
     when 'move'
       move_path = Avalon::Configuration.lookup('master_file_management.path')
       raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?
       newpath = File.join(move_path, MasterFile.post_processing_move_filename(file_location, id: id))
-      AvalonJobs.move_masterfile self.id, newpath
+      AvalonJobs.move_master_file self.id, newpath
     else
       # Do nothing
     end
   end
 
   def update_ingest_batch
-    ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( self.mediaobject.id )
+    ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( self.media_object.id )
     if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
       IngestBatchMailer.status_email(ingest_batch.id).deliver
       ingest_batch.email_sent = true
@@ -669,9 +671,9 @@ class MasterFile < ActiveFedora::Base
   end
 
   def update_parent!
-    mediaobject.parts -= [self]
-    mediaobject.set_media_types!
-    mediaobject.set_duration!
-    mediaobject.save(validate: false)
+    media_object.parts -= [self]
+    media_object.set_media_types!
+    media_object.set_duration!
+    media_object.save(validate: false)
   end
 end

@@ -38,11 +38,11 @@ describe Derivative do
 
   describe "#destroy" do
     let(:derivative) {FactoryGirl.create(:derivative)}
-    let(:masterfile) { double }
+    let(:master_file) { double }
     before do
-      allow(derivative).to receive(:masterfile).and_return(masterfile)
-      allow(masterfile).to receive(:encoder_class).and_return(ActiveEncode::Base)
-      allow(masterfile).to receive(:workflow_id).and_return(Faker::Number.digit)
+      allow(derivative).to receive(:master_file).and_return(master_file)
+      allow(master_file).to receive(:encoder_class).and_return(ActiveEncode::Base)
+      allow(master_file).to receive(:workflow_id).and_return(Faker::Number.digit)
     end
 
     it "should delete and retract files" do

@@ -1,0 +1,75 @@
+development: 
+  name: 'Avalon' # used in page titles
+  fedora:
+    namespace: avalon
+  domain:
+    host: localhost
+    port: 3000
+    protocol: http
+  dropbox:
+    path: '/srv/avalon/dropbox/'
+    upload_uri: 'sftp://localhost/srv/avalon/dropbox'
+  matterhorn:
+    root: 'http://localhost:8080/'
+    baseApplication: 'avalon'
+    cleanup_log: 'log/cleanup_jobs.log'
+  mediainfo:
+    path: '/usr/bin/mediainfo'
+  email:
+    comments: 'avalon-comments@example.edu'
+    notification: 'avalon-notifications@example.edu'
+    support: 'avalon-support@example.edu'
+    mailer:
+      smtp:
+        address: 'smtp.example.edu'
+        port: 587
+        enable_starttls_auto: false
+  streaming:
+    stream_token_ttl: 20 #minutes
+    rtmp_base: 'rtmp://localhost/avalon'
+    http_base: 'http://localhost:3000/streams'
+    default_quality: 'low'
+  groups:
+    system_groups: [administrator, group_manager, manager]
+  master_file_management:
+    strategy: 'none' #'delete', or 'move' (for move uncomment and configure next line)
+    #path: '/path/to/move/to'
+  bib_retriever:
+    protocol: sru
+    url: http://zgate.example.edu:9000/exampledb
+    query: rec.id='%s'
+test:
+  fedora:
+    namespace: avalon
+  dropbox:
+    path: '/srv/avalon/dropbox/'
+    upload_uri: 'sftp://localhost/srv/avalon/dropbox'
+  matterhorn:
+    root: 'http://localhost:8080/'
+    baseApplication: 'avalon'
+    cleanup_log: 'log/cleanup_jobs.log'
+  mediainfo:
+    path: '/usr/bin/mediainfo'
+  email:
+    comments: 'avalon-comments@example.edu'
+    notification: 'avalon-notifications@example.edu'
+    support: 'avalon-support@example.edu'
+    mailer:
+      smtp:
+        address: 'smtp.example.edu'
+        port: 587
+        enable_starttls_auto: false
+  streaming:
+    stream_token_ttl: 20 #minute
+    content_path: '/path/to/avalon/content'
+    rtmp_base: 'rtmp://localhost/avalon'
+    http_base: 'http://localhost:3000/streams'
+  groups:
+    system_groups: [administator, group_manager, manager]
+  master_file_management:
+    strategy: 'none' #'delete', or 'move' (for move uncomment and configure next line)
+    #path: '/path/to/move/to'
+  bib_retriever:
+    protocol: sru
+    url: http://zgate.example.edu:9000/exampledb
+    query: rec.id='%s'

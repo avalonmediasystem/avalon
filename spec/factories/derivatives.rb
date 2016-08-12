@@ -22,7 +22,7 @@ FactoryGirl.define do
 
     trait :with_master_file do
       after(:create) do |d|
-        d.masterfile = FactoryGirl.create(:master_file)
+        d.master_file = FactoryGirl.create(:master_file)
         d.save
       end
     end

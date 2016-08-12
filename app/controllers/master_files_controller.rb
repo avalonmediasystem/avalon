@@ -23,9 +23,9 @@ class MasterFilesController < ApplicationController
   # Renders the captions content for an object or alerts the user that no caption content is present with html present
   # @return [String] The rendered template
   def captions
-    @masterfile = MasterFile.find(params[:id])
-    authorize! :read, @masterfile
-    ds = @masterfile.captions
+    @master_file = MasterFile.find(params[:id])
+    authorize! :read, @master_file
+    ds = @master_file.captions
     if ds.nil? or ds.new?
       render :text => 'Not Found', :status => :not_found
     else
@@ -38,15 +38,15 @@ class MasterFilesController < ApplicationController
   end
 
   def show
-    masterfile = MasterFile.find(params[:id])
-    redirect_to id_section_media_object_path(masterfile.mediaobject_id, masterfile.id, params.except(:id, :action, :controller))
+    master_file = MasterFile.find(params[:id])
+    redirect_to id_section_media_object_path(master_file.media_object_id, master_file.id, params.except(:id, :action, :controller))
   end
 
   def embed
-    @masterfile = MasterFile.find(params[:id])
-    if can? :read, @masterfile
-      @token = @masterfile.nil? ? "" : StreamToken.find_or_create_session_token(session, @masterfile.id)
-      @stream_info = @masterfile.stream_details(@token, default_url_options[:host])
+    @master_file = MasterFile.find(params[:id])
+    if can? :read, @master_file
+      @token = @master_file.nil? ? "" : StreamToken.find_or_create_session_token(session, @master_file.id)
+      @stream_info = @master_file.stream_details(@token, default_url_options[:host])
     end
     respond_to do |format|
       format.html do
@@ -91,9 +91,9 @@ class MasterFilesController < ApplicationController
     if params[:id].blank? || (not MasterFile.exists?(params[:id]))
       flash[:notice] = "MasterFile #{params[:id]} does not exist"
     end
-    @masterfile = MasterFile.find(params[:id])
+    @master_file = MasterFile.find(params[:id])
     if flash.empty?
-      authorize! :edit, @masterfile, message: "You do not have sufficient privileges to add files"
+      authorize! :edit, @master_file, message: "You do not have sufficient privileges to add files"
       structure = request.format.json? ? params[:xml_content] : nil
       if params[:master_file].present? && params[:master_file][:structure].present?
         structure = params[:master_file][:structure].open.read
@@ -101,19 +101,19 @@ class MasterFilesController < ApplicationController
       if structure.present?
         validation_errors = StructuralMetadata.content_valid? structure
         if validation_errors.empty?
-          @masterfile.structuralMetadata.content = structure
+          @master_file.structuralMetadata.content = structure
         else
           flash[:error] = validation_errors.map{|e| "Line #{e.line}: #{e.to_s}" }
         end
       else
-        @masterfile.structuralMetadata.delete
+        @master_file.structuralMetadata.delete
       end
       if flash.empty?
-        flash[:error] = "There was a problem storing the file" unless @masterfile.save
+        flash[:error] = "There was a problem storing the file" unless @master_file.save
       end
     end
     respond_to do |format|
-      format.html { redirect_to edit_media_object_path(@masterfile.mediaobject_id, step: 'structure') }
+      format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'structure') }
       format.json { render json: {structure: structure, flash: flash} }
     end
   end
@@ -123,25 +123,25 @@ class MasterFilesController < ApplicationController
     if params[:id].blank? || (not MasterFile.exists?(params[:id]))
       flash[:notice] = "MasterFile #{params[:id]} does not exist"
     end
-    @masterfile = MasterFile.find(params[:id])
+    @master_file = MasterFile.find(params[:id])
     if flash.empty?
-      authorize! :edit, @masterfile, message: "You do not have sufficient privileges to add files"
+      authorize! :edit, @master_file, message: "You do not have sufficient privileges to add files"
       if params[:master_file].present? && params[:master_file][:captions].present?
         captions = params[:master_file][:captions].open.read
       end
       if captions.present?
-        @masterfile.captions.content = captions
-        @masterfile.captions.mime_type = params[:master_file][:captions].content_type
-        @masterfile.captions.original_name = params[:master_file][:captions].original_filename
+        @master_file.captions.content = captions
+        @master_file.captions.mime_type = params[:master_file][:captions].content_type
+        @master_file.captions.original_name = params[:master_file][:captions].original_filename
         flash[:success] = "Captions file succesfully added."
       else
-        @masterfile.captions.delete
+        @master_file.captions.delete
         flash[:success] = "Captions file succesfully removed."
       end
-      @masterfile.save
+      @master_file.save
     end
     respond_to do |format|
-      format.html { redirect_to edit_media_object_path(@masterfile.mediaobject_id, step: 'structure') }
+      format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'structure') }
       format.json { render json: {captions: captions, flash: flash} }
     end
   end
@@ -175,7 +175,7 @@ class MasterFilesController < ApplicationController
 
         master_file = MasterFile.new
         master_file.save( validate: false )
-        master_file.mediaobject = media_object
+        master_file.media_object = media_object
         master_file.setContent(file)
         master_file.set_workflow(params[:workflow])
 
@@ -206,7 +206,7 @@ class MasterFilesController < ApplicationController
         file_path = URI.parse(entry[:url]).path.gsub(/\+/,' ')
         master_file = MasterFile.new
         master_file.save( validate: false )
-        master_file.mediaobject = media_object
+        master_file.media_object = media_object
         master_file.setContent(File.open(file_path, 'rb'))
         master_file.set_workflow(params[:workflow])
 
@@ -238,7 +238,7 @@ class MasterFilesController < ApplicationController
     filename ||= master_file.id
     flash[:notice] = "#{filename} has been deleted from the system"
 
-    redirect_to edit_media_object_path(master_file.mediaobject_id, step: "file-upload")
+    redirect_to edit_media_object_path(master_file.media_object_id, step: "file-upload")
   end
 
   def set_frame
@@ -256,7 +256,7 @@ class MasterFilesController < ApplicationController
         unless master_file.save
           flash[:notice] = master_file.errors.to_a.join('<br/>')
         end
-        redirect_to edit_media_object_path(master_file.mediaobject_id, step: "file-upload")
+        redirect_to edit_media_object_path(master_file.media_object_id, step: "file-upload")
       end
     end
   end

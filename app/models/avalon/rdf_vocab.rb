@@ -18,20 +18,20 @@ module Avalon
       property :encoderClassname, "rdfs:isDefinedBy" => %(avr-transcoding:).freeze, type: "rdfs:Class".freeze
     end
 
-    class MasterFile < RDF::StrictVocabulary("http://avalonmediasystem.org/rdf/vocab/masterfile#")
-      property :title,        "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
-      property :fileLocation,        "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
-      property :fileChecksum,        "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
-      property :fileSize,            "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
-      property :duration,            "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
-      property :displayAspectRatio,  "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
-      property :originalFrameSize,   "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
-      property :fileFormat,          "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
-      property :posterOffset,        "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
-      property :thumbnailOffset,     "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
-      property :dateDigitized,       "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
-      property :physicalDescription, "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
-      property :masterFile,          "rdfs:isDefinedBy" => %(avr-masterfile:).freeze, type: "rdfs:Class".freeze
+    class MasterFile < RDF::StrictVocabulary("http://avalonmediasystem.org/rdf/vocab/master_file#")
+      property :title,        "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :fileLocation,        "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :fileChecksum,        "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :fileSize,            "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :duration,            "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :displayAspectRatio,  "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :originalFrameSize,   "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :fileFormat,          "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :posterOffset,        "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :thumbnailOffset,     "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :dateDigitized,       "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :physicalDescription, "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
+      property :masterFile,          "rdfs:isDefinedBy" => %(avr-master_file:).freeze, type: "rdfs:Class".freeze
     end
 
     class Derivative < RDF::StrictVocabulary("http://avalonmediasystem.org/rdf/vocab/derivative#")
@@ -54,12 +54,12 @@ module Avalon
       property :resolution,     "rdfs:isDefinedBy" => %(avr-encoding:).freeze, type: "rdfs:Class".freeze
     end
 
-    class MediaObject < RDF::StrictVocabulary("http://avalonmediasystem.org/rdf/vocab/mediaobject#")
-      property :duration,        "rdfs:isDefinedBy" => %(avr-encoding:).freeze, type: "rdfs:Class".freeze
-      property :avalon_resource_type,        "rdfs:isDefinedBy" => %(avr-encoding:).freeze, type: "rdfs:Class".freeze
-      property :avalon_publisher,        "rdfs:isDefinedBy" => %(avr-encoding:).freeze, type: "rdfs:Class".freeze
-      property :avalon_uploader,        "rdfs:isDefinedBy" => %(avr-encoding:).freeze, type: "rdfs:Class".freeze
-      property :identifier,        "rdfs:isDefinedBy" => %(avr-encoding:).freeze, type: "rdfs:Class".freeze
+    class MediaObject < RDF::StrictVocabulary("http://avalonmediasystem.org/rdf/vocab/media_object#")
+      property :duration,             "rdfs:isDefinedBy" => %(avr-media_object:).freeze, type: "rdfs:Class".freeze
+      property :avalon_resource_type, "rdfs:isDefinedBy" => %(avr-media_object:).freeze, type: "rdfs:Class".freeze
+      property :avalon_publisher,     "rdfs:isDefinedBy" => %(avr-media_object:).freeze, type: "rdfs:Class".freeze
+      property :avalon_uploader,      "rdfs:isDefinedBy" => %(avr-media_object:).freeze, type: "rdfs:Class".freeze
+      property :identifier,           "rdfs:isDefinedBy" => %(avr-media_object:).freeze, type: "rdfs:Class".freeze
     end
   end
 end

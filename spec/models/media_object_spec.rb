@@ -390,7 +390,7 @@ describe MediaObject do
   end
 
   describe '#destroy' do
-    it 'destroys related masterfiles' do
+    it 'destroys related master_files' do
       media_object.parts << FactoryGirl.create(:master_file)
       master_file_pids = media_object.parts.map(&:id)
       media_object.section_pid = master_file_pids
@@ -409,7 +409,7 @@ describe MediaObject do
     end
 
     describe '#set_media_types!' do
-      let!(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
+      let!(:master_file) { FactoryGirl.create(:master_file, media_object: media_object) }
       it 'sets format on the model' do
         media_object.update_attribute_in_metadata(:format, nil)
         expect(media_object.format).to be_nil
@@ -419,7 +419,7 @@ describe MediaObject do
     end
 
     describe '#set_resource_types!' do
-      let!(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
+      let!(:master_file) { FactoryGirl.create(:master_file, media_object: media_object) }
       it 'sets resource_type on the model' do
         media_object.displayMetadata.avalon_resource_type = []
         expect(media_object.displayMetadata.avalon_resource_type).to be_empty
@@ -458,7 +458,7 @@ describe MediaObject do
       expect(solr_doc['other_identifier_sim']).not_to include('123456788675309 testing')
     end
     it 'should index identifier for parts' do
-      master_file = FactoryGirl.create(:master_file, mediaobject_id: media_object.pid)
+      master_file = FactoryGirl.create(:master_file, media_object_id: media_object.pid)
       master_file.DC.identifier += ["TestOtherID"]
       master_file.save!
       media_object.parts += [master_file]
@@ -468,7 +468,7 @@ describe MediaObject do
       expect(solr_doc['other_identifier_sim']).to include('TestOtherID')
     end
     it 'should index labels for parts' do
-      master_file = FactoryGirl.create(:master_file_with_structure, mediaobject_id: media_object.pid, label: 'Test Label')
+      master_file = FactoryGirl.create(:master_file_with_structure, media_object_id: media_object.pid, label: 'Test Label')
       master_file.save!
       media_object.parts += [master_file]
       media_object.save!
@@ -590,7 +590,7 @@ describe MediaObject do
     before do
       2.times do
         mf = FactoryGirl.create(:master_file)
-        mf.mediaobject = media_object
+        mf.media_object = media_object
         mf.save
       end
       media_object.save
@@ -630,7 +630,7 @@ describe MediaObject do
   describe '#section_labels' do
     before do
       mf = FactoryGirl.create(:master_file_with_structure, label: 'Test Label')
-      mf.mediaobject = media_object
+      mf.media_object = media_object
       mf.save
       media_object.save
     end
@@ -644,7 +644,7 @@ describe MediaObject do
     it 'should return a list of physical descriptions' do
       mf = FactoryGirl.create(:master_file_with_structure, label: 'Test Label')
       mf.descMetadata.physical_description = 'stone tablet'
-      mf.mediaobject = media_object
+      mf.media_object = media_object
       mf.save
       media_object.save
       expect(media_object.section_physical_descriptions).to match(['stone tablet'])
@@ -652,7 +652,7 @@ describe MediaObject do
 
     it 'should not return nil physical descriptions' do
       mf = FactoryGirl.create(:master_file_with_structure, label: 'Test Label')
-      mf.mediaobject = media_object
+      mf.media_object = media_object
       mf.save
       media_object.save
       expect(media_object.section_physical_descriptions).to match([])
@@ -661,12 +661,12 @@ describe MediaObject do
     it 'should return a unique list of physical descriptions' do
       mf = FactoryGirl.create(:master_file_with_structure, label: 'Test Label')
       mf.descMetadata.physical_description = 'cave paintings'
-      mf.mediaobject = media_object
+      mf.media_object = media_object
       mf.save
 
       mf2 = FactoryGirl.create(:master_file_with_structure, label: 'Test Label2')
       mf2.descMetadata.physical_description = 'cave paintings'
-      mf2.mediaobject = media_object
+      mf2.media_object = media_object
       mf2.save
       media_object.save
 
