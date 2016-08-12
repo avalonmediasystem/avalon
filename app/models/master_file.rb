@@ -26,13 +26,14 @@ class MasterFile < ActiveFedora::Base
   include Permalink
 
   belongs_to :mediaobject, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
-  has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
+  has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf, dependent: :destroy
 
   has_subresource 'structuralMetadata', class_name: 'StructuralMetadata'
   has_subresource 'thumbnail', class_name: 'ActiveFedora::File'
   has_subresource 'poster', class_name: 'ActiveFedora::File'
   has_subresource 'captions', class_name: 'ActiveFedora::File'
 
+  property :title, predicate: Avalon::RDFVocab::MasterFile.title, multiple: false
   property :file_location, predicate: Avalon::RDFVocab::MasterFile.fileLocation, multiple: false
   property :file_checksum, predicate: Avalon::RDFVocab::MasterFile.fileChecksum, multiple: false
   property :file_size, predicate: Avalon::RDFVocab::MasterFile.fileSize, multiple: false
@@ -76,7 +77,8 @@ class MasterFile < ActiveFedora::Base
   # validates :file_format, presence: true, exclusion: { in: ['Unknown'], message: "The file was not recognized as audio or video." }
 
   before_save :update_stills_from_offset!
-  after_destroy :update_parent!
+  before_destroy :stop_processing!
+  before_destroy :update_parent!
 
   define_hooks :after_processing
 
@@ -139,44 +141,44 @@ class MasterFile < ActiveFedora::Base
     self.workflow_name = workflow
   end
 
-  alias_method :'_mediaobject=', :'mediaobject='
+  # alias_method :'_mediaobject=', :'mediaobject='
+  #
+  # # This requires the MasterFile having an actual id
+  # def mediaobject=(mo)
+  #   # Removes existing association
+  #   if self.mediaobject.present?
+  #     self.mediaobject.parts_with_order_remove self
+  #     self.mediaobject.parts -= [self]
+  #   end
+  #
+  #   self._mediaobject=(mo)
+  #   unless self.mediaobject.nil?
+  #     self.mediaobject.parts_with_order += [self]
+  #     self.mediaobject.parts += [self]
+  #   end
+  # end
 
-  # This requires the MasterFile having an actual id
-  def mediaobject=(mo)
-    # Removes existing association
-    if self.mediaobject.present?
-      self.mediaobject.parts_with_order_remove self
-      self.mediaobject.parts -= [self]
-    end
+  # def destroy
+    # mo = self.mediaobject
+    # self.mediaobject = nil
 
-    self._mediaobject=(mo)
-    unless self.mediaobject.nil?
-      self.mediaobject.parts_with_order += [self]
-      self.mediaobject.parts += [self]
-    end
-  end
+    # # Stops all processing
+    # if workflow_id.present? && !finished_processing?
+    #   encoder_class.find(workflow_id).cancel!
+    # end
+    # self.derivatives.map(&:destroy)
 
-  def destroy
-    mo = self.mediaobject
-    self.mediaobject = nil
+    # clear_association_cache
 
-    # Stops all processing
-    if workflow_id.present? && !finished_processing?
-      encoder_class.find(workflow_id).cancel!
-    end
-    self.derivatives.map(&:destroy)
-
-    clear_association_cache
-
-    super
+    # super
 
     #Only save the media object if the master file was successfully deleted
-    if mo.nil?
-      logger.warn "MasterFile has no owning MediaObject to update upon deletion"
-    else
-      mo.save(validate: false)
-    end
-  end
+    # if mo.nil?
+    #   logger.warn "MasterFile has no owning MediaObject to update upon deletion"
+    # else
+    #   mo.save(validate: false)
+    # end
+  # end
 
   def process file=nil
     raise "MasterFile is already being processed" if status_code.present? && !finished_processing?
@@ -210,7 +212,8 @@ class MasterFile < ActiveFedora::Base
 
   def stream_details(token,host=nil)
     flash, hls = [], []
-    ActiveFedora::SolrService.reify_solr_results(derivatives.load_from_solr, load_from_solr: true).each do |d|
+    # ActiveFedora::SolrService.reify_solr_results(derivatives.load_from_solr, load_from_solr: true).each do |d|
+    derivatives.each do |d|
       common = { quality: d.quality,
                  mimetype: d.mime_type,
                  format: d.format }
@@ -222,14 +225,14 @@ class MasterFile < ActiveFedora::Base
     flash = sort_streams flash
     hls = sort_streams hls
 
-    poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self) unless poster.new?
+    poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self) unless poster.empty?
     captions_path = Rails.application.routes.url_helpers.captions_master_file_path(self) unless captions.empty?
     captions_format = self.captions.mime_type
 
     # Returns the hash
     {
       id: self.id,
-      label: label,
+      label: title,
       is_video: is_video?,
       poster_image: poster_path,
       embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}),
@@ -243,7 +246,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def embed_title
-    "#{ self.mediaobject.title } - #{ self.label || self.file_location.split( "/" ).last }"
+    "#{ self.mediaobject.title } - #{ self.title || self.file_location.split( "/" ).last }"
   end
 
   def embed_code(width, permalink_opts = {})
@@ -658,9 +661,17 @@ class MasterFile < ActiveFedora::Base
     ActiveEncode::Base.descendants.find { |c| c.name == klass_name }
   end
 
+  def stop_processing!
+    # Stops all processing
+    if workflow_id.present? && !finished_processing?
+      encoder_class.find(workflow_id).cancel!
+    end
+  end
+
   def update_parent!
-    media_object.set_media_types!
-    media_object.set_duration!
-    media_object.save( validate: false )
+    mediaobject.parts -= [self]
+    mediaobject.set_media_types!
+    mediaobject.set_duration!
+    mediaobject.save(validate: false)
   end
 end

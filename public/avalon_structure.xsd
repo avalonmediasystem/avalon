@@ -1,0 +1,26 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="Item" type="div"/>    
+    <xs:complexType name="div">
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
+            <xs:element name="Div" type="div" maxOccurs="unbounded" minOccurs="0"/>
+            <xs:element name="Span" type="span" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:choice>
+        <xs:attribute type="label" name="label" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="span">
+        <xs:attribute type="label" name="label" use="required"/>
+        <xs:attribute name="begin" type="time" />        
+        <xs:attribute name="end" type="time" />        
+    </xs:complexType>
+    <xs:simpleType name="label">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="time">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(\d+:){0,2}\d+(\.\d+)?"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

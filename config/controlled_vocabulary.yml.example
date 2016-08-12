@@ -1,0 +1,21 @@
+units:
+ - Default Unit
+identifier_types:
+ local: Catalog Key
+ oclc: OCLC
+ lccn: LCCN
+ issue number: Issue Number
+ matrix number: Matrix Number
+ music publisher: Music Publisher/Label
+ videorecording identifier: Videorecording Identifier
+ other: Other
+note_types:
+ general: General Note
+ awards: Awards
+ biographical/historical: Bibliographical/Historical Note
+ creation/production credits: Creation/Production Credits
+ language: Language Note
+ local: Local Note
+ performers: Performers
+ statement of responsibility: Statement of Responsibility
+ venue: Venue/Event Date

@@ -20,7 +20,7 @@ FactoryGirl.define do
     hls_url "http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"
     hls_track_id "track-8"
 
-    factory :derivative_with_masterfile do
+    trait :with_master_file do
       after(:create) do |d|
         d.masterfile = FactoryGirl.create(:master_file)
         d.save
