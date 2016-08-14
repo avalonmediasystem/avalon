@@ -16,7 +16,7 @@ require 'rails_helper'
 require 'cancan/matchers'
 
 describe MediaObject do
-  let! (:media_object) { FactoryGirl.create(:media_object) }
+  let(:media_object) { FactoryGirl.create(:media_object, :with_collection) }
 
   describe 'validations' do
     describe 'collection' do

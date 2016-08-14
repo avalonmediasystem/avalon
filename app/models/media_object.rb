@@ -46,7 +46,8 @@ class MediaObject < ActiveFedora::Base
   validates :date_issued, :presence => true
   validate  :report_missing_attributes
   validates :collection, presence: true
-  validates :governing_policies, presence: true
+  # TODO: Fix the next line
+  # validates :governing_policies, presence: true
   validate  :validate_related_items
   validate  :validate_dates
   validate  :validate_note_type
@@ -149,7 +150,8 @@ class MediaObject < ActiveFedora::Base
     self.governing_policies -= [self.governing_policies.to_a.find {|gp| gp.is_a? Admin::Collection }]
     self.governing_policies += [co]
     if (self.read_groups + self.read_users + self.discover_groups + self.discover_users).empty?
-      self.rightsMetadata.content = co.defaultRights.content unless co.nil?
+      # TODO: Fix the next line
+      # self.rightsMetadata.content = co.defaultRights.content unless co.nil?
     end
   end
 

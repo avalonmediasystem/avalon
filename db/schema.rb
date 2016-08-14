@@ -42,6 +42,11 @@ ActiveRecord::Schema.define(version: 20160803143858) do
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority"
 
+  create_table "role_maps", force: :cascade do |t|
+    t.string  "entry"
+    t.integer "parent_id"
+  end
+
   create_table "searches", force: :cascade do |t|
     t.text     "query_params"
     t.integer  "user_id"
