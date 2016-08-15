@@ -124,7 +124,7 @@ describe ApplicationHelper do
       expect(helper.image_for(doc)).to eq(nil)
     end
     it "should return thumbnail" do
-      doc = {"section_pid_tesim" => ['1'], "avalon_resource_type_ssim" => ['moving image 1'] }
+      doc = {"section_pid_tesim" => ['1'], "avalon_resource_type_ssim" => ['Moving Image 1'] }
       expect(helper.image_for(doc)).to eq('/master_files/1/thumbnail')
     end
   end
