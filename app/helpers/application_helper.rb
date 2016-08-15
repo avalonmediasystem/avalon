@@ -1,14 +1,14 @@
 # Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
@@ -17,7 +17,7 @@ module ApplicationHelper
   def application_name
     Avalon::Configuration.lookup('name') || 'Avalon Media System'
   end
-  
+
   def release_text
     "#{application_name} #{t(:release_label)} #{Avalon::VERSION}"
   end
@@ -38,8 +38,8 @@ module ApplicationHelper
   def image_for(document)
     master_file_id = document["section_pid_tesim"].try :first
 
-    video_count = document["avalon_resource_type_sim"].count{|m| m.start_with?('moving image') } rescue 0
-    audio_count = document["avalon_resource_type_sim"].count{|m| m.start_with?('sound recording') } rescue 0
+    video_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('moving image'.titleize) } rescue 0
+    audio_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('sound recording'.titleize) } rescue 0
 
     if master_file_id
       if video_count > 0
@@ -90,7 +90,7 @@ module ApplicationHelper
     else
       label = item.id
     end
-    
+
     if item['duration_tesim'].present?
       duration = item['duration_tesim'].first
       if duration.respond_to?(:to_i) && duration.to_i > 0
@@ -119,7 +119,7 @@ module ApplicationHelper
   # the mediainfo gem returns duration as milliseconds
   # see attr_reader.rb line 48 in the mediainfo source
   def milliseconds_to_formatted_time( milliseconds )
-    total_seconds = milliseconds / 1000                                     
+    total_seconds = milliseconds / 1000
     hours = total_seconds / (60 * 60)
     minutes = (total_seconds / 60) % 60
     seconds = total_seconds % 60
@@ -132,7 +132,7 @@ module ApplicationHelper
     output += "#{minutes.to_s.rjust(2,'0')}:#{seconds.to_s.rjust(2,'0')}"
     output
   end
-  
+
   # display millisecond times in HH:MM:SS format
   # @param [Float] milliseconds the time to convert
   # @return [String] time in HH:MM:SS
