@@ -23,7 +23,6 @@ class MediaObject < ActiveFedora::Base
 
   include Kaminari::ActiveFedoraModelExtension
 
-  has_many :parts, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
   has_and_belongs_to_many :governing_policies, class_name: 'ActiveFedora::Base', predicate: ActiveFedora::RDF::ProjectHydra.isGovernedBy
   belongs_to :collection, class_name: 'Admin::Collection', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
@@ -84,8 +83,14 @@ class MediaObject < ActiveFedora::Base
   # end
   # delegate :section_pid, to: :sectionsMetadata
   # has_attributes :section_pid, datastream: :sectionsMetadata, multiple: true
+  # has_many :parts, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
 
-  accepts_nested_attributes_for :parts, :allow_destroy => true
+  ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source #, has_member_relation: Vocab::PCDMTerms.hasMember
+  # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
+  #  and methods for master_files (an array): first, last, [index], =, <<, +=, delete(mf)
+  #  and methods for ordered_master_files (an array): first, last, [index], =, <<, +=, insert_at(index,mf), delete(mf), delete_at(index)
+
+  accepts_nested_attributes_for :master_files, :allow_destroy => true
 
   def published?
     not self.avalon_publisher.blank?
@@ -93,8 +98,8 @@ class MediaObject < ActiveFedora::Base
 
   def destroy
     # attempt to stop the matterhorn processing job
-    self.parts.each(&:destroy)
-    self.parts.clear
+    self.master_files.each(&:destroy)
+    self.master_files.clear
     Bookmark.where(document_id: self.id).destroy_all
     super
   end
