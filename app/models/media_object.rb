@@ -435,7 +435,7 @@ class MediaObject < ActiveFedora::Base
     solr_doc["creator_ssort"] = Array(self.creator).join(', ')
     solr_doc["date_digitized_sim"] = parts.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
     solr_doc["date_ingested_sim"] = Time.parse(self.create_date).strftime "%F"
-    solr_doc["avalon_resource_type_sim"] = self.avalon_resource_type.map(&:titleize)
+    solr_doc["avalon_resource_type_ssim"] = self.avalon_resource_type.map(&:titleize)
     #include identifiers for parts
     solr_doc["other_identifier_sim"] += parts.collect {|mf| mf.DC.identifier }.flatten
     #include labels for parts and their structural metadata
