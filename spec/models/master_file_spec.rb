@@ -87,12 +87,9 @@ describe MasterFile do
     let(:derivative) {Derivative.create}
     let(:master_file) {FactoryGirl.create(:master_file)}
     it "should set hasDerivation relationships on self" do
-      # expect(master_file.relationships(:is_derivation_of).size).to eq(0)
-
       master_file.derivatives += [derivative]
-
-      expect(derivative.relationships(:is_derivation_of).size).to eq(1)
-      expect(derivative.relationships(:is_derivation_of).first).to eq(master_file.internal_uri)
+      expect(derivative.association_cache).to have_key(:master_file)
+      expect(derivative.association_cache[:master_file].target.id).to eq(master_file.id)
     end
   end
 
@@ -160,7 +157,8 @@ describe MasterFile do
     subject(:master_file) { FactoryGirl.create(:master_file) }
 
     it "should delete (VOV-1805)" do
-      expect { master_file.delete }.to change { MasterFile.all.count }.by(-1)
+      mf = FactoryGirl.create(:master_file)
+      expect { mf.delete }.to change { MasterFile.all.count }.by(-1)
     end
 
     it "should delete with a nil parent (VOV-1357)" do
