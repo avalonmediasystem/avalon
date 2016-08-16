@@ -360,13 +360,13 @@ describe MediaObject do
 
   describe '#finished_processing?' do
     it 'returns true if the statuses indicate processing is finished' do
-      media_object.ordered_master_files += [MasterFile.new(status_code: 'CANCELLED')]
-      media_object.ordered_master_files += [MasterFile.new(status_code: 'COMPLETED')]
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, status_code: 'CANCELLED')]
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, status_code: 'COMPLETED')]
       expect(media_object.finished_processing?).to be true
     end
     it 'returns true if the statuses indicate processing is not finished' do
-      media_object.ordered_master_files += [MasterFile.new(status_code: 'CANCELLED')]
-      media_object.ordered_master_files += [MasterFile.new(status_code: 'RUNNING')]
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, status_code: 'CANCELLED')]
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, status_code: 'RUNNING')]
       expect(media_object.finished_processing?).to be false
     end
   end
@@ -376,28 +376,27 @@ describe MediaObject do
       expect(media_object.send(:calculate_duration)).to eq(0)
     end
     it 'returns the correct duration with two master files' do
-      media_object.ordered_master_files += [MasterFile.new(duration: '40')]
-      media_object.ordered_master_files += [MasterFile.new(duration: '40')]
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration: '40')]
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration: '40')]
       expect(media_object.send(:calculate_duration)).to eq(80)
     end
     it 'returns the correct duration with two master files one nil' do
-      media_object.ordered_master_files += [MasterFile.new(duration: '40')]
-      media_object.ordered_master_files += [MasterFile.new(duration: nil)]
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration: '40')]
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration:nil)]
       expect(media_object.send(:calculate_duration)).to eq(40)
     end
     it 'returns the correct duration with one master file that is nil' do
-      media_object.ordered_master_files += [MasterFile.new(duration:nil)]
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration:nil)]
       expect(media_object.send(:calculate_duration)).to eq(0)
     end
   end
 
   describe '#destroy' do
-    let(:media_object) { FactoryGirl.create(:media_object, master_files: [master_file]) }
-    let(:master_file) { FactoryGirl.create(:master_file) }
+    let(:media_object) { FactoryGirl.create(:media_object, :with_collection, :with_master_file) }
+    let(:master_file) { media_object.master_files.first }
 
     it 'destroys related master_files' do
-      media_object.destroy
-      expect(MasterFile.exists?(master_file)).to eq(false)
+      expect { media_object.destroy }.to change { MasterFile.exists?(master_file) }.from(true).to(false)
     end
   end
 
@@ -410,7 +409,7 @@ describe MediaObject do
     end
 
     describe '#set_media_types!' do
-      let(:media_object) { FactoryGirl.create(:media_object, :with_master_file) }
+      let(:media_object) { FactoryGirl.create(:media_object, :with_collection, :with_master_file) }
       it 'sets format on the model' do
         media_object.format = nil
         expect(media_object.format).to be_nil

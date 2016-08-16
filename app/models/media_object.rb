@@ -44,7 +44,7 @@ class MediaObject < ActiveFedora::Base
   validate  :validate_language
   validates :date_issued, :presence => true
   validate  :report_missing_attributes
-  # validates :collection, presence: true
+  validates :collection, presence: true
   # TODO: Fix the next line
   # validates :governing_policies, presence: true
   validate  :validate_related_items
@@ -226,11 +226,11 @@ class MediaObject < ActiveFedora::Base
     all_pds.uniq
   end
 
-  # def to_solr(solr_doc = Hash.new, opts = {})
-  #   solr_doc = super(solr_doc, opts)
+  def to_solr(solr_doc = Hash.new, opts = {})
+    solr_doc = super(solr_doc)
   #   solr_doc[Solrizer.default_field_mapper.solr_name("created_by", :facetable, type: :string)] = self.DC.creator
   #   solr_doc[Solrizer.default_field_mapper.solr_name("duration", :displayable, type: :string)] = self.duration
-  #   solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
+    solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
   #   solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
   #   solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
   #   indexer = Solrizer::Descriptor.new(:string, :stored, :indexed, :multivalued)
@@ -242,13 +242,13 @@ class MediaObject < ActiveFedora::Base
   #   solr_doc["dc_publisher_tesim"] = self.publisher
   #   solr_doc["title_ssort"] = self.title
   #   solr_doc["creator_ssort"] = Array(self.creator).join(', ')
-  #   solr_doc["date_digitized_sim"] = parts.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
+    solr_doc["date_digitized_sim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
   #   solr_doc["date_ingested_sim"] = Time.parse(self.create_date).strftime "%F"
   #   #include identifiers for parts
-  #   solr_doc["other_identifier_sim"] += parts.collect {|mf| mf.DC.identifier }.flatten
-  #   #include labels for parts and their structural metadata
-  #   solr_doc["section_label_tesim"] = section_labels
-  #   solr_doc['section_physical_description_ssim'] = section_physical_descriptions
+  #   solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.DC.identifier }.flatten
+    #include labels for parts and their structural metadata
+    solr_doc["section_label_tesim"] = section_labels
+    solr_doc['section_physical_description_ssim'] = section_physical_descriptions
   #
   #   #Add all searchable fields to the all_text_timv field
   #   all_text_values = []
@@ -271,8 +271,8 @@ class MediaObject < ActiveFedora::Base
   #   all_text_values << solr_doc["other_identifier_sim"]
   #   solr_doc["all_text_timv"] = all_text_values.flatten
   #   solr_doc.each_pair { |k,v| solr_doc[k] = v.is_a?(Array) ? v.select { |e| e =~ /\S/ } : v }
-  #   return solr_doc
-  # end
+    return solr_doc
+  end
 
   def as_json(options={})
     {

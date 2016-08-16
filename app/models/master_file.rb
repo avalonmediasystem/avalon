@@ -80,7 +80,6 @@ class MasterFile < ActiveFedora::Base
   before_save :update_stills_from_offset!
   before_destroy :stop_processing!
   before_destroy :update_parent!
-
   define_hooks :after_processing
 
   after_processing :post_processing_file_management
@@ -142,20 +141,20 @@ class MasterFile < ActiveFedora::Base
     self.workflow_name = workflow
   end
 
-  # alias_method :'_media_object=', :'media_object='
-  #
-  # # This requires the MasterFile having an actual id
-  # def media_object=(mo)
-  #   # Removes existing association
-  #   if self.media_object.present?
-  #     self.media_object.master_files -= [self]
-  #   end
-  #
-  #   self._media_object=(mo)
-  #   unless self.media_object.nil?
-  #     self.media_object.master_files += [self]
-  #   end
-  # end
+  alias_method :'_media_object=', :'media_object='
+
+  # This requires the MasterFile having an actual id
+  def media_object=(mo)
+    # Removes existing association
+    if self.media_object.present?
+      self.media_object.master_files -= [self]
+    end
+
+    self._media_object=(mo)
+    unless self.media_object.nil?
+      self.media_object.ordered_master_files += [self]
+    end
+  end
 
   # def destroy
     # mo = self.media_object
@@ -674,4 +673,5 @@ class MasterFile < ActiveFedora::Base
     media_object.set_duration!
     media_object.save(validate: false)
   end
+
 end
