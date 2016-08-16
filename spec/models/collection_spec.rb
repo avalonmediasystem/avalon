@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'rails_helper'
-# require 'cancan/matchers'
+require 'cancan/matchers'
 
 describe Admin::Collection do
   subject {collection}
