@@ -85,7 +85,7 @@ class MediaObject < ActiveFedora::Base
   # has_attributes :section_pid, datastream: :sectionsMetadata, multiple: true
   # has_many :parts, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
 
-  ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source #, has_member_relation: Vocab::PCDMTerms.hasMember
+  ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source #, has_member_relation: ActiveFedora::RDF::PCDMTerms.hasMember
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
   #  and methods for master_files (an array): first, last, [index], =, <<, +=, delete(mf)
   #  and methods for ordered_master_files (an array): first, last, [index], =, <<, +=, insert_at(index,mf), delete(mf), delete_at(index)
@@ -169,7 +169,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def finished_processing?
-    self.parts.all?{ |master_file| master_file.finished_processing? }
+    self.master_files.all?{ |master_file| master_file.finished_processing? }
   end
 
   def set_duration!
@@ -186,14 +186,14 @@ class MediaObject < ActiveFedora::Base
 
 
   def set_media_types!
-    mime_types = parts.reject {|mf| mf.file_location.blank? }.collect { |mf|
+    mime_types = master_files.reject {|mf| mf.file_location.blank? }.collect { |mf|
       Rack::Mime.mime_type(File.extname(mf.file_location))
     }.uniq
     self.format = mime_types.empty? ? nil : mime_types
   end
 
   def set_resource_types!
-    self.avalon_resource_type = parts.reject {|mf| mf.file_format.blank? }.collect{ |mf|
+    self.avalon_resource_type = master_files.reject {|mf| mf.file_format.blank? }.collect{ |mf|
       case mf.file_format
       when 'Moving image'
         'moving image'
@@ -212,7 +212,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def section_labels
-    all_labels = parts.collect{|mf|mf.structural_metadata_labels << mf.title}
+    all_labels = master_files.collect{|mf|mf.structural_metadata_labels << mf.title}
     all_labels.flatten.uniq.compact
   end
 
@@ -220,7 +220,7 @@ class MediaObject < ActiveFedora::Base
   # @return [Array<String>] A unique list of all physical descriptions for the media object
   def section_physical_descriptions
     all_pds = []
-    self.parts.each do |master_file|
+    self.master_files.each do |master_file|
       all_pds += Array(master_file.physical_description) unless master_file.physical_description.nil?
     end
     all_pds.uniq
@@ -455,7 +455,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def _update_dependent_permalinks
-    self.parts.each do |master_file|
+    self.master_files.each do |master_file|
       begin
 	updated = master_file.ensure_permalink!
 	master_file.save( validate: false ) if updated
@@ -488,7 +488,7 @@ class MediaObject < ActiveFedora::Base
     end
 
     def calculate_duration
-      self.parts.map{|mf| mf.duration.to_i }.compact.sum
+      self.master_files.map{|mf| mf.duration.to_i }.compact.sum
     end
 
     def collect_ips_for_index ip_strings

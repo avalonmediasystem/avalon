@@ -83,19 +83,19 @@ describe MasterFile do
     end
   end
 
-  # describe "master_files=" do
-  #   let(:derivative) {Derivative.create}
-  #   let(:master_file) {FactoryGirl.create(:master_file)}
-  #   it "should set hasDerivation relationships on self" do
-  #     byebug
-  #     # expect(master_file.relationships(:is_derivation_of).size).to eq(0)
-  #
-  #     master_file.derivatives += [derivative]
-  #
-  #     expect(derivative.relationships(:is_derivation_of).size).to eq(1)
-  #     expect(derivative.relationships(:is_derivation_of).first).to eq(master_file.internal_uri)
-  #   end
-  # end
+  describe "master_files=" do
+    let(:derivative) {Derivative.create}
+    let(:master_file) {FactoryGirl.create(:master_file)}
+    it "should set hasDerivation relationships on self" do
+      # expect(master_file.relationships(:is_derivation_of).size).to eq(0)
+ 
+      master_file.derivatives += [derivative]
+      byebug
+ 
+      expect(derivative.relationships(:is_derivation_of).size).to eq(1)
+      expect(derivative.relationships(:is_derivation_of).first).to eq(master_file.internal_uri)
+    end
+  end
 
   describe '#finished_processing?' do
     describe 'classifying statuses' do
