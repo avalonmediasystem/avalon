@@ -301,7 +301,7 @@ describe MasterFile do
       describe "uploaded file" do
         let(:fixture)    { File.expand_path('../../fixtures/videoshort.mp4',__FILE__) }
         let(:original)   { File.basename(fixture) }
-        let(:tempfile)   { Tempfile.new }
+        let(:tempfile)   { Tempfile.new('foo') }
         let(:media_path) { File.expand_path("../../master_files-#{SecureRandom.uuid}",__FILE__)}
         let(:upload)     { ActionDispatch::Http::UploadedFile.new :tempfile => tempfile, :filename => original, :type => 'video/mp4' }
         subject {
