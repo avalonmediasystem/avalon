@@ -360,13 +360,13 @@ describe MediaObject do
 
   describe '#finished_processing?' do
     it 'returns true if the statuses indicate processing is finished' do
-      media_object.parts << MasterFile.new(status_code: 'CANCELLED')
-      media_object.parts << MasterFile.new(status_code: 'COMPLETED')
+      media_object.ordered_master_files += [MasterFile.new(status_code: 'CANCELLED')]
+      media_object.ordered_master_files += [MasterFile.new(status_code: 'COMPLETED')]
       expect(media_object.finished_processing?).to be true
     end
     it 'returns true if the statuses indicate processing is not finished' do
-      media_object.parts << MasterFile.new(status_code: 'CANCELLED')
-      media_object.parts << MasterFile.new(status_code: 'RUNNING')
+      media_object.ordered_master_files += [MasterFile.new(status_code: 'CANCELLED')]
+      media_object.ordered_master_files += [MasterFile.new(status_code: 'RUNNING')]
       expect(media_object.finished_processing?).to be false
     end
   end
@@ -376,25 +376,25 @@ describe MediaObject do
       expect(media_object.send(:calculate_duration)).to eq(0)
     end
     it 'returns the correct duration with two master files' do
-      media_object.parts << MasterFile.new(duration: '40')
-      media_object.parts << MasterFile.new(duration: '40')
+      media_object.ordered_master_files += [MasterFile.new(duration: '40')]
+      media_object.ordered_master_files += [MasterFile.new(duration: '40')]
       expect(media_object.send(:calculate_duration)).to eq(80)
     end
     it 'returns the correct duration with two master files one nil' do
-      media_object.parts << MasterFile.new(duration: '40')
-      media_object.parts << MasterFile.new(duration: nil)
+      media_object.ordered_master_files += [MasterFile.new(duration: '40')]
+      media_object.ordered_master_files += [MasterFile.new(duration: nil)]
       expect(media_object.send(:calculate_duration)).to eq(40)
     end
     it 'returns the correct duration with one master file that is nil' do
-      media_object.parts << MasterFile.new(duration:nil)
+      media_object.ordered_master_files += [MasterFile.new(duration:nil)]
       expect(media_object.send(:calculate_duration)).to eq(0)
     end
   end
 
   describe '#destroy' do
     it 'destroys related master_files' do
-      media_object.parts << FactoryGirl.create(:master_file)
-      master_file_ids = media_object.parts.map(&:id)
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file)]
+      master_file_ids = media_object.ordered_master_files.map(&:id)
       media_object.section_id = master_file_ids
       media_object.save( validate: false )
       media_object.destroy
@@ -462,13 +462,13 @@ describe MediaObject do
       expect(solr_doc['other_identifier_sim']).to include('12345678','8675309 testing')
       expect(solr_doc['other_identifier_sim']).not_to include('123456788675309 testing')
     end
-    it 'should index identifier for parts' do
+    it 'should index identifier for master files' do
       master_file = FactoryGirl.create(:master_file, identifier: 'TestOtherID', media_object: media_object)
       media_object.reload
       solr_doc = media_object.to_solr
       expect(solr_doc['other_identifier_sim']).to include('TestOtherID')
     end
-    it 'should index labels for parts' do
+    it 'should index labels for master files' do
       FactoryGirl.create(:master_file, :with_structure, media_object: media_object, title: 'Test Label')
       media_object.reload
       solr_doc = media_object.to_solr
@@ -654,7 +654,7 @@ describe MediaObject do
       mf2 = FactoryGirl.create(:master_file, title: 'Test Label2', physical_description: 'cave paintings', media_object: media_object)
       media_object.reload
 
-      #expect(media_object.parts.size).to eq(2)
+      #expect(media_object.ordered_master_files.size).to eq(2)
       expect(media_object.section_physical_descriptions).to match(['cave paintings'])
     end
   end

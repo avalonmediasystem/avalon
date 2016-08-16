@@ -44,7 +44,7 @@ class MediaObject < ActiveFedora::Base
   validate  :validate_language
   validates :date_issued, :presence => true
   validate  :report_missing_attributes
-  validates :collection, presence: true
+  # validates :collection, presence: true
   # TODO: Fix the next line
   # validates :governing_policies, presence: true
   validate  :validate_related_items

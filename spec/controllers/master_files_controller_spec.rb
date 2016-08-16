@@ -68,7 +68,7 @@ describe MasterFilesController do
           original: 'any',
           container_id: media_object.id
 
-        master_file = media_object.reload.parts.first
+        master_file = media_object.reload.ordered_master_files.first
         expect(master_file.file_format).to eq "Moving image"
 
         expect(flash[:errors]).to be_nil
@@ -81,7 +81,7 @@ describe MasterFilesController do
          original: 'any',
          container_id: media_object.id
 
-       master_file = media_object.reload.parts.first
+       master_file = media_object.reload.ordered_master_files.first
        expect(master_file.file_format).to eq "Sound"
      end
 
@@ -120,7 +120,7 @@ describe MasterFilesController do
         post :create, Filedata: [file], original: 'any', container_id: media_object.id
 
         master_file = MasterFile.all.last
-        expect(media_object.reload.parts).to include master_file
+        expect(media_object.reload.ordered_master_files).to include master_file
         expect(master_file.media_object.id).to eq(media_object.id)
 
         expect(flash[:errors]).to be_nil
@@ -132,7 +132,7 @@ describe MasterFilesController do
 
         master_file = MasterFile.all.last
         media_object.reload
-        expect(media_object.parts).to include master_file
+        expect(media_object.ordered_master_files).to include master_file
         expect(master_file.media_object.id).to eq(media_object.id)
 
         expect(flash[:errors]).to be_nil
@@ -149,7 +149,7 @@ describe MasterFilesController do
         post :create, Filedata: [@file], original: 'any', container_id: media_object.id
 
         master_file = MasterFile.all.last
-        expect(media_object.reload.parts).to include master_file
+        expect(media_object.reload.ordered_master_files).to include master_file
         expect(master_file.media_object.id).to eq(media_object.id)
 
         expect(flash[:errors]).to be_nil
@@ -172,7 +172,7 @@ describe MasterFilesController do
     context "should no longer be associated with its parent object" do
       it "should create then remove a file from a video object" do
         expect { post :destroy, id: master_file.id }.to change { MasterFile.count }.by(-1)
-        expect(master_file.media_object.reload.parts).not_to include master_file
+        expect(master_file.media_object.reload.ordered_master_files).not_to include master_file
       end
     end
   end

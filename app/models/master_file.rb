@@ -148,14 +148,12 @@ class MasterFile < ActiveFedora::Base
   # def media_object=(mo)
   #   # Removes existing association
   #   if self.media_object.present?
-  #     self.media_object.parts_with_order_remove self
-  #     self.media_object.parts -= [self]
+  #     self.media_object.master_files -= [self]
   #   end
   #
   #   self._media_object=(mo)
   #   unless self.media_object.nil?
-  #     self.media_object.parts_with_order += [self]
-  #     self.media_object.parts += [self]
+  #     self.media_object.master_files += [self]
   #   end
   # end
 
