@@ -1,7 +1,16 @@
 # windows doesn't properly require hydra-head (from the gemfile), so we need to require it explicitly here:
 require 'hydra/head' unless defined? Hydra
+# require 'hydra/datastream/rights_metadata'
+# require 'hydra/multiple_policy_aware_access_controls_enforcement'
+require 'hydra/multiple_policy_aware_ability'
 
 Hydra.configure do |config|
+  silence_warnings do
+    Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC = 'public'.freeze
+    Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_AUTHENTICATED = 'restricted'.freeze
+    Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE = 'private'.freeze
+  end
+
   # This specifies the solr field names of permissions-related fields.
   # You only need to change these values if you've indexed permissions by some means other than the Hydra's built-in tooling.
   # If you change these, you must also update the permissions request handler in your solrconfig.xml to return those values
@@ -19,4 +28,6 @@ Hydra.configure do |config|
   #
   # Specify the user model
   # config.user_model = 'User'
+  # config.permissions.policy_class = {Admin::Collection => {}, Lease => {clause: " AND begin_time_dti:[* TO NOW] AND end_time_dti:[NOW TO *]"}}
+  config.permissions.policy_class = { Admin::Collection => {} }
 end

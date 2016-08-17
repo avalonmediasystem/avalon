@@ -54,9 +54,9 @@ FactoryGirl.define do
     trait :with_master_file do
       after(:create) do |mo|
         mf = FactoryGirl.create(:master_file)
-        mf.mediaobject = mo
+        mf.media_object = mo
         mf.save
-        mo.parts += [mf]
+        mo.ordered_master_files += [mf]
         mo.save
       end
     end

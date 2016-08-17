@@ -13,18 +13,19 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 FactoryGirl.define do
-  factory :derivative do
-    duration "21575"
-    location_url "rtmp://localhost/vod/mp4:6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning"
-    track_id "track-6"
-    hls_url "http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"
-    hls_track_id "track-8"
+  factory :collection, class: Admin::Collection do
+    sequence(:name) {|n| "Collection #{n}" }
+    unit {"Default Unit"}
+    description {Faker::Lorem.sentence}
+    managers {[FactoryGirl.create(:manager).username]}
+    editors {[FactoryGirl.create(:user).username]}
+    depositors {[FactoryGirl.create(:user).username]}
+    media_objects {[]}
 
-    trait :with_master_file do
-      after(:create) do |d|
-        d.master_file = FactoryGirl.create(:master_file)
-        d.save
-      end
+    transient { items 0 }
+    after(:create) do |c, env|
+      1.upto(env.items) { FactoryGirl.create(:media_object, collection: c) }
+      c.reload
     end
   end
 end

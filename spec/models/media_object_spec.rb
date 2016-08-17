@@ -16,7 +16,7 @@ require 'rails_helper'
 require 'cancan/matchers'
 
 describe MediaObject do
-  let! (:media_object) { FactoryGirl.create(:media_object) }
+  let(:media_object) { FactoryGirl.create(:media_object, :with_collection) }
 
   describe 'validations' do
     describe 'collection' do
@@ -33,12 +33,12 @@ describe MediaObject do
     end
     describe 'language' do
       it 'should validate valid language' do
-        media_object.update_datastream :descMetadata, {language: 'eng'}
+        media_object.language = ['eng']
         expect(media_object.valid?).to be_truthy
         expect(media_object.errors[:language]).to be_empty
       end
       it 'should not validate invalid language' do
-        media_object.update_datastream :descMetadata, {language: 'engl'}
+        media_object.language = ['engl']
         expect(media_object.valid?).to be_falsey
         expect(media_object.errors[:language]).not_to be_empty
       end
@@ -100,12 +100,14 @@ describe MediaObject do
 
     describe 'notes' do
       it 'should validate notes with types in controlled vocabulary' do
-        media_object.update_datastream :descMetadata, {note: ['Test Note'], note_type: ['general']}
+        media_object.descMetadata.note = ['Test Note']
+        media_object.descMetadata.note.type = ['general']
         expect(media_object.valid?).to be_truthy
         expect(media_object.errors[:note]).to be_empty
       end
       it 'should not validate notes with types not in controlled vocabulary' do
-        media_object.update_datastream :descMetadata, {note: ['Test Note'], note_type: ['genreal']}
+        media_object.descMetadata.note = ['Test Note']
+        media_object.descMetadata.note.type = ['genereal']
         expect(media_object.valid?).to be_falsey
         expect(media_object.errors[:note]).not_to be_empty
       end
@@ -248,19 +250,19 @@ describe MediaObject do
 
   describe "Languages are handled correctly" do
     it "should handle pairs of language codes and language names" do
-      media_object.update_datastream(:descMetadata, :language => ['eng','French','spa','uig'])
+      media_object.language = ['eng','French','spa','uig']
       expect(media_object.descMetadata.language_code.to_a).to match_array(['eng','fre','spa','uig'])
       expect(media_object.descMetadata.language_text.to_a).to match_array(['English','French','Spanish','Uighur'])
     end
   end
 
-  describe "Unknown metadata generates error" do
-    it "should have an error on an unknown attribute" do
-      media_object.update_attribute_in_metadata :foo, 'bar'
-      media_object.valid?
-      expect(media_object.errors[:foo].size).to eq(1)
-    end
-  end
+  # describe "Unknown metadata generates error" do
+  #   it "should have an error on an unknown attribute" do
+  #     media_object.update_attribute_in_metadata :foo, 'bar'
+  #     media_object.valid?
+  #     expect(media_object.errors[:foo].size).to eq(1)
+  #   end
+  # end
 
   describe "Field persistence" do
     skip "setters should work"
@@ -303,7 +305,7 @@ describe MediaObject do
         'date_issued' => '2013',
         'date_created'=> '1956'
       }
-      media_object.update_datastream(:descMetadata, params)
+      media_object.update_attributes(params)
       expect(media_object.creator).to      eq(params['creator'])
       expect(media_object.contributor).to  eq(params['contributor'])
       expect(media_object.title).to        eq(params['title'])
@@ -327,7 +329,7 @@ describe MediaObject do
       media_object.date_created = '2016'
       media_object.date_issued = nil
       media_object.descMetadata.ng_xml.root.add_child('<originInfo/>')
-      expect { media_object.descMetadata.add_date_issued('2017') }.not_to raise_error
+      expect { media_object.date_issued = '2017' }.not_to raise_error
       expect(media_object.date_created).to eq '2016'
       expect(media_object.date_issued).to eq '2017'
     end
@@ -358,13 +360,13 @@ describe MediaObject do
 
   describe '#finished_processing?' do
     it 'returns true if the statuses indicate processing is finished' do
-      media_object.parts << MasterFile.new(status_code: 'CANCELLED')
-      media_object.parts << MasterFile.new(status_code: 'COMPLETED')
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, status_code: 'CANCELLED')]
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, status_code: 'COMPLETED')]
       expect(media_object.finished_processing?).to be true
     end
     it 'returns true if the statuses indicate processing is not finished' do
-      media_object.parts << MasterFile.new(status_code: 'CANCELLED')
-      media_object.parts << MasterFile.new(status_code: 'RUNNING')
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, status_code: 'CANCELLED')]
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, status_code: 'RUNNING')]
       expect(media_object.finished_processing?).to be false
     end
   end
@@ -374,29 +376,27 @@ describe MediaObject do
       expect(media_object.send(:calculate_duration)).to eq(0)
     end
     it 'returns the correct duration with two master files' do
-      media_object.parts << MasterFile.new(duration: '40')
-      media_object.parts << MasterFile.new(duration: '40')
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration: '40')]
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration: '40')]
       expect(media_object.send(:calculate_duration)).to eq(80)
     end
     it 'returns the correct duration with two master files one nil' do
-      media_object.parts << MasterFile.new(duration: '40')
-      media_object.parts << MasterFile.new(duration: nil)
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration: '40')]
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration:nil)]
       expect(media_object.send(:calculate_duration)).to eq(40)
     end
     it 'returns the correct duration with one master file that is nil' do
-      media_object.parts << MasterFile.new(duration:nil)
+      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration:nil)]
       expect(media_object.send(:calculate_duration)).to eq(0)
     end
   end
 
   describe '#destroy' do
-    it 'destroys related masterfiles' do
-      media_object.parts << FactoryGirl.create(:master_file)
-      master_file_pids = media_object.parts.map(&:id)
-      media_object.section_pid = master_file_pids
-      media_object.save( validate: false )
-      media_object.destroy
-      expect(MasterFile.exists?(master_file_pids.first)).to eq(false)
+    let(:media_object) { FactoryGirl.create(:media_object, :with_collection, :with_master_file) }
+    let(:master_file) { media_object.master_files.first }
+
+    it 'destroys related master_files' do
+      expect { media_object.destroy }.to change { MasterFile.exists?(master_file) }.from(true).to(false)
     end
   end
 
@@ -409,9 +409,9 @@ describe MediaObject do
     end
 
     describe '#set_media_types!' do
-      let!(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
+      let(:media_object) { FactoryGirl.create(:media_object, :with_collection, :with_master_file) }
       it 'sets format on the model' do
-        media_object.update_attribute_in_metadata(:format, nil)
+        media_object.format = nil
         expect(media_object.format).to be_nil
         media_object.set_media_types!
         expect(media_object.format).to eq "video/mp4"
@@ -419,12 +419,15 @@ describe MediaObject do
     end
 
     describe '#set_resource_types!' do
-      let!(:master_file) { FactoryGirl.create(:master_file, mediaobject: media_object) }
+      let!(:master_file) { FactoryGirl.create(:master_file, media_object: media_object) }
+      before do
+        media_object.reload
+      end
       it 'sets resource_type on the model' do
-        media_object.displayMetadata.avalon_resource_type = []
-        expect(media_object.displayMetadata.avalon_resource_type).to be_empty
+        media_object.avalon_resource_type = []
+        expect(media_object.avalon_resource_type).to be_empty
         media_object.set_resource_types!
-        expect(media_object.displayMetadata.avalon_resource_type).to eq ["moving image"]
+        expect(media_object.avalon_resource_type).to eq ["moving image"]
       end
     end
   end
@@ -447,7 +450,7 @@ describe MediaObject do
       expect(media_object.to_solr.keys.reject { |k| k.is_a?(String) }).to eq([:id])
     end
     it 'should not index any unknown resource types' do
-      media_object.descMetadata.resource_type = 'notated music'
+      media_object.resource_type = 'notated music'
       expect(media_object.to_solr['format_sim']).not_to include 'Notated Music'
     end
     it 'should index separate identifiers as separate values' do
@@ -457,21 +460,14 @@ describe MediaObject do
       expect(solr_doc['other_identifier_sim']).to include('12345678','8675309 testing')
       expect(solr_doc['other_identifier_sim']).not_to include('123456788675309 testing')
     end
-    it 'should index identifier for parts' do
-      master_file = FactoryGirl.create(:master_file, mediaobject_id: media_object.pid)
-      master_file.DC.identifier += ["TestOtherID"]
-      master_file.save!
-      media_object.parts += [master_file]
-      media_object.save!
+    it 'should index identifier for master files' do
+      master_file = FactoryGirl.create(:master_file, identifier: ['TestOtherID'], media_object: media_object)
       media_object.reload
       solr_doc = media_object.to_solr
       expect(solr_doc['other_identifier_sim']).to include('TestOtherID')
     end
-    it 'should index labels for parts' do
-      master_file = FactoryGirl.create(:master_file_with_structure, mediaobject_id: media_object.pid, label: 'Test Label')
-      master_file.save!
-      media_object.parts += [master_file]
-      media_object.save!
+    it 'should index labels for master files' do
+      FactoryGirl.create(:master_file, :with_structure, media_object: media_object, title: 'Test Label')
       media_object.reload
       solr_doc = media_object.to_solr
       expect(solr_doc['section_label_tesim']).to include('CD 1')
@@ -529,7 +525,7 @@ describe MediaObject do
           'http://www.example.com/perma-url'
         }
         media_object.ensure_permalink!
-        expect(t).to eq("http://test.host/media_objects/#{media_object.pid}")
+        expect(t).to eq("http://test.host/media_objects/#{media_object.id}")
         expect(media_object.permalink).to eq('http://www.example.com/perma-url')
       end
 
@@ -571,8 +567,8 @@ describe MediaObject do
     let(:bib_id) { '7763100' }
     let(:mods) { File.read(File.expand_path("../../fixtures/#{bib_id}.mods",__FILE__)) }
     before do
-      media_object.update_attribute_in_metadata(:resource_type, ["moving image"])
-      media_object.update_attribute_in_metadata(:format, "video/mpeg")
+      media_object.resource_type = "moving image"
+      media_object.format = "video/mpeg"
       instance = double("instance")
       allow(Avalon::BibRetriever).to receive(:instance).and_return(instance)
       allow(Avalon::BibRetriever.instance).to receive(:get_record).and_return(mods)
@@ -586,53 +582,10 @@ describe MediaObject do
     end
   end
 
-  describe '#section_pid' do
-    before do
-      2.times do
-        mf = FactoryGirl.create(:master_file)
-        mf.mediaobject = media_object
-        mf.save
-      end
-      media_object.save
-    end
-    let(:part_ids) { media_object.part_ids }
-    let(:trap_ids) { media_object.part_ids.reverse }
-
-    it 'should append missing section_pids' do
-      media_object.section_pid = [part_ids.first]
-      expect( media_object.section_pid ).to eq(part_ids)
-
-      media_object.section_pid = [trap_ids.first]
-      expect( media_object.section_pid ).to eq(trap_ids)
-    end
-
-    it 'should remove superfluous section_pids' do
-      nope_ids = trap_ids + ['avalon:nope']
-      media_object.section_pid = nope_ids
-      expect( nope_ids.length ).to eq(3)
-      expect( media_object.section_pid ).to eq(trap_ids)
-    end
-
-    it 'should append missing section_pids and remove superfluous section_pids' do
-      media_object.section_pid = ['avalon:nope']
-      expect( media_object.section_pid ).to eq(part_ids)
-    end
-
-    it 'should report changes' do
-      expect( media_object.section_pid_changed? ).to be_falsey
-      expect( media_object.changes ).to eq({})
-      media_object.section_pid = trap_ids
-      expect( media_object.section_pid_changed? ).to be_truthy
-      expect( media_object.changes ).to eq({"section_pid"=>[part_ids, trap_ids]})
-    end
-  end
-
   describe '#section_labels' do
     before do
-      mf = FactoryGirl.create(:master_file_with_structure, label: 'Test Label')
-      mf.mediaobject = media_object
-      mf.save
-      media_object.save
+      mf = FactoryGirl.create(:master_file, :with_structure, title: 'Test Label', media_object: media_object)
+      media_object.reload
     end
     it 'should return correct list of labels' do
       expect(media_object.section_labels.first).to eq 'CD 1'
@@ -642,37 +595,24 @@ describe MediaObject do
 
   describe '#physical_description' do
     it 'should return a list of physical descriptions' do
-      mf = FactoryGirl.create(:master_file_with_structure, label: 'Test Label')
-      mf.descMetadata.physical_description = 'stone tablet'
-      mf.mediaobject = media_object
-      mf.save
-      media_object.save
+      mf = FactoryGirl.create(:master_file, title: 'Test Label', physical_description: 'stone tablet', media_object: media_object)
+      media_object.reload
       expect(media_object.section_physical_descriptions).to match(['stone tablet'])
     end
 
     it 'should not return nil physical descriptions' do
-      mf = FactoryGirl.create(:master_file_with_structure, label: 'Test Label')
-      mf.mediaobject = media_object
-      mf.save
-      media_object.save
+      mf = FactoryGirl.create(:master_file, title: 'Test Label', media_object: media_object)
+      media_object.reload
       expect(media_object.section_physical_descriptions).to match([])
     end
 
     it 'should return a unique list of physical descriptions' do
-      mf = FactoryGirl.create(:master_file_with_structure, label: 'Test Label')
-      mf.descMetadata.physical_description = 'cave paintings'
-      mf.mediaobject = media_object
-      mf.save
+      mf = FactoryGirl.create(:master_file, title: 'Test Label', physical_description: 'cave paintings', media_object: media_object)
+      mf2 = FactoryGirl.create(:master_file, title: 'Test Label2', physical_description: 'cave paintings', media_object: media_object)
+      media_object.reload
 
-      mf2 = FactoryGirl.create(:master_file_with_structure, label: 'Test Label2')
-      mf2.descMetadata.physical_description = 'cave paintings'
-      mf2.mediaobject = media_object
-      mf2.save
-      media_object.save
-
-      expect(media_object.parts.size).to eq(2)
+      #expect(media_object.ordered_master_files.size).to eq(2)
       expect(media_object.section_physical_descriptions).to match(['cave paintings'])
-
     end
   end
 

@@ -12,19 +12,21 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-FactoryGirl.define do
-  factory :derivative do
-    duration "21575"
-    location_url "rtmp://localhost/vod/mp4:6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning"
-    track_id "track-6"
-    hls_url "http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"
-    hls_track_id "track-8"
+require 'rails_helper'
+require 'avalon/sanitizer'
 
-    trait :with_master_file do
-      after(:create) do |d|
-        d.master_file = FactoryGirl.create(:master_file)
-        d.save
-      end
+describe Avalon::Sanitizer do
+  describe '#sanitize' do
+    it 'replaces blacklisted characters' do
+      expect(Avalon::Sanitizer.sanitize('abcdefg&',['&','_'])).to eq('abcdefg_')
+    end
+
+    it 'replaces multiple blacklisted characters' do
+      expect(Avalon::Sanitizer.sanitize('avalon*media&system',['*&','__'])).to eq('avalon_media_system')
+    end
+
+    it 'does not modify a string without any blacklisted characters' do
+      expect(Avalon::Sanitizer.sanitize('avalon_media_system',['*&','__'])).to eq('avalon_media_system')
     end
   end
 end

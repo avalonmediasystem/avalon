@@ -23,7 +23,6 @@ class MediaObject < ActiveFedora::Base
 
   include Kaminari::ActiveFedoraModelExtension
 
-  has_many :parts, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
   has_and_belongs_to_many :governing_policies, class_name: 'ActiveFedora::Base', predicate: ActiveFedora::RDF::ProjectHydra.isGovernedBy
   belongs_to :collection, class_name: 'Admin::Collection', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
@@ -46,7 +45,8 @@ class MediaObject < ActiveFedora::Base
   validates :date_issued, :presence => true
   validate  :report_missing_attributes
   validates :collection, presence: true
-  validates :governing_policies, presence: true
+  # TODO: Fix the next line
+  # validates :governing_policies, presence: true
   validate  :validate_related_items
   validate  :validate_dates
   validate  :validate_note_type
@@ -83,8 +83,14 @@ class MediaObject < ActiveFedora::Base
   # end
   # delegate :section_pid, to: :sectionsMetadata
   # has_attributes :section_pid, datastream: :sectionsMetadata, multiple: true
+  # has_many :parts, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
 
-  accepts_nested_attributes_for :parts, :allow_destroy => true
+  ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source #, has_member_relation: ActiveFedora::RDF::PCDMTerms.hasMember
+  # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
+  #  and methods for master_files (an array): first, last, [index], =, <<, +=, delete(mf)
+  #  and methods for ordered_master_files (an array): first, last, [index], =, <<, +=, insert_at(index,mf), delete(mf), delete_at(index)
+
+  accepts_nested_attributes_for :master_files, :allow_destroy => true
 
   def published?
     not self.avalon_publisher.blank?
@@ -92,8 +98,8 @@ class MediaObject < ActiveFedora::Base
 
   def destroy
     # attempt to stop the matterhorn processing job
-    self.parts.each(&:destroy)
-    self.parts.clear
+    self.master_files.each(&:destroy)
+    self.master_files.clear
     Bookmark.where(document_id: self.id).destroy_all
     super
   end
@@ -149,7 +155,8 @@ class MediaObject < ActiveFedora::Base
     self.governing_policies -= [self.governing_policies.to_a.find {|gp| gp.is_a? Admin::Collection }]
     self.governing_policies += [co]
     if (self.read_groups + self.read_users + self.discover_groups + self.discover_users).empty?
-      self.rightsMetadata.content = co.defaultRights.content unless co.nil?
+      # TODO: Fix the next line
+      # self.rightsMetadata.content = co.defaultRights.content unless co.nil?
     end
   end
 
@@ -162,7 +169,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def finished_processing?
-    self.parts.all?{ |master_file| master_file.finished_processing? }
+    self.master_files.all?{ |master_file| master_file.finished_processing? }
   end
 
   def set_duration!
@@ -179,14 +186,14 @@ class MediaObject < ActiveFedora::Base
 
 
   def set_media_types!
-    mime_types = parts.reject {|mf| mf.file_location.blank? }.collect { |mf|
+    mime_types = master_files.reject {|mf| mf.file_location.blank? }.collect { |mf|
       Rack::Mime.mime_type(File.extname(mf.file_location))
     }.uniq
     self.format = mime_types.empty? ? nil : mime_types
   end
 
   def set_resource_types!
-    self.avalon_resource_type = parts.reject {|mf| mf.file_format.blank? }.collect{ |mf|
+    self.avalon_resource_type = master_files.reject {|mf| mf.file_format.blank? }.collect{ |mf|
       case mf.file_format
       when 'Moving image'
         'moving image'
@@ -205,7 +212,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def section_labels
-    all_labels = parts.collect{|mf|mf.structural_metadata_labels << mf.label}
+    all_labels = master_files.collect{|mf|mf.structural_metadata_labels << mf.title}
     all_labels.flatten.uniq.compact
   end
 
@@ -213,17 +220,17 @@ class MediaObject < ActiveFedora::Base
   # @return [Array<String>] A unique list of all physical descriptions for the media object
   def section_physical_descriptions
     all_pds = []
-    self.parts.each do |master_file|
-      all_pds += master_file.physical_description unless master_file.physical_description.nil?
+    self.master_files.each do |master_file|
+      all_pds += Array(master_file.physical_description) unless master_file.physical_description.nil?
     end
     all_pds.uniq
   end
 
-  # def to_solr(solr_doc = Hash.new, opts = {})
-  #   solr_doc = super(solr_doc, opts)
+  def to_solr(solr_doc = Hash.new, opts = {})
+    solr_doc = super(solr_doc)
   #   solr_doc[Solrizer.default_field_mapper.solr_name("created_by", :facetable, type: :string)] = self.DC.creator
   #   solr_doc[Solrizer.default_field_mapper.solr_name("duration", :displayable, type: :string)] = self.duration
-  #   solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
+    solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
   #   solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
   #   solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
   #   indexer = Solrizer::Descriptor.new(:string, :stored, :indexed, :multivalued)
@@ -235,13 +242,13 @@ class MediaObject < ActiveFedora::Base
   #   solr_doc["dc_publisher_tesim"] = self.publisher
   #   solr_doc["title_ssort"] = self.title
   #   solr_doc["creator_ssort"] = Array(self.creator).join(', ')
-  #   solr_doc["date_digitized_sim"] = parts.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
+    solr_doc["date_digitized_sim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
   #   solr_doc["date_ingested_sim"] = Time.parse(self.create_date).strftime "%F"
   #   #include identifiers for parts
-  #   solr_doc["other_identifier_sim"] += parts.collect {|mf| mf.DC.identifier }.flatten
-  #   #include labels for parts and their structural metadata
-  #   solr_doc["section_label_tesim"] = section_labels
-  #   solr_doc['section_physical_description_ssim'] = section_physical_descriptions
+    solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier }.flatten
+    #include labels for parts and their structural metadata
+    solr_doc["section_label_tesim"] = section_labels
+    solr_doc['section_physical_description_ssim'] = section_physical_descriptions
   #
   #   #Add all searchable fields to the all_text_timv field
   #   all_text_values = []
@@ -264,8 +271,8 @@ class MediaObject < ActiveFedora::Base
   #   all_text_values << solr_doc["other_identifier_sim"]
   #   solr_doc["all_text_timv"] = all_text_values.flatten
   #   solr_doc.each_pair { |k,v| solr_doc[k] = v.is_a?(Array) ? v.select { |e| e =~ /\S/ } : v }
-  #   return solr_doc
-  # end
+    return solr_doc
+  end
 
   def as_json(options={})
     {
@@ -448,7 +455,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def _update_dependent_permalinks
-    self.parts.each do |master_file|
+    self.master_files.each do |master_file|
       begin
 	updated = master_file.ensure_permalink!
 	master_file.save( validate: false ) if updated
@@ -481,7 +488,7 @@ class MediaObject < ActiveFedora::Base
     end
 
     def calculate_duration
-      self.parts.map{|mf| mf.duration.to_i }.compact.sum
+      self.master_files.map{|mf| mf.duration.to_i }.compact.sum
     end
 
     def collect_ips_for_index ip_strings

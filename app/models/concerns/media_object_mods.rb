@@ -16,7 +16,8 @@ module MediaObjectMods
 
   included do
     has_subresource 'descMetadata', class_name: 'ModsDocument'
-    before_save :normalize_desc_metadata!
+    # TODO: fix next line
+    # before_save :normalize_desc_metadata!
   end
 
   # # this method returns a hash: class attribute -> metadata attribute

@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
     <section id="content" class="avalon-player" style="width: 100%" tabIndex="-1">
-      <% if @masterfile.present? and @masterfile.succeeded? %>
+      <% if @master_file.present? and @master_file.succeeded? %>
         <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>
 
         <% if @stream_info[:is_video] %>
@@ -53,7 +53,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <% features = ['playpause','current','progress','duration','tracks','volume','responsive', 'title'] %>
 
-  <% if @masterfile.is_video? %>
+  <% if @master_file.is_video? %>
     <% features << 'qualities' %>
   <% else %>
     <%= javascript_include_tag 'mediaelement-hd-toggle/mep-feature-hdtoggle' %>
@@ -66,18 +66,18 @@ Unless required by applicable law or agreed to in writing, software distributed
   <script>
     avalonPlayer = new AvalonPlayer($('#content').parent(), <%= @stream_info.to_json.html_safe %>, {
       audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
-      mobileDisplayedDuration: <%= @masterfile ? (@masterfile.duration.to_f / 1000).round : -1 %>,
+      mobileDisplayedDuration: <%= @master_file ? (@master_file.duration.to_f / 1000).round : -1 %>,
       startQuality: '<%= current_quality(@stream_info) %>',
       features: <%= features.inspect.html_safe %>,
       videoWidth: '100%',
       videoHeight: '100%',
       enableAutosize: true,
-      iOSDisplayedDuration: <%= @masterfile ? @masterfile.duration.to_i / 1000 : -1 %>,
+      iOSDisplayedDuration: <%= @master_file ? @master_file.duration.to_i / 1000 : -1 %>,
       startQuality: '<%= current_quality(@stream_info) %>',
-      title: '<%= @masterfile.label %>',
-      titleLink: '<%= media_object_url(@masterfile.mediaobject) %>',
+      title: '<%= @master_file.label %>',
+      titleLink: '<%= media_object_url(@master_file.media_object) %>',
       logoAction: 'popup',
-      logoURL: '<%= id_section_media_object_url(@masterfile.mediaobject.id, @masterfile.id).html_safe %>',
+      logoURL: '<%= id_section_media_object_url(@master_file.media_object.id, @master_file.id).html_safe %>',
       logoTitle: 'View in repository',
       customError: '<%= t("media_objects.player.customError").html_safe %>'
     })

@@ -21,7 +21,7 @@ FactoryGirl.define do
     duration {'100'}
 
     trait :with_media_object do
-      association :mediaobject, factory: :media_object
+      association :media_object #, factory: :media_object
     end
 
     trait :with_derivative do

@@ -15,7 +15,7 @@
 require 'avalon/stream_mapper'
 
 class Derivative < ActiveFedora::Base
-  belongs_to :masterfile, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
+  belongs_to :master_file, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
 
   property :location_url, predicate: Avalon::RDFVocab::Derivative.locationURL, multiple: false
   property :hls_url, predicate: Avalon::RDFVocab::Derivative.hlsURL, multiple: false
@@ -85,7 +85,7 @@ class Derivative < ActiveFedora::Base
     end
   end
 
-  # TODO: move this into a service class along with masterfile#update_progress_*
+  # TODO: move this into a service class along with master_file#update_progress_*
   def self.from_output(dists, managed = true)
     # output is an array of 1 or more distributions of the same derivative (e.g. file and HLS segmented file)
     hls_output = dists.delete(dists.find { |o| (o[:url].ends_with? 'm3u8') || (o[:hls_url].present? && o[:hls_url].ends_with?('m3u8')) })
@@ -118,7 +118,7 @@ class Derivative < ActiveFedora::Base
 
   # TODO: move this into a service class
   def retract_distributed_files!
-    encode = masterfile.encoder_class.find(masterfile.workflow_id)
+    encode = master_file.encoder_class.find(master_file.workflow_id)
     encode.remove_output!(track_id) if track_id.present?
     encode.remove_output!(hls_track_id) if hls_track_id.present? && track_id != hls_track_id
   rescue StandardError => e

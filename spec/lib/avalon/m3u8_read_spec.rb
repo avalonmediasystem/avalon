@@ -12,19 +12,25 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-FactoryGirl.define do
-  factory :derivative do
-    duration "21575"
-    location_url "rtmp://localhost/vod/mp4:6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning"
-    track_id "track-6"
-    hls_url "http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"
-    hls_track_id "track-8"
+require 'rails_helper'
+require 'avalon/m3u8_reader'
 
-    trait :with_master_file do
-      after(:create) do |d|
-        d.master_file = FactoryGirl.create(:master_file)
-        d.save
-      end
-    end
+describe Avalon::M3U8Reader do
+  let(:m3u_file)  { File.expand_path('../../../fixtures/The_Fox.mp4.m3u',__FILE__) }
+  let(:m3u)       { Avalon::M3U8Reader.read(m3u_file) }
+  let(:framespec) { m3u.at(127000) }
+
+  it "should know how many files it has" do
+    expect(m3u.files.length).to eq(23)
+  end
+
+  it "should know its duration" do
+    expect(m3u.duration.round(2)).to eq(225.14)
+  end
+
+  it "should be able to locate a frame" do
+    expect(framespec[:location]).to match(%r{/The_Fox.mp4-012.ts$})
+    expect(framespec[:filename]).to eq('The_Fox.mp4-012.ts')
+    expect(framespec[:offset].round(2)).to eq(6818.91)
   end
 end

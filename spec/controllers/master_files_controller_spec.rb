@@ -29,13 +29,13 @@ describe MasterFilesController do
   describe "#create" do
     let(:media_object) { FactoryGirl.create(:media_object) }
     # TODO: fill in the lets below with a legitimate values from mediainfo
-    let(:mediainfo_video) {  }
-    let(:mediainfo_audio) {  }
+    # let(:mediainfo_video) {  }
+    # let(:mediainfo_audio) {  }
     before do
       # login_user media_object.collection.managers.first
       login_as :administrator
       disableCanCan!
-      allow_any_instance_of(MasterFile).to receive(:mediainfo).and_return(mediainfo_output)
+      # allow_any_instance_of(MasterFile).to receive(:mediainfo).and_return(mediainfo_output)
     end
 
     context "must provide a container id" do
@@ -68,7 +68,7 @@ describe MasterFilesController do
           original: 'any',
           container_id: media_object.id
 
-        master_file = media_object.reload.parts.first
+        master_file = media_object.reload.ordered_master_files.first
         expect(master_file.file_format).to eq "Moving image"
 
         expect(flash[:errors]).to be_nil
@@ -81,7 +81,7 @@ describe MasterFilesController do
          original: 'any',
          container_id: media_object.id
 
-       master_file = media_object.reload.parts.first
+       master_file = media_object.reload.ordered_master_files.first
        expect(master_file.file_format).to eq "Sound"
      end
 
@@ -120,8 +120,8 @@ describe MasterFilesController do
         post :create, Filedata: [file], original: 'any', container_id: media_object.id
 
         master_file = MasterFile.all.last
-        expect(media_object.reload.parts).to include master_file
-        expect(master_file.mediaobject.id).to eq(media_object.id)
+        expect(media_object.reload.ordered_master_files).to include master_file
+        expect(master_file.media_object.id).to eq(media_object.id)
 
         expect(flash[:errors]).to be_nil
       end
@@ -132,12 +132,12 @@ describe MasterFilesController do
 
         master_file = MasterFile.all.last
         media_object.reload
-        expect(media_object.parts).to include master_file
-        expect(master_file.mediaobject.id).to eq(media_object.id)
+        expect(media_object.ordered_master_files).to include master_file
+        expect(master_file.media_object.id).to eq(media_object.id)
 
         expect(flash[:errors]).to be_nil
       end
-      it "should not fail when associating with a published mediaobject" do
+      it "should not fail when associating with a published media_object" do
         media_object = FactoryGirl.create(:published_media_object)
         login_user media_object.collection.managers.first
         @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
@@ -149,8 +149,8 @@ describe MasterFilesController do
         post :create, Filedata: [@file], original: 'any', container_id: media_object.id
 
         master_file = MasterFile.all.last
-        expect(media_object.reload.parts).to include master_file
-        expect(master_file.mediaobject.id).to eq(media_object.id)
+        expect(media_object.reload.ordered_master_files).to include master_file
+        expect(master_file.media_object.id).to eq(media_object.id)
 
         expect(flash[:errors]).to be_nil
       end
@@ -172,7 +172,7 @@ describe MasterFilesController do
     context "should no longer be associated with its parent object" do
       it "should create then remove a file from a video object" do
         expect { post :destroy, id: master_file.id }.to change { MasterFile.count }.by(-1)
-        expect(master_file.mediaobject.reload.parts).not_to include master_file
+        expect(master_file.media_object.reload.ordered_master_files).not_to include master_file
       end
     end
   end
@@ -181,7 +181,7 @@ describe MasterFilesController do
     let(:master_file) {FactoryGirl.create(:master_file, :with_media_object)}
     it "should redirect you to the media object page with the correct section" do
       get :show, id: master_file.id, t:'10'
-      expect(response).to redirect_to("#{id_section_media_object_path(master_file.mediaobject.id, master_file.id)}?t=10")
+      expect(response).to redirect_to("#{id_section_media_object_path(master_file.media_object.id, master_file.id)}?t=10")
     end
   end
 
@@ -189,7 +189,7 @@ describe MasterFilesController do
     let(:master_file) {FactoryGirl.create(:master_file)}
     let(:media_object) { double }
     before do
-      allow_any_instance_of(MasterFile).to receive(:mediaobject).and_return(media_object)
+      allow_any_instance_of(MasterFile).to receive(:media_object).and_return(media_object)
       allow(media_object).to receive(:title).and_return("Media Object")
       disableCanCan!
     end
@@ -210,7 +210,7 @@ describe MasterFilesController do
     context "authorized" do
       before { disableCanCan! }
       it "should redirect to edit_media_object" do
-        expect(get :set_frame, id: mf.id, type: 'thumbnail', offset: '10').to redirect_to edit_media_object_path(mf.mediaobject_id, step: 'file-upload')
+        expect(get :set_frame, id: mf.id, type: 'thumbnail', offset: '10').to redirect_to edit_media_object_path(mf.media_object_id, step: 'file-upload')
       end
       it "should return thumbnail" do
         expect_any_instance_of(MasterFile).to receive(:extract_still) {'fake image content'}
