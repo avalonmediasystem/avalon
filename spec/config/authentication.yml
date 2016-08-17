@@ -4,9 +4,3 @@
   :params:
     :fields:
     - :email
-- :name: Avalon JSON Api
-  :id: :api
-  :tokens:
-    'secret_token':
-      :username: system_account_name
-      :email: system@example.edu
