@@ -50,9 +50,7 @@
       target.val ""
     else if $t.data('matched_val') != typed
       mySource.remote.get typed, (matches) ->
-        if matches.length > 0
-          target.val matches[0].id
-        else if !$validate
+        if !$validate
           target.val typed
         else
           target.val ""

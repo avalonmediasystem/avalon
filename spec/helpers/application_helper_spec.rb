@@ -1,14 +1,14 @@
 # Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
@@ -74,7 +74,7 @@ describe ApplicationHelper do
       expect(helper.truncate_center("", 5)).to eq ""
     end
     it "should truncate with no end length provided" do
-      expect(helper.truncate_center("This is my very long test string", 16)).to eq "This is ...tring" 
+      expect(helper.truncate_center("This is my very long test string", 16)).to eq "This is ...tring"
     end
     it "should truncate with end length" do
       expect(helper.truncate_center("This is my very long test string", 20, 6)).to eq "This is my ...string"
@@ -104,27 +104,27 @@ describe ApplicationHelper do
   describe "#image_for" do
     # image_for expects hash keys as labels, not strings
     it "should return nil" do
-      doc = {"avalon_resource_type_sim" => [] }
+      doc = {"avalon_resource_type_ssim" => [] }
       expect(helper.image_for(doc)).to eq(nil)
     end
     it "should return audio icon" do
-      doc = {"avalon_resource_type_sim" => ['sound recording 2', 'sound recording 1'] }
+      doc = {"avalon_resource_type_ssim" => ['Sound Recording', 'Sound Recording'] }
       expect(helper.image_for(doc)).to eq('/assets/audio_icon.png')
     end
     it "should return video icon" do
-      doc = {"avalon_resource_type_sim" => ['moving image 1'] }
+      doc = {"avalon_resource_type_ssim" => ['Moving Image'] }
       expect(helper.image_for(doc)).to eq('/assets/video_icon.png')
     end
     it "should return hybrid icon" do
-      doc = {"avalon_resource_type_sim" => ['moving image 1', 'sound recording 1'] }
+      doc = {"avalon_resource_type_ssim" => ['Moving Image', 'Sound Recording'] }
       expect(helper.image_for(doc)).to eq('/assets/hybrid_icon.png')
     end
     it "should return nil when only unprocessed video" do
-      doc = {"section_pid_tesim" => ['1'], "avalon_resource_type_sim" => [] }
+      doc = {"section_pid_tesim" => ['1'], "avalon_resource_type_ssim" => [] }
       expect(helper.image_for(doc)).to eq(nil)
     end
     it "should return thumbnail" do
-      doc = {"section_pid_tesim" => ['1'], "avalon_resource_type_sim" => ['moving image 1'] }
+      doc = {"section_pid_tesim" => ['1'], "avalon_resource_type_ssim" => ['Moving Image'] }
       expect(helper.image_for(doc)).to eq('/master_files/1/thumbnail')
     end
   end
