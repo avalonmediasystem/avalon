@@ -329,7 +329,7 @@ describe MediaObject do
       media_object.date_created = '2016'
       media_object.date_issued = nil
       media_object.descMetadata.ng_xml.root.add_child('<originInfo/>')
-      expect { media_object.descMetadata.add_date_issued('2017') }.not_to raise_error
+      expect { media_object.date_issued = '2017' }.not_to raise_error
       expect(media_object.date_created).to eq '2016'
       expect(media_object.date_issued).to eq '2017'
     end
