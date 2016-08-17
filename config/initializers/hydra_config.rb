@@ -4,6 +4,9 @@ require 'hydra/head' unless defined? Hydra
 # require 'hydra/multiple_policy_aware_access_controls_enforcement'
 require 'hydra/multiple_policy_aware_ability'
 
+# TODO: remove the next line after fix is made for this method in hydra-access-controls
+Hydra::AdminPolicyBehavior.send :remove_method, :default_permissions=
+
 Hydra.configure do |config|
   silence_warnings do
     Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC = 'public'.freeze
