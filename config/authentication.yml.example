@@ -12,9 +12,3 @@
 #      :username: system_account_name
 #      :email: system@example.edu
 #
-#- :name: Avalon Lti OAuth
-#  :provider: :lti
-#  :hidden: true
-#  :params:
-#    :oauth_credentials:
-#      key: 'secret'

@@ -140,6 +140,7 @@
     gem 'letter_opener'
     gem 'pry'
     gem 'pry-rails'
+    gem 'dotenv-rails'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :debug do
