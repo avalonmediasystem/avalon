@@ -47,6 +47,7 @@ class MasterFile < ActiveFedora::Base
   property :date_digitized, predicate: Avalon::RDFVocab::MasterFile.dateDigitized, multiple: false
   property :physical_description, predicate: Avalon::RDFVocab::MasterFile.physicalDescription, multiple: false
   property :masterFile, predicate: Avalon::RDFVocab::MasterFile.masterFile, multiple: false
+  property :identifier, predicate: Avalon::RDFVocab::MasterFile.identifier, multiple: true
 
   # Workflow status properties
   property :workflow_id, predicate: Avalon::RDFVocab::Transcoding.workflowId, multiple: false

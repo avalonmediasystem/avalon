@@ -461,7 +461,7 @@ describe MediaObject do
       expect(solr_doc['other_identifier_sim']).not_to include('123456788675309 testing')
     end
     it 'should index identifier for master files' do
-      master_file = FactoryGirl.create(:master_file, identifier: 'TestOtherID', media_object: media_object)
+      master_file = FactoryGirl.create(:master_file, identifier: ['TestOtherID'], media_object: media_object)
       media_object.reload
       solr_doc = media_object.to_solr
       expect(solr_doc['other_identifier_sim']).to include('TestOtherID')
