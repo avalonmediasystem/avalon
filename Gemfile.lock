@@ -1,4 +1,11 @@
 GIT
+  remote: https://github.com/avalonmediasystem/avalon-workflow.git
+  revision: 1cdd3749f9bc887113a9d782ce15125628cc7695
+  branch: hydra10
+  specs:
+    avalon-workflow (0.0.3)
+
+GIT
   remote: https://github.com/avalonmediasystem/omniauth-lti.git
   revision: 7534c44fc5a3c927aec57bbd3a15cbad37feec74
   tag: avalon-r4
@@ -485,6 +492,7 @@ PLATFORMS
 
 DEPENDENCIES
   active_encode!
+  avalon-workflow!
   byebug
   coffee-rails (~> 4.1.0)
   coveralls

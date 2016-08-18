@@ -17,7 +17,7 @@ class MediaObject < ActiveFedora::Base
   # include Avalon::AccessControls::VirtualGroups
   include ActiveFedora::Associations
   include MediaObjectMods
-  # include Avalon::Workflow::WorkflowModelMixin
+  include Avalon::Workflow::WorkflowModelMixin
   include Permalink
   require 'avalon/controlled_vocabulary'
 

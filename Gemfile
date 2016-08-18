@@ -38,6 +38,7 @@ gem 'devise'
 gem 'devise-guests', '~> 0.3'
 
 # Avalon-specific
+gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", branch: 'hydra10'
 gem 'active_encode', git: "https://github.com/projecthydra-labs/active_encode.git", tag: 'v0.0.3'
 gem 'hooks'
 gem 'iconv'
