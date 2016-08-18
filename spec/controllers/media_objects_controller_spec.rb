@@ -170,7 +170,7 @@ describe MediaObjectsController, type: :controller do
     describe "#create" do
       context 'using api' do
         before do
-           request.headers['Avalon-Api-Key'] = 'secret_token'
+          request.headers['Avalon-Api-Key'] = 'secret_token'
         end
         it "should respond with 422 if collection not found" do
           post 'create', format: 'json', collection_id: "avalon:doesnt_exist"

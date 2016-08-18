@@ -83,8 +83,6 @@ RSpec.configure do |config|
     Rails.application.routes.default_url_options.merge!( server_options )
     ActionMailer::Base.default_url_options.merge!( server_options )
     ApplicationController.default_url_options = server_options
-    
-    ApiToken.create token: 'secret_token', username: 'system_account_name', email: 'system@example.edu'
   end
 
   config.after(:suite) do
@@ -93,14 +91,13 @@ RSpec.configure do |config|
       Avalon::Configuration['dropbox']['path'] = Avalon::Configuration.lookup('spec.real_dropbox')
       Avalon::Configuration.delete('spec')
     end
-
-    ApiToken.where(token: 'secret_token').destroy_all
   end
 
   config.before(:each) do
     Rails.cache.clear
     DatabaseCleaner.start
     RoleMap.reset!
+    ApiToken.create token: 'secret_token', username: 'system_account_name', email: 'system@example.edu'
     allow(Admin::Collection).to receive(:units).and_return ['University Archives', 'University Library']
   end
 
