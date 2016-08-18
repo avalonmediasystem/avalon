@@ -59,16 +59,16 @@ class Ability
   def custom_permissions(user=nil, session=nil)
     # playlist_permissions
     unless full_login? and @user_groups.include? "administrator"
-      cannot :read, MediaObject do |mediaobject|
-        !(test_read(mediaobject.id) && mediaobject.published?) && !test_edit(mediaobject.id)
+      cannot :read, MediaObject do |media_object|
+        !(test_read(media_object.id) && media_object.published?) && !test_edit(media_object.id)
       end
 
       can :read, MasterFile do |master_file|
-        can? :read, master_file.mediaobject
+        can? :read, master_file.media_object
       end
 
       can :read, Derivative do |derivative|
-        can? :read, derivative.masterfile.mediaobject
+        can? :read, derivative.masterfile.media_object
       end
 
       cannot :read, Admin::Collection unless full_login?
@@ -82,13 +82,13 @@ class Ability
           cannot :read, Admin::Collection
         end
 
-        can :update_access_control, MediaObject do |mediaobject|
-          @user.in?(mediaobject.collection.managers) ||
-            (is_editor_of?(mediaobject.collection) && !mediaobject.published?)
+        can :update_access_control, MediaObject do |media_object|
+          @user.in?(media_object.collection.managers) ||
+            (is_editor_of?(media_object.collection) && !media_object.published?)
         end
 
-        can :unpublish, MediaObject do |mediaobject|
-          @user.in?(mediaobject.collection.managers)
+        can :unpublish, MediaObject do |media_object|
+          @user.in?(media_object.collection.managers)
         end
 
         can :update, Admin::Collection do |collection|
@@ -115,12 +115,12 @@ class Ability
           is_editor_of?(collection)
         end
 
-        can :inspect, MediaObject do |mediaobject|
-          is_member_of?(mediaobject.collection)
+        can :inspect, MediaObject do |media_object|
+          is_member_of?(media_object.collection)
         end
 
         can :edit, MasterFile do |master_file|
-          can? :edit, master_file.mediaobject
+          can? :edit, master_file.media_object
         end
 
         # Users logged in through LTI cannot share
@@ -133,15 +133,15 @@ class Ability
         can :manage, Avalon::ControlledVocabulary
       end
 
-      cannot :update, MediaObject do |mediaobject|
-        (not full_login?) || (!is_member_of?(mediaobject.collection)) ||
-          ( mediaobject.published? && !@user.in?(mediaobject.collection.managers) )
+      cannot :update, MediaObject do |media_object|
+        (not full_login?) || (!is_member_of?(media_object.collection)) ||
+          ( media_object.published? && !@user.in?(media_object.collection.managers) )
       end
 
-      cannot :destroy, MediaObject do |mediaobject|
-        # non-managers can only destroy mediaobject if it's unpublished
-        (not full_login?) || (!is_member_of?(mediaobject.collection)) ||
-          ( mediaobject.published? && !@user.in?(mediaobject.collection.managers) )
+      cannot :destroy, MediaObject do |media_object|
+        # non-managers can only destroy media_object if it's unpublished
+        (not full_login?) || (!is_member_of?(media_object.collection)) ||
+          ( media_object.published? && !@user.in?(media_object.collection.managers) )
       end
 
       cannot :destroy, Admin::Collection do |collection, other_user_collections=[]|
