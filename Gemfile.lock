@@ -849,7 +849,7 @@ DEPENDENCIES
   multipart-post
   mysql2 (~> 0.3.20)
   net-ldap
-  nokogiri (~> 1.6.5)
+  nokogiri (~> 1.6)
   nom-xml (~> 0.5.2)
   om (~> 3.1.0)
   omniauth-identity
@@ -887,6 +887,3 @@ DEPENDENCIES
   whenever
   with_locking
   xray-rails
-
-BUNDLED WITH
-   1.12.5
