@@ -26,7 +26,7 @@ require 'avalon/dropbox'
     # just need to ask the dropbox if there are any files. If so load
     # them into a variable that can be referred to later
     def before_step context
-       dropbox_files = context[:mediaobject].collection.dropbox.all
+       dropbox_files = context[:media_object].collection.dropbox.all
        context[:dropbox_files] = dropbox_files
        context
     end
@@ -36,14 +36,14 @@ require 'avalon/dropbox'
     end
 
     def execute context
-       deleted_parts = update_master_files context
-       context[:notice] = "Several clean up jobs have been sent out. Their statuses can be viewed by your sysadmin at #{ Avalon::Configuration.lookup('matterhorn.cleanup_log') }" unless deleted_parts.empty?
+       deleted_master_files = update_master_files context
+       context[:notice] = "Several clean up jobs have been sent out. Their statuses can be viewed by your sysadmin at #{ Avalon::Configuration.lookup('matterhorn.cleanup_log') }" unless deleted_master_files.empty?
 
-       # Reloads mediaobject.parts, should use .reload when we update hydra-head
-       media = MediaObject.find(context[:mediaobject].pid)
-       unless media.parts.empty?
+       # Reloads media_object.master_files, should use .reload when we update hydra-head
+       media = MediaObject.find(context[:media_object].id)
+       unless media.master_files.empty?
          media.save(validate: false)
-         context[:mediaobject] = media
+         context[:media_object] = media
        end
 
        context
@@ -54,33 +54,33 @@ require 'avalon/dropbox'
   #
   # remove - Set to true to delete this item
   # label - Display label in the interface
-  # pid - Identifier for the masterFile to help with mapping
+  # id - Identifier for the masterFile to help with mapping
   def update_master_files(context)
-    mediaobject = context[:mediaobject]
-    files = context[:parts] || {}
-    deleted_parts = []
+    media_object = context[:media_object]
+    files = context[:master_files] || {}
+    deleted_master_files = []
     if not files.blank?
-      files.each_pair do |pid,part|
-        selected_part = MasterFile.find(pid)
+      files.each_pair do |id,master_file|
+        selected_master_file = MasterFile.find(id)
 
-        if selected_part
-          if part[:remove]
-            deleted_parts << selected_part
-            selected_part.destroy
+        if selected_master_file
+          if master_file[:remove]
+            deleted_master_files << selected_master_file
+            selected_master_file.destroy
           else
-            selected_part.label = part[:label] unless part[:label].nil?
-            selected_part.permalink = part[:permalink] unless part[:permalink].nil?
-            selected_part.poster_offset = part[:poster_offset] unless part[:poster_offset].nil?
-            selected_part.date_digitized = part[:date_digitized].blank? ? nil : part[:date_digitized] unless part[:date_digitized].nil?
-            unless selected_part.save
+            selected_master_file.title = master_file[:title] unless master_file[:title].nil?
+            selected_master_file.permalink = master_file[:permalink] unless master_file[:permalink].nil?
+            selected_master_file.poster_offset = master_file[:poster_offset] unless master_file[:poster_offset].nil?
+            selected_master_file.date_digitized = master_file[:date_digitized].blank? ? nil : master_file[:date_digitized] unless master_file[:date_digitized].nil?
+            unless selected_master_file.save
               context[:error] ||= []
-              context[:error] << "#{selected_part.pid}: #{selected_part.errors.to_a.first.gsub(/(\d+)/) { |m| m.to_i.to_hms }}"
+              context[:error] << "#{selected_master_file.id}: #{selected_master_file.errors.to_a.first.gsub(/(\d+)/) { |m| m.to_i.to_hms }}"
             end
           end
         end
       end
     end
-    return deleted_parts
+    return deleted_master_files
   end
 
   end

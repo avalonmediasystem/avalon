@@ -25,7 +25,7 @@ describe FileUploadStep do
     it 'should be able to set a blank title' do
       step_context = {media_object: media_object, master_files: {master_file.id => {title: ''}}}
       FileUploadStep.new.update_master_files(step_context)
-      expect(master_file.reload.title).to be_nil
+      expect(master_file.reload.title).to be_empty
     end
   end
 end
