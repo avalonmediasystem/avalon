@@ -23,8 +23,8 @@ class Ability
     @user_groups = default_user_groups
     @user_groups |= current_user.groups if current_user and current_user.respond_to? :groups
     @user_groups |= ['registered'] unless current_user.new_record?
-    @user_groups |= @session[:virtual_groups] if @session.present? and @session.has_key? :virtual_groups
-    @user_groups |= [@session[:remote_ip]] if @session.present? and @session.has_key? :remote_ip
+    @user_groups |= @options[:virtual_groups] if @options.present? and @options.has_key? :virtual_groups
+    @user_groups |= [@options[:remote_ip]] if @options.present? and @options.has_key? :remote_ip
     @user_groups
   end
 
@@ -188,12 +188,12 @@ class Ability
 
   def full_login?
     return @full_login unless @full_login.nil?
-    @full_login = ( @session.present? and @session.has_key? :full_login ) ? @session[:full_login] : true
+    @full_login = ( @options.present? and @options.has_key? :full_login ) ? @options[:full_login] : true
     @full_login
   end
 
   def is_api_request?
-    @json_api_login ||= !!@session[:json_api_login] if @session.present?
+    @json_api_login ||= !!@options[:json_api_login] if @options.present?
     @json_api_login ||= false
     @json_api_login
   end
