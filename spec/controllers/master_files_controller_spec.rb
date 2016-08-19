@@ -68,7 +68,7 @@ describe MasterFilesController do
           original: 'any',
           container_id: media_object.id
 
-        master_file = media_object.reload.ordered_master_files.first
+        master_file = media_object.reload.ordered_master_files.to_a.first
         expect(master_file.file_format).to eq "Moving image"
 
         expect(flash[:errors]).to be_nil
@@ -81,7 +81,7 @@ describe MasterFilesController do
          original: 'any',
          container_id: media_object.id
 
-       master_file = media_object.reload.ordered_master_files.first
+       master_file = media_object.reload.ordered_master_files.to_a.first
        expect(master_file.file_format).to eq "Sound"
      end
 

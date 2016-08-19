@@ -16,7 +16,7 @@ require 'rails_helper'
 require 'cancan/matchers'
 
 describe MediaObject do
-  let(:media_object) { FactoryGirl.create(:media_object, :with_collection) }
+  let(:media_object) { FactoryGirl.create(:media_object) }
 
   describe 'validations' do
     describe 'collection' do
@@ -392,7 +392,7 @@ describe MediaObject do
   end
 
   describe '#destroy' do
-    let(:media_object) { FactoryGirl.create(:media_object, :with_collection, :with_master_file) }
+    let(:media_object) { FactoryGirl.create(:media_object, :with_master_file) }
     let(:master_file) { media_object.master_files.first }
 
     it 'destroys related master_files' do
@@ -409,7 +409,7 @@ describe MediaObject do
     end
 
     describe '#set_media_types!' do
-      let(:media_object) { FactoryGirl.create(:media_object, :with_collection, :with_master_file) }
+      let(:media_object) { FactoryGirl.create(:media_object, :with_master_file) }
       it 'sets format on the model' do
         media_object.format = nil
         expect(media_object.format).to be_nil

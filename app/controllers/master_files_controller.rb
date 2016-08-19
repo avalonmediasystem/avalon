@@ -173,11 +173,11 @@ class MasterFilesController < ApplicationController
           return
         end
 
-        master_file = MasterFile.new
-        master_file.save( validate: false )
-        master_file.media_object = media_object
+        master_file = MasterFile.new()
         master_file.setContent(file)
         master_file.set_workflow(params[:workflow])
+        # master_file.media_object = media_object
+        # master_file.save!
 
         if 'Unknown' == master_file.file_format
           flash[:error] = [] if flash[:error].nil?
@@ -191,6 +191,7 @@ class MasterFilesController < ApplicationController
           flash[:notice] = create_upload_notice(master_file.file_format)
         end
 
+        master_file.media_object = media_object
         unless master_file.save
           flash[:error] = "There was a problem storing the file"
         else

@@ -46,7 +46,7 @@ class MediaObject < ActiveFedora::Base
   validate  :report_missing_attributes
   validates :collection, presence: true
   # TODO: Fix the next line
-  # validates :governing_policies, presence: true
+  validates :governing_policies, presence: true
   validate  :validate_related_items
   validate  :validate_dates
   validate  :validate_note_type
@@ -150,7 +150,6 @@ class MediaObject < ActiveFedora::Base
   # This requires the MediaObject having an actual pid
   def collection= co
     # TODO: Removes existing association
-
     self._collection= co
     self.governing_policies -= [self.governing_policies.to_a.find {|gp| gp.is_a? Admin::Collection }]
     self.governing_policies += [co]
