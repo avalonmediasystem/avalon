@@ -25,7 +25,7 @@ describe RoleMap do
     end
 
     it "should properly initialize the map" do
-      expect(RoleMapper.map).to eq(YAML.load(File.read(File.join(Rails.root, "config/role_map_#{Rails.env}.yml"))))
+      expect(RoleMapper.map).to eq(YAML.load(File.read(File.join(Rails.root, "config/role_map.yml")))[Rails.env])
     end
 
     it "should properly persist a hash" do
