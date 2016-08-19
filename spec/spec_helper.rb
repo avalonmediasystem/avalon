@@ -97,6 +97,7 @@ RSpec.configure do |config|
     Rails.cache.clear
     DatabaseCleaner.start
     RoleMap.reset!
+    ApiToken.create token: 'secret_token', username: 'system_account_name', email: 'system@example.edu'
     allow(Admin::Collection).to receive(:units).and_return ['University Archives', 'University Library']
   end
 

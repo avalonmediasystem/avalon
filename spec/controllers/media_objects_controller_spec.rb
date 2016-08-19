@@ -170,7 +170,7 @@ describe MediaObjectsController, type: :controller do
     describe "#create" do
       context 'using api' do
         before do
-           request.headers['Avalon-Api-Key'] = 'secret_token'
+          request.headers['Avalon-Api-Key'] = 'secret_token'
         end
         it "should respond with 422 if collection not found" do
           post 'create', format: 'json', collection_id: "avalon:doesnt_exist"
@@ -575,11 +575,8 @@ describe MediaObjectsController, type: :controller do
         end
       end
       context "No LTI configuration" do
-        around do |example|
-          providers = Avalon::Authentication::Providers
-          Avalon::Authentication::Providers = Avalon::Authentication::Providers.reject{|p| p[:provider] == :lti}
-          example.run
-          Avalon::Authentication::Providers = providers
+        before do
+          allow(Avalon::Authentication).to receive(:lti_configured?).and_return false
         end
         it "should not include lti" do
           login_as(:administrator)
