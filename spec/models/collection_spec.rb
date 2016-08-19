@@ -34,6 +34,7 @@ describe Admin::Collection do
       let(:ability){ Ability.new(user) }
       let(:user){ User.where(username: collection.managers.first).first }
 
+      it{ is_expected.to be_able_to(:create, Admin::Collection) }
       it{ is_expected.to be_able_to(:read, Admin::Collection) }
       it{ is_expected.to be_able_to(:update, collection) }
       it{ is_expected.to be_able_to(:read, collection) }
@@ -41,7 +42,6 @@ describe Admin::Collection do
       it{ is_expected.to be_able_to(:update_managers, collection) }
       it{ is_expected.to be_able_to(:update_editors, collection) }
       it{ is_expected.to be_able_to(:update_depositors, collection) }
-      it{ is_expected.to be_able_to(:create, Admin::Collection) }
       it{ is_expected.to be_able_to(:destroy, collection) }
       it{ is_expected.to be_able_to(:update_access_control, collection) }
     end
