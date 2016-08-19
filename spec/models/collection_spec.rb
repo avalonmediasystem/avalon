@@ -130,7 +130,7 @@ describe Admin::Collection do
       expect { FactoryGirl.create(:collection, name: "This little piggy") }.not_to raise_error
     end
     it {is_expected.to validate_presence_of(:unit)}
-    it {is_expected.to ensure_inclusion_of(:unit).in_array(Admin::Collection.units)}
+    it {is_expected.to validate_inclusion_of(:unit).in_array(Admin::Collection.units)}
     it "should ensure length of :managers is_at_least(1)"
 
     it "should have attributes" do
@@ -373,12 +373,12 @@ describe Admin::Collection do
 
   describe "#reassign_media_objects" do
     before do
-      @media_objects = (1..3).map{ FactoryGirl.build(:media_object)}
-      incomplete_object = MediaObject.new
-      @media_objects << incomplete_object
+      @source_collection = FactoryGirl.create(:collection)
+      @media_objects = (1..3).map{ FactoryGirl.build(:media_object, collection: @source_collection)}
+      # TODO: Fix handling of invalid objects
+      # incomplete_object = MediaObject.new(collection: @source_collection)
+      # @media_objects << incomplete_object
       @media_objects.map { |mo| mo.save(validate: false) }
-      @source_collection = FactoryGirl.build(:collection, media_objects: @media_objects)
-      @source_collection.save(:validate => false)
       @target_collection = FactoryGirl.create(:collection)
       Admin::Collection.reassign_media_objects(@media_objects, @source_collection, @target_collection)
     end

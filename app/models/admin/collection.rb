@@ -140,19 +140,19 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def self.reassign_media_objects( media_objects, source_collection, target_collection)
-    media_objects.dup.each do |media_object|
+    media_objects.each do |media_object|
 
-      source_collection.remove_relationship(:is_member_of_collection, "info:fedora/#{media_object.id}")
-      source_collection.media_objects.delete media_object
+      # source_collection.remove_relationship(:is_member_of_collection, "info:fedora/#{media_object.id}")
+      # source_collection.media_objects.delete media_object
 
-      target_collection.add_relationship(:is_member_of_collection, "info:fedora/#{media_object.id}")
-      target_collection.media_objects << media_object
+      # target_collection.add_relationship(:is_member_of_collection, "info:fedora/#{media_object.id}")
+      # target_collection.media_objects << media_object
 
       media_object.collection = target_collection
       media_object.save(validate: false)
     end
-    source_collection.save!
-    target_collection.save!
+    # source_collection.save!
+    # target_collection.save!
   end
 
   def reindex_members

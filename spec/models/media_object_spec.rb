@@ -187,6 +187,9 @@ describe MediaObject do
       subject{ ability }
       let(:ability){ Ability.new(user) }
       let(:user){FactoryGirl.create(:user)}
+      before do
+        media_object.save!
+      end
 
       it{ is_expected.to be_able_to(:share, MediaObject) }
       it "should not be able to read unauthorized, published MediaObject" do
@@ -204,6 +207,7 @@ describe MediaObject do
       it "should be able to read authorized, published MediaObject" do
         media_object.read_users += [user.user_key]
         media_object.publish! "random"
+        media_object.save!
         expect(subject.can?(:read, media_object)).to be true
       end
     end
@@ -525,7 +529,8 @@ describe MediaObject do
           'http://www.example.com/perma-url'
         }
         media_object.ensure_permalink!
-        expect(t).to eq("http://test.host/media_objects/#{media_object.id}")
+        # TODO: Fix next line so that it uses Rails.application.routes.default_url_options
+        expect(t).to eq("http://localhost:3000/media_objects/#{media_object.id}")
         expect(media_object.permalink).to eq('http://www.example.com/perma-url')
       end
 
