@@ -24,11 +24,11 @@ FactoryGirl.define do
     # end
 
     factory :published_media_object do
-      with_collection
+      # with_collection
       avalon_publisher { 'publisher' }
 
       factory :fully_searchable_media_object do
-        with_collection
+        # with_collection
         visibility { 'public' }
         abstract { Faker::Lorem.paragraph }
         contributor { [Faker::Name.name] }

@@ -29,8 +29,7 @@ class Admin::Collection < ActiveFedora::Base
   # has_subresource 'inheritedRights', class_name: 'Hydra::Datastream::InheritableRightsMetadata', autocreate: true
   # has_subresource 'defaultRights', class_name: 'Hydra::Datastream::NonIndexedRightsMetadata', autocreate: true
 
-  # TODO: fix next line
-  # validates :name, :uniqueness => { :solr_name => 'name_sim'}, presence: true
+  validates :name, :uniqueness => { :solr_name => 'name_sim'}, presence: true
   validates :unit, presence: true, inclusion: { in: Proc.new{ Admin::Collection.units } }
   validates :managers, length: {minimum: 1, message: "list can't be empty."}
 
@@ -57,7 +56,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def created_at
-    @created_at ||= DateTime.parse(create_date)
+    @created_at ||= create_date
   end
 
   def managers

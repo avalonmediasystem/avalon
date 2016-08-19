@@ -120,7 +120,7 @@ describe MasterFilesController do
         post :create, Filedata: [file], original: 'any', container_id: media_object.id
 
         master_file = MasterFile.all.last
-        expect(media_object.reload.ordered_master_files).to include master_file
+        expect(media_object.reload.ordered_master_files.to_a).to include master_file
         expect(master_file.media_object.id).to eq(media_object.id)
 
         expect(flash[:errors]).to be_nil
@@ -149,7 +149,7 @@ describe MasterFilesController do
         post :create, Filedata: [@file], original: 'any', container_id: media_object.id
 
         master_file = MasterFile.all.last
-        expect(media_object.reload.ordered_master_files).to include master_file
+        expect(media_object.reload.ordered_master_files.to_a).to include master_file
         expect(master_file.media_object.id).to eq(media_object.id)
 
         expect(flash[:errors]).to be_nil
