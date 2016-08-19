@@ -560,35 +560,6 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
-  def calculate_percent_complete matterhorn_response
-    totals = {
-      :transcode => 70,
-      :distribution => 20,
-      :cleaning => 0,
-      :other => 10
-    }
-
-    operations = matterhorn_response.find_by_terms(:operations, :operation).collect { |op|
-      type = case op['description']
-             when /mp4/ then :transcode
-             when /^Distributing/ then :distribution
-             else :other
-             end
-      { :description => op['description'], :state => op['state'], :type => type }
-    }
-
-    result = Hash.new { |h,k| h[k] = 0 }
-    operations.each { |op|
-      op[:pct] = (totals[op[:type]].to_f / operations.select { |o| o[:type] == op[:type] }.count.to_f)
-      state = op[:state].downcase.to_sym
-      result[state] += op[:pct]
-      result[:complete] += op[:pct] if END_STATES.include?(op[:state])
-    }
-    result[:succeeded] += result.delete(:skipped) unless result[:skipped].nil?
-    result.each {|k,v| result[k] = result[k].round }
-    result
-  end
-
   def saveOriginal(file, original_name=nil)
     realpath = File.realpath(file.path)
     if original_name.present?
