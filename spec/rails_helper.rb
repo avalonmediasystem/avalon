@@ -73,6 +73,7 @@ RSpec.configure do |config|
 
   config.after :each do
     DatabaseCleaner.clean
+    ActiveFedora::Cleaner.clean!
   end
 
   # RSpec Rails can automatically mix in different behaviours to your tests

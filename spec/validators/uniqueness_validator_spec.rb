@@ -20,7 +20,7 @@ describe "UniquenessValidator" do
   let(:validator) {UniquenessValidator.new({:attributes => [:title], :solr_name => solr_field})}
 
   before(:each) do
-    @record = double(pid:"avalon:1")
+    @record = double(id:"avalon:1")
     allow(@record).to receive("errors").and_return([])
   end
 
@@ -35,17 +35,18 @@ describe "UniquenessValidator" do
   end
 
   it "should not return errors when field is unique but record is the same" do
-    doc = double(pid: "avalon:1")
+    doc = double(id: "avalon:1")
     allow(validator).to receive("find_doc").and_return(doc)
     expect(@record).not_to receive('errors')
     validator.validate_each(@record, "title", "new_title")
   end
 
   it "should return errors when field is not unique" do
-    doc = double(pid: "avalon:2")
+    doc = double(id: "avalon:2")
     allow(validator).to receive("find_doc").and_return(doc)
-    expect(@record.errors).to receive('add')
+    # expect(@record.errors).to receive('add')
     validator.validate_each(@record, "title", "old_title")
+    expect(@record.errors).to_not be_empty
   end
 
   describe "#find_doc" do
@@ -59,7 +60,7 @@ describe "UniquenessValidator" do
       validator.find_doc(klass, value)
     end
     it "should return one record when present" do
-      doc = double(pid: "avalon:1")
+      doc = double(id: "avalon:1")
       relation = double()
       allow(relation).to receive("first").and_return(doc)
       allow(klass).to receive("where").and_return(relation)
