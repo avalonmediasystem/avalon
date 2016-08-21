@@ -21,7 +21,7 @@ describe MediaObject do
   describe 'validations' do
     describe 'collection' do
       it 'has errors when not present' do
-        expect{media_object.collection = nil}.to raise_error(ActiveFedora::RecordInvalid)
+        expect{media_object.collection = nil}.to raise_error
       end
       it 'does not have errors when present' do
         media_object.valid?
