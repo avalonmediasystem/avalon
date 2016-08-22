@@ -530,7 +530,7 @@ describe MediaObject do
         }
         media_object.ensure_permalink!
         # TODO: Fix next line so that it uses Rails.application.routes.default_url_options
-        expect(t).to eq("http://localhost:3000/media_objects/#{media_object.id}")
+        expect(t).to eq("http://localhost:3000/media_objects/#{CGI::escape(media_object.id)}")
         expect(media_object.permalink).to eq('http://www.example.com/perma-url')
       end
 
