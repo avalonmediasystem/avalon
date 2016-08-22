@@ -51,16 +51,3 @@ class RoleMap < ActiveRecord::Base
     add.each    { |e| entries.create :entry => e       }
   end
 end
-
-module Hydra::RoleMapperBehavior::ClassMethods
-  def map
-    RoleMap.reset! if RoleMap.count == 0
-    RoleMap.load
-  end
-
-  def update
-    m = map
-    yield m
-    RoleMap.replace_with! m
-  end
-end
