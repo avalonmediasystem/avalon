@@ -34,3 +34,22 @@ Hydra.configure do |config|
   # config.permissions.policy_class = {Admin::Collection => {}, Lease => {clause: " AND begin_time_dti:[* TO NOW] AND end_time_dti:[NOW TO *]"}}
   config.permissions.policy_class = { Admin::Collection => {} }
 end
+
+module Hydra::RoleMapperBehavior::ClassMethods
+  def map
+    RoleMap.reset! if RoleMap.count == 0
+    RoleMap.load
+  end
+
+  def update
+    m = map
+    yield m
+    RoleMap.replace_with! m
+  end
+
+  def byname
+    @byname = map.each_with_object(Hash.new{ |h,k| h[k] = [] }) do |(role, usernames), memo|
+      Array(usernames).each { |x| memo[x] << role}
+    end
+  end
+end
