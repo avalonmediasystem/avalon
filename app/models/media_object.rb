@@ -13,8 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 class MediaObject < ActiveFedora::Base
   include Hydra::AccessControls::Permissions
-  # include Avalon::AccessControls::Hidden
-  # include Avalon::AccessControls::VirtualGroups
+  # include Hidden
+  include VirtualGroups
   include ActiveFedora::Associations
   include MediaObjectMods
   include Avalon::Workflow::WorkflowModelMixin
@@ -232,10 +232,10 @@ class MediaObject < ActiveFedora::Base
   #   solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
   #   solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
   #   indexer = Solrizer::Descriptor.new(:string, :stored, :indexed, :multivalued)
-  #   solr_doc[Solrizer.default_field_mapper.solr_name("read_access_virtual_group", indexer)] = virtual_read_groups
-  #   solr_doc[Solrizer.default_field_mapper.solr_name("read_access_ip_group", indexer)] = collect_ips_for_index(ip_read_groups)
-  #   solr_doc[Hydra.config.permissions.read.group] ||= []
-  #   solr_doc[Hydra.config.permissions.read.group] += solr_doc[Solrizer.default_field_mapper.solr_name("read_access_ip_group", indexer)]
+    solr_doc['read_access_virtual_group_ssim'] = virtual_read_groups
+    solr_doc['read_access_ip_group_ssim'] = collect_ips_for_index(ip_read_groups)
+    solr_doc[Hydra.config.permissions.read.group] ||= []
+    solr_doc[Hydra.config.permissions.read.group] += solr_doc['read_access_ip_group_ssim']
   #   solr_doc["dc_creator_tesim"] = self.creator
   #   solr_doc["dc_publisher_tesim"] = self.publisher
   #   solr_doc["title_ssort"] = self.title
@@ -439,9 +439,7 @@ class MediaObject < ActiveFedora::Base
 
   def update_permalink
     ensure_permalink!
-    # unless self.descMetadata.permalink.include? self.permalink
-    #   self.descMetadata.permalink = self.permalink
-    # end
+    true
   end
 
   class << self
