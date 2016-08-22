@@ -449,6 +449,7 @@ describe Admin::Collection do
       end
 
       it 'should call reindex_members if unit has changed' do
+        allow(Admin::Collection).to receive(:units).and_return ["Default Unit", "Some Other Unit"]
         collection.unit = Admin::Collection.units.last
         expect(collection).to be_unit_changed
         expect(collection).to receive("reindex_members").and_return(nil)
