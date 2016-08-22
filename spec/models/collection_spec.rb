@@ -140,9 +140,7 @@ describe Admin::Collection do
       it "starts with same name should be valid" do
         expect(FactoryGirl.build(:collection, name: 'Herman B. Wells Collection Highlights')).to be_valid
       end
-
     end
-    it {is_expected.to validate_uniqueness_of(:name).case_insensitive}
     it "shouldn't complain about partial name matches" do
       FactoryGirl.create(:collection, name: "This little piggy went to market")
       expect { FactoryGirl.create(:collection, name: "This little piggy") }.not_to raise_error
@@ -177,7 +175,7 @@ describe Admin::Collection do
     it "should solrize important information" do
      collection.name = "Herman B. Wells Collection"
      expect(collection.to_solr[ "name_ssi" ]).to eq("Herman B. Wells Collection")
-     expect(collection.to_solr[ "name_uniq_si" ]).to eq("herman b. wells collection")
+     expect(collection.to_solr[ "name_uniq_si" ]).to eq("hermanb.wellscollection")
     end
   end
 

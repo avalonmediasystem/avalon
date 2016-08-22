@@ -171,7 +171,7 @@ class Admin::Collection < ActiveFedora::Base
   def to_solr(solr_doc=Hash.new, *args)
     solr_doc = super(solr_doc)
     solr_doc["name_ssi"] = self.name
-    solr_doc["name_uniq_si"] = self.name.downcase.gsub(/\s+/,'')
+    solr_doc["name_uniq_si"] = self.name.downcase.gsub(/\s+/,'') if self.name.present?
     solr_doc[Solrizer.default_field_mapper.solr_name("dropbox_directory_name", :facetable, type: :string)] = self.dropbox_directory_name
     solr_doc
   end
