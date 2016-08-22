@@ -29,7 +29,7 @@ class Admin::Collection < ActiveFedora::Base
   # has_subresource 'inheritedRights', class_name: 'Hydra::Datastream::InheritableRightsMetadata', autocreate: true
   # has_subresource 'defaultRights', class_name: 'Hydra::Datastream::NonIndexedRightsMetadata', autocreate: true
 
-  validates :name, :uniqueness => { :solr_name => 'name_sim'}, presence: true
+  validates :name, :uniqueness => { :solr_name => 'name_uniq_si'}, presence: true
   validates :unit, presence: true, inclusion: { in: Proc.new{ Admin::Collection.units } }
   validates :managers, length: {minimum: 1, message: "list can't be empty."}
 
@@ -170,7 +170,8 @@ class Admin::Collection < ActiveFedora::Base
 
   def to_solr(solr_doc=Hash.new, *args)
     solr_doc = super(solr_doc)
-    solr_doc[Solrizer.default_field_mapper.solr_name("name", :facetable, type: :string)] = self.name
+    solr_doc["name_ssi"] = self.name
+    solr_doc["name_uniq_si"] = self.name.downcase.gsub(/\s+/,'')
     solr_doc[Solrizer.default_field_mapper.solr_name("dropbox_directory_name", :facetable, type: :string)] = self.dropbox_directory_name
     solr_doc
   end

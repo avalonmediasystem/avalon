@@ -22,10 +22,10 @@ class UniquenessValidator < ActiveModel::EachValidator
   end
   def validate_each(record, attribute, value)
     klass = record.class
-    existing_doc = find_doc(klass, value)
-
+    # existing_doc = find_doc(klass, value)
+    existing_doc = find_doc(klass, record.to_solr[@solr_field])
     if ! existing_doc.nil? && existing_doc.id != record.id
-      record.errors.add attribute, :taken, value: value
+      record.errors.add(attribute, :taken, value: value)
     end
   end
   def find_doc(klass, value)

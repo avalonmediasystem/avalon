@@ -124,7 +124,25 @@ describe Admin::Collection do
     let(:depositor) {FactoryGirl.create(:user)}
 
     it {is_expected.to validate_presence_of(:name)}
-    it {is_expected.to validate_uniqueness_of(:name)}
+    context 'validate uniqueness of name' do
+      before do
+        subject
+      end
+      it "same name should be invalid" do
+        expect { FactoryGirl.create(:collection, name: 'Herman B. Wells Collection') }.to raise_error(ActiveFedora::RecordInvalid).with_message("Validation failed: Name has already been taken")
+      end
+      it "same name with different case should be invalid" do
+        expect { FactoryGirl.create(:collection, name: 'herman b. wells COLLECTION') }.to raise_error(ActiveFedora::RecordInvalid).with_message("Validation failed: Name has already been taken")
+      end
+      it "same name with whitespace changes should be invalid" do
+        expect { FactoryGirl.create(:collection, name: 'HermanB.WellsCollection') }.to raise_error(ActiveFedora::RecordInvalid).with_message("Validation failed: Name has already been taken")
+      end
+      it "starts with same name should be valid" do
+        expect(FactoryGirl.build(:collection, name: 'Herman B. Wells Collection Highlights')).to be_valid
+      end
+
+    end
+    it {is_expected.to validate_uniqueness_of(:name).case_insensitive}
     it "shouldn't complain about partial name matches" do
       FactoryGirl.create(:collection, name: "This little piggy went to market")
       expect { FactoryGirl.create(:collection, name: "This little piggy") }.not_to raise_error
@@ -157,9 +175,9 @@ describe Admin::Collection do
 
   describe "#to_solr" do
     it "should solrize important information" do
-     map = Solrizer.default_field_mapper
      collection.name = "Herman B. Wells Collection"
-     expect(collection.to_solr[ map.solr_name(:name, :stored_searchable, type: :string) ]).to eq("Herman B. Wells Collection")
+     expect(collection.to_solr[ "name_ssi" ]).to eq("Herman B. Wells Collection")
+     expect(collection.to_solr[ "name_uniq_si" ]).to eq("herman b. wells collection")
     end
   end
 
