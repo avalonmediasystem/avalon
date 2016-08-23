@@ -164,15 +164,21 @@ describe MasterFilesController do
     end
 
     context "should be deleted" do
+      before do
+        master_file
+      end
       it "should no longer exist" do
         expect { post :destroy, id: master_file.id }.to change { MasterFile.count }.by(-1)
       end
     end
 
     context "should no longer be associated with its parent object" do
+      before do
+        master_file
+      end
       it "should create then remove a file from a video object" do
         expect { post :destroy, id: master_file.id }.to change { MasterFile.count }.by(-1)
-        expect(master_file.media_object.reload.ordered_master_files).not_to include master_file
+        expect(master_file.media_object.reload.ordered_master_files.to_a).not_to include master_file
       end
     end
   end
