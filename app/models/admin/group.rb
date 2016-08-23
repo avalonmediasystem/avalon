@@ -39,19 +39,19 @@ module Admin
 
     def self.all
       groups = []
-      RoleControls.roles.each do |role|
+      Avalon::RoleControls.roles.each do |role|
         groups << Admin::Group.find(role)
       end
       groups
     end
 
     def self.find(name)
-      if RoleControls.roles.include? name
+      if Avalon::RoleControls.roles.include? name
         # Creates a new object that looks like an old object
         group = self.new
         group.ignoring_changes do
           group.name = name
-          group.users = RoleControls.users(name)
+          group.users = Avalon::RoleControls.users(name)
           group.new_record = false
           group.saved = true
         end
@@ -62,7 +62,7 @@ module Admin
     end
 
     def self.exists? name
-      RoleControls.role_exists? name
+      Avalon::RoleControls.role_exists? name
     end
 
     def self.create(attributes = nil)
@@ -153,20 +153,20 @@ module Admin
     # FIXME This method is gnarly and doesn't allow everything that it should
     def save
       if new_record? && valid? && !self.class.exists?(name)
-        RoleControls.add_role(name)
-        RoleControls.save_changes
+        Avalon::RoleControls.add_role(name)
+        Avalon::RoleControls.save_changes
         @saved = true
       elsif !new_record? && valid?
         if name_changed? && !@previous_name.eql?(name)
-          RoleControls.remove_role @previous_name
-          RoleControls.add_role name
-          RoleControls.assign_users(users, name)
+          Avalon::RoleControls.remove_role @previous_name
+          Avalon::RoleControls.add_role name
+          Avalon::RoleControls.assign_users(users, name)
         end
         if users_changed?
-          RoleControls.assign_users(users, name)
+          Avalon::RoleControls.assign_users(users, name)
         end
 
-        RoleControls.save_changes
+        Avalon::RoleControls.save_changes
         @saved = true
       elsif new_record? && valid? && self.class.exists?(name)
         errors.add(:name, "Group name already exists")
@@ -181,8 +181,8 @@ module Admin
     alias_method :save!, :save
 
     def delete
-      RoleControls.remove_role(name)
-      RoleControls.save_changes
+      Avalon::RoleControls.remove_role(name)
+      Avalon::RoleControls.save_changes
     end
 
     def ignoring_changes
