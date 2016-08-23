@@ -69,19 +69,19 @@ describe Lease do
 
     describe 'start of day' do
       it 'returns the start of the day when passed in a day' do
-        expect(lease.start_of_day(DateTime.now)).to eq(DateTime.now.utc.beginning_of_day.iso8601)
+        expect(lease.start_of_day(DateTime.now)).to eq(DateTime.now.utc.beginning_of_day)
       end
       it 'returns the start of the day as a String' do
-        expect(lease.start_of_day(DateTime.now).class).to eq(String)
+        expect(lease.start_of_day(DateTime.now).class).to eq(DateTime)
       end
     end
 
     describe 'end of day' do
       it 'returns the start of the day when passed in a day' do
-        expect(lease.end_of_day(DateTime.now)).to eq(DateTime.now.utc.end_of_day.iso8601)
+        expect(lease.end_of_day(DateTime.now)).to eq(DateTime.now.utc.end_of_day)
       end
       it 'returns the start of the day as a String' do
-        expect(lease.end_of_day(DateTime.now).class).to eq(String)
+        expect(lease.end_of_day(DateTime.now).class).to eq(DateTime)
       end
     end
   end
@@ -168,19 +168,19 @@ describe Lease do
   end
   describe '#lease_type' do
     it 'identifies user lease_type' do
-      lease.read_users = [Faker::Internet.email]
+      lease.inherited_read_users = [Faker::Internet.email]
       expect(lease.lease_type).to eq "user"
     end
     it 'identifies group lease_type' do
-      lease.read_groups = [FactoryGirl.create(:group).name]
+      lease.inherited_read_groups = [FactoryGirl.create(:group).name]
       expect(lease.lease_type).to eq "local"
     end
     it 'identifies external_group lease_type' do
-      lease.read_groups = ["ExternalGroup"]
+      lease.inherited_read_groups = ["ExternalGroup"]
       expect(lease.lease_type).to eq "external"
     end
     it 'identifies ip lease_type' do
-      lease.read_groups = [Faker::Internet.ip_v4_address]
+      lease.inherited_read_groups = [Faker::Internet.ip_v4_address]
       expect(lease.lease_type).to eq "ip"
     end
   end
