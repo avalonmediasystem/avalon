@@ -50,6 +50,16 @@ ActiveRecord::Schema.define(version: 20160803143858) do
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority"
 
+  create_table "ingest_batches", force: :cascade do |t|
+    t.string   "name",             limit: 50
+    t.string   "email"
+    t.text     "media_object_ids"
+    t.boolean  "finished",                    default: false
+    t.boolean  "email_sent",                  default: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "role_maps", force: :cascade do |t|
     t.string  "entry"
     t.integer "parent_id"

@@ -78,5 +78,7 @@ group :test do
   gem 'shoulda-matchers'
   gem 'fakefs', require: 'fakefs/safe'
   gem 'fakeweb'
+  gem 'email_spec'
+  gem 'capybara'
   # gem 'hashdiff'
 end

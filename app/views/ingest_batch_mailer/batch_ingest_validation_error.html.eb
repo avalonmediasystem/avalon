@@ -1,0 +1,48 @@
+<%#
+Copyright 2011-2015, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<p>Initial processing of your batch ingest failed. Details are below. Please see the <a href="https://wiki.dlib.indiana.edu/display/VarVideo/Batch+Ingest+Package+Format">Batch Ingest Package Format</a> for further help.</p>
+<% if @package.manifest.file.present? %>
+  <p>
+    <%= "Manifest file: #{@package.manifest.file}" %>
+  </p>
+<% end %>
+
+<% if @base_errors.present? %>
+  <div class="alert alert-danger">
+    <% @base_errors.uniq.each do |message| %>
+      <%= message %>
+      <br/>
+    <% end %>
+  </div>
+<% end %>
+
+<% @package.entries.each.with_index(2) do |entry,index| %>
+  <% if entry.errors.present? %>
+    <div class="alert alert-danger">
+      <b>
+        <%= "Row #{index}: #{entry.fields[:title].try(:first) || 'Untitled' }" %>
+      </b>
+      <% if Avalon::BibRetriever.configured? and entry.fields[:bibliographic_id].present? %>
+        <p>Initial processing of your batch ingest failed. Details are below. If Bibliographic ID is used for batch ingest, check that the ID works with the service being used.</p>
+      <% end %>
+      <br/>
+      <% entry.errors.messages.each_pair do |field, errors| %>
+        <%= "#{field.to_s.titleize} - #{errors.join(', ')}" %>
+        </br>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>
