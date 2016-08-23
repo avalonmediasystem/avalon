@@ -26,6 +26,14 @@ ActiveRecord::Schema.define(version: 20160803143858) do
   add_index "bookmarks", ["document_id"], name: "index_bookmarks_on_document_id"
   add_index "bookmarks", ["user_id"], name: "index_bookmarks_on_user_id"
 
+  create_table "courses", force: :cascade do |t|
+    t.string   "context_id"
+    t.string   "title"
+    t.text     "label"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "delayed_jobs", force: :cascade do |t|
     t.integer  "priority",   default: 0
     t.integer  "attempts",   default: 0
