@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 class MediaObject < ActiveFedora::Base
   include Hydra::AccessControls::Permissions
-  # include Hidden
+  include Hidden
   include VirtualGroups
   include ActiveFedora::Associations
   include MediaObjectMods
