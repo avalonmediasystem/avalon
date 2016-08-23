@@ -73,5 +73,10 @@ module Avalon
       property :default_visibility,       "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
       property :default_hidden,           "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
     end
+
+    class Lease < RDF::StrictVocabulary("http://avalonmediasystem.org/rdf/vocab/lease#")
+      property :begin_time,  "rdfs:isDefinedBy" => %(avr-lease:).freeze, type: "rdfs:Class".freeze
+      property :end_time,    "rdfs:isDefinedBy" => %(avr-lease:).freeze, type: "rdfs:Class".freeze
+    end
   end
 end
