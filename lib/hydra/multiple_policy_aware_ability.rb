@@ -1,144 +1,68 @@
 # Repeats access controls evaluation methods, but checks against a governing "Policy" object (or "Collection" object) that provides inherited access controls.
 module Hydra::MultiplePolicyAwareAbility
   extend ActiveSupport::Concern
-  include Hydra::Ability
+  include Hydra::PolicyAwareAbility
 
-  # Extends Hydra::Ability.test_edit to try policy controls if object-level controls deny access
-  def test_edit(pid)
-    result = super
-    if result
-      return result
-    else
-      return test_edit_from_policy(pid)
-    end
-  end
-
-  # Extends Hydra::Ability.test_read to try policy controls if object-level controls deny access
-  def test_read(pid)
-    result = super
-    if result
-      return result
-    else
-      return test_read_from_policy(pid)
-    end
-  end
-
-  # Returns the pid of policy object (is_governed_by) for the specified object
+  # Returns the id of policy object (is_governed_by) for the specified object
   # Assumes that the policy object is associated by an is_governed_by relationship
   # (which is stored as "is_governed_by_ssim" in object's solr document)
   # Returns nil if no policy associated with the object
-  def policy_pids_for(object_pid)
-    policy_pids = policy_pids_cache[object_pid]
-    return policy_pids if policy_pids
-    solr_result = ActiveFedora::Base.search_with_conditions({:id=>object_pid}, :fl=>ActiveFedora.index_field_mapper.solr_name('is_governed_by', :symbol))
-    begin
-      policy_pids_cache[object_pid] = policy_pids = value_from_solr_field(solr_result, ActiveFedora.index_field_mapper.solr_name('is_governed_by', :symbol)).collect {|val| val.gsub("info:fedora/", "")}
-    rescue NoMethodError
-    end
-
-    return policy_pids
+  def policy_ids_for(object_id)
+    policy_ids = policy_id_cache[object_id]
+    return policy_ids if policy_ids
+    solr_results = ActiveFedora::Base.search_with_conditions({id: object_id}, fl: governed_by_solr_field)
+    return unless solr_results.any?(&:present?)
+    policy_id_cache[object_id] = policy_ids = solr_results.collect {|solr_result| solr_result[governed_by_solr_field] }.flatten
   end
 
-  def active_policy_pids_for(object_pid)
-    policy_pids = policy_pids_for(object_pid)
-    return nil if policy_pids.nil?
+  def active_policy_ids_for(object_id)
+    policy_ids = policy_ids_for(object_id)
+    return nil if policy_ids.nil?
 
     ids = policy_classes.collect do |policy_class|
-      id_clause = "(#{policy_pids.collect {|pid| escape_filter("id", pid)}.join(" OR ")})"
+      id_clause = "(#{policy_ids.collect {|id| escape_filter("id", id)}.join(" OR ")})"
       policy_class_clause = policy_class_clause(policy_class)
-      active_policy_pids = policy_class.search_with_conditions(id_clause + policy_class_clause, fl: "id", rows: policy_class.count )
-      active_policy_pids.collect {|h| h.values }.flatten
+      active_policy_ids = policy_class.search_with_conditions(id_clause + policy_class_clause, fl: "id", rows: policy_class.count )
+      active_policy_ids.collect {|h| h.values }.flatten
     end
     ids.flatten
   end
 
-  # Returns the permissions solr document for policy_pids
-  # The document is stored in an instance variable, so calling this multiple times will only query solr once.
-  # To force reload, set @policy_permissions_solr_cache to {}
-  def policy_permissions_doc(policy_pid)
-    @policy_permissions_solr_cache ||= {}
-    @policy_permissions_solr_cache[policy_pid] ||= get_permissions_solr_response_for_doc_id(policy_pid)
-  end
-
   # Tests whether the object's governing policy object grants edit access for the current user
-  def test_edit_from_policy(object_pid)
-    policy_pids = active_policy_pids_for(object_pid)
-    if policy_pids.nil?
-      return false
-    else
-      Rails.logger.debug("[CANCAN] -policy- Do the POLICIES #{policy_pids} provide READ permissions for #{current_user.user_key}?")
-      results = policy_pids.collect do |policy_pid|
-        group_intersection = user_groups & edit_groups_from_policy( policy_pid )
-        result = !group_intersection.empty? || edit_users_from_policy( policy_pid ).include?(current_user.user_key)
-        result
-      end
-      result = results.any? {|result| !!result}
-      Rails.logger.debug("[CANCAN] -policy- decision: #{result}")
-      return result
+  def test_edit_from_policy(object_id)
+    policy_ids = active_policy_ids_for(object_id)
+    return false if policy_ids.nil?
+    Rails.logger.debug("[CANCAN] -policy- Do the POLICIES #{policy_ids} provide READ permissions for #{current_user.user_key}?")
+    results = policy_ids.collect do |policy_id|
+      group_intersection = user_groups & edit_groups_from_policy( policy_id )
+      result = !group_intersection.empty? || edit_users_from_policy( policy_id ).include?(current_user.user_key)
+      result
     end
+    result = results.any? {|result| !!result}
+    Rails.logger.debug("[CANCAN] -policy- decision: #{result}")
+    result
   end
 
   # Tests whether the object's governing policy object grants read access for the current user
-  def test_read_from_policy(object_pid)
-    policy_pids = active_policy_pids_for(object_pid)
-    if policy_pids.nil?
-      return false
-    else
-      Rails.logger.debug("[CANCAN] -policy- Do the POLICIES #{policy_pids} provide READ permissions for #{current_user.user_key}?")
-      results = policy_pids.collect do |policy_pid|
-        group_intersection = user_groups & read_groups_from_policy( policy_pid )
-        result = !group_intersection.empty? || read_users_from_policy( policy_pid ).include?(current_user.user_key)
-        result
-      end
-      result = results.any? {|result| !!result}
-      Rails.logger.debug("[CANCAN] -policy- decision: #{result}")
+  def test_read_from_policy(object_id)
+    policy_ids = active_policy_ids_for(object_id)
+    return false if policy_ids.nil?
+    Rails.logger.debug("[CANCAN] -policy- Do the POLICIES #{policy_ids} provide READ permissions for #{current_user.user_key}?")
+    results = policy_ids.collect do |policy_id|
+      group_intersection = user_groups & read_groups_from_policy( policy_id )
+      result = !group_intersection.empty? || read_users_from_policy( policy_id ).include?(current_user.user_key)
       result
     end
-  end
-
-  # Returns the list of groups granted edit access by the policy object identified by policy_pids
-  def edit_groups_from_policy(policy_pids)
-    policy_permissions = policy_permissions_doc(policy_pids)
-    edit_group_field = Hydra.config[:permissions][:inheritable][:edit][:group]
-    eg = ((policy_permissions == nil || policy_permissions.fetch(edit_group_field,nil) == nil) ? [] : policy_permissions.fetch(edit_group_field,nil))
-    Rails.logger.debug("[CANCAN] -policy- edit_groups: #{eg.inspect}")
-    return eg
-  end
-
-  # Returns the list of groups granted read access by the policy object identified by policy_pids
-  # Note: edit implies read, so read_groups is the union of edit and read groups
-  def read_groups_from_policy(policy_pids)
-    policy_permissions = policy_permissions_doc(policy_pids)
-    read_group_field = Hydra.config[:permissions][:inheritable][:read][:group]
-    rg = edit_groups_from_policy(policy_pids) | ((policy_permissions == nil || policy_permissions.fetch(read_group_field,nil) == nil) ? [] : policy_permissions.fetch(read_group_field,nil))
-    Rails.logger.debug("[CANCAN] -policy- read_groups: #{rg.inspect}")
-    return rg
-  end
-
-  # Returns the list of users granted edit access by the policy object identified by policy_pids
-  def edit_users_from_policy(policy_pids)
-    policy_permissions = policy_permissions_doc(policy_pids)
-    edit_user_field = Hydra.config[:permissions][:inheritable][:edit][:individual]
-    eu = ((policy_permissions == nil || policy_permissions.fetch(edit_user_field,nil) == nil) ? [] : policy_permissions.fetch(edit_user_field,nil))
-    Rails.logger.debug("[CANCAN] -policy- edit_users: #{eu.inspect}")
-    return eu
-  end
-
-  # Returns the list of users granted read access by the policy object identified by policy_pids
-  # Note: edit implies read, so read_users is the union of edit and read users
-  def read_users_from_policy(policy_pids)
-    policy_permissions = policy_permissions_doc(policy_pids)
-    read_user_field = Hydra.config[:permissions][:inheritable][:read][:individual]
-    ru = edit_users_from_policy(policy_pids) | ((policy_permissions == nil || policy_permissions.fetch(read_user_field, nil) == nil) ? [] : policy_permissions.fetch(read_user_field, nil))
-    Rails.logger.debug("[CANCAN] -policy- read_users: #{ru.inspect}")
-    return ru
+    result = results.any? {|result| !!result}
+    Rails.logger.debug("[CANCAN] -policy- decision: #{result}")
+    result
   end
 
   private
 
   # Grabs the value of field_name from solr_result
   # @example
-  #   solr_result = Multiresimage.search_with_conditions({:id=>object_pid}, :fl=>'is_governed_by_s')
+  #   solr_result = Multiresimage.search_with_conditions({:id=>object_id}, :fl=>'is_governed_by_s')
   #   value_from_solr_field(solr_result, 'is_governed_by_s')
   #   => ["info:fedora/changeme:2278"]
   def value_from_solr_field(solr_result, field_name)
@@ -148,10 +72,6 @@ module Hydra::MultiplePolicyAwareAbility
     else
       return field_from_result[field_name]
     end
-  end
-
-  def policy_pids_cache
-    @policy_pids_cache ||= {}
   end
 
   # Returns the Model used for AdminPolicy objects.

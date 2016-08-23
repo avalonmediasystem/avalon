@@ -12,27 +12,9 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-require 'rails_helper'
-
-describe RoleMap do
-  describe "role map persistor" do
-    before :each do
-      RoleMap.reset!
-    end
-
-    after :each do
-      RoleMap.all.each &:destroy
-    end
-
-    it "should properly initialize the map" do
-      expect(RoleMapper.map).to eq(YAML.load(File.read(File.join(Rails.root, "config/role_map.yml")))[Rails.env])
-    end
-
-    it "should properly persist a hash" do
-      new_hash = { 'archivist' => ['alice.archivist@example.edu'], 'registered' => ['bob.user@example.edu','charlie.user@example.edu'] }
-      RoleMap.replace_with!(new_hash)
-      expect(RoleMapper.map).to eq(new_hash)
-      expect(RoleMap.load).to eq(new_hash)
-    end
+FactoryGirl.define do
+  factory :lease, class: Lease do
+    begin_time { Date.yesterday }
+    end_time { Date.tomorrow }
   end
 end

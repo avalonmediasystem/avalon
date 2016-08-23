@@ -18,16 +18,17 @@ FactoryGirl.define do
     creator { [FactoryGirl.create(:user).username] }
     date_issued { Time.zone.today.edtf.to_s }
 
-    trait :with_collection do
+    # trait :with_collection do
       collection { FactoryGirl.create(:collection) }
-    end
+      governing_policies { [collection] }
+    # end
 
     factory :published_media_object do
-      with_collection
+      # with_collection
       avalon_publisher { 'publisher' }
 
       factory :fully_searchable_media_object do
-        with_collection
+        # with_collection
         visibility { 'public' }
         abstract { Faker::Lorem.paragraph }
         contributor { [Faker::Name.name] }

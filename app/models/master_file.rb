@@ -253,6 +253,7 @@ class MasterFile < ActiveFedora::Base
       if self.permalink
         url = self.permalink(permalink_opts)
       else
+        # TODO: Fix deprecation warning for next line
         url = embed_master_file_path(self.id, only_path: false, protocol: '//')
       end
       height = is_video? ? (width/display_aspect_ratio.to_f).floor : AUDIO_HEIGHT
@@ -605,14 +606,13 @@ class MasterFile < ActiveFedora::Base
 
     # Formats like MP4 can be caught as both audio and video
     # so the case statement flows in the preferred order
-    self.file_format = case
-                    when mediainfo.video?
-                      'Moving image'
-                    when mediainfo.audio?
-                       'Sound'
-                    else
-                       'Unknown'
-                    end
+    self.file_format = if mediainfo.video?
+                         'Moving image'
+                       elsif mediainfo.audio?
+                         'Sound'
+                       else
+                         'Unknown'
+                       end
 
     self.duration = begin
       mediainfo.duration.to_s

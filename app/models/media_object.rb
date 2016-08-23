@@ -13,8 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 class MediaObject < ActiveFedora::Base
   include Hydra::AccessControls::Permissions
-  # include Avalon::AccessControls::Hidden
-  # include Avalon::AccessControls::VirtualGroups
+  include Hidden
+  include VirtualGroups
   include ActiveFedora::Associations
   include MediaObjectMods
   include Avalon::Workflow::WorkflowModelMixin
@@ -40,13 +40,12 @@ class MediaObject < ActiveFedora::Base
   # blank. Since identifier is set automatically we only need to worry about creator,
   # title, and date of creation.
 
-  validates :title, :presence => true
+  validates :title, presence: true
   validate  :validate_language
-  validates :date_issued, :presence => true
+  validates :date_issued, presence: true
   validate  :report_missing_attributes
   validates :collection, presence: true
-  # TODO: Fix the next line
-  # validates :governing_policies, presence: true
+  validates :governing_policies, presence: true
   validate  :validate_related_items
   validate  :validate_dates
   validate  :validate_note_type
@@ -93,7 +92,7 @@ class MediaObject < ActiveFedora::Base
   accepts_nested_attributes_for :master_files, :allow_destroy => true
 
   def published?
-    not self.avalon_publisher.blank?
+    !avalon_publisher.blank?
   end
 
   def destroy
@@ -149,11 +148,10 @@ class MediaObject < ActiveFedora::Base
 
   # This requires the MediaObject having an actual pid
   def collection= co
-    # TODO: Removes existing association
-
+    old_collection = self.collection
     self._collection= co
-    self.governing_policies -= [self.governing_policies.to_a.find {|gp| gp.is_a? Admin::Collection }]
     self.governing_policies += [co]
+    self.governing_policies.delete(old_collection)
     if (self.read_groups + self.read_users + self.discover_groups + self.discover_users).empty?
       # TODO: Fix the next line
       # self.rightsMetadata.content = co.defaultRights.content unless co.nil?
@@ -165,7 +163,7 @@ class MediaObject < ActiveFedora::Base
   # of publishing _explicit_ instead of an accidental side effect.
   def publish!(user_key)
     self.avalon_publisher = user_key.blank? ? nil : user_key
-    self.save(validate: false)
+    save!
   end
 
   def finished_processing?
@@ -234,16 +232,16 @@ class MediaObject < ActiveFedora::Base
   #   solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
   #   solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
   #   indexer = Solrizer::Descriptor.new(:string, :stored, :indexed, :multivalued)
-  #   solr_doc[Solrizer.default_field_mapper.solr_name("read_access_virtual_group", indexer)] = virtual_read_groups
-  #   solr_doc[Solrizer.default_field_mapper.solr_name("read_access_ip_group", indexer)] = collect_ips_for_index(ip_read_groups)
-  #   solr_doc[Hydra.config.permissions.read.group] ||= []
-  #   solr_doc[Hydra.config.permissions.read.group] += solr_doc[Solrizer.default_field_mapper.solr_name("read_access_ip_group", indexer)]
+    solr_doc['read_access_virtual_group_ssim'] = virtual_read_groups
+    solr_doc['read_access_ip_group_ssim'] = collect_ips_for_index(ip_read_groups)
+    solr_doc[Hydra.config.permissions.read.group] ||= []
+    solr_doc[Hydra.config.permissions.read.group] += solr_doc['read_access_ip_group_ssim']
   #   solr_doc["dc_creator_tesim"] = self.creator
   #   solr_doc["dc_publisher_tesim"] = self.publisher
   #   solr_doc["title_ssort"] = self.title
   #   solr_doc["creator_ssort"] = Array(self.creator).join(', ')
     solr_doc["date_digitized_sim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
-  #   solr_doc["date_ingested_sim"] = Time.parse(self.create_date).strftime "%F"
+  #   solr_doc["date_ingested_sim"] = self.create_date.strftime "%F"
   #   #include identifiers for parts
     solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier }.flatten
     #include labels for parts and their structural metadata
@@ -441,9 +439,7 @@ class MediaObject < ActiveFedora::Base
 
   def update_permalink
     ensure_permalink!
-    # unless self.descMetadata.permalink.include? self.permalink
-    #   self.descMetadata.permalink = self.permalink
-    # end
+    true
   end
 
   class << self

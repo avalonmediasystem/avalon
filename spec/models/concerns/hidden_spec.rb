@@ -14,25 +14,26 @@
 
 require 'rails_helper'
 
-describe RoleMap do
-  describe "role map persistor" do
-    before :each do
-      RoleMap.reset!
+describe Hidden do
+  before do
+    class Foo < ActiveFedora::Base
+      include Hydra::AccessControls::Permissions
+      include Hidden
+    end
+  end
+
+  subject { Foo.new }
+
+  describe 'hidden' do
+    it 'should default to discoverable' do
+      expect(subject.hidden?).to be false
+      expect(subject.to_solr['hidden_bsi']).to be false
     end
 
-    after :each do
-      RoleMap.all.each &:destroy
-    end
-
-    it "should properly initialize the map" do
-      expect(RoleMapper.map).to eq(YAML.load(File.read(File.join(Rails.root, "config/role_map.yml")))[Rails.env])
-    end
-
-    it "should properly persist a hash" do
-      new_hash = { 'archivist' => ['alice.archivist@example.edu'], 'registered' => ['bob.user@example.edu','charlie.user@example.edu'] }
-      RoleMap.replace_with!(new_hash)
-      expect(RoleMapper.map).to eq(new_hash)
-      expect(RoleMap.load).to eq(new_hash)
+    it 'should set hidden?' do
+      subject.hidden = true
+      expect(subject.hidden?).to be true
+      expect(subject.to_solr['hidden_bsi']).to be_truthy
     end
   end
 end

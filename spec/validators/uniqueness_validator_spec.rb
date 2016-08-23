@@ -16,13 +16,13 @@ require 'rails_helper'
 
 describe "UniquenessValidator" do
 
-  let(:solr_field) {"title_tesim"}
-  let(:validator) {UniquenessValidator.new({:attributes => [:title], :solr_name => solr_field})}
-
-  before(:each) do
-    @record = double(pid:"avalon:1")
-    allow(@record).to receive("errors").and_return([])
+  class Foo < ActiveFedora::Base
+    property :title, predicate: ::RDF::Vocab::DC.title, multiple: false
   end
+
+  let(:solr_field) {"title_uniq_si"}
+  let(:validator) {UniquenessValidator.new({:attributes => [:title], :solr_name => solr_field})}
+  let(:record) {Foo.new}
 
   it "should raise an exception if solr_name option is missing" do
      expect{UniquenessValidator.new({attributes: [:title]})}.to raise_error ArgumentError
@@ -30,26 +30,27 @@ describe "UniquenessValidator" do
 
   it "should not return errors when field is unique" do
     allow(validator).to receive("find_doc").and_return(nil)
-    expect(@record).not_to receive('errors')
-    validator.validate_each(@record, "title", "new_title")
+    expect(record).not_to receive('errors')
+    validator.validate_each(record, "title", "new_title")
   end
 
   it "should not return errors when field is unique but record is the same" do
-    doc = double(pid: "avalon:1")
+    doc = double(id: record.id)
     allow(validator).to receive("find_doc").and_return(doc)
-    expect(@record).not_to receive('errors')
-    validator.validate_each(@record, "title", "new_title")
+    expect(record.errors).not_to receive('add')
+    validator.validate_each(record, "title", "new_title")
   end
 
   it "should return errors when field is not unique" do
-    doc = double(pid: "avalon:2")
+    doc = double(id: 'different-id')
     allow(validator).to receive("find_doc").and_return(doc)
-    expect(@record.errors).to receive('add')
-    validator.validate_each(@record, "title", "old_title")
+    # expect(record.errors).to receive('add')
+    validator.validate_each(record, "title", "old_title")
+    expect(record.errors).to_not be_empty
   end
 
   describe "#find_doc" do
-    let (:klass) {@record.class}
+    let (:klass) {record.class}
     let (:value) {"old_title"}
 
     it "should use the solr field name and supplied values" do
@@ -59,7 +60,7 @@ describe "UniquenessValidator" do
       validator.find_doc(klass, value)
     end
     it "should return one record when present" do
-      doc = double(pid: "avalon:1")
+      doc = Foo.new
       relation = double()
       allow(relation).to receive("first").and_return(doc)
       allow(klass).to receive("where").and_return(relation)

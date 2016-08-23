@@ -415,6 +415,9 @@ describe MasterFile do
   describe '#update_progress_on_success!' do
     subject(:master_file) { FactoryGirl.create(:master_file) }
     let(:encode) { double("encode", :output => []) }
+    before do
+      allow(master_file).to receive(:update_ingest_batch).and_return(true)
+    end
 
     it 'should set the digitized date' do
       master_file.update_progress_on_success!(encode)

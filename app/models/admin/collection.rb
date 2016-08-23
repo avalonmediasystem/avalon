@@ -29,8 +29,7 @@ class Admin::Collection < ActiveFedora::Base
   # has_subresource 'inheritedRights', class_name: 'Hydra::Datastream::InheritableRightsMetadata', autocreate: true
   # has_subresource 'defaultRights', class_name: 'Hydra::Datastream::NonIndexedRightsMetadata', autocreate: true
 
-  # TODO: fix next line
-  # validates :name, :uniqueness => { :solr_name => 'name_sim'}, presence: true
+  validates :name, :uniqueness => { :solr_name => 'name_uniq_si'}, presence: true
   validates :unit, presence: true, inclusion: { in: Proc.new{ Admin::Collection.units } }
   validates :managers, length: {minimum: 1, message: "list can't be empty."}
 
@@ -57,7 +56,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def created_at
-    @created_at ||= DateTime.parse(create_date)
+    @created_at ||= create_date
   end
 
   def managers
@@ -141,19 +140,19 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def self.reassign_media_objects( media_objects, source_collection, target_collection)
-    media_objects.dup.each do |media_object|
+    media_objects.each do |media_object|
 
-      source_collection.remove_relationship(:is_member_of_collection, "info:fedora/#{media_object.id}")
-      source_collection.media_objects.delete media_object
+      # source_collection.remove_relationship(:is_member_of_collection, "info:fedora/#{media_object.id}")
+      # source_collection.media_objects.delete media_object
 
-      target_collection.add_relationship(:is_member_of_collection, "info:fedora/#{media_object.id}")
-      target_collection.media_objects << media_object
+      # target_collection.add_relationship(:is_member_of_collection, "info:fedora/#{media_object.id}")
+      # target_collection.media_objects << media_object
 
       media_object.collection = target_collection
       media_object.save(validate: false)
     end
-    source_collection.save!
-    target_collection.save!
+    # source_collection.save!
+    # target_collection.save!
   end
 
   def reindex_members
@@ -171,7 +170,8 @@ class Admin::Collection < ActiveFedora::Base
 
   def to_solr(solr_doc=Hash.new, *args)
     solr_doc = super(solr_doc)
-    solr_doc[Solrizer.default_field_mapper.solr_name("name", :facetable, type: :string)] = self.name
+    solr_doc["name_ssi"] = self.name
+    solr_doc["name_uniq_si"] = self.name.downcase.gsub(/\s+/,'') if self.name.present?
     solr_doc[Solrizer.default_field_mapper.solr_name("dropbox_directory_name", :facetable, type: :string)] = self.dropbox_directory_name
     solr_doc
   end

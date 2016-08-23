@@ -23,8 +23,8 @@ class Ability
     @user_groups = default_user_groups
     @user_groups |= current_user.groups if current_user and current_user.respond_to? :groups
     @user_groups |= ['registered'] unless current_user.new_record?
-    @user_groups |= @session[:virtual_groups] if @session.present? and @session.has_key? :virtual_groups
-    @user_groups |= [@session[:remote_ip]] if @session.present? and @session.has_key? :remote_ip
+    @user_groups |= @options[:virtual_groups] if @options.present? and @options.has_key? :virtual_groups
+    @user_groups |= [@options[:remote_ip]] if @options.present? and @options.has_key? :remote_ip
     @user_groups
   end
 
@@ -59,16 +59,16 @@ class Ability
   def custom_permissions(user=nil, session=nil)
     # playlist_permissions
     unless full_login? and @user_groups.include? "administrator"
-      cannot :read, MediaObject do |mediaobject|
-        !(test_read(mediaobject.id) && mediaobject.published?) && !test_edit(mediaobject.id)
+      cannot :read, MediaObject do |media_object|
+        !(test_read(media_object.id) && media_object.published?) && !test_edit(media_object.id)
       end
 
       can :read, MasterFile do |master_file|
-        can? :read, master_file.mediaobject
+        can? :read, master_file.media_object
       end
 
       can :read, Derivative do |derivative|
-        can? :read, derivative.masterfile.mediaobject
+        can? :read, derivative.masterfile.media_object
       end
 
       cannot :read, Admin::Collection unless full_login?
@@ -82,13 +82,13 @@ class Ability
           cannot :read, Admin::Collection
         end
 
-        can :update_access_control, MediaObject do |mediaobject|
-          @user.in?(mediaobject.collection.managers) ||
-            (is_editor_of?(mediaobject.collection) && !mediaobject.published?)
+        can :update_access_control, MediaObject do |media_object|
+          @user.in?(media_object.collection.managers) ||
+            (is_editor_of?(media_object.collection) && !media_object.published?)
         end
 
-        can :unpublish, MediaObject do |mediaobject|
-          @user.in?(mediaobject.collection.managers)
+        can :unpublish, MediaObject do |media_object|
+          @user.in?(media_object.collection.managers)
         end
 
         can :update, Admin::Collection do |collection|
@@ -115,12 +115,12 @@ class Ability
           is_editor_of?(collection)
         end
 
-        can :inspect, MediaObject do |mediaobject|
-          is_member_of?(mediaobject.collection)
+        can :inspect, MediaObject do |media_object|
+          is_member_of?(media_object.collection)
         end
 
         can :edit, MasterFile do |master_file|
-          can? :edit, master_file.mediaobject
+          can? :edit, master_file.media_object
         end
 
         # Users logged in through LTI cannot share
@@ -133,15 +133,15 @@ class Ability
         can :manage, Avalon::ControlledVocabulary
       end
 
-      cannot :update, MediaObject do |mediaobject|
-        (not full_login?) || (!is_member_of?(mediaobject.collection)) ||
-          ( mediaobject.published? && !@user.in?(mediaobject.collection.managers) )
+      cannot :update, MediaObject do |media_object|
+        (not full_login?) || (!is_member_of?(media_object.collection)) ||
+          ( media_object.published? && !@user.in?(media_object.collection.managers) )
       end
 
-      cannot :destroy, MediaObject do |mediaobject|
-        # non-managers can only destroy mediaobject if it's unpublished
-        (not full_login?) || (!is_member_of?(mediaobject.collection)) ||
-          ( mediaobject.published? && !@user.in?(mediaobject.collection.managers) )
+      cannot :destroy, MediaObject do |media_object|
+        # non-managers can only destroy media_object if it's unpublished
+        (not full_login?) || (!is_member_of?(media_object.collection)) ||
+          ( media_object.published? && !@user.in?(media_object.collection.managers) )
       end
 
       cannot :destroy, Admin::Collection do |collection, other_user_collections=[]|
@@ -188,12 +188,12 @@ class Ability
 
   def full_login?
     return @full_login unless @full_login.nil?
-    @full_login = ( @session.present? and @session.has_key? :full_login ) ? @session[:full_login] : true
+    @full_login = ( @options.present? and @options.has_key? :full_login ) ? @options[:full_login] : true
     @full_login
   end
 
   def is_api_request?
-    @json_api_login ||= !!@session[:json_api_login] if @session.present?
+    @json_api_login ||= !!@options[:json_api_login] if @options.present?
     @json_api_login ||= false
     @json_api_login
   end

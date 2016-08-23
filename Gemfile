@@ -49,6 +49,7 @@ gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 gem 'net-ldap'
 gem 'edtf'
+gem 'rest-client'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -75,7 +76,9 @@ group :test do
   gem 'database_cleaner'
   gem 'coveralls'
   gem 'shoulda-matchers'
-  # gem 'fakefs', require: 'fakefs/safe'
-  # gem 'fakeweb'
+  gem 'fakefs', require: 'fakefs/safe'
+  gem 'fakeweb'
+  gem 'email_spec'
+  gem 'capybara'
   # gem 'hashdiff'
 end

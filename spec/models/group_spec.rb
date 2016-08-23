@@ -12,27 +12,24 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-require 'rails_helper'
+require 'spec_helper'
 
-describe RoleMap do
-  describe "role map persistor" do
-    before :each do
-      RoleMap.reset!
-    end
+describe Admin::Group do
 
-    after :each do
-      RoleMap.all.each &:destroy
-    end
+  describe "name" do
+    it { is_expected.to validate_presence_of( :name )}
+    it { is_expected.not_to allow_value( 'group.01' ).for( :name )}
+    it { is_expected.not_to allow_value( 'group;01' ).for( :name )}
+    it { is_expected.not_to allow_value( 'group%01' ).for( :name )}
+    it { is_expected.not_to allow_value( 'group/01' ).for( :name )}
+  end
 
-    it "should properly initialize the map" do
-      expect(RoleMapper.map).to eq(YAML.load(File.read(File.join(Rails.root, "config/role_map.yml")))[Rails.env])
-    end
-
-    it "should properly persist a hash" do
-      new_hash = { 'archivist' => ['alice.archivist@example.edu'], 'registered' => ['bob.user@example.edu','charlie.user@example.edu'] }
-      RoleMap.replace_with!(new_hash)
-      expect(RoleMapper.map).to eq(new_hash)
-      expect(RoleMap.load).to eq(new_hash)
+  describe "non system groups" do
+    it "should not have system groups" do
+      groups = Admin::Group.non_system_groups
+      system_groups = Avalon::Configuration.lookup('groups.system_groups')
+      groups.each { |g| expect(system_groups).not_to include g.name }
     end
   end
+
 end
