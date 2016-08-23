@@ -21,13 +21,15 @@
 #                  Must be set to save the object
 #                  Always set to the supplied date and 23:59:59 UTC for the time on save (end of the day).
 class Lease < ActiveFedora::Base
+  include Hydra::AdminPolicyBehavior
+
   before_save :apply_default_begin_time, :ensure_end_time_present, :validate_dates, :format_times
 
   #has_and_belongs_to_many :media_objects, class_name: 'MediaObject', property: :has_member, inverse_of: :is_governed_by
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
-  property :begin_time, predicate: Avalon::RDFVocab::Lease::begin_time, multiple: false, type: :date
-  property :end_time, predicate: Avalon::RDFVocab::Lease::end_time, multiple: false, type: :date
+  property :begin_time, predicate: Avalon::RDFVocab::Lease::begin_time, multiple: false
+  property :end_time, predicate: Avalon::RDFVocab::Lease::end_time, multiple: false
   #has_metadata name: 'inheritedRights', type: Hydra::Datastream::InheritableRightsMetadata
 
   #delegate :read_groups, :read_groups=, :read_users, :read_users=, to: :inheritedRights
@@ -45,9 +47,6 @@ class Lease < ActiveFedora::Base
     solr_doc = super(solr_doc)
     Solrizer.insert_field(solr_doc, 'begin_time', begin_time, :sortable)
     Solrizer.insert_field(solr_doc, 'end_time', end_time, :sortable)
-    # Clear out incorrectly named dynamic fields
-    solr_doc.delete('begin_time_dtsim')
-    solr_doc.delete('end_time_dtsim')
     solr_doc
   end
 
@@ -80,25 +79,71 @@ class Lease < ActiveFedora::Base
   # @param [Date, Time, String] a date or time object or a string that DateTime can parts_with_order
   # @return [String] supplied date and time with the passed date and time portion set to 00:00:00 UTC time in the iso8601 format
   def start_of_day(time)
-    DateTime.parse(time.to_s).utc.beginning_of_day.iso8601
+    DateTime.parse(time.to_s).utc.beginning_of_day
   end
 
   # Take a supplied date and format it in iso8601 with the time portion set to 11:59:59 UTC
   # @param [Date, Time, String] a date or time object or a string that DateTime can parts_with_order
   # @return [String] supplied date and time with the passed date and time portion set to 11:59:59 UTC time in the iso8601 format
   def end_of_day(time)
-    DateTime.parse(time.to_s).utc.end_of_day.iso8601
+    DateTime.parse(time.to_s).utc.end_of_day
   end
 
   # Calculate lease type by inspecting read_users and read_groups values, each of which are assumed to contain a single value
   # @return [String] "user" for user lease, "ip" for ip group lease, "local" for local group lease, "external" for external group lease, nil for others
   def lease_type
-    return "user" if self.read_users.present?
-    group = self.read_groups.first
+    return "user" if self.inherited_read_users.present?
+    group = self.inherited_read_groups.first
     return nil if group.nil?
     return "ip" if IPAddr.new(group) rescue false
     return "local" if Admin::Group.exists? group
     return "external"
+  end
+
+  def inherited_edit_users
+    default_permissions.select {|p| p.access == 'edit' && p.type == 'person'}.collect(&:agent_name)
+  end
+
+  def inherited_edit_users= users
+    (inherited_edit_users - users).each { |u| remove_permission(u, 'person', 'edit') }
+    (users - inherited_edit_users).each { |u| add_permission(u, 'person', 'edit') }
+  end
+
+  def inherited_read_users
+    default_permissions.select {|p| p.access == 'read' && p.type == 'person'}.collect(&:agent_name)
+  end
+
+  def inherited_read_users= users
+    (inherited_read_users - users).each { |u| remove_permission(u, 'person', 'read') }
+    (users - inherited_read_users).each { |u| add_permission(u, 'person', 'read') }
+  end
+
+  def inherited_edit_groups
+    default_permissions.select {|p| p.access == 'edit' && p.type == 'group'}.collect(&:agent_name)
+  end
+
+  def inherited_edit_groups= groups
+    (inherited_edit_groups - groups).each { |u| remove_permission(u, 'group', 'edit') }
+    (groups - inherited_edit_groups).each { |u| add_permission(u, 'group', 'edit') }
+  end
+
+  def inherited_read_groups
+    default_permissions.select {|p| p.access == 'read' && p.type == 'group'}.collect(&:agent_name)
+  end
+
+  def inherited_read_groups= groups
+    (inherited_read_groups - groups).each { |u| remove_permission(u, 'group', 'read') }
+    (groups - inherited_read_groups).each { |u| add_permission(u, 'group', 'read') }
+  end
+
+private
+
+  def remove_permission(name, type, access)
+    self.default_permissions = self.default_permissions.reject {|p| p.agent_name == name && p.type == type && p.access == access}
+  end
+
+  def add_permission(name, type, access)
+    self.default_permissions.build({name: name, type: type, access: access})
   end
 
 end
