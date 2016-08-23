@@ -271,12 +271,12 @@ describe MasterFilesController do
       expect(flash[:errors]).to be_nil
       expect(flash[:notice]).to be_nil
     end
-    it "should remove contents of structuralMetadata datastream" do
+    it "should remove contents of structuralMetadata" do
       # remove the contents of the datastream
       post 'attach_structure', id: master_file.id
       master_file.reload
-      expect(master_file.structuralMetadata.new?).to be true
-      expect(master_file.structuralMetadata.empty?).to be true
+      # expect(master_file.structuralMetadata.new?).to be true
+      expect(master_file.structuralMetadata.content.empty?).to be true
       expect(master_file.structuralMetadata.valid?).to be false
       expect(flash[:errors]).to be_nil
       expect(flash[:notice]).to be_nil

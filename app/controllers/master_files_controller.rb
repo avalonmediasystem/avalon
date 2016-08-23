@@ -106,7 +106,8 @@ class MasterFilesController < ApplicationController
           flash[:error] = validation_errors.map{|e| "Line #{e.line}: #{e.to_s}" }
         end
       else
-        @master_file.structuralMetadata.delete
+        # TODO: mark structuralMetadata as dirty or somehow get it to save
+        @master_file.structuralMetadata.content.clear
       end
       if flash.empty?
         flash[:error] = "There was a problem storing the file" unless @master_file.save
