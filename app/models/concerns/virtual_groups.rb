@@ -18,8 +18,7 @@
       extend ActiveSupport::Concern
 
       def local_read_groups
-        []
-        # self.read_groups.select {|g| Admin::Group.exists? g}
+        self.read_groups.select {|g| Admin::Group.exists? g}
       end
 
       def ip_read_groups
