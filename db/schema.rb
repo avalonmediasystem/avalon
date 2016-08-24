@@ -11,7 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160803143858) do
+ActiveRecord::Schema.define(version: 20160817153843) do
+
+  create_table "api_tokens", force: :cascade do |t|
+    t.string   "token",      null: false
+    t.string   "username",   null: false
+    t.string   "email",      null: false
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "api_tokens", ["token"], name: "index_api_tokens_on_token", unique: true
+  add_index "api_tokens", ["username"], name: "index_api_tokens_on_username"
 
   create_table "bookmarks", force: :cascade do |t|
     t.integer  "user_id",       null: false
