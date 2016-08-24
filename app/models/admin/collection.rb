@@ -12,8 +12,6 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-# require 'hydra/datastream/non_indexed_rights_metadata'
-# require 'hydra/model_mixins/hybrid_delegator'
 require 'avalon/role_controls'
 require 'avalon/controlled_vocabulary'
 require 'avalon/sanitizer'
@@ -21,32 +19,41 @@ require 'avalon/sanitizer'
 class Admin::Collection < ActiveFedora::Base
   include Hydra::AccessControls::Permissions
   include Hydra::AdminPolicyBehavior
-
-  # include Hydra::ModelMixins::HybridDelegator
   include ActiveFedora::Associations
 
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
-  # has_subresource 'inheritedRights', class_name: 'Hydra::Datastream::InheritableRightsMetadata', autocreate: true
-  # has_subresource 'defaultRights', class_name: 'Hydra::Datastream::NonIndexedRightsMetadata', autocreate: true
 
   validates :name, :uniqueness => { :solr_name => 'name_uniq_si'}, presence: true
   validates :unit, presence: true, inclusion: { in: Proc.new{ Admin::Collection.units } }
   validates :managers, length: {minimum: 1, message: "list can't be empty."}
 
-  property :name, predicate: Avalon::RDFVocab::Collection.name, multiple: false
-  property :unit, predicate: Avalon::RDFVocab::Collection.unit, multiple: false
-  property :description, predicate: Avalon::RDFVocab::Collection.description, multiple: false
-  property :dropbox_directory_name, predicate: Avalon::RDFVocab::Collection.dropbox_directory_name, multiple: false
-  property :default_read_users, predicate: Avalon::RDFVocab::Collection.default_read_users, multiple: true
-  property :default_read_groups, predicate: Avalon::RDFVocab::Collection.default_read_groups, multiple: true
-  property :default_visibility, predicate: Avalon::RDFVocab::Collection.default_visibility, multiple: false
-  property :default_hidden, predicate: Avalon::RDFVocab::Collection.default_hidden, multiple: false
-
-  # TODO: add indexing to these fields and multiple false handling...look at Form pattern?
-  # delegate :read_groups, :read_groups=, :read_users, :read_users=,
-  #          :visibility, :visibility=, :hidden?, :hidden=,
-  #          :local_read_groups, :virtual_read_groups, :ip_read_groups,
-  #          to: :defaultRights, prefix: :default
+  property :name, predicate: Avalon::RDFVocab::Collection.name, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :unit, predicate: Avalon::RDFVocab::Collection.unit, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :description, predicate: Avalon::RDFVocab::Collection.description, multiple: false do |index|
+    index.as :stored_searchable
+  end
+  property :dropbox_directory_name, predicate: Avalon::RDFVocab::Collection.dropbox_directory_name, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :default_read_users, predicate: Avalon::RDFVocab::Collection.default_read_users, multiple: true do |index|
+    index.as :symbol
+  end
+  property :default_read_groups, predicate: Avalon::RDFVocab::Collection.default_read_groups, multiple: true do |index|
+    index.as :symbol
+  end
+  property :default_visibility, predicate: Avalon::RDFVocab::Collection.default_visibility, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :default_hidden, predicate: Avalon::RDFVocab::Collection.default_hidden, multiple: false do |index|
+    index.as Solrizer::Descriptor.new(:boolean, :stored, :indexed)
+  end
+  property :identifier, predicate: Avalon::RDFVocab::Collection.identifier, multiple: true do |index|
+    index.as :facetable
+  end
 
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
   after_validation :create_dropbox_directory!, :on => :create
@@ -141,18 +148,9 @@ class Admin::Collection < ActiveFedora::Base
 
   def self.reassign_media_objects( media_objects, source_collection, target_collection)
     media_objects.each do |media_object|
-
-      # source_collection.remove_relationship(:is_member_of_collection, "info:fedora/#{media_object.id}")
-      # source_collection.media_objects.delete media_object
-
-      # target_collection.add_relationship(:is_member_of_collection, "info:fedora/#{media_object.id}")
-      # target_collection.media_objects << media_object
-
       media_object.collection = target_collection
       media_object.save(validate: false)
     end
-    # source_collection.save!
-    # target_collection.save!
   end
 
   def reindex_members
@@ -168,12 +166,10 @@ class Admin::Collection < ActiveFedora::Base
     handle_asynchronously :reindex_media_objects
   end
 
-  def to_solr(solr_doc=Hash.new, *args)
-    solr_doc = super(solr_doc)
-    solr_doc["name_ssi"] = self.name
-    solr_doc["name_uniq_si"] = self.name.downcase.gsub(/\s+/,'') if self.name.present?
-    solr_doc[Solrizer.default_field_mapper.solr_name("dropbox_directory_name", :facetable, type: :string)] = self.dropbox_directory_name
-    solr_doc
+  def to_solr
+    super.tap do |solr_doc|
+      solr_doc["name_uniq_si"] = self.name.downcase.gsub(/\s+/,'') if self.name.present?
+    end
   end
 
   def as_json(options={})

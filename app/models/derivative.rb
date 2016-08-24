@@ -17,17 +17,29 @@ require 'avalon/stream_mapper'
 class Derivative < ActiveFedora::Base
   belongs_to :master_file, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
 
-  property :location_url, predicate: Avalon::RDFVocab::Derivative.locationURL, multiple: false
-  property :hls_url, predicate: Avalon::RDFVocab::Derivative.hlsURL, multiple: false
-  property :duration, predicate: Avalon::RDFVocab::Derivative.duration, multiple: false
+  property :location_url, predicate: Avalon::RDFVocab::Derivative.locationURL, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :hls_url, predicate: Avalon::RDFVocab::Derivative.hlsURL, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :duration, predicate: Avalon::RDFVocab::Derivative.duration, multiple: false do |index|
+    index.as :stored_sortable
+  end
   property :track_id, predicate: Avalon::RDFVocab::Derivative.trackID, multiple: false
   property :hls_track_id, predicate: Avalon::RDFVocab::Derivative.hlsTrackID, multiple: false
-  property :managed, predicate: Avalon::RDFVocab::Derivative.isManaged, multiple: false
+  property :managed, predicate: Avalon::RDFVocab::Derivative.isManaged, multiple: false do |index|
+    index.as Solrizer::Descriptor.new(:boolean, :stored, :indexed)
+  end
   property :derivativeFile, predicate: Avalon::RDFVocab::Derivative.derivativeFile, multiple: false
 
   # Encoding datastream properties
-  property :quality, predicate: Avalon::RDFVocab::Encoding.quality, multiple: false
-  property :mime_type, predicate: Avalon::RDFVocab::Encoding.mimeType, multiple: false
+  property :quality, predicate: Avalon::RDFVocab::Encoding.quality, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :mime_type, predicate: Avalon::RDFVocab::Encoding.mimeType, multiple: false do |index|
+    index.as :stored_sortable
+  end
   property :audio_bitrate, predicate: Avalon::RDFVocab::Encoding.audioBitrate, multiple: false
   property :audio_codec, predicate: Avalon::RDFVocab::Encoding.audioCodec, multiple: false
   property :video_bitrate, predicate: Avalon::RDFVocab::Encoding.videoBitrate, multiple: false
@@ -82,6 +94,7 @@ class Derivative < ActiveFedora::Base
   def to_solr
     super.tap do |solr_doc|
       solr_doc['stream_path_ssi'] = location_url.split(/:/).last if location_url.present?
+      solr_doc['format_sim'] = self.format
     end
   end
 
