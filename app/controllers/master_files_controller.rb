@@ -106,8 +106,7 @@ class MasterFilesController < ApplicationController
           flash[:error] = validation_errors.map{|e| "Line #{e.line}: #{e.to_s}" }
         end
       else
-        # TODO: mark structuralMetadata as dirty or somehow get it to save
-        @master_file.structuralMetadata.content.clear
+        @master_file.structuralMetadata.content = "<?xml version=\"1.0\"?>"
       end
       if flash.empty?
         flash[:error] = "There was a problem storing the file" unless @master_file.save
@@ -245,7 +244,6 @@ class MasterFilesController < ApplicationController
 
   def set_frame
     master_file = MasterFile.find(params[:id])
-
     authorize! :read, master_file, message: "You do not have sufficient privileges to edit this file"
     opts = { :type => params[:type], :size => params[:size], :offset => params[:offset].to_f*1000, :preview => params[:preview] }
     respond_to do |format|
