@@ -11,7 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160817153843) do
+ActiveRecord::Schema.define(version: 20160824181325) do
+
+  create_table "annotations", force: :cascade do |t|
+    t.string "uuid"
+    t.string "source_uri"
+    t.text   "annotation"
+    t.string "type"
+  end
+
+  add_index "annotations", ["type"], name: "index_annotations_on_type"
 
   create_table "api_tokens", force: :cascade do |t|
     t.string   "token",      null: false
