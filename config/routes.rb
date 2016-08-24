@@ -65,6 +65,24 @@ Rails.application.routes.draw do
   end
   resources :derivatives, only: [:create]
 
+  namespace :admin do
+    resources :groups, except: [:show] do
+      collection do
+        put 'update_multiple'
+      end
+      member do
+        put 'update_users'
+      end
+    end
+    resources :collections do
+      member do
+        get 'edit'
+        get 'remove'
+        get 'items'
+      end
+    end
+  end
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

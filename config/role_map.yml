@@ -8,11 +8,11 @@ development:
 
 test:
   administrator:
-    - 
+    - archivist1@example.com
   manager:
-    -
+    - archivist1@example.com
   group_manager:
-    -
+    - archivist1@example.com
 
 production:
   # Add roles for users here.
