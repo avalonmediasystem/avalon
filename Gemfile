@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'hydra', git: 'https://github.com/projecthydra/hydra.git'
+gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', tag: 'avalon-r5'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.6'
