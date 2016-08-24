@@ -58,6 +58,7 @@ group :development, :test do
   gem 'solr_wrapper', '>= 0.3'
   gem 'fcrepo_wrapper'
   gem 'rspec-rails'
+  gem 'dotenv-rails'
 end
 
 group :development do
