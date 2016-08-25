@@ -4,7 +4,7 @@ Most of Avalon's configuration settings can be replaced by environment variables
 ## Configuration Files and Equivalent Environment Variables 
 * `avalon.yml`: (*NOTE*: If `avalon.yml` exists, it will be used and the following variables ignored)
   * `APP_NAME`
-  * `AVALON_URL`: Base URL for the Avalon server
+  * `BASE_URL`: Base URL for the Avalon server
   * `DROPBOX_PATH`: Base path for Avalon dropbox
   * `DROPBOX_URI`: Base URI for Avalon dropbox
   * `FEDORA_NAMESPACE`: Fedora PID prefix
