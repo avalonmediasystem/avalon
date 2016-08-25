@@ -44,7 +44,7 @@ module Avalon
     end
     
     ENVIRONMENT_MAP = {
-      "AVALON_URL" => { key: 'domain', read_proc: ->(v){read_avalon_url(v)}, write_proc: ->(v){write_avalon_url(v)} },
+      "BASE_URL" => { key: 'domain', read_proc: ->(v){read_avalon_url(v)}, write_proc: ->(v){write_avalon_url(v)} },
       "DROPBOX_PATH" => { key: "dropbox.path" },
       "DROPBOX_URI" => { key: "dropbox.upload_uri" },
       "FEDORA_NAMESPACE" => { key: "fedora.namespace" },
@@ -78,8 +78,13 @@ module Avalon
       "Z3950_HOST" => { key: "bib_retriever.host", infer: { key: 'bib_retriever.protocol', value: 'zoom' } },
       "Z3950_PORT" => { key: "bib_retriever.port", read_proc: ->(v){coerce(v, :to_i)} },
       "Z3950_DATABASE" => { key: "bib_retriever.database" },
-      "Z3950_ATTRIBBUTE" => { key: "bib_retriever.attribute", read_proc: ->(v){coerce(v, :to_i)} }
+      "Z3950_ATTRIBUTE" => { key: "bib_retriever.attribute", read_proc: ->(v){coerce(v, :to_i)} }
     }
+
+    ENV.keys.select { |k| k =~ /^AVALON_/ }.each do |key|
+      ENV[key.split(/_/,2).last] = ENV[key]
+    end
+    
     
     def set(key, value, hash=@config_hash)
       this_key,sub_key = key.split(/\./,2)
