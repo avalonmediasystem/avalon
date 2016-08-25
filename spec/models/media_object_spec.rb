@@ -193,8 +193,8 @@ describe MediaObject do
 
       it{ is_expected.to be_able_to(:share, MediaObject) }
       it "should not be able to read unauthorized, published MediaObject" do
-        media_object.avalon_publisher = "random"
-        media_object.save
+        media_object.publish! "random"
+        media_object.reload
         expect(subject.can?(:read, media_object)).to be false
       end
 
@@ -207,7 +207,7 @@ describe MediaObject do
       it "should be able to read authorized, published MediaObject" do
         media_object.read_users += [user.user_key]
         media_object.publish! "random"
-        media_object.save!
+        media_object.reload
         expect(subject.can?(:read, media_object)).to be true
       end
     end
@@ -232,16 +232,19 @@ describe MediaObject do
       it 'should not be able to read unauthorized, published MediaObject' do
         media_object.read_groups += [Faker::Internet.ip_v4_address]
         media_object.publish! "random"
+        media_object.reload
         expect(subject.can?(:read, media_object)).to be_falsey
       end
       it 'should be able to read single-ip authorized, published MediaObject' do
         media_object.read_groups += [ip_addr]
         media_object.publish! "random"
+        media_object.reload
         expect(subject.can?(:read, media_object)).to be_truthy
       end
       it 'should be able to read ip-range authorized, published MediaObject' do
         media_object.read_groups += ["#{ip_addr}/30"]
         media_object.publish! "random"
+        media_object.reload
         expect(subject.can?(:read, media_object)).to be_truthy
       end
     end
