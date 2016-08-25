@@ -83,6 +83,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resources :dropbox, :only => [] do
+    collection do
+      delete :bulk_delete
+    end
+  end
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
