@@ -16,7 +16,7 @@ require 'rails_helper'
 
 describe MediaObjectsHelper do
   describe "#current_quality" do
-    before(:each) do
+    before(:all) do
       @streaming_config = Avalon::Configuration["streaming"]
       Avalon::Configuration["streaming"] = {"default_quality" => "low"}
     end
