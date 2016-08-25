@@ -11,7 +11,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160817153843) do
+ActiveRecord::Schema.define(version: 20160825153112) do
+
+  create_table "annotations", force: :cascade do |t|
+    t.string "uuid"
+    t.string "source_uri"
+    t.text   "annotation"
+    t.string "type"
+  end
+
+  add_index "annotations", ["type"], name: "index_annotations_on_type"
 
   create_table "api_tokens", force: :cascade do |t|
     t.string   "token",      null: false
@@ -70,6 +79,28 @@ ActiveRecord::Schema.define(version: 20160817153843) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "playlist_items", force: :cascade do |t|
+    t.integer  "playlist_id", null: false
+    t.integer  "clip_id",     null: false
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "playlist_items", ["clip_id"], name: "index_playlist_items_on_clip_id"
+  add_index "playlist_items", ["playlist_id"], name: "index_playlist_items_on_playlist_id"
+
+  create_table "playlists", force: :cascade do |t|
+    t.string   "title"
+    t.integer  "user_id",    null: false
+    t.string   "comment"
+    t.string   "visibility"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "playlists", ["user_id"], name: "index_playlists_on_user_id"
 
   create_table "role_maps", force: :cascade do |t|
     t.string  "entry"
