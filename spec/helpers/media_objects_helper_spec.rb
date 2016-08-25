@@ -17,7 +17,11 @@ require 'rails_helper'
 describe MediaObjectsHelper do
   describe "#current_quality" do
     before(:each) do
-      allow(Avalon::Configuration).to receive('[]').with("streaming").and_return({"default_quality" => "low"})
+      @streaming_config = Avalon::Configuration["streaming"]
+      Avalon::Configuration["streaming"] = {"default_quality" => "low"}
+    end
+    after(:all) do
+      Avalon::Configuration["streaming"] = @streaming_config
     end
     let(:stream_info) {{stream_flash: [{quality: 'high'}, {quality: 'medium'}, {quality: 'low'}], stream_hls: [{quality: 'high'}, {quality: 'medium'}, {quality: 'low'}]}}
     let(:skip_transcoded_stream_info) {{stream_flash: [{quality: 'high'}], stream_hls: [{quality: 'high'}]}}
