@@ -8,6 +8,7 @@ Bundler.require(*Rails.groups)
 
 module HydraDemo
   class Application < Rails::Application
+    require 'avalon/configuration'
     
     config.generators do |g|
       g.test_framework :rspec, :spec => true
