@@ -160,7 +160,7 @@ describe Admin::GroupsController do
     context "Deleting a group" do
       it "should redirect to sign in page with a notice on when unauthenticated" do
 
-        expect { put 'update_multiple', group_ids: [group.name] }.not_to change { RoleControls.users(group.name) }
+        expect { put 'update_multiple', group_ids: [group.name] }.not_to change { Avalon::RoleControls.users(group.name) }
         expect(flash[:notice]).not_to be_nil
         expect(response).to redirect_to(new_user_session_path)
       end
@@ -168,7 +168,7 @@ describe Admin::GroupsController do
       it "should redirect to home page with a notice when authenticated but unauthorized" do
         login_as('student')
 
-        expect { put 'update_multiple', group_ids: [group.name] }.not_to change { RoleControls.users(group.name) }
+        expect { put 'update_multiple', group_ids: [group.name] }.not_to change { Avalon::RoleControls.users(group.name) }
         expect(flash[:notice]).not_to be_nil
         expect(response).to redirect_to(root_path)
       end
