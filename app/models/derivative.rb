@@ -15,36 +15,38 @@
 require 'avalon/stream_mapper'
 
 class Derivative < ActiveFedora::Base
+  include FrameSize
+  
   belongs_to :master_file, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
 
-  property :location_url, predicate: Avalon::RDFVocab::Derivative.locationURL, multiple: false do |index|
+  property :location_url, predicate: ::RDF::Vocab::EBUCore.locator, multiple: false do |index|
     index.as :stored_sortable
   end
   property :hls_url, predicate: Avalon::RDFVocab::Derivative.hlsURL, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :duration, predicate: Avalon::RDFVocab::Derivative.duration, multiple: false do |index|
+  property :duration, predicate: ::RDF::Vocab::EBUCore.duration, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :track_id, predicate: Avalon::RDFVocab::Derivative.trackID, multiple: false
+  property :track_id, predicate: ::RDF::Vocab::EBUCore.identifier, multiple: false
   property :hls_track_id, predicate: Avalon::RDFVocab::Derivative.hlsTrackID, multiple: false
   property :managed, predicate: Avalon::RDFVocab::Derivative.isManaged, multiple: false do |index|
     index.as Solrizer::Descriptor.new(:boolean, :stored, :indexed)
   end
-  property :derivativeFile, predicate: Avalon::RDFVocab::Derivative.derivativeFile, multiple: false
+  property :derivativeFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false
 
   # Encoding datastream properties
-  property :quality, predicate: Avalon::RDFVocab::Encoding.quality, multiple: false do |index|
+  property :quality, predicate: ::RDF::Vocab::EBUCore.encodingLevel, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :mime_type, predicate: Avalon::RDFVocab::Encoding.mimeType, multiple: false do |index|
+  property :mime_type, predicate: ::RDF::Vocab::EBUCore.hasMimeType, multiple: false do |index|
     index.as :stored_sortable
   end
   property :audio_bitrate, predicate: Avalon::RDFVocab::Encoding.audioBitrate, multiple: false
   property :audio_codec, predicate: Avalon::RDFVocab::Encoding.audioCodec, multiple: false
-  property :video_bitrate, predicate: Avalon::RDFVocab::Encoding.videoBitrate, multiple: false
-  property :video_codec, predicate: Avalon::RDFVocab::Encoding.videoCodec, multiple: false
-  property :resolution, predicate: Avalon::RDFVocab::Encoding.resolution, multiple: false
+  property :video_bitrate, predicate: ::RDF::Vocab::EBUCore.bitRate, multiple: false
+  property :video_codec, predicate: ::RDF::Vocab::EBUCore.hasCodec, multiple: false
+  frame_size_property :resolution, predicate: Avalon::RDFVocab::Common.resolution, multiple: false
 
   before_destroy :retract_distributed_files!
 

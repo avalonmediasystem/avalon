@@ -70,7 +70,7 @@ class MediaObject < ActiveFedora::Base
     end
   end
 
-  property :duration, predicate: Avalon::RDFVocab::MediaObject.duration, multiple: false do |index|
+  property :duration, predicate: ::RDF::Vocab::EBUCore.duration, multiple: false do |index|
     index.as :stored_sortable
   end
   property :avalon_resource_type, predicate: Avalon::RDFVocab::MediaObject.avalon_resource_type, multiple: true do |index|
@@ -82,7 +82,7 @@ class MediaObject < ActiveFedora::Base
   property :avalon_uploader, predicate: Avalon::RDFVocab::MediaObject.avalon_uploader, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :identifier, predicate: Avalon::RDFVocab::MediaObject.identifier, multiple: true do |index|
+  property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
     index.as :facetable
   end
 
