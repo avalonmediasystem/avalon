@@ -1,8 +1,6 @@
 source 'https://rubygems.org'
 
 gem 'hydra', git: 'https://github.com/projecthydra/hydra.git'
-gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', tag: 'avalon-r5'
-gem 'acts_as_list'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.6'
@@ -52,6 +50,8 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 gem 'net-ldap'
 gem 'edtf'
 gem 'rest-client'
+gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', tag: 'avalon-r5'
+gem 'acts_as_list'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

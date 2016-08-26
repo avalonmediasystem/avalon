@@ -17,6 +17,8 @@ class Ability
   include Hydra::Ability
   include Hydra::MultiplePolicyAwareAbility
 
+  self.ability_logic += [ :playlist_permissions, :playlist_item_permissions, :marker_permissions ]
+
   def user_groups
     return @user_groups if @user_groups
 
@@ -57,7 +59,7 @@ class Ability
   end
 
   def custom_permissions(user=nil, session=nil)
-    playlist_permissions
+
     unless full_login? and @user_groups.include? "administrator"
       cannot :read, MediaObject do |media_object|
         !(test_read(media_object.id) && media_object.published?) && !test_edit(media_object.id)
@@ -156,9 +158,6 @@ class Ability
       # can :create, Playlist
     end
     can :read, Playlist, visibility: Playlist::PUBLIC
-
-    playlist_item_permissions
-    marker_permissions
   end
 
   def playlist_item_permissions
