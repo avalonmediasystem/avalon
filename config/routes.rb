@@ -62,6 +62,7 @@ Rails.application.routes.draw do
     end
     collection do
       post :create, action: :create, constraints: { format: 'json' }
+      post :set_session_quality
       get :confirm_remove
       put :update_status
       # 'delete' has special signifigance so use 'remove' for now
@@ -113,6 +114,8 @@ Rails.application.routes.draw do
       delete :bulk_delete
     end
   end
+
+  match "/oembed", to: 'master_files#oembed', via: [:get]
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

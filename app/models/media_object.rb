@@ -107,7 +107,7 @@ class MediaObject < ActiveFedora::Base
 
   alias_method :'_collection=', :'collection='
 
-  # This requires the MediaObject having an actual pid
+  # This requires the MediaObject having an actual id
   def collection= co
     old_collection = self.collection
     self._collection= co

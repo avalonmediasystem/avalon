@@ -9,10 +9,63 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
-  revision: 1cdd3749f9bc887113a9d782ce15125628cc7695
+  revision: 1dd1f63b8110809c42141952890934b9f0f8041e
   branch: hydra10
   specs:
     avalon-workflow (0.0.3)
+
+GIT
+  remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
+  revision: d5a20bc90c93bda2377f2d53e3a3fefb3e7ba4b0
+  tag: avalon-r5
+  specs:
+    media_element_add_to_playlist (0.0.1)
+      rails (~> 4.0)
+
+GIT
+  remote: https://github.com/avalonmediasystem/media-element-thumbnail-selector
+  revision: b919ad61525cd608f42983846c87f48212e11646
+  tag: avalon-r4
+  specs:
+    media_element_thumbnail_selector (0.0.1)
+      rails (>= 3.2.3)
+
+GIT
+  remote: https://github.com/avalonmediasystem/mediaelement-hd-toggle.git
+  revision: 102ad74ef5baef7b15983a9a49586da461fe1d32
+  tag: avalon-r4
+  specs:
+    mediaelement-hd-toggle (0.0.1)
+
+GIT
+  remote: https://github.com/avalonmediasystem/mediaelement-qualityselector.git
+  revision: f0b1a10883a6e57faedff45112c1fb4243e99ad2
+  tag: avalon-r4
+  specs:
+    mediaelement-qualityselector (0.0.1)
+
+GIT
+  remote: https://github.com/avalonmediasystem/mediaelement-skin-avalon.git
+  revision: a564874595672d5f751a83ae43685728c247f49e
+  tag: avalon-r5
+  specs:
+    mediaelement-skin-avalon (0.0.1)
+
+GIT
+  remote: https://github.com/avalonmediasystem/mediaelement-title.git
+  revision: a2e67d24217f06a0a7d46c0175cc64fc178cf1fc
+  tag: avalon-r4
+  specs:
+    mediaelement-title (0.0.1)
+
+GIT
+  remote: https://github.com/avalonmediasystem/mediaelement_rails.git
+  revision: 86de64fd02e4982508c07dd6b3412430793e6955
+  branch: captions
+  specs:
+    mediaelement_rails (0.5.1)
+      jquery-rails (>= 1.0)
+      railties (>= 3.1)
 
 GIT
   remote: https://github.com/avalonmediasystem/omniauth-lti.git
@@ -291,6 +344,8 @@ GEM
       nokogiri (>= 1.5.9)
     mail (2.6.4)
       mime-types (>= 1.16, < 4)
+    media-element-logo-plugin (0.0.2)
+      rails (>= 3.2.3)
     mediainfo (0.7.2)
     method_source (0.8.2)
     mime-types (3.1)
@@ -562,6 +617,14 @@ DEPENDENCIES
   iconv
   jbuilder (~> 2.0)
   jquery-rails
+  media-element-logo-plugin
+  media_element_add_to_playlist!
+  media_element_thumbnail_selector!
+  mediaelement-hd-toggle!
+  mediaelement-qualityselector!
+  mediaelement-skin-avalon!
+  mediaelement-title!
+  mediaelement_rails!
   mediainfo
   mysql2
   net-ldap
