@@ -57,8 +57,8 @@ describe Permalink do
       let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object) }
 
       it 'should get the absolute path to the object' do
-        expect(Permalink.url_for(media_object)).to eq("http://localhost:3000/media_objects/#{CGI::escape(media_object.id)}")
-        expect(Permalink.url_for(master_file)).to eq("http://localhost:3000/media_objects/#{CGI::escape(media_object.id)}/section/#{CGI::escape(master_file.id)}")
+        expect(Permalink.url_for(media_object)).to eq("http://test.host/media_objects/#{CGI::escape(media_object.id)}")
+        expect(Permalink.url_for(master_file)).to eq("http://test.host/media_objects/#{CGI::escape(media_object.id)}/section/#{CGI::escape(master_file.id)}")
       end
 
       it 'permalink_for raises ArgumentError if not passed media_object or master_file' do

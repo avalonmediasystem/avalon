@@ -23,7 +23,7 @@
 class Lease < ActiveFedora::Base
   include Hydra::AdminPolicyBehavior
 
-  before_save :apply_default_begin_time, :ensure_end_time_present, :validate_dates, :format_times
+  before_save :apply_default_begin_time, :ensure_end_time_present, :validate_dates#, :format_times
 
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
@@ -34,17 +34,25 @@ class Lease < ActiveFedora::Base
     index.as :stored_sortable
   end
 
+  def begin_time= value
+    super(start_of_day(value))
+  end
+
+  def end_time= value
+    super(end_of_day(value))
+  end
+
   # Determines if the lease is currently active (today is between the begin and end time)
   # @return [Boolean] returns true if the lease is active
   def lease_is_active?
-    Date.today >= begin_time && Date.today <= end_time
+    start_of_day(Date.today) >= begin_time && end_of_day(Date.today) <= end_time
   end
 
-  # A before_save action that sets the times to the start and end of the day in the UTC timezome and formats them as is8061
-  def format_times
-    self.begin_time = start_of_day(begin_time)
-    self.end_time = end_of_day(end_time)
-  end
+  # # A before_save action that sets the times to the start and end of the day in the UTC timezome and formats them as is8061
+  # def format_times
+  #   self.begin_time = start_of_day(begin_time)
+  #   self.end_time = end_of_day(end_time)
+  # end
 
   # A before_save action that sets begin_time to Date.today if a begin_time has not been supplied
   def apply_default_begin_time
