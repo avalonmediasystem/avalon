@@ -70,19 +70,21 @@ class MediaObject < ActiveFedora::Base
     end
   end
 
-  property :duration, predicate: Avalon::RDFVocab::MediaObject.duration, multiple: false
-  property :avalon_resource_type, predicate: Avalon::RDFVocab::MediaObject.avalon_resource_type, multiple: true
-  property :avalon_publisher, predicate: Avalon::RDFVocab::MediaObject.avalon_publisher, multiple: false
-  property :avalon_uploader, predicate: Avalon::RDFVocab::MediaObject.avalon_uploader, multiple: false
-  property :identifier, predicate: Avalon::RDFVocab::MediaObject.identifier, multiple: true
-
-  # TODO use ordered association for parts/sections and get rid of this and parts_with_order
-  # has_subresource 'sectionsMetadata', class_name: 'ActiveFedora::SimpleDatastream' do |sds|
-  #   sds.field :section_pid, :string
-  # end
-  # delegate :section_pid, to: :sectionsMetadata
-  # has_attributes :section_pid, datastream: :sectionsMetadata, multiple: true
-  # has_many :parts, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
+  property :duration, predicate: Avalon::RDFVocab::MediaObject.duration, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :avalon_resource_type, predicate: Avalon::RDFVocab::MediaObject.avalon_resource_type, multiple: true do |index|
+    index.as :symbol
+  end
+  property :avalon_publisher, predicate: Avalon::RDFVocab::MediaObject.avalon_publisher, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :avalon_uploader, predicate: Avalon::RDFVocab::MediaObject.avalon_uploader, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :identifier, predicate: Avalon::RDFVocab::MediaObject.identifier, multiple: true do |index|
+    index.as :facetable
+  end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source #, has_member_relation: ActiveFedora::RDF::PCDMTerms.hasMember
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
@@ -102,47 +104,6 @@ class MediaObject < ActiveFedora::Base
     Bookmark.where(document_id: self.id).destroy_all
     super
   end
-
-  # # Removes one or many MasterFiles from parts_with_order
-  # def parts_with_order_remove part
-  #   self.parts_with_order = self.parts_with_order.reject{|master_file| master_file.pid == part.pid }
-  # end
-  #
-  # def parts_with_order= master_files
-  #   self.section_pid = master_files.map(&:pid)
-  #   self.sectionsMetadata.save if self.persisted?
-  #   self.section_pid
-  # end
-  #
-  # def parts_with_order(opts = {})
-  #   pids_with_order = section_pid
-  #   if !!opts[:load_from_solr]
-  #     return [] if pids_with_order.empty?
-  #     pid_list = pids_with_order.uniq.map { |pid| RSolr.solr_escape(pid) }.join ' OR '
-  #     solr_results = ActiveFedora::SolrService.query("id\:(#{pid_list})", rows: pids_with_order.length)
-  #     mfs = ActiveFedora::SolrService.reify_solr_results(solr_results, load_from_solr: true)
-  #     pids_with_order.map { |pid| mfs.find { |mf| mf.pid == pid }}
-  #   else
-  #     pids_with_order.map{|pid| MasterFile.find(pid)}
-  #   end
-  # end
-  #
-  # def _section_pid
-  #   self.sectionsMetadata.get_values(:section_pid)
-  # end
-  #
-  # def section_pid
-  #   ordered_pids = self._section_pid
-  #   missing_from_order = self.part_ids - ordered_pids
-  #   missing_parts = ordered_pids - self.part_ids
-  #   ordered_pids + missing_from_order - missing_parts
-  # end
-  #
-  # def section_pid=( pids )
-  #   self.section_pid_will_change!
-  #   self.sectionsMetadata.find_by_terms(:section_pid).each &:remove
-  #   self.sectionsMetadata.update_values(['section_pid'] => pids)
-  # end
 
   alias_method :'_collection=', :'collection='
 
@@ -181,7 +142,6 @@ class MediaObject < ActiveFedora::Base
   def report_missing_attributes
     missing_attributes.each_pair { |a,m| errors.add a, m }
   end
-
 
   def set_media_types!
     mime_types = master_files.reject {|mf| mf.file_location.blank? }.collect { |mf|
@@ -224,52 +184,47 @@ class MediaObject < ActiveFedora::Base
     all_pds.uniq
   end
 
-  def to_solr(solr_doc = Hash.new, opts = {})
-    solr_doc = super(solr_doc)
-  #   solr_doc[Solrizer.default_field_mapper.solr_name("created_by", :facetable, type: :string)] = self.DC.creator
-  #   solr_doc[Solrizer.default_field_mapper.solr_name("duration", :displayable, type: :string)] = self.duration
-    solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
-  #   solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
-  #   solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
-  #   indexer = Solrizer::Descriptor.new(:string, :stored, :indexed, :multivalued)
-    solr_doc['read_access_virtual_group_ssim'] = virtual_read_groups
-    solr_doc['read_access_ip_group_ssim'] = collect_ips_for_index(ip_read_groups)
-    solr_doc[Hydra.config.permissions.read.group] ||= []
-    solr_doc[Hydra.config.permissions.read.group] += solr_doc['read_access_ip_group_ssim']
-  #   solr_doc["dc_creator_tesim"] = self.creator
-  #   solr_doc["dc_publisher_tesim"] = self.publisher
-  #   solr_doc["title_ssort"] = self.title
-  #   solr_doc["creator_ssort"] = Array(self.creator).join(', ')
-    solr_doc["date_digitized_sim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
-  #   solr_doc["date_ingested_sim"] = self.create_date.strftime "%F"
-  #   #include identifiers for parts
-    solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier }.flatten
-    #include labels for parts and their structural metadata
-    solr_doc["section_label_tesim"] = section_labels
-    solr_doc['section_physical_description_ssim'] = section_physical_descriptions
-  #
-  #   #Add all searchable fields to the all_text_timv field
-  #   all_text_values = []
-  #   all_text_values << solr_doc["title_tesi"]
-  #   all_text_values << solr_doc["creator_ssim"]
-  #   all_text_values << solr_doc["contributor_sim"]
-  #   all_text_values << solr_doc["unit_ssim"]
-  #   all_text_values << solr_doc["collection_ssim"]
-  #   all_text_values << solr_doc["summary_ssi"]
-  #   all_text_values << solr_doc["publisher_sim"]
-  #   all_text_values << solr_doc["subject_topic_sim"]
-  #   all_text_values << solr_doc["subject_geographic_sim"]
-  #   all_text_values << solr_doc["subject_temporal_sim"]
-  #   all_text_values << solr_doc["genre_sim"]
-  #   all_text_values << solr_doc["language_sim"]
-  #   all_text_values << solr_doc["physical_description_sim"]
-  #   all_text_values << solr_doc["date_sim"]
-  #   all_text_values << solr_doc["notes_sim"]
-  #   all_text_values << solr_doc["table_of_contents_sim"]
-  #   all_text_values << solr_doc["other_identifier_sim"]
-  #   solr_doc["all_text_timv"] = all_text_values.flatten
-  #   solr_doc.each_pair { |k,v| solr_doc[k] = v.is_a?(Array) ? v.select { |e| e =~ /\S/ } : v }
-    return solr_doc
+  def to_solr
+    super.tap do |solr_doc|
+      solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
+      solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
+      solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
+      solr_doc['read_access_virtual_group_ssim'] = virtual_read_groups
+      solr_doc['read_access_ip_group_ssim'] = collect_ips_for_index(ip_read_groups)
+      solr_doc[Hydra.config.permissions.read.group] ||= []
+      solr_doc[Hydra.config.permissions.read.group] += solr_doc['read_access_ip_group_ssim']
+      solr_doc["title_ssort"] = self.title
+      solr_doc["creator_ssort"] = Array(self.creator).join(', ')
+      solr_doc["date_digitized_sim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
+      solr_doc["date_ingested_sim"] = self.create_date.strftime "%F"
+      #include identifiers for parts
+      solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier }.flatten
+      #include labels for parts and their structural metadata
+      solr_doc["section_label_tesim"] = section_labels
+      solr_doc['section_physical_description_ssim'] = section_physical_descriptions
+
+      #Add all searchable fields to the all_text_timv field
+      all_text_values = []
+      all_text_values << solr_doc["title_tesi"]
+      all_text_values << solr_doc["creator_ssim"]
+      all_text_values << solr_doc["contributor_sim"]
+      all_text_values << solr_doc["unit_ssim"]
+      all_text_values << solr_doc["collection_ssim"]
+      all_text_values << solr_doc["summary_ssi"]
+      all_text_values << solr_doc["publisher_sim"]
+      all_text_values << solr_doc["subject_topic_sim"]
+      all_text_values << solr_doc["subject_geographic_sim"]
+      all_text_values << solr_doc["subject_temporal_sim"]
+      all_text_values << solr_doc["genre_sim"]
+      all_text_values << solr_doc["language_sim"]
+      all_text_values << solr_doc["physical_description_sim"]
+      all_text_values << solr_doc["date_sim"]
+      all_text_values << solr_doc["notes_sim"]
+      all_text_values << solr_doc["table_of_contents_sim"]
+      all_text_values << solr_doc["other_identifier_sim"]
+      solr_doc["all_text_timv"] = all_text_values.flatten
+      solr_doc.each_pair { |k,v| solr_doc[k] = v.is_a?(Array) ? v.select { |e| e =~ /\S/ } : v }
+    end
   end
 
   def as_json(options={})

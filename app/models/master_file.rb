@@ -34,32 +34,75 @@ class MasterFile < ActiveFedora::Base
   has_subresource 'poster', class_name: 'ActiveFedora::File'
   has_subresource 'captions', class_name: 'ActiveFedora::File'
 
-  property :title, predicate: Avalon::RDFVocab::MasterFile.title, multiple: false
-  property :file_location, predicate: Avalon::RDFVocab::MasterFile.fileLocation, multiple: false
-  property :file_checksum, predicate: Avalon::RDFVocab::MasterFile.fileChecksum, multiple: false
-  property :file_size, predicate: Avalon::RDFVocab::MasterFile.fileSize, multiple: false
-  property :duration, predicate: Avalon::RDFVocab::MasterFile.duration, multiple: false
-  property :display_aspect_ratio, predicate: Avalon::RDFVocab::MasterFile.displayAspectRatio, multiple: false
-  property :original_frame_size, predicate: Avalon::RDFVocab::MasterFile.originalFrameSize, multiple: false
-  property :file_format, predicate: Avalon::RDFVocab::MasterFile.fileFormat, multiple: false
-  property :poster_offset, predicate: Avalon::RDFVocab::MasterFile.posterOffset, multiple: false
-  property :thumbnail_offset, predicate: Avalon::RDFVocab::MasterFile.thumbnailOffset, multiple: false
-  property :date_digitized, predicate: Avalon::RDFVocab::MasterFile.dateDigitized, multiple: false
-  property :physical_description, predicate: Avalon::RDFVocab::MasterFile.physicalDescription, multiple: false
+  property :title, predicate: Avalon::RDFVocab::MasterFile.title, multiple: false do |index|
+    index.as :stored_searchable
+  end
+  property :file_location, predicate: Avalon::RDFVocab::MasterFile.fileLocation, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :file_checksum, predicate: Avalon::RDFVocab::MasterFile.fileChecksum, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :file_size, predicate: Avalon::RDFVocab::MasterFile.fileSize, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :duration, predicate: Avalon::RDFVocab::MasterFile.duration, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :display_aspect_ratio, predicate: Avalon::RDFVocab::MasterFile.displayAspectRatio, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :original_frame_size, predicate: Avalon::RDFVocab::MasterFile.originalFrameSize, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :file_format, predicate: Avalon::RDFVocab::MasterFile.fileFormat, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :poster_offset, predicate: Avalon::RDFVocab::MasterFile.posterOffset, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :thumbnail_offset, predicate: Avalon::RDFVocab::MasterFile.thumbnailOffset, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :date_digitized, predicate: Avalon::RDFVocab::MasterFile.dateDigitized, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :physical_description, predicate: Avalon::RDFVocab::MasterFile.physicalDescription, multiple: false do |index|
+    index.as :stored_sortable
+  end
   property :masterFile, predicate: Avalon::RDFVocab::MasterFile.masterFile, multiple: false
-  property :identifier, predicate: Avalon::RDFVocab::MasterFile.identifier, multiple: true
+  property :identifier, predicate: Avalon::RDFVocab::MasterFile.identifier, multiple: true do |index|
+    index.as :facetable
+  end
 
   # Workflow status properties
-  property :workflow_id, predicate: Avalon::RDFVocab::Transcoding.workflowId, multiple: false
-  property :workflow_name, predicate: Avalon::RDFVocab::Transcoding.workflowName, multiple: false
-  property :percent_complete, predicate: Avalon::RDFVocab::Transcoding.percentComplete, multiple: false
-  property :percent_succeeded, predicate: Avalon::RDFVocab::Transcoding.percentSucceeded, multiple: false
-  property :percent_failed, predicate: Avalon::RDFVocab::Transcoding.percentFailed, multiple: false
-  property :status_code, predicate: Avalon::RDFVocab::Transcoding.statusCode, multiple: false
-  property :operation, predicate: Avalon::RDFVocab::Transcoding.operation, multiple: false
-  property :error, predicate: Avalon::RDFVocab::Transcoding.error, multiple: false
-  property :failures, predicate: Avalon::RDFVocab::Transcoding.failures, multiple: false
-  property :encoder_classname, predicate: Avalon::RDFVocab::Transcoding.encoderClassname, multiple: false
+  property :workflow_id, predicate: Avalon::RDFVocab::Transcoding.workflowId, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :workflow_name, predicate: Avalon::RDFVocab::Transcoding.workflowName, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :percent_complete, predicate: Avalon::RDFVocab::Transcoding.percentComplete, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :percent_succeeded, predicate: Avalon::RDFVocab::Transcoding.percentSucceeded, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :percent_failed, predicate: Avalon::RDFVocab::Transcoding.percentFailed, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :status_code, predicate: Avalon::RDFVocab::Transcoding.statusCode, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :operation, predicate: Avalon::RDFVocab::Transcoding.operation, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :error, predicate: Avalon::RDFVocab::Transcoding.error, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :encoder_classname, predicate: Avalon::RDFVocab::Transcoding.encoderClassname, multiple: false do |index|
+    index.as :stored_sortable
+  end
 
   validates :workflow_name, presence: true, inclusion: { in: proc { WORKFLOWS } }
   validates_each :date_digitized do |record, attr, value|

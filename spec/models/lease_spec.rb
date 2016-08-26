@@ -141,8 +141,8 @@ describe Lease do
   end
   describe 'solrizing and saving' do
     before :all do
-      @begin_time_field = 'begin_time_dti'
-      @end_time_field = 'end_time_dti'
+      @begin_time_field = 'begin_time_dtsi'
+      @end_time_field = 'end_time_dtsi'
       @deleted_fields = %w('begin_time_dtsim', 'end_time_dtsim')
       @lenght_of_a_iso8601_time = 20
     end

@@ -25,29 +25,19 @@ class Lease < ActiveFedora::Base
 
   before_save :apply_default_begin_time, :ensure_end_time_present, :validate_dates, :format_times
 
-  #has_and_belongs_to_many :media_objects, class_name: 'MediaObject', property: :has_member, inverse_of: :is_governed_by
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
-  property :begin_time, predicate: Avalon::RDFVocab::Lease::begin_time, multiple: false
-  property :end_time, predicate: Avalon::RDFVocab::Lease::end_time, multiple: false
-  #has_metadata name: 'inheritedRights', type: Hydra::Datastream::InheritableRightsMetadata
-
-  #delegate :read_groups, :read_groups=, :read_users, :read_users=, to: :inheritedRights
+  property :begin_time, predicate: Avalon::RDFVocab::Lease::begin_time, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :end_time, predicate: Avalon::RDFVocab::Lease::end_time, multiple: false do |index|
+    index.as :stored_sortable
+  end
 
   # Determines if the lease is currently active (today is between the begin and end time)
   # @return [Boolean] returns true if the lease is active
   def lease_is_active?
     Date.today >= begin_time && Date.today <= end_time
-  end
-
-  # Converts the object to a solr hash for indexing
-  # @param [Hash] solr_doc A hash passable to solr, an empty one is created by default_field_mapper
-  #
-  def to_solr(solr_doc = {}, *args)
-    solr_doc = super(solr_doc)
-    Solrizer.insert_field(solr_doc, 'begin_time', begin_time, :sortable)
-    Solrizer.insert_field(solr_doc, 'end_time', end_time, :sortable)
-    solr_doc
   end
 
   # A before_save action that sets the times to the start and end of the day in the UTC timezome and formats them as is8061
