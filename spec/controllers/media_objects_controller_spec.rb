@@ -180,7 +180,7 @@ describe MediaObjectsController, type: :controller do
           expect(JSON.parse(response.body)["errors"].first.class).to eq String
         end
         it "should create a new media_object" do
-          media_object = FactoryGirl.create(:multiple_entries)
+          media_object = FactoryGirl.create(:media_object)
           fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
           post 'create', format: 'json', fields: fields, files: [master_file], collection_id: collection.id
           expect(response.status).to eq(200)
@@ -188,12 +188,12 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.title).to eq media_object.title
           expect(new_media_object.creator).to eq media_object.creator
           expect(new_media_object.date_issued).to eq media_object.date_issued
-          expect(new_media_object.master_files_with_order).to eq new_media_object.master_files
+          expect(new_media_object.ordered_master_files).to match_array new_media_object.master_files
           expect(new_media_object.duration).to eq '6315'
           expect(new_media_object.format).to eq 'video/mp4'
           expect(new_media_object.avalon_resource_type).to eq ['moving image']
           expect(new_media_object.master_files.first.date_digitized).to eq('2015-12-31T00:00:00Z')
-          expect(new_media_object.master_files.first.DC.identifier).to include('40000000045312')
+          expect(new_media_object.master_files.first.identifier).to include('40000000045312')
           expect(new_media_object.master_files.first.structuralMetadata.has_content?).to be_truthy
           expect(new_media_object.master_files.first.captions.has_content?).to be_truthy
           expect(new_media_object.master_files.first.captions.label).to eq('ingest.api')
@@ -203,7 +203,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
        end
         it "should create a new published media_object" do
-          media_object = FactoryGirl.create(:multiple_entries)
+          media_object = FactoryGirl.create(:published_media_object)
           fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
           post 'create', format: 'json', fields: fields, files: [master_file], collection_id: collection.id, publish: true
           expect(response.status).to eq(200)
@@ -236,7 +236,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.date_issued).to eq media_object.date_issued
         end
         it "should create a new media_object, removing invalid data for non-required fields" do
-          media_object = FactoryGirl.create(:multiple_entries)
+          media_object = FactoryGirl.create(:media_object)
           fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
           fields[:language] = ['???']
           fields[:related_item_url] = ['???']
@@ -504,13 +504,13 @@ describe MediaObjectsController, type: :controller do
         login_user user.username
       end
       it "should not be available to a user on an inactive lease" do
-        media_object.governing_policies+=[Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, read_users: [user.username])]
+        media_object.governing_policies+=[Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, inherited_read_users: [user.username])]
         media_object.save!
         get 'show', id: media_object.id
         expect(response.response_code).not_to eq(200)
       end
       it "should be available to a user on an active lease" do
-        media_object.governing_policies+=[Lease.create(begin_time: Date.yesterday, end_time: Date.tomorrow, read_users: [user.username])]
+        media_object.governing_policies+=[Lease.create(begin_time: Date.yesterday, end_time: Date.tomorrow, inherited_read_users: [user.username])]
         media_object.save!
         get 'show', id: media_object.id
         expect(response.response_code).to eq(200)
