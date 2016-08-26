@@ -60,11 +60,11 @@ describe Lease do
     end
 
     it 'sets begin_time to the start of the day' do
-      expect(lease.begin_time).to eq(Time.now.utc.beginning_of_day - 1.day)
+      expect(lease.begin_time).to eq(DateTime.now.utc.beginning_of_day - 1.day)
     end
 
     it 'sets end_time to the end of the day' do
-      expect(lease.end_time).to eq(Time.now.utc.end_of_day + 1.day)
+      expect(lease.end_time).to eq(DateTime.now.utc.end_of_day + 1.day)
     end
 
     describe 'start of day' do
@@ -92,7 +92,7 @@ describe Lease do
     end
     it 'sets the begin_time to today if it is nil' do
       @lease.apply_default_begin_time
-      expect(@lease.begin_time).to eq(Time.now.utc.beginning_of_day)
+      expect(@lease.begin_time).to eq(DateTime.parse(Date.today.to_s).utc.beginning_of_day)
     end
     it 'does not set the begin_time today is one is provided' do
       @lease.begin_time = DateTime.parse(Date.yesterday.to_s)
@@ -126,11 +126,11 @@ describe Lease do
       expect { @lease.validate_dates }.to raise_error(ArgumentError)
       expect { @lease.save }.to raise_error(ArgumentError)
     end
-    it 'raises an ArgumentError if the end_time equals the begin_time' do
-      now = DateTime.now
-      @lease.end_time = now
-      @lease.begin_time = now
-      expect { @lease.validate_dates }.to raise_error(ArgumentError)
+    it 'does not raise an ArgumentError if the end_time is set to the same value as begin_time' do
+      now = Date.today
+      @lease.end_time = now #beginning of toay
+      @lease.begin_time = now #end of today
+      expect { @lease.validate_dates }.to_not raise_error(ArgumentError)
     end
     it 'does not raise an ArgumentError if the end_time is after the begin_time' do
       @lease.end_time = Date.tomorrow
