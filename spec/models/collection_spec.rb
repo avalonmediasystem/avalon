@@ -408,7 +408,7 @@ describe Admin::Collection do
     end
 
     it 'adds the media object to the target collection' do
-      expect(@target_collection.media_objects).to eq @media_objects
+      expect(@target_collection.media_objects).to match_array @media_objects
     end
   end
 
