@@ -176,7 +176,7 @@ describe Admin::GroupsController do
       it "should be able to change group users when authenticated and authorized" do
         login_as('policy_editor')
 
-        expect { put 'update_multiple', group_ids: [group.name] }.to change { RoleControls.users(group.name) }
+        expect { put 'update_multiple', group_ids: [group.name] }.to change { Avalon::RoleControls.users(group.name) }
         expect(flash[:notice]).not_to be_nil
         expect(response).to redirect_to(admin_groups_path)
       end
