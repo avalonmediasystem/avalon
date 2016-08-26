@@ -89,6 +89,25 @@ Rails.application.routes.draw do
   match "/autocomplete", to: 'objects#autocomplete', via: [:get]
   match "/objects/:id", to: 'objects#show', via: [:get], :as => :objects
 
+  resources :playlists do
+    resources :playlist_items, path: 'items', only: [:create, :update]
+    member do
+      patch 'update_multiple'
+      delete 'update_multiple'
+    end
+    collection do
+      if Avalon::Configuration.has_key?('variations')
+        post 'import_variations_playlist'
+      end
+    end
+  end
+
+  resources :avalon_marker, only: [:create, :show, :update, :destroy]
+
+  resources :comments, only: [:index, :create]
+
+  resources :playlist_items, only: [:update], :constraints => {:format => /(js|json)/}
+
   resources :dropbox, :only => [] do
     collection do
       delete :bulk_delete

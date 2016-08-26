@@ -1,0 +1,72 @@
+<%#
+Copyright 2011-2015, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<div class="col-md-9 col-sm-8">
+  <h1>Import Results</h1>
+  <p>The following errors were encountered in the playlist file.</p>
+  <div class="panel panel-default" style="background-color:#F9F9F9;">
+    <div class="panel-body">
+      <% playlist.items.each do |item| %>
+        <% if item.clip.valid? && item.valid? %>
+          <div><p style="font-weight: bold"><i class='fa fa-plus-circle success-color'></i> <%= item.title %></p></div>
+        <% else %>
+          <div>
+            <p style="font-weight: bold"><i class='fa fa-times-circle danger-color'></i> <%= item.title %></p>
+            <% if item.clip.errors.full_messages.include? "Master file field is required." %>
+              <ul><li>No matching item found</li></ul>
+            <% else %>
+              <ul>
+                <% item.errors.full_messages.select{|m|m!="Marker is invalid"}.each do |m| %>
+                  <li><%= m %></li>
+                <% end %>
+                <% item.clip.errors.full_messages.each do |m| %>
+                  <li><%= m %></li>
+                <% end if !item.clip.valid?%>
+                <% if item.errors.full_messages.include? "Marker is invalid" %>
+                  <% item.marker.select{|m|!m.valid?}.each do |marker| %>
+                    <li>Marker: <%= marker.title %>
+                      <% if marker.errors.full_messages.include? "Master file field is required." %>
+                        <ul><li>Master file field is required.</li></ul>
+                      <% else %>
+                        <ul>
+                          <% marker.errors.full_messages.each do |m| %>
+                            <li><%= m %></li>
+                          <% end %>
+                        </ul>
+                      <% end %>
+                    </li>
+                  <% end %>
+                <% end %>
+              </ul>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+  <br>
+  <div class="col-lg-7">
+    <p>This playlist is still able to be imported, but due to these errors will not contain the items above; other problems may be present as a result.</p>
+    <p>For technical assistance regarding these errors please use our <strong><a href="/comments">contact form</a></strong>.</p>
+    <br>
+  </div>
+  <div class = "col-lg-7">
+    <a href="/playlists/" class="btn btn-danger outline_on">Cancel</a>
+    <%= form_tag(import_variations_playlist_playlists_path, method:"post", style:"display:inline") do %>
+      <input type="submit" class="btn btn-default outline_on" value="Import"/>
+      <input type="hidden" name="skip_errors" value="true"/>
+    <% end %>
+  </div>
+</div>
