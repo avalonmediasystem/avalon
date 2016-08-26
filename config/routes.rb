@@ -28,6 +28,25 @@ Rails.application.routes.draw do
     match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
   end
 
+  # Avalon routes
+  namespace :admin do
+    resources :groups, except: [:show] do
+      collection do
+        put 'update_multiple'
+      end
+      member do
+        put 'update_users'
+      end
+    end
+    resources :collections do
+      member do
+        get 'edit'
+        get 'remove'
+        get 'items'
+      end
+    end
+  end
+
   resources :media_objects, except: [:create, :update] do
     member do
       put :update, action: :update, defaults: { format: 'html' }, constraints: { format: 'html' }
@@ -49,6 +68,7 @@ Rails.application.routes.draw do
       delete :remove, :action => :destroy
     end
   end
+
   resources :master_files, except: [:new, :index, :update] do
     member do
       get  'thumbnail', :to => 'master_files#get_frame', :defaults => { :type => 'thumbnail' }
@@ -63,25 +83,11 @@ Rails.application.routes.draw do
       get :captions
     end
   end
+
   resources :derivatives, only: [:create]
 
-  namespace :admin do
-    resources :groups, except: [:show] do
-      collection do
-        put 'update_multiple'
-      end
-      member do
-        put 'update_users'
-      end
-    end
-    resources :collections do
-      member do
-        get 'edit'
-        get 'remove'
-        get 'items'
-      end
-    end
-  end
+  match "/autocomplete", to: 'objects#autocomplete', via: [:get]
+  match "/objects/:id", to: 'objects#show', via: [:get], :as => :objects
 
   resources :dropbox, :only => [] do
     collection do
