@@ -25,6 +25,7 @@ class MasterFile < ActiveFedora::Base
   include Hooks
   include Rails.application.routes.url_helpers
   include Permalink
+  include FrameSize
 
   belongs_to :media_object, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
   has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf, dependent: :destroy
@@ -34,28 +35,28 @@ class MasterFile < ActiveFedora::Base
   has_subresource 'poster', class_name: 'ActiveFedora::File'
   has_subresource 'captions', class_name: 'ActiveFedora::File'
 
-  property :title, predicate: Avalon::RDFVocab::MasterFile.title, multiple: false do |index|
+  property :title, predicate: ::RDF::Vocab::EBUCore.title, multiple: false do |index|
     index.as :stored_searchable
   end
-  property :file_location, predicate: Avalon::RDFVocab::MasterFile.fileLocation, multiple: false do |index|
+  property :file_location, predicate: ::RDF::Vocab::EBUCore.locator, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :file_checksum, predicate: Avalon::RDFVocab::MasterFile.fileChecksum, multiple: false do |index|
+  property :file_checksum, predicate: ::RDF::Vocab::NFO.hashValue, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :file_size, predicate: Avalon::RDFVocab::MasterFile.fileSize, multiple: false do |index|
+  property :file_size, predicate: ::RDF::Vocab::EBUCore.fileSize, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :duration, predicate: Avalon::RDFVocab::MasterFile.duration, multiple: false do |index|
+  property :duration, predicate: ::RDF::Vocab::EBUCore.duration, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :display_aspect_ratio, predicate: Avalon::RDFVocab::MasterFile.displayAspectRatio, multiple: false do |index|
+  property :display_aspect_ratio, predicate: ::RDF::Vocab::EBUCore.aspectRatio, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :original_frame_size, predicate: Avalon::RDFVocab::MasterFile.originalFrameSize, multiple: false do |index|
+  frame_size_property :original_frame_size, predicate: Avalon::RDFVocab::Common.resolution, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :file_format, predicate: Avalon::RDFVocab::MasterFile.fileFormat, multiple: false do |index|
+  property :file_format, predicate: ::RDF::Vocab::PREMIS.hasFormatName, multiple: false do |index|
     index.as :stored_sortable
   end
   property :poster_offset, predicate: Avalon::RDFVocab::MasterFile.posterOffset, multiple: false do |index|
@@ -64,14 +65,14 @@ class MasterFile < ActiveFedora::Base
   property :thumbnail_offset, predicate: Avalon::RDFVocab::MasterFile.thumbnailOffset, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :date_digitized, predicate: Avalon::RDFVocab::MasterFile.dateDigitized, multiple: false do |index|
+  property :date_digitized, predicate: ::RDF::Vocab::EBUCore.dateCreated, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :physical_description, predicate: Avalon::RDFVocab::MasterFile.physicalDescription, multiple: false do |index|
+  property :physical_description, predicate: ::RDF::Vocab::DC.format, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :masterFile, predicate: Avalon::RDFVocab::MasterFile.masterFile, multiple: false
-  property :identifier, predicate: Avalon::RDFVocab::MasterFile.identifier, multiple: true do |index|
+  property :masterFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false
+  property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
     index.as :facetable
   end
 
