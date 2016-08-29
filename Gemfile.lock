@@ -46,7 +46,7 @@ GIT
       om (~> 3.1.1)
       rails (~> 4.2)
       rsolr (~> 1.1.1)
-      solr_wrapper (~> 0.13.1)
+      solr_wrapper (~> 0.16)
       solrizer (~> 3.4.0)
 
 GEM
@@ -467,7 +467,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    solr_wrapper (0.13.2)
+    solr_wrapper (0.16)
       faraday
       ruby-progressbar
       rubyzip
