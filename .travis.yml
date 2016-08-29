@@ -2,6 +2,8 @@
 git:
   submodules: false
 bundler_args: --without development debug
+services:
+  - mysql2
 before_install:
   - sudo apt-get update
   - sudo apt-get install mediainfo
@@ -9,6 +11,9 @@ before_install:
   - cp spec/config/*.yml config
   - bundle config without development:production
 before_script:
+  - rm config/database.yml
+  - cp config/database.travis.yml config/database.yml
+  - mysql -e 'create database avalon_test;'
   - bundle exec rake delayed_job:start
   - bundle exec rake db:migrate
 language: ruby

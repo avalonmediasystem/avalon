@@ -83,5 +83,6 @@ group :test do
   gem 'fakeweb'
   gem 'email_spec'
   gem 'capybara'
+  gem 'mysql2'
   # gem 'hashdiff'
 end
