@@ -1,4 +1,13 @@
 GIT
+  remote: https://github.com/avalonmediasystem/active_annotations.git
+  revision: 63c683fdf9f8d629116a28b9e8439b7e2269c265
+  tag: avalon-r5
+  specs:
+    active_annotations (0.1.0)
+      json-ld
+      rdf-vocab
+
+GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
   revision: 1cdd3749f9bc887113a9d782ce15125628cc7695
   branch: hydra10
@@ -37,7 +46,7 @@ GIT
       om (~> 3.1.1)
       rails (~> 4.2)
       rsolr (~> 1.1.1)
-      solr_wrapper (~> 0.13.1)
+      solr_wrapper (~> 0.16)
       solrizer (~> 3.4.0)
 
 GEM
@@ -96,6 +105,8 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    acts_as_list (0.8.0)
+      activerecord (>= 3.0)
     addressable (2.4.0)
     arel (6.0.3)
     ast (2.3.0)
@@ -289,6 +300,7 @@ GEM
     minitest (5.9.0)
     multi_json (1.12.1)
     multipart-post (2.0.0)
+    mysql2 (0.4.4)
     net-http-persistent (2.9.4)
     net-ldap (0.14.0)
     netrc (0.11.0)
@@ -455,7 +467,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
     slop (3.6.0)
-    solr_wrapper (0.13.2)
+    solr_wrapper (0.16)
       faraday
       ruby-progressbar
       rubyzip
@@ -524,7 +536,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  active_annotations!
   active_encode!
+  acts_as_list
   avalon-workflow!
   byebug
   capybara
@@ -549,6 +563,7 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   jquery-rails
   mediainfo
+  mysql2
   net-ldap
   omniauth-identity
   omniauth-lti!
@@ -562,7 +577,7 @@ DEPENDENCIES
   sdoc (~> 0.4.0)
   shoulda-matchers
   simplecov
-  solr_wrapper (>= 0.3)
+  solr_wrapper (>= 0.16)
   spring
   sqlite3
   turbolinks
