@@ -87,7 +87,6 @@ class MediaObjectsController < ApplicationController
         # Set other identifiers
         @media_object.update_attributes(media_object_params.slice(:other_identifier_type, :other_identifier))
         # Try to use Bib Import
-        # byebug
         @media_object.descMetadata.populate_from_catalog!(Array(params[:fields][:bibliographic_id]).first,
                                                          Array(params[:fields][:bibliographic_id_label]).first)
       rescue
@@ -115,7 +114,6 @@ class MediaObjectsController < ApplicationController
         end
       end
     end
-    # byebug
     if !@media_object.save
       error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
     elsif params[:files].respond_to?('each')

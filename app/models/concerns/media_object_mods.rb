@@ -183,7 +183,7 @@ module MediaObjectMods
 
   def format=(value)
     delete_all_values(:media_type)
-    descMetadata.media_type = value
+    descMetadata.add_media_type(value)
   end
 
   # has_attributes :resource_type, datastream: :descMetadata, at: [:resource_type], multiple: true

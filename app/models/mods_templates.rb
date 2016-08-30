@@ -1,14 +1,14 @@
 # Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
@@ -17,7 +17,7 @@ module ModsTemplates
 
   included do
     class_eval do
-      
+
       # Title Templates
       define_template :title_info do |xml, title, attributes={}|
         opts = { primary: false }.merge(attributes)
@@ -101,7 +101,7 @@ module ModsTemplates
       end
 
       # Simple Subject Templates
-      define_template(:simple_subject) do |xml, text, type| 
+      define_template(:simple_subject) do |xml, text, type|
         xml.subject { xml.send(type.to_sym, text) }
       end
       def add_subject(text, type)
@@ -183,6 +183,10 @@ module ModsTemplates
         }
       end
 
+      def add_media_type(media_type_term, attrs={})
+        add_child_node(ng_xml.root, :media_type, media_type_term)
+      end
+
       define_template :_related_item do |xml, url, label|
         xml.relatedItem(:displayLabel => label) {
           xml.location { xml.url { xml.text(url) } } if url.present?
@@ -223,8 +227,8 @@ module ModsTemplates
 
       define_template :url do |xml,url,attrs={}|
         xml.location {
-          xml.url(attrs) { 
-            xml.text(url) 
+          xml.url(attrs) {
+            xml.text(url)
           }
         }
       end
