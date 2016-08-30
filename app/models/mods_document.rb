@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-require 'avalon/bib_retriever'
+# require 'avalon/bib_retriever'
 
 class ModsDocument < ActiveFedora::OmDatastream
 

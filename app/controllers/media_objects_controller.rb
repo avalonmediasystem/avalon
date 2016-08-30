@@ -85,7 +85,7 @@ class MediaObjectsController < ApplicationController
     if populate_from_catalog and Avalon::BibRetriever.configured?
       begin
         # Set other identifiers
-        @media_object.update_datastream(:descMetadata, params[:fields].slice(:other_identifier_type, :other_identifier))
+        @media_object.update_attributes(media_object_params.slice(:other_identifier_type, :other_identifier))
         # Try to use Bib Import
         @media_object.descMetadata.populate_from_catalog!(Array(params[:fields][:bibliographic_id]).first,
                                                          Array(params[:fields][:bibliographic_id_label]).first)
@@ -94,11 +94,11 @@ class MediaObjectsController < ApplicationController
       ensure
         if !@media_object.valid?
           # Fall back to MODS as sent if Bib Import fails
-          @media_object.update_datastream(:descMetadata, params[:fields].slice(*@media_object.errors.keys)) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
+          @media_object.update_attributes(media_object_params.slice(*@media_object.errors.keys)) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
         end
       end
     else
-      @media_object.update_datastream(:descMetadata, params[:fields]) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
+      @media_object.update_attributes(media_object_params) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
     end
 
     error_messages = []
@@ -110,26 +110,26 @@ class MediaObjectsController < ApplicationController
         invalid_fields.each do |field|
           #NOTE this will erase all values for fields with multiple values
           logger.warn "Erasing field #{field} with bad value, bibID: #{Array(params[:fields][:bibliographic_id]).first}, avalon ID: #{@media_object.id}"
-          @media_object[field] = nil
+          @media_object.send(field, nil)
         end
       end
     end
     if !@media_object.save
       error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
     elsif params[:files].respond_to?('each')
-      old_ordered_master_files = @media_object.ordered_master_files.collect{|p|p.id}
-      params[:files].each do |file_spec|
+      old_ordered_master_files = @media_object.ordered_master_files.to_a.collect{|p|p.id}
+      master_files_params.each do |file_spec|
         master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier))
-        master_file.media_object = @media_object
+        # master_file.media_object = @media_object
         master_file.structuralMetadata.content = file_spec[:structure] if file_spec[:structure].present?
         if file_spec[:captions].present?
           master_file.captions.content = file_spec[:captions]
-          master_file.captions.mimeType = file_spec[:captions_type]
-          master_file.captions.dsLabel = 'ingest.api'
+          master_file.captions.mime_type = file_spec[:captions_type]
         end
-        master_file.label = file_spec[:label] if file_spec[:label].present?
+        # TODO: Document this API change!
+        master_file.title = file_spec[:title] if file_spec[:title].present?
         master_file.date_digitized = DateTime.parse(file_spec[:date_digitized]).to_time.utc.iso8601 if file_spec[:date_digitized].present?
-        master_file.DC.identifier += Array(file_spec[:other_identifier])
+        master_file.identifier += Array(file_spec[:other_identifier])
         if master_file.update_derivatives(file_spec[:files], false)
           @media_object.ordered_master_files += [master_file]
         else
@@ -399,4 +399,13 @@ class MediaObjectsController < ApplicationController
     file_id.nil? ? nil : @masterFiles.find { |mf| mf.id == file_id }
   end
 
+  def media_object_params
+    # TODO: Restrist permitted params!!!
+    params.require(:fields).permit!
+  end
+  def master_files_params
+    # TODO: Restrist permitted params!!!
+    params.permit!
+    params[:files]
+  end
 end

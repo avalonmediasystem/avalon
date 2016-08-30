@@ -23,7 +23,7 @@ describe MediaObjectsController, type: :controller do
 
   describe 'security' do
     let(:media_object) { FactoryGirl.create(:media_object) }
-    let(:collection) { FactoryGirl.create(:collection) }
+    # let(:collection) { FactoryGirl.create(:collection) }
     describe 'ingest api' do
       it "all routes should return 401 when no token is present" do
         expect(get :index, format: 'json').to have_http_status(401)
@@ -94,7 +94,7 @@ describe MediaObjectsController, type: :controller do
     let!(:sru_response) { File.read(File.expand_path("../../fixtures/#{bib_id}.xml",__FILE__)) }
     let!(:master_file) {{
         file_location: absolute_location,
-        label: "Part 1",
+        title: "Part 1",
         files: [{label: 'quality-high',
                   id: 'track-1',
                   url: absolute_location,
@@ -180,15 +180,18 @@ describe MediaObjectsController, type: :controller do
           expect(JSON.parse(response.body)["errors"].first.class).to eq String
         end
         it "should create a new media_object" do
-          media_object = FactoryGirl.create(:media_object)
-          fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
+          # master_file_obj = FactoryGirl.create(:master_file, master_file.slice(:files))
+          media_object = FactoryGirl.create(:media_object)#, master_files: [master_file_obj])
+          fields = {}
+          descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
+          # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
           post 'create', format: 'json', fields: fields, files: [master_file], collection_id: collection.id
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.title).to eq media_object.title
           expect(new_media_object.creator).to eq media_object.creator
           expect(new_media_object.date_issued).to eq media_object.date_issued
-          expect(new_media_object.ordered_master_files).to match_array new_media_object.master_files
+          expect(new_media_object.ordered_master_files.to_a.map(&:id)).to match_array new_media_object.master_file_ids
           expect(new_media_object.duration).to eq '6315'
           expect(new_media_object.format).to eq 'video/mp4'
           expect(new_media_object.avalon_resource_type).to eq ['moving image']
@@ -196,8 +199,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.master_files.first.identifier).to include('40000000045312')
           expect(new_media_object.master_files.first.structuralMetadata.has_content?).to be_truthy
           expect(new_media_object.master_files.first.captions.has_content?).to be_truthy
-          expect(new_media_object.master_files.first.captions.label).to eq('ingest.api')
-          expect(new_media_object.master_files.first.captions.mimeType).to eq('text/vtt')
+          expect(new_media_object.master_files.first.captions.mime_type).to eq('text/vtt')
           expect(new_media_object.master_files.first.derivatives.count).to eq(2)
           expect(new_media_object.master_files.first.derivatives.first.location_url).to eq(absolute_location)
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])

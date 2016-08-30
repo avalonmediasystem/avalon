@@ -15,6 +15,8 @@ module MediaObjectMods
   extend ActiveSupport::Concern
 
   included do
+    require 'avalon/bib_retriever'
+
     has_subresource 'descMetadata', class_name: 'ModsDocument'
     # TODO: fix next line
     # before_save :normalize_desc_metadata!
