@@ -53,6 +53,7 @@ gem 'rest-client'
 gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', tag: 'avalon-r5'
 gem 'acts_as_list'
 gem 'api-pagination'
+gem 'browse-everything'
 
 #MediaElement.js related
 gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', branch: 'captions'

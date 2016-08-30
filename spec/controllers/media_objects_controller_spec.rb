@@ -206,7 +206,9 @@ describe MediaObjectsController, type: :controller do
        end
         it "should create a new published media_object" do
           media_object = FactoryGirl.create(:published_media_object)
-          fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
+          fields = {}
+          descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
+          # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
           post 'create', format: 'json', fields: fields, files: [master_file], collection_id: collection.id, publish: true
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])

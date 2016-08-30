@@ -2,11 +2,13 @@ class ApplicationController < ActionController::Base
   # Adds a few additional behaviors into the application controller
   include Blacklight::Controller
   include Hydra::Controller::ControllerBehavior
-  layout 'blacklight'
+  layout 'avalon'
 
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
+
+  helper_method :render_bookmarks_control?
 
   around_action :handle_api_request, if: proc{|c| request.format.json?}
 
