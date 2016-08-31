@@ -35,7 +35,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'rsolr', '~> 1.0'
 gem 'devise'
-gem 'devise-guests', '~> 0.3'
+#gem 'devise-guests', '~> 0.3'
 
 # Avalon-specific
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", branch: 'hydra10'
@@ -69,6 +69,7 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
   gem 'pry-rails'
+  gem 'pry-byebug'
   gem 'solr_wrapper', '>= 0.16'
   gem 'fcrepo_wrapper'
   gem 'rspec-rails'

@@ -245,8 +245,6 @@ GEM
       railties (>= 4.1.0, < 5.1)
       responders
       warden (~> 1.2.3)
-    devise-guests (0.5.0)
-      devise
     diff-lcs (1.2.5)
     docile (1.1.5)
     domain_name (0.5.20160615)
@@ -454,6 +452,9 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
+    pry-byebug (3.4.0)
+      byebug (~> 9.0)
+      pry (~> 0.10)
     pry-rails (0.3.4)
       pry (>= 0.9.10)
     rack (1.6.4)
@@ -688,7 +689,6 @@ DEPENDENCIES
   delayed_job (~> 4.1.0)
   delayed_job_active_record
   devise
-  devise-guests (~> 0.3)
   dotenv-rails
   edtf
   email_spec
@@ -715,6 +715,7 @@ DEPENDENCIES
   net-ldap
   omniauth-identity
   omniauth-lti!
+  pry-byebug
   pry-rails
   rails (= 4.2.6)
   rest-client
