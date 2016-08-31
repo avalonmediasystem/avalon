@@ -167,9 +167,11 @@ describe MediaObjectsController, type: :controller do
       :physical_description,
       :other_identifier
     ]}
+    
     describe "#create" do
       context 'using api' do
         before do
+           ApiToken.create token: 'secret_token', username: 'system_account_name', email: 'system@example.edu'
            request.headers['Avalon-Api-Key'] = 'secret_token'
         end
         it "should respond with 422 if collection not found" do

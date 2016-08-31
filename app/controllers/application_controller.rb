@@ -16,15 +16,9 @@ class ApplicationController < ActionController::Base
     if request.headers['Avalon-Api-Key'].present?
       token = request.headers['Avalon-Api-Key']
       #verify token (and IP)
-      apiauth = Avalon::Authentication::Config.find {|p| p[:id] == :api }
-      apiauth ||= { tokens: {} }
-      if apiauth[:tokens].include? token
-        token_creds = apiauth[:tokens][token]
-  #        user = User.find_by_api(token_creds[:username], token_creds[:email])
-        user = User.find_by_username(token_creds[:username]) ||
-               User.find_by_email(token_creds[:email]) ||
-               User.create(:username => token_creds[:username], :email => token_creds[:email])
-
+      api_token = ApiToken.where(token: token).first
+      unless api_token.nil?
+        user = User.from_api_token(api_token)
         sign_in user, event: :authentication
         user_session[:json_api_login] = true
         user_session[:full_login] = false

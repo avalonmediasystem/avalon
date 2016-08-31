@@ -4,12 +4,6 @@ development:
   :params:
     :fields:
     - :email
-#- :name: Avalon JSON Api
-#  :id: :api
-#  :tokens:
-#    token:
-#      :username: system_account_name
-#      :email: system@example.edu
 #- :name: Avalon Lti OAuth
 #  :provider: :lti
 #  :hidden: true
@@ -29,12 +23,5 @@ test:
   :params:
     :oauth_credentials:
       key: 'secret'
-- :name: Avalon JSON Api
-  :id: :api
-  :tokens:
-    'secret_token':
-      :username: archivist1@example.com
-      :email: archivist1@example.com
 
 production:
-
