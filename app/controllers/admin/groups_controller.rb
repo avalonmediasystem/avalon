@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 # -*- encoding : utf-8 -*-
-require "role_controls"
+require "avalon/role_controls"
 class Admin::GroupsController < ApplicationController
   before_filter :auth
 
@@ -126,9 +126,9 @@ class Admin::GroupsController < ApplicationController
     if !sole_managers.blank?
       flash[:error] = "Cannot remove users #{sole_managers.join(",")} because they are sole managers of collections."
     else
-      users = RoleControls.users(group_name) - params[:user_ids]
-      RoleControls.assign_users(users, group_name)
-      RoleControls.save_changes
+      users = Avalon::RoleControls.users(group_name) - params[:user_ids]
+      Avalon::RoleControls.assign_users(users, group_name)
+      Avalon::RoleControls.save_changes
     end
     redirect_to :back
   end
@@ -151,4 +151,4 @@ class Admin::GroupsController < ApplicationController
     end
     sole_managers
   end
-end 
+end

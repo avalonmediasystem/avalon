@@ -36,16 +36,14 @@ class Ability
         can :manage, MediaObject
         can :manage, MasterFile
         can :inspect, MediaObject
-        # TODO: Turn back on next line
-        # can :manage, Admin::Group
+        can :manage, Admin::Group
         can :manage, Admin::Collection
       end
 
       if @user_groups.include? "group_manager"
-        # TODO: Turn back on next line
-        # can :manage, Admin::Group do |group|
-        #   group.nil? or !['administrator','group_manager'].include?(group.name)
-        # end
+        can :manage, Admin::Group do |group|
+           group.nil? or !['administrator','group_manager'].include?(group.name)
+        end
       end
 
       if is_member_of_any_collection?
