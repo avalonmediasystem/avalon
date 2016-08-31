@@ -1,0 +1,9 @@
+<div class="container">
+<h1>Editing playlist</h1>
+
+<%= render 'edit_form' %>
+</div>
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag "avalon_playlists/playlist_items" =%>
+<% end %>
