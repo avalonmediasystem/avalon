@@ -298,14 +298,14 @@ describe MediaObjectsController, type: :controller do
           expect(JSON.parse(response.body)['id'].class).to eq String
           expect(JSON.parse(response.body)).not_to include('errors')
           media_object.reload
-          expect(media_object.master_files.count).to eq 2
+          expect(media_object.master_files.to_a.size).to eq 2
         end
         it "should delete existing master_files and add a new master_file to a media_object" do
           put 'json_update', format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id, replace_master_files: true
           expect(JSON.parse(response.body)['id'].class).to eq String
           expect(JSON.parse(response.body)).not_to include('errors')
           media_object.reload
-          expect(media_object.master_files.count).to eq 1
+          expect(media_object.master_files.to_a.size).to eq 1
         end
         it "should return 404 if media object doesn't exist" do
           allow_any_instance_of(MediaObject).to receive(:save).and_return false
