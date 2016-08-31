@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-require 'spec_helper'
+require 'rails_helper'
 
 
 describe Admin::GroupsController do
@@ -36,15 +36,15 @@ describe Admin::GroupsController do
 
     it "should redirect to group index page with a notice when group name is already taken" do
       group = FactoryGirl.create(:group)
-      login_as('policy_editor')
+      login_as('group_manager')
       expect { post 'create', admin_group: group.name }.not_to change {Admin::Group.all.count }
-      expect(flash[:error]).not_to be_nil
       expect(response).to redirect_to(admin_groups_path)
+      expect(flash[:error]).not_to be_nil
     end
 
     context "Default permissions should be applied" do
-      it "should be create-able by the policy_editor" do
-        login_as('policy_editor')
+      it "should be create-able by the group_manager" do
+        login_as('group_manager')
         expect { post 'create', admin_group: test_group }.to change { Admin::Group.all.count }
         g = Admin::Group.find(test_group)
         expect(g).not_to be_nil
@@ -77,7 +77,7 @@ describe Admin::GroupsController do
       end
 
       it "should be able to change group users when authenticated and authorized" do
-        login_as('policy_editor')
+        login_as('group_manager')
         new_user = FactoryGirl.build(:user).username
 
         put 'update', group_name: group.name, id: group.name, new_user: new_user
@@ -90,7 +90,7 @@ describe Admin::GroupsController do
       end
 
       it "should be able to change group name when authenticated and authorized" do
-        login_as('policy_editor')
+        login_as('group_manager')
         new_group_name = Faker::Lorem.word
 
         put 'update', group_name: new_group_name, id: group.name
@@ -111,7 +111,7 @@ describe Admin::GroupsController do
       end
 
       it "should be able to remove users from a group" do
-        login_as('policy_editor')
+        login_as('group_manager')
         request.env["HTTP_REFERER"] = '/admin/groups/manager/edit'
 
         put 'update_users', id: group.name, user_ids: Admin::Group.find(group.name).users
@@ -121,7 +121,7 @@ describe Admin::GroupsController do
       end
 
       it "should not remove users from the manager group if they are sole managers of a collection" do
-        login_as('policy_editor')
+        login_as('group_manager')
         request.env["HTTP_REFERER"] = '/admin/groups/manager/edit'
 
         collection = FactoryGirl.create(:collection)
@@ -145,7 +145,7 @@ describe Admin::GroupsController do
         end
 
         it "should not be able to manage #{g} group as a group_manager" do
-          login_as('policy_editor')
+          login_as('group_manager')
           new_user = FactoryGirl.build(:user).username
 
           put 'update', id: g, new_user: new_user
@@ -174,7 +174,7 @@ describe Admin::GroupsController do
       end
 
       it "should be able to change group users when authenticated and authorized" do
-        login_as('policy_editor')
+        login_as('group_manager')
 
         expect { put 'update_multiple', group_ids: [group.name] }.to change { Avalon::RoleControls.users(group.name) }
         expect(flash[:notice]).not_to be_nil

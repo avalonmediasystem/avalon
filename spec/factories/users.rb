@@ -33,6 +33,14 @@ FactoryGirl.define do
         end
       end
     end
+    factory :group_manager do
+      after(:create) do |user|
+        begin
+          Avalon::RoleControls.add_user_role(user.username, 'group_manager')
+        rescue
+        end
+      end
+    end
     factory :user_lti do
     end
   end
@@ -40,17 +48,6 @@ FactoryGirl.define do
   factory :cataloger, class: User  do
     sequence(:username) {|n| "archivist#{n}" }
     sequence(:email)    {|n| "archivist#{n}@example.com" }
-  end
-
-  factory :policy_editor, class: User  do
-    sequence(:username) {|n| "archivist#{n}" }
-    sequence(:email)    {|n| "archivist#{n}@example.com" }
-    after(:create) do |user|
-      begin
-        Avalon::RoleControls.add_user_role(user.username, 'group_manager')
-      rescue
-      end
-    end
   end
 
   factory :content_provider, class: User  do
