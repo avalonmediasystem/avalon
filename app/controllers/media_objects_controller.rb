@@ -402,8 +402,8 @@ class MediaObjectsController < ApplicationController
   def media_object_params
     # TODO: Restrist permitted params!!!
     # params.require(:fields).permit!
-    params.permit!
-    params[:fields]
+    # params.permit!
+    ActionController::Parameters.new(Hash(params[:fields]).merge(Hash(params[:media_object]))).permit!
   end
   def master_files_params
     # TODO: Restrist permitted params!!!

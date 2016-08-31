@@ -27,11 +27,11 @@ Rails.application.routes.draw do
     match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session, via: [:get]
     match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
     match '/users/auth/:provider', to: 'users/omniauth_callbacks#passthru', as: :user_omniauth_authorize, via: [:get, :post]
-    match '/users/auth/:action/callback', to: "users/omniauth_callbacks", as: :user_omniauth_callback, via: [:get, :post]
+    match '/users/auth/:action/callback', controller: "users/omniauth_callbacks", as: :user_omniauth_callback, via: [:get, :post]
   end
 
   mount BrowseEverything::Engine => '/browse'
-  
+
   # Avalon routes
   namespace :admin do
     resources :groups, except: [:show] do
