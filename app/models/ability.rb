@@ -36,8 +36,7 @@ class Ability
         can :manage, MediaObject
         can :manage, MasterFile
         can :inspect, MediaObject
-        # TODO: Turn back on next line
-        # can :manage, Admin::Group
+        can :manage, Admin::Group
         can :manage, Admin::Collection
       end
 
