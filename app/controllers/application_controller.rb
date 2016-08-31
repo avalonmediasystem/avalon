@@ -47,4 +47,12 @@ class ApplicationController < ActionController::Base
       redirect_to new_user_session_path, flash: { notice: 'You are not authorized to perform this action. Try logging in.' }
     end
   end
+
+  rescue_from ActiveFedora::ObjectNotFoundError do |exception|
+    if request.format == :json
+      render json: {errors: ["#{params[:id]} not found"]}, status: 404
+    else
+      render '/errors/unknown_pid', status: 404
+    end
+  end
 end

@@ -811,7 +811,7 @@ describe MediaObjectsController, type: :controller do
       media_object.set_media_types!
       media_object.save( validate: false )
       media_object.reload
-      expect(media_object.media_type).to eq(["video/mp4"])
+      expect(media_object.format).to eq(["video/mp4"])
     end
 
     context 'large objects' do
