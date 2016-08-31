@@ -21,7 +21,8 @@ class MediaObjectsController < ApplicationController
 
   before_filter :authenticate_user!, except: [:show, :set_session_quality]
   before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
-  load_and_authorize_resource instance_name: 'media_object', except: [:destroy, :update_status, :set_session_quality, :tree, :deliver_content]
+  load_and_authorize_resource except: [:create, :update, :destroy, :update_status, :set_session_quality, :tree, :deliver_content]
+  authorize_resource only: [:create, :update]
 
   before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
   before_filter :load_player_context, only: [:show]
@@ -62,6 +63,7 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects
   def create
+    @media_object = MediaObject.new
     update_media_object
   end
 

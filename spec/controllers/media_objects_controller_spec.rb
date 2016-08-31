@@ -228,16 +228,17 @@ describe MediaObjectsController, type: :controller do
         it "should create a new media_object with supplied fields when bib import fails" do
           Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           FakeWeb.register_uri :get, sru_url, body: nil
-          media_object = FactoryGirl.create(:media_object)
-          fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
-          fields = fields.merge({ bibliographic_id: bib_id })
+          ex_media_object = FactoryGirl.create(:media_object)
+          fields = {}
+          descMetadata_fields.each {|f| fields[f] = ex_media_object.send(f) }
+          fields[:bibliographic_id] = bib_id
           post 'create', format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.bibliographic_id).to eq(['local', bib_id])
-          expect(new_media_object.title).to eq media_object.title
+          expect(new_media_object.title).to eq ex_media_object.title
           expect(new_media_object.creator).to eq [] #creator no longer required, so supplied value won't be used
-          expect(new_media_object.date_issued).to eq media_object.date_issued
+          expect(new_media_object.date_issued).to eq ex_media_object.date_issued
         end
         it "should create a new media_object, removing invalid data for non-required fields" do
           media_object = FactoryGirl.create(:media_object)
