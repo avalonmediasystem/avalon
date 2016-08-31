@@ -95,6 +95,9 @@ group :test do
   gem 'fakeweb'
   gem 'email_spec'
   gem 'capybara'
-  gem 'mysql2'
   # gem 'hashdiff'
+end
+
+group :travis, optional: true do
+  gem 'mysql2'
 end
