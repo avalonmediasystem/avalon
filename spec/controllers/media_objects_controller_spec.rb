@@ -193,7 +193,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.date_issued).to eq media_object.date_issued
           expect(new_media_object.ordered_master_files.to_a.map(&:id)).to match_array new_media_object.master_file_ids
           expect(new_media_object.duration).to eq '6315'
-          expect(new_media_object.format).to eq 'video/mp4'
+          expect(new_media_object.format).to eq ['video/mp4']
           expect(new_media_object.avalon_resource_type).to eq ['moving image']
           expect(new_media_object.master_files.first.date_digitized).to eq('2015-12-31T00:00:00Z')
           expect(new_media_object.master_files.first.identifier).to include('40000000045312')
@@ -811,7 +811,7 @@ describe MediaObjectsController, type: :controller do
       media_object.set_media_types!
       media_object.save( validate: false )
       media_object.reload
-      expect(media_object.descMetadata.media_type).to eq(["video/mp4"])
+      expect(media_object.media_type).to eq(["video/mp4"])
     end
 
     context 'large objects' do

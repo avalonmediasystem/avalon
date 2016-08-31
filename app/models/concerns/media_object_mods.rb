@@ -176,14 +176,16 @@ module MediaObjectMods
   end
 
   # TODO: Should this be multivalued given that it stores the mime_types of sections!?!
+  # TODO: I changed this to multiple
   # has_attributes :format, datastream: :descMetadata, at: [:media_type], multiple: false
   def format
-    descMetadata.media_type.first
+    descMetadata.media_type
   end
 
   def format=(value)
+
     delete_all_values(:media_type)
-    descMetadata.add_media_type(value)
+    Array(value).each { |val| descMetadata.add_media_type(val) }
   end
 
   # has_attributes :resource_type, datastream: :descMetadata, at: [:resource_type], multiple: true
