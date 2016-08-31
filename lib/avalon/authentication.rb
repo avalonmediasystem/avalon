@@ -3,7 +3,7 @@ module Avalon
     def self.lti_configured?
       Devise.omniauth_providers.include?(:lti)
     end
-    Config  = YAML.load(File.read(File.expand_path('config/authentication.yml',Rails.root)))
+    Config  = YAML.load(File.read(File.expand_path('config/authentication.yml',Rails.root)))[Rails.env]
     Providers = Config.reject {|provider| provider[:provider].blank? }
     VisibleProviders = Providers.reject {|provider| provider[:hidden]}
     HiddenProviders = Providers - VisibleProviders
