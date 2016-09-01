@@ -584,8 +584,16 @@ describe MediaObjectsController, type: :controller do
         end
       end
       context "No share tabs rendered" do
+        before do
+          @original_conditional_partials = controller.class.conditional_partials.deep_dup
+          controller.class.conditional_partials[:share].each {|partial_name, conditions| conditions[:if] = false }
+        end
+        after do
+          controller.class.conditional_partials = @original_conditional_partials
+        end
         it "should not render Share button" do
-          allow(@controller).to receive(:evaluate_if_unless_configuration).and_return false
+          # allow(@controller).to receive(:evaluate_if_unless_configuration).and_return false
+          # allow(@controller).to receive(:is_editor_or_not_lti).and_return false
           expect(response).to_not render_template(:_share)
         end
       end
