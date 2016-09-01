@@ -203,6 +203,10 @@ module ModsTemplates
         }
       end
 
+      def add_note(note_term, note_type_term, attrs={})
+        add_child_node(ng_xml.root, :note, note_term, note_type_term)
+      end
+
       define_template :collection do |xml,collection_name|
         xml.relatedItem(:type => 'host') {
           xml.titleInfo {

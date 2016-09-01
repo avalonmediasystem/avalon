@@ -175,6 +175,11 @@ module MediaObjectMods
     descMetadata.note = Array(value)
   end
 
+  def note_type=(value)
+    delete_all_values(:note, :type)
+    descMetadata.note.type = Array(value)
+  end
+
   # TODO: Should this be multivalued given that it stores the mime_types of sections!?!
   # TODO: I changed this to multiple
   # has_attributes :format, datastream: :descMetadata, at: [:media_type], multiple: false
@@ -455,7 +460,7 @@ module MediaObjectMods
     descMetadata.remove_empty_nodes!
   end
 
-  def delete_all_values(field_name)
-    descMetadata.find_by_terms(field_name).each &:remove
+  def delete_all_values(*field_name)
+    descMetadata.find_by_terms(*field_name).each &:remove
   end
 end
