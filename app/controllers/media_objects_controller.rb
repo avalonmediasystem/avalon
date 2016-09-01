@@ -21,8 +21,8 @@ class MediaObjectsController < ApplicationController
 
   before_filter :authenticate_user!, except: [:show, :set_session_quality]
   before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
-  load_and_authorize_resource except: [:create, :update, :destroy, :update_status, :set_session_quality, :tree, :deliver_content]
-  authorize_resource only: [:create, :update]
+  load_and_authorize_resource except: [:destroy, :update_status, :set_session_quality, :tree, :deliver_content]
+  # authorize_resource only: [:create, :update]
 
   before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
   before_filter :load_player_context, only: [:show]
@@ -63,7 +63,7 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects
   def create
-    @media_object = MediaObject.new
+    # @media_object = initialize_media_object
     update_media_object
   end
 
@@ -87,7 +87,7 @@ class MediaObjectsController < ApplicationController
     if populate_from_catalog and Avalon::BibRetriever.configured?
       begin
         # Set other identifiers
-        @media_object.update_attributes(media_object_params.slice(:other_identifier_type, :other_identifier))
+        @media_object.update_attributes(media_object_parameters.slice(:other_identifier_type, :other_identifier))
         # Try to use Bib Import
         @media_object.descMetadata.populate_from_catalog!(Array(params[:fields][:bibliographic_id]).first,
                                                          Array(params[:fields][:bibliographic_id_label]).first)
@@ -96,11 +96,11 @@ class MediaObjectsController < ApplicationController
       ensure
         if !@media_object.valid?
           # Fall back to MODS as sent if Bib Import fails
-          @media_object.update_attributes(media_object_params.slice(*@media_object.errors.keys)) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
+          @media_object.update_attributes(media_object_parameters.slice(*@media_object.errors.keys)) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
         end
       end
     else
-      @media_object.update_attributes(media_object_params) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
+      @media_object.update_attributes(media_object_parameters) if params.has_key?(:fields) and params[:fields].respond_to?(:has_key?)
     end
 
     error_messages = []
@@ -353,7 +353,7 @@ class MediaObjectsController < ApplicationController
   end
 
   def build_context
-    params.merge!({media_object: model_object, media_object_params: media_object_params, user: user_key, ability: current_ability})
+    params.merge!({media_object: model_object, media_object_params: media_object_parameters, user: user_key, ability: current_ability})
   end
 
   def set_session_quality
@@ -401,7 +401,7 @@ class MediaObjectsController < ApplicationController
     file_id.nil? ? nil : @masterFiles.find { |mf| mf.id == file_id }
   end
 
-  def media_object_params
+  def media_object_parameters
     # TODO: Restrist permitted params!!!
     # params.require(:fields).permit!
     # params.permit!
