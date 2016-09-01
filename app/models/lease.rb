@@ -35,11 +35,11 @@ class Lease < ActiveFedora::Base
   end
 
   def begin_time= value
-    super(start_of_day(value))
+    super(start_of_day(value)) if value.present?
   end
 
   def end_time= value
-    super(end_of_day(value))
+    super(end_of_day(value)) if value.present?
   end
 
   # Determines if the lease is currently active (today is between the begin and end time)
