@@ -59,6 +59,8 @@
     end
   end
 
+  resources :vocabulary, except: [:create, :destroy, :new, :edit]
+
   resources :media_objects, except: [:create, :update] do
     member do
       put :update, action: :update, defaults: { format: 'html' }, constraints: { format: 'html' }
