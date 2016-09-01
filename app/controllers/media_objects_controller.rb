@@ -112,14 +112,14 @@ class MediaObjectsController < ApplicationController
         invalid_fields.each do |field|
           #NOTE this will erase all values for fields with multiple values
           logger.warn "Erasing field #{field} with bad value, bibID: #{Array(params[:fields][:bibliographic_id]).first}, avalon ID: #{@media_object.id}"
-          @media_object.send(field, nil)
+          @media_object.send("#{field}=", nil)
         end
       end
     end
     if !@media_object.save
       error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
     elsif params[:files].respond_to?('each')
-      old_ordered_master_files = @media_object.ordered_master_files.to_a.collect{|p|p.id}
+      old_ordered_master_files = @media_object.ordered_master_files.to_a.collect(&:id)
       master_files_params.each do |file_spec|
         master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier))
         # master_file.media_object = @media_object
@@ -140,14 +140,17 @@ class MediaObjectsController < ApplicationController
           break
         end
       end
+
       if error_messages.empty?
-        if params[:replace_masterfiles]
+        if params[:replace_master_files]
           old_ordered_master_files.each do |mf|
             p = MasterFile.find(mf)
             @media_object.master_files.delete(p)
+            @media_object.ordered_master_files.delete(p)
             p.destroy
           end
         end
+
         #Ensure these are set because sometimes there is a timing issue that prevents the masterfile save from doing it
         @media_object.set_media_types!
         @media_object.set_resource_types!
@@ -296,12 +299,7 @@ class MediaObjectsController < ApplicationController
     errors = []
     success_count = 0
     Array(params[:id]).each do |id|
-      begin
-        media_object = MediaObject.find(id)
-      rescue ActiveFedora::ObjectNotFoundError
-        errors += ["#{id} was not found."]
-        next
-      end
+      media_object = MediaObject.find(id)
       if cannot? :update, media_object
         errors += ["#{media_object.title} (#{id}) (permission denied)."]
       else

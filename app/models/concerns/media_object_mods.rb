@@ -72,7 +72,7 @@ module MediaObjectMods
 
   def title=(value)
     delete_all_values(:main_title)
-    descMetadata.add_main_title(value)
+    descMetadata.add_main_title(value) if value.present?
   end
 
   # has_attributes :alternative_title, datastream: :descMetadata, at: [:alternative_title], multiple: true
@@ -82,7 +82,7 @@ module MediaObjectMods
 
   def alternative_title=(value)
     delete_all_values(:alternative_title)
-    Array(value).each { |val| descMetadata.add_alternative_title(val) }
+    Array(value).each { |val| descMetadata.add_alternative_title(val) } if value.present?
   end
 
   # has_attributes :translated_title, datastream: :descMetadata, at: [:translated_title], multiple: true
@@ -92,7 +92,7 @@ module MediaObjectMods
 
   def translated_title=(value)
     delete_all_values(:translated_title)
-    Array(value).each { |val| descMetadata.add_translated_title(val) }
+    Array(value).each { |val| descMetadata.add_translated_title(val) } if value.present?
   end
 
   # has_attributes :uniform_title, datastream: :descMetadata, at: [:uniform_title], multiple: true
@@ -102,7 +102,7 @@ module MediaObjectMods
 
   def uniform_title=(value)
     delete_all_values(:uniform_title)
-    Array(value).each { |val| descMetadata.add_uniform_title(val) }
+    Array(value).each { |val| descMetadata.add_uniform_title(val) } if value.present?
   end
 
   # has_attributes :statement_of_responsibility, datastream: :descMetadata, at: [:statement_of_responsibility], multiple: false
@@ -112,7 +112,7 @@ module MediaObjectMods
 
   def statement_of_responsibility=(value)
     delete_all_values(:statement_of_responsibility)
-    descMetadata.statement_of_responsibility = value
+    descMetadata.statement_of_responsibility = value if value.present?
   end
 
   # has_attributes :creator, datastream: :descMetadata, at: [:creator], multiple: true
@@ -122,7 +122,7 @@ module MediaObjectMods
 
   def creator=(value)
     delete_all_values(:creator)
-    Array(value).each { |val| descMetadata.add_creator(val) }
+    Array(value).each { |val| descMetadata.add_creator(val) } if value.present?
   end
 
   # has_attributes :date_created, datastream: :descMetadata, at: [:date_created], multiple: false
@@ -132,7 +132,7 @@ module MediaObjectMods
 
   def date_created=(value)
     delete_all_values(:date_created)
-    descMetadata.add_date_created(value)
+    descMetadata.add_date_created(value) if value.present?
   end
 
   # has_attributes :date_issued, datastream: :descMetadata, at: [:date_issued], multiple: false
@@ -142,7 +142,7 @@ module MediaObjectMods
 
   def date_issued=(value)
     delete_all_values(:date_issued)
-    descMetadata.add_date_issued(value)
+    descMetadata.add_date_issued(value) if value.present?
   end
 
   # has_attributes :copyright_date, datastream: :descMetadata, at: [:copyright_date], multiple: false
@@ -152,7 +152,7 @@ module MediaObjectMods
 
   def copyright_date=(value)
     delete_all_values(:copyright_date)
-    descMetadata.add_copyright_date(value)
+    descMetadata.add_copyright_date(value) if value.present?
   end
 
   # has_attributes :abstract, datastream: :descMetadata, at: [:abstract], multiple: false
@@ -162,7 +162,7 @@ module MediaObjectMods
 
   def abstract=(value)
     delete_all_values(:abstract)
-    descMetadata.abstract = value
+    descMetadata.abstract = value if value.present?
   end
 
   # has_attributes :note, datastream: :descMetadata, at: [:note], multiple: true
@@ -172,12 +172,12 @@ module MediaObjectMods
 
   def note=(value)
     delete_all_values(:note)
-    descMetadata.note = Array(value)
+    descMetadata.note = Array(value) if value.present?
   end
 
   def note_type=(value)
     delete_all_values(:note, :type)
-    descMetadata.note.type = Array(value)
+    descMetadata.note.type = Array(value) if value.present?
   end
 
   # TODO: Should this be multivalued given that it stores the mime_types of sections!?!
@@ -190,7 +190,7 @@ module MediaObjectMods
   def format=(value)
 
     delete_all_values(:media_type)
-    Array(value).each { |val| descMetadata.add_media_type(val) }
+    Array(value).each { |val| descMetadata.add_media_type(val) } if value.present?
   end
 
   # has_attributes :resource_type, datastream: :descMetadata, at: [:resource_type], multiple: true
@@ -200,7 +200,7 @@ module MediaObjectMods
 
   def resource_type=(value)
     delete_all_values(:resource_type)
-    descMetadata.resource_type = value
+    descMetadata.resource_type = value if value.present?
   end
 
   # Additional descriptive metadata
@@ -211,7 +211,7 @@ module MediaObjectMods
 
   def contributor=(value)
     delete_all_values(:contributor)
-    Array(value).each { |val| descMetadata.add_contributor(val) }
+    Array(value).each { |val| descMetadata.add_contributor(val) } if value.present?
   end
 
   # has_attributes :publisher, datastream: :descMetadata, at: [:publisher], multiple: true
@@ -221,7 +221,7 @@ module MediaObjectMods
 
   def publisher=(value)
     delete_all_values(:publisher)
-    Array(value).each { |val| descMetadata.add_publisher(val) }
+    Array(value).each { |val| descMetadata.add_publisher(val) } if value.present?
   end
 
   # has_attributes :genre, datastream: :descMetadata, at: [:genre], multiple: true
@@ -231,7 +231,7 @@ module MediaObjectMods
 
   def genre=(value)
     delete_all_values(:genre)
-    descMetadata.genre = value
+    descMetadata.genre = value if value.present?
   end
 
   # TODO: Review this with jlhardes
@@ -242,7 +242,7 @@ module MediaObjectMods
 
   def subject=(value)
     delete_all_values(:topical_subject)
-    Array(value).each { |val| descMetadata.add_topical_subject(val) }
+    Array(value).each { |val| descMetadata.add_topical_subject(val) } if value.present?
   end
 
   # has_attributes :related_item_url, datastream: :descMetadata, at: [:related_item_url], multiple: true
@@ -252,7 +252,7 @@ module MediaObjectMods
 
   def related_item_url=(value)
     delete_all_values(:related_item_url)
-    Array(value).each { |val| descMetadata.add_related_item_url(val) }
+    Array(value).each { |val| descMetadata.add_related_item_url(val) } if value.present?
   end
 
   # has_attributes :geographic_subject, datastream: :descMetadata, at: [:geographic_subject], multiple: true
@@ -262,7 +262,7 @@ module MediaObjectMods
 
   def geographic_subject=(value)
     delete_all_values(:geographic_subject)
-    Array(value).each { |val| descMetadata.add_geographic_subject(val) }
+    Array(value).each { |val| descMetadata.add_geographic_subject(val) } if value.present?
   end
 
   # has_attributes :temporal_subject, datastream: :descMetadata, at: [:temporal_subject], multiple: true
@@ -272,7 +272,7 @@ module MediaObjectMods
 
   def temporal_subject=(value)
     delete_all_values(:temporal_subject)
-    Array(value).each { |val| descMetadata.add_temporal_subject(val) }
+    Array(value).each { |val| descMetadata.add_temporal_subject(val) } if value.present?
   end
 
   # has_attributes :topical_subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
@@ -282,7 +282,7 @@ module MediaObjectMods
 
   def topical_subject=(value)
     delete_all_values(:topical_subject)
-    Array(value).each { |val| descMetadata.add_topical_subject(val) }
+    Array(value).each { |val| descMetadata.add_topical_subject(val) } if value.present?
   end
 
   # has_attributes :bibliographic_id, datastream: :descMetadata, at: [:bibliographic_id], multiple: false
@@ -291,17 +291,26 @@ module MediaObjectMods
   end
   def bibliographic_id=(value)
     delete_all_values(:bibliographic_id)
-    descMetadata.add_bibliographic_id(value)
+    descMetadata.add_bibliographic_id(value) if value.present?
   end
 
   # has_attributes :language, datastream: :descMetadata, at: [:language], multiple: true
   def language
-    descMetadata.language.code.zip(descMetadata.language.text).map{|a|{code: a[0],text: a[1]}}
+    descMetadata.language_code.zip(descMetadata.language_text).map{|a|{code: a[0],text: a[1]}}
   end
   def language=(value)
     delete_all_values(:language)
-    Array(value).each { |val| descMetadata.add_language(val) }
+    Array(value).each { |val| descMetadata.add_language(val) } if value.present?
   end
+  def language_code=(value)
+    delete_all_values(:language_code)
+    descMetadata.language_code = Array(value) if value.present?
+  end
+  def language_text=(value)
+    delete_all_values(:language_text)
+    descMetadata.language_text = Array(value) if value.present?
+  end
+  # TODO: follow same pattern as note and note_type here!
 
   # has_attributes :terms_of_use, datastream: :descMetadata, at: [:terms_of_use], multiple: false
   def terms_of_use
@@ -309,7 +318,7 @@ module MediaObjectMods
   end
   def terms_of_use=(value)
     delete_all_values(:terms_of_use)
-    descMetadata.add_terms_of_use(value)
+    descMetadata.add_terms_of_use(value) if value.present?
   end
 
   # has_attributes :table_of_contents, datastream: :descMetadata, at: [:table_of_contents], multiple: true
@@ -318,7 +327,7 @@ module MediaObjectMods
   end
   def table_of_contents=(value)
     delete_all_values(:table_of_contents)
-    descMetadata.table_of_contents = value
+    descMetadata.table_of_contents = value if value.present?
   end
 
   # has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: true
@@ -327,7 +336,7 @@ module MediaObjectMods
   end
   def physical_description=(value)
     delete_all_values(:physical_description)
-    Array(value).each { |val| descMetadata.add_physical_description(val) }
+    Array(value).each { |val| descMetadata.add_physical_description(val) } if value.present?
   end
 
   # has_attributes :other_identifier, datastream: :descMetadata, at: [:other_identifier], multiple: true
@@ -336,7 +345,7 @@ module MediaObjectMods
   end
   def other_identifier=(value)
     delete_all_values(:other_identifier)
-    Array(value).each { |val| descMetadata.add_other_identifier(val) }
+    Array(value).each { |val| descMetadata.add_other_identifier(val) } if value.present?
   end
 
   # has_attributes :record_identifier, datastream: :descMetadata, at: [:record_identifier], multiple: true
@@ -345,7 +354,7 @@ module MediaObjectMods
   end
   def record_identifier=(value)
     delete_all_values(:record_identifier)
-    Array(value).each { |val| descMetadata.add_record_identifier(val) }
+    Array(value).each { |val| descMetadata.add_record_identifier(val) } if value.present?
   end
 
   # def find_metadata_attribute(attribute)

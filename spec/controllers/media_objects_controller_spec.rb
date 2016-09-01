@@ -244,7 +244,8 @@ describe MediaObjectsController, type: :controller do
         end
         it "should create a new media_object, removing invalid data for non-required fields" do
           media_object = FactoryGirl.create(:media_object)
-          fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
+          fields = {}
+          descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
           fields[:language] = ['???']
           fields[:related_item_url] = ['???']
           fields[:note] = ['note']
