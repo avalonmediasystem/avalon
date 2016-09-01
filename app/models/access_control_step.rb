@@ -43,7 +43,7 @@ class AccessControlStep < Avalon::Workflow::BasicStep
           if title=='user'
             if create_lease
               begin
-                media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, read_users: [val]) ]
+                media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, inherited_read_users: [val]) ]
               rescue Exception => e
                 context[:error] = e.message
               end
@@ -54,7 +54,7 @@ class AccessControlStep < Avalon::Workflow::BasicStep
             if ( IPAddr.new(val) rescue false )
               if create_lease
                 begin
-                  media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, read_groups: [val]) ]
+                  media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, inherited_read_groups: [val]) ]
                 rescue Exception => e
                   context[:error] = e.message
                 end
@@ -67,7 +67,7 @@ class AccessControlStep < Avalon::Workflow::BasicStep
           else
             if create_lease
               begin
-                media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, read_groups: [val]) ]
+                media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, inherited_read_groups: [val]) ]
               rescue Exception => e
                 context[:error] = e.message
               end

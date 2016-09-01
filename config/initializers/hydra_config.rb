@@ -31,8 +31,8 @@ Hydra.configure do |config|
   #
   # Specify the user model
   # config.user_model = 'User'
-  # config.permissions.policy_class = {Admin::Collection => {}, Lease => {clause: " AND begin_time_dti:[* TO NOW] AND end_time_dti:[NOW TO *]"}}
-  config.permissions.policy_class = { Admin::Collection => {} }
+  config.permissions.policy_class = {Admin::Collection => {}, Lease => {clause: " AND begin_time_dtsi:[* TO NOW] AND end_time_dtsi:[NOW TO *]"}}
+  # config.permissions.policy_class = { Admin::Collection => {} }
 end
 
 module Hydra::RoleMapperBehavior::ClassMethods

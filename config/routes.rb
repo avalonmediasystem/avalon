@@ -26,7 +26,11 @@ Rails.application.routes.draw do
   devise_scope :user do
     match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session, via: [:get]
     match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
+    match '/users/auth/:provider', to: 'users/omniauth_callbacks#passthru', as: :user_omniauth_authorize, via: [:get, :post]
+    match '/users/auth/:action/callback', controller: "users/omniauth_callbacks", as: :user_omniauth_callback, via: [:get, :post]
   end
+
+  mount BrowseEverything::Engine => '/browse'
 
   # Avalon routes
   namespace :admin do
@@ -62,6 +66,7 @@ Rails.application.routes.draw do
     end
     collection do
       post :create, action: :create, constraints: { format: 'json' }
+      post :set_session_quality
       get :confirm_remove
       put :update_status
       # 'delete' has special signifigance so use 'remove' for now
@@ -113,6 +118,8 @@ Rails.application.routes.draw do
       delete :bulk_delete
     end
   end
+
+  match "/oembed", to: 'master_files#oembed', via: [:get]
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

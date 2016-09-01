@@ -28,7 +28,7 @@
           master_files = context[:master_file_ids].map{ |master_file_id| MasterFile.find(master_file_id) }
 
           # re-add the parts that are now in the right order
-          media_object.parts_with_order = master_files
+          media_object.ordered_master_files = master_files
 
           media_object.save
         end

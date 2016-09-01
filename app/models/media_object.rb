@@ -45,7 +45,7 @@ class MediaObject < ActiveFedora::Base
   validates :date_issued, presence: true
   validate  :report_missing_attributes
   validates :collection, presence: true
-  validates :governing_policies, presence: true
+  # validates :governing_policies, presence: true if Proc.new { |mo| mo.changes["governing_policy_ids"].empty? }
   validate  :validate_related_items
   validate  :validate_dates
   validate  :validate_note_type
@@ -107,12 +107,12 @@ class MediaObject < ActiveFedora::Base
 
   alias_method :'_collection=', :'collection='
 
-  # This requires the MediaObject having an actual pid
+  # This requires the MediaObject having an actual id
   def collection= co
     old_collection = self.collection
     self._collection= co
+    self.governing_policies.delete(old_collection) if old_collection
     self.governing_policies += [co]
-    self.governing_policies.delete(old_collection)
     if (self.read_groups + self.read_users + self.discover_groups + self.discover_users).empty?
       # TODO: Fix the next line
       # self.rightsMetadata.content = co.defaultRights.content unless co.nil?

@@ -35,7 +35,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'rsolr', '~> 1.0'
 gem 'devise'
-gem 'devise-guests', '~> 0.3'
+#gem 'devise-guests', '~> 0.3'
 
 # Avalon-specific
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", branch: 'hydra10'
@@ -52,11 +52,24 @@ gem 'edtf'
 gem 'rest-client'
 gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', tag: 'avalon-r5'
 gem 'acts_as_list'
+gem 'api-pagination'
+gem 'browse-everything'
+
+#MediaElement.js related
+gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', branch: 'captions'
+gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r4'
+gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r4'
+gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'avalon-r5'
+gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r4'
+gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r4'
+gem 'media-element-logo-plugin'
+gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r5'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
   gem 'pry-rails'
+  gem 'pry-byebug'
   gem 'solr_wrapper', '>= 0.16'
   gem 'fcrepo_wrapper'
   gem 'rspec-rails'
@@ -83,6 +96,9 @@ group :test do
   gem 'fakeweb'
   gem 'email_spec'
   gem 'capybara'
-  gem 'mysql2'
   # gem 'hashdiff'
+end
+
+group :travis, optional: true do
+  gem 'mysql2'
 end

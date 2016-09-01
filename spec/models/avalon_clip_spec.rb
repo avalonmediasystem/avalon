@@ -155,7 +155,6 @@ describe AvalonClip do
       expect(clip.playlist_position(1)).to be_nil
     end
     it 'returns position when there is a related clip' do
-      #byebug
       stub_playlist
       expect(clip.playlist_position(@playlist.id)).to eq(1)
       expect(second_clip.playlist_position(@playlist.id)).to eq(2)

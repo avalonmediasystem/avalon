@@ -6,7 +6,9 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module HydraDemo
+module Avalon
+  VERSION = '6.0'
+
   class Application < Rails::Application
     require 'avalon/configuration'
     

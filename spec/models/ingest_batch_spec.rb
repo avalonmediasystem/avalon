@@ -32,7 +32,7 @@ describe IngestBatch do
     it 'returns false when one or more master files are not finished' do
        skip "Fix problems with this test"
 
-       media_object = MediaObject.new(pid:'avalon:ingest-batch-test')
+       media_object = MediaObject.new(id:'avalon:ingest-batch-test')
        media_object.add_relationship(:has_part, MasterFile.new(status_code: 'STOPPED'))
        media_object.parts << MasterFile.create(status_code: 'RUNNING')
        media_object.save(validate: false)

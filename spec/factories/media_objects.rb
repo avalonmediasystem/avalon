@@ -57,7 +57,7 @@ FactoryGirl.define do
         mf = FactoryGirl.create(:master_file)
         mf.media_object = mo
         mf.save
-        mo.ordered_master_files += [mf]
+        # mo.ordered_master_files += [mf]
         mo.save
       end
     end

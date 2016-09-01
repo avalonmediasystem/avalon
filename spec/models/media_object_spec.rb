@@ -29,7 +29,7 @@ describe MediaObject do
       end
     end
     describe 'governing_policy' do
-      it {is_expected.to validate_presence_of(:governing_policies)}
+      xit {is_expected.to validate_presence_of(:governing_policies)}
     end
     describe 'language' do
       it 'should validate valid language' do
@@ -419,9 +419,9 @@ describe MediaObject do
       let(:media_object) { FactoryGirl.create(:media_object, :with_master_file) }
       it 'sets format on the model' do
         media_object.format = nil
-        expect(media_object.format).to be_nil
+        expect(media_object.format).to be_empty
         media_object.set_media_types!
-        expect(media_object.format).to eq "video/mp4"
+        expect(media_object.format).to eq ["video/mp4"]
       end
     end
 

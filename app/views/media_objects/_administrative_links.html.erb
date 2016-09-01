@@ -1,0 +1,56 @@
+<%#
+Copyright 2011-2015, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<% if can? :update, @media_object %>
+  <div class="row-fluid">
+      <p>
+        <ul class="unstyled hidden">
+          <li>
+            <% if @media_object.published? %>
+              <span class="label label-success">Published</span> Authorized users can view the item</li>
+            <% else %>
+              <span class="label label-important">Unpublished</span> Users cannot view the item</li>
+            <% end %>
+          <li>
+            <% unless @media_object.discover_groups.include? "nobody" %>
+              <span class="label label-success">Visible</span> Users can search for the item</li>
+            <% else %>
+              <span class="label label-important">Hidden</span> Users cannot search for the item</li>
+            <% end %>
+        </ul>
+      </p>
+
+      <div id="administrative_options" style="margin-bottom:1em;">
+
+      <% if @media_object.published? %>
+        <% if can?(:unpublish, @media_object) %>
+          <%= link_to 'Unpublish', update_status_media_object_path(@media_object, status:'unpublish'), method: :put, class: 'btn btn-default' %>
+        <% end %>
+      <% else %>
+        <%= link_to 'Publish', update_status_media_object_path(@media_object, status:'publish'), method: :put, class: 'btn btn-default' %>
+      <% end %>
+
+
+        <%= link_to 'Edit', edit_media_object_path(@media_object), class: 'btn btn-default' %>
+        <%# This might not be the best approach because it makes accidental 
+            deletion possible just by following a link. Need to revisit when
+            extra cycles are available %>
+
+        <% if can? :destroy, @media_object %>
+          <%= link_to 'Delete', confirm_remove_media_object_path(@media_object), class: 'btn btn-danger' %>
+        <% end %>
+      </div>
+  </div>
+<% end %>

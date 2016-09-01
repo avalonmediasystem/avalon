@@ -28,7 +28,7 @@ module Kaminari
       #   Model.page(5)
       eval <<-RUBY
         def self.#{Kaminari.config.page_method_name}(num = nil)
-          limit(default_per_page).offset(default_per_page * ((num = num.to_i - 1) < 0 ? 0 : num)).extending do
+          limit(default_per_page).offset(default_per_page * ((num = num.to_i - 1) < 0 ? 0 : num)).extending! do
             include Kaminari::ActiveFedoraRelationMethods
             include Kaminari::PageScopeMethods
           end
@@ -108,7 +108,7 @@ ActiveFedora::Relation.class_eval do
   include Kaminari::ConfigurationMethods
 
   def page(num = nil)
-    limit(Kaminari.config.default_per_page).offset(Kaminari.config.default_per_page * ((num = num.to_i - 1) < 0 ? 0 : num)).extending do
+    limit(Kaminari.config.default_per_page).offset(Kaminari.config.default_per_page * ((num = num.to_i - 1) < 0 ? 0 : num)).extending! do
       include Kaminari::ActiveFedoraRelationMethods
       include Kaminari::PageScopeMethods
     end
