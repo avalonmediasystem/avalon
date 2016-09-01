@@ -787,7 +787,7 @@ describe MediaObjectsController, type: :controller do
       request.env["HTTP_REFERER"] = '/'
       expect {
         get 'update_status', id: media_object.id, status: 'unpublish'
-      }.to change { Bookmark.exists? bookmark }.from( true ).to( false )
+      }.to change { Bookmark.exists? bookmark.id }.from( true ).to( false )
     end
   end
 

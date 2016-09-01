@@ -87,7 +87,8 @@ class MediaObjectsController < ApplicationController
     if populate_from_catalog and Avalon::BibRetriever.configured?
       begin
         # Set other identifiers
-        @media_object.update_attributes(media_object_parameters.slice(:other_identifier_type, :other_identifier))
+        # FIXME: The ordering in the slice is important
+        @media_object.update_attributes(media_object_parameters.slice(:other_identifier, :other_identifier_type))
         # Try to use Bib Import
         @media_object.descMetadata.populate_from_catalog!(Array(params[:fields][:bibliographic_id]).first,
                                                          Array(params[:fields][:bibliographic_id_label]).first)

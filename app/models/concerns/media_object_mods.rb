@@ -346,6 +346,12 @@ module MediaObjectMods
   def other_identifier=(value)
     delete_all_values(:other_identifier)
     Array(value).each { |val| descMetadata.add_other_identifier(val) } if value.present?
+    # descMetadata.other_identifier = Array(value) if value.present?
+  end
+  def other_identifier_type=(value)
+    delete_all_values(:original_related_item, :other_identifier, :type)
+    descMetadata.original_related_item.other_identifier.type = Array(value) if value.present?
+    # Array(value).each { |val| descMetadata.add_other_identifier_type(val) } if value.present?
   end
 
   # has_attributes :record_identifier, datastream: :descMetadata, at: [:record_identifier], multiple: true
