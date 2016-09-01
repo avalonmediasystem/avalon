@@ -23,8 +23,10 @@ describe MediaObjectsController, type: :controller do
 
   describe 'security' do
     let(:media_object) { FactoryGirl.create(:media_object) }
-    # let(:collection) { FactoryGirl.create(:collection) }
     describe 'ingest api' do
+      before do
+        ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+      end
       it "all routes should return 401 when no token is present" do
         expect(get :index, format: 'json').to have_http_status(401)
         expect(get :show, id: media_object.id, format: 'json').to have_http_status(401)
@@ -167,11 +169,11 @@ describe MediaObjectsController, type: :controller do
       :physical_description,
       :other_identifier
     ]}
-    
+
     describe "#create" do
       context 'using api' do
         before do
-           ApiToken.create token: 'secret_token', username: 'system_account_name', email: 'system@example.edu'
+           ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
            request.headers['Avalon-Api-Key'] = 'secret_token'
         end
         it "should respond with 422 if collection not found" do
@@ -278,6 +280,7 @@ describe MediaObjectsController, type: :controller do
     describe "#update" do
       context 'using api' do
         before do
+          ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
           request.headers['Avalon-Api-Key'] = 'secret_token'
         end
         let!(:media_object) { FactoryGirl.create(:media_object, :with_master_file) }
@@ -438,6 +441,9 @@ describe MediaObjectsController, type: :controller do
   describe "#index" do
     let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
     subject(:json) { JSON.parse(response.body) }
+    before do
+      ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
+    end
 
     it "should return list of media_objects" do
       request.headers['Avalon-Api-Key'] = 'secret_token'
@@ -459,6 +465,7 @@ describe MediaObjectsController, type: :controller do
       subject(:json) { JSON.parse(response.body) }
       before do
         5.times { FactoryGirl.create(:published_media_object, visibility: 'public', collection: collection) }
+        ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
         request.headers['Avalon-Api-Key'] = 'secret_token'
         get 'index', format:'json', per_page: '2'
       end
@@ -658,6 +665,7 @@ describe MediaObjectsController, type: :controller do
       let!(:media_object) { FactoryGirl.create(:media_object) }
 
       before do
+        ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
         request.headers['Avalon-Api-Key'] = 'secret_token'
       end
 
