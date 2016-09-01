@@ -193,6 +193,7 @@ GEM
     bootstrap-sass (3.3.7)
       autoprefixer-rails (>= 5.2.1)
       sass (>= 3.3.4)
+    bootstrap_form (2.3.0)
     browse-everything (0.10.2)
       bootstrap-sass
       dropbox-sdk (>= 1.6.2)
@@ -680,6 +681,7 @@ DEPENDENCIES
   acts_as_list
   api-pagination
   avalon-workflow!
+  bootstrap_form
   browse-everything
   byebug
   capybara
