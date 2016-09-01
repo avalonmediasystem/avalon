@@ -193,11 +193,13 @@ class MasterFile < ActiveFedora::Base
     # Removes existing association
     if self.media_object.present?
       self.media_object.master_files -= [self]
+      self.media_object.save
     end
 
     self._media_object=(mo)
     unless self.media_object.nil?
       self.media_object.ordered_master_files += [self]
+      self.media_object.save
     end
   end
 

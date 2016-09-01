@@ -120,7 +120,6 @@ describe MediaObjectsController, type: :controller do
                   width: "640",
                   height: "480" }
                ],
-        file_location: absolute_location,
         file_checksum: "7ae24368ccb7a6c6422a14ff73f33c9a",
         file_size: "199160",
         duration: "6315",
@@ -840,7 +839,7 @@ describe MediaObjectsController, type: :controller do
       it "should update all the labels" do
         login_user media_object.collection.managers.first
         part_params = {}
-        media_object.ordered_master_files.to_a.each_with_index { |mf,i| part_params[mf.id] = { id: mf.id, label: "Part #{i}", permalink: '', poster_offset: '00:00:00.000' } }
+        media_object.ordered_master_files.to_a.each_with_index { |mf,i| part_params[mf.id] = { id: mf.id, title: "Part #{i}", permalink: '', poster_offset: '00:00:00.000' } }
         params = { id: media_object.id, master_files: part_params, save: 'Save', step: 'file-upload', donot_advance: 'true' }
         patch 'update', params
         media_object.reload
