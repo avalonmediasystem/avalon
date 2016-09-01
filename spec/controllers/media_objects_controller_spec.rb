@@ -505,8 +505,8 @@ describe MediaObjectsController, type: :controller do
         moid = media_object.id
         media_object = MediaObject.find(moid)
 
-        media_object.master_files.collect { |part|
-          get 'show', id: media_object.id, format: 'js', content: part.id
+        media_object.master_files.each { |part|
+          xhr :get, :show, id: media_object.id, format: :js, content: part.id
           json_obj = JSON.parse(response.body)
           expect(json_obj['is_video']).to eq(part.is_video?)
         }
