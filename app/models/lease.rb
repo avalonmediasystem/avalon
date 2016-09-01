@@ -27,10 +27,10 @@ class Lease < ActiveFedora::Base
 
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
-  property :begin_time, predicate: Avalon::RDFVocab::Lease::begin_time, multiple: false do |index|
+  property :begin_time, predicate: ::RDF::Vocab::SCHEMA.startDate, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :end_time, predicate: Avalon::RDFVocab::Lease::end_time, multiple: false do |index|
+  property :end_time, predicate: ::RDF::Vocab::SCHEMA.endDate, multiple: false do |index|
     index.as :stored_sortable
   end
 
