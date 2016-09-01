@@ -1,4 +1,4 @@
-server_options = Avalon::Configuration.lookup('domain')
+server_options = Avalon::Configuration.lookup('domain').dup
 
 if server_options
   server_options.symbolize_keys!

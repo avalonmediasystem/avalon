@@ -126,10 +126,13 @@ module Avalon
       url.password = ActiveFedora.fedora_config.credentials[:password]
       result['FEDORA_URL'] = url.to_s
 
-      url = URI.parse(Rubyhorn.config_for_environment[:url])
-      url.user = Rubyhorn.config_for_environment[:user]
-      url.password = Rubyhorn.config_for_environment[:password]
-      result['MATTERHORN_URL'] = url.to_s
+      begin
+        url = URI.parse(Rubyhorn.config_for_environment[:url])
+        url.user = Rubyhorn.config_for_environment[:user]
+        url.password = Rubyhorn.config_for_environment[:password]
+        result['MATTERHORN_URL'] = url.to_s
+      rescue NameError, LoadError
+      end
 
       result['SOLR_URL'] = ActiveFedora.solr_config[:url]
 
@@ -139,7 +142,7 @@ module Avalon
       url.query_values = config.reject { |k,v| [:adapter,:host,:username,:password,:port,:database].include?(k) }
       result['DATABASE_URL'] = url.to_s
       
-      result['SECRET_KEY_BASE'] = Avalon.config.secret_key_base
+      result['SECRET_KEY_BASE'] = Avalon::Application.config.secret_key_base
       result.collect { |key,val| [key,val.to_s.inspect].join('=') }.join("\n")
     end
     
