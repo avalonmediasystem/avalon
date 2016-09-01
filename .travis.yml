@@ -9,6 +9,8 @@ before_install:
   - sudo apt-get install mediainfo
   - sudo ln -s /usr/bin/lsof /usr/sbin/lsof
   - cp spec/config/*.yml config
+  - cp config/authentication.yml.example config/authentication.yml
+  - cp config/avalon.yml.example config/avalon.yml
   - bundle config without development:production
 before_script:
   - rm config/database.yml
