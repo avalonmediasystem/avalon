@@ -1,23 +1,205 @@
-# Files in the config/locales directory are used for internationalization
-# and are automatically loaded by Rails. If you want to use locales other
-# than English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t 'hello'
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t('hello') %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more, please read the Rails Internationalization guide
-# available at http://guides.rubyonrails.org/i18n.html.
+# Sample localization file for English. Add more files in this directory for other locales.
+# See http://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
 
 en:
-  hello: "Hello world"
+  auth:
+    sign_in: "Sign in"
+    sign_out: "Sign out"
+    embedded_video: <p>This video content is restricted</p><p>You must be logged in and authorized to view it</p>
+    embedded_audio: This audio content is restricted
+  release_label: "Release"
+  errors:
+    lti_auth_error: |
+      If you are an instructor, you cannot view these items in student mode.
+      Please switch back to instructor mode to view. If you are a student and
+      receiving this message, please contact us at <a href="mailto:%s">%s</a>.
+    messages:
+      blank: "field is required."
+      taken: "is taken."
+      dateformat: "(%{date}) is in wrong format."
+  media_object:
+    empty_share_link: ""
+    empty_share_link_notice: "After processing has started the embedded link will be available."
+    empty_share_section_permalink_notice: "After processing has started the section link will be available."
+  metadata_tip:
+    abstract: |
+      Summary provides a space for describing the contents of the item. Examples
+      include liner notes, contents list, or an opera scene abstract. This field
+      is not meant for cataloger's descriptions but for descriptions that
+      accompany the item. Depending on the length of the summary it may be
+      truncated in search results.
+    collection: |
+      Collection defines the source or host of the item (for example, the source
+      of the original record or the collection responsible for entering
+      information about the item). Collections will be aggregated for browsing
+      access. Examples: Variations, Indiana University Libraries Film Archive,
+      IUCAT, NUcat.
+    contributor: |
+      Contributors are persons or bodies associated with the item but not considered
+      primary to the creation of its content. Examples of this would be performers in
+      a band or opera, conductor, arranger, cinematographer, and choreographer. At
+      this time this is no ability to specify a contributor as a corporate body. When
+      possible, use the <a href="http://id.loc.gov/authorities/names.html"
+      target="_blank">Library of Congress Name Authority File</a>.
+    creator: |
+      Main contributors are the primary persons
+      or bodies associated with the creation of the content.  Main contributors
+      will be included in search results display and aggregated for browsing
+      access. At this time there is no ability to specify a main contributor as
+      a corporate body. When possible, use the <a
+      href="http://id.loc.gov/authorities/names.html" target="_blank">Library of
+      Congress Name Authority File</a>.
+    date_created: |
+      Creation date should only be used if Date is a re-issue date. Then Creation date
+      would contain the original publication date. Enter date information in a format
+      consistent with the options shown in <a
+      href="http://www.loc.gov/standards/datetime/pre-submission.html"
+      target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.
+    date_issued: |
+      <strong>Required field.</strong> Date should be the main publication date
+      associated with the item to be used for sorting browse and search results.
+      Enter date information in a format consistent with the options shown in <a
+      href="http://www.loc.gov/standards/datetime/pre-submission.html"
+      target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.
+    genre: |
+      Genre can be used to categorize an item by form, style, or subject matter. For
+      consistency and to allow for sorting and aggregating, use terms from the <a
+      href="http://metadataregistry.org/concept/list/vocabulary_id/148.html"
+      target="_blank">Open Metadata Registry labels for PBCore: pbcoreGenre</a>.
+    geographic_subject: |
+      Location should be used for the geographic subject of the content. For
+      consistency and to allow for sorting and aggregating, use terms from the
+      <a href="http://www.getty.edu/research/tools/vocabularies/tgn/index.html"
+      target="_blank">Getty Thesaurus of Geographic Names</a>.
+    publisher: |
+      Publisher of the content of the item.
+    temporal_subject: |
+      Time period should be used for the temporal subject of the content (for example,
+      years or year ranges). Enter date information in a format consistent with the
+      options shown in <a href="http://www.loc.gov/standards/datetime/pre-
+      submission.html" target="_blank">Extended Date/Time Format (EDTF) 1.0</a>.
+    title: |
+      <strong>Required field.</strong> Title is used for display in search results and
+      single item views. Recommended use is to reflect the content captured in
+      digitized media files (such as the title of the piece performed or a short
+      description of the content of a home movie). Lengthy titles may be truncated in
+      the search results view.
+    topical_subject: |
+      Subject should be used for the topical subject of the content. For
+      consistency and to allow for sorting and aggregating, use terms from the
+      <a href="http://id.loc.gov/authorities/subjects.html"
+      target="_blank">Library of Congress Subject Headings</a>. For temporal
+      subjects, use the Time period(s) field and for geographic subjects, use
+      the Location(s) field in this form. See below.
+    permalink: |
+      The item Permalink is a URL that links to the Item as a whole. In addition, each section of an item will have a distinct permalink assigned in the File Upload page. If configured to do so, Avalon will automatically generate a permalink if this field is left blank.
+    bibliographic_id: |
+      Bibliographic ID should be used for an external record identifier that can connect the Avalon item to a catalog record or other record for the original item. Type specifies the type of external record identifier.
+    language: |
+      Language describes the languages used in the item. Typing two or more
+      letters within the field will bring up permitted matches. Only terms or
+      codes from the <a href="http://www.loc.gov/marc/languages/"
+      target="_blank">MARC Code List for Languages</a> may be used. This is an
+      optional field.
+    terms_of_use: |
+      Terms of Use describes the conditions under which content may be used. This is an optional field.
+    physical_description: |
+      Physical Description is an optional field that will display information about the original resource being described.
+    related_item_url: |
+      The label is the text that will be displayed in the item record and will link to the URL entered. Related Item is an optional field.
+    note: |
+      Note is used to describe aspects of the resource not accounted for in any of the other fields, such as creation or production credits, performers, venue, historical or biographical information, language details, awards given to the performance or the work performed. Recommended use is to provide a separate Contributor field for each person or body associated with the creation of the content and to use a Note to provide more information about such contributions or to provide information about secondary persons or bodies associated with the creation of the content. Type specifies the type of note and is used as a label in the user interface.<br><br>Statement of Responsibility is used to provide information about primary persons or bodies associated with the creation of the content, along with details about their roles. This information can be transcribed from the credits  listed in the resource itself or on its packaging. Recommended use is to provide a separate Contributor field for each person or body listed in the Statement of Responsibility. Statement of Responsibility may be left empty if the use of Contributor fields alone is preferred. Statement of Responsibility is displayed in the user interface appended to the Title field, following a ' / '.
+    other_identifier: |
+      Other Identifier should be used for an external record identifier that can connect the Avalon item to a catalog record or other record for the original item. This identifier differs from Bibliographic Identifier in that it is not used to retrieve a record from another system. Type specifies the type of external record identifier.
+    table_of_contents: |
+      Table of Contents is used to provide the titles of separate works or parts of a resource. Information provided may also contain statements of responsibility or other sequential designations. Titles of separate works or parts should be separated by ' -- ' (space-hyphen-hyphen-space).
+
+  file_upload_tip:
+    label: |
+      The Section Label will be used in an item's listing to identify each file associated with the item.
+    permalink: |
+      The section Permalink is a URL that links to an individual section of an Item. In addition, the entire item will have a distinct permalink that can be assigned in the Resource Description page. If configured to do so, Avalon will automatically generate a permalink if this field is left blank.
+    datedigitized: |
+      The Date Digitized field reflects when the original media was initially digitized, not ingested into Avalon. This date automatically will be set to the date the ingest process completes unless a date is provided.
+    thumbnail: |
+      The Thumbnail is a still image that will be displayed in search results. Thumbnails can be grabbed from a video during playback by clicking the 'Create thumbnail' button in the player or by entering a time offset value here in the format 'hh:mm:ss.sss'.
+    skip_transcoding: |
+      For best results, use AAC-encoded mp4 files for audio and H.264 mp4 files for video. Some file types, such as mp3, will not work with the Adobe Media Server.
+  access_control:
+    depositorlabel: "Depositor"
+    editorlabel: "Editor"
+    managerlabel: "Manager"
+    userlabel: "Avalon User"
+    grouplabel: "Avalon Group"
+    classlabel: "External Group"
+    ipaddresslabel: "IP Address or Range"
+    depositor: |
+      Depositors add media to the collection and describe it with metadata.
+      They can publish items but not unpublish. They can only modify or
+      delete unpublished items.
+    editor: |
+      Editors have supervisory responsibility for the collection building — the
+      ingest and description process. They can assign depositor roles, change
+      the name or description of the collection, and can modify the access
+      controls for individual items in the collection. Editors can also do
+      anything a depositor can do.
+    manager: |
+      Managers have overall accountability for the collection. Managers can
+      create collections and assign editor and depositor roles for those
+      collections. They set the default access controls for items added to
+      the collection, and they also step in when a published item needs
+      revising or deleting. Managers can also do anything an editor or
+      depositor can do.
+    user: |
+      Enter a username to grant them access to an item or collection. Start and end dates are not required; if included, access for the specified user will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified user.
+    group: |
+      Select an Avalon group from the dropdown list below to grant it access to an item or collection.  Start and end dates are not required; if included, access for the specified group will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified group.
+    class: |
+      Enter an external group to grant it access to an item or collection. This group might represent students in a course or members of an institution-specific group. Start and end dates are not required; if included, access for the specified group will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified group.
+    ipaddress: |
+      An IP Address or subnet. Eg. 255.0.1.10 or 255.0.1.10/21 or 255.0.1.10/255.255.255.0
+      or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777
+      or ffaa:aaff:bbcc:ddee:1122:3344:5566:7777/ffff:ffff:ffff:ffff:ffff:ffff:ffff:ff00
+      Start and end dates are not required; if included, access for the specified IP Address(es) will start at the beginning of the start date and end at the beginning of the end date. Otherwise, access will be open ended for the specified IP Address(es).
+
+  contact:
+    title: 'Contact Us - %{application_name}'
+
+  groups:
+    title: 'Groups - %{application_name}'
+    show:
+      title: '%{group_name} - Groups - %{application_name}'
+
+  collections:
+    title: 'Collections - %{application_name}'
+    show:
+      title: '%{collection_name} - Collections - %{application_name}'
+
+  media_objects:
+    edit:
+      title: '%{step_title} - %{media_object_title} - %{application_name}'
+    show:
+      title: '%{media_object_title} - %{application_name}'
+    player:
+      customError: 'Your browser requires Adobe Flash Player in order to play this item. For more information, see <a href="https://helpx.adobe.com/flash-player.html" target="_blank">Adobe Flash Player Help</a>.'
+
+  playlist:
+    ago: "%{time} ago"
+    lockAltText: "This playlist is private."
+    unlockAltText: "This playlist is public."
+    lockText: "Private"
+    unlockText: "Public"
+    new:
+      action: "Create"
+    create:
+      action: "Create"
+    edit:
+      action: "Save Changes"
+    update:
+      action: "Save Changes"
+
+  activerecord:
+    attributes:
+      playlist:
+        title: "Name"
+        comment: "Description"
