@@ -41,20 +41,11 @@ module Avalon
     end
 
     class Collection < RDF::StrictVocabulary("http://avalonmediasystem.org/rdf/vocab/collection#")
-      property :name,                     "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
-      property :unit,                     "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
-      property :description,              "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
       property :dropbox_directory_name,   "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
       property :default_read_users,       "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
       property :default_read_groups,      "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
       property :default_visibility,       "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
       property :default_hidden,           "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
-      property :identifier,               "rdfs:isDefinedBy" => %(avr-collection:).freeze, type: "rdfs:Class".freeze
-    end
-
-    class Lease < RDF::StrictVocabulary("http://avalonmediasystem.org/rdf/vocab/lease#")
-      property :begin_time,  "rdfs:isDefinedBy" => %(avr-lease:).freeze, type: "rdfs:Class".freeze
-      property :end_time,    "rdfs:isDefinedBy" => %(avr-lease:).freeze, type: "rdfs:Class".freeze
     end
   end
 end

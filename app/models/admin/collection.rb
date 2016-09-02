@@ -27,13 +27,13 @@ class Admin::Collection < ActiveFedora::Base
   validates :unit, presence: true, inclusion: { in: Proc.new{ Admin::Collection.units } }
   validates :managers, length: {minimum: 1, message: "list can't be empty."}
 
-  property :name, predicate: Avalon::RDFVocab::Collection.name, multiple: false do |index|
+  property :name, predicate: ::RDF::Vocab::DC.title, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :unit, predicate: Avalon::RDFVocab::Collection.unit, multiple: false do |index|
+  property :unit, predicate: ::RDF::Vocab::Bibframe.heldBy, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :description, predicate: Avalon::RDFVocab::Collection.description, multiple: false do |index|
+  property :description, predicate: ::RDF::Vocab::DC.description, multiple: false do |index|
     index.as :stored_searchable
   end
   property :dropbox_directory_name, predicate: Avalon::RDFVocab::Collection.dropbox_directory_name, multiple: false do |index|
@@ -51,7 +51,7 @@ class Admin::Collection < ActiveFedora::Base
   property :default_hidden, predicate: Avalon::RDFVocab::Collection.default_hidden, multiple: false do |index|
     index.as Solrizer::Descriptor.new(:boolean, :stored, :indexed)
   end
-  property :identifier, predicate: Avalon::RDFVocab::Collection.identifier, multiple: true do |index|
+  property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
     index.as :facetable
   end
 
