@@ -33,6 +33,15 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def get_user_collections
+    if can? :manage, Admin::Collection
+      Admin::Collection.all
+    else
+      Admin::Collection.where("inheritable_edit_access_person_ssim" => user_key).to_a
+    end
+  end
+  helper_method :get_user_collections
+
   rescue_from CanCan::AccessDenied do |exception|
     if current_user
       redirect_to root_path, flash: { notice: 'You are not authorized to perform this action.' }

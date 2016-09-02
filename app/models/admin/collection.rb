@@ -203,6 +203,18 @@ class Admin::Collection < ActiveFedora::Base
     media_objects.collect{|mo| [mo.id, mo.to_json] }.to_h
   end
 
+  def default_local_read_groups
+    self.default_read_groups.select {|g| Admin::Group.exists? g}
+  end
+
+  def default_ip_read_groups
+    self.default_read_groups.select {|g| IPAddr.new(g) rescue false }
+  end
+
+  def default_virtual_read_groups
+    self.default_read_groups - ["public", "registered"] - default_local_read_groups - default_ip_read_groups
+  end
+
   private
 
     def remove_edit_user(name)
