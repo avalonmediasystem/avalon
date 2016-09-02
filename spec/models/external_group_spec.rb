@@ -15,19 +15,13 @@
 require 'rails_helper'
 
 describe ExternalGroup do
-  before do
-    Avalon::GROUP_LDAP = Net::LDAP.new unless defined?(Avalon::GROUP_LDAP)
-    Avalon::GROUP_LDAP_TREE = 'ou=Test,dc=avalonmediasystem,dc=org' unless defined?(Avalon::GROUP_LDAP_TREE)
-  end
-  after do
-    Avalon::GROUP_LDAP = nil
-    Avalon::GROUP_LDAP_TREE = nil
-  end
   it "ldap_lookup should return [] if LDAP is not configured" do
     hide_const("Avalon::GROUP_LDAP")
     expect( ExternalGroup.ldap_lookup('foo') ).to eq([])
   end
   it "ldap_lookup should return ['Group1','Group2'] for mock LDAP" do
+    stub_const("Avalon::GROUP_LDAP", Net::LDAP.new)
+    stub_const("Avalon::GROUP_LDAP_TREE", 'ou=Test,dc=avalonmediasystem,dc=org')
     entry1 = Net::LDAP::Entry.new("dc=ads,dc=example,dc=edu")
     entry1["cn"]="Group1"
     entry2 = Net::LDAP::Entry.new("dc=ads,dc=example,dc=edu")
