@@ -155,9 +155,10 @@ describe BookmarksController, type: :controller do
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
-            expect(mo.governing_policies[1].inherited_read_users).to include 'cjcolvar'
-            expect(mo.governing_policies[1].begin_time).to eq DateTime.parse(Date.yesterday.to_s).utc.beginning_of_day.iso8601
-            expect(mo.governing_policies[1].end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
+            lease = mo.governing_policies.to_a.find { |gp| gp.is_a? Lease }
+            expect(lease.inherited_read_users).to include 'cjcolvar'
+            expect(lease.begin_time).to eq DateTime.parse(Date.yesterday.to_s).utc.beginning_of_day.iso8601
+            expect(lease.end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
           end
         end
 
@@ -184,7 +185,8 @@ describe BookmarksController, type: :controller do
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
-            expect(mo.governing_policies.collect{|p|p.inherited_read_users}.flatten.uniq.compact).not_to include 'john.doe'
+            leases = mo.governing_policies.to_a.select { |gp| gp.is_a? Lease }
+            expect(leases.collect{|p|p.inherited_read_users}.flatten.uniq.compact).not_to include 'john.doe'
           end
         end
       end
@@ -202,9 +204,10 @@ describe BookmarksController, type: :controller do
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
-            expect(mo.governing_policies[1].inherited_read_groups).to include 'students'
-            expect(mo.governing_policies[1].begin_time).to eq DateTime.parse(Date.yesterday.to_s).utc.beginning_of_day.iso8601
-            expect(mo.governing_policies[1].end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
+            lease = mo.governing_policies.to_a.find { |gp| gp.is_a? Lease }
+            expect(lease.inherited_read_groups).to include 'students'
+            expect(lease.begin_time).to eq DateTime.parse(Date.yesterday.to_s).utc.beginning_of_day.iso8601
+            expect(lease.end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
           end
         end
 	it 'removes a group from the selected items' do
@@ -230,7 +233,8 @@ describe BookmarksController, type: :controller do
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
-            expect(mo.governing_policies.collect{|p|p.inherited_read_groups}.flatten.uniq.compact).not_to include 'test-group'
+            leases = mo.governing_policies.to_a.select { |gp| gp.is_a? Lease }
+            expect(leases.collect{|p|p.inherited_read_groups}.flatten.uniq.compact).not_to include 'test-group'
           end
         end
       end
@@ -248,9 +252,10 @@ describe BookmarksController, type: :controller do
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
-            expect(mo.governing_policies[1].inherited_read_groups).to include 'ECON-101'
-            expect(mo.governing_policies[1].begin_time).to eq DateTime.parse(Date.yesterday.to_s).utc.beginning_of_day.iso8601
-            expect(mo.governing_policies[1].end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
+            lease = mo.governing_policies.to_a.find { |gp| gp.is_a? Lease }
+            expect(lease.inherited_read_groups).to include 'ECON-101'
+            expect(lease.begin_time).to eq DateTime.parse(Date.yesterday.to_s).utc.beginning_of_day.iso8601
+            expect(lease.end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
           end
         end
 	it 'removes an external group from the selected items' do
@@ -276,7 +281,8 @@ describe BookmarksController, type: :controller do
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
-            expect(mo.governing_policies.collect{|p|p.inherited_read_groups}.flatten.uniq.compact).not_to include 'MUSIC-101'
+            leases = mo.governing_policies.to_a.select { |gp| gp.is_a? Lease }
+            expect(leases.collect{|p|p.inherited_read_groups}.flatten.uniq.compact).not_to include 'MUSIC-101'
           end
         end
       end
@@ -294,9 +300,10 @@ describe BookmarksController, type: :controller do
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
-            expect(mo.governing_policies[1].inherited_read_groups).to include '127.0.0.127'
-            expect(mo.governing_policies[1].begin_time).to eq DateTime.parse(Date.yesterday.to_s).utc.beginning_of_day.iso8601
-            expect(mo.governing_policies[1].end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
+            lease = mo.governing_policies.to_a.find { |gp| gp.is_a? Lease }
+            expect(lease.inherited_read_groups).to include '127.0.0.127'
+            expect(lease.begin_time).to eq DateTime.parse(Date.yesterday.to_s).utc.beginning_of_day.iso8601
+            expect(lease.end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
           end
         end
 	it 'removes an ip group from the selected items' do
@@ -322,7 +329,8 @@ describe BookmarksController, type: :controller do
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
-            expect(mo.governing_policies.collect{|p|p.inherited_read_groups}.flatten.uniq.compact).not_to include '127.0.0.127'
+            leases = mo.governing_policies.to_a.select { |gp| gp.is_a? Lease }
+            expect(leases.collect{|p|p.inherited_read_groups}.flatten.uniq.compact).not_to include '127.0.0.127'
           end
         end
       end

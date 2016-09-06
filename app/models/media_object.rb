@@ -265,7 +265,7 @@ class MediaObject < ActiveFedora::Base
               if title=='user'
                 if create_lease
                   begin
-                    media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, read_users: [val]) ]
+                    media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, inherited_read_users: [val]) ]
                   rescue Exception => e
                     errors += [media_object]
                   end
@@ -276,7 +276,7 @@ class MediaObject < ActiveFedora::Base
                 if ( IPAddr.new(val) rescue false )
                   if create_lease
                     begin
-                      media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, read_groups: [val]) ]
+                      media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, inherited_read_groups: [val]) ]
                     rescue Exception => e
                       errors += [media_object]
                     end
@@ -289,7 +289,7 @@ class MediaObject < ActiveFedora::Base
               else
                 if create_lease
                   begin
-                    media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, read_groups: [val]) ]
+                    media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, inherited_read_groups: [val]) ]
                   rescue Exception => e
                     errors += [media_object]
                   end
