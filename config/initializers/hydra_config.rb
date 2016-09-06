@@ -1,7 +1,7 @@
 # windows doesn't properly require hydra-head (from the gemfile), so we need to require it explicitly here:
 require 'hydra/head' unless defined? Hydra
 # require 'hydra/datastream/rights_metadata'
-# require 'hydra/multiple_policy_aware_access_controls_enforcement'
+require 'hydra/multiple_policy_aware_access_controls_enforcement'
 require 'hydra/multiple_policy_aware_ability'
 
 # TODO: remove the next line after fix is made for this method in hydra-access-controls

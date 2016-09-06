@@ -25,15 +25,15 @@ class BookmarksController < CatalogController
   blacklight_config.show.document_actions[:email].if = false if blacklight_config.show.document_actions[:email]
   blacklight_config.show.document_actions[:citation].if = false if blacklight_config.show.document_actions[:citation]
 
-  self.add_show_tools_partial( :update_access_control, callback: :access_control_action, if: Proc.new { |context, config, options| context.controller.user_can? :update_access_control } )
+  self.add_show_tools_partial( :update_access_control, callback: :access_control_action, if: Proc.new { |context, config, options| context.user_can? :update_access_control } )
 
-  self.add_show_tools_partial( :move, callback: :move_action, if: Proc.new { |context, config, options| context.controller.user_can? :move } )
+  self.add_show_tools_partial( :move, callback: :move_action, if: Proc.new { |context, config, options| context.user_can? :move } )
 
-  self.add_show_tools_partial( :publish, callback: :status_action, modal: false, partial: 'formless_document_action', if: Proc.new { |context, config, options| context.controller.user_can? :publish } )
+  self.add_show_tools_partial( :publish, callback: :status_action, modal: false, partial: 'formless_document_action', if: Proc.new { |context, config, options| context.user_can? :publish } )
 
-  self.add_show_tools_partial( :unpublish, callback: :status_action, modal: false, partial: 'formless_document_action', if: Proc.new { |context, config, options| context.controller.user_can? :unpublish } )
+  self.add_show_tools_partial( :unpublish, callback: :status_action, modal: false, partial: 'formless_document_action', if: Proc.new { |context, config, options| context.user_can? :unpublish } )
 
-  self.add_show_tools_partial( :delete, callback: :delete_action, if: Proc.new { |context, config, options| context.controller.user_can? :delete } )
+  self.add_show_tools_partial( :delete, callback: :delete_action, if: Proc.new { |context, config, options| context.user_can? :delete } )
 
   before_filter :verify_permissions, only: :index
 
@@ -72,30 +72,30 @@ class BookmarksController < CatalogController
     end
   end
 
-  def index
-    @bookmarks = token_or_current_or_guest_user.bookmarks
-    bookmark_ids = @bookmarks.collect { |b| b.document_id.to_s }
+  # def index
+  #   @bookmarks = token_or_current_or_guest_user.bookmarks
+  #   bookmark_ids = @bookmarks.collect { |b| b.document_id.to_s }
+  #
+  #   @response, @document_list = get_solr_response_for_document_ids(bookmark_ids, defType: 'edismax')
+  #
+  #   respond_to do |format|
+  #     format.html { }
+  #     format.rss  { render :layout => false }
+  #     format.atom { render :layout => false }
+  #     format.json do
+  #       render json: render_search_results_as_json
+  #     end
+  #
+  #     additional_response_formats(format)
+  #     document_export_formats(format)
+  #   end
+  # end
 
-    @response, @document_list = get_solr_response_for_document_ids(bookmark_ids, defType: 'edismax')
-
-    respond_to do |format|
-      format.html { }
-      format.rss  { render :layout => false }
-      format.atom { render :layout => false }
-      format.json do
-        render json: render_search_results_as_json
-      end
-
-      additional_response_formats(format)
-      document_export_formats(format)
-    end
-  end
-
-  def action_documents
-    bookmarks = token_or_current_or_guest_user.bookmarks
-    bookmark_ids = bookmarks.collect { |b| b.document_id.to_s }
-    get_solr_response_for_document_ids(bookmark_ids, rows: bookmark_ids.count, defType: 'edismax')
-  end
+  # def action_documents
+  #   bookmarks = token_or_current_or_guest_user.bookmarks
+  #   bookmark_ids = bookmarks.collect { |b| b.document_id.to_s }
+  #   get_solr_response_for_document_ids(bookmark_ids, rows: bookmark_ids.count, defType: 'edismax')
+  # end
 
   def access_control_action documents
     errors = []

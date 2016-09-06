@@ -155,7 +155,7 @@ describe BookmarksController, type: :controller do
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
-            expect(mo.governing_policies[1].read_users).to include 'cjcolvar'
+            expect(mo.governing_policies[1].inherited_read_users).to include 'cjcolvar'
             expect(mo.governing_policies[1].begin_time).to eq DateTime.parse(Date.yesterday.to_s).utc.beginning_of_day.iso8601
             expect(mo.governing_policies[1].end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
           end
