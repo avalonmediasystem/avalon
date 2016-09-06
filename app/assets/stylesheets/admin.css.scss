@@ -1,0 +1,59 @@
+/*
+ * Copyright 2011-2015, The Trustees of Indiana University and Northwestern
+ *   University.  Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
+ *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ *   specific language governing permissions and limitations under the License.
+ * ---  END LICENSE_HEADER BLOCK  ---
+*/
+
+@import "branding";
+@import "bootstrap/variables";
+
+/**
+ * Tweak the modules so that there is some space between items in the
+ * definition lists
+ *
+ * A little quick and dirty but it can be cleaned up later. Use 18px or the defined
+ * line height to keep things flowing nicely in the grid instead of arbitrary gaps
+ */
+.admin .badge, .admin .label {
+  font-size: $baseFontSize;
+  font-weight: normal;
+  margin-right: 4px;
+}
+
+.admin .icon-remove-sign, .admin .icon-ok-sign, .admin .icon-plus-sign {
+  font-size: $baseFontSize*1.5;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+.admin .icon-remove-sign, .admin .icon-ok-sign, input[name="admin_group[users][]"], input[name="admin_group[resources][]"] {
+  display: none;
+}
+
+.noshow {
+  display: none;
+}
+
+.admin .badge .close {
+  float: none;
+  opacity: 0.6;
+  margin-top: -8px;
+}
+
+.float-left {
+  float: left;
+}
+
+.btn-group:last-of-type {
+  margin-right: 4px;
+}
