@@ -265,7 +265,7 @@ class MediaObject < ActiveFedora::Base
               if title=='user'
                 if create_lease
                   begin
-                    media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, read_users: [val]) ]
+                    media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, inherited_read_users: [val]) ]
                   rescue Exception => e
                     errors += [media_object]
                   end
@@ -276,7 +276,7 @@ class MediaObject < ActiveFedora::Base
                 if ( IPAddr.new(val) rescue false )
                   if create_lease
                     begin
-                      media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, read_groups: [val]) ]
+                      media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, inherited_read_groups: [val]) ]
                     rescue Exception => e
                       errors += [media_object]
                     end
@@ -289,7 +289,7 @@ class MediaObject < ActiveFedora::Base
               else
                 if create_lease
                   begin
-                    media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, read_groups: [val]) ]
+                    media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, inherited_read_groups: [val]) ]
                   rescue Exception => e
                     errors += [media_object]
                   end
@@ -304,7 +304,7 @@ class MediaObject < ActiveFedora::Base
               if ["group", "class", "ipaddress"].include? title
                 media_object.read_groups -= [params[title]]
                 media_object.governing_policies.each do |policy|
-                  if policy.class==Lease && policy.read_groups.include?(params[title])
+                  if policy.class==Lease && policy.inherited_read_groups.include?(params[title])
                     media_object.governing_policies.delete policy
                     policy.destroy
                   end
@@ -312,7 +312,7 @@ class MediaObject < ActiveFedora::Base
               else
                 media_object.read_users -= [params[title]]
                 media_object.governing_policies.each do |policy|
-                  if policy.class==Lease && policy.read_users.include?(params[title])
+                  if policy.class==Lease && policy.inherited_read_users.include?(params[title])
                     media_object.governing_policies.delete policy
                     policy.destroy
                   end

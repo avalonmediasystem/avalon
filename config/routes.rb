@@ -1,4 +1,4 @@
-Rails.application.routes.draw do
+  Rails.application.routes.draw do
 
   mount Blacklight::Engine => '/'
   root to: "catalog#index"
@@ -19,6 +19,14 @@ Rails.application.routes.draw do
 
     collection do
       delete 'clear'
+      get 'delete'#, as: :delete_bookmarks
+      post 'delete'
+      get 'move'#, as: :move_bookmarks
+      post 'move'
+      get 'update_access_control'#, as: :update_access_control_bookmarks
+      post 'update_access_control'
+      post 'publish'#, as: :publish_bookmarks
+      post 'unpublish'#, as: :unpublish_bookmarks
     end
   end
 
