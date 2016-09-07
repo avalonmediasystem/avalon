@@ -32,6 +32,7 @@ Rails.application.config.assets.precompile += %w( dynamic_fields.js )
 Rails.application.config.assets.precompile += %w( file_browse.js )
 Rails.application.config.assets.precompile += %w( file_upload_step.js )
 Rails.application.config.assets.precompile += %w( import_button.js )
+Rails.application.config.assets.precompile += %w( marker.js )
 
 #Third party
 Rails.application.config.assets.precompile += %w( modernizr.js )
