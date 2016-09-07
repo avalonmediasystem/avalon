@@ -55,7 +55,6 @@ gem 'acts_as_list'
 gem 'api-pagination'
 gem 'browse-everything'
 gem 'bootstrap_form'
-gem 'net-ldap'
 
 #MediaElement.js related
 gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', branch: 'captions'
