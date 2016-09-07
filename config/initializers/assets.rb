@@ -21,3 +21,5 @@ Rails.application.config.assets.precompile += %w( me-add-to-playlist.css )
 
 Rails.application.config.assets.precompile += %w( file_browse.js.coffee )
 Rails.application.config.assets.precompile += %w( file_upload_step.js.coffee )
+Rails.application.config.assets.precompile += %w( modernizr.js )
+Rails.application.config.assets.precompile += %w( autocomplete.js )
