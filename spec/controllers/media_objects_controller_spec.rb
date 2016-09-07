@@ -225,7 +225,7 @@ describe MediaObjectsController, type: :controller do
           post 'create', format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
-          expect(new_media_object.bibliographic_id).to eq(['local', bib_id])
+          expect(new_media_object.bibliographic_id).to eq({source: "local", id: bib_id})
           expect(new_media_object.title).to eq('245 A : B F G K N P S')
         end
         it "should create a new media_object with supplied fields when bib import fails" do
@@ -238,7 +238,7 @@ describe MediaObjectsController, type: :controller do
           post 'create', format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
-          expect(new_media_object.bibliographic_id).to eq(['local', bib_id])
+          expect(new_media_object.bibliographic_id).to eq({source: "local", id: bib_id})
           expect(new_media_object.title).to eq ex_media_object.title
           expect(new_media_object.creator).to eq [] #creator no longer required, so supplied value won't be used
           expect(new_media_object.date_issued).to eq ex_media_object.date_issued
@@ -249,6 +249,7 @@ describe MediaObjectsController, type: :controller do
           descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
           fields[:language] = ['???']
           fields[:related_item_url] = ['???']
+          fields[:related_item_label] = ['???']
           fields[:note] = ['note']
           fields[:note_type] = ['???']
           fields[:date_created] = '???'
@@ -270,7 +271,7 @@ describe MediaObjectsController, type: :controller do
           post 'create', format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
-          expect(new_media_object.bibliographic_id).to eq(['local', bib_id])
+          expect(new_media_object.bibliographic_id).to eq({source: "local", id: bib_id})
           expect(new_media_object.other_identifier.find {|id_pair| id_pair[0] == 'other'}).not_to be nil
           expect(new_media_object.other_identifier.find {|id_pair| id_pair[0] == 'other'}[1]).to eq('12345')
         end

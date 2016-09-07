@@ -327,7 +327,7 @@ describe MediaObject do
       media_object.descMetadata.add_bibliographic_id('ABC123','local')
       media_object.save
       media_object.reload
-      expect(media_object.bibliographic_id).to eq(["local","ABC123"])
+      expect(media_object.bibliographic_id).to eq({source: "local", id: 'ABC123'})
     end
   end
 
