@@ -1,0 +1,137 @@
+/* 
+ * Copyright 2011-2015, The Trustees of Indiana University and Northwestern
+ *   University.  Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ * 
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed 
+ *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ *   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+ *   specific language governing permissions and limitations under the License.
+ * ---  END LICENSE_HEADER BLOCK  ---
+*/
+
+/**
+ * Custom branding for Avalon to override Bootstrap, Hydra, and Blacklight
+ * defaults. This should be included at the top of the application.scss file
+ * so it is preferred over the defaults. */
+$sansFontFamily: Arial, Helvetica, sans-serif;
+
+/**
+ * If you want to override the default color scheme do so here
+ *
+ * Bootstrap provides settings for
+ * blue
+ * red
+ * green
+ * yellow
+ * orange
+ * pink
+ * purple
+ * white
+ * black
+ * gray
+ */
+$green: rgb(128, 165, 144);
+$greenBG: scale-color($green, $saturation: -40%, $lightness: 60%);
+$white: rgb(255, 255, 255);
+$orange: rgb(42, 84, 69);
+$black: #333;
+$gray: #CFD8D3;
+$lightgray: #F5F5F5;
+$red: #D9534F;
+$blue: #2a4d59;
+
+/* Links */
+
+$linkColor: rgb(42, 84, 89);
+$linkHoverColor: $lightgray;
+
+/* Alerts */
+
+$warningText: $gray;
+$warningBackground: rgb(234, 234, 234);
+
+$successText: $black;
+$successLink: rgb(250, 250, 250);
+$successBackground: $gray;
+$state-success-bg: $gray;
+$state-success-text: $black;
+$state-info-bg: $gray;
+$state-info-text: $black;
+
+$infoText: $black;
+$infoBackground: $gray;
+
+/* Header */
+
+$headerBackgroundColor: rgb(234, 234, 234);
+$headerTextColor: $white;
+$loginTextColor: $gray;
+$loginLinkColor: rgb(42, 84, 89);
+$loginLinkBackgroundColor: rgb(251, 176, 64);
+
+/* Sidenav */
+
+$sidenavHeaderBackgroundColor: $greenBG;
+
+/* Search Facets */
+$constraint_bg_color: $greenBG;
+$constraint_border_color: scale-color($greenBG, $lightness: -20%);
+
+/* Change default breakpoint for the navigation bar */
+$navCollapseWidth: 650px;
+
+/* Bootstrap navbar styles */
+$navbar-inverse-color:                      #777;
+$navbar-inverse-bg:                         #F9F9F9;
+$navbar-inverse-border:                     #D4D4D4;
+$navbar-inverse-link-color:                 #777;
+$navbar-inverse-link-hover-color:           $black;
+
+// Navbar toggle
+$navbar-default-toggle-hover-bg:            $lightgray;
+$navbar-default-toggle-icon-bar-bg:         $lightgray;
+$navbar-default-toggle-border-color:        rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+
+// Inverted navbar toggle
+$navbar-inverse-toggle-hover-bg:            #E6E6E6;
+$navbar-inverse-toggle-icon-bar-bg:         $lightgray;
+$navbar-inverse-toggle-border-color:        rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+
+$grid-gutter-width: 			    16px;
+$wellBackground:			    $gray;
+$sideHeaderBackgroundColor:		    $gray;
+
+$btn-default-color: 			    $black;
+$btn-default-bg: 			    $white;
+$btn-default-border: 			    $gray;
+$btn-primary-color: 			    $white;
+$btn-primary-bg: 			    $blue;
+$btn-primary-border: 			    $blue;
+$btn-success-color: 			    $black;
+$btn-success-bg: 			    $lightgray;
+$btn-success-border: 			    $gray;
+$btn-info-color: 			    $black;
+$btn-info-bg: 				    $lightgray;
+$btn-info-border: 			    $gray;
+$btn-danger-color:			    $white;
+
+$pagination-color:                     	    $linkColor;
+$pagination-bg:                        	    $white;
+$pagination-border:                    	    $gray;
+$pagination-hover-color:               	    $linkHoverColor;
+$pagination-hover-bg:                  	    $lightgray;
+$pagination-hover-border:              	    $gray;
+$pagination-active-color:              	    $gray;
+$pagination-active-bg:                 	    $lightgray;
+$pagination-active-border:             	    $gray;
+$pagination-disabled-color:            	    $gray;
+$pagination-disabled-bg:               	    $white;
+$pagination-disabled-border:           	    $gray;
+
+$nav-tabs-active-link-hover-color: 	    $black;
+$input-color:				    $black;

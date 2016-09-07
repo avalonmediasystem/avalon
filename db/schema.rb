@@ -16,7 +16,7 @@ ActiveRecord::Schema.define(version: 20160825153112) do
   create_table "annotations", force: :cascade do |t|
     t.string  "uuid"
     t.string  "source_uri"
-    t.integer "playlist_item_id", null: false
+    t.integer "playlist_item_id"
     t.text    "annotation"
     t.string  "type"
   end
@@ -71,6 +71,13 @@ ActiveRecord::Schema.define(version: 20160825153112) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority"
+
+  create_table "identities", force: :cascade do |t|
+    t.string   "email"
+    t.string   "password_digest"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "ingest_batches", force: :cascade do |t|
     t.string   "name",             limit: 50

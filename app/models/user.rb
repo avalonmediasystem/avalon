@@ -33,11 +33,16 @@ class User < ActiveRecord::Base
     self.where(email: email).first ||
     self.create(username: username, email: email)
   end
-  
+
   def self.from_api_token(token)
     self.find_or_create_by_username_or_email(token.username, token.email)
   end
-  
+
+  def self.find_for_identity(access_token, signed_in_resource=nil)
+    username = access_token.info['email']
+    User.find_by_username(username) || User.find_by_email(username) || User.create(username: username, email: username)
+  end
+
   def self.find_for_lti(auth_hash, signed_in_resource=nil)
     if auth_hash.uid.blank?
       raise Avalon::MissingUserId
@@ -82,3 +87,5 @@ class User < ActiveRecord::Base
     seen
   end
 end
+
+class Avalon::MissingUserId < StandardError; end

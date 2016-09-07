@@ -1,3 +1,120 @@
 en:
   blacklight:
-    application_name: 'Blacklight'
+    application_name: 'Avalon Media System'
+
+    header_links:
+      bookmarks: 'Manage Selected Items'
+
+    bookmarks:
+      title: 'Selected Items'
+      no_bookmarks: 'You have not selected any items'
+      addall:
+        button: 'Select All'
+      add:
+        button: 'Select'
+        success:
+          one: 'Successfully selected item.'
+          other: 'Successfully selected items.'
+        failure:  'Sorry, there was a problem saving the selected items.'
+      remove:
+        button: 'Unselect'
+        success: 'Successfully removed selected item.'
+        failure: 'Sorry, there was a problem removing the selected items.'
+        action_confirm: 'Remove the selected items?'
+      clear:
+        action_title: 'Clear selected items'
+        action_confirm: 'Clear your selected items?'
+        success: 'Cleared your selected items.'
+        failure: 'Sorry, there was a problem clearing your selected items.'
+      need_login: 'Please log in to manage and view your selected items.'
+      list_title: 'Your Selected Items'
+      delete: 'Remove'
+
+    back_to_bookmarks: 'Back to Selected Items'
+
+    search:
+      title: '%{constraints} - %{application_name} Search'
+      bookmarks:
+        present: "Selected"
+        absent: "Select"
+        inprogress: "Saving..."
+      facets:
+        title: 'Browse By'
+      facets-workflow:
+        title: 'Limit to'
+      filters:
+        none: 'Browse'
+
+    tools:
+      publish: "Publish"
+      unpublish: "Unpublish"
+      move: "Move"
+      delete: "Delete"
+
+    messages:
+      permission_denied: "Permission Denied"
+      go_back: "Go Back"
+      yes_sure: "Yes, I am Sure"
+
+    delete:
+      form:
+        title: "Delete Selected Items"
+      confirm: {
+        one: "Are you certain you want to delete the following item?",
+	other: "Are you certain you want to delete the following items?"
+      }
+      success: {
+        one: "One item is being deleted.",
+	other: "%{count} items are being deleted. This operation could take a while for large numbers of items."
+      }
+      fail: "Delete failed."
+      alert: {
+        one: "This item was not deleted:",
+        other: "These items were not deleted:"
+      }     	     
+    move:
+      form:
+        title: "Move Selected Items"
+      insufficient_rights: "You do not have sufficient rights to move selected items to another collection."
+      confirm: "Please choose a new collection to move selected items:"
+      button: "Move"
+      success: {
+        one: "One item is being moved to collection %{collection_name}.",
+	other: "%{count} items are being moved to collection %{collection_name}. This operation could take a while for large numbers of items."
+      }
+      fail: "Save failed."
+      alert: {
+        one: "This item was not moved:",
+        other: "These items were not moved:"
+      }     	     
+      error: "You do not have permission to add to collection %{collection_name}."
+    status:
+      success: {
+        one: "One item is being %{status}ed.",
+	other: "%{count} items are being %{status}ed. This operation could take a while for large numbers of items."
+      }
+      alert: {
+        one: "This item was not %{status}ed:",
+        other: "These items were not %{status}ed:"
+      }
+    publish:
+      form:
+        title: "Publish Selected Items"
+      fail: "Save failed."
+    unpublish:
+      form:
+        title: "Unpublish Selected Items"
+      fail: "Unpublish failed."
+    update_access_control:
+      form:
+        title: "Manage Access Control Settings"
+      button: "Save"
+      success: {
+        one: "Access controls are being updated on %{count} item.",
+	other: "Access controls are being updated on %{count} items. This operation could take a while for large numbers of items."
+      }
+      fail: "Save failed."
+      alert: {
+        one: "Failed to update access control settings for this item:",
+        other: "Failed to update access control settings for these items:"
+      }     	     
