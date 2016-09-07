@@ -193,8 +193,8 @@ module ModsTemplates
         } if label.present?
       end
 
-      def add_related_item_url(values, opts={})
-        add_child_node(ng_xml.root, :_related_item, values[0], values[1])
+      def add_related_item_url(url, label)
+        add_child_node(ng_xml.root, :_related_item, url, label)
       end
 
       define_template :note do |xml,text,type='general'|
@@ -203,7 +203,7 @@ module ModsTemplates
         }
       end
 
-      def add_note(note_term, note_type_term, attrs={})
+      def add_note(note_term, note_type_term)
         add_child_node(ng_xml.root, :note, note_term, note_type_term)
       end
 
@@ -246,7 +246,7 @@ module ModsTemplates
       end
 
       define_template :_record_identifier do |xml,text,source|
-        source = ModsDocument::IDENTIFIER_TYPES.keys.first if source.empty?
+        source = ModsDocument::IDENTIFIER_TYPES.keys.first unless source.present?
         xml.recordIdentifier(:source => source) {
           xml.text(text)
         }
@@ -260,8 +260,8 @@ module ModsTemplates
         Array(node).first
       end
 
-      def add_bibliographic_id(content, attrs={})
-        add_child_node(get_record_info, :_record_identifier, content, attrs)
+      def add_bibliographic_id(content, source)
+        add_child_node(get_record_info, :_record_identifier, content, source)
       end
 
       def add_record_identifier(content)
