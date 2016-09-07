@@ -7,9 +7,9 @@ You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed 
+Unless required by applicable law or agreed to in writing, software distributed
   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
@@ -28,7 +28,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 	  <%= f.text_area :description, rows: 3, class: 'col-md-5'  %>
 	  <% if @collection.new_record? || can?(:update_unit, @collection)%>
 	    <%= f.select(:unit, Admin::Collection.units) %>
-	  <% end %>	
+	  <% end %>
 	  <%= f.submit class: 'btn btn-primary btn-stateful-loading', data: {loading_text: 'Saving...'} %>
 	<a href="#" data-dismiss="modal" aria-hidden="true" class="btn">Cancel</a>
 	<% end %>
@@ -49,7 +49,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         $(this).closest('.modal').modal('hide')
         inject_alert(xhr.responseJSON['errors'].join('<br/>'));
       }
-      else window.location = '/admin/collections/'+xhr.responseJSON['id'];
+      else window.location = '/admin/collections/' + encodeURIComponent(xhr.responseJSON['id']);
     });
   </script>
 <% end %>
