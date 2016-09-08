@@ -42,6 +42,12 @@ class ApplicationController < ActionController::Base
   end
   helper_method :get_user_collections
 
+  def current_ability
+    session_opts ||= user_session
+    session_opts ||= {}
+    @current_ability ||= Ability.new(current_user, session_opts.merge(remote_ip: request.remote_ip))
+  end
+
   rescue_from CanCan::AccessDenied do |exception|
     if current_user
       redirect_to root_path, flash: { notice: 'You are not authorized to perform this action.' }

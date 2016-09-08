@@ -19,17 +19,14 @@ describe VocabularyController, type: :controller do
   render_views
 
   before(:all) {
-    FileUtils.cp_r 'spec/config/controlled_vocabulary.yml', 'spec/config/controlled_vocabulary.yml.bak'
-    #Avalon::ControlledVocabulary.class_variable_set :@@path, Rails.root.join('spec/fixtures/controlled_vocabulary.yml.tmp')
+    FileUtils.cp_r 'config/controlled_vocabulary.yml.example', 'spec/fixtures/controlled_vocabulary.yml.tmp'
+    Avalon::ControlledVocabulary.class_variable_set :@@path, Rails.root.join('spec/fixtures/controlled_vocabulary.yml.tmp')
   }
   after(:all) {
-    File.delete('spec/config/controlled_vocabulary.yml')
-    FileUtils.cp_r 'spec/config/controlled_vocabulary.yml.bak', 'spec/config/controlled_vocabulary.yml'
-    File.delete('spec/config/controlled_vocabulary.yml.bak')
-    #Avalon::ControlledVocabulary.class_variable_set :@@path, Rails.root.join('spec/config/controlled_vocabulary.yml')
+    File.delete('spec/fixtures/controlled_vocabulary.yml.tmp')
   }
 
-  before do
+  before(:each) do
     ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
     request.headers['Avalon-Api-Key'] = 'secret_token'
   end
