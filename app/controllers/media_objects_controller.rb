@@ -404,7 +404,22 @@ class MediaObjectsController < ApplicationController
     # TODO: Restrist permitted params!!!
     # params.require(:fields).permit!
     # params.permit!
-    ActionController::Parameters.new(Hash(params[:fields]).merge(Hash(params[:media_object]))).permit!
+    mo_parameters = ActionController::Parameters.new(Hash(params[:fields]).merge(Hash(params[:media_object]))).permit!
+    # NOTE: Deal with multi-part fields
+    #Bib ids
+    bib_id = mo_parameters.delete(:bibliographic_id)
+    bib_id_label = mo_parameters.delete(:bibliographic_id_label)
+    mo_parameters[:bibliographic_id] = { id: bib_id, source: bib_id_label } if bib_id.present?
+    #Related urls
+    related_item_url = mo_parameters.delete(:related_item_url)
+    related_item_label = mo_parameters.delete(:related_item_label)
+    mo_parameters[:related_item_url] = related_item_url.zip(related_item_label).map{|a|{url: a[0],label: a[1]}} if related_item_url.present?
+    #Notes
+    note = mo_parameters.delete(:note)
+    note_type = mo_parameters.delete(:note_type)
+    mo_parameters[:note] = note.zip(note_type).map{|a|{note: a[0],type: a[1]}} if note.present?
+
+    mo_parameters
   end
   def master_files_params
     # TODO: Restrist permitted params!!!

@@ -51,7 +51,7 @@ class MediaObject < ActiveFedora::Base
   validate  :validate_note_type
 
   def validate_note_type
-    Array(note).each{|i|errors.add(:note, "Note type (#{i[0]}) not in controlled vocabulary") unless ModsDocument::NOTE_TYPES.keys.include? i[0] }
+    Array(note).each{|i|errors.add(:note, "Note type (#{i[:type]}) not in controlled vocabulary") unless ModsDocument::NOTE_TYPES.keys.include? i[:type] }
   end
 
   def validate_language

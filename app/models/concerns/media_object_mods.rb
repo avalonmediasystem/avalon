@@ -167,18 +167,19 @@ module MediaObjectMods
 
   # has_attributes :note, datastream: :descMetadata, at: [:note], multiple: true
   def note
-    descMetadata.note.present? ? descMetadata.note.type.zip(descMetadata.note) : nil
+    descMetadata.note.present? ? descMetadata.note.zip(descMetadata.note.type).map{|a|{note: a[0],type: a[1]}} : nil
   end
 
-  def note=(value)
+  def note=(value_hashes)
     delete_all_values(:note)
-    descMetadata.note = Array(value) if value.present?
+    Array(value_hashes).each { |val| descMetadata.add_note(val[:note], val[:type]) } if value_hashes.present?
   end
 
-  def note_type=(value)
-    delete_all_values(:note, :type)
-    descMetadata.note.type = Array(value) if value.present?
-  end
+
+  # def note_type=(value)
+  #   delete_all_values(:note, :type)
+  #   descMetadata.note.type = Array(value) if value.present?
+  # end
 
   # TODO: Should this be multivalued given that it stores the mime_types of sections!?!
   # TODO: I changed this to multiple
@@ -188,7 +189,6 @@ module MediaObjectMods
   end
 
   def format=(value)
-
     delete_all_values(:media_type)
     Array(value).each { |val| descMetadata.add_media_type(val) } if value.present?
   end
@@ -250,9 +250,9 @@ module MediaObjectMods
     descMetadata.related_item_url.zip(descMetadata.related_item_label).map{|a|{url: a[0],label: a[1]}}
   end
 
-  def related_item_url=(value)
+  def related_item_url=(value_hashes)
     delete_all_values(:related_item_url)
-    Array(value).each { |val| descMetadata.add_related_item_url(val) } if value.present?
+    Array(value_hashes).each { |val| descMetadata.add_related_item_url(val[:url], val[:label]) } if value_hashes.present?
   end
 
   # has_attributes :geographic_subject, datastream: :descMetadata, at: [:geographic_subject], multiple: true
@@ -287,11 +287,12 @@ module MediaObjectMods
 
   # has_attributes :bibliographic_id, datastream: :descMetadata, at: [:bibliographic_id], multiple: false
   def bibliographic_id
-    descMetadata.bibliographic_id.present? ? [descMetadata.bibliographic_id.source.first,descMetadata.bibliographic_id.first] : nil
+    descMetadata.bibliographic_id.present? ? { source: descMetadata.bibliographic_id.source.first, id: descMetadata.bibliographic_id.first } : nil
+    # TODO: return hash instead of array?
   end
-  def bibliographic_id=(value)
+  def bibliographic_id=(value_hash)
     delete_all_values(:bibliographic_id)
-    descMetadata.add_bibliographic_id(value) if value.present?
+    descMetadata.add_bibliographic_id(value_hash[:id], value_hash[:source]) if value_hash.present?
   end
 
   # has_attributes :language, datastream: :descMetadata, at: [:language], multiple: true

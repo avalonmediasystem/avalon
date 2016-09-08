@@ -129,13 +129,13 @@ describe Admin::Collection do
         subject
       end
       it "same name should be invalid" do
-        expect { FactoryGirl.create(:collection, name: 'Herman B. Wells Collection') }.to raise_error(ActiveFedora::RecordInvalid).with_message("Validation failed: Name has already been taken")
+        expect { FactoryGirl.create(:collection, name: 'Herman B. Wells Collection') }.to raise_error(ActiveFedora::RecordInvalid, 'Validation failed: Name is taken.')
       end
       it "same name with different case should be invalid" do
-        expect { FactoryGirl.create(:collection, name: 'herman b. wells COLLECTION') }.to raise_error(ActiveFedora::RecordInvalid).with_message("Validation failed: Name has already been taken")
+        expect { FactoryGirl.create(:collection, name: 'herman b. wells COLLECTION') }.to raise_error(ActiveFedora::RecordInvalid, 'Validation failed: Name is taken.')
       end
       it "same name with whitespace changes should be invalid" do
-        expect { FactoryGirl.create(:collection, name: 'HermanB.WellsCollection') }.to raise_error(ActiveFedora::RecordInvalid).with_message("Validation failed: Name has already been taken")
+        expect { FactoryGirl.create(:collection, name: 'HermanB.WellsCollection') }.to raise_error(ActiveFedora::RecordInvalid, 'Validation failed: Name is taken.')
       end
       it "starts with same name should be valid" do
         expect(FactoryGirl.build(:collection, name: 'Herman B. Wells Collection Highlights')).to be_valid
