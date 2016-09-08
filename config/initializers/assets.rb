@@ -36,3 +36,6 @@ Rails.application.config.assets.precompile += %w( marker.js )
 
 #Third party
 Rails.application.config.assets.precompile += %w( modernizr.js )
+Rails.application.config.assets.precompile += %w( jasny-bootstrap.min.js )
+Rails.application.config.assets.precompile += %w( jasny-bootstrap.min.css )
+Rails.application.config.assets.precompile += %w( jquery-ui/datepicker.css )
