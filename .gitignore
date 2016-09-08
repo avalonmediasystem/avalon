@@ -21,6 +21,7 @@
 ## PROJECT::SPECIFIC
 config/authentication.yml
 config/avalon.yml
+config/controlled_vocabulary.yml
 config/matterhorn.yml
 config/role_map_development.yml
 config/initializers/rubyhorn.rb
