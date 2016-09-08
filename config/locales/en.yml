@@ -115,7 +115,7 @@ en:
       Table of Contents is used to provide the titles of separate works or parts of a resource. Information provided may also contain statements of responsibility or other sequential designations. Titles of separate works or parts should be separated by ' -- ' (space-hyphen-hyphen-space).
 
   file_upload_tip:
-    label: |
+    title: |
       The Section Label will be used in an item's listing to identify each file associated with the item.
     permalink: |
       The section Permalink is a URL that links to an individual section of an Item. In addition, the entire item will have a distinct permalink that can be assigned in the Resource Description page. If configured to do so, Avalon will automatically generate a permalink if this field is left blank.

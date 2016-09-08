@@ -20,8 +20,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div id="associated_files">
       <legend>Associated files</legend>
       <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
-  <div class="collapse form-tooltip" id="label-tooltip">
-    <button class="close">&times;</button> <p><%= t("file_upload_tip.label").html_safe %></p>
+  <div class="collapse form-tooltip" id="title-tooltip">
+    <button class="close">&times;</button> <p><%= t("file_upload_tip.title").html_safe %></p>
   </div>
   <div class="collapse form-tooltip" id="permalink-tooltip">
     <button class="close">&times;</button> <p><%= t("file_upload_tip.permalink").html_safe %></p>
@@ -45,7 +45,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
       <thead>
         <th>Type</th>
-        <th><div class="tooltip-help" data-tooltip="#label-tooltip">Section label</div></th>
+        <th><div class="tooltip-help" data-tooltip="#title-tooltip">Section label</div></th>
 	<th><div class="tooltip-help" data-tooltip="#permalink-tooltip">Permalink</div></th>
         <th><div class="tooltip-help" data-tooltip="#datedigitized-tooltip">Date Digitized</div></th>
 	<th><div class="tooltip-help" data-tooltip="#thumbnail-tooltip" style='min-width:9em;'>Thumbnail</div></th>
@@ -56,7 +56,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     <tbody>
     <% @masterFiles.each do |part| %>
-      <%= hidden_field_tag "parts[#{part.id}][id]", part.id  %>
+      <%= hidden_field_tag "media_objects[#{part.id}][id]", part.id  %>
       <tr>
         <td>
           <% case part.file_format
@@ -69,17 +69,17 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% end %>
         </td>
         <td>
-          <%= text_field_tag "parts[#{part.id}][label]", part.label, class: 'form-control' %>
+          <%= text_field_tag "media_objects[#{part.id}][title]", part.title, class: 'form-control' %>
         </td>
         <td>
-          <%= text_field_tag "parts[#{part.id}][permalink]", part.permalink, class: 'form-control' %>
+          <%= text_field_tag "media_objects[#{part.id}][permalink]", part.permalink, class: 'form-control' %>
       	</td>
         <td>
-          <%= text_field_tag "parts[#{part.id}][date_digitized]", part.date_digitized, class: 'form-control date-input' %>
+          <%= text_field_tag "media_objects[#{part.id}][date_digitized]", part.date_digitized, class: 'form-control date-input' %>
         </td>
         <td>
           <% if part.is_video? %>
-            <%= text_field_tag "parts[#{part.id}][poster_offset]",
+            <%= text_field_tag "media_objects[#{part.id}][poster_offset]",
               part.poster_offset.to_i.to_hms, class: 'input-small form-control' %>
           <% else %>
             <span class="input-small">n/a</span>
