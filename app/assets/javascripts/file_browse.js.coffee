@@ -1,4 +1,7 @@
 $ ->
+  $(document).on 'click', 'a[data-trigger="submit"]', (event) ->
+    $(this).closest('form').submit()
+
   initialized = false
   $('#browse-btn').browseEverything()
     .show ->
@@ -12,6 +15,3 @@ $ ->
       if data.length > 0
         $('#dropbox_form input[name=workflow]').val($('#browse-everything input[name=workflow]:checked').val())
         $('#dropbox_form').submit() 
-  
-  $(document).on 'click', 'a[data-trigger="submit"]', (event) ->
-    $(this).closest('form').submit()
