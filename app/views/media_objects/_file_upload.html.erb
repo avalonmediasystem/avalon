@@ -56,7 +56,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
     <tbody>
     <% @masterFiles.each do |part| %>
-      <%= hidden_field_tag "media_objects[#{part.id}][id]", part.id  %>
+      <%= hidden_field_tag "master_files[#{part.id}][id]", part.id  %>
       <tr>
         <td>
           <% case part.file_format
@@ -69,17 +69,17 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% end %>
         </td>
         <td>
-          <%= text_field_tag "media_objects[#{part.id}][title]", part.title, class: 'form-control' %>
+          <%= text_field_tag "master_files[#{part.id}][title]", part.title, class: 'form-control' %>
         </td>
         <td>
-          <%= text_field_tag "media_objects[#{part.id}][permalink]", part.permalink, class: 'form-control' %>
+          <%= text_field_tag "master_files[#{part.id}][permalink]", part.permalink, class: 'form-control' %>
       	</td>
         <td>
-          <%= text_field_tag "media_objects[#{part.id}][date_digitized]", part.date_digitized, class: 'form-control date-input' %>
+          <%= text_field_tag "master_files[#{part.id}][date_digitized]", part.date_digitized, class: 'form-control date-input' %>
         </td>
         <td>
           <% if part.is_video? %>
-            <%= text_field_tag "media_objects[#{part.id}][poster_offset]",
+            <%= text_field_tag "master_files[#{part.id}][poster_offset]",
               part.poster_offset.to_i.to_hms, class: 'input-small form-control' %>
           <% else %>
             <span class="input-small">n/a</span>
