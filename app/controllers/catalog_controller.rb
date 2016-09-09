@@ -4,6 +4,7 @@ require 'blacklight/catalog'
 class CatalogController < ApplicationController
 
   include Hydra::Catalog
+  include Hydra::MultiplePolicyAwareAccessControlsEnforcement
 
   # These before_filters apply the hydra access controls
   before_filter :enforce_show_permissions, only: :show
@@ -18,6 +19,8 @@ class CatalogController < ApplicationController
     ## Model that maps search index responses to the blacklight response model
     # config.response_model = Blacklight::Solr::Response
 
+    config.http_method = :post
+
     ## Default parameters to send to solr for all search-like requests. See also SearchBuilder#processed_parameters
     config.default_solr_params = {
       qt: 'search',
@@ -25,9 +28,13 @@ class CatalogController < ApplicationController
     }
 
     # solr field configuration for search results/index views
-    config.index.title_field = 'title_tesim'
+    config.index.title_field = 'title_tesi'
     config.index.display_type_field = 'has_model_ssim'
+    config.index.thumbnail_method = :avalon_image_tag
 
+    # solr field configuration for document/show views
+    config.show.title_field = 'title_tesi'
+    config.show.display_type_field = 'has_model_ssim'
 
     # solr fields that will be treated as facets by the blacklight application
     #   The ordering of the field names is the order of the display
@@ -48,13 +55,18 @@ class CatalogController < ApplicationController
     #
     # :show may be set to false if you don't want the facet to be drawn in the
     # facet bar
-    config.add_facet_field solr_name('object_type', :facetable), label: 'Format'
-    config.add_facet_field solr_name('pub_date', :facetable), label: 'Publication Year'
-    config.add_facet_field solr_name('subject_topic', :facetable), label: 'Topic', limit: 20
-    config.add_facet_field solr_name('language', :facetable), label: 'Language', limit: true
-    config.add_facet_field solr_name('lc1_letter', :facetable), label: 'Call Number'
-    config.add_facet_field solr_name('subject_geo', :facetable), label: 'Region'
-    config.add_facet_field solr_name('subject_era', :facetable), label: 'Era'
+    config.add_facet_field 'creator_ssim', label: 'Main contributor', limit: 5
+    config.add_facet_field 'date_sim', label: 'Date', limit: 5
+    config.add_facet_field 'genre_sim', label: 'Genres', limit: 5
+    config.add_facet_field 'collection_ssim', label: 'Collection', limit: 5
+    config.add_facet_field 'unit_ssim', label: 'Unit', limit: 5
+    config.add_facet_field 'language_sim', label: 'Language', limit: 5
+    # Hide these facets if not a Collection Manager
+    config.add_facet_field 'workflow_published_sim', label: 'Published', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"
+    config.add_facet_field 'created_by_sim', label: 'Created by', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"
+    config.add_facet_field 'read_access_virtual_group_ssim', label: 'External Group', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow", helper_method: :vgroup_display
+    config.add_facet_field 'date_digitized_sim', label: 'Date Digitized', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"#, partial: 'blacklight/hierarchy/facet_hierarchy'
+    config.add_facet_field 'date_ingested_sim', label: 'Date Ingested', limit: 5, if: Proc.new {|context, config, opts| Ability.new(context.current_user, context.user_session).can? :create, MediaObject}, group: "workflow"
 
     # Have BL send all facet field names to Solr, which has been the default
     # previously. Simply remove these lines if you'd rather use Solr request
@@ -66,32 +78,25 @@ class CatalogController < ApplicationController
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display
-    config.add_index_field solr_name('title', :stored_searchable, type: :string), label: 'Title'
-    config.add_index_field solr_name('title_vern', :stored_searchable, type: :string), label: 'Title'
-    config.add_index_field solr_name('author', :stored_searchable, type: :string), label: 'Author'
-    config.add_index_field solr_name('author_vern', :stored_searchable, type: :string), label: 'Author'
-    config.add_index_field solr_name('format', :symbol), label: 'Format'
-    config.add_index_field solr_name('language', :stored_searchable, type: :string), label: 'Language'
-    config.add_index_field solr_name('published', :stored_searchable, type: :string), label: 'Published'
-    config.add_index_field solr_name('published_vern', :stored_searchable, type: :string), label: 'Published'
-    config.add_index_field solr_name('lc_callnum', :stored_searchable, type: :string), label: 'Call number'
+    config.add_index_field 'date_ssi', label: 'Date', helper_method: :combined_display_date
+    config.add_index_field 'creator_ssim', label: 'Main contributors', helper_method: :contributor_index_display
+    config.add_index_field 'summary_ssi', label: 'Summary', helper_method: :description_index_display
 
     # solr fields to be displayed in the show (single result) view
     #   The ordering of the field names is the order of the display
-    config.add_show_field solr_name('title', :stored_searchable, type: :string), label: 'Title'
-    config.add_show_field solr_name('title_vern', :stored_searchable, type: :string), label: 'Title'
-    config.add_show_field solr_name('subtitle', :stored_searchable, type: :string), label: 'Subtitle'
-    config.add_show_field solr_name('subtitle_vern', :stored_searchable, type: :string), label: 'Subtitle'
-    config.add_show_field solr_name('author', :stored_searchable, type: :string), label: 'Author'
-    config.add_show_field solr_name('author_vern', :stored_searchable, type: :string), label: 'Author'
-    config.add_show_field solr_name('format', :symbol), label: 'Format'
-    config.add_show_field solr_name('url_fulltext_tsim', :stored_searchable, type: :string), label: 'URL'
-    config.add_show_field solr_name('url_suppl_tsim', :stored_searchable, type: :string), label: 'More Information'
-    config.add_show_field solr_name('language', :stored_searchable, type: :string), label: 'Language'
-    config.add_show_field solr_name('published', :stored_searchable, type: :string), label: 'Published'
-    config.add_show_field solr_name('published_vern', :stored_searchable, type: :string), label: 'Published'
-    config.add_show_field solr_name('lc_callnum', :stored_searchable, type: :string), label: 'Call number'
-    config.add_show_field solr_name('isbn', :stored_searchable, type: :string), label: 'ISBN'
+    config.add_show_field 'title_tesi', label: 'Title'
+    config.add_show_field 'format_sim', label: 'Format'
+    config.add_show_field 'creator_sim', label: 'Creator'
+    config.add_show_field 'language_sim', label: 'Language'
+    config.add_show_field 'date_ssi', label: 'Date'
+    config.add_show_field 'abstract_sim', label: 'Abstract'
+    config.add_show_field 'location_sim', label: 'Locations'
+    config.add_show_field 'time_period_sim', label: 'Time periods'
+    config.add_show_field 'contributor_sim', label: 'Contributors'
+    config.add_show_field 'publisher_sim', label: 'Publisher'
+    config.add_show_field 'genre_sim', label: 'Genre'
+    config.add_show_field 'publication_location_sim', label: 'Place of publication'
+    config.add_show_field 'terms_sim', label: 'Terms'
 
     # "fielded" search configuration. Used by pulldown among other places.
     # For supported keys in hash, see rdoc for Blacklight::SearchFields
@@ -151,10 +156,10 @@ class CatalogController < ApplicationController
     # label in pulldown is followed by the name of the SOLR field to sort by and
     # whether the sort is ascending or descending (it must be asc or desc
     # except in the relevancy case).
-    config.add_sort_field 'score desc, pub_date_dtsi desc, title_tesi asc', label: 'relevance'
-    config.add_sort_field 'pub_date_dtsi desc, title_tesi asc', label: 'year'
-    config.add_sort_field 'author_tesi asc, title_tesi asc', label: 'author'
-    config.add_sort_field 'title_tesi asc, pub_date_dtsi desc', label: 'title'
+    config.add_sort_field 'score desc, title_ssort asc, date_ssi desc', label: 'Relevance'
+    config.add_sort_field 'date_ssi desc, title_ssort asc', label: 'Date'
+    config.add_sort_field 'creator_ssort asc, title_ssort asc', label: 'Main contributor'
+    config.add_sort_field 'title_ssort asc, date_ssi desc', label: 'Title'
 
     # If there are more than this many search results, no spelling ("did you
     # mean") suggestion is offered.
