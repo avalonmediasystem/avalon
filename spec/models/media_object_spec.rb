@@ -525,7 +525,7 @@ describe MediaObject do
     context 'correct target' do
 
       it 'should link to the correct target' do
-        media_object.save(validate: false)
+        media_object.save
         t = nil
         Permalink.on_generate { |obj, target|
           t = target

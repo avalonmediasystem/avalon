@@ -195,7 +195,7 @@ class MasterFilesController < ApplicationController
         unless master_file.save
           flash[:error] = "There was a problem storing the file"
         else
-          media_object.save(validate: false)
+          media_object.save
           master_file.process
           @master_files << master_file
         end
@@ -214,7 +214,7 @@ class MasterFilesController < ApplicationController
         unless master_file.save
           flash[:error] = "There was a problem storing the file"
         else
-          media_object.save(validate: false)
+          media_object.save
           master_file.process
           @master_files << master_file
         end

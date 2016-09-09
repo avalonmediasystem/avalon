@@ -394,7 +394,7 @@ describe Admin::Collection do
       # TODO: Fix handling of invalid objects
       # incomplete_object = MediaObject.new(collection: @source_collection)
       # @media_objects << incomplete_object
-      @media_objects.map { |mo| mo.save(validate: false) }
+      @media_objects.map { |mo| mo.save }
       @target_collection = FactoryGirl.create(:collection)
       Admin::Collection.reassign_media_objects(@media_objects, @source_collection, @target_collection)
     end

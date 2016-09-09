@@ -149,7 +149,7 @@ class MasterFile < ActiveFedora::Base
 
   def save_parent
     unless media_object.nil?
-      media_object.save(validate: false)
+      media_object.save
     end
   end
 
@@ -221,7 +221,7 @@ class MasterFile < ActiveFedora::Base
     # if mo.nil?
     #   logger.warn "MasterFile has no owning MediaObject to update upon deletion"
     # else
-    #   mo.save(validate: false)
+    #   mo.save
     # end
   # end
 
@@ -718,7 +718,7 @@ class MasterFile < ActiveFedora::Base
     media_object.master_files -= [self]
     media_object.set_media_types!
     media_object.set_duration!
-    media_object.save(validate: false)
+    media_object.save
   end
 
 end
