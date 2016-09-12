@@ -1,4 +1,5 @@
 set :application, "avalon"
+set :scm, :git
 set :repository,  "git://github.com/avalonmediasystem/avalon.git"
 set :rails_env, ENV['RAILS_ENV'] || "development"
 
@@ -20,7 +21,7 @@ before "bundle:install", "deploy:link_local_files"
 before "deploy:finalize_update", "deploy:remove_symlink_targets"
 after "deploy:update_code", "deploy:symlink_dirs"
 after "deploy:update_code", "deploy:migrate"
-after "deploy:create_symlink", "deploy:trust_rvmrc"
+#after "deploy:create_symlink", "deploy:trust_rvmrc"
 if ENV['AVALON_REINDEX']
   after "deploy:create_symlink", "deploy:reindex_everything"
 end
