@@ -19,6 +19,9 @@ describe MediaObject do
   let(:media_object) { FactoryGirl.create(:media_object) }
 
   describe 'validations' do
+    # Force the validations to run by being on the resource-description workflow step
+    let(:media_object) { FactoryGirl.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
+
     describe 'collection' do
       it 'has errors when not present' do
         expect{media_object.collection = nil}.to raise_error
@@ -97,7 +100,6 @@ describe MediaObject do
         end
       end
     end
-
     describe 'notes' do
       it 'should validate notes with types in controlled vocabulary' do
         media_object.descMetadata.note = ['Test Note']
@@ -251,6 +253,9 @@ describe MediaObject do
   end
 
   describe "Required metadata is present" do
+    # Force the validations to run by being on the resource-description workflow step
+    subject(:media_object) { FactoryGirl.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
+
     it {is_expected.to validate_presence_of(:date_issued)}
     it {is_expected.to validate_presence_of(:title)}
   end

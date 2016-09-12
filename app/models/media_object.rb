@@ -56,8 +56,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def validate_note_type
-    # FIXME: This is seriously broken due to how note returns a hash now
-    # Array(note).each{|i|errors.add(:note, "Note type (#{i[:type]}) not in controlled vocabulary") unless ModsDocument::NOTE_TYPES.keys.include? i[:type] }
+    Array(note).each{|i|errors.add(:note, "Note type (#{i[:type]}) not in controlled vocabulary") unless ModsDocument::NOTE_TYPES.keys.include? i[:type] }
   end
 
   def validate_language
@@ -92,7 +91,7 @@ class MediaObject < ActiveFedora::Base
     index.as :facetable
   end
 
-  ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source #, has_member_relation: ActiveFedora::RDF::PCDMTerms.hasMember
+  ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
   #  and methods for master_files (an array): first, last, [index], =, <<, +=, delete(mf)
   #  and methods for ordered_master_files (an array): first, last, [index], =, <<, +=, insert_at(index,mf), delete(mf), delete_at(index)

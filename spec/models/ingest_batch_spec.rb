@@ -48,11 +48,7 @@ describe IngestBatch do
     end
 
     it 'returns an array of media objects based on ids passed in' do
-      media_objects = (0..10).map{
-          media_object = MediaObject.new
-          media_object.save
-          media_object
-        }
+      media_objects = Array.new(3) { FactoryGirl.create(:media_object) }
       ingest_batch = IngestBatch.new(media_object_ids:media_objects.map(&:id))
       expect(ingest_batch.media_objects).to eq(media_objects)
     end
