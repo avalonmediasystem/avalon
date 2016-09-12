@@ -42,7 +42,7 @@ require 'avalon/dropbox'
        # Reloads media_object.master_files, should use .reload when we update hydra-head
        media = MediaObject.find(context[:media_object].id)
        unless media.master_files.empty?
-         media.save(validate: false)
+         media.save
          context[:media_object] = media
        end
 

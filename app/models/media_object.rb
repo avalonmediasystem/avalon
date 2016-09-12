@@ -40,15 +40,20 @@ class MediaObject < ActiveFedora::Base
   # blank. Since identifier is set automatically we only need to worry about creator,
   # title, and date of creation.
 
-  validates :title, presence: true
-  validate  :validate_language
-  validates :date_issued, presence: true
-  validate  :report_missing_attributes
   validates :collection, presence: true
   # validates :governing_policies, presence: true if Proc.new { |mo| mo.changes["governing_policy_ids"].empty? }
-  validate  :validate_related_items
-  validate  :validate_dates
-  validate  :validate_note_type
+
+  validates :title, presence: true, if: :resource_description_active?
+  validates :date_issued, presence: true, if: :resource_description_active?
+  validate  :validate_language, if: :resource_description_active?
+  validate  :validate_related_items, if: :resource_description_active?
+  validate  :validate_dates, if: :resource_description_active?
+  validate  :validate_note_type, if: :resource_description_active?
+  validate  :report_missing_attributes, if: :resource_description_active?
+
+  def resource_description_active?
+    workflow.active?("resource-description")
+  end
 
   def validate_note_type
     Array(note).each{|i|errors.add(:note, "Note type (#{i[:type]}) not in controlled vocabulary") unless ModsDocument::NOTE_TYPES.keys.include? i[:type] }
@@ -86,7 +91,7 @@ class MediaObject < ActiveFedora::Base
     index.as :facetable
   end
 
-  ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source #, has_member_relation: ActiveFedora::RDF::PCDMTerms.hasMember
+  ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
   #  and methods for master_files (an array): first, last, [index], =, <<, +=, delete(mf)
   #  and methods for ordered_master_files (an array): first, last, [index], =, <<, +=, insert_at(index,mf), delete(mf), delete_at(index)

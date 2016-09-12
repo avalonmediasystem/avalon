@@ -170,6 +170,10 @@ module MediaObjectMods
     descMetadata.note.present? ? descMetadata.note.zip(descMetadata.note.type).map{|a|{note: a[0],type: a[1]}} : nil
   end
 
+  def note_values
+    note.collect { |n| n[:note] }.flatten unless note.nil?
+  end
+
   def note=(value_hashes)
     delete_all_values(:note)
     Array(value_hashes).each { |val| descMetadata.add_note(val[:note], val[:type]) } if value_hashes.present?

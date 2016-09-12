@@ -40,7 +40,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <i class="fa fa-question-sign"></i>
             <% end %>
 	  </li><li>
-            <%= section.label.blank? ? '&#8212;'.html_safe : section.label %>
+            <%= section.title.blank? ? '&#8212;'.html_safe : section.title %>
 	  </li><li>
             <%= truncate_center(File.basename(section.file_location), 50, 20) %>
 	  </li><li>
@@ -79,7 +79,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 	    <% end %>
           </div>
 	  <% if section.captions.present? %>
-            <div class="structure_view">Uploaded file: <%= section.captions.label %></div>
+            <div class="structure_view">Uploaded file: <%= section.captions.title %></div>
           <% end %>
         </div>
       </li>

@@ -64,11 +64,15 @@ class MediaObjectsController < ApplicationController
   # POST /media_objects
   def create
     # @media_object = initialize_media_object
+    # Preset the workflow to the last workflow step to ensure validators run
+    @media_object.workflow.last_completed_step = HYDRANT_STEPS.last.step
     update_media_object
   end
 
   # PUT /media_objects/avalon:1.json
   def json_update
+    # Preset the workflow to the last workflow step to ensure validators run
+    @media_object.workflow.last_completed_step = HYDRANT_STEPS.last.step
     update_media_object
   end
 
@@ -105,7 +109,6 @@ class MediaObjectsController < ApplicationController
     end
 
     error_messages = []
-
     if !@media_object.valid?
       invalid_fields = @media_object.errors.keys
       required_fields = [:title, :date_issued]
@@ -415,6 +418,7 @@ class MediaObjectsController < ApplicationController
     related_item_label = mo_parameters.delete(:related_item_label)
     mo_parameters[:related_item_url] = related_item_url.zip(related_item_label).map{|a|{url: a[0],label: a[1]}} if related_item_url.present?
     #Notes
+    # FIXME: lets in empty values!
     note = mo_parameters.delete(:note)
     note_type = mo_parameters.delete(:note_type)
     mo_parameters[:note] = note.zip(note_type).map{|a|{note: a[0],type: a[1]}} if note.present?

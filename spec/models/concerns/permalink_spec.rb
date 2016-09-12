@@ -51,7 +51,7 @@ describe Permalink do
     context 'creating permalink' do
       let(:media_object) do
         mo = FactoryGirl.build(:media_object)
-        mo.save(validate: false)
+        mo.save
         mo.reload
       end
       let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object) }

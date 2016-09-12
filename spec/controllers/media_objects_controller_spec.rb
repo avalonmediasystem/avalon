@@ -617,7 +617,7 @@ describe MediaObjectsController, type: :controller do
     context "correctly handle unfound streams/sections" do
       subject(:mo){FactoryGirl.create(:media_object, :with_master_file)}
       before do
-        mo.save(validate: false)
+        mo.save
         login_user mo.collection.managers.first
       end
       it "redirects to first stream when currentStream is nil" do
