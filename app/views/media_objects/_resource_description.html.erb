@@ -21,6 +21,8 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render partial: 'text_field',
              locals: {form: form, field: :bibliographic_id,
                       options: {display_label: 'Bibliographic ID',
+                                primary_hash_key: :id,
+                                secondary_hash_key: :source,
                                 dropdown_field: :bibliographic_id_label,
                                 dropdown_options: ModsDocument::IDENTIFIER_TYPES,
                                 extra_classes: Avalon::BibRetriever.configured? ? 'import-button' : nil}} %>
@@ -98,6 +100,8 @@ Unless required by applicable law or agreed to in writing, software distributed
              locals: {form: form, field: :other_identifier,
                       options: {display_label: 'Other Identifier(s)',
                                 multivalued: true,
+                                primary_hash_key: :id,
+                                secondary_hash_key: :source,
                                 dropdown_field: :other_identifier_type,
                                 dropdown_options: ModsDocument::IDENTIFIER_TYPES}} %>
   <%= render partial: 'text_area',
@@ -108,6 +112,8 @@ Unless required by applicable law or agreed to in writing, software distributed
              locals: {form: form, field: :note,
                       options: {multivalued: true,
                                 display_label: 'Note(s)',
+                                primary_hash_key: :note,
+                                secondary_hash_key: :type,
                                 dropdown_field: :note_type,
                                 dropdown_options: ModsDocument::NOTE_TYPES }} %>
 

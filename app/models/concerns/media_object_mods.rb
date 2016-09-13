@@ -256,6 +256,7 @@ module MediaObjectMods
 
   def related_item_url=(value_hashes)
     delete_all_values(:related_item_url)
+    delete_all_values(:related_item_label)
     Array(value_hashes).each { |val| descMetadata.add_related_item_url(val[:url], val[:label]) } if value_hashes.present?
   end
 
@@ -292,7 +293,6 @@ module MediaObjectMods
   # has_attributes :bibliographic_id, datastream: :descMetadata, at: [:bibliographic_id], multiple: false
   def bibliographic_id
     descMetadata.bibliographic_id.present? ? { source: descMetadata.bibliographic_id.source.first, id: descMetadata.bibliographic_id.first } : nil
-    # TODO: return hash instead of array?
   end
   def bibliographic_id=(value_hash)
     delete_all_values(:bibliographic_id)
@@ -346,7 +346,7 @@ module MediaObjectMods
 
   # has_attributes :other_identifier, datastream: :descMetadata, at: [:other_identifier], multiple: true
   def other_identifier
-    descMetadata.other_identifier.present? ? descMetadata.other_identifier.type.zip(descMetadata.other_identifier) : nil
+    descMetadata.other_identifier.present? ? descMetadata.other_identifier.zip(descMetadata.other_identifier.type).map{|a|{id: a[0], source: a[1]}} : nil
   end
   def other_identifier=(value)
     delete_all_values(:other_identifier)
