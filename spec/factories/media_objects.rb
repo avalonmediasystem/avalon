@@ -40,9 +40,13 @@ FactoryGirl.define do
         geographic_subject { [Faker::Address.country] }
         physical_description { [Faker::Lorem.word] }
         table_of_contents { [Faker::Lorem.paragraph] }
+        note { [{note: Faker::Lorem.paragraph, type: 'general'}] }
+        other_identifier { [Faker::Lorem.word] }
+        other_identifier_type { ['local'] }
+        language { ['eng'] }
         # after(:create) do |mo|
         #   mo.update_datastream(:descMetadata, {
-        #     note: [Faker::Lorem.paragraph],
+        #     note: {note[Faker::Lorem.paragraph],
         #     note_type: ['general'],
         #     other_identifier: [Faker::Lorem.word],
         #     other_identifier_type: ['local'],

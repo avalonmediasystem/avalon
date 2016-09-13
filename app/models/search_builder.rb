@@ -4,6 +4,7 @@ class SearchBuilder < Blacklight::SearchBuilder
   include Hydra::AccessControlsEnforcement
   include Hydra::MultiplePolicyAwareAccessControlsEnforcement
 
+  self.default_processor_chain -= [:add_access_controls_to_solr_params]
   self.default_processor_chain += [:add_access_controls_to_solr_params_if_not_admin, :only_wanted_models, :only_published_items, :limit_to_non_hidden_items]#, :apply_sticky_settings]
 
   def only_wanted_models(solr_parameters)
