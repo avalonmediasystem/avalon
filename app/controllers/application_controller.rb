@@ -12,6 +12,12 @@ class ApplicationController < ActionController::Base
 
   around_action :handle_api_request, if: proc{|c| request.format.json?}
 
+  def current_ability
+    session_opts ||= user_session
+    session_opts ||= {}
+    @current_ability ||= Ability.new(current_user, session_opts.merge(remote_ip: request.remote_ip))
+  end
+
   def handle_api_request
     if request.headers['Avalon-Api-Key'].present?
       token = request.headers['Avalon-Api-Key']

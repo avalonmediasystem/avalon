@@ -119,7 +119,7 @@ describe CatalogController do
         get 'index', :q => ""
         expect(response).to be_success
         expect(response).to render_template('catalog/index')
-        expect(assigns(:document_list).count).to eql(1)
+        expect(assigns(:document_list).count).to eq 1
         expect(assigns(:document_list).map(&:id)).to eq([mo.id])
       end
     end
