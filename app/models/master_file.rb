@@ -221,14 +221,14 @@ class MasterFile < ActiveFedora::Base
     status?('COMPLETED')
   end
 
-  def stream_details(token,host=nil)
+  def stream_details
     flash, hls = [], []
     ActiveFedora::SolrService.reify_solr_results(derivatives.load_from_solr, load_from_solr: true).each do |d|
       common = { quality: d.encoding.quality.first,
                  mimetype: d.encoding.mime_type.first,
                  format: d.format }
-      flash << common.merge(url: Avalon::Configuration.rehost(d.tokenized_url(token, false),host))
-      hls << common.merge(url: Avalon::Configuration.rehost(d.tokenized_url(token, true),host))
+      flash << common.merge(url: d.streaming_url(false))
+      hls << common.merge(url: d.streaming_url(true))
     end
 
     # Sorts the streams in order of quality, note: Hash order only works in Ruby 1.9 or later
@@ -490,9 +490,9 @@ class MasterFile < ActiveFedora::Base
     unless File.exists?(response[:source])
       Rails.logger.warn("Masterfile `#{file_location}` not found. Extracting via HLS.")
       begin
-        token = StreamToken.find_or_create_session_token({media_token:nil}, self.pid)
-        playlist_url = self.stream_details(token)[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
-        playlist = Avalon::M3U8Reader.read(playlist_url)
+        playlist_url = self.stream_details[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
+        secure_url = SecurityHandler.secure_stream(playlist_url, target: self.pid)
+        playlist = Avalon::M3U8Reader.read(secure_url)
         details = playlist.at(options[:offset])
         target = File.join(Dir.tmpdir,File.basename(details[:location]))
         File.open(target,'wb') { |f| open(details[:location]) { |io| f.write(io.read) } }

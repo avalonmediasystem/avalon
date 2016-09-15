@@ -99,12 +99,6 @@ class Derivative < ActiveFedora::Base
     derivativeFile.location
   end
 
-  def tokenized_url(token, mobile=false)
-    #uri = URI.parse(url.first)
-    uri = streaming_url(mobile)
-    "#{uri.to_s}?token=#{token}".html_safe
-  end
-
   def streaming_url(is_mobile=false)
     is_mobile ? self.hls_url : self.location_url
   end
