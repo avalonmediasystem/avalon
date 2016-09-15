@@ -9,7 +9,7 @@ set(:user) { 'avalon' }                # User to deploy as
 set :branch, ENV['SCM_BRANCH'] || "develop"       # Git branch to deploy
 
 set :hls_dir, "/var/avalon/hls_streams"
-ssh_options[:keys] = ["/opt/staging/avalon/vov_deployment_key"]
+ssh_options[:keys] = ["/opt/staging/avalon/vov_deployment_key"] if ENV['CI_DEPLOY']
 
 set :bundle_without, rails_env == "development" ? "production" : "development debug"
 
@@ -17,10 +17,11 @@ role :web, deployment_host
 role :app, deployment_host
 role :db, deployment_host, :primary => true
 
-before "bundle:install", "deploy:link_local_files"
+before "deploy:bundle_install", "deploy:link_local_files"
 before "deploy:finalize_update", "deploy:remove_symlink_targets"
 after "deploy:update_code", "deploy:symlink_dirs"
 after "deploy:update_code", "deploy:migrate"
+before "deploy:migrate", "deploy:bundle_install"
 #after "deploy:create_symlink", "deploy:trust_rvmrc"
 if ENV['AVALON_REINDEX']
   after "deploy:create_symlink", "deploy:reindex_everything"
@@ -30,6 +31,7 @@ set(:shared_children) {
   %{
     config/authentication.yml
     config/avalon.yml
+    config/blacklight.yml
     config/controlled_vocabulary.yml
     config/database.yml
     config/environments/development.rb
@@ -63,8 +65,11 @@ namespace :deploy do
     run "cd #{current_release}; bundle exec rake RAILS_ENV=#{rails_env} db:migrate"
   end
 
+  task :bundle_install do
+    run "cd #{current_release}; bundle install"
+  end
+
   task :link_local_files do
-    link_shared_file "Gemfile.local", "Gemfile.local"
     link_shared_file "user_auth_cas.rb", "config/initializers/user_auth_cas.rb"
     link_shared_file "iu-ldap.rb", "config/initializers/iu-ldap.rb"
     link_shared_file "permalink.rb", "config/initializers/permalink.rb"
