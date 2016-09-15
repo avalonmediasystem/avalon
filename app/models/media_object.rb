@@ -436,8 +436,10 @@ class MediaObject < ActiveFedora::Base
     self._remove_bookmarks
   end
 
-  def policies_of_type(klass)
-    governing_policies.select { |p| p.is_a?(klass) }
+  def leases(scope=:all)
+    criteria = { has_model_ssim: 'Lease' }
+    criteria.merge!(lease_type_ssi: scope) unless scope == :all
+    governing_policies.where(criteria)
   end
   
   private

@@ -106,10 +106,10 @@ class AccessControlStep < Avalon::Workflow::BasicStep
     context[:groups] = media_object.read_groups
     context[:virtual_groups] = media_object.virtual_read_groups
     context[:ip_groups] = media_object.ip_read_groups
-    context[:group_leases] = media_object.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="local" }
-    context[:user_leases] = media_object.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="user" }
-    context[:virtual_leases] = media_object.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="external" }
-    context[:ip_leases] = media_object.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="ip" }
+    context[:group_leases] = media_object.leases('local')
+    context[:user_leases] = media_object.leases('user')
+    context[:virtual_leases] = media_object.leases('external')
+    context[:ip_leases] = media_object.leases('ip')
     context[:addable_groups] = Admin::Group.non_system_groups.reject { |g| context[:groups].include? g.name }
     context[:addable_courses] = Course.all.reject { |c| context[:virtual_groups].include? c.context_id }
     context
