@@ -3,7 +3,6 @@ source 'https://rubygems.org'
 gem 'hydra-head', '~> 10.1'
 gem 'active-fedora', '~> 11.0'
 gem 'active_fedora-datastreams'
-gem 'curation_concerns', '~> 1.5'
 gem 'blacklight', '~> 6.6'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
