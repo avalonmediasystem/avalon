@@ -891,8 +891,8 @@ describe MediaObjectsController, type: :controller do
             put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.yesterday, add_user_end: Date.tomorrow
             media_object.reload
           }.to change{media_object.governing_policies.to_a.size}.by(1)
-          expect(media_object.governing_policies.last.class).to eq(Lease)
-          lease_id = media_object.reload.governing_policies.last.id
+          expect(media_object.policies_of_type(Lease)).not_to be_empty
+          lease_id = media_object.reload.policies_of_type(Lease).first.id
           expect {
             put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', remove_lease: lease_id
             media_object.reload
@@ -918,7 +918,7 @@ describe MediaObjectsController, type: :controller do
             put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: '', add_user_end: Date.tomorrow
             media_object.reload
           }.to change{media_object.governing_policies.to_a.size}.by(1)
-          expect(media_object.governing_policies.last.begin_time).to eq(Date.today)
+          expect(media_object.policies_of_type(Lease).first.begin_time).to eq(Date.today)
         end
         it "should reject missing end date" do
           expect {

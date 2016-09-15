@@ -1,6 +1,10 @@
 source 'https://rubygems.org'
 
-gem 'hydra', git: 'https://github.com/projecthydra/hydra.git'
+gem 'hydra-head', '~> 10.1'
+gem 'active-fedora', '~> 11.0'
+gem 'active_fedora-datastreams'
+gem 'curation_concerns', '~> 1.5'
+gem 'blacklight', '~> 6.6'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.6'
@@ -51,7 +55,7 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 gem 'net-ldap'
 gem 'edtf'
 gem 'rest-client'
-gem 'active_annotations', git: 'https://github.com/avalonmediasystem/active_annotations.git', tag: 'avalon-r5'
+gem 'active_annotations', '~> 0.2.0'
 gem 'acts_as_list'
 gem 'api-pagination'
 gem 'browse-everything'
@@ -69,6 +73,7 @@ gem 'media-element-logo-plugin'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r5'
 
 group :development, :test do
+  gem 'equivalent-xml'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
   gem 'pry-rails'
