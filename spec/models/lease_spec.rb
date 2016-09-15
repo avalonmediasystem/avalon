@@ -168,19 +168,31 @@ describe Lease do
   end
   describe '#lease_type' do
     it 'identifies user lease_type' do
-      lease.inherited_read_users = [Faker::Internet.email]
+      expect { 
+        lease.inherited_read_users = [Faker::Internet.email]
+        lease.save
+      }.to change{Lease.user.count}.by(1)
       expect(lease.lease_type).to eq "user"
     end
     it 'identifies group lease_type' do
-      lease.inherited_read_groups = [FactoryGirl.create(:group).name]
+      expect { 
+        lease.inherited_read_groups = [FactoryGirl.create(:group).name]
+        lease.save
+      }.to change{Lease.local.count}.by(1)
       expect(lease.lease_type).to eq "local"
     end
     it 'identifies external_group lease_type' do
-      lease.inherited_read_groups = ["ExternalGroup"]
+      expect { 
+        lease.inherited_read_groups = ["ExternalGroup"]
+        lease.save
+      }.to change{Lease.external.count}.by(1)
       expect(lease.lease_type).to eq "external"
     end
     it 'identifies ip lease_type' do
-      lease.inherited_read_groups = [Faker::Internet.ip_v4_address]
+      expect { 
+        lease.inherited_read_groups = [Faker::Internet.ip_v4_address]
+        lease.save
+      }.to change{Lease.ip.count}.by(1)
       expect(lease.lease_type).to eq "ip"
     end
   end
