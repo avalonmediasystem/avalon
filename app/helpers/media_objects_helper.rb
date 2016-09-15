@@ -67,7 +67,7 @@ module MediaObjectsHelper
        # bibliographic_id has form [:type,"value"], other_identifier has form [[:type,"value],[:type,"value"],...]
        ids = media_object.bibliographic_id.present? ? [media_object.bibliographic_id] : []
        ids += Array(media_object.other_identifier)
-       ids.uniq.collect{|i| "#{ ModsDocument::IDENTIFIER_TYPES[i[0]] }: #{ i[1] }" }
+       ids.uniq.collect{|i| "#{ ModsDocument::IDENTIFIER_TYPES[i[:source]] }: #{ i[:id] }" }
      end
 
      def display_notes media_object
@@ -87,7 +87,7 @@ module MediaObjectsHelper
      end
 
      def gather_notes_of_type media_object, type
-       media_object.note.present? ? media_object.note.select{|n| n[0]==type}.collect{|n|n[1]} : []
+       media_object.note.present? ? media_object.note.select{|n| n[:type]==type}.collect{|n|n[:note]} : []
      end
 
      def display_language media_object

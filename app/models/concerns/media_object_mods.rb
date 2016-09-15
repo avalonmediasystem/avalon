@@ -337,26 +337,31 @@ module MediaObjectMods
 
   # has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: true
   def physical_description
-    descMetadata.physical_description.first
+    descMetadata.physical_description
   end
   def physical_description=(value)
     delete_all_values(:physical_description)
     Array(value).each { |val| descMetadata.add_physical_description(val) } if value.present?
   end
 
+  # has_attributes :related_item_url, datastream: :descMetadata, at: [:related_item_url], multiple: true
+  def related_item_url
+    descMetadata.related_item_url.zip(descMetadata.related_item_label).map{|a|{url: a[0],label: a[1]}}
+  end
+
+  def related_item_url=(value_hashes)
+    delete_all_values(:related_item_url)
+    delete_all_values(:related_item_label)
+    Array(value_hashes).each { |val| descMetadata.add_related_item_url(val[:url], val[:label]) } if value_hashes.present?
+  end
+
   # has_attributes :other_identifier, datastream: :descMetadata, at: [:other_identifier], multiple: true
   def other_identifier
     descMetadata.other_identifier.present? ? descMetadata.other_identifier.zip(descMetadata.other_identifier.type).map{|a|{id: a[0], source: a[1]}} : nil
   end
-  def other_identifier=(value)
+  def other_identifier=(value_hashes)
     delete_all_values(:other_identifier)
-    Array(value).each { |val| descMetadata.add_other_identifier(val) } if value.present?
-    # descMetadata.other_identifier = Array(value) if value.present?
-  end
-  def other_identifier_type=(value)
-    delete_all_values(:original_related_item, :other_identifier, :type)
-    descMetadata.original_related_item.other_identifier.type = Array(value) if value.present?
-    # Array(value).each { |val| descMetadata.add_other_identifier_type(val) } if value.present?
+    Array(value_hashes).each { |val| descMetadata.add_other_identifier(val[:id], val[:source]) } if value_hashes.present?
   end
 
   # has_attributes :record_identifier, datastream: :descMetadata, at: [:record_identifier], multiple: true
