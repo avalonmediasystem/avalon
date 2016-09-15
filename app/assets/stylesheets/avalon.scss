@@ -880,6 +880,9 @@ div.status-detail {
 /* MediaObject structure page */
 
 #mediaobject_structure {
+  a.structure_toggle, a.captions_toggle {
+    cursor: pointer;
+  }
   ul {
     list-style: none;
     padding: 0;
