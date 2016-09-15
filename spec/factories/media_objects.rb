@@ -41,8 +41,7 @@ FactoryGirl.define do
         physical_description { [Faker::Lorem.word] }
         table_of_contents { [Faker::Lorem.paragraph] }
         note { [{note: Faker::Lorem.paragraph, type: 'general'}] }
-        other_identifier { [Faker::Lorem.word] }
-        other_identifier_type { ['local'] }
+        other_identifier { [{id: Faker::Lorem.word, source: ['local']}] }
         language { ['eng'] }
         # after(:create) do |mo|
         #   mo.update_datastream(:descMetadata, {
