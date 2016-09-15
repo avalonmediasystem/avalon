@@ -16,7 +16,7 @@ class CreateTableIngestBatch < ActiveRecord::Migration
 
   def change
     create_table :ingest_batches do |t|
-      t.string :name, :limit => 50
+      t.string, :name, :limit => 50
       t.string :email
       t.text :media_object_ids
       t.boolean :finished, :default => false

@@ -309,6 +309,7 @@ GEM
       tilt
     hamster (3.0.0)
       concurrent-ruby (~> 1.0)
+    hashdiff (0.3.0)
     hashie (3.4.4)
     highline (1.7.8)
     hooks (0.4.1)
@@ -509,6 +510,9 @@ GEM
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
     retriable (1.4.1)
+    roo (2.5.1)
+      nokogiri (~> 1)
+      rubyzip (~> 1.1, < 2.0.0)
     rsolr (1.1.2)
       builder (>= 2.1.2)
     rspec-core (3.5.3)
@@ -658,6 +662,7 @@ DEPENDENCIES
   faker
   fakeweb
   fcrepo_wrapper
+  hashdiff
   hooks
   hydra-head (~> 10.1)
   iconv
@@ -681,6 +686,7 @@ DEPENDENCIES
   pry-rails
   rails (= 4.2.6)
   rest-client
+  roo
   rsolr (~> 1.0)
   rspec-rails
   rubocop (~> 0.40.0)

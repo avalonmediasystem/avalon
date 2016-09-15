@@ -56,7 +56,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
-  after_validation :create_dropbox_directory!, :on => :create
+  before_create :create_dropbox_directory!
 
   def self.units
     Avalon::ControlledVocabulary.find_by_name(:units) || []
@@ -195,7 +195,7 @@ class Admin::Collection < ActiveFedora::Base
     Avalon::Dropbox.new( dropbox_absolute_path, self )
   end
 
-  def dropbox_absolute_path( name = '' )
+  def dropbox_absolute_path( name = nil )
     File.join(Avalon::Configuration.lookup('dropbox.path'), name || dropbox_directory_name)
   end
 

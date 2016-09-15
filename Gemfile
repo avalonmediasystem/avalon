@@ -60,6 +60,7 @@ gem 'api-pagination'
 gem 'browse-everything'
 gem 'bootstrap_form'
 gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r5'
+gem 'roo'
 
 #MediaElement.js related
 gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', branch: 'captions'
@@ -107,7 +108,7 @@ group :test do
   gem 'fakeweb'
   gem 'email_spec'
   gem 'capybara'
-  # gem 'hashdiff'
+  gem 'hashdiff'
 end
 
 group :travis, optional: true do
