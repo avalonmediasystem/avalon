@@ -203,7 +203,7 @@ class MediaObject < ActiveFedora::Base
       solr_doc["date_digitized_sim"] = master_files.collect {|mf| mf.date_digitized }.compact.map {|t| Time.parse(t).strftime "%F" }
       solr_doc["date_ingested_sim"] = self.create_date.strftime "%F"
       #include identifiers for parts
-      solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier }.flatten
+      solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier.to_a }.flatten
       #include labels for parts and their structural metadata
       solr_doc["section_label_tesim"] = section_labels
       solr_doc['section_physical_description_ssim'] = section_physical_descriptions
@@ -436,6 +436,12 @@ class MediaObject < ActiveFedora::Base
     self._remove_bookmarks
   end
 
+  def leases(scope=:all)
+    criteria = { has_model_ssim: 'Lease' }
+    criteria.merge!(lease_type_ssi: scope) unless scope == :all
+    governing_policies.where(criteria)
+  end
+  
   private
 
     def after_create

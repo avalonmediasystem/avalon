@@ -50,11 +50,11 @@ describe BookmarksController, type: :controller do
 
       it "should publish multiple items" do
         post 'publish'
-	expect(flash[:success]).to eq( I18n.t("blacklight.status.success", count: 3, status: 'publish'))
+	      expect(flash[:success]).to eq( I18n.t("blacklight.status.success", count: 3, status: 'publish'))
         media_objects.each do |mo|
           mo.reload
-	  expect(mo).to be_published
-	  expect(mo.permalink).to be_present
+      	  expect(mo).to be_published
+      	  expect(mo.permalink).to be_present
         end
       end
     end
@@ -62,10 +62,10 @@ describe BookmarksController, type: :controller do
     context 'unpublishing' do
       it "should unpublish multiple items" do
         post 'unpublish'
-	expect(flash[:success]).to eq( I18n.t("blacklight.status.success", count: 3, status: 'unpublish'))
+	      expect(flash[:success]).to eq( I18n.t("blacklight.status.success", count: 3, status: 'unpublish'))
         media_objects.each do |mo|
           mo.reload
-	  expect(mo).not_to be_published
+	        expect(mo).not_to be_published
         end
       end
     end
@@ -98,7 +98,7 @@ describe BookmarksController, type: :controller do
     context 'user has no permission on target collection' do
       it 'responds with error message' do
         post 'move', target_collection_id: collection2.id
-	expect(flash[:error]).to eq( I18n.t("blacklight.move.error", collection_name: collection2.name))
+      	expect(flash[:error]).to eq( I18n.t("blacklight.move.error", collection_name: collection2.name))
       end
     end
     context 'user has permission on target collection' do
@@ -142,7 +142,7 @@ describe BookmarksController, type: :controller do
     end
     context 'Limited access' do
       context 'users' do
-	it 'adds a user to the selected items' do
+	      it 'adds a user to the selected items' do
           post 'update_access_control', submit_add_user: 'Add', user: 'cjcolvar'
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
@@ -150,7 +150,7 @@ describe BookmarksController, type: :controller do
             expect(mo.read_users).to include 'cjcolvar'
           end
         end
-	it 'adds a time-based user to the selected items' do
+	      it 'adds a time-based user to the selected items' do
           post 'update_access_control', submit_add_user: 'Add', add_user_begin: Date.yesterday, add_user_end: Date.today, user: 'cjcolvar'
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
@@ -162,7 +162,7 @@ describe BookmarksController, type: :controller do
           end
         end
 
-	it 'removes a user from the selected items' do
+	      it 'removes a user from the selected items' do
           media_objects.each do |mo|
             mo.read_users += ["john.doe"]
             mo.save
@@ -175,7 +175,7 @@ describe BookmarksController, type: :controller do
             expect(mo.read_users).not_to include 'john.doe'
           end
         end
-	it 'removes a time-based user from the selected items' do
+	      it 'removes a time-based user from the selected items' do
           media_objects.each do |mo|
             mo.governing_policies += [Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, inherited_read_users: ['jane.doe'])]
             mo.save
@@ -185,13 +185,12 @@ describe BookmarksController, type: :controller do
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
-            leases = mo.governing_policies.to_a.select { |gp| gp.is_a? Lease }
-            expect(leases.collect{|p|p.inherited_read_users}.flatten.uniq.compact).not_to include 'john.doe'
+            expect(mo.leases.collect{|p|p.inherited_read_users}.flatten.uniq.compact).not_to include 'john.doe'
           end
         end
       end
       context 'groups' do
-	it 'adds a group to the selected items' do
+	      it 'adds a group to the selected items' do
           post 'update_access_control', submit_add_group: 'Add', group: 'students'
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
@@ -199,7 +198,7 @@ describe BookmarksController, type: :controller do
             expect(mo.read_groups).to include 'students'
           end
         end
-	it 'adds a time-based group to the selected items' do
+	      it 'adds a time-based group to the selected items' do
           post 'update_access_control', submit_add_group: 'Add', add_group_begin: Date.yesterday, add_group_end: Date.today, group: 'students'
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
@@ -210,7 +209,7 @@ describe BookmarksController, type: :controller do
             expect(lease.end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
           end
         end
-	it 'removes a group from the selected items' do
+	      it 'removes a group from the selected items' do
           media_objects.each do |mo|
             mo.read_groups += ["test-group"]
             mo.save
@@ -223,7 +222,7 @@ describe BookmarksController, type: :controller do
             expect(mo.read_groups).not_to include 'test-group'
           end
         end
-	it 'removes a time-based group from the selected items' do
+	      it 'removes a time-based group from the selected items' do
           media_objects.each do |mo|
             mo.governing_policies += [Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, inherited_read_groups: ['test-group'])]
             mo.save
@@ -233,13 +232,12 @@ describe BookmarksController, type: :controller do
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
-            leases = mo.governing_policies.to_a.select { |gp| gp.is_a? Lease }
-            expect(leases.collect{|p|p.inherited_read_groups}.flatten.uniq.compact).not_to include 'test-group'
+            expect(mo.leases.collect{|p|p.inherited_read_groups}.flatten.uniq.compact).not_to include 'test-group'
           end
         end
       end
       context 'external groups' do
-	it 'adds an external group to the selected items' do
+	      it 'adds an external group to the selected items' do
           post 'update_access_control', submit_add_class: 'Add', class: 'ECON-101'
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
@@ -247,7 +245,7 @@ describe BookmarksController, type: :controller do
             expect(mo.read_groups).to include 'ECON-101'
           end
         end
-	it 'adds a time-based external group to the selected items' do
+	      it 'adds a time-based external group to the selected items' do
           post 'update_access_control', submit_add_class: 'Add', add_class_begin: Date.yesterday, add_class_end: Date.today, class: 'ECON-101'
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
@@ -258,7 +256,7 @@ describe BookmarksController, type: :controller do
             expect(lease.end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
           end
         end
-	it 'removes an external group from the selected items' do
+      	it 'removes an external group from the selected items' do
           media_objects.each do |mo|
             mo.read_groups += ["MUSIC-101"]
             mo.save
@@ -271,7 +269,7 @@ describe BookmarksController, type: :controller do
             expect(mo.read_groups).not_to include 'MUSIC-101'
           end
         end
-	it 'removes a time-based external group from the selected items' do
+      	it 'removes a time-based external group from the selected items' do
           media_objects.each do |mo|
             mo.governing_policies += [Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, inherited_read_groups: ['MUSIC-101'])]
             mo.save
@@ -281,13 +279,12 @@ describe BookmarksController, type: :controller do
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
-            leases = mo.governing_policies.to_a.select { |gp| gp.is_a? Lease }
-            expect(leases.collect{|p|p.inherited_read_groups}.flatten.uniq.compact).not_to include 'MUSIC-101'
+            expect(mo.leases.collect{|p|p.inherited_read_groups}.flatten.uniq.compact).not_to include 'MUSIC-101'
           end
         end
       end
       context 'ip groups' do
-	it 'adds an ip group to the selected items' do
+      	it 'adds an ip group to the selected items' do
           post 'update_access_control', submit_add_ipaddress: 'Add', ipaddress: '127.0.0.127'
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
@@ -295,7 +292,7 @@ describe BookmarksController, type: :controller do
             expect(mo.read_groups).to include '127.0.0.127'
           end
         end
-	it 'adds a time-based ip group to the selected items' do
+      	it 'adds a time-based ip group to the selected items' do
           post 'update_access_control', submit_add_ipaddress: 'Add', add_ipaddress_begin: Date.yesterday, add_ipaddress_end: Date.today, ipaddress: '127.0.0.127'
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
@@ -306,7 +303,7 @@ describe BookmarksController, type: :controller do
             expect(lease.end_time).to eq DateTime.parse(Date.today.to_s).utc.end_of_day.iso8601
           end
         end
-	it 'removes an ip group from the selected items' do
+      	it 'removes an ip group from the selected items' do
           media_objects.each do |mo|
             mo.read_groups += ["127.0.0.127"]
             mo.save
@@ -319,7 +316,7 @@ describe BookmarksController, type: :controller do
             expect(mo.read_groups).not_to include '127.0.0.127'
           end
         end
-	it 'removes a time-based ip group from the selected items' do
+      	it 'removes a time-based ip group from the selected items' do
           media_objects.each do |mo|
             mo.governing_policies += [Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, inherited_read_groups: ['127.0.0.127'])]
             mo.save
@@ -329,8 +326,7 @@ describe BookmarksController, type: :controller do
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
-            leases = mo.governing_policies.to_a.select { |gp| gp.is_a? Lease }
-            expect(leases.collect{|p|p.inherited_read_groups}.flatten.uniq.compact).not_to include '127.0.0.127'
+            expect(mo.leases.collect{|p|p.inherited_read_groups}.flatten.uniq.compact).not_to include '127.0.0.127'
           end
         end
       end

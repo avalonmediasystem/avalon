@@ -203,7 +203,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.master_files.first.structuralMetadata.has_content?).to be_truthy
           expect(new_media_object.master_files.first.captions.has_content?).to be_truthy
           expect(new_media_object.master_files.first.captions.mime_type).to eq('text/vtt')
-          expect(new_media_object.master_files.first.derivatives.to_a.size).to eq(2)
+          expect(new_media_object.master_files.first.derivatives.count).to eq(2)
           expect(new_media_object.master_files.first.derivatives.first.location_url).to eq(absolute_location)
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
        end
@@ -890,13 +890,13 @@ describe MediaObjectsController, type: :controller do
           expect {
             put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.yesterday, add_user_end: Date.tomorrow
             media_object.reload
-          }.to change{media_object.governing_policies.to_a.size}.by(1)
-          expect(media_object.governing_policies.last.class).to eq(Lease)
-          lease_id = media_object.reload.governing_policies.last.id
+          }.to change{media_object.leases.count}.by(1)
+          expect(media_object.leases).not_to be_empty
+          lease_id = media_object.reload.leases.first.id
           expect {
             put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', remove_lease: lease_id
             media_object.reload
-          }.to change{media_object.governing_policies.to_a.size}.by(-1)
+          }.to change{media_object.leases.count}.by(-1)
         end
       end
 
@@ -905,26 +905,26 @@ describe MediaObjectsController, type: :controller do
           expect {
             put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.today, add_user_end: Date.tomorrow
             media_object.reload
-          }.to change{media_object.governing_policies.to_a.size}.by(1)
+          }.to change{media_object.leases.count}.by(1)
         end
         it "should reject reverse date range for lease" do
           expect {
             put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.tomorrow, add_user_end: Date.today
             media_object.reload
-          }.not_to change{media_object.governing_policies.to_a.size}
+          }.not_to change{media_object.leases.count}
         end
         it "should accept missing begin date and set it to today" do
           expect {
             put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: '', add_user_end: Date.tomorrow
             media_object.reload
-          }.to change{media_object.governing_policies.to_a.size}.by(1)
-          expect(media_object.governing_policies.last.begin_time).to eq(Date.today)
+          }.to change{media_object.leases.count}.by(1)
+          expect(media_object.leases.first.begin_time).to eq(Date.today)
         end
         it "should reject missing end date" do
           expect {
             put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.tomorrow, add_user_end: ''
             media_object.reload
-          }.not_to change{media_object.governing_policies.to_a.size}
+          }.not_to change{media_object.leases.count}
         end
       end
     end

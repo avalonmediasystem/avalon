@@ -324,7 +324,7 @@ describe MasterFile do
 
         it "should rename an uploaded file in place" do
           Avalon::Configuration['matterhorn'].delete('media_path')
-          expect(subject.file_location).to eq(File.join(File.dirname(tempfile),original))
+          expect(subject.file_location).to eq(File.realpath(File.join(File.dirname(tempfile),original)))
         end
 
         it "should copy an uploaded file to the media path" do

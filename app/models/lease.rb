@@ -23,6 +23,11 @@
 class Lease < ActiveFedora::Base
   include Hydra::AdminPolicyBehavior
 
+  scope :local,    -> { where(lease_type_ssi: "local")    }
+  scope :user,     -> { where(lease_type_ssi: "user")     }
+  scope :external, -> { where(lease_type_ssi: "external") }
+  scope :ip,       -> { where(lease_type_ssi: "ip")       }
+  
   before_save :apply_default_begin_time, :ensure_end_time_present, :validate_dates#, :format_times
 
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
@@ -31,6 +36,9 @@ class Lease < ActiveFedora::Base
     index.as :stored_sortable
   end
   property :end_time, predicate: ::RDF::Vocab::SCHEMA.endDate, multiple: false do |index|
+    index.as :stored_sortable
+  end
+  property :lease_type, predicate: ::RDF::Vocab::DC.type, multiple: false do |index|
     index.as :stored_sortable
   end
 
@@ -87,17 +95,6 @@ class Lease < ActiveFedora::Base
     DateTime.parse(time.to_s).utc.end_of_day
   end
 
-  # Calculate lease type by inspecting read_users and read_groups values, each of which are assumed to contain a single value
-  # @return [String] "user" for user lease, "ip" for ip group lease, "local" for local group lease, "external" for external group lease, nil for others
-  def lease_type
-    return "user" if self.inherited_read_users.present?
-    group = self.inherited_read_groups.first
-    return nil if group.nil?
-    return "ip" if IPAddr.new(group) rescue false
-    return "local" if Admin::Group.exists? group
-    return "external"
-  end
-
   def inherited_edit_users
     default_permissions.select {|p| p.access == 'edit' && p.type == 'person'}.collect(&:agent_name)
   end
@@ -105,6 +102,8 @@ class Lease < ActiveFedora::Base
   def inherited_edit_users= users
     (inherited_edit_users - users).each { |u| remove_permission(u, 'person', 'edit') }
     (users - inherited_edit_users).each { |u| add_permission(u, 'person', 'edit') }
+    set_lease_type
+    users
   end
 
   def inherited_read_users
@@ -114,6 +113,8 @@ class Lease < ActiveFedora::Base
   def inherited_read_users= users
     (inherited_read_users - users).each { |u| remove_permission(u, 'person', 'read') }
     (users - inherited_read_users).each { |u| add_permission(u, 'person', 'read') }
+    set_lease_type
+    users
   end
 
   def inherited_edit_groups
@@ -123,6 +124,8 @@ class Lease < ActiveFedora::Base
   def inherited_edit_groups= groups
     (inherited_edit_groups - groups).each { |u| remove_permission(u, 'group', 'edit') }
     (groups - inherited_edit_groups).each { |u| add_permission(u, 'group', 'edit') }
+    set_lease_type
+    groups
   end
 
   def inherited_read_groups
@@ -132,6 +135,8 @@ class Lease < ActiveFedora::Base
   def inherited_read_groups= groups
     (inherited_read_groups - groups).each { |u| remove_permission(u, 'group', 'read') }
     (groups - inherited_read_groups).each { |u| add_permission(u, 'group', 'read') }
+    set_lease_type
+    groups
   end
 
 private
@@ -142,6 +147,21 @@ private
 
   def add_permission(name, type, access)
     self.default_permissions.build({name: name, type: type, access: access})
+  end
+
+  # Calculate lease type by inspecting read_users and read_groups values, each of which are assumed to contain a single value
+  # @return [String] "user" for user lease, "ip" for ip group lease, "local" for local group lease, "external" for external group lease, nil for others
+  def determine_lease_type
+    return "user" if self.inherited_read_users.present?
+    group = self.inherited_read_groups.first
+    return nil if group.nil?
+    return "ip" if IPAddr.new(group) rescue false
+    return "local" if Admin::Group.exists? group
+    return "external"
+  end
+  
+  def set_lease_type
+    self.lease_type = determine_lease_type
   end
 
 end

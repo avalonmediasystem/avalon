@@ -196,13 +196,13 @@ class MediaObjectsController < ApplicationController
 
     if 'access-control' == @active_step
       @groups = @media_object.local_read_groups
-      @group_leases = @media_object.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="local" }
+      @group_leases = @media_object.leases('local')
       @users = @media_object.read_users
-      @user_leases = @media_object.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="user" }
+      @user_leases = @media_object.leases('user')
       @virtual_groups = @media_object.virtual_read_groups
-      @virtual_leases = @media_object.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="external" }
+      @virtual_leases = @media_object.leases('external')
       @ip_groups = @media_object.ip_read_groups
-      @ip_leases = @media_object.governing_policies.to_a.select { |p| p.class==Lease && p.lease_type=="ip" }
+      @ip_leases = @media_object.leases('ip')
       @visibility = @media_object.visibility
 
       @addable_groups = Admin::Group.non_system_groups.reject { |g| @groups.include? g.name }
@@ -388,7 +388,7 @@ class MediaObjectsController < ApplicationController
     # cycles available.
     @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
     @currentStreamInfo['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
- end
+  end
 
   # The goal of this method is to determine which stream to provide to the interface
   #
