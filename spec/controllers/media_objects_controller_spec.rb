@@ -272,8 +272,8 @@ describe MediaObjectsController, type: :controller do
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.bibliographic_id).to eq({source: "local", id: bib_id})
-          expect(new_media_object.other_identifier.find {|id_pair| id_pair[0] == 'other'}).not_to be nil
-          expect(new_media_object.other_identifier.find {|id_pair| id_pair[0] == 'other'}[1]).to eq('12345')
+          expect(new_media_object.other_identifier.find {|id_pair| id_pair[:source] == 'other'}).not_to be nil
+          expect(new_media_object.other_identifier.find {|id_pair| id_pair[:source] == 'other'}[:id]).to eq('12345')
         end
       end
     end

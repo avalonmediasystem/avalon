@@ -416,12 +416,17 @@ class MediaObjectsController < ApplicationController
     #Related urls
     related_item_url = mo_parameters.delete(:related_item_url)
     related_item_label = mo_parameters.delete(:related_item_label)
-    mo_parameters[:related_item_url] = related_item_url.zip(related_item_label).map{|a|{url: a[0],label: a[1]}} if related_item_url.present?
+    mo_parameters[:related_item_url] = related_item_url.zip(related_item_label).map{|a|{url: a[0],label: a[1]}} if related_item_url.present? && related_item_url.reject(&:empty?).present?
+    #Other identifiers
+    other_identifier = mo_parameters.delete(:other_identifier)
+    other_identifier_type = mo_parameters.delete(:other_identifier_type)
+    mo_parameters[:other_identifier] = other_identifier.zip(other_identifier_type).map{|a|{id: a[0], source: a[1]}} if other_identifier.present? && other_identifier.reject(&:empty?).present?
     #Notes
     # FIXME: lets in empty values!
     note = mo_parameters.delete(:note)
     note_type = mo_parameters.delete(:note_type)
-    mo_parameters[:note] = note.zip(note_type).map{|a|{note: a[0],type: a[1]}} if note.present?
+    mo_parameters[:note] = note.zip(note_type).map{|a|{note: a[0],type: a[1]}} if note.present? && note.reject(&:empty?).present?
+
 
     mo_parameters
   end

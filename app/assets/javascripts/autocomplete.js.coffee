@@ -16,7 +16,6 @@
   $validate = $t.data('validate') || false
   $t.attr('autocomplete','off')
   mySource = new Bloodhound(
-    limit: 10
     datumTokenizer: Bloodhound.tokenizers.whitespace('display')
     queryTokenizer: Bloodhound.tokenizers.whitespace
     remote: 
@@ -34,6 +33,7 @@
       else
         suggestion.display
     source: mySource
+    limit: 10
   ).on("typeahead:selected typeahead:autocompleted", (event, suggestion, dataset) ->
     target = $("##{$t.data('target')}")
     target.val suggestion["id"]

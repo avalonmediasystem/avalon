@@ -577,8 +577,7 @@ fur:
   :uri: http://id.loc.gov/vocabulary/languages/fur
 gaa:
   :code: gaa
-  :text: !binary |-
-    R8Oj
+  :text: Gã
   :uri: http://id.loc.gov/vocabulary/languages/gaa
 gay:
   :code: gay
@@ -842,8 +841,7 @@ kac:
   :uri: http://id.loc.gov/vocabulary/languages/kac
 kal:
   :code: kal
-  :text: !binary |-
-    S2Fsw6J0ZGxpc3V0
+  :text: Kalâtdlisut
   :uri: http://id.loc.gov/vocabulary/languages/kal
 kam:
   :code: kam
@@ -971,8 +969,7 @@ lad:
   :uri: http://id.loc.gov/vocabulary/languages/lad
 lah:
   :code: lah
-  :text: !binary |-
-    TGFobmTEgQ==
+  :text: Lahndā
   :uri: http://id.loc.gov/vocabulary/languages/lah
 lam:
   :code: lam
@@ -1032,8 +1029,7 @@ lug:
   :uri: http://id.loc.gov/vocabulary/languages/lug
 lui:
   :code: lui
-  :text: !binary |-
-    THVpc2XDsW8=
+  :text: Luiseño
   :uri: http://id.loc.gov/vocabulary/languages/lui
 lun:
   :code: lun
@@ -1161,8 +1157,7 @@ mon:
   :uri: http://id.loc.gov/vocabulary/languages/mon
 mos:
   :code: mos
-  :text: !binary |-
-    TW9vcsOp
+  :text: Mooré
   :uri: http://id.loc.gov/vocabulary/languages/mos
 mul:
   :code: mul
@@ -1254,8 +1249,7 @@ nno:
   :uri: http://id.loc.gov/vocabulary/languages/nno
 nob:
   :code: nob
-  :text: !binary |-
-    Tm9yd2VnaWFuIChCb2ttw6VsKQ==
+  :text: Norwegian (Bokmål)
   :uri: http://id.loc.gov/vocabulary/languages/nob
 nog:
   :code: nog
@@ -1403,8 +1397,7 @@ pra:
   :uri: http://id.loc.gov/vocabulary/languages/pra
 pro:
   :code: pro
-  :text: !binary |-
-    UHJvdmVuw6dhbCAodG8gMTUwMCk=
+  :text: Provençal (to 1500)
   :uri: http://id.loc.gov/vocabulary/languages/pro
 pus:
   :code: pus
@@ -1712,8 +1705,7 @@ tib:
   :uri: http://id.loc.gov/vocabulary/languages/tib
 tig:
   :code: tig
-  :text: !binary |-
-    VGlncsOp
+  :text: Tigré
   :uri: http://id.loc.gov/vocabulary/languages/tig
 tir:
   :code: tir
@@ -1841,8 +1833,7 @@ vie:
   :uri: http://id.loc.gov/vocabulary/languages/vie
 vol:
   :code: vol
-  :text: !binary |-
-    Vm9sYXDDvGs=
+  :text: Volapük
   :uri: http://id.loc.gov/vocabulary/languages/vol
 vot:
   :code: vot

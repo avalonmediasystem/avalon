@@ -47,7 +47,7 @@ class LanguageTerm
       language_map = {}
       doc = RestClient.get('http://id.loc.gov/vocabulary/languages.tsv').split(/\n/).collect{ |l| l.split(/\t/) }
       doc.shift
-      doc.each { |entry| language_map[entry[1]] = { code: entry[1], text: entry[2], uri: entry[0] } }
+      doc.each { |entry| language_map[entry[1].to_s] = { code: entry[1].to_s, text: entry[2].to_s, uri: entry[0].to_s } }
       begin
         File.open(Store,'w') { |f| f.write(YAML.dump(language_map)) }
       rescue
