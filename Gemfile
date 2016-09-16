@@ -6,7 +6,7 @@ gem 'active_fedora-datastreams'
 gem 'blacklight', '~> 6.6'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.6'
+gem 'rails', '4.2.7.1'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 # Use SCSS for stylesheets
@@ -46,7 +46,7 @@ gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflo
 gem 'active_encode', git: "https://github.com/projecthydra-labs/active_encode.git", tag: 'v0.0.3'
 gem 'hooks'
 gem 'iconv'
-gem 'mediainfo'
+gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'avalon_fixes'
 gem 'delayed_job', '~> 4.1.0'
 gem 'delayed_job_active_record'
 gem 'omniauth-identity'

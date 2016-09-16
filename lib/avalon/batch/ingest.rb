@@ -39,7 +39,6 @@ module Avalon
             ingest_batch = ingest_package(package)
           rescue Exception => ex
             begin
-              # byebug
               package.manifest.error!
             ensure
               IngestBatchMailer.batch_ingest_validation_error( package, ["#{ex.class.name}: #{ex.message}"] ).deliver
@@ -66,7 +65,6 @@ module Avalon
           end
         end
         if !base_errors.empty? || !package.valid?
-          # byebug
           package.manifest.error!
           IngestBatchMailer.batch_ingest_validation_error( package, base_errors ).deliver
           return nil
