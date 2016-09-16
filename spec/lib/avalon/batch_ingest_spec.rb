@@ -111,7 +111,7 @@ describe Avalon::Batch::Ingest do
       batch_ingest.ingest
       ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.last)
-      expect(media_object.bibliographic_id).to eq(['local', bib_id])
+      expect(media_object.bibliographic_id).to eq({:source=>"local", :id=>"7763100"})
       expect(media_object.title).to eq('245 A : B F G K N P S')
     end
 
@@ -119,7 +119,7 @@ describe Avalon::Batch::Ingest do
       batch_ingest.ingest
       ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
-      master_file = media_object.parts.first
+      master_file = media_object.master_files.first
       expect(master_file.structuralMetadata.has_content?).to be_truthy
     end
 
@@ -127,7 +127,7 @@ describe Avalon::Batch::Ingest do
       batch_ingest.ingest
       ingest_batch = IngestBatch.first
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
-      master_file = media_object.parts.first
+      master_file = media_object.master_files.first
       expect(master_file.captions.has_content?).to be_truthy
     end
 
@@ -135,8 +135,9 @@ describe Avalon::Batch::Ingest do
       batch_ingest.ingest
       ingest_batch = IngestBatch.last
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
-      master_file = media_object.parts.first
-      expect(master_file.label).to eq('Quis quo')
+
+      master_file = media_object.ordered_master_files.to_a.first
+      expect(master_file.title).to eq('Quis quo')
       expect(master_file.poster_offset.to_i).to eq(500)
       expect(master_file.workflow_name).to eq('avalon')
       expect(master_file.absolute_location).to eq(Avalon::FileResolver.new.path_to(master_file.file_location))
@@ -145,15 +146,15 @@ describe Avalon::Batch::Ingest do
       # it should have workflow name set
       # master_file.workflow_name.should be_nil
 
-      master_file = media_object.parts[1]
-      expect(master_file.label).to eq('Unde aliquid')
+      master_file = media_object.ordered_master_files.to_a[1]
+      expect(master_file.title).to eq('Unde aliquid')
       expect(master_file.poster_offset.to_i).to eq(500)
       expect(master_file.workflow_name).to eq('avalon-skip-transcoding')
       expect(master_file.absolute_location).to eq('file:///tmp/sheephead_mountain_master.mov')
       expect(master_file.date_digitized).to eq('2015-10-31T00:00:00Z')
 
-      master_file = media_object.parts[2]
-      expect(master_file.label).to eq('Audio')
+      master_file = media_object.ordered_master_files.to_a[2]
+      expect(master_file.title).to eq('Audio')
       expect(master_file.workflow_name).to eq('fullaudio')
       expect(master_file.absolute_location).to eq(Avalon::FileResolver.new.path_to(master_file.file_location))
     end
@@ -179,14 +180,14 @@ describe Avalon::Batch::Ingest do
       batch_ingest.ingest
       ingest_batch = IngestBatch.last
       media_object = MediaObject.find(ingest_batch.media_object_ids.last)
-      expect(media_object.bibliographic_id).to eq(["local",bib_id])
+      expect(media_object.bibliographic_id).to eq({:source=>"local", :id=>"7763100"})
     end
 
     it 'should correctly set notes' do
       batch_ingest.ingest
       ingest_batch = IngestBatch.last
       media_object = MediaObject.find(ingest_batch.media_object_ids.first)
-      expect(media_object.note.first).to eq(["general","This is a test general note"])
+      expect(media_object.note.first).to eq({:note=>"This is a test general note", :type=>"general"})
     end
 
   end
@@ -268,7 +269,7 @@ describe Avalon::Batch::Ingest do
       expect(mailer).to receive(:deliver)
       expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
       expect(batch.errors[4].messages).to have_key(:contributator)
-      expect(batch.errors[4].messages[:contributator]).to eq(["Metadata attribute 'contributator' not found"])
+      expect(batch.errors[4].messages[:contributator]).to eq(["unknown attribute 'contributator' for MediaObject."])
     end
 
     it 'should fail if an unknown error occurs' do

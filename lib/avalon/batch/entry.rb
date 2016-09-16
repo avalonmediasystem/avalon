@@ -23,19 +23,20 @@ module Avalon
     	attr_reader :fields, :files, :opts, :row, :errors, :manifest, :collection
 
     	def initialize(fields, files, opts, row, manifest)
-	  @fields = fields
-	  @files  = files
-	  @opts   = opts
-	  @row    = row
-	  @manifest = manifest
-	  @errors = ActiveModel::Errors.new(self)
-	  @files.each { |file| file[:file] = File.join(@manifest.package.dir, file[:file]) }
-        end
+    	  @fields = fields
+    	  @files  = files
+    	  @opts   = opts
+    	  @row    = row
+    	  @manifest = manifest
+    	  @errors = ActiveModel::Errors.new(self)
+    	  @files.each { |file| file[:file] = File.join(@manifest.package.dir, file[:file]) }
+      end
 
         def media_object
           @media_object ||= MediaObject.new(avalon_uploader: @manifest.package.user.user_key,
                                             collection: @manifest.package.collection).tap do |mo|
             mo.workflow.origin = 'batch'
+            mo.workflow.last_completed_step = HYDRANT_STEPS.last.step
             if Avalon::BibRetriever.configured? and fields[:bibliographic_id].present?
               begin
                 mo.descMetadata.populate_from_catalog!(fields[:bibliographic_id].first, Array(fields[:bibliographic_id_label]).first)
@@ -43,10 +44,32 @@ module Avalon
                 @errors.add(:bibliographic_id, e.message)
               end
             else
-              mo.update_attributes(fields.dup)
+              begin
+                mo.update_attributes(media_object_fields)
+              rescue ActiveFedora::UnknownAttributeError => e
+                @errors.add(e.attribute.to_sym, e.message)
+              end
             end
           end
           @media_object
+        end
+
+        def media_object_fields
+          mo_parameters = fields.dup
+          bib_id = mo_parameters.delete(:bibliographic_id)
+          bib_id_label = mo_parameters.delete(:bibliographic_id_label)
+          mo_parameters[:bibliographic_id] = { id: bib_id, source: bib_id_label } if bib_id.present?
+          #Related urls
+          related_item_url = mo_parameters.delete(:related_item_url)
+          related_item_label = mo_parameters.delete(:related_item_label)
+          mo_parameters[:related_item_url] = related_item_url.zip(related_item_label).map{|a|{url: a[0],label: a[1]}} if related_item_url.present?
+          #Notes
+          # FIXME: lets in empty values!
+          note = mo_parameters.delete(:note)
+          note_type = mo_parameters.delete(:note_type)
+          mo_parameters[:note] = note.zip(note_type).map{|a|{note: a[0],type: a[1]}} if note.present?
+
+          mo_parameters
         end
 
         def valid?
@@ -127,8 +150,7 @@ module Avalon
           captions_file = "#{filename}.vtt"
           if File.exists? captions_file
             master_file.captions.content=File.open(captions_file)
-            master_file.captions.mimeType='text/vtt'
-            master_file.captions.dsLabel=captions_file
+            master_file.captions.mime_type='text/vtt'
           end
       end
 
@@ -143,7 +165,7 @@ module Avalon
           self.class.attach_datastreams_to_master_file(master_file, file_spec[:file])
           master_file.setContent(files)
           master_file.absolute_location = file_spec[:absolute_location] if file_spec[:absolute_location].present?
-          master_file.label = file_spec[:label] if file_spec[:label].present?
+          master_file.title = file_spec[:label] if file_spec[:label].present?
           master_file.poster_offset = file_spec[:offset] if file_spec[:offset].present?
           master_file.date_digitized = DateTime.parse(file_spec[:date_digitized]).to_time.utc.iso8601 if file_spec[:date_digitized].present?
 
