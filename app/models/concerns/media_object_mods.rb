@@ -72,7 +72,7 @@ module MediaObjectMods
 
   def title=(value)
     delete_all_values(:main_title)
-    descMetadata.add_main_title(value) if value.present?
+    descMetadata.add_main_title(Array(value).first) if value.present?
   end
 
   # has_attributes :alternative_title, datastream: :descMetadata, at: [:alternative_title], multiple: true
@@ -112,7 +112,7 @@ module MediaObjectMods
 
   def statement_of_responsibility=(value)
     delete_all_values(:statement_of_responsibility)
-    descMetadata.statement_of_responsibility = value if value.present?
+    descMetadata.statement_of_responsibility = Array(value).first if value.present?
   end
 
   # has_attributes :creator, datastream: :descMetadata, at: [:creator], multiple: true
@@ -132,7 +132,7 @@ module MediaObjectMods
 
   def date_created=(value)
     delete_all_values(:date_created)
-    descMetadata.add_date_created(value) if value.present?
+    descMetadata.add_date_created(Array(value).first) if value.present?
   end
 
   # has_attributes :date_issued, datastream: :descMetadata, at: [:date_issued], multiple: false
@@ -142,7 +142,7 @@ module MediaObjectMods
 
   def date_issued=(value)
     delete_all_values(:date_issued)
-    descMetadata.add_date_issued(value) if value.present?
+    descMetadata.add_date_issued(Array(value).first) if value.present?
   end
 
   # has_attributes :copyright_date, datastream: :descMetadata, at: [:copyright_date], multiple: false
@@ -152,7 +152,7 @@ module MediaObjectMods
 
   def copyright_date=(value)
     delete_all_values(:copyright_date)
-    descMetadata.add_copyright_date(value) if value.present?
+    descMetadata.add_copyright_date(Array(value).first) if value.present?
   end
 
   # has_attributes :abstract, datastream: :descMetadata, at: [:abstract], multiple: false
@@ -162,7 +162,7 @@ module MediaObjectMods
 
   def abstract=(value)
     delete_all_values(:abstract)
-    descMetadata.abstract = value if value.present?
+    descMetadata.abstract = Array(value).first if value.present?
   end
 
   # has_attributes :note, datastream: :descMetadata, at: [:note], multiple: true
