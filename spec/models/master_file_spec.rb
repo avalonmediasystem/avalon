@@ -175,7 +175,7 @@ describe MasterFile do
       it "should accept a value" do
         offset = master_file.duration.to_i / 2
         master_file.poster_offset = offset
-        expect(master_file.poster_offset).to eq(offset.to_s)
+        expect(master_file.poster_offset).to eq(offset)
         expect(master_file).to be_valid
       end
 
@@ -197,7 +197,7 @@ describe MasterFile do
       it "should accept a value" do
         offset = master_file.duration.to_i / 2
         master_file.poster_offset = offset.to_hms
-        expect(master_file.poster_offset).to eq(offset.to_s)
+        expect(master_file.poster_offset).to eq(offset)
         expect(master_file).to be_valid
       end
 
@@ -211,7 +211,7 @@ describe MasterFile do
 
     describe "update images" do
       it "should update on save" do
-        expect(MasterFile).to receive(:extract_still).with(master_file.id,{type:'both',offset:'12345'})
+        expect(MasterFile).to receive(:extract_still).with(master_file.id,{type:'both',offset:12345})
         master_file.poster_offset = 12345
         master_file.save
       end
