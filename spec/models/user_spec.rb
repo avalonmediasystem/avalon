@@ -73,7 +73,7 @@ describe User do
     it 'removes bookmarks for user' do
       user = FactoryGirl.create(:public)
       bookmark = Bookmark.create(document_id: Faker::Number.digit, user_id: user.id)
-      expect { user.destroy }.to change { Bookmark.exists? bookmark }.from( true ).to( false )
+      expect { user.destroy }.to change { Bookmark.exists? bookmark.id }.from( true ).to( false )
     end
   end
 
