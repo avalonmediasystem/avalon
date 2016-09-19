@@ -234,14 +234,14 @@ class MasterFilesController < ApplicationController
   def destroy
     master_file = MasterFile.find(params[:id])
     authorize! :delete, master_file, message: "You do not have sufficient privileges to delete files"
-
-    filename = File.basename(master_file.file_location) if master_file.file_location.present?
-    media_object_id = master_file.media_object_id
+    filename = File.basename(master_file.file_location) || master_file.id
+    media_object = MediaObject.find(master_file.media_object_id)
+    media_object.ordered_master_files.delete(master_file)
+    media_object.master_files.delete(master_file)
+    media_object.save
     master_file.destroy
-    filename ||= master_file.id
     flash[:notice] = "#{filename} has been deleted from the system"
-
-    redirect_to edit_media_object_path(media_object_id, step: "file-upload")
+    redirect_to edit_media_object_path(media_object, step: "file-upload")
   end
 
   def set_frame
