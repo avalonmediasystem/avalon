@@ -46,12 +46,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 	  </li><li>
             <%= number_to_human_size(section.file_size) %>
 	  </li><li>
-	    <a href="#structure" class="structure_toggle" data-target="structure_<%= index %>" >
+	    <a class="structure_toggle" data-target="structure_<%= index %>" >
 	      <i class="fa fa-plus-square"></i>
 	      <i class="fa fa-minus-square hidden"></i>
 	    </a>
 	  </li><li>
-	    <a href="#captions" class="captions_toggle" data-target="captions_<%= index %>" >
+	    <a class="captions_toggle" data-target="captions_<%= index %>" >
 	      <i class="fa fa-plus-square"></i>
 	      <i class="fa fa-minus-square hidden"></i>
 	    </a>
@@ -79,7 +79,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 	    <% end %>
           </div>
 	  <% if section.captions.present? %>
-            <div class="structure_view">Uploaded file: <%= section.captions.title %></div>
+            <div class="structure_view">Uploaded file: <%= section.captions.original_name %></div>
           <% end %>
         </div>
       </li>
@@ -170,6 +170,7 @@ function parse_node(node, tracknumber){
 }
 
 $('.structure_toggle').on('click', function (e) {
+  e.preventDefault();
   $(this).find('i.fa').toggleClass('hidden');
   target = $(this).data('target')
   section_index = parseInt(target.split('_')[1]);
@@ -178,6 +179,7 @@ $('.structure_toggle').on('click', function (e) {
 });
 
 $('.captions_toggle').on('click', function (e) {
+  e.preventDefault();
   $(this).find('i.fa').toggleClass('hidden');
   target = $(this).data('target')
   $('#'+target).toggleClass('hidden');

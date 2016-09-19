@@ -17,12 +17,12 @@
 $('.sortable').sortable({ 
   disabled: false,
   update: function(e, ui) {
-    $('form > [name="masterfile_ids[]"]').remove();
+    $('form > [name="master_file_ids[]"]').remove();
 
     $(this).find('li.section').each(function(){     
       $('<input>').attr({ 
         type: 'hidden', 
-        name: 'masterfile_ids[]', 
+        name: 'master_file_ids[]',
         value: $(this).data('segment')
       }).appendTo('form');
     });

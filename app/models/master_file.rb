@@ -374,6 +374,16 @@ class MasterFile < ActiveFedora::Base
     save
   end
 
+  alias_method :'_poster_offset', :'poster_offset'
+  def poster_offset
+    _poster_offset.to_i
+  end
+
+  alias_method :'_thumbnail_offset', :'thumbnail_offset'
+  def thumbnail_offset
+    _thumbnail_offset.to_i
+  end
+
   alias_method :'_poster_offset=', :'poster_offset='
   def poster_offset=(value)
     set_image_offset(:poster,value)

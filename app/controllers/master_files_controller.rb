@@ -135,7 +135,8 @@ class MasterFilesController < ApplicationController
         @master_file.captions.original_name = params[:master_file][:captions].original_filename
         flash[:success] = "Captions file succesfully added."
       else
-        @master_file.captions.delete
+        @master_file.captions.content = ''
+        @master_file.captions.original_name = ''
         flash[:success] = "Captions file succesfully removed."
       end
       @master_file.save
