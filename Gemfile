@@ -59,7 +59,7 @@ gem 'acts_as_list'
 gem 'api-pagination'
 gem 'browse-everything'
 gem 'bootstrap_form'
-gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r5'
+gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
 gem 'roo'
 
 #MediaElement.js related
