@@ -92,7 +92,7 @@ describe AvalonClip do
   end
   describe 'selector' do
     it 'can create the selector using the start and end time' do
-      video_master_file.stub(:rdf_uri).and_return(RuntimeError, 'htt://www.avalon.edu/obj')
+      allow(video_master_file).to receive(:rdf_uri).and_return(RuntimeError, 'htt://www.avalon.edu/obj')
       expect{ clip.mediafragment_uri }.not_to raise_error
     end
   end
