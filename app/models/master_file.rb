@@ -300,7 +300,7 @@ class MasterFile < ActiveFedora::Base
         url = self.permalink(permalink_opts)
       else
         # TODO: Fix deprecation warning for next line
-        url = embed_master_file_path(self.id, only_path: false, protocol: '//')
+        url = embed_master_file_url(self.id, only_path: false, protocol: '//')
       end
       height = is_video? ? (width/display_aspect_ratio.to_f).floor : AUDIO_HEIGHT
       "<iframe title=\"#{ embed_title }\" src=\"#{url}\" width=\"#{width}\" height=\"#{height}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
@@ -707,7 +707,7 @@ class MasterFile < ActiveFedora::Base
   def update_ingest_batch
     ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( self.media_object.id )
     if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
-      IngestBatchMailer.status_email(ingest_batch.id).deliver
+      IngestBatchMailer.status_email(ingest_batch.id).deliver_now
       ingest_batch.email_sent = true
       ingest_batch.save!
     end

@@ -130,7 +130,7 @@ describe Lease do
       now = Date.today
       @lease.end_time = now #beginning of toay
       @lease.begin_time = now #end of today
-      expect { @lease.validate_dates }.to_not raise_error(ArgumentError)
+      expect { @lease.validate_dates }.to_not raise_error
     end
     it 'does not raise an ArgumentError if the end_time is after the begin_time' do
       @lease.end_time = Date.tomorrow
