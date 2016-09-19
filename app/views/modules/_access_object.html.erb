@@ -97,9 +97,9 @@ Unless required by applicable law or agreed to in writing, software distributed
             <td class='access_list_label'>
               <%= label_tag do %>
                 <% if defined?(display_helper) && display_helper.present? %>
-                  <%= self.send(display_helper, (lease_object.read_groups+lease_object.read_users).first) %>
+                  <% self.send(display_helper, (lease_object.inherited_read_groups+lease_object.inherited_read_users).first) %>
                 <% else %>
-                  <%= (lease_object.read_groups+lease_object.read_users).first %>
+                  <% (lease_object.inherited_read_groups+lease_object.inherited_read_users).first %>
                 <% end %>
               <% end %>
             </td>
