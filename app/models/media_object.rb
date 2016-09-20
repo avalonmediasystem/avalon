@@ -93,8 +93,8 @@ class MediaObject < ActiveFedora::Base
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
-  #  and methods for master_files (an array): first, last, [index], =, <<, +=, delete(mf)
-  #  and methods for ordered_master_files (an array): first, last, [index], =, <<, +=, insert_at(index,mf), delete(mf), delete_at(index)
+  #  and methods for master_files: first, last, [index], =, <<, +=, delete(mf)
+  #  and methods for ordered_master_files: first, last, [index], =, <<, +=, insert_at(index,mf), delete(mf), delete_at(index)
 
   accepts_nested_attributes_for :master_files, :allow_destroy => true
 
