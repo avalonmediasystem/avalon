@@ -177,7 +177,7 @@ module ApplicationHelper
   end
 
   def master_file_meta_properties( m )
-    formatted_duration = m.duration ? Duration.new(m.duration.to_i / 1000).iso8601 : ''
+    formatted_duration = m.duration ? Time.new(m.duration.to_i / 1000).iso8601 : ''
     item_type = m.is_video? ? 'http://schema.org/VideoObject' : 'http://schema.org/AudioObject'
 
     content_tag(:div, itemscope: '', itemprop:  m.is_video? ? 'video' : 'audio',  itemtype: item_type ) do
