@@ -698,7 +698,7 @@ class MasterFile < ActiveFedora::Base
       move_path = Avalon::Configuration.lookup('master_file_management.path')
       raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?
       newpath = File.join(move_path, MasterFile.post_processing_move_filename(file_location, id: id))
-      AvalonJobs.move_master_file self.id, newpath
+      AvalonJobs.move_masterfile self.id, newpath
     else
       # Do nothing
     end
