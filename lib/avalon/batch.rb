@@ -17,6 +17,7 @@ require "avalon/batch/entry"
 require "avalon/batch/ingest"
 require "avalon/batch/manifest"
 require "avalon/batch/package"
+require "timeout"
 
 module Avalon
   module Batch
@@ -26,15 +27,25 @@ module Avalon
     def self.find_open_files(files, base_directory = '.')
       args = files.collect { |p| %{"#{p}"} }.join(' ')
       Dir.chdir(base_directory) do
-        status = `/usr/sbin/lsof -Fcpan0 #{args}`
-        statuses = status.split(/[\u0000\n]+/)
         result = []
-        statuses.in_groups_of(4) do |group|
-          file_status = Hash[group.compact.collect { |s| [s[0].to_sym,s[1..-1]] }]
-          if file_status.has_key?(:n) and File.file?(file_status[:n]) and 
-            (file_status[:a] =~ /w/ or file_status[:c] == 'scp')
-              result << file_status[:n] 
+        begin
+          Timeout.timeout(5) do
+            status = `/usr/sbin/lsof -Fcpan0 #{args}`
+            statuses = status.split(/[\u0000\n]+/)
+            statuses.in_groups_of(4) do |group|
+              file_status = Hash[group.compact.collect { |s| [s[0].to_sym,s[1..-1]] }]
+              if file_status.has_key?(:n) and File.file?(file_status[:n]) and 
+                (file_status[:a] =~ /w/ or file_status[:c] == 'scp')
+                  result << file_status[:n] 
+              end
+            end
           end
+        rescue Errno::ENOENT
+          # lsof doesn't exist so bail
+          Rails.logger.warn('lsof missing; continuing without open file checking')
+        rescue Timeout::Error
+          # lsof didn't return so bail
+          Rails.logger.warn('lsof blocking; continuing without open file checking')
         end
         result
       end
