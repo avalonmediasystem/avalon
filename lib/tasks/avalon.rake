@@ -18,6 +18,13 @@ namespace :avalon do
     `rake db:migrate`
     `rails generate active_annotations:install`
   end
+
+  desc 'clean out user sessions that have not been updated for 7 days'
+  task :session_cleanup => :environment do
+    sql = 'DELETE FROM sessions WHERE updated_at < DATE_SUB(NOW(), INTERVAL 7 DAY);'
+    ActiveRecord::Base.connection.execute(sql)
+  end
+
   namespace :services do
     services = ["jetty", "felix", "delayed_job"]
     desc "Start Avalon's dependent services"
@@ -240,7 +247,7 @@ namespace :avalon do
           mf_obj = MasterFile.where("dc_identifier_tesim:#{container}").first
           unless mf_obj.present?
             item_errors += [{username: user['username'], playlist_id: playlist_obj.id, container: container, title: title, errors: ['Masterfile not found']}]
-            next 
+            next
           end
           item_count += 1
           puts "  Importing playlist item #{title}"
@@ -301,7 +308,7 @@ namespace :avalon do
         puts [api_token.token,api_token.username].join('|')
       end
     end
-    
+
     desc "Generate an API token for a user"
     task :generate => :environment do
       user = ENV['username']
@@ -313,7 +320,7 @@ namespace :avalon do
       new_token = ApiToken.create username: user, email: email, token: token
       puts new_token.token
     end
-    
+
     desc "Revoke an API token or all of a given user's API tokens"
     task :revoke => :environment do
       user = ENV['username']
