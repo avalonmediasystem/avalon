@@ -146,11 +146,13 @@ module Avalon
           structural_file = "#{filename}.structure.xml"
           if File.exists? structural_file
             master_file.structuralMetadata.content=File.open(structural_file)
+            master_file.structuralMetadata.original_name = structural_file
           end
           captions_file = "#{filename}.vtt"
           if File.exists? captions_file
             master_file.captions.content=File.open(captions_file)
             master_file.captions.mime_type='text/vtt'
+            master_file.captions.original_name = captions_file
           end
       end
 

@@ -1,22 +1,22 @@
 # Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class AvalonProgress
-  setActive = (target, active) -> 
+  setActive = (target, active) ->
     if active then target.addClass('progress-striped active') else target.removeClass('progress-striped active')
 
-  updateBar = (bar, attrs) -> 
+  updateBar = (bar, attrs) ->
     for type, percent of attrs
       target = $(".progress-bar.progress-bar-#{type}",bar)
       target.css('width',"#{percent}%")
@@ -24,7 +24,7 @@ class AvalonProgress
   retrieve: (auto=false) ->
     $.ajax $('#progress').data('progress-url'),
       dataType: 'json',
-      success: (data) => 
+      success: (data) =>
         @data = data
         if @update() and auto
           setTimeout =>
@@ -41,7 +41,7 @@ class AvalonProgress
       info_box = $(sec).next('div.alert')
 
       info = @data[id]
-      
+
       if info?
         setActive(bar, info.complete < 100 and (info.status == 'RUNNING' or info.status == 'WAITING'))
 
@@ -74,6 +74,9 @@ class AvalonProgress
       $('.avalon-player').html('<div id="nojs"></div>')
 
 $(document).ready ->
+  if $('.progress-bar').size() == 0
+    return
+
   progress_controller = new AvalonProgress()
 
   $('.progress-indented').prepend('
