@@ -61,6 +61,7 @@ gem 'browse-everything'
 gem 'bootstrap_form'
 gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
 gem 'roo'
+gem 'activerecord-session_store'
 
 #MediaElement.js related
 gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', branch: 'captions'
