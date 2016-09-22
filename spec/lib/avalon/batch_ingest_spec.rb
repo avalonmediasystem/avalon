@@ -115,20 +115,19 @@ describe Avalon::Batch::Ingest do
       expect(media_object.title).to eq('245 A : B F G K N P S')
     end
 
-    it 'should ingest structural metadata' do
-      batch_ingest.ingest
-      ingest_batch = IngestBatch.first
-      media_object = MediaObject.find(ingest_batch.media_object_ids.first)
-      master_file = media_object.master_files.first
-      expect(master_file.structuralMetadata.has_content?).to be_truthy
-    end
+    context '#attach_datastreams_to_master_file' do
+      let(:master_file) { FactoryGirl.build(:master_file) }
+      let(:filename) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov') }
+      before do
+        Avalon::Batch::Entry.attach_datastreams_to_master_file(master_file, filename)
+      end
 
-    it 'should ingest captions' do
-      batch_ingest.ingest
-      ingest_batch = IngestBatch.first
-      media_object = MediaObject.find(ingest_batch.media_object_ids.first)
-      master_file = media_object.master_files.first
-      expect(master_file.captions.has_content?).to be_truthy
+      it 'should attach structural metadata' do
+        expect(master_file.structuralMetadata.has_content?).to be_truthy
+      end
+      it 'should attach captions' do
+        expect(master_file.captions.has_content?).to be_truthy
+      end
     end
 
     it 'should set MasterFile details' do
