@@ -41,6 +41,9 @@
   mount BrowseEverything::Engine => '/browse'
 
   # Avalon routes
+  match "/authorize", to: 'derivatives#authorize', via: [:get, :post]
+  match "/authorize/:path", to: 'derivatives#authorize', via: [:get, :post]
+
   namespace :admin do
     resources :groups, except: [:show] do
       collection do
