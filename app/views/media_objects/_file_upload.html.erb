@@ -142,7 +142,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           </span>
           <a href="#" class="input-group-addon btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
           <span class="input-group-addon fileinput-exists" style="background-color: white; padding-top: 8px; padding-bottom: 2px; border: none;">
-            <%= check_box_tag(:workflow, 'skip_transcoding', false)%>
+            <%= check_box_tag(:workflow, 'skip_transcoding', false, id: nil)%>
             <%= label_tag(:skip_transcoding) do %>
               <div style="font-size: inherit;" class="tooltip-help" data-title="Skip Transcoding" data-tooltip="#skip-transcoding-tooltip">
                 Skip transcoding

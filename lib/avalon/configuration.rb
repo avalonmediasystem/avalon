@@ -49,6 +49,7 @@ module Avalon
       "DROPBOX_URI" => { key: "dropbox.upload_uri" },
       "FEDORA_NAMESPACE" => { key: "fedora.namespace" },
       "FFMPEG_PATH" => { key: "ffmpeg.path" },
+      "MEDIA_PATH" => { key: "matterhorn.media_path" },
       "MEDIAINFO_PATH" => { key: "mediainfo.path" },
       "EMAIL_COMMENTS" => { key: "email.comments" },
       "EMAIL_NOTIFICATION" => { key: "email.notification" },

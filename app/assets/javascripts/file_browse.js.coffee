@@ -5,10 +5,11 @@ $ ->
   initialized = false
   $('#browse-btn').browseEverything()
     .show ->
-      skip_box = $('#web_upload input[name=workflow]').closest('span')
-        .clone().removeClass().css('margin-right','10px')
-      
-      $('.ev-cancel').before skip_box
+      unless $('#browse-everything input[name=workflow]').length > 0
+        skip_box = $('#web_upload input[name=workflow]').closest('span')
+          .clone().removeClass().css('margin-right','10px')
+        $('.ev-cancel').before skip_box
+
       $('.ev-providers .ev-container a').click()
       initialized = true
     .done (data) -> 

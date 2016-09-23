@@ -57,7 +57,7 @@ gem 'rest-client'
 gem 'active_annotations', '~> 0.2.0'
 gem 'acts_as_list'
 gem 'api-pagination'
-gem 'browse-everything'
+gem 'browse-everything', '~> 0.10.5'
 gem 'bootstrap_form'
 gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
 gem 'roo'

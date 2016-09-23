@@ -194,7 +194,7 @@ GEM
       autoprefixer-rails (>= 5.2.1)
       sass (>= 3.3.4)
     bootstrap_form (2.5.0)
-    browse-everything (0.10.4)
+    browse-everything (0.10.5)
       bootstrap-sass
       dropbox-sdk (>= 1.6.2)
       font-awesome-rails
@@ -368,7 +368,7 @@ GEM
     json-ld (2.1.0)
       multi_json (~> 1.11)
       rdf (~> 2.1)
-    jwt (1.5.4)
+    jwt (1.5.6)
     kaminari (0.17.0)
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -655,7 +655,7 @@ DEPENDENCIES
   avalon-workflow!
   blacklight (~> 6.6)
   bootstrap_form
-  browse-everything
+  browse-everything (~> 0.10.5)
   byebug
   capistrano (~> 2.12.0)
   capybara
@@ -716,4 +716,4 @@ DEPENDENCIES
   web-console (~> 2.0)
 
 BUNDLED WITH
-   1.13.0
+   1.13.1
