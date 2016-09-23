@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% f_start = @current_clip.start_time / 1000.0 %>
 <% f_end = @current_clip.end_time / 1000.0 %>
 <% @currentStream = @current_masterfile %>
-<% @token = StreamToken.find_or_create_session_token(session, @currentStream.pid) %>
+<% @token = StreamToken.find_or_create_session_token(session, @currentStream.id) %>
 <% @currentStreamInfo = @currentStream.stream_details(@token, ApplicationController.default_url_options[:host]) %>
 <% @currentStreamInfo['t'] = "#{f_start},#{f_end}" %>
 <% if can? :read, @current_masterfile %>

@@ -12,6 +12,7 @@ Rails.application.config.assets.version = '1.0'
 
 #mediaelement
 Rails.application.config.assets.precompile += %w( mediaelement_rails/mediaelement-and-player.js )
+Rails.application.config.assets.precompile += %w( mediaelement_rails/mediaelementplayer.css )
 Rails.application.config.assets.precompile += %w( mediaelement-qualityselector/mep-feature-qualities.js )
 Rails.application.config.assets.precompile += %w( me-thumb-selector.js )
 Rails.application.config.assets.precompile += %w( mediaelement-skin-avalon/mep-feature-responsive.js )
@@ -34,6 +35,7 @@ Rails.application.config.assets.precompile += %w( file_upload_step.js )
 Rails.application.config.assets.precompile += %w( import_button.js )
 Rails.application.config.assets.precompile += %w( marker.js )
 Rails.application.config.assets.precompile += %w( sort_streams.js )
+Rails.application.config.assets.precompile += %w( avalon_playlists/playlist_items.js )
 
 #Third party
 Rails.application.config.assets.precompile += %w( modernizr.js )
