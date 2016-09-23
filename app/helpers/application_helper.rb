@@ -75,8 +75,8 @@ module ApplicationHelper
   end
 
   def display_metadata(label, value, default=nil)
-    return if value.blank? and default.nil?
     sanitized_values = Array(value).collect { |v| sanitize(v.to_s.strip) }.delete_if(&:empty?)
+    return if sanitized_values.empty? and default.nil?
     sanitized_values = Array(default) if sanitized_values.empty?
     label = label.pluralize(sanitized_values.size)
     result = content_tag(:dt, label) +

@@ -127,4 +127,18 @@ describe ApplicationHelper do
       expect(helper.image_for(doc)).to eq('/master_files/1/thumbnail')
     end
   end
+
+  describe "#display_metadata" do
+    it "should return nil for a blank value" do
+      expect(helper.display_metadata("Label", [""])).to be_nil
+    end
+
+    it "should return a pluralized label and semicolon-separated string for multiple values" do
+      expect(helper.display_metadata("Label", ["Value1", "Value2"])).to eq("<dt>Labels</dt><dd>Value1; Value2</dd>")
+    end
+
+    it "should return a default value if provided" do
+      expect(helper.display_metadata("Label", [""], "Default value")).to eq("<dt>Label</dt><dd>Default value</dd>")
+    end
+  end
 end
