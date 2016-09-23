@@ -27,7 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% @current_playlist_item = @playlist.items.where(position: position).first %>
   <% @current_clip = @current_playlist_item.clip %>
   <% @current_masterfile = @current_playlist_item.clip.master_file %>
-  <% @current_mediaobject = @current_masterfile.mediaobject %>
+  <% @current_mediaobject = @current_masterfile.media_object %>
       <div class="col-sm-8" id="left_column">
         <%= render 'player' %>
         <%= render file: '_add_to_playlist.html.erb' if current_user.present? %>
