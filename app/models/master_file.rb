@@ -444,11 +444,11 @@ class MasterFile < ActiveFedora::Base
         self.extract_still(options.merge(:type => 'thumbnail'))
       else
         frame_size = options[:size] || default_frame_sizes[options[:type]]
-        ds = self.datastreams[type]
+        file = self.send(type.to_sym)
         result = extract_frame(options.merge(:size => frame_size))
         unless options[:preview]
-          ds.mime_type = 'image/jpeg'
-          ds.content = StringIO.new(result)
+          file.mime_type = 'image/jpeg'
+          file.content = StringIO.new(result)
         end
       end
       save
@@ -552,7 +552,7 @@ class MasterFile < ActiveFedora::Base
 
   def extract_frame(options={})
     if is_video?
-      base = id.gsub(/:/,'_')
+      base = id.gsub(/\//,'_')
       offset = options[:offset].to_i
       unless offset.between?(0,self.duration.to_i)
         raise RangeError, "Offset #{offset} not in range 0..#{self.duration}"
