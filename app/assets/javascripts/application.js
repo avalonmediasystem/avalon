@@ -16,9 +16,9 @@
 //= require turbolinks//
 
 // Required by Blacklight
-//= require blacklight/blacklight
-//= require browse_everything
 //= require jquery-ui
 //= require jquery.ui.nestedSortable
+//= require blacklight/blacklight
+//= require browse_everything
 
 //= require_tree .

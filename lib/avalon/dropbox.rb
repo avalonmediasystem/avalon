@@ -84,8 +84,7 @@ module Avalon
 
   #  protected
     def find_open_files(files)
-      # TODO: uncomment next line
-      # Avalon::Batch.find_open_files(files, @base_directory)
+      Avalon::Batch.find_open_files(files, @base_directory)
     end
   end
 end

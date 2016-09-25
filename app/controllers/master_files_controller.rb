@@ -207,10 +207,10 @@ class MasterFilesController < ApplicationController
       params[:selected_files].each_value do |entry|
         file_path = URI.parse(entry[:url]).path.gsub(/\+/,' ')
         master_file = MasterFile.new
-        master_file.save( validate: false )
-        master_file.media_object = media_object
         master_file.setContent(File.open(file_path, 'rb'))
         master_file.set_workflow(params[:workflow])
+        master_file.save( validate: false )
+        master_file.media_object = media_object
 
         unless master_file.save
           flash[:error] = "There was a problem storing the file"
