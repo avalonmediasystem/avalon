@@ -208,6 +208,7 @@ class Admin::CollectionsController < ApplicationController
       @target_collection = Admin::Collection.find(params[:target_collection_id])
       Admin::Collection.reassign_media_objects( @source_collection.media_objects, @source_collection, @target_collection )
       target_path = admin_collection_path(@target_collection)
+      @source_collection.reload
     end
     if @source_collection.media_objects.count == 0
       @source_collection.destroy
