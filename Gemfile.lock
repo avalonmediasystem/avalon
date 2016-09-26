@@ -197,7 +197,7 @@ GEM
       nom-xml (>= 0.5.1)
       om (~> 3.1)
       rdf-rdfxml (~> 1.1.0)
-      rsolr (~> 1.0.11)
+      rsolr (~> 1.1.2)
       rubydora (~> 1.8)
     active-triples (0.4.0)
       activemodel (>= 3.0.0)
@@ -251,7 +251,7 @@ GEM
       kaminari (>= 0.15)
       nokogiri (~> 1.6)
       rails (>= 3.2.6, < 5)
-      rsolr (~> 1.0.11)
+      rsolr (~> 1.1.2)
     block_helpers (0.3.3)
       activesupport (>= 2.0)
     bootstrap-sass (3.3.3)
@@ -610,7 +610,7 @@ GEM
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
     retriable (1.4.1)
-    rsolr (1.0.13)
+    rsolr (1.1.2)
       builder (>= 2.1.2)
     rspec-core (3.4.1)
       rspec-support (~> 3.4.0)
@@ -845,7 +845,7 @@ DEPENDENCIES
   rb-fsevent (~> 0.9.1)
   red5wrapper!
   roo!
-  rsolr (~> 1.0.12)
+  rsolr (~> 1.1.2)
   rspec-rails
   rubocop (~> 0.40.0)
   ruby-duration
