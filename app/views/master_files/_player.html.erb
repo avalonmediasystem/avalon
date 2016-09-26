@@ -74,7 +74,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       enableAutosize: true,
       iOSDisplayedDuration: <%= @master_file ? @master_file.duration.to_i / 1000 : -1 %>,
       startQuality: '<%= current_quality(@stream_info) %>',
-      title: '<%= @master_file.label %>',
+      title: '<%= @master_file.title %>',
       titleLink: '<%= media_object_url(@master_file.media_object) %>',
       logoAction: 'popup',
       logoURL: '<%= id_section_media_object_url(@master_file.media_object.id, @master_file.id).html_safe %>',
