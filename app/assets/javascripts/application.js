@@ -13,7 +13,6 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery.nestable
-//= require turbolinks//
 
 // Required by Blacklight
 //= require jquery-ui
