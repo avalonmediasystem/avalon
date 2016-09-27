@@ -21,6 +21,8 @@ Rails.application.config.assets.precompile += %w( mediaelement-qualityselector/m
 Rails.application.config.assets.precompile += %w( me-thumb-selector.css )
 Rails.application.config.assets.precompile += %w( mediaelement-skin-avalon/mejs-skin-avalon.css )
 Rails.application.config.assets.precompile += %w( me-add-to-playlist.css )
+Rails.application.config.assets.precompile += %w( mediaelement-title/mejs-title.css )
+Rails.application.config.assets.precompile += %w( me-logo.css )
 
 #avalon
 Rails.application.config.assets.precompile += %w( access_control_step.js )
@@ -36,6 +38,8 @@ Rails.application.config.assets.precompile += %w( import_button.js )
 Rails.application.config.assets.precompile += %w( marker.js )
 Rails.application.config.assets.precompile += %w( sort_streams.js )
 Rails.application.config.assets.precompile += %w( avalon_playlists/playlist_items.js )
+Rails.application.config.assets.precompile += %w( embed_player.js )
+Rails.application.config.assets.precompile += %w( embed.css )
 
 #Third party
 Rails.application.config.assets.precompile += %w( modernizr.js )
@@ -48,3 +52,4 @@ Rails.application.config.assets.precompile += %w( xmleditor/xsd2json.js )
 Rails.application.config.assets.precompile += %w( xmleditor/vkbeautify.js )
 Rails.application.config.assets.precompile += %w( xmleditor/ace.js )
 Rails.application.config.assets.precompile += %w( xmleditor/mode-xml.js )
+Rails.application.config.assets.precompile += %w( font-awesome.css )
