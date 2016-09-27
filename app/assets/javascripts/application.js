@@ -20,5 +20,3 @@
 //= require jquery.ui.nestedSortable
 //= require blacklight/blacklight
 //= require browse_everything
-
-//= require_tree .
