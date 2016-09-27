@@ -12,6 +12,12 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+//= require mediaelement_rails/mediaelement-and-player
+//= require mediaelement-qualityselector/mep-feature-qualities
+//= require mediaelement-skin-avalon/mep-feature-responsive
+//= require keyboard_access
+//= require android_pre_play
+
 class AvalonPlayer
   constructor: (container, stream_info, opts) ->
     @container = container
