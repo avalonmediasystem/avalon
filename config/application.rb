@@ -11,11 +11,13 @@ module Avalon
 
   class Application < Rails::Application
     require 'avalon/configuration'
-    
+
     config.generators do |g|
       g.test_framework :rspec, :spec => true
     end
 
+    # Disable Whiny Requests
+    config.web_console.whiny_requests = false
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
