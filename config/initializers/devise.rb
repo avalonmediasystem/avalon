@@ -253,6 +253,14 @@ Devise.setup do |config|
     if provider[:provider] == :lti
       provider[:params].merge!({consumers: Avalon::Lti::Configuration})
     end
+    
+    if provider[:provider] == :identity
+      provider[:params].merge!({
+        on_login: AuthFormsController.action(:render_form, AuthFormsController.dispatcher(:identity, :request_phase)),
+        on_registration: AuthFormsController.action(:render_form, AuthFormsController.dispatcher(:identity, :registration_form))
+      })
+    end
+    
     config.omniauth provider[:provider], provider[:params]
   end
   if ENV['LTI_AUTH_KEY']
