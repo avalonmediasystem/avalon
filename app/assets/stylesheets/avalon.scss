@@ -329,14 +329,14 @@ header div{
 /* Sidebar */
 
 .sidenav {
-  h4 {
+  h2 {
     margin: 0px;
     background-color: $sidenavHeaderBackgroundColor;
     @include border-top-radius(6px);
-    padding: 10px 0 10px 10px;
-    font-weight: bold;
+    padding-left: 10px;
+    font-weight: bold !important;
   }
-  h5 {
+  h3 {
     font-weight: bold;
     font-size: 1em;
   }
@@ -647,10 +647,6 @@ a[data-trigger='submit'] {
 .index_title {
   line-height: 20px;
   margin-top: 0;
-}
-
-.form-control {
-  color: $black;
 }
 
 .tab-content > .tab-pane {
