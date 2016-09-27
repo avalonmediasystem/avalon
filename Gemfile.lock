@@ -596,7 +596,6 @@ GEM
       nokogiri
       stomp
       xml-simple
-    spring (1.7.2)
     sprockets (3.7.0)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
@@ -706,7 +705,6 @@ DEPENDENCIES
   shoulda-matchers
   simplecov
   solr_wrapper (>= 0.16)
-  spring
   sqlite3
   uglifier (>= 1.3.0)
   web-console (~> 2.0)
