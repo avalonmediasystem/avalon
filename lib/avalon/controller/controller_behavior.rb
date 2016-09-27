@@ -22,7 +22,7 @@ module Avalon
       def deliver_content
         @obj = ActiveFedora::Base.find(params[:id], :cast => true)
         authorize! :inspect, @obj
-        file = @obj.send(params[:datastream])
+        file = @obj.send(params[:file])
         if file.nil? or file.new_record?
           render :text => 'Not Found', :status => :not_found
         else
