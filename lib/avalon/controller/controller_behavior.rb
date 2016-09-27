@@ -23,7 +23,7 @@ module Avalon
         @obj = ActiveFedora::Base.find(params[:id], :cast => true)
         authorize! :inspect, @obj
         file = @obj.send(params[:file])
-        if file.nil? or file.new?
+        if file.nil? or file.new_record?
           render :text => 'Not Found', :status => :not_found
         else
           render :text => file.content, :content_type => file.mime_type
