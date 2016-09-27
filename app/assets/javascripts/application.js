@@ -19,3 +19,5 @@
 //= require jquery.ui.nestedSortable
 //= require blacklight/blacklight
 //= require browse_everything
+//= require pop_help
+//= require input_form_attribute_support
