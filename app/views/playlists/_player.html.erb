@@ -59,19 +59,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   <span class = 'playlist_item_denied'>You do not have permission to playback item <%= @current_masterfile.mediaobject_id %></span>
 <% end %>
 <% content_for :page_scripts do %>
-  <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
-  <%= javascript_include_tag 'android_pre_play' %>
-  <%= javascript_include_tag 'mediaelement-qualityselector/mep-feature-qualities' %>
-  <%= javascript_include_tag 'me-thumb-selector' %>
-  <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
-  <%= javascript_include_tag 'avalon_player' %>
-  <%= javascript_include_tag 'me-add-to-playlist' %>
-
-  <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
-  <%= stylesheet_link_tag 'me-thumb-selector' %>
-  <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
-  <%= stylesheet_link_tag 'me-add-to-playlist' %>
-
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
     function advancePlaylist() {
