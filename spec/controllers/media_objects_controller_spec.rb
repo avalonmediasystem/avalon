@@ -56,7 +56,7 @@ describe MediaObjectsController, type: :controller do
           expect(put :update, id: media_object.id).to redirect_to(new_user_session_path)
           expect(put :update_status, id: media_object.id).to redirect_to(new_user_session_path)
           expect(get :tree, id: media_object.id).to redirect_to(new_user_session_path)
-          expect(get :deliver_content, id: media_object.id, datastream: 'descMetadata').to redirect_to(new_user_session_path)
+          expect(get :deliver_content, id: media_object.id, file: 'descMetadata').to redirect_to(new_user_session_path)
           expect(delete :destroy, id: media_object.id).to redirect_to(new_user_session_path)
         end
       end
@@ -77,7 +77,7 @@ describe MediaObjectsController, type: :controller do
           expect(put :update, id: media_object.id).to redirect_to(root_path)
           expect(put :update_status, id: media_object.id).to redirect_to(root_path)
           expect(get :tree, id: media_object.id).to redirect_to(root_path)
-          expect(get :deliver_content, id: media_object.id, datastream: 'descMetadata').to redirect_to(root_path)
+          expect(get :deliver_content, id: media_object.id, file: 'descMetadata').to redirect_to(root_path)
           expect(delete :destroy, id: media_object.id).to redirect_to(root_path)
         end
       end

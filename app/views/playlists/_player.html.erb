@@ -59,6 +59,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <span class = 'playlist_item_denied'>You do not have permission to playback item <%= @current_masterfile.mediaobject_id %></span>
 <% end %>
 <% content_for :page_scripts do %>
+
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
     function advancePlaylist() {

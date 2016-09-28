@@ -71,7 +71,7 @@
       patch :update, action: :update, defaults: { format: 'html' }, constraints: { format: 'html' }
       put :update_status
       get :progress, :action => :show_progress
-      get 'content/:datastream', :action => :deliver_content, :as => :inspect
+      get 'content/:file', :action => :deliver_content, :as => :inspect
       get 'track/:part', :action => :show, :as => :indexed_section
       get 'section/:content', :action => :show, :as => :id_section
       get 'tree', :action => :tree, :as => :tree
