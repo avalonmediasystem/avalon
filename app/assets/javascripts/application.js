@@ -20,6 +20,7 @@
 //= require blacklight/blacklight
 //= require browse_everything
 //= require modernizr
+//= require mediaelement_rails
 
 //= require_tree .
 

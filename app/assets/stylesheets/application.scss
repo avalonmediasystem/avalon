@@ -43,6 +43,7 @@
 
  * Add mediaelement rails stylesheets
  *= require mediaelement_rails
+ *= require mediaelement_rails/mejs-skins
  * Required by Hydra
  * require 'hydra/styles'
  *
@@ -55,5 +56,3 @@
 @import "blacklight_folders/forms";
 @import "blacklight_folders/folders";
 @import "blacklight_folders/nestable";
-@import "mediaelement_rails.css";
-@import "mediaelement_rails/mejs-skins.css";

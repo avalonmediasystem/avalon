@@ -41,4 +41,10 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+  if ENV['BENCHMARKING']
+    config.serve_static_files = true
+    config.assets.js_compressor = :uglifier
+    config.assets.compile = true
+    config.assets.debug = false
+  end
 end
