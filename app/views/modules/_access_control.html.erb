@@ -39,7 +39,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
 
       <%= label_tag :visibility do %>
-      <%= radio_button_tag :visibility, 'private', (@visibility == 'private') %>
+      <%= radio_button_tag :visibility, 'private', (@visibility == 'private' || @visibility.nil?) %>
         Collection staff only
       <% end %>
   </fieldset> 

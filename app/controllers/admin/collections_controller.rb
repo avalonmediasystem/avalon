@@ -18,16 +18,6 @@ class Admin::CollectionsController < ApplicationController
   before_filter :load_and_authorize_collections, only: [:index]
   respond_to :html
 
-  # Catching a global exception seems like a bad idea here
-  rescue_from ArgumentError do |e|
-    if e.message == "UserIsEditor"
-      flash[:notice] = "User #{params[:new_depositor]} needs to be removed from manager or editor role first"
-      redirect_to @collection
-    else
-      raise e
-    end
-  end
-
   def load_and_authorize_collections
     @collections = get_user_collections
     authorize!(params[:action].to_sym, Admin::Collection)
