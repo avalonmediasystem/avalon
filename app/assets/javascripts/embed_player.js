@@ -1,5 +1,5 @@
 //= require jquery
-//= require mediaelement_rails/mediaelement-and-player
+//= require mediaelement_rails
 //= require mediaelement-qualityselector/mep-feature-qualities
 //= require mediaelement-skin-avalon/mep-feature-responsive
 //= require keyboard_access
