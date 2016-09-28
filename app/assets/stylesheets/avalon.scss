@@ -329,14 +329,14 @@ header div{
 /* Sidebar */
 
 .sidenav {
-  h2 {
+  h4 {
     margin: 0px;
     background-color: $sidenavHeaderBackgroundColor;
     @include border-top-radius(6px);
-    padding-left: 10px;
-    font-weight: bold !important;
+    padding: 10px 0 10px 10px;
+    font-weight: bold;
   }
-  h3 {
+  h5 {
     font-weight: bold;
     font-size: 1em;
   }
@@ -649,6 +649,10 @@ a[data-trigger='submit'] {
   margin-top: 0;
 }
 
+.form-control {
+  color: $black;
+}
+
 .tab-content > .tab-pane {
   padding: 10px;
   border-bottom: 1px solid $gray;
@@ -679,7 +683,7 @@ a[data-trigger='submit'] {
     background-color: darken($blue, 15%) !important;
   }
   a[data-trigger='submit']{
-    color: $white;
+    color: $white !important;
   }
 }
 
