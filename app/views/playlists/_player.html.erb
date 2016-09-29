@@ -23,7 +23,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% if can? :read, @current_masterfile %>
     <section id="content" class="avalon-player" style="width: 100%; visibility: hidden;" tabIndex="-1">
       <% if @currentStream.present? and @currentStream.derivatives.present? %>
-        <%= stylesheet_link_tag "mediaelement_rails/mediaelementplayer" =%>
 
         <% if @currentStreamInfo[:is_video] %>
           <%= master_file_meta_properties(@currentStream) do %>

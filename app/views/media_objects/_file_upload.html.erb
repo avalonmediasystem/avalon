@@ -179,14 +179,3 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <%= render "workflow_buttons", form: 'master_files_form' %>
 
-<% content_for :page_styles do %>
-  <%= stylesheet_link_tag "browse_everything", media: "rel" %>
-  <%= stylesheet_link_tag "jasny-bootstrap.min", media: "all" %>
-  <%= stylesheet_link_tag "jquery-ui/datepicker", media: "all" %>
-<% end %>
-
-<% content_for :page_scripts do %>
-  <%= javascript_include_tag "file_upload_step" %>
-  <%= javascript_include_tag "file_browse" %>
-  <%= javascript_include_tag "jasny-bootstrap.min.js" %>
-<% end %>
