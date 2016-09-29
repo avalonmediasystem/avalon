@@ -416,7 +416,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def update_stills_from_offset!
-    if @stills_to_update.present?
+    if @stills_to_update.present? || self.thumbnail.empty? || self.poster.empty?
       # Update stills together
       self.class.extract_still(self.id, :type => 'both', :offset => self.poster_offset)
 
