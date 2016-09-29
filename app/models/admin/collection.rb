@@ -127,7 +127,7 @@ class Admin::Collection < ActiveFedora::Base
       self.read_users += [user]
       self.inherited_edit_users += [user]
     else
-      raise ArgumentError.new("UserIsEditor")
+      raise ArgumentError, "User #{user} needs to be removed from manager or editor role before being added as a depositor."
     end
   end
 
