@@ -276,7 +276,11 @@ class MasterFilesController < ApplicationController
       mimeType = ds.mime_type
       ds.content
     end
-    send_data content, :filename => "#{params[:type]}-#{master_file.id.split(':')[1]}", :disposition => :inline, :type => mimeType
+    unless content
+      redirect_to ActionController::Base.helpers.asset_path('video_icon.png')
+    else
+      send_data content, :filename => "#{params[:type]}-#{master_file.id.split(':')[1]}", :disposition => :inline, :type => mimeType
+    end
   end
 
 protected
