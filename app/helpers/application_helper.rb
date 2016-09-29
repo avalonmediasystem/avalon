@@ -37,7 +37,7 @@ module ApplicationHelper
 
   # TODO: Fix me with latest changes from 5.1.4
   def image_for(document)
-    master_file_id = document["section_id_tesim"].try :first
+    master_file_id = document["section_id_ssim"].try :first
 
     video_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('moving image') } rescue 0
     audio_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('sound recording') } rescue 0

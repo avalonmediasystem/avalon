@@ -207,6 +207,7 @@ class MediaObject < ActiveFedora::Base
       #include identifiers for parts
       solr_doc["other_identifier_sim"] +=  master_files.collect {|mf| mf.identifier.to_a }.flatten
       #include labels for parts and their structural metadata
+      solr_doc['section_id_ssim'] = master_file_ids
       solr_doc["section_label_tesim"] = section_labels
       solr_doc['section_physical_description_ssim'] = section_physical_descriptions
 
