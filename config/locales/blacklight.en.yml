@@ -88,6 +88,14 @@ en:
         other: "These items were not moved:"
       }     	     
       error: "You do not have permission to add to collection %{collection_name}."
+    add_to_playlist:
+      form:
+        title: "Add to Playlist"
+      no_playlists: "You have no playlists"
+      confirm: "Please choose a playlist:"
+      button: "Add"
+      success: "Items successfully added to playlist."
+      fail: "Add to playlist failed."
     status:
       success: {
         one: "One item is being %{status}ed.",
