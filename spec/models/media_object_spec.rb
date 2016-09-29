@@ -629,4 +629,28 @@ describe MediaObject do
     end
   end
 
+  describe '#collection=' do
+    let(:new_media_object) { MediaObject.new }
+    let(:collection) { FactoryGirl.create(:collection, default_hidden: true, default_visibility: 'public', default_read_users: ['archivist1@example.com'], default_read_groups: ['TestGroup'])}
+
+    it 'sets hidden based upon collection for new media objects' do
+      expect {new_media_object.collection = collection}.to change {new_media_object.hidden?}.to(true).from(false)
+    end
+    it 'sets visibility based upon collection for new media objects' do
+      expect {new_media_object.collection = collection}.to change {new_media_object.visibility}.to('public').from('private')
+    end
+    it 'sets read_users based upon collection for new media objects' do
+      expect {new_media_object.collection = collection}.to change {new_media_object.read_users}.to(['archivist1@example.com']).from([])
+    end
+    it 'sets read_groups based upon collection for new media objects' do
+      expect(new_media_object.read_groups).not_to include "TestGroup"
+      expect {new_media_object.collection = collection}.to change {new_media_object.read_groups}.to include 'TestGroup'
+    end
+    it 'does not change access control fields if not new media object' do
+      expect {media_object.collection = collection}.not_to change {new_media_object.hidden?}
+      expect {media_object.collection = collection}.not_to change {new_media_object.visibility}
+      expect {media_object.collection = collection}.not_to change {new_media_object.read_users}
+      expect {media_object.collection = collection}.not_to change {new_media_object.read_users}
+    end
+  end
 end

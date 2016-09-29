@@ -118,9 +118,11 @@ class MediaObject < ActiveFedora::Base
     self._collection= co
     self.governing_policies.delete(old_collection) if old_collection
     self.governing_policies += [co]
-    if (self.read_groups + self.read_users + self.discover_groups + self.discover_users).empty?
-      # TODO: Fix the next line
-      # self.rightsMetadata.content = co.defaultRights.content unless co.nil?
+    if self.new_record?
+      self.hidden = co.default_hidden
+      self.visibility = co.default_visibility
+      self.read_users = co.default_read_users.to_a
+      self.read_groups = co.default_read_groups.to_a + self.read_groups #Make sure to include any groups added by visibility
     end
   end
 
@@ -441,7 +443,7 @@ class MediaObject < ActiveFedora::Base
     criteria.merge!(lease_type_ssi: scope) unless scope == :all
     governing_policies.where(criteria)
   end
-  
+
   private
 
     def after_create

@@ -452,6 +452,16 @@ describe Admin::Collection do
         expect(Admin::Collection.find(collection.id).default_read_groups).to eq([])
       end
     end
+
+    describe 'visiblity' do
+      it 'should default to private' do
+        expect(collection.default_visibility).to eq 'private'
+      end
+      it 'should not override on create' do
+        c = FactoryGirl.create(:collection, default_visibility: 'public')
+        expect(c.default_visibility).to eq 'public'
+      end
+    end
   end
 
   describe "callbacks" do
