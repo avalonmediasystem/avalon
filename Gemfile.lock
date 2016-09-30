@@ -174,6 +174,12 @@ GIT
       rest-client
 
 GIT
+  remote: https://github.com/bricestacey/ruby-zoom.git
+  revision: 5348fd415520fa08af33ca7b84113a93d2da9f10
+  specs:
+    zoom (0.5.0)
+
+GIT
   remote: https://github.com/projecthydra-labs/active_encode.git
   revision: 5e68c05fd4023d8bc6655d9a65ae709553c7ab8f
   tag: v0.0.3
@@ -887,3 +893,7 @@ DEPENDENCIES
   whenever
   with_locking
   xray-rails
+  zoom!
+
+BUNDLED WITH
+   1.13.1
