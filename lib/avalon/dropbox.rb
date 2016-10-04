@@ -78,8 +78,7 @@ module Avalon
 
     # Gets completed, uningested batch packages
     def find_new_packages()
-      # TODO: uncomment next line
-      # Avalon::Batch::Package.locate(@base_directory, @collection)
+      Avalon::Batch::Package.locate(@base_directory, @collection)
     end
 
   #  protected
