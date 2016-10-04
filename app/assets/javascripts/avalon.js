@@ -1,15 +1,15 @@
-/* 
+/*
  * Copyright 2011-2015, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software distributed 
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
- *   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+ *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
  *   specific language governing permissions and limitations under the License.
  * ---  END LICENSE_HEADER BLOCK  ---
 */
@@ -29,7 +29,7 @@ $(document).ready(function() {
       clone.remove();
   });
 
-  $( document ).on('click', '.btn-stateful-loading', function() { $(this).button('loading'); });    
+  $( document ).on('click', '.btn-stateful-loading', function() { $(this).button('loading'); });
 
   $(document).on("click", ".btn-confirmation+.popover .btn", function() {
       $('.btn-confirmation').popover('hide');
@@ -63,8 +63,8 @@ $(document).ready(function() {
     html: true,
     trigger: 'hover',
     delay: { show: 250, hide: 500 },
-    content: function() { 
-      return $(this).next('.po-body').html() 
+    content: function() {
+      return $(this).next('.po-body').html()
     }
   });
 
@@ -102,12 +102,3 @@ $(document).ready(function() {
   })
 
 });
-
-function timeCodeToSeconds(hh_mm_ss){
-    var tc_array = hh_mm_ss.split(":").reverse(),
-      tc_ss = parseInt(tc_array[0])||0,
-      tc_mm = parseInt(tc_array[1])||0,
-      tc_hh = parseInt(tc_array[2])||0,
-      tc_in_seconds = ( tc_hh * 3600 ) + ( tc_mm * 60 ) + tc_ss;
-  return tc_in_seconds;
-}

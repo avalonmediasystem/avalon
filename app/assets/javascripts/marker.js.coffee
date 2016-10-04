@@ -12,6 +12,14 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+timeCodeToSeconds = (hh_mm_ss) ->
+  tc_array = hh_mm_ss.split(":").reverse()
+  tc_ss = parseInt(tc_array[0])||0
+  tc_mm = parseInt(tc_array[1])||0
+  tc_hh = parseInt(tc_array[2])||0
+  tc_in_seconds = ( tc_hh * 3600 ) + ( tc_mm * 60 ) + tc_ss
+  return tc_in_seconds
+
 @enableMarkerEditForm = (event) ->
   button = $(this)
   form = button.closest('form')
@@ -84,11 +92,18 @@
     disableMarkerEditForm response['id']
   return
 
+@handle_edit_fail = (e, xhr, status, error) ->
+  alert = "<div class='alert alert-danger' style='padding:0 10px; margin-bottom: 0;'>";
+  alert += "<button type='button' class='close' data-dismiss='alert'>&times;</button>";
+  for i in xhr.responseJSON.errors
+    alert += "<span>"+i+"</span>"
+  alert += "</div>";
+  $('#marker_item_edit_alert_2').html(alert)
+
 $('button.edit_marker').click enableMarkerEditForm
 $('.marker_title').click (e) ->
   if typeof currentPlayer != typeof undefined
     currentPlayer.setCurrentTime parseFloat(@dataset['offset']) or 0
   return
-$('.edit_avalon_marker').on('ajax:success', handle_edit_save).on 'ajax:error', (e, xhr, status, error) ->
-  alert 'Request failed.'
-  return
+$('.edit_avalon_marker').on('ajax:success', handle_edit_save).on('ajax:error', handle_edit_fail)
+
