@@ -90,6 +90,7 @@ timeCodeToSeconds = (hh_mm_ss) ->
   else
     #respond to edit
     disableMarkerEditForm response['id']
+    $('#marker_item_edit_alert').html("")
   return
 
 @handle_edit_fail = (e, xhr, status, error) ->
@@ -98,7 +99,7 @@ timeCodeToSeconds = (hh_mm_ss) ->
   for i in xhr.responseJSON.errors
     alert += "<span>"+i+"</span>"
   alert += "</div>";
-  $('#marker_item_edit_alert_2').html(alert)
+  $('#marker_item_edit_alert').html(alert) # need to add this to the correct marker_item_edit_alert element, hardcoded to 2 right now
 
 $('button.edit_marker').click enableMarkerEditForm
 $('.marker_title').click (e) ->
