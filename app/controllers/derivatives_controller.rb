@@ -27,6 +27,9 @@ class DerivativesController < ApplicationController
   def authorize
     begin
       resp = { :authorized => StreamToken.validate_token(params[:token]) }
+      if params[:name] and not resp[:authorized].any? { |valid| params[:name].index(valid).present? }
+        return head :forbidden
+      end
       
       respond_to do |format|
         format.urlencoded { resp[:authorized] = resp[:authorized].join(';'); render :text => resp.to_query, :content_type => :urlencoded, :status => :accepted }
