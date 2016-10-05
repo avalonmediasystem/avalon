@@ -61,10 +61,13 @@ class AvalonMarkerController < ApplicationController
     unless can? :update, @marker
       render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return
     end
-    @marker.update(marker_params)
-    render json: @marker.to_json
+    if @marker.update(marker_params)
+      render json: @marker.to_json, status: 201 and return
+    else
+      render json: { message: "Marker was not updated", errors: @marker.errors.full_messages }, status: :unprocessable_entity
+    end
   rescue StandardError => error
-    render json: { message: "Marker was not updated: #{error.message}" }, status: 500 and return
+    render json: { message: "Marker was not updated", errors: error.message }, status: 500 and return
   end
 
   # Destroy a marker based on uuid
