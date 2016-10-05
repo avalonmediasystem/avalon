@@ -827,6 +827,7 @@ $accordionPadding: 20px;
     ul {
       padding-left: $accordionPadding;
       margin-bottom: 0;
+      display: inline-block;
     }
     #expand_button, #collapse_button {
       float:right;

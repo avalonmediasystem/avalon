@@ -57,6 +57,7 @@ class Admin::Collection < ActiveFedora::Base
 
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
   before_create :create_dropbox_directory!
+  before_create { self.default_visibility = 'private' unless self.default_visibility.present?}
 
   def self.units
     Avalon::ControlledVocabulary.find_by_name(:units) || []
@@ -127,7 +128,7 @@ class Admin::Collection < ActiveFedora::Base
       self.read_users += [user]
       self.inherited_edit_users += [user]
     else
-      raise ArgumentError.new("UserIsEditor")
+      raise ArgumentError, "User #{user} needs to be removed from manager or editor role before being added as a depositor."
     end
   end
 

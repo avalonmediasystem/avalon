@@ -20,7 +20,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% unless @current_mediaobject.title.blank? %>
         <%= @current_mediaobject.title %>
       <% else %>
-        <%= @current_mediaobject.pid %>
+        <%= @current_mediaobject.id %>
       <% end %>
       <%= "/ #{@current_mediaobject.statement_of_responsibility}" if @current_mediaobject.statement_of_responsibility.present? %>
     <% end %>

@@ -62,11 +62,4 @@ module Blacklight::LocalBlacklightHelper
     result
   end
 
-  def render_facet_count(num, options = {})
-    classes = (options[:classes] || [])
-    content_tag("div", :class => "facet-count") do
-      content_tag("span", t('blacklight.search.facets.count', :number => number_with_delimiter(num)), :class => classes)
-    end
-  end
-
 end

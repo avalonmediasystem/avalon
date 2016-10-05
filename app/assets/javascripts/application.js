@@ -21,6 +21,7 @@
 //= require browse_everything
 //= require modernizr
 //= require mediaelement_rails
+//= require pop_help
+//= require input_form_attribute_support
 
 //= require_tree .
-
