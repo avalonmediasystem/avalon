@@ -113,14 +113,16 @@ describe MasterFile do
 
   describe '#process' do
     let!(:master_file) { FactoryGirl.create(:master_file) }
-    let(:encode_job) { ActiveEncodeJob::Create.new(master_file.id, nil, {}) }
+    # let(:encode_job) { ActiveEncodeJob::Create.new(master_file.id, nil, {}) }
     before do
-      allow(ActiveEncodeJob::Create).to receive(:new).and_return(encode_job)
-      allow(encode_job).to receive(:perform)
+      ActiveJob::Base.queue_adapter = :test
+      # allow(ActiveEncodeJob::Create).to receive(:new).and_return(encode_job)
+      # allow(encode_job).to receive(:perform)
     end
     it 'starts an ActiveEncode workflow' do
       master_file.process
-      expect(encode_job).to have_received(:perform)
+      expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, "file://" + URI.escape(master_file.file_location), {preset: master_file.workflow_name})
+      # expect(encode_job).to have_received(:perform)
     end
     describe 'already processing' do
       before do
@@ -128,7 +130,8 @@ describe MasterFile do
       end
       it 'should not start an ActiveEncode workflow' do
         expect{master_file.process}.to raise_error(RuntimeError)
-        expect(encode_job).not_to have_received(:perform)
+        expect(ActiveEncodeJob::Create).not_to have_been_enqueued
+        # expect(encode_job).not_to have_received(:perform)
       end
     end
   end
