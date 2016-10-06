@@ -12,11 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-//= require mediaelement_rails/mediaelement-and-player
-//= require mediaelement-qualityselector/mep-feature-qualities
-//= require mediaelement-skin-avalon/mep-feature-responsive
-//= require keyboard_access
-//= require android_pre_play
+
 
 class AvalonPlayer
   constructor: (container, stream_info, opts) ->
@@ -34,7 +30,6 @@ class AvalonPlayer
     features = (feature for feature in features when feature?)
     player_options =
       mode: 'auto_plugin'
-      pluginPath: '/assets/mediaelement_rails/'
       usePluginFullScreen: false
       thumbnailSelectorUpdateURL: '/update-url'
       thumbnailSelectorEnabled: true
@@ -94,7 +89,7 @@ class AvalonPlayer
           clip_span.css 'width', end_percent-start_percent+'%'
           $('.mejs-time-total').append clip_span
         if _this.player.options.displayMarkers
-          duration = _this.stream_info.duration 
+          duration = _this.stream_info.duration
           scrubber = $('.mejs-time-rail')
           scrubber.css('position', 'relative')
           $('.row.marker').each (i,value) ->
