@@ -12,21 +12,16 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-module Avalon
-  module Controller
-    module ControllerBehavior
+require 'rails_helper'
 
-      def deliver_content
-        @obj = ActiveFedora::Base.find(params[:id], :cast => true)
-        authorize! :inspect, @obj
-        file = @obj.send(params[:file])
-        if file.nil? or file.new_record?
-          render :text => 'Not Found', :status => :not_found
-        else
-          render :text => file.content, :content_type => file.mime_type
-        end
-      end
-
+describe ReindexJob do
+  let(:job) { ReindexJob.new }
+  describe "perform" do
+    let(:objs) { [ActiveFedora::Base.create!, ActiveFedora::Base.create!] }
+    it 'calls reindex on each id passed' do
+      objs.each {|obj| allow(ActiveFedora::Base).to receive(:find).with(obj.id, cast: true).and_return(obj)}
+      objs.each {|obj| expect(obj).to receive(:update_index)}
+      job.perform(objs.map(&:id))
     end
   end
 end

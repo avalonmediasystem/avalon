@@ -16,7 +16,6 @@ before_script:
   - rm config/database.yml
   - cp config/database.travis.yml config/database.yml
   - mysql -e 'create database avalon_test;'
-  - bundle exec rake delayed_job:start
   - bundle exec rake db:migrate
 language: ruby
 jdk:

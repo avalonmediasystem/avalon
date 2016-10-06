@@ -240,7 +240,7 @@ class MasterFile < ActiveFedora::Base
       "file://" + URI.escape(file_location)
     end
 
-    Delayed::Job.enqueue ActiveEncodeJob::Create.new(self.id, encoder_class.new(input, preset: self.workflow_name))
+    ActiveEncodeJob::Create.perform_later(self.id, input, {preset: self.workflow_name})
   end
 
   def status?(value)
@@ -418,7 +418,7 @@ class MasterFile < ActiveFedora::Base
   def update_stills_from_offset!
     if @stills_to_update.present? || self.thumbnail.empty? || self.poster.empty?
       # Update stills together
-      self.class.extract_still(self.id, :type => 'both', :offset => self.poster_offset)
+      ExtractStillJob.perform_later(self.id, :type => 'both', :offset => self.poster_offset)
 
       # Update stills independently
       # @stills_to_update.each do |type|
@@ -453,14 +453,6 @@ class MasterFile < ActiveFedora::Base
       save
     end
     result
-  end
-
-  class << self
-    def extract_still(id, options={})
-      obj = self.find(id)
-      obj.extract_still(options)
-    end
-    handle_asynchronously :extract_still
   end
 
   def absolute_location
@@ -692,12 +684,12 @@ class MasterFile < ActiveFedora::Base
 
     case Avalon::Configuration.lookup('master_file_management.strategy')
     when 'delete'
-      AvalonJobs.delete_master_file self.id
+      MasterFileManagementJobs.delete_master_file self.id
     when 'move'
       move_path = Avalon::Configuration.lookup('master_file_management.path')
       raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?
       newpath = File.join(move_path, MasterFile.post_processing_move_filename(file_location, id: id))
-      AvalonJobs.move_masterfile self.id, newpath
+      MasterFileManagementJobs.move_masterfile self.id, newpath
     else
       # Do nothing
     end
@@ -706,7 +698,7 @@ class MasterFile < ActiveFedora::Base
   def update_ingest_batch
     ingest_batch = IngestBatch.find_ingest_batch_by_media_object_id( self.media_object.id )
     if ingest_batch && ! ingest_batch.email_sent? && ingest_batch.finished?
-      IngestBatchMailer.status_email(ingest_batch.id).deliver_now
+      IngestBatchMailer.status_email(ingest_batch.id).deliver_later
       ingest_batch.email_sent = true
       ingest_batch.save!
     end

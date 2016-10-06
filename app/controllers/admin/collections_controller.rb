@@ -74,12 +74,12 @@ class Admin::CollectionsController < ApplicationController
     @collection = Admin::Collection.create(collection_params)
     if @collection.persisted?
       User.where(username: [Avalon::RoleControls.users('administrator')].flatten).each do |admin_user|
-        NotificationsMailer.delay.new_collection(
+        NotificationsMailer.new_collection(
           creator_id: current_user.id,
           collection_id: @collection.id,
           user_id: admin_user.id,
           subject: "New collection: #{@collection.name}"
-        )
+        ).deliver_later
       end
       render json: {id: @collection.id}, status: 200
     else
@@ -158,13 +158,13 @@ class Admin::CollectionsController < ApplicationController
     saved = @collection.save
     if saved and name_changed
       User.where(username: [Avalon::RoleControls.users('administrator')].flatten).each do |admin_user|
-        NotificationsMailer.delay.update_collection(
+        NotificationsMailer.update_collection(
           updater_id: current_user.id,
           collection_id: @collection.id,
           user_id: admin_user.id,
           old_name: @old_name,
           subject: "Notification: collection #{@old_name} changed to #{@collection.name}"
-        )
+        ).deliver_later
       end
     end
 

@@ -21,8 +21,6 @@ module Avalon
   module Batch
     class Ingest
 
-      include Avalon::Controller::ControllerBehavior
-
       attr_reader :collection
 
       def initialize(collection)
@@ -41,7 +39,7 @@ module Avalon
             begin
               package.manifest.error!
             ensure
-              IngestBatchMailer.batch_ingest_validation_error( package, ["#{ex.class.name}: #{ex.message}"] ).deliver
+              IngestBatchMailer.batch_ingest_validation_error( package, ["#{ex.class.name}: #{ex.message}"] ).deliver_now
             end
           end
         end
@@ -66,12 +64,12 @@ module Avalon
         end
         if !base_errors.empty? || !package.valid?
           package.manifest.error!
-          IngestBatchMailer.batch_ingest_validation_error( package, base_errors ).deliver
+          IngestBatchMailer.batch_ingest_validation_error( package, base_errors ).deliver_now
           return nil
         end
         media_objects = package.process!
         # send email confirming kickoff of batch
-        IngestBatchMailer.batch_ingest_validation_success( package ).deliver
+        IngestBatchMailer.batch_ingest_validation_success( package ).deliver_now
         # Create an ingest batch object for all of the media objects associated with this particular package
         IngestBatch.create( media_object_ids: media_objects.map(&:id), name: package.manifest.name, email: current_user.email )
       end

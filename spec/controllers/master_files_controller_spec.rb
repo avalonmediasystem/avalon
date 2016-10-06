@@ -16,12 +16,10 @@ require 'rails_helper'
 
 describe MasterFilesController do
   before do
-    MasterFile.skip_callback(:save, :before, :update_stills_from_offset!)
     MasterFile.skip_callback(:destroy, :before, :stop_processing!)
     MasterFile.skip_callback(:destroy, :before, :update_parent!)
   end
   after do
-    MasterFile.set_callback(:save, :before, :update_stills_from_offset!)
     MasterFile.set_callback(:destroy, :before, :stop_processing!)
     MasterFile.set_callback(:destroy, :before, :update_parent!)
   end
