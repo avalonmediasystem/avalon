@@ -62,7 +62,7 @@ gem 'bootstrap_form'
 gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
 gem 'roo'
 gem 'activerecord-session_store'
-gem 'whenever', require: false
+gem 'whenever', git: "https://github.com/javan/whenever.git", require: false
 gem 'with_locking'
 
 #MediaElement.js related
