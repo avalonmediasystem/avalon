@@ -119,11 +119,11 @@ describe ApplicationHelper do
       expect(helper.image_for(doc).start_with?('/assets/hybrid_icon')).to be_truthy
     end
     it "should return nil when only unprocessed video" do
-      doc = {"section_id_tesim" => ['1'], "avalon_resource_type_ssim" => [] }
+      doc = {"section_id_ssim" => ['1'], "avalon_resource_type_ssim" => [] }
       expect(helper.image_for(doc)).to eq(nil)
     end
     it "should return thumbnail" do
-      doc = {"section_id_tesim" => ['1'], "avalon_resource_type_ssim" => ['moving image'] }
+      doc = {"section_id_ssim" => ['1'], "avalon_resource_type_ssim" => ['moving image'] }
       expect(helper.image_for(doc)).to eq('/master_files/1/thumbnail')
     end
   end
