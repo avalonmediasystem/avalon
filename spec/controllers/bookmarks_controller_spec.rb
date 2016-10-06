@@ -22,16 +22,11 @@ describe BookmarksController, type: :controller do
 
   before(:each) do
     request.env["HTTP_REFERER"] = '/'
-    Delayed::Worker.delay_jobs = false
     login_user collection.managers.first
     3.times do
       media_objects << mo = FactoryGirl.create(:media_object, collection: collection)
       post :create, id: mo.id
     end
-  end
-
-  after(:each) do
-    Delayed::Worker.delay_jobs = true
   end
 
   describe "#destroy" do

@@ -29,7 +29,7 @@ class MediaObject < ActiveFedora::Base
   after_create :after_create
   before_save :update_dependent_properties!
   before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }
-  after_save :update_dependent_permalinks, if: Proc.new { |mo| mo.persisted? && mo.published? }
+  after_save :update_dependent_permalinks_job, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :remove_bookmarks
 
   # Call custom validation methods to ensure that required fields are present and
@@ -253,180 +253,25 @@ class MediaObject < ActiveFedora::Base
   # and research as opposed to being able to just throw something together in an ad hoc
   # manner
 
-  class << self
-    def access_control_bulk documents, params
-      errors = []
-      successes = []
-      documents.each do |id|
-        media_object = self.find(id)
-        media_object.hidden = params[:hidden] if !params[:hidden].nil?
-        media_object.visibility = params[:visibility] unless params[:visibility].blank?
-        # Limited access stuff
-        ["group", "class", "user", "ipaddress"].each do |title|
-          if params["submit_add_#{title}"].present?
-            begin_time = params["add_#{title}_begin"].blank? ? nil : params["add_#{title}_begin"]
-            end_time = params["add_#{title}_end"].blank? ? nil : params["add_#{title}_end"]
-            create_lease = begin_time.present? || end_time.present?
-
-            if params[title].present?
-              val = params[title].strip
-              if title=='user'
-                if create_lease
-                  begin
-                    media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, inherited_read_users: [val]) ]
-                  rescue Exception => e
-                    errors += [media_object]
-                  end
-                else
-                  media_object.read_users += [val]
-                end
-              elsif title=='ipaddress'
-                if ( IPAddr.new(val) rescue false )
-                  if create_lease
-                    begin
-                      media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, inherited_read_groups: [val]) ]
-                    rescue Exception => e
-                      errors += [media_object]
-                    end
-                  else
-                    media_object.read_groups += [val]
-                  end
-                else
-                  context[:error] = "IP Address #{val} is invalid. Valid examples: 124.124.10.10, 124.124.0.0/16, 124.124.0.0/255.255.0.0"
-                end
-              else
-                if create_lease
-                  begin
-                    media_object.governing_policies += [ Lease.create(begin_time: begin_time, end_time: end_time, inherited_read_groups: [val]) ]
-                  rescue Exception => e
-                    errors += [media_object]
-                  end
-                else
-                  media_object.read_groups += [val]
-                end
-              end
-            end
-          end
-          if params["submit_remove_#{title}"].present?
-            if params[title].present?
-              if ["group", "class", "ipaddress"].include? title
-                media_object.read_groups -= [params[title]]
-                media_object.governing_policies.each do |policy|
-                  if policy.class==Lease && policy.inherited_read_groups.include?(params[title])
-                    media_object.governing_policies.delete policy
-                    policy.destroy
-                  end
-                end
-              else
-                media_object.read_users -= [params[title]]
-                media_object.governing_policies.each do |policy|
-                  if policy.class==Lease && policy.inherited_read_users.include?(params[title])
-                    media_object.governing_policies.delete policy
-                    policy.destroy
-                  end
-                end
-              end
-            end
-          end
-        end
-        if errors.empty? && media_object.save
-          successes += [media_object]
-        else
-          errors += [media_object]
-        end
-      end
-      return successes, errors
-    end
-    handle_asynchronously :access_control_bulk
-
-    def update_status_bulk documents, user_key, params
-      errors = []
-      successes = []
-      status = params['action']
-      documents.each do |id|
-        media_object = self.find(id)
-        case status
-        when 'publish'
-          media_object.publish!(user_key)
-          # additional save to set permalink
-          if media_object.save
-            successes += [media_object]
-          else
-            errors += [media_object]
-          end
-        when 'unpublish'
-          if media_object.publish!(nil)
-            successes += [media_object]
-          else
-            errors += [media_object]
-          end
-        end
-      end
-      return successes, errors
-    end
-    handle_asynchronously :update_status_bulk
-
-    def delete_bulk documents, params
-      errors = []
-      successes = []
-      documents.each do |id|
-        media_object = self.find(id)
-        if media_object.destroy
-          successes += [media_object]
-        else
-          errors += [media_object]
-        end
-      end
-      return successes, errors
-    end
-    handle_asynchronously :delete_bulk
-
-    def move_bulk documents, params
-      collection = Admin::Collection.find( params[:target_collection_id] )
-      errors = []
-      successes = []
-      documents.each do |id|
-        media_object = self.find(id)
-        media_object.collection = collection
-        if media_object.save
-          successes += [media_object]
-        else
-          errors += [media_object]
-        end
-      end
-      return successes, errors
-    end
-    handle_asynchronously :move_bulk
-
-  end
-
   def update_permalink
     ensure_permalink!
     true
   end
 
-  class << self
-    def update_dependent_permalinks id
-      mo = self.find(id)
-      mo._update_dependent_permalinks
-    end
-    handle_asynchronously :update_dependent_permalinks
-  end
-
-  def _update_dependent_permalinks
-    self.master_files.each do |master_file|
-      begin
-	updated = master_file.ensure_permalink!
-	master_file.save( validate: false ) if updated
-      rescue
-	# no-op
-	# Save is called (uncharacteristically) during a destroy.
-      end
-    end
+  def update_dependent_permalinks_job
+    UpdateDependentPermalinksJob.perform_later(self.id)
   end
 
   def update_dependent_permalinks
-    self.class.update_dependent_permalinks self.id
+    self.master_files.each do |master_file|
+      begin
+      	updated = master_file.ensure_permalink!
+      	master_file.save( validate: false ) if updated
+      rescue
+      	# no-op
+      	# Save is called (uncharacteristically) during a destroy.
+      end
+    end
   end
 
   def _remove_bookmarks

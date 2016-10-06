@@ -729,8 +729,6 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#update_status" do
-    before { Delayed::Worker.delay_jobs = false }
-    after  { Delayed::Worker.delay_jobs = true  }
 
     let!(:collection) { FactoryGirl.create(:collection) }
     before(:each) do

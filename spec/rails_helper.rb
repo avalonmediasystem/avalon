@@ -72,6 +72,7 @@ RSpec.configure do |config|
       'fake_dropbox' => Dir.mktmpdir
     }
     Avalon::Configuration['dropbox']['path'] = Avalon::Configuration.lookup('spec.fake_dropbox')
+    MasterFile.skip_callback(:save, :before, :update_stills_from_offset!)
   end
 
   config.after :suite do

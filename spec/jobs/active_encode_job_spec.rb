@@ -12,21 +12,21 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-module Avalon
-  module Controller
-    module ControllerBehavior
+require 'rails_helper'
 
-      def deliver_content
-        @obj = ActiveFedora::Base.find(params[:id], :cast => true)
-        authorize! :inspect, @obj
-        file = @obj.send(params[:file])
-        if file.nil? or file.new_record?
-          render :text => 'Not Found', :status => :not_found
-        else
-          render :text => file.content, :content_type => file.mime_type
-        end
+describe ActiveEncodeJob do
+  describe ActiveEncodeJob::Create do
+    let(:job) { ActiveEncodeJob::Create.new }
+    describe "perform" do
+      before do
+        allow_any_instance_of(ActiveEncode::Base).to receive(:create!).and_raise(StandardError)
       end
-
+      let(:master_file) { FactoryGirl.create(:master_file) }
+      it "sets the status of the master file to FAILED" do
+        job.perform(master_file.id, nil, {})
+        master_file.reload
+        expect(master_file.status_code).to eq('FAILED')
+      end
     end
   end
 end

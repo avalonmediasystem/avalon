@@ -73,7 +73,7 @@ describe Avalon::Batch::Ingest do
     it 'should send email when batch finishes processing' do
       mailer = double('mailer').as_null_object
       expect(IngestBatchMailer).to receive(:batch_ingest_validation_success).with(duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver)
+      expect(mailer).to receive(:deliver_now)
       batch_ingest.ingest
     end
 
@@ -217,7 +217,7 @@ describe Avalon::Batch::Ingest do
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver)
+      expect(mailer).to receive(:deliver_now)
       expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
       expect(batch.errors[3].messages).to have_key(:content)
       expect(batch.errors[3].messages[:content]).to eq(["File not found: spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain_wrong.mov"])
@@ -234,7 +234,7 @@ describe Avalon::Batch::Ingest do
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(anything(), include("User jay@krajcik.org does not have permission to add items to collection: Ut minus ut accusantium odio autem odit..")).and_return(mailer)
-      expect(mailer).to receive(:deliver)
+      expect(mailer).to receive(:deliver_now)
       expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
     end
 
@@ -243,7 +243,7 @@ describe Avalon::Batch::Ingest do
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver)
+      expect(mailer).to receive(:deliver_now)
       expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
       expect(batch.errors[4].messages).to have_key(:offset)
       expect(batch.errors[4].messages[:offset]).to eq(['Invalid offset: 5:000'])
@@ -254,7 +254,7 @@ describe Avalon::Batch::Ingest do
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver)
+      expect(mailer).to receive(:deliver_now)
       expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
       expect(batch.errors[4].messages).to have_key(:title)
       expect(batch.errors[4].messages[:title]).to eq(['field is required.'])
@@ -265,7 +265,7 @@ describe Avalon::Batch::Ingest do
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver)
+      expect(mailer).to receive(:deliver_now)
       expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
       expect(batch.errors[4].messages).to have_key(:contributator)
       expect(batch.errors[4].messages[:contributator]).to eq(["unknown attribute 'contributator' for MediaObject."])
@@ -276,7 +276,7 @@ describe Avalon::Batch::Ingest do
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
       mailer = double('mailer').as_null_object
       expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(batch ,['RuntimeError: Foo']).and_return(mailer)
-      expect(mailer).to receive(:deliver)
+      expect(mailer).to receive(:deliver_now)
       expect(batch_ingest).to receive(:ingest_package) { raise "Foo" }
       expect { batch_ingest.ingest }.to_not raise_error
     end

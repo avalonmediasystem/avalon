@@ -47,8 +47,6 @@ gem 'active_encode', git: "https://github.com/projecthydra-labs/active_encode.gi
 gem 'hooks'
 gem 'iconv'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'avalon_fixes'
-gem 'delayed_job', '~> 4.1.0'
-gem 'delayed_job_active_record'
 gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 gem 'net-ldap'
