@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# Usage: locking_runner process_name command arg arg arg...
+#
+
+SEMAPHORE=$1
+LOCKFILE=tmp/pids/$SEMAPHORE
+shift
+
+if ( set -o noclobber; echo "$$" > "$LOCKFILE") 2> /dev/null; 
+then
+  trap 'rm -f "$LOCKFILE"; exit 255' INT TERM EXIT
+  "$@" || true #run the command
+fi
