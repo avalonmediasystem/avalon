@@ -22,6 +22,9 @@ class DerivativesController < ApplicationController
   # request for security reasons
   def authorize
     resp = { authorized: StreamToken.validate_token(params[:token]) }
+    if params[:name] and not resp[:authorized].any? { |valid| params[:name].index(valid).present? }
+      return head :forbidden
+    end
 
     respond_to do |format|
       format.urlencoded do
