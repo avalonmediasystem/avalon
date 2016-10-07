@@ -1,8 +1,8 @@
-<% clip = AvalonClip.find(@playlist.items[playlist_item_counter].clip_id) %>
 <% item = @playlist.items[playlist_item_counter] %>
 <% item_class = (item == @current_playlist_item)? 'now_playing' : 'queue' %>
-<% item_type = (clip.master_file.file_format=='Moving image')? 'fa-film' : 'fa-music' %>
+<% clip = AvalonClip.find(item.clip_id) %>
 <% if can? :read, item %>
+  <% item_type = (clip.master_file.file_format=='Moving image')? 'fa-film' : 'fa-music' %>
   <li class="<%= item_class %>">
     <% if item_class == 'now_playing' %>
       <i class="fa fa-arrow-circle-right"></i>
@@ -19,8 +19,13 @@
     <% if item_class == 'now_playing' %>
       <i class="fa fa-arrow-circle-right"></i>
     <% end %>
-    <i class="fa fa-lock"></i>
-    <span title="You do not playback permission for the source item, <%=clip.master_file.mediaobject_id%>, this playlist item references.">[Inaccessible Item] <%=clip.master_file.mediaobject_id%></span>
-    <span class="pull-right"> <span class="fa <%= item_type %>"></span> <%= clip.duration %></span>
+    <% if clip.master_file.nil? %>
+      <i class="fa fa-times-circle"></i>
+      <span title="The source for this playlist item has been deleted.">[Deleted Item]</span>
+    <% else %>
+      <i class="fa fa-lock"></i>
+      <span title="You do not playback permission for the source item, <%=clip.master_file.mediaobject_id%>, this playlist item references.">[Inaccessible Item] <%=clip.master_file.mediaobject_id%></span>
+    <% end %>
+    <span class="pull-right"><%= clip.duration %></span>
   </li>
 <% end %>
