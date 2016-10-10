@@ -683,7 +683,7 @@ a[data-trigger='submit'] {
     background-color: darken($blue, 15%) !important;
   }
   a[data-trigger='submit']{
-    color: $white;
+    color: $white !important;
   }
 }
 
