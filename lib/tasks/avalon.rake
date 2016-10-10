@@ -131,11 +131,12 @@ namespace :avalon do
       mf_count.times do |i|
         FactoryGirl.create(:master_file_with_derivative, mediaobject: mo)
       end
-      puts mo.pid
+      puts mo.id
     end
   end
 
   desc "Reindex all Avalon objects"
+  TODO: fix reindex for fedora4 ids
   task :reindex => :environment do
     query = "pid~#{Avalon::Configuration.lookup('fedora.namespace')}:*"
     #Override of ActiveFedora::Base.reindex_everything("pid~#{prefix}:*") including error handling/reporting
@@ -153,7 +154,7 @@ namespace :avalon do
 
   desc "Identify invalid Avalon Media Objects"
   task :validate => :environment do
-    MediaObject.find_each({},{batch_size:5}) {|mo| puts "#{mo.pid}: #{mo.errors.full_messages}" if !mo.valid? }
+    MediaObject.find_each({},{batch_size:5}) {|mo| puts "#{mo.id}: #{mo.errors.full_messages}" if !mo.valid? }
   end
 
   namespace :variations do
@@ -200,10 +201,10 @@ namespace :avalon do
         sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_playlist VALUES (?, ?, ?)", playlist.id, playlist.title, playlist.user_id])
         conn.execute(sql)
         playlist.items.each do |item|
-          sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_playlist_item VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", item.id, item.playlist_id, playlist.user_id, item.clip_id, item.master_file.pid, item.position, item.title, item.start_time, item.end_time])
+          sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_playlist_item VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", item.id, item.playlist_id, playlist.user_id, item.clip_id, item.master_file.id, item.position, item.title, item.start_time, item.end_time])
           conn.execute(sql)
           item.marker.each do |marker|
-            sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_marker VALUES (?,?,?,?,?)", marker.id, item.id, marker.master_file.pid, marker.title, marker.start_time])
+            sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_marker VALUES (?,?,?,?,?)", marker.id, item.id, marker.master_file.id, marker.title, marker.start_time])
             conn.execute(sql)
           end
         end
@@ -244,7 +245,7 @@ namespace :avalon do
           end
           item_count += 1
           puts "  Importing playlist item #{title}"
-          sql = ActiveRecord::Base.send(:sanitize_sql_array, ["SELECT id FROM temp_playlist_item WHERE playlist_id=? and master_file=? and title=?", playlist_obj.id, mf_obj.pid, title])
+          sql = ActiveRecord::Base.send(:sanitize_sql_array, ["SELECT id FROM temp_playlist_item WHERE playlist_id=? and master_file=? and title=?", playlist_obj.id, mf_obj.id, title])
           playlist_item_id = conn.exec_query(sql)
           pi_obj = !playlist_item_id.empty? ? PlaylistItem.find(playlist_item_id.first['id']) : []
           unless pi_obj.present?
