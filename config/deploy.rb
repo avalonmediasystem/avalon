@@ -1,3 +1,5 @@
+require 'whenever/capistrano'
+
 set :application, "avalon"
 set :scm, :git
 set :repository,  "git://github.com/avalonmediasystem/avalon.git"
@@ -12,6 +14,7 @@ set :hls_dir, "/var/avalon/hls_streams"
 ssh_options[:keys] = ["/opt/staging/avalon/vov_deployment_key"] if ENV['CI_DEPLOY']
 
 set :bundle_without, rails_env == "development" ? "production" : "development debug"
+set(:whenever_command) { "bundle exec whenever" }
 
 role :web, deployment_host
 role :app, deployment_host
