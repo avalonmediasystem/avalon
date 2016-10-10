@@ -121,7 +121,7 @@ class BookmarksController < CatalogController
     playlist = Playlist.find(params[:target_playlist_id])
     Array(documents.map(&:id)).each do |id|
       media_object = MediaObject.find(id)
-      media_object.parts.each do |mf|
+      media_object.ordered_master_files.to_a.each do |mf|
         clip = AvalonClip.create(master_file: mf)
         PlaylistItem.create(clip: clip, playlist: playlist)
       end

@@ -98,8 +98,13 @@
               </div>
             <% else %>
               <div class="col-sm-9 title" style="margin-top:5px">
-                <i class="fa fa-lock" title="You don't have permission to view this item"></i> 
-                <span class="playlist_item_denied">[inaccessible item] <%= i.clip.master_file.media_object.id %></span>
+                <% if i.clip.master_file.nil? %>
+                  <i class="fa fa-times-circle" title="The source for this item has been deleted"></i> 
+                  <span class="playlist_item_denied">[deleted item]</span>
+                <% else %>
+                  <i class="fa fa-lock" title="You don't have permission to view this item"></i> 
+                  <span class="playlist_item_denied">[inaccessible item] <%= i.clip.master_file.media_object.id %></span>
+                <% end %>
               </div>
               <div class="col-sm-1 checkbox text-right">
                 <label>
