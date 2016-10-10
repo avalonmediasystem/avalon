@@ -136,7 +136,7 @@ namespace :avalon do
   end
 
   desc "Reindex all Avalon objects"
-  TODO: fix reindex for fedora4 ids
+  # TODO: fix reindex for fedora4 ids
   task :reindex => :environment do
     query = "pid~#{Avalon::Configuration.lookup('fedora.namespace')}:*"
     #Override of ActiveFedora::Base.reindex_everything("pid~#{prefix}:*") including error handling/reporting
