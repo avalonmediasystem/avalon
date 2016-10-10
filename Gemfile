@@ -62,6 +62,8 @@ gem 'bootstrap_form'
 gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
 gem 'roo'
 gem 'activerecord-session_store'
+gem 'whenever', git: "https://github.com/javan/whenever.git", require: false
+gem 'with_locking'
 
 #MediaElement.js related
 gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', branch: 'captions'
