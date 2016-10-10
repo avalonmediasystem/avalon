@@ -35,6 +35,7 @@ set(:shared_children) {
     config/authentication.yml
     config/avalon.yml
     config/blacklight.yml
+    config/browse_everything_providers.yml
     config/controlled_vocabulary.yml
     config/database.yml
     config/environments/development.rb
