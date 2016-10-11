@@ -168,7 +168,8 @@ module Avalon
           master_file.setContent(files)
           master_file.absolute_location = file_spec[:absolute_location] if file_spec[:absolute_location].present?
           master_file.title = file_spec[:label] if file_spec[:label].present?
-          master_file.poster_offset = file_spec[:offset] if file_spec[:offset].present?
+          # TODO: fix offset. At this point duration isn't available on mf, and this causes the master_file.save to fail
+          # master_file.poster_offset = file_spec[:offset] if file_spec[:offset].present?
           master_file.date_digitized = DateTime.parse(file_spec[:date_digitized]).to_time.utc.iso8601 if file_spec[:date_digitized].present?
 
           #Make sure to set content before setting the workflow
