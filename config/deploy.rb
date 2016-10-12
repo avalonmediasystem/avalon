@@ -14,7 +14,7 @@ set :hls_dir, "/var/avalon/hls_streams"
 ssh_options[:keys] = ["/opt/staging/avalon/vov_deployment_key"] if ENV['CI_DEPLOY']
 
 set :bundle_without, rails_env == "development" ? "production" : "development debug"
-set(:whenever_command) { "RAILS_ENV=#{:rails_env} bundle exec whenever" }
+set(:whenever_command) { "RAILS_ENV=#{rails_env} bundle exec whenever" }
 
 role :web, deployment_host
 role :app, deployment_host
