@@ -51,7 +51,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: 86de64fd02e4982508c07dd6b3412430793e6955
+  revision: 6a9911e34a02c4fd8989d723b105b13168bb2611
   branch: captions
   specs:
     mediaelement_rails (0.5.1)
@@ -411,7 +411,7 @@ GEM
     mime-types-data (3.2016.0521)
     mimemagic (0.3.2)
     mini_portile2 (2.1.0)
-    minitest (5.9.0)
+    minitest (5.9.1)
     multi_json (1.12.1)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
@@ -426,9 +426,8 @@ GEM
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
     netrc (0.11.0)
-    nokogiri (1.6.8)
+    nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
-      pkg-config (~> 1.1.7)
     nom-xml (0.5.4)
       activesupport (>= 3.2.18)
       i18n
@@ -455,7 +454,6 @@ GEM
     os (0.9.6)
     parser (2.3.1.2)
       ast (~> 2.2)
-    pkg-config (1.1.7)
     powerpack (0.1.1)
     pry (0.10.4)
       coderay (~> 1.1.0)
@@ -494,7 +492,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rainbow (2.1.0)
-    rake (11.2.2)
+    rake (11.3.0)
     rdf (2.1.0)
       hamster (~> 3.0)
       link_header (~> 0.0, >= 0.0.8)
@@ -721,4 +719,4 @@ DEPENDENCIES
   with_locking
 
 BUNDLED WITH
-   1.13.1
+   1.13.3
