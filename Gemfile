@@ -66,6 +66,7 @@ gem 'whenever', git: "https://github.com/javan/whenever.git", require: false
 gem 'with_locking'
 
 #MediaElement.js related
+gem 'rake', '~>11.3'
 gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', branch: 'captions'
 gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r4'
 gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r4'
