@@ -20,6 +20,7 @@ require 'spec_helper'
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 # require 'factory_girl'
+require 'capybara/rails'
 require 'database_cleaner'
 require 'active_fedora/cleaner'
 # require 'equivalent-xml/rspec_matchers'
@@ -114,5 +115,6 @@ RSpec.configure do |config|
   # config.include FactoryGirl::Syntax::Methods
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include ControllerMacros, type: :controller
+  config.include Warden::Test::Helpers,type: :feature
   config.include FixtureMacros, type: :controller
 end
