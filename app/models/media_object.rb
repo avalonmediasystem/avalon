@@ -196,8 +196,8 @@ class MediaObject < ActiveFedora::Base
       solr_doc[Solrizer.default_field_mapper.solr_name("workflow_published", :facetable, type: :string)] = published? ? 'Published' : 'Unpublished'
       solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
       solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
-      solr_doc['read_access_virtual_group_ssim'] = virtual_read_groups
-      solr_doc['read_access_ip_group_ssim'] = collect_ips_for_index(ip_read_groups)
+      solr_doc['read_access_virtual_group_ssim'] = virtual_read_groups + leases('external').map(&:inherited_read_groups).flatten
+      solr_doc['read_access_ip_group_ssim'] = collect_ips_for_index(ip_read_groups + leases('ip').map(&:inherited_read_groups).flatten)
       solr_doc[Hydra.config.permissions.read.group] ||= []
       solr_doc[Hydra.config.permissions.read.group] += solr_doc['read_access_ip_group_ssim']
       solr_doc["title_ssort"] = self.title
