@@ -83,16 +83,7 @@ namespace :deploy do
     run "/usr/local/rvm/bin/rvm rvmrc trust #{latest_release}"
   end
 
-  task :start do
-    run "cd #{current_release} && #{rake} RAILS_ENV=#{rails_env} delayed_job:start"
-  end
-
-  task :stop do
-    run "cd #{current_release} && #{rake} RAILS_ENV=#{rails_env} delayed_job:stop"
-  end
-
   task :restart, :roles => :app, :except => { :no_release => true } do
-    run "cd #{current_release} && #{rake} RAILS_ENV=#{rails_env} delayed_job:restart"
     run "touch #{File.join(current_path,'tmp','restart.txt')}"
   end
 

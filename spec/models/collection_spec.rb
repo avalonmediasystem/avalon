@@ -495,16 +495,11 @@ describe Admin::Collection do
   describe "reindex_members" do
     before do
       @collection = FactoryGirl.create(:collection, items: 3)
-      allow(Admin::Collection).to receive(:find).with(@collection.id).and_return(@collection)
+      ActiveJob::Base.queue_adapter = :test
     end
-    it 'should reindex in the background' do
-      expect(@collection.reindex_members {}).to be_a_kind_of(Delayed::Job)
-    end
-    it 'should call update_index on all member objects' do
-      Delayed::Worker.delay_jobs = false
-      @collection.media_objects.each {|mo| expect(mo).to receive("update_index").and_return(true)}
+    it 'should queue a reindex job for all member objects' do
       @collection.reindex_members {}
-      Delayed::Worker.delay_jobs = true
+      expect(ReindexJob).to have_been_enqueued.with(@collection.media_object_ids)
     end
   end
 
