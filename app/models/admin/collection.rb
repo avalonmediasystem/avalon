@@ -156,15 +156,7 @@ class Admin::Collection < ActiveFedora::Base
 
   def reindex_members
     yield
-    self.class.reindex_media_objects id
-  end
-
-  class << self
-    def reindex_media_objects id
-      collection = self.find id
-      collection.media_objects.each{|mo| mo.update_index}
-    end
-    handle_asynchronously :reindex_media_objects
+    ReindexJob.perform_later(self.media_object_ids)
   end
 
   def to_solr

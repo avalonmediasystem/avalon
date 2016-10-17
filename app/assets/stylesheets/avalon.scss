@@ -683,7 +683,7 @@ a[data-trigger='submit'] {
     background-color: darken($blue, 15%) !important;
   }
   a[data-trigger='submit']{
-    color: $white;
+    color: $white !important;
   }
 }
 
@@ -1156,4 +1156,11 @@ h5.panel-title {
   font-weight: bold;
   bottom: 6pt;
   width: 1em !important;
+}
+
+.omniauth-form {
+  width: 320px;
+  border: 2px solid #eee;
+  margin: 0px auto;
+  padding: 8px;
 }

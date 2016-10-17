@@ -12,21 +12,16 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-module Avalon
-  module Controller
-    module ControllerBehavior
+require 'rails_helper'
 
-      def deliver_content
-        @obj = ActiveFedora::Base.find(params[:id], :cast => true)
-        authorize! :inspect, @obj
-        file = @obj.send(params[:file])
-        if file.nil? or file.new_record?
-          render :text => 'Not Found', :status => :not_found
-        else
-          render :text => file.content, :content_type => file.mime_type
-        end
-      end
-
-    end
+describe AuthFormsController, type: :feature do
+  scenario "User reaches the login screen" do
+    visit "/users/auth/identity"
+    expect(page).to have_text('Avalon Media System')
+  end
+  
+  scenario "User reaches the registration screen" do
+    visit "/users/auth/identity/register"
+    expect(page).to have_text('Avalon Media System')
   end
 end

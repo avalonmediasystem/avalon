@@ -1,3 +1,5 @@
+require 'whenever/capistrano'
+
 set :application, "avalon"
 set :scm, :git
 set :repository,  "git://github.com/avalonmediasystem/avalon.git"
@@ -12,6 +14,7 @@ set :hls_dir, "/var/avalon/hls_streams"
 ssh_options[:keys] = ["/opt/staging/avalon/vov_deployment_key"] if ENV['CI_DEPLOY']
 
 set :bundle_without, rails_env == "development" ? "production" : "development debug"
+set(:whenever_command) { "RAILS_ENV=#{rails_env} bundle exec whenever" }
 
 role :web, deployment_host
 role :app, deployment_host
@@ -32,6 +35,7 @@ set(:shared_children) {
     config/authentication.yml
     config/avalon.yml
     config/blacklight.yml
+    config/browse_everything_providers.yml
     config/controlled_vocabulary.yml
     config/database.yml
     config/environments/development.rb
@@ -79,16 +83,7 @@ namespace :deploy do
     run "/usr/local/rvm/bin/rvm rvmrc trust #{latest_release}"
   end
 
-  task :start do
-    run "cd #{current_release} && #{rake} RAILS_ENV=#{rails_env} delayed_job:start"
-  end
-
-  task :stop do
-    run "cd #{current_release} && #{rake} RAILS_ENV=#{rails_env} delayed_job:stop"
-  end
-
   task :restart, :roles => :app, :except => { :no_release => true } do
-    run "cd #{current_release} && #{rake} RAILS_ENV=#{rails_env} delayed_job:restart"
     run "touch #{File.join(current_path,'tmp','restart.txt')}"
   end
 

@@ -113,18 +113,16 @@ describe MasterFile do
 
   describe '#process' do
     let!(:master_file) { FactoryGirl.create(:master_file) }
-    let(:encode_job) { ActiveEncodeJob::Create.new(master_file.id, ActiveEncode::Base.new(nil)) }
+    # let(:encode_job) { ActiveEncodeJob::Create.new(master_file.id, nil, {}) }
     before do
-      allow(ActiveEncodeJob::Create).to receive(:new).and_return(encode_job)
-      allow(encode_job).to receive(:perform)
-      Delayed::Worker.delay_jobs = false
-    end
-    after do
-      Delayed::Worker.delay_jobs = true
+      ActiveJob::Base.queue_adapter = :test
+      # allow(ActiveEncodeJob::Create).to receive(:new).and_return(encode_job)
+      # allow(encode_job).to receive(:perform)
     end
     it 'starts an ActiveEncode workflow' do
       master_file.process
-      expect(encode_job).to have_received(:perform)
+      expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, "file://" + URI.escape(master_file.file_location), {preset: master_file.workflow_name})
+      # expect(encode_job).to have_received(:perform)
     end
     describe 'already processing' do
       before do
@@ -132,23 +130,8 @@ describe MasterFile do
       end
       it 'should not start an ActiveEncode workflow' do
         expect{master_file.process}.to raise_error(RuntimeError)
-        expect(encode_job).not_to have_received(:perform)
-      end
-    end
-    describe 'failure' do
-      before do
-        allow(encode_job.encode).to receive(:create!).and_raise(Exception)
-        Delayed::Worker.delay_jobs = true
-      end
-      after do
-        Delayed::Worker.delay_jobs = false
-      end
-      it 'should set the status to FAILED when ActiveEncode::Base#create fails' do
-        master_file.process
-        #Have to manually tell delayed_job to do the work because callback doesn't get fired with delay_jobs = false
-        Delayed::Worker.new.work_off
-        master_file.reload
-        expect(master_file.status_code).to eq('FAILED')
+        expect(ActiveEncodeJob::Create).not_to have_been_enqueued
+        # expect(encode_job).not_to have_received(:perform)
       end
     end
   end
@@ -210,10 +193,17 @@ describe MasterFile do
     end
 
     describe "update images" do
+      before do
+        ActiveJob::Base.queue_adapter = :test
+        MasterFile.set_callback(:save, :before, :update_stills_from_offset!)
+      end
+      after do
+        MasterFile.skip_callback(:save, :before, :update_stills_from_offset!)
+      end
       it "should update on save" do
-        expect(MasterFile).to receive(:extract_still).with(master_file.id,{type:'both',offset:12345})
         master_file.poster_offset = 12345
         master_file.save
+        expect(ExtractStillJob).to have_been_enqueued.with(master_file.id,{type:'both',offset:12345})
       end
     end
   end

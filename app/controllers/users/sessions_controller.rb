@@ -15,7 +15,7 @@
 class Users::SessionsController < Devise::SessionsController
   def new
     if Avalon::Authentication::VisibleProviders.length == 1
-      redirect_to user_omniauth_authorize_path(Avalon::Authentication::VisibleProviders.first[:provider], params)
+      redirect_to user_omniauth_authorize_path(Avalon::Authentication::VisibleProviders.first[:provider])
     else
       super
     end

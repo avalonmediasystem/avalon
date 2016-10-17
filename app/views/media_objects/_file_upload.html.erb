@@ -133,7 +133,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           </div>
           <span class="fileinput-submit fileinput-exists input-group-addon btn btn-default btn-file">
             <input type="hidden" name="upload_file" value="upload_file"></input>
-            <a href="#" data-trigger="submit">Upload</a>
+            <a href="#" data-trigger="submit" data-toggle="modal" data-target="#uploading">Upload</a>
           </span>
           <span class="input-group-addon btn btn-default btn-file">
             <span class="fileinput-new">Select file</span>
@@ -160,6 +160,17 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="collapse form-tooltip equal-height" id="skip-transcoding-tooltip">
     <button class="close">&times;</button>
     <p><%= t("file_upload_tip.skip_transcoding").html_safe %></p>
+  </div>
+</div>
+
+<div id="uploading" class="modal fade" role="dialog" data-backdrop="true" data-keyboard="false">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p><i class='fa fa-spinner fa-spin'></i> Uploading. Please wait...</p>
+      </div>
+      <div class="modal-body"></div>
+    </div>
   </div>
 </div>
 

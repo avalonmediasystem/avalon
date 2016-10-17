@@ -114,14 +114,14 @@ class BookmarksController < CatalogController
     flash[:alert] = "#{t('blacklight.update_access_control.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
 
     params[:hidden] = params[:hidden] == "true" if params[:hidden].present?
-    MediaObject.access_control_bulk success_ids, params
+    BulkActionJobs::AccessControl.perform_later success_ids, params
   end
 
   def add_to_playlist_action documents
     playlist = Playlist.find(params[:target_playlist_id])
     Array(documents.map(&:id)).each do |id|
       media_object = MediaObject.find(id)
-      media_object.parts.each do |mf|
+      media_object.ordered_master_files.to_a.each do |mf|
         clip = AvalonClip.create(master_file: mf)
         PlaylistItem.create(clip: clip, playlist: playlist)
       end
@@ -151,7 +151,7 @@ class BookmarksController < CatalogController
     end
     flash[:success] = t("blacklight.status.success", count: success_ids.count, status: status) if success_ids.count > 0
     flash[:alert] = "#{t('blacklight.status.alert', count: errors.count, status: status)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
-    MediaObject.update_status_bulk success_ids, current_user.user_key, params
+    BulkActionJobs::UpdateStatus.perform_later success_ids, current_user.user_key, params
   end
 
   def delete_action documents
@@ -167,7 +167,7 @@ class BookmarksController < CatalogController
     end
     flash[:success] = t("blacklight.delete.success", count: success_ids.count) if success_ids.count > 0
     flash[:alert] = "#{t('blacklight.delete.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
-    MediaObject.delete_bulk success_ids, params
+    BulkActionJobs::Delete.perform_later success_ids, params
   end
 
   def move_action documents
@@ -187,7 +187,7 @@ class BookmarksController < CatalogController
       end
       flash[:success] = t("blacklight.move.success", count: success_ids.count, collection_name: collection.name) if success_ids.count > 0
       flash[:alert] = "#{t('blacklight.move.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
-      MediaObject.move_bulk success_ids, params
+      BulkActionJobs::Move.perform_later success_ids, params
     end
   end
 end
