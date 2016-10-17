@@ -40,6 +40,7 @@ Rails.application.config.assets.precompile += %w( sort_streams.js )
 Rails.application.config.assets.precompile += %w( avalon_playlists/playlist_items.js )
 Rails.application.config.assets.precompile += %w( embed_player.js )
 Rails.application.config.assets.precompile += %w( embed.css )
+Rails.application.config.assets.precompile += %w( select_all.js )
 
 #Third party
 Rails.application.config.assets.precompile += %w( modernizr.js )
