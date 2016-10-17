@@ -88,6 +88,7 @@ $navCollapseWidth: 650px;
 /* Bootstrap navbar styles */
 $navbar-inverse-color:                      #777;
 $navbar-inverse-bg:                         #F9F9F9;
+$navbar-inverse-link-active-bg:             darken($navbar-inverse-bg, 10%);
 $navbar-inverse-border:                     #D4D4D4;
 $navbar-inverse-link-color:                 #777;
 $navbar-inverse-link-hover-color:           $black;

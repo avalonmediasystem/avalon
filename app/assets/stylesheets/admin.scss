@@ -25,13 +25,13 @@
  * line height to keep things flowing nicely in the grid instead of arbitrary gaps
  */
 .admin .badge, .admin .label {
-  font-size: $baseFontSize;
+  font-size: $font-size-base;
   font-weight: normal;
   margin-right: 4px;
 }
 
 .admin .icon-remove-sign, .admin .icon-ok-sign, .admin .icon-plus-sign {
-  font-size: $baseFontSize*1.5;
+  font-size: $font-size-base*1.5;
   vertical-align: middle;
   cursor: pointer;
 }

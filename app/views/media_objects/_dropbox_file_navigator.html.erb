@@ -7,18 +7,12 @@ You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed 
+Unless required by applicable law or agreed to in writing, software distributed
   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% content_for(:page_styles)  { stylesheet_link_tag "datatables_bootstrap", media: "all" } %>
-<% content_for(:page_scripts) do %>
-  <%= javascript_include_tag "jquery.dataTables.min.js" %>
-  <%= javascript_include_tag "jquery.dataTables.bootstrap.js" %>
-  <%= javascript_include_tag "file_table", :defer => 'defer' %>
-<% end %>
 
 <% file_set ||= nil %>
 
@@ -27,7 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% else %>
   <%= hidden_field_tag :step, 'file-upload' %>
   <%= hidden_field_tag :container_id, @media_object.id %>
-    
+
   <table id="file-list" class="table table-striped">
     <colgroup>
       <col class="col-md-1">
@@ -36,7 +30,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <col class="col-md-1">
       <col class="col-md-1">
     </colgroup>
-  
+
     <thead>
       <th> <%= check_box_tag 'select_deselect_all' %> </th>
       <th>File name</th>

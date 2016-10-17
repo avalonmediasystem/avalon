@@ -14,20 +14,10 @@
  * ---  END LICENSE_HEADER BLOCK  ---
 */
 
-@import "branding";
-@import "font-awesome";
-@import "bootstrap-sprockets";
-@import "browse_everything";
-@import "bootstrap";
-@import "blacklight_themes/avalon";
-@import "blacklight/blacklight";
-//@import "about_page";
-//@import "typeahead";
 
 /*
  * This is the default theme. You can modify many of the settings
  * by editing your local app/assets/stylesheets/blacklight_themes/standard.css
- * require 'blacklight_themes/avalon'
  *
  * This is a manifest file that'll be compiled into application.css, which will include all the files
  * listed below.
@@ -38,22 +28,32 @@
  * You're free to add application-wide styles to this file and they'll appear at the top of the
  * compiled file, but it's generally better to create a new file per style scope.
  *
- * require jquery.fileupload-ui
- *= require admin
-
- * Add mediaelement rails stylesheets
+ * Require stylesheets for our gems
  *= require mediaelement_rails
- * Required by Hydra
- * require 'hydra/styles'
+ *= require mediaelement_rails/mejs-skins
  *
- * require_tree .
- *= require 'avalon-engage'
- *= require self
+ *= require mediaelement-skin-avalon/mejs-skin-avalon
+ *= require mediaelement-qualityselector/mep-feature-qualities
+ *= require me-thumb-selector
+ *= require me-add-to-playlist
+ *= require jquery-ui/datepicker
+ * Require all of our vendored stylesheets
+ *= require_tree ../../../vendor/assets/stylesheets/.
+ *= require_self
 */
-//= require rails_bootstrap_forms
-@import "avalon";
+
+@import "bootstrap-sprockets";
+@import "bootstrap";
+@import "font-awesome";
+@import "browse_everything";
+
+@import "blacklight_themes/avalon";
 @import "blacklight_folders/forms";
 @import "blacklight_folders/folders";
 @import "blacklight_folders/nestable";
-@import "mediaelement_rails.css";
-@import "mediaelement_rails/mejs-skins.css";
+
+
+@import "admin";
+@import "blacklight";
+@import "branding";
+@import "avalon";

@@ -13,9 +13,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% content_for :additional_head_content do %>
-<%= stylesheet_link_tag 'jquery.xmleditor.css' %>
-<% end %>
 
 <p class="muted">Drag files to reorder them.</p>
 
@@ -112,12 +109,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <% content_for :page_scripts do %>
-  <%= javascript_include_tag 'sort_streams' %>
-  <%= javascript_include_tag 'xmleditor/jquery.xmleditor' %>
-  <%= javascript_include_tag 'xmleditor/xsd2json' %>
-  <%= javascript_include_tag 'xmleditor/vkbeautify' %>
-  <%= javascript_include_tag 'xmleditor/ace' %>
-  <%= javascript_include_tag 'xmleditor/mode-xml' %>
+
 <script>
 
 function htmlDecode(value){

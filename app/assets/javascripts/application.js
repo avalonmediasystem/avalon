@@ -12,12 +12,16 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require jquery.nestable
 
 // Required by Blacklight
 //= require jquery-ui
-//= require jquery.ui.nestedSortable
 //= require blacklight/blacklight
 //= require browse_everything
-//= require pop_help
-//= require input_form_attribute_support
+//= require mediaelement_rails
+//= require me-thumb-selector
+//= require me-add-to-playlist
+//= require modernizr
+
+// include all of our vendored js
+//= require_tree ../../../vendor/assets/javascripts/.
+//= require_tree .

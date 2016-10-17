@@ -7,20 +7,12 @@ You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed 
+Unless required by applicable law or agreed to in writing, software distributed
   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-  <%= render 'modules/access_control', {object: @media_object, visibility: @media_object.visibility, hidden: @media_object.hidden?} %>	
-  <%= render 'workflow_buttons', form: 'access_control_form' %>	
-
-<% content_for :page_styles do %>
-  <%= stylesheet_link_tag 'jquery-ui/datepicker', media: 'all' %>
-<% end %>
-<% content_for :page_scripts do %>
-  <%= javascript_include_tag 'access_control_step' %>
-  <%= javascript_include_tag 'autocomplete' %>
-<% end %>
+  <%= render 'modules/access_control', {object: @media_object, visibility: @media_object.visibility, hidden: @media_object.hidden?} %>
+  <%= render 'workflow_buttons', form: 'access_control_form' %>
