@@ -68,7 +68,7 @@ class MasterFile < ActiveFedora::Base
   property :date_digitized, predicate: ::RDF::Vocab::EBUCore.dateCreated, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :physical_description, predicate: ::RDF::Vocab::DC.format, multiple: false do |index|
+  property :physical_description, predicate: ::RDF::Vocab::EBUCore.hasFormat, multiple: false do |index|
     index.as :stored_sortable
   end
   property :masterFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false
