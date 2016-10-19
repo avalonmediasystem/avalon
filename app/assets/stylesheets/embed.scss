@@ -15,6 +15,12 @@
 */
 
 @import "bootstrap";
+@import "mediaelement-qualityselector/mep-feature-qualities";
+@import "mediaelement-skin-avalon/mejs-skin-avalon";
+@import "mediaelement-title/mejs-title";
+@import "me-logo";
+@import "font-awesome";
+@import "mediaelement-hd-toggle/mejs-hdtoggle";
 
 body {
     background-color: #000000;
