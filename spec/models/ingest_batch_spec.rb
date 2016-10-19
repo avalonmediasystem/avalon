@@ -23,7 +23,7 @@ describe IngestBatch do
   end
   describe '#finished?' do
     it 'returns true when all the master files are finished' do
-      media_object = FactoryGirl.create(:media_object, master_files: [FactoryGirl.create(:master_file, status_code: 'STOPPED'), FactoryGirl.create(:master_file, status_code: 'SUCCEEDED')])
+      media_object = FactoryGirl.create(:media_object, master_files: [FactoryGirl.create(:master_file, status_code: 'CANCELLED'), FactoryGirl.create(:master_file, status_code: 'COMPLETED')])
       ingest_batch = IngestBatch.new(media_object_ids: [media_object.id], email: 'email@something.com')
       expect(ingest_batch.finished?).to be true
     end
@@ -33,7 +33,7 @@ describe IngestBatch do
        skip "Fix problems with this test"
 
        media_object = MediaObject.new(id:'avalon:ingest-batch-test')
-       media_object.add_relationship(:has_part, MasterFile.new(status_code: 'STOPPED'))
+       media_object.add_relationship(:has_part, MasterFile.new(status_code: 'COMPLETED'))
        media_object.parts << MasterFile.create(status_code: 'RUNNING')
        media_object.save
        ingest_batch = IngestBatch.new(media_object_ids: ['avalon:ingest-batch-test'], email: 'email@something.com')

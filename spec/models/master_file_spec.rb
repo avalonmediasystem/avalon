@@ -96,7 +96,7 @@ describe MasterFile do
   describe '#finished_processing?' do
     describe 'classifying statuses' do
       let(:master_file){ MasterFile.new }
-      it 'returns true for stopped' do
+      it 'returns true for cancelled' do
         master_file.status_code = 'CANCELLED'
         expect(master_file.finished_processing?).to be true
       end
