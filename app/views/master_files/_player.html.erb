@@ -43,7 +43,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     </section>
 
 <% content_for :page_scripts do %>
-
+  <%= javascript_include_tag 'embed_player' =%>
   <% features = ['playpause','current','progress','duration','tracks','volume','responsive', 'title'] %>
 
   <% if @master_file.is_video? %>
