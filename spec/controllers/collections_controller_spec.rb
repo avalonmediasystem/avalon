@@ -81,7 +81,7 @@ describe Admin::CollectionsController, type: :controller do
       put 'update', id: collection.id, submit_add_manager: 'Add', add_manager: user.username
       collection.reload
       expect(user).not_to be_in(collection.managers)
-      expect(flash[:notice]).not_to be_empty
+      expect(flash[:error]).not_to be_empty
     end
 
     it "should remove users from manager role" do
