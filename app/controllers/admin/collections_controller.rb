@@ -143,9 +143,11 @@ class Admin::CollectionsController < ApplicationController
 
         if params["remove_#{title}"].present?
           if ["group", "class", "ipaddress"].include? title
-            @collection.default_read_groups -= [params["remove_#{title}"]]
+            @collection.default_read_groups_will_change!
+            @collection.default_read_groups.delete params["remove_#{title}"]
           else
-            @collection.default_read_users -= [params["remove_#{title}"]]
+            @collection.default_read_users_will_change!
+            @collection.default_read_users.delete params["remove_#{title}"]
           end
         end
     end
