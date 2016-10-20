@@ -500,7 +500,7 @@ describe MediaObject do
 
   describe 'permalink' do
 
-    let(:media_object){ FactoryGirl.build(:media_object) }
+    let(:media_object){ FactoryGirl.create(:media_object) }
 
     before(:each) {
       Permalink.on_generate{ |obj,target| 'http://www.example.com/perma-url' }

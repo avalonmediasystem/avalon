@@ -70,7 +70,7 @@ class AvalonProgress
 
   click_section: (section_id) ->
     data = @data[section_id]
-    if data.status != 'SUCCEEDED' or data.complete < 100
+    if data.status != 'COMPLETED' or data.complete < 100
       window.currentPlayer = null
       $('.avalon-player').html('<div id="nojs"></div>')
 

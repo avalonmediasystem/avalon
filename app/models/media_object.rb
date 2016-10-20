@@ -26,7 +26,6 @@ class MediaObject < ActiveFedora::Base
   has_and_belongs_to_many :governing_policies, class_name: 'ActiveFedora::Base', predicate: ActiveFedora::RDF::ProjectHydra.isGovernedBy
   belongs_to :collection, class_name: 'Admin::Collection', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
-  after_create :after_create
   before_save :update_dependent_properties!
   before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :update_dependent_permalinks_job, if: Proc.new { |mo| mo.persisted? && mo.published? }
@@ -291,11 +290,6 @@ class MediaObject < ActiveFedora::Base
   end
 
   private
-
-    def after_create
-      self.identifier += [ id ]
-      save
-    end
 
     def calculate_duration
       self.master_files.map{|mf| mf.duration.to_i }.compact.sum
