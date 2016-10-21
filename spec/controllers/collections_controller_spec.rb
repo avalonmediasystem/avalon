@@ -86,7 +86,7 @@ describe Admin::CollectionsController, type: :controller do
 
     it "should remove users from manager role" do
       #initial_manager = FactoryGirl.create(:manager).username
-      collection.managers += [FactoryGirl.create(:manager).username]
+      collection.managers += [FactoryGirl.create(:manager).username, FactoryGirl.create(:manager).username]
       collection.save!
       manager = User.where(username: collection.managers.first).first
       put 'update', id: collection.id, remove_manager: manager.username
