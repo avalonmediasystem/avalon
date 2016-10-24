@@ -115,3 +115,6 @@ end
 group :travis, optional: true do
   gem 'mysql2'
 end
+
+extra_gems = File.expand_path("../Gemfile.local",__FILE__)
+eval File.read(extra_gems) if File.exists?(extra_gems)
