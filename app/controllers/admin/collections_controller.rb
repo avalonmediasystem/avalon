@@ -201,16 +201,21 @@ class Admin::CollectionsController < ApplicationController
     @source_collection = @collection
     target_path = admin_collections_path
     if @source_collection.media_objects.count > 0
-      @target_collection = Admin::Collection.find(params[:target_collection_id])
-      Admin::Collection.reassign_media_objects( @source_collection.media_objects, @source_collection, @target_collection )
-      target_path = admin_collection_path(@target_collection)
-      @source_collection.reload
+      if @source_collection.media_objects.all?(&:valid?)
+        @target_collection = Admin::Collection.find(params[:target_collection_id])
+        Admin::Collection.reassign_media_objects( @source_collection.media_objects, @source_collection, @target_collection )
+        target_path = admin_collection_path(@target_collection)
+        @source_collection.reload
+      else
+        flash[:error] = "Collection contains invalid media objects that cannot be moved. Please address these issues before attempting to delete #{@source_collection.name}."
+        redirect_to admin_collection_path(@source_collection) and return
+      end
     end
     if @source_collection.media_objects.count == 0
       @source_collection.destroy
       redirect_to target_path
     else
-      flash[:notice] = "Something went wrong. #{@source_collection.name} is not empty."
+      flash[:error] = "Something went wrong. #{@source_collection.name} is not empty."
       redirect_to admin_collection_path(@source_collection)
     end
   end
