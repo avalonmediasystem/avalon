@@ -106,16 +106,20 @@ class Admin::CollectionsController < ApplicationController
           begin
             @collection.send "add_#{title}".to_sym, params["add_#{title}"].strip
           rescue ArgumentError => e
-            flash[:notice] = e.message
+            flash[:error] = e.message
           end
         else
-          flash[:notice] = "#{title.titleize} can't be blank."
+          flash[:error] = "#{title.titleize} can't be blank."
         end
       end
 
       remove_access = "remove_#{title}"
       if params[remove_access].present? && can?("update_#{title.pluralize}".to_sym, @collection)
+        begin
           @collection.send remove_access.to_sym, params[remove_access]
+        rescue ArgumentError => e
+          flash[:error] = e.message
+        end
       end
     end
 

@@ -85,7 +85,7 @@ class Admin::Collection < ActiveFedora::Base
 
   def remove_manager user
     return unless managers.include? user
-    #raise "OneManagerLeft" if self.managers.size == 1 # Requires at least 1 manager
+    raise ArgumentError, "At least one manager is required." if self.managers.size == 1
 
     self.edit_users -= [user]
     self.inherited_edit_users -= [user]

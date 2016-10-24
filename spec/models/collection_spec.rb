@@ -207,13 +207,19 @@ describe Admin::Collection do
         manager_list = [FactoryGirl.create(:manager).username, FactoryGirl.create(:manager).username]
         collection.managers = manager_list
         expect(collection.managers).to eq(manager_list)
-        collection.managers -= manager_list
-        expect(collection.managers).to eq([])
+        collection.managers -= [manager_list[1]]
+        expect(collection.managers).to eq([manager_list[0]])
       end
       it "should call remove_manager" do
         collection.managers = [user.username]
         expect(collection).to receive("remove_manager").with(user.username)
         collection.managers = [FactoryGirl.create(:manager).username]
+      end
+      it "should fail to remove only manager" do
+        manager_list = [FactoryGirl.create(:manager).username]
+        collection.managers = manager_list
+        expect(collection.managers).to eq(manager_list)
+        expect{collection.managers=[]}.to raise_error(ArgumentError)
       end
     end
     describe "#add_manager" do
@@ -258,7 +264,6 @@ describe Admin::Collection do
       end
     end
   end
-
   describe "editors" do
     let!(:user) {FactoryGirl.create(:user)}
     let!(:collection) {Admin::Collection.new}
