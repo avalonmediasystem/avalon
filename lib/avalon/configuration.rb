@@ -2,7 +2,7 @@ module Avalon
   class Config
     DEFAULT_CONFIGURATION = {
       "dropbox"=>{},
-      "fedora"=>{"namespace"=>"avalon"},
+      "fedora"=>{"namespace"=>"avalon", "base_path"=>""},
       "ffmpeg"=>{"path"=>"/usr/local/bin/ffmpeg"},
       "mediainfo"=>{"path"=>"/usr/local/bin/mediainfo"},
       "email"=>{},
@@ -47,6 +47,7 @@ module Avalon
       "BASE_URL" => { key: 'domain', read_proc: ->(v){read_avalon_url(v)}, write_proc: ->(v){write_avalon_url(v)} },
       "DROPBOX_PATH" => { key: "dropbox.path" },
       "DROPBOX_URI" => { key: "dropbox.upload_uri" },
+      "FEDORA_BASE_PATH" => { key: "fedora.base_path" },
       "FEDORA_NAMESPACE" => { key: "fedora.namespace" },
       "FFMPEG_PATH" => { key: "ffmpeg.path" },
       "MEDIA_PATH" => { key: "matterhorn.media_path" },
@@ -126,6 +127,7 @@ module Avalon
       url.user = ActiveFedora.fedora_config.credentials[:user]
       url.password = ActiveFedora.fedora_config.credentials[:password]
       result['FEDORA_URL'] = url.to_s
+      result['FEDORA_BASE_PATH'] = ActiveFedora.fedora_config.credentials[:base_path]
 
       begin
         url = URI.parse(Rubyhorn.config_for_environment[:url])
