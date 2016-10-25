@@ -19,6 +19,7 @@ class MediaObject < ActiveFedora::Base
   include MediaObjectMods
   include Avalon::Workflow::WorkflowModelMixin
   include Permalink
+  include Identifier
   require 'avalon/controlled_vocabulary'
 
   include Kaminari::ActiveFedoraModelExtension
