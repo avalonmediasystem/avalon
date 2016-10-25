@@ -244,7 +244,7 @@ namespace :avalon do
           container = playlist_item['container_string']
           comment = HTMLEntities.new.decode(playlist_item['comment'])
           title = HTMLEntities.new.decode(playlist_item['name'])
-          mf_obj = MasterFile.where("dc_identifier_tesim:#{container}").first
+          mf_obj = MasterFile.where("dc_identifier_sim:#{container}").first
           unless mf_obj.present?
             item_errors += [{username: user['username'], playlist_id: playlist_obj.id, container: container, title: title, errors: ['Masterfile not found']}]
             next
