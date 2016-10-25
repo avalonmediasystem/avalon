@@ -12,7 +12,37 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+module FedoraMigrate::Hooks
+  # Both @source and @target are available, as the Rubydora object and ActiveFedora model, respectively
+  def before_object_migration
+    # For masterfiles, transform mhMetadata datastream into MasterFile properties
+    if target.class == MasterFile
+      mhMetadata = Nokogiri::XML(source.datastreams["mhMetadata"].content)
+      target.workflow_name = mhMetadata.xpath('fields/workflow_name').text
+      target.percent_complete = mhMetadata.xpath('fields/percent_complete').text
+      target.percent_succeeded = mhMetadata.xpath('fields/percent_succeeded').text
+      target.percent_failed = mhMetadata.xpath('fields/percent_failed').text
+      target.operation = mhMetadata.xpath('fields/operation').text
+      target.workflow_id = mhMetadata.xpath('fields/workflow_id').text
+      target.status_code = mhMetadata.xpath('fields/status_code').text
+    end
+    #xml = Nokogiri::XML(source.datastreams["properties"].content)
+    #target.apply_depositor_metadata xml.xpath("//depositor").text
+  end
+
+  def after_object_migration
+    # additional actions as needed
+  end
+
+end
+
 namespace :avalon do
+  desc "Migrate all my objects"
+  task migrate: :environment do
+    results = FedoraMigrate.migrate_repository(namespace: "avalon", options: {})
+    puts results
+  end
+
   desc 'migrate databases for the rails app and the active annotations gem'
   task :db_migrate do
     `rake db:migrate`

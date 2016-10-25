@@ -159,7 +159,7 @@ GIT
       hydra-core (= 10.3.2)
       rails (>= 3.2.6)
   remote: https://github.com/projecthydra-labs/fedora-migrate.git
-  revision: 4038a2251e0f23524d1971b6ccb6f8d326fd91c1
+  revision: dbb3b56cfd8e9a419f12930f1c36d2d30cf64010
   specs:
     fedora-migrate (0.5.0)
       rchardet
@@ -359,7 +359,7 @@ GEM
       warden (~> 1.2.3)
     diff-lcs (1.2.5)
     docile (1.1.5)
-    domain_name (0.5.20160826)
+    domain_name (0.5.20161021)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.1.1)
     dotenv-rails (2.1.1)
@@ -435,7 +435,7 @@ GEM
       httparty (>= 0.7.3)
       mimemagic
       multipart-post
-    http-cookie (1.0.2)
+    http-cookie (1.0.3)
       domain_name (~> 0.5)
     http_logger (0.5.1)
     httparty (0.14.0)
