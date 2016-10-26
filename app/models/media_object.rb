@@ -425,7 +425,7 @@ class MediaObject < ActiveFedora::Base
     solr_doc[Solrizer.default_field_mapper.solr_name("collection", :symbol, type: :string)] = collection.name if collection.present?
     solr_doc[Solrizer.default_field_mapper.solr_name("unit", :symbol, type: :string)] = collection.unit if collection.present?
     indexer = Solrizer::Descriptor.new(:string, :stored, :indexed, :multivalued)
-    solr_doc[Solrizer.default_field_mapper.solr_name("read_access_virtual_group", indexer)] = virtual_read_groups
+    solr_doc[Solrizer.default_field_mapper.solr_name("read_access_virtual_group", indexer)] = virtual_read_groups + leases('external').map(&:read_groups).flatten
     solr_doc[Solrizer.default_field_mapper.solr_name("read_access_ip_group", indexer)] = collect_ips_for_index(ip_read_groups)
     solr_doc[Hydra.config.permissions.read.group] ||= []
     solr_doc[Hydra.config.permissions.read.group] += solr_doc[Solrizer.default_field_mapper.solr_name("read_access_ip_group", indexer)]
@@ -697,6 +697,14 @@ class MediaObject < ActiveFedora::Base
         addr.to_range.map(&:to_s)
       end
       ips.flatten.compact.uniq || []
+    end
+
+    def leases(scope=:all)
+      if scope == :all
+        governing_policies.to_a.select {|gp| gp.is_a?(Lease) }
+      else
+        governing_policies.to_a.select {|gp| gp.is_a?(Lease) && gp.lease_type == scope }
+      end
     end
 
 end
