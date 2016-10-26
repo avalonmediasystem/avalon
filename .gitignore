@@ -34,3 +34,5 @@ public/**/*.ts
 
 /coverage
 /spec/master_file*
+
+Gemfile.local
