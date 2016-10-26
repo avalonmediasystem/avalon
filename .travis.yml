@@ -4,6 +4,7 @@ git:
 bundler_args: --with travis --without development debug
 services:
   - mysql2
+  - redis-server
 before_install:
   - sudo apt-get update
   - sudo apt-get install mediainfo
