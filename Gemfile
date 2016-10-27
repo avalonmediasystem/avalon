@@ -73,6 +73,9 @@ gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaele
 gem 'media-element-logo-plugin'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', branch: 'master'
 
+gem 'resque', '~> 1.26.0'
+gem 'resque-scheduler', '~> 4.3.0'
+
 group :development, :test do
   gem 'equivalent-xml'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

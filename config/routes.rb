@@ -135,6 +135,9 @@
   end
 
   match "/oembed", to: 'master_files#oembed', via: [:get]
+  
+  require 'resque/server'
+  mount Resque::Server, at: '/jobs'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
