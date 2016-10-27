@@ -418,8 +418,7 @@ class MasterFile < ActiveFedora::Base
   def update_stills_from_offset!
     if @stills_to_update.present? || self.thumbnail.empty? || self.poster.empty?
       # Update stills together
-      ExtractStillJob.perform_later(self.id, :type => 'thumbnail', :offset => self.poster_offset)
-      ExtractStillJob.perform_later(self.id, :type => 'poster', :offset => self.poster_offset)
+      ExtractStillJob.perform_later(self.id, :type => 'both', :offset => self.poster_offset)
 
       # Update stills independently
       # @stills_to_update.each do |type|
@@ -451,7 +450,6 @@ class MasterFile < ActiveFedora::Base
           file.content = StringIO.new(result)
         end
       end
-      save unless result.empty?
     end
     result
   end
