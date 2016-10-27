@@ -418,7 +418,8 @@ class MasterFile < ActiveFedora::Base
   def update_stills_from_offset!
     if @stills_to_update.present? || self.thumbnail.empty? || self.poster.empty?
       # Update stills together
-      ExtractStillJob.perform_later(self.id, :type => 'both', :offset => self.poster_offset)
+      ExtractStillJob.perform_later(self.id, :type => 'thumbnail', :offset => self.poster_offset)
+      ExtractStillJob.perform_later(self.id, :type => 'poster', :offset => self.poster_offset)
 
       # Update stills independently
       # @stills_to_update.each do |type|
@@ -450,7 +451,7 @@ class MasterFile < ActiveFedora::Base
           file.content = StringIO.new(result)
         end
       end
-      save
+      save unless result.empty?
     end
     result
   end
@@ -542,59 +543,60 @@ class MasterFile < ActiveFedora::Base
   end
 
   def extract_frame(options={})
-    if is_video?
-      base = id.gsub(/\//,'_')
-      offset = options[:offset].to_i
-      unless offset.between?(0,self.duration.to_i)
-        raise RangeError, "Offset #{offset} not in range 0..#{self.duration}"
-      end
+    return unless is_video?
 
-      ffmpeg = Avalon::Configuration.lookup('ffmpeg.path')
-      frame_size = (options[:size].nil? or options[:size] == 'auto') ? self.original_frame_size : options[:size]
+    base = id.gsub(/\//,'_')
+    offset = options[:offset].to_i
+    unless offset.between?(0,self.duration.to_i)
+      raise RangeError, "Offset #{offset} not in range 0..#{self.duration}"
+    end
 
-      (new_width,new_height) = frame_size.split(/x/).collect &:to_f
-      new_height = (new_width/self.display_aspect_ratio.to_f).floor
-      new_height += 1 if new_height.odd?
-      aspect = new_width/new_height
+    ffmpeg = Avalon::Configuration.lookup('ffmpeg.path')
+    frame_size = (options[:size].nil? or options[:size] == 'auto') ? self.original_frame_size : options[:size]
 
-      frame_source = find_frame_source(offset: offset)
-      Tempfile.open([base,'.jpg']) do |jpeg|
-        file_source = File.join(File.dirname(jpeg.path),"#{File.basename(jpeg.path,File.extname(jpeg.path))}#{File.extname(frame_source[:source])}")
-        File.symlink(frame_source[:source],file_source)
-        begin
-          options = [
-            '-i',       file_source,
-            '-ss',      (frame_source[:offset] / 1000.0).to_s,
-            '-s',       "#{new_width.to_i}x#{new_height.to_i}",
-            '-vframes', '1',
-            '-aspect',  aspect.to_s,
-            '-f',       'image2',
-            '-y',       jpeg.path
-          ]
-          if frame_source[:master]
-            options[0..3] = options.values_at(2,3,0,1)
-          end
+    (new_width,new_height) = frame_size.split(/x/).collect &:to_f
+    new_height = (new_width/self.display_aspect_ratio.to_f).floor
+    new_height += 1 if new_height.odd?
+    aspect = new_width/new_height
+
+    frame_source = find_frame_source(offset: offset)
+    data = nil
+    Tempfile.open([base,'.jpg']) do |jpeg|
+      file_source = File.join(File.dirname(jpeg.path),"#{File.basename(jpeg.path,File.extname(jpeg.path))}#{File.extname(frame_source[:source])}")
+      File.symlink(frame_source[:source],file_source)
+      begin
+        options = [
+          '-i',       file_source,
+          '-ss',      (frame_source[:offset] / 1000.0).to_s,
+          '-s',       "#{new_width.to_i}x#{new_height.to_i}",
+          '-vframes', '1',
+          '-aspect',  aspect.to_s,
+          '-f',       'image2',
+          '-y',       jpeg.path
+        ]
+        if frame_source[:master]
+          options[0..3] = options.values_at(2,3,0,1)
+        end
+        Kernel.system(ffmpeg, *options)
+        jpeg.rewind
+        data = jpeg.read
+        Rails.logger.debug("Generated #{data.length} bytes of data")
+        if (!frame_source[:master]) and data.length == 0
+          # -ss before -i is faster, but fails on some files.
+          Rails.logger.warn("No data received. Swapping -ss and -i options")
+          options[0..3] = options.values_at(2,3,0,1)
           Kernel.system(ffmpeg, *options)
           jpeg.rewind
           data = jpeg.read
           Rails.logger.debug("Generated #{data.length} bytes of data")
-          if (!frame_source[:master]) and data.length == 0
-            # -ss before -i is faster, but fails on some files.
-            Rails.logger.warn("No data received. Swapping -ss and -i options")
-            options[0..3] = options.values_at(2,3,0,1)
-            Kernel.system(ffmpeg, *options)
-            jpeg.rewind
-            data = jpeg.read
-            Rails.logger.debug("Generated #{data.length} bytes of data")
-          end
-          data
-        ensure
-          File.unlink(file_source)
         end
+        data
+      ensure
+        File.unlink(file_source)
       end
-    else
-      nil
     end
+    raise RuntimeError("Frame extraction failed. See log for details.") if data.empty?
+    data
   end
 
   def calculate_percent_complete matterhorn_response
