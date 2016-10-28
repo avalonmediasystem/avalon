@@ -122,7 +122,7 @@ class MasterFile < ActiveFedora::Base
   end
   # validates :file_format, presence: true, exclusion: { in: ['Unknown'], message: "The file was not recognized as audio or video." }
 
-  before_save :update_stills_from_offset!
+  after_save :update_stills_from_offset!, if: Proc.new { |mf| mf.previous_changes.include?("poster_offset") || mf.previous_changes.include?("thumbnail_offset") }
   before_destroy :stop_processing!
   before_destroy :update_parent!
   define_hooks :after_processing
@@ -409,24 +409,20 @@ class MasterFile < ActiveFedora::Base
 
     return milliseconds if milliseconds == self.send("#{type}_offset").to_i
 
-    @stills_to_update ||= []
-    @stills_to_update << type
+    # @stills_to_update ||= []
+    # @stills_to_update << type
     self.send("_#{type}_offset=".to_sym,milliseconds.to_s)
     milliseconds
   end
 
   def update_stills_from_offset!
-    if @stills_to_update.present? || self.thumbnail.empty? || self.poster.empty?
-      # Update stills together
-      ExtractStillJob.perform_later(self.id, :type => 'both', :offset => self.poster_offset)
+    # Update stills together
+    ExtractStillJob.perform_later(self.id, :type => 'both', :offset => self.poster_offset)
 
-      # Update stills independently
-      # @stills_to_update.each do |type|
-      #   self.class.extract_still(self.id, :type => type, :offset => self.send("#{type}_offset"))
-      # end
-      @stills_to_update = []
-    end
-    true
+    # Update stills independently
+    # @stills_to_update.each do |type|
+    #   self.class.extract_still(self.id, :type => type, :offset => self.send("#{type}_offset"))
+    # end
   end
 
   def extract_still(options={})
@@ -593,7 +589,7 @@ class MasterFile < ActiveFedora::Base
         File.unlink(file_source)
       end
     end
-    raise RuntimeError("Frame extraction failed. See log for details.") if data.empty?
+    raise RuntimeError, "Frame extraction failed. See log for details." if data.empty?
     data
   end
 
