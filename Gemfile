@@ -15,7 +15,7 @@
   gem 'active-fedora', '~> 8.1.0'
   gem 'om', '~> 3.1.0'
   gem 'solrizer', '~> 3.3.0'
-  gem 'rsolr', '~> 1.0.12'
+  gem 'rsolr', '~> 1.1.2'
   gem 'blacklight', '~> 5.10'
   gem 'nokogiri', '~> 1.6.5'
   gem 'rubydora', '~> 1.8.1'
@@ -72,7 +72,7 @@
   end
 
   gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git", tag: 'avalon-r4'
-  gem 'about_page', git: "https://github.com/avalonmediasystem/about_page.git", tag: 'avalon-r4'
+  gem 'about_page', git: "https://github.com/avalonmediasystem/about_page.git"
 
   # You are free to implement your own User/Authentication solution in its place.
   gem 'devise', '~>3.2.0'
@@ -80,7 +80,7 @@
   gem 'haml'
 
   gem 'active_encode', git: "https://github.com/projecthydra-labs/active_encode.git", tag: 'v0.0.3'
-  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r5'
+  gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
   gem 'validates_email_format_of'
   gem 'loofah'
   gem 'omniauth-identity'
@@ -125,6 +125,7 @@
     gem 'capistrano', '~>2.12.0'
     gem 'rvm-capistrano', require: false
     gem 'rubocop', '~> 0.40.0', require: false
+    gem 'rugged'
   end
 
   # For testing.  You will probably want to use these to run the tests you write for your hydra head
@@ -139,6 +140,7 @@
     gem 'letter_opener'
     gem 'pry'
     gem 'pry-rails'
+    gem 'dotenv-rails'
   end # (leave this comment here to catch a stray line inserted by blacklight!)
 
   group :debug do

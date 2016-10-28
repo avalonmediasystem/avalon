@@ -22,6 +22,7 @@ require 'rspec/rails'
 require 'rspec/autorun'
 require 'equivalent-xml/rspec_matchers'
 require 'capybara/rspec'
+require 'capybara/rails'
 require 'database_cleaner'
 require 'fakefs/safe'
 require 'fileutils'
@@ -97,6 +98,7 @@ RSpec.configure do |config|
     Rails.cache.clear
     DatabaseCleaner.start
     RoleMap.reset!
+    ApiToken.create token: 'secret_token', username: 'system_account_name', email: 'system@example.edu'
     allow(Admin::Collection).to receive(:units).and_return ['University Archives', 'University Library']
   end
 
@@ -107,5 +109,6 @@ RSpec.configure do |config|
 
   config.include Devise::TestHelpers, :type => :controller
   config.include ControllerMacros, :type => :controller
-  config.include FixtureMacros
+  config.include Warden::Test::Helpers,type: :feature
+  config.include FixtureMacros, :type => :controller
 end

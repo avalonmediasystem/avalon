@@ -148,7 +148,7 @@ EOF
          share_link: share_link_for(section), 
          native_url: pid_section_media_object_path(@mediaobject, section.pid)
        } 
-       data[:lti_share_link] = user_omniauth_callback_url(action: 'lti', target_id: section) if Avalon::Authentication::Providers.any? {|p| p[:provider] == :lti } 
+       data[:lti_share_link] = user_omniauth_callback_url(action: 'lti', target_id: section) if Avalon::Authentication.lti_configured? 
        duration = section.duration.blank? ? '' : " (#{milliseconds_to_formatted_time(section.duration.to_i)})"
 
        # If there is no structural metadata associated with this masterfile return the stream info

@@ -5,3 +5,7 @@ job_type :locking_rake, "cd :path && :environment_variable=:environment script/l
 every 1.minute do
   locking_rake "avalon:batch:ingest", :lock_name => "batch_ingest"
 end
+
+every 6.hours do
+  rake 'avalon:session_cleanup'
+end

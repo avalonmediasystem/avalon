@@ -477,6 +477,10 @@ describe MediaObject do
       expect(solr_doc['section_label_tesim']).to include('CD 1')
       expect(solr_doc['section_label_tesim']).to include('Test Label')
     end
+    it 'includes virtual group leases in external group facet' do
+      media_object.governing_policies += [FactoryGirl.create(:lease, read_groups: ['TestGroup'])]
+      expect(media_object.to_solr['read_access_virtual_group_ssim']).to include('TestGroup')
+    end
   end
 
   describe 'permalink' do

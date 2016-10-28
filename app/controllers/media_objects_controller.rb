@@ -18,6 +18,7 @@ class MediaObjectsController < ApplicationController
   include Avalon::Workflow::WorkflowControllerBehavior
   include Avalon::Controller::ControllerBehavior
   include ConditionalPartials
+  include SecurityHelper
 
   before_filter :authenticate_user!, except: [:show, :set_session_quality]
   before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
@@ -34,7 +35,7 @@ class MediaObjectsController < ApplicationController
   end
 
   is_editor_or_not_lti = proc { |ctx| self.is_editor(ctx) || !self.is_lti_session(ctx) }
-  is_editor_or_lti = proc { |ctx| (Avalon::Authentication::Providers.any? {|p| p[:provider] == :lti } &&self.is_editor(ctx)) || self.is_lti_session(ctx) }
+  is_editor_or_lti = proc { |ctx| (Avalon::Authentication.lti_configured? && self.is_editor(ctx)) || self.is_lti_session(ctx) }
 
   add_conditional_partial :share, :share, partial: 'share_resource', if: is_editor_or_not_lti
   add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti
@@ -177,8 +178,7 @@ class MediaObjectsController < ApplicationController
 
     if 'preview' == @active_step 
       @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
-      @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.pid)
-      @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
+      @currentStreamInfo = @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details)
 
       if (not @masterFiles.empty? and @currentStream.blank?)
         @currentStream = @masterFiles.first
@@ -374,13 +374,12 @@ class MediaObjectsController < ApplicationController
       
     @masterFiles = load_master_files load_from_solr: true
     @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
-    @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.pid)
     # This rescue statement seems a bit dodgy because it catches *all*
     # exceptions. It might be worth refactoring when there are some extra
     # cycles available.
-    @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
+    @currentStreamInfo = @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details)
     @currentStreamInfo['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
- end
+  end
 
   # The goal of this method is to determine which stream to provide to the interface
   #
