@@ -409,8 +409,6 @@ class MasterFile < ActiveFedora::Base
 
     return milliseconds if milliseconds == self.send("#{type}_offset").to_i
 
-    # @stills_to_update ||= []
-    # @stills_to_update << type
     self.send("_#{type}_offset=".to_sym,milliseconds.to_s)
     milliseconds
   end
