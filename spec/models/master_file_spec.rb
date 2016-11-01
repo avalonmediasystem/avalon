@@ -195,9 +195,11 @@ describe MasterFile do
     describe "update images" do
       before do
         ActiveJob::Base.queue_adapter = :test
+        MasterFile.set_callback(:save, :after, :update_stills_from_offset!)
       end
       after do
         ActiveJob::Base.queue_adapter = :inline
+        MasterFile.skip_callback(:save, :after, :update_stills_from_offset!)
       end
       it "should update on save" do
         master_file.poster_offset = 12345
