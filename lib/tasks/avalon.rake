@@ -149,8 +149,6 @@ namespace :avalon do
         puts "Error reindexing #{uri}"
       end
     end
-
-
   end
 
   desc "Identify invalid Avalon Media Objects"
