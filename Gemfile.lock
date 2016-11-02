@@ -453,6 +453,7 @@ GEM
       omniauth (~> 1.0)
     orm_adapter (0.5.0)
     os (0.9.6)
+    parallel (1.9.0)
     parser (2.3.1.2)
       ast (~> 2.2)
     powerpack (0.1.1)
@@ -720,6 +721,7 @@ DEPENDENCIES
   net-ldap
   omniauth-identity
   omniauth-lti!
+  parallel
   pry-byebug
   pry-rails
   rails (= 4.2.7.1)
