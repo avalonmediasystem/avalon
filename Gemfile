@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'parallel'
 gem 'hydra-head', '~> 10.1'
 gem 'active-fedora', '~> 11.0'
 gem 'active_fedora-datastreams'

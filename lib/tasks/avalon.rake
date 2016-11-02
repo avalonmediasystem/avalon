@@ -135,19 +135,18 @@ namespace :avalon do
     end
   end
 
-  desc "Reindex all Avalon objects"
-  # TODO: fix reindex for fedora4 ids
-  task :reindex => :environment do
-    query = "pid~#{Avalon::Configuration.lookup('fedora.namespace')}:*"
-    #Override of ActiveFedora::Base.reindex_everything("pid~#{prefix}:*") including error handling/reporting
-    ActiveFedora::Base.send(:connections).each do |conn|
-      conn.search(query) do |object|
-        next if object.pid.start_with?('fedora-system:')
-        begin
-          ActiveFedora::Base.find(object.pid).update_index
-        rescue
-          puts "#{object.pid} failed reindex"
-        end
+  desc 'Reindex all Avalon objects'
+  # @example RAILS_ENV=production bundle exec rake avalon:reindex would do a single threaded production environment reindex
+  # @example RAILS_ENV=production bundle exec rake avalon:reindex[2] would do a dual threaded production environment reindex
+  task :reindex, [:threads] => :environment do |t, args|
+    descendants = ActiveFedora::Base.descendant_uris(ActiveFedora::Base.id_to_uri(''))
+    descendants.shift # remove the root
+    Parallel.map(descendants, in_threads: args[:threads].to_i || 1) do |uri|
+      begin
+        ActiveFedora::Base.find(ActiveFedora::Base.uri_to_id(uri)).update_index
+        puts "#{uri} reindexed"
+      rescue
+        puts "Error reindexing #{uri}"
       end
     end
   end
@@ -241,7 +240,7 @@ namespace :avalon do
           mf_obj = MasterFile.where("dc_identifier_tesim:#{container}").first
           unless mf_obj.present?
             item_errors += [{username: user['username'], playlist_id: playlist_obj.id, container: container, title: title, errors: ['Masterfile not found']}]
-            next 
+            next
           end
           item_count += 1
           puts "  Importing playlist item #{title}"
