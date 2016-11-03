@@ -23,6 +23,15 @@ GIT
     avalon-workflow (0.0.3)
 
 GIT
+  remote: https://github.com/avalonmediasystem/fedora-migrate.git
+  revision: 2557849a9a4447f01a363770ded33553481df5d0
+  branch: class_order_migrator
+  specs:
+    fedora-migrate (0.5.0)
+      rchardet
+      rubydora (~> 1.8)
+
+GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
   revision: af3644c432e8c61dc6d31a0c72ab4bf28c6ecbdd
   branch: master

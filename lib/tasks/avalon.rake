@@ -15,9 +15,23 @@
 module FedoraMigrate::Hooks
   # Both @source and @target are available, as the Rubydora object and ActiveFedora model, respectively
   def before_object_migration
-    # For masterfiles, transform mhMetadata datastream into MasterFile properties
-    if target.class == MasterFile
-      mhMetadata = Nokogiri::XML(source.datastreams["mhMetadata"].content)
+    if target.class == Admin::Collection
+      descMetadata = Nokogiri::XML(source.datastreams['descMetadata'].content)
+      target.name = descMetadata.xpath('fields/name').text
+      target.description = descMetadata.xpath('fields/description').text
+      target.unit = descMetadata.xpath('fields/unit').text
+      target.dropbox_directory_name = descMetadata.xpath('fields/dropbox_directory_name').text
+      v = Avalon::ControlledVocabulary.vocabulary
+      unless v[:units].include? target.unit
+        v[:units] |= Array(target.unit)
+        Avalon::ControlledVocabulary.vocabulary = v
+      end
+
+      # Managers cannot be empty
+
+    elsif target.class == MasterFile
+      # For transform mhMetadata datastream into MasterFile properties
+      mhMetadata = Nokogiri::XML(source.datastreams['mhMetadata'].content)
       target.workflow_name = mhMetadata.xpath('fields/workflow_name').text
       target.percent_complete = mhMetadata.xpath('fields/percent_complete').text
       target.percent_succeeded = mhMetadata.xpath('fields/percent_succeeded').text
@@ -25,10 +39,14 @@ module FedoraMigrate::Hooks
       target.operation = mhMetadata.xpath('fields/operation').text
       target.workflow_id = mhMetadata.xpath('fields/workflow_id').text
       target.status_code = mhMetadata.xpath('fields/status_code').text
+
+    elsif target.class == MediaObject
+      binding.pry
+      relsExt = Nokogiri::XML(source.datastreams['RELS-EXT'].content)
+      target.collection = Admin::Collection.find(relsExt.xpath("//ns2:isMemberOfCollection/@rdf:resource").first.value.split('/').last)
+
     end
-    #xml = Nokogiri::XML(source.datastreams["properties"].content)
-    #target.apply_depositor_metadata xml.xpath("//depositor").text
-  end
+ end
 
   def after_object_migration
     # additional actions as needed
@@ -39,8 +57,24 @@ end
 namespace :avalon do
   desc "Migrate all my objects"
   task migrate: :environment do
-    results = FedoraMigrate.migrate_repository(namespace: "avalon", options: {})
-    puts results
+
+    credentials = ActiveFedora::Config.new(FedoraMigrate.configurator.fedora3_config).credentials
+    solr = RSolr.connect url: credentials[:solrurl]
+
+    models = [Admin::Collection, MediaObject, MasterFile, Derivative]
+    models.each do |model| 
+      m = model.to_s.split(/::/).join('_')
+      response = solr.get 'select', :params => {:q =>'has_model_ssim:"info:fedora/afmodel:'+m+'"'}
+      ids = response['response']['docs'].collect{|d|d['dc_identifier_tesim']}.flatten.uniq
+      ids.each do |id|
+        source = FedoraMigrate.source.connection.find(id)
+        mover = FedoraMigrate::ObjectMover.new source, model.new
+        mover.migrate
+      end
+    end
+
+    #results = FedoraMigrate.migrate_repository(namespace: "avalon", options: {})
+    #puts results
   end
 
   desc 'migrate databases for the rails app and the active annotations gem'
