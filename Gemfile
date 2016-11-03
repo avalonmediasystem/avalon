@@ -76,7 +76,6 @@ gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/
 
 gem 'resque', '~> 1.26.0'
 gem 'resque-scheduler', '~> 4.3.0'
-gem 'capistrano-resque', '~> 0.2.2', require: false
 
 group :development, :test do
   gem 'equivalent-xml'
@@ -99,8 +98,11 @@ group :development do
   gem 'rubocop', '~> 0.40.0', require: false
 
   #Cap Deploys
-  gem 'capistrano', '~>2.12.0'
-  gem 'rvm-capistrano', require: false
+  gem 'capistrano', '~>3.6'
+  gem 'capistrano-rails', require: false
+  gem 'capistrano-resque', require: false
+  gem 'capistrano-rvm', require: false
+  gem 'capistrano-passenger', require: false
 end
 
 group :test do
