@@ -1,7 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'parallel'
-gem 'hydra-head', '~> 10.1'
+gem 'hydra-head', git: 'https://github.com/projecthydra/hydra-head.git'
 gem 'active-fedora', '~> 11.0'
 gem 'active_fedora-datastreams'
 gem 'blacklight', '~> 6.6'
@@ -63,6 +62,7 @@ gem 'roo'
 gem 'activerecord-session_store'
 gem 'whenever', git: "https://github.com/javan/whenever.git", require: false
 gem 'with_locking'
+gem 'parallel'
 
 #MediaElement.js related
 gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', branch: 'captions'

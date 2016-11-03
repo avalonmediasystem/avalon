@@ -102,6 +102,25 @@ GIT
     active_encode (0.0.2)
       activesupport
 
+GIT
+  remote: https://github.com/projecthydra/hydra-head.git
+  revision: db56e3926ab906e23eaf6ac5dff13087002948a8
+  specs:
+    hydra-access-controls (10.3.2)
+      active-fedora (>= 10.0.0, < 12)
+      activesupport (>= 4, < 6)
+      blacklight (>= 5.16)
+      blacklight-access_controls (~> 0.6)
+      cancancan (~> 1.8)
+      deprecation (~> 1.0)
+    hydra-core (10.3.2)
+      hydra-access-controls (= 10.3.2)
+      railties (>= 4.0.0, < 6)
+    hydra-head (10.3.2)
+      hydra-access-controls (= 10.3.2)
+      hydra-core (= 10.3.2)
+      rails (>= 3.2.6)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -193,7 +212,7 @@ GEM
       rails (>= 4.2, < 6)
       rsolr (~> 1.0, >= 1.0.6)
       twitter-typeahead-rails (= 0.11.1.pre.corejavascript)
-    blacklight-access_controls (0.6.0)
+    blacklight-access_controls (0.6.1)
       blacklight (~> 6.0)
       cancancan (~> 1.8)
       deprecation (~> 1.0)
@@ -339,20 +358,6 @@ GEM
     http_logger (0.5.1)
     httparty (0.14.0)
       multi_xml (>= 0.5.2)
-    hydra-access-controls (10.3.0)
-      active-fedora (>= 10.0.0, < 12)
-      activesupport (>= 4, < 6)
-      blacklight (>= 5.16)
-      blacklight-access_controls (~> 0.6)
-      cancancan (~> 1.8)
-      deprecation (~> 1.0)
-    hydra-core (10.3.0)
-      hydra-access-controls (= 10.3.0)
-      railties (>= 4.0.0, < 6)
-    hydra-head (10.3.0)
-      hydra-access-controls (= 10.3.0)
-      hydra-core (= 10.3.0)
-      rails (>= 3.2.6)
     i18n (0.7.0)
     iconv (1.0.4)
     ims-lti (1.1.12)
@@ -697,7 +702,7 @@ DEPENDENCIES
   fcrepo_wrapper
   hashdiff
   hooks
-  hydra-head (~> 10.1)
+  hydra-head!
   iconv
   jbuilder (~> 2.0)
   jquery-rails
