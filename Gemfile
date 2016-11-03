@@ -116,8 +116,11 @@ group :test do
   gem 'hashdiff'
 end
 
-group :travis, optional: true do
+group :mysql, optional: true do
   gem 'mysql2'
+end
+group :postgres, optional: true do
+  gem 'pg'
 end
 
 extra_gems = File.expand_path("../Gemfile.local",__FILE__)
