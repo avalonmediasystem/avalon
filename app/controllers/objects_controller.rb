@@ -14,7 +14,7 @@
 
 class ObjectsController < ApplicationController
   def show
-    obj = ActiveFedora::Base.where("identifier_sim:\"#{params[:id]}\"").first
+    obj = ActiveFedora::Base.where("identifier_ssim:\"#{params[:id]}\"").first
     obj ||= ActiveFedora::Base.find(params[:id], cast: true) rescue nil
     if obj.blank?
       redirect_to root_path

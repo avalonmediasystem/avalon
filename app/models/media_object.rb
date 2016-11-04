@@ -87,7 +87,7 @@ class MediaObject < ActiveFedora::Base
     index.as :stored_sortable
   end
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
-    index.as :facetable
+    index.as :symbol
   end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source

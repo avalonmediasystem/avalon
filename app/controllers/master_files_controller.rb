@@ -59,7 +59,7 @@ class MasterFilesController < ApplicationController
   def oembed
     if params[:url].present?
       id = params[:url].split('?')[0].split('/').last
-      mf = MasterFile.where("dc_identifier_tesim:\"#{id}\"").first
+      mf = MasterFile.where("identifier_ssim:\"#{id}\"").first
       mf ||= MasterFile.find(id) rescue nil
       if mf.present?
         width = params[:maxwidth] || MasterFile::EMBED_SIZE[:medium]
