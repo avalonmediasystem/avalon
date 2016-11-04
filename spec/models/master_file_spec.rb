@@ -195,10 +195,11 @@ describe MasterFile do
     describe "update images" do
       before do
         ActiveJob::Base.queue_adapter = :test
-        MasterFile.set_callback(:save, :before, :update_stills_from_offset!)
+        MasterFile.set_callback(:save, :after, :update_stills_from_offset!)
       end
       after do
-        MasterFile.skip_callback(:save, :before, :update_stills_from_offset!)
+        ActiveJob::Base.queue_adapter = :inline
+        MasterFile.skip_callback(:save, :after, :update_stills_from_offset!)
       end
       it "should update on save" do
         master_file.poster_offset = 12345
@@ -460,6 +461,16 @@ describe MasterFile do
     it 'does not prepend the id if already present' do
       path = '/path/to/avalon_12345-video.mp4'
       expect(MasterFile.post_processing_move_filename(path, id: id).include?(id_prefix + '-' + id_prefix)).to be_falsey
+    end
+  end
+
+  describe '#extract_frame' do
+    subject(:video_master_file) { FactoryGirl.create(:master_file, :with_media_object, :with_derivative, display_aspect_ratio: '1') }
+    before do
+      allow(video_master_file).to receive(:find_frame_source).and_return({source: video_master_file.file_location, offset: 1, master: false})
+    end
+    it "raises an exception when ffmpeg doesn't extract anything" do
+      expect {video_master_file.send(:extract_frame, {size: '160x120', offset: 1})}.to raise_error(RuntimeError)
     end
   end
 end
