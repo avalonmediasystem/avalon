@@ -41,6 +41,7 @@
   end
 
   mount BrowseEverything::Engine => '/browse'
+  mount AboutPage::Engine => '/about(.:format)', :as => 'about_page'
 
   # Avalon routes
   match "/authorize", to: 'derivatives#authorize', via: [:get, :post]
@@ -135,7 +136,7 @@
   end
 
   match "/oembed", to: 'master_files#oembed', via: [:get]
-  
+
   require 'resque/server'
   mount Resque::Server, at: '/jobs'
 
