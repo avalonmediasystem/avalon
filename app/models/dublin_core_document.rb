@@ -58,7 +58,7 @@ class DublinCoreDocument < ActiveFedora::OmDatastream
 
     def to_solr(solr_doc = {})
       solr_doc = super(solr_doc)
-      solr_doc["dc_identifier_sim"] = self.identifier.map(&:downcase)
+      solr_doc["dc_identifier_ssim"] = self.identifier.map(&:downcase)
       return solr_doc
     end
 
