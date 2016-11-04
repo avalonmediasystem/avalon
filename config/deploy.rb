@@ -19,12 +19,17 @@ set(:whenever_command) { "RAILS_ENV=#{rails_env} bundle exec whenever" }
 role :web, deployment_host
 role :app, deployment_host
 role :db, deployment_host, :primary => true
+role :resque_worker, deployment_host
+role :resque_scheduler, deployment_host
+
+set :resque_environment_task, true
 
 before "deploy:bundle_install", "deploy:link_local_files"
 before "deploy:finalize_update", "deploy:remove_symlink_targets"
 after "deploy:update_code", "deploy:symlink_dirs"
 after "deploy:update_code", "deploy:migrate"
 before "deploy:migrate", "deploy:bundle_install"
+after "deploy:restart", "resque:restart"
 #after "deploy:create_symlink", "deploy:trust_rvmrc"
 if ENV['AVALON_REINDEX']
   after "deploy:create_symlink", "deploy:reindex_everything"

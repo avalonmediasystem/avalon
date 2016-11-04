@@ -76,6 +76,7 @@ gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/
 
 gem 'resque', '~> 1.26.0'
 gem 'resque-scheduler', '~> 4.3.0'
+gem 'capistrano-resque', '~> 0.2.2', require: false
 
 group :development, :test do
   gem 'equivalent-xml'
