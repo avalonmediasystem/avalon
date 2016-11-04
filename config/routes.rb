@@ -151,6 +151,11 @@ Rails.application.routes.draw do
 
   require 'resque/server'
   mount Resque::Server, at: '/jobs'
+  
+  constraints(route_can?(:manage, Resque)) do
+    require 'resque/server'
+    mount Resque::Server, at: '/jobs'
+  end
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
