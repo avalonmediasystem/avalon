@@ -73,7 +73,7 @@ class MasterFile < ActiveFedora::Base
   end
   property :masterFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
-    index.as :facetable
+    index.as :symbol
   end
 
   # Workflow status properties

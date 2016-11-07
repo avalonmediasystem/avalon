@@ -52,7 +52,7 @@ class Admin::Collection < ActiveFedora::Base
     index.as Solrizer::Descriptor.new(:boolean, :stored, :indexed)
   end
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
-    index.as :facetable
+    index.as :symbol
   end
 
   around_save :reindex_members, if: Proc.new{ |c| c.name_changed? or c.unit_changed? }
