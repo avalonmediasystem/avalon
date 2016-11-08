@@ -25,8 +25,8 @@ class RoleMap < ActiveRecord::Base
     self.where(parent_id: nil)
   end
 
-  def self.load
-    Rails.cache.fetch('RoleMapHash') do
+  def self.load(opts = {})
+    Rails.cache.fetch('RoleMapHash', opts) do
       roles.inject({}) do |map, role|
         map[role.entry] = role.entries.collect &:entry
         map
