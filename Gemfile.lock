@@ -24,11 +24,12 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/fedora-migrate.git
-  revision: 2557849a9a4447f01a363770ded33553481df5d0
+  revision: 83cc5c34d6668bd8149895fcbc79bb6563a7cdbb
   branch: class_order_migrator
   specs:
     fedora-migrate (0.5.0)
       rchardet
+      rdf-rdfxml
       rubydora (~> 1.8)
 
 GIT
@@ -167,12 +168,6 @@ GIT
       hydra-access-controls (= 10.3.2)
       hydra-core (= 10.3.2)
       rails (>= 3.2.6)
-  remote: https://github.com/projecthydra-labs/fedora-migrate.git
-  revision: dbb3b56cfd8e9a419f12930f1c36d2d30cf64010
-  specs:
-    fedora-migrate (0.5.0)
-      rchardet
-      rubydora (~> 1.8)
 
 GIT
   remote: https://github.com/projecthydra/ldp.git
