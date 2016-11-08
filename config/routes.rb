@@ -1,4 +1,4 @@
-  Rails.application.routes.draw do
+Rails.application.routes.draw do
 
   mount Blacklight::Engine => '/'
   root to: "catalog#index"
@@ -41,8 +41,7 @@
   end
 
   mount BrowseEverything::Engine => '/browse'
-  mount AboutPage::Engine => '/about(.:format)', :as => 'about_page'
-
+    
   # Avalon routes
   match "/authorize", to: 'derivatives#authorize', via: [:get, :post]
   match "/authorize/:path", to: 'derivatives#authorize', via: [:get, :post]
@@ -136,6 +135,18 @@
   end
 
   match "/oembed", to: 'master_files#oembed', via: [:get]
+
+  def can_see?(thing, scope=nil)
+    lambda do |request|
+      warden = request.env['warden']
+      warden.authenticate? && Ability.new(warden.user(scope), warden.session(scope)).can?(:manage, thing)
+    end
+  end
+
+  constraints(can_see?(Admin::Collection)) do
+    mount AboutPage::Engine => '/about(.:format)', as: 'about_page'
+  end
+  get '/about(.:format)', to: redirect('/')
 
   require 'resque/server'
   mount Resque::Server, at: '/jobs'
