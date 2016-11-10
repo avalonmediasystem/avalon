@@ -38,6 +38,7 @@ class Ability
         can :inspect, MediaObject
         can :manage, Admin::Group
         can :manage, Admin::Collection
+        can :read, :about_page
       end
 
       if @user_groups.include? "group_manager"

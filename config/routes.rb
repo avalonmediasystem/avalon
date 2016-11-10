@@ -143,7 +143,7 @@ Rails.application.routes.draw do
     end
   end
 
-  constraints(route_can?(:manage, Admin::Collection)) do
+  constraints(route_can?(:read, :about_page)) do
     mount AboutPage::Engine => '/about(.:format)', as: 'about_page'
   end
   get '/about(.:format)', to: redirect('/')
