@@ -136,14 +136,14 @@ Rails.application.routes.draw do
 
   match "/oembed", to: 'master_files#oembed', via: [:get]
 
-  def can_see?(thing, scope=nil)
+  def route_can?(action, thing, scope=nil)
     lambda do |request|
       warden = request.env['warden']
-      warden.authenticate? && Ability.new(warden.user(scope), warden.session(scope)).can?(:manage, thing)
+      warden.authenticate? && Ability.new(warden.user(scope), warden.session(scope)).can?(action, thing)
     end
   end
 
-  constraints(can_see?(Admin::Collection)) do
+  constraints(route_can?(:manage, Admin::Collection)) do
     mount AboutPage::Engine => '/about(.:format)', as: 'about_page'
   end
   get '/about(.:format)', to: redirect('/')
