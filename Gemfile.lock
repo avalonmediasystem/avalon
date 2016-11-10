@@ -1,4 +1,21 @@
 GIT
+  remote: https://github.com/avalonmediasystem/about_page.git
+  revision: e4a87a7aec112b1ccdfa8f4cc71e0ee7ccdf66a6
+  tag: avalon-r6
+  specs:
+    about_page (0.3.1)
+      rails (>= 3.2)
+
+GIT
+  remote: https://github.com/avalonmediasystem/avalon-about.git
+  revision: 93cd70f348e04ee0affeb4543e57d630c976efe1
+  tag: avalon-r6
+  specs:
+    avalon-about (0.1.0)
+      about_page
+      mediainfo
+
+GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
   revision: 1dd1f63b8110809c42141952890934b9f0f8041e
   branch: hydra10
@@ -693,6 +710,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  about_page!
   active-fedora (~> 11.0)
   active_annotations (~> 0.2.0)
   active_encode!
@@ -701,6 +719,7 @@ DEPENDENCIES
   activerecord-session_store
   acts_as_list
   api-pagination
+  avalon-about!
   avalon-workflow!
   blacklight (~> 6.6)
   bootstrap_form
