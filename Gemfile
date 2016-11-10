@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'hydra-head', git: 'https://github.com/projecthydra/hydra-head.git'
 gem 'active-fedora', '~> 11.0'
 gem 'active_fedora-datastreams'
+gem 'active_fedora-noid'
 gem 'blacklight', '~> 6.6'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'

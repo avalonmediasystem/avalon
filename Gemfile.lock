@@ -164,6 +164,10 @@ GEM
       nom-xml (>= 0.5.1)
       om (~> 3.1)
       rdf-rdfxml (~> 2.0)
+    active_fedora-noid (2.0.0.beta3)
+      active-fedora (>= 9.7, < 12)
+      noid (~> 0.9)
+      rails (>= 4.2.6, < 6)
     activejob (4.2.7.1)
       activesupport (= 4.2.7.1)
       globalid (>= 0.3.0)
@@ -440,6 +444,7 @@ GEM
       net-ssh (>= 2.6.5)
     net-ssh (3.2.0)
     netrc (0.11.0)
+    noid (0.9.0)
     nokogiri (1.6.8.1)
       mini_portile2 (~> 2.1.0)
     nom-xml (0.5.4)
@@ -692,6 +697,7 @@ DEPENDENCIES
   active_annotations (~> 0.2.0)
   active_encode!
   active_fedora-datastreams
+  active_fedora-noid
   activerecord-session_store
   acts_as_list
   api-pagination
