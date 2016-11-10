@@ -16,10 +16,10 @@ require 'rails_helper'
 
 describe "Secure Routes" do
   after { Warden.test_reset! }
+  let!(:admin) { FactoryGirl.create(:administrator) }
+  let!(:user)  { FactoryGirl.create(:user) }
+
   describe "/about" do
-    let!(:admin) { FactoryGirl.create(:administrator) }
-    let!(:user)  { FactoryGirl.create(:user) }
-    
     it "should provide access to admins" do
       login_as admin, scope: :user
       visit '/about'
@@ -35,6 +35,26 @@ describe "Secure Routes" do
     it "should not provide access to anonymous users" do
       login_as user, scope: :user
       visit '/about'
+      page.should have_content('Sample Content')
+    end
+  end
+
+  describe "/about/health" do  
+    it "should provide access to admins" do
+      login_as admin, scope: :user
+      visit '/about/health'
+      page.should have_content('Service Health')
+    end
+
+    it "should not provide access to regular users" do
+      login_as user, scope: :user
+      visit '/about/health'
+      page.should have_content('Sample Content')
+    end
+
+    it "should not provide access to anonymous users" do
+      login_as user, scope: :user
+      visit '/about/health'
       page.should have_content('Sample Content')
     end
   end

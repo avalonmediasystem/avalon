@@ -147,6 +147,7 @@ Rails.application.routes.draw do
     mount AboutPage::Engine => '/about(.:format)', as: 'about_page'
   end
   get '/about(.:format)', to: redirect('/')
+  get '/about/health(.:format)', to: redirect('/')
 
   require 'resque/server'
   mount Resque::Server, at: '/jobs'

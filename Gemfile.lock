@@ -8,7 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-about.git
-  revision: 4bb6dda8426bfdad0969bbadb8f921c633d1cda0
+  revision: 93cd70f348e04ee0affeb4543e57d630c976efe1
+  tag: avalon-r6
   specs:
     avalon-about (0.1.0)
       about_page
