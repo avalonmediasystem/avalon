@@ -47,6 +47,8 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
 
+ActiveJob::Base.queue_adapter = :inline
+
 Shoulda::Matchers.configure do |config|
   config.integrate do |with|
     with.test_framework :rspec
@@ -73,7 +75,7 @@ RSpec.configure do |config|
       'fake_dropbox' => Dir.mktmpdir
     }
     Avalon::Configuration['dropbox']['path'] = Avalon::Configuration.lookup('spec.fake_dropbox')
-    MasterFile.skip_callback(:save, :before, :update_stills_from_offset!)
+    MasterFile.skip_callback(:save, :after, :update_stills_from_offset!)
   end
 
   config.after :suite do

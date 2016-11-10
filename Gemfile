@@ -1,8 +1,9 @@
 source 'https://rubygems.org'
 
-gem 'hydra-head', '~> 10.1'
+gem 'hydra-head', git: 'https://github.com/projecthydra/hydra-head.git'
 gem 'active-fedora', '~> 11.0'
 gem 'active_fedora-datastreams'
+gem 'active_fedora-noid', '>= 2.0.0.beta4'
 gem 'blacklight', '~> 6.6'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
@@ -62,6 +63,7 @@ gem 'roo'
 gem 'activerecord-session_store'
 gem 'whenever', git: "https://github.com/javan/whenever.git", require: false
 gem 'with_locking'
+gem 'parallel'
 
 #MediaElement.js related
 gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', branch: 'captions'
@@ -72,6 +74,9 @@ gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement
 gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r4'
 gem 'media-element-logo-plugin'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', branch: 'master'
+
+gem 'resque', '~> 1.26.0'
+gem 'resque-scheduler', '~> 4.3.0'
 
 group :development, :test do
   gem 'equivalent-xml'
@@ -94,8 +99,11 @@ group :development do
   gem 'rubocop', '~> 0.40.0', require: false
 
   #Cap Deploys
-  gem 'capistrano', '~>2.12.0'
-  gem 'rvm-capistrano', require: false
+  gem 'capistrano', '~>3.6'
+  gem 'capistrano-rails', require: false
+  gem 'capistrano-resque', require: false
+  gem 'capistrano-rvm', require: false
+  gem 'capistrano-passenger', require: false
 end
 
 group :test do
@@ -112,8 +120,11 @@ group :test do
   gem 'hashdiff'
 end
 
-group :travis, optional: true do
+group :mysql, optional: true do
   gem 'mysql2'
+end
+group :postgres, optional: true do
+  gem 'pg'
 end
 
 extra_gems = File.expand_path("../Gemfile.local",__FILE__)

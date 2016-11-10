@@ -19,6 +19,7 @@ class MediaObject < ActiveFedora::Base
   include MediaObjectMods
   include Avalon::Workflow::WorkflowModelMixin
   include Permalink
+  include Identifier
   require 'avalon/controlled_vocabulary'
 
   include Kaminari::ActiveFedoraModelExtension
@@ -87,7 +88,7 @@ class MediaObject < ActiveFedora::Base
     index.as :stored_sortable
   end
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
-    index.as :facetable
+    index.as :symbol
   end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
@@ -209,6 +210,7 @@ class MediaObject < ActiveFedora::Base
       solr_doc['section_id_ssim'] = master_file_ids
       solr_doc["section_label_tesim"] = section_labels
       solr_doc['section_physical_description_ssim'] = section_physical_descriptions
+      solr_doc['avalon_resource_type_ssim'] = self.avalon_resource_type.map(&:titleize)
 
       #Add all searchable fields to the all_text_timv field
       all_text_values = []

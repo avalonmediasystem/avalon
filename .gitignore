@@ -37,4 +37,4 @@ masterfiles/*
 /coverage
 /spec/master_file*
 .env*
-
+Gemfile.local

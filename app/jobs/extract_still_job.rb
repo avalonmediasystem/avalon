@@ -4,5 +4,6 @@ class ExtractStillJob < ActiveJob::Base
     return unless id
     mf = MasterFile.find(id)
     mf.extract_still(options)
+    mf.save
   end
 end
