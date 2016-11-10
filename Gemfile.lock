@@ -143,7 +143,7 @@ GEM
       erubis (~> 2.7.0)
       rails-dom-testing (~> 1.0, >= 1.0.5)
       rails-html-sanitizer (~> 1.0, >= 1.0.2)
-    active-fedora (11.0.0)
+    active-fedora (11.0.1)
       active-triples (~> 0.11.0)
       activemodel (>= 4.2, < 6)
       activesupport (>= 4.2.4, < 6)
@@ -164,10 +164,10 @@ GEM
       nom-xml (>= 0.5.1)
       om (~> 3.1)
       rdf-rdfxml (~> 2.0)
-    active_fedora-noid (2.0.0.beta3)
+    active_fedora-noid (2.0.0.beta6)
       active-fedora (>= 9.7, < 12)
       noid (~> 0.9)
-      rails (>= 4.2.6, < 6)
+      rails (>= 4.2.7.1, < 6)
     activejob (4.2.7.1)
       activesupport (= 4.2.7.1)
       globalid (>= 0.3.0)
@@ -697,7 +697,7 @@ DEPENDENCIES
   active_annotations (~> 0.2.0)
   active_encode!
   active_fedora-datastreams
-  active_fedora-noid
+  active_fedora-noid (>= 2.0.0.beta4)
   activerecord-session_store
   acts_as_list
   api-pagination
