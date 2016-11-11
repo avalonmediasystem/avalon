@@ -149,13 +149,11 @@ Rails.application.routes.draw do
   get '/about(.:format)', to: redirect('/')
   get '/about/health(.:format)', to: redirect('/')
 
-  require 'resque/server'
-  mount Resque::Server, at: '/jobs'
-  
   constraints(route_can?(:manage, Resque)) do
     require 'resque/server'
     mount Resque::Server, at: '/jobs'
   end
+  get '/jobs', to: redirect('/')
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
