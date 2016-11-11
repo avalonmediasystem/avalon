@@ -14,7 +14,7 @@
 
 
 $ ->
-  $(document).on 'click', '.dropdown-menu li', (event) ->
+  $(document).on 'click', '.dropdown-menu li a.dropdown-field', (event) ->
     event.preventDefault()
     d = $(this)
     group = d.closest('.input-group-btn')
