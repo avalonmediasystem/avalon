@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'hydra-head', git: 'https://github.com/projecthydra/hydra-head.git'
-gem 'active-fedora', '~> 11.0'
+gem 'active-fedora', git: 'https://github.com/projecthydra/active_fedora.git'
 gem 'active_fedora-datastreams'
 gem 'active_fedora-noid', '>= 2.0.0.beta4'
 gem 'blacklight', '~> 6.6'
