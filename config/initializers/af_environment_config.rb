@@ -9,7 +9,7 @@ class EnvironmentConfigurator < ActiveFedora::FileConfigurator
     if ENV['FEDORA_URL'].present?
       ActiveFedora::Base.logger.info("ActiveFedora: loading fedora config from FEDORA_URL") if ActiveFedora::Base.logger
       fedora_url = URI.parse(ENV['FEDORA_URL'])
-      @fedora_config = { user: fedora_url.user, password: fedora_url.password }
+      @fedora_config = { user: fedora_url.user, password: fedora_url.password, base_path: ENV['FEDORA_BASE_PATH'] || "" }
       fedora_url.userinfo = ''
       @fedora_config[:url] = fedora_url.to_s
     else
