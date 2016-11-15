@@ -139,7 +139,7 @@ namespace :avalon do
   # @example RAILS_ENV=production bundle exec rake avalon:reindex would do a single threaded production environment reindex
   # @example RAILS_ENV=production bundle exec rake avalon:reindex[2] would do a dual threaded production environment reindex
   task :reindex, [:threads] => :environment do |t, args|
-    descendants = ActiveFedora::Base.descendant_uris(ActiveFedora::Base.id_to_uri(''))
+    descendants = ActiveFedora::Base.descendant_uris(ActiveFedora.fedora.base_uri)
     descendants.shift # remove the root
     Parallel.map(descendants, in_threads: args[:threads].to_i || 1) do |uri|
       begin

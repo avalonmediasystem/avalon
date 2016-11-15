@@ -120,6 +120,19 @@ GIT
       activesupport
 
 GIT
+  remote: https://github.com/projecthydra/active_fedora.git
+  revision: 0e7b1515db3e493771ed10b7a4b53c1053d29bd3
+  specs:
+    active-fedora (11.0.1)
+      active-triples (~> 0.11.0)
+      activemodel (>= 4.2, < 6)
+      activesupport (>= 4.2.4, < 6)
+      deprecation
+      ldp (~> 0.6.0)
+      rsolr (>= 1.1.2, < 3)
+      solrizer (~> 3.4)
+
+GIT
   remote: https://github.com/projecthydra/hydra-head.git
   revision: db56e3926ab906e23eaf6ac5dff13087002948a8
   specs:
@@ -160,14 +173,6 @@ GEM
       erubis (~> 2.7.0)
       rails-dom-testing (~> 1.0, >= 1.0.5)
       rails-html-sanitizer (~> 1.0, >= 1.0.2)
-    active-fedora (11.0.1)
-      active-triples (~> 0.11.0)
-      activemodel (>= 4.2, < 6)
-      activesupport (>= 4.2.4, < 6)
-      deprecation
-      ldp (~> 0.6.0)
-      rsolr (~> 1.1, >= 1.1.2)
-      solrizer (~> 3.4)
     active-triples (0.11.0)
       activemodel (>= 3.0.0)
       activesupport (>= 3.0.0)
@@ -711,7 +716,7 @@ PLATFORMS
 
 DEPENDENCIES
   about_page!
-  active-fedora (~> 11.0)
+  active-fedora!
   active_annotations (~> 0.2.0)
   active_encode!
   active_fedora-datastreams
