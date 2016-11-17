@@ -24,7 +24,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/fedora-migrate.git
-  revision: 83cc5c34d6668bd8149895fcbc79bb6563a7cdbb
+  revision: 6109cb724b4e9b1731665793eb713a016b023143
   branch: class_order_migrator
   specs:
     fedora-migrate (0.5.0)
@@ -669,7 +669,7 @@ GEM
       multipart-post
       oauth2
     ruby-progressbar (1.8.1)
-    rubydora (1.9.0)
+    rubydora (1.9.1)
       activemodel
       activesupport
       deprecation

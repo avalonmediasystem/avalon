@@ -43,6 +43,8 @@ module FedoraMigrate::Hooks
     dc = Nokogiri::XML(source.datastreams['DC'].content)
     dc.remove_namespaces!
     target.identifier += dc.xpath('//identifier').map(&:text)
+    target.identifier += [source.pid]
+    #TODO need to do uniq! on target.identifier?
 
     #Add units to controlled vocabulary
     v = Avalon::ControlledVocabulary.vocabulary

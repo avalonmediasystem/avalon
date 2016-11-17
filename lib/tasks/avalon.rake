@@ -17,9 +17,9 @@ namespace :avalon do
   task migrate: :environment do
     #disable callbacks
     Admin::Collection.skip_callback(:save, :around, :reindex_members)
-    
-    models = [Admin::Collection, MediaObject, MasterFile, Derivative, Lease]
-    migrator = FedoraMigrate.migrate_repository(namespace: 'avalon', options: { class_order: models, single_pass: true })
+
+    models = [Admin::Collection]#, MediaObject, MasterFile, Derivative, Lease]
+    migrator = FedoraMigrate.migrate_repository(namespace: 'avalon', options: { class_order: models, single_pass: true, reassign_ids: true })
     # migrator.report.save
   end
 
