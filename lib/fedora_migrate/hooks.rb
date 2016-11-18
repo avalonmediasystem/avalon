@@ -30,34 +30,35 @@ module FedoraMigrate::Hooks
 
   def before_collection_migration(source, target)
     #FIXME change report to better report collection data
-    descMetadata = Nokogiri::XML(source.datastreams['descMetadata'].content)
-    target.name = descMetadata.xpath('fields/name').text
-    target.unit = descMetadata.xpath('fields/unit').text
-    target.description = descMetadata.xpath('fields/description').text
-    target.dropbox_directory_name = descMetadata.xpath('fields/dropbox_directory_name').text
-    defaultRights = Nokogiri::XML(source.datastreams['defaultRights'].content)
-    defaultRights.remove_namespaces!
-    target.default_read_users = defaultRights.xpath('//access[@type="read"]/machine/person').map(&:text)
-    target.default_read_groups = defaultRights.xpath('//access[@type="read"]/machine/group').map(&:text)
-    target.default_hidden = defaultRights.xpath('//access[@type="discover"]/machine/group[text()="nobody"]').present?
-    dc = Nokogiri::XML(source.datastreams['DC'].content)
-    dc.remove_namespaces!
-    target.identifier += dc.xpath('//identifier').map(&:text)
-    target.identifier += [source.pid]
+    # descMetadata = Nokogiri::XML(source.datastreams['descMetadata'].content)
+    # target.name = descMetadata.xpath('fields/name').text
+    # target.unit = descMetadata.xpath('fields/unit').text
+    # target.description = descMetadata.xpath('fields/description').text
+    # target.dropbox_directory_name = descMetadata.xpath('fields/dropbox_directory_name').text
+    # defaultRights = Nokogiri::XML(source.datastreams['defaultRights'].content)
+    # defaultRights.remove_namespaces!
+    # target.default_read_users = defaultRights.xpath('//access[@type="read"]/machine/person').map(&:text)
+    # target.default_read_groups = defaultRights.xpath('//access[@type="read"]/machine/group').map(&:text)
+    # target.default_hidden = defaultRights.xpath('//access[@type="discover"]/machine/group[text()="nobody"]').present?
+
+    # dc = Nokogiri::XML(source.datastreams['DC'].content)
+    # dc.remove_namespaces!
+    # target.identifier += dc.xpath('//identifier').map(&:text)
+    # target.identifier += [source.pid]
     #TODO need to do uniq! on target.identifier?
 
-    #Add units to controlled vocabulary
-    v = Avalon::ControlledVocabulary.vocabulary
-    unless v[:units].include? target.unit
-     v[:units] |= Array(target.unit)
-     Avalon::ControlledVocabulary.vocabulary = v
-    end
+    # #Add units to controlled vocabulary
+    # v = Avalon::ControlledVocabulary.vocabulary
+    # unless v[:units].include? target.unit
+    #  v[:units] |= Array(target.unit)
+    #  Avalon::ControlledVocabulary.vocabulary = v
+    # end
 
-    inheritedRights = Nokogiri::XML(source.datastreams['inheritedRights'].content)
-    inheritedRights.remove_namespaces!
-    #This will set both editors and managers
-    target.editors = inheritedRights.xpath('//rightsMetadata/access[@type="edit"]/machine/person').map(&:text)
-    target.depositors = inheritedRights.xpath('//rightsMetadata/access[@type="read"]/machine/person').map(&:text)
+    # inheritedRights = Nokogiri::XML(source.datastreams['inheritedRights'].content)
+    # inheritedRights.remove_namespaces!
+    # #This will set both editors and managers
+    # target.editors = inheritedRights.xpath('//rightsMetadata/access[@type="edit"]/machine/person').map(&:text)
+    # target.depositors = inheritedRights.xpath('//rightsMetadata/access[@type="read"]/machine/person').map(&:text)
   end
 
   def before_media_object_migration(source, target)

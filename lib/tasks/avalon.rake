@@ -12,6 +12,8 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+require 'fedora_migrate/class_ordered_repository_migrator'
+
 namespace :avalon do
   desc "Migrate all my objects"
   task migrate: :environment do
@@ -19,8 +21,9 @@ namespace :avalon do
     Admin::Collection.skip_callback(:save, :around, :reindex_members)
 
     models = [Admin::Collection]#, MediaObject, MasterFile, Derivative, Lease]
-    migrator = FedoraMigrate.migrate_repository(namespace: 'avalon', options: { class_order: models, single_pass: true, reassign_ids: true })
-    # migrator.report.save
+    migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', { class_order: models })
+    migrator.migrate_objects
+    migrator
   end
 
   desc 'migrate databases for the rails app and the active annotations gem'

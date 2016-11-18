@@ -23,16 +23,6 @@ GIT
     avalon-workflow (0.0.3)
 
 GIT
-  remote: https://github.com/avalonmediasystem/fedora-migrate.git
-  revision: 6109cb724b4e9b1731665793eb713a016b023143
-  branch: class_order_migrator
-  specs:
-    fedora-migrate (0.5.0)
-      rchardet
-      rdf-rdfxml
-      rubydora (~> 1.8)
-
-GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
   revision: af3644c432e8c61dc6d31a0c72ab4bf28c6ecbdd
   branch: master
@@ -151,6 +141,15 @@ GIT
       solrizer (~> 3.4)
 
 GIT
+  remote: https://github.com/projecthydra-labs/fedora-migrate.git
+  revision: dfbe18ec838f2574b4f2d9d9003b3e61f83326d3
+  specs:
+    fedora-migrate (0.5.0)
+      rchardet
+      rdf-rdfxml
+      rubydora (~> 1.8)
+
+GIT
   remote: https://github.com/projecthydra/hydra-head.git
   revision: db56e3926ab906e23eaf6ac5dff13087002948a8
   specs:
@@ -171,7 +170,8 @@ GIT
 
 GIT
   remote: https://github.com/projecthydra/ldp.git
-  revision: a988e5fa5d94eb0f3f0b3a27d1190f632048736b
+  revision: 36520b2a78744f0610d75702384330c43bbf8e21
+  branch: remove_ifmatch
   specs:
     ldp (0.6.2)
       deprecation
