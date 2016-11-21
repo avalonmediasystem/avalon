@@ -30,7 +30,7 @@ module Avalon
       def ingest
         # Scans dropbox for new batch packages
         new_packages = collection.dropbox.find_new_packages
-        logger.info "<< Found #{new_packages.count} new packages for collection #{collection.name} >>"
+        logger.info "<< Found #{new_packages.count} new packages for collection #{collection.name} >>" if new_packages.count > 0 
         # Extract package and process
         new_packages.each do |package|
           begin
