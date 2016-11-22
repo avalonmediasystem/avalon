@@ -538,6 +538,7 @@ GEM
       thor (>= 0.18.1, < 2.0)
     rainbow (2.1.0)
     rake (11.3.0)
+    rb-readline (0.5.3)
     rdf (2.1.0)
       hamster (~> 3.0)
       link_header (~> 0.0, >= 0.0.8)
@@ -774,6 +775,7 @@ DEPENDENCIES
   pry-byebug
   pry-rails
   rails (= 4.2.7.1)
+  rb-readline
   resque (~> 1.26.0)
   resque-scheduler (~> 4.3.0)
   rest-client
