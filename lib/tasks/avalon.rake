@@ -197,15 +197,23 @@ namespace :avalon do
       # Save existing playlist/item/marker data for users being imported
       puts "Compiling existing avalon marker data"
       usernames = import_json.collect{|user|user['username']}
-      Playlist.where(user_id: User.where(username: usernames)).each do |playlist|
+      userids = User.where(username: usernames).collect(&:id)
+      userids.each do |user_id|
+        print "."
+        playlist = Playlist.where(user_id: user_id, title:'Variations Bookmarks').first
+        next if playlist.nil?
         sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_playlist VALUES (?, ?, ?)", playlist.id, playlist.title, playlist.user_id])
         conn.execute(sql)
         playlist.items.each do |item|
-          sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_playlist_item VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", item.id, item.playlist_id, playlist.user_id, item.clip_id, item.master_file.id, item.position, item.title, item.start_time, item.end_time])
-          conn.execute(sql)
-          item.marker.each do |marker|
-            sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_marker VALUES (?,?,?,?,?)", marker.id, item.id, marker.master_file.id, marker.title, marker.start_time])
+          begin
+            sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_playlist_item VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", item.id, item.playlist_id, playlist.user_id, item.clip_id, item.master_file.pid, item.position, item.title, item.start_time, item.end_time])
             conn.execute(sql)
+            item.marker.each do |marker|
+              sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_marker VALUES (?,?,?,?,?)", marker.id, item.id, marker.master_file.pid, marker.title, marker.start_time])
+              conn.execute(sql)
+            end
+          rescue Exception => e
+            puts " Bad existing playlist item"
           end
         end
       end
