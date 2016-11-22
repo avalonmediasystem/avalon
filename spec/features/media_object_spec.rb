@@ -16,14 +16,23 @@ require 'rails_helper'
 describe 'MediaObject' do
   after { Warden.test_reset! }
   let(:media_object) { FactoryGirl.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
-  before :all do
-    user = FactoryGirl.create(:administrator)
-    login_as user, scope: :user
+  before :each do
+    @user = FactoryGirl.create(:administrator)
+    login_as @user, scope: :user
   end
   it 'can visit a media object' do
     media_object.save
-    url = media_object_url(media_object)
-    visit url
+    visit media_object_url(media_object)
     expect(page.status_code). to eq(200)
+    expect(page.has_content?('Default Unit')).to be_truthy
+  end
+  describe 'metadata display' do
+    it 'displays the title properly' do
+      title = 'Hello World'
+      media_object.title = title
+      media_object.save
+      visit media_object_url(media_object)
+      expect(page.has_content?(title)).to be_truthy
+    end
   end
 end
