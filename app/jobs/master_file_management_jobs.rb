@@ -35,23 +35,23 @@ module MasterFileManagementJobs
   end
 
   class Delete < ActiveJob::Base
-    queue_as :master_file_management_move
+    queue_as :master_file_management_delete
     def perform(id)
       Rails.logger.debug "Deleting masterfile"
 
       masterfile = MasterFile.find(id)
       oldpath = masterfile.file_location
       if File.exist? oldpath
-	File.delete(oldpath)
-	masterfile.file_location = ""
-	masterfile.save
-	Rails.logger.info "#{oldpath} has been deleted"
+      	File.delete(oldpath)
+      	masterfile.file_location = ""
+      	masterfile.save
+      	Rails.logger.info "#{oldpath} has been deleted"
       else
-	unless masterfile.file_location.empty?
-	  masterfile.file_location = ""
-	  masterfile.save
-	end
-	Rails.logger.warn "MasterFile #{oldpath} does not exist"
+      	unless masterfile.file_location.empty?
+      	  masterfile.file_location = ""
+      	  masterfile.save
+      	end
+      	Rails.logger.warn "MasterFile #{oldpath} does not exist"
       end
     end
   end

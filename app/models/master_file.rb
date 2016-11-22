@@ -679,12 +679,12 @@ class MasterFile < ActiveFedora::Base
 
     case Avalon::Configuration.lookup('master_file_management.strategy')
     when 'delete'
-      MasterFileManagementJobs.delete_master_file self.id
+      MasterFileManagementJobs::Delete.perform_now self.id
     when 'move'
       move_path = Avalon::Configuration.lookup('master_file_management.path')
       raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?
       newpath = File.join(move_path, MasterFile.post_processing_move_filename(file_location, id: id))
-      MasterFileManagementJobs.move_masterfile self.id, newpath
+      MasterFileManagementJobs::Move.perform_later self.id, newpath
     else
       # Do nothing
     end
