@@ -1,16 +1,15 @@
 module FedoraMigrate
   class ReassignIdRelsExtDatastreamMover < RelsExtDatastreamMover
-    def post_initialize
-      @target = ActiveFedora::Base.find(target.id)
-    rescue ActiveFedora::ObjectNotFoundError
-      raise FedoraMigrate::Errors::MigrationError, "Target object was not found in Fedora 4. Did you migrate it?"
-    end
+    # def post_initialize
+    #   @target = ActiveFedora::Base.find(target.id)
+    # rescue ActiveFedora::ObjectNotFoundError
+    #   raise FedoraMigrate::Errors::MigrationError, "Target object was not found in Fedora 4. Did you migrate it?"
+    # end
 
     def migrate
       migrate_statements
-      target.ldp_source.update
-      update_index
-      super
+      # target.save
+      report
     end
 
     private
@@ -21,12 +20,13 @@ module FedoraMigrate
       end
 
       def migrate_object(fc3_uri)
-        obj = locate_object(fc3_uri)
+        obj = locate_object(fc3_uri.to_s.split('/').last)
+        #FIXME raise error or return if obj.nil?
         RDF::URI.new(ActiveFedora::Base.id_to_uri(obj.id))
       end
 
       def missing_object?(statement)
-        return false if locate_object(statement.object).nil?
+        return false if locate_object(statement.object.to_s.split('/').last).present?
         report << "could not migrate relationship #{statement.predicate} because #{statement.object} doesn't exist in Fedora 4"
         true
       end

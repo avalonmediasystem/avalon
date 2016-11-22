@@ -1,5 +1,7 @@
 #FIXME autoload these elsewhere so this class doesn't need to know all of the object movers explicitly
+require 'fedora_migrate/simple_xml_datastream_mover'
 require 'fedora_migrate/admin_collection/object_mover'
+require 'fedora_migrate/media_object/object_mover'
 
 module FedoraMigrate
   class ClassOrderedRepositoryMigrator < RepositoryMigrator

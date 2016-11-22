@@ -128,6 +128,15 @@ GIT
       activesupport
 
 GIT
+  remote: https://github.com/projecthydra-labs/fedora-migrate.git
+  revision: dfbe18ec838f2574b4f2d9d9003b3e61f83326d3
+  specs:
+    fedora-migrate (0.5.0)
+      rchardet
+      rdf-rdfxml
+      rubydora (~> 1.8)
+
+GIT
   remote: https://github.com/projecthydra/active_fedora.git
   revision: 0e7b1515db3e493771ed10b7a4b53c1053d29bd3
   specs:
@@ -139,15 +148,6 @@ GIT
       ldp (~> 0.6.0)
       rsolr (>= 1.1.2, < 3)
       solrizer (~> 3.4)
-
-GIT
-  remote: https://github.com/projecthydra-labs/fedora-migrate.git
-  revision: dfbe18ec838f2574b4f2d9d9003b3e61f83326d3
-  specs:
-    fedora-migrate (0.5.0)
-      rchardet
-      rdf-rdfxml
-      rubydora (~> 1.8)
 
 GIT
   remote: https://github.com/projecthydra/hydra-head.git
@@ -170,8 +170,7 @@ GIT
 
 GIT
   remote: https://github.com/projecthydra/ldp.git
-  revision: 36520b2a78744f0610d75702384330c43bbf8e21
-  branch: remove_ifmatch
+  revision: 22ee4b0a6cede18b1ec234ac283a30eae355e617
   specs:
     ldp (0.6.2)
       deprecation
@@ -363,7 +362,7 @@ GEM
       warden (~> 1.2.3)
     diff-lcs (1.2.5)
     docile (1.1.5)
-    domain_name (0.5.20161021)
+    domain_name (0.5.20161129)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.1.1)
     dotenv-rails (2.1.1)
@@ -501,7 +500,7 @@ GEM
     mime-types-data (3.2016.0521)
     mimemagic (0.3.2)
     mini_portile2 (2.1.0)
-    minitest (5.10.1)
+    minitest (5.10.0)
     mono_logger (1.1.0)
     multi_json (1.12.1)
     multi_xml (0.5.5)

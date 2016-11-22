@@ -15,12 +15,16 @@
 require 'fedora_migrate/class_ordered_repository_migrator'
 
 namespace :avalon do
+  task clean: :environment do
+    require 'active_fedora/cleaner'
+    ActiveFedora::Cleaner.clean!
+  end
   desc "Migrate all my objects"
   task migrate: :environment do
     #disable callbacks
     Admin::Collection.skip_callback(:save, :around, :reindex_members)
 
-    models = [Admin::Collection]#, MediaObject, MasterFile, Derivative, Lease]
+    models = [Admin::Collection, ::MediaObject]#, MasterFile, Derivative, Lease]
     migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', { class_order: models })
     migrator.migrate_objects
     migrator

@@ -62,9 +62,9 @@ module FedoraMigrate::Hooks
   end
 
   def before_media_object_migration(source, target)
-    #byebug
-    relsExt = Nokogiri::XML(source.datastreams['RELS-EXT'].content)
-    target.collection = Admin::Collection.find(relsExt.xpath("//ns2:isMemberOfCollection/@rdf:resource").first.value.split('/').last)
+    # byebug
+    # relsExt = Nokogiri::XML(source.datastreams['RELS-EXT'].content)
+    # target.collection = Admin::Collection.find(relsExt.xpath("//ns2:isMemberOfCollection/@rdf:resource").first.value.split('/').last)
   end
 
   def before_master_file_migration(source, target)
@@ -87,5 +87,11 @@ module FedoraMigrate::Hooks
 
   def after_object_migration
     # additional actions as needed
+  end
+
+  def before_datastream_migration
+  end
+
+  def after_datastream_migration
   end
 end
