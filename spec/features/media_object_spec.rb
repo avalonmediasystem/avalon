@@ -15,7 +15,7 @@ require 'rails_helper'
 
 describe 'MediaObject' do
   after { Warden.test_reset! }
-  it 'does something'
+  it 'does something' do
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
     visit '/'
