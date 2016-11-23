@@ -34,5 +34,39 @@ describe 'MediaObject' do
       visit media_object_url(media_object)
       expect(page.has_content?(title)).to be_truthy
     end
+    it 'displays the title properly' do
+      title = 'Hello World'
+      media_object.title = title
+      media_object.save
+      visit media_object_url(media_object)
+      expect(page.has_content?(title)).to be_truthy
+    end
+    it 'displays the date properly' do
+      date = '1997'
+      media_object.date_issued = date
+      media_object.save
+      visit media_object_url(media_object)
+      expect(page.has_content?(date)).to be_truthy
+    end
+    it 'displays the main contributors properly' do
+      media_object.save
+      on_save_mc = media_object.creator.first
+      visit media_object_url(media_object)
+      expect(page.has_content?(on_save_mc)).to be_truthy
+    end
+    it 'displays the summary properly' do
+      summary = 'This is a really awesome object'
+      media_object.abstract = summary
+      media_object.save
+      visit media_object_url(media_object)
+      expect(page.has_content?(summary)).to be_truthy
+    end
+    it 'displays the contriburs properly' do
+      contributor = 'Jamie Lannister'
+      media_object.contributor = [contributor]
+      media_object.save
+      visit media_object_url(media_object)
+      expect(page.has_content?(contributor)).to be_truthy
+    end
   end
 end
