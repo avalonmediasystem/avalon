@@ -5,6 +5,8 @@ gem 'active-fedora', git: 'https://github.com/projecthydra/active_fedora.git'
 gem 'active_fedora-datastreams'
 gem 'active_fedora-noid', '>= 2.0.0.beta4'
 gem 'blacklight', '~> 6.6'
+gem 'rdf-rdfxml'
+gem 'ldp', git:'https://github.com/projecthydra/ldp.git'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.7.1'

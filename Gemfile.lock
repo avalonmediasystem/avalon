@@ -151,6 +151,21 @@ GIT
       hydra-core (= 10.3.2)
       rails (>= 3.2.6)
 
+GIT
+  remote: https://github.com/projecthydra/ldp.git
+  revision: 22ee4b0a6cede18b1ec234ac283a30eae355e617
+  specs:
+    ldp (0.6.1)
+      deprecation
+      faraday
+      http_logger
+      json-ld
+      rdf (>= 1.1)
+      rdf-isomorphic
+      rdf-turtle
+      rdf-vocab (>= 0.8)
+      slop
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -328,7 +343,7 @@ GEM
       railties (>= 4.0, < 5.1)
     dropbox-sdk (1.6.5)
       json
-    ebnf (1.0.1)
+    ebnf (1.0.2)
       rdf (~> 2.0)
       sxp (~> 1.0)
     edtf (3.0.0)
@@ -425,16 +440,6 @@ GEM
       activesupport (>= 3.0.0)
     launchy (2.4.3)
       addressable (~> 2.3)
-    ldp (0.6.1)
-      deprecation
-      faraday
-      http_logger
-      json-ld
-      rdf (>= 1.1)
-      rdf-isomorphic
-      rdf-turtle
-      rdf-vocab (>= 0.8)
-      slop
     link_header (0.0.8)
     little-plugger (1.1.4)
     logging (2.1.0)
@@ -757,6 +762,7 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   jquery-rails
   jquery-ui-rails
+  ldp!
   media-element-logo-plugin
   media_element_add_to_playlist!
   media_element_thumbnail_selector!
@@ -776,6 +782,7 @@ DEPENDENCIES
   pry-rails
   rails (= 4.2.7.1)
   rb-readline
+  rdf-rdfxml
   resque (~> 1.26.0)
   resque-scheduler (~> 4.3.0)
   rest-client
