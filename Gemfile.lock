@@ -112,14 +112,6 @@ GIT
       chronic (>= 0.6.3)
 
 GIT
-  remote: https://github.com/projecthydra-labs/active_encode.git
-  revision: 5e68c05fd4023d8bc6655d9a65ae709553c7ab8f
-  tag: v0.0.3
-  specs:
-    active_encode (0.0.2)
-      activesupport
-
-GIT
   remote: https://github.com/projecthydra/hydra-head.git
   revision: db56e3926ab906e23eaf6ac5dff13087002948a8
   specs:
@@ -176,6 +168,8 @@ GEM
     active_annotations (0.2.1)
       json-ld
       rdf-vocab (~> 2.1.0)
+    active_encode (0.0.3)
+      activesupport
     active_fedora-datastreams (0.1.0)
       active-fedora (>= 11.0.0.pre, < 12)
       nom-xml (>= 0.5.1)
@@ -714,7 +708,7 @@ DEPENDENCIES
   about_page!
   active-fedora (>= 10.3.0)
   active_annotations (~> 0.2.0)
-  active_encode!
+  active_encode (~> 0.0.3)
   active_fedora-datastreams
   active_fedora-noid (>= 2.0.0.beta4)
   activerecord-session_store
