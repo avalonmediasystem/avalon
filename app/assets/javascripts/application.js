@@ -18,6 +18,7 @@
 //= require blacklight/blacklight
 //= require browse_everything
 //= require mediaelement_rails
+//= require mediaelement-qualityselector/mep-feature-qualities
 //= require me-thumb-selector
 //= require me-add-to-playlist
 //= require modernizr
