@@ -64,16 +64,15 @@ class User < ActiveRecord::Base
   end
 
   def self.find_for_shibboleth(auth_hash, signed_in_resource=nil)
-
     if auth_hash.uid.blank?
       raise Avalon::MissingUserId 
     end
-    
+    email = auth_hash.info.email || auth_hash.uid + "@ualberta.ca" 
     result = 
       User.find_by_username(auth_hash.uid) ||
       User.find_by_email(auth_hash.info.email) ||
-      User.create(:username => auth_hash.info.email, :email => auth_hash.info.email)
-
+      User.create(:username => email, :email => email)
+    return result
   end
 
   def self.autocomplete(query)

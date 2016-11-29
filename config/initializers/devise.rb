@@ -197,12 +197,18 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', :scope => 'user,public_repo'
-
+  
   Avalon::Authentication::Providers.each do |provider|
     if provider[:provider] == :lti
       provider[:params].merge!({consumers: Avalon::Lti::Configuration})
     end
-    config.omniauth provider[:provider], provider[:params]
+    config.omniauth provider[:provider], {
+          :uid_field => 'uid',
+    :name_field => 'displayName',
+    :info_fields => {:name => 'givenName', :last_name => 'sn', :email => 'mail'},
+    :debug => false
+  }
+
   end
 
   # ==> Warden configuration
@@ -235,31 +241,5 @@ Devise.setup do |config|
   # CAS, uncomment the following line.
   # config.cas_create_user = false  
   OmniAuth.config.logger = Rails.logger
-  
-  # ==> OmniAuth
-  # Add a new OmniAuth provider. Check the wiki for more information on setting
-  # up on your models and hooks.
-  # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
-  config.omniauth :shibboleth, {
-    :uid_field => 'uid',
-    :name_field => 'displayName',
-    :info_fields => {
-      :name => 'givenName', 
-      :last_name => 'sn', 
-      :email => 'mail'}
-  }
-    #    ,
-    #    :debug => true
-
-# unless Rails.env.development?
-#  config.omniauth :shibboleth, {
-#    :uid_field => ->(request) {request.call('uid') || request.call('eppn').gsub(/@.*/, '')},
-#    :info_fields => {:name => 'givenName', :last_name => 'sn'}
-#  } if Rails.env.development?
-
-#  config.omniauth :shibboleth, {:uid_field => 'eppn',
-#    :info_fields => {:email => 'mail', :name => 'cn', :last_name => 'sn'},
-#    :extra_fields => [:schacHomeOrganization]
-#  }
-  
+   
 end
