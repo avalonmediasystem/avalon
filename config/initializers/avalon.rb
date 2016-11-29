@@ -7,4 +7,3 @@ require 'avalon/dropbox'
 require 'avalon/batch'
 
 I18n.config.enforce_available_locales = true
-RoleMap.load(force: true)
