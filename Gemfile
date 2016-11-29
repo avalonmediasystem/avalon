@@ -46,7 +46,7 @@ gem 'devise'
 
 # Avalon-specific
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", branch: 'hydra10'
-gem 'active_encode', git: "https://github.com/projecthydra-labs/active_encode.git", tag: 'v0.0.3'
+gem 'active_encode', '~> 0.0.3'
 gem 'hooks'
 gem 'iconv'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'avalon_fixes'
