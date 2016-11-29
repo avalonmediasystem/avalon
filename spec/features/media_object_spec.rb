@@ -34,13 +34,6 @@ describe 'MediaObject' do
       visit media_object_url(media_object)
       expect(page.has_content?(title)).to be_truthy
     end
-    it 'displays the title properly' do
-      title = 'Hello World'
-      media_object.title = title
-      media_object.save
-      visit media_object_url(media_object)
-      expect(page.has_content?(title)).to be_truthy
-    end
     it 'displays the date properly' do
       date = '1997'
       media_object.date_issued = date
