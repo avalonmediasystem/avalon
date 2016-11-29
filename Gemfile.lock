@@ -111,40 +111,6 @@ GIT
     whenever (0.9.7)
       chronic (>= 0.6.3)
 
-GIT
-  remote: https://github.com/projecthydra/hydra-head.git
-  revision: db56e3926ab906e23eaf6ac5dff13087002948a8
-  specs:
-    hydra-access-controls (10.3.2)
-      active-fedora (>= 10.0.0, < 12)
-      activesupport (>= 4, < 6)
-      blacklight (>= 5.16)
-      blacklight-access_controls (~> 0.6)
-      cancancan (~> 1.8)
-      deprecation (~> 1.0)
-    hydra-core (10.3.2)
-      hydra-access-controls (= 10.3.2)
-      railties (>= 4.0.0, < 6)
-    hydra-head (10.3.2)
-      hydra-access-controls (= 10.3.2)
-      hydra-core (= 10.3.2)
-      rails (>= 3.2.6)
-
-GIT
-  remote: https://github.com/projecthydra/ldp.git
-  revision: 22ee4b0a6cede18b1ec234ac283a30eae355e617
-  specs:
-    ldp (0.6.1)
-      deprecation
-      faraday
-      http_logger
-      json-ld
-      rdf (>= 1.1)
-      rdf-isomorphic
-      rdf-turtle
-      rdf-vocab (>= 0.8)
-      slop
-
 GEM
   remote: https://rubygems.org/
   specs:
@@ -228,21 +194,21 @@ GEM
       addressable (>= 2.3.1)
       extlib (>= 0.9.15)
       multi_json (>= 1.0.0)
-    autoprefixer-rails (6.4.1.1)
+    autoprefixer-rails (6.5.3)
       execjs
     bcrypt (3.1.11)
     bcrypt-ruby (3.1.5)
       bcrypt (>= 3.1.3)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
-    blacklight (6.6.1)
+    blacklight (6.7.2)
       bootstrap-sass (~> 3.2)
       deprecation
       globalid
       kaminari (>= 0.15)
       nokogiri (~> 1.6)
       rails (>= 4.2, < 6)
-      rsolr (~> 1.0, >= 1.0.6)
+      rsolr (>= 1.0.6, < 3)
       twitter-typeahead-rails (= 0.11.1.pre.corejavascript)
     blacklight-access_controls (0.6.1)
       blacklight (~> 6.0)
@@ -405,6 +371,20 @@ GEM
     http_logger (0.5.1)
     httparty (0.14.0)
       multi_xml (>= 0.5.2)
+    hydra-access-controls (10.3.3)
+      active-fedora (>= 10.0.0, < 12)
+      activesupport (>= 4, < 6)
+      blacklight (>= 5.16)
+      blacklight-access_controls (~> 0.6)
+      cancancan (~> 1.8)
+      deprecation (~> 1.0)
+    hydra-core (10.3.3)
+      hydra-access-controls (= 10.3.3)
+      railties (>= 4.0.0, < 6)
+    hydra-head (10.3.3)
+      hydra-access-controls (= 10.3.3)
+      hydra-core (= 10.3.3)
+      rails (>= 3.2.6)
     i18n (0.7.0)
     iconv (1.0.4)
     ims-lti (1.1.12)
@@ -746,7 +726,7 @@ DEPENDENCIES
   fcrepo_wrapper
   hashdiff
   hooks
-  hydra-head!
+  hydra-head (~> 10.3.3)
   iconv
   jbuilder (~> 2.0)
   jquery-rails
