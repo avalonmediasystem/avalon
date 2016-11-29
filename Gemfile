@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'hydra-head', git: 'https://github.com/projecthydra/hydra-head.git'
-gem 'active-fedora', git: 'https://github.com/projecthydra/active_fedora.git'
+gem 'active-fedora', '>= 10.3.0'
 gem 'active_fedora-datastreams'
 gem 'active_fedora-noid', '>= 2.0.0.beta4'
 gem 'blacklight', '~> 6.6'
@@ -87,6 +87,7 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'rb-readline'
   gem 'byebug'
+  gem 'rb-readline'
   gem 'pry-rails'
   gem 'pry-byebug'
   gem 'solr_wrapper', '>= 0.16'
