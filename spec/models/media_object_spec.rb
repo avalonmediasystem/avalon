@@ -640,7 +640,7 @@ describe MediaObject do
 
   describe '#collection=' do
     let(:new_media_object) { MediaObject.new }
-    let(:collection) { FactoryGirl.create(:collection, default_hidden: true, default_visibility: 'public', default_read_users: ['archivist1@example.com'], default_read_groups: ['TestGroup'])}
+    let(:collection) { FactoryGirl.create(:collection, default_hidden: true, default_read_users: ['archivist1@example.com'], default_read_groups: ['TestGroup', 'public'])}
 
     it 'sets hidden based upon collection for new media objects' do
       expect {new_media_object.collection = collection}.to change {new_media_object.hidden?}.to(true).from(false)
