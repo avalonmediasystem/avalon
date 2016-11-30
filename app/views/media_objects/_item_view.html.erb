@@ -80,6 +80,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
   <%= javascript_include_tag 'avalon_player' %>
   <%= javascript_include_tag 'me-add-to-playlist' %>
+  <%= javascript_include_tag 'me-track-scrubber' %>
 
   <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
   <%= stylesheet_link_tag 'me-thumb-selector' %>
@@ -105,6 +106,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       startQuality: '<%= current_quality(@currentStreamInfo) %>',
       customError: '<%= t("media_objects.player.customError").html_safe %>',
       playlistItemDefaultTitle: '<%= escape_javascript @currentStream.embed_title %>',
+      displayTrackScrubber: true,
       autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
       success: function(mediaElement, domObject, player) {
 	player.media.addEventListener('ended', function(e) {

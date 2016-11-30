@@ -34,6 +34,7 @@ class AvalonPlayer
       thumbnailSelectorEnabled: true
       addToPlaylistEnabled: true
       addMarkerToPlaylistItemEnabled: true
+      trackScrubberEnabled: true
       features: features
       startQuality: 'low'
       customError: 'This browser requires Adobe Flash Player to be installed for media playback.'
@@ -105,6 +106,7 @@ class AvalonPlayer
         $(@player.media).on 'timeupdate', => @setActiveSection()
         @container.find('#content').css('visibility','visible')
         @player.setCurrentTime(initialTime)
+        @player.initializeTrackScrubber(initialTime, _this.stream_info)
         $(@player.media).one 'loadedmetadata', initialize_view
         $(@player.media).one 'loadeddata', initialize_view
         keyboardAccess()
