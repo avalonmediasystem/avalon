@@ -54,6 +54,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     </section>
 
+    <%= render file: '_track_scrubber.html.erb' if current_user.present? %>
     <%= render file: '_add_to_playlist.html.erb' if current_user.present? %>
     <%= render 'workflow_progress' %>
     <%= render 'share' if will_partial_list_render? :share %>
@@ -84,6 +85,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= stylesheet_link_tag 'me-thumb-selector' %>
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
   <%= stylesheet_link_tag 'me-add-to-playlist' %>
+  <%= stylesheet_link_tag 'me-track-scrubber' %>
 
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>

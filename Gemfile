@@ -35,6 +35,7 @@
   gem 'media-element-logo-plugin'
   #gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r5'
   gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', branch: 'master'
+  gem 'mediaelement-track-scrubber', path: '/home/bkeese/mediaelement-track-scrubber'
 
   gem 'browse-everything', '0.6.3'
 
