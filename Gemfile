@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'hydra-head', '~> 10.3.3'
+gem 'hydra-head', '~> 10.3.4'
 gem 'active-fedora', '>= 10.3.0'
 gem 'active_fedora-datastreams'
 gem 'active_fedora-noid', '~> 2.0.0'
