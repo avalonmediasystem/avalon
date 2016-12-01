@@ -156,6 +156,7 @@ class AvalonPlayer
     unless now_playing_node == marked_node
       marked_node.remove()
       now_playing_node.before('<i class="now-playing fa fa-arrow-circle-right"></i>')
+      @player.initializeTrackScrubber(parseFloat(now_playing_node.data().fragmentbegin)||0, @stream_info)
 
   initStructureHandlers: ->
     @container.find('a[data-segment]').on 'click', (e) =>
