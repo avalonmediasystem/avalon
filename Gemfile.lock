@@ -128,6 +128,14 @@ GIT
     mediaelement-title (0.0.1)
 
 GIT
+  remote: https://github.com/avalonmediasystem/mediaelement-track-scrubber.git
+  revision: d524fccddbddb2698dcffa8868a5714c09f2d7d5
+  branch: master
+  specs:
+    mediaelement-track-scrubber (0.0.1)
+      rails (>= 4.0.13)
+
+GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
   revision: 86de64fd02e4982508c07dd6b3412430793e6955
   branch: captions
@@ -823,6 +831,7 @@ DEPENDENCIES
   mediaelement-qualityselector!
   mediaelement-skin-avalon!
   mediaelement-title!
+  mediaelement-track-scrubber!
   mediaelement_rails!
   mediainfo
   meta_request
@@ -870,4 +879,4 @@ DEPENDENCIES
   xray-rails
 
 BUNDLED WITH
-   1.12.5
+   1.13.1
