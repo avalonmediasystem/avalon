@@ -24,7 +24,7 @@ namespace :avalon do
     #disable callbacks
     Admin::Collection.skip_callback(:save, :around, :reindex_members)
 
-    models = [Admin::Collection, ::MediaObject]#, MasterFile, Derivative, Lease]
+    models = [Admin::Collection, ::MediaObject, ::MasterFile]#, Derivative, Lease]
     migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', { class_order: models })
     migrator.migrate_objects
     migrator
