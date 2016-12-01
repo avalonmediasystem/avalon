@@ -751,8 +751,6 @@ DEPENDENCIES
   pry-rails
   rails (= 4.2.7.1)
   rb-readline
-  rdf-rdfxml
-  active fedora 10.3.0
   resque (~> 1.26.0)
   resque-scheduler (~> 4.3.0)
   rest-client
