@@ -27,6 +27,7 @@ namespace :avalon do
     models = [Admin::Collection, ::MediaObject, ::MasterFile, ::Derivative]#, Lease]
     migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', { class_order: models })
     migrator.migrate_objects
+    FedoraMigrate::MediaObject::ObjectMover.set_master_file_order
     migrator
   end
 

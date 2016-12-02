@@ -13,6 +13,9 @@ module FedoraMigrate
     def migrate_objects
       class_order.each do |klass|
         @klass = klass
+        klass.class_eval do
+          property :migrated_from, predicate: RDF::URI("http://avalonmediasystem.org/ns/migration#migratedFrom"), multiple: false
+        end
         @source_objects = nil
         source_objects(klass).each do |object|
           @source = object

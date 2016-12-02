@@ -8,6 +8,23 @@ module FedoraMigrate
       WORKFLOW_DATASTREAM = "workflow".freeze
       DISPLAY_METADATA_DATASTREAM = "displayMetadata".freeze
 
+      def self.set_master_file_order
+        ::MediaObject.find_each do |mo|
+          original_object = FedoraMigrate.source.connection.find(mo.migrated_from)
+          master_files = ::MasterFile.where(isPartOf_ssim: mo.id)
+          if original_object.datastreams.has_key?('sectionsMetadata')
+            sections_md = Nokogiri::XML(original_object.datastreams['sectionsMetadata'].content)
+            old_pid_order = sections_md.xpath('fields/section_pid').collect(&:text)
+            mo.ordered_master_files = master_files.sort do |a,b|
+              old_pid_order.index(a.migrated_from) <=> old_pid_order.index(b.migrated_from)
+            end
+          else
+            mo.ordered_master_files = master_files
+          end
+          mo.save
+        end
+      end
+
       def migrate_datastreams
         migrate_dublin_core
         migrate_relationships
