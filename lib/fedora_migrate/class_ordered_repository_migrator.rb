@@ -3,6 +3,7 @@ require 'fedora_migrate/simple_xml_datastream_mover'
 require 'fedora_migrate/admin_collection/object_mover'
 require 'fedora_migrate/media_object/object_mover'
 require 'fedora_migrate/master_file/object_mover'
+require 'fedora_migrate/derivative/object_mover'
 
 module FedoraMigrate
   class ClassOrderedRepositoryMigrator < RepositoryMigrator
