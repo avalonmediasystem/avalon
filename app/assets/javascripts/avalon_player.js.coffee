@@ -20,11 +20,12 @@ class AvalonPlayer
     removeOpt = (key) -> value = opts[key]; delete opts[key]; value
     thumbnail_selector = if removeOpt('thumbnailSelector') then 'thumbnailSelector' else null
     add_to_playlist = if removeOpt('addToPlaylist') then 'addToPlaylist' else null
+    display_track_scrubber = if removeOpt('displayTrackScrubber') then 'trackScrubber' else null
     add_marker = if removeOpt('addMarker') then 'addMarkerToPlaylistItem' else null
     start_time = removeOpt('startTime')
     success_callback = removeOpt('success')
 
-    features = ['playpause','current','progress','duration','volume','tracks','qualities',thumbnail_selector, add_to_playlist, add_marker, 'fullscreen','responsive']
+    features = ['playpause','current','progress','duration','volume','tracks','qualities',thumbnail_selector, add_to_playlist, add_marker,display_track_scrubber,'fullscreen','responsive']
     features = (feature for feature in features when feature?)
     player_options =
       mode: 'auto_plugin'
@@ -103,10 +104,20 @@ class AvalonPlayer
       @player.options.playlistItemDefaultTitle = @stream_info.embed_title
 
       $(@player).one 'created', =>
-        $(@player.media).on 'timeupdate', => @setActiveSection()
+        $(@player.media).on 'timeupdate', => 
+          @setActiveSection()
+          @player.updateTrackScrubber()
         @container.find('#content').css('visibility','visible')
         @player.setCurrentTime(initialTime)
-        @player.initializeTrackScrubber(initialTime, _this.stream_info)
+        #Save because it might be necessary if showing mediafragment of object without structure...
+        if _this.stream_info.hasOwnProperty('t')
+          trackstart = _this.stream_info.t[0]
+          trackend = _this.stream_info.t[1] || _this.stream_info.duration
+        else
+          trackstart = 0
+          trackend = _this.stream_info.duration
+        @player.initializeTrackScrubber(trackstart, trackend, _this.stream_info)
+        @player.showTrackScrubber(true)
         $(@player.media).one 'loadedmetadata', initialize_view
         $(@player.media).one 'loadeddata', initialize_view
         keyboardAccess()
@@ -148,6 +159,10 @@ class AvalonPlayer
       $(active_node)
         .addClass('current-stream')
         .trigger('streamswitch', [@stream_info])
+      trackstart = parseFloat($(active_node).data('fragmentbegin')||0)||0
+      trackend = parseFloat($(active_node).data('fragmentend')||@stream_info.duration)||@stream_info.duration
+      @player.initializeTrackScrubber(trackstart, trackend, @stream_info)
+      @player.showTrackScrubber(true)
 
     marked_node = @container.find('i.now-playing')
     now_playing_node = @container.find('a.current-stream')
@@ -156,7 +171,6 @@ class AvalonPlayer
     unless now_playing_node == marked_node
       marked_node.remove()
       now_playing_node.before('<i class="now-playing fa fa-arrow-circle-right"></i>')
-      @player.initializeTrackScrubber(parseFloat(now_playing_node.data().fragmentbegin)||0, @stream_info)
 
   initStructureHandlers: ->
     @container.find('a[data-segment]').on 'click', (e) =>
