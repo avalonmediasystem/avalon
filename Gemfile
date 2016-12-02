@@ -1,9 +1,9 @@
 source 'https://rubygems.org'
 
-gem 'hydra-head', git: 'https://github.com/projecthydra/hydra-head.git'
-gem 'active-fedora', git: 'https://github.com/projecthydra/active_fedora.git'
+gem 'hydra-head', '~> 10.3.4'
+gem 'active-fedora', '>= 10.3.0'
 gem 'active_fedora-datastreams'
-gem 'active_fedora-noid', '>= 2.0.0.beta4'
+gem 'active_fedora-noid', '~> 2.0.0'
 gem 'blacklight', '~> 6.6'
 gem 'rdf-rdfxml'
 gem 'ldp', git:'https://github.com/projecthydra/ldp.git'
@@ -46,7 +46,7 @@ gem 'devise'
 
 # Avalon-specific
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", branch: 'hydra10'
-gem 'active_encode', git: "https://github.com/projecthydra-labs/active_encode.git", tag: 'v0.0.3'
+gem 'active_encode', '~> 0.0.3'
 gem 'hooks'
 gem 'iconv'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'avalon_fixes'
@@ -87,6 +87,7 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'rb-readline'
   gem 'byebug'
+  gem 'rb-readline'
   gem 'pry-rails'
   gem 'pry-byebug'
   gem 'solr_wrapper', '>= 0.16'
