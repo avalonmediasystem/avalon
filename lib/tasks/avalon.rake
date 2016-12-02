@@ -74,7 +74,7 @@ namespace :avalon do
         abort "You must specify a username and password.  Example: rake avalon:user:create avalon_username=user@example.edu avalon_password=password avalon_groups=group1,group2"
       end
 
-      require 'role_controls'
+      require 'avalon/role_controls'
       username = ENV['avalon_username'].dup
       password = ENV['avalon_password']
       groups = ENV['avalon_groups'].split(",")
@@ -82,8 +82,8 @@ namespace :avalon do
       Identity.create!(email: username, password: password, password_confirmation: password)
       User.create!(username: username, email: username)
       groups.each do |group|
-        RoleControls.add_role(group) unless RoleControls.role_exists? group
-        RoleControls.add_user_role(username, group)
+        Avalon::RoleControls.add_role(group) unless Avalon::RoleControls.role_exists? group
+        Avalon::RoleControls.add_user_role(username, group)
       end
 
       puts "User #{username} created and added to groups #{groups}"
@@ -94,14 +94,14 @@ namespace :avalon do
         abort "You must specify a username  Example: rake avalon:user:delete avalon_username=user@example.edu"
       end
 
-      require 'role_controls'
+      require 'avalon/role_controls'
       username = ENV['avalon_username'].dup
-      groups = RoleControls.user_roles username
+      groups = Avalon::RoleControls.user_roles username
 
       Identity.where(email: username).destroy_all
       User.where(username: username).destroy_all
       groups.each do |group|
-        RoleControls.remove_user_role(username, group)
+        Avalon::RoleControls.remove_user_role(username, group)
       end
 
       puts "Deleted user #{username} and removed them from groups #{groups}"
