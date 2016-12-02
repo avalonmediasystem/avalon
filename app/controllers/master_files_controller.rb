@@ -174,7 +174,7 @@ class MasterFilesController < ApplicationController
         end
 
         unless file.path.valid_encoding? && file.path.ascii_only?
-          flash[:error] = 'The file you has non ASCII characters in its name.'
+          flash[:error] = 'The file you have uploaded has non-ASCII characters in its name.'
           return redirect_to :back
         end
 
