@@ -170,8 +170,12 @@ class MasterFilesController < ApplicationController
           # Use the errors key to signal that it should be a red notice box rather
           # than the default
           flash[:error] = "The file you have uploaded is too large"
-          redirect_to :back
-          return
+          return redirect_to :back
+        end
+
+        unless file.path.valid_encoding? && file.path.ascii_only?
+          flash[:error] = 'The file you have uploaded has non-ASCII characters in its name.'
+          return redirect_to :back
         end
 
         master_file = MasterFile.new()
