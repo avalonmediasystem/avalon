@@ -1,5 +1,6 @@
 require 'fedora_migrate/reassign_id_object_mover'
 require 'fedora_migrate/media_object/display_metadata_datastream_mover'
+require 'fedora_migrate/media_object/dublin_core_datastream_mover'
 
 module FedoraMigrate
   module MediaObject
@@ -36,6 +37,13 @@ module FedoraMigrate
         # migrate_dates #skip because it doesn't do anything for us
         save
         # super
+      end
+
+      def migrate_dublin_core
+        return unless source.datastreams.keys.include?('DC')
+        mover = FedoraMigrate::MediaObject::DublinCoreDatastreamMover.new(source.datastreams['DC'], target)
+        mover.migrate
+        # report.dc = mover.migrate
       end
 
       def migrate_desc_metadata
