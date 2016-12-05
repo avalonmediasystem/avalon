@@ -106,18 +106,23 @@ class AvalonPlayer
       $(@player).one 'created', =>
         $(@player.media).on 'timeupdate', => 
           @setActiveSection()
-          @player.updateTrackScrubber()
         @container.find('#content').css('visibility','visible')
         @player.setCurrentTime(initialTime)
         #Save because it might be necessary if showing mediafragment of object without structure...
-        if _this.stream_info.hasOwnProperty('t')
-          trackstart = _this.stream_info.t[0]
-          trackend = _this.stream_info.t[1] || _this.stream_info.duration
-        else
-          trackstart = 0
-          trackend = _this.stream_info.duration
-        @player.initializeTrackScrubber(trackstart, trackend, _this.stream_info)
-        @player.showTrackScrubber(true)
+        if @player.options.trackScrubberEnabled
+          if _this.stream_info.hasOwnProperty('t')
+            trackstart = _this.stream_info.t[0]
+            trackend = _this.stream_info.t[1] || _this.stream_info.duration
+          else
+            trackstart = 0
+            trackend = _this.stream_info.duration
+          @player.initializeTrackScrubber(trackstart, trackend, _this.stream_info)
+          @player.showTrackScrubber(true)
+          $(@player.media).on 'timeupdate', => 
+            @player.updateTrackScrubber()
+          @player.globalBind('resize', (e) ->
+            _this.player.resizeTrackScrubber()
+          )
         $(@player.media).one 'loadedmetadata', initialize_view
         $(@player.media).one 'loadeddata', initialize_view
         keyboardAccess()
@@ -159,10 +164,11 @@ class AvalonPlayer
       $(active_node)
         .addClass('current-stream')
         .trigger('streamswitch', [@stream_info])
-      trackstart = parseFloat($(active_node).data('fragmentbegin')||0)||0
-      trackend = parseFloat($(active_node).data('fragmentend')||@stream_info.duration)||@stream_info.duration
-      @player.initializeTrackScrubber(trackstart, trackend, @stream_info)
-      @player.showTrackScrubber(true)
+      if @player? && @player.options.trackScrubberEnabled
+        trackstart = parseFloat($(active_node).data('fragmentbegin')||0)||0
+        trackend = parseFloat($(active_node).data('fragmentend')||@stream_info.duration)||@stream_info.duration
+        @player.initializeTrackScrubber(trackstart, trackend, @stream_info)
+        @player.showTrackScrubber(true)
 
     marked_node = @container.find('i.now-playing')
     now_playing_node = @container.find('a.current-stream')
