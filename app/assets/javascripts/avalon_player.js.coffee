@@ -117,7 +117,6 @@ class AvalonPlayer
             trackstart = 0
             trackend = _this.stream_info.duration
           @player.initializeTrackScrubber(trackstart, trackend, _this.stream_info)
-          @player.showTrackScrubber(true)
           $(@player.media).on 'timeupdate', => 
             @player.updateTrackScrubber()
           @player.globalBind('resize', (e) ->
@@ -168,7 +167,6 @@ class AvalonPlayer
         trackstart = parseFloat($(active_node).data('fragmentbegin')||0)||0
         trackend = parseFloat($(active_node).data('fragmentend')||@stream_info.duration)||@stream_info.duration
         @player.initializeTrackScrubber(trackstart, trackend, @stream_info)
-        @player.showTrackScrubber(true)
 
     marked_node = @container.find('i.now-playing')
     now_playing_node = @container.find('a.current-stream')
