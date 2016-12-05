@@ -2,6 +2,7 @@
 require 'fedora_migrate/simple_xml_datastream_mover'
 require 'fedora_migrate/admin_collection/object_mover'
 require 'fedora_migrate/media_object/object_mover'
+require 'fedora_migrate/media_object/master_file_aggregation_mover'
 require 'fedora_migrate/master_file/object_mover'
 require 'fedora_migrate/derivative/object_mover'
 
@@ -14,12 +15,24 @@ module FedoraMigrate
       class_order.each do |klass|
         @klass = klass
         klass.class_eval do
-          property :migrated_from, predicate: RDF::URI("http://avalonmediasystem.org/ns/migration#migratedFrom"), multiple: false
+          property :migrated_from, predicate: RDF::URI("http://avalonmediasystem.org/ns/migration#migratedFrom"), multiple: false do |index|
+            index.as :stored_searchable
+          end
         end
         @source_objects = nil
         source_objects(klass).each do |object|
           @source = object
           migrate_current_object
+        end
+      end
+      class_order.each do |klass|
+        @klass = klass
+        if object_mover.instance_methods.include?(:second_pass)
+          @source_objects = nil
+          source_objects(klass).each do |object|
+            @source = object
+            migrate_object(:second_pass)
+          end
         end
       end
       report.reload
@@ -42,8 +55,10 @@ module FedoraMigrate
 
     private
 
-      def migrate_object
-        result.object = object_mover.new(source, nil, options).migrate
+      def migrate_object(method=:migrate)
+        target = klass.where(migrated_from_tesim: source.pid).first
+        options[:report] = report.reload[source.pid]
+        result.object = object_mover.new(source, target, options).send(method)
         result.status = true
       rescue StandardError => e
         result.object = e.inspect

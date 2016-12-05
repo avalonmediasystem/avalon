@@ -1,3 +1,4 @@
+require 'ostruct'
 require 'fedora_migrate/reassign_id_object_mover'
 require 'fedora_migrate/media_object/display_metadata_datastream_mover'
 require 'fedora_migrate/media_object/dublin_core_datastream_mover'
@@ -8,24 +9,6 @@ module FedoraMigrate
       DESC_METADATA_DATASTREAM = "descMetadata".freeze
       WORKFLOW_DATASTREAM = "workflow".freeze
       DISPLAY_METADATA_DATASTREAM = "displayMetadata".freeze
-
-      def self.set_master_file_order
-        ::MediaObject.find_each do |mo|
-          next unless mo.migrated_from
-          original_object = FedoraMigrate.source.connection.find(mo.migrated_from)
-          master_files = ::MasterFile.where(isPartOf_ssim: mo.id)
-          if original_object.datastreams.has_key?('sectionsMetadata')
-            sections_md = Nokogiri::XML(original_object.datastreams['sectionsMetadata'].content)
-            old_pid_order = sections_md.xpath('fields/section_pid').collect(&:text)
-            mo.ordered_master_files = master_files.sort do |a,b|
-              old_pid_order.index(a.migrated_from) <=> old_pid_order.index(b.migrated_from)
-            end
-          else
-            mo.ordered_master_files = master_files
-          end
-          mo.save
-        end
-      end
 
       def migrate_datastreams
         migrate_dublin_core
@@ -61,6 +44,13 @@ module FedoraMigrate
       def migrate_display_metadata
         return unless source.datastreams.keys.include?(DISPLAY_METADATA_DATASTREAM)
         FedoraMigrate::MediaObject::DisplayMetadataDatastreamMover.new(source.datastreams[DISPLAY_METADATA_DATASTREAM], target).migrate
+      end
+
+      def second_pass
+        @report = OpenStruct.new(options[:report]) if options[:report].present?
+        mover = FedoraMigrate::MediaObject::MasterFileAggregationMover.new(source, target)
+        report.master_file_order = mover.migrate
+        report
       end
     end
   end
