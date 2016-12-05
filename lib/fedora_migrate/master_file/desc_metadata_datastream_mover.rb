@@ -3,9 +3,9 @@ module FedoraMigrate
     class DescMetadataDatastreamMover < FedoraMigrate::SimpleXmlDatastreamMover
 
       def fields_to_copy
-        %w(file_checksum file_size duration display_aspect_ratio original_frame_size file_size date_digitized physical_description)
+        %w(file_checksum file_size duration display_aspect_ratio original_frame_size file_size date_digitized physical_description file_location)
       end
-      
+
       def migrate
         super
         ['poster_offset','thumbnail_offset'].each do |field|

@@ -10,6 +10,7 @@ module FedoraMigrate
 
       def self.set_master_file_order
         ::MediaObject.find_each do |mo|
+          next unless mo.migrated_from
           original_object = FedoraMigrate.source.connection.find(mo.migrated_from)
           master_files = ::MasterFile.where(isPartOf_ssim: mo.id)
           if original_object.datastreams.has_key?('sectionsMetadata')

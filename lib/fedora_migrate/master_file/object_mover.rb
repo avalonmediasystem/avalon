@@ -17,6 +17,7 @@ module FedoraMigrate
       def migrate_datastreams
         migrate_dublin_core
         migrate_desc_metadata
+        migrate_title
         migrate_file_location
         migrate_transcoding_metadata
         migrate_poster_and_thumbnail
@@ -57,6 +58,11 @@ module FedoraMigrate
       def migrate_file_location
         return unless source.datastreams.keys.include?(MASTERFILE_DATASTREAM)
         target.masterFile = source.datastreams[MASTERFILE_DATASTREAM].content
+      end
+
+      def migrate_title
+        return unless source.label
+        target.title = source.label
       end
 
       private
