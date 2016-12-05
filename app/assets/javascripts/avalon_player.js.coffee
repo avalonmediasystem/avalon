@@ -35,7 +35,7 @@ class AvalonPlayer
       thumbnailSelectorEnabled: true
       addToPlaylistEnabled: true
       addMarkerToPlaylistItemEnabled: true
-      trackScrubberEnabled: true
+      trackScrubberEnabled: display_track_scrubber == 'trackScrubber'
       features: features
       startQuality: 'low'
       customError: 'This browser requires Adobe Flash Player to be installed for media playback.'
