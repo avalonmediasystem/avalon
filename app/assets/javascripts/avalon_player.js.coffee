@@ -27,7 +27,7 @@ class AvalonPlayer
     start_time = removeOpt('startTime')
     success_callback = removeOpt('success')
 
-    features = ['playpause','current','progress','duration','volume','tracks','qualities',thumbnail_selector, add_to_playlist, add_marker,display_track_scrubber, 'fullscreen','responsive']
+    features = ['playpause','current','progress','duration',display_track_scrubber,'volume','tracks','qualities',thumbnail_selector, add_to_playlist, add_marker, 'fullscreen','responsive']
     features = (feature for feature in features when feature?)
     player_options =
       mode: 'auto_plugin'
@@ -36,7 +36,7 @@ class AvalonPlayer
       thumbnailSelectorEnabled: true
       addToPlaylistEnabled: true
       addMarkerToPlaylistItemEnabled: true
-      trackScrubberEnabled: true
+      trackScrubberEnabled: display_track_scrubber == 'trackScrubber'
       features: features
       startQuality: 'low'
       customError: 'This browser requires Adobe Flash Player to be installed for media playback.'
@@ -108,20 +108,23 @@ class AvalonPlayer
 
         $(@player.media).on 'timeupdate', =>
           @setActiveSection()
-          @player.updateTrackScrubber()
         @container.find('#content').css('visibility','visible')
         @player.setCurrentTime(initialTime)
 
         #Save because it might be necessary if showing mediafragment of object without structure...
-        if _this.stream_info.hasOwnProperty('t')
-          trackstart = _this.stream_info.t[0]
-          trackend = _this.stream_info.t[1] || _this.stream_info.duration
-        else
-          trackstart = 0
-          trackend = _this.stream_info.duration
-        @player.initializeTrackScrubber(trackstart, trackend, _this.stream_info)
-        @player.showTrackScrubber(true)
-
+        if @player.options.trackScrubberEnabled
+          if _this.stream_info.hasOwnProperty('t')
+            trackstart = _this.stream_info.t[0]
+            trackend = _this.stream_info.t[1] || _this.stream_info.duration
+          else
+            trackstart = 0
+            trackend = _this.stream_info.duration
+          @player.initializeTrackScrubber(trackstart, trackend, _this.stream_info)
+          $(@player.media).on 'timeupdate', =>
+            @player.updateTrackScrubber()
+          @player.globalBind('resize', (e) ->
+            _this.player.resizeTrackScrubber()
+          )
         $(@player.media).one 'loadedmetadata', initialize_view
         $(@player.media).one 'loadeddata', initialize_view
         keyboardAccess()
@@ -163,10 +166,10 @@ class AvalonPlayer
       $(active_node)
         .addClass('current-stream')
         .trigger('streamswitch', [@stream_info])
-      trackstart = parseFloat($(active_node).data('fragmentbegin')||0)||0
-      trackend = parseFloat($(active_node).data('fragmentend')||@stream_info.duration)||@stream_info.duration
-      @player.initializeTrackScrubber(trackstart, trackend, @stream_info)
-      @player.showTrackScrubber(true)
+      if @player? && @player.options.trackScrubberEnabled
+        trackstart = parseFloat($(active_node).data('fragmentbegin')||0)||0
+        trackend = parseFloat($(active_node).data('fragmentend')||@stream_info.duration)||@stream_info.duration
+        @player.initializeTrackScrubber(trackstart, trackend, @stream_info)
 
 
     marked_node = @container.find('i.now-playing')
