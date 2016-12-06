@@ -111,6 +111,21 @@ GIT
     whenever (0.9.7)
       chronic (>= 0.6.3)
 
+GIT
+  remote: https://github.com/projecthydra/ldp.git
+  revision: a988e5fa5d94eb0f3f0b3a27d1190f632048736b
+  specs:
+    ldp (0.6.2)
+      deprecation
+      faraday
+      http_logger
+      json-ld
+      rdf (>= 1.1)
+      rdf-isomorphic
+      rdf-turtle
+      rdf-vocab (>= 0.8)
+      slop
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -468,7 +483,7 @@ GEM
     orm_adapter (0.5.0)
     os (0.9.6)
     parallel (1.9.0)
-    parser (2.3.1.2)
+    parser (2.3.3.1)
       ast (~> 2.2)
     pg (0.19.0)
     powerpack (0.1.1)
@@ -751,6 +766,7 @@ DEPENDENCIES
   pry-rails
   rails (= 4.2.7.1)
   rb-readline
+  rdf-rdfxml
   resque (~> 1.26.0)
   resque-scheduler (~> 4.3.0)
   rest-client
