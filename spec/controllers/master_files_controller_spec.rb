@@ -58,6 +58,19 @@ describe MasterFilesController do
       end
     end
 
+    context "cannot upload a file with a non-ascii character in the filename" do
+      it "should provide a warning about the invalid filename" do
+        request.env["HTTP_REFERER"] = "/"
+
+        file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+        allow(file).to receive(:original_filename).and_return("videoshort_é.mp4")
+
+        expect { post :create, Filedata: [file], original: 'any', container_id: media_object.id}.not_to change { MasterFile.count }
+
+        expect(flash[:error]).not_to be_nil
+      end
+    end
+
     context "must be a valid MIME type" do
       it "should recognize a video format" do
         file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
