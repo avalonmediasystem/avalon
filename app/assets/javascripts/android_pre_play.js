@@ -11,10 +11,10 @@
       if (typeof _t.originalGetCurrentTime != 'function')
         _t.originalGetCurrentTime = _t.player.getCurrentTime;
       _t.player.getCurrentTime = _t.androidGetCurrentTime;
-      $(_t.player.durationD).html(mejs.Utility.secondsToTimeCode(handler.stream_info.duration));
+      $(_t.player.durationD).html(mejs.Utility.secondsToTimeCode(parseInt(handler.stream_info.duration)));
       _t.player.media.addEventListener('play', _t.androidFirstPlay, true);
     },
-    
+
     durationChanged: function() {
       console.log(_t.player.media.duration);
       if (_t.player.media.duration == 0)
@@ -41,7 +41,7 @@
       var total = _t.player.controls.find('.mejs-time-total');
       var handle = _t.player.controls.find('.mejs-time-handle');
       var current = _t.player.controls.find('.mejs-time-current');
-      
+
       // update bar and handle
       if (total && handle) {
         var
@@ -68,6 +68,6 @@
       _t.player.media.removeEventListener("play", _t.androidFirstPlay);
     }
   };
-  
+
   (typeof exports !== "undefined" && exports !== null ? exports : this).AndroidShim = _t;
 })();
