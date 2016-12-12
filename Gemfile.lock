@@ -129,7 +129,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-track-scrubber.git
-  revision: 748b40238f57aa55dcc0a53e7f3f48c96044b9a4
+  revision: 66973deb051847e4b8084e8413355c313555b851
   branch: master
   specs:
     mediaelement-track-scrubber (0.0.1)
