@@ -36,6 +36,5 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 <% end %>
 <ol class="side-playlist">
-  <% clip_map = @playlist.clips.index_by{|c|c.id} %>
-  <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clip_map: clip_map } %>
+  <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clips: @playlist.clips } %>
 </ol>
