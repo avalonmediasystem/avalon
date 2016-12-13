@@ -1,5 +1,5 @@
-<% clip = AvalonClip.find(@playlist.items[playlist_item_counter].clip_id) %>
 <% item = @playlist.items[playlist_item_counter] %>
+<% clip = clip_map[item.clip_id] %>
 <% item_class = (item == @current_playlist_item)? 'now_playing' : 'queue' %>
 <% item_type = (clip.master_file.file_format=='Moving image')? 'fa-film' : 'fa-music' %>
 <% if can? :read, item %>
