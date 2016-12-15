@@ -1,8 +1,3 @@
-require 'fedora_migrate/reassign_id_target_constructor'
-require 'fedora_migrate/reassign_id_rels_ext_datastream_mover'
-require 'fedora_migrate/dublin_core_datastream_mover'
-require 'fedora_migrate/inherited_rights_datastream_mover'
-
 module FedoraMigrate
   class ReassignIdObjectMover < ObjectMover
     SinglePassReport = Struct.new(:id, :class, :content_datastreams, :rdf_datastreams, :permissions, :dates, :relationships)

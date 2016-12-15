@@ -1,7 +1,3 @@
-require 'fedora_migrate/reassign_id_object_mover'
-require 'fedora_migrate/admin_collection/desc_metadata_datastream_mover'
-require 'fedora_migrate/admin_collection/default_rights_datastream_mover'
-
 module FedoraMigrate
   module AdminCollection
     class ObjectMover < ReassignIdObjectMover

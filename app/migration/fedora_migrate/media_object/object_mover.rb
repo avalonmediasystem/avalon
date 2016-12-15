@@ -1,7 +1,4 @@
 require 'ostruct'
-require 'fedora_migrate/reassign_id_object_mover'
-require 'fedora_migrate/media_object/display_metadata_datastream_mover'
-require 'fedora_migrate/media_object/dublin_core_datastream_mover'
 
 module FedoraMigrate
   module MediaObject

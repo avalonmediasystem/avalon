@@ -8,8 +8,19 @@ module FedoraMigrate
 
     def migrate
       migrate_statements
+      migrate_whitelist
       # target.save
       report
+    end
+    
+    def migrate_whitelist
+      graph.statements.each do |stmt| 
+        if predicate_whitelist.include?(stmt.predicate) 
+          triple = [target.rdf_subject, stmt.predicate, stmt.object]
+          target.ldp_source.graph << triple
+          report << triple.join("--")
+        end
+      end
     end
 
     private
@@ -25,16 +36,23 @@ module FedoraMigrate
         RDF::URI.new(ActiveFedora::Base.id_to_uri(obj.id))
       end
 
+      def predicate_blacklist
+        [ActiveFedora::RDF::Fcrepo::Model.hasModel, "http://projecthydra.org/ns/relations#hasModelVersion"]
+      end
+
+      def predicate_whitelist
+        ['http://projecthydra.org/ns/relations#hasPermalink']
+      end
+      
       def missing_object?(statement)
         return false if locate_object(statement.object.to_s.split('/').last).present?
-        report << "could not migrate relationship #{statement.predicate} because #{statement.object} doesn't exist in Fedora 4"
+        report << "could not migrate relationship #{statement.predicate} because #{statement.object} doesn't exist in Fedora 4" unless predicate_whitelist.include?(statement.predicate)
         true
       end
 
       # All the graph statements except hasModel and those with missing objects
       def statements
-        blacklisted_predicates = [ActiveFedora::RDF::Fcrepo::Model.hasModel, "http://projecthydra.org/ns/relations#hasModelVersion"]
-        graph.statements.reject { |stmt| blacklisted_predicates.include?(stmt.predicate) || missing_object?(stmt) }
+        graph.statements.reject { |stmt| predicate_blacklist.include?(stmt.predicate) || missing_object?(stmt) }
       end
   end
 end

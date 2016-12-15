@@ -1,11 +1,3 @@
-#FIXME autoload these elsewhere so this class doesn't need to know all of the object movers explicitly
-require 'fedora_migrate/simple_xml_datastream_mover'
-require 'fedora_migrate/admin_collection/object_mover'
-require 'fedora_migrate/media_object/object_mover'
-require 'fedora_migrate/media_object/master_file_aggregation_mover'
-require 'fedora_migrate/master_file/object_mover'
-require 'fedora_migrate/derivative/object_mover'
-
 module FedoraMigrate
   class ClassOrderedRepositoryMigrator < RepositoryMigrator
 
@@ -61,7 +53,7 @@ module FedoraMigrate
         result.object = object_mover.new(source, target, options).send(method)
         result.status = true
       rescue StandardError => e
-        result.object = e.inspect
+        result.object = {exception: e.class.name, message: e.message, backtrace: e.backtrace[0..15]}
         result.status = false
       ensure
         report.save(source.pid, result)

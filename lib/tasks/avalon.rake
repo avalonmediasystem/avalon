@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-require 'fedora_migrate/class_ordered_repository_migrator'
+require 'pry'
 
 namespace :avalon do
   task clean: :environment do

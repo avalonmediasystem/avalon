@@ -1,8 +1,3 @@
-require 'fedora_migrate/reassign_id_object_mover'
-require 'fedora_migrate/derivative/desc_metadata_datastream_mover'
-require 'fedora_migrate/derivative/encoding_datastream_mover'
-require 'pry'
-
 module FedoraMigrate
   module Derivative
     class ObjectMover < ReassignIdObjectMover
