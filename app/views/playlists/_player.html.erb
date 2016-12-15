@@ -74,9 +74,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
     function advancePlaylist() {
-      nextUrl = $('li.now_playing').nextAll('li.queue:first').find('a').attr('href');
+      nextUrl = $('.side-playlist li.now_playing').nextAll('li.queue:first').find('a');
       if (nextUrl) {
-        window.location = nextUrl + "&autostart=true";
+        nextUrl.click();
       }
     }
 
@@ -95,12 +95,12 @@ Unless required by applicable law or agreed to in writing, software distributed
         autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
 	success: function(mediaElement, domObject, player) {
 	  player.media.addEventListener('timeupdate', function(e) {
-	    if (avalonPlayer.player.getCurrentTime() > avalonPlayer.stream_info.t.split(',')[1]) {
+	    if (avalonPlayer.player.getCurrentTime() > avalonPlayer.stream_info.t[1]) {
 	      avalonPlayer.player.media.stop();
 	      advancePlaylist();
 	    }
 	  }, false);
-	}
+        }
       });
       currentPlayer = avalonPlayer.player;
 

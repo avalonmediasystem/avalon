@@ -144,4 +144,10 @@ class PlaylistsController < ApplicationController
       item.position = nil
     end
   end
+
+  def refresh_info
+    respond_to do |format|
+      format.js
+    end
+  end
 end
