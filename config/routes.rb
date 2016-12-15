@@ -86,6 +86,7 @@ Avalon::Application.routes.draw do
         post 'import_variations_playlist'
       end
     end
+    get 'refresh_info', to: 'playlists#refresh_info'
   end
 
   resources :avalon_marker, only: [:create, :show, :update, :destroy]
