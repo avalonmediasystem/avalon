@@ -166,8 +166,12 @@ class AvalonPlayer
         .addClass('current-stream')
         .trigger('streamswitch', [@stream_info])
       if @player? && @player.options.trackScrubberEnabled
-        trackstart = parseFloat($(active_node).data('fragmentbegin')||0)||0
-        trackend = parseFloat($(active_node).data('fragmentend')||@stream_info.duration)||@stream_info.duration
+        if active_node==null
+          trackstart = @stream_info.t[0]
+          trackend = @stream_info.t[1] || @stream_info.duration
+        else
+          trackstart = parseFloat($(active_node).data('fragmentbegin')||0)||0
+          trackend = parseFloat($(active_node).data('fragmentend')||@stream_info.duration)||@stream_info.duration
         @player.initializeTrackScrubber(trackstart, trackend, @stream_info)
 
     marked_node = @container.find('i.now-playing')
