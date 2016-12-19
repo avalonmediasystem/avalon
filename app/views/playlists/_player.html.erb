@@ -18,7 +18,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% f_end = @current_clip.end_time / 1000.0 %>
 <% @currentStream = @current_masterfile %>
 <% @currentStreamInfo = secure_streams(@currentStream.stream_details) %>
-<% @currentStreamInfo['t'] = "#{f_start},#{f_end}" %>
+<% @currentStreamInfo['t'] = [f_start,f_end] %>
 <% if can? :read, @current_masterfile %>
     <section id="content" class="avalon-player" style="width: 100%; visibility: hidden;" tabIndex="-1">
       <% if @currentStream.present? and @currentStream.derivatives.present? %>
@@ -65,11 +65,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= javascript_include_tag 'mediaelement-skin-avalon/mep-feature-responsive' %>
   <%= javascript_include_tag 'avalon_player' %>
   <%= javascript_include_tag 'me-add-to-playlist' %>
+  <%= javascript_include_tag 'me-track-scrubber' %>
 
   <%= stylesheet_link_tag "mediaelement-qualityselector/mep-feature-qualities" =%>
   <%= stylesheet_link_tag 'me-thumb-selector' %>
   <%= stylesheet_link_tag "mediaelement-skin-avalon/mejs-skin-avalon" =%>
   <%= stylesheet_link_tag 'me-add-to-playlist' %>
+  <%= stylesheet_link_tag 'me-track-scrubber' %>
 
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
@@ -92,6 +94,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 	customError: '<%= t("media_objects.player.customError").html_safe %>',
 	displayMediaFragment: true,
         displayMarkers: true,
+        displayTrackScrubber: true,
         autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
 	success: function(mediaElement, domObject, player) {
 	  player.media.addEventListener('timeupdate', function(e) {
