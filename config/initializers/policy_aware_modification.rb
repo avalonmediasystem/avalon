@@ -1,5 +1,15 @@
 require 'active-fedora'
 
+module Hydra::AccessControlsEnforcement
+  def escape_filter(key, value)
+    [key, escape_value(value)].join(':')
+  end
+
+  def escape_value(value)
+    RSolr.solr_escape(value).gsub(/ /, '\ ')
+  end
+end
+
 # https://github.com/projecthydra/hydra-head/blob/master/hydra-access-controls/lib/hydra/policy_aware_access_controls_enforcement.rb#L30
 module Hydra::PolicyAwareAccessControlsEnforcement
   def policies_with_access

@@ -11,7 +11,7 @@
       if (typeof _t.originalGetCurrentTime != 'function')
         _t.originalGetCurrentTime = _t.player.getCurrentTime;
       _t.player.getCurrentTime = _t.androidGetCurrentTime;
-      $(_t.player.durationD).html(mejs.Utility.secondsToTimeCode(handler.stream_info.duration));
+      $(_t.player.durationD).html(mejs.Utility.secondsToTimeCode(parseInt(handler.stream_info.duration)));
       _t.player.media.addEventListener('play', _t.androidFirstPlay, true);
     },
     

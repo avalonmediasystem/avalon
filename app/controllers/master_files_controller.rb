@@ -17,6 +17,8 @@ require 'net/http/post/multipart'
 require 'rubyhorn'
 require 'avalon/controller/controller_behavior'
 
+include SecurityHelper
+
 class MasterFilesController < ApplicationController
   include Avalon::Controller::ControllerBehavior
 
@@ -49,8 +51,7 @@ class MasterFilesController < ApplicationController
   def embed
     @masterfile = MasterFile.find(params[:id])
     if can? :read, @masterfile.mediaobject
-      @token = @masterfile.nil? ? "" : StreamToken.find_or_create_session_token(session, @masterfile.pid)
-      @stream_info = @masterfile.stream_details(@token, default_url_options[:host])
+      @stream_info = secure_streams(@masterfile.stream_details)
     end
     respond_to do |format|
       format.html do
@@ -63,7 +64,7 @@ class MasterFilesController < ApplicationController
   def oembed
     if params[:url].present?
       pid = params[:url].split('?')[0].split('/').last
-      mf = MasterFile.where("dc_identifier_tesim:\"#{pid}\"").first
+      mf = MasterFile.where("dc_identifier_ssim:\"#{pid.downcase}\"").first
       mf ||= MasterFile.find(pid) rescue nil
       if mf.present?
         width = params[:maxwidth] || MasterFile::EMBED_SIZE[:medium]

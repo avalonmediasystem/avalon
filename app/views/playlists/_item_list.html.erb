@@ -36,5 +36,22 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 <% end %>
 <ol class="side-playlist">
-  <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clips: @playlist.clips } %>
+  <% clip_map = @playlist.clips.index_by{|c|c.id} %>
+  <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clip_map: clip_map } %>
 </ol>
+
+<% content_for :page_scripts do %>
+  <script>
+    function reload_player(segment, nativeUrl, isVideo) {
+      splitUrl = nativeUrl.split('?');
+      uri = splitUrl[0]+".js";
+      params = "content="+segment;
+      if (splitUrl.length>1) {
+        params+='&'+splitUrl[1];
+      }
+      $.getJSON(uri, params, function(data){
+        avalonPlayer.setStreamInfo(data)
+      });
+    }
+  </script>
+<% end %>

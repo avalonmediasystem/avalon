@@ -20,11 +20,12 @@ class AvalonPlayer
     removeOpt = (key) -> value = opts[key]; delete opts[key]; value
     thumbnail_selector = if removeOpt('thumbnailSelector') then 'thumbnailSelector' else null
     add_to_playlist = if removeOpt('addToPlaylist') then 'addToPlaylist' else null
+    display_track_scrubber = if removeOpt('displayTrackScrubber') then 'trackScrubber' else null
     add_marker = if removeOpt('addMarker') then 'addMarkerToPlaylistItem' else null
     start_time = removeOpt('startTime')
     success_callback = removeOpt('success')
 
-    features = ['playpause','current','progress','duration','volume','tracks','qualities',thumbnail_selector, add_to_playlist, add_marker, 'fullscreen','responsive']
+    features = ['playpause','current','progress','duration',display_track_scrubber,'volume','tracks','qualities',thumbnail_selector, add_to_playlist, add_marker, 'fullscreen','responsive']
     features = (feature for feature in features when feature?)
     player_options =
       mode: 'auto_plugin'
@@ -34,6 +35,7 @@ class AvalonPlayer
       thumbnailSelectorEnabled: true
       addToPlaylistEnabled: true
       addMarkerToPlaylistItemEnabled: true
+      trackScrubberEnabled: display_track_scrubber == 'trackScrubber'
       features: features
       startQuality: 'low'
       customError: 'This browser requires Adobe Flash Player to be installed for media playback.'
@@ -64,6 +66,8 @@ class AvalonPlayer
       @player.pause()
       videoNode = $(@player.$node)
       videoNode.html('')
+      $('.scrubber-marker').remove()
+      $('.mejs-time-clip').remove()
 
       for flash in @stream_info.stream_flash
         videoNode.append "<source src='#{flash.url}' data-quality='#{flash.quality}' data-plugin-type='flash' type='video/rtmp'>"
@@ -80,7 +84,7 @@ class AvalonPlayer
       initialize_view = =>
         if _this.stream_info.hasOwnProperty('t') and _this.player.options.displayMediaFragment
           duration = _this.stream_info.duration
-          t = _this.stream_info.t.split(',')
+          t = _this.stream_info.t
           start_percent = Math.round(if isNaN(parseFloat(t[0])) then 0 else (100*parseFloat(t[0]) / duration))
           end_percent = Math.round(if t.length < 2 or isNaN(parseFloat(t[1])) then 100 else (100*parseFloat(t[1]) / duration))
           clip_span = $('<span />').addClass('mejs-time-clip')
@@ -102,9 +106,24 @@ class AvalonPlayer
       @player.options.playlistItemDefaultTitle = @stream_info.embed_title
 
       $(@player).one 'created', =>
-        $(@player.media).on 'timeupdate', => @setActiveSection()
+        $(@player.media).on 'timeupdate', => 
+          @setActiveSection()
         @container.find('#content').css('visibility','visible')
         @player.setCurrentTime(initialTime)
+        #Save because it might be necessary if showing mediafragment of object without structure...
+        if @player.options.trackScrubberEnabled
+          if _this.stream_info.hasOwnProperty('t')
+            trackstart = _this.stream_info.t[0]
+            trackend = _this.stream_info.t[1] || _this.stream_info.duration
+          else
+            trackstart = 0
+            trackend = _this.stream_info.duration
+          @player.initializeTrackScrubber(trackstart, trackend, _this.stream_info)
+          $(@player.media).on 'timeupdate', => 
+            @player.updateTrackScrubber()
+          @player.globalBind('resize', (e) ->
+            _this.player.resizeTrackScrubber()
+          )
         $(@player.media).one 'loadedmetadata', initialize_view
         $(@player.media).one 'loadeddata', initialize_view
         keyboardAccess()
@@ -146,6 +165,11 @@ class AvalonPlayer
       $(active_node)
         .addClass('current-stream')
         .trigger('streamswitch', [@stream_info])
+      if @player? && @player.options.trackScrubberEnabled
+        if active_node!=null
+          trackstart = parseFloat($(active_node).data('fragmentbegin')||0)||0
+          trackend = parseFloat($(active_node).data('fragmentend')||@stream_info.duration)||@stream_info.duration
+          @player.initializeTrackScrubber(trackstart, trackend, @stream_info)
 
     marked_node = @container.find('i.now-playing')
     now_playing_node = @container.find('a.current-stream')

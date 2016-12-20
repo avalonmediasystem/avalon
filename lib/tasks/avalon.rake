@@ -18,6 +18,13 @@ namespace :avalon do
     `rake db:migrate`
     `rails generate active_annotations:install`
   end
+
+  desc 'clean out user sessions that have not been updated for 7 days'
+  task :session_cleanup => :environment do
+    sql = 'DELETE FROM sessions WHERE updated_at < DATE_SUB(NOW(), INTERVAL 7 DAY);'
+    ActiveRecord::Base.connection.execute(sql)
+  end
+
   namespace :services do
     services = ["jetty", "felix", "delayed_job"]
     desc "Start Avalon's dependent services"
@@ -237,10 +244,10 @@ namespace :avalon do
           container = playlist_item['container_string']
           comment = HTMLEntities.new.decode(playlist_item['comment'])
           title = HTMLEntities.new.decode(playlist_item['name'])
-          mf_obj = MasterFile.where("dc_identifier_tesim:#{container}").first
+          mf_obj = MasterFile.where("dc_identifier_ssim:#{container.downcase}").first
           unless mf_obj.present?
             item_errors += [{username: user['username'], playlist_id: playlist_obj.id, container: container, title: title, errors: ['Masterfile not found']}]
-            next 
+            next
           end
           item_count += 1
           puts "  Importing playlist item #{title}"
@@ -289,6 +296,43 @@ namespace :avalon do
       puts " Created #{new_playlist_count} new playlists (#{playlist_errors.length} errors)"
       puts " Created #{new_item_count} new playlist items (#{item_errors.length} errors)"
       puts " Created #{new_bookmark_count} new bookmarks (#{bookmark_errors.length} errors)"
+    end
+  end
+
+  namespace :token do
+    desc "List API tokens"
+    task :list => :environment do
+      user = ENV['username']
+      criteria = { username: user }.reject { |k,v| v.nil? }
+      ApiToken.where(criteria).each do |api_token|
+        puts [api_token.token,api_token.username].join('|')
+      end
+    end
+
+    desc "Generate an API token for a user"
+    task :generate => :environment do
+      user = ENV['username']
+      email = ENV['email']
+      token = ENV['token']
+      unless user.present? and email.present?
+        abort "You must specify a username and email address. Example: rake avalon:token:generate username=archivist email=archivist1@example.com"
+      end
+      new_token = ApiToken.create username: user, email: email, token: token
+      puts new_token.token
+    end
+
+    desc "Revoke an API token or all of a given user's API tokens"
+    task :revoke => :environment do
+      user = ENV['username']
+      token = ENV['token']
+      if (user.blank? and token.blank?) or (user.present? and token.present?)
+        abort "You must specify a username OR a token but not both. Example: rake avalon:token:revoke username=archivist"
+      end
+      criteria = { username: user, token: token }.reject { |k,v| v.nil? }
+      ApiToken.where(criteria).each do |api_token|
+        api_token.destroy
+        puts "Token `#{api_token.token}` (#{api_token.username}) revoked."
+      end
     end
   end
 end
