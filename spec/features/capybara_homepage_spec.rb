@@ -24,7 +24,7 @@ describe 'homepage' do
     page.should have_content('Featured Audio')
     page.should have_link('Avalon Media System Project Website')
     page.should have_link('Contact Us')
-    page.should have_content('Avalon Media System Release 5.1.4')
+    page.should have_content('Avalon Media System Release 5.1.5')
     page.should have_content('Search')
   end
   it 'validates absence of features when not logged in' do
