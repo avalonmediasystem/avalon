@@ -64,6 +64,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     if request['target_id']
       redirect_to object_path(request['target_id'])
+    elsif params[:url]
+      redirect_to params[:url]
     elsif session[:previous_url] 
       redirect_to session.delete :previous_url
     elsif auth_type == 'lti' && user_session[:virtual_groups].present?
