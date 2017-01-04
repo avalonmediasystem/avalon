@@ -1,4 +1,6 @@
 source 'https://rubygems.org'
+gem 'fedora-migrate', git: 'https://github.com/projecthydra-labs/fedora-migrate.git'
+gem 'rdf-rdfxml'
 
 gem 'hydra-head', '~> 10.3.4'
 gem 'active-fedora', '>= 10.3.0'

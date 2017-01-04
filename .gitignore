@@ -38,3 +38,5 @@ masterfiles/*
 /spec/master_file*
 .env*
 Gemfile.local
+config/fedora3.yml
+migration_report

@@ -12,7 +12,25 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
+require 'pry'
+
 namespace :avalon do
+  task clean: :environment do
+    require 'active_fedora/cleaner'
+    ActiveFedora::Cleaner.clean!
+  end
+  desc "Migrate all my objects"
+  task migrate: :environment do
+    #disable callbacks
+    Admin::Collection.skip_callback(:save, :around, :reindex_members)
+    ::MediaObject.skip_callback(:save, :before, :update_dependent_properties!)
+
+    models = [Admin::Collection, ::MediaObject, ::MasterFile, ::Derivative, ::Lease]
+    migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', { class_order: models })
+    migrator.migrate_objects
+    migrator
+  end
+
   desc 'migrate databases for the rails app and the active annotations gem'
   task :db_migrate do
     `rake db:migrate`

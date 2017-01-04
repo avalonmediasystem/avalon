@@ -1,0 +1,15 @@
+development:
+  user: fedoraAdmin
+  password: fedoraAdmin
+  url: http://pawpaw.dlib.indiana.edu:8983/fedora
+test:
+  user: fedoraAdmin
+  password: fedoraAdmin
+  url: http://pawpaw.dlib.indiana.edu:8983/fedora
+  solruser: solrAdmin
+  solrpassword: solrAdmin
+  solrurl: http://pawpaw.dlib.indiana.edu:8983/solr
+production:
+  user: fedoraAdmin
+  password: fedoraAdmin
+  url: http://pawpaw.dlib.indiana.edu:8983/fedora
