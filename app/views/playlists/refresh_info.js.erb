@@ -15,3 +15,4 @@ $('.now_playing').addClass('queue').removeClass('now_playing');
 new_now_playing=$($("<%=target_href%>").first().closest('li'));
 new_now_playing.addClass('now_playing').removeClass('queue');
 new_now_playing.prepend("<i class='fa fa-arrow-circle-right'></i>");
+currentPlayer.domNode.dataset['currentPlaylistItem']='<%= @current_playlist_item.clip_id %>';
