@@ -15,4 +15,15 @@ $('.now_playing').addClass('queue').removeClass('now_playing');
 new_now_playing=$($("<%=target_href%>").first().closest('li'));
 new_now_playing.addClass('now_playing').removeClass('queue');
 new_now_playing.prepend("<i class='fa fa-arrow-circle-right'></i>");
+
+// Initialize marker functionality for playlist item loaded by ajax
 currentPlayer.domNode.dataset['currentPlaylistItem']='<%= @current_playlist_item.id %>';
+$('button.edit_marker').click(enableMarkerEditForm);
+$('.marker_title').click(function(e) {
+  if (typeof currentPlayer !== typeof void 0) {
+    currentPlayer.setCurrentTime(parseFloat(this.dataset['offset']) || 0);
+  }
+});
+$('.edit_avalon_marker').on('ajax:success', handle_edit_save).on('ajax:error', function(e, xhr, status, error) {
+  alert('Request failed.');
+});
