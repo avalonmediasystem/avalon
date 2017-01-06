@@ -103,12 +103,18 @@ Unless required by applicable law or agreed to in writing, software distributed
         displayTrackScrubber: true,
         autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
 	success: function(mediaElement, domObject, player) {
-	  player.media.addEventListener('timeupdate', function(e) {
-	    if (avalonPlayer.player.getCurrentTime() > avalonPlayer.stream_info.t[1]) {
-	      avalonPlayer.player.media.stop();
-	      advancePlaylist();
-	    }
-	  }, false);
+          player.media.addEventListener('timeupdate', function(e) {
+            // round times to nearest .1 second for derivative duration discrepancies
+            t = Math.round(avalonPlayer.player.getCurrentTime()*10)
+            // if player's new currenttime is >= end of playlist item or equal to mf duration, advance to next playlist item
+            if (t > Math.round(avalonPlayer.stream_info.t[1]*10) || t == Math.round(avalonPlayer.player.media.duration*10)) {
+              // advance only if player media duration matches stream_info duration (it might not when switching sections)
+              if (Math.round(avalonPlayer.player.media.duration*10) == Math.round(avalonPlayer.stream_info.duration*10)) {
+                avalonPlayer.player.media.stop();
+                advancePlaylist();
+              }
+            }
+          }, false);
         }
       });
       currentPlayer = avalonPlayer.player;
