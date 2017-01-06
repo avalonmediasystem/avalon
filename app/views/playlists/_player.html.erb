@@ -84,7 +84,11 @@ Unless required by applicable law or agreed to in writing, software distributed
     function advancePlaylist() {
       nextUrl = $('.side-playlist li.now_playing').nextAll('li.queue:first').find('a');
       if (nextUrl) {
-        nextUrl.click();
+        if ('remote' in nextUrl[0].dataset) {
+          nextUrl.click();
+        } else {
+          window.location = nextUrl[0].href;
+        }
       }
     }
 
