@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class ApplicationController < ActionController::Base
-  before_filter :store_location
+  before_filter :store_location, unless: :devise_controller?
   around_action :handle_api_request, if: proc{|c| request.format.json?}
 
   # Adds a few additional behaviors into the application controller 
@@ -48,6 +48,7 @@ class ApplicationController < ActionController::Base
   end
 
   def store_location
+    store_location_for(:user, request.url)
     if request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?
       session[:previous_url] = root_path + "self_closing.html"
     end
@@ -80,7 +81,7 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
-    session[:previous_url] || root_path
+    request.env['omniauth.origin'] || stored_location_for(resource) || session[:previous_url] || root_path
   end
 
   Warden::Manager.after_authentication do |user,auth,opts|

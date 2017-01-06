@@ -55,7 +55,13 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 <% unless can? :read, @current_masterfile %>
   <span class = 'show_playlist_player_denied_title'><h2>Restricted Access</h2></span>
-  <span class = 'playlist_item_denied'>You do not have permission to playback item <%= @current_masterfile.mediaobject_id %></span>
+  <span class = 'playlist_item_denied'>
+    You do not have permission to playback item <%= @current_masterfile.mediaobject_id %>.
+    <% if !user_signed_in? %>
+      <br>Have you tried <%= link_to 'logging in', new_user_session_path %>?
+    <% end %>
+  </span>
+
 <% end %>
 <% content_for :page_scripts do %>
   <%= javascript_include_tag "mediaelement_rails/mediaelement-and-player" =%>
@@ -78,7 +84,11 @@ Unless required by applicable law or agreed to in writing, software distributed
     function advancePlaylist() {
       nextUrl = $('.side-playlist li.now_playing').nextAll('li.queue:first').find('a');
       if (nextUrl) {
-        nextUrl.click();
+        if ('remote' in nextUrl[0].dataset) {
+          nextUrl.click();
+        } else {
+          window.location = nextUrl[0].href;
+        }
       }
     }
 
@@ -97,12 +107,18 @@ Unless required by applicable law or agreed to in writing, software distributed
         displayTrackScrubber: true,
         autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
 	success: function(mediaElement, domObject, player) {
-	  player.media.addEventListener('timeupdate', function(e) {
-	    if (avalonPlayer.player.getCurrentTime() > avalonPlayer.stream_info.t[1]) {
-	      avalonPlayer.player.media.stop();
-	      advancePlaylist();
-	    }
-	  }, false);
+          player.media.addEventListener('timeupdate', function(e) {
+            // round times to nearest .1 second for derivative duration discrepancies
+            t = Math.round(avalonPlayer.player.getCurrentTime()*10)
+            // if player's new currenttime is >= end of playlist item or equal to mf duration, advance to next playlist item
+            if (t > Math.round(avalonPlayer.stream_info.t[1]*10) || t == Math.round(avalonPlayer.player.media.duration*10)) {
+              // advance only if player media duration matches stream_info duration (it might not when switching sections)
+              if (Math.round(avalonPlayer.player.media.duration) == Math.round(avalonPlayer.stream_info.duration)) {
+                avalonPlayer.player.media.stop();
+                advancePlaylist();
+              }
+            }
+          }, false);
         }
       });
       currentPlayer = avalonPlayer.player;
