@@ -12,8 +12,6 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-require 'pry'
-
 namespace :avalon do
   task clean: :environment do
     require 'active_fedora/cleaner'
