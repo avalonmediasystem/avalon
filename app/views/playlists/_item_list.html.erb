@@ -13,15 +13,21 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% if current_ability.can? :edit, @playlist %>
- <div class="btn-group pull-right">
-  <%= link_to edit_playlist_path(@playlist) do %>
-    <button type="button" class="btn btn-default" style="display:block;" >
-      <span class="fa fa-edit"> Edit Playlist</span>
-    </button>
+<div class="text-right">
+  <% if current_ability.can? :edit, @playlist %>
+    <div class="btn-group pull-right" id="edit-playlist-button">
+      <%= link_to edit_playlist_path(@playlist) do %>
+      <button type="button" class="btn btn-default btn-xs" style="display:block;" >
+        <span class="fa fa-edit"> Edit Playlist</span>
+      </button>
+      <% end %>
+    </div>
   <% end %>
- </div>
-<% end %>
+  <div>
+    <span>Autoplay</span>
+    <input type="checkbox" checked data-toggle="toggle" data-size="mini">
+  </div>
+</div>
 <h3 class="playlist-title">
   <% if @playlist.visibility==Playlist::PRIVATE %>
     <span class="fa fa-lock" alt="<%= t('playlist.lockAltText') %>" title="<%= t('playlist.lockAltText') %>"></span>
