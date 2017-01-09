@@ -113,7 +113,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             // if player's new currenttime is >= end of playlist item or equal to mf duration, advance to next playlist item
             if (t > Math.round(avalonPlayer.stream_info.t[1]*10) || t == Math.round(avalonPlayer.player.media.duration*10)) {
               // advance only if player media duration matches stream_info duration (it might not when switching sections)
-              if (avalonPlayer.player.media.duration - avalonPlayer.stream_info.duration < 0.5) {
+              if (Math.round(avalonPlayer.player.media.duration) == Math.round(avalonPlayer.stream_info.duration)) {
                 avalonPlayer.player.media.stop();
                 advancePlaylist();
               }
