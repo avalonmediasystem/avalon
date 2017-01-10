@@ -82,12 +82,15 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
     function advancePlaylist() {
-      nextUrl = $('.side-playlist li.now_playing').nextAll('li.queue:first').find('a');
-      if (nextUrl) {
-        if ('remote' in nextUrl[0].dataset) {
-          nextUrl.click();
-        } else {
-          window.location = nextUrl[0].href;
+      if ($('input[name="autoadvance"]')[0].checked) {
+        nextUrl = $('.side-playlist li.now_playing').nextAll('li.queue:first').find('a');
+        if (nextUrl) {
+          if ('remote' in nextUrl[0].dataset) {
+            currentPlayer.options['autostart']='true'
+            nextUrl.click();
+          } else {
+            window.location = nextUrl[0].href;
+          }
         }
       }
     }
@@ -112,11 +115,8 @@ Unless required by applicable law or agreed to in writing, software distributed
             t = Math.round(avalonPlayer.player.getCurrentTime()*10)
             // if player's new currenttime is >= end of playlist item or equal to mf duration, advance to next playlist item
             if (t > Math.round(avalonPlayer.stream_info.t[1]*10) || t == Math.round(avalonPlayer.player.media.duration*10)) {
-              // advance only if player media duration matches stream_info duration (it might not when switching sections)
-              if (Math.round(avalonPlayer.player.media.duration) == Math.round(avalonPlayer.stream_info.duration)) {
-                avalonPlayer.player.media.stop();
-                advancePlaylist();
-              }
+              avalonPlayer.player.media.stop();
+              advancePlaylist();
             }
           }, false);
         }
