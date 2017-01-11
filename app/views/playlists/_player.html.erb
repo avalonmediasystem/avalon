@@ -83,11 +83,17 @@ Unless required by applicable law or agreed to in writing, software distributed
   <script>
     function advancePlaylist() {
       nextUrl = $('.side-playlist li.now_playing').nextAll('li.queue:first').find('a');
-      if (nextUrl) {
-        if ('remote' in nextUrl[0].dataset) {
-          nextUrl.click();
+      if ($('input[name="autoadvance"]')[0].checked) {
+        if (nextUrl.length) {
+          if ('remote' in nextUrl[0].dataset) {
+            currentPlayer.options['autostart']='true'
+            nextUrl.click();
+          } else {
+            window.location = nextUrl[0].href.replace('autoadvance=false','autoadvance=true');
+          }
         } else {
-          window.location = nextUrl[0].href;
+          currentPlayer.pause()
+          currentPlayer.setCurrentTime(avalonPlayer.stream_info.t[0] || 0)
         }
       }
     }
@@ -107,16 +113,19 @@ Unless required by applicable law or agreed to in writing, software distributed
         displayTrackScrubber: true,
         autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
 	success: function(mediaElement, domObject, player) {
-          player.media.addEventListener('timeupdate', function(e) {
-            // round times to nearest .1 second for derivative duration discrepancies
+            <%# turn off autoadvance if scrubber is clicked %>
+            var scrubber =  $('.mejs-time-total')[0];
+            var oldclick = scrubber.onclick;
+            scrubber.onclick = function(){
+              $('input[name="autoadvance"]').prop('checked',false).change();
+              if(oldclick){oldclick();}
+            }
+            player.media.addEventListener('timeupdate', function(e) {
+            <%# round times to nearest .1 second for derivative duration discrepancies %>
             t = Math.round(avalonPlayer.player.getCurrentTime()*10)
-            // if player's new currenttime is >= end of playlist item or equal to mf duration, advance to next playlist item
-            if (t > Math.round(avalonPlayer.stream_info.t[1]*10) || t == Math.round(avalonPlayer.player.media.duration*10)) {
-              // advance only if player media duration matches stream_info duration (it might not when switching sections)
-              if (Math.round(avalonPlayer.player.media.duration) == Math.round(avalonPlayer.stream_info.duration)) {
-                avalonPlayer.player.media.stop();
-                advancePlaylist();
-              }
+            <%# if players new currenttime is >= masterfile duration or end of playlist item advance to next playlist item %>
+            if (t >= Math.round(avalonPlayer.player.media.duration*10) || t > Math.round(avalonPlayer.stream_info.t[1]*10)) {
+              advancePlaylist();
             }
           }, false);
         }
