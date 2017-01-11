@@ -115,6 +115,7 @@
     gem 'handlebars_assets'
     #gem 'twitter-typeahead-rails', '~>0.11.1'
     gem 'twitter-typeahead-rails', '= 0.11.1.pre.corejavascript'
+    gem 'bootstrap-toggle-rails'
   end
 
   group :development do

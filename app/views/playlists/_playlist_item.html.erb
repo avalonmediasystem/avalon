@@ -25,7 +25,7 @@
         <%= clip.title %>
       <% end %>
     <% else %>
-      <%= link_to playlist_path(@playlist, position: item.position, autostart: true) do %>
+      <%= link_to playlist_path(@playlist, position: item.position, autostart: true, autoadvance: false) do %>
         <%= clip.title %>
       <% end %>
     <% end %>
