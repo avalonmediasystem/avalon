@@ -126,6 +126,10 @@ class AvalonPlayer
           )
         $(@player.media).one 'loadedmetadata', initialize_view
         $(@player.media).one 'loadeddata', initialize_view
+        # in case media is not playable yet, also listen for canplay
+        $(@player.media).one 'canplay', =>
+          if @player.options.autostart
+            @player.media.play()
         keyboardAccess()
         @boundPrePlay()
         if @player.options.autostart
