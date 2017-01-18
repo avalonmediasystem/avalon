@@ -84,6 +84,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     function advancePlaylist() {
       nextUrl = $('.side-playlist li.now_playing').nextAll('li.queue:first').find('a');
       if ($('input[name="autoadvance"]')[0].checked) {
+        currentPlayer.pause();
         if (nextUrl.length) {
           if ('remote' in nextUrl[0].dataset) {
             currentPlayer.options['autostart']='true'
@@ -92,7 +93,6 @@ Unless required by applicable law or agreed to in writing, software distributed
             window.location = nextUrl[0].href.replace('autoadvance=false','autoadvance=true');
           }
         } else {
-          currentPlayer.pause()
           currentPlayer.setCurrentTime(avalonPlayer.stream_info.t[0] || 0)
         }
       }
@@ -115,8 +115,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 	success: function(mediaElement, domObject, player) {
             <%# turn off autoadvance if scrubber is clicked %>
             var scrubber =  $('.mejs-time-total')[0];
-            var oldclick = scrubber.onclick;
-            scrubber.onclick = function(){
+            var oldclick = scrubber.onmousedown;
+            scrubber.onmousedown = function(){
               $('input[name="autoadvance"]').prop('checked',false).change();
               if(oldclick){oldclick();}
             }
@@ -124,7 +124,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%# round times to nearest .1 second for derivative duration discrepancies %>
             t = Math.round(avalonPlayer.player.getCurrentTime()*10)
             <%# if players new currenttime is >= masterfile duration or end of playlist item advance to next playlist item %>
-            if (t >= Math.round(avalonPlayer.player.media.duration*10) || t > Math.round(avalonPlayer.stream_info.t[1]*10)) {
+            if (t >= Math.round(avalonPlayer.stream_info.duration*10) || t > Math.round(avalonPlayer.stream_info.t[1]*10)) {
               advancePlaylist();
             }
           }, false);
