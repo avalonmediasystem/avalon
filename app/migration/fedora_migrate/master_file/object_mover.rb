@@ -43,7 +43,8 @@ module FedoraMigrate
       end
 
       def migrate_structural_metadata
-        migrate_content_datastream(STRUCTURAL_METADATA_DATASTREAM, target.structuralMetadata)
+        return unless source.datastreams.keys.include?(STRUCTURAL_METADATA_DATASTREAM)
+        FedoraMigrate::StatusTrackingDatastreamMover.new(source.datastreams[STRUCTURAL_METADATA_DATASTREAM], target.structuralMetadata).migrate
       end
 
       def migrate_captions
@@ -63,7 +64,7 @@ module FedoraMigrate
       private
       def migrate_content_datastream(ds_name, target_file)
         return unless source.datastreams.keys.include?(ds_name)
-        mover = FedoraMigrate::DatastreamMover.new(source.datastreams[ds_name], target_file)
+        mover = FedoraMigrate::StatusTrackingDatastreamMover.new(source.datastreams[ds_name], target_file)
         mover.migrate
         #report.content_datastreams << ContentDatastreamReport.new(target.attached_files[ds_name], mover.migrate)
       end
