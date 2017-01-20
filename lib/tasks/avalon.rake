@@ -30,6 +30,24 @@ namespace :avalon do
     migrator.migrate_objects
     migrator
   end
+  namespace :migrate do
+    task db: :environment do
+      Bookmark.all.each do |b|
+        b.document_id = ActiveFedora::Base.where("identifier_ssim:\"#{b.document_id}\"").first.id rescue next
+        b.save!
+      end
+      AvalonAnnotation.all.each do |anno|
+        mf = ActiveFedora::Base.where("identifier_ssim:\"#{anno.source.split('/').last}\"").first
+        next unless mf
+        anno.master_file = mf
+        anno.save!
+      end
+      IngestBatch.all.each do |ib|
+        ib.media_object_ids = ib.media_object_ids.map {|moid| ActiveFedora::Base.where("identifier_ssim:\"#{moid}\"").first.id rescue moid }  
+        ib.save!
+      end
+    end
+  end
 
   desc 'migrate databases for the rails app and the active annotations gem'
   task :db_migrate do
