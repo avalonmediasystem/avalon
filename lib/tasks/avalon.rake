@@ -19,18 +19,27 @@ namespace :avalon do
     require 'active_fedora/cleaner'
     ActiveFedora::Cleaner.clean!
   end
-  desc "Migrate all my objects"
+  
+  desc "Migrate Avalon 5.x to 6.x"
   task migrate: :environment do
-    #disable callbacks
-    Admin::Collection.skip_callback(:save, :around, :reindex_members)
-    ::MediaObject.skip_callback(:save, :before, :update_dependent_properties!)
-
-    models = [Admin::Collection, ::MediaObject, ::MasterFile, ::Derivative, ::Lease]
-    migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', { class_order: models })
-    migrator.migrate_objects
-    migrator
+    Rake::Task['avalon:migrate:repo'].invoke
+    Rake::Task['avalon:migrate:db'].invoke
   end
+
   namespace :migrate do
+    desc "Migrate all my objects"
+    task repo: :environment do
+      #disable callbacks
+      Admin::Collection.skip_callback(:save, :around, :reindex_members)
+      ::MediaObject.skip_callback(:save, :before, :update_dependent_properties!)
+
+      models = [Admin::Collection, ::MediaObject, ::MasterFile, ::Derivative, ::Lease]
+      migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', { class_order: models })
+      migrator.migrate_objects
+      migrator
+    end
+    
+    desc "Migrate my database"
     task db: :environment do
       Bookmark.all.each do |b|
         b.document_id = ActiveFedora::Base.where("identifier_ssim:\"#{b.document_id}\"").first.id rescue next
