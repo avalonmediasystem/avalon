@@ -12,9 +12,10 @@ module FedoraMigrate
       def migrate_datastreams
         migrate_dublin_core
         migrate_desc_metadata
+        migrate_transcoding_metadata
         migrate_title
         migrate_file_location
-        migrate_transcoding_metadata
+        save   # save before creating contained files
         migrate_poster_and_thumbnail
         migrate_structural_metadata
         migrate_captions
@@ -37,17 +38,16 @@ module FedoraMigrate
       end
 
       def migrate_poster_and_thumbnail
-        migrate_content_datastream(POSTER_DATASTREAM)
-        migrate_content_datastream(THUMBNAIL_DATASTREAM)
+        migrate_content_datastream(POSTER_DATASTREAM, target.poster)
+        migrate_content_datastream(THUMBNAIL_DATASTREAM, target.thumbnail)
       end
 
       def migrate_structural_metadata
-        return unless source.datastreams.keys.include?(STRUCTURAL_METADATA_DATASTREAM)
-        FedoraMigrate::DatastreamMover.new(source.datastreams[STRUCTURAL_METADATA_DATASTREAM], target.structuralMetadata).migrate
+        migrate_content_datastream(STRUCTURAL_METADATA_DATASTREAM, target.structuralMetadata)
       end
 
       def migrate_captions
-        migrate_content_datastream(CAPTIONS_DATASTREAM)
+        migrate_content_datastream(CAPTIONS_DATASTREAM, target.captions)
       end
 
       def migrate_file_location
@@ -61,9 +61,9 @@ module FedoraMigrate
       end
 
       private
-      def migrate_content_datastream(ds_name)
+      def migrate_content_datastream(ds_name, target_file)
         return unless source.datastreams.keys.include?(ds_name)
-        mover = FedoraMigrate::DatastreamMover.new(source.datastreams[ds_name], target.thumbnail)
+        mover = FedoraMigrate::DatastreamMover.new(source.datastreams[ds_name], target_file)
         mover.migrate
         #report.content_datastreams << ContentDatastreamReport.new(target.attached_files[ds_name], mover.migrate)
       end
