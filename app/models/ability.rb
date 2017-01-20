@@ -40,6 +40,7 @@ class Ability
         can :manage, Admin::Collection
         can :manage, Resque
         can :read, :about_page
+        can :read, MigrationStatus
       end
 
       if @user_groups.include? "group_manager"
