@@ -41,7 +41,7 @@ Rails.application.routes.draw do
   end
 
   mount BrowseEverything::Engine => '/browse'
-    
+
   # Avalon routes
   match "/authorize", to: 'derivatives#authorize', via: [:get, :post]
   match "/authorize/:path", to: 'derivatives#authorize', via: [:get, :post]
@@ -120,6 +120,7 @@ Rails.application.routes.draw do
         post 'import_variations_playlist'
       end
     end
+    get 'refresh_info', to: 'playlists#refresh_info'
   end
 
   resources :avalon_marker, only: [:create, :show, :update, :destroy]

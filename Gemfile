@@ -80,7 +80,7 @@ gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement
 gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r4'
 gem 'media-element-logo-plugin'
 gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', branch: 'master'
-gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/mediaelement-track-scrubber.git', branch: 'update-rails'
+gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/mediaelement-track-scrubber.git', branch: 'master'
 
 
 gem 'resque', '~> 1.26.0'

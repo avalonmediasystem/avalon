@@ -1,9 +1,9 @@
 require 'avalon/variations_playlist_importer'
 
 class PlaylistsController < ApplicationController
-  before_action :authenticate_user!, except: [:show]
+  before_action :authenticate_user!, except: [:show, :refresh_info]
   load_and_authorize_resource
-  skip_load_and_authorize_resource only: :import_variations_playlist
+  skip_load_and_authorize_resource only: [:import_variations_playlist, :refresh_info]
   before_action :get_all_playlists, only: [:index, :edit, :update]
 
   # GET /playlists
@@ -142,6 +142,12 @@ class PlaylistsController < ApplicationController
     # items that have moved to another playlist
     changed_playlist.select {|item| item.playlist_id_was != item.playlist_id}.each do |item|
       item.position = nil
+    end
+  end
+
+  def refresh_info
+    respond_to do |format|
+      format.js
     end
   end
 end

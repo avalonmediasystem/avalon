@@ -67,6 +67,8 @@ class AvalonPlayer
       @player.pause()
       videoNode = $(@player.$node)
       videoNode.html('')
+      $('.scrubber-marker').remove()
+      $('.mejs-time-clip').remove()
 
       for flash in @stream_info.stream_flash
         videoNode.append "<source src='#{flash.url}' data-quality='#{flash.quality}' data-plugin-type='flash' type='video/rtmp'>"
@@ -83,7 +85,7 @@ class AvalonPlayer
       initialize_view = =>
         if _this.stream_info.hasOwnProperty('t') and _this.player.options.displayMediaFragment
           duration = _this.stream_info.duration
-          t = _this.stream_info.t.split(',')
+          t = _this.stream_info.t
           start_percent = Math.round(if isNaN(parseFloat(t[0])) then 0 else (100*parseFloat(t[0]) / duration))
           end_percent = Math.round(if t.length < 2 or isNaN(parseFloat(t[1])) then 100 else (100*parseFloat(t[1]) / duration))
           clip_span = $('<span />').addClass('mejs-time-clip')
@@ -166,11 +168,10 @@ class AvalonPlayer
       $(active_node)
         .addClass('current-stream')
         .trigger('streamswitch', [@stream_info])
-      if @player? && @player.options.trackScrubberEnabled
+      if @player? && @player.options.trackScrubberEnabled && active_node!=null
         trackstart = parseFloat($(active_node).data('fragmentbegin')||0)||0
         trackend = parseFloat($(active_node).data('fragmentend')||@stream_info.duration)||@stream_info.duration
         @player.initializeTrackScrubber(trackstart, trackend, @stream_info)
-
 
     marked_node = @container.find('i.now-playing')
     now_playing_node = @container.find('a.current-stream')
