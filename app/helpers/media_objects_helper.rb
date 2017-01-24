@@ -95,7 +95,8 @@ module MediaObjectsHelper
      end
 
      def display_related_item mediaobject
-       mediaobject.related_item_url.collect{ |r| link_to( r[:label], r[:url]) }
+       mediaobject.related_item_url.collect{ |r|
+         link_to( r[:label], r[:url], :target => '_blank') }
      end
 
      def current_quality stream_info
