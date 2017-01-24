@@ -73,9 +73,16 @@ module ApplicationHelper
     end
   end
 
-  def display_metadata(label, value, default=nil)
+  def display_metadata(label, value, default=nil, options = {})
     return if value.blank? and default.nil?
-    sanitized_values = Array(value).collect { |v| sanitize(v.to_s.strip) }.delete_if(&:empty?)
+    allowed_attributes = self.class.sanitized_allowed_attributes.dup
+    if options[:allow_target_attribute]
+      # If we want links to open in a separate tab, we need to add
+      # 'target' to the allowed attributes list.
+      allowed_attributes += ['target']
+    end
+    sanitized_values = Array(value).collect {
+      |v| sanitize(v.to_s.strip, attributes: allowed_attributes) }.delete_if(&:empty?)
     sanitized_values = Array(default) if sanitized_values.empty?
     label = label.pluralize(sanitized_values.size)
     result = content_tag(:dt, label) +
