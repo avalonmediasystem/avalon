@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  before_filter :store_location, unless: :devise_controller?
+  #before_filter :store_location, unless: :devise_controller?
 
   # Adds a few additional behaviors into the application controller
   include Blacklight::Controller
@@ -14,16 +14,16 @@ class ApplicationController < ActionController::Base
 
   around_action :handle_api_request, if: proc{|c| request.format.json?}
 
-  def store_location
-    store_location_for(:user, request.url)
-      if request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?
-        session[:previous_url] = root_path + "self_closing.html"
-      end
-  end
-
-  def after_sign_in_path_for(resource)
-    request.env['omniauth.origin'] || stored_location_for(resource) || session[:previous_url] || root_path
-  end
+  # def store_location
+  #   store_location_for(:user, request.url)
+  #     if request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?
+  #       session[:previous_url] = root_path + "self_closing.html"
+  #     end
+  # end
+  #
+  # def after_sign_in_path_for(resource)
+  #   request.env['omniauth.origin'] || stored_location_for(resource) || session[:previous_url] || root_path
+  # end
 
   def current_ability
     session_opts ||= user_session
