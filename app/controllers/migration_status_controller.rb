@@ -15,22 +15,25 @@
 class MigrationStatusController < ApplicationController
   
   before_filter :auth
+  layout 'migration_report'
   
   def index
-    @migration_classes = ['Admin::Collection', 'Derivative', 'MasterFile', 'MediaObject', 'Lease']
-    @counts = MigrationStatus.where(datastream: nil).group(:source_class, :status).count
+    @counts = MigrationStatus.summary
+    render without_layout_if_xhr
   end
   
   def show
     criteria = { source_class: params[:class], datastream: nil }
-    criteria[:status] = params[:status] == 'true' if ['true','false'].include?(params[:status])
+    criteria[:status] = params[:status] if params[:status].present?
     @statuses = MigrationStatus.where(criteria).order(params[:order] || :id).page(params[:page]).per(params[:per])
+    render without_layout_if_xhr
   end
   
   def detail
     @statuses = MigrationStatus.where(f3_pid: params[:id])
     @class = @statuses.first.source_class
     @f4_pid = @statuses.first.f4_pid
+    render without_layout_if_xhr
   end
   
   def report
@@ -46,5 +49,9 @@ class MigrationStatusController < ApplicationController
       flash[:notice] = "You do not have permission to view migration reports"
       redirect_to root_path
     end
+  end
+  
+  def without_layout_if_xhr
+    request.xhr? ? { layout: false } : {}
   end
 end

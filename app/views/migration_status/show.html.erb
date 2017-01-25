@@ -6,7 +6,7 @@
   <tr>
     <th class="nowrap"><%= link_to 'Fedora 3 PID', admin_migration_report_by_class_path(sort_params('f3_pid','f3_pid')) %></th>
     <th class="nowrap"><%= link_to 'Fedora 4 PID', admin_migration_report_by_class_path(sort_params('f4_pid','f3_pid')) %></th>
-    <th class="nowrap"><%= link_to 'Succeeded', admin_migration_report_by_class_path(sort_params('status','f3_pid')) %></th>
+    <th class="nowrap"><%= link_to 'Status', admin_migration_report_by_class_path(sort_params('status','f3_pid')) %></th>
     <th class="nowrap">Message</th>
   </tr>
   <% @statuses.each do |status| %>

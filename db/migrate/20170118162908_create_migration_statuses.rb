@@ -6,7 +6,7 @@ class CreateMigrationStatuses < ActiveRecord::Migration
       t.string :f4_pid
       t.string :datastream
       t.string :checksum
-      t.boolean :status
+      t.string :status
       t.text :log
 
       t.timestamps null: false
