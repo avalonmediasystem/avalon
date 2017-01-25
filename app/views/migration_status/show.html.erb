@@ -1,0 +1,21 @@
+<ol class="breadcrumb">
+  <li><%= link_to "Migration Report", admin_migration_report_path %></li>
+  <li class="active"><%= params[:class] %></li>
+</ol>
+<table class="table table-striped table-hover table-condensed">
+  <tr>
+    <th class="nowrap"><%= link_to 'Fedora 3 PID', admin_migration_report_by_class_path(sort_params('f3_pid','f3_pid')) %></th>
+    <th class="nowrap"><%= link_to 'Fedora 4 PID', admin_migration_report_by_class_path(sort_params('f4_pid','f3_pid')) %></th>
+    <th class="nowrap"><%= link_to 'Status', admin_migration_report_by_class_path(sort_params('status','f3_pid')) %></th>
+    <th class="nowrap">Message</th>
+  </tr>
+  <% @statuses.each do |status| %>
+  <tr>
+    <td><%= link_to status.f3_pid, admin_migration_report_detail_path(id: status.f3_pid) %></td>
+    <td><%= status.f4_pid %></td>
+    <td><%= status.status %></td>
+    <td><%= status.log %></td>
+  </tr>
+  <% end %>
+</table>
+<%= paginate @statuses %>

@@ -41,6 +41,10 @@ module FedoraMigrate
       migrate_object
     end
 
+    def migration_required?
+      MigrationStatus.find_by(source_class: klass, f3_pid: source.pid, datastream: nil).nil?
+    end
+    
     def source_objects(klass)
       @source_objects ||= FedoraMigrate.source.connection.search(nil).collect { |o| qualifying_object(o, klass) }.compact
     end
@@ -48,15 +52,30 @@ module FedoraMigrate
     private
 
       def migrate_object(method=:migrate)
-        target = klass.where(migrated_from_tesim: source.pid).first
-        options[:report] = report.reload[source.pid]
-        result.object = object_mover.new(source, target, options).send(method)
-        result.status = true
-      rescue StandardError => e
-        result.object = {exception: e.class.name, message: e.message, backtrace: e.backtrace[0..15]}
-        result.status = false
-      ensure
-        report.save(source.pid, result)
+        status_record = MigrationStatus.find_or_create_by(source_class: klass.name, f3_pid: source.pid, datastream: nil)
+        begin
+          status_record.update_attribute :status, method.to_s
+          target = klass.where(migrated_from_tesim: source.pid).first
+          options[:report] = report.reload[source.pid]
+          result.object = object_mover.new(source, target, options).send(method)
+          status_record.update_attribute :f4_pid, result.object.id
+          result.status = true
+        rescue StandardError => e
+          result.object = {exception: e.class.name, message: e.message, backtrace: e.backtrace[0..15]}
+          status_record.update_attribute :log, %{#{e.class.name}: "#{e.message}"}
+          result.status = false
+        ensure
+          new_status = 'failed'
+          if result.status
+            if (method == :migrate) and not (object_mover.instance_methods.include?(:second_pass))
+              new_status = 'waiting'
+            else
+              new_status = 'completed'
+            end
+          end
+          status_record.update_attribute :status, new_status
+          report.save(source.pid, result)
+        end
       end
 
       def object_mover

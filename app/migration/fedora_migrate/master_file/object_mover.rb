@@ -19,9 +19,9 @@ module FedoraMigrate
         migrate_poster_and_thumbnail
         migrate_structural_metadata
         migrate_captions
+        save
         migrate_relationships
         target.ldp_source.save #Because save isn't persisting the isPartOf relationship
-        save
         # super
       end
 
