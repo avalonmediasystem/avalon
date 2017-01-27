@@ -53,20 +53,22 @@ module FedoraMigrate
 
       def migrate_object(method=:migrate)
         status_record = MigrationStatus.find_or_create_by(source_class: klass.name, f3_pid: source.pid, datastream: nil)
-        begin
-          status_record.update_attribute :status, method.to_s
-          target = klass.where(migrated_from_tesim: source.pid).first
-          options[:report] = report.reload[source.pid]
-          result.object = object_mover.new(source, target, options).send(method)
-          status_record.update_attribute :f4_pid, result.object.id
-          result.status = true
-        rescue StandardError => e
-          result.object = {exception: e.class.name, message: e.message, backtrace: e.backtrace[0..15]}
-          status_record.update_attribute :log, %{#{e.class.name}: "#{e.message}"}
-          result.status = false
-        ensure
-          status_record.update_attribute :status, end_status(method)
-          report.save(source.pid, result)
+        unless status_record.status == 'failed'
+          begin
+            status_record.update_attribute :status, method.to_s
+            target = klass.where(migrated_from_tesim: source.pid).first
+            options[:report] = report.reload[source.pid]
+            result.object = object_mover.new(source, target, options).send(method)
+            status_record.update_attribute :f4_pid, result.object.id
+            result.status = true
+          rescue StandardError => e
+            result.object = {exception: e.class.name, message: e.message, backtrace: e.backtrace[0..15]}
+            status_record.update_attribute :log, %{#{e.class.name}: "#{e.message}"}
+            result.status = false
+          ensure
+            status_record.update_attribute :status, end_status(method)
+            report.save(source.pid, result)
+          end
         end
       end
       
