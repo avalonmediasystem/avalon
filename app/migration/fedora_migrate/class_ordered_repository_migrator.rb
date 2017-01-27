@@ -42,7 +42,8 @@ module FedoraMigrate
     end
 
     def migration_required?
-      MigrationStatus.find_by(source_class: klass, f3_pid: source.pid, datastream: nil).nil?
+      status_report = MigrationStatus.find_by(source_class: klass, f3_pid: source.pid, datastream: nil)
+      status_report.nil? || (status_report.status != 'completed')
     end
     
     def source_objects(klass)
@@ -53,9 +54,9 @@ module FedoraMigrate
 
       def migrate_object(method=:migrate)
         status_record = MigrationStatus.find_or_create_by(source_class: klass.name, f3_pid: source.pid, datastream: nil)
-        unless status_record.status == 'failed'
+        unless (status_record.status == 'failed') && (method == :second_pass)
           begin
-            status_record.update_attribute :status, method.to_s
+            status_record.update_attributes status: method.to_s, log: nil
             target = klass.where(migrated_from_tesim: source.pid).first
             options[:report] = report.reload[source.pid]
             result.object = object_mover.new(source, target, options).send(method)

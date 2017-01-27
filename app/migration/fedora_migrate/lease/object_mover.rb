@@ -4,7 +4,6 @@ module FedoraMigrate
       DESC_METADATA_DATASTREAM = "descMetadata".freeze
 
       def migrate_datastreams
-        migrate_dublin_core
         migrate_desc_metadata
         migrate_permissions
         migrate_inherited_rights
