@@ -19,7 +19,7 @@ module FedoraMigrate
       end
       class_order.each do |klass|
         @klass = klass
-        if object_mover.instance_methods.include?(:second_pass)
+        if second_pass_needed?
           @source_objects = nil
           source_objects(klass).each do |object|
             @source = object
@@ -65,17 +65,24 @@ module FedoraMigrate
           status_record.update_attribute :log, %{#{e.class.name}: "#{e.message}"}
           result.status = false
         ensure
-          new_status = 'failed'
-          if result.status
-            if (method == :migrate) && (object_mover.instance_methods.include?(:second_pass))
-              new_status = 'waiting'
-            else
-              new_status = 'completed'
-            end
-          end
-          status_record.update_attribute :status, new_status
+          status_record.update_attribute :status, end_status(method)
           report.save(source.pid, result)
         end
+      end
+      
+      def end_status(method)
+        if result.status
+          if method == :migrate and second_pass_needed?
+            return 'waiting'
+          else
+            return 'completed'
+          end
+        end
+        return 'failed'
+      end
+      
+      def second_pass_needed?
+        object_mover.instance_methods.include?(:second_pass)
       end
 
       def object_mover
