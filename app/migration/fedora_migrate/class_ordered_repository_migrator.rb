@@ -67,7 +67,7 @@ module FedoraMigrate
         ensure
           new_status = 'failed'
           if result.status
-            if (method == :migrate) and not (object_mover.instance_methods.include?(:second_pass))
+            if (method == :migrate) && (object_mover.instance_methods.include?(:second_pass))
               new_status = 'waiting'
             else
               new_status = 'completed'

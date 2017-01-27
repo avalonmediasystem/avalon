@@ -4,7 +4,7 @@ module FedoraMigrate
     
     def migrate
       ds_name = source.dsid
-      source_class = source.digital_object.models.last.scan(/afmodel:(.+)$/).flatten.last rescue source.class.name
+      source_class = source.digital_object.models.find {|m| /afmodel/ =~ m}.scan(/afmodel:(.+)$/).flatten.last rescue source.class.name
       status = MigrationStatus.create source_class: source_class, f3_pid: source.pid, f4_pid: target.id.split(/\//).first, datastream: ds_name, status: 'migrate'
       begin
         super
