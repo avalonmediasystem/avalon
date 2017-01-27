@@ -13,7 +13,7 @@
   <tr>
     <td><%= link_to status.f3_pid, admin_migration_report_detail_path(id: status.f3_pid) %></td>
     <td><%= status.f4_pid %></td>
-    <td><%= status.status %></td>
+    <td><%= status_string(status.status) %></td>
     <td><%= status.log %></td>
   </tr>
   <% end %>

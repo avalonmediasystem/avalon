@@ -24,7 +24,10 @@ class MigrationStatusController < ApplicationController
   
   def show
     criteria = { source_class: params[:class], datastream: nil }
-    criteria[:status] = params[:status] if params[:status].present?
+    if params[:status].present?
+      criteria[:status] = "migrate" if params[:status] == "in progress"
+      criteria[:status] ||= params[:status]
+    end
     @statuses = MigrationStatus.where(criteria).order(params[:order] || :id).page(params[:page]).per(params[:per])
     render without_layout_if_xhr
   end

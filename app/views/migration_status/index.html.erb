@@ -16,7 +16,7 @@
       <td class="text-right"><%= status_link(klass, 'completed') %></td>
       <td class="text-right"><%= status_link(klass, 'failed') %></td>
       <td class="text-right"><%= status_link(klass, 'waiting') %></td>
-      <td class="text-right"><%= @counts[klass]['in progress'] %></td>
+      <td class="text-right"><%= status_link(klass, 'in progress') %></td>
       <td class="text-right"><%= status_link(klass, 'total', nil) %></td>
     </tr>
   <% end %>

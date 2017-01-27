@@ -13,4 +13,8 @@ module MigrationReportHelper
     new_params[:order] = "#{col_name} #{order}"
     new_params
   end
+
+  def status_string(status)
+    status == "migrate" ? "In Progress" : status.titleize
+  end
 end
