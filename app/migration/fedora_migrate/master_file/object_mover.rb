@@ -9,6 +9,19 @@ module FedoraMigrate
       MASTERFILE_DATASTREAM = "masterFile".freeze
       MH_METADATA_DATASTREAM = "mhMetadata".freeze
 
+      def migrate
+        #find mediaobject pid to see if it's already failed
+        rels_ext = Nokogiri::XML(source.datastreams["RELS-EXT"].content)
+        media_object_pid = rels_ext.remove_namespaces!.xpath('//isPartOf').first.values.first.split("/").last
+        mo_status = MigrationStatus.where(f3_pid: media_object_pid).first.status
+        if mo_status == "failed"
+          status = MigrationStatus.find_or_create_by(source_class: "MasterFile", f3_pid: source.pid, datastream: nil)
+          status.update_attributes status: 'failed', log: "Media Object Failed to Migrate"
+          status.save!
+        end
+        super
+			end
+
       def migrate_datastreams
         migrate_dublin_core
         migrate_desc_metadata

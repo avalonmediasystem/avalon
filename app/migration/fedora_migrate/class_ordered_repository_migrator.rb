@@ -60,8 +60,13 @@ module FedoraMigrate
             target = klass.where(migrated_from_tesim: source.pid).first
             options[:report] = report.reload[source.pid]
             result.object = object_mover.new(source, target, options).send(method)
-            status_record.update_attribute :f4_pid, result.object.id unless method == :second_pass
-            result.status = true
+            status_record.reload
+            if status_record.status == "failed"
+              result.status = false
+            else
+              status_record.update_attribute :f4_pid, result.object.id unless method == :second_pass
+              result.status = true
+            end
           rescue StandardError => e
             result.object = {exception: e.class.name, message: e.message, backtrace: e.backtrace[0..15]}
             status_record.update_attribute :log, %{#{e.class.name}: "#{e.message}"}
