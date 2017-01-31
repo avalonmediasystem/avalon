@@ -62,6 +62,13 @@ Rails.application.routes.draw do
         get 'items'
       end
     end
+
+    namespace :migration_report, controller: '/migration_status' do
+      get '/', action: :index
+      get ':class', action: :show, as: 'by_class'
+      get ':id/detail', action: :detail, as: 'detail'
+      get ':id/report', action: :report, as: 'report'
+    end
   end
 
   resources :vocabulary, except: [:create, :destroy, :new, :edit]

@@ -19,7 +19,7 @@ module FedoraMigrate
       end
       class_order.each do |klass|
         @klass = klass
-        if object_mover.instance_methods.include?(:second_pass)
+        if second_pass_needed?
           @source_objects = nil
           source_objects(klass).each do |object|
             @source = object
@@ -41,6 +41,11 @@ module FedoraMigrate
       migrate_object
     end
 
+    def migration_required?
+      status_report = MigrationStatus.find_by(source_class: klass, f3_pid: source.pid, datastream: nil)
+      status_report.nil? || (status_report.status != 'completed')
+    end
+    
     def source_objects(klass)
       @source_objects ||= FedoraMigrate.source.connection.search(nil).collect { |o| qualifying_object(o, klass) }.compact
     end
@@ -48,15 +53,44 @@ module FedoraMigrate
     private
 
       def migrate_object(method=:migrate)
-        target = klass.where(migrated_from_tesim: source.pid).first
-        options[:report] = report.reload[source.pid]
-        result.object = object_mover.new(source, target, options).send(method)
-        result.status = true
-      rescue StandardError => e
-        result.object = {exception: e.class.name, message: e.message, backtrace: e.backtrace[0..15]}
-        result.status = false
-      ensure
-        report.save(source.pid, result)
+        status_record = MigrationStatus.find_or_create_by(source_class: klass.name, f3_pid: source.pid, datastream: nil)
+        unless (status_record.status == 'failed') && (method == :second_pass)
+          begin
+            status_record.update_attributes status: method.to_s, log: nil
+            target = klass.where(migrated_from_tesim: source.pid).first
+            options[:report] = report.reload[source.pid]
+            result.object = object_mover.new(source, target, options).send(method)
+            status_record.reload
+            if status_record.status == "failed"
+              result.status = false
+            else
+              status_record.update_attribute :f4_pid, result.object.id unless method == :second_pass
+              result.status = true
+            end
+          rescue StandardError => e
+            result.object = {exception: e.class.name, message: e.message, backtrace: e.backtrace[0..15]}
+            status_record.update_attribute :log, %{#{e.class.name}: "#{e.message}"}
+            result.status = false
+          ensure
+            status_record.update_attribute :status, end_status(method)
+            report.save(source.pid, result)
+          end
+        end
+      end
+      
+      def end_status(method)
+        if result.status
+          if method == :migrate and second_pass_needed?
+            return 'waiting'
+          else
+            return 'completed'
+          end
+        end
+        return 'failed'
+      end
+      
+      def second_pass_needed?
+        object_mover.instance_methods.include?(:second_pass)
       end
 
       def object_mover

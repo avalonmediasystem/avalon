@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160825153112) do
+ActiveRecord::Schema.define(version: 20170118162908) do
 
   create_table "annotations", force: :cascade do |t|
     t.string  "uuid"
@@ -71,6 +71,18 @@ ActiveRecord::Schema.define(version: 20160825153112) do
     t.boolean  "email_sent",                  default: false
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "migration_statuses", force: :cascade do |t|
+    t.string   "source_class", null: false
+    t.string   "f3_pid",       null: false
+    t.string   "f4_pid"
+    t.string   "datastream"
+    t.string   "checksum"
+    t.string   "status"
+    t.text     "log"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
   end
 
   create_table "playlist_items", force: :cascade do |t|

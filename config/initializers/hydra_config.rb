@@ -53,3 +53,6 @@ module Hydra::RoleMapperBehavior::ClassMethods
     end
   end
 end
+
+# Clear the role map out of the Rails cache so it initializes from the DB
+Rails.cache.delete("RoleMapHash")

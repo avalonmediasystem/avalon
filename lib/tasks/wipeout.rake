@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 def wipeout_fedora(base)
-  if base.path =~ %r{^/rest/?$}
+  if base.path =~ %r{/rest/?$}
     graph = RDF::Graph.load(base)
     graph.query([nil,RDF::URI('http://www.w3.org/ns/ldp#contains'),nil]).each do |statement|
       uri = statement.object.to_s
@@ -22,7 +22,7 @@ def wipeout_fedora(base)
       resource['fcr:tombstone'].delete
     end
   else
-    resource = RestClient::Resource.new(base)
+    resource = RestClient::Resource.new(base.to_s)
     resource.delete
     resource['fcr:tombstone'].delete
   end
@@ -38,7 +38,7 @@ def wipeout_redis(redis)
 end
 
 def wipeout_db
-  [ActiveAnnotations::Annotation, Bookmark, Search, ApiToken, Course, 
+  [MigrationStatus, ActiveAnnotations::Annotation, Bookmark, Search, ApiToken, Course, 
    IngestBatch, PlaylistItem, Playlist, RoleMap, StreamToken, User, Identity].each(&:destroy_all)
 end
 

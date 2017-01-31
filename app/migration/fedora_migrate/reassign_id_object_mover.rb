@@ -37,6 +37,7 @@ module FedoraMigrate
         return unless source.datastreams.keys.include?('inheritedRights')
         mover = FedoraMigrate::InheritedRightsDatastreamMover.new(source.datastreams['inheritedRights'], target)
         mover.migrate
+        report.permissions ||= []
         report.permissions += mover.migrate
       end
 

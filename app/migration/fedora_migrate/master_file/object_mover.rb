@@ -9,6 +9,15 @@ module FedoraMigrate
       MASTERFILE_DATASTREAM = "masterFile".freeze
       MH_METADATA_DATASTREAM = "mhMetadata".freeze
 
+      def migrate
+        #find mediaobject pid to see if it's already failed
+        rels_rdf = RDF::Graph.new { |g| g.from_rdfxml(source.datastreams["RELS-EXT"].content) }
+        media_object_pid = rels_rdf.statements.find {|s| s.predicate == ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf }.object.to_s.split('/').last
+        mo_status = MigrationStatus.where(f3_pid: media_object_pid).first.status
+        raise FedoraMigrate::Errors::MigrationError, "Parent media object (#{media_object_pid}) failed to migrate" if mo_status == "failed"
+        super
+      end
+
       def migrate_datastreams
         migrate_dublin_core
         migrate_desc_metadata
@@ -19,8 +28,9 @@ module FedoraMigrate
         migrate_poster_and_thumbnail
         migrate_structural_metadata
         migrate_captions
-        migrate_relationships
         save
+        migrate_relationships
+        target.ldp_source.save #Because save isn't persisting the isPartOf relationship
         # super
       end
 

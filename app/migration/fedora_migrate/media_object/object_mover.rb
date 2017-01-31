@@ -28,14 +28,14 @@ module FedoraMigrate
 
       def migrate_desc_metadata
         return unless source.datastreams.keys.include?(DESC_METADATA_DATASTREAM)
-        mover = FedoraMigrate::DatastreamMover.new(source.datastreams[DESC_METADATA_DATASTREAM], target.attached_files[DESC_METADATA_DATASTREAM], options)
+        mover = FedoraMigrate::StatusTrackingDatastreamMover.new(source.datastreams[DESC_METADATA_DATASTREAM], target.attached_files[DESC_METADATA_DATASTREAM], options)
         #FIXME change MODS recordIdentifier to be new fedora noid id
         report.content_datastreams << ContentDatastreamReport.new(target.attached_files[DESC_METADATA_DATASTREAM], mover.migrate)
       end
 
       def migrate_workflow
         return unless source.datastreams.keys.include?(WORKFLOW_DATASTREAM)
-        FedoraMigrate::DatastreamMover.new(source.datastreams[WORKFLOW_DATASTREAM], target.workflow).migrate
+        FedoraMigrate::StatusTrackingDatastreamMover.new(source.datastreams[WORKFLOW_DATASTREAM], target.workflow).migrate
       end
 
       def migrate_display_metadata
