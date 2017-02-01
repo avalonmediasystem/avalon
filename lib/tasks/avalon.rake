@@ -42,18 +42,51 @@ namespace :avalon do
     desc "Migrate my database"
     task db: :environment do
       Bookmark.all.each do |b|
-        b.document_id = ActiveFedora::Base.where("identifier_ssim:\"#{b.document_id}\"").first.id rescue next
-        b.save!
+        status_record = MigrationStatus.find_or_create_by(source_class: Bookmark.name, f3_pid: "Bookmark:#{b.document_id}")
+        next if status_record.status == "completed"
+        status_record.update_attributes status: "migrate", log: nil
+        begin
+          obj = MediaObject.where("identifier_ssim:\"#{b.document_id}\"").first
+          obj ||= MediaObject.where(id: b.document_id).first
+          raise FedoraMigrate::Errors::MigrationError, "Media Object with Avalon 5 ID #{b.document_id} could not be found" unless obj
+          b.document_id = obj.id
+          b.save!
+          status_record.update_attribute :status, "completed"
+        rescue StandardError => e
+          status_record.update_attributes status: "failed", log: %{#{e.class.name}: "#{e.message}"}
+        end
       end
-      AvalonAnnotation.all.each do |anno|
-        mf = ActiveFedora::Base.where("identifier_ssim:\"#{anno.source.split('/').last}\"").first
-        next unless mf
-        anno.master_file = mf
-        anno.save!
+      AvalonClip.all.each do |anno|
+        status_record = MigrationStatus.find_or_create_by(source_class: AvalonClip.name, f3_pid: "AvalonClip:#{anno.id}")
+        next if status_record.status == "completed"
+        status_record.update_attributes status: "migrate", log: nil
+        begin
+          old_id = anno.source.split('/').last
+          mf = MasterFile.where("identifier_ssim:\"#{old_id}\"").first
+          mf ||= MasterFile.where(id: old_id).first
+          raise FedoraMigrate::Errors::MigrationError, "Master File with Avalon 5 ID #{old_id} could not be found" unless mf
+          anno.master_file = mf
+          anno.save!
+          status_record.update_attribute :status, "completed"
+        rescue StandardError => e
+          status_record.update_attributes status: "failed", log: %{#{e.class.name}: "#{e.message}"}
+        end
       end
-      IngestBatch.all.each do |ib|
-        ib.media_object_ids = ib.media_object_ids.map {|moid| ActiveFedora::Base.where("identifier_ssim:\"#{moid}\"").first.id rescue moid }  
-        ib.save!
+      AvalonMarker.all.each do |anno|
+        status_record = MigrationStatus.find_or_create_by(source_class: AvalonMarker.name, f3_pid: "AvalonMarker:#{anno.id}")
+        next if status_record.status == "completed"
+        status_record.update_attributes status: "migrate", log: nil
+        begin
+          old_id = anno.source.split('/').last
+          mf = MasterFile.where("identifier_ssim:\"#{old_id}\"").first
+          mf ||= MasterFile.where(id: old_id).first
+          raise FedoraMigrate::Errors::MigrationError, "Master File with Avalon 5 ID #{old_id} could not be found" unless mf
+          anno.master_file = mf
+          anno.save!
+          status_record.update_attribute :status, "completed"
+        rescue StandardError => e
+          status_record.update_attributes status: "failed", log: %{#{e.class.name}: "#{e.message}"}
+        end
       end
     end
   end

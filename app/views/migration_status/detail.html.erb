@@ -7,7 +7,9 @@
 <% if @f4_pid.present? %>
   <p>Migrated to <%= @f4_pid %></p>
 <% end %>
-<p><%= link_to 'Full Report', admin_migration_report_report_path(id: params[:id]), target: 'migration_json'%></p>
+<% unless ["Bookmark", "AvalonClip", "AvalonMarker"].include? @class %>
+  <p><%= link_to 'Full Report', admin_migration_report_report_path(id: params[:id]), target: 'migration_json'%></p>
+<% end %>
 
 <table class="table table-striped table-hover table-condensed">
   <tr>
