@@ -42,7 +42,7 @@ namespace :avalon do
     desc "Migrate my database"
     task db: :environment do
       Bookmark.all.each do |b|
-        status_record = MigrationStatus.find_or_create_by(source_class: Bookmark.name, f3_pid: "Bookmark:#{b.document_id}")
+        status_record = MigrationStatus.find_or_create_by(source_class: Bookmark.name, f3_pid: "Bookmark:#{b.id}")
         next if status_record.status == "completed"
         status_record.update_attributes status: "migrate", log: nil
         begin
