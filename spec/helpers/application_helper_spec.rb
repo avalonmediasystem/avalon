@@ -59,7 +59,7 @@ describe ApplicationHelper do
       expect(helper.search_result_label(mo_solr_doc)).not_to include("(00:00)")
     end
     it "should return formatted title if duration is present" do
-      mo_solr_doc = {"title_tesi" => "my_title", "duration_tesim" => ["1000"]}
+      mo_solr_doc = {"title_tesi" => "my_title", "duration_ssi" => "1000"}
       expect(helper.search_result_label(mo_solr_doc)).to eq("my_title (00:01)")
     end
     it "should return id when no title" do
