@@ -8,6 +8,7 @@
 * switch to Ruby 2.3.1 ``rvm install 2.3.1`` and ``rvm use 2.3.1`` (``rvm --default use 2.3.1`` will also make 2.3.1 your new default)
 * ``bundle install``
 * ``cp config/authentication.yml.example config/authentication.yml``
+* ``cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml``
 * ``rake db:migrate``
 * ``bundle install``
 * ``bundle exec rake server:development`` or ``bundle exec rake server:test`` Note: This process will not background itself, it will occupy the terminal you run it in
