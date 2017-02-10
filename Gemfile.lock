@@ -68,8 +68,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-track-scrubber.git
-  revision: 08079975274a20013b63fdcaaf3a4896e79267e4
-  branch: update-rails
+  revision: 9c5b35ec9d923921ffbac5e842cc4ae03e22a0cc
+  branch: master
   specs:
     mediaelement-track-scrubber (0.0.1)
       rails (>= 4.0)
@@ -221,7 +221,7 @@ GEM
     airbrussh (1.1.1)
       sshkit (>= 1.6.1, != 1.7.0)
     api-pagination (4.5.1)
-    arel (6.0.3)
+    arel (6.0.4)
     ast (2.3.0)
     autoparse (0.3.3)
       addressable (>= 2.3.1)
@@ -262,7 +262,7 @@ GEM
       ruby-box
       sass-rails
       skydrive
-    builder (3.2.2)
+    builder (3.2.3)
     byebug (9.0.6)
     cancancan (1.15.0)
     capistrano (3.7.1)
@@ -303,7 +303,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    concurrent-ruby (1.0.3)
+    concurrent-ruby (1.0.4)
     coveralls (0.8.17)
       json (>= 1.8, < 3)
       simplecov (~> 0.12.0)
@@ -432,7 +432,7 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (6.0.1)
       railties (>= 3.2.16)
-    json (1.8.3)
+    json (1.8.6)
     json-ld (2.1.0)
       multi_json (~> 1.11)
       rdf (~> 2.1)
@@ -474,7 +474,7 @@ GEM
     net-ssh (3.2.0)
     netrc (0.11.0)
     noid (0.9.0)
-    nokogiri (1.6.8.1)
+    nokogiri (1.7.0.1)
       mini_portile2 (~> 2.1.0)
     nom-xml (0.6.0)
       activesupport (>= 3.2.18)
@@ -533,9 +533,9 @@ GEM
       sprockets-rails
     rails-deprecated_sanitizer (1.0.3)
       activesupport (>= 4.2.0.alpha)
-    rails-dom-testing (1.0.7)
+    rails-dom-testing (1.0.8)
       activesupport (>= 4.2.0.beta, < 5.0)
-      nokogiri (~> 1.6.0)
+      nokogiri (~> 1.6)
       rails-deprecated_sanitizer (>= 1.0.1)
     rails-html-sanitizer (1.0.3)
       loofah (~> 2.0)
@@ -797,6 +797,7 @@ DEPENDENCIES
   pry-rails
   rails (= 4.2.7.1)
   rb-readline
+  rdf (~> 2.1.1)
   rdf-rdfxml
   resque (~> 1.26.0)
   resque-scheduler (~> 4.3.0)

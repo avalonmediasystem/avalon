@@ -7,9 +7,9 @@ You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software distributed 
+Unless required by applicable law or agreed to in writing, software distributed
   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-  CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
@@ -36,5 +36,22 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 <% end %>
 <ol class="side-playlist">
-  <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clips: @playlist.clips } %>
+  <% clip_map = @playlist.clips.index_by{|c|c.id} %>
+  <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clip_map: clip_map } %>
 </ol>
+
+<% content_for :page_scripts do %>
+  <script>
+    function reload_player(segment, nativeUrl, isVideo) {
+      splitUrl = nativeUrl.split('?');
+      uri = splitUrl[0]+".js";
+      params = "content="+segment;
+      if (splitUrl.length>1) {
+        params+='&'+splitUrl[1];
+      }
+      $.getJSON(uri, params, function(data){
+        avalonPlayer.setStreamInfo(data)
+      });
+    }
+  </script>
+<% end %>

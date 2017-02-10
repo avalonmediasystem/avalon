@@ -1,14 +1,14 @@
 # Copyright 2011-2015, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
-# Unless required by applicable law or agreed to in writing, software distributed 
+#
+# Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-#   CONDITIONS OF ANY KIND, either express or implied. See the License for the 
+#   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
@@ -64,6 +64,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     if request['target_id']
       redirect_to object_path(request['target_id'])
+    elsif params[:url]
+      redirect_to params[:url]
     elsif session[:previous_url] 
       redirect_to session.delete :previous_url
     elsif auth_type == 'lti' && user_session[:virtual_groups].present?
@@ -74,7 +76,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   protected :find_user
-  
+
   rescue_from Avalon::MissingUserId do |exception|
     support_email = Avalon::Configuration.lookup('email.support')
     notice_text = I18n.t('errors.lti_auth_error') % [support_email, support_email]
