@@ -582,6 +582,7 @@ a[data-trigger='submit'] {
 
 .facet-values {
   display: table;
+  //white-space: nowrap; I don't think we want values to no wrap because collection names can be long
   table-layout: fixed;
   //set hyphen definitions at this (display:block) level
   -ms-word-break: keep-all;
@@ -618,6 +619,7 @@ a[data-trigger='submit'] {
 .facet-count {
   text-align: right;
   width: 5em;
+  white-space: nowrap;
 }
 
 .facets .panel-group .panel {
