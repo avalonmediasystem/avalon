@@ -11,7 +11,7 @@
       var longest = $(this).find('span.facet-count').sort(longer).first();
       var clone = longest.clone()
         .css('visibility','hidden').css('width', 'auto');
-      longest.append(clone);
+      $('span.facet-count:visible:first').append(clone);
       $(this).find('.facet-count').first().width(clone.width());
       clone.remove();
     });
