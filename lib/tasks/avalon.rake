@@ -19,7 +19,7 @@ namespace :avalon do
     require 'active_fedora/cleaner'
     ActiveFedora::Cleaner.clean!
   end
-  
+
   desc "Migrate Avalon 5.x to 6.x"
   task migrate: :environment do
     Rake::Task['avalon:migrate:repo'].invoke
@@ -38,7 +38,7 @@ namespace :avalon do
       migrator.migrate_objects
       migrator
     end
-    
+
     desc "Migrate my database"
     task db: :environment do
       Bookmark.all.each do |b|
@@ -88,6 +88,29 @@ namespace :avalon do
           status_record.update_attributes status: "failed", log: %{#{e.class.name}: "#{e.message}"}
         end
       end
+    end
+
+    desc "Cleanup failed bookmarks"
+    task bookmark_cleanup: :environment do
+      deleted_count = 0
+      passed_count = 0
+      failed_count = 0
+
+      Bookmark.all.each do |b|
+        if MediaObject.where(id: b.document_id).count > 0
+          passed_count = passed_count + 1
+        else
+          begin
+            b.destroy
+            deleted_count = deleted_count + 1
+          rescue Exception => e
+            puts "Failed to delete #{b.id}"
+            failed_count = failed_count + 1
+            puts e.message
+          end
+        end
+      end
+      puts "Deleted: #{deleted_count} Passed: #{passed_count} Failed: #{failed_count}"
     end
   end
 
