@@ -797,6 +797,7 @@ DEPENDENCIES
   pry-rails
   rails (= 4.2.7.1)
   rb-readline
+  rdf (~> 2.1.1)
   rdf-rdfxml
   resque (~> 1.26.0)
   resque-scheduler (~> 4.3.0)
