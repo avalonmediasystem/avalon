@@ -21,7 +21,7 @@ class MediaObjectsController < ApplicationController
 
   before_filter :authenticate_user!, except: [:show, :set_session_quality]
   before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
-  load_and_authorize_resource except: [:destroy, :update_status, :set_session_quality, :tree, :deliver_content]
+  load_and_authorize_resource except: [:destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove]
   # authorize_resource only: [:create, :update]
 
   before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
@@ -47,6 +47,10 @@ class MediaObjectsController < ApplicationController
 
   def authenticate_api!
     return head :unauthorized if !signed_in?
+  end
+
+  def confirm_remove
+    raise CanCan::AccessDenied unless Array(params[:id]).any? { |id| current_ability.can? :destroy, id }
   end
 
   def new
