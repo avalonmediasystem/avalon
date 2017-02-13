@@ -3,7 +3,7 @@ module FedoraMigrate
     class DescMetadataDatastreamMover < FedoraMigrate::SimpleXmlDatastreamMover
 
       def fields_to_copy
-        %w(file_checksum file_size duration display_aspect_ratio original_frame_size file_size date_digitized physical_description file_location)
+        %w(file_checksum file_size duration display_aspect_ratio original_frame_size file_size date_digitized physical_description file_location file_format)
       end
 
       def migrate
