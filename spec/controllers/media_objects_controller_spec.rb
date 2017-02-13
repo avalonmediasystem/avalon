@@ -701,6 +701,32 @@ describe MediaObjectsController, type: :controller do
     end
   end
 
+  describe "#confirm_remove" do
+    let!(:collection) { FactoryGirl.create(:collection) }
+    before(:each) do
+      login_user collection.managers.first
+    end
+
+    it "redirects with message when user does not have ability to delete all items" do
+      media_object = FactoryGirl.create(:media_object)
+      expect(controller.current_ability.can? :destroy, media_object).to be_falsey
+      expect(get :confirm_remove, id: media_object.id).to redirect_to(root_path)
+      expect(flash[:notice]).not_to be_empty
+    end
+    it "displays confirmation form" do
+      media_object = FactoryGirl.create(:media_object, collection: collection)
+      expect(controller.current_ability.can? :destroy, media_object).to be_truthy
+      expect(get :confirm_remove, id: media_object.id).to render_template(:confirm_remove)
+    end
+    it "displays confirmation form even if user does not have ability to delete some items" do
+      media_object1 = FactoryGirl.create(:media_object)
+      media_object2 = FactoryGirl.create(:media_object, collection: collection)
+      expect(controller.current_ability.can? :destroy, media_object1).to be_falsey
+      expect(controller.current_ability.can? :destroy, media_object2).to be_truthy
+      expect(get :confirm_remove, id: [media_object1.id, media_object2.id]).to render_template(:confirm_remove)
+    end
+  end
+
   describe "#update_status" do
     before { Delayed::Worker.delay_jobs = false }
     after  { Delayed::Worker.delay_jobs = true  }
