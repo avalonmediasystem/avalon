@@ -70,7 +70,7 @@ gem 'whenever', git: "https://github.com/javan/whenever.git", require: false
 gem 'with_locking'
 gem 'parallel'
 gem 'avalon-about', git: "https://github.com/avalonmediasystem/avalon-about.git", tag: "avalon-r6"
-gem 'about_page', git: "https://github.com/avalonmediasystem/about_page.git", tag: "avalon-r6"
+gem 'about_page', git: "https://github.com/avalonmediasystem/about_page.git"
 
 #MediaElement.js related
 gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', branch: 'captions'

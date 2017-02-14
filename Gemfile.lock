@@ -1,7 +1,6 @@
 GIT
   remote: https://github.com/avalonmediasystem/about_page.git
-  revision: e4a87a7aec112b1ccdfa8f4cc71e0ee7ccdf66a6
-  tag: avalon-r6
+  revision: a6a0c9cb5dad559b91bb054727bf06d24830e9f3
   specs:
     about_page (0.3.1)
       rails (>= 3.2)
