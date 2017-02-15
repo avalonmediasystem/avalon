@@ -25,9 +25,9 @@ Unless required by applicable law or agreed to in writing, software distributed
       <span class="icon-bar"></span>
     </button>
 
-  <h4>
+  <h2>
   	<%= groupname.blank? ? t('blacklight.search.facets.title') : t("blacklight.search.facets-#{groupname}.title", default: groupname.titleize) %>
-  </h4>
+  </h2>
     </div>
 
   <div id="facet-panel<%= "-#{groupname}" unless groupname.nil? %>-collapse" class="collapse panel-group">
