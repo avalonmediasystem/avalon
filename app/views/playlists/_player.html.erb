@@ -56,7 +56,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% unless can? :read, @current_masterfile %>
   <span class = 'show_playlist_player_denied_title'><h2>Restricted Access</h2></span>
   <span class = 'playlist_item_denied'>
-    You do not have permission to playback item <%= @current_masterfile.mediaobject_id %>.
+    You do not have permission to playback item <%= @current_masterfile.media_object_id %>.
     <% if !user_signed_in? %>
       <br>Have you tried <%= link_to 'logging in', new_user_session_path %>?
     <% end %>
