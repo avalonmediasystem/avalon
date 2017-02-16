@@ -22,6 +22,7 @@
 //= require me-add-to-playlist
 //= require modernizr
 //= require me-track-scrubber
+//= require mediaelement-qualityselector/mep-feature-qualities
 
 // include all of our vendored js
 //= require_tree ../../../vendor/assets/javascripts/.
