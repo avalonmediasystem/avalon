@@ -330,14 +330,17 @@ header div{
 /* Sidebar */
 
 .sidenav {
-  h4 {
+  /* Browse By Header */
+  h2 {
     margin: 0px;
     background-color: $sidenavHeaderBackgroundColor;
     @include border-top-radius(6px);
     padding: 10px 0 10px 10px;
     font-weight: bold;
+    font-size: 18px;
   }
-  h5 {
+  /* Facet Group Header */
+  h3 {
     font-weight: bold;
     font-size: 1em;
   }
@@ -648,6 +651,7 @@ a[data-trigger='submit'] {
 .index_title {
   line-height: 20px;
   margin-top: 0;
+  font-weight: 700 !important;
 }
 
 .form-control {
@@ -698,10 +702,6 @@ a[data-trigger='submit'] {
     background-color: $greenBG;
     border-color: $green;
   }
-}
-
-.index_title {
-  font-weight: bold;
 }
 
 #content {
