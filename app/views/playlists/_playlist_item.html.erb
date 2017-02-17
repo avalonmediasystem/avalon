@@ -10,16 +10,16 @@
     <% clip_start = clip.start_time / 1000.0 %>
     <% clip_end = clip.end_time / 1000.0 %>
     <% clip_frag = "?t=#{clip_start},#{clip_end}" %>
-    <% link = pid_section_media_object_path(MediaObject.find(masterfile.media_object_id), masterfile.pid) + clip_frag %>
+    <% link = pid_section_media_object_path(MediaObject.find(masterfile.media_object_id), masterfile.id) + clip_frag %>
     <% data = {
-        segment: masterfile.pid,
+        segment: masterfile.id,
         is_video: masterfile.is_video?,
         share_link: link,
         native_url: link
       } %>
 
     <%#= link_to "#", data: data, onclick: 'reload_player(this);' do %>
-    <% if @current_masterfile.is_video? == masterfile.is_video? && can?(:read, @current_playlist_item.clip.master_file.mediaobject) %>
+    <% if @current_masterfile.is_video? == masterfile.is_video? && can?(:read, @current_playlist_item.clip.master_file.media_object) %>
       <%= link_to playlist_refresh_info_path(@playlist, position: item.position, autostart: true), remote: true do%>
         <%= clip.title %>
       <% end %>
@@ -42,7 +42,7 @@
       <span title="The source for this playlist item has been deleted.">[Deleted Item]</span>
     <% else %>
       <i class="fa fa-lock"></i>
-      <span title="You do not playback permission for the source item, <%=clip.master_file.mediaobject_id%>, this playlist item references.">[Inaccessible Item] <%=clip.master_file.mediaobject_id%></span>
+      <span title="You do not playback permission for the source item, <%=clip.master_file.media_object_id%>, this playlist item references.">[Inaccessible Item] <%=clip.master_file.mediaobject_id%></span>
     <% end %>
     <span class="pull-right"><%= clip.duration %></span>
   </li>
