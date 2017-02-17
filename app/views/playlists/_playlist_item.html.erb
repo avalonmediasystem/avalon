@@ -10,7 +10,7 @@
     <% clip_start = clip.start_time / 1000.0 %>
     <% clip_end = clip.end_time / 1000.0 %>
     <% clip_frag = "?t=#{clip_start},#{clip_end}" %>
-    <% link = pid_section_media_object_path(MediaObject.find(masterfile.mediaobject_id), masterfile.pid) + clip_frag %>
+    <% link = pid_section_media_object_path(MediaObject.find(masterfile.media_object_id), masterfile.pid) + clip_frag %>
     <% data = {
         segment: masterfile.pid,
         is_video: masterfile.is_video?,
