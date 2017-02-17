@@ -1,6 +1,7 @@
 <% item = @playlist.items[playlist_item_counter] %>
 <% item_class = (item == @current_playlist_item)? 'now_playing' : 'queue' %>
 <% clip = clip_map[item.clip_id] %>
+<% item_type = (clip.master_file.file_format=='Moving image')? 'fa-film' : 'fa-music' %>
 <% if can? :read, clip.master_file.media_object %>
 <li class="<%= item_class %>" is_video="<%= clip.master_file.is_video? %>">
     <% if item_class == 'now_playing' %>
