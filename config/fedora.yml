@@ -11,5 +11,5 @@ test:
 production:
   user: fedoraAdmin
   password: fedoraAdmin
-  url: http://127.0.0.1:8983/fedora/rest
+  url: http://127.0.0.1:8983/fedora4/rest
   base_path: /prod
