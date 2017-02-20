@@ -188,14 +188,7 @@ class MediaObjectsController < ApplicationController
     end
 
     if 'preview' == @active_step
-      @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
-      @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.id)
-      @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
-
-      if (not @masterFiles.empty? and @currentStream.blank?)
-        @currentStream = @masterFiles.first
-        flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
-      end
+      load_current_stream
     end
 
     if 'access-control' == @active_step
@@ -235,15 +228,17 @@ class MediaObjectsController < ApplicationController
           render
         end
       end
-      format.js do
-        render json: @currentStreamInfo
-      end
       format.json do
         render json: @media_object.to_json
       end
     end
   end
 
+  def show_stream_details
+    load_current_stream
+    render json: @currentStreamInfo
+  end
+  
   def show_progress
     overall = { :success => 0, :error => 0 }
 
@@ -370,9 +365,20 @@ class MediaObjectsController < ApplicationController
   protected
 
   def load_master_files #(opts = {})
-    @media_object.ordered_master_files.to_a #opts
+    @masterFiles ||= @media_object.ordered_master_files.to_a #opts
   end
 
+  def set_player_token
+    @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.id)
+  end
+
+  def load_current_stream
+    set_active_file
+    set_player_token
+    @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
+    @currentStreamInfo['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
+  end
+  
   def load_player_context
     return if request.format.json? and !params.has_key? :content
 
@@ -384,14 +390,8 @@ class MediaObjectsController < ApplicationController
       params[:content] = @media_object.ordered_master_files.to_a[index]
     end
 
-    @masterFiles = load_master_files # load_from_solr: true
-    @currentStream = params[:content] ? set_active_file(params[:content]) : @masterFiles.first
-    @token = @currentStream.nil? ? "" : StreamToken.find_or_create_session_token(session, @currentStream.id)
-    # This rescue statement seems a bit dodgy because it catches *all*
-    # exceptions. It might be worth refactoring when there are some extra
-    # cycles available.
-    @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
-    @currentStreamInfo['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
+    load_master_files # load_from_solr: true
+    load_current_stream
   end
 
   # The goal of this method is to determine which stream to provide to the interface
@@ -402,9 +402,17 @@ class MediaObjectsController < ApplicationController
   # If the stream is not a member of that media object or does not exist at all then
   # return a nil value that needs to be handled appropriately by the calling code
   # block
-  def set_active_file(file_id = nil)
-    @masterFiles ||= load_master_files #load_from_solr: true
-    file_id.nil? ? nil : @masterFiles.find { |mf| mf.id == file_id }
+  def set_active_file
+    if params[:content]
+      @currentStream = begin
+        MasterFile.find(params[:content])
+      rescue ActiveFedora::ObjectNotFoundError
+        flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
+        nil
+      end
+    end
+    @currentStream ||= @media_object.master_files.first
+    return @currentStream
   end
 
   def media_object_parameters
