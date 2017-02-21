@@ -19,9 +19,9 @@ class MediaObjectsController < ApplicationController
   include Avalon::Controller::ControllerBehavior
   include ConditionalPartials
 
-  before_filter :authenticate_user!, except: [:show, :set_session_quality]
+  before_filter :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details]
   before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
-  load_and_authorize_resource except: [:destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove]
+  load_and_authorize_resource except: [:destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details]
   # authorize_resource only: [:create, :update]
 
   before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
@@ -236,9 +236,10 @@ class MediaObjectsController < ApplicationController
 
   def show_stream_details
     load_current_stream
+    raise CanCan::AccessDenied unless current_ability.can? :read, @currentStream
     render json: @currentStreamInfo
   end
-  
+
   def show_progress
     overall = { :success => 0, :error => 0 }
 
@@ -378,7 +379,7 @@ class MediaObjectsController < ApplicationController
     @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
     @currentStreamInfo['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
   end
-  
+
   def load_player_context
     return if request.format.json? and !params.has_key? :content
 
@@ -389,7 +390,6 @@ class MediaObjectsController < ApplicationController
       end
       params[:content] = @media_object.ordered_master_files.to_a[index]
     end
-
     load_master_files # load_from_solr: true
     load_current_stream
   end
@@ -403,16 +403,16 @@ class MediaObjectsController < ApplicationController
   # return a nil value that needs to be handled appropriately by the calling code
   # block
   def set_active_file
-    if params[:content]
-      @currentStream = begin
+    @currentStream ||= if params[:content]
+      begin
         MasterFile.find(params[:content])
       rescue ActiveFedora::ObjectNotFoundError
         flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
         nil
       end
+    else
+      @media_object.master_files.first
     end
-    @currentStream ||= @media_object.master_files.first
-    return @currentStream
   end
 
   def media_object_parameters

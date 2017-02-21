@@ -498,15 +498,9 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should provide a JSON stream description to the client" do
-        master_file = FactoryGirl.create(:master_file)
-        master_file.media_object = media_object
-        master_file.save
-
-        moid = media_object.id
-        media_object = MediaObject.find(moid)
-
+        FactoryGirl.create(:master_file, media_object: media_object)
         media_object.master_files.each { |part|
-          xhr :get, :show, id: media_object.id, format: :js, content: part.id
+          xhr :get, :show_stream_details, id: media_object.id, content: part.id
           json_obj = JSON.parse(response.body)
           expect(json_obj['is_video']).to eq(part.is_video?)
         }
@@ -617,7 +611,6 @@ describe MediaObjectsController, type: :controller do
     context "correctly handle unfound streams/sections" do
       subject(:mo){FactoryGirl.create(:media_object, :with_master_file)}
       before do
-        mo.save
         login_user mo.collection.managers.first
       end
       it "redirects to first stream when currentStream is nil" do
