@@ -27,8 +27,9 @@ Unless required by applicable law or agreed to in writing, software distributed
       </h4>
     </div>
 
+<% show_all_sections = can? :edit, @media_object %>
 <% sections.each_with_index do |section,i| %>
-<%   unless can? :edit, @media_object %>
+<%   unless show_all_sections %>
 <%     next if section.derivatives.empty? %>
 <%   end %>
 <%=  structure_html(section,i,show_progress).html_safe %>
@@ -81,4 +82,3 @@ Unless required by applicable law or agreed to in writing, software distributed
 </script>
 <% end %>
 <% end %>
-
