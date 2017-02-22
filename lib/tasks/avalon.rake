@@ -29,6 +29,18 @@ namespace :avalon do
   namespace :migrate do
     desc "Migrate all my objects"
     task repo: :environment do
+      unless ENV['CONFIRM'] == 'yes'
+        $stderr.puts <<-EOC
+WARNING: This migration task currently has known issues. 
+         For example, some metadata is not migrated or is migrated incorrectly.
+
+This migration task is part of a larger migration process. More info can be found at:
+https://wiki.dlib.indiana.edu/display/VarVideo/Avalon+5+to+6+Database+Migration
+
+Please run `rake avalon:migrate:repo CONFIRM=yes` to confirm.
+EOC
+        exit 1
+      end
       #disable callbacks
       Admin::Collection.skip_callback(:save, :around, :reindex_members)
       ::MediaObject.skip_callback(:save, :before, :update_dependent_properties!)
