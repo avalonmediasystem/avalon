@@ -411,7 +411,7 @@ class MediaObjectsController < ApplicationController
         nil
       end
     else
-      @media_object.master_files.first
+      @media_object.ordered_master_files.to_a.first
     end
   end
 
