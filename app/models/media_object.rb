@@ -286,9 +286,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def leases(scope=:all)
-    criteria = { has_model_ssim: 'Lease' }
-    criteria.merge!(lease_type_ssi: scope) unless scope == :all
-    governing_policies.where(criteria)
+    governing_policies.select { |gp| gp.is_a?(Lease) and (scope == :all or gp.lease_type == scope) }
   end
 
   private
