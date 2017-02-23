@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class StructuralMetadata < ActiveFedora::File
+  include SpeedyAF::IndexedContent
   include ActiveFedora::Datastreams::NokogiriDatastreams
 
   def mimeType
@@ -32,5 +33,4 @@ class StructuralMetadata < ActiveFedora::File
   def valid?
     self.class.schema.validate(self.ng_xml).empty?
   end
-
 end

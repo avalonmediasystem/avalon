@@ -244,7 +244,7 @@ class MediaObjectsController < ApplicationController
     overall = { :success => 0, :error => 0 }
 
     result = Hash[
-      @media_object.ordered_master_files.to_a.collect { |mf|
+      master_file_presenter.collect { |mf|
         mf_status = {
           :status => mf.status_code,
           :complete => mf.percent_complete.to_i,
@@ -262,7 +262,7 @@ class MediaObjectsController < ApplicationController
         [mf.id, mf_status]
       }
     ]
-    master_files_count = @media_object.master_files.to_a.size
+    master_files_count = @media_object.master_files.size
     if master_files_count > 0
       overall.each { |k,v| overall[k] = [0,[100,v.to_f/master_files_count.to_f].min].max.floor }
     else
@@ -340,7 +340,7 @@ class MediaObjectsController < ApplicationController
       }
       format.json {
         result = { @media_object.id => {} }
-        @media_object.ordered_master_files.each do |mf|
+        @media_object.indexed_master_files.each do |mf|
           result[@media_object.id][mf.id] = mf.derivatives.collect(&:id)
         end
         render :json => result
@@ -365,8 +365,13 @@ class MediaObjectsController < ApplicationController
 
   protected
 
-  def load_master_files #(opts = {})
-    @masterFiles ||= @media_object.ordered_master_files.to_a #opts
+  def master_file_presenter
+    SpeedyAF::SolrPresenter.where("isPartOf_ssim:#{@media_object.id}",
+      order: -> { @media_object.indexed_master_file_ids }, defaults: { permalink: nil })
+  end
+
+  def load_master_files(mode = :rw)
+    @masterFiles ||= mode == :rw ? @media_object.indexed_master_files.to_a : master_file_presenter
   end
 
   def set_player_token
@@ -385,12 +390,13 @@ class MediaObjectsController < ApplicationController
 
     if params[:part]
       index = params[:part].to_i-1
-      if index < 0 or index > @media_object.ordered_master_files.to_a.size
+      if index < 0 or index > @media_object.master_files.size-1
         raise ActiveFedora::ObjectNotFoundError
       end
-      params[:content] = @media_object.ordered_master_files.to_a[index]
+      params[:content] = @media_object.indexed_master_file_ids[index]
     end
-    load_master_files # load_from_solr: true
+
+    load_master_files(mode: :ro)
     load_current_stream
   end
 
@@ -408,11 +414,14 @@ class MediaObjectsController < ApplicationController
         MasterFile.find(params[:content])
       rescue ActiveFedora::ObjectNotFoundError
         flash[:notice] = "That stream was not recognized. Defaulting to the first available stream for the resource"
+        redirect_to media_object_path(@media_object.id)
         nil
       end
-    else
-      @media_object.ordered_master_files.to_a.first
     end
+    if @currentStream.nil?
+      @currentStream = @media_object.indexed_master_files.first
+    end
+    return @currentStream
   end
 
   def media_object_parameters

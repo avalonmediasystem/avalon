@@ -49,7 +49,7 @@ class StreamToken < ActiveRecord::Base
     token = find_by_token(value)
     if token.present? && token.expires > Time.now.utc
       token.renew!
-      valid_streams = ActiveFedora::SolrService.query(%(isDerivationOf_ssim:"#{token.target}"), fl: 'stream_path_ssi')
+      valid_streams = ActiveFedora::SolrService.query(%(isDerivationOf_ssim:"#{token.target}"), fl: 'stream_path_ssi', rows: 10)
       return valid_streams.collect { |d| d['stream_path_ssi'] }
     else
       raise Unauthorized, 'Unauthorized'
