@@ -505,6 +505,18 @@ describe MediaObjectsController, type: :controller do
           expect(json_obj['is_video']).to eq(part.is_video?)
         }
       end
+
+      it "should choose the correct default master_file" do
+        mf1 = FactoryGirl.create(:master_file, media_object: media_object)
+        mf2 = FactoryGirl.create(:master_file, media_object: media_object)
+        media_object.ordered_master_files = media_object.ordered_master_files.to_a.reverse
+        media_object.save!
+        controller.instance_variable_set('@media_object', media_object)
+        expect(media_object.master_files.first).to eq(mf1)
+        expect(media_object.ordered_master_files.to_a.first).to eq(mf2)
+        expect(controller.send('set_active_file')).to eq(mf2)
+      end
+
     end
     context "Test lease access control" do
       let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'private') }
@@ -613,7 +625,7 @@ describe MediaObjectsController, type: :controller do
       before do
         login_user mo.collection.managers.first
       end
-      it "redirects to first stream when currentStream is nil" do
+      it "redirects to first stream when currentStream is bad" do
         expect(get 'show', id: mo.id, content: 'foo').to redirect_to(media_object_path(id: mo.id))
       end
       it "responds with 404 when non-existant section is requested" do
