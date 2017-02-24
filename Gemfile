@@ -87,6 +87,10 @@ gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/me
 gem 'resque', '~> 1.26.0'
 gem 'resque-scheduler', '~> 4.3.0'
 
+group :production do
+  gem 'lograge'
+end
+
 group :development, :test do
   gem 'equivalent-xml'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
