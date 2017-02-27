@@ -487,13 +487,13 @@ describe MediaObject do
     end
     it 'includes virtual group leases in external group facet' do
       media_object.governing_policies += [FactoryGirl.create(:lease, inherited_read_groups: ['TestGroup'])]
-      media_object.reload
+      media_object.save!
       expect(media_object.to_solr['read_access_virtual_group_ssim']).to include('TestGroup')
     end
     it 'includes ip group leases in ip group facet' do
       ip_addr = Faker::Internet.ip_v4_address
       media_object.governing_policies += [FactoryGirl.create(:lease, inherited_read_groups: [ip_addr])]
-      media_object.reload
+      media_object.save!
       expect(media_object.to_solr['read_access_ip_group_ssim']).to include(ip_addr)
     end
   end
