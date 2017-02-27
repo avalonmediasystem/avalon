@@ -67,7 +67,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-track-scrubber.git
-  revision: 9c5b35ec9d923921ffbac5e842cc4ae03e22a0cc
+  revision: 8b9b094cbd30f3d8954026cd3650a26df5d5a417
   branch: master
   specs:
     mediaelement-track-scrubber (0.0.1)
@@ -302,7 +302,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    concurrent-ruby (1.0.4)
+    concurrent-ruby (1.0.5)
     coveralls (0.8.17)
       json (>= 1.8, < 3)
       simplecov (~> 0.12.0)
@@ -417,7 +417,7 @@ GEM
       hydra-access-controls (= 10.3.4)
       hydra-core (= 10.3.4)
       rails (>= 3.2.6)
-    i18n (0.7.0)
+    i18n (0.8.1)
     iconv (1.0.4)
     ims-lti (1.1.13)
       builder
@@ -699,7 +699,7 @@ GEM
     term-ansicolor (1.4.0)
       tins (~> 1.0)
     thor (0.19.4)
-    thread_safe (0.3.5)
+    thread_safe (0.3.6)
     tilt (2.0.5)
     tins (1.13.0)
     twitter-typeahead-rails (0.11.1.pre.corejavascript)
