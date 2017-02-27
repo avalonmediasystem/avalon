@@ -87,7 +87,9 @@ class AvalonPlayer
           duration = _this.stream_info.duration
           t = _this.stream_info.t
           start_percent = Math.round(if isNaN(parseFloat(t[0])) then 0 else (100*parseFloat(t[0]) / duration))
+          start_percent = Math.max(0,Math.min(100,start_percent));
           end_percent = Math.round(if t.length < 2 or isNaN(parseFloat(t[1])) then 100 else (100*parseFloat(t[1]) / duration))
+          end_percent = Math.max(0,Math.min(100,end_percent));
           clip_span = $('<span />').addClass('mejs-time-clip')
           clip_span.css 'left', start_percent+'%'
           clip_span.css 'width', end_percent-start_percent+'%'
@@ -101,6 +103,7 @@ class AvalonPlayer
             marker_id = $(this)[0].dataset['marker']
             title = String($(this).find('.marker_title')[0].text).replace(/"/g, '&quot;') + " ["+mejs.Utility.secondsToTimeCode(offset)+"]";
             offset_percent = Math.round(if isNaN(parseFloat(offset)) then 0 else (100*offset / duration))
+            offset_percent = Math.max(0,Math.min(100,offset_percent));
             scrubber.append('<span class="fa fa-chevron-up scrubber-marker" style="left: '+offset_percent+'%" title="'+title+'" data-marker="'+marker_id+'"></span>')
         @player.setCurrentTime initialTime
 
