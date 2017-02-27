@@ -485,25 +485,17 @@ describe MediaObject do
       expect(solr_doc['section_label_tesim']).to include('CD 1')
       expect(solr_doc['section_label_tesim']).to include('Test Label')
     end
-
-      xit 'includes virtual group leases in external group facet' do
-        @lease = Lease.new
-        @lease.end_time = Date.today + 1.day
-        @lease.inherited_read_groups == ['TestGroup']
-        @lease.save
-        media_object.governing_policies << @lease
-        expect(media_object.to_solr['read_access_virtual_group_ssim']).to include('TestGroup')
-      end
-      xit 'includes ip group leases in ip group facet' do
-        @lease = Lease.new
-        @lease.end_time = Date.today + 1.day
-        ip_addr = Faker::Internet.ip_v4_address
-        @lease.inherited_read_groups == [ip_addr]
-        @lease.save
-        media_object.governing_policies << @lease
-        expect(media_object.to_solr['read_access_ip_group_ssim']).to include(ip_addr)
-      end
-
+    it 'includes virtual group leases in external group facet' do
+      media_object.governing_policies += [FactoryGirl.create(:lease, inherited_read_groups: ['TestGroup'])]
+      media_object.reload
+      expect(media_object.to_solr['read_access_virtual_group_ssim']).to include('TestGroup')
+    end
+    it 'includes ip group leases in ip group facet' do
+      ip_addr = Faker::Internet.ip_v4_address
+      media_object.governing_policies += [FactoryGirl.create(:lease, inherited_read_groups: [ip_addr])]
+      media_object.reload
+      expect(media_object.to_solr['read_access_ip_group_ssim']).to include(ip_addr)
+    end
   end
 
   describe 'permalink' do
