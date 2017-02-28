@@ -16,7 +16,7 @@
 $ ->
   $(document).on 'click', '.dropdown-menu li a.dropdown-field', (event) ->
     event.preventDefault()
-    d = $(this)
+    d = $(this).parent()
     group = d.closest('.input-group-btn')
     group.find('.dropdown-toggle span').first().text(d.find('a').text())
     group.find('input[type="hidden"]').val(d.find('span.hidden').text())
