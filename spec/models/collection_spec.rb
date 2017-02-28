@@ -43,6 +43,7 @@ describe Admin::Collection do
       it{ is_expected.to be_able_to(:update_editors, collection) }
       it{ is_expected.to be_able_to(:update_depositors, collection) }
       it{ is_expected.to be_able_to(:destroy, collection) }
+      it{ is_expected.to be_able_to(:manage, collection) }
       it{ is_expected.to be_able_to(:update_access_control, collection) }
     end
 
