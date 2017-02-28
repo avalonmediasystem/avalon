@@ -7,7 +7,6 @@ gem 'active-fedora', '>= 10.3.0'
 gem 'active_fedora-datastreams'
 gem 'active_fedora-noid', '~> 2.0.0'
 gem 'blacklight', '~> 6.6'
-gem 'rdf-rdfxml'
 gem 'rdf', '~> 2.1.1'
 gem 'ldp', git:'https://github.com/projecthydra/ldp.git'
 
