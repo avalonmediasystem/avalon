@@ -410,6 +410,14 @@ describe MediaObject do
     it 'destroys related master_files' do
       expect { media_object.destroy }.to change { MasterFile.exists?(master_file) }.from(true).to(false)
     end
+
+    it 'destroys multiple sections' do
+      FactoryGirl.create(:master_file, media_object: media_object)
+      media_object.reload
+      expect(media_object.master_files.size).to eq 2
+      expect { media_object.destroy }.to change { MasterFile.count }.from(2).to(0)
+      expect(MediaObject.exists?(media_object.id)).to be_falsey
+    end
   end
 
   context "dependent properties" do

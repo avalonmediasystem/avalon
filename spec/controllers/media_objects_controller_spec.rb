@@ -711,12 +711,23 @@ describe MediaObjectsController, type: :controller do
       login_user collection.managers.first
     end
 
-    it "should remove the MediaObject and MasterFiles from the system" do
+    it "should remove a MediaObject with a single MasterFiles" do
       media_object = FactoryGirl.create(:media_object, :with_master_file, collection: collection)
       delete :destroy, id: media_object.id
       expect(flash[:notice]).to include("success")
       expect(MediaObject.exists?(media_object.id)).to be_falsey
       expect(MasterFile.exists?(media_object.master_files.first.id)).to be_falsey
+    end
+
+    it "should remove a MediaObject with multiple MasterFiles" do
+      media_object = FactoryGirl.create(:media_object, :with_master_file, collection: collection)
+      FactoryGirl.create(:master_file, media_object: media_object)
+      master_file_ids = media_object.master_files.map(&:id)
+      media_object.reload
+      delete :destroy, id: media_object.id
+      expect(flash[:notice]).to include("success")
+      expect(MediaObject.exists?(media_object.id)).to be_falsey
+      master_file_ids.each { |mf_id| expect(MasterFile.exists?(mf_id)).to be_falsey }
     end
 
     it "should fail when id doesn't exist" do
