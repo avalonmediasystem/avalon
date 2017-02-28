@@ -50,7 +50,7 @@ class MediaObjectsController < ApplicationController
   end
 
   def confirm_remove
-    raise CanCan::AccessDenied unless Array(params[:id]).any? { |id| current_ability.can? :destroy, id }
+    raise CanCan::AccessDenied unless Array(params[:id]).any? { |id| current_ability.can? :destroy, MediaObject.find(id) }
   end
 
   def new

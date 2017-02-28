@@ -757,6 +757,12 @@ describe MediaObjectsController, type: :controller do
       expect(controller.current_ability.can? :destroy, media_object2).to be_truthy
       expect(get :confirm_remove, id: [media_object1.id, media_object2.id]).to render_template(:confirm_remove)
     end
+    it "displays confirmation form for administrators" do
+      login_as :administrator
+      media_object = FactoryGirl.create(:media_object, collection: collection)
+      expect(controller.current_ability.can? :destroy, media_object).to be_truthy
+      expect(get :confirm_remove, id: media_object.id).to render_template(:confirm_remove)
+    end
   end
 
   describe "#update_status" do
