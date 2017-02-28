@@ -49,18 +49,15 @@ class Ability
         end
       end
 
-      if @user_groups.include? "manager"
-        can :manage, Admin::Collection do |collection|
-          @user.in?(collection.managers)
-        end
-      end
-
       if is_member_of_any_collection?
         can :create, MediaObject
       end
 
       if @user_groups.include? "manager"
         can :create, Admin::Collection
+        can :manage, Admin::Collection do |collection|
+          @user.in?(collection.managers)
+        end
       end
     end
   end
