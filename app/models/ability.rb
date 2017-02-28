@@ -49,6 +49,12 @@ class Ability
         end
       end
 
+      if @user_groups.include? "manager"
+        can :manage, Admin::Collection do |collection|
+          @user.in?(collection.managers)
+        end
+      end
+
       if is_member_of_any_collection?
         can :create, MediaObject
       end
@@ -60,6 +66,15 @@ class Ability
   end
 
   def custom_permissions(user=nil, session=nil)
+
+    # unless full_login? and @user_groups.include? "manager"
+    #   can :manage, Admin::Collection do |collection|
+    #     @user.in?(collection.managers)
+    #   end
+    #   can :manage, MediaObject
+    #   can :manage, MasterFile
+    #   can :manage, Admin::Group
+    # end
 
     unless full_login? and @user_groups.include? "administrator"
       cannot :read, MediaObject do |media_object|

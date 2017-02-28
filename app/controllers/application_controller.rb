@@ -54,7 +54,11 @@ class ApplicationController < ActionController::Base
 
   def get_user_collections
     if can? :manage, Admin::Collection
-      Admin::Collection.all
+      collections = []
+      Admin::Collection.all.each do |collection|
+        collections << collection if can? :manage, collection
+      end
+      collections
     else
       Admin::Collection.where("inheritable_edit_access_person_ssim" => user_key).to_a
     end
