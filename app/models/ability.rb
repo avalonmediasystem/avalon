@@ -67,15 +67,6 @@ class Ability
 
   def custom_permissions(user=nil, session=nil)
 
-    # unless full_login? and @user_groups.include? "manager"
-    #   can :manage, Admin::Collection do |collection|
-    #     @user.in?(collection.managers)
-    #   end
-    #   can :manage, MediaObject
-    #   can :manage, MasterFile
-    #   can :manage, Admin::Group
-    # end
-
     unless full_login? and @user_groups.include? "administrator"
       cannot :read, MediaObject do |media_object|
         !(test_read(media_object.id) && media_object.published?) && !test_edit(media_object.id)
