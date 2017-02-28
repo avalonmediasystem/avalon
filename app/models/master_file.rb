@@ -711,7 +711,8 @@ class MasterFile < ActiveFedora::Base
   end
 
   def update_parent!
-    media_object.master_files -= [self]
+    media_object.master_files.delete(self)
+    media_object.ordered_master_files.delete(self)
     media_object.set_media_types!
     media_object.set_duration!
     media_object.save
