@@ -983,6 +983,12 @@ describe MediaObjectsController, type: :controller do
       get :show_progress, id: media_object.id, format: 'json'
       expect(JSON.parse(response.body)["overall"]).to_not be_empty
     end
+    it "should return information about the processing state of the media object's master_files for managers" do
+      media_object =  FactoryGirl.create(:media_object, :with_master_file)
+      login_user media_object.collection.managers.first
+      get :show_progress, id: media_object.id, format: 'json'
+      expect(JSON.parse(response.body)["overall"]).to_not be_empty
+    end
     it "should return something even if the media object has no master_files" do
       media_object = FactoryGirl.create(:media_object)
       login_as 'administrator'
