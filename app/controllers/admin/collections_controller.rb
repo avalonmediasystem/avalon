@@ -14,7 +14,7 @@
 
 class Admin::CollectionsController < ApplicationController
   before_filter :authenticate_user!
-  load_and_authorize_resource except: [:index]
+  load_and_authorize_resource except: [:index, :remove]
   before_filter :load_and_authorize_collections, only: [:index]
   respond_to :html
 
@@ -192,6 +192,8 @@ class Admin::CollectionsController < ApplicationController
 
   # GET /collections/1/remove
   def remove
+    @collection = Admin::Collection.find(params['id'])
+    raise CanCan::AccessDenied unless current_ability.can? :destroy, @collection
     @objects    = @collection.media_objects
     @candidates = get_user_collections.reject { |c| c == @collection }
   end

@@ -37,4 +37,24 @@ describe ApplicationController do
       post :create
     end
   end
+
+  describe '#get_user_collections' do
+    let(:collection1) { FactoryGirl.create(:collection) }
+    let(:collection2) { FactoryGirl.create(:collection) }
+
+    it 'returns all collections for an administrator' do
+      login_as :administrator
+      expect(controller.get_user_collections).to include(collection1)
+      expect(controller.get_user_collections).to include(collection2)
+    end
+    it 'returns only relevant collections for a manager' do
+      login_user collection1.managers.first
+      expect(controller.get_user_collections).to include(collection1)
+      expect(controller.get_user_collections).not_to include(collection2)
+    end
+    it 'returns no collections for an end-user' do
+      login_as :user
+      expect(controller.get_user_collections).to be_empty
+    end
+  end
 end

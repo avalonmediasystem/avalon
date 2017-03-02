@@ -320,4 +320,20 @@ describe Admin::CollectionsController, type: :controller do
 
     end
   end
+
+  describe "#remove" do
+    let!(:collection) { FactoryGirl.create(:collection) }
+
+    it "redirects with message when user does not have ability to delete collection" do
+      login_as :user
+      expect(controller.current_ability.can? :destroy, collection).to be_falsey
+      expect(get :remove, id: collection.id).to redirect_to(root_path)
+      expect(flash[:notice]).not_to be_empty
+    end
+    it "displays confirmation form for managers" do
+      login_user collection.managers.first
+      expect(controller.current_ability.can? :destroy, collection).to be_truthy
+      expect(get :remove, id: collection.id).to render_template(:remove)
+    end
+  end
 end
