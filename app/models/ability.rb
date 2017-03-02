@@ -122,6 +122,10 @@ class Ability
           is_member_of?(media_object.collection)
         end
 
+        can :show_progress, MediaObject do |media_object|
+          is_member_of?(media_object.collection)
+        end
+
         can :edit, MasterFile do |master_file|
           can? :edit, master_file.media_object
         end
