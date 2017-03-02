@@ -48,6 +48,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       if (xhr.responseJSON.hasOwnProperty('errors')){
         $(this).closest('.modal').modal('hide')
         inject_alert(xhr.responseJSON['errors'].join('<br/>'));
+        $('.btn-stateful-loading').button('reset')
       }
       else window.location = '/admin/collections/' + encodeURIComponent(xhr.responseJSON['id']);
     });
