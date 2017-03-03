@@ -169,28 +169,25 @@ describe MasterFilesController do
   end
 
   describe "#destroy" do
-    let(:master_file) {FactoryGirl.create(:master_file, :with_media_object)}
-    before do
-      disableCanCan!
-    end
+    let!(:master_file) {FactoryGirl.create(:master_file, :with_media_object)}
 
-    context "should be deleted" do
-      before do
-        master_file
-      end
-      it "should no longer exist" do
-        expect { post :destroy, id: master_file.id }.to change { MasterFile.count }.by(-1)
-      end
+    it "deletes a master file as administrator" do
+      login_as :administrator
+      expect(controller.current_ability.can? :destroy, master_file).to be_truthy
+      expect { post :destroy, id: master_file.id }.to change { MasterFile.count }.by(-1)
+      expect(master_file.media_object.reload.ordered_master_files.to_a).not_to include master_file
     end
-
-    context "should no longer be associated with its parent object" do
-      before do
-        master_file
-      end
-      it "should create then remove a file from a video object" do
-        expect { post :destroy, id: master_file.id }.to change { MasterFile.count }.by(-1)
-        expect(master_file.media_object.reload.ordered_master_files.to_a).not_to include master_file
-      end
+    it "deletes a master file as manager of owning collection" do
+      login_user master_file.media_object.collection.managers.first
+      expect(controller.current_ability.can? :destroy, master_file).to be_truthy
+      expect { post :destroy, id: master_file.id }.to change { MasterFile.count }.by(-1)
+      expect(master_file.media_object.reload.ordered_master_files.to_a).not_to include master_file
+    end
+    it "redirects with a flash warning for end users" do
+      login_as :user
+      expect(controller.current_ability.can? :destroy, master_file).to be_falsey
+      expect(post :destroy, id: master_file.id).to redirect_to(root_path)
+      expect(flash[:notice]).not_to be_empty
     end
   end
 

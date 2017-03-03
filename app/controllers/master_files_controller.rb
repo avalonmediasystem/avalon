@@ -237,7 +237,7 @@ class MasterFilesController < ApplicationController
   # When destroying a file asset be sure to stop it first
   def destroy
     master_file = MasterFile.find(params[:id])
-    authorize! :delete, master_file, message: "You do not have sufficient privileges to delete files"
+    authorize! :destroy, master_file, message: "You do not have sufficient privileges to delete files"
     filename = File.basename(master_file.file_location) || master_file.id
     media_object = MediaObject.find(master_file.media_object_id)
     media_object.ordered_master_files.delete(master_file)
