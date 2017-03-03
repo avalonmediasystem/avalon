@@ -641,7 +641,7 @@ GEM
       mime-types
       nokogiri
       rest-client
-    rubyzip (1.2.0)
+    rubyzip (1.2.1)
     rufus-scheduler (3.3.1)
       tzinfo
     sass (3.4.22)
