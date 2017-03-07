@@ -131,7 +131,7 @@ EOC
   end
 
   desc "Index MasterFiles and subresources to take advantage of SpeedyAF"
-  task :index_for_speed do
+  task index_for_speed: :environment do
     MasterFile.find_each do |mf|
       $stderr.print "m["
       mf.update_index;
@@ -143,7 +143,7 @@ EOC
     end
     $stderr.puts
   end
-  
+
   namespace :services do
     services = ["jetty", "felix", "delayed_job"]
     desc "Start Avalon's dependent services"
