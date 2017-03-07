@@ -29,7 +29,7 @@ namespace :avalon do
     task repo: :environment do
       unless ENV['CONFIRM'] == 'yes'
         $stderr.puts <<-EOC
-WARNING: This migration task currently has known issues. 
+WARNING: This migration task currently has known issues.
          For example, some metadata is not migrated or is migrated incorrectly.
 
 This migration task is part of a larger migration process. More info can be found at:
@@ -129,6 +129,21 @@ EOC
     `rake db:migrate`
     `rails generate active_annotations:install`
   end
+
+  desc "Index MasterFiles and subresources to take advantage of SpeedyAF"
+  task :index_for_speed do
+    MasterFile.find_each do |mf|
+      $stderr.print "m["
+      mf.update_index;
+      mf.declared_attached_files.each_pair do |name, file|
+        $stderr.print name.to_s[0]
+        file.update_external_index if file.respond_to?(:update_external_index)
+      end
+      $stderr.print "]"
+    end
+    $stderr.puts
+  end
+  
   namespace :services do
     services = ["jetty", "felix", "delayed_job"]
     desc "Start Avalon's dependent services"
