@@ -121,11 +121,11 @@ group :development do
   gem 'capistrano-passenger', require: false
 end
 
-group :profiling do
-  gem 'rack-mini-profiler', require: false
-  gem 'stackprof', require: false
-  gem 'flamegraph', require: false
-end
+# group :profiling do
+#   gem 'rack-mini-profiler', require: false
+#   gem 'stackprof', require: false
+#   gem 'flamegraph', require: false
+# end
 
 group :test do
   gem 'factory_girl_rails'
