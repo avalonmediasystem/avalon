@@ -58,7 +58,7 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 gem 'net-ldap'
 gem 'edtf'
 gem 'rest-client'
-gem 'active_annotations', '~> 0.2.0'
+gem 'active_annotations', '~> 0.2.2'
 gem 'acts_as_list'
 gem 'api-pagination'
 gem 'browse-everything', '~> 0.10.5'
