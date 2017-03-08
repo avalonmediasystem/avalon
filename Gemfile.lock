@@ -129,7 +129,7 @@ GIT
 
 GIT
   remote: https://github.com/projecthydra-labs/speedy_af.git
-  revision: b8bd015a10239b641568306502db7dd4e4ef38fa
+  revision: 017b6adfd9111abfdbd189198e6ec9de16ee4597
   specs:
     speedy-af (0.0.2)
       active-fedora (>= 11.0.0)
