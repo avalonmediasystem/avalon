@@ -30,7 +30,7 @@ module ApplicationHelper
     else
       case obj
       when MediaObject then media_object_url(obj)
-      when MasterFile  then id_section_media_object_url(obj.media_object.id, obj.id)
+      when MasterFileBehavior then id_section_media_object_url(obj.media_object.id, obj.id)
       end
     end
   end
