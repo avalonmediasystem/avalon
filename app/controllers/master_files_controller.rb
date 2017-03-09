@@ -26,10 +26,10 @@ class MasterFilesController < ApplicationController
     @master_file = MasterFile.find(params[:id])
     authorize! :read, @master_file
     ds = @master_file.captions
-    if ds.nil? or ds.new?
+    if ds.nil? or ds.empty?
       render :text => 'Not Found', :status => :not_found
     else
-      render :text => ds.content, :content_type => ds.mime_type, :label => ds.label
+      render :text => ds.content, :content_type => ds.mime_type, :label => ds.original_name
     end
   end
 
