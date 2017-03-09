@@ -6,6 +6,7 @@ gem 'hydra-head', '~> 10.3.4'
 gem 'active-fedora', '>= 10.3.0'
 gem 'active_fedora-datastreams'
 gem 'active_fedora-noid', '~> 2.0.0'
+gem 'speedy-af', git: 'https://github.com/projecthydra-labs/speedy_af.git'
 gem 'blacklight', '~> 6.6'
 gem 'rdf', '~> 2.1.1'
 gem 'ldp', git:'https://github.com/projecthydra/ldp.git'
@@ -57,7 +58,7 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 gem 'net-ldap'
 gem 'edtf'
 gem 'rest-client'
-gem 'active_annotations', '~> 0.2.0'
+gem 'active_annotations', '~> 0.2.2'
 gem 'acts_as_list'
 gem 'api-pagination'
 gem 'browse-everything', '~> 0.10.5'
@@ -118,6 +119,12 @@ group :development do
   gem 'capistrano-resque', require: false
   gem 'capistrano-rvm', require: false
   gem 'capistrano-passenger', require: false
+end
+
+group :profiling do
+  gem 'rack-mini-profiler', require: false
+  gem 'stackprof', require: false
+  gem 'flamegraph', require: false
 end
 
 group :test do

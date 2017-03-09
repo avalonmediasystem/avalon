@@ -15,8 +15,9 @@
 require 'avalon/stream_mapper'
 
 class Derivative < ActiveFedora::Base
+  include DerivativeBehavior
   include FrameSize
-  
+
   belongs_to :master_file, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
 
   property :location_url, predicate: ::RDF::Vocab::EBUCore.locator, multiple: false do |index|
@@ -42,11 +43,21 @@ class Derivative < ActiveFedora::Base
   property :mime_type, predicate: ::RDF::Vocab::EBUCore.hasMimeType, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :audio_bitrate, predicate: Avalon::RDFVocab::Encoding.audioBitrate, multiple: false
-  property :audio_codec, predicate: Avalon::RDFVocab::Encoding.audioCodec, multiple: false
-  property :video_bitrate, predicate: ::RDF::Vocab::EBUCore.bitRate, multiple: false
-  property :video_codec, predicate: ::RDF::Vocab::EBUCore.hasCodec, multiple: false
-  frame_size_property :resolution, predicate: Avalon::RDFVocab::Common.resolution, multiple: false
+  property :audio_bitrate, predicate: Avalon::RDFVocab::Encoding.audioBitrate, multiple: false do |index|
+    index.as :displayable
+  end
+  property :audio_codec, predicate: Avalon::RDFVocab::Encoding.audioCodec, multiple: false do |index|
+    index.as :displayable
+  end
+  property :video_bitrate, predicate: ::RDF::Vocab::EBUCore.bitRate, multiple: false do |index|
+    index.as :displayable
+  end
+  property :video_codec, predicate: ::RDF::Vocab::EBUCore.hasCodec, multiple: false do |index|
+    index.as :displayable
+  end
+  frame_size_property :resolution, predicate: Avalon::RDFVocab::Common.resolution, multiple: false do |index|
+    index.as :displayable
+  end
 
   before_destroy :retract_distributed_files!
 
@@ -64,33 +75,10 @@ class Derivative < ActiveFedora::Base
     self
   end
 
-  def absolute_location
-    derivativeFile
-  end
-
   def absolute_location=(value)
     self.derivativeFile = value
     set_streaming_locations!
     derivativeFile
-  end
-
-  def tokenized_url(token, mobile = false)
-    uri = streaming_url(mobile)
-    "#{uri}?token=#{token}".html_safe
-  end
-
-  def streaming_url(is_mobile = false)
-    is_mobile ? hls_url : location_url
-  end
-
-  def format
-    if video_codec.present?
-      'video'
-    elsif audio_codec.present?
-      'audio'
-    else
-      'other'
-    end
   end
 
   def to_solr

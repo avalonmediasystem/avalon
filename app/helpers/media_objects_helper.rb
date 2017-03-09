@@ -125,7 +125,7 @@ module MediaObjectsHelper
      end
 
      def hide_sections? sections
-       sections.blank? or (sections.length == 1 && sections.first.structuralMetadata.empty?)
+       sections.blank? or (sections.length == 1 and sections.first.structuralMetadata.empty?)
      end
 
      def structure_html section, index, show_progress
@@ -144,7 +144,7 @@ EOF
 
        data = {
          segment: section.id,
-         is_video: section.is_video?,
+         is_video: section.file_format != 'Sound',
          share_link: share_link_for(section),
          native_url: id_section_media_object_path(@media_object, section.id)
        }
@@ -222,7 +222,7 @@ EOF
          start,stop = get_xml_media_fragment node, section
          native_url = "#{id_section_media_object_path(@media_object, section.id)}?t=#{start},#{stop}"
          url = "#{share_link_for( section )}?t=#{start},#{stop}"
-         data =  {segment: section.id, is_video: section.is_video?, native_url: native_url, fragmentbegin: start, fragmentend: stop}
+         data =  {segment: section.id, is_video: section.file_format != 'Sound', native_url: native_url, fragmentbegin: start, fragmentend: stop}
          link = link_to label, url, data: data, class: 'playable wrap'+(is_current_section?(section) ? ' current-stream' : '' )
          return "<li class='stream-li'>#{link}</li>", tracknumber
        end

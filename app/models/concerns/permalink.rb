@@ -47,7 +47,9 @@ module Permalink
   end
 
   included do
-    property :permalink, predicate: ::RDF::Vocab::DC.identifier, multiple: false
+    property :permalink, predicate: ::RDF::Vocab::DC.identifier, multiple: false do |index|
+      index.as :stored_searchable
+    end
   end
 
   def self.url_for(obj)

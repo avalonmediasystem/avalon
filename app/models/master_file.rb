@@ -27,14 +27,15 @@ class MasterFile < ActiveFedora::Base
   include Permalink
   include FrameSize
   include Identifier
+  include MasterFileBehavior
 
   belongs_to :media_object, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
   has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf, dependent: :destroy
 
   has_subresource 'structuralMetadata', class_name: 'StructuralMetadata'
-  has_subresource 'thumbnail', class_name: 'ActiveFedora::File'
-  has_subresource 'poster', class_name: 'ActiveFedora::File'
-  has_subresource 'captions', class_name: 'ActiveFedora::File'
+  has_subresource 'thumbnail', class_name: 'IndexedFile'
+  has_subresource 'poster', class_name: 'IndexedFile'
+  has_subresource 'captions', class_name: 'IndexedFile'
 
   property :title, predicate: ::RDF::Vocab::EBUCore.title, multiple: false do |index|
     index.as :stored_searchable
@@ -142,11 +143,7 @@ class MasterFile < ActiveFedora::Base
   AUDIO_TYPES = ["audio/vnd.wave", "audio/mpeg", "audio/mp3", "audio/mp4", "audio/wav", "audio/x-wav"]
   VIDEO_TYPES = ["application/mp4", "video/mpeg", "video/mpeg2", "video/mp4", "video/quicktime", "video/avi"]
   UNKNOWN_TYPES = ["application/octet-stream", "application/x-upload-data"]
-  QUALITY_ORDER = { "high" => 1, "medium" => 2, "low" => 3 }
   END_STATES = ['CANCELLED', 'COMPLETED', 'FAILED']
-
-  EMBED_SIZE = {:medium => 600}
-  AUDIO_HEIGHT = 50
 
   def save_parent
     unless media_object.nil?
@@ -242,79 +239,6 @@ class MasterFile < ActiveFedora::Base
     end
 
     ActiveEncodeJob::Create.perform_later(self.id, input, {preset: self.workflow_name})
-  end
-
-  def status?(value)
-    status_code == value
-  end
-
-  def failed?
-    status?('FAILED')
-  end
-
-  def succeeded?
-    status?('COMPLETED')
-  end
-
-  def stream_details(token,host=nil)
-    flash, hls = [], []
-    # ActiveFedora::SolrService.reify_solr_results(derivatives.load_from_solr, load_from_solr: true).each do |d|
-    derivatives.each do |d|
-      common = { quality: d.quality,
-                 mimetype: d.mime_type,
-                 format: d.format }
-      flash << common.merge(url: Avalon::Configuration.rehost(d.tokenized_url(token, false),host))
-      hls << common.merge(url: Avalon::Configuration.rehost(d.tokenized_url(token, true),host))
-    end
-
-    # Sorts the streams in order of quality, note: Hash order only works in Ruby 1.9 or later
-    flash = sort_streams flash
-    hls = sort_streams hls
-
-    poster_path = Rails.application.routes.url_helpers.poster_master_file_path(self) unless poster.empty?
-    captions_path = Rails.application.routes.url_helpers.captions_master_file_path(self) unless captions.empty?
-    captions_format = self.captions.mime_type
-
-    # Returns the hash
-    {
-      id: self.id,
-      label: title,
-      is_video: is_video?,
-      poster_image: poster_path,
-      embed_code: embed_code(EMBED_SIZE[:medium], {urlappend: '/embed'}),
-      stream_flash: flash,
-      stream_hls: hls,
-      captions_path: captions_path,
-      captions_format: captions_format,
-      duration: (duration.to_f / 1000),
-      embed_title: embed_title
-    }
-  end
-
-  def embed_title
-    "#{ self.media_object.title } - #{ self.title || self.file_location.split( "/" ).last }"
-  end
-
-  def embed_code(width, permalink_opts = {})
-    begin
-      url = if self.permalink.present?
-        self.permalink(permalink_opts)
-      else
-        embed_master_file_url(self.id, only_path: false, protocol: '//')
-      end
-      height = is_video? ? (width/display_aspect_ratio.to_f).floor : AUDIO_HEIGHT
-      "<iframe title=\"#{ embed_title }\" src=\"#{url}\" width=\"#{width}\" height=\"#{height}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
-    rescue
-      ""
-    end
-  end
-
-  def is_video?
-    self.file_format != "Sound"
-  end
-
-  def sort_streams array
-    array.sort { |x, y| QUALITY_ORDER[x[:quality]] <=> QUALITY_ORDER[y[:quality]] }
   end
 
   def finished_processing?
@@ -505,6 +429,36 @@ class MasterFile < ActiveFedora::Base
       File.basename(oldpath)
     else
       "#{prefix}-#{File.basename(oldpath)}"
+    end
+  end
+
+  def has_poster?
+    !poster.empty?
+  end
+
+  def has_thumbnail?
+    !thumbnail.empty?
+  end
+
+  def has_captions?
+    !captions.empty?
+  end
+
+  def caption_type
+    has_captions? ? captions.mime_type : nil
+  end
+
+  def has_structuralMetadata?
+    !structuralMetadata.empty?
+  end
+
+  def to_solr *args
+    super.tap do |solr_doc|
+      solr_doc['has_captions?_bs'] = has_captions?
+      solr_doc['has_poster?_bs'] = has_poster?
+      solr_doc['has_thumbnail?_bs'] = has_thumbnail?
+      solr_doc['has_structuralMetadata?_bs'] = has_structuralMetadata?
+      solr_doc['caption_type_ss'] = caption_type
     end
   end
 
@@ -717,5 +671,4 @@ class MasterFile < ActiveFedora::Base
     media_object.set_duration!
     media_object.save
   end
-
 end

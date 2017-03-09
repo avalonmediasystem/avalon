@@ -20,6 +20,7 @@ class MediaObject < ActiveFedora::Base
   include Avalon::Workflow::WorkflowModelMixin
   include Permalink
   include Identifier
+  include SpeedyAF::OrderedAggregationIndex
   require 'avalon/controlled_vocabulary'
 
   include Kaminari::ActiveFedoraModelExtension
@@ -95,6 +96,7 @@ class MediaObject < ActiveFedora::Base
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
   #  and methods for master_files: first, last, [index], =, <<, +=, delete(mf)
   #  and methods for ordered_master_files: first, last, [index], =, <<, +=, insert_at(index,mf), delete(mf), delete_at(index)
+  indexed_ordered_aggregation :master_files
 
   accepts_nested_attributes_for :master_files, :allow_destroy => true
 
