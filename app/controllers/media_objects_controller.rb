@@ -366,7 +366,7 @@ class MediaObjectsController < ApplicationController
   protected
 
   def master_file_presenter
-    SpeedyAF::SolrPresenter.where("isPartOf_ssim:#{@media_object.id}",
+    SpeedyAF::Base.where("isPartOf_ssim:#{@media_object.id}",
       order: -> { @media_object.indexed_master_file_ids }, defaults: { permalink: nil })
   end
 
