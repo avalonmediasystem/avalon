@@ -14,6 +14,7 @@ module FedoraMigrate
         migrate_desc_metadata #Need to do this after target is saved
         migrate_workflow
         migrate_display_metadata
+        migrate_permalink
         # migrate_dates #skip because it doesn't do anything for us
         save
         # super
