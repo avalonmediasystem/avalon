@@ -44,5 +44,11 @@ FactoryGirl.define do
         mf.save
       end
     end
+    trait :with_captions do
+      after(:create) do |mf|
+        mf.captions.content = File.read('spec/fixtures/captions.vtt')
+        mf.save
+      end
+    end
   end
 end

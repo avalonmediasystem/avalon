@@ -317,4 +317,11 @@ describe MasterFilesController do
       expect(flash[:notice]).to be_nil
     end
   end
+  describe "#captions" do
+    let(:master_file) { FactoryGirl.create(:master_file, :with_media_object, :with_captions) }
+    it "should return contents of the captions attached file" do
+      login_as :administrator
+      expect(get 'captions', id: master_file.id).to have_http_status(:ok)
+    end
+  end
 end
