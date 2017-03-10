@@ -88,7 +88,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       customError: '<%= t("media_objects.player.customError").html_safe %>',
       playlistItemDefaultTitle: '<%= @currentStream.embed_title.html_safe %>',
       displayTrackScrubber: true,
-      autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
+      autostart: <%= params[:autostart] == 'true' %>,
       success: function(mediaElement, domObject, player) {
 	player.media.addEventListener('ended', function(e) {
             player.options.autostart=true;
