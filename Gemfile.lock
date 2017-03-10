@@ -129,9 +129,9 @@ GIT
 
 GIT
   remote: https://github.com/projecthydra-labs/speedy_af.git
-  revision: 017b6adfd9111abfdbd189198e6ec9de16ee4597
+  revision: 661b34c57f4e8de9db2c07aa80acce7c6288462d
   specs:
-    speedy-af (0.0.2)
+    speedy-af (0.1.0)
       active-fedora (>= 11.0.0)
       activesupport
 
@@ -830,7 +830,7 @@ DEPENDENCIES
   shoulda-matchers
   simplecov
   solr_wrapper (>= 0.16)
-  speedy-af!
+  speedy-af (~> 0.1.0)!
   sqlite3
   stackprof
   uglifier (>= 1.3.0)
