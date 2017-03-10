@@ -75,10 +75,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
   <script>
     function advancePlaylist() {
-      nextUrl = $('div.panel-heading').has('a.current-section').nextAll('div[role="tab"]:first').find('a.playable').attr('href');
-      if (nextUrl) {
-        window.location = nextUrl + "?autostart=true";
-      }
+      $('div.panel-heading').has('a.current-section').nextAll('div[role="tab"]:first').find('a.playable').first().click();
     }
 
     avalonPlayer = new AvalonPlayer($('#left_column'), <%= @currentStreamInfo.to_json.html_safe %>, {
@@ -94,7 +91,11 @@ Unless required by applicable law or agreed to in writing, software distributed
       autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
       success: function(mediaElement, domObject, player) {
 	player.media.addEventListener('ended', function(e) {
-	    advancePlaylist();
+            player.options.autostart=true;
+            advancePlaylist();
+	}, false);
+	player.media.addEventListener('pause', function(e) {
+            player.options.autostart=false;
 	}, false);
       }
     });
