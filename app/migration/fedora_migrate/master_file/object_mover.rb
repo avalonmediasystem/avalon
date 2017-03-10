@@ -30,6 +30,7 @@ module FedoraMigrate
         migrate_captions
         save
         migrate_relationships
+        migrate_permalink
         target.ldp_source.save #Because save isn't persisting the isPartOf relationship
         # super
       end

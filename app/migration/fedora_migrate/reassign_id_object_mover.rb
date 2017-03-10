@@ -44,5 +44,11 @@ module FedoraMigrate
       def migrate_relationships
         report.relationships = FedoraMigrate::ReassignIdRelsExtDatastreamMover.new(source, target).migrate
       end
+
+      def migrate_permalink
+        permalink_value = target.ldp_source.graph.find{|stmt| stmt.predicate == "http://projecthydra.org/ns/relations#hasPermalink"}.object.to_s rescue nil
+        return unless permalink_value
+        target.permalink = permalink_value 
+      end
   end
 end
