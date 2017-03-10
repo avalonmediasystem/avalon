@@ -209,6 +209,9 @@ class AvalonPlayer
           uri = "#{splitUrl[0]}/stream"
           params = ["content=#{segment}"]
           params.push(splitUrl[1]) if splitUrl[1]?
-          $.getJSON uri, params.join('&'), (data) => @setStreamInfo(data)
+          autostart = @player.options.autostart
+          $.getJSON uri, params.join('&'), (data) =>
+            @player.options.autostart = autostart
+            @setStreamInfo(data)
 
 (exports ? this).AvalonPlayer = AvalonPlayer
