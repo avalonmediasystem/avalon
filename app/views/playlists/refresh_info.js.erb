@@ -21,7 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% clip_start = @current_clip.start_time / 1000.0 %>
 <% clip_end = @current_clip.end_time / 1000.0 %>
 <% clip_frag = "?t=#{clip_start},#{clip_end}" %>
-<% link = id_section_media_object_path(@current_mediaobject, @current_masterfile.id) + clip_frag %>
+<% link = section_stream_media_object_path(@current_mediaobject, @current_masterfile.id) + clip_frag %>
 <% target_href = "a[href*='position=#{params[:position]}']".html_safe%>
 $('#accordion').replaceWith("<%= escape_javascript(render partial: 'info') %>");
 reload_player('<%= @current_masterfile.id %>', '<%= link %>', <%= @current_masterfile.is_video? %>);
