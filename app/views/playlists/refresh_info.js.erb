@@ -21,10 +21,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% clip_start = @current_clip.start_time / 1000.0 %>
 <% clip_end = @current_clip.end_time / 1000.0 %>
 <% clip_frag = "?t=#{clip_start},#{clip_end}" %>
-<% link = pid_section_media_object_path(@current_mediaobject, @current_masterfile.pid) + clip_frag %>
+<% link = id_section_media_object_path(@current_mediaobject, @current_masterfile.id) + clip_frag %>
 <% target_href = "a[href*='position=#{params[:position]}']".html_safe%>
 $('#accordion').replaceWith("<%= escape_javascript(render partial: 'info') %>");
-reload_player('<%= @current_masterfile.pid %>', '<%= link %>', <%= @current_masterfile.is_video? %>);
+reload_player('<%= @current_masterfile.id %>', '<%= link %>', <%= @current_masterfile.is_video? %>);
 $('.fa-arrow-circle-right').remove();
 $('.now_playing').addClass('queue').removeClass('now_playing');
 new_now_playing=$($("<%=target_href%>").first().closest('li'));
