@@ -332,10 +332,10 @@ EOC
         conn.execute(sql)
         playlist.items.each do |item|
           begin
-            sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_playlist_item VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", item.id, item.playlist_id, playlist.user_id, item.clip_id, item.master_file.pid, item.position, item.title, item.start_time, item.end_time])
+            sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_playlist_item VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", item.id, item.playlist_id, playlist.user_id, item.clip_id, item.master_file.id, item.position, item.title, item.start_time, item.end_time])
             conn.execute(sql)
             item.marker.each do |marker|
-              sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_marker VALUES (?,?,?,?,?)", marker.id, item.id, marker.master_file.pid, marker.title, marker.start_time])
+              sql = ActiveRecord::Base.send(:sanitize_sql_array, ["INSERT INTO temp_marker VALUES (?,?,?,?,?)", marker.id, item.id, marker.master_file.id, marker.title, marker.start_time])
               conn.execute(sql)
             end
           rescue Exception => e
