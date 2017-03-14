@@ -297,7 +297,7 @@ class MasterFile < ActiveFedora::Base
     self.status_code = encode.state.to_s.upcase
     self.duration = encode.tech_metadata[:duration] if encode.tech_metadata[:duration]
     self.file_checksum = encode.tech_metadata[:checksum] if encode.tech_metadata[:checksum]
-    self.workflow_id = encode.id
+    self.workflow_id ||= encode.id
     #self.workflow_name = encode.options[:preset] #MH can switch to an error workflow
 
     case self.status_code
@@ -489,17 +489,13 @@ class MasterFile < ActiveFedora::Base
     response = { source: file_location, offset: options[:offset], master: true }
     unless File.exists?(response[:source])
       Rails.logger.warn("Masterfile `#{file_location}` not found. Extracting via HLS.")
-      begin
-        playlist_url = self.stream_details[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
-        secure_url = SecurityHandler.secure_stream(playlist_url, target: self.pid)
-        playlist = Avalon::M3U8Reader.read(secure_url)
-        details = playlist.at(options[:offset])
-        target = File.join(Dir.tmpdir,File.basename(details[:location]))
-        File.open(target,'wb') { |f| open(details[:location]) { |io| f.write(io.read) } }
-        response = { source: target, offset: details[:offset], master: false }
-      ensure
-        StreamToken.find_by_token(token).destroy
-      end
+      playlist_url = self.stream_details[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
+      secure_url = SecurityHandler.secure_url(playlist_url, target: self.pid)
+      playlist = Avalon::M3U8Reader.read(secure_url)
+      details = playlist.at(options[:offset])
+      target = File.join(Dir.tmpdir,File.basename(details[:location]))
+      File.open(target,'wb') { |f| open(details[:location]) { |io| f.write(io.read) } }
+      response = { source: target, offset: details[:offset], master: false }
     end
     return response
   end

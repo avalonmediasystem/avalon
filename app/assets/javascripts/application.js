@@ -42,6 +42,7 @@
 //= require jquery.ui.nestedSortable
 
 //= require bootstrap-sprockets
+//= require bootstrap-toggle
 
 //= require browse_everything
 

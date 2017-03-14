@@ -1049,14 +1049,16 @@ h5.panel-title {
     text-align:right;
   }
 }
-.playlist-title {
-  margin:0;padding:0;
-  font-size:1.5em;
-}
 #section-label {
   float:left;
 }
+#edit-playlist-button {
+  margin-left: 5px;
+  margin-top: 1px;
+}
 .playlist-title {
+  margin:0;padding:0;
+  font-size:1.5em;
   width:100%;
   border-bottom:1px solid $gray;
   line-height:2em;
