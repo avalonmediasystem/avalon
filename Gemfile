@@ -62,6 +62,7 @@ gem 'acts_as_list'
 gem 'api-pagination'
 gem 'browse-everything', '~> 0.10.5'
 gem 'bootstrap_form'
+gem 'bootstrap-toggle-rails'
 gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
 gem 'roo'
 gem 'activerecord-session_store'
