@@ -1,6 +1,6 @@
 # Avalon 6 Development Branch
 
-[![Build Status](https://travis-ci.org/avalonmediasystem/avalon.svg?branch=hydra10-fresh)](https://travis-ci.org/avalonmediasystem/avalon)
+[![Build Status](https://travis-ci.org/avalonmediasystem/avalon.svg?branch=master)](https://travis-ci.org/avalonmediasystem/avalon)
 
 # Installing Avalon 6 For Devs
 
