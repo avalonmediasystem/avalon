@@ -21,6 +21,8 @@ class CatalogController < ApplicationController
   include Hydra::Controller::ControllerBehavior
   include Hydra::MultiplePolicyAwareAccessControlsEnforcement
 
+  include BlacklightHelperReloadFix
+
   before_filter :save_sticky_settings
 
   #Override taken from Hydra::Controller::ControllerBehavior and reapplied here to be in scope
