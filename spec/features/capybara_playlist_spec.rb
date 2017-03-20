@@ -59,7 +59,7 @@ describe 'Playlist' do
     page.should have_content('private_playlist')
     page.should have_button('Edit Playlist')
     page.should have_content('This is test')
-    page.should have_content('This playlist currently has no items')
+    page.should have_content('This playlist currently has no playable items')
   end
   it 'is able to view playlist by accessing View Playlist' do
     user = FactoryGirl.create(:administrator)
@@ -75,7 +75,7 @@ describe 'Playlist' do
     page.should have_content('private_playlist')
     page.should have_button('Edit Playlist')
     page.should have_content('This is test')
-    page.should have_content('This playlist currently has no items')
+    page.should have_content('This playlist currently has no playable items')
   end
 
   it 'deletes playlist permanently from playlists page' do
