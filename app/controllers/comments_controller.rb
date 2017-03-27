@@ -31,16 +31,16 @@ class CommentsController < ApplicationController
 
     if (@comment.valid?)
       begin
-	CommentsMailer.contact_email(@comment).deliver_later
+        CommentsMailer.contact_email(@comment.to_h).deliver_later
       rescue Errno::ECONNRESET => e
-	logger.warn "The mail server does not appear to be responding \n #{e}"
+        logger.warn "The mail server does not appear to be responding \n #{e}"
 
-	flash[:notice] = "The message could not be sent in a timely fashion. Contact us at #{Avalon::Configuration.lookup('email.support')} to report the problem."
-	render action: "index"
+        flash[:notice] = "The message could not be sent in a timely fashion. Contact us at #{Avalon::Configuration.lookup('email.support')} to report the problem."
+        render action: "index"
       end
     else
-     flash[:error] = "There were problems submitting your comment. Please correct the errors and try again."
-     render action: "index"
+      flash[:error] = "There were problems submitting your comment. Please correct the errors and try again."
+      render action: "index"
     end
   end
 
