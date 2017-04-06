@@ -106,6 +106,58 @@ describe Avalon::Batch::Entry do
     end 
   end
 
+  describe '#valid?' do
+    it "should be valid under the right conditions" do
+      allow(entry).to receive(:file_valid?).and_return(true)
+      allow(entry.media_object).to receive(:valid?).and_return(true)
+      expect(entry.valid?).to be_truthy
+    end
+
+    it "should not be valid when the media object is not valid" do
+      media_object_error = { some_field: [ 'Some error' ] }
+      allow(entry).to receive(:file_valid?).and_return(true)
+      allow(entry.media_object).to receive(:valid?).and_return(false)
+      allow(entry.media_object.errors).to receive(:messages).
+        and_return(media_object_error)
+      expect(entry.valid?).to be_falsey
+      expect(entry.errors.messages).to eq(media_object_error)
+    end
+
+    let(:no_collection_entry) do
+      Avalon::Batch::Entry.
+        new( {collection: ['bad_collection']}, [{file: filename, skip_transcoding: false}],
+             {}, nil, manifest)
+    end
+    it "should not be valid when the media object has no collection" do
+      allow(no_collection_entry).to receive(:file_valid?).and_return(true)
+      allow(no_collection_entry.media_object).to receive(:valid?).and_return(true)
+      allow(no_collection_entry.media_object).to receive(:collection).and_return(nil)
+      expect(no_collection_entry.valid?).to be_falsey
+      expect(no_collection_entry.errors.messages.keys).to eq([:collection])
+      expect(no_collection_entry.errors.messages[:collection]).
+        to eq(["Collection not found: bad_collection"])
+    end
+
+    it "should be not valid when there are no valid files" do
+      allow(entry).to receive(:file_valid?).and_return(false)
+      allow(entry.media_object).to receive(:valid?).and_return(true)
+      expect(entry.valid?).to be_falsey
+      expect(entry.errors.messages.keys).to eq([:content])
+      expect(entry.errors.messages[:content]).to eq(["No files listed"])
+    end
+
+    it "should not be valid when a file isn't valid" do
+      allow(entry.media_object).to receive(:valid?).and_return(true)
+      allow(Avalon::Batch::Entry).to receive(:derivativePaths).
+        and_return(['video.low.mp4', 'video.medium.mp4', 'video.high.mp4'])
+      expect(entry.valid?).to be_falsey
+      expect(entry.errors.messages.keys).to eq([:content])
+      expect(entry.errors.messages[:content]).
+        to eq(["Derivative files found but skip transcoding not selected",
+               "No files listed"])
+    end
+  end
+
   describe '#gatherFiles' do
     it 'should return a file when no pretranscoded derivatives exist' do      
       expect(FileUtils.cmp(Avalon::Batch::Entry.gatherFiles(filename), filename)).to be_truthy
