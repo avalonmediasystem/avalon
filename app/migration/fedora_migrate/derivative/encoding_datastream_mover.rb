@@ -28,8 +28,8 @@ module FedoraMigrate
         target.audio_codec = present_or_nil(encodingProfile.xpath('//audio/codec').text)
         target.video_bitrate = present_or_nil(encodingProfile.xpath('//video/bitrate').text)
         target.video_codec = present_or_nil(encodingProfile.xpath('//video/codec').text)
-        width = present_or_nil(encodingProfile.xpath('//video/resolution/width').text)
-        height = present_or_nil(encodingProfile.xpath('//video/resolution/height').text)
+        target.width = width = present_or_nil(encodingProfile.xpath('//video/resolution/width').text)
+        target.height = height = present_or_nil(encodingProfile.xpath('//video/resolution/height').text)
         target.resolution = "#{width}x#{height}" if width.present? && height.present?
         super
       end
