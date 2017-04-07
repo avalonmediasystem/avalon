@@ -17,7 +17,7 @@
 module Avalon
   # A tool for mapping from a variations id to an Avalon object
   class VariationsMappingService
-    MEDIA_OBJECT_ID_MAP = YAML.load_file(Avalon::Configuration['variations']['media_object_id_map_file']).freeze rescue {}
+    MEDIA_OBJECT_ID_MAP = YAML.load_file(Settings.variations.media_object_id_map_file).freeze rescue {}
 
     def find_master_file(variations_media_object_id)
       raise ArgumentError, 'Not a valid Variations Media Object ID' unless variations_media_object_id =~ %r{/MediaObject/}

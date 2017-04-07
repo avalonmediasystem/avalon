@@ -122,7 +122,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <p class="muted">Uploaded files must not exceed <%= number_to_human_size MasterFile::MAXIMUM_UPLOAD_SIZE %></p>
 
   <fieldset id='uploader'>
-          <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: "uploader-form form-horizontal step") do -%>
+      <%= form_tag(master_files_path, :enctype=>"multipart/form-data", class: upload_form_classes, data: upload_form_data) do -%>
         <input type="hidden" name="container_id" value="<%=h @media_object.id %>"/>
         <input type="hidden" name="step" value="file_upload"/>
 

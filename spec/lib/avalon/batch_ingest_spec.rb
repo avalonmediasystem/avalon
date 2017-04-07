@@ -19,9 +19,9 @@ require 'fileutils'
 
 describe Avalon::Batch::Ingest do
   before :each do
-    @saved_dropbox_path = Avalon::Configuration.lookup('dropbox.path')
-    Avalon::Configuration['dropbox']['path'] = 'spec/fixtures/dropbox'
-    Avalon::Configuration['email']['notification'] = 'frances.dickens@reichel.com'
+    @saved_dropbox_path = Settings.dropbox.path
+    Settings.dropbox.path = File.join(Rails.root, 'spec/fixtures/dropbox')
+    Settings.email.notification = 'frances.dickens@reichel.com'
     # Dirty hack is to remove the .processed files both before and after the
     # test. Need to look closer into the ideal timing for where this should take
     # place
@@ -36,7 +36,7 @@ describe Avalon::Batch::Ingest do
   end
 
   after :each do
-    Avalon::Configuration['dropbox']['path'] = @saved_dropbox_path
+    Settings.dropbox.path = @saved_dropbox_path
     Dir['spec/fixtures/**/*.xlsx.process*','spec/fixtures/**/*.xlsx.error'].each { |file| File.delete(file) }
     Avalon::RoleControls.remove_user_role('frances.dickens@reichel.com','manager')
     Avalon::RoleControls.remove_user_role('jay@krajcik.org','manager')
@@ -56,7 +56,7 @@ describe Avalon::Batch::Ingest do
     before :each do
       @dropbox_dir = collection.dropbox.base_directory
       FileUtils.cp_r 'spec/fixtures/dropbox/example_batch_ingest', @dropbox_dir
-      Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+      Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
       stub_request(:get, sru_url).to_return(body: sru_response)
       manifest_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
       batch = Avalon::Batch::Package.new(manifest_file, collection)

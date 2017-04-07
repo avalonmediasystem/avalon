@@ -513,7 +513,7 @@ describe Admin::Collection do
 
     it 'removes bad characters from collection name' do
       collection.name = '../../secret.rb'
-      expect(Dir).to receive(:mkdir).with( File.join(Avalon::Configuration.lookup('dropbox.path'), '______secret_rb') )
+      expect(Dir).to receive(:mkdir).with( File.join(Settings.dropbox.path, '______secret_rb') )
       allow(Dir).to receive(:mkdir) # stubbing this out in a before(:each) block will effect where mkdir is used elsewhere (i.e. factories)
       collection.send(:create_dropbox_directory!)
     end
@@ -526,9 +526,9 @@ describe Admin::Collection do
     it 'uses a different directory name if the directory exists' do
       collection.name = 'african art'
       FakeFS.activate!
-      FileUtils.mkdir_p(File.join(Avalon::Configuration.lookup('dropbox.path'), 'african_art'))
-      FileUtils.mkdir_p(File.join(Avalon::Configuration.lookup('dropbox.path'), 'african_art_2'))
-      expect(Dir).to receive(:mkdir).with(File.join(Avalon::Configuration.lookup('dropbox.path'), 'african_art_3'))
+      FileUtils.mkdir_p(File.join(Settings.dropbox.path, 'african_art'))
+      FileUtils.mkdir_p(File.join(Settings.dropbox.path, 'african_art_2'))
+      expect(Dir).to receive(:mkdir).with(File.join(Settings.dropbox.path, 'african_art_3'))
       collection.send(:create_dropbox_directory!)
       FakeFS.deactivate!
     end
@@ -541,7 +541,7 @@ describe Admin::Collection do
 
     it 'handles Unicode collection names correctly' do
       collection.name = collection_name
-      expect(Dir).to receive(:mkdir).with( File.join(Avalon::Configuration.lookup('dropbox.path'), collection_dir) )
+      expect(Dir).to receive(:mkdir).with( File.join(Settings.dropbox.path, collection_dir) )
       allow(Dir).to receive(:mkdir)
       collection.send(:create_dropbox_directory!)
     end

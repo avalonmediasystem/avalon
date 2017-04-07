@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -22,37 +22,37 @@ module Avalon
 
     	attr_reader :fields, :files, :opts, :row, :errors, :manifest, :collection
 
-    	def initialize(fields, files, opts, row, manifest)
+      def initialize(fields, files, opts, row, manifest)
     	  @fields = fields
     	  @files  = files
     	  @opts   = opts
     	  @row    = row
     	  @manifest = manifest
     	  @errors = ActiveModel::Errors.new(self)
-    	  @files.each { |file| file[:file] = File.join(@manifest.package.dir, file[:file]) }
+    	  @files.each { |file| file[:file] = @manifest.path_to(file[:file]) }
       end
 
-        def media_object
-          @media_object ||= MediaObject.new(avalon_uploader: @manifest.package.user.user_key,
-                                            collection: @manifest.package.collection).tap do |mo|
-            mo.workflow.origin = 'batch'
-            mo.workflow.last_completed_step = HYDRANT_STEPS.last.step
-            if Avalon::BibRetriever.configured? and fields[:bibliographic_id].present?
-              begin
-                mo.descMetadata.populate_from_catalog!(fields[:bibliographic_id].first, Array(fields[:bibliographic_id_label]).first)
-              rescue Exception => e
-                @errors.add(:bibliographic_id, e.message)
-              end
-            else
-              begin
-                mo.update_attributes(media_object_fields)
-              rescue ActiveFedora::UnknownAttributeError => e
-                @errors.add(e.attribute.to_sym, e.message)
-              end
+      def media_object
+        @media_object ||= MediaObject.new(avalon_uploader: @manifest.package.user.user_key,
+                                          collection: @manifest.package.collection).tap do |mo|
+          mo.workflow.origin = 'batch'
+          mo.workflow.last_completed_step = HYDRANT_STEPS.last.step
+          if Avalon::BibRetriever.configured? and fields[:bibliographic_id].present?
+            begin
+              mo.descMetadata.populate_from_catalog!(fields[:bibliographic_id].first, Array(fields[:bibliographic_id_label]).first)
+            rescue Exception => e
+              @errors.add(:bibliographic_id, e.message)
+            end
+          else
+            begin
+              mo.update_attributes(media_object_fields)
+            rescue ActiveFedora::UnknownAttributeError => e
+              @errors.add(e.attribute.to_sym, e.message)
             end
           end
-          @media_object
         end
+        @media_object
+      end
 
         def media_object_fields
           mo_parameters = fields.dup
@@ -74,88 +74,88 @@ module Avalon
           note_type = mo_parameters.delete(:note_type)
           mo_parameters[:note] = note.zip(note_type).map{|a|{note: a[0],type: a[1]}} if note.present?
 
-          mo_parameters
-        end
+        mo_parameters
+      end
 
-        def valid?
-          # Set errors if does not validate against media_object model
-          media_object.valid?
-          media_object.errors.messages.each_pair { |field,errs|
-            errs.each { |err| @errors.add(field, err) }
-          }
-          files = @files.select {|file_spec| file_valid?(file_spec)}
-          # Ensure files are listed
-          @errors.add(:content, "No files listed") if files.empty?
-          # Replace collection error if collection not found
-          if media_object.collection.nil?
-            @errors.messages[:collection] = ["Collection not found: #{@fields[:collection].first}"]
-            @errors.messages.delete(:governing_policy)
-          end
+      def valid?
+        # Set errors if does not validate against media_object model
+        media_object.valid?
+        media_object.errors.messages.each_pair { |field,errs|
+          errs.each { |err| @errors.add(field, err) }
+        }
+        files = @files.select {|file_spec| file_valid?(file_spec)}
+        # Ensure files are listed
+        @errors.add(:content, "No files listed") if files.empty?
+        # Replace collection error if collection not found
+        if media_object.collection.nil?
+          @errors.messages[:collection] = ["Collection not found: #{@fields[:collection].first}"]
+          @errors.messages.delete(:governing_policy)
         end
+      end
 
-        def file_valid?(file_spec)
-          valid = true
-          # Check date_digitized for valid format
-          if file_spec[:date_digitized].present?
-            begin
-              DateTime.parse(file_spec[:date_digitized])
-            rescue ArgumentError
-              @errors.add(:date_digitized, "Invalid date_digitized: #{file_spec[:date_digitized]}. Recommended format: yyyy-mm-dd.")
-              valid = false
-            end
-          end
-          # Check file offsets for valid format
-          if file_spec[:offset].present? && !Avalon::Batch::Entry.offset_valid?(file_spec[:offset])
-            @errors.add(:offset, "Invalid offset: #{file_spec[:offset]}")
+      def file_valid?(file_spec)
+        valid = true
+        # Check date_digitized for valid format
+        if file_spec[:date_digitized].present?
+          begin
+            DateTime.parse(file_spec[:date_digitized])
+          rescue ArgumentError
+            @errors.add(:date_digitized, "Invalid date_digitized: #{file_spec[:date_digitized]}. Recommended format: yyyy-mm-dd.")
             valid = false
           end
-          # Ensure listed files exist
-          if File.file?(file_spec[:file]) && self.class.derivativePaths(file_spec[:file]).present?
-            @errors.add(:content, "Both original and derivative files found")
-            valid = false
-          elsif File.file?(file_spec[:file])
+        end
+        # Check file offsets for valid format
+        if file_spec[:offset].present? && !Avalon::Batch::Entry.offset_valid?(file_spec[:offset])
+          @errors.add(:offset, "Invalid offset: #{file_spec[:offset]}")
+          valid = false
+        end
+        # Ensure listed files exist
+        if FileLocator.new(file_spec[:file]).exist? && self.class.derivativePaths(file_spec[:file]).present?
+          @errors.add(:content, "Both original and derivative files found")
+          valid = false
+        elsif FileLocator.new(file_spec[:file]).exist?
+          #Do nothing.
+        else
+          if self.class.derivativePaths(file_spec[:file]).present? && file_spec[:skip_transcoding]
             #Do nothing.
+          elsif self.class.derivativePaths(file_spec[:file]).present? && !file_spec[:skip_transcoding]
+            @errors.add(:content, "Derivative files found but skip transcoding not selected")
+            valid = false
           else
-            if self.class.derivativePaths(file_spec[:file]).present? && file_spec[:skip_transcoding]
-              #Do nothing.
-            elsif self.class.derivativePaths(file_spec[:file]).present? && !file_spec[:skip_transcoding]
-              @errors.add(:content, "Derivative files found but skip transcoding not selected")
-              valid = false
-            else
-              @errors.add(:content, "File not found: #{file_spec[:file]}")
-              valid = false
-            end
+            @errors.add(:content, "File not found: #{file_spec[:file]}")
+            valid = false
           end
-          valid
         end
+        valid
+      end
 
-        def self.offset_valid?( offset )
-          tokens = offset.split(':')
-          return false unless (1...4).include? tokens.size
-          seconds = tokens.pop
-          return false unless /^\d{1,2}([.]\d*)?$/ =~ seconds
-          return false unless seconds.to_f < 60
+      def self.offset_valid?( offset )
+        tokens = offset.split(':')
+        return false unless (1...4).include? tokens.size
+        seconds = tokens.pop
+        return false unless /^\d{1,2}([.]\d*)?$/ =~ seconds
+        return false unless seconds.to_f < 60
+        unless tokens.empty?
+          minutes = tokens.pop
+          return false unless /^\d{1,2}$/ =~ minutes
+          return false unless minutes.to_i < 60
           unless tokens.empty?
-            minutes = tokens.pop
-            return false unless /^\d{1,2}$/ =~ minutes
-            return false unless minutes.to_i < 60
-            unless tokens.empty?
-              hours = tokens.pop
-              return false unless /^\d{1,}$/ =~ hours
-            end
+            hours = tokens.pop
+            return false unless /^\d{1,}$/ =~ hours
           end
-          true
         end
+        true
+      end
 
       def self.attach_datastreams_to_master_file( master_file, filename )
           structural_file = "#{filename}.structure.xml"
-          if File.exists? structural_file
-            master_file.structuralMetadata.content=File.open(structural_file)
+          if FileLocator.new(structural_file).exist?
+            master_file.structuralMetadata.content=FileLocator.new(structural_file).reader
             master_file.structuralMetadata.original_name = structural_file
           end
           captions_file = "#{filename}.vtt"
-          if File.exists? captions_file
-            master_file.captions.content=File.open(captions_file)
+          if FileLocator.new(captions_file).exist?
+            master_file.captions.content=FileLocator.new(captions_file).reader
             master_file.captions.mime_type='text/vtt'
             master_file.captions.original_name = captions_file
           end
@@ -206,16 +206,17 @@ module Avalon
         derivatives = {}
         %w(low medium high).each do |quality|
           derivative = self.derivativePath(file, quality)
-          derivatives["quality-#{quality}"] = File.new(derivative) if File.file? derivative
+          locator = FileLocator.new(derivative)
+          derivatives["quality-#{quality}"] = locator.attachment if locator.exist?
         end
-        derivatives.empty? ? File.new(file) : derivatives
+        derivatives.empty? ? FileLocator.new(file).attachment : derivatives
       end
 
       def self.derivativePaths(filename)
         paths = []
         %w(low medium high).each do |quality|
           derivative = self.derivativePath(filename, quality)
-          paths << derivative if File.file? derivative
+          paths << derivative if FileLocator.new(derivative).exist?
         end
         paths
       end

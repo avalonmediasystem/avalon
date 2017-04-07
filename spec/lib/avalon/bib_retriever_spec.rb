@@ -21,7 +21,7 @@ describe Avalon::BibRetriever do
 
   describe 'configured?' do
     before :each do
-      Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+      Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
     end
 
     it 'valid' do
@@ -29,12 +29,12 @@ describe Avalon::BibRetriever do
     end
 
     it 'invalid' do
-      Avalon::Configuration['bib_retriever'] = { 'protocol' => 'unknown', 'url' => 'http://zgate.example.edu:9000/db' }
+      Settings.bib_retriever = { 'protocol' => 'unknown', 'url' => 'http://zgate.example.edu:9000/db' }
       expect(Avalon::BibRetriever).not_to be_configured
     end
 
     it 'missing' do
-      Avalon::Configuration['bib_retriever'] = nil
+      Settings.bib_retriever = nil
       expect(Avalon::BibRetriever).not_to be_configured
     end
   end
@@ -47,7 +47,7 @@ describe Avalon::BibRetriever do
       let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
 
       before :each do
-        Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
       end
 
       it 'retrieves proper MODS' do
@@ -62,7 +62,7 @@ describe Avalon::BibRetriever do
       let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
 
       before :each do
-        Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'namespace' => 'http://example.edu/fake/sru/namespace/' }
+        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'namespace' => 'http://example.edu/fake/sru/namespace/' }
       end
 
       it 'retrieves proper MODS' do

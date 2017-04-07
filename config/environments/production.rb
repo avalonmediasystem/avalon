@@ -87,6 +87,6 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  # Suppress deprecation warnings
-  Deprecation.default_deprecation_behavior = :silence
+  require 'active_job/queue_adapters/better_active_elastic_job_adapter'
+  config.active_job.queue_adapter     = Settings&.active_job&.queue_adapter || :resque
 end

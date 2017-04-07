@@ -19,12 +19,12 @@ describe VocabularyController, type: :controller do
   render_views
 
   before(:all) {
-    FileUtils.cp_r Avalon::Configuration.lookup('controlled_vocabulary.path'), 'spec/fixtures/controlled_vocabulary.yml.tmp'
+    FileUtils.cp_r Settings.controlled_vocabulary.path, 'spec/fixtures/controlled_vocabulary.yml.tmp'
     Avalon::ControlledVocabulary.class_variable_set :@@path, Rails.root.join('spec/fixtures/controlled_vocabulary.yml.tmp')
   }
   after(:all) {
     File.delete('spec/fixtures/controlled_vocabulary.yml.tmp')
-    Avalon::ControlledVocabulary.class_variable_set :@@path, Rails.root.join(Avalon::Configuration.lookup('controlled_vocabulary.path'))
+    Avalon::ControlledVocabulary.class_variable_set :@@path, Rails.root.join(Settings.controlled_vocabulary.path)
   }
 
   before(:each) do

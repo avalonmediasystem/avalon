@@ -49,23 +49,24 @@ gem 'devise'
 #gem 'devise-guests', '~> 0.3'
 
 # Avalon-specific
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.2'
-gem 'active_encode', '~> 0.1.1'
+gem 'active_encode', git: "http://github.com/projecthydra-labs/active-encode.git"
+gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", branch: 'no_invalid_objs'
 gem 'hooks'
 gem 'iconv'
-gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag: 'avalon-r6.1'
+gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'remote_files'
 gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
+gem 'omniauth-openam'
 gem 'net-ldap'
 gem 'edtf'
 gem 'rest-client'
 gem 'active_annotations', '~> 0.2.2'
 gem 'acts_as_list'
 gem 'api-pagination'
-gem 'browse-everything', '~> 0.10.5'
+gem 'browse-everything', '~> 0.13.0'
 gem 'bootstrap_form'
-gem 'bootstrap-toggle-rails'
-gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
+gem 'bootstrap-toggle-rails', git: "https://github.com/rkallensee/bootstrap-toggle-rails.git"
+gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
 gem 'roo'
 gem 'activerecord-session_store'
 gem 'whenever', git: "https://github.com/javan/whenever.git", require: false
@@ -73,7 +74,8 @@ gem 'with_locking'
 gem 'parallel'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r6'
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.1'
-gem 'jquery-datatables'
+gem 'config'
+gem 'marc'
 
 #MediaElement.js related
 gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r6_flash-fix'
@@ -97,7 +99,6 @@ end
 group :development, :test do
   gem 'equivalent-xml'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'rb-readline'
   gem 'byebug'
   gem 'pry-rails'
   gem 'pry-byebug'
@@ -146,6 +147,18 @@ group :test do
   gem 'rspec-retry'
   gem 'hashdiff'
   gem 'webmock'
+end
+
+group :aws, optional: true do
+  gem 'aws-sdk'
+  gem 'aws-sdk-rails'
+  gem 'cloudfront-signer'
+  gem 'zk'
+  gem 'active_elastic_job', '~> 1.7'
+end
+
+group :zoom, optional: true do
+  gem 'zoom'
 end
 
 group :mysql, optional: true do

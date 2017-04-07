@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class CommentsMailer < ActionMailer::Base
-  default :to => Avalon::Configuration.lookup('email.comments')
+  default :to => Settings.email.comments
   
   def contact_email(comment)
     @comment = OpenStruct.new(comment)

@@ -24,6 +24,9 @@ development:
         address: 'smtp.example.edu'
         port: 587
         enable_starttls_auto: false
+  solr:
+    configset_source_path: <%= File.join(Rails.root, 'solr', 'config') %>
+    zookeeper_connection_str: "localhost:9983/configs"
   streaming:
     stream_token_ttl: 20 #minutes
     rtmp_base: 'rtmp://localhost/avalon'

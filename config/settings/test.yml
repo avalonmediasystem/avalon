@@ -1,0 +1,15 @@
+domain:
+  host: test.host
+auth:
+  configuration:
+  - :name: Avalon Test Auth
+    :provider: :identity
+    :params:
+      :fields:
+      - :email
+  - :name: Avalon Lti OAuth
+    :provider: :lti
+    :hidden: true
+    :params:
+      :oauth_credentials:
+        key: 'secret'

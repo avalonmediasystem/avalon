@@ -133,7 +133,7 @@ Rails.application.routes.draw do
     collection do
       post 'duplicate'
       post 'paged_index'
-      if Avalon::Configuration.has_key?('variations')
+      if Settings['variations'].present?
         post 'import_variations_playlist'
       end
     end

@@ -253,19 +253,22 @@ Devise.setup do |config|
     if provider[:provider] == :lti
       provider[:params].merge!({consumers: Avalon::Lti::Configuration})
     end
-    
+
     if provider[:provider] == :identity
       provider[:params].merge!({
         on_login: AuthFormsController.action(:render_form, AuthFormsController.dispatcher(:identity, :request_phase)),
         on_registration: AuthFormsController.action(:render_form, AuthFormsController.dispatcher(:identity, :registration_form))
       })
     end
-    
-    config.omniauth provider[:provider], provider[:params]
-  end
-  if ENV['LTI_AUTH_KEY']
-    config.omniauth :lti, consumers: Avalon::Lti::Configuration, 
-      oauth_credentials: { ENV['LTI_AUTH_KEY'] => ENV['LTI_AUTH_SECRET'] }
+
+    params = provider[:params]
+    params = [params] unless params.is_a?(Array)
+    begin
+      require "omniauth/#{provider[:provider]}"
+    rescue LoadError
+      require "omniauth-#{provider[:provider]}"
+    end
+    config.omniauth provider[:provider], *params
   end
 
   # ==> Warden configuration
