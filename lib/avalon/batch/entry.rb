@@ -63,6 +63,8 @@ module Avalon
             @errors.messages[:collection] = ["Collection not found: #{@fields[:collection].first}"]
             @errors.messages.delete(:governing_policy)
           end
+
+          return @errors.messages.empty?
         end
 
         def file_valid?(file_spec)
