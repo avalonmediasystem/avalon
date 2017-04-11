@@ -21,7 +21,7 @@ module FedoraMigrate
       class_order.each do |klass|
         @klass = klass
         klass.class_eval do
-          property :migrated_from, predicate: RDF::URI("http://avalonmediasystem.org/ns/migration#migratedFrom"), multiple: false do |index|
+          property :migrated_from, predicate: RDF::URI("http://www.w3.org/ns/prov#wasDerivedFrom"), multiple: false do |index|
             index.as :stored_searchable
           end
         end
@@ -71,7 +71,7 @@ module FedoraMigrate
         unless (status_record.status == 'failed') && (method == :second_pass)
           begin
             status_record.update_attributes status: method.to_s, log: nil
-            target = klass.where(migrated_from_tesim: source.pid).first
+            target = klass.where(migrated_from_tesim: construct_migrate_from_uri(source).to_s).first
             options[:report] = report.reload[source.pid]
             result.object = object_mover.new(source, target, options).send(method)
             status_record.reload
@@ -126,6 +126,10 @@ module FedoraMigrate
       def qualifying_object(object, klass)
         name = object.pid.split(/:/).first
         return object if (name.match(namespace) && object.models.include?("info:fedora/afmodel:#{klass.name.gsub(/(::)/, '_')}"))
+      end
+
+      def construct_migrate_from_uri(source)
+        RDF::URI.new(FedoraMigrate.fedora_config.credentials[:url]) / "/objects/#{source.pid}"
       end
   end
 end
