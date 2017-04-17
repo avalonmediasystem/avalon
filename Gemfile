@@ -135,10 +135,10 @@ group :test do
   gem 'coveralls'
   gem 'shoulda-matchers'
   gem 'fakefs', require: 'fakefs/safe'
-  gem 'fakeweb'
   gem 'email_spec'
   gem 'capybara'
   gem 'hashdiff'
+  gem 'webmock'
 end
 
 group :mysql, optional: true do

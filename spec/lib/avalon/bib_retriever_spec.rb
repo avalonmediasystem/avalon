@@ -44,36 +44,30 @@ describe Avalon::BibRetriever do
 
     describe 'default namespace' do
       let(:sru_response) { File.read(File.expand_path("../../../fixtures/#{bib_id}.xml",__FILE__)) }
+      let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
 
       before :each do
         Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
-        FakeWeb.register_uri :get, sru_url, body: sru_response
-      end
-
-      after :each do
-        FakeWeb.clean_registry
       end
 
       it 'retrieves proper MODS' do
         response = Avalon::BibRetriever.instance.get_record("^%#{bib_id}")
+        expect(request).to have_been_requested
         expect(Nokogiri::XML(response)).to be_equivalent_to(mods)
       end
     end
 
     describe 'alternate namespace' do
       let(:sru_response) { File.read(File.expand_path("../../../fixtures/#{bib_id}-ns.xml",__FILE__)) }
+      let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
 
       before :each do
         Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'namespace' => 'http://example.edu/fake/sru/namespace/' }
-        FakeWeb.register_uri :get, sru_url, body: sru_response
-      end
-
-      after :each do
-        FakeWeb.clean_registry
       end
 
       it 'retrieves proper MODS' do
         response = Avalon::BibRetriever.instance.get_record("^%#{bib_id}")
+        expect(request).to have_been_requested
         expect(Nokogiri::XML(response)).to be_equivalent_to(mods)
       end
     end
