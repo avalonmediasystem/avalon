@@ -206,6 +206,7 @@ class ModsDocument < ActiveFedora::OmDatastream
   end
   
   def populate_from_catalog! bib_id, bib_id_label = nil
+    bib_id.strip!
     if bib_id.present?
       bib_id_label ||= IDENTIFIER_TYPES.keys.first
       new_record = Avalon::BibRetriever.instance.get_record(bib_id)

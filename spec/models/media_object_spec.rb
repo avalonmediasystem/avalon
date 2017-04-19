@@ -574,19 +574,35 @@ describe MediaObject do
   describe 'bib import' do
     let(:bib_id) { '7763100' }
     let(:mods) { File.read(File.expand_path("../../fixtures/#{bib_id}.mods",__FILE__)) }
-    before do
-      media_object.update_attribute_in_metadata(:resource_type, ["moving image"])
-      media_object.update_attribute_in_metadata(:format, "video/mpeg")
-      instance = double("instance")
-      allow(Avalon::BibRetriever).to receive(:instance).and_return(instance)
-      allow(Avalon::BibRetriever.instance).to receive(:get_record).and_return(mods)
-    end
+    describe 'only overrides correct fields' do
+      before do
+        media_object.resource_type = "moving image"
+        media_object.format = "video/mpeg"
+        instance = double("instance")
+        allow(Avalon::BibRetriever).to receive(:instance).and_return(instance)
+        allow(Avalon::BibRetriever.instance).to receive(:get_record).and_return(mods)
+      end
 
-    it 'should not override format' do
-      expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to_not change { media_object.format }
+      it 'should not override format' do
+        expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to_not change { media_object.format }
+      end
+      it 'should not override resource_type' do
+        expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to_not change { media_object.resource_type }
+      end
+      it 'should override the title' do
+        expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to change { media_object.title }.to "245 A : B F G K N P S"
+      end
     end
-    it 'should not override resource_type' do
-      expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to_not change { media_object.resource_type }
+    describe 'should strip whitespace from bib_id parameter' do
+      let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
+      let(:sru_response) { File.read(File.expand_path("../../fixtures/#{bib_id}.xml",__FILE__)) }
+      let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
+
+      it 'should strip whitespace off bib_id parameter' do
+        Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+        expect { media_object.descMetadata.populate_from_catalog!(" #{bib_id} ", 'local') }.to change { media_object.title }.to "245 A : B F G K N P S"
+        expect(request).to have_been_requested
+      end
     end
   end
 
