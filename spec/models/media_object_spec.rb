@@ -593,17 +593,6 @@ describe MediaObject do
         expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to change { media_object.title }.to "245 A : B F G K N P S"
       end
     end
-    describe 'should strip whitespace from bib_id parameter' do
-      let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
-      let(:sru_response) { File.read(File.expand_path("../../fixtures/#{bib_id}.xml",__FILE__)) }
-      let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
-
-      it 'should strip whitespace off bib_id parameter' do
-        Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
-        expect { media_object.descMetadata.populate_from_catalog!(" #{bib_id} ", 'local') }.to change { media_object.title }.to "245 A : B F G K N P S"
-        expect(request).to have_been_requested
-      end
-    end
   end
 
   describe '#section_pid' do
