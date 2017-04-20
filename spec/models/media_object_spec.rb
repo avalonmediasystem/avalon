@@ -576,7 +576,7 @@ describe MediaObject do
     let(:mods) { File.read(File.expand_path("../../fixtures/#{bib_id}.mods",__FILE__)) }
     describe 'only overrides correct fields' do
       before do
-        media_object.resource_type = "moving image"
+        media_object.resource_type = ["moving image"]
         media_object.format = "video/mpeg"
         instance = double("instance")
         allow(Avalon::BibRetriever).to receive(:instance).and_return(instance)
