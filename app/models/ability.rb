@@ -55,6 +55,9 @@ class Ability
 
       if @user_groups.include? "manager"
         can :create, Admin::Collection
+        can :manage, Admin::Collection do |collection|
+          @user.in?(collection.managers)
+        end
       end
     end
   end
