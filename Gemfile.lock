@@ -76,8 +76,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement_rails.git
-  revision: 273c6dab083afba8e1737f99ee87794d175d0e3a
-  tag: avalon-r6_embed-fix
+  revision: 8ce0042124460f1c3893372afcee34a93d25f8fd
+  tag: avalon-r6_flash-fix
   specs:
     mediaelement_rails (0.5.1)
       jquery-rails (>= 1.0)
@@ -838,4 +838,4 @@ DEPENDENCIES
   with_locking
 
 BUNDLED WITH
-   1.14.3
+   1.14.6
