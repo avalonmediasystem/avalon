@@ -147,9 +147,13 @@ class Admin::CollectionsController < ApplicationController
 
         if params["remove_#{title}"].present?
           if ["group", "class", "ipaddress"].include? title
+            # This is a hack to deal with the fact that calling default_read_groups#delete isn't marking the record as dirty
+            # TODO: Ensure default_read_groups is tracked by ActiveModel::Dirty
             @collection.default_read_groups_will_change!
             @collection.default_read_groups.delete params["remove_#{title}"]
           else
+            # This is a hack to deal with the fact that calling default_read_users#delete isn't marking the record as dirty
+            # TODO: Ensure default_read_users is tracked by ActiveModel::Dirty
             @collection.default_read_users_will_change!
             @collection.default_read_users.delete params["remove_#{title}"]
           end
