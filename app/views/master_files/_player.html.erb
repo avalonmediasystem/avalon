@@ -72,6 +72,13 @@ Unless required by applicable law or agreed to in writing, software distributed
       customError: '<%= t("media_objects.player.customError").html_safe %>'
     })
     currentPlayer = avalonPlayer.player;
+
+    window.addEventListener('message', function(e) {
+      var message = e.data;
+      if (message=='play') currentPlayer.play();
+      if (message=='pause') currentPlayer.pause(); 
+    });
+
   </script>
 
   <style>
