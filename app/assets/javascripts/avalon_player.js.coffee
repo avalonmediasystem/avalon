@@ -103,7 +103,7 @@ class AvalonPlayer
             marker_id = $(this)[0].dataset['marker']
             title = String($(this).find('.marker_title')[0].text).replace(/"/g, '&quot;') + " ["+mejs.Utility.secondsToTimeCode(offset)+"]"
             offset_percent = if isNaN(parseFloat(offset)) then 0 else Math.min(1, offset / duration)
-            offset = $('.mejs-time-total').width() * offset_percent
+            offset = Math.round($('.mejs-time-total').width() * offset_percent)+'px'
             scrubber.append('<span class="fa fa-chevron-up scrubber-marker" style="left: '+offset+'" title="'+title+'" data-marker="'+marker_id+'"></span>')
         @player.setCurrentTime initialTime
 
