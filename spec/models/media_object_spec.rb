@@ -686,4 +686,16 @@ describe MediaObject do
       expect {media_object.collection = collection}.not_to change {new_media_object.read_users}
     end
   end
+
+  describe 'descMetadata' do
+    it 'sets original_name to default value' do
+      expect(media_object.descMetadata.original_name).to eq 'descMetadata.xml'
+    end
+  end
+
+  describe 'workflow' do
+    it 'sets original_name to default value' do
+      expect(media_object.workflow.original_name).to eq 'workflow.xml'
+    end
+  end
 end
