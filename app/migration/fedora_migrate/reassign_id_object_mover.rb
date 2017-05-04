@@ -25,7 +25,7 @@ module FedoraMigrate
 
     def complete_target
       after_object_migration
-      target.migrated_from = construct_migrate_from_uri(source)
+      target.migrated_from = [construct_migrate_from_uri(source)]
       save
       complete_report
     end
