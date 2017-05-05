@@ -21,8 +21,9 @@ module FedoraMigrate
       class_order.each do |klass|
         @klass = klass
         klass.class_eval do
-          property :migrated_from, predicate: RDF::URI("http://www.w3.org/ns/prov#wasDerivedFrom"), multiple: false do |index|
-            index.as :stored_searchable
+          # We don't really need multiple true but there is a bug with indexing single valued URI objects
+          property :migrated_from, predicate: RDF::URI("http://www.w3.org/ns/prov#wasDerivedFrom"), multiple: true do |index|
+            index.as :symbol
           end
         end
         @source_objects = nil
@@ -71,7 +72,7 @@ module FedoraMigrate
         unless (status_record.status == 'failed') && (method == :second_pass)
           begin
             status_record.update_attributes status: method.to_s, log: nil
-            target = klass.where(migrated_from_tesim: construct_migrate_from_uri(source).to_s).first
+            target = klass.where(migrated_from_ssim: construct_migrate_from_uri(source).to_s).first
             options[:report] = report.reload[source.pid]
             result.object = object_mover.new(source, target, options).send(method)
             status_record.reload
