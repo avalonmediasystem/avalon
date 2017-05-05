@@ -15,56 +15,34 @@
 module FedoraMigrate
   class ClassOrderedRepositoryMigrator < RepositoryMigrator
 
-    attr_accessor :klass
-
     def migrate_objects(pids = nil)
       @pids_whitelist = pids
       class_order.each do |klass|
-        @klass = klass
         klass.class_eval do
           # We don't really need multiple true but there is a bug with indexing single valued URI objects
           property :migrated_from, predicate: RDF::URI("http://www.w3.org/ns/prov#wasDerivedFrom"), multiple: true do |index|
             index.as :symbol
           end
         end
-        source_objects(klass) do |object|
-          @source = object
-          migrate_current_object
+        Parallel.map(gather_pids_for_class(klass), in_thread: parallel_threads) do |pid|
+          next unless qualifying_pid?(pid, klass)
+          migrate_object(source_object(pid), klass)
         end
       end
       class_order.each do |klass|
-        @klass = klass
-        if second_pass_needed?
-          source_objects(klass) do |object|
-            @source = object
-            migrate_object(:second_pass)
+        if second_pass_needed?(klass)
+          Parallel.map(gather_pids_for_class(klass), in_thread: parallel_threads) do |pid|
+            next unless qualifying_pid?(pid, klass)
+            migrate_object(source_object(pid), klass, :second_pass)
           end
         end
       end
-      report.reload
+      @report.reload
     end
 
-    def migrate_relationships
-      # return "Relationship migration skipped because migrator invoked in single pass mode." if single_pass?
-      super
-    end
-
-    def migrate_current_object
-      return unless migration_required?
-      initialize_report
-      migrate_object
-    end
-
-    def migration_required?
-      status_report = MigrationStatus.find_by(source_class: klass, f3_pid: source.pid, datastream: nil)
+    def migration_required?(pid, klass)
+      status_report = MigrationStatus.find_by(source_class: klass, f3_pid: pid, datastream: nil)
       status_report.nil? || (status_report.status != 'completed')
-    end
-    
-    def source_objects(klass, &block)
-      gather_pids_for_class(klass).each do |pid|
-        obj = FedoraMigrate.source.connection.find(pid)
-        block.call(obj) if qualifying_object(obj)
-      end
     end
 
     private
@@ -76,14 +54,26 @@ module FedoraMigrate
         @pids_whitelist.blank? ? pids : pids & @pids_whitelist
       end
 
-      def migrate_object(method=:migrate)
+      def source_object(pid)
+        FedoraMigrate.source.connection.find(pid)
+      end
+
+      def initialize_report(source)
+        result = SingleObjectReport.new
+        result.status = false
+        @report.save(source.pid, result)
+        result
+      end
+
+      def migrate_object(source, klass, method=:migrate)
+        result = initialize_report(source)
         status_record = MigrationStatus.find_or_create_by(source_class: klass.name, f3_pid: source.pid, datastream: nil)
         unless (status_record.status == 'failed') && (method == :second_pass)
           begin
             status_record.update_attributes status: method.to_s, log: nil
             target = klass.where(migrated_from_ssim: construct_migrate_from_uri(source).to_s).first
-            options[:report] = report.reload[source.pid]
-            result.object = object_mover.new(source, target, options).send(method)
+            options[:report] = @report.reload[source.pid]
+            result.object = object_mover(klass).new(source, target, options).send(method)
             status_record.reload
             if status_record.status == "failed"
               result.status = false
@@ -96,15 +86,15 @@ module FedoraMigrate
             status_record.update_attribute :log, %{#{e.class.name}: "#{e.message}"}
             result.status = false
           ensure
-            status_record.update_attribute :status, end_status(method)
-            report.save(source.pid, result)
+            status_record.update_attribute :status, end_status(result, method, klass)
+            @report.save(source.pid, result)
           end
         end
       end
       
-      def end_status(method)
+      def end_status(result, method, klass)
         if result.status
-          if method == :migrate and second_pass_needed?
+          if method == :migrate and second_pass_needed?(klass)
             return 'waiting'
           else
             return 'completed'
@@ -113,11 +103,11 @@ module FedoraMigrate
         return 'failed'
       end
       
-      def second_pass_needed?
-        object_mover.instance_methods.include?(:second_pass)
+      def second_pass_needed?(klass)
+        object_mover(klass).instance_methods.include?(:second_pass)
       end
 
-      def object_mover
+      def object_mover(klass)
         ("FedoraMigrate::" + klass.name.gsub(/::/,'') + "::ObjectMover").constantize
       end
 
@@ -125,18 +115,14 @@ module FedoraMigrate
         @options[:class_order]
       end
 
-      # def single_pass?
-      #   !!@options[:single_pass]
-      # end
-      #
-      # def reassign_ids?
-      #   !!@options[:reassign_ids]
-      # end
+      def parallel_threads
+        @options[:parallel_threads] || Parallel.processor_count - 2
+      end
 
-      #def qualifying_object(object, klass)
-      #  name = object.pid.split(/:/).first
-      #  return object if (name.match(namespace) && object.models.include?("info:fedora/afmodel:#{klass.name.gsub(/(::)/, '_')}"))
-      #end
+      def qualifying_pid?(pid, klass)
+        name = pid.split(/:/).first
+        name.match(namespace) && migration_required?(pid, klass)
+      end
 
       def parse_model_name(object)
         model_uri = object.models.find {|m| m.start_with? "info:fedora/afmodel"}
