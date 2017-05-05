@@ -70,8 +70,8 @@ module FedoraMigrate
         status_record = MigrationStatus.find_or_create_by(source_class: klass.name, f3_pid: source.pid, datastream: nil)
         unless (status_record.status == 'failed') && (method == :second_pass)
           begin
-            status_record.update_attributes status: method.to_s, log: nil
             target = klass.where(migrated_from_ssim: construct_migrate_from_uri(source).to_s).first
+            status_record.update_attributes status: method.to_s, log: nil
             options[:report] = @report.reload[source.pid]
             result.object = object_mover(klass).new(source, target, options).send(method)
             status_record.reload
@@ -87,6 +87,8 @@ module FedoraMigrate
             result.status = false
           ensure
             status_record.update_attribute :status, end_status(result, method, klass)
+            target = klass.where(migrated_from_ssim: construct_migrate_from_uri(source).to_s).first
+            target.destroy if (status_record.status == "failed") && !target.nil?
             @report.save(source.pid, result)
           end
         end
