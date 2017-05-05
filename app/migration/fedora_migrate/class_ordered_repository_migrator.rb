@@ -26,6 +26,7 @@ module FedoraMigrate
         end
         Parallel.map(gather_pids_for_class(klass), in_thread: parallel_threads) do |pid|
           next unless qualifying_pid?(pid, klass)
+          remove_object(pid, klass)
           migrate_object(source_object(pid), klass)
         end
       end
@@ -65,12 +66,17 @@ module FedoraMigrate
         result
       end
 
+      def remove_object(pid, klass)
+        target = klass.where(migrated_from_ssim: construct_migrate_from_uri(pid).to_s).first
+        target.delete unless target.nil?
+      end
+
       def migrate_object(source, klass, method=:migrate)
         result = initialize_report(source)
         status_record = MigrationStatus.find_or_create_by(source_class: klass.name, f3_pid: source.pid, datastream: nil)
         unless (status_record.status == 'failed') && (method == :second_pass)
           begin
-            target = klass.where(migrated_from_ssim: construct_migrate_from_uri(source).to_s).first
+            target = klass.where(migrated_from_ssim: construct_migrate_from_uri(source.pid).to_s).first
             status_record.update_attributes status: method.to_s, log: nil
             options[:report] = @report.reload[source.pid]
             result.object = object_mover(klass).new(source, target, options).send(method)
@@ -87,8 +93,7 @@ module FedoraMigrate
             result.status = false
           ensure
             status_record.update_attribute :status, end_status(result, method, klass)
-            target = klass.where(migrated_from_ssim: construct_migrate_from_uri(source).to_s).first
-            target.destroy if (status_record.status == "failed") && !target.nil?
+            remove_object(source.pid, klass) if status_record.status == "failed"
             @report.save(source.pid, result)
           end
         end
@@ -135,8 +140,8 @@ module FedoraMigrate
         "info:fedora/afmodel:#{klass.name.gsub(/(::)/, '_')}"
       end
 
-      def construct_migrate_from_uri(source)
-        RDF::URI.new(FedoraMigrate.fedora_config.credentials[:url]) / "/objects/#{source.pid}"
+      def construct_migrate_from_uri(pid)
+        RDF::URI.new(FedoraMigrate.fedora_config.credentials[:url]) / "/objects/#{pid}"
       end
   end
 end
