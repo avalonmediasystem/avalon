@@ -39,13 +39,15 @@ Please run `rake avalon:migrate:repo CONFIRM=yes` to confirm.
 EOC
         exit 1
       end
+      ids = ENV['pids'].split(',') unless ENV['pids'].nil?
+
       #disable callbacks
       Admin::Collection.skip_callback(:save, :around, :reindex_members)
       ::MediaObject.skip_callback(:save, :before, :update_dependent_properties!)
 
       models = [Admin::Collection, ::MediaObject, ::MasterFile, ::Derivative, ::Lease]
       migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', { class_order: models })
-      migrator.migrate_objects
+      migrator.migrate_objects(ids)
       migrator
     end
 
