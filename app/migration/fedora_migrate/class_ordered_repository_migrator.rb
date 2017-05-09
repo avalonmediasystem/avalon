@@ -17,16 +17,17 @@ module FedoraMigrate
 
     attr_accessor :klass
 
-    def migrate_objects
+    def migrate_objects(pids = nil)
+      @pids_whitelist = pids
       class_order.each do |klass|
         @klass = klass
         klass.class_eval do
-          property :migrated_from, predicate: RDF::URI("http://www.w3.org/ns/prov#wasDerivedFrom"), multiple: false do |index|
-            index.as :stored_searchable
+          # We don't really need multiple true but there is a bug with indexing single valued URI objects
+          property :migrated_from, predicate: RDF::URI("http://www.w3.org/ns/prov#wasDerivedFrom"), multiple: true do |index|
+            index.as :symbol
           end
         end
-        @source_objects = nil
-        source_objects(klass).each do |object|
+        source_objects(klass) do |object|
           @source = object
           migrate_current_object
         end
@@ -34,8 +35,7 @@ module FedoraMigrate
       class_order.each do |klass|
         @klass = klass
         if second_pass_needed?
-          @source_objects = nil
-          source_objects(klass).each do |object|
+          source_objects(klass) do |object|
             @source = object
             migrate_object(:second_pass)
           end
@@ -60,18 +60,28 @@ module FedoraMigrate
       status_report.nil? || (status_report.status != 'completed')
     end
     
-    def source_objects(klass)
-      @source_objects ||= FedoraMigrate.source.connection.search(nil).collect { |o| qualifying_object(o, klass) }.compact
+    def source_objects(klass, &block)
+      gather_pids_for_class(klass).each do |pid|
+        obj = FedoraMigrate.source.connection.find(pid)
+        block.call(obj) if qualifying_object(obj)
+      end
     end
 
     private
+
+      def gather_pids_for_class(klass)
+        query = "SELECT ?pid WHERE { ?pid <info:fedora/fedora-system:def/model#hasModel> <#{class_to_model_name(klass)}> }"
+        # Query and filter using pids whitelist
+        pids = FedoraMigrate.source.connection.sparql(query)["pid"].collect {|pid| pid.split('/').last}
+        @pids_whitelist.blank? ? pids : pids & @pids_whitelist
+      end
 
       def migrate_object(method=:migrate)
         status_record = MigrationStatus.find_or_create_by(source_class: klass.name, f3_pid: source.pid, datastream: nil)
         unless (status_record.status == 'failed') && (method == :second_pass)
           begin
             status_record.update_attributes status: method.to_s, log: nil
-            target = klass.where(migrated_from_tesim: construct_migrate_from_uri(source).to_s).first
+            target = klass.where(migrated_from_ssim: construct_migrate_from_uri(source).to_s).first
             options[:report] = report.reload[source.pid]
             result.object = object_mover.new(source, target, options).send(method)
             status_record.reload
@@ -123,9 +133,18 @@ module FedoraMigrate
       #   !!@options[:reassign_ids]
       # end
 
-      def qualifying_object(object, klass)
-        name = object.pid.split(/:/).first
-        return object if (name.match(namespace) && object.models.include?("info:fedora/afmodel:#{klass.name.gsub(/(::)/, '_')}"))
+      #def qualifying_object(object, klass)
+      #  name = object.pid.split(/:/).first
+      #  return object if (name.match(namespace) && object.models.include?("info:fedora/afmodel:#{klass.name.gsub(/(::)/, '_')}"))
+      #end
+
+      def parse_model_name(object)
+        model_uri = object.models.find {|m| m.start_with? "info:fedora/afmodel"}
+        model_uri.nil? ? nil : model_uri[/afmodel:(.+?)$/, 1].gsub(/_/,'::')
+      end
+
+      def class_to_model_name(klass)
+        "info:fedora/afmodel:#{klass.name.gsub(/(::)/, '_')}"
       end
 
       def construct_migrate_from_uri(source)

@@ -18,7 +18,10 @@ module MediaObjectMods
   included do
     require 'avalon/bib_retriever'
 
-    has_subresource 'descMetadata', class_name: 'ModsDocument'
+    has_subresource 'descMetadata', class_name: 'ModsDocument' do |f|
+      f.original_name = "descMetadata.xml"
+    end
+
     # TODO: fix next line
     # before_save :normalize_desc_metadata!
   end

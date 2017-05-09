@@ -32,9 +32,19 @@ class MasterFile < ActiveFedora::Base
   belongs_to :media_object, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
   has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf, dependent: :destroy
 
-  has_subresource 'structuralMetadata', class_name: 'StructuralMetadata'
-  has_subresource 'thumbnail', class_name: 'IndexedFile'
-  has_subresource 'poster', class_name: 'IndexedFile'
+  has_subresource 'structuralMetadata', class_name: 'StructuralMetadata' do |f|
+    f.original_name = 'structuralMetadata.xml'
+  end
+
+  has_subresource 'thumbnail', class_name: 'IndexedFile' do |f|
+    f.original_name = 'thumbnail.jpg'
+  end
+
+  has_subresource 'poster', class_name: 'IndexedFile' do |f|
+    f.original_name = 'poster.jpg'
+  end
+
+  # Don't pass the block here since we save the original_name when the user uploads the captions file
   has_subresource 'captions', class_name: 'IndexedFile'
 
   property :title, predicate: ::RDF::Vocab::EBUCore.title, multiple: false do |index|

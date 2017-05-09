@@ -47,7 +47,7 @@ gem 'devise'
 #gem 'devise-guests', '~> 0.3'
 
 # Avalon-specific
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6'
+gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git"
 gem 'active_encode', '~> 0.0.3'
 gem 'hooks'
 gem 'iconv'
