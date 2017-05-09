@@ -82,6 +82,16 @@ Unless required by applicable law or agreed to in writing, software distributed
       customError: '<%= t("media_objects.player.customError").html_safe %>'
     })
     currentPlayer = avalonPlayer.player;
+
+    window.addEventListener('message', function(event) {
+      var command = event.data.command;
+      if (command=='play') currentPlayer.play();
+      else if (command=='pause') currentPlayer.pause();
+      else if (command=='toggle_loop') currentPlayer.loop = !currentPlayer.loop;
+      else if (command=='set_offset') currentPlayer.setCurrentTime(event.data.offset); // time is in seconds
+      else if (command=='get_offset') event.source.postMessage({'command':'currentTime','currentTime':currentPlayer.getCurrentTime()}, event.origin);
+    });
+
   </script>
 
   <style>
