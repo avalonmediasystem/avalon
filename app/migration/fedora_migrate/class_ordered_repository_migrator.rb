@@ -15,8 +15,9 @@
 module FedoraMigrate
   class ClassOrderedRepositoryMigrator < RepositoryMigrator
 
-    def migrate_objects(pids = nil)
+    def migrate_objects(pids = nil, overwrite = false)
       @pids_whitelist = pids
+      @overwrite = overwrite
       class_order.each do |klass|
         klass.class_eval do
           # We don't really need multiple true but there is a bug with indexing single valued URI objects
@@ -26,7 +27,7 @@ module FedoraMigrate
         end
         Parallel.map(gather_pids_for_class(klass), in_thread: parallel_threads) do |pid|
           next unless qualifying_pid?(pid, klass)
-          remove_object(pid, klass)
+          remove_object(pid, klass) unless overwrite?
           migrate_object(source_object(pid), klass)
         end
       end
@@ -43,7 +44,7 @@ module FedoraMigrate
 
     def migration_required?(pid, klass)
       status_report = MigrationStatus.find_by(source_class: klass, f3_pid: pid, datastream: nil)
-      status_report.nil? || (status_report.status != 'completed')
+      status_report.nil? || (status_report.status != 'completed') || overwrite?
     end
 
     private
@@ -71,12 +72,32 @@ module FedoraMigrate
         target.delete unless target.nil?
       end
 
+      def cleanout_object!(target)
+        return nil unless target
+        target_id = target.id
+        target_class = target.class
+        success = target.destroy.eradicate
+        raise RuntimeError("Failed to cleanout object: #{target_id}") unless success
+        target_class.new(id: target_id)
+      end
+
+      def overwrite?
+        !!@overwrite
+      end
+
       def migrate_object(source, klass, method=:migrate)
         result = initialize_report(source)
         status_record = MigrationStatus.find_or_create_by(source_class: klass.name, f3_pid: source.pid, datastream: nil)
         unless (status_record.status == 'failed') && (method == :second_pass)
           begin
             target = klass.where(migrated_from_ssim: construct_migrate_from_uri(source.pid).to_s).first
+            if overwrite? && (method != :second_pass)
+              target = cleanout_object!(target)
+              unless target.nil?
+                MigrationStatus.where(f3_pid: status_record.f3_pid).delete_all
+                status_record = MigrationStatus.find_or_create_by(source_class: klass.name, f3_pid: source.pid, datastream: nil)
+              end
+            end
             status_record.update_attributes status: method.to_s, log: nil
             options[:report] = @report.reload[source.pid]
             result.object = object_mover(klass).new(source, target, options).send(method)
