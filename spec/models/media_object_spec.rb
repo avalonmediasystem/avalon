@@ -326,6 +326,50 @@ describe MediaObject do
     end
   end
 
+  describe "Update datastream with empty strings" do
+    it "should handle a complex update" do
+      params = {
+        'alternative_title' => [''],
+        'translated_title' => [''],
+        'uniform_title' => [''],
+        'creator' => [''],
+        'format' => [''],
+        'contributor' => [''],
+        'publisher' => [''],
+        'subject' => [''],
+        'related_item_url' => [{label:'',url:''}],
+        'geographic_subject' => [''],
+        'temporal_subject' => [''],
+        'topical_subject' => [''],
+        'language' => [''],
+        'table_of_contents' => [''],
+        'physical_description' => [''],
+        'record_identifier' => [''],
+        'note' => [{type:'',note:''}],
+        'other_identifier' => [{id:'',source:''}]
+      }
+      media_object.update_attributes(params)
+      expect(media_object.alternative_title).to eq([])
+      expect(media_object.translated_title).to eq([])
+      expect(media_object.uniform_title).to eq([])
+      expect(media_object.creator).to eq([])
+      expect(media_object.format).to eq([])
+      expect(media_object.contributor).to eq([])
+      expect(media_object.publisher).to eq([])
+      expect(media_object.subject).to eq([])
+      expect(media_object.related_item_url).to eq([])
+      expect(media_object.geographic_subject).to eq([])
+      expect(media_object.temporal_subject).to eq([])
+      expect(media_object.topical_subject).to eq([])
+      expect(media_object.language).to eq([])
+      expect(media_object.table_of_contents).to eq([])
+      expect(media_object.physical_description).to eq([])
+      expect(media_object.record_identifier).to eq([])
+      expect(media_object.note).to be_nil
+      expect(media_object.other_identifier).to be_nil
+   end
+  end
+
   describe "Update datastream directly" do
     it "should reflect datastream changes on media object" do
       newtitle = Faker::Lorem.sentence
@@ -333,6 +377,17 @@ describe MediaObject do
       media_object.save
       media_object.reload
       expect(media_object.bibliographic_id).to eq({source: "local", id: 'ABC123'})
+    end
+  end
+
+  describe "Correctly set table of contents from form" do
+    it "should not include empty strings" do
+      media_object.update_attributes({'table_of_contents' => ['']})
+      expect(media_object.table_of_contents).to eq([])
+    end
+    it "should include actual strings" do
+      media_object.update_attributes({'table_of_contents' => ['Test']})
+      expect(media_object.table_of_contents).to eq(['Test'])
     end
   end
 
