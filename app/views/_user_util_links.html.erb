@@ -14,7 +14,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <ul class="nav navbar-nav">
-  <li><%= link_to 'Browse', main_app.search_catalog_path(search_field: 'all_fields', utf8: '✓', q: '') %></li>
   <li class=<%= active_for_controller('collections') %>><%= link_to 'Collections', main_app.collections_path %></li>
 
   <% if user_session && user_session[:lti_group] %>

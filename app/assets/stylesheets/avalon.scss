@@ -112,6 +112,16 @@ div.alert-danger {
 // Generic content spacer
 .content-block {
   padding-bottom: 3rem;
+
+/* Header */
+.custom-header {
+  background-color: #e9e9e9;
+  color: $black;
+  margin-bottom: 0em;
+  font-size: 0.8em;
+  .row {
+    margin: 0;
+  }
 }
 
 // Dotted line separator from branding guide

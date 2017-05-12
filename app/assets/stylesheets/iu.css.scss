@@ -1,0 +1,384 @@
+$red: rgb(124, 18, 12);
+$gray: rgb(51,51,51);
+$midnight: #006298;
+$avalongray: #abbbc4;
+$wellBackground: $avalongray;
+$sidenavHeaderBackgroundColor: $avalongray;
+
+/****************************************
+ * Branding Bar
+ ****************************************/
+@font-face {
+  font-family: 'BentonSansCondensedRegular';
+  src:font-url('benton-sans-condensed/regular.eot');
+  src:font-url('benton-sans-condensed/regular.eot?#iefix') format('embedded-opentype'),
+    font-url('benton-sans-condensed/regular.svg#regular') format('svg'),
+    font-url('benton-sans-condensed/regular.woff') format('woff'),
+    font-url('benton-sans-condensed/regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+		font-family: 'BentonSansRegular';
+		src: url("https://fonts.iu.edu/fonts/benton-sans-regular.eot");
+		src: url("https://fonts.iu.edu/fonts/benton-sans-regular.eot?#iefix") format("embedded-opentype"), url("https://fonts.iu.edu/fonts/benton-sans-regular.woff") format("woff"), url("https://fonts.iu.edu/fonts/benton-sans-regular.ttf") format("truetype"), url("https://fonts.iu.edu/fonts/benton-sans-regular.svg#BentonSansRegular") format("svg");
+		font-style: normal;
+		font-weight: normal;
+}
+@font-face {
+		font-family: 'BentonSansCondRegular';
+		src: url("https://fonts.iu.edu/fonts/benton-sans-cond-regular.eot");
+		src: url("https://fonts.iu.edu/fonts/benton-sans-cond-regular.eot?#iefix") format("embedded-opentype"), url("https://fonts.iu.edu/fonts/benton-sans-cond-regular.woff") format("woff"), url("https://fonts.iu.edu/fonts/benton-sans-cond-regular.ttf") format("truetype"), url("https://fonts.iu.edu/fonts/benton-sans-cond-regular.svg#BentonSansCondRegular") format("svg");
+		font-style: normal;
+		font-weight: normal;
+}
+@font-face {
+		font-family: 'BentonSansCondBold';
+		src: url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.eot");
+		src: url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.eot?#iefix") format("embedded-opentype"), url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.woff") format("woff"), url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.ttf") format("truetype"), url("https://fonts.iu.edu/fonts/benton-sans-cond-bold.svg#BentonSansCondBold") format("svg");
+		font-style: normal;
+		font-weight: normal;
+}
+@font-face {
+		font-family: 'GeorgiaProBoldItalic';
+		src: url("https://fonts.iu.edu/fonts/georgia-pro-bold-italic.eot");
+		src: url("https://fonts.iu.edu/fonts/georgia-pro-bold-italic.eot?#iefix") format("embedded-opentype"), url("https://fonts.iu.edu/fonts/georgia-pro-bold-italic.woff") format("woff"), url("https://fonts.iu.edu/fonts/georgia-pro-bold-italic.ttf") format("truetype"), url("https://fonts.iu.edu/fonts/georgia-pro-bold-italic.svg#GeorgiaProBoldItalic") format("svg");
+		font-style: normal;
+		font-weight: normal;
+}
+
+#branding-bar {
+  background: #212121 url(iu/bg-bar.gif) repeat 0 100%;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px; /* Normalize font size */
+  line-height: 18px; /* Normalize line height */
+  min-height: 40px;
+  min-width: 300px;
+  overflow: visible;
+  text-align: right;
+  @media all and (max-width: 768px) {
+    min-height: 46px;
+  }
+  h1,p,ul,form,fieldset,input,dl,dt,dd,img,abbr {
+    border: none;
+    display: block;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+  }
+  a {
+    color: #fff;
+  }
+  ul {
+    list-style: none;
+  }
+  .wrapper {
+    position: relative;
+  }
+  .bar {
+    border-top: 6px solid #990000;
+  }
+  .campus {
+    font-family: "BentonSansCondensedRegular", "Arial Narrow", Arial, Helvetica, sans-serif;
+    font-size: 1.125em; /* 16px (16/16) */
+    left: auto;
+    letter-spacing: 0.025em;
+    line-height: 1em; /* 16px (16/16) */
+    text-align: left;
+    text-transform: uppercase;
+    top: 6px;
+    z-index: 400;
+    a {
+      display: table-cell;
+      height: 40px;
+      padding: 0 0 0 75px;
+      text-decoration: none;
+      vertical-align: middle;
+      @media all and (max-width: 768px) {
+        height: 24px;
+        padding: 12px 0 0 47px;
+      }
+      &:hover {
+        text-decoration: none;
+      }
+    }
+    img {
+      height: auto;
+      position: absolute;
+      top: -6px;
+      width: 64px;
+      left: 7px;
+      z-index: 1;
+      @media all and (max-width: 768px) {
+        width: 34px;
+        top: 0;
+        left: 7px;
+      }
+    }
+    .expanded {
+      display: none;
+    }
+  }
+}
+
+.log-in-out {
+  color: white;
+  font-size: 0.9em;
+  float: right;
+  padding: 3px 20px 0 0;
+  @media all and (max-width: 768px) {
+    padding-right: 0;
+  }
+  a {
+    color: white;
+    background: none;
+    padding: 0;
+  }
+  a:after {
+    content: none;
+  }
+  span + a:before {
+    content: "|";
+    margin-right: 8px;
+    margin-left: 5px;
+  }
+  .pull-right {
+    padding: .5em;
+  }
+}
+
+footer {
+  font-size: .8em;
+  border-top: 3px solid #990000;
+  margin-top: 10px;
+  padding: 5px 0;
+  position: relative;
+  ul {
+    float: none;
+  }
+  li:before {
+    content: " | ";
+  }
+  a:visited {
+    color: #990000;
+    text-decoration: none;
+    font-weight: normal;
+  }
+  a:link {
+    color: #990000;
+    text-decoration: none;
+    font-weight: normal;
+  }
+}
+#footer-text {
+  margin-left: 0;
+  margin-right: 100px;
+  text-align: center;
+  img {
+    width: auto;
+    height: 45px;
+    float: left;
+    margin-right: 5px;
+  }
+  ul {
+    margin-bottom: 0;
+  }
+  @media all and (max-width: 660px) {
+    margin-right: 0;
+    a:first-of-type {
+      display: inline-block;
+    }
+  }
+}
+#footer-avalonlogo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  @media all and (max-width: 660px) {
+    position: relative;
+    text-align: center;
+  }
+  img {
+    width: auto;
+    height: 50px;
+  }
+}
+
+.navbar {
+  .btn-navbar {
+    position: absolute;
+    right: 5px;
+    padding: 3px 3px 5px 3px;
+    z-index: 1;
+  }
+  .nav > li > a {
+    color: $white;
+    text-shadow: none;
+    padding: 4px 15px;
+    padding-left: 10px;
+    border-radius:0;
+    &:hover {
+      color: $black;
+    }
+  }
+  .brand {
+    display: inline-block;
+    margin-top: 15px;
+    color: $white;
+    text-indent: 0;
+    background: none;
+    width: auto;
+    font-size: 2em;
+    text-shadow: none;
+    height: auto;
+    margin-left: 76px;
+    @media all and (max-width: 768px) {
+      margin-left: 5px;
+      margin-top: 8px;
+    }
+    p {
+      color: white;
+      text-decoration: none;
+      margin: 0 0 10px 0;
+      white-space: nowrap;
+      line-height: 20px;
+    }
+    .brand-color2 {
+      color: #AEA79F;
+    }
+  }
+}
+.navbar-inner {
+  background-color: #4A3C31;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+  border-radius:0;
+  position: relative;
+  height: 52px;
+  padding-right: 0;
+  z-index: 0;
+  @media all and (max-width: 768px) {
+    height: 40px;
+  }
+  @media all and (max-width: 653px) {
+    height: 82px;
+  }
+  .iu-search {
+    float: right;
+    position: relative;
+    min-width: 300px;
+    margin-top: 5px;
+    a, a:hover, a:focus, a:visited {
+      position: absolute;
+      left: 0;
+      top: 10px;
+      margin-top: 0;
+      color: white;
+      &:hover, &:focus {
+        text-decoration: underline;
+      }
+    }
+    input[type=text] {
+      color: black;
+      font-size: 15px;
+    }
+    @media all and (max-width: 768px) {
+       margin-top: 0;
+    }
+    @media all and (max-width: 653px) {
+      float: left;
+      margin-left: 8px;
+    }
+   .navbar-right {
+      position: absolute;
+      right: 0;
+      top: 4px;
+      margin-right: 0;
+    }
+  }
+}
+.navbar-browse {
+  color: white;
+  padding-right: 1em;
+  float: left;
+  margin-top: 10px;
+}
+.nav2 {
+  background-color: #44697D;
+  padding-right: 0;
+  .container {
+    min-height: 27px;
+  }
+  div ul.nav {
+    padding-left: 67px;
+    @media all and (max-width: 768px) {
+      padding-left: 0px;
+    }
+  }
+}
+
+.sidenav h4 {
+  background-color: $avalongray;
+  padding: 6px 0 6px 10px;
+}
+.constraints-container {
+  background-color: $avalongray;
+}
+.facets-toggle, .navbar-toggle {
+  padding: 5px;
+  z-index: 1;
+  border: 1px solid transparent;
+  &:hover {
+    border-color: #888;
+    background-color: $lightgray;
+  }
+}
+.nav-collapse.collapse {
+  @media all and (min-width: 769px) {
+    display: inline;
+    visibility: visible;
+  }
+}
+
+#home-visit-box {
+  -webkit-box-shadow: 5px 5px 5px 0 #616161;
+  box-shadow: 5px 5px 5px 0 #616161;
+  border-radius:5px;
+  background-color: #e5e3e0;
+  margin-bottom: 20px;
+  p {
+    padding: 15px 10px 10px 10px;
+  }
+}
+
+#link-object, #link-section, #embed-part {
+  cursor: pointer;
+}
+
+#home-about {
+  margin-top: 10px;
+}
+#featured_content {
+  div {
+    margin-top: 20px;
+    p:nth-of-type(2) {
+      margin-bottom: -10px;
+    }
+    p:last-of-type {
+      margin-top: 0;
+      @media all and (max-width: 768px) {
+        text-align: center;
+      }
+    }
+  }
+}
+
+#metadata_container {
+  a:not(.btn) {
+    color: $midnight;
+    font-weight: bold;
+  }
+}

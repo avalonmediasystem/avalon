@@ -5,7 +5,7 @@ gem 'bootsnap', require: false
 gem 'listen'
 gem 'rails', '=5.2.3'
 gem 'sprockets', '~>3.7.2'
-gem 'sqlite3'
+# gem 'sqlite3'
 
 # Assets
 gem 'coffee-rails', '~> 4.2.0'
@@ -146,6 +146,7 @@ end
 group :production do
   gem 'google-analytics-rails', '1.1.0'
   gem 'lograge'
+  gem 'gelf'
 end
 
 # Install the bundle --with aws when running on Amazon Elastic Beanstalk
@@ -172,5 +173,9 @@ group :mysql, optional: true do
   gem 'mysql2'
 end
 
-extra_gems = File.expand_path("../Gemfile.local", __FILE__)
-eval File.read(extra_gems) if File.exist?(extra_gems)
+# IU specific gems
+gem 'net-ldap'
+gem 'omniauth-cas', :git => "https://github.com/cjcolvar/omniauth-cas.git"
+
+extra_gems = File.expand_path("../Gemfile.local",__FILE__)
+eval File.read(extra_gems) if File.exists?(extra_gems)

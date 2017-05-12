@@ -338,6 +338,11 @@ class MEJSPlayer {
       this.player.media.hlsPlayer.config.maxMaxBufferLength = 120;
     }
 
+    if (this.player && this.player.media && this.player.media.hlsPlayer && this.player.media.hlsPlayer.config) {
+      // Workaround for hlsError bufferFullError: Set max buffer length to 2 minutes
+      this.player.media.hlsPlayer.config.maxMaxBufferLength = 120;
+    }
+
     // Toggle captions on if toggleable and previously on
     if (this.mediaType==="video" && this.player.options.toggleCaptionsButtonWhenOnlyOne) {
       if (this.localStorage.getItem('captions') !== '' && this.player.tracks && this.player.tracks.length===1) {

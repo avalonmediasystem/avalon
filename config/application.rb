@@ -47,5 +47,7 @@ module Avalon
         resource '/timelines/*/manifest.json', headers: :any, methods: [:get, :post]
       end
     end
+
+    config.action_view.sanitized_allowed_attributes = ['href', 'src', 'width', 'height', 'alt', 'cite', 'datetime', 'title', 'class', 'name', 'xml:lang', 'abbr', 'target']
   end
 end

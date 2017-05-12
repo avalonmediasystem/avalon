@@ -14,24 +14,23 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div class="custom-header">
-  <div class="container">
-    <header class="header-wrapper">
-      <div class="header-logo">
-        <%= link_to main_app.root_path do %>
-        <%= image_tag "Home.png", class: "img-responvies", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
-        <% end %>
+<div class="row">
+<div id="branding-bar">
+  <div class="bar">
+    <div class="wrapper">
+      <div class="log-in-out">
+	<div class="pull-right">
+	  <%= render 'modules/user_management' %>
+	</div>
       </div>
-
-      <% unless current_page?(main_app.root_path) %>
-      <div class="header-search">
-        <%= render :partial=>'modules/avalon_search_form' %>
-      </div>
-      <% end %>
-
-      <%# By default shift log in / log out to the header %>
-      <div class="text-right log-in-out text-muted header-user">
-        <%= render 'modules/user_management' %>
-      </div>
-    </header>
+      <p class="campus">
+	<a href="http://www.indiana.edu/">
+	  <%= image_tag("iu/trident-tab.gif", height: "73", width:"64", alt:" ") %>
+	  Indiana University
+	</a>
+      </p>
+    </div>
   </div>
+</div>
+</div>
 </div>

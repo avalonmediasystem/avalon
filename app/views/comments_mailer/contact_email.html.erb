@@ -13,7 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<h2>Avalon Media System feedback</h2>
+<h2><%= Settings.name %> feedback</h2>
 <p>A @comment has been submitted through the system</p>
 <hr />
 <dl>
@@ -25,7 +25,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
   <dt>Comment</dt>
   <dd><%= @comment.comment %></dd>
-  
+
   <dt>Received</dt>
   <dd><%= DateTime.now %>
 </dl>

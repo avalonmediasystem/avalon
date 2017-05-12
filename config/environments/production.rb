@@ -63,7 +63,7 @@ config.webpacker.check_yarn_integrity = false
   # Enable logging to both stdout and file, in more compact format
   config.lograge.enabled = true
   config.lograge.custom_options = lambda do |event|
-    {:time => event.time}
+    { time: Time.now }
   end
 
   # Use the lowest log level to ensure availability of diagnostic information

@@ -109,6 +109,36 @@ GIT
       ims-lti
       omniauth
 
+GIT
+  remote: https://github.com/avalonmediasystem/rubyhorn.git
+  revision: fd1e0ee2cca53df515f58690603e9a6351066106
+  tag: avalon-r6
+  specs:
+    rubyhorn (0.0.6)
+      activesupport
+      json
+      mediashelf-loggable
+      mime-types
+      net-http-digest_auth
+      om
+      rest-client
+
+GIT
+  remote: https://github.com/cjcolvar/omniauth-cas.git
+  revision: b6ba1d9208ce230d97cd74681fed87224f0501f8
+  specs:
+    omniauth-cas (0.0.7)
+      addressable (~> 2.2)
+      nokogiri (~> 1.5)
+      omniauth (~> 1.0)
+
+GIT
+  remote: https://github.com/rkallensee/bootstrap-toggle-rails.git
+  revision: b85df8ea25ab71628fcec1504c7182dd5d7d3606
+  tag: v2.2.1.0
+  specs:
+    bootstrap-toggle-rails (2.2.1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -406,6 +436,11 @@ GEM
     ffi (1.10.0)
     font-awesome-rails (4.7.0.5)
       railties (>= 3.2, < 6.1)
+    fugit (1.2.1)
+      et-orbi (~> 1.1, >= 1.1.8)
+      raabro (~> 1.1)
+    gelf (3.1.0)
+      json
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     google-analytics-rails (1.1.0)
@@ -942,6 +977,7 @@ DEPENDENCIES
   faker
   fcrepo_wrapper
   fedora-migrate!
+  gelf
   google-analytics-rails (= 1.1.0)
   hashdiff
   hooks
@@ -970,6 +1006,7 @@ DEPENDENCIES
   mysql2
   net-ldap
   noid-rails (~> 3.0.1)
+  omniauth-cas!
   omniauth-identity
   omniauth-lti!
   parallel

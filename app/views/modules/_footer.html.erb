@@ -13,19 +13,35 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div id="footer" class="<%= "homepage-footer" if current_page?(main_app.root_path) %>">
-
-  <footer class="container">
-    <div class="separator"></div>
-    <ul>
-      <li class="footer-logo">
-        <%= image_tag "AvalonMediaSystem_Logo_A.png", alt: "Avalon Media System - #{t(:release_label)} #{Avalon::VERSION}" %>
-      <li><a href="http://www.avalonmediasystem.org">Avalon Media System Project Website</a> </li>
-      <li><%= link_to "Contact Us", main_app.comments_path %></li>
-    </ul>
-    <div class="release">
-      <%=release_text%>
-      <%= git_commit_info(" (%s %s [%s])") if Rails.env == 'development' %>
-    </div>
-  </footer>
-</div>
+   <div class="container-fluid footer-container">
+     <div class="row bottom-nav thick-footer">
+       <div id="bottom-nav" class="container">
+         <ul>
+           <li><strong><%= Settings.name %></strong> is a service of <a href="http://libraries.iub.edu" class="outline_on">Indiana University Libraries</a>
+             <br>
+             <%= link_to "Contact Us", comments_path %> |
+					   <a href="https://mailform.kb.iu.edu/email.php?cid=1443" class="outline_on" target="_blank">Copyright Complaints</a> |
+					   <a href="https://libraries.indiana.edu/privacy-policy" id="privacy-policy-link">Libraries Privacy Policy</a>
+					 </li>
+           <li class="small">
+             <a href="http://avalonmediasystem.org"><img src="/assets/Home.png" alt="Avalon Media System" class="logo-avalon" /></a>
+           </li>
+         </ul>
+       </div>
+     </div>
+     <footer id="footer" itemscope="itemscope" itemtype="http://schema.org/CollegeOrUniversity">
+       <div class="row pad">
+         <p class="tagline">
+           Fulfilling <span>the</span> Promise
+         </p>
+         <img src="//assets.iu.edu/brand/2.x/trident-small.png" alt="Indiana University">
+         <p class=" copyright">
+           <a href="https://www.iu.edu/copyright/index.html" class="outline_on">Copyright</a> © 2018
+           <span class="line-break-small">
+             The Trustees of <a href="https://www.iu.edu/" itemprop="url" class="outline_on"><span itemprop="name">Indiana University</span></a>
+           </span>
+           <span class="hide-on-mobile"> | </span><span class="line-break"><a href="https://www.indiana.edu/privacy/" id="privacy-policy-link" class="outline_on">Privacy Notice</a> | <a href="https://accessibility.iu.edu" id="accessibility-link" title="Having trouble accessing this web page because of a disability? Visit this page for assistance." class="outline_on">Accessibility Help</a></span>
+					</p>
+        </div>
+     </footer>
+   </div>

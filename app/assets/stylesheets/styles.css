@@ -1,0 +1,9 @@
+/***************************************** 
+ * Author: IU Office of Creative Services
+ *
+ * The function of this CSS is to import
+ * other CSS files, thus hiding advanced
+ * styles from older browsers.
+ *****************************************/
+
+@import url("screen.css");

@@ -1,0 +1,272 @@
+/* 
+ * Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+ *   University.  Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ * 
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed
+ *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ *   specific language governing permissions and limitations under the License.
+ * ---  END LICENSE_HEADER BLOCK  ---
+*/
+
+/******* User top navigation links **********/
+
+.navbar {
+  margin: 0 0 20px 0;
+  border: none;
+}
+
+.navbar-left {
+  background-color: #44697d;
+  a{
+    color: #fff !important;
+    &:active { color: #000 !important; }
+    &:visited { color: #fff !important; }
+    &:hover { color: #000 !important; }
+  }
+}
+
+a.navbar-browse {
+  color: #fff !important;
+}
+
+/* MCO title */
+a.brand{
+	padding-top: 10px;
+  margin-top: 5px !important;
+	text-decoration: none;
+}
+
+/****************** Sidebar ******************/
+
+.sidenav {
+  /* Browse By Header */
+  h2 {
+    background-color: #abbbc4;
+    padding: 6px 0 6px 10px;
+    font-size: 1.3em;
+  }
+  /* Facet Group Header */
+  h3 {
+    font-size: 1.15em;
+  }
+}
+
+.sidenav .top-panel-heading {
+  background-color: #cfd8d3;
+  padding: 0;
+  margin-bottom: 0;
+}
+
+.navbar-toggle {
+	@extend .facets-toggle;
+}
+
+.index_title {
+  font-weight: bold;
+}
+
+.playlist-title {
+  margin:0;
+  padding:0;
+  font-size:1.5em;
+}
+
+/************** Footer *************/	
+.footer-container {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#footer {
+  max-width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  font-family: BentonSansRegular, Arial, serif;
+  font-weight: normal;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  border-top: 6px solid #7A1705;
+  padding: 32px 0 24px;
+  .row {
+    max-width: 99%;
+  }
+  a {
+    color: #990000;
+  }
+  p {
+    font-size: 12px;
+    line-height: 2.25rem;
+    margin: 0;
+    clear: left;
+  }
+  .copyright {
+    float: left;
+    clear: right;
+    text-align: left;
+    padding-left: 45px;
+    width: 100%;
+  }
+  img {
+    display: inline;
+    margin: 0;
+    position: absolute;
+    left: 1em;
+    top: 26px;
+    width: 25px;
+    height: auto;
+  }
+  .row.pad {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  .line-break {
+    float: right;
+    text-align: right;
+    padding-right: 1em;
+  }
+  .tagline {
+    font-family: BentonSansCondBold, Arial, serif;
+    font-weight: normal;
+    -webkit-font-smoothing: antialiased;
+    background: #7A1705;
+    color: #fff;
+    font-size: 2.05em;
+    line-height: 2.5rem;
+    margin: 0 -200px 0 0;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    max-width: 100%;
+    position: absolute;
+    left: 50%;
+    top: -25px;
+    padding: 10px 24px;
+    text-align: center;
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    -o-transform: translateX(-50%);
+    transform: translateX(-50%);
+    span {
+      text-transform: lowercase;
+      font-family: GeorgiaProBoldItalic, Georgia, serif;
+      font-size: .75em;
+      vertical-align: 2px;
+      letter-spacing: 0;
+      margin-left: -4px;
+    }
+    @media (max-width: $screen-sm-max) {
+      margin: -15px 0 2em;
+      width: 100%;
+      box-sizing: border-box;
+      white-space: nowrap;
+      padding: 10px 15px;
+    }
+  }
+  .hide-on-mobile {
+    display: none;
+  }
+  @media (max-width: $screen-sm-max) {
+    img {
+      position: absolute;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+    }
+    .line-break {
+      width: 100%;
+      padding: 0;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .copyright {
+      width: 100%;
+      padding: 0;
+      margin: 2.5em auto .5em;
+      text-align: center;
+    }
+  }
+}
+
+.thick-footer {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 5px 20px;
+  max-width: 100%;
+  background: #4A3C31;
+  margin: 100px 0 0;
+  #bottom-nav {
+    min-height: 100px;
+    margin: 5px 0;
+    color: #fff;
+    padding: 10px 0;
+    box-sizing: border-box;
+    width: 100%;
+    text-align: left;
+    a {
+      outline-color: #80a590 !important;
+      color: #fff;
+      text-decoration: underline;
+    }
+    ul {
+      list-style: none;
+      width: 99%;
+      max-width: 99%;
+      padding: 0 1em 0 0;
+      margin: 18px;
+      box-sizing: border-box;
+      li {
+        margin: 10px 0 10px;
+        padding: 0;
+        width: 500px;
+        float: left;
+        @media screen and (max-width: 500px) {
+          width: 100%;
+        }
+        &.small {
+          a {
+            width: 150px;
+          }
+          @media screen and (max-width: 700px) {
+            float: left;
+            margin-left: -12px;
+          }
+          float: right;
+          width: 150px;
+          margin-top: 0;
+        }
+      }
+    }
+    .logo-avalon {
+      width: 150px;
+      height: auto;
+      padding: 2px 5px;
+      border-radius: 5px;
+    }
+  }
+}
+@media screen and (max-width: 26.25em) {
+  #bottom-nav {
+    ul {
+      max-width: 95%;
+      li {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        float: left;
+        &.small {
+          text-align: left;
+          margin: 15px 0 30px;
+        }
+      }
+    }
+  }
+}
+

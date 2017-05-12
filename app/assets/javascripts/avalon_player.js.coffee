@@ -30,6 +30,7 @@ class AvalonPlayer
     features = ['playpause','current','progress','duration',display_track_scrubber,'volume','tracks','qualities',thumbnail_selector, add_to_playlist, add_marker, 'fullscreen','responsive']
     features = (feature for feature in features when feature?)
     player_options =
+      enablePluginSmoothing: true
       mode: 'auto_plugin'
       usePluginFullScreen: false
       thumbnailSelectorUpdateURL: '/update-url'

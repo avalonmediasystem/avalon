@@ -95,7 +95,7 @@ module MediaObjectsHelper
       end
 
       def display_related_item media_object
-        media_object.related_item_url.collect{ |r| link_to( r[:label], r[:url]) }
+        media_object.related_item_url.collect{ |r| link_to( r[:label], r[:url], target: :_blank) }
       end
 
       def display_rights_statement media_object
