@@ -18,7 +18,10 @@ module MediaObjectMods
   included do
     require 'avalon/bib_retriever'
 
-    has_subresource 'descMetadata', class_name: 'ModsDocument'
+    has_subresource 'descMetadata', class_name: 'ModsDocument' do |f|
+      f.original_name = "descMetadata.xml"
+    end
+
     # TODO: fix next line
     # before_save :normalize_desc_metadata!
   end
@@ -83,7 +86,7 @@ module MediaObjectMods
 
   def alternative_title=(value)
     delete_all_values(:alternative_title)
-    Array(value).each { |val| descMetadata.add_alternative_title(val) } if value.present?
+    Array(value).each { |val| descMetadata.add_alternative_title(val) if val.present? }
   end
 
   # has_attributes :translated_title, datastream: :descMetadata, at: [:translated_title], multiple: true
@@ -93,7 +96,7 @@ module MediaObjectMods
 
   def translated_title=(value)
     delete_all_values(:translated_title)
-    Array(value).each { |val| descMetadata.add_translated_title(val) } if value.present?
+    Array(value).each { |val| descMetadata.add_translated_title(val) if val.present? }
   end
 
   # has_attributes :uniform_title, datastream: :descMetadata, at: [:uniform_title], multiple: true
@@ -103,7 +106,7 @@ module MediaObjectMods
 
   def uniform_title=(value)
     delete_all_values(:uniform_title)
-    Array(value).each { |val| descMetadata.add_uniform_title(val) } if value.present?
+    Array(value).each { |val| descMetadata.add_uniform_title(val) if val.present? }
   end
 
   # has_attributes :statement_of_responsibility, datastream: :descMetadata, at: [:statement_of_responsibility], multiple: false
@@ -123,7 +126,7 @@ module MediaObjectMods
 
   def creator=(value)
     delete_all_values(:creator)
-    Array(value).each { |val| descMetadata.add_creator(val) } if value.present?
+    Array(value).each { |val| descMetadata.add_creator(val) if val.present? }
   end
 
   # has_attributes :date_created, datastream: :descMetadata, at: [:date_created], multiple: false
@@ -177,7 +180,7 @@ module MediaObjectMods
 
   def note=(value_hashes)
     delete_all_values(:note)
-    Array(value_hashes).each { |val| descMetadata.add_note(val[:note], val[:type]) } if value_hashes.present?
+    Array(value_hashes).each { |val| descMetadata.add_note(val[:note], val[:type]) if val[:note].present? and val[:type].present? }
   end
 
 
@@ -195,7 +198,7 @@ module MediaObjectMods
 
   def format=(value)
     delete_all_values(:media_type)
-    Array(value).each { |val| descMetadata.add_media_type(val) } if value.present?
+    Array(value).each { |val| descMetadata.add_media_type(val) if val.present? }
   end
 
   # has_attributes :resource_type, datastream: :descMetadata, at: [:resource_type], multiple: true
@@ -216,7 +219,7 @@ module MediaObjectMods
 
   def contributor=(value)
     delete_all_values(:contributor)
-    Array(value).each { |val| descMetadata.add_contributor(val) } if value.present?
+    Array(value).each { |val| descMetadata.add_contributor(val) if val.present? }
   end
 
   # has_attributes :publisher, datastream: :descMetadata, at: [:publisher], multiple: true
@@ -226,7 +229,7 @@ module MediaObjectMods
 
   def publisher=(value)
     delete_all_values(:publisher)
-    Array(value).each { |val| descMetadata.add_publisher(val) } if value.present?
+    Array(value).each { |val| descMetadata.add_publisher(val) if val.present? }
   end
 
   # has_attributes :genre, datastream: :descMetadata, at: [:genre], multiple: true
@@ -247,18 +250,7 @@ module MediaObjectMods
 
   def subject=(value)
     delete_all_values(:topical_subject)
-    Array(value).each { |val| descMetadata.add_topical_subject(val) } if value.present?
-  end
-
-  # has_attributes :related_item_url, datastream: :descMetadata, at: [:related_item_url], multiple: true
-  def related_item_url
-    descMetadata.related_item_url.zip(descMetadata.related_item_label).map{|a|{url: a[0],label: a[1]}}
-  end
-
-  def related_item_url=(value_hashes)
-    delete_all_values(:related_item_url)
-    delete_all_values(:related_item_label)
-    Array(value_hashes).each { |val| descMetadata.add_related_item_url(val[:url], val[:label]) } if value_hashes.present?
+    Array(value).each { |val| descMetadata.add_topical_subject(val) if val.present? }
   end
 
   # has_attributes :geographic_subject, datastream: :descMetadata, at: [:geographic_subject], multiple: true
@@ -268,7 +260,7 @@ module MediaObjectMods
 
   def geographic_subject=(value)
     delete_all_values(:geographic_subject)
-    Array(value).each { |val| descMetadata.add_geographic_subject(val) } if value.present?
+    Array(value).each { |val| descMetadata.add_geographic_subject(val) if val.present? }
   end
 
   # has_attributes :temporal_subject, datastream: :descMetadata, at: [:temporal_subject], multiple: true
@@ -278,7 +270,7 @@ module MediaObjectMods
 
   def temporal_subject=(value)
     delete_all_values(:temporal_subject)
-    Array(value).each { |val| descMetadata.add_temporal_subject(val) } if value.present?
+    Array(value).each { |val| descMetadata.add_temporal_subject(val) if val.present? }
   end
 
   # has_attributes :topical_subject, datastream: :descMetadata, at: [:topical_subject], multiple: true
@@ -288,7 +280,7 @@ module MediaObjectMods
 
   def topical_subject=(value)
     delete_all_values(:topical_subject)
-    Array(value).each { |val| descMetadata.add_topical_subject(val) } if value.present?
+    Array(value).each { |val| descMetadata.add_topical_subject(val) if val.present? }
   end
 
   # has_attributes :bibliographic_id, datastream: :descMetadata, at: [:bibliographic_id], multiple: false
@@ -306,7 +298,7 @@ module MediaObjectMods
   end
   def language=(value)
     delete_all_values(:language)
-    Array(value).each { |val| descMetadata.add_language(val) } if value.present?
+    Array(value).each { |val| descMetadata.add_language(val) if val.present? }
   end
   def language_code=(value)
     delete_all_values(:language_code)
@@ -333,7 +325,7 @@ module MediaObjectMods
   end
   def table_of_contents=(value)
     delete_all_values(:table_of_contents)
-    descMetadata.table_of_contents = value if value.present?
+    descMetadata.table_of_contents = Array(value).reject(&:blank?) if value.present?
   end
 
   # has_attributes :physical_description, datastream: :descMetadata, at: [:physical_description], multiple: true
@@ -342,7 +334,7 @@ module MediaObjectMods
   end
   def physical_description=(value)
     delete_all_values(:physical_description)
-    Array(value).each { |val| descMetadata.add_physical_description(val) } if value.present?
+    Array(value).each { |val| descMetadata.add_physical_description(val) if val.present? }
   end
 
   # has_attributes :related_item_url, datastream: :descMetadata, at: [:related_item_url], multiple: true
@@ -353,7 +345,7 @@ module MediaObjectMods
   def related_item_url=(value_hashes)
     delete_all_values(:related_item_url)
     delete_all_values(:related_item_label)
-    Array(value_hashes).each { |val| descMetadata.add_related_item_url(val[:url], val[:label]) } if value_hashes.present?
+    Array(value_hashes).each { |val| descMetadata.add_related_item_url(val[:url], val[:label]) if val[:url].present? and val[:label].present? }
   end
 
   # has_attributes :other_identifier, datastream: :descMetadata, at: [:other_identifier], multiple: true
@@ -362,7 +354,7 @@ module MediaObjectMods
   end
   def other_identifier=(value_hashes)
     delete_all_values(:other_identifier)
-    Array(value_hashes).each { |val| descMetadata.add_other_identifier(val[:id], val[:source]) } if value_hashes.present?
+    Array(value_hashes).each { |val| descMetadata.add_other_identifier(val[:id], val[:source]) if val[:id].present? and val[:source].present? }
   end
 
   # has_attributes :record_identifier, datastream: :descMetadata, at: [:record_identifier], multiple: true
@@ -371,7 +363,7 @@ module MediaObjectMods
   end
   def record_identifier=(value)
     delete_all_values(:record_identifier)
-    Array(value).each { |val| descMetadata.add_record_identifier(val) } if value.present?
+    Array(value).each { |val| descMetadata.add_record_identifier(val) if val.present? }
   end
 
   # def find_metadata_attribute(attribute)

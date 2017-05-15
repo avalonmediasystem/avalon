@@ -2915,15 +2915,15 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 		<xsl:for-each select="marc:datafield[@tag=856][@ind2=2][marc:subfield[@code='u']]">
 			<relatedItem>
+				<xsl:if test="marc:subfield[@code='y' or @code='3']">
+					<xsl:attribute name="displayLabel">
+						<xsl:call-template name="subfieldSelect">
+							<xsl:with-param name="codes">y3</xsl:with-param>
+						</xsl:call-template>
+					</xsl:attribute>
+				</xsl:if>
 				<location>
 					<url>
-						<xsl:if test="marc:subfield[@code='y' or @code='3']">
-							<xsl:attribute name="displayLabel">
-								<xsl:call-template name="subfieldSelect">
-									<xsl:with-param name="codes">y3</xsl:with-param>
-								</xsl:call-template>
-							</xsl:attribute>
-						</xsl:if>
 						<xsl:if test="marc:subfield[@code='z']">
 							<xsl:attribute name="note">
 								<xsl:call-template name="subfieldSelect">
@@ -6027,13 +6027,6 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 						<xsl:attribute name="usage">primary display</xsl:attribute>
 					</xsl:if>
 
-					<xsl:if test="marc:subfield[@code='y' or @code='3']">
-						<xsl:attribute name="displayLabel">
-							<xsl:call-template name="subfieldSelect">
-								<xsl:with-param name="codes">y3</xsl:with-param>
-							</xsl:call-template>
-						</xsl:attribute>
-					</xsl:if>
 					<xsl:if test="marc:subfield[@code='z']">
 						<xsl:attribute name="note">
 							<xsl:call-template name="subfieldSelect">

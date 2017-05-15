@@ -44,12 +44,29 @@ module FedoraMigrate
       def migrate_desc_metadata
         return unless source.datastreams.keys.include?(DESC_METADATA_DATASTREAM)
         mover = FedoraMigrate::StatusTrackingDatastreamMover.new(source.datastreams[DESC_METADATA_DATASTREAM], target.attached_files[DESC_METADATA_DATASTREAM], options)
-        #FIXME change MODS recordIdentifier to be new fedora noid id
         report.content_datastreams << ContentDatastreamReport.new(target.attached_files[DESC_METADATA_DATASTREAM], mover.migrate)
+        # add MODS recordIdentifier for new fedora noid id
+        add_fedora4_record_info
+      end
+
+      def add_fedora4_record_info
+        doc = Nokogiri::XML(target.attached_files[DESC_METADATA_DATASTREAM].content)
+        f3_recid = doc.xpath('//mods:recordIdentifier', mods: "http://www.loc.gov/mods/v3").first
+        f4_recid = f3_recid.dup
+        f4_recid.content = target.uri
+        f4_recid["source"] = "Fedora4"
+        f3_recid.add_next_sibling f4_recid
+        # I don't know why setting original_name needs to be here instead of before calling the mover, but it seems to work here now and not before
+        # Manually set ebucore:filename before the file gets persisted
+        target.attached_files[DESC_METADATA_DATASTREAM].original_name = "#{DESC_METADATA_DATASTREAM}.xml"
+        target.attached_files[DESC_METADATA_DATASTREAM].content = doc.to_xml
+        target.attached_files[DESC_METADATA_DATASTREAM].save
       end
 
       def migrate_workflow
         return unless source.datastreams.keys.include?(WORKFLOW_DATASTREAM)
+        # Manually set ebucore:filename before the file gets persisted
+        target.attached_files[WORKFLOW_DATASTREAM].original_name = "#{WORKFLOW_DATASTREAM}.xml"
         FedoraMigrate::StatusTrackingDatastreamMover.new(source.datastreams[WORKFLOW_DATASTREAM], target.workflow).migrate
       end
 

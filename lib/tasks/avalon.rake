@@ -39,13 +39,18 @@ Please run `rake avalon:migrate:repo CONFIRM=yes` to confirm.
 EOC
         exit 1
       end
+      ids = ENV['pids'].split(',') unless ENV['pids'].nil?
+      ids = Array(ids) | File.readlines(ENV['pidfile']).map(&:strip) unless ENV['pidfile'].nil?
+      parallel_threads = ENV['parallel_threads']
+      overwrite = !!ENV['overwrite']
+
       #disable callbacks
       Admin::Collection.skip_callback(:save, :around, :reindex_members)
       ::MediaObject.skip_callback(:save, :before, :update_dependent_properties!)
 
       models = [Admin::Collection, ::MediaObject, ::MasterFile, ::Derivative, ::Lease]
-      migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', { class_order: models })
-      migrator.migrate_objects
+      migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', class_order: models, parallel_threads: parallel_threads)
+      migrator.migrate_objects(ids, overwrite)
       migrator
     end
 
@@ -121,6 +126,21 @@ EOC
         end
       end
       puts "Deleted: #{deleted_count} Passed: #{passed_count} Failed: #{failed_count}"
+    end
+
+    desc "Migrate related items for Avalon 6.0 to 6.1"
+    task related_item: :environment do
+      MediaObject.find_each({},{batch_size:5}) do |mo|
+        doc = Nokogiri::XML(mo.descMetadata.content)
+        doc.xpath('//mods:relatedItem/mods:location/mods:url[@displayLabel]', mods: "http://www.loc.gov/mods/v3").each do |url|
+          label = url['displayLabel']
+          relatedItem = url.ancestors('relatedItem').first
+          relatedItem.set_attribute('displayLabel',label)
+          url.remove_attribute('displayLabel')
+        end
+        mo.descMetadata.content = doc.to_xml
+        mo.descMetadata.save
+      end
     end
   end
 
