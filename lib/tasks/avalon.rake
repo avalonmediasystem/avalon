@@ -40,6 +40,7 @@ EOC
         exit 1
       end
       ids = ENV['pids'].split(',') unless ENV['pids'].nil?
+      ids = Array(ids) | File.readlines(ENV['pidfile']).map(&:strip) unless ENV['pidfile'].nil?
       parallel_threads = ENV['parallel_threads']
       overwrite = !!ENV['overwrite']
 
