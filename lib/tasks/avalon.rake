@@ -126,6 +126,21 @@ EOC
       end
       puts "Deleted: #{deleted_count} Passed: #{passed_count} Failed: #{failed_count}"
     end
+
+    desc "Migrate related items for Avalon 6.0 to 6.1"
+    task related_item: :environment do
+      MediaObject.find_each({},{batch_size:5}) do |mo|
+        doc = Nokogiri::XML(mo.descMetadata.content)
+        doc.xpath('//mods:relatedItem/mods:location/mods:url[@displayLabel]', mods: "http://www.loc.gov/mods/v3").each do |url|
+          label = url['displayLabel']
+          relatedItem = url.ancestors('relatedItem').first
+          relatedItem.set_attribute('displayLabel',label)
+          url.remove_attribute('displayLabel')
+        end
+        mo.descMetadata.content = doc.to_xml
+        mo.descMetadata.save
+      end
+    end
   end
 
   desc 'migrate databases for the rails app and the active annotations gem'
