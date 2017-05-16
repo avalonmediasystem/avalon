@@ -35,6 +35,15 @@ describe BookmarksController, type: :controller do
       expect(flash[:success]).to eq(I18n.t("blacklight.delete.success", count: 3))
       media_objects.each {|mo| expect(MediaObject.exists?(mo.id)).to be_falsey }
     end
+    it "should remove more than the blacklight default number of items (>10)" do
+      8.times do
+        media_objects << mo = FactoryGirl.create(:media_object, collection: collection)
+        post :create, id: mo.id
+      end
+      post :delete
+      expect(flash[:success]).to eq(I18n.t("blacklight.delete.success", count: 11))
+      media_objects.each {|mo| expect(MediaObject.exists?(mo.id)).to be_falsey }
+    end
   end
 
   describe "#update_status" do
