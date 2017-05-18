@@ -25,7 +25,7 @@ module FedoraMigrate
             index.as :symbol
           end
         end
-        Parallel.map(gather_pids_for_class(klass), in_thread: parallel_threads, progress: "Migrating #{klass.to_s}") do |pid|
+        Parallel.map(gather_pids_for_class(klass), in_threads: parallel_threads, progress: "Migrating #{klass.to_s}") do |pid|
           next unless qualifying_pid?(pid, klass)
           remove_object(pid, klass) unless overwrite?
           migrate_object(source_object(pid), klass)
@@ -33,8 +33,8 @@ module FedoraMigrate
       end
       class_order.each do |klass|
         if second_pass_needed?(klass)
-          Parallel.map(gather_pids_for_class(klass), in_thread: parallel_threads, progress: "Migrating #{klass.to_s} (second pass)") do |pid|
-            next unless qualifying_pid?(pid, klass)
+          Parallel.map(gather_pids_for_class(klass), in_threads: parallel_threads, progress: "Migrating #{klass.to_s} (second pass)") do |pid|
+            next unless qualifying_pid?(pid, klass, :second_pass)
             migrate_object(source_object(pid), klass, :second_pass)
           end
         end
@@ -42,9 +42,12 @@ module FedoraMigrate
       @report.reload
     end
 
-    def migration_required?(pid, klass)
+    def migration_required?(pid, klass, method=:migrate)
       status_report = MigrationStatus.find_by(source_class: klass, f3_pid: pid, datastream: nil)
-      status_report.nil? || (status_report.status != 'completed') || overwrite?
+      status_report.nil? ||
+        (status_report.status != 'completed' && status_report.status != 'waiting' && method == :migrate) ||
+        (status_report.status != 'completed' && method == :second_pass) ||
+        overwrite?
     end
 
     private
@@ -144,12 +147,12 @@ module FedoraMigrate
       end
 
       def parallel_threads
-        @options[:parallel_threads] || (Parallel.processor_count - 2)
+        (@options[:parallel_threads] || (Parallel.processor_count - 2)).to_i
       end
 
-      def qualifying_pid?(pid, klass)
+      def qualifying_pid?(pid, klass, method=:migrate)
         name = pid.split(/:/).first
-        name.match(namespace) && migration_required?(pid, klass)
+        name.match(namespace) && migration_required?(pid, klass, method)
       end
 
       def parse_model_name(object)
