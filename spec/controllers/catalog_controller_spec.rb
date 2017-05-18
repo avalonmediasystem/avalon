@@ -230,5 +230,23 @@ describe CatalogController do
         expect(assigns(:document_list).map(&:id)).to eq [m2.id, m1.id, m3.id]
       end
     end
+
+    describe "gated discovery" do
+      context "with bad ldap groups" do
+        let(:ldap_groups) { ['good-group', 'bad group'] }
+        let!(:media_object) { FactoryGirl.create(:published_media_object, read_groups: ['bad group']) }
+        before do
+          login_as :user
+          controller.user_session[:virtual_groups] = ldap_groups
+        end
+        it "gracefully handles bad ldap groups" do
+          get :index, q: ""
+          expect(response).to be_success
+          expect(response).to render_template('catalog/index')
+          expect(assigns(:document_list).count).to eq 1
+          expect(assigns(:document_list).collect(&:id)). to eq [media_object.id]
+        end
+      end
+    end
   end
 end
