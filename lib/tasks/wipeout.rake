@@ -12,20 +12,8 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-def wipeout_fedora(base)
-  if base.path =~ %r{/rest/?$}
-    graph = RDF::Graph.load(base)
-    graph.query([nil,RDF::URI('http://www.w3.org/ns/ldp#contains'),nil]).each do |statement|
-      uri = statement.object.to_s
-      resource = RestClient::Resource.new(uri)
-      resource.delete
-      resource['fcr:tombstone'].delete
-    end
-  else
-    resource = RestClient::Resource.new(base.to_s)
-    resource.delete
-    resource['fcr:tombstone'].delete
-  end
+def wipeout_fedora
+  ActiveFedora::Cleaner.clean!
 end
 
 def wipeout_solr(solr)
@@ -39,14 +27,14 @@ end
 
 def wipeout_db
   [MigrationStatus, ActiveAnnotations::Annotation, Bookmark, Search, ApiToken, Course, 
-   IngestBatch, PlaylistItem, Playlist, RoleMap, StreamToken, User, Identity].each(&:destroy_all)
+   IngestBatch, PlaylistItem, Playlist, RoleMap, StreamToken, User, Identity].each(&:delete_all)
 end
 
 namespace :avalon do
   namespace :wipeout do
     desc "Reset fedora to empty state"
     task fedora: :environment do
-      wipeout_fedora(ActiveFedora.fedora.build_connection.http.url_prefix)
+      wipeout_fedora
     end
     
     desc "Reset solr to empty state"
