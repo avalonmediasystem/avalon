@@ -108,7 +108,7 @@ module FedoraMigrate
               end
             end
             status_record.update_attributes status: method.to_s, log: nil
-            options[:report] = @report.reload[source.pid]
+            options[:report] = @report.results[source.pid] = reload_single_item_report(source.pid) if method == :second_pass
             result.object = object_mover(klass).new(source, target, options).send(method)
             status_record.reload
             if status_record.status == "failed"
@@ -172,6 +172,12 @@ module FedoraMigrate
 
       def construct_migrate_from_uri(pid)
         RDF::URI.new(FedoraMigrate.fedora_config.credentials[:url]) / "/objects/#{pid}"
+      end
+
+      def reload_single_item_report(pid)
+        path = @report.path
+        file = File.join(path, pid.tr(':', "_") + ".json")
+        JSON.parse(File.read(file))
       end
   end
 end
