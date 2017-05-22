@@ -44,7 +44,7 @@ module FedoraMigrate
 
       def locate_object(id)
         return target if source.pid == id
-        return self.id_map[source.pid] if self.id_map.has_key? source.pid
+        return self.id_map[source.pid] if self.id_map[source.pid].present?
         self.id_map[source.pid] = ActiveFedora::Base.where(identifier_ssim: id).first
       end
 
