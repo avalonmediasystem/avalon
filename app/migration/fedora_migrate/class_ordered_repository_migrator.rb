@@ -26,22 +26,22 @@ module FedoraMigrate
           end
         end
         Parallel.map_with_index(gather_pids_for_class(klass), in_processes: parallel_processes, progress: "Migrating #{klass.to_s}") do |pid, i|
-          next unless qualifying_pid?(pid, klass)
-          remove_object(pid, klass) unless overwrite?
-          migrate_object(source_object(pid), klass)
           # Let solr catch up
           ActiveFedora::SolrService.instance.conn.commit if (i % 100 == 0)
           ActiveFedora::SolrService.instance.conn.optimize if (i % 1000 == 0)
+          next unless qualifying_pid?(pid, klass)
+          remove_object(pid, klass) unless overwrite?
+          migrate_object(source_object(pid), klass)
         end
       end
       class_order.each do |klass|
         if second_pass_needed?(klass)
           Parallel.map_with_index(gather_pids_for_class(klass), in_processes: parallel_processes, progress: "Migrating #{klass.to_s} (second pass)") do |pid, i|
-            next unless qualifying_pid?(pid, klass, :second_pass)
-            migrate_object(source_object(pid), klass, :second_pass)
             # Let solr catch up
             ActiveFedora::SolrService.instance.conn.commit if (i % 100 == 0)
             ActiveFedora::SolrService.instance.conn.optimize if (i % 1000 == 0)
+            next unless qualifying_pid?(pid, klass, :second_pass)
+            migrate_object(source_object(pid), klass, :second_pass)
           end
         end
       end
