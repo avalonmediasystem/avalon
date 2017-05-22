@@ -25,7 +25,7 @@ module FedoraMigrate
             index.as :symbol
           end
         end
-        Parallel.map(gather_pids_for_class(klass), in_threads: parallel_threads, progress: "Migrating #{klass.to_s}") do |pid|
+        Parallel.map(gather_pids_for_class(klass), in_processes: parallel_processes, progress: "Migrating #{klass.to_s}") do |pid|
           next unless qualifying_pid?(pid, klass)
           remove_object(pid, klass) unless overwrite?
           migrate_object(source_object(pid), klass)
@@ -33,7 +33,7 @@ module FedoraMigrate
       end
       class_order.each do |klass|
         if second_pass_needed?(klass)
-          Parallel.map(gather_pids_for_class(klass), in_threads: parallel_threads, progress: "Migrating #{klass.to_s} (second pass)") do |pid|
+          Parallel.map(gather_pids_for_class(klass), in_processes: parallel_processes, progress: "Migrating #{klass.to_s} (second pass)") do |pid|
             next unless qualifying_pid?(pid, klass, :second_pass)
             migrate_object(source_object(pid), klass, :second_pass)
           end
@@ -146,8 +146,8 @@ module FedoraMigrate
         @options[:class_order]
       end
 
-      def parallel_threads
-        (@options[:parallel_threads] || (Parallel.processor_count - 2)).to_i
+      def parallel_processes
+        (@options[:parallel_processes] || (Parallel.processor_count - 2)).to_i
       end
 
       def qualifying_pid?(pid, klass, method=:migrate)
