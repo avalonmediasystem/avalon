@@ -42,16 +42,16 @@ module FedoraMigrate
 
     private
 
-      def locate_object(id)
+      def locate_object_id(id)
         return target if source.pid == id
         return self.id_map[source.pid] if self.id_map[source.pid].present?
-        self.id_map[source.pid] = ActiveFedora::Base.where(identifier_ssim: id).first
+        self.id_map[source.pid] = ActiveFedora::Base.where(identifier_ssim: id).first.try(:id)
       end
 
       def migrate_object(fc3_uri)
-        obj = locate_object(fc3_uri.to_s.split('/').last)
-        #FIXME raise error or return if obj.nil?
-        RDF::URI.new(ActiveFedora::Base.id_to_uri(obj.id))
+        obj_id = locate_object_id(fc3_uri.to_s.split('/').last)
+        #FIXME raise error or return if obj_id.nil?
+        RDF::URI.new(ActiveFedora::Base.id_to_uri(obj_id))
       end
 
       def predicate_blacklist
