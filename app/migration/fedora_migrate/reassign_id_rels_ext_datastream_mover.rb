@@ -63,7 +63,7 @@ module FedoraMigrate
       end
       
       def missing_object?(statement)
-        return false if locate_object(statement.object.to_s.split('/').last).present?
+        return false if locate_object_id(statement.object.to_s.split('/').last).present?
         report << "could not migrate relationship #{statement.predicate} because #{statement.object} doesn't exist in Fedora 4" unless predicate_whitelist.include?(statement.predicate)
         true
       end
