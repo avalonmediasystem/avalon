@@ -372,7 +372,6 @@ describe MediaObject do
 
   describe "Update datastream directly" do
     it "should reflect datastream changes on media object" do
-      newtitle = Faker::Lorem.sentence
       media_object.descMetadata.add_bibliographic_id('ABC123','local')
       media_object.save
       media_object.reload
@@ -388,6 +387,17 @@ describe MediaObject do
     it "should include actual strings" do
       media_object.update_attributes({'table_of_contents' => ['Test']})
       expect(media_object.table_of_contents).to eq(['Test'])
+    end
+  end
+
+  describe "Bibliographic Identifiers" do
+    it "should exclude recordIdentifier[@source = Fedora or Fedora4]" do
+      media_object.descMetadata.add_bibliographic_id('ABC123','local')
+      media_object.descMetadata.add_bibliographic_id('DEF456','Fedora')
+      media_object.descMetadata.add_bibliographic_id('GHI789','Fedora4')
+      media_object.save
+      media_object.reload
+      expect(media_object.bibliographic_id).to eq({source: "local", id: 'ABC123'})
     end
   end
 
