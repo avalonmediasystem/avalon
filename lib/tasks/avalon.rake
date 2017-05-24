@@ -41,15 +41,15 @@ EOC
       end
       ids = ENV['pids'].split(',') unless ENV['pids'].nil?
       ids = Array(ids) | File.readlines(ENV['pidfile']).map(&:strip) unless ENV['pidfile'].nil?
-      parallel_threads = ENV['parallel_threads']
+      parallel_processes = ENV['parallel_processes']
       overwrite = !!ENV['overwrite']
 
       #disable callbacks
       Admin::Collection.skip_callback(:save, :around, :reindex_members)
-      ::MediaObject.skip_callback(:save, :before, :update_dependent_properties!)
+      #::MediaObject.skip_callback(:save, :before, :update_dependent_properties!)
 
       models = [Admin::Collection, ::MediaObject, ::MasterFile, ::Derivative, ::Lease]
-      migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', class_order: models, parallel_threads: parallel_threads)
+      migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', class_order: models, parallel_processes: parallel_processes)
       migrator.migrate_objects(ids, overwrite)
       migrator
     end
