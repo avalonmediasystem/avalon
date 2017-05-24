@@ -14,9 +14,6 @@
 
 module FedoraMigrate
   class ReassignIdRelsExtDatastreamMover < RelsExtDatastreamMover
-    class_attribute :id_map
-    self.id_map = {}
-
     # def post_initialize
     #   @target = ActiveFedora::Base.find(target.id)
     # rescue ActiveFedora::ObjectNotFoundError
@@ -44,8 +41,7 @@ module FedoraMigrate
 
       def locate_object_id(id)
         return target if source.pid == id
-        return self.id_map[source.pid] if self.id_map[source.pid].present?
-        self.id_map[source.pid] = ActiveFedora::Base.where(identifier_ssim: id).first.try(:id)
+        ActiveFedora::Base.where(identifier_ssim: id).first.try(:id)
       end
 
       def migrate_object(fc3_uri)
