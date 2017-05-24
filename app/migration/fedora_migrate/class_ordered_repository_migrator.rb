@@ -25,6 +25,7 @@ module FedoraMigrate
             index.as :symbol
           end
         end
+        ::MediaObject.skip_callback(:save, :before, :update_dependent_properties!) if klass == ::MediaObject
         Parallel.map_with_index(gather_pids_for_class(klass), in_processes: parallel_processes, progress: "Migrating #{klass.to_s}") do |pid, i|
           next unless qualifying_pid?(pid, klass)
           # Let solr catch up
@@ -33,6 +34,7 @@ module FedoraMigrate
           remove_object(pid, klass) unless overwrite?
           migrate_object(source_object(pid), klass)
         end
+        ::MediaObject.set_callback(:save, :before, :update_dependent_properties!) if klass == ::MediaObject
       end
       class_order.each do |klass|
         if second_pass_needed?(klass)
@@ -59,6 +61,7 @@ module FedoraMigrate
     private
 
       def gather_pids_for_class(klass)
+        # TODO make this faster by querying for @pids_whitelist instead of all objects
         query = "SELECT ?pid WHERE { ?pid <info:fedora/fedora-system:def/model#hasModel> <#{class_to_model_name(klass)}> }"
         # Query and filter using pids whitelist
         pids = FedoraMigrate.source.connection.sparql(query)["pid"].collect {|pid| pid.split('/').last}
@@ -85,7 +88,7 @@ module FedoraMigrate
         return nil unless target
         target_id = target.id
         target_class = target.class
-        success = target.destroy.eradicate
+        success = target.delete.eradicate
         raise RuntimeError("Failed to cleanout object: #{target_id}") unless success
         target_class.new(id: target_id)
       end

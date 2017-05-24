@@ -46,7 +46,7 @@ EOC
 
       #disable callbacks
       Admin::Collection.skip_callback(:save, :around, :reindex_members)
-      ::MediaObject.skip_callback(:save, :before, :update_dependent_properties!)
+      #::MediaObject.skip_callback(:save, :before, :update_dependent_properties!)
 
       models = [Admin::Collection, ::MediaObject, ::MasterFile, ::Derivative, ::Lease]
       migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', class_order: models, parallel_processes: parallel_processes)
