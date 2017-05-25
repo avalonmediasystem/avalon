@@ -77,7 +77,7 @@ module FedoraMigrate
 
       def migrate_file_location
         return unless source.datastreams.keys.include?(MASTERFILE_DATASTREAM)
-        target.masterFile = source.datastreams[MASTERFILE_DATASTREAM].content
+        target.masterFile = source.datastreams[MASTERFILE_DATASTREAM].content.to_s.force_encoding(Encoding.default_external)
       end
 
       def migrate_title
