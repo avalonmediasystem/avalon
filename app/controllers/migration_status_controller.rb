@@ -34,8 +34,10 @@ class MigrationStatusController < ApplicationController
   
   def detail
     @statuses = MigrationStatus.where(f3_pid: params[:id])
+    @statuses = MigrationStatus.where(f4_pid: params[:id]) if @statuses.empty?
     @class = @statuses.first.source_class
     @f4_pid = @statuses.first.f4_pid
+    @f3_pid = @statuses.first.f3_pid
     render without_layout_if_xhr
   end
   

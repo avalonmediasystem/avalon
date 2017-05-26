@@ -20,11 +20,19 @@ Unless required by applicable law or agreed to in writing, software distributed
 </ol>
 
 <% if @f4_pid.present? %>
-  <p>Migrated to <%= @f4_pid %></p>
+  <% unless ["Derivative", "Lease"].include? @class %>
+    <p>Migrated to <%= link_to objects_url(@f4_pid), objects_path(@f4_pid) %></p>
+  <% else %>
+    <p>Migrated to <%= @f4_pid %></p>
+  <% end %>
 <% end %>
-<% unless ["Bookmark", "AvalonClip", "AvalonMarker"].include? @class %>
-  <p><%= link_to 'Full Report', admin_migration_report_report_path(id: params[:id]), target: 'migration_json'%></p>
+
+<% if @f3_pid.present? %>
+  <p>Migrated from <%=@f3_pid%></p>
 <% end %>
+
+<p><a href="#Fedora3">Fedora3 Datastreams</a></p>
+<p><a href="#Fedora4">Fedora4 Properties</a></p>
 
 <table class="table table-striped table-hover table-condensed">
   <tr>
@@ -42,3 +50,23 @@ Unless required by applicable law or agreed to in writing, software distributed
     </tr>
   <% end %>
 </table>
+<% unless ["Bookmark", "AvalonClip", "AvalonMarker"].include? @class %>
+  <p><%= link_to 'Full Report', admin_migration_report_report_path(id: params[:id]), target: 'migration_json'%></p>
+<% end %>
+
+<h2><a id="Fedora3">Fedora 3</a></h2>
+<% if @f3_pid.present? %>
+  <% FedoraMigrate.source.connection.find(@f3_pid).datastreams.each do |name, ds| %>
+    <h3><%= name %></h3>
+    <pre><%= ds.content %></pre>
+  <% end %>
+<% end %>
+<br/>
+<br/>
+<h2><a id="Fedora4">Fedora 4</a></h2>
+<% if @f4_pid.present? %>
+  <pre><%= ActiveFedora::Base.find(@f4_pid).resource.dump(:ttl) %></pre>
+  <!-- TODO print contained things that are NonRdfSources -->
+  <!-- TODO print links to migration reports of anything linked via property with ns info:fedora/fedora-system:def/relations-external or dcterms:hasPart-->
+  <%# ActiveFedora::Base.find(@f4_pid).%>
+<% end %>
