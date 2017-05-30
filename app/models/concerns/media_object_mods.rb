@@ -22,8 +22,7 @@ module MediaObjectMods
       f.original_name = "descMetadata.xml"
     end
 
-    # TODO: fix next line
-    # before_save :normalize_desc_metadata!
+    before_save :normalize_desc_metadata!
   end
 
   # # this method returns a hash: class attribute -> metadata attribute
