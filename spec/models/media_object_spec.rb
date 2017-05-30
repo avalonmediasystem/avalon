@@ -756,6 +756,11 @@ describe MediaObject do
     it 'sets original_name to default value' do
       expect(media_object.descMetadata.original_name).to eq 'descMetadata.xml'
     end
+    it 'is a valid MODS document' do
+      media_object = FactoryGirl.create(:media_object, :with_master_file)
+      xsd = Nokogiri::XML::Schema(File.read('spec/fixtures/mods-3-6.xsd'))
+      expect(xsd.valid?(media_object.descMetadata.ng_xml)).to be_truthy
+    end
   end
 
   describe 'workflow' do
