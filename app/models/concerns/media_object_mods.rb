@@ -471,7 +471,7 @@ module MediaObjectMods
   # Put the pieces into the right order and validate to make sure that there are no
   # syntactic errors
   def normalize_desc_metadata!
-    descMetadata.ensure_identifier_exists!
+    descMetadata.ensure_identifier_exists!(self.uri)
     descMetadata.update_change_date!
     descMetadata.reorder_elements!
     descMetadata.remove_empty_nodes!

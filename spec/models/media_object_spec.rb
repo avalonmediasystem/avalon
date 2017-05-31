@@ -348,7 +348,7 @@ describe MediaObject do
         'note' => [{type:'',note:''}],
         'other_identifier' => [{id:'',source:''}]
       }
-      media_object.update_attributes(params)
+      media_object.assign_attributes(params)
       expect(media_object.alternative_title).to eq([])
       expect(media_object.translated_title).to eq([])
       expect(media_object.uniform_title).to eq([])

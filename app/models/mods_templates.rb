@@ -264,8 +264,8 @@ module ModsTemplates
         add_child_node(get_record_info, :_record_identifier, content, source)
       end
 
-      def add_record_identifier(content)
-        add_child_node(get_record_info, :_record_identifier, content, "Fedora")
+      def add_record_identifier(content, source="Fedora4")
+        add_child_node(get_record_info, :_record_identifier, content, source)
       end
 
     end

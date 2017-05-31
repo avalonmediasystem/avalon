@@ -162,7 +162,7 @@ class ModsDocument < ActiveFedora::OmDatastream
       t.content_source(:path => 'recordContentSource')
       t.creation_date(:path => 'recordCreationDate')
       t.change_date(:path => 'recordChangeDate')
-      t.identifier(:path => "recordIdentifier[@source='Fedora']") { t.source_(:path => '@source', :namespace_prefix => nil) }
+      t.identifier(:path => "recordIdentifier[@source='Fedora4']") { t.source_(:path => '@source', :namespace_prefix => nil) }
       t.bibliographic_id(:path => "recordIdentifier[@source!='Fedora' and @source!='Fedora4']") { t.source_(:path => '@source', :namespace_prefix => nil) }
       t.language_of_cataloging(:path => 'languageOfCataloging') { t.language_term(:path => 'languageTerm') }
       t.language(:proxy => [:language_of_cataloging, :language_term])
@@ -188,7 +188,7 @@ class ModsDocument < ActiveFedora::OmDatastream
         xml.recordContentSource('IEN')
         xml.recordCreationDate(now.strftime('%Y%m%d'))
         xml.recordChangeDate(now.iso8601)
-        xml.recordIdentifier('source' => 'Fedora')
+        xml.recordIdentifier('source' => 'Fedora4')
         xml.languageOfCataloging {
           xml.languageTerm('authority' => 'iso639-2b', 'type' => 'code') { xml.text('eng') }
         }

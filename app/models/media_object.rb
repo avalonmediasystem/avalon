@@ -31,6 +31,7 @@ class MediaObject < ActiveFedora::Base
 
   before_save :update_dependent_properties!, prepend: true
   before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }, prepend: true
+  before_save :assign_id!, prepend: true
   after_save :update_dependent_permalinks_job, if: Proc.new { |mo| mo.persisted? && mo.published? }
   after_save :remove_bookmarks
 
@@ -256,6 +257,10 @@ class MediaObject < ActiveFedora::Base
   # validate against a known controlled vocabulary. This one will take some thought
   # and research as opposed to being able to just throw something together in an ad hoc
   # manner
+
+  def assign_id!
+    self.id = assign_id if self.id.blank?
+  end
 
   def update_permalink
     ensure_permalink!

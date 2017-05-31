@@ -94,9 +94,8 @@ module ModsBehaviors
     { 'mods' => 'http://www.loc.gov/mods/v3' }
   end
 
-  def ensure_identifier_exists!
-    # TODO: check with jlhardes about the identifier stored in the mods document
-    self.send(:add_record_identifier, self.id) if self.record_identifier.empty? or self.record_identifier.join.empty?
+  def ensure_identifier_exists!(f4_id)
+    self.send(:add_record_identifier, f4_id) if self.record_identifier.empty? or self.record_identifier.join.empty?
   end
 
   def update_change_date!(t=Time.now.iso8601)
