@@ -191,7 +191,6 @@ class MasterFilesController < ApplicationController
           error << file.original_filename
           error << " (" << file.content_type << ")"
           flash[:error].push error
-          master_file.destroy
           next
         else
           flash[:notice] = create_upload_notice(master_file.file_format)
