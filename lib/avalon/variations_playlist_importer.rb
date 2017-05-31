@@ -32,12 +32,15 @@ module Avalon
         playlist.save
       else
         Playlist.transaction do
-          playlist.save
           has_error = false
-          has_error ||= !playlist.errors.empty?
-          has_error ||= playlist.items.any? { |pi| !pi.errors.empty? || !pi.clip.errors.empty? }
-          has_error ||= playlist.items.any? { |pi| pi.marker.any? { |m| !m.errors.empty? } }
-          raise ActiveRecord::Rollback if has_error
+          has_error ||= playlist.invalid?
+          has_error ||= playlist.items.any? { |pi| pi.invalid?  || pi.clip.invalid? }
+          has_error ||= playlist.items.any? { |pi| pi.marker.any? { |m| m.invalid? } }
+          if has_error
+            raise ActiveRecord::Rollback
+          else
+            playlist.save
+          end
         end
       end
       playlist
@@ -63,8 +66,8 @@ module Avalon
         start_time = content_interval_xml.attr('begin')
         end_time = content_interval_xml.attr('end')
         master_file = find_master_file(content_interval_xml)
-        clip = AvalonClip.new(title: clip_title, master_file: master_file, start_time: start_time, end_time: end_time)
-        PlaylistItem.new(clip: clip, playlist: playlist)
+        clip = AvalonClip.create(title: clip_title, master_file: master_file, start_time: start_time, end_time: end_time)
+        PlaylistItem.create(clip: clip, playlist: playlist)
       end
     end
 
@@ -74,7 +77,7 @@ module Avalon
       playlist_item = find_associated_playlist_item(playlist_offset, playlist_items)
       start_time = construct_marker_start_time(playlist_offset, playlist_item, playlist_items)
       master_file = playlist_item.clip.master_file rescue nil
-      AvalonMarker.new(title: marker_title, start_time: start_time, playlist_item: playlist_item, master_file: master_file)
+      AvalonMarker.create(title: marker_title, start_time: start_time, playlist_item: playlist_item, master_file: master_file)
     end
 
     private
