@@ -27,6 +27,7 @@ class MasterFile < ActiveFedora::Base
   include Permalink
   include FrameSize
   include Identifier
+  include MigrationTarget
   include MasterFileBehavior
 
   belongs_to :media_object, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
@@ -509,8 +510,14 @@ class MasterFile < ActiveFedora::Base
   def find_frame_source(options={})
     options[:offset] ||= 2000
 
-    response = { source: FileLocator.new(file_location).location, offset: options[:offset], master: true }
-    return response if response[:source] =~ %r(^https?://)
+    source = FileLocator.new(file_location)
+    options[:master] = true
+    if source.source.nil? or (source.uri.scheme == 's3' and not source.exist?)
+      source = FileLocator.new(self.derivatives.where(quality_ssi: 'high').first.absolute_location)
+      options[:master] = false
+    end
+    response = { source: source&.location }.merge(options)
+    return response if response[:source].to_s =~ %r(^https?://)
 
     unless File.exists?(response[:source])
       Rails.logger.warn("Masterfile `#{file_location}` not found. Extracting via HLS.")

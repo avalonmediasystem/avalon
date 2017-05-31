@@ -43,7 +43,7 @@ EOC
       ids = Array(ids) | File.readlines(ENV['pidfile']).map(&:strip) unless ENV['pidfile'].nil?
       parallel_processes = ENV['parallel_processes']
       overwrite = !!ENV['overwrite']
-      namespace = ENV['namespace'] || 'avalon'
+      namespace = ENV['namespace'] || Settings&.fedora&.namespace || 'avalon'
 
       #disable callbacks
       Admin::Collection.skip_callback(:save, :around, :reindex_members)

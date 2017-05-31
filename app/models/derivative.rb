@@ -17,6 +17,7 @@ require 'avalon/stream_mapper'
 class Derivative < ActiveFedora::Base
   include DerivativeBehavior
   include FrameSize
+  include MigrationTarget
 
   belongs_to :master_file, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
 

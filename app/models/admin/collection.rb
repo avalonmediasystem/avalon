@@ -21,6 +21,7 @@ class Admin::Collection < ActiveFedora::Base
   include Hydra::AdminPolicyBehavior
   include ActiveFedora::Associations
   include Identifier
+  include MigrationTarget
 
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
