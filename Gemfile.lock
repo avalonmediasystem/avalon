@@ -23,7 +23,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
-  revision: e093eb95054322c9491e73920fe1174ab7d0e308
+  revision: fd9c084cf9c39c05b96a5e4ecfb1b9bcfd5c883d
   specs:
     media_element_add_to_playlist (0.0.1)
       rails (~> 4.0)
@@ -351,8 +351,8 @@ GEM
     flamegraph (0.9.5)
     font-awesome-rails (4.7.0.1)
       railties (>= 3.2, < 5.1)
-    globalid (0.3.7)
-      activesupport (>= 4.1.0)
+    globalid (0.4.0)
+      activesupport (>= 4.2.0)
     google-api-client (0.8.7)
       activesupport (>= 3.2, < 5.0)
       addressable (~> 2.3)
@@ -409,7 +409,7 @@ GEM
       hydra-access-controls (= 10.3.4)
       hydra-core (= 10.3.4)
       rails (>= 3.2.6)
-    i18n (0.8.1)
+    i18n (0.8.4)
     iconv (1.0.4)
     ims-lti (1.1.13)
       builder
@@ -454,7 +454,7 @@ GEM
       railties (>= 4, < 5.1)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
-    mail (2.6.4)
+    mail (2.6.5)
       mime-types (>= 1.16, < 4)
     media-element-logo-plugin (0.0.2)
       rails (>= 3.2.3)
@@ -520,7 +520,7 @@ GEM
     pry-rails (0.3.4)
       pry (>= 0.9.10)
     public_suffix (2.0.4)
-    rack (1.6.5)
+    rack (1.6.8)
     rack-mini-profiler (0.10.2)
       rack (>= 1.2.0)
     rack-protection (1.5.3)

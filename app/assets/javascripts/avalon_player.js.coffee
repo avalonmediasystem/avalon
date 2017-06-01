@@ -102,9 +102,8 @@ class AvalonPlayer
             offset = $(this)[0].dataset['offset']
             marker_id = $(this)[0].dataset['marker']
             title = String($(this).find('.marker_title')[0].text).replace(/"/g, '&quot;') + " ["+mejs.Utility.secondsToTimeCode(offset)+"]"
-            offset_percent = if isNaN(parseFloat(offset)) then 0 else Math.min(1, offset / duration)
-            offset = Math.round($('.mejs-time-total').width() * offset_percent)+'px'
-            scrubber.append('<span class="fa fa-chevron-up scrubber-marker" style="left: '+offset+'" title="'+title+'" data-marker="'+marker_id+'"></span>')
+            offset_percent = if isNaN(parseFloat(offset)) then 0 else Math.min(100,Math.round(100*offset / duration))
+            $('.mejs-time-total').append('<span class="fa fa-chevron-up scrubber-marker" style="left: '+offset_percent+'%" title="'+title+'" data-marker="'+marker_id+'"></span>')
         @player.setCurrentTime initialTime
 
       @player.options.playlistItemDefaultTitle = @stream_info.embed_title
