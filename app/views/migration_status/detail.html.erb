@@ -65,8 +65,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 <br/>
 <h2><a id="Fedora4">Fedora 4</a></h2>
 <% if @f4_pid.present? %>
-  <pre><%= ActiveFedora::Base.find(@f4_pid).resource.dump(:ttl) %></pre>
-  <!-- TODO print contained things that are NonRdfSources -->
+  <% f4_obj = ActiveFedora::Base.find(@f4_pid) %>
+  <pre><%= f4_obj.resource.dump(:ttl) %></pre>
   <!-- TODO print links to migration reports of anything linked via property with ns info:fedora/fedora-system:def/relations-external or dcterms:hasPart-->
-  <%# ActiveFedora::Base.find(@f4_pid).%>
+  <% f4_obj.serialize_attached_files.each do |label, file| %>
+    <h3><%= label %></h3>
+    <pre><%= file.content %></pre>
+  <% end %>
 <% end %>
