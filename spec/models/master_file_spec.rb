@@ -494,4 +494,19 @@ describe MasterFile do
       expect(master_file.structuralMetadata.original_name).to eq 'structuralMetadata.xml'
     end
   end
+
+  describe 'update_parent!' do
+    it 'does not error if the master file has no parent' do
+      expect { MasterFile.new.send(:update_parent!) }.not_to raise_error
+    end
+  end
+
+  describe 'stop_processing!' do
+    before do
+      allow(ActiveEncode::Base).to receive(:find).and_return(nil)
+    end
+    it 'does not error if the master file has no encode' do
+      expect { MasterFile.new(workflow_id: '1', status_code: 'RUNNING').send(:stop_processing!) }.not_to raise_error
+    end
+  end
 end

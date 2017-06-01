@@ -670,11 +670,12 @@ class MasterFile < ActiveFedora::Base
   def stop_processing!
     # Stops all processing
     if workflow_id.present? && !finished_processing?
-      encoder_class.find(workflow_id).cancel!
+      encoder_class.find(workflow_id).try(:cancel!)
     end
   end
 
   def update_parent!
+    return unless media_object.present?
     media_object.master_files.delete(self)
     media_object.ordered_master_files.delete(self)
     media_object.set_media_types!

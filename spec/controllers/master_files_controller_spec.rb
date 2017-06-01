@@ -15,15 +15,6 @@
 require 'rails_helper'
 
 describe MasterFilesController do
-  before do
-    MasterFile.skip_callback(:destroy, :before, :stop_processing!)
-    MasterFile.skip_callback(:destroy, :before, :update_parent!)
-  end
-  after do
-    MasterFile.set_callback(:destroy, :before, :stop_processing!)
-    MasterFile.set_callback(:destroy, :before, :update_parent!)
-  end
-
   describe "#create" do
     let(:media_object) { FactoryGirl.create(:media_object) }
     # TODO: fill in the lets below with a legitimate values from mediainfo
