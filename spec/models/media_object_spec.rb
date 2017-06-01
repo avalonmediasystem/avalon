@@ -348,7 +348,7 @@ describe MediaObject do
         'note' => [{type:'',note:''}],
         'other_identifier' => [{id:'',source:''}]
       }
-      media_object.update_attributes(params)
+      media_object.assign_attributes(params)
       expect(media_object.alternative_title).to eq([])
       expect(media_object.translated_title).to eq([])
       expect(media_object.uniform_title).to eq([])
@@ -755,6 +755,11 @@ describe MediaObject do
   describe 'descMetadata' do
     it 'sets original_name to default value' do
       expect(media_object.descMetadata.original_name).to eq 'descMetadata.xml'
+    end
+    it 'is a valid MODS document' do
+      media_object = FactoryGirl.create(:media_object, :with_master_file)
+      xsd = Nokogiri::XML::Schema(File.read('spec/fixtures/mods-3-6.xsd'))
+      expect(xsd.valid?(media_object.descMetadata.ng_xml)).to be_truthy
     end
   end
 
