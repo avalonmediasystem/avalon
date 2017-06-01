@@ -298,6 +298,7 @@ describe MasterFilesController do
       expect(master_file.captions.mime_type).to eq('text/vtt')
       expect(flash[:errors]).to be_nil
       expect(flash[:notice]).to be_nil
+      expect(flash[:success]).not_to be_nil
     end
     it "should remove contents of captions datastream" do
       # remove the contents of the datastream
@@ -306,6 +307,18 @@ describe MasterFilesController do
       expect(master_file.captions.empty?).to be true
       expect(flash[:errors]).to be_nil
       expect(flash[:notice]).to be_nil
+      expect(flash[:success]).not_to be_nil
+    end
+    context "with invalid file" do
+      let(:file) { fixture_file_upload('/videoshort.mp4', 'video/mp4') }
+      it "gracefully handles an invalid file" do
+        post 'attach_captions', master_file: {captions: file}, id: master_file.id
+        master_file.reload
+        expect(master_file.captions.has_content?).to be_falsey
+        expect(flash[:error]).not_to be_blank
+        expect(flash[:notice]).to be_nil
+        expect(flash[:success]).to be_nil
+      end
     end
   end
   describe "#captions" do
