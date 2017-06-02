@@ -214,25 +214,33 @@ class ModsDocument < ActiveFedora::OmDatastream
         old_resource_type = self.resource_type.dup
         old_media_type = self.media_type.dup
         old_other_identifier = self.other_identifier.type.zip(self.other_identifier)
+        old_bibliographic_id = self.bibliographic_id.dup
+        old_bibliographic_id_source = self.bibliographic_id.source.dup
+        # replace old mods with newly imported mods
         self.ng_xml = Nokogiri::XML(new_record)
+        # de-dupe imported values
         [:genre, :topical_subject, :geographic_subject, :temporal_subject,
          :occupation_subject, :person_subject, :corporate_subject, :family_subject,
          :title_subject].each do |field|
            self.send("#{field}=".to_sym, self.send(field).uniq)
         end
+        # restore old media_type and resource_type
         old_media_type.each do |val|
           self.add_child_node(self.ng_xml.root, :media_type, val)
         end
         self.send("resource_type=", old_resource_type)
+        # let template remove languages that aren't in the controlled vocabulary, and de-dupe
         languages = self.language.collect &:strip
         self.language = nil
-        languages.each { |lang| self.add_language(lang) }
+        languages.uniq.each { |lang| self.add_language(lang) }
+        # add new other identifiers and restore old other identifiers and remove the old bibliographic id
         new_other_identifier = self.other_identifier.type.zip(self.other_identifier)
         self.other_identifier = nil
-        (old_other_identifier | new_other_identifier).each do |id_pair|
+        ((old_other_identifier | new_other_identifier)-(old_bibliographic_id_source.zip old_bibliographic_id)).each do |id_pair|
           self.add_other_identifier(id_pair[1], id_pair[0])
         end
       end
+      # add new bibliographic_id as another other identifier and also as a the new bibliographic_id
       self.add_other_identifier(bib_id, bib_id_label) unless self.other_identifier.type.zip(self.other_identifier).include?([bib_id_label, bib_id])
       self.bibliographic_id = nil
       self.add_bibliographic_id(bib_id, bib_id_label)
