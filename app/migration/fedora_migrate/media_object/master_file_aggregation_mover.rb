@@ -24,6 +24,7 @@ module FedoraMigrate
           target.ordered_master_files = master_files.sort do |a,b|
             old_pid_order.index(pid_from_obj(a)) <=> old_pid_order.index(pid_from_obj(b))
           end
+          return false unless lists_equivalent?(old_pid_order, ordered_master_files.collect {|mf| pid_from_obj(mf)})
         else
           target.ordered_master_files = master_files
         end
@@ -34,6 +35,10 @@ module FedoraMigrate
       private
         def pid_from_obj(obj)
           obj.migrated_from.first.rdf_subject.to_s.split('/').last
+        end
+
+        def lists_equivalent?(a,b)
+          a.size == b.size && ((a-b) + (b-a)).blank?
         end
     end
   end
