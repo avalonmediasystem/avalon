@@ -128,19 +128,29 @@ class MasterFilesController < ApplicationController
     if flash.empty?
       authorize! :edit, @master_file, message: "You do not have sufficient privileges to add files"
       if params[:master_file].present? && params[:master_file][:captions].present?
-        captions = params[:master_file][:captions].open.read
+        captions_file = params[:master_file][:captions]
+        if ["text/vtt", "text/srt"].include? captions_file.content_type
+          captions = captions_file.open.read
+        else
+          flash[:error] = "Uploaded file is not a recognized captions file"
+        end
       end
       if captions.present?
         @master_file.captions.content = captions
         @master_file.captions.mime_type = params[:master_file][:captions].content_type
         @master_file.captions.original_name = params[:master_file][:captions].original_filename
         flash[:success] = "Captions file succesfully added."
-      else
+      elsif !captions_file.present?
         @master_file.captions.content = ''
         @master_file.captions.original_name = ''
         flash[:success] = "Captions file succesfully removed."
       end
-      @master_file.save
+      if flash[:error].blank?
+        unless @master_file.save
+          flash[:success] = nil
+          flash[:error] = "There was a problem storing the file"
+        end
+      end
     end
     respond_to do |format|
       format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'structure') }
