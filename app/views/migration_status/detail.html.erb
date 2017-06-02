@@ -13,6 +13,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+
+<script type="text/javascript">
+window.onload = (function () {
+	hljs.initHighlighting();
+});
+</script>
+
 <ol class="breadcrumb">
   <li><%= link_to "Migration Report", admin_migration_report_path %></li>
   <li><%= link_to @class, admin_migration_report_by_class_path(class: @class) %></li>
@@ -58,7 +65,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% if @f3_obj.present? %>
   <% @f3_obj.datastreams.each do |name, ds| %>
     <h3><%= name %></h3>
-    <pre><%= ds.content %></pre>
+    <pre><code class="xml"><%= ds.content %></code></pre>
   <% end %>
 <% end %>
 <br/>
