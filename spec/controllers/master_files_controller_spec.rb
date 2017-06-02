@@ -73,7 +73,7 @@ describe MasterFilesController do
         master_file = media_object.reload.ordered_master_files.to_a.first
         expect(master_file.file_format).to eq "Moving image"
 
-        expect(flash[:errors]).to be_nil
+        expect(flash[:error]).to be_nil
       end
 
      it "should recognize an audio format" do
@@ -107,7 +107,7 @@ describe MasterFilesController do
        master_file = MasterFile.all.last
        expect(master_file.file_format).to eq "Moving image"
 
-       expect(flash[:errors]).to be_nil
+       expect(flash[:error]).to be_nil
      end
     end
 
@@ -125,7 +125,7 @@ describe MasterFilesController do
         expect(media_object.reload.ordered_master_files.to_a).to include master_file
         expect(master_file.media_object.id).to eq(media_object.id)
 
-        expect(flash[:errors]).to be_nil
+        expect(flash[:error]).to be_nil
       end
       it "should associate a dropbox file" do
         skip
@@ -137,7 +137,7 @@ describe MasterFilesController do
         expect(media_object.ordered_master_files).to include master_file
         expect(master_file.media_object.id).to eq(media_object.id)
 
-        expect(flash[:errors]).to be_nil
+        expect(flash[:error]).to be_nil
       end
       it "should not fail when associating with a published media_object" do
         media_object = FactoryGirl.create(:published_media_object)
@@ -154,7 +154,7 @@ describe MasterFilesController do
         expect(media_object.reload.ordered_master_files.to_a).to include master_file
         expect(master_file.media_object.id).to eq(media_object.id)
 
-        expect(flash[:errors]).to be_nil
+        expect(flash[:error]).to be_nil
       end
     end
   end
@@ -255,19 +255,19 @@ describe MasterFilesController do
 
   describe "#attach_structure" do
     let(:master_file) { FactoryGirl.create(:master_file, :with_media_object) }
+    let(:file) { fixture_file_upload('/structure.xml', 'text/xml') }
 
     before(:each) do
       disableCanCan!
       # populate the structuralMetadata datastream with an uploaded xml file
-      @file = fixture_file_upload('/structure.xml', 'text/xml')
-      post 'attach_structure', master_file: {structure: @file}, id: master_file.id
+      post 'attach_structure', master_file: {structure: file}, id: master_file.id
       master_file.reload
     end
 
     it "should populate structuralMetadata datastream with xml" do
       expect(master_file.structuralMetadata.xpath('//Item').length).to be(1)
       expect(master_file.structuralMetadata.valid?).to be true
-      expect(flash[:errors]).to be_nil
+      expect(flash[:error]).to be_nil
       expect(flash[:notice]).to be_nil
     end
     it "should remove contents of structuralMetadata" do
@@ -277,8 +277,26 @@ describe MasterFilesController do
       # expect(master_file.structuralMetadata.new?).to be true
       expect(master_file.structuralMetadata.content.empty?).to be true
       expect(master_file.structuralMetadata.valid?).to be false
-      expect(flash[:errors]).to be_nil
+      expect(flash[:error]).to be_nil
       expect(flash[:notice]).to be_nil
+    end
+    context "with invalid XML file" do
+      let(:file) { fixture_file_upload('/7763100.xml', 'text/xml') }
+      it "gracefully handles an invalid file" do
+        expect(master_file.structuralMetadata.content.nil?).to be_truthy
+        expect(master_file.structuralMetadata.valid?).to be false
+        expect(flash[:error]).not_to be_blank
+        expect(flash[:notice]).to be_nil
+      end
+    end
+    context "with invalid binary file" do
+      let(:file) { fixture_file_upload('/videoshort.mp4', 'video/mp4') }
+      it "gracefully handles an invalid file" do
+        expect(master_file.structuralMetadata.content.nil?).to be_truthy
+        expect(master_file.structuralMetadata.valid?).to be false
+        expect(flash[:error]).not_to be_blank
+        expect(flash[:notice]).to be_nil
+      end
     end
   end
   describe "#attach_captions" do
@@ -296,7 +314,7 @@ describe MasterFilesController do
       expect(master_file.captions.has_content?).to be_truthy
       expect(master_file.captions.original_name).to eq('captions.vtt')
       expect(master_file.captions.mime_type).to eq('text/vtt')
-      expect(flash[:errors]).to be_nil
+      expect(flash[:error]).to be_nil
       expect(flash[:notice]).to be_nil
       expect(flash[:success]).not_to be_nil
     end
@@ -305,7 +323,7 @@ describe MasterFilesController do
       post 'attach_captions', id: master_file.id
       master_file.reload
       expect(master_file.captions.empty?).to be true
-      expect(flash[:errors]).to be_nil
+      expect(flash[:error]).to be_nil
       expect(flash[:notice]).to be_nil
       expect(flash[:success]).not_to be_nil
     end

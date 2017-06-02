@@ -97,7 +97,12 @@ class MasterFilesController < ApplicationController
       authorize! :edit, @master_file, message: "You do not have sufficient privileges to add files"
       structure = request.format.json? ? params[:xml_content] : nil
       if params[:master_file].present? && params[:master_file][:structure].present?
-        structure = params[:master_file][:structure].open.read
+        structure_file = params[:master_file][:structure]
+        if structure_file.content_type != "text/xml"
+          flash[:error] = "Uploaded file is not a structure xml file"
+        else
+          structure = structure_file.open.read
+        end
       end
       if structure.present?
         validation_errors = StructuralMetadata.content_valid? structure
