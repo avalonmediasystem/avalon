@@ -29,7 +29,7 @@ module FedoraMigrate
         target.video_bitrate = present_or_nil(encodingProfile.xpath('//video/bitrate').text)
         target.video_codec = present_or_nil(encodingProfile.xpath('//video/codec').text)
         resolution = present_or_nil(encodingProfile.xpath('//video/resolution').text)
-        res_width,res_height = resolution.present? resolution.split('x') : [nil,nil]
+        res_width,res_height = resolution.present? ? resolution.split('x') : [nil,nil]
         width = present_or_nil(encodingProfile.xpath('//video/resolution/width').text)
         height = present_or_nil(encodingProfile.xpath('//video/resolution/height').text)
         if (res_width.present? and width.present? and res_width!=width) or (res_height.present? and height.present? and res_height!=height)
