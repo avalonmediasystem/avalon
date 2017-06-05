@@ -22,7 +22,7 @@ module FedoraMigrate
           sections_md = Nokogiri::XML(source.datastreams['sectionsMetadata'].content)
           old_pid_order = sections_md.xpath('fields/section_pid').collect(&:text)
           unless lists_equivalent?(old_pid_order, master_files.collect {|mf| pid_from_obj(mf)})
-            #TODO fail master_files
+            fail_dependent_objects(master_files)
             raise FedoraMigrate::Errors::MigrationError, "Master files found don't match media object expectations."
           end
           target.ordered_master_files = master_files.sort do |a,b|
@@ -42,6 +42,19 @@ module FedoraMigrate
 
         def lists_equivalent?(a,b)
           a.size == b.size && ((a-b) + (b-a)).blank?
+        end
+
+        def fail_dependent_objects(master_files)
+          #fail master_files
+          master_files.each do |mf|
+            fail_object(mf, source.pid)
+            ::Derivative.where(isDerivationOf_ssim: mf.id).each {|d| fail_object(d, pid_from_obj(mf))}
+          end
+        end
+        def fail_object(obj, parent_pid)
+            status_record = MigrationStatus.where(source_class: obj.class.name, f4_pid: obj.id).first
+            return unless status_record
+            status_record.update_attributes status: 'failed', log: "Parent object (#{parent_pid}) failed to migrate"
         end
     end
   end
