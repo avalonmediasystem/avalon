@@ -20,6 +20,16 @@ window.onload = (function () {
 });
 </script>
 
+<style type="text/css">
+	pre {
+		margin: 0;
+		padding: 0;
+	}
+	.hljs {
+		padding: 1.5em;
+	}
+</style>
+
 <ol class="breadcrumb">
   <li><%= link_to "Migration Report", admin_migration_report_path %></li>
   <li><%= link_to @class, admin_migration_report_by_class_path(class: @class) %></li>
