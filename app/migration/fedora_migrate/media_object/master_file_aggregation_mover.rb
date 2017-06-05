@@ -21,10 +21,13 @@ module FedoraMigrate
         if source.datastreams.has_key?('sectionsMetadata')
           sections_md = Nokogiri::XML(source.datastreams['sectionsMetadata'].content)
           old_pid_order = sections_md.xpath('fields/section_pid').collect(&:text)
+          unless lists_equivalent?(old_pid_order, master_files.collect {|mf| pid_from_obj(mf)})
+            #TODO fail master_files
+            raise FedoraMigrate::Errors::MigrationError, "Master files found don't match media object expectations."
+          end
           target.ordered_master_files = master_files.sort do |a,b|
             old_pid_order.index(pid_from_obj(a)) <=> old_pid_order.index(pid_from_obj(b))
           end
-          return false unless lists_equivalent?(old_pid_order, ordered_master_files.collect {|mf| pid_from_obj(mf)})
         else
           target.ordered_master_files = master_files
         end
