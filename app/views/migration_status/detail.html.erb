@@ -26,21 +26,32 @@ window.onload = (function () {
   <li class="active"><%= params[:id]%></li>
 </ol>
 
+<h3>
+<% if @f3_pid.present? %>
+  Migrated from <b><%=@f3_pid%></b>
+<% else %>
+	Migrated from ???
+<% end %>
+ to <b>
 <% if @f4_pid.present? %>
   <% unless ["Derivative", "Lease"].include? @class %>
-    <p>Migrated to <%= link_to objects_url(@f4_pid), objects_path(@f4_pid) %></p>
+    <%= link_to objects_url(@f4_pid), objects_path(@f4_pid) %>
   <% else %>
-    <p>Migrated to <%= @f4_pid %></p>
+    <%= @f4_pid %>
   <% end %>
+<% else %>
+???
 <% end %>
-
-<% if @f3_pid.present? %>
-  <p>Migrated from <%=@f3_pid%></p>
+</b>
+</h3>
+<h5>
+<a href="#Fedora3">Fedora 3 Datastreams <i class="fa fa-arrow-down" aria-hidden="true"></i></a> |
+<a href="#Fedora4">Fedora 4 Properties <i class="fa fa-arrow-down" aria-hidden="true"></i></a> |
+<% unless ["Bookmark", "AvalonClip", "AvalonMarker"].include? @class %>
+  <%= link_to 'Full Report', admin_migration_report_report_path(id: params[:id]), target: 'migration_json'%>
 <% end %>
-
-<p><a href="#Fedora3">Fedora3 Datastreams</a></p>
-<p><a href="#Fedora4">Fedora4 Properties</a></p>
-
+<h5/>
+<br/>
 <table class="table table-striped table-hover table-condensed">
   <tr>
     <th class="nowrap">Datastream</th>
@@ -57,25 +68,52 @@ window.onload = (function () {
     </tr>
   <% end %>
 </table>
-<% unless ["Bookmark", "AvalonClip", "AvalonMarker"].include? @class %>
-  <p><%= link_to 'Full Report', admin_migration_report_report_path(id: params[:id]), target: 'migration_json'%></p>
-<% end %>
 
-<h2><a id="Fedora3">Fedora 3</a></h2>
+<h3><a id="Fedora3">Fedora 3</a></h3>
+<div class="panel-group">
+	<div class="panel panel-default">
 <% if @f3_obj.present? %>
   <% @f3_obj.datastreams.each do |name, ds| %>
-    <h3><%= name %></h3>
-    <pre><code class="xml"><%= ds.content %></code></pre>
+    <div class="panel-heading">
+			<h4 class="panel-title">
+				<a data-toggle="collapse" href="#f3-details-panel-<%= name %>">
+					<%= name.titleize %>
+				</a>
+			</h4>
+		</div>
+		<div id="f3-details-panel-<%= name %>" class="collapse panel-collapse">
+      <pre><code class="xml"><%= ds.content %></code></pre>
+		</div>
   <% end %>
 <% end %>
-<br/>
-<br/>
-<h2><a id="Fedora4">Fedora 4</a></h2>
-<% if @f4_obj.present? %>
-  <pre><%= @f4_obj.resource.dump(:ttl) %></pre>
-  <!-- TODO print links to migration reports of anything linked via property with ns info:fedora/fedora-system:def/relations-external or dcterms:hasPart-->
-  <% @f4_obj.serialize_attached_files.each do |label, file| %>
-    <h3><%= label %></h3>
-    <pre><%= file.content %></pre>
-  <% end %>
-<% end %>
+	</div>
+</div>
+
+<h3><a id="Fedora4">Fedora 4</a></h3>
+<div class="panel-group">
+	<% if @f4_obj.present? %>
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4 class="panel-title">
+				<a data-toggle="collapse" href="#f4-details-panel-resources">fcr:metadata</a>
+			</h4>
+		</div>
+		<div id="f4-details-panel-resources" class="collapse panel-collapse">
+			<pre><code class="xml"><%= @f4_obj.resource.dump(:ttl) %></code></pre>
+		</div>
+<!-- TODO print links to migration reports of anything linked via property with ns info:fedora/fedora-system:def/relations-external or dcterms:hasPart-->
+		<% @f4_obj.serialize_attached_files.each do |label, file| %>
+		<div class="panel-heading">
+			<h4 class="panel-title">
+				<a data-toggle="collapse" href="#f4-details-panel-<%= label %>">
+					<%= label %>
+				</a>
+			</h4>
+		</div>
+		<div id="f4-details-panel-<%= label %>" class="collapse panel-collapse">
+			<pre><code class="xml"><%= file.content %></code></pre>
+		</div>
+		<% end %>
+	</div>
+	<% end %>
+</div>
