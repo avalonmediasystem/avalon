@@ -172,7 +172,7 @@ GEM
       nom-xml (>= 0.5.1)
       om (~> 3.1)
       rdf-rdfxml (~> 2.0)
-    active_fedora-noid (2.0.0)
+    active_fedora-noid (2.0.2)
       active-fedora (>= 9.7, < 12)
       noid (~> 0.9)
       rails (>= 4.2.7.1, < 6)
@@ -752,7 +752,7 @@ DEPENDENCIES
   active_annotations (~> 0.2.2)
   active_encode (~> 0.0.3)
   active_fedora-datastreams
-  active_fedora-noid (~> 2.0.0)
+  active_fedora-noid (~> 2.0.2)
   activerecord-session_store
   acts_as_list
   api-pagination
