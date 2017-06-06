@@ -1,0 +1,31 @@
+units:
+ - Charles Deering McCormick Library of Special Collections
+ - Center for Scholarly Communication and Digital Curation
+ - Galter Health Sciences Library, Special Collections
+ - Melville J. Herskovits Library of African Studies
+ - Music Library
+ - Northwestern University Archives
+ - Northwestern University Libraries
+ - Northwestern University Pritzker Legal Research Center
+ - Northwestern University Transportation Library
+ - Marjorie I. Mitchell Multimedia Center
+ - WCAS Multimedia Learning Center
+identifier_types:
+ local: Catalog Key
+ oclc: OCLC
+ lccn: LCCN
+ issue number: Issue Number
+ matrix number: Matrix Number
+ music publisher: Music Publisher/Label
+ videorecording identifier: Videorecording Identifier
+ other: Other
+note_types:
+ general: General Note
+ awards: Awards
+ biographical/historical: Biographical/Historical Note
+ creation/production credits: Creation/Production Credits
+ language: Language Note
+ local: Local Note
+ performers: Performers
+ statement of responsibility: Statement of Responsibility
+ venue: Venue/Event Date

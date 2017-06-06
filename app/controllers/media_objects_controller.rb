@@ -436,7 +436,6 @@ class MediaObjectsController < ApplicationController
   def load_current_stream
     set_active_file
     set_player_token
-    add_stream_cookies(id: @currentStream.id) unless @currentStream.nil?
     @currentStreamInfo = @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details)
     @currentStreamInfo['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
   end
@@ -506,9 +505,11 @@ class MediaObjectsController < ApplicationController
 
     mo_parameters
   end
+
   def master_files_params
     # TODO: Restrist permitted params!!!
     params.permit!
     params[:files]
   end
+
 end

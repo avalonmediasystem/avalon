@@ -687,7 +687,7 @@ describe MediaObject do
       let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
 
       it 'should strip whitespace off bib_id parameter' do
-        Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
         expect { media_object.descMetadata.populate_from_catalog!(" #{bib_id} ", 'local') }.to change { media_object.title }.to "245 A : B F G K N P S"
         expect(request).to have_been_requested
       end

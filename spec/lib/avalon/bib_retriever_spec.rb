@@ -80,7 +80,7 @@ describe Avalon::BibRetriever do
       let!(:request_2) { stub_request(:get, sru_url_2).to_return(body: sru_response) }
 
       before :each do
-        Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'query' => ["rec.id='not_a_real_id'","cql.serverChoice='^C%{bib_id}'"] }
+        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db', 'query' => ["rec.id='not_a_real_id'","cql.serverChoice='^C%{bib_id}'"] }
       end
 
       it 'retrieves proper MODS' do

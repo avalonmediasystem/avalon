@@ -14,8 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<% if Avalon::Configuration.has_key?('flash_message') && Avalon::Configuration.lookup('flash_message.message') %>
-  <% flash[Avalon::Configuration.lookup('flash_message.type').to_sym || :error] = Avalon::Configuration.lookup('flash_message.message').html_safe %>
+<% if Settings&.flash_message&.message %>
+  <% flash[Settings.flash_message.type || :error] = Settings.flash_message.message.html_safe %>
 <% end %>
 
 <% if defined? flash and !flash.empty? %>

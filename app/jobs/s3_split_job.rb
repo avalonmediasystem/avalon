@@ -36,7 +36,7 @@ class S3SplitJob < ActiveJob::Base
       if Kernel.system(*cmd)
         segment_files = Dir[File.join(dir,'*')]
         segment_files.each do |seg|
-          File.open(seg,'r') { |io| bucket.put_object(key: File.join(path,'segments',File.basename(seg)), body: io) }
+          File.open(seg,'r') { |io| bucket.put_object(key: File.join(path,'hls',File.basename(seg)), body: io) }
         end
       end
     end

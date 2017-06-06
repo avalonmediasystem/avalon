@@ -46,10 +46,9 @@ class MasterFilesController < ApplicationController
   end
 
   def embed
-    @masterfile = MasterFile.find(params[:id])
-    if can? :read, @masterfile.mediaobject
-      add_stream_cookies(id: @masterfile.id)
-      @stream_info = secure_streams(@masterfile.stream_details)
+    @master_file = MasterFile.find(params[:id])
+    if can? :read, @master_file.media_object
+      @stream_info = secure_streams(@master_file.stream_details)
     end
     respond_to do |format|
       format.html do

@@ -12,20 +12,10 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class Course < ActiveRecord::Base
-#  attr_accessible :context_id, :label, :title
-
-  def self.autocomplete(query)
-    self.where("label LIKE :q OR title LIKE :q", q: "%#{query}%").collect { |course|
-      { id: course.context_id, display: course.title }
-    }
+class DeleteCourseJob < ActiveJob::Base
+  queue_as :delete_course
+  def perform(context_id)
+    Course.unlink_all(context_id)
+    Course.find_by(context_id: context_id)&.destroy
   end
-
-  def self.unlink_all(context_id)
-    MediaObject.find_each(read_access_group_ssim: context_id) do |mo|
-      mo.read_groups = mo.read_groups - [context_id]
-      mo.update_index
-    end
-  end
-
 end

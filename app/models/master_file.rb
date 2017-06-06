@@ -57,9 +57,7 @@ class MasterFile < ActiveFedora::Base
   property :file_checksum, predicate: ::RDF::Vocab::NFO.hashValue, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :file_size, predicate: ::RDF::Vocab::EBUCore.fileSize, multiple: false do |index|
-    index.as :stored_sortable
-  end
+  property :file_size, predicate: ::RDF::Vocab::EBUCore.fileSize, multiple: false # indexed in to_solr
   property :duration, predicate: ::RDF::Vocab::EBUCore.duration, multiple: false do |index|
     index.as :stored_sortable
   end
@@ -489,6 +487,7 @@ class MasterFile < ActiveFedora::Base
 
   def to_solr *args
     super.tap do |solr_doc|
+      solr_doc['file_size_ltsi'] = file_size
       solr_doc['has_captions?_bs'] = has_captions?
       solr_doc['has_poster?_bs'] = has_poster?
       solr_doc['has_thumbnail?_bs'] = has_thumbnail?

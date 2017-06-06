@@ -6,7 +6,7 @@ gem 'hydra-head', '~> 10.3.4'
 gem 'active-fedora', '~> 11.2'
 gem 'active_fedora-datastreams'
 gem 'active_fedora-noid', '~> 2.0.2'
-gem 'speedy-af', '~>0.1.1'
+gem 'speedy-af', '~> 0.1.1'
 gem 'blacklight', '~> 6.6'
 gem 'rdf', '~> 2.2'
 
@@ -16,6 +16,7 @@ gem 'rails', '4.2.9'
 gem 'sqlite3'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
+gem 'sass', '3.4.22'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .coffee assets and views
@@ -56,6 +57,7 @@ gem 'iconv'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'remote_files'
 gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
+gem 'ims-lti', '~> 1.1.13'
 gem 'omniauth-openam'
 gem 'net-ldap'
 gem 'edtf'
@@ -74,6 +76,7 @@ gem 'with_locking'
 gem 'parallel'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r6'
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.1'
+gem 'jquery-datatables'
 gem 'config'
 gem 'marc'
 
@@ -91,13 +94,16 @@ gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/me
 
 gem 'resque', '~> 1.26.0'
 gem 'resque-scheduler', '~> 4.3.0'
+gem 'redis-rails'
 
 group :production do
   gem 'lograge'
+  gem 'google-analytics-rails', '1.1.0'
 end
 
 group :development, :test do
   gem 'equivalent-xml'
+  gem 'rb-readline'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
   gem 'pry-rails'
@@ -150,11 +156,11 @@ group :test do
 end
 
 group :aws, optional: true do
-  gem 'aws-sdk'
+  gem 'aws-sdk', '~> 2.0'
   gem 'aws-sdk-rails'
   gem 'cloudfront-signer'
   gem 'zk'
-  gem 'active_elastic_job', '~> 1.7'
+  gem 'active_elastic_job', '~> 2.0'
 end
 
 group :zoom, optional: true do
@@ -166,6 +172,12 @@ group :mysql, optional: true do
 end
 group :postgres, optional: true do
   gem 'pg'
+end
+group :ssl_dev, optional: true do
+  gem 'puma'
+end
+group :ezid, optional: true do
+  gem 'ezid-client'
 end
 
 extra_gems = File.expand_path("../Gemfile.local",__FILE__)

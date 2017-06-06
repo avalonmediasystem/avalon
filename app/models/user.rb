@@ -53,8 +53,9 @@ class User < ActiveRecord::Base
   end
 
   def self.find_for_generic(access_token, signed_in_resource=nil)
-    username = access_token.info['email']
-    User.find_by_username(username) || User.find_by_email(username) || User.create(username: username, email: username)
+    username = access_token.uid
+    email = access_token.info.email
+    User.find_by_username(username) || User.find_by_email(email) || User.create(username: username, email: email)
   end
 
   def self.find_for_lti(auth_hash, signed_in_resource=nil)

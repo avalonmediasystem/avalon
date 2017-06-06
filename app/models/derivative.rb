@@ -35,7 +35,9 @@ class Derivative < ActiveFedora::Base
   property :managed, predicate: Avalon::RDFVocab::Derivative.isManaged, multiple: false do |index|
     index.as Solrizer::Descriptor.new(:boolean, :stored, :indexed)
   end
-  property :derivativeFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false
+  property :derivativeFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false do |index|
+    index.as :stored_sortable
+  end
 
   # Encoding datastream properties
   property :quality, predicate: ::RDF::Vocab::EBUCore.encodingLevel, multiple: false do |index|

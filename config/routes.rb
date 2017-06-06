@@ -12,6 +12,11 @@ Rails.application.routes.draw do
 
   concern :exportable, Blacklight::Routes::Exportable.new
 
+  # NU Pages routing
+  get '/help', to: 'nu_pages#help'
+  get '/aboutnu', to: 'nu_pages#about'
+  get 'is_it_alive', to: 'application#alive'
+  
   resources :solr_documents, only: [:show], path: '/catalog', controller: 'catalog' do
     concerns :exportable
   end
@@ -86,6 +91,7 @@ Rails.application.routes.draw do
       get 'track/:part', :action => :show, :as => :indexed_section
       get 'section/:content', :action => :show, :as => :id_section
       get 'section/:content/stream', :action => :show_stream_details, :as => :section_stream
+      get 'section/:content/embed', :to => redirect('/master_files/%{content}/embed')
       get 'tree', :action => :tree, :as => :tree
       get :confirm_remove
       get :add_to_playlist_form
