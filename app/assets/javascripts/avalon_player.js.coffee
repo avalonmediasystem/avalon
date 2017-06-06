@@ -212,5 +212,8 @@ class AvalonPlayer
           $.getJSON uri, params.join('&'), (data) =>
             @player.options.autostart = autostart
             @setStreamInfo(data)
+      else
+        @click()
+      return
 
 (exports ? this).AvalonPlayer = AvalonPlayer
