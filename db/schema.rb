@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170118162908) do
+ActiveRecord::Schema.define(version: 20170530173242) do
 
   create_table "annotations", force: :cascade do |t|
     t.string  "uuid"
@@ -84,6 +84,20 @@ ActiveRecord::Schema.define(version: 20170118162908) do
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
   end
+
+  add_index "migration_statuses", ["source_class", "f3_pid", "datastream"], name: "index_migration_statuses"
+
+  create_table "minter_states", force: :cascade do |t|
+    t.string   "namespace",            default: "default", null: false
+    t.string   "template",                                 null: false
+    t.text     "counters"
+    t.integer  "seq",        limit: 8, default: 0
+    t.binary   "rand"
+    t.datetime "created_at",                               null: false
+    t.datetime "updated_at",                               null: false
+  end
+
+  add_index "minter_states", ["namespace"], name: "index_minter_states_on_namespace", unique: true
 
   create_table "playlist_items", force: :cascade do |t|
     t.integer  "playlist_id", null: false

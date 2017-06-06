@@ -23,9 +23,13 @@ module FedoraMigrate
       end
     end
 
+    def prepare_target
+      target.migrated_from = [construct_migrate_from_uri(source)]
+      super
+    end
+
     def complete_target
       after_object_migration
-      target.migrated_from = source.pid
       save
       complete_report
     end
@@ -63,6 +67,10 @@ module FedoraMigrate
         permalink_value = target.ldp_source.graph.find{|stmt| stmt.predicate == "http://projecthydra.org/ns/relations#hasPermalink"}.object.to_s rescue nil
         return unless permalink_value
         target.permalink = permalink_value 
+      end
+
+      def construct_migrate_from_uri(source)
+        RDF::URI.new(FedoraMigrate.fedora_config.credentials[:url]) / "/objects/#{source.pid}"
       end
   end
 end

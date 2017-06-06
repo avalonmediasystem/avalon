@@ -57,8 +57,9 @@ timeCodeToSeconds = (hh_mm_ss) ->
   row.find('button[name="marker_edit_save"]').remove()
   row.find('button[name="delete_marker"]').show()
   row.find('button[name="marker_edit_cancel"]').remove()
-  $('.scrubber-marker[data-marker="'+id+'"]').css('left',Math.round(if isNaN(parseFloat(offset)) then 0 else (100*offset / currentPlayer.media.duration))+'%')
-  $('.scrubber-marker[data-marker="'+id+'"]').attr('title',title_val)
+  offset_percent = if isNaN(parseFloat(offset)) then 0 else Math.min(100,Math.round(100*offset / currentPlayer.media.duration))
+  marker_title = String(title_val).replace(/"/g, '&quot;')+' ['+start_input.val()+']'
+  $('.scrubber-marker[data-marker="'+id+'"]').css('left',offset_percent+'%').attr('title',marker_title)
   return
 
 @cancelMarkerEdit = (event) ->

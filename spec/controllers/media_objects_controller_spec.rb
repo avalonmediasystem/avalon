@@ -220,7 +220,7 @@ describe MediaObjectsController, type: :controller do
        end
         it "should create a new media_object with successful bib import" do
           Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
-          FakeWeb.register_uri :get, sru_url, body: sru_response
+          stub_request(:get, sru_url).to_return(body: sru_response)
           fields = { bibliographic_id: bib_id }
           post 'create', format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id
           expect(response.status).to eq(200)
@@ -230,7 +230,7 @@ describe MediaObjectsController, type: :controller do
         end
         it "should create a new media_object with supplied fields when bib import fails" do
           Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
-          FakeWeb.register_uri :get, sru_url, body: nil
+          stub_request(:get, sru_url).to_return(body: nil)
           ex_media_object = FactoryGirl.create(:media_object)
           fields = {}
           descMetadata_fields.each {|f| fields[f] = ex_media_object.send(f) }
@@ -266,7 +266,7 @@ describe MediaObjectsController, type: :controller do
         end
         it "should merge supplied other identifiers after bib import" do
           Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
-          FakeWeb.register_uri :get, sru_url, body: sru_response
+          stub_request(:get, sru_url).to_return(body: sru_response)
           fields = { bibliographic_id: bib_id, other_identifier_type: ['other'], other_identifier: ['12345'] }
           post 'create', format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id
           expect(response.status).to eq(200)

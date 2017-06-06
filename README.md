@@ -29,7 +29,6 @@ explore the out-of-the-box functionality or do basic development.
 * ```cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml```
 * Install [cmake](https://cmake.org/) if necessary.  This can typically be installed via package manager
 * ```bundle install```
-* ```cp config/secrets.yml.example config/secrets.yml```
 * ```rake secret```
 * ```rake avalon:services:start```
 * ```rake avalon:db_migrate```

@@ -473,4 +473,40 @@ describe MasterFile do
       expect {video_master_file.send(:extract_frame, {size: '160x120', offset: 1})}.to raise_error(RuntimeError)
     end
   end
+
+  describe 'poster' do
+    let(:master_file) { FactoryGirl.create(:master_file) }
+    it 'sets original_name to default value' do
+      expect(master_file.poster.original_name).to eq 'poster.jpg'
+    end
+  end
+
+  describe 'thumbnail' do
+    let(:master_file) { FactoryGirl.create(:master_file) }
+    it 'sets original_name to default value' do
+      expect(master_file.thumbnail.original_name).to eq 'thumbnail.jpg'
+    end
+  end
+
+  describe 'structuralMetadata' do
+    let(:master_file) { FactoryGirl.create(:master_file) }
+    it 'sets original_name to default value' do
+      expect(master_file.structuralMetadata.original_name).to eq 'structuralMetadata.xml'
+    end
+  end
+
+  describe 'update_parent!' do
+    it 'does not error if the master file has no parent' do
+      expect { MasterFile.new.send(:update_parent!) }.not_to raise_error
+    end
+  end
+
+  describe 'stop_processing!' do
+    before do
+      allow(ActiveEncode::Base).to receive(:find).and_return(nil)
+    end
+    it 'does not error if the master file has no encode' do
+      expect { MasterFile.new(workflow_id: '1', status_code: 'RUNNING').send(:stop_processing!) }.not_to raise_error
+    end
+  end
 end

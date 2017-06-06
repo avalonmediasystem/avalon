@@ -31,14 +31,11 @@ module Avalon
         playlist.items = playlist.items.select { |pi| pi.valid? && pi.clip.valid? }
         playlist.save
       else
-        Playlist.transaction do
-          playlist.save
-          has_error = false
-          has_error ||= !playlist.errors.empty?
-          has_error ||= playlist.items.any? { |pi| !pi.errors.empty? || !pi.clip.errors.empty? }
-          has_error ||= playlist.items.any? { |pi| pi.marker.any? { |m| !m.errors.empty? } }
-          raise ActiveRecord::Rollback if has_error
-        end
+        has_error = false
+        has_error ||= playlist.invalid?
+        has_error ||= playlist.items.any? { |pi| pi.invalid?  || pi.clip.invalid? }
+        has_error ||= playlist.items.any? { |pi| pi.marker.any? { |m| m.invalid? } }
+        playlist.save unless has_error
       end
       playlist
     end
