@@ -20,13 +20,14 @@
   display: block;
   overflow-x: auto;
   padding: 0.5em;
-  background: #333;
+  background: #0a0909;
   color: white;
 }
 
 .hljs-name,
 .hljs-strong {
   font-weight: bold;
+	color: #53b5fb;
 }
 
 .hljs-code,
@@ -35,7 +36,7 @@
 }
 
 .hljs-tag {
-  color: #62c8f3;
+  color: #d446d6;
 }
 
 .hljs-variable,
