@@ -34,8 +34,17 @@ class MigrationStatusController < ApplicationController
   
   def detail
     @statuses = MigrationStatus.where(f3_pid: params[:id])
+    @statuses = MigrationStatus.where(f4_pid: params[:id]) if @statuses.empty?
+    raise ActiveRecord::RecordNotFound if @statuses.blank?
     @class = @statuses.first.source_class
     @f4_pid = @statuses.first.f4_pid
+    if @f4_pid
+      @f4_obj = ActiveFedora::Base.find(@f4_pid) rescue ActiveFedora::ObjectNotFoundError
+    end
+    @f3_pid = @statuses.first.f3_pid
+    if @f3_pid
+      @f3_obj = FedoraMigrate.source.connection.find(@f3_pid) rescue nil
+    end
     render without_layout_if_xhr
   end
   
