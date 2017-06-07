@@ -196,4 +196,14 @@ describe Lease do
       expect(lease.lease_type).to eq "ip"
     end
   end
+  describe '#media_objects' do
+    let(:media_object) { FactoryGirl.create(:media_object) }
+    before do
+      media_object.governing_policies += [ lease ]
+      media_object.save!
+    end
+    it 'lists media objects the lease applies to' do
+      expect(lease.media_objects).not_to be_empty
+    end
+  end
 end
