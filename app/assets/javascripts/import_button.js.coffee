@@ -20,21 +20,22 @@ $ ->
   enable_bib_btn()
   $('#media_object_bibliographic_id').keyup -> enable_bib_btn()
 
-  $(document).on 'click', '#cancel_bibimport', ->
-    $('#media_object_bibliographic_id_btn').popover 'hide'
-    true
-  $('#media_object_bibliographic_id_btn').popover(
-    trigger: 'manual'
-    html: true
-    placement: 'top'
-    container: 'body'
-    content: ->
-      button = '<button class="btn btn-xs btn-danger btn-confirm" type="submit" name="media_object[import_bib_record]" value="yes" data-original-title="" title="" form="'+$(this).attr('form')+'" >Import</button>'
-      '<p>Note: this will replace all metadata except for Other Identifiers</p> ' + button + ' <button id=\'cancel_bibimport\' class=\'btn btn-xs btn-primary\'>No, Cancel</button>'
-  ).click ->
-    $('.btn-confirmation').popover 'hide'
-    $(this).popover 'show'
-    false
+  if $('input#media_object_title').val()!=''
+    $(document).on 'click', '#cancel_bibimport', ->
+      $('#media_object_bibliographic_id_btn').popover 'hide'
+      true
+    $('#media_object_bibliographic_id_btn').popover(
+      trigger: 'manual'
+      html: true
+      placement: 'top'
+      container: 'body'
+      content: ->
+        button = '<button class="btn btn-xs btn-danger btn-confirm" type="submit" name="media_object[import_bib_record]" value="yes" data-original-title="" title="" form="'+$(this).attr('form')+'" >Import</button>'
+        '<p>Note: this will replace all metadata except for Other Identifiers</p> ' + button + ' <button id=\'cancel_bibimport\' class=\'btn btn-xs btn-primary\'>No, Cancel</button>'
+    ).click ->
+      $('.btn-confirmation').popover 'hide'
+      $(this).popover 'show'
+      false
 
 enable_bib_btn = ->
     if $('#media_object_bibliographic_id').val() == ""
