@@ -282,17 +282,19 @@ class MediaObjectsController < ApplicationController
   def destroy
     errors = []
     success_count = 0
+    success_ids = []
     Array(params[:id]).each do |id|
       media_object = MediaObject.find(id)
       if can? :destroy, media_object
-        media_object.destroy
+        success_ids << id
         success_count += 1
       else
         errors += [ "#{media_object.title} (#{params[:id]}) permission denied" ]
       end
     end
-    message = "#{success_count} #{'media object'.pluralize(success_count)} successfully deleted."
+    message = "#{success_count} #{'media object'.pluralize(success_count)} are being deleted."
     message += "These objects were not deleted:</br> #{ errors.join('<br/> ') }" if errors.count > 0
+    BulkActionJobs::Delete.perform_later success_ids, nil
     redirect_to params[:previous_view]=='/bookmarks'? '/bookmarks' : root_path, flash: { notice: message }
   end
 

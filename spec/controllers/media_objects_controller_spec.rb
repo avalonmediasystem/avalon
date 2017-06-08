@@ -714,7 +714,7 @@ describe MediaObjectsController, type: :controller do
     it "should remove a MediaObject with a single MasterFiles" do
       media_object = FactoryGirl.create(:media_object, :with_master_file, collection: collection)
       delete :destroy, id: media_object.id
-      expect(flash[:notice]).to include("success")
+      expect(flash[:notice]).to include("being deleted")
       expect(MediaObject.exists?(media_object.id)).to be_falsey
       expect(MasterFile.exists?(media_object.master_files.first.id)).to be_falsey
     end
@@ -725,7 +725,7 @@ describe MediaObjectsController, type: :controller do
       master_file_ids = media_object.master_files.map(&:id)
       media_object.reload
       delete :destroy, id: media_object.id
-      expect(flash[:notice]).to include("success")
+      expect(flash[:notice]).to include("being deleted")
       expect(MediaObject.exists?(media_object.id)).to be_falsey
       master_file_ids.each { |mf_id| expect(MasterFile.exists?(mf_id)).to be_falsey }
     end
