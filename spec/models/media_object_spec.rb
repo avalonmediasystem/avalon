@@ -327,7 +327,8 @@ describe MediaObject do
   end
 
   describe "Update datastream with empty strings" do
-    it "should handle a complex update" do
+    it "should remove pre-existing values" do
+      media_object = FactoryGirl.create( :fully_searchable_media_object )
       params = {
         'alternative_title' => [''],
         'translated_title' => [''],
