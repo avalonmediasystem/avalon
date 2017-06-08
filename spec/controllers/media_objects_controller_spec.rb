@@ -974,6 +974,23 @@ describe MediaObjectsController, type: :controller do
         end
       end
     end
+
+    context 'resource description' do
+      context 'bib import' do
+        require 'avalon/bib_retriever'
+        let(:media_object) { FactoryGirl.create(:media_object) }
+        before do
+          login_as 'administrator'
+        end
+
+        it 'does nothing when the bib id is blank or missing' do
+          dbl = double("BibRetriever")
+          allow(Avalon::BibRetriever).to receive(:instance).and_return(dbl)
+          expect(dbl).not_to receive(:get_record)
+          put :update, id: media_object.id, step: 'resource-description', media_object: { import_bib_record: 'yes', bibliographic_id: ' ', bibliographic_id_label: 'local' }
+        end
+      end
+    end
   end
 
   describe "#show_progress" do
