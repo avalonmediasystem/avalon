@@ -142,6 +142,14 @@ EOC
         mo.descMetadata.save
       end
     end
+
+    desc "Add Fedora4 identifier as mods record_identifier"
+    task record_identifier: :environment do
+      MediaObject.find_each({},{batch_size:5}) do |mo|
+        mo.save if mo.descMetadata.record_identifier.empty?
+      end
+    end
+
   end
 
   desc 'migrate databases for the rails app and the active annotations gem'
