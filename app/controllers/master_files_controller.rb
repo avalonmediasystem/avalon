@@ -30,7 +30,7 @@ class MasterFilesController < ApplicationController
     if ds.nil? or ds.empty?
       render :text => 'Not Found', :status => :not_found
     else
-      render :text => ds.content, :content_type => ds.mime_type, :label => ds.original_name
+      send_data ds.content, type: ds.mime_type, filename: ds.original_name
     end
   end
 
@@ -134,7 +134,9 @@ class MasterFilesController < ApplicationController
       authorize! :edit, @master_file, message: "You do not have sufficient privileges to add files"
       if params[:master_file].present? && params[:master_file][:captions].present?
         captions_file = params[:master_file][:captions]
-        if ["text/vtt", "text/srt"].include? captions_file.content_type
+        captions_ext = File.extname(captions_file.path)
+        content_type = Mime::Type.lookup_by_extension(captions_ext.slice(1..-1)).to_s if captions_ext
+        if ["text/vtt", "text/srt"].include? content_type
           captions = captions_file.open.read
         else
           flash[:error] = "Uploaded file is not a recognized captions file"
@@ -142,7 +144,7 @@ class MasterFilesController < ApplicationController
       end
       if captions.present?
         @master_file.captions.content = captions
-        @master_file.captions.mime_type = params[:master_file][:captions].content_type
+        @master_file.captions.mime_type = content_type
         @master_file.captions.original_name = params[:master_file][:captions].original_filename
         flash[:success] = "Captions file succesfully added."
       elsif !captions_file.present?
