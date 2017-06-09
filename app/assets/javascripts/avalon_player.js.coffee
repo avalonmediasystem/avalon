@@ -213,7 +213,7 @@ class AvalonPlayer
             @player.options.autostart = autostart
             @setStreamInfo(data)
       else
-        @click()
+        e.target.click()
       return
 
 (exports ? this).AvalonPlayer = AvalonPlayer
