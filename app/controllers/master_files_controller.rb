@@ -134,7 +134,7 @@ class MasterFilesController < ApplicationController
       authorize! :edit, @master_file, message: "You do not have sufficient privileges to add files"
       if params[:master_file].present? && params[:master_file][:captions].present?
         captions_file = params[:master_file][:captions]
-        captions_ext = File.extname(captions_file.path)
+        captions_ext = File.extname(captions_file.original_filename)
         content_type = Mime::Type.lookup_by_extension(captions_ext.slice(1..-1)).to_s if captions_ext
         if ["text/vtt", "text/srt"].include? content_type
           captions = captions_file.open.read
