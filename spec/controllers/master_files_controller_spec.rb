@@ -318,6 +318,18 @@ describe MasterFilesController do
       expect(flash[:notice]).to be_nil
       expect(flash[:success]).not_to be_nil
     end
+    it "works with bad mime types from the browser" do
+      # populate the captions datastream with an uploaded vtt file
+      file = fixture_file_upload('/captions.vtt', 'application/octet-stream')
+      post 'attach_captions', master_file: {captions: file}, id: master_file.id
+      master_file.reload
+      expect(master_file.captions.has_content?).to be_truthy
+      expect(master_file.captions.original_name).to eq('captions.vtt')
+      expect(master_file.captions.mime_type).to eq('text/vtt')
+      expect(flash[:error]).to be_nil
+      expect(flash[:notice]).to be_nil
+      expect(flash[:success]).not_to be_nil
+    end
     it "should remove contents of captions datastream" do
       # remove the contents of the datastream
       post 'attach_captions', id: master_file.id
