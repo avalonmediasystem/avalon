@@ -48,7 +48,7 @@ gem 'devise'
 
 # Avalon-specific
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git"
-gem 'active_encode', '~> 0.0.3'
+gem 'active_encode', '~> 0.1.1'
 gem 'hooks'
 gem 'iconv'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag: 'avalon-r6'

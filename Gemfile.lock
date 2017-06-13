@@ -165,7 +165,7 @@ GEM
     active_annotations (0.2.2)
       json-ld
       rdf-vocab (~> 2.1.0)
-    active_encode (0.0.3)
+    active_encode (0.1.1)
       activesupport
     active_fedora-datastreams (0.1.0)
       active-fedora (>= 11.0.0.pre, < 12)
@@ -750,7 +750,7 @@ DEPENDENCIES
   about_page!
   active-fedora (~> 11.2)
   active_annotations (~> 0.2.2)
-  active_encode (~> 0.0.3)
+  active_encode (~> 0.1.1)
   active_fedora-datastreams
   active_fedora-noid (~> 2.0.2)
   activerecord-session_store
