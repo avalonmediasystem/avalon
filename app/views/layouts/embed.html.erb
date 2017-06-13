@@ -13,9 +13,28 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-
 <% content_for :page_styles do %>
   <%= stylesheet_link_tag 'embed' %>
 <% end %>
 
-<%= render template: "layouts/avalon" %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title><%= render_page_title %></title>
+
+   <%= csrf_meta_tags %>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%= favicon_link_tag %>
+    <%= stylesheet_link_tag "application", media: "all" %>
+    <%= yield :page_styles %>
+    <%= yield :additional_head_content %>
+  </head>
+
+  <body>
+    <%= yield %>
+    <%= javascript_include_tag "application" %>
+    <%= yield :page_scripts %>
+  </body>
+</html>
