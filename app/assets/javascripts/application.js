@@ -23,6 +23,9 @@
 //= require modernizr
 //= require me-track-scrubber
 //= require mediaelement-qualityselector/mep-feature-qualities
+//= require mediaelement-title/mep-feature-title
+//= require mediaelement-hd-toggle/mep-feature-hdtoggle
+//= require me-logo
 //= require bootstrap-toggle
 
 // include all of our vendored js
