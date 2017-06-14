@@ -265,8 +265,10 @@ class MasterFile < ActiveFedora::Base
     self.percent_succeeded = encode.percent_complete.to_s
     self.error = encode.errors.first if encode.errors.present?
     self.status_code = encode.state.to_s.upcase
-    self.duration = encode.tech_metadata[:duration] if encode.tech_metadata[:duration]
-    self.file_checksum = encode.tech_metadata[:checksum] if encode.tech_metadata[:checksum]
+    if encode.tech_metadata
+      self.duration = encode.tech_metadata[:duration] if encode.tech_metadata[:duration]
+      self.file_checksum = encode.tech_metadata[:checksum] if encode.tech_metadata[:checksum]
+    end
     self.workflow_id = encode.id
     #self.workflow_name = encode.options[:preset] #MH can switch to an error workflow
 
