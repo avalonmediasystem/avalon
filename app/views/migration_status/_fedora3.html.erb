@@ -14,14 +14,10 @@
 			<% if ds.mimeType.start_with?("image") %>
 				<%= ('<img src="data:image/jpg;base64,%s">' % Base64.encode64(ds.content)).html_safe %>
 			<% else %>
-				<pre><code class="xml">
-					<%= ds.content %>
-				</code></pre>
+				<pre><code class="xml"><%= ds.content.body.force_encoding(Encoding::UTF_8).strip %></code></pre>
 			<% end %>
 		</div>
   <% end %>
 <% end %>
 	</div>
 </div>
-
-

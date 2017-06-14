@@ -16,18 +16,21 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <script type="text/javascript">
 window.onload = (function () {
-	hljs.initHighlighting();
+  hljs.configure({tabReplace: '    ',
+                  languages: 'xml'
+                  });
+  hljs.initHighlighting();
 });
 </script>
 
 <style type="text/css">
-	pre {
-		margin: 0;
-		padding: 0;
-	}
-	.hljs {
-		padding: 1.5em;
-	}
+  pre {
+    margin: 0;
+    padding: 0;
+  }
+  .hljs {
+    padding: 1.5em;
+  }
 </style>
 
 <ol class="breadcrumb">
@@ -40,7 +43,7 @@ window.onload = (function () {
 <% if @f3_pid.present? %>
   Migrated from <b><%=@f3_pid%></b>
 <% else %>
-	Migrated from ???
+  Migrated from ???
 <% end %>
  to <b>
 <% if @f4_pid.present? %>
@@ -80,8 +83,8 @@ window.onload = (function () {
 </table>
 
 <% if ["playlists", "Bookmark", "AvalonClip", "AvalonMarker"].include? @class %>
-	<%= render 'dbobject' %>
+  <%= render 'dbobject' %>
 <% else %>
-	<%= render 'fedora3' %>
-	<%= render 'fedora4' %>
+  <%= render 'fedora3' %>
+  <%= render 'fedora4' %>
 <% end %>
