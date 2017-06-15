@@ -46,6 +46,8 @@ EOC
 
       #disable callbacks
       Admin::Collection.skip_callback(:save, :around, :reindex_members)
+      # Don't accidentally delete derivatives
+      ::Derivative.skip_callback(:destroy, :before, :retract_distributed_files!)
       #::MediaObject.skip_callback(:save, :before, :update_dependent_properties!)
 
       models = [Admin::Collection, ::Lease, ::MediaObject, ::MasterFile, ::Derivative]
