@@ -41,28 +41,29 @@ window.onload = (function () {
 
 <h3>
 <% if @f3_pid.present? %>
-  Migrated from <b><%=@f3_pid%></b>
+  Migrated <b><%=@f3_pid%></b>
 <% else %>
-  Migrated from ???
+  Migrated ???
 <% end %>
- to <b>
 <% if @f4_pid.present? %>
-  <% unless ["Derivative", "Lease"].include? @class %>
+ to <b>
+  <% unless ['Derivative', 'Lease'].include? @class %>
     <%= link_to objects_url(@f4_pid), objects_path(@f4_pid) %>
   <% else %>
     <%= @f4_pid %>
   <% end %>
 <% else %>
-???
 <% end %>
 </b>
 </h3>
 <h5>
-<a href="#Fedora3">Fedora 3 Datastreams <i class="fa fa-arrow-down" aria-hidden="true"></i></a> |
-<a href="#Fedora4">Fedora 4 Properties <i class="fa fa-arrow-down" aria-hidden="true"></i></a> |
-<% unless ["Bookmark", "AvalonClip", "AvalonMarker"].include? @class %>
+
+<% unless ['Playlist', 'Bookmark', 'AvalonClip', 'AvalonMarker'].include? @class %>
+  <a href="#Fedora3">Fedora 3 Datastreams <i class="fa fa-arrow-down" aria-hidden="true"></i></a> |
+  <a href="#Fedora4">Fedora 4 Properties <i class="fa fa-arrow-down" aria-hidden="true"></i></a> |
   <%= link_to 'Full Report', admin_migration_report_report_path(id: params[:id]), target: 'migration_json'%>
 <% end %>
+
 <h5/>
 <br/>
 <table class="table table-striped table-hover table-condensed">
@@ -82,9 +83,7 @@ window.onload = (function () {
   <% end %>
 </table>
 
-<% if ["playlists", "Bookmark", "AvalonClip", "AvalonMarker"].include? @class %>
-  <%= render 'dbobject' %>
-<% else %>
+<% unless ['Playlists', 'Bookmark', 'AvalonClip', 'AvalonMarker'].include? @class %>
   <%= render 'fedora3' %>
   <%= render 'fedora4' %>
 <% end %>
