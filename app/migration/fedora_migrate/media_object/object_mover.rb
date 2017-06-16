@@ -81,6 +81,19 @@ module FedoraMigrate
         report.master_file_order = mover.migrate
         report
       end
+
+      def self.wipeout!(media_object)
+        media_object.ordered_master_files = []
+        media_object.master_files = []
+        media_object.save
+        super
+      end
+
+      def self.empty?(media_object)
+        media_object.ordered_master_files.to_a.blank? &&
+        media_object.master_files.blank? &&
+        super
+      end
     end
   end
 end

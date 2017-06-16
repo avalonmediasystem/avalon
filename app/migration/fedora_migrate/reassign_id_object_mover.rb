@@ -42,6 +42,24 @@ module FedoraMigrate
       @target ||= FedoraMigrate::ReassignIdTargetConstructor.new(source).build
     end
 
+    def self.wipeout!(obj)
+      return false if obj.new_record?
+      obj.access_control.destroy
+      obj.attached_files.values.each do |file|
+        next if file.new_record?
+        file.destroy
+        file.eradicate
+      end
+      obj.reload
+      obj.resource.clear
+    end
+
+    def self.empty?(obj)
+      obj.resource.blank? &&
+      obj.access_control.blank? &&
+      obj.attached_files.values.all?(&:blank?)
+    end
+
     private
 
       def migrate_dublin_core
