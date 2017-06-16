@@ -58,7 +58,7 @@ window.onload = (function () {
 </h3>
 <h5>
 
-<% unless ['Playlist', 'Bookmark', 'AvalonClip', 'AvalonMarker'].include? @class %>
+<% unless ['Bookmark', 'AvalonClip', 'AvalonMarker'].include? @class %>
   <a href="#Fedora3">Fedora 3 Datastreams <i class="fa fa-arrow-down" aria-hidden="true"></i></a> |
   <a href="#Fedora4">Fedora 4 Properties <i class="fa fa-arrow-down" aria-hidden="true"></i></a> |
   <%= link_to 'Full Report', admin_migration_report_report_path(id: params[:id]), target: 'migration_json'%>
@@ -83,7 +83,7 @@ window.onload = (function () {
   <% end %>
 </table>
 
-<% unless ['Playlists', 'Bookmark', 'AvalonClip', 'AvalonMarker'].include? @class %>
+<% unless ['Bookmark', 'AvalonClip', 'AvalonMarker'].include? @class %>
   <%= render 'fedora3' %>
   <%= render 'fedora4' %>
 <% end %>
