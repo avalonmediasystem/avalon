@@ -52,6 +52,7 @@ module FedoraMigrate
       end
       obj.reload
       obj.resource.clear
+      self.empty?(obj)
     end
 
     def self.empty?(obj)

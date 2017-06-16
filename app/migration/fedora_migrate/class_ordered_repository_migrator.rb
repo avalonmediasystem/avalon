@@ -84,14 +84,15 @@ module FedoraMigrate
         target.delete unless target.nil?
       end
 
-      def cleanout_object!(target)
+      def cleanout_object!(target, klass)
         return nil unless target
         #target_id = target.id
         #target_class = target.class
         #success = target.delete.eradicate
-        object_mover(klass).wipeout!(target)
+        success = object_mover(klass).wipeout!(target)
         raise RuntimeError("Failed to cleanout object: #{target_id}") unless success
-        target_class.new(id: target_id)
+        #target_class.new(id: target_id)
+        target
       end
 
       def overwrite?
@@ -105,7 +106,7 @@ module FedoraMigrate
           begin
             target = klass.where(migrated_from_ssim: construct_migrate_from_uri(source.pid).to_s).first
             if overwrite? && (method != :second_pass)
-              target = cleanout_object!(target)
+              target = cleanout_object!(target, klass)
               unless target.nil?
                 MigrationStatus.where(f3_pid: status_record.f3_pid).delete_all
                 status_record = MigrationStatus.find_or_create_by(source_class: klass.name, f3_pid: source.pid, datastream: nil)
