@@ -13,14 +13,15 @@ describe FedoraMigrate::AdminCollection::ObjectMover do
   end
   describe 'wipeout!' do
     it 'wipes all of the data' do
-      expect(collection.resource.blank?).to be_falsey
-      expect(collection.default_permissions.blank?).to be_falsey
-      expect(collection.access_control.blank?).to be_falsey
+      resources = [:resource, :default_permissions, :access_control]
+      resources.each do |res|
+        expect(collection.send(res).blank?).to be_falsey
+      end
       expect(described_class.empty?(collection)).to be_falsey
       described_class.wipeout!(collection)
-      expect(collection.resource.blank?).to be_truthy
-      expect(collection.default_permissions.blank?).to be_truthy
-      expect(collection.access_control.blank?).to be_truthy
+      resources.each do |res|
+        expect(collection.send(res).blank?).to be_truthy
+      end
       expect(described_class.empty?(collection)).to be_truthy
     end
   end

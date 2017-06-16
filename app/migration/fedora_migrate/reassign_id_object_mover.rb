@@ -44,7 +44,7 @@ module FedoraMigrate
 
     def self.wipeout!(obj)
       return false if obj.new_record?
-      obj.access_control.destroy
+      obj.access_control.destroy if obj.respond_to?(:access_control)
       obj.attached_files.values.each do |file|
         next if file.new_record?
         file.destroy
@@ -56,7 +56,7 @@ module FedoraMigrate
 
     def self.empty?(obj)
       obj.resource.blank? &&
-      obj.access_control.blank? &&
+      (!obj.respond_to?(:access_control) || obj.access_control.blank?) &&
       obj.attached_files.values.all?(&:blank?)
     end
 

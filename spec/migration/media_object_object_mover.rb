@@ -13,19 +13,16 @@ describe FedoraMigrate::MediaObject::ObjectMover do
   end
   describe 'wipeout!' do
     it 'wipes all of the data' do
-      expect(media_object.resource.blank?).to be_falsey
-      expect(media_object.access_control.blank?).to be_falsey
-      expect(media_object.descMetadata.blank?).to be_falsey
-      expect(media_object.workflow.blank?).to be_falsey
-      expect(media_object.master_files.blank?).to be_falsey
+      resources = [:resource, :access_control, :descMetadata, :workflow, :master_files]
+      resources.each do |res|
+        expect(media_object.send(res).blank?).to be_falsey
+      end
       expect(media_object.ordered_master_files.to_a.blank?).to be_falsey
       expect(described_class.empty?(media_object)).to be_falsey
       described_class.wipeout!(media_object)
-      expect(media_object.resource.blank?).to be_truthy
-      expect(media_object.access_control.blank?).to be_truthy
-      expect(media_object.descMetadata.blank?).to be_truthy
-      expect(media_object.workflow.blank?).to be_truthy
-      expect(media_object.master_files.blank?).to be_truthy
+      resources.each do |res|
+        expect(media_object.send(res).blank?).to be_truthy
+      end
       expect(media_object.ordered_master_files.to_a.blank?).to be_truthy
       expect(described_class.empty?(media_object)).to be_truthy
     end

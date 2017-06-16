@@ -16,5 +16,6 @@ FactoryGirl.define do
   factory :lease, class: Lease do
     begin_time { Date.yesterday }
     end_time { Date.tomorrow }
+    inherited_read_users {[ FactoryGirl.create(:user).username ]}
   end
 end
