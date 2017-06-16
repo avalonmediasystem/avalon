@@ -86,9 +86,10 @@ module FedoraMigrate
 
       def cleanout_object!(target)
         return nil unless target
-        target_id = target.id
-        target_class = target.class
-        success = target.delete.eradicate
+        #target_id = target.id
+        #target_class = target.class
+        #success = target.delete.eradicate
+        object_mover(klass).wipeout!(target)
         raise RuntimeError("Failed to cleanout object: #{target_id}") unless success
         target_class.new(id: target_id)
       end
