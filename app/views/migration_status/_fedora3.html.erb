@@ -1,0 +1,23 @@
+<h3><a id="Fedora3">Fedora 3</a></h3>
+<div class="panel-group">
+	<div class="panel panel-default">
+<% if @f3_obj.present? %>
+  <% @f3_obj.datastreams.each do |name, ds| %>
+    <div class="panel-heading">
+			<h4 class="panel-title">
+				<a data-toggle="collapse" href="#f3-details-panel-<%= name %>">
+					<%= name.titleize %>
+				</a>
+			</h4>
+		</div>
+		<div id="f3-details-panel-<%= name %>" class="collapse panel-collapse">
+			<% if ds.mimeType.start_with?("image") %>
+				<%= ('<img src="data:image/jpg;base64,%s">' % Base64.encode64(ds.content)).html_safe %>
+			<% else %>
+				<pre><code class="xml"><%= ds.content.body.force_encoding(Encoding::UTF_8).strip %></code></pre>
+			<% end %>
+		</div>
+  <% end %>
+<% end %>
+	</div>
+</div>
