@@ -83,8 +83,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediainfo.git
-  revision: af770d3c4c9867335a2ae0e564f2cfd9bce56aa3
-  tag: avalon-r6
+  revision: 5e28f2b58cefb20b6e06f022256ea1d13b761b1f
+  tag: avalon-r6.1
   specs:
     mediainfo (0.7.1)
 
