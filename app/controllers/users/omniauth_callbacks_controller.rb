@@ -62,8 +62,11 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     end
 
-    if request['target_id']
-      redirect_to objects_path(request['target_id'])
+    if params['login_popup'].present?
+      flash[:success] = nil
+      render inline: '<html><head><script>window.close();</script></head><body></body><html>'.html_safe
+    elsif request['target_id']
+      redirect_to object_path(request['target_id'])
     elsif params[:url]
       redirect_to params[:url]
     elsif session[:previous_url] 
