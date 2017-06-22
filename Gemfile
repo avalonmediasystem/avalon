@@ -51,7 +51,7 @@ gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflo
 gem 'active_encode', '~> 0.1.1'
 gem 'hooks'
 gem 'iconv'
-gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag: 'avalon-r6'
+gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag: 'avalon-r6.1'
 gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 gem 'net-ldap'
