@@ -97,4 +97,12 @@ class ApplicationController < ActionController::Base
       render '/errors/unknown_pid', status: 404
     end
   end
+
+  rescue_from Ldp::Gone do |exception|
+    if request.format == :json
+      render json: {errors: ["#{params[:id]} has been deleted"]}, status: 410
+    else
+      render '/errors/deleted_pid', status: 410
+    end
+  end
 end
