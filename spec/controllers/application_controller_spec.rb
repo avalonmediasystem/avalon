@@ -19,8 +19,8 @@ describe ApplicationController do
     def create
       render nothing: true
     end
-    
-    def show_deleted_pid
+
+    def show
       raise Ldp::Gone
     end
   end
@@ -64,7 +64,7 @@ describe ApplicationController do
   
   describe "exceptions handling" do
     it "renders deleted_pid template" do
-      get :show_deleted_pid
+      get :show, id: 'deleted-id'
       expect(response).to render_template("errors/deleted_pid")
     end
   end
