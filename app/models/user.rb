@@ -68,7 +68,7 @@ class User < ActiveRecord::Base
       Course.create :context_id => class_id, :label => auth_hash.extra.consumer.context_label, :title => class_name unless class_name.nil?
     end
 
-    self.find_or_create_by_username_or_email(auth_hash.uid, auth_hash.email)
+    self.find_or_create_by_username_or_email(auth_hash.uid, auth_hash.info.email)
   end
 
   def self.autocomplete(query)

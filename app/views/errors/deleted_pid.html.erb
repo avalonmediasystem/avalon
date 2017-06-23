@@ -13,10 +13,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% save_disabled = @active_step == "access-control" && cannot?( :update_access_control, @media_object) %>
-<div class="btn-group">
-<% form ||= nil %>
-<%= submit_tag 'Save', name: 'save', class: "btn btn-default", form: form, disabled: save_disabled %>
-<%= hidden_field_tag :step, @active_step, form: form %>
-<%= submit_tag "Save and continue", name: 'save_and_continue', class: 'btn btn-primary', form: form %>
+<div id="main_content_container" class="container-fluid">
+  <div class="content" class="col-md-8">
+    <h2>Item deleted</h2>
+    <p>The item you requested has been deleted from the system. If this is not expected, contact your support staff.</p>
+  </div>
 </div>

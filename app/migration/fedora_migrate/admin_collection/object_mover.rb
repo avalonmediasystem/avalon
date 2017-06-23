@@ -44,6 +44,15 @@ module FedoraMigrate
         mover.migrate
         report.permissions += mover.migrate
       end
+
+      def self.wipeout!(collection)
+        collection.default_permissions.destroy_all
+        super
+      end
+
+      def self.empty?(collection)
+        collection.default_permissions.blank? && super
+      end
     end
   end
 end

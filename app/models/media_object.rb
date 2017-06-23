@@ -215,6 +215,7 @@ class MediaObject < ActiveFedora::Base
       solr_doc["section_label_tesim"] = section_labels
       solr_doc['section_physical_description_ssim'] = section_physical_descriptions
       solr_doc['avalon_resource_type_ssim'] = self.avalon_resource_type.map(&:titleize)
+      solr_doc['identifier_ssim'] = self.identifier.map(&:downcase)
 
       #Add all searchable fields to the all_text_timv field
       all_text_values = []

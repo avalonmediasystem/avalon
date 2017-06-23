@@ -38,6 +38,13 @@ FactoryGirl.define do
         mf.save
       end
     end
+    trait :with_poster do
+      after(:create) do |mf|
+        mf.poster.mime_type = 'image/jpeg'
+        mf.poster.content = 'fake image content'
+        mf.save
+      end
+    end
     trait :with_structure do
       after(:create) do |mf|
         mf.structuralMetadata.content = File.read('spec/fixtures/structure.xml')

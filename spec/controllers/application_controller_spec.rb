@@ -19,6 +19,10 @@ describe ApplicationController do
     def create
       render nothing: true
     end
+
+    def show
+      raise Ldp::Gone
+    end
   end
 
   context "normal auth" do
@@ -55,6 +59,13 @@ describe ApplicationController do
     it 'returns no collections for an end-user' do
       login_as :user
       expect(controller.get_user_collections).to be_empty
+    end
+  end
+  
+  describe "exceptions handling" do
+    it "renders deleted_pid template" do
+      get :show, id: 'deleted-id'
+      expect(response).to render_template("errors/deleted_pid")
     end
   end
 end

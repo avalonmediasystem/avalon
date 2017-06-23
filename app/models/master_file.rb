@@ -471,6 +471,7 @@ class MasterFile < ActiveFedora::Base
       solr_doc['has_thumbnail?_bs'] = has_thumbnail?
       solr_doc['has_structuralMetadata?_bs'] = has_structuralMetadata?
       solr_doc['caption_type_ss'] = caption_type
+      solr_doc['identifier_ssim'] = identifier.map(&:downcase)
     end
   end
 

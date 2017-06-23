@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -13,15 +13,15 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class MigrationStatusController < ApplicationController
-  
+
   before_filter :auth
   layout 'migration_report'
-  
+
   def index
     @counts = MigrationStatus.summary
     render without_layout_if_xhr
   end
-  
+
   def show
     criteria = { source_class: params[:class], datastream: nil }
     if params[:status].present?
@@ -31,7 +31,7 @@ class MigrationStatusController < ApplicationController
     @statuses = MigrationStatus.where(criteria).order(params[:order] || :id).page(params[:page]).per(params[:per])
     render without_layout_if_xhr
   end
-  
+
   def detail
     @statuses = MigrationStatus.where(f3_pid: params[:id])
     @statuses = MigrationStatus.where(f4_pid: params[:id]) if @statuses.empty?
@@ -39,7 +39,7 @@ class MigrationStatusController < ApplicationController
     @class = @statuses.first.source_class
     @f4_pid = @statuses.first.f4_pid
     if @f4_pid
-      @f4_obj = ActiveFedora::Base.find(@f4_pid) rescue ActiveFedora::ObjectNotFoundError
+      @f4_obj = ActiveFedora::Base.find(@f4_pid) rescue nil
     end
     @f3_pid = @statuses.first.f3_pid
     if @f3_pid
@@ -47,12 +47,12 @@ class MigrationStatusController < ApplicationController
     end
     render without_layout_if_xhr
   end
-  
+
   def report
     filename = "#{params[:id].sub(/:/,'_')}.json"
     send_file File.join(Rails.root, 'migration_report', filename), type: 'application/json', disposition: 'inline'
   end
-  
+
   def auth
     if current_user.nil?
       flash[:notice] = "You need to login to view migration reports"
@@ -62,7 +62,7 @@ class MigrationStatusController < ApplicationController
       redirect_to root_path
     end
   end
-  
+
   def without_layout_if_xhr
     request.xhr? ? { layout: false } : {}
   end
