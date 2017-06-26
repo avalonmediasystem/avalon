@@ -553,7 +553,7 @@ GEM
       thor (>= 0.18.1, < 2.0)
     rainbow (2.1.0)
     rake (12.0.0)
-    rb-readline (0.5.3)
+    rb-readline (0.5.4)
     rchardet (1.6.1)
     rdf (2.2.6)
       hamster (~> 3.0)
