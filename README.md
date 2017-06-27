@@ -44,6 +44,7 @@ Docker provides an alternative way of setting up an Avalon Media System Developm
 * ```cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml```
 * ```docker-compose up```
 * Try loading Avalon in your browser: ```localhost:3000```
+
 Avalon is served by Webrick in development mode so any changes will be picked up automatically. Running a Rails command inside the Avalon container is easy, for example, to run tests ```docker exec -it avalon_avalon_1 bash -c "RAILS_ENV=test bundle exec rspec"```
 
 # Browser Testing
