@@ -96,7 +96,6 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'rb-readline'
   gem 'byebug'
-  gem 'rb-readline'
   gem 'pry-rails'
   gem 'pry-byebug'
   gem 'solr_wrapper', '>= 0.16'
