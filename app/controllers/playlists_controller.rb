@@ -52,8 +52,15 @@ class PlaylistsController < ApplicationController
         end
       end
     else
-      flash.now[:error] = @playlist.errors.full_messages.to_sentence
-      render action: 'new'
+      respond_to do |format|
+        format.html do
+          flash.now[:error] = @playlist.errors.full_messages.to_sentence
+          render action: 'new'
+        end
+        format.json do
+          render json: {errors: @playlist.errors}
+        end
+      end
     end
   end
 
@@ -69,8 +76,15 @@ class PlaylistsController < ApplicationController
         end
       end
     else
-      flash.now[:error] = "There are errors with your submission.  #{@playlist.errors.full_messages.join(', ')}"
-      render action: 'edit'
+      respond_to do |format|
+        format.html do
+          flash.now[:error] = "There are errors with your submission.  #{@playlist.errors.full_messages.join(', ')}"
+          render action: 'edit'
+        end
+        format.json do
+          render json: {errors: @playlist.errors}
+        end
+      end
     end
   end
 
