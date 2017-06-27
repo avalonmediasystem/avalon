@@ -63,7 +63,7 @@ EOC
         next if status_record.status == "completed"
         status_record.update_attributes status: "migrate", log: nil
         begin
-          obj = MediaObject.where("identifier_ssim:\"#{b.document_id}\"").first
+          obj = MediaObject.where("identifier_ssim:\"#{b.document_id.downcase}\"").first
           obj ||= MediaObject.where(id: b.document_id).first
           raise FedoraMigrate::Errors::MigrationError, "Media Object with Avalon 5 ID #{b.document_id} could not be found" unless obj
           b.document_id = obj.id
@@ -79,7 +79,7 @@ EOC
         status_record.update_attributes status: "migrate", log: nil
         begin
           old_id = anno.source.split('/').last
-          mf = MasterFile.where("identifier_ssim:\"#{old_id}\"").first
+          mf = MasterFile.where("identifier_ssim:\"#{old_id.downcase}\"").first
           mf ||= MasterFile.where(id: old_id).first
           raise FedoraMigrate::Errors::MigrationError, "Master File with Avalon 5 ID #{old_id} could not be found" unless mf
           anno.master_file = mf
@@ -95,7 +95,7 @@ EOC
         status_record.update_attributes status: "migrate", log: nil
         begin
           old_id = anno.source.split('/').last
-          mf = MasterFile.where("identifier_ssim:\"#{old_id}\"").first
+          mf = MasterFile.where("identifier_ssim:\"#{old_id.downcase}\"").first
           mf ||= MasterFile.where(id: old_id).first
           raise FedoraMigrate::Errors::MigrationError, "Master File with Avalon 5 ID #{old_id} could not be found" unless mf
           anno.master_file = mf
@@ -402,7 +402,7 @@ EOC
           container = playlist_item['container_string']
           comment = HTMLEntities.new.decode(playlist_item['comment'])
           title = HTMLEntities.new.decode(playlist_item['name'])
-          mf_obj = MasterFile.where("identifier_ssim:#{container}").first
+          mf_obj = MasterFile.where("identifier_ssim:#{container.downcase}").first
           unless mf_obj.present?
             item_errors += [{username: user['username'], playlist_id: playlist_obj.id, container: container, title: title, errors: ['Masterfile not found']}]
             next

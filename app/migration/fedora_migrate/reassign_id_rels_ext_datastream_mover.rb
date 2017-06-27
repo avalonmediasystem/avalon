@@ -41,7 +41,7 @@ module FedoraMigrate
 
       def locate_object_id(id)
         return target if source.pid == id
-        ActiveFedora::Base.where(identifier_ssim: id).first.try(:id)
+        ActiveFedora::Base.where(identifier_ssim: id.downcase).first.try(:id)
       end
 
       def migrate_object(fc3_uri)
