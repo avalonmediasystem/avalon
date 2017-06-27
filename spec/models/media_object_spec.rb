@@ -604,7 +604,7 @@ describe MediaObject do
 
       it 'does not remove the permalink if the permalink service returns nil' do
         Permalink.on_generate{ nil }
-        media_object.save( validate: false )
+        media_object.save
         expect(media_object.permalink).to eq('http://www.example.com/perma-url')
       end
 
@@ -654,7 +654,7 @@ describe MediaObject do
       it 'returns false when not updated' do
         media_object.publish!('C.S. Lewis')
         expect(media_object).to receive(:ensure_permalink!).and_return(false)
-        media_object.save( validate: false )
+        media_object.save
       end
     end
   end

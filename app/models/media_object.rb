@@ -55,7 +55,7 @@ class MediaObject < ActiveFedora::Base
   validate  :report_missing_attributes, if: :resource_description_active?
 
   def resource_description_active?
-    workflow.active?("resource-description")
+    workflow.completed?("file-upload")
   end
 
   def validate_note_type

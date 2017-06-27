@@ -385,6 +385,19 @@ describe MediaObjectsController, type: :controller do
         get :edit, {id: media_object.id, step: 'resource-description'}
         expect(response.response_code).to eq(200)
       end
+      it "does not persist invalid media object after resource-description step" do
+        media_object.workflow.last_completed_step = 'resource-description'
+        media_object.save
+        login_user media_object.collection.managers.first
+
+        put :update, {id: media_object.id, step: 'resource-description', media_object: {title: '', date_issued: ''}}
+        expect(response.response_code).to eq(200)
+        expect(flash[:error]).not_to be_empty
+        media_object.reload
+        expect(media_object.valid?).to be_truthy
+        expect(media_object.title).not_to be_blank
+        expect(media_object.date_issued).not_to be_blank
+      end
     end
 
     context "Persisting Permalinks" do
@@ -875,7 +888,7 @@ describe MediaObjectsController, type: :controller do
       media_object = FactoryGirl.create(:media_object)
       media_object.ordered_master_files += [FactoryGirl.create(:master_file, :with_derivative)]
       media_object.set_media_types!
-      media_object.save( validate: false )
+      media_object.save
       media_object.reload
       expect(media_object.format).to eq(["video/mp4"])
     end
