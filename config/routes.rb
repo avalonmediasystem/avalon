@@ -148,7 +148,7 @@ Rails.application.routes.draw do
 
   def route_can?(action, thing, scope=nil)
     lambda do |request|
-      warden = request.env['warden']
+      warden = @request.env['warden']
       warden.authenticate? && Ability.new(warden.user(scope), warden.session(scope)).can?(action, thing)
     end
   end
@@ -157,7 +157,7 @@ Rails.application.routes.draw do
     mount AboutPage::Engine => '/about(.:format)', as: 'about_page'
   end
   get '/about(.:format)', to: redirect('/')
-  get '/about/health.yaml', to: 'about_page/about#health', defaults: { :format => 'yaml' }  
+  get '/about/health.yaml', to: 'about_page/about#health', defaults: { :format => 'yaml' }
   get '/about/health(.:format)', to: redirect('/')
 
   constraints(route_can?(:manage, Resque)) do

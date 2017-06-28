@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 20170530173242) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "annotations", force: :cascade do |t|
     t.string  "uuid"
     t.string  "source_uri"
@@ -21,8 +24,8 @@ ActiveRecord::Schema.define(version: 20170530173242) do
     t.string  "type"
   end
 
-  add_index "annotations", ["playlist_item_id"], name: "index_annotations_on_playlist_item_id"
-  add_index "annotations", ["type"], name: "index_annotations_on_type"
+  add_index "annotations", ["playlist_item_id"], name: "index_annotations_on_playlist_item_id", using: :btree
+  add_index "annotations", ["type"], name: "index_annotations_on_type", using: :btree
 
   create_table "api_tokens", force: :cascade do |t|
     t.string   "token",      null: false
@@ -32,8 +35,8 @@ ActiveRecord::Schema.define(version: 20170530173242) do
     t.datetime "updated_at"
   end
 
-  add_index "api_tokens", ["token"], name: "index_api_tokens_on_token", unique: true
-  add_index "api_tokens", ["username"], name: "index_api_tokens_on_username"
+  add_index "api_tokens", ["token"], name: "index_api_tokens_on_token", unique: true, using: :btree
+  add_index "api_tokens", ["username"], name: "index_api_tokens_on_username", using: :btree
 
   create_table "bookmarks", force: :cascade do |t|
     t.integer  "user_id",       null: false
@@ -45,8 +48,8 @@ ActiveRecord::Schema.define(version: 20170530173242) do
     t.datetime "updated_at",    null: false
   end
 
-  add_index "bookmarks", ["document_id"], name: "index_bookmarks_on_document_id"
-  add_index "bookmarks", ["user_id"], name: "index_bookmarks_on_user_id"
+  add_index "bookmarks", ["document_id"], name: "index_bookmarks_on_document_id", using: :btree
+  add_index "bookmarks", ["user_id"], name: "index_bookmarks_on_user_id", using: :btree
 
   create_table "courses", force: :cascade do |t|
     t.string   "context_id"
@@ -85,7 +88,7 @@ ActiveRecord::Schema.define(version: 20170530173242) do
     t.datetime "updated_at",   null: false
   end
 
-  add_index "migration_statuses", ["source_class", "f3_pid", "datastream"], name: "index_migration_statuses"
+  add_index "migration_statuses", ["source_class", "f3_pid", "datastream"], name: "index_migration_statuses", using: :btree
 
   create_table "minter_states", force: :cascade do |t|
     t.string   "namespace",            default: "default", null: false
@@ -97,7 +100,7 @@ ActiveRecord::Schema.define(version: 20170530173242) do
     t.datetime "updated_at",                               null: false
   end
 
-  add_index "minter_states", ["namespace"], name: "index_minter_states_on_namespace", unique: true
+  add_index "minter_states", ["namespace"], name: "index_minter_states_on_namespace", unique: true, using: :btree
 
   create_table "playlist_items", force: :cascade do |t|
     t.integer  "playlist_id", null: false
@@ -107,8 +110,8 @@ ActiveRecord::Schema.define(version: 20170530173242) do
     t.datetime "updated_at"
   end
 
-  add_index "playlist_items", ["clip_id"], name: "index_playlist_items_on_clip_id"
-  add_index "playlist_items", ["playlist_id"], name: "index_playlist_items_on_playlist_id"
+  add_index "playlist_items", ["clip_id"], name: "index_playlist_items_on_clip_id", using: :btree
+  add_index "playlist_items", ["playlist_id"], name: "index_playlist_items_on_playlist_id", using: :btree
 
   create_table "playlists", force: :cascade do |t|
     t.string   "title"
@@ -119,7 +122,7 @@ ActiveRecord::Schema.define(version: 20170530173242) do
     t.datetime "updated_at"
   end
 
-  add_index "playlists", ["user_id"], name: "index_playlists_on_user_id"
+  add_index "playlists", ["user_id"], name: "index_playlists_on_user_id", using: :btree
 
   create_table "role_maps", force: :cascade do |t|
     t.string  "entry"
@@ -134,7 +137,7 @@ ActiveRecord::Schema.define(version: 20170530173242) do
     t.datetime "updated_at",   null: false
   end
 
-  add_index "searches", ["user_id"], name: "index_searches_on_user_id"
+  add_index "searches", ["user_id"], name: "index_searches_on_user_id", using: :btree
 
   create_table "sessions", force: :cascade do |t|
     t.string   "session_id", null: false
@@ -143,8 +146,8 @@ ActiveRecord::Schema.define(version: 20170530173242) do
     t.datetime "updated_at"
   end
 
-  add_index "sessions", ["session_id"], name: "index_sessions_on_session_id"
-  add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at"
+  add_index "sessions", ["session_id"], name: "index_sessions_on_session_id", using: :btree
+  add_index "sessions", ["updated_at"], name: "index_sessions_on_updated_at", using: :btree
 
   create_table "stream_tokens", force: :cascade do |t|
     t.string   "token"
@@ -162,7 +165,7 @@ ActiveRecord::Schema.define(version: 20170530173242) do
     t.string   "guest"
   end
 
-  add_index "users", ["email"], name: "index_users_on_email", unique: true
-  add_index "users", ["username"], name: "index_users_on_username", unique: true
+  add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
+  add_index "users", ["username"], name: "index_users_on_username", unique: true, using: :btree
 
 end

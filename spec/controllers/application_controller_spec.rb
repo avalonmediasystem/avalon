@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -61,11 +61,22 @@ describe ApplicationController do
       expect(controller.get_user_collections).to be_empty
     end
   end
-  
+
   describe "exceptions handling" do
     it "renders deleted_pid template" do
       get :show, id: 'deleted-id'
       expect(response).to render_template("errors/deleted_pid")
+    end
+  end
+
+  # Authenticated routes must be tested in a controller
+  # https://github.com/plataformatec/devise/wiki/How-To:-Test-controllers-with-Rails-3-and-4-%28and-RSpec%29#authenticated-routes-in-rails-3
+  describe 'About page routes spec' do
+    describe 'admin' do
+      it "should be able to resolve /about" do
+        login_as :administrator
+        expect(get: '/').to route_to('about_page/about#index')
+      end
     end
   end
 end

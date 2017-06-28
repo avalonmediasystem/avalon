@@ -126,6 +126,11 @@ RSpec.configure do |config|
   # config.include FactoryGirl::Syntax::Methods
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include ControllerMacros, type: :controller
-  config.include Warden::Test::Helpers,type: :feature
+  config.include Warden::Test::Helpers, type: :feature
   config.include FixtureMacros, type: :controller
+
+   config.include Devise::Test::IntegrationHelpers, type: :routing
+#  config.include Devise::TestHelpers, type: :routing
+#  config.include Warden::Test::Helpers, type: :routing
+#  config.include ControllerMacros, type: :routing
 end
