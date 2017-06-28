@@ -1,3 +1,5 @@
+require 'avalon/routing/can_constraint'
+
 Rails.application.routes.draw do
 
   mount Blacklight::Engine => '/'
@@ -146,21 +148,14 @@ Rails.application.routes.draw do
 
   match "/oembed", to: 'master_files#oembed', via: [:get]
 
-  def route_can?(action, thing, scope=nil)
-    lambda do |request|
-      warden = request.env['warden']
-      warden.authenticate? && Ability.new(warden.user(scope), warden.session(scope)).can?(action, thing)
-    end
-  end
-
-  constraints(route_can?(:read, :about_page)) do
+  constraints(Avalon::Routing::CanConstraint.new(:read, :about_page)) do
     mount AboutPage::Engine => '/about(.:format)', as: 'about_page'
   end
   get '/about(.:format)', to: redirect('/')
   get '/about/health.yaml', to: 'about_page/about#health', defaults: { :format => 'yaml' }  
   get '/about/health(.:format)', to: redirect('/')
 
-  constraints(route_can?(:manage, Resque)) do
+  constraints(Avalon::Routing::CanConstraint.new(:manage, Resque)) do
     require 'resque/server'
     mount Resque::Server, at: '/jobs'
   end
