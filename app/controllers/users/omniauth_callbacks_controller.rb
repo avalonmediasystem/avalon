@@ -62,7 +62,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
     end
 
-    if params['login_popup'].present? || request.env["omniauth.params"]["login_popup"].present?
+    if params['login_popup'].present? || (request.env["omniauth.params"].present? && request.env["omniauth.params"]["login_popup"].present?)
       flash[:success] = nil
       render inline: '<html><head><script>window.close();</script></head><body></body><html>'.html_safe
     elsif request['target_id']
