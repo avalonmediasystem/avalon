@@ -68,15 +68,4 @@ describe ApplicationController do
       expect(response).to render_template("errors/deleted_pid")
     end
   end
-
-  # Authenticated routes must be tested in a controller
-  # https://github.com/plataformatec/devise/wiki/How-To:-Test-controllers-with-Rails-3-and-4-%28and-RSpec%29#authenticated-routes-in-rails-3
-  describe 'About page routes spec' do
-    describe 'admin' do
-      it "should be able to resolve /about" do
-        login_as :administrator
-        expect(get: '/').to route_to('about_page/about#index')
-      end
-    end
-  end
 end
