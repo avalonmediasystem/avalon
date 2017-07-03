@@ -99,7 +99,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
-  revision: 9849835a4711f671371e8ef8b18e87bb9183cbba
+  revision: 0c1d53f826620ef41ad5e4f9bb0bddd7097f6d93
+  branch: blank_lookups
   specs:
     rubyhorn (0.0.6)
       activesupport
@@ -463,7 +464,7 @@ GEM
     multi_xml (0.6.0)
     multipart-post (2.0.0)
     mysql2 (0.4.5)
-    net-http-digest_auth (1.4)
+    net-http-digest_auth (1.4.1)
     net-ldap (0.15.0)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
