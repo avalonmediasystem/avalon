@@ -35,6 +35,17 @@ explore the out-of-the-box functionality or do basic development.
 * ```rake db:test:prepare```
 * ``bundle exec rake server:development`` or ``bundle exec rake server:test`` Note: This process will not background itself, it will occupy the terminal you run it in
 
+# Quickstart development with Docker (experimental)
+Docker provides an alternative way of setting up an Avalon Media System Development Environment in minutes without installing any dependencies beside Docker itself. It should be noted that the docker-compose.yml provided here is for development only and will be updated continually.
+* Install [Docker](https://docs.docker.com/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/)
+* ```git clone https://github.com/avalonmediasystem/avalon```
+* ```cd avalon```
+* ```cp config/authentication.yml.example config/authentication.yml```
+* ```cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml```
+* ```docker-compose up```
+* Try loading Avalon in your browser: ```localhost:3000```
+
+Avalon is served by Webrick in development mode so any changes will be picked up automatically. Running a Rails command inside the Avalon container is easy, for example, to run tests ```docker exec -it avalon_avalon_1 bash -c "RAILS_ENV=test bundle exec rspec"```
 
 # Browser Testing
 Testing support for Avalon Media System is provided by [BrowserStack](https://www.browserstack.com).

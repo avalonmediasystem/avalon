@@ -33,7 +33,7 @@ module ActiveEncodeJob
       unless encode.created?
         Rails.logger.info "Creating! #{encode.inspect} for MasterFile #{master_file_id}"
         encode_job = encode.create!
-        raise RuntimeError, 'Error creating encoding job' unless encode_job.id
+        raise RuntimeError, 'Error creating encoding job' unless encode_job.id.present?
         mf.update_progress_with_encode!(encode_job).save
         ActiveEncodeJob::Update.set(wait: 10.seconds).perform_later(master_file_id)
       end
