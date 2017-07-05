@@ -18,12 +18,14 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
   revision: ce676ddcec233fb525305579f26142965691d2ba
+  tag: avalon-r6.1
   specs:
     avalon-workflow (0.0.3)
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
   revision: fd9c084cf9c39c05b96a5e4ecfb1b9bcfd5c883d
+  tag: avalon-r6.1
   specs:
     media_element_add_to_playlist (0.0.1)
       rails (~> 4.0)
@@ -99,8 +101,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
-  revision: 0c1d53f826620ef41ad5e4f9bb0bddd7097f6d93
-  branch: blank_lookups
+  revision: fd1e0ee2cca53df515f58690603e9a6351066106
+  tag: avalon-r6
   specs:
     rubyhorn (0.0.6)
       activesupport

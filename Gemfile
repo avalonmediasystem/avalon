@@ -47,7 +47,7 @@ gem 'devise'
 #gem 'devise-guests', '~> 0.3'
 
 # Avalon-specific
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git"
+gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.1'
 gem 'active_encode', '~> 0.1.1'
 gem 'hooks'
 gem 'iconv'
@@ -63,7 +63,7 @@ gem 'api-pagination'
 gem 'browse-everything', '~> 0.10.5'
 gem 'bootstrap_form'
 gem 'bootstrap-toggle-rails'
-gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", branch: 'blank_lookups'
+gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
 gem 'roo'
 gem 'activerecord-session_store'
 gem 'whenever', git: "https://github.com/javan/whenever.git", require: false
@@ -80,7 +80,7 @@ gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediae
 gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r4'
 gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r4'
 gem 'media-element-logo-plugin'
-gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git'
+gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.1'
 gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/mediaelement-track-scrubber.git', tag: 'avalon-r6'
 
 
