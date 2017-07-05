@@ -1444,7 +1444,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 		<xsl:if test="$controlField008-35-37 != 'N/A' and $controlField008-35-37 != ''">
 			<language>
 				<languageTerm authority="iso639-2b" type="code">
-					<xsl:value-of select="substring($controlField008,36,3)"/>
+					<xsl:value-of select="$controlField008-35-37"/>
 				</languageTerm>
 			</language>
 		</xsl:if>
