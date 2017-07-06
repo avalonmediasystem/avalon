@@ -1,12 +1,15 @@
 <xsl:stylesheet xmlns="http://www.loc.gov/mods/v3" xmlns:marc="http://www.loc.gov/MARC21/slim"
 	xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-	exclude-result-prefixes="xlink marc" version="2.0">
+	exclude-result-prefixes="xlink marc" version="1.0">
 	<xsl:include href="./MARC21slimUtils.xsl"/>
 	<xsl:output encoding="UTF-8" indent="yes" method="xml"/>
 	<xsl:strip-space elements="*"/>
 
 	<!-- Avalon Media System changes:
 		
+Changed XSL version to 1.0 since that is what Nokogiri gem supports. jlh 20170630
+Changing checks for $controlField008-35-37 to make sure value is both not an empty string and not 'N/A' instead of true/false boolean. jlh 20170630
+Removed check for 'N/A' from variable value since that turned variable into true/false boolean. jlh 20170630
 Added type="primary" to 245 titles. mbk 20150112
 Changed "marc" date encodings to "edtf". mbk 20150112
 Put 245 $a$b$f$g$k$n$p$s all into one <titleInfo><title> element to facilitate complete display. kdm 20150113
@@ -1437,11 +1440,11 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 
 		<!-- language 041 -->
 		<xsl:variable name="controlField008-35-37"
-			select="normalize-space(translate(substring($controlField008,36,3),'|#','')) != 'N/A'"/>
-		<xsl:if test="$controlField008-35-37">
+			select="normalize-space(translate(substring($controlField008,36,3),'|#',''))"/>
+		<xsl:if test="$controlField008-35-37 != 'N/A' and $controlField008-35-37 != ''">
 			<language>
 				<languageTerm authority="iso639-2b" type="code">
-					<xsl:value-of select="substring($controlField008,36,3)"/>
+					<xsl:value-of select="$controlField008-35-37"/>
 				</languageTerm>
 			</language>
 		</xsl:if>
@@ -1460,7 +1463,9 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 								<xsl:text/>
 							</xsl:with-param>
 							<xsl:with-param name="controlField008-35-37">
-								<xsl:value-of select="$controlField008-35-37"/>
+								<xsl:if test="$controlField008-35-37 != 'N/A' and $controlField008-35-37 != ''">
+									<xsl:value-of select="$controlField008-35-37"/>
+								</xsl:if>
 							</xsl:with-param>
 						</xsl:call-template>
 					</xsl:when>
@@ -1480,7 +1485,7 @@ Revision 1.02 - Added Log Comment  2003/03/24 19:37:42  ckeith
 								<xsl:value-of select="substring($allLanguages,4,string-length($allLanguages)-3)"/>
 							</xsl:with-param>
 							<xsl:with-param name="usedLanguages">
-								<xsl:if test="$controlField008-35-37">
+								<xsl:if test="$controlField008-35-37 != 'N/A' and $controlField008-35-37 != ''">
 									<xsl:value-of select="$controlField008-35-37"/>
 								</xsl:if>
 							</xsl:with-param>
