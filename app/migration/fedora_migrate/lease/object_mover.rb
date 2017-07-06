@@ -19,8 +19,8 @@ module FedoraMigrate
 
       def migrate
         #find mediaobject pid to see if it's already failed
-        media_object_pids = FedoraMigrate.source.connection.find_by_sparql("SELECT ?pid FROM <#ri> WHERE { ?pid <http://projecthydra.org/ns/relations#isGovernedBy> <#{source.uri}> }").collect(&:pid)
-        raise FedoraMigrate::Errors::MigrationError, "Parent media object(s) (#{media_object_pids}) failed to migrate" if media_object_pids.all? {|mo_pid| MigrationStatus.where(f3_pid: mo_pid).first.status == "failed" }
+#        media_object_pids = FedoraMigrate.source.connection.find_by_sparql("SELECT ?pid FROM <#ri> WHERE { ?pid <http://projecthydra.org/ns/relations#isGovernedBy> <#{source.uri}> }").collect(&:pid)
+#        raise FedoraMigrate::Errors::MigrationError, "Parent media object(s) (#{media_object_pids}) failed to migrate" if media_object_pids.all? {|mo_pid| MigrationStatus.where(f3_pid: mo_pid).first.status == "failed" }
         super
       end
 

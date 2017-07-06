@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -43,10 +43,24 @@ class PlaylistsController < ApplicationController
   def create
     @playlist = Playlist.new(playlist_params.merge(user: current_user))
     if @playlist.save
-      redirect_to @playlist, notice: 'Playlist was successfully created.'
+      respond_to do |format|
+        format.html do
+          redirect_to @playlist, notice: 'Playlist was successfully created.'
+        end
+        format.json do
+          render json: @playlist
+        end
+      end
     else
-      flash.now[:error] = @playlist.errors.full_messages.to_sentence
-      render action: 'new'
+      respond_to do |format|
+        format.html do
+          flash.now[:error] = @playlist.errors.full_messages.to_sentence
+          render action: 'new'
+        end
+        format.json do
+          render json: {errors: @playlist.errors}
+        end
+      end
     end
   end
 
@@ -62,8 +76,15 @@ class PlaylistsController < ApplicationController
         end
       end
     else
-      flash.now[:error] = "There are errors with your submission.  #{@playlist.errors.full_messages.join(', ')}"
-      render action: 'edit'
+      respond_to do |format|
+        format.html do
+          flash.now[:error] = "There are errors with your submission.  #{@playlist.errors.full_messages.join(', ')}"
+          render action: 'edit'
+        end
+        format.json do
+          render json: {errors: @playlist.errors}
+        end
+      end
     end
   end
 

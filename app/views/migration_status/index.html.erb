@@ -32,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <td class="text-right"><%= status_link(klass, 'failed') %></td>
       <td class="text-right"><%= status_link(klass, 'waiting') %></td>
       <td class="text-right"><%= status_link(klass, 'in progress') %></td>
-      <td class="text-right"><%= status_link(klass, 'total', nil) %></td>
+      <td class="text-right"><%= status_link(klass, 'total') %></td>
     </tr>
   <% end %>
   <% totals = @counts.values.inject(Hash.new(0)) { |h,l| l.each_pair { |k,v| h[k] += v }; h } %>
@@ -43,3 +43,6 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
   </tr>
 </table>
+<form>
+  <input type="checkbox" id="live-update" checked/> Live Update
+</form>

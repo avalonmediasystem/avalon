@@ -19,6 +19,7 @@ class CatalogController < ApplicationController
 
   include Hydra::Catalog
   include Hydra::MultiplePolicyAwareAccessControlsEnforcement
+  include BlacklightHelperReloadFix
 
   # These before_filters apply the hydra access controls
   before_filter :enforce_show_permissions, only: :show
@@ -89,7 +90,7 @@ class CatalogController < ApplicationController
     config.default_solr_params[:'facet.field'] = config.facet_fields.keys
     #use this instead if you don't want to query facets marked :show=>false
     #config.default_solr_params[:'facet.field'] = config.facet_fields.select{ |k, v| v[:show] != false}.keys
-
+    config.add_facet_fields_to_solr_request!
 
     # solr fields to be displayed in the index (search results) view
     #   The ordering of the field names is the order of the display

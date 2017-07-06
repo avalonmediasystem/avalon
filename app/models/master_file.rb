@@ -32,9 +32,19 @@ class MasterFile < ActiveFedora::Base
   belongs_to :media_object, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
   has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf, dependent: :destroy
 
-  has_subresource 'structuralMetadata', class_name: 'StructuralMetadata'
-  has_subresource 'thumbnail', class_name: 'IndexedFile'
-  has_subresource 'poster', class_name: 'IndexedFile'
+  has_subresource 'structuralMetadata', class_name: 'StructuralMetadata' do |f|
+    f.original_name = 'structuralMetadata.xml'
+  end
+
+  has_subresource 'thumbnail', class_name: 'IndexedFile' do |f|
+    f.original_name = 'thumbnail.jpg'
+  end
+
+  has_subresource 'poster', class_name: 'IndexedFile' do |f|
+    f.original_name = 'poster.jpg'
+  end
+
+  # Don't pass the block here since we save the original_name when the user uploads the captions file
   has_subresource 'captions', class_name: 'IndexedFile'
 
   property :title, predicate: ::RDF::Vocab::EBUCore.title, multiple: false do |index|
@@ -255,8 +265,10 @@ class MasterFile < ActiveFedora::Base
     self.percent_succeeded = encode.percent_complete.to_s
     self.error = encode.errors.first if encode.errors.present?
     self.status_code = encode.state.to_s.upcase
-    self.duration = encode.tech_metadata[:duration] if encode.tech_metadata[:duration]
-    self.file_checksum = encode.tech_metadata[:checksum] if encode.tech_metadata[:checksum]
+    if encode.tech_metadata
+      self.duration = encode.tech_metadata[:duration] if encode.tech_metadata[:duration]
+      self.file_checksum = encode.tech_metadata[:checksum] if encode.tech_metadata[:checksum]
+    end
     self.workflow_id = encode.id
     #self.workflow_name = encode.options[:preset] #MH can switch to an error workflow
 
@@ -459,6 +471,7 @@ class MasterFile < ActiveFedora::Base
       solr_doc['has_thumbnail?_bs'] = has_thumbnail?
       solr_doc['has_structuralMetadata?_bs'] = has_structuralMetadata?
       solr_doc['caption_type_ss'] = caption_type
+      solr_doc['identifier_ssim'] = identifier.map(&:downcase)
     end
   end
 
@@ -660,11 +673,12 @@ class MasterFile < ActiveFedora::Base
   def stop_processing!
     # Stops all processing
     if workflow_id.present? && !finished_processing?
-      encoder_class.find(workflow_id).cancel!
+      encoder_class.find(workflow_id).try(:cancel!)
     end
   end
 
   def update_parent!
+    return unless media_object.present?
     media_object.master_files.delete(self)
     media_object.ordered_master_files.delete(self)
     media_object.set_media_types!

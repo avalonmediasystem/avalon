@@ -30,7 +30,7 @@ class MasterFilesController < ApplicationController
     if ds.nil? or ds.empty?
       render :text => 'Not Found', :status => :not_found
     else
-      render :text => ds.content, :content_type => ds.mime_type, :label => ds.original_name
+      send_data ds.content, type: ds.mime_type, filename: ds.original_name
     end
   end
 
@@ -60,7 +60,7 @@ class MasterFilesController < ApplicationController
   def oembed
     if params[:url].present?
       id = params[:url].split('?')[0].split('/').last
-      mf = MasterFile.where("identifier_ssim:\"#{id}\"").first
+      mf = MasterFile.where("identifier_ssim:\"#{id.downcase}\"").first
       mf ||= MasterFile.find(id) rescue nil
       if mf.present?
         width = params[:maxwidth] || MasterFile::EMBED_SIZE[:medium]
@@ -97,7 +97,12 @@ class MasterFilesController < ApplicationController
       authorize! :edit, @master_file, message: "You do not have sufficient privileges to add files"
       structure = request.format.json? ? params[:xml_content] : nil
       if params[:master_file].present? && params[:master_file][:structure].present?
-        structure = params[:master_file][:structure].open.read
+        structure_file = params[:master_file][:structure]
+        if structure_file.content_type != "text/xml"
+          flash[:error] = "Uploaded file is not a structure xml file"
+        else
+          structure = structure_file.open.read
+        end
       end
       if structure.present?
         validation_errors = StructuralMetadata.content_valid? structure
@@ -128,19 +133,31 @@ class MasterFilesController < ApplicationController
     if flash.empty?
       authorize! :edit, @master_file, message: "You do not have sufficient privileges to add files"
       if params[:master_file].present? && params[:master_file][:captions].present?
-        captions = params[:master_file][:captions].open.read
+        captions_file = params[:master_file][:captions]
+        captions_ext = File.extname(captions_file.original_filename)
+        content_type = Mime::Type.lookup_by_extension(captions_ext.slice(1..-1)).to_s if captions_ext
+        if ["text/vtt", "text/srt"].include? content_type
+          captions = captions_file.open.read
+        else
+          flash[:error] = "Uploaded file is not a recognized captions file"
+        end
       end
       if captions.present?
         @master_file.captions.content = captions
-        @master_file.captions.mime_type = params[:master_file][:captions].content_type
+        @master_file.captions.mime_type = content_type
         @master_file.captions.original_name = params[:master_file][:captions].original_filename
         flash[:success] = "Captions file succesfully added."
-      else
+      elsif !captions_file.present?
         @master_file.captions.content = ''
         @master_file.captions.original_name = ''
         flash[:success] = "Captions file succesfully removed."
       end
-      @master_file.save
+      if flash[:error].blank?
+        unless @master_file.save
+          flash[:success] = nil
+          flash[:error] = "There was a problem storing the file"
+        end
+      end
     end
     respond_to do |format|
       format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'structure') }
@@ -191,7 +208,6 @@ class MasterFilesController < ApplicationController
           error << file.original_filename
           error << " (" << file.content_type << ")"
           flash[:error].push error
-          master_file.destroy
           next
         else
           flash[:notice] = create_upload_notice(master_file.file_format)

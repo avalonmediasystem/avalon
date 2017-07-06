@@ -282,17 +282,19 @@ class MediaObjectsController < ApplicationController
   def destroy
     errors = []
     success_count = 0
+    success_ids = []
     Array(params[:id]).each do |id|
       media_object = MediaObject.find(id)
       if can? :destroy, media_object
-        media_object.destroy
+        success_ids << id
         success_count += 1
       else
         errors += [ "#{media_object.title} (#{params[:id]}) permission denied" ]
       end
     end
-    message = "#{success_count} #{'media object'.pluralize(success_count)} successfully deleted."
+    message = "#{success_count} #{'media object'.pluralize(success_count)} are being deleted."
     message += "These objects were not deleted:</br> #{ errors.join('<br/> ') }" if errors.count > 0
+    BulkActionJobs::Delete.perform_later success_ids, nil
     redirect_to params[:previous_view]=='/bookmarks'? '/bookmarks' : root_path, flash: { notice: message }
   end
 
@@ -435,18 +437,17 @@ class MediaObjectsController < ApplicationController
     bib_id_label = mo_parameters.delete(:bibliographic_id_label)
     mo_parameters[:bibliographic_id] = { id: bib_id, source: bib_id_label } if bib_id.present?
     #Related urls
-    related_item_url = mo_parameters.delete(:related_item_url)
-    related_item_label = mo_parameters.delete(:related_item_label)
-    mo_parameters[:related_item_url] = related_item_url.zip(related_item_label).map{|a|{url: a[0],label: a[1]}} if related_item_url.present? && related_item_url.reject(&:empty?).present?
+    related_item_url = mo_parameters.delete(:related_item_url) || []
+    related_item_label = mo_parameters.delete(:related_item_label) || []
+    mo_parameters[:related_item_url] = related_item_url.zip(related_item_label).map{|a|{url: a[0],label: a[1]}}
     #Other identifiers
-    other_identifier = mo_parameters.delete(:other_identifier)
-    other_identifier_type = mo_parameters.delete(:other_identifier_type)
-    mo_parameters[:other_identifier] = other_identifier.zip(other_identifier_type).map{|a|{id: a[0], source: a[1]}} if other_identifier.present? && other_identifier.reject(&:empty?).present?
+    other_identifier = mo_parameters.delete(:other_identifier) || []
+    other_identifier_type = mo_parameters.delete(:other_identifier_type) || []
+    mo_parameters[:other_identifier] = other_identifier.zip(other_identifier_type).map{|a|{id: a[0], source: a[1]}}
     #Notes
-    # FIXME: lets in empty values!
-    note = mo_parameters.delete(:note)
-    note_type = mo_parameters.delete(:note_type)
-    mo_parameters[:note] = note.zip(note_type).map{|a|{note: a[0],type: a[1]}} if note.present? && note.reject(&:empty?).present?
+    note = mo_parameters.delete(:note) || []
+    note_type = mo_parameters.delete(:note_type) || []
+    mo_parameters[:note] = note.zip(note_type).map{|a|{note: a[0],type: a[1]}}
 
 
     mo_parameters

@@ -3,12 +3,12 @@ gem 'fedora-migrate', '~> 0.5.0'
 gem 'rdf-rdfxml'
 
 gem 'hydra-head', '~> 10.3.4'
-gem 'active-fedora', '>= 10.3.0'
+gem 'active-fedora', '~> 11.2'
 gem 'active_fedora-datastreams'
-gem 'active_fedora-noid', '~> 2.0.0'
-gem 'speedy-af', git: 'https://github.com/projecthydra-labs/speedy_af.git', tag: 'v0.1.0'
+gem 'active_fedora-noid', '~> 2.0.2'
+gem 'speedy-af', '~>0.1.1'
 gem 'blacklight', '~> 6.6'
-gem 'rdf', '~> 2.1.1'
+gem 'rdf', '~> 2.2'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.7.1'
@@ -47,11 +47,11 @@ gem 'devise'
 #gem 'devise-guests', '~> 0.3'
 
 # Avalon-specific
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6'
-gem 'active_encode', '~> 0.0.3'
+gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.1'
+gem 'active_encode', '~> 0.1.1'
 gem 'hooks'
 gem 'iconv'
-gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag: 'avalon-r6'
+gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", tag: 'avalon-r6.1'
 gem 'omniauth-identity'
 gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git", tag: 'avalon-r4'
 gem 'net-ldap'
@@ -63,7 +63,7 @@ gem 'api-pagination'
 gem 'browse-everything', '~> 0.10.5'
 gem 'bootstrap_form'
 gem 'bootstrap-toggle-rails'
-gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
+gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
 gem 'roo'
 gem 'activerecord-session_store'
 gem 'whenever', git: "https://github.com/javan/whenever.git", require: false
@@ -73,14 +73,14 @@ gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git'
 gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6'
 
 #MediaElement.js related
-gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r6'
+gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r6_flash-fix'
 gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r4'
 gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r4'
 gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'avalon-r5'
 gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r4'
 gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r4'
 gem 'media-element-logo-plugin'
-gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6'
+gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.1'
 gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/mediaelement-track-scrubber.git', tag: 'avalon-r6'
 
 
@@ -135,10 +135,10 @@ group :test do
   gem 'coveralls'
   gem 'shoulda-matchers'
   gem 'fakefs', require: 'fakefs/safe'
-  gem 'fakeweb'
   gem 'email_spec'
   gem 'capybara'
   gem 'hashdiff'
+  gem 'webmock'
 end
 
 group :mysql, optional: true do

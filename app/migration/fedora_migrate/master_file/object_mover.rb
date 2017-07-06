@@ -63,21 +63,21 @@ module FedoraMigrate
       end
 
       def migrate_poster_and_thumbnail
-        migrate_content_datastream(POSTER_DATASTREAM, target.poster)
-        migrate_content_datastream(THUMBNAIL_DATASTREAM, target.thumbnail)
+        migrate_content_datastream(POSTER_DATASTREAM, target.poster, "#{POSTER_DATASTREAM}.jpg")
+        migrate_content_datastream(THUMBNAIL_DATASTREAM, target.thumbnail, "#{THUMBNAIL_DATASTREAM}.jpg")
       end
 
       def migrate_structural_metadata
-        migrate_content_datastream(STRUCTURAL_METADATA_DATASTREAM, target.structuralMetadata)
+        migrate_content_datastream(STRUCTURAL_METADATA_DATASTREAM, target.structuralMetadata, "#{STRUCTURAL_METADATA_DATASTREAM}.xml")
       end
 
       def migrate_captions
-        migrate_content_datastream(CAPTIONS_DATASTREAM, target.captions)
+        migrate_content_datastream(CAPTIONS_DATASTREAM, target.captions, source.datastreams[CAPTIONS_DATASTREAM].label.try(:gsub, /"/, '\"'))
       end
 
       def migrate_file_location
         return unless source.datastreams.keys.include?(MASTERFILE_DATASTREAM)
-        target.masterFile = source.datastreams[MASTERFILE_DATASTREAM].content
+        target.masterFile = source.datastreams[MASTERFILE_DATASTREAM].content.to_s.force_encoding(Encoding.default_external)
       end
 
       def migrate_title
@@ -86,8 +86,10 @@ module FedoraMigrate
       end
 
       private
-      def migrate_content_datastream(ds_name, target_file)
+      def migrate_content_datastream(ds_name, target_file, filename)
         return unless source.datastreams.keys.include?(ds_name)
+        # Manually set ebucore:filename before the file gets persisted
+        target_file.original_name = filename
         mover = FedoraMigrate::DatastreamMover.new(source.datastreams[ds_name], target_file)
         mover.migrate
         #report.content_datastreams << ContentDatastreamReport.new(target.attached_files[ds_name], mover.migrate)

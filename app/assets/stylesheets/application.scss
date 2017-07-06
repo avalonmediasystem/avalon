@@ -34,6 +34,9 @@
  *
  *= require mediaelement-skin-avalon/mejs-skin-avalon
  *= require mediaelement-qualityselector/mep-feature-qualities
+ *= require mediaelement-title/mejs-title
+ *= require me-logo
+ *= require mediaelement-hd-toggle/mejs-hdtoggle
  *= require me-thumb-selector
  *= require me-add-to-playlist
  *= require me-track-scrubber
@@ -50,12 +53,10 @@
 @import "browse_everything";
 
 @import "blacklight_themes/avalon";
-@import "blacklight_folders/forms";
-@import "blacklight_folders/folders";
-@import "blacklight_folders/nestable";
 
 @import "about_page";
 @import "admin";
 @import "blacklight";
 @import "branding";
+@import "nestable";
 @import "avalon";

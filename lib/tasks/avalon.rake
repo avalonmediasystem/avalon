@@ -39,24 +39,31 @@ Please run `rake avalon:migrate:repo CONFIRM=yes` to confirm.
 EOC
         exit 1
       end
+      ids = ENV['pids'].split(',') unless ENV['pids'].nil?
+      ids = Array(ids) | File.readlines(ENV['pidfile']).map(&:strip) unless ENV['pidfile'].nil?
+      parallel_processes = ENV['parallel_processes']
+      overwrite = !!ENV['overwrite']
+
       #disable callbacks
       Admin::Collection.skip_callback(:save, :around, :reindex_members)
-      ::MediaObject.skip_callback(:save, :before, :update_dependent_properties!)
+      # Don't accidentally delete derivatives
+      ::Derivative.skip_callback(:destroy, :before, :retract_distributed_files!)
+      #::MediaObject.skip_callback(:save, :before, :update_dependent_properties!)
 
-      models = [Admin::Collection, ::MediaObject, ::MasterFile, ::Derivative, ::Lease]
-      migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', { class_order: models })
-      migrator.migrate_objects
+      models = [Admin::Collection, ::Lease, ::MediaObject, ::MasterFile, ::Derivative]
+      migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new('avalon', class_order: models, parallel_processes: parallel_processes)
+      migrator.migrate_objects(ids, overwrite)
       migrator
     end
 
     desc "Migrate my database"
     task db: :environment do
-      Bookmark.all.each do |b|
+      Bookmark.find_each do |b|
         status_record = MigrationStatus.find_or_create_by(source_class: Bookmark.name, f3_pid: "Bookmark:#{b.id}")
         next if status_record.status == "completed"
         status_record.update_attributes status: "migrate", log: nil
         begin
-          obj = MediaObject.where("identifier_ssim:\"#{b.document_id}\"").first
+          obj = MediaObject.where("identifier_ssim:\"#{b.document_id.downcase}\"").first
           obj ||= MediaObject.where(id: b.document_id).first
           raise FedoraMigrate::Errors::MigrationError, "Media Object with Avalon 5 ID #{b.document_id} could not be found" unless obj
           b.document_id = obj.id
@@ -66,13 +73,13 @@ EOC
           status_record.update_attributes status: "failed", log: %{#{e.class.name}: "#{e.message}"}
         end
       end
-      AvalonClip.all.each do |anno|
+      AvalonClip.find_each do |anno|
         status_record = MigrationStatus.find_or_create_by(source_class: AvalonClip.name, f3_pid: "AvalonClip:#{anno.id}")
         next if status_record.status == "completed"
         status_record.update_attributes status: "migrate", log: nil
         begin
           old_id = anno.source.split('/').last
-          mf = MasterFile.where("identifier_ssim:\"#{old_id}\"").first
+          mf = MasterFile.where("identifier_ssim:\"#{old_id.downcase}\"").first
           mf ||= MasterFile.where(id: old_id).first
           raise FedoraMigrate::Errors::MigrationError, "Master File with Avalon 5 ID #{old_id} could not be found" unless mf
           anno.master_file = mf
@@ -82,13 +89,13 @@ EOC
           status_record.update_attributes status: "failed", log: %{#{e.class.name}: "#{e.message}"}
         end
       end
-      AvalonMarker.all.each do |anno|
+      AvalonMarker.find_each do |anno|
         status_record = MigrationStatus.find_or_create_by(source_class: AvalonMarker.name, f3_pid: "AvalonMarker:#{anno.id}")
         next if status_record.status == "completed"
         status_record.update_attributes status: "migrate", log: nil
         begin
           old_id = anno.source.split('/').last
-          mf = MasterFile.where("identifier_ssim:\"#{old_id}\"").first
+          mf = MasterFile.where("identifier_ssim:\"#{old_id.downcase}\"").first
           mf ||= MasterFile.where(id: old_id).first
           raise FedoraMigrate::Errors::MigrationError, "Master File with Avalon 5 ID #{old_id} could not be found" unless mf
           anno.master_file = mf
@@ -122,6 +129,29 @@ EOC
       end
       puts "Deleted: #{deleted_count} Passed: #{passed_count} Failed: #{failed_count}"
     end
+
+    desc "Migrate related items for Avalon 6.0 to 6.1"
+    task related_item: :environment do
+      MediaObject.find_each({},{batch_size:5}) do |mo|
+        doc = Nokogiri::XML(mo.descMetadata.content)
+        doc.xpath('//mods:relatedItem/mods:location/mods:url[@displayLabel]', mods: "http://www.loc.gov/mods/v3").each do |url|
+          label = url['displayLabel']
+          relatedItem = url.ancestors('relatedItem').first
+          relatedItem.set_attribute('displayLabel',label)
+          url.remove_attribute('displayLabel')
+        end
+        mo.descMetadata.content = doc.to_xml
+        mo.descMetadata.save
+      end
+    end
+
+    desc "Add Fedora4 identifier as mods record_identifier"
+    task record_identifier: :environment do
+      MediaObject.find_each({},{batch_size:5}) do |mo|
+        mo.save if mo.descMetadata.record_identifier.empty?
+      end
+    end
+
   end
 
   desc 'migrate databases for the rails app and the active annotations gem'
@@ -372,7 +402,7 @@ EOC
           container = playlist_item['container_string']
           comment = HTMLEntities.new.decode(playlist_item['comment'])
           title = HTMLEntities.new.decode(playlist_item['name'])
-          mf_obj = MasterFile.where("identifier_ssim:#{container}").first
+          mf_obj = MasterFile.where("identifier_ssim:#{container.downcase}").first
           unless mf_obj.present?
             item_errors += [{username: user['username'], playlist_id: playlist_obj.id, container: container, title: title, errors: ['Masterfile not found']}]
             next

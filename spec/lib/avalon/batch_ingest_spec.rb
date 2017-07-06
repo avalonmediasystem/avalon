@@ -57,7 +57,7 @@ describe Avalon::Batch::Ingest do
       @dropbox_dir = collection.dropbox.base_directory
       FileUtils.cp_r 'spec/fixtures/dropbox/example_batch_ingest', @dropbox_dir
       Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
-      FakeWeb.register_uri :get, sru_url, body: sru_response
+      stub_request(:get, sru_url).to_return(body: sru_response)
       manifest_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
       batch = Avalon::Batch::Package.new(manifest_file, collection)
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
@@ -67,7 +67,6 @@ describe Avalon::Batch::Ingest do
       if @dropbox_dir =~ %r{spec/fixtures/dropbox/Ut}
         FileUtils.rm_rf @dropbox_dir
       end
-      FakeWeb.clean_registry
     end
 
     it 'should send email when batch finishes processing' do

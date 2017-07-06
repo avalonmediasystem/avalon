@@ -47,6 +47,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% else %>
 
+  <%= bootstrap_form_for object, html: { class: "form-horizontal", id: 'access_control_form'}  do |vid| %>
+  <%= hidden_field_tag :step, @active_step %>
   <fieldset class='item-discovery'>
     <legend>Item discovery</legend>
     <%= hidden ? "Item is hidden from search results" : 
@@ -64,6 +66,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             "collection staff only"
           end %>
   </fieldset> 
+  <% end #form_for %>
 
 <% end %>		
 

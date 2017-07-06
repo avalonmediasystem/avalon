@@ -74,7 +74,7 @@ module MasterFileBehavior
   def embed_code(width, permalink_opts = {})
     begin
       url = if self.permalink.present?
-        self.permalink(permalink_opts)
+        self.permalink_with_query(permalink_opts)
       else
         embed_master_file_url(self.id, only_path: false, protocol: '//')
       end

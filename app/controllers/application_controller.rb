@@ -36,7 +36,11 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_path_for(resource)
-    request.env['omniauth.origin'] || stored_location_for(resource) || session[:previous_url] || root_path
+    if request.env['QUERY_STRING']['login_popup'].present?
+      root_path + "self_closing.html"
+    else
+      request.env['omniauth.origin'] || stored_location_for(resource) || session[:previous_url] || root_path
+    end
   end
 
   def current_ability
@@ -95,6 +99,14 @@ class ApplicationController < ActionController::Base
       render json: {errors: ["#{params[:id]} not found"]}, status: 404
     else
       render '/errors/unknown_pid', status: 404
+    end
+  end
+
+  rescue_from Ldp::Gone do |exception|
+    if request.format == :json
+      render json: {errors: ["#{params[:id]} has been deleted"]}, status: 410
+    else
+      render '/errors/deleted_pid', status: 410
     end
   end
 end

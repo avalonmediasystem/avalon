@@ -116,6 +116,7 @@ Rails.application.routes.draw do
 
   match "/autocomplete", to: 'objects#autocomplete', via: [:get]
   match "/objects/:id", to: 'objects#show', via: [:get], :as => :objects
+  match "/object/:id", to: 'objects#show', via: [:get]
 
   resources :playlists do
     resources :playlist_items, path: 'items', only: [:create, :update]

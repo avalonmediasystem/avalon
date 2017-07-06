@@ -220,7 +220,7 @@ describe MediaObjectsController, type: :controller do
        end
         it "should create a new media_object with successful bib import" do
           Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
-          FakeWeb.register_uri :get, sru_url, body: sru_response
+          stub_request(:get, sru_url).to_return(body: sru_response)
           fields = { bibliographic_id: bib_id }
           post 'create', format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id
           expect(response.status).to eq(200)
@@ -230,7 +230,7 @@ describe MediaObjectsController, type: :controller do
         end
         it "should create a new media_object with supplied fields when bib import fails" do
           Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
-          FakeWeb.register_uri :get, sru_url, body: nil
+          stub_request(:get, sru_url).to_return(body: nil)
           ex_media_object = FactoryGirl.create(:media_object)
           fields = {}
           descMetadata_fields.each {|f| fields[f] = ex_media_object.send(f) }
@@ -266,7 +266,7 @@ describe MediaObjectsController, type: :controller do
         end
         it "should merge supplied other identifiers after bib import" do
           Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
-          FakeWeb.register_uri :get, sru_url, body: sru_response
+          stub_request(:get, sru_url).to_return(body: sru_response)
           fields = { bibliographic_id: bib_id, other_identifier_type: ['other'], other_identifier: ['12345'] }
           post 'create', format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id
           expect(response.status).to eq(200)
@@ -714,7 +714,7 @@ describe MediaObjectsController, type: :controller do
     it "should remove a MediaObject with a single MasterFiles" do
       media_object = FactoryGirl.create(:media_object, :with_master_file, collection: collection)
       delete :destroy, id: media_object.id
-      expect(flash[:notice]).to include("success")
+      expect(flash[:notice]).to include("being deleted")
       expect(MediaObject.exists?(media_object.id)).to be_falsey
       expect(MasterFile.exists?(media_object.master_files.first.id)).to be_falsey
     end
@@ -725,7 +725,7 @@ describe MediaObjectsController, type: :controller do
       master_file_ids = media_object.master_files.map(&:id)
       media_object.reload
       delete :destroy, id: media_object.id
-      expect(flash[:notice]).to include("success")
+      expect(flash[:notice]).to include("being deleted")
       expect(MediaObject.exists?(media_object.id)).to be_falsey
       master_file_ids.each { |mf_id| expect(MasterFile.exists?(mf_id)).to be_falsey }
     end
@@ -971,6 +971,23 @@ describe MediaObjectsController, type: :controller do
             put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.tomorrow, add_user_end: ''
             media_object.reload
           }.not_to change{media_object.leases.count}
+        end
+      end
+    end
+
+    context 'resource description' do
+      context 'bib import' do
+        require 'avalon/bib_retriever'
+        let(:media_object) { FactoryGirl.create(:media_object) }
+        before do
+          login_as 'administrator'
+        end
+
+        it 'does nothing when the bib id is blank or missing' do
+          dbl = double("BibRetriever")
+          allow(Avalon::BibRetriever).to receive(:instance).and_return(dbl)
+          expect(dbl).not_to receive(:get_record)
+          put :update, id: media_object.id, step: 'resource-description', media_object: { import_bib_record: 'yes', bibliographic_id: ' ', bibliographic_id_label: 'local' }
         end
       end
     end

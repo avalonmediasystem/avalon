@@ -1,0 +1,123 @@
+version: '2'
+
+volumes:
+  streaming:
+  database:
+  fedora:
+  work:
+  solr:
+    
+services:
+  db:
+    image: avalonmediasystem/db:fedora4
+    volumes:
+      - database:/data
+    environment:
+      - AVALON_DB_PASSWORD=avalondb
+      - FEDORA_DB_PASSWORD
+      - PGDATA=/data
+      - POSTGRES_USER=postgres
+    ports:
+      - "5432:5432"
+  fedora:
+    image: avalonmediasystem/fedora:4.7.x
+    depends_on:
+      - db
+    volumes:
+      - fedora:/data
+    ports:
+      - "8984:8080"
+  solr:
+    image: avalonmediasystem/solr:latest
+    ports:
+      - "8983:8983"
+    volumes:
+      - solr:/opt/solr/server/solr/mycores
+    entrypoint:
+      - docker-entrypoint.sh
+      - solr-precreate
+      - avalon
+      - /opt/solr/avalon_conf
+  matterhorn:
+    image: avalonmediasystem/matterhorn
+    volumes:
+      - ./masterfiles:/masterfiles
+      - streaming:/streamfiles
+      - work:/work
+    ports:
+      - "8080:8080"
+  rtmp:
+    image: avalonmediasystem/red5
+    volumes:
+      - streaming:/data
+    ports:
+      - "1935:1935"
+  hls:
+    image: avalonmediasystem/nginx
+    volumes:
+      - streaming:/data
+    ports:
+       - "8880:80"
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+  avalon:
+    image: avalonmediasystem/avalon:6.0-dev
+    command: "/rails_init-dev.sh"
+    depends_on:
+      - db
+      - fedora
+      - solr
+      - redis
+    environment:
+      - APP_NAME=avalon
+      - ASSET_HOST=http://localhost:3000
+      - AVALON_BRANCH=develop
+      - AVALON_DB_PASSWORD=avalondb
+      - BASE_URL=http://localhost:3000
+      - CONTROLLED_VOCABULARY=config/controlled_vocabulary.yml
+      - DATABASE_URL=postgres://avalon:${AVALON_DB_PASSWORD}@db/avalon
+      - DROPBOX_PATH=/masterfiles/dropbox
+      - DROPBOX_URI=./masterfiles/dropbox
+      - EMAIL_COMMENTS
+      - EMAIL_NOTIFICATION
+      - EMAIL_SUPPORT
+      - FEDORA_BASE_PATH
+      - FEDORA_NAMESPACE=avalon
+      - FEDORA_URL=http://fedoraAdmin:fedoraAdmin@fedora:8080/fedora/rest
+      - FFMPEG_PATH=/usr/bin/ffmpeg
+      - MASTER_FILE_PATH
+      - MASTER_FILE_STRATEGY=delete
+      - MATTERHORN_URL=http://matterhorn_system_account:CHANGE_ME@matterhorn:8080/
+      - MEDIA_PATH=/masterfiles
+      - MEDIAINFO_PATH=/usr/bin/mediainfo
+      - RAILS_ENV=development
+      - REDIS_SERVER=redis:6379
+      - SECRET_KEY_BASE=abcd
+      - SMTP_ADDRESS
+      - SMTP_AUTHENTICATION
+      - SMTP_DOMAIN
+      - SMTP_ENABLE_STARTTLS_AUTO
+      - SMTP_OPENSSL_VERIFY_MODE
+      - SMTP_PASSWORD
+      - SMTP_PORT
+      - SMTP_USER_NAME
+      - SOLR_URL=http://solr:8983/solr/avalon
+      - STREAM_BASE=/streamfiles
+      - STREAM_DEFAULT_QUALITY=medium
+      - STREAM_HTTP_BASE=http://localhost:8880/avalon
+      - STREAM_RTMP_BASE=rtmp://localhost/avalon
+      - STREAM_SERVER=nginx
+      - STREAM_TOKEN_TTL=20
+      - SYSTEM_GROUPS=administrator,group_manager,manager
+      - Z3950_ATTRIBUTE
+      - Z3950_DATABASE
+      - Z3950_HOST
+      - Z3950_PORT
+    volumes:
+      - ./masterfiles:/masterfiles
+      - ./gems:/gems
+      - .:/home/app/avalon
+    ports:
+      - "3000:80"

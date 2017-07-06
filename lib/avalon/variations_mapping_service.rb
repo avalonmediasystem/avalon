@@ -23,7 +23,7 @@ module Avalon
       raise ArgumentError, 'Not a valid Variations Media Object ID' unless variations_media_object_id =~ %r{/MediaObject/}
       notis_id = MEDIA_OBJECT_ID_MAP[variations_media_object_id]
       raise RuntimeError, "Unknown Variations Id: #{variations_media_object_id}" unless notis_id
-      master_file = MasterFile.where("identifier_ssim:#{notis_id}").first
+      master_file = MasterFile.where("identifier_ssim:#{notis_id.downcase}").first
       raise RuntimeError, "MasterFile could not be found for Variations label #{notis_id}" unless master_file
       master_file
     end

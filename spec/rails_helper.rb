@@ -23,6 +23,8 @@ require 'rspec/rails'
 require 'capybara/rails'
 require 'database_cleaner'
 require 'active_fedora/cleaner'
+require 'webmock/rspec'
+require 'active_fedora/noid/rspec'
 # require 'equivalent-xml/rspec_matchers'
 # require 'fakefs/safe'
 # require 'fileutils'
@@ -57,6 +59,8 @@ Shoulda::Matchers.configure do |config|
 end
 
 RSpec.configure do |config|
+  include ActiveFedora::Noid::RSpec
+
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
 
@@ -66,8 +70,10 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = false
 
   config.before :suite do
+    WebMock.disable_net_connect!(allow: ['localhost', '127.0.0.1', 'fedora', 'solr'])
     DatabaseCleaner.clean_with(:truncation)
     ActiveFedora::Cleaner.clean!
+    disable_production_minter!
 
     # Stub the entire dropbox
     Avalon::Configuration['spec'] = {
@@ -84,6 +90,8 @@ RSpec.configure do |config|
       Avalon::Configuration['dropbox']['path'] = Avalon::Configuration.lookup('spec.real_dropbox')
       Avalon::Configuration.delete('spec')
     end
+    enable_production_minter!
+    WebMock.allow_net_connect!
   end
 
   config.before :each do

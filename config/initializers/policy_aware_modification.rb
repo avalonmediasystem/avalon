@@ -1,5 +1,16 @@
 require 'active-fedora'
 
+module Blacklight::AccessControls::Enforcement
+  def apply_group_permissions(permission_types, ability = current_ability)
+    groups = ability.user_groups
+    return [] if groups.empty?
+    permission_types.map do |type|
+      field = solr_field_for(type, 'group')
+      "_query_:\"{!terms f=#{field}}#{groups.join(',')}\"" # nested query needed for solr to properly parse terms when any have spaces in them
+    end
+  end
+end
+
 module Hydra::AccessControlsEnforcement
   def escape_filter(key, value)
     [key, escape_value(value)].join(':')

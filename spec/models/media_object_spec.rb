@@ -326,10 +326,76 @@ describe MediaObject do
     end
   end
 
+  describe "Update datastream with empty strings" do
+    it "should remove pre-existing values" do
+      media_object = FactoryGirl.create( :fully_searchable_media_object )
+      params = {
+        'alternative_title' => [''],
+        'translated_title' => [''],
+        'uniform_title' => [''],
+        'creator' => [''],
+        'format' => [''],
+        'contributor' => [''],
+        'publisher' => [''],
+        'subject' => [''],
+        'related_item_url' => [{label:'',url:''}],
+        'geographic_subject' => [''],
+        'temporal_subject' => [''],
+        'topical_subject' => [''],
+        'language' => [''],
+        'table_of_contents' => [''],
+        'physical_description' => [''],
+        'record_identifier' => [''],
+        'note' => [{type:'',note:''}],
+        'other_identifier' => [{id:'',source:''}]
+      }
+      media_object.assign_attributes(params)
+      expect(media_object.alternative_title).to eq([])
+      expect(media_object.translated_title).to eq([])
+      expect(media_object.uniform_title).to eq([])
+      expect(media_object.creator).to eq([])
+      expect(media_object.format).to eq([])
+      expect(media_object.contributor).to eq([])
+      expect(media_object.publisher).to eq([])
+      expect(media_object.subject).to eq([])
+      expect(media_object.related_item_url).to eq([])
+      expect(media_object.geographic_subject).to eq([])
+      expect(media_object.temporal_subject).to eq([])
+      expect(media_object.topical_subject).to eq([])
+      expect(media_object.language).to eq([])
+      expect(media_object.table_of_contents).to eq([])
+      expect(media_object.physical_description).to eq([])
+      expect(media_object.record_identifier).to eq([])
+      expect(media_object.note).to be_nil
+      expect(media_object.other_identifier).to be_nil
+   end
+  end
+
   describe "Update datastream directly" do
     it "should reflect datastream changes on media object" do
-      newtitle = Faker::Lorem.sentence
       media_object.descMetadata.add_bibliographic_id('ABC123','local')
+      media_object.save
+      media_object.reload
+      expect(media_object.bibliographic_id).to eq({source: "local", id: 'ABC123'})
+    end
+  end
+
+  describe "Correctly set table of contents from form" do
+    it "should not include empty strings" do
+      media_object.update_attributes({'table_of_contents' => ['']})
+      expect(media_object.table_of_contents).to eq([])
+    end
+    it "should include actual strings" do
+      media_object.update_attributes({'table_of_contents' => ['Test']})
+      expect(media_object.table_of_contents).to eq(['Test'])
+    end
+  end
+
+  describe "Bibliographic Identifiers" do
+    it "should exclude recordIdentifier[@source = Fedora or Fedora4]" do
+      media_object.descMetadata.add_bibliographic_id('ABC123','local')
+      media_object.descMetadata.add_bibliographic_id('DEF456','Fedora')
+      media_object.descMetadata.add_bibliographic_id('GHI789','Fedora4')
       media_object.save
       media_object.reload
       expect(media_object.bibliographic_id).to eq({source: "local", id: 'ABC123'})
@@ -596,19 +662,35 @@ describe MediaObject do
   describe 'bib import' do
     let(:bib_id) { '7763100' }
     let(:mods) { File.read(File.expand_path("../../fixtures/#{bib_id}.mods",__FILE__)) }
-    before do
-      media_object.resource_type = "moving image"
-      media_object.format = "video/mpeg"
-      instance = double("instance")
-      allow(Avalon::BibRetriever).to receive(:instance).and_return(instance)
-      allow(Avalon::BibRetriever.instance).to receive(:get_record).and_return(mods)
-    end
+    describe 'only overrides correct fields' do
+      before do
+        media_object.resource_type = "moving image"
+        media_object.format = "video/mpeg"
+        instance = double("instance")
+        allow(Avalon::BibRetriever).to receive(:instance).and_return(instance)
+        allow(Avalon::BibRetriever.instance).to receive(:get_record).and_return(mods)
+      end
 
-    it 'should not override format' do
-      expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to_not change { media_object.format }
+      it 'should not override format' do
+        expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to_not change { media_object.format }
+      end
+      it 'should not override resource_type' do
+        expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to_not change { media_object.resource_type }
+      end
+      it 'should override the title' do
+        expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to change { media_object.title }.to "245 A : B F G K N P S"
+      end
     end
-    it 'should not override resource_type' do
-      expect { media_object.descMetadata.populate_from_catalog!(bib_id, 'local') }.to_not change { media_object.resource_type }
+    describe 'should strip whitespace from bib_id parameter' do
+      let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
+      let(:sru_response) { File.read(File.expand_path("../../fixtures/#{bib_id}.xml",__FILE__)) }
+      let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
+
+      it 'should strip whitespace off bib_id parameter' do
+        Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+        expect { media_object.descMetadata.populate_from_catalog!(" #{bib_id} ", 'local') }.to change { media_object.title }.to "245 A : B F G K N P S"
+        expect(request).to have_been_requested
+      end
     end
   end
 
@@ -668,6 +750,23 @@ describe MediaObject do
       expect {media_object.collection = collection}.not_to change {new_media_object.visibility}
       expect {media_object.collection = collection}.not_to change {new_media_object.read_users}
       expect {media_object.collection = collection}.not_to change {new_media_object.read_users}
+    end
+  end
+
+  describe 'descMetadata' do
+    it 'sets original_name to default value' do
+      expect(media_object.descMetadata.original_name).to eq 'descMetadata.xml'
+    end
+    it 'is a valid MODS document' do
+      media_object = FactoryGirl.create(:media_object, :with_master_file)
+      xsd = Nokogiri::XML::Schema(File.read('spec/fixtures/mods-3-6.xsd'))
+      expect(xsd.valid?(media_object.descMetadata.ng_xml)).to be_truthy
+    end
+  end
+
+  describe 'workflow' do
+    it 'sets original_name to default value' do
+      expect(media_object.workflow.original_name).to eq 'workflow.xml'
     end
   end
 end
