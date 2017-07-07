@@ -56,9 +56,14 @@ module Avalon
 
         def media_object_fields
           mo_parameters = fields.dup
+          #Bibliographic IDs
           bib_id = mo_parameters.delete(:bibliographic_id)
           bib_id_label = mo_parameters.delete(:bibliographic_id_label)
           mo_parameters[:bibliographic_id] = { id: bib_id, source: bib_id_label } if bib_id.present?
+          #Other Identifiers
+          other_identifier = mo_parameters.delete(:other_identifier)
+          other_identifier_type = mo_parameters.delete(:other_identifier_type)
+          mo_parameters[:other_identifier] = other_identifier.zip(other_identifier_type).map{|a|{id: a[0], source: a[1]}} if other_identifier.present?
           #Related urls
           related_item_url = mo_parameters.delete(:related_item_url)
           related_item_label = mo_parameters.delete(:related_item_label)
