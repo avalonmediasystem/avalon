@@ -35,7 +35,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <th>Visibility</th>
                 <th>Created</th>
                 <th>Updated</th>
-                <th class="text-right">Actions</th>
+                <th class="text-right" data-orderable=false>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -99,7 +99,13 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <% content_for :page_scripts do %>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css"></link>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
+
 <script>
+$(document).ready( function () { $('#Playlists').DataTable(); } );
+
 $( '.filedata' ).change(function() {
   $(this).closest('form').submit();
 });
