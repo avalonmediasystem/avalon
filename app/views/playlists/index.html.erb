@@ -39,38 +39,6 @@ Unless required by applicable law or agreed to in writing, software distributed
               </tr>
             </thead>
             <tbody>
-              <% playlists.each do |playlist| %>
-              <tr>
-                <td>
-                  <%= link_to(playlist.title, playlist_path(playlist), title: playlist.comment)%>
-                </td>
-                <td class='nowrap'>
-                  <%= PlaylistItem.where(playlist_id: playlist.id).size %> items
-                </td>
-                <td class='nowrap'>
-                  <% if playlist.visibility =='private' %>
-                    <span class="fa fa-lock fa-lg"></span> Only me
-                  <% end %>
-                  <% if playlist.visibility !='private' %>
-                    <span class="fa fa-globe fa-lg"></span> Public
-                  <% end %>
-                </td>
-                <td class='nowrap'>
-                  <span title= <%= playlist.created_at.utc.iso8601%> ><%= time_ago_in_words(playlist.created_at)%></span>
-                </td>
-                <td class='nowrap'>
-                  <span title= <%= playlist.updated_at.utc.iso8601%> ><%= time_ago_in_words(playlist.updated_at)%></span>
-                </td>
-                <td align="right" class='nowrap'>
-                  <%= link_to(edit_playlist_path(playlist), class: 'btn btn-default btn-xs') do %>
-                    <span class='fa fa-edit'> Edit</span>
-                  <% end %>
-                  <%= link_to(playlist_path(playlist), method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'}) do %>
-                    <span class='fa fa-times'> Delete</span>
-                  <% end %>
-                </td>
-              </tr>
-              <%end%>
           </tbody>
         </table>
         <div> </div>
@@ -104,7 +72,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
 
 <script>
-$(document).ready( function () { $('#Playlists').DataTable(); } );
+$(document).ready( function () {
+ $('#Playlists').DataTable({
+    serverSide: true,
+    ajax: '/playlists?datatables=true'
+  }).on( 'draw', function () {
+    window.apply_button_confirmation()
+  });
+});
 
 $( '.filedata' ).change(function() {
   $(this).closest('form').submit();

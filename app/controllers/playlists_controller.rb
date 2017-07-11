@@ -22,6 +22,50 @@ class PlaylistsController < ApplicationController
 
   # GET /playlists
   def index
+    # Playlists for index page are loaded dynamically by jquery datatables javascript which
+    # requests the html for only a limited set of rows at a time. 
+    if request.params['datatables'].present?
+      playlists = Playlist.where(user_id: current_user.id)
+      recordsTotal = playlists.count
+      columns = ['title','size','visibility','created_at','updated_at','actions']
+      playlistsFiltered = playlists.where("title LIKE ?", "%#{request.params['search']['value']}%")
+      if columns[request.params['order']['0']['column'].to_i] != 'size'
+        playlistsFiltered = playlistsFiltered.order("#{columns[request.params['order']['0']['column'].to_i]} #{request.params['order']['0']['dir']}")
+        pagedPlaylists = playlistsFiltered.offset(request.params['start']).limit(request.params['length'])
+      else
+        # sort by size (item count): decorate list with playlistitem count then sort and undecorate
+        decorated = playlistsFiltered.collect{|p| [ p.items.size, p ]}
+        decorated.sort!
+        playlistsFiltered = decorated.collect{|p| p[1]}
+        pagedPlaylists = playlistsFiltered.slice(request.params['start'].to_i, request.params['length'].to_i)
+      end
+      response = {
+        "draw": request.parameters['draw'],
+        "recordsTotal": recordsTotal,
+        "recordsFiltered": playlistsFiltered.count,
+        "data": pagedPlaylists.collect do |playlist|
+          edit_button = view_context.link_to(edit_playlist_path(playlist), class: 'btn btn-default btn-xs') do
+            "<span class='fa fa-edit'> Edit</span>".html_safe
+          end
+          delete_button = view_context.link_to(playlist_path(playlist), method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'}) do
+            "<span class='fa fa-times'> Delete</span>".html_safe
+          end
+          [
+            view_context.link_to(playlist.title, playlist_path(playlist), title: playlist.comment),
+            "#{playlist.items.size} items",
+            playlist.visibility =='private'? '<span class="fa fa-lock fa-lg"></span> Only me' : '<span class="fa fa-globe fa-lg"></span> Public',
+            "<span title='#{playlist.created_at.utc.iso8601}'>#{view_context.time_ago_in_words(playlist.created_at)}</span>",
+            "<span title='#{playlist.updated_at.utc.iso8601}'>#{view_context.time_ago_in_words(playlist.updated_at)}</span>",
+            "#{edit_button} #{delete_button}"
+          ]
+        end
+      }
+      respond_to do |format|
+        format.json do
+          render json: response
+        end
+      end
+    end
   end
 
   # GET /playlists/1
