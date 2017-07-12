@@ -75,7 +75,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 $(document).ready( function () {
  $('#Playlists').DataTable({
     serverSide: true,
-    ajax: '/playlists?datatables=true'
+    ajax: {
+      url: '/playlists/paged_index',
+      type: 'POST'
+    }
   }).on( 'draw', function () {
     window.apply_button_confirmation()
   });

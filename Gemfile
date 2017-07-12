@@ -137,6 +137,8 @@ group :test do
   gem 'fakefs', require: 'fakefs/safe'
   gem 'email_spec'
   gem 'capybara'
+  gem 'poltergeist'
+  gem 'rspec-retry'
   gem 'hashdiff'
   gem 'webmock'
 end
