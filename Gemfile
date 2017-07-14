@@ -11,7 +11,7 @@ gem 'blacklight', '~> 6.6'
 gem 'rdf', '~> 2.2'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.7.1'
+gem 'rails', '4.2.9'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 # Use SCSS for stylesheets
@@ -96,7 +96,6 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'rb-readline'
   gem 'byebug'
-  gem 'rb-readline'
   gem 'pry-rails'
   gem 'pry-byebug'
   gem 'solr_wrapper', '>= 0.16'
