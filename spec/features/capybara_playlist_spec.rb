@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'rails_helper'
+require 'capybara/poltergeist'
+Capybara.javascript_driver = :poltergeist
 
 describe 'Playlist' do
   after { Warden.test_reset! }
@@ -24,7 +26,7 @@ describe 'Playlist' do
     click_on('Create New Playlist')
     expect(page.current_url).to eq('http://www.example.com/playlists/new')
   end
-  it 'is able to create private (default) playlist' do
+  it 'is able to create private (default) playlist', js: true do
     hide_const('Avalon::GROUP_LDAP')
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
@@ -45,7 +47,7 @@ describe 'Playlist' do
     page.should have_link('Edit')
     page.should have_link('Delete')
   end
-  it 'is able to view playlist by clicking on playlist name' do
+  it 'is able to view playlist by clicking on playlist name', js: true do
     hide_const('Avalon::GROUP_LDAP')
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
@@ -61,7 +63,7 @@ describe 'Playlist' do
     page.should have_content('This is test')
     page.should have_content('This playlist currently has no playable items')
   end
-  it 'is able to view playlist by accessing View Playlist' do
+  it 'is able to view playlist by accessing View Playlist', js: true do
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
@@ -78,7 +80,7 @@ describe 'Playlist' do
     page.should have_content('This playlist currently has no playable items')
   end
 
-  it 'deletes playlist permanently from playlists page' do
+  it 'deletes playlist permanently from playlists page', js: true do
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
@@ -88,12 +90,13 @@ describe 'Playlist' do
     click_on('Create')
     visit '/playlists'
     click_link('Delete')
+    click_link('Yes, Delete')
     visit '/playlists'
     page.should have_content('Playlist was successfully destroyed')
     page.should have_no_link('private_playlist')
   end
 
-  it 'is able to delete playlist from edit playlist page' do
+  it 'is able to delete playlist from edit playlist page', js: true do
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
@@ -104,12 +107,13 @@ describe 'Playlist' do
     visit '/playlists'
     click_on('Edit')
     click_on('Delete Playlist')
+    click_on('Yes, Delete')
     visit '/playlists'
     page.should have_content('Playlist was successfully destroyed')
     page.should have_no_link('private_playlist')
   end
 
-  it 'is able to create public playlist' do
+  it 'is able to create public playlist', js: true do
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
@@ -121,7 +125,7 @@ describe 'Playlist' do
     visit '/playlists'
     page.should have_content('Public')
   end
-  it 'is able to edit playlist name and description' do
+  it 'is able to edit playlist name and description', js: true, :retry => 3 do
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
@@ -135,6 +139,7 @@ describe 'Playlist' do
     page.should have_content('Editing playlist')
     page.should have_content('View Playlist')
     page.should have_content('Delete Playlist')
+    page.first("#playlist_edit_button").click
     page.should have_button('Save Changes')
     fill_in('playlist_title', with: 'edit_public_playlist')
     fill_in('playlist_comment', with: 'Name and description edited')
@@ -144,7 +149,7 @@ describe 'Playlist' do
     page.should have_content('Name and description edited')
   end
 
-  it 'is able to change public playlist to private' do
+  it 'is able to change public playlist to private', js: true, :retry => 3 do
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
@@ -158,13 +163,14 @@ describe 'Playlist' do
     page.should have_content('Editing playlist')
     page.should have_content('View Playlist')
     page.should have_content('Delete Playlist')
+    page.first("#playlist_edit_button").click
     page.should have_button('Save Changes')
     choose('Private')
     click_button('Save Changes')
     page.should have_content('Playlist was successfully updated')
     page.should have_content('Private')
   end
-  it 'is able to change private playlist to public' do
+  it 'is able to change private playlist to public', js: true, :retry => 3 do
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
@@ -178,6 +184,7 @@ describe 'Playlist' do
     page.should have_content('Editing playlist')
     page.should have_content('View Playlist')
     page.should have_content('Delete Playlist')
+    page.first("#playlist_edit_button").click
     page.should have_button('Save Changes')
     choose('Public')
     click_button('Save Changes')
