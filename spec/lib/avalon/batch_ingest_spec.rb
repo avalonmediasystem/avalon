@@ -174,11 +174,18 @@ describe Avalon::Batch::Ingest do
       expect(media_object).to be_hidden
     end
 
-    it 'should correctly set identifiers' do
+    it 'should correctly set bibliographic_id' do
       batch_ingest.ingest
       ingest_batch = IngestBatch.last
       media_object = MediaObject.find(ingest_batch.media_object_ids.last)
       expect(media_object.bibliographic_id).to eq({:source=>"local", :id=>"7763100"})
+    end
+
+    it 'should correctly set other identifiers' do
+      batch_ingest.ingest
+      ingest_batch = IngestBatch.last
+      media_object = MediaObject.find(ingest_batch.media_object_ids.first)
+      expect(media_object.other_identifier).to eq([{:source=>"local", :id=>"ABC123"}])
     end
 
     it 'should correctly set notes' do
