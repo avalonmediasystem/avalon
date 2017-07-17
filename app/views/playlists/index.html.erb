@@ -74,7 +74,15 @@ $(document).ready( function () {
     ajax: {
       url: '/playlists/paged_index',
       type: 'POST'
-    }
+    },
+    "columns": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      { className: "text-right" }
+    ]
   }).on( 'draw', function () {
     window.apply_button_confirmation()
   });
