@@ -41,6 +41,7 @@
  *= require me-add-to-playlist
  *= require me-track-scrubber
  *= require jquery-ui/datepicker
+ *= require datatables
  * Require all of our vendored stylesheets
  *= require_tree ../../../vendor/assets/stylesheets/.
  *= require_self
@@ -60,5 +61,3 @@
 @import "branding";
 @import "nestable";
 @import "avalon";
-
-@import "datatables";
