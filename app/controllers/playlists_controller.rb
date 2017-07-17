@@ -40,7 +40,7 @@ class PlaylistsController < ApplicationController
       decorated = playlistsFiltered.collect{|p| [ p.items.size, p ]}
       decorated.sort!
       playlistsFiltered = decorated.collect{|p| p[1]}
-      playlistsFiltered.reverse! if request.params['order']=='desc'
+      playlistsFiltered.reverse! if request.params['order']['0']['dir']=='desc'
       pagedPlaylists = playlistsFiltered.slice(request.params['start'].to_i, request.params['length'].to_i)
     end
     response = {
