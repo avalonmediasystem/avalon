@@ -27,7 +27,7 @@ class PlaylistsController < ApplicationController
   # POST /playlists/paged_index
   def paged_index
     # Playlists for index page are loaded dynamically by jquery datatables javascript which
-    # requests the html for only a limited set of rows at a time. 
+    # requests the html for only a limited set of rows at a time.
     playlists = Playlist.where(user_id: current_user.id)
     recordsTotal = playlists.count
     columns = ['title','size','visibility','created_at','updated_at','actions']
@@ -48,6 +48,10 @@ class PlaylistsController < ApplicationController
       "recordsTotal": recordsTotal,
       "recordsFiltered": playlistsFiltered.count,
       "data": pagedPlaylists.collect do |playlist|
+        copy_button = view_context.button_tag( type: 'button', data: { playlist: playlist },
+          class: 'copy-playlist-button btn btn-default btn-xs') do
+          "<span class='fa fa-clone'> Copy </span>".html_safe
+        end
         edit_button = view_context.link_to(edit_playlist_path(playlist), class: 'btn btn-default btn-xs') do
           "<span class='fa fa-edit'> Edit</span>".html_safe
         end
@@ -60,7 +64,7 @@ class PlaylistsController < ApplicationController
           playlist.visibility =='private'? '<span class="fa fa-lock fa-lg"></span> Only me' : '<span class="fa fa-globe fa-lg"></span> Public',
           "<span title='#{playlist.created_at.utc.iso8601}'>#{view_context.time_ago_in_words(playlist.created_at)}</span>",
           "<span title='#{playlist.updated_at.utc.iso8601}'>#{view_context.time_ago_in_words(playlist.updated_at)}</span>",
-          "#{edit_button} #{delete_button}"
+          "#{copy_button} #{edit_button} #{delete_button}"
         ]
       end
     }
@@ -110,6 +114,35 @@ class PlaylistsController < ApplicationController
       end
     end
   end
+
+  # POST /playlists
+  def replicate
+    old_playlist = Playlist.find(params['old_playlist_id'])
+    @playlist = Playlist.new(playlist_params.merge(user: current_user))
+    if @playlist.save
+
+      #copy items
+      old_playlist.items.each do |item|
+        copy_item = item.replicate
+        copy_item.playlist_id = @playlist.id
+        copy_item.save
+        @playlist.items << copy_item
+      end
+
+      respond_to do |format|
+        format.json do
+          render json: { playlist: @playlist, path: edit_playlist_path(@playlist) }
+        end
+      end
+    else
+      respond_to do |format|
+        format.json do
+          render json: {errors: @playlist.errors}
+        end
+      end
+    end
+  end
+
 
   # PATCH/PUT /playlists/1
   def update

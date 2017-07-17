@@ -29,10 +29,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 <h3 class="playlist-title">
-  <% if @playlist.visibility==Playlist::PRIVATE %>
-    <span class="fa fa-lock" alt="<%= t('playlist.lockAltText') %>" title="<%= t('playlist.lockAltText') %>"></span>
+  <% if @playlist.visibility==Playlist::PUBLIC %>
+    <%= human_friendly_visibility Playlist::PUBLIC %>
   <% else %>
-    <span class="glyphicon glyphicon-unlock" alt="<%= t('playlist.unlockAltText') %>" title="<%= t('playlist.unlockAltText') %>"></span>
+    <%= human_friendly_visibility Playlist::PRIVATE %>
   <% end %>
   <%= @playlist.title %>
 </h3>
