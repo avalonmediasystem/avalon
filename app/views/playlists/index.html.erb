@@ -70,6 +70,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <script>
 $(document).ready( function () {
  $('#Playlists').DataTable({
+    processing: true,
     serverSide: true,
     ajax: {
       url: '/playlists/paged_index',
