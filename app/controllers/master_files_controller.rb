@@ -179,6 +179,12 @@ class MasterFilesController < ApplicationController
     media_object = MediaObject.find(params[:container_id])
     authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
 
+    unless media_object.valid?
+      flash[:error] = "MediaObject is invalid.  Please add required fields."
+      redirect_to :back
+      return
+    end
+
     format_errors = "The file was not recognized as audio or video - "
 
     if params.has_key?(:Filedata) and params.has_key?(:original)
