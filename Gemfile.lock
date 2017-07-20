@@ -17,7 +17,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
-  revision: f7ea41455f36007a4ddf1fcd6fe58beff4dd1dc4
+  revision: caa1504664ee4b53a1bf21622ed5abd00b95ae7b
   branch: no_invalid_objs
   specs:
     avalon-workflow (0.0.3)
@@ -846,6 +846,7 @@ DEPENDENCIES
   webmock
   whenever!
   with_locking
+  xray-rails
 
 BUNDLED WITH
    1.14.6
