@@ -36,6 +36,21 @@ describe MasterFilesController do
       end
     end
 
+    context "must provide a valid media object" do
+      before do
+        media_object.title = nil
+        media_object.date_issued = nil
+        media_object.workflow.last_completed_step = 'file-upload'
+        media_object.save(validate: false)
+      end
+      it "should fail if parent media object is invalid" do
+        request.env["HTTP_REFERER"] = "/"
+        file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+        expect(media_object.valid?).to be_falsey
+        expect { post :create, Filedata: [file], original: 'any', container_id: media_object.id}.not_to change { MasterFile.count }
+      end
+    end
+
     context "cannot upload a file over the defined limit" do
       it "should provide a warning about the file size" do
         request.env["HTTP_REFERER"] = "/"
