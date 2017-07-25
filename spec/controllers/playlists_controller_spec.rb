@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -170,6 +170,53 @@ RSpec.describe PlaylistsController, type: :controller do
       it "re-renders the 'new' template" do
         post :create, { playlist: invalid_attributes }, valid_session
         expect(response).to render_template('new')
+      end
+    end
+  end
+
+  describe 'POST #replicate' do
+    before do
+      login_as :user
+    end
+    let(:new_attributes) do
+      { title: Faker::Lorem.word, visibility: Playlist::PUBLIC, comment: Faker::Lorem.sentence, user: user }
+    end
+    let(:playlist) { FactoryGirl.create(:playlist, new_attributes) }
+
+    context 'blank playlist' do
+      it 'replicate a blank playlist' do
+        post :replicate, format: 'json', old_playlist_id: playlist.id,
+          playlist: { 'title' => playlist.title, 'comment' => playlist.comment, 'visibility' => playlist.visibility }
+        expect(response.body).not_to be_empty
+        parsed_response = JSON.parse(response.body)
+
+        new_playlist = parsed_response['playlist']
+
+        expect(new_playlist['id']).not_to eq playlist.id
+        expect(new_playlist['user_id']).to eq playlist.user_id
+        expect(new_playlist['visibility']).to eq playlist.visibility
+        expect(new_playlist['title']).to eq playlist.title
+        expect(new_playlist['comment']).to eq playlist.comment
+      end
+    end
+
+    context 'playlist with items and markers' do
+
+      let!(:video_master_file) { FactoryGirl.create(:master_file, duration: "200000") }
+      let!(:clip) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.word, comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
+      let!(:playlist_item) { PlaylistItem.create!(playlist: playlist, clip: clip) }
+
+      it 'replicate playlist' do
+        post :replicate, format: 'json', old_playlist_id: playlist.id,
+          playlist: { 'title' => playlist.title, 'comment' => playlist.comment, 'visibility' => playlist.visibility }
+        expect(response.body).not_to be_empty
+        parsed_response = JSON.parse(response.body)
+
+        new_playlist = Playlist.find(parsed_response['playlist']['id'])
+        expect(new_playlist.items.count).to eq 1
+        expect(new_playlist.clips.first.start_time).to eq clip.start_time
+        expect(new_playlist.clips.first.id).not_to eq clip.id
+        expect(new_playlist.items.first.id).not_to eq playlist_item.id
       end
     end
   end

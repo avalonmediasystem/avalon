@@ -124,8 +124,6 @@ class PlaylistsController < ApplicationController
       #copy items
       old_playlist.items.each do |item|
         copy_item = item.replicate
-        copy_item.playlist_id = @playlist.id
-        copy_item.save
         @playlist.items << copy_item
       end
 
