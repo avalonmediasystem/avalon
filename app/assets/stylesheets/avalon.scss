@@ -1155,7 +1155,6 @@ h5.panel-title {
 .scrubber-marker {
   color: #dedede;
   font-weight: bold;
-  top: 10px;
 }
 
 .omniauth-form {
@@ -1167,45 +1166,4 @@ h5.panel-title {
 
 .twitter-typeahead {
   z-index: auto !important;
-}
-
-.mejs-time-marker-rail {
-  margin: 5px;
-}
-
-.mejs-time-float-marker {
-	position: absolute !important;
-	background: #eee;
-	width: 66px !important;
-	height: 17px !important;
-	border: solid 1px #333;
-  top: auto;
-	bottom: 8px;
-	margin-left: -38px;
-	text-align: center;
-	color: #111;
-}
-
-.mejs-time-float-current-marker {
-	margin: 2px;
-	width: 60px !important;
-	display: block;
-	text-align: center;
-	left: 0;
-  overflow: hidden;
-}
-
-.mejs-time-float-corner-marker {
-	position: absolute !important;
-	display: block !important;
-	width: 0 !important;
-	height: 0 !important;
-	line-height: 0;
-	border: solid 5px #eee;
-	border-color: #eee transparent transparent transparent;
-	-webkit-border-radius: 0;
-	-moz-border-radius: 0;
-	border-radius: 0;
-	top: 15px;
-	left: 33px !important;
 }
