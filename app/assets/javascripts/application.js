@@ -23,7 +23,7 @@
 // include all of our vendored js
 //= require_tree ../../../vendor/assets/javascripts/.
 
-// Don't include MediaElement 4 JS files, as ME4 collides with the ME2 gem
+// Exclude MediaElement 4 JS files in /vendor, as ME4 collides with the ME2 gem
 //= stub mediaelement/mediaelement-and-player
 //= stub mediaelement/plugins/markers
 //= stub mediaelement/plugins/quality

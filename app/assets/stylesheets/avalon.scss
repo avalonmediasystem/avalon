@@ -1116,11 +1116,15 @@ h5.panel-title {
   position: relative;
 }
 
+/* Mediaelement styles */
 .mejs-time-clip {
   background: linear-gradient(#DDD,#DDD);
   opacity: .3;
   height: 14px !important;
   top: -3px !important;
+}
+.mejs__container {
+  z-index: 1000;
 }
 
 .playlist-description {

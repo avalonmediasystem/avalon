@@ -18,6 +18,9 @@ Rails.application.config.assets.precompile += %w( mediaelement/plugins/quality.j
 Rails.application.config.assets.precompile += %w( mediaelement/plugins/quality-i18n.js )
 Rails.application.config.assets.precompile += %w( mediaelement/plugins/markers.js )
 
+Rails.application.config.assets.precompile += %w( mediaelement/mediaelementplayer.css )
+Rails.application.config.assets.precompile += %w( mediaelement/plugins/quality.css )
+
 # MediaElement 2 files
 Rails.application.config.assets.precompile += %w( jquery.js )
 Rails.application.config.assets.precompile += %w( mediaelement_rails/index.js )
@@ -28,3 +31,14 @@ Rails.application.config.assets.precompile += %w( mediaelement-qualityselector/m
 Rails.application.config.assets.precompile += %w( mediaelement-title/mep-feature-title.js )
 Rails.application.config.assets.precompile += %w( mediaelement-hd-toggle/mep-feature-hdtoggle.js )
 Rails.application.config.assets.precompile += %w( me-logo.js )
+
+Rails.application.config.assets.precompile += %w( mediaelement_rails/index.css )
+Rails.application.config.assets.precompile += %w( mediaelement_rails/mejs-skins.css )
+Rails.application.config.assets.precompile += %w( mediaelement-skin-avalon/mejs-skin-avalon.css )
+Rails.application.config.assets.precompile += %w( mediaelement-qualityselector/mep-feature-qualities.css )
+Rails.application.config.assets.precompile += %w( mediaelement-title/mejs-title.css )
+Rails.application.config.assets.precompile += %w( me-logo.css )
+Rails.application.config.assets.precompile += %w( mediaelement-hd-toggle/mejs-hdtoggle.css )
+Rails.application.config.assets.precompile += %w( me-thumb-selector.css )
+Rails.application.config.assets.precompile += %w( me-add-to-playlist.css )
+Rails.application.config.assets.precompile += %w( me-track-scrubber.css )
