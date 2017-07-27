@@ -11,3 +11,20 @@ Rails.application.config.assets.version = '1.0'
 # Rails.application.config.assets.precompile += %w( search.js )
 
 Rails.application.config.assets.precompile += %w( embed.css )
+
+# MediaElement 4 files
+Rails.application.config.assets.precompile += %w( mediaelement/mediaelement-and-player.js )
+Rails.application.config.assets.precompile += %w( mediaelement/plugins/quality.js )
+Rails.application.config.assets.precompile += %w( mediaelement/plugins/quality-i18n.js )
+Rails.application.config.assets.precompile += %w( mediaelement/plugins/markers.js )
+
+# MediaElement 2 files
+Rails.application.config.assets.precompile += %w( jquery.js )
+Rails.application.config.assets.precompile += %w( mediaelement_rails/index.js )
+Rails.application.config.assets.precompile += %w( me-thumb-selector.js )
+Rails.application.config.assets.precompile += %w( me-add-to-playlist.js )
+Rails.application.config.assets.precompile += %w( me-track-scrubber.js )
+Rails.application.config.assets.precompile += %w( mediaelement-qualityselector/mep-feature-qualities.js )
+Rails.application.config.assets.precompile += %w( mediaelement-title/mep-feature-title.js )
+Rails.application.config.assets.precompile += %w( mediaelement-hd-toggle/mep-feature-hdtoggle.js )
+Rails.application.config.assets.precompile += %w( me-logo.js )
