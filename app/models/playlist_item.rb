@@ -27,18 +27,18 @@ class PlaylistItem < ActiveRecord::Base
     clip.save
   end
 
-  def replicate
+  def replicate!
     new_clip = clip.dup
-    new_clip.save
+    new_clip.save!
 
     new_playlist_item = PlaylistItem.create(playlist: @playlist, clip: new_clip)
 
     marker.each do |old_marker|
       new_marker = old_marker.dup
-      new_marker.save
+      new_marker.save!
       new_playlist_item.marker << new_marker
     end
-    new_playlist_item.save
+    new_playlist_item.save!
     new_playlist_item
   end
 end
