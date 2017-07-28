@@ -135,7 +135,7 @@ class MEJSPlayer {
    */
   getNewStreamAjax (target) {
     let segment = target.dataset.segment
-    let nativeUrl = target.dataset.nativeUrl
+    let nativeUrl = target.dataset.nativeUrl.split('?')[0]
 
     $.ajax({
       url: nativeUrl + '/stream',
@@ -173,7 +173,7 @@ class MEJSPlayer {
   initializePlayer () {
     // Mediaelement default root level configuration
     let defaults = {
-      pluginPath: "/",
+      pluginPath: "/assets/mediaelement/shims/",
       features: ['playpause','loop','progress','current','duration','volume','quality','markers'],
       success: this.handleSuccess.bind(this)
     }

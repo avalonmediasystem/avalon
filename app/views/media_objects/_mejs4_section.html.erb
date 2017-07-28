@@ -35,7 +35,7 @@
                 class="mejs-avalon invisible"
                 controls
                 style="width: 100%;"
-                preload="true">
+                preload="auto">
         <% @currentStreamInfo[:stream_hls].each do |hls| %>
           <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
         <% end %>
