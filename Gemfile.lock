@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/avalonmediasystem/about_page.git
-  revision: e4a87a7aec112b1ccdfa8f4cc71e0ee7ccdf66a6
-  tag: avalon-r6
+  revision: d59bd65d5482f0b69c2ebf1acd60952ecd6b6fb3
+  tag: avalon-r6.1
   specs:
     about_page (0.3.1)
       rails (>= 3.2)
@@ -402,7 +402,7 @@ GEM
       hydra-access-controls (= 10.3.4)
       hydra-core (= 10.3.4)
       rails (>= 3.2.6)
-    i18n (0.8.4)
+    i18n (0.8.6)
     iconv (1.0.4)
     ims-lti (1.1.13)
       builder
@@ -460,7 +460,7 @@ GEM
     mime-types-data (3.2016.0521)
     mimemagic (0.3.2)
     mini_portile2 (2.2.0)
-    minitest (5.10.2)
+    minitest (5.10.3)
     mono_logger (1.1.0)
     multi_json (1.12.1)
     multi_xml (0.6.0)
