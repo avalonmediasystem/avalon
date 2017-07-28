@@ -70,7 +70,7 @@ gem 'whenever', git: "https://github.com/javan/whenever.git", require: false
 gem 'with_locking'
 gem 'parallel'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r6'
-gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6'
+gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.1'
 gem 'jquery-datatables'
 
 #MediaElement.js related
