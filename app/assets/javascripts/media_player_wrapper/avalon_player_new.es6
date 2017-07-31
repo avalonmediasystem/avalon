@@ -55,7 +55,7 @@ class MEJSPlayer {
       if (currentStreamInfo.poster_image) {
         node.setAttribute('poster', currentStreamInfo.poster_image)
       }
-      node.setAttribute('preload', 'auto')
+      node.setAttribute('preload', 'true')
       node.classList.add('mejs-avalon')
       node.classList.add('invisible')
 
@@ -81,10 +81,7 @@ class MEJSPlayer {
 
       // Add <source>s
       currentStreamInfo.stream_hls.map((source) => {
-        markup += `<source src="${source.url}" data-quality="${source.quality}" data-plugin-type="native" type="application/vnd.apple.mpegURL" />`
-      })
-      currentStreamInfo.stream_flash.map((source) => {
-        markup += `<source src="${source.url}" data-quality="${source.quality}" data-plugin-type="flash" type="audio/rtmp" />`
+        markup += `<source src="${source.url}" data-quality="${source.quality}" data-plugin-type="native" type="application/x-mpegURL" />`
       })
       markup += `</audio>`
     }
