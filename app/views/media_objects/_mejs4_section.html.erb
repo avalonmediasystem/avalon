@@ -20,7 +20,7 @@
                 height="309"
                 style="width: 100%; height: 100%"
                 poster="<%= @currentStreamInfo[:poster_image] if f_start == 0 %>"
-                preload="auto">
+                preload="true">
           <% @currentStreamInfo[:stream_hls].each do |hls| %>
             <source src="<%= hls[:url] %>" type="application/x-mpegURL" data-quality="<%= hls[:quality] %>"/>
           <% end %>
@@ -35,7 +35,7 @@
                 class="mejs-avalon invisible"
                 controls
                 style="width: 100%;"
-                preload="auto">
+                preload="true">
         <% @currentStreamInfo[:stream_hls].each do |hls| %>
           <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
         <% end %>

@@ -4,11 +4,20 @@
  */
 class MEJSPlayer {
   constructor(currentStreamInfo) {
-    this.player = undefined
+    // Wrapper for MediaElement instance which interfaces with properties, events, etc.
+    this.mediaElement = null
+    // Actual MediaElement instance
+    this.player = null
+    // Source file info from server
     this.currentStreamInfo = currentStreamInfo
     this.addSectionsClickListener()
     // audio or video file?
     this.mediaType = (this.currentStreamInfo.is_video === true) ? 'video' : 'audio'
+    // Flag whether to play a specified range of media clip (ie. 00:15 - 1:23)
+    // Default 'false' indicates play from beginning (00:00)
+    this.playRangeFlag = false
+    // Temporary holder for clip range data
+    this.playRangeData = {}
     this.initializePlayer()
   }
 
@@ -20,21 +29,8 @@ class MEJSPlayer {
   addSectionsClickListener() {
     const accordionEl = document.getElementById('accordion')
 
-    // Clickable sections are present in DOM
     if (accordionEl) {
-      accordionEl.addEventListener('click', (e) => {
-        let target = e.target
-
-        e.preventDefault()
-        if (target.dataset.segment === this.currentStreamInfo.id) {
-          // Clicked on current stream section link, play from beginning
-          this.player.setCurrentTime(0)
-        } else {
-          // If they clicked on a new item, get new item stream info
-          this.getNewStreamAjax(target)
-          this.updateSectionLinks(target)
-        }
-      })
+      accordionEl.addEventListener('click', this.handleSectionClick.bind(this))
     }
   }
 
@@ -134,8 +130,8 @@ class MEJSPlayer {
    * @return {void}
    */
   getNewStreamAjax (target) {
-    let segment = target.dataset.segment
-    let nativeUrl = target.dataset.nativeUrl.split('?')[0]
+    const segment = target.dataset.segment
+    const nativeUrl = target.dataset.nativeUrl.split('?')[0]
 
     $.ajax({
       url: nativeUrl + '/stream',
@@ -150,7 +146,56 @@ class MEJSPlayer {
     }).fail((error) => {
       console.log('error', error)
     })
+  }
 
+  /**
+   * Event handler for MediaElement's 'canplay' event
+   * At this point can play, pause, set time on player instance
+   * @return {void}
+   */
+  handleCanPlay () {
+    console.log('canplay')
+    this.mediaElement.removeEventListener('canplay')
+
+    // Do we play a specified range of the media file?
+    if (this.playRangeFlag) {
+      this.playRange()
+    }
+  }
+
+  /**
+   * Event handler for clicking on a section link
+   * @param  {Object} e - Event object
+   * @return {void}
+   */
+  handleSectionClick (e) {
+    const target = e.target
+    const dataset = e.target.dataset
+
+    // Did user click on Structured metadata link?// Did user click on Structured metadata link?
+    this.playRangeFlag = !!dataset.fragmentbegin
+    if (this.playRangeFlag) {
+      // Store temporarily range clip data
+      this.playRangeData = dataset
+    }
+
+    // Only handle clicks on section links
+    if (dataset.segment) {
+      e.preventDefault()
+      this.updateSectionLinks(target)
+      // Current structure item clicked
+      if (dataset.segment === this.currentStreamInfo.id) {
+        if (this.playRangeFlag) {
+          this.playRange()
+        } else {
+          // Play from beginning
+          this.mediaElement.setCurrentTime(0)
+        }
+      } else {
+        // New structure item clicked
+        this.getNewStreamAjax(target)
+      }
+    }
   }
 
   /**
@@ -162,7 +207,16 @@ class MEJSPlayer {
    * @return {void}
    */
   handleSuccess (mediaElement, originalNode, instance) {
+    this.mediaElement = mediaElement
     this.revealPlayer(instance)
+
+    // MediaElement doesn't set the instance when calling
+    // with ... = new MediaElement(...) for audio files.  Guessing because
+    // it's using the Flash player?
+    if (!this.player) {
+      this.player = mediaElement
+    }
+    mediaElement.addEventListener('canplay', this.handleCanPlay.bind(this))
   }
 
   /**
@@ -173,8 +227,9 @@ class MEJSPlayer {
   initializePlayer () {
     // Mediaelement default root level configuration
     let defaults = {
+      alwaysShowControls: true,
       pluginPath: "/assets/mediaelement/shims/",
-      features: ['playpause','loop','progress','current','duration','volume','quality','markers'],
+      features: ['playpause', 'current', 'progress', 'duration', 'volume', 'fullscreen', 'loop', 'quality', 'markers'],
       success: this.handleSuccess.bind(this)
     }
     let markers = this.getMarkers()
@@ -182,7 +237,18 @@ class MEJSPlayer {
     let fullConfiguration = { ...defaults, ...markers }
 
     // Create a MediaElement instance
-    this.player = new MediaElementPlayer(`mejs-avalon-${this.mediaType}`, fullConfiguration);
+    this.player = new MediaElementPlayer(`mejs-avalon-${this.mediaType}`, fullConfiguration)
+  }
+
+  /**
+   * Play a range of a video
+   * @return {void}
+   */
+  playRange () {
+    // Reset the flag to default 'off'
+    this.playRangeFlag = false
+    this.mediaElement.play()
+    this.mediaElement.setCurrentTime(this.playRangeData.fragmentbegin)
   }
 
   /**
