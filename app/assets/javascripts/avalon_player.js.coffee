@@ -120,6 +120,12 @@ class AvalonPlayer
           ).bind 'mouseleave', (e) ->
             $('.mejs-time-float-marker[data-marker="'+this.dataset.marker+'"]').hide()
         @player.setCurrentTime initialTime
+        #Workaround for Firefox rendering issue
+        #TODO figure out how to scope this to Firefox and/or misrendered players
+        #Might also want to try moving it to another place in the initialization code to minimize impact
+        #as it causes some flashing while resizing things
+        @player.setPlayerSize()
+        @player.setControlsSize()
 
       @player.options.playlistItemDefaultTitle = @stream_info.embed_title
 
