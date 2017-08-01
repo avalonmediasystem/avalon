@@ -39,8 +39,13 @@ $('#copy-playlist-submit-edit').on('click',
 
 $('#copy-playlist-form').submit(
   () ->
-    disable_submit()
-    return true
+    if($('#playlist_title').val())
+      disable_submit()
+      return true
+    if($('#title_error').length == 0)
+      $('#playlist_title').after('<h5 id="title_error" class="error text-danger">Name is required</h5>')
+      $('#playlist_title').parent().addClass('has-error')
+    return false
 )
 
 disable_submit = () ->
