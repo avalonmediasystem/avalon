@@ -31,6 +31,12 @@ is_mejs4 = params['mejs4'] === 'true' %>
       <!-- MediaElement2 section -->
       <%= render partial: "mejs2_section", locals: {f_start: @f_start, f_end: @f_end} %>
     <% end %>
+
+    <%= render file: '_track_scrubber.html.erb' %>
+    <%= render file: '_add_to_playlist.html.erb' if current_user.present? %>
+    <%= render 'workflow_progress' %>
+    <%= render 'share' if will_partial_list_render? :share %>
+
     <!-- Sections -->
     <%= render partial: 'sections',
         locals: { mediaobject: @media_object,
