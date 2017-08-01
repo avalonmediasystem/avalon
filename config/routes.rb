@@ -127,6 +127,7 @@ Rails.application.routes.draw do
       delete 'update_multiple'
     end
     collection do
+      post 'replicate'
       post 'paged_index'
       if Avalon::Configuration.has_key?('variations')
         post 'import_variations_playlist'
@@ -153,7 +154,7 @@ Rails.application.routes.draw do
     mount AboutPage::Engine => '/about(.:format)', as: 'about_page'
   end
   get '/about(.:format)', to: redirect('/')
-  get '/about/health.yaml', to: 'about_page/about#health', defaults: { :format => 'yaml' }  
+  get '/about/health.yaml', to: 'about_page/about#health', defaults: { :format => 'yaml' }
   get '/about/health(.:format)', to: redirect('/')
 
   constraints(Avalon::Routing::CanConstraint.new(:manage, Resque)) do

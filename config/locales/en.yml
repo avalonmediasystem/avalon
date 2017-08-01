@@ -193,6 +193,8 @@ en:
       action: "Create"
     create:
       action: "Create"
+    create_and_edit:
+      action: "Create and Edit"
     edit:
       action: "Save Changes"
     update:
