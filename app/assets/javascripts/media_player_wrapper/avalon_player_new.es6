@@ -226,7 +226,7 @@ class MEJSPlayer {
     let defaults = {
       alwaysShowControls: true,
       pluginPath: "/assets/mediaelement/shims/",
-      features: ['playpause', 'current', 'progress', 'duration', 'volume', 'fullscreen', 'loop', 'quality', 'markers'],
+      features: ['playpause', 'current', 'progress', 'duration', 'volume', 'quality', 'fullscreen'],
       success: this.handleSuccess.bind(this)
     }
     let markers = this.getMarkers()
