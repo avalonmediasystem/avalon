@@ -244,7 +244,6 @@ class MEJSPlayer {
   playRange () {
     // Reset the flag to default 'off'
     this.playRangeFlag = false
-    this.mediaElement.play()
     this.mediaElement.setCurrentTime(this.playRangeData.fragmentbegin)
   }
 
