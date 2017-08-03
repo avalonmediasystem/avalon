@@ -1,0 +1,46 @@
+<% content_for :page_styles do %>
+  <% stylesheet_link_tag 'mediaelement/mediaelementplayer', 'mediaelement/plugins/quality' %>
+<% end %>
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'mediaelement/mediaelement-and-player',
+      'mediaelement/plugins/quality',
+      'mediaelement/plugins/quality-i18n',
+      'mediaelement/plugins/markers' %>
+<% end %>
+
+<section id="content" style="width: 100%;" tabIndex="-1">
+  <% if @currentStream.present? and @currentStream.derivatives.present? %>
+
+    <% if @currentStreamInfo[:is_video] %>
+      <%= master_file_meta_properties(@currentStream) do %>
+        <video id="mejs-avalon-video"
+                class="mejs-avalon invisible"
+                controls
+                width="450"
+                height="309"
+                style="width: 100%; height: 100%"
+                poster="<%= @currentStreamInfo[:poster_image] if f_start == 0 %>"
+                preload="true">
+          <% @currentStreamInfo[:stream_hls].each do |hls| %>
+            <source src="<%= hls[:url] %>" type="application/x-mpegURL" data-quality="<%= hls[:quality] %>"/>
+          <% end %>
+          <% if @currentStreamInfo[:captions_path].present? %>
+            <track srclang="en" kind="subtitles" type="<%= @currentStreamInfo[:captions_format] %>" src="<%= @currentStreamInfo[:captions_path] %>"></track>
+          <% end %>
+        </video>
+      <% end %>
+    <% else %>
+      <%= master_file_meta_properties(@currentStream) do %>
+        <audio id="mejs-avalon-audio"
+                class="mejs-avalon invisible"
+                controls
+                style="width: 100%;"
+                preload="true">
+        <% @currentStreamInfo[:stream_hls].each do |hls| %>
+          <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/x-mpegURL"/>
+        <% end %>
+        </audio>
+      <% end %>
+    <% end %>
+  <% end %>
+</section>
