@@ -1,16 +1,8 @@
 <% content_for :page_styles do %>
-  <% stylesheet_link_tag 'mediaelement_rails', 'mediaelement_rails/mejs-skins', 'mediaelement-skin-avalon/mejs-skin-avalon', 'mediaelement-qualityselector/mep-feature-qualities', 'mediaelement-title/mejs-title', 'me-logo', 'mediaelement-hd-toggle/mejs-hdtoggle', 'me-thumb-selector', 'me-add-to-playlist', 'me-track-scrubber' %>
+  <% stylesheet_link_tag 'mejs2_player' %>
 <% end %>
 <% content_for :page_scripts do %>
-  <%= javascript_include_tag 'jquery',
-    'mediaelement_rails',
-    'me-thumb-selector',
-    'me-add-to-playlist',
-    'me-track-scrubber',
-    'mediaelement-qualityselector/mep-feature-qualities',
-    'mediaelement-title/mep-feature-title',
-    'mediaelement-hd-toggle/mep-feature-hdtoggle',
-    'me-logo'  %>
+  <%= javascript_include_tag 'mejs2_player' %>
 <% end %>
 
 <section id="content" class="avalon-player" style="width: 100%; visibility: hidden;" tabIndex="-1">
