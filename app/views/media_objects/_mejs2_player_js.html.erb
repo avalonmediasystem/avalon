@@ -1,0 +1,35 @@
+<% content_for :page_styles do %>
+  <%= stylesheet_link_tag 'mejs2_player' %>
+<% end %>
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag "mejs2_player" %>
+<% end %>
+
+      <script>
+        function advancePlaylist() {
+          $('div.panel-heading').has('a.current-section').nextAll('div[role="tab"]:first').find('a.playable').first().click();
+        }
+
+        avalonPlayer = new AvalonPlayer($('#left_column'), <%= section_info.to_json.html_safe %>, {
+          audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
+          mobileDisplayedDuration: <%= section ? (section.duration.to_f / 1000).round : -1 %>,
+          thumbnailSelector: <%= can?(:edit, @media_object) ? 'true' : 'false' %>,
+          //addToPlaylist: <%= can?(:create, Playlist) ? 'true' : 'false' %>,
+          addToPlaylist: <%= current_user.present? ? 'true' : 'false' %>,
+          startQuality: '<%= current_quality(section_info) %>',
+          customError: '<%= t("media_objects.player.customError").html_safe %>',
+          displayTrackScrubber: true,
+          playlistItemDefaultTitle: '<%= escape_javascript section.embed_title %>',
+          success: function(mediaElement, domObject, player) {
+        player.media.addEventListener('ended', function(e) {
+                player.options.autostart=true;
+                advancePlaylist();
+        }, false);
+        player.media.addEventListener('pause', function(e) {
+                player.options.autostart=false;
+        }, false);
+          }
+        });
+        currentPlayer = avalonPlayer.player;
+      </script>
+
