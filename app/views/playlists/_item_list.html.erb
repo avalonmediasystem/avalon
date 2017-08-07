@@ -27,6 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <span>Autoplay</span>
     <input type="checkbox" <%= 'checked' if params['autoadvance'].nil? or params['autoadvance']=='true' %> data-toggle="toggle" data-size="mini" name="autoadvance">
   </div>
+  <%= render 'share' if will_partial_list_render? :share %>
 </div>
 <h3 class="playlist-title">
   <% if @playlist.visibility==Playlist::PUBLIC %>

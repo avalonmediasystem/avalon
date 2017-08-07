@@ -14,7 +14,7 @@
 
 FactoryGirl.define do
   factory :playlist do
-    user
+    user { FactoryGirl.create(:user) }
     title { Faker::Lorem.word }
     comment { Faker::Lorem.sentence }
     visibility { Playlist::PRIVATE }

@@ -302,4 +302,72 @@ RSpec.describe PlaylistsController, type: :controller do
     end
   end
 
+  context "Conditional Share partials should be rendered" do
+    render_views
+    let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
+    context "Normal login" do
+      it "administrators: should include lti and share" do
+	login_as(:administrator)
+	get :show, id: playlist.id
+	expect(response).to render_template(:_share_resource)
+	#expect(response).to render_template(:_lti_url)
+      end
+      it "Playlist owner: should include lti and share" do
+	login_user playlist.user.username
+	get :show, id: playlist.id
+	expect(response).to render_template(:_share_resource)
+	#expect(response).to render_template(:_lti_url)
+      end
+      it "others: should include share and NOT lti" do
+	login_as(:user)
+	get :show, id: playlist.id
+	expect(response).to render_template(:_share_resource)
+	#expect(response).to_not render_template(:_lti_url)
+      end
+    end
+    context "LTI login" do
+      xit "administrators/managers/editors: should include lti and share" do
+	login_lti 'administrator'
+	lti_group = @controller.user_session[:virtual_groups].first
+	get :show, id: playlist.id
+	expect(response).to render_template(:_share_resource)
+	expect(response).to render_template(:_lti_url)
+      end
+      xit "others: should include only lti" do
+	login_lti 'student'
+	lti_group = @controller.user_session[:virtual_groups].first
+	get :show, id: playlist.id
+	expect(response).to_not render_template(:_share_resource)
+	expect(response).to render_template(:_lti_url)
+      end
+    end
+    context "No share tabs rendered" do
+      before do
+	@original_conditional_partials = controller.class.conditional_partials.deep_dup
+	controller.class.conditional_partials[:share].each {|partial_name, conditions| conditions[:if] = false }
+      end
+      after do
+	controller.class.conditional_partials = @original_conditional_partials
+      end
+      it "should not render Share button" do
+	# allow(@controller).to receive(:evaluate_if_unless_configuration).and_return false
+	# allow(@controller).to receive(:is_editor_or_not_lti).and_return false
+	expect(response).to_not render_template(:_share)
+      end
+    end
+    context "No LTI configuration" do
+      around do |example|
+	providers = Avalon::Authentication::Providers
+	Avalon::Authentication::Providers = Avalon::Authentication::Providers.reject{|p| p[:provider] == :lti}
+	example.run
+	Avalon::Authentication::Providers = providers
+      end
+      it "should not include lti" do
+	login_as(:administrator)
+	get :show, id: playlist.id
+	expect(response).to render_template(:_share_resource)
+	expect(response).to_not render_template(:_lti_url)
+      end
+    end
+  end
 end
