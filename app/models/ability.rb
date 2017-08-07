@@ -41,6 +41,9 @@ class Ability
         can :manage, Resque
         can :read, :about_page
         can :read, MigrationStatus
+        can :manage, Playlist
+        can :manage, PlaylistItem
+        can :manage, AvalonMarker
       end
 
       if @user_groups.include? "group_manager"

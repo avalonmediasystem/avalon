@@ -15,10 +15,26 @@
 require 'avalon/variations_playlist_importer'
 
 class PlaylistsController < ApplicationController
+  include ConditionalPartials
+
   before_action :authenticate_user!, except: [:show, :refresh_info]
   load_and_authorize_resource
   skip_load_and_authorize_resource only: [:import_variations_playlist, :refresh_info]
   before_action :get_all_playlists, only: [:index, :edit, :update]
+
+
+  def self.is_owner ctx
+    ctx.current_user == ctx.instance_variable_get('@playlist').user
+  end
+  def self.is_lti_session ctx
+    ctx.user_session.present? && ctx.user_session[:lti_group].present?
+  end
+
+  is_owner_or_not_lti = proc { |ctx| self.is_owner(ctx) || !self.is_lti_session(ctx) }
+  is_owner_or_lti = proc { |ctx| (Avalon::Authentication::Providers.any? {|p| p[:provider] == :lti } &&self.is_owner(ctx)) || self.is_lti_session(ctx) }
+
+  add_conditional_partial :share, :share, partial: 'share_resource', if: is_owner_or_not_lti
+#  add_conditional_partial :share, :lti_url, partial: 'lti_url',  if: is_owner_or_lti
 
   # GET /playlists
   def index
