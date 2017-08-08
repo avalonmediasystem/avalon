@@ -310,30 +310,30 @@ RSpec.describe PlaylistsController, type: :controller do
 	login_as(:administrator)
 	get :show, id: playlist.id
 	expect(response).to render_template(:_share_resource)
-	#expect(response).to render_template(:_lti_url)
+	expect(response).to render_template(:_lti_url)
       end
       it "Playlist owner: should include lti and share" do
 	login_user playlist.user.username
 	get :show, id: playlist.id
 	expect(response).to render_template(:_share_resource)
-	#expect(response).to render_template(:_lti_url)
+	expect(response).to render_template(:_lti_url)
       end
       it "others: should include share and NOT lti" do
 	login_as(:user)
 	get :show, id: playlist.id
 	expect(response).to render_template(:_share_resource)
-	#expect(response).to_not render_template(:_lti_url)
+	expect(response).to_not render_template(:_lti_url)
       end
     end
     context "LTI login" do
-      xit "administrators/managers/editors: should include lti and share" do
+      it "administrators/managers/editors: should include lti and share" do
 	login_lti 'administrator'
 	lti_group = @controller.user_session[:virtual_groups].first
 	get :show, id: playlist.id
 	expect(response).to render_template(:_share_resource)
 	expect(response).to render_template(:_lti_url)
       end
-      xit "others: should include only lti" do
+      it "others: should include only lti" do
 	login_lti 'student'
 	lti_group = @controller.user_session[:virtual_groups].first
 	get :show, id: playlist.id

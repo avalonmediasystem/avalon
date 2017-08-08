@@ -32,7 +32,7 @@ class Ability
 
   def create_permissions(user=nil, session=nil)
     if full_login?
-      if @user_groups.include? "administrator"
+      if is_administrator?
         can :manage, MediaObject
         can :manage, MasterFile
         can :inspect, MediaObject
@@ -64,7 +64,7 @@ class Ability
 
   def custom_permissions(user=nil, session=nil)
 
-    unless full_login? and @user_groups.include? "administrator"
+    unless full_login? and is_administrator?
       cannot :read, MediaObject do |media_object|
         !(test_read(media_object.id) && media_object.published?) && !test_edit(media_object.id)
       end
@@ -192,13 +192,17 @@ class Ability
     end
   end
 
+  def is_administrator?
+    @user_groups.include?("administrator")
+  end
+
   def is_member_of?(collection)
-     @user_groups.include?("administrator") ||
+     is_administrator? ||
        @user.in?(collection.managers, collection.editors, collection.depositors)
   end
 
   def is_editor_of?(collection)
-     @user_groups.include?("administrator") ||
+     is_administrator? ||
        @user.in?(collection.managers, collection.editors)
   end
 
