@@ -27,7 +27,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     </div>
    <% end %>
-   <% if current_ability.can? :show, @playlist %>
+   <% if current_ability.can? :duplicate, @playlist %>
      <%= button_tag( type: 'button', data: { playlist: @playlist },
        class: 'copy-playlist-button btn btn-default btn-xs pull-right') do
        "<span class='fa fa-clone'> Copy Playlist </span>".html_safe
@@ -54,7 +54,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clip_map: clip_map } %>
 </ol>
 
-<% if current_ability.can? :show, @playlist %>
+<% if current_ability.can? :duplicate, @playlist %>
   <%= render partial: 'copy_playlist_modal', locals: { with_refresh: false } %>
 <% end %>
 
