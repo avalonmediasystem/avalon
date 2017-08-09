@@ -13,8 +13,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% # Set MediaElement 4 query param variable
-is_mejs4 = params['mejs4'] === 'true' %>
 
 <% f_start = @current_clip.start_time / 1000.0 %>
 <% f_end = @current_clip.end_time / 1000.0 %>
@@ -37,10 +35,10 @@ is_mejs4 = params['mejs4'] === 'true' %>
 
 <% content_for :page_scripts do %>
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
-    <% if is_mejs4 %>
-      <%#= render partial: "mejs4_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
-    <% else %>
+    <% if is_mejs_2? %>
       <%= render partial: "mejs2_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
+    <% else %>
+      <%#= render partial: "mejs4_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
     <% end %>
   <% end %>
 <% end %>

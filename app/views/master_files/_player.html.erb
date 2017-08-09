@@ -13,17 +13,15 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<% # Set MediaElement 4 query param variable
-is_mejs4 = params['mejs4'] === 'true' %>
 
     <%= render partial: 'modules/player/section', locals: {section: @master_file, section_info: @stream_info, f_start: @f_start, f_end: @f_end} %>
 
 <% content_for :page_scripts do %>
 
-  <% if is_mejs4 %>
-    <%#= render partial: "mejs4_player_js", locals: {section: @master_file, section_info: @stream_info} %>
-  <% else %>
+  <% if is_mejs_2? %>
     <%= render partial: "mejs2_player_js", locals: {section: @master_file, section_info: @stream_info} %>
+  <% else %>
+    <%#= render partial: "mejs4_player_js", locals: {section: @master_file, section_info: @stream_info} %>
   <% end %>
 
   <script>

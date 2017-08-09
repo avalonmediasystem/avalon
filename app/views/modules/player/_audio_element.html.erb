@@ -1,13 +1,10 @@
-<% # Set MediaElement 4 query param variable
-is_mejs4 = params['mejs4'] === 'true' %>
-
       <%= master_file_meta_properties(section) do %>
         <audio id="mejs-avalon-audio"
-                class="mejs-avalon <%= is_mejs4 ? 'invisible' : '' %>"
+                class="mejs-avalon <%= is_mejs_2? ? '' : 'invisible' %>"
                 controls
                 style="width: 100%;"
                 preload="true">
-        <% unless is_mejs4 %>
+        <% if is_mejs_2? %>
           <% section_info[:stream_flash].each do |flash| %>
             <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
           <% end %>
@@ -17,4 +14,3 @@ is_mejs4 = params['mejs4'] === 'true' %>
         <% end %>
         </audio>
       <% end %>
-
