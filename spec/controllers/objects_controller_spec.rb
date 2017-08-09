@@ -38,6 +38,12 @@ describe ObjectsController do
       get :show, id: obj.id, urlappend: 'test'
       expect(response).to redirect_to(media_object_path(obj)+"/test")
     end
+
+    it "works for global ids" do
+      obj = FactoryGirl.create(:playlist)
+      get :show, id: obj.to_gid_param
+      expect(response).to redirect_to(playlist_path(obj))
+    end
   end
 
   describe "#autocomplete" do

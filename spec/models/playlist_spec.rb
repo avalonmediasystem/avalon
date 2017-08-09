@@ -28,6 +28,17 @@ RSpec.describe Playlist, type: :model do
     let(:ability){ Ability.new(user) }
     let(:user){ FactoryGirl.create(:user) }
 
+    context 'when administrator' do
+      let(:playlist) { FactoryGirl.create(:playlist) }
+      let(:user) { FactoryGirl.create(:administrator) }
+
+      it{ is_expected.to be_able_to(:manage, playlist) }
+      it{ is_expected.to be_able_to(:create, playlist) }
+      it{ is_expected.to be_able_to(:read, playlist) }
+      it{ is_expected.to be_able_to(:update, playlist) }
+      it{ is_expected.to be_able_to(:delete, playlist) }
+    end
+
     context 'when owner' do
       let(:playlist) { FactoryGirl.create(:playlist, user: user) }
 

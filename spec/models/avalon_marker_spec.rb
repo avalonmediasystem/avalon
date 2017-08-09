@@ -27,6 +27,18 @@ describe AvalonMarker, type: :model do
 
     context 'when owner' do
       let(:playlist) { FactoryGirl.create(:playlist, user: user) }
+      let(:user) { FactoryGirl.create(:administrator) }
+
+      it { is_expected.to be_able_to(:manage, avalon_marker) }
+      it { is_expected.to be_able_to(:create, avalon_marker) }
+      it { is_expected.to be_able_to(:read, avalon_marker) }
+      it { is_expected.to be_able_to(:update, avalon_marker) }
+      it { is_expected.to be_able_to(:delete, avalon_marker) }
+    end
+
+
+    context 'when owner' do
+      let(:playlist) { FactoryGirl.create(:playlist, user: user) }
 
       it { is_expected.to be_able_to(:create, avalon_marker) }
       it { is_expected.to be_able_to(:update, avalon_marker) }

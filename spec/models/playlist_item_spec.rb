@@ -31,6 +31,17 @@ RSpec.describe PlaylistItem, type: :model do
 
     context 'when owner' do
       let(:playlist) { FactoryGirl.create(:playlist, user: user) }
+      let(:user) { FactoryGirl.create(:administrator) }
+
+      it{ is_expected.to be_able_to(:manage, playlist_item) }
+      it{ is_expected.to be_able_to(:create, playlist_item) }
+      it{ is_expected.to be_able_to(:read, playlist_item) }
+      it{ is_expected.to be_able_to(:update, playlist_item) }
+      it{ is_expected.to be_able_to(:delete, playlist_item) }
+    end
+
+    context 'when owner' do
+      let(:playlist) { FactoryGirl.create(:playlist, user: user) }
 
       it{ is_expected.to be_able_to(:create, playlist_item) }
       it{ is_expected.to be_able_to(:update, playlist_item) }

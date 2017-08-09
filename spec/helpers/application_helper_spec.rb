@@ -53,6 +53,21 @@ describe ApplicationHelper do
     end
   end
 
+  describe '.lti_share_url_for' do
+    it 'forms a proper lti share url for media objects' do
+      media_object = FactoryGirl.create(:media_object)
+      expect(helper.lti_share_url_for(media_object)).to eq "http://test.host/users/auth/lti/callback?target_id=#{media_object.id}"
+    end
+    it 'forms a proper lti share url for master files' do
+      master_file = FactoryGirl.create(:master_file)
+      expect(helper.lti_share_url_for(master_file)).to eq "http://test.host/users/auth/lti/callback?target_id=#{master_file.id}"
+    end
+    it 'forms a proper lti share url for playlists' do
+      playlist = FactoryGirl.create(:playlist)
+      expect(helper.lti_share_url_for(playlist)).to eq "http://test.host/users/auth/lti/callback?target_id=#{playlist.to_gid_param}"
+    end
+  end
+
   describe "#search_result_label" do
     it "should not include a duration string if it would be 0" do
       mo_solr_doc = {"title_tesi" => "my_title"}

@@ -15,20 +15,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% if section=='tab-content' %>
 
-    <div class="tab-pane" id="lti-tab">
+    <div class="tab-pane text-left" id="lti-tab">
       <p class="muted">Copy the link below to share this resource via LTI</p>
       <form role="form">
         <div class="form-group">
-          <label for="ltilink-object">Item</label>
-          <input type="text" class="col-md-5 form-control" id="ltilink-object" value="<%= lti_share_url_for(@media_object) %>" onClick="this.select();" readonly="readonly">
-        </div>
-        <div class="form-group">
-          <label for="ltilink-section">Section</label>
-          <% if @currentStream.present? %>
-          <input type="text" class="col-md-5 form-control" id="ltilink-section" value="<%= lti_share_url_for(@currentStream) %>" onClick="this.select();" readonly="readonly">
-          <% else %>
-          <p class="muted"> <%= I18n.t('media_object.empty_share_section_permalink_notice') %> </p>
-          <% end %>
+          <input type="text" class="col-md-5 form-control" id="ltilink-object" value="<%= lti_share_url_for(@playlist) %>" onClick="this.select();" readonly="readonly">
         </div>
       </form>
     </div>
