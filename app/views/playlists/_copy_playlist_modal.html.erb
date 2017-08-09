@@ -11,7 +11,7 @@
       <div class="modal-body">
         <%= form_for(Playlist.new, remote: true, format: 'json',
           html: {id: 'copy-playlist-form', class: 'form-horizontal' },
-          :url => { :action => "replicate" }) do |f| %>
+          :url => { :action => "duplicate" }) do |f| %>
           <%= hidden_field_tag 'old_playlist_id' %>
           <%= hidden_field_tag 'with_refresh', with_refresh %>
           <div class="row form-group">

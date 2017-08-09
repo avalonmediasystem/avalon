@@ -27,7 +27,7 @@ class PlaylistItem < ActiveRecord::Base
     clip.save
   end
 
-  def replicate!
+  def duplicate!
     new_clip = clip.dup
     new_clip.save!
 

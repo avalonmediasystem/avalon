@@ -19,7 +19,7 @@ class PlaylistsController < ApplicationController
 
   before_action :authenticate_user!, except: [:show, :refresh_info]
   load_and_authorize_resource
-  skip_load_and_authorize_resource only: [:import_variations_playlist, :refresh_info, :replicate]
+  skip_load_and_authorize_resource only: [:import_variations_playlist, :refresh_info, :duplicate]
   before_action :get_all_playlists, only: [:index, :edit, :update]
 
 
@@ -132,15 +132,15 @@ class PlaylistsController < ApplicationController
   end
 
   # POST /playlists
-  def replicate
+  def duplicate
     old_playlist = Playlist.find(params['old_playlist_id'])
-    authorize! :read, old_playlist, message: "You do not have sufficient privledges to copy this item"
+    authorize! :duplicate, old_playlist, message: "You do not have sufficient privledges to copy this item"
     @playlist = Playlist.new(playlist_params.merge(user: current_user))
     if @playlist.save
 
       #copy items
       old_playlist.items.each do |item|
-        copy_item = item.replicate!
+        copy_item = item.duplicate!
         @playlist.items << copy_item
       end
 
