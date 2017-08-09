@@ -174,7 +174,7 @@ RSpec.describe PlaylistsController, type: :controller do
     end
   end
 
-  describe 'POST #replicate' do
+  describe 'POST #duplicate' do
     before do
       login_as :user
     end
@@ -184,8 +184,8 @@ RSpec.describe PlaylistsController, type: :controller do
     let(:playlist) { FactoryGirl.create(:playlist, new_attributes) }
 
     context 'blank playlist' do
-      it 'replicate a blank playlist' do
-        post :replicate, format: 'json', old_playlist_id: playlist.id,
+      it 'duplicate a blank playlist' do
+        post :duplicate, format: 'json', old_playlist_id: playlist.id,
           playlist: { 'title' => playlist.title, 'comment' => playlist.comment, 'visibility' => playlist.visibility }
         expect(response.body).not_to be_empty
         parsed_response = JSON.parse(response.body)
@@ -209,8 +209,8 @@ RSpec.describe PlaylistsController, type: :controller do
       let!(:playlist_item) { PlaylistItem.create!(playlist: playlist, clip: clip) }
       let!(:bookmark) { AvalonMarker.create(playlist_item: playlist_item, master_file: video_master_file, start_time: "200000")}
 
-      it 'replicate playlist with items' do
-        post :replicate, format: 'json', old_playlist_id: playlist.id,
+      it 'duplicate playlist with items' do
+        post :duplicate, format: 'json', old_playlist_id: playlist.id,
           playlist: { 'title' => playlist.title, 'comment' => playlist.comment, 'visibility' => playlist.visibility }
         expect(response.body).not_to be_empty
         parsed_response = JSON.parse(response.body)

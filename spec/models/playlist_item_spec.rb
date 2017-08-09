@@ -99,14 +99,14 @@ RSpec.describe PlaylistItem, type: :model do
     end
   end
 
-  describe '#replicate!' do
+  describe '#duplicate!' do
     let(:master_file) { FactoryGirl.create(:master_file, :with_media_object) }
     let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: avalon_clip) }
     let(:avalon_clip) { FactoryGirl.create(:avalon_clip, master_file: master_file) }
     let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
 
-    it 'it replicates an item' do
-      new_item = playlist_item.replicate!
+    it 'it duplicates an item' do
+      new_item = playlist_item.duplicate!
       expect(new_item.id).not_to eq playlist_item.id
       expect(new_item.playlist_id).to eq playlist_item.playlist_id
       expect(new_item.clip_id).not_to eq playlist_item.clip_id

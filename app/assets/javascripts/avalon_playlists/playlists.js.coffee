@@ -18,18 +18,24 @@ submit_edit = null
   $('.copy-playlist-button').on('click',
     () ->
       playlist = $(this).data('playlist')
-      $('#playlist_title').val(playlist.title)
-      $('#playlist_comment').val(playlist.comment)
+      modal = $('#copy-playlist-modal')
+      modal.find('#playlist_title').val(playlist.title)
+      modal.find('#playlist_comment').val(playlist.comment)
       if (playlist.visibility == 'public')
-        $('#playlist_visibility_private').prop('checked', false)
-        $('#playlist_visibility_public').prop('checked', true)
+        modal.find('#playlist_visibility_private').prop('checked', false)
+        modal.find('#playlist_visibility_public').prop('checked', true)
       else
-        $('#playlist_visibility_private').prop('checked', true)
-        $('#playlist_visibility_public').prop('checked', false)
-      $('#old_playlist_id').val(playlist.id)
-      $('#copy-playlist-submit').prop("disabled", false)
-      $('#copy-playlist-submit-edit').prop("disabled", false)
-      $('#copy-playlist').modal('show')
+        modal.find('#playlist_visibility_private').prop('checked', true)
+        modal.find('#playlist_visibility_public').prop('checked', false)
+      modal.find('#old_playlist_id').val(playlist.id)
+      modal.find('#copy-playlist-submit').prop("disabled", false)
+      modal.find('#copy-playlist-submit-edit').prop("disabled", false)
+
+      # toggle title error off
+      modal.find('#playlist_title').parent().removeClass('has-error')
+      modal.find('#title_error').hide()
+
+      modal.modal('show')
     )
 
 $('#copy-playlist-submit-edit').on('click',
@@ -39,18 +45,20 @@ $('#copy-playlist-submit-edit').on('click',
 
 $('#copy-playlist-form').submit(
   () ->
-    if($('#playlist_title').val())
+    modal = $('#copy-playlist-modal')
+    if(modal.find('#playlist_title').val())
       disable_submit()
       return true
-    if($('#title_error').length == 0)
-      $('#playlist_title').after('<h5 id="title_error" class="error text-danger">Name is required</h5>')
-      $('#playlist_title').parent().addClass('has-error')
+    else
+      modal.find('#title_error').show()
+      modal.find('#playlist_title').parent().addClass('has-error')
     return false
 )
 
 disable_submit = () ->
-  $('#copy-playlist-submit').prop("disabled", true)
-  $('#copy-playlist-submit-edit').prop("disabled", true)
+  modal = $('#copy-playlist-modal')
+  modal.find('#copy-playlist-submit').prop("disabled", true)
+  modal.find('#copy-playlist-submit-edit').prop("disabled", true)
 
 $('#copy-playlist-form').bind('ajax:success',
   (event, data, status, xhr) ->
@@ -60,5 +68,6 @@ $('#copy-playlist-form').bind('ajax:success',
       if (submit_edit)
         window.location.href = data.path
       else
-        location.reload()
+        if ( $('#with_refresh').val() )
+          location.reload()
 )

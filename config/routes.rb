@@ -127,7 +127,7 @@ Rails.application.routes.draw do
       delete 'update_multiple'
     end
     collection do
-      post 'replicate'
+      post 'duplicate'
       post 'paged_index'
       if Avalon::Configuration.has_key?('variations')
         post 'import_variations_playlist'
