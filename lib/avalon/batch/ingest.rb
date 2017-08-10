@@ -36,12 +36,13 @@ module Avalon
         # For Each
         new_package.each do |package|
           @current_package = package
+          package_validation
           # Determine if package is valid
           package_valid = @current_package_errors.empty?
           # TODO: Register failed package and send the email
           next unless package_valid
-          replay = !BatchRegistries.where(replay_name: @package.title).empty?
-          BatchRegistries.new(@current_package) unless replay
+          replay = BatchRegistries.exists?(replay_name: @package.title)
+          BatchRegistries.register_batch(@current_package) unless replay
           BatchRegistries.register_replay(@current_package) if replay
         end
         # Return something about the new batches
