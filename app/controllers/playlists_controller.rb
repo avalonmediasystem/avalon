@@ -186,13 +186,20 @@ class PlaylistsController < ApplicationController
   def update_multiple
     if request.request_method=='DELETE'
       PlaylistItem.where(id: params[:clip_ids]).to_a.map(&:destroy)
-    elsif params[:new_playlist_id].present? and params[:clip_ids]
+    elsif params[:new_playlist_id].present? and params[:clip_ids] #PATCH
       @new_playlist = Playlist.find(params[:new_playlist_id])
-      pis = PlaylistItem.where(id: params[:clip_ids])
-      @new_playlist.items += pis
-      @playlist.items -= pis
+      playlist_items = PlaylistItem.where(id: params[:clip_ids])
+      if (params[:action_type] == 'move_to_playlist')
+        @new_playlist.items += playlist_items
+        @playlist.items -= playlist_items
+        @playlist.save!
+      else
+        playlist_items.each do |item|
+          new_item = item.duplicate!
+          @new_playlist.items << new_item
+        end
+      end
       @new_playlist.save!
-      @playlist.save!
     end
     redirect_to edit_playlist_path(@playlist), notice: 'Playlist was successfully updated.'
   end
