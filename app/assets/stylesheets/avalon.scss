@@ -1116,6 +1116,25 @@ h5.panel-title {
   position: relative;
 }
 
+/* Playlist edit page */
+.manage-playlist-item {
+   margin-top:20px;
+   padding-right:0;
+
+  .dropdown{
+    float:right;
+    padding-right: 5px;
+  }
+  input[type="submit"] {
+    float:right;
+    margin-right: 5px;
+  }
+  label {
+    padding-left:20px;
+    float:right;
+  }
+}
+
 /* Mediaelement styles */
 .mejs-time-clip {
   background: linear-gradient(#DDD,#DDD);
