@@ -18,5 +18,10 @@ FactoryGirl.define do
     title { Faker::Lorem.word }
     comment { Faker::Lorem.sentence }
     visibility { Playlist::PRIVATE }
+
+    trait :with_access_token do
+      visibility { Playlist::PRIVATE_WITH_TOKEN }
+      access_token { Faker::Lorem.characters(10) }
+    end
   end
 end

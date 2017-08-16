@@ -18,7 +18,7 @@ class Playlist < ActiveRecord::Base
   validates :title, presence: true
   validates :comment, length: { maximum: 255 }
   validates :visibility, presence: true
-  validates :visibility, inclusion: { in: proc { [PUBLIC, PRIVATE] } }
+  validates :visibility, inclusion: { in: proc { [PUBLIC, PRIVATE, PRIVATE_WITH_TOKEN] } }
 
   after_initialize :default_values
 
@@ -29,6 +29,7 @@ class Playlist < ActiveRecord::Base
   # visibility
   PUBLIC = 'public'
   PRIVATE = 'private'
+  PRIVATE_WITH_TOKEN = 'private-with-token'
 
   # Default values to be applied after initialization
   def default_values
