@@ -18,8 +18,8 @@ class PlaylistsController < ApplicationController
   include ConditionalPartials
 
   before_action :authenticate_user!, except: [:show, :refresh_info]
-  load_and_authorize_resource
-  skip_load_and_authorize_resource only: [:import_variations_playlist, :refresh_info, :duplicate]
+  load_and_authorize_resource except: [:import_variations_playlist, :refresh_info, :duplicate, :show]
+  load_resource only: [:show]
   before_action :get_all_other_playlists, only: [:edit]
 
 
@@ -93,6 +93,7 @@ class PlaylistsController < ApplicationController
 
   # GET /playlists/1
   def show
+    raise CanCan::AccessDenied unless can?(:read, @playlist) || token_matches?
   end
 
   # GET /playlists/new
@@ -286,5 +287,9 @@ class PlaylistsController < ApplicationController
     respond_to do |format|
       format.js
     end
+  end
+
+  def token_matches?
+    @playlist.access_token == params[:token] && @playlist.visibility == Playlist::PRIVATE_WITH_TOKEN
   end
 end
