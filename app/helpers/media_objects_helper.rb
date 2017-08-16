@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -135,6 +135,7 @@ module MediaObjectsHelper
        headeropen = <<EOF
     <div class="panel-heading" role="tab" id="heading#{index}">
       <h4 class="panel-title #{ 'progress-indented' if progress_div.present? }">
+      <button type="button" title="Add section to playlist" aria-label="Add section to playlist" class="structure_add_to_playlist outline_on btn btn-primary" data-scope="master_file" data-masterfile-id="#{section.id}"></button>
 EOF
        headerclose = <<EOF
       #{progress_div}

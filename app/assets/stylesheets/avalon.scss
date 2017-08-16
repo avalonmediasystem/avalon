@@ -875,6 +875,13 @@ div.status-detail {
 }
 
 /* MediaObject structure page */
+.structure_add_to_playlist {
+  float: right;
+  height: 1.5em;
+  background: #2a4d59 url(/assets/add_to_playlist_icon-233fc168dd0a0fb5cc59665bf7004c7cfe0f89b642ae81cc614e0ea754693131.svg) no-repeat;
+  background-position: 3px 0px;
+  border-color: #2a4d59 !important;
+}
 
 #mediaobject_structure {
   a.structure_toggle, a.captions_toggle {

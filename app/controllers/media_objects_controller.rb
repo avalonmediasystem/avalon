@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -63,6 +63,52 @@ class MediaObjectsController < ApplicationController
     @media_object.save(:validate => false)
 
     redirect_to edit_media_object_path(@media_object)
+  end
+
+  # POST /media_objects/avalon:1/add_to_playlist_form
+  def add_to_playlist_form
+    respond_to do |format|
+      format.html do
+        render partial: 'add_to_playlist_form', locals: { scope: params[:scope], masterfile_id: params[:masterfile_id] }
+      end
+    end
+  end
+
+  # POST /media_objects/avalon:1/add_to_playlist
+  def add_to_playlist
+    masterfile_id = params[:post][:masterfile_id]
+    playlist_id = params[:post][:playlist_id]
+    playlist = Playlist.find(playlist_id)
+    playlistitem_scope = params[:post][:playlistitem_scope] #'section', 'structure'
+    # If a single masterfile_id wasn't in the request, then create playlist_items for all masterfiles
+    masterfile_ids = masterfile_id.present? ? [masterfile_id] : @media_object.ordered_master_file_ids
+    masterfile_ids.each do |mf_id|
+      mf = MasterFile.find(mf_id)
+      if playlistitem_scope=='structure' && mf.has_structuralMetadata? && mf.structuralMetadata.xpath('//Span').present?
+        #create individual items for spans within structure
+        mf.structuralMetadata.xpath('//Span').each do |s|
+          labels = [@media_object.title, mf.title]
+          labels += s.xpath('ancestor::*[\'label\']').collect{|a|a.attribute('label').value.strip}
+          labels << s.attribute('label')
+          label = labels.reject(&:blank?).join(' - ')
+          start_time = s.attribute('begin')
+          end_time = s.attribute('end')
+          start_time = time_str_to_milliseconds(start_time.value) if start_time.present?
+          end_time = time_str_to_milliseconds(end_time.value) if end_time.present?
+          clip = AvalonClip.new(title: label, master_file: mf, start_time: start_time, end_time: end_time)
+          new_item = PlaylistItem.new(clip: clip, playlist: playlist)
+          playlist.items += [new_item]
+        end
+      else
+        #create a single item for the entire masterfile
+        item_title = @media_object.title
+        item_title += " - #{mf.title}" if @media_object.master_file_ids.count>1
+        clip = AvalonClip.new(title: item_title, master_file: mf)
+        playlist.items += [PlaylistItem.new(clip: clip, playlist: playlist)]
+      end
+    end
+
+    render json: {message: 'Playlist item creating has started and will be finished soon.'}, status: 200
   end
 
   # POST /media_objects
