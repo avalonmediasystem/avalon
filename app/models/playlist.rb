@@ -21,6 +21,7 @@ class Playlist < ActiveRecord::Base
   validates :visibility, inclusion: { in: proc { [PUBLIC, PRIVATE, PRIVATE_WITH_TOKEN] } }
 
   after_initialize :default_values
+  before_save :generate_access_token, if: Proc.new{ |p| p.visibility == Playlist::PRIVATE_WITH_TOKEN && access_token.blank? }
 
   has_many :items, -> { order('position ASC') }, class_name: PlaylistItem, dependent: :destroy
   has_many :clips, -> { order('playlist_items.position ASC') }, class_name: AvalonClip, through: :items
@@ -34,6 +35,14 @@ class Playlist < ActiveRecord::Base
   # Default values to be applied after initialization
   def default_values
     self.visibility ||= Playlist::PRIVATE
+  end
+
+  def generate_access_token
+    # TODO Use ActiveRecord's secure_token when we move to Rails 5
+    self.access_token = loop do
+      random_token = SecureRandom.urlsafe_base64(nil, false)
+      break random_token unless self.class.exists?(access_token: random_token)
+    end
   end
 
   # Returns all other playlist items on the same playlist that share a master file

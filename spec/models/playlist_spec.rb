@@ -20,7 +20,7 @@ RSpec.describe Playlist, type: :model do
     it { is_expected.to validate_presence_of(:title) }
     it { is_expected.to validate_presence_of(:user) }
     it { is_expected.to validate_presence_of(:visibility) }
-    it { is_expected.to validate_inclusion_of(:visibility).in_array([Playlist::PUBLIC, Playlist::PRIVATE]) }
+    it { is_expected.to validate_inclusion_of(:visibility).in_array([Playlist::PUBLIC, Playlist::PRIVATE, Playlist::PRIVATE_WITH_TOKEN]) }
   end
 
   describe 'abilities' do
@@ -71,8 +71,18 @@ RSpec.describe Playlist, type: :model do
         it{ is_expected.not_to be_able_to(:update, playlist) }
         it{ is_expected.not_to be_able_to(:delete, playlist) }
       end
-    end
+      context('playlist private with token') do
+        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PRIVATE_WITH_TOKEN) }
 
+        it{ is_expected.not_to be_able_to(:manage, playlist) }
+        it{ is_expected.not_to be_able_to(:duplicate, playlist) }
+        it{ is_expected.not_to be_able_to(:create, playlist) }
+        # One is still not allowed to read the playlist, but the controller bypasses this when the token is passed as a query param
+        it{ is_expected.not_to be_able_to(:read, playlist) }
+        it{ is_expected.not_to be_able_to(:update, playlist) }
+        it{ is_expected.not_to be_able_to(:delete, playlist) }
+      end
+    end
   end
 
   describe 'related items' do
@@ -118,6 +128,17 @@ RSpec.describe Playlist, type: :model do
         @pi.position = i+1
         @pi.save!
       end
+    end
+  end
+
+  describe 'access_token' do
+    let(:playlist) { FactoryGirl.build(:playlist, visibility: Playlist::PRIVATE_WITH_TOKEN, access_token: nil) }
+
+    it 'generates an access token on save if visibility is private-with-token and no access token exists' do
+      expect(playlist.visibility).to eq Playlist::PRIVATE_WITH_TOKEN
+      expect(playlist.access_token).to be_nil
+      playlist.save
+      expect(playlist.access_token).not_to be_nil
     end
   end
 end

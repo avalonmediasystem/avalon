@@ -172,6 +172,11 @@ RSpec.describe PlaylistsController, type: :controller do
         post :create, { playlist: valid_attributes }, valid_session
         expect(response).to redirect_to(Playlist.last)
       end
+
+      it 'generates a token if visibility is private-with-token' do
+        post :create, { playlist: valid_attributes.merge(visibility: Playlist::PRIVATE_WITH_TOKEN) }, valid_session
+        expect(assigns(:playlist).access_token).not_to be_blank
+      end
     end
 
     context 'with invalid params' do
@@ -259,14 +264,21 @@ RSpec.describe PlaylistsController, type: :controller do
 
         it 'assigns the requested playlist as @playlist' do
           playlist = Playlist.create! valid_attributes
-          put :update, { id: playlist.to_param, playlist: valid_attributes }, valid_session
+          put :update, { id: playlist.to_param, playlist: new_attributes }, valid_session
           expect(assigns(:playlist)).to eq(playlist)
         end
 
         it 'redirects to edit playlist' do
           playlist = Playlist.create! valid_attributes
-          put :update, { id: playlist.to_param, playlist: valid_attributes }, valid_session
+          put :update, { id: playlist.to_param, playlist: new_attributes }, valid_session
           expect(response).to redirect_to(edit_playlist_path(playlist))
+        end
+
+        it 'generates a token if visibility is private-with-token' do
+          playlist = Playlist.create! valid_attributes
+          put :update, { id: playlist.to_param, playlist: { visibility: Playlist::PRIVATE_WITH_TOKEN }}, valid_session
+          playlist.reload
+          expect(playlist.access_token).not_to be_blank
         end
       end
 
