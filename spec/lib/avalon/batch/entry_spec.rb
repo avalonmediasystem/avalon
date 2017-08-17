@@ -15,8 +15,8 @@
 require 'rails_helper'
 
 describe Avalon::Batch::Entry do
-  let(:testdir) {'spec/fixtures/dropbox/dynamic'}
-  let(:filename) {File.join(testdir,'video.mp4')}
+  let(:testdir) {'spec/fixtures/'}
+  let(:filename) {'videoshort.mp4'}
   let(:collection) {FactoryGirl.build(:collection)}
   let(:manifest) do
     manifest = double()
@@ -25,25 +25,13 @@ describe Avalon::Batch::Entry do
     allow(manifest).to receive_message_chain(:package, :collection).and_return(collection)
     manifest
   end
-  let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", collection: collection }}
+  let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{DateTime.now.strftime('%F')}", collection: collection }}
   let(:entry_files) { [{ file: filename, skip_transcoding: false }] }
   let(:entry_opts) { {} }
   let(:entry) { Avalon::Batch::Entry.new(entry_fields, entry_files, entry_opts, nil, manifest) }
 
-  before(:each) do
-    #FakeFS.activate!
-    #FakeFS::FileSystem.clone(File.join(Rails.root, "config"))
-    FileUtils.mkdir_p(testdir)
-    FileUtils.touch(filename)
-  end
-
-  after(:each) do
-    FileUtils.rm(filename)
-    FileUtils.rmdir(testdir)
-    #FakeFS.deactivate!
-  end
-
   describe '#file_valid?' do
+    let(:filename) { 'spec/fixtures/dropbox/example_batch_ingest/assets/Vid1-1.mp4' }
     it 'should be valid if the file exists' do
       expect(entry.file_valid?({file: filename})).to be_truthy
       expect(entry.errors).to be_empty
@@ -90,38 +78,23 @@ describe Avalon::Batch::Entry do
   end
 
   describe '#gatherFiles' do
+    let(:filename) { File.join(Rails.root, "spec/fixtures/jazz-performance.mp3") }
     it 'should return a file when no pretranscoded derivatives exist' do
       expect(FileUtils.cmp(Avalon::Batch::Entry.gatherFiles(filename), filename)).to be_truthy
     end
   end
 
   describe 'with multiple pretranscoded derivatives' do
-    let(:filename) {'videoshort.mp4'}
+    let(:filename) {File.join(Rails.root, "spec/fixtures/videoshort.mp4")}
     %w(low medium high).each do |quality|
-      let("filename_#{quality}".to_sym) {"videoshort.#{quality}.mp4"}
+      let("filename_#{quality}".to_sym) {File.join(Rails.root, "spec/fixtures/videoshort.#{quality}.mp4")}
     end
     let(:derivative_paths) {[filename_low, filename_medium, filename_high]}
     let(:derivative_hash) {{'quality-low' => File.new(filename_low), 'quality-medium' => File.new(filename_medium), 'quality-high' => File.new(filename_high)}}
 
-
-    before(:each) do
-      derivative_paths.each {|path| FileUtils.touch(path)}
-    end
-
-    after(:each) do
-      derivative_paths.each {|path| FileUtils.rm(path)}
-    end
-
     describe '#process' do
       let(:entry) do
-        Avalon::Batch::Entry.new({ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", collection: collection }, [{file: filename, skip_transcoding: true}], {}, nil, manifest)
-      end
-
-      before(:each) do
-        derivative_paths.each {|path| FileUtils.touch(File.join(testdir,path))}
-      end
-      after(:each) do
-        derivative_paths.each {|path| FileUtils.rm(File.join(testdir,path))}
+        Avalon::Batch::Entry.new({ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", collection: collection }, [{file: "videoshort.mp4", skip_transcoding: true}], {}, nil, manifest)
       end
 
       it 'should call MasterFile.setContent with a hash of derivatives' do
@@ -165,5 +138,78 @@ describe Avalon::Batch::Entry do
     it 'sets avalon_uploader on the media object' do
       expect(entry.media_object.avalon_uploader).to eq('archivist1@example.org')
     end
+  end
+
+  describe 'bibliographic import' do
+    let(:bib_id) { '7763100' }
+    let(:sru_url) { "http://zgate.example.edu:9000/exampledb?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id='{:bib_id=>\"#{bib_id}\"}'" }
+    let(:sru_response) { File.read(File.expand_path("../../../../fixtures/#{bib_id}.xml",__FILE__)) }
+    let(:entry_fields) {{ bibliographic_id: [bib_id], bibliographic_id_label: ['local'], collection: collection }}
+    before do
+      stub_request(:get, sru_url).to_return(body: sru_response)
+    end
+    it 'retrieves bib data' do
+      expect(entry.media_object.bibliographic_id).to eq({:source=>"local", :id=>bib_id})
+      expect(entry.media_object.title).to eq('245 A : B F G K N P S')
+    end
+  end
+
+  describe 'other identifiers' do
+    let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", other_identifier: ['ABC123'], other_identifier_type: ['local'], collection: collection }}
+    it 'sets other identifers' do
+      expect(entry.media_object.other_identifier).to eq([{:source=>"local", :id=>"ABC123"}])
+    end
+  end
+
+  describe 'notes' do
+    let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", note: ["This is a test general note"], note_type: ['general'], collection: collection }}
+    it 'sets notes' do
+      expect(entry.media_object.note.first).to eq({:note=>"This is a test general note", :type=>"general"})
+    end
+  end
+
+  describe '#process!' do
+    let(:entry_files) { [{ file: filename, offset: '00:00:00.500', label: 'Quis quo', date_digitized: '2015-10-30', skip_transcoding: false }] }
+    let(:master_file) { entry.media_object.master_files.first }
+    before do
+      entry.process!
+    end
+
+    it 'sets MasterFile details' do
+      expect(master_file.title).to eq('Quis quo')
+      expect(master_file.poster_offset.to_i).to eq(500)
+      expect(master_file.workflow_name).to eq('avalon')
+      expect(master_file.absolute_location).to eq(Avalon::FileResolver.new.path_to(master_file.file_location))
+      expect(master_file.date_digitized).to eq('2015-10-30T00:00:00Z')
+    end
+  end
+
+  describe '#attach_datastreams_to_master_file' do
+    let(:master_file) { FactoryGirl.build(:master_file) }
+    let(:filename) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov') }
+    before do
+      Avalon::Batch::Entry.attach_datastreams_to_master_file(master_file, filename)
+    end
+
+    it 'should attach structural metadata' do
+      expect(master_file.structuralMetadata.has_content?).to be_truthy
+    end
+    it 'should attach captions' do
+      expect(master_file.captions.has_content?).to be_truthy
+    end
+  end
+
+  describe "#offset_valid?" do
+    it {expect(Avalon::Batch::Entry.offset_valid?("33.12345")).to be true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("21:33.12345")).to be true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("125:21:33.12345")).to be true}
+    it {expect(Avalon::Batch::Entry.offset_valid?("63.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("66:33.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(".12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":33.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?(":66:33.12345")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("5:000")).to be false}
+    it {expect(Avalon::Batch::Entry.offset_valid?("`5.000")).to be false}
   end
 end

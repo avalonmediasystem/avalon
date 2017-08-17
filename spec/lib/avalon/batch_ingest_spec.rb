@@ -130,65 +130,6 @@ describe Avalon::Batch::Ingest do
     it 'creates an ingest batch object' do
       expect{batch_ingest.ingest}.to change{IngestBatch.count}.by(1)
     end
-
-    context '#attach_datastreams_to_master_file' do
-      let(:master_file) { FactoryGirl.build(:master_file) }
-      let(:filename) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov') }
-      before do
-        Avalon::Batch::Entry.attach_datastreams_to_master_file(master_file, filename)
-      end
-
-      it 'should attach structural metadata' do
-        expect(master_file.structuralMetadata.has_content?).to be_truthy
-      end
-      it 'should attach captions' do
-        expect(master_file.captions.has_content?).to be_truthy
-      end
-    end
-
-    context 'should set details correctly' do
-      let(:manifest_file) { File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx') }
-      let(:package) { Avalon::Batch::Package.new(manifest_file, collection) }
-      let(:media_object) { package.manifest.entries.first.process! }
-      let(:media_object_last) { package.manifest.entries.last.process! }
-
-    it 'should correctly set bibliographic_id' do
-      batch_ingest.ingest
-      ingest_batch = IngestBatch.last
-      media_object = MediaObject.find(ingest_batch.media_object_ids.last)
-      expect(media_object.bibliographic_id).to eq({:source=>"local", :id=>"7763100"})
-    end
-
-      it 'should correctly set notes' do
-        expect(media_object.note.first).to eq({:note=>"This is a test general note", :type=>"general"})
-      end
-
-      it 'should retrieve bib data' do
-        expect(media_object_last.bibliographic_id).to eq({:source=>"local", :id=>"7763100"})
-        expect(media_object_last.title).to eq('245 A : B F G K N P S')
-      end
-    end
-
-    context 'should set hidden' do
-      let(:manifest_file) { File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx') }
-      let(:package) { Avalon::Batch::Package.new(manifest_file, collection) }
-      let(:entry) { package.manifest.entries.first }
-      let(:entry_hidden) { package.manifest.entries.second }
-
-      it 'correctly reads hidden from the manifest' do
-        expect(entry.opts[:hidden]).to be_falsey
-        expect(entry_hidden.opts[:hidden]).to be_truthy
-      end
-      it 'does not set hidden on the media objects if the entry is not hidden' do
-        media_object = entry.process!
-        expect(media_object).not_to be_hidden
-      end
-      it 'sets hidden on the media objects if the entry is hidden' do
-        media_object = entry_hidden.process!
-        expect(media_object).to be_hidden
-      end
-    end
-
   end
 
   describe 'invalid manifest' do
@@ -288,19 +229,5 @@ describe Avalon::Batch::Ingest do
 
   it "should be able to default to specific groups" do
     skip "[VOV-1348] Wait until implemented"
-  end
-
-  describe "#offset_valid?" do
-    it {expect(Avalon::Batch::Entry.offset_valid?("33.12345")).to be true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("21:33.12345")).to be true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("125:21:33.12345")).to be true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("63.12345")).to be false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("66:33.12345")).to be false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(".12345")).to be false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":.12345")).to be false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":33.12345")).to be false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":66:33.12345")).to be false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("5:000")).to be false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("`5.000")).to be false}
   end
 end
