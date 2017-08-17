@@ -37,16 +37,20 @@ module Avalon
         new_package.each do |package|
           @current_package = package
           package_validation
-          # Determine if package is valid
           package_valid = @current_package_errors.empty?
-          # TODO: Register failed package and send the email
+          send_invalid_package_email unless package_valid
           next unless package_valid
-          replay = BatchRegistries.exists?(replay_name: @package.title)
-          BatchRegistries.register_batch(@current_package) unless replay
-          BatchRegistries.register_replay(@current_package) if replay
+          BatchRegistries.register_batch(@current_package) unless replay?
+          BatchRegistries.register_replay(@current_package) if replay?
         end
         # Return something about the new batches
       end
+
+      def replay?(filename)
+        replay = BatchRegistries.exists?(replay_name: @package.title)
+      end
+
+
 
       def register_batch(valid: true)
         obj = {
@@ -95,6 +99,10 @@ module Avalon
         errors = []
         errors << "There are no entries in the manifest file." if @current_package.manifest.count==0
         errors
+      end
+
+      def send_invalid_package_email
+        #TODO: Write me!
       end
 
       def ingest
