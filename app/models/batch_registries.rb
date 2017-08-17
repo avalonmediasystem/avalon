@@ -27,16 +27,16 @@ class BatchRegistries < ActiveRecord::Base
 
   # Places a created_at DateTime if nil, sets the updated_at DateTime as well
   def timestamp
-    created_at = Time.now.to_datetime if created_at.nil?
-    updated_at = Time.now.to_datetime
+    self.created_at = Time.now.to_datetime if created_at.nil?
+    self.updated_at = Time.now.to_datetime
   end
 
   # On every save the user_id is checked and if the user_id does not exist (deleted) user
   # the batch is set to an error state
   def check_user
     unless User.exists?(user_id)
-      error = true
-      error_message = "No user with id #{user_id} found in system"
+      self.error = true
+      self.error_message = "No user with id #{user_id} found in system"
     end
   end
 end
