@@ -187,8 +187,11 @@ en:
     ago: "%{time} ago"
     lockAltText: "This playlist is private."
     unlockAltText: "This playlist is public."
+    shareAltText: "This playlist is shared by link."
     lockText: "Private"
     unlockText: "Public"
+    shareText: "Share by link"
+
     new:
       action: "Create"
     create:
