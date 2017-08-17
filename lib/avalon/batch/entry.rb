@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -51,6 +51,8 @@ module Avalon
               end
             end
           end
+          # Not quite sure why this doesn't work within the tap and had to move it here
+          @media_object.hidden = hidden
           @media_object
         end
 
@@ -186,8 +188,8 @@ module Avalon
             logger.error "Problem saving MasterFile(#{master_file.id}): #{master_file.errors.full_messages.to_sentence}"
           end
         end
-        context = { media_object: media_object, user: @manifest.package.user.user_key, hidden: opts[:hidden] ? '1' : nil }
-        HYDRANT_STEPS.get_step('access-control').execute context
+        # context = { media_object: media_object, user: @manifest.package.user.user_key, hidden: opts[:hidden] ? '1' : nil }
+        # HYDRANT_STEPS.get_step('access-control').execute context
         media_object.workflow.last_completed_step = 'access-control'
 
         if opts[:publish]
@@ -223,6 +225,11 @@ module Avalon
       def self.derivativePath(filename, quality)
         filename.dup.insert(filename.rindex('.'), ".#{quality}")
       end
+
+      private
+        def hidden
+          !!opts[:hidden]
+        end
     end
   end
 end

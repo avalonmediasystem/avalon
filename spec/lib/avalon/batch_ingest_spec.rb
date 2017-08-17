@@ -152,42 +152,12 @@ describe Avalon::Batch::Ingest do
       let(:media_object) { package.manifest.entries.first.process! }
       let(:media_object_last) { package.manifest.entries.last.process! }
 
-      it 'should set avalon_uploader' do
-        expect(media_object.avalon_uploader).to eq('frances.dickens@reichel.com')
-      end
-
-      it 'should set MasterFile details' do
-        master_file = media_object.ordered_master_files.to_a.first
-
-        expect(master_file.title).to eq('Quis quo')
-        expect(master_file.poster_offset.to_i).to eq(500)
-        expect(master_file.workflow_name).to eq('avalon')
-        expect(master_file.absolute_location).to eq(Avalon::FileResolver.new.path_to(master_file.file_location))
-        expect(master_file.date_digitized).to eq('2015-10-30T00:00:00Z')
-        # if a master file is saved on a media object
-        # it should have workflow name set
-        # master_file.workflow_name.should be_nil
-
-        master_file = media_object.ordered_master_files.to_a[1]
-        expect(master_file.title).to eq('Unde aliquid')
-        expect(master_file.poster_offset.to_i).to eq(500)
-        expect(master_file.workflow_name).to eq('avalon-skip-transcoding')
-        expect(master_file.absolute_location).to eq('file:///tmp/sheephead_mountain_master.mov')
-        expect(master_file.date_digitized).to eq('2015-10-31T00:00:00Z')
-
-        master_file = media_object.ordered_master_files.to_a[2]
-        expect(master_file.title).to eq('Audio')
-        expect(master_file.workflow_name).to eq('fullaudio')
-        expect(master_file.absolute_location).to eq(Avalon::FileResolver.new.path_to(master_file.file_location))
-      end
-
-      it 'should correctly set bibliographic_id' do
-        expect(media_object_last.bibliographic_id).to eq({:source=>"local", :id=>"7763100"})
-      end
-
-      it 'should correctly set other identifiers' do
-        expect(media_object.other_identifier).to eq([{:source=>"local", :id=>"ABC123"}])
-      end
+    it 'should correctly set bibliographic_id' do
+      batch_ingest.ingest
+      ingest_batch = IngestBatch.last
+      media_object = MediaObject.find(ingest_batch.media_object_ids.last)
+      expect(media_object.bibliographic_id).to eq({:source=>"local", :id=>"7763100"})
+    end
 
       it 'should correctly set notes' do
         expect(media_object.note.first).to eq({:note=>"This is a test general note", :type=>"general"})

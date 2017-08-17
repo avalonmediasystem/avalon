@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -15,27 +15,9 @@
 require 'rails_helper'
 
 describe Avalon::Batch::Entry do
-
-  RSpec::Matchers.define :hash_match do |expected|
-    match do |actual|
-      diff = HashDiff.diff(actual,expected) do |p,a,e|
-        if a.is_a?(RealFile) && e.is_a?(RealFile)
-          FileUtils.cmp(a,e)
-        elsif a.is_a?(File) && e.is_a?(File)
-          FileUtils.cmp(a,e)
-        elsif p == ""
-           nil
-        else
-          a.eql? e
-        end
-      end
-      diff == []
-    end
-  end
-
   let(:testdir) {'spec/fixtures/dropbox/dynamic'}
   let(:filename) {File.join(testdir,'video.mp4')}
-  let(:collection) {FactoryGirl.create(:collection)}
+  let(:collection) {FactoryGirl.build(:collection)}
   let(:manifest) do
     manifest = double()
     allow(manifest).to receive_message_chain(:package, :dir).and_return(testdir)
@@ -43,9 +25,10 @@ describe Avalon::Batch::Entry do
     allow(manifest).to receive_message_chain(:package, :collection).and_return(collection)
     manifest
   end
-  let(:entry) do
-    Avalon::Batch::Entry.new({ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", collection: collection }, [{file: filename, skip_transcoding: false}], {}, nil, manifest)
-  end
+  let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", collection: collection }}
+  let(:entry_files) { [{ file: filename, skip_transcoding: false }] }
+  let(:entry_opts) { {} }
+  let(:entry) { Avalon::Batch::Entry.new(entry_fields, entry_files, entry_opts, nil, manifest) }
 
   before(:each) do
     #FakeFS.activate!
@@ -165,6 +148,22 @@ describe Avalon::Batch::Entry do
       it 'should insert supplied quality into filename' do
 	expect(Avalon::Batch::Entry.derivativePath(filename, 'low')).to eq filename_low
       end
+    end
+  end
+
+  describe 'hidden' do
+    let(:entry_hidden) { Avalon::Batch::Entry.new(entry_fields, entry_files, {hidden: true}, nil, manifest) }
+    it 'does not set hidden on the media objects if the entry is not hidden' do
+      expect(entry.media_object).not_to be_hidden
+    end
+    it 'sets hidden on the media objects if the entry is hidden' do
+      expect(entry_hidden.media_object).to be_hidden
+    end
+  end
+
+  describe 'avalon_uploader' do
+    it 'sets avalon_uploader on the media object' do
+      expect(entry.media_object.avalon_uploader).to eq('archivist1@example.org')
     end
   end
 end
