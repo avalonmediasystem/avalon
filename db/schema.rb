@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170530173242) do
+ActiveRecord::Schema.define(version: 20170817195104) do
 
   create_table "annotations", force: :cascade do |t|
     t.string  "uuid"
@@ -34,6 +34,32 @@ ActiveRecord::Schema.define(version: 20170530173242) do
 
   add_index "api_tokens", ["token"], name: "index_api_tokens_on_token", unique: true
   add_index "api_tokens", ["username"], name: "index_api_tokens_on_username"
+
+  create_table "batch_entries", force: :cascade do |t|
+    t.integer "batch_registries_id"
+    t.text    "payload",             limit: 4294967295
+    t.boolean "complete"
+    t.boolean "error"
+    t.string  "current_status"
+    t.string  "error_message"
+  end
+
+  add_index "batch_entries", ["batch_registries_id"], name: "index_batch_entries_on_batch_registries_id"
+
+  create_table "batch_registries", force: :cascade do |t|
+    t.string   "file_name"
+    t.string   "replay_name"
+    t.integer  "user_id"
+    t.string   "collection"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "complete"
+    t.boolean  "processed_email_sent"
+    t.boolean  "completed_email_sent"
+    t.boolean  "error"
+    t.boolean  "error_email_sent"
+    t.boolean  "locked"
+  end
 
   create_table "bookmarks", force: :cascade do |t|
     t.integer  "user_id",       null: false
