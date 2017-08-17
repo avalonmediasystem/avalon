@@ -11,6 +11,7 @@ class CreateBatchRegistries < ActiveRecord::Migration
       t.boolean 'processed_email_sent'
       t.boolean 'completed_email_sent'
       t.boolean 'error'
+      t.text 'error_message'
       t.boolean 'error_email_sent'
       t.boolean 'locked'
     end
