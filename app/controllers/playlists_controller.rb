@@ -20,7 +20,7 @@ class PlaylistsController < ApplicationController
   before_action :authenticate_user!, except: [:show, :refresh_info]
   load_and_authorize_resource
   skip_load_and_authorize_resource only: [:import_variations_playlist, :refresh_info, :duplicate]
-  before_action :get_all_playlists, only: [:index, :edit, :update]
+  before_action :get_all_other_playlists, only: [:edit]
 
 
   def self.is_owner ctx
@@ -102,8 +102,6 @@ class PlaylistsController < ApplicationController
 
   # GET /playlists/1/edit
   def edit
-    # We are already editing our playlist, we don't need it to show up in this array as well
-    @playlists.delete( @playlist )
   end
 
   # POST /playlists
@@ -231,9 +229,8 @@ class PlaylistsController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
-  def get_all_playlists
-    @playlists = Playlist.for_ability(current_ability).to_a
+  def get_all_other_playlists
+    @playlists = Playlist.where( user_id: current_user ).where.not( id: @playlist )
   end
 
   # Only allow a trusted parameter "white list" through.
