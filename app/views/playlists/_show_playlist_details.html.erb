@@ -1,0 +1,85 @@
+<%#
+Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<div class="col-md-9">
+  <div class="row">
+    <div class="col-sm-12">
+      <%= link_to "View Playlist", @playlist, { class: 'btn btn-xs btn-primary'} %>
+      <% if can?(:destroy, @playlist) %>
+        <%= link_to "Delete Playlist", @playlist, method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'} %>
+      <% end %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <h3 style="display:inline-block">Playlist Details</h3>
+      <a id="playlist_edit_button" data-toggle="collapse" data-target="#playlist_edit_div, #playlist_view_div" class="fa fa-edit btn btn-sm"></a>
+    </div>
+  </div>
+  <div id="playlist_view_div" class="container collapse <%= 'in' if @playlist.errors.empty? %>">
+    <div class="row">
+      <div class="col-sm-2">Name</div>
+      <div class="col-sm-10"><%= @playlist.title %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-2">Description</div>
+      <div class="col-sm-10"><%= @playlist.comment %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-2"><%= t("blacklight/folders/folder.visibility", scope: "helpers.label") %></div>
+      <div class="col-sm-10">
+        <% if @playlist.visibility==Playlist::PUBLIC %>
+          <%= human_friendly_visibility Playlist::PUBLIC %>
+        <% elsif @playlist.visibility==Playlist::PRIVATE %>
+          <%= human_friendly_visibility Playlist::PRIVATE %>
+        <% else %>
+          <%= human_friendly_visibility Playlist::PRIVATE_WITH_TOKEN %>
+          <div class="input-group" style="max-width:505px; margin-top:9px;">
+            <%= url_field_tag 'playlist-share-link',
+              "#{playlist_path(@playlist, only_path: false)}?token=#{@playlist.access_token}",
+              class: 'form-control', readonly: true, style: 'background:white;' %>
+            <span class="input-group-btn">
+              <%= button_tag "Copy", id: 'playlist-share-btn',
+                title: 'Copy share link',
+                class: "copy-share-link-button btn btn-secondary js-tooltip js-copy",
+                data: { toggle: 'tooltip', placement: 'bottom'} %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+<% content_for :page_scripts do %>
+  <script>
+  $('.js-tooltip').tooltip();
+  $('#playlist-share-btn').click( function (event) {
+    var copytarget = $('#playlist-share-link');
+    // select text
+    copytarget.select();
+    try {
+      // copy text
+      document.execCommand('copy');
+      copytarget.blur();
+      this.setAttribute('data-original-title', 'Copied!');
+      $(this).tooltip('fixTitle');
+    }
+    catch (err) {
+      this.setAttribute('data-original-title', 'please press Ctrl/Cmd+C to copy!');
+      $(this).tooltip('fixTitle');
+    }
+  });
+  </script>
+<% end %>
