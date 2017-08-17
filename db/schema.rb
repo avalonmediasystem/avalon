@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170802203053) do
+ActiveRecord::Schema.define(version: 20170530173242) do
 
   create_table "annotations", force: :cascade do |t|
     t.string  "uuid"
@@ -34,61 +34,6 @@ ActiveRecord::Schema.define(version: 20170802203053) do
 
   add_index "api_tokens", ["token"], name: "index_api_tokens_on_token", unique: true
   add_index "api_tokens", ["username"], name: "index_api_tokens_on_username"
-
-  create_table "batch_entries", force: :cascade do |t|
-    t.string   "bibliographic_id_label"
-    t.string   "bibliographic_id"
-    t.string   "other_identifier_type"
-    t.string   "other_identifier"
-    t.string   "title",                                     null: false
-    t.string   "creator"
-    t.string   "contributor"
-    t.string   "genre"
-    t.string   "publisher"
-    t.string   "date_created"
-    t.string   "date_issued",                               null: false
-    t.text     "abstract",               limit: 4294967295
-    t.string   "language"
-    t.string   "physical_description"
-    t.string   "related_item_label"
-    t.string   "related_item_url"
-    t.string   "topical_subject"
-    t.string   "geographic_subject"
-    t.string   "temporal_subject"
-    t.string   "terms_of_use"
-    t.string   "table_of_contents"
-    t.string   "note_type1"
-    t.string   "note1"
-    t.string   "note_type2"
-    t.string   "note2"
-    t.string   "publish"
-    t.string   "hidden"
-    t.string   "file"
-    t.string   "label"
-    t.string   "offset"
-    t.string   "skip-transcoding"
-    t.string   "absolute_location"
-    t.integer  "batch_registry_id"
-    t.string   "status"
-    t.string   "error"
-    t.datetime "loaded_at"
-    t.datetime "last_modified"
-    t.boolean  "ingested"
-  end
-
-  add_index "batch_entries", ["batch_registry_id"], name: "index_batch_entries_on_batch_registry_id"
-
-  create_table "batch_registries", force: :cascade do |t|
-    t.string   "file_name",      null: false
-    t.string   "replay_name",    null: false
-    t.string   "collection",     null: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "valid_manifest"
-    t.boolean  "completed"
-    t.boolean  "email_sent"
-    t.boolean  "locked"
-  end
 
   create_table "bookmarks", force: :cascade do |t|
     t.integer  "user_id",       null: false
