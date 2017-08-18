@@ -110,11 +110,11 @@ class AvalonPlayer
               currentPlayer.setCurrentTime offset
             marker_rail.append(marker)
             marker_rail.append('<span class="mejs-time-float-marker" data-marker="'+marker_id+'" style="display: none; left: '+offset_percent+'%" ><span class="mejs-time-float-current-marker">'+title+'</span><span class="mejs-time-float-corner-marker"></span></span>')
-            marker_rail.width(total.width())
           scrubber.append(marker_rail)
           _this.player.globalBind('resize', (e) ->
             marker_rail.width(total.width())
           )
+          marker_rail.width(total.width())
           $('.scrubber-marker').bind('mouseenter', (e) ->
             $('.mejs-time-float-marker[data-marker="'+this.dataset.marker+'"]').show()
           ).bind 'mouseleave', (e) ->
