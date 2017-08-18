@@ -42,6 +42,7 @@ ActiveRecord::Schema.define(version: 20170817195104) do
     t.boolean "error"
     t.string  "current_status"
     t.string  "error_message"
+    t.string  "media_object_pid"
   end
 
   add_index "batch_entries", ["batch_registries_id"], name: "index_batch_entries_on_batch_registries_id"
