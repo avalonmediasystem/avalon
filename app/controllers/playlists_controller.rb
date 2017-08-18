@@ -138,7 +138,7 @@ class PlaylistsController < ApplicationController
 
       #copy items
       old_playlist.items.each do |item|
-        next if item.nil?
+        next if item.clip.master_file.nil?
         copy_item = item.duplicate!
         copy_item.playlist_id  = @playlist.id
         copy_item.save!
