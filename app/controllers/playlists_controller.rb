@@ -138,8 +138,11 @@ class PlaylistsController < ApplicationController
 
       #copy items
       old_playlist.items.each do |item|
+        next if item.nil?
         copy_item = item.duplicate!
-        @playlist.items << copy_item
+        copy_item.playlist_id  = @playlist.id
+        copy_item.save!
+        copy_item.move_to_bottom
       end
 
       respond_to do |format|
@@ -184,19 +187,19 @@ class PlaylistsController < ApplicationController
   def update_multiple
     if request.request_method=='DELETE'
       PlaylistItem.where(id: params[:clip_ids]).to_a.map(&:destroy)
-    elsif params[:new_playlist_id].present? and params[:clip_ids] #PATCH
+    elsif params[:new_playlist_id].present? and params[:clip_ids]
       @new_playlist = Playlist.find(params[:new_playlist_id])
       playlist_items = PlaylistItem.where(id: params[:clip_ids])
-      if (params[:action_type] == 'move_to_playlist')
-        @new_playlist.items += playlist_items
-        @playlist.items -= playlist_items
-        @playlist.save!
-      else
-        playlist_items.each do |item|
-          new_item = item.duplicate!
-          @new_playlist.items << new_item
+      playlist_items.each do |item|
+        next if item.clip.master_file.nil?
+        if (params[:action_type] == 'copy_to_playlist')
+          item = item.duplicate!
         end
+        item.playlist_id = @new_playlist.id
+        item.save!
+        item.move_to_bottom
       end
+      @playlist.save!
       @new_playlist.save!
     end
     redirect_to edit_playlist_path(@playlist), notice: 'Playlist was successfully updated.'
