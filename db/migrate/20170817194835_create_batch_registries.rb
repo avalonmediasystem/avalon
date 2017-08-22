@@ -5,8 +5,6 @@ class CreateBatchRegistries < ActiveRecord::Migration
       t.string 'replay_name'
       t.integer 'user_id'
       t.string 'collection'
-      t.datetime 'created_at'
-      t.datetime 'updated_at'
       t.boolean 'complete'
       t.boolean 'processed_email_sent'
       t.boolean 'completed_email_sent'
@@ -14,6 +12,7 @@ class CreateBatchRegistries < ActiveRecord::Migration
       t.text 'error_message'
       t.boolean 'error_email_sent'
       t.boolean 'locked'
+      t.timestamps
     end
   end
 end
