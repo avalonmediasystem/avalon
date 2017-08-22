@@ -28,6 +28,7 @@ class PlaylistItem < ActiveRecord::Base
   end
 
   def duplicate!
+    return nil if clip.master_file.nil?
     new_clip = clip.dup
     new_clip.save!
 
