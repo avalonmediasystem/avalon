@@ -66,7 +66,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       flash[:success] = nil
       render inline: '<html><head><script>window.close();</script></head><body></body><html>'.html_safe
     elsif request['target_id']
-      redirect_to objects_path(request['target_id'])
+      # Whitelist params that are allowed to be passed through via LTI
+      params_whitelist = %w{t position token}
+      redirect_to objects_path(request['target_id'], params.slice(*params_whitelist))
     elsif params[:url]
       redirect_to params[:url]
     elsif session[:previous_url] 
