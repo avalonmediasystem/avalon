@@ -88,7 +88,7 @@ Rails.application.routes.draw do
       get 'section/:content/stream', :action => :show_stream_details, :as => :section_stream
       get 'tree', :action => :tree, :as => :tree
       get :confirm_remove
-      post :add_to_playlist_form
+      get :add_to_playlist_form
       post :add_to_playlist
     end
     collection do

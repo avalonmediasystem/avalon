@@ -86,7 +86,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   });
   $('.structure_add_to_playlist').on('click',function(){
     $.ajax({
-        type: "POST",
+        type: "GET",
         url: "<%= add_to_playlist_form_media_object_path(@media_object) %>",
         data: {
           masterfile_id: $(this).data('masterfileId'),
@@ -95,6 +95,9 @@ Unless required by applicable law or agreed to in writing, software distributed
         success: function(result) {
           modal = $('#add-to-playlist-modal')
           modal.html(result);
+          modal.find('#playlistitem_submit').on('click', function(){
+              $(this).button('loading')
+          })
           modal.find('#add_to_playlist_form').on('ajax:success', function(e, data, status, xhr){
             $('#add-to-playlist-modal .modal-body').html(data["message"]);
           }).on('ajax:error',function(e, xhr, status, error){

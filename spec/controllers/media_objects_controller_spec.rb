@@ -1042,29 +1042,27 @@ describe MediaObjectsController, type: :controller do
       login_as 'administrator'
     end
     it "should render add_to_playlist_form with correct masterfile_id" do
-      post :add_to_playlist_form, id: media_object.id, scope: 'master_file', masterfile_id: media_object.master_file_ids[0]
+      get :add_to_playlist_form, id: media_object.id, scope: 'master_file', masterfile_id: media_object.master_file_ids[0]
       expect(response).to render_template(:_add_to_playlist_form)
       expect(response.body).to include(media_object.master_file_ids[0])
     end
     it "should render the correct label for scope=master_file" do
-      post :add_to_playlist_form, id: media_object.id, scope: 'master_file', masterfile_id: media_object.master_file_ids[0]
+      get :add_to_playlist_form, id: media_object.id, scope: 'master_file', masterfile_id: media_object.master_file_ids[0]
       expect(response.body).to include('Add Section to Playlist')
     end
-    it "should render the correct label for scope=master_file" do
-      post :add_to_playlist_form, id: media_object.id, scope: 'media_object', masterfile_id: media_object.master_file_ids[0]
+    it "should render the correct label for scope=media_object" do
+      get :add_to_playlist_form, id: media_object.id, scope: 'media_object', masterfile_id: media_object.master_file_ids[0]
       expect(response.body).to include('Add Media Object to Playlist')
     end
   end
 
   describe "#add_to_playlist" do
-    let(:media_object) { FactoryGirl.create(:media_object, :with_master_file, title: 'Test Item') }
+    let(:media_object) { FactoryGirl.create(:media_object, ordered_master_files: [FactoryGirl.create(:master_file), master_file_with_structure], title: 'Test Item') }
     let(:master_file_with_structure) { FactoryGirl.create(:master_file, :with_structure) }
     let(:playlist) { FactoryGirl.create(:playlist) }
 
     before do
       login_as 'administrator'
-      media_object.ordered_master_files += [master_file_with_structure]
-      media_object.save!
     end
 
     it "should create a single playlist_item for a single master_file" do

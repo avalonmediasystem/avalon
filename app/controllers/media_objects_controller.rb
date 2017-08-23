@@ -107,8 +107,8 @@ class MediaObjectsController < ApplicationController
         playlist.items += [PlaylistItem.new(clip: clip, playlist: playlist)]
       end
     end
-
-    render json: {message: 'Playlist item creating has started and will be finished soon.'}, status: 200
+    link = view_context.link_to('View Playlist', playlist_path(playlist), class: "btn btn-primary btn-xs")
+    render json: {message: "<p>Playlist items created successfully.</p> #{link}", status: 200}
   end
 
   # POST /media_objects
