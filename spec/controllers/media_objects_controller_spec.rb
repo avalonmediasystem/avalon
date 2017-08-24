@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -1034,4 +1034,65 @@ describe MediaObjectsController, type: :controller do
       expect(@request.session[:quality]).to eq('crazy_high')
     end
   end
+
+  describe "#add_to_playlist_form" do
+    let(:media_object) { FactoryGirl.create(:media_object, :with_master_file) }
+
+    before do
+      login_as 'administrator'
+    end
+    it "should render add_to_playlist_form with correct masterfile_id" do
+      get :add_to_playlist_form, id: media_object.id, scope: 'master_file', masterfile_id: media_object.master_file_ids[0]
+      expect(response).to render_template(:_add_to_playlist_form)
+      expect(response.body).to include(media_object.master_file_ids[0])
+    end
+    it "should render the correct label for scope=master_file" do
+      get :add_to_playlist_form, id: media_object.id, scope: 'master_file', masterfile_id: media_object.master_file_ids[0]
+      expect(response.body).to include('Add Section to Playlist')
+    end
+    it "should render the correct label for scope=media_object" do
+      get :add_to_playlist_form, id: media_object.id, scope: 'media_object', masterfile_id: media_object.master_file_ids[0]
+      expect(response.body).to include('Add Media Object to Playlist')
+    end
+  end
+
+  describe "#add_to_playlist" do
+    let(:media_object) { FactoryGirl.create(:media_object, ordered_master_files: [FactoryGirl.create(:master_file), master_file_with_structure], title: 'Test Item') }
+    let(:master_file_with_structure) { FactoryGirl.create(:master_file, :with_structure) }
+    let(:playlist) { FactoryGirl.create(:playlist) }
+
+    before do
+      login_as 'administrator'
+    end
+
+    it "should create a single playlist_item for a single master_file" do
+      expect {
+        post :add_to_playlist, id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.master_file_ids[0], playlistitem_scope: 'section' }
+      }.to change { playlist.items.count }.from(0).to(1)
+      expect(playlist.items[0].title).to eq("#{media_object.title} - #{media_object.ordered_master_files.to_a[0].title}")
+    end
+    it "should create playlist_items for each span in a single master_file's structure" do
+      expect {
+        post :add_to_playlist, id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.master_file_ids[1], playlistitem_scope: 'structure' }
+      }.to change { playlist.items.count }.from(0).to(13)
+      expect(playlist.items[0].title).to eq("Test Item - CD 1 - Copland, Three Piano Excerpts from Our Town - Track 1. Story of Our Town")
+      expect(playlist.items[12].title).to eq("Test Item - CD 1 - Track 13. Copland, Danzon Cubano")
+    end
+    it "should create a single playlist_item for each master_file in a media_object" do
+      expect {
+        post :add_to_playlist, id: media_object.id, post: { playlist_id: playlist.id, playlistitem_scope: 'section' }
+      }.to change { playlist.items.count }.from(0).to(2)
+      expect(playlist.items[0].title).to eq("#{media_object.title} - #{media_object.ordered_master_files.to_a[0].title}")
+      expect(playlist.items[1].title).to eq("#{media_object.title} - #{media_object.ordered_master_files.to_a[1].title}")
+    end
+    it "should create playlist_items for each span in a master_file structures in a media_object" do
+      expect {
+        post :add_to_playlist, id: media_object.id, post: { playlist_id: playlist.id, playlistitem_scope: 'structure' }
+      }.to change { playlist.items.count }.from(0).to(14)
+      expect(response.response_code).to eq(200)
+      expect(playlist.items[0].title).to eq("#{media_object.title} - #{media_object.ordered_master_files.to_a[0].title}")
+      expect(playlist.items[13].title).to eq("Test Item - CD 1 - Track 13. Copland, Danzon Cubano")
+    end
+  end
+
 end
