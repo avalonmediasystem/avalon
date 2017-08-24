@@ -20,6 +20,8 @@ class Playlist < ActiveRecord::Base
   validates :visibility, presence: true
   validates :visibility, inclusion: { in: proc { [PUBLIC, PRIVATE, PRIVATE_WITH_TOKEN] } }
 
+  delegate :url_helpers, to: 'Rails.application.routes'
+
   after_initialize :default_values
   before_save :generate_access_token, if: Proc.new{ |p| p.visibility == Playlist::PRIVATE_WITH_TOKEN && access_token.blank? }
 
@@ -43,6 +45,10 @@ class Playlist < ActiveRecord::Base
       random_token = SecureRandom.urlsafe_base64(nil, false)
       break random_token unless self.class.exists?(access_token: random_token)
     end
+  end
+
+  def access_token_url
+    url_helpers.playlist_path(self, only_path: false) + '?token=' + self.access_token
   end
 
   # Returns all other playlist items on the same playlist that share a master file
