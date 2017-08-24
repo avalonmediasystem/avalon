@@ -18,9 +18,10 @@ class PlaylistsController < ApplicationController
   include ConditionalPartials
 
   before_action :authenticate_user!, except: [:show, :refresh_info]
-  load_and_authorize_resource
+  load_and_authorize_resource except: [:import_variations_playlist, :refresh_info, :duplicate, :show]
+  load_resource only: [:show]
   skip_load_and_authorize_resource only: [:import_variations_playlist, :refresh_info, :duplicate]
-  before_action :get_all_other_playlists, only: [:edit]
+  before_action :get_all_other_playlists, only: [:index, :edit, :update]
 
 
   def self.is_owner ctx
@@ -184,6 +185,7 @@ class PlaylistsController < ApplicationController
     end
   end
 
+  # PATCH/PUT /playlists/1
   def update_multiple
     if request.request_method=='DELETE'
       PlaylistItem.where(id: params[:clip_ids]).to_a.map(&:destroy)
@@ -203,6 +205,13 @@ class PlaylistsController < ApplicationController
       @new_playlist.save!
     end
     redirect_to edit_playlist_path(@playlist), notice: 'Playlist was successfully updated.'
+  end
+
+  # PATCH/PUT /playlists/1
+  def regenerate_access_token
+    @playlist.access_token = nil
+    @playlist.save!
+    render json: { access_token_url: @playlist.access_token_url }
   end
 
   # DELETE /playlists/1
