@@ -15,9 +15,17 @@
 module PlaylistsHelper
   def human_friendly_visibility(visibility)
     if (visibility == Playlist::PUBLIC)
-      safe_join([content_tag(:span, '', class:"fa fa-globe fa-lg", title: t("playlist.unlockAltText")),t("playlist.unlockText")], ' ')
+      safe_join([icon_only_visibility(visibility),t("playlist.unlockText")], ' ')
     else
-      safe_join([content_tag(:span, '', class:"fa fa-lock fa-lg", title: t("playlist.lockAltText")),t("playlist.lockText")], ' ')
+      safe_join([icon_only_visibility(visibility),t("playlist.lockText")], ' ')
+    end
+  end
+
+  def icon_only_visibility(visibility)
+    if (visibility == Playlist::PUBLIC)
+      content_tag(:span, '', class:"fa fa-globe fa-lg", title: t("playlist.unlockAltText"))
+    else
+      content_tag(:span, '', class:"fa fa-lock fa-lg", title: t("playlist.lockAltText"))
     end
   end
 end
