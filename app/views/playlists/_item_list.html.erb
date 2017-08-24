@@ -37,11 +37,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render 'share' if will_partial_list_render? :share %>
 </div>
 <h3 class="playlist-title">
-  <% if @playlist.visibility==Playlist::PUBLIC %>
-    <%= human_friendly_visibility Playlist::PUBLIC %>
-  <% else %>
-    <%= human_friendly_visibility Playlist::PRIVATE %>
-  <% end %>
+  <%= icon_only_visibility @playlist.visibility %>
   <%= @playlist.title %>
 </h3>
 <% if @playlist.comment.present? %>
