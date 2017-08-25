@@ -18,10 +18,11 @@ class PlaylistsController < ApplicationController
   include ConditionalPartials
 
   before_action :authenticate_user!, except: [:show, :refresh_info]
-  load_and_authorize_resource
-  skip_load_and_authorize_resource only: [:import_variations_playlist, :refresh_info, :duplicate]
+  load_and_authorize_resource except: [:import_variations_playlist, :refresh_info, :duplicate, :show]
+  load_resource only: [:show]
   before_action :get_all_other_playlists, only: [:edit]
 
+  helper_method :access_token_url
 
   def self.is_owner ctx
     ctx.current_ability.is_administrator? || (ctx.current_user == ctx.instance_variable_get('@playlist').user)
@@ -93,6 +94,7 @@ class PlaylistsController < ApplicationController
 
   # GET /playlists/1
   def show
+    raise CanCan::AccessDenied unless can?(:read, @playlist) || token_matches?
   end
 
   # GET /playlists/new
@@ -184,6 +186,7 @@ class PlaylistsController < ApplicationController
     end
   end
 
+  # PATCH/PUT /playlists/1/update_multiple
   def update_multiple
     if request.request_method=='DELETE'
       PlaylistItem.where(id: params[:clip_ids]).to_a.map(&:destroy)
@@ -205,10 +208,21 @@ class PlaylistsController < ApplicationController
     redirect_to edit_playlist_path(@playlist), notice: 'Playlist was successfully updated.'
   end
 
+  # PATCH/PUT /playlists/1/regenerate_access_token
+  def regenerate_access_token
+    @playlist.access_token = nil
+    @playlist.save!
+    render json: { access_token_url: access_token_url(@playlist) }
+  end
+
   # DELETE /playlists/1
   def destroy
     @playlist.destroy
     redirect_to playlists_url, notice: 'Playlist was successfully destroyed.'
+  end
+
+  def access_token_url(playlist)
+    playlist_url(playlist) + '?token=' + playlist.access_token
   end
 
   def import_variations_playlist
@@ -286,5 +300,9 @@ class PlaylistsController < ApplicationController
     respond_to do |format|
       format.js
     end
+  end
+
+  def token_matches?
+    @playlist.access_token == params[:token] && @playlist.visibility == Playlist::PRIVATE_WITH_TOKEN
   end
 end

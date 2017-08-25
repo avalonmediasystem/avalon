@@ -16,16 +16,20 @@ module PlaylistsHelper
   def human_friendly_visibility(visibility)
     if (visibility == Playlist::PUBLIC)
       safe_join([icon_only_visibility(visibility),t("playlist.unlockText")], ' ')
-    else
+    elsif (visibility == Playlist::PRIVATE)
       safe_join([icon_only_visibility(visibility),t("playlist.lockText")], ' ')
+    else
+      safe_join([icon_only_visibility(visibility),t("playlist.shareText")], ' ')
     end
   end
 
   def icon_only_visibility(visibility)
     if (visibility == Playlist::PUBLIC)
       content_tag(:span, '', class:"fa fa-globe fa-lg", title: t("playlist.unlockAltText"))
-    else
+    elsif (visibility == Playlist::PRIVATE)
       content_tag(:span, '', class:"fa fa-lock fa-lg", title: t("playlist.lockAltText"))
+    else
+      content_tag(:span, '', class:"fa fa-link fa-lg", title: t("playlist.shareText"))
     end
   end
 end

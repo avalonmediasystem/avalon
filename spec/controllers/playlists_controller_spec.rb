@@ -54,7 +54,7 @@ RSpec.describe PlaylistsController, type: :controller do
   describe 'security' do
     let(:playlist) { FactoryGirl.create(:playlist) }
     context 'with unauthenticated user' do
-      #New is isolated here due to issues caused by the controller instance not being regenerated
+      # New is isolated here due to issues caused by the controller instance not being regenerated
       it "should redirect to sign in" do
         expect(get :new).to redirect_to(new_user_session_path)
       end
@@ -70,11 +70,19 @@ RSpec.describe PlaylistsController, type: :controller do
         let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
         it "should return the playlist view page" do
           expect(get :show, id: playlist.id).not_to redirect_to(new_user_session_path)
+          expect(get :show, id: playlist.id).to be_success
         end
       end
       context 'with a private playlist' do
         it "should NOT return the playlist view page" do
           expect(get :show, id: playlist.id).to redirect_to(new_user_session_path)
+        end
+      end
+      context 'with a private playlist and token' do
+        let(:playlist) { FactoryGirl.create(:playlist, :with_access_token) }
+        it "should return the playlist view page" do
+          expect(get :show, id: playlist.id, token: playlist.access_token).not_to redirect_to(root_path)
+          expect(get :show, id: playlist.id, token: playlist.access_token).to be_success
         end
       end
     end
@@ -92,11 +100,19 @@ RSpec.describe PlaylistsController, type: :controller do
         let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
         it "should return the playlist view page" do
           expect(get :show, id: playlist.id).not_to redirect_to(root_path)
+          expect(get :show, id: playlist.id).to be_success
         end
       end
       context 'with a private playlist' do
         it "should NOT return the playlist view page" do
           expect(get :show, id: playlist.id).to redirect_to(root_path)
+        end
+      end
+      context 'with a private playlist and token' do
+        let(:playlist) { FactoryGirl.create(:playlist, :with_access_token) }
+        it "should return the playlist view page" do
+          expect(get :show, id: playlist.id, token: playlist.access_token).not_to redirect_to(root_path)
+          expect(get :show, id: playlist.id, token: playlist.access_token).to be_success
         end
       end
     end
@@ -155,6 +171,11 @@ RSpec.describe PlaylistsController, type: :controller do
       it 'redirects to the created playlist' do
         post :create, { playlist: valid_attributes }, valid_session
         expect(response).to redirect_to(Playlist.last)
+      end
+
+      it 'generates a token if visibility is private-with-token' do
+        post :create, { playlist: valid_attributes.merge(visibility: Playlist::PRIVATE_WITH_TOKEN) }, valid_session
+        expect(assigns(:playlist).access_token).not_to be_blank
       end
     end
 
@@ -243,14 +264,21 @@ RSpec.describe PlaylistsController, type: :controller do
 
         it 'assigns the requested playlist as @playlist' do
           playlist = Playlist.create! valid_attributes
-          put :update, { id: playlist.to_param, playlist: valid_attributes }, valid_session
+          put :update, { id: playlist.to_param, playlist: new_attributes }, valid_session
           expect(assigns(:playlist)).to eq(playlist)
         end
 
         it 'redirects to edit playlist' do
           playlist = Playlist.create! valid_attributes
-          put :update, { id: playlist.to_param, playlist: valid_attributes }, valid_session
+          put :update, { id: playlist.to_param, playlist: new_attributes }, valid_session
           expect(response).to redirect_to(edit_playlist_path(playlist))
+        end
+
+        it 'generates a token if visibility is private-with-token' do
+          playlist = Playlist.create! valid_attributes
+          put :update, { id: playlist.to_param, playlist: { visibility: Playlist::PRIVATE_WITH_TOKEN }}, valid_session
+          playlist.reload
+          expect(playlist.access_token).not_to be_blank
         end
       end
 
