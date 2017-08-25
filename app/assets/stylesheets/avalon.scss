@@ -1102,25 +1102,20 @@ h5.panel-title {
     resize: vertical;
   }
 }
-.clip_title {
-   font-weight: bold;
-   left: 0 ;
-   position: absolute;
-}
-.clip_start_time {
-  position: absolute;
-  right: 240px;
-}
-.clip_end_time {
-  position: absolute;
-  right: 130px;
-}
-.clip_position {
-  position: absolute;
-  right: 0;
-}
-.related_item {
-  position: relative;
+#related_items {
+  .clip_title {
+     font-weight: bold;
+  }
+  .clip_start_time {
+  }
+  .clip_end_time {
+  }
+  .clip_position {
+    text-align: center;
+  }
+  tr {
+    height: 2em;
+  }
 }
 
 /* Playlist edit page */
