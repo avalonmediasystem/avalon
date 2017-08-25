@@ -47,10 +47,6 @@ class Playlist < ActiveRecord::Base
     end
   end
 
-  def access_token_url
-    url_helpers.playlist_path(self, only_path: false) + '?token=' + self.access_token
-  end
-
   # Returns all other playlist items on the same playlist that share a master file
   # @param [PlaylistItem] current_item The playlist item you want to find matches for
   # @return [Array <PlaylistItem>] an array of all other playlist items that reference the same master file

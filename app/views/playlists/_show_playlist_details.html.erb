@@ -50,7 +50,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <div class="col-xs-9">
               <div class="input-group">
                 <%= url_field_tag 'playlist-share-link',
-                  @playlist.access_token_url,
+                  access_token_url(@playlist),
                   class: 'form-control', readonly: true, style: 'background:white;' %>
                 <span class="input-group-btn">
                   <%= button_tag "Copy", id: 'playlist-share-btn',
