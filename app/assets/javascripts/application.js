@@ -28,5 +28,6 @@
 //= stub mediaelement/plugins/markers
 //= stub mediaelement/plugins/quality
 //= stub mediaelement/plugins/quality-i18n
+//= stub media_player_wrapper/mejs4_add_to_playlist
 
 //= require_tree .
