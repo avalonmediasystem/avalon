@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -232,7 +232,7 @@ class MasterFilesController < ApplicationController
     elsif params.has_key?(:selected_files)
       @master_files = []
       params[:selected_files].each_value do |entry|
-        file_path = URI.parse(entry[:url]).path.gsub(/\+/,' ')
+        file_path = URI.decode(URI.parse(URI.encode(entry[:url])).path)
         master_file = MasterFile.new
         master_file.setContent(File.open(file_path, 'rb'))
         master_file.set_workflow(params[:workflow])
