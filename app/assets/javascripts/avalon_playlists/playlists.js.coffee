@@ -22,11 +22,11 @@ submit_edit = null
       modal.find('#playlist_title').val(playlist.title)
       modal.find('#playlist_comment').val(playlist.comment)
       if (playlist.visibility == 'public')
-        modal.find('#playlist_visibility_private').prop('checked', false)
         modal.find('#playlist_visibility_public').prop('checked', true)
-      else
+      else if (playlist.visibility == 'private')
         modal.find('#playlist_visibility_private').prop('checked', true)
-        modal.find('#playlist_visibility_public').prop('checked', false)
+      else
+        modal.find('#playlist_visibility_private-with-token').prop('checked', true)
       modal.find('#old_playlist_id').val(playlist.id)
       modal.find('#copy-playlist-submit').prop("disabled", false)
       modal.find('#copy-playlist-submit-edit').prop("disabled", false)

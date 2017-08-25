@@ -78,7 +78,7 @@ class PlaylistsController < ApplicationController
         [
           view_context.link_to(playlist.title, playlist_path(playlist), title: playlist.comment),
           "#{playlist.items.size} items",
-          playlist.visibility =='private'? '<span class="fa fa-lock fa-lg"></span> Only me' : '<span class="fa fa-globe fa-lg"></span> Public',
+          view_context.human_friendly_visibility(playlist.visibility),
           "<span title='#{playlist.created_at.utc.iso8601}'>#{view_context.time_ago_in_words(playlist.created_at)}</span>",
           "<span title='#{playlist.updated_at.utc.iso8601}'>#{view_context.time_ago_in_words(playlist.updated_at)}</span>",
           "#{copy_button} #{edit_button} #{delete_button}"
