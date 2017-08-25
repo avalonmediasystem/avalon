@@ -146,12 +146,28 @@ class MEJSPlayer {
   }
 
   /**
+   * Stub function to demonstrate future usage of MEJS4 playlist plugin
+   * @return {void}
+   */
+  getPlaylists () {
+    const obj = {
+      playlist: [{
+        src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/CastVideos/mp4/BigBuckBunny.mp4',
+        title: 'Big Buck Bunny Test'
+      }, {
+        src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/CastVideos/mp4/BigBuckBunny.mp4',
+        title: 'Big Buck Bunny Test 2'
+      }]
+    }
+    return {}
+  }
+
+  /**
    * Event handler for MediaElement's 'canplay' event
    * At this point can play, pause, set time on player instance
    * @return {void}
    */
   handleCanPlay () {
-    console.log('canplay')
     this.mediaElement.removeEventListener('canplay')
 
     // Do we play a specified range of the media file?
@@ -226,15 +242,21 @@ class MEJSPlayer {
     let defaults = {
       alwaysShowControls: true,
       pluginPath: "/assets/mediaelement/shims/",
-      features: ['playpause', 'current', 'progress', 'duration', 'volume', 'quality', 'fullscreen'],
+      features: ['playpause', 'current', 'progress', 'duration', 'volume', 'quality', 'addToPlaylist', 'fullscreen'],
       success: this.handleSuccess.bind(this)
     }
+    // Get markers, playlists, etc. anything else here we'll
+    // need to configure the player instance
     let markers = this.getMarkers()
+
     // Combine all configurations
-    let fullConfiguration = { ...defaults, ...markers }
+    let fullConfiguration = Object.assign({}, defaults, markers)
 
     // Create a MediaElement instance
     this.player = new MediaElementPlayer(`mejs-avalon-${this.mediaType}`, fullConfiguration)
+
+    // Add default title from stream info which mejs plugins can access
+    this.player.options.playlistItemDefaultTitle = this.currentStreamInfo.embed_title;
   }
 
   /**
