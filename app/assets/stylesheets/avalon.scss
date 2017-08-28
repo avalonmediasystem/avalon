@@ -881,6 +881,8 @@ div.status-detail {
   background: $blue url(add_to_playlist_icon.svg) no-repeat;
   background-position: 3px 0px;
   border-color: $blue !important;
+  margin-top: -2px;
+  margin-left: 2px;
 }
 
 #mediaobject_structure {
