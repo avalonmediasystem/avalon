@@ -183,8 +183,10 @@ Unless required by applicable law or agreed to in writing, software distributed
       $('#playlist_form #playlist_comment').val('<%= j @playlist.comment %>');
       <% if @playlist.visibility==Playlist::PRIVATE %>
         $('#playlist_form #playlist_visibility_private').prop('checked', true);
-      <% else %>
+      <% elsif @playlist.visibility==Playlist::PUBLIC %>
         $('#playlist_form #playlist_visibility_public').prop('checked', true);
+      <% else %>
+        $('#playlist_form #playlist_visibility_private-with-token').prop('checked', true);
       <% end %>
     });
 

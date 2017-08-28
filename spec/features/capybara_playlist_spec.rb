@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -43,7 +43,7 @@ describe 'Playlist' do
     page.should have_content('Size')
     page.should have_content('Updated')
     page.should have_content('Actions')
-    page.should have_content('Only me')
+    page.should have_content('Private')
     page.should have_link('Edit')
     page.should have_link('Delete')
   end

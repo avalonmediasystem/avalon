@@ -34,6 +34,10 @@
                 <%= f.radio_button(:visibility, Playlist::PRIVATE) %>
                 <%= human_friendly_visibility Playlist::PRIVATE %>
               </label>
+              <label class="radio-inline">
+                <%= f.radio_button(:visibility, Playlist::PRIVATE_WITH_TOKEN) %>
+                <%= human_friendly_visibility Playlist::PRIVATE_WITH_TOKEN %>
+              </label>
             </div>
           </div>
           <div class="row">
