@@ -222,7 +222,7 @@ class PlaylistsController < ApplicationController
   end
 
   def access_token_url(playlist)
-    playlist_url(playlist) + '?token=' + playlist.access_token
+    playlist_url(playlist, token: playlist.access_token)
   end
 
   def import_variations_playlist
