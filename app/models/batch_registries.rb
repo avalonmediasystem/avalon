@@ -15,14 +15,9 @@
 #Handles the registration and replayability of registries
 #@since 6.3.0
 class BatchRegistries < ActiveRecord::Base
-  before_save :timestamp, :check_user
+  before_save :check_user
   validates :file_name, :user_id, :collection, presence: true
-
-  private
-  # Places a value in the replay_id column if there is not one currently
-  def ensure_replay_id
-    self.replay_name = "#{SecureRandom.uuid}_#{file_name}" if replay_name.nil?
-  end
+  has_many :batch_entries, -> { order(position: :asc) }
 
   # For FactoryGirl's taps, document more TODO
   def file_name=(fn)
@@ -30,14 +25,12 @@ class BatchRegistries < ActiveRecord::Base
     ensure_replay_id
   end
 
-  # # Places a created_at DateTime if nil, sets the updated_at DateTime as well
-  # def timestamp
-  #   self.created_at = Time.now.to_datetime if created_at.nil?
-  #   self.updated_at = Time.now.to_datetime
-  # end
+  private
+  # Places a value in the replay_id column if there is not one currently
+  def ensure_replay_id
+    self.replay_name = "#{SecureRandom.uuid}_#{file_name}" if replay_name.nil?
+  end
 
-  # On every save the user_id is checked and if the user_id does not exist (deleted) user
-  # the batch is set to an error state
   def check_user
     unless User.exists?(user_id)
       self.error = true

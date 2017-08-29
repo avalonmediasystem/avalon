@@ -40,30 +40,47 @@ module Avalon
           package_valid = @current_package_errors.empty?
           send_invalid_package_email unless package_valid
           next unless package_valid
-          BatchRegistries.register_batch(@current_package) unless replay?
-          BatchRegistries.register_replay(@current_package) if replay?
+          BatchRegistries.register_batch unless replay?
+          BatchRegistries.register_replay if replay?
         end
         # Return something about the new batches
       end
 
-      def replay?(filename)
-        replay = BatchRegistries.exists?(replay_name: @package.title)
+      # Uses the filename to determine if a batch is a replay using the filename
+      # @return Boolean whether or not the file is a replay
+      def replay?
+        replay = BatchRegistries.exists?(replay_name: @current_package.title)
       end
 
-
-
+      # Registers a new batch manifest and sets it to locked, locked manifests are not proccessed
+      # This is done so processing does not begin while individual lines are registered
+      # @param [Boolean] whether or not the manifest is valid, defaults to true
       def register_batch(valid: true)
-        obj = {
-          email: @current_package.user.email,
-          file_name: @current_package.title,
-          replay_name: "#{SecureRandom.uuid}-#{@current_package.title}",
-          collection: @current_package.collection.id,
-          valid_manifest: valid,
-          completed: false,
-          email_sent: false,
-          locked: true
-        }
-        BatchRegistries.new(obj)
+        br = BatchRegistries.new(
+                        user_id: User.where(email: @current_package.user.email).first.id,
+                        file_name: @current_package.title,
+                        collection: @current_package.collection.id,
+                        valid_manifest: valid,
+                        completed: false,
+                        email_sent: false,
+                        locked: true
+        )
+        br.save
+      end
+
+      # Registers a replay batch manifest and sets it to locked, locked manifests are not processed_email_sent
+      # This is done so processing does not begin while individual lines are registered
+      # @raise ArgumentError raised if the collection ids do not match
+      def register_replay(valid: true)
+        br = BatchRegistries.where(replay_name: @current_package.title).first
+        fail ArgumentError, "Collections cannot change on replay, replay using #{@current_package.title} failed" if br.collection != @current_package.collection.id
+        br.user_id = User.where(email: @current_package.user.email).first.id
+        br.file_name = @current_package.title
+        br.valid_manifest = valid,
+        br.completed = false,
+        br.email_sent = false,
+        br.locked = true
+        br.save
       end
 
 

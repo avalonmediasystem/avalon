@@ -8,6 +8,7 @@ class CreateBatchEntries < ActiveRecord::Migration
       t.string 'current_status'
       t.string 'error_message'
       t.string 'media_object_pid'
+      t.integer 'posistion', index: true
     end
   end
 end
