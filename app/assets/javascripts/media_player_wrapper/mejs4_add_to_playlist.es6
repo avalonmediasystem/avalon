@@ -36,9 +36,10 @@ Object.assign(MediaElementPlayer.prototype, {
         // Adding variables to the object is a good idea if you plan to reuse
         // those variables in further operations.
         const t = this;
-        const addTitle = 'Add to Playlist'
+        const addTitle = 'Add to Playlist';
         let addToPlayListObj = t.addToPlayListObj;
         addToPlayListObj.hasPlaylists = addToPlayListObj.playlistEl.dataset.hasPlaylists === 'true';
+        addToPlayListObj.isVideo = player.isVideo;
 
         // Make player instance available outside of this method
         addToPlayListObj.player = player;
@@ -53,12 +54,17 @@ Object.assign(MediaElementPlayer.prototype, {
         // Add control button to player
     		t.addControlElement(player.addPlaylistButton, 'addToPlaylist');
 
-        // Set up click listeners
+        // Set up click listener for the control button
         player.addPlaylistButton.addEventListener('click', addToPlayListObj.handleControlClick.bind(t));
+
+        // Set click listeners for form elements
         if (addToPlayListObj.hasPlaylists) {
           addToPlayListObj.addButton.addEventListener('click', addToPlayListObj.handleAddClick.bind(t));
           addToPlayListObj.cancelButton.addEventListener('click', addToPlayListObj.handleCancelClick.bind(t));
         }
+
+        // Set up click listener for Sections
+        $('#accordion').on('click', addToPlayListObj.handleSectionLinkClick.bind(t));
     },
 
     // Optionally, each feature can be destroyed setting a `clean` method
@@ -72,7 +78,15 @@ Object.assign(MediaElementPlayer.prototype, {
      * @param {HTMLElement} layers
      * @param {HTMLElement} media
      */
-    cleanaddToPlaylist (player, controls, layers, media) {},
+    cleanaddToPlaylist (player, controls, layers, media) {
+      const t = this;
+      // Remove the click listener on accordion, which captures all
+      // section link clicks
+      $('#accordion').off('click');
+      $(t.addToPlayListObj.alertEl).hide();
+      $(t.addToPlayListObj.playlistEl).hide();
+      t.addToPlayListObj.resetForm.apply(t);
+    },
 
     // Other optional public methods (all documented according to JSDoc specifications)
 
@@ -94,7 +108,43 @@ Object.assign(MediaElementPlayer.prototype, {
         title: document.getElementById('playlist_item_title')
       },
       hasPlaylists: false,
+      hasSections: $('#accordion').length > 0,
+      isVideo: null,
       playlistEl: document.getElementById('add_to_playlist'),
+
+      /**
+       * Create a default add to playlist title from @currentStreamInfo
+       * Note there is some massaging of the data to get it into place based on whether
+       * sections and structural metadata exist.  Perhaps server side could pre-parse the
+       * default title to account for scenarios in the future.
+       * @return {string} defaultTitle
+       */
+      createDefaultPlaylistTitle: function () {
+        const t = this;
+        let addToPlayListObj = t.addToPlayListObj;
+        let playlistItemDefaultTitle = addToPlayListObj.player.options.playlistItemDefaultTitle;
+
+        let defaultTitle = addToPlayListObj.hasSections
+          ? playlistItemDefaultTitle.slice(0, playlistItemDefaultTitle.lastIndexOf('-')).trim()
+          : playlistItemDefaultTitle.slice(playlistItemDefaultTitle.indexOf('-') + 1).trim();
+
+        const currentStream = $('#accordion li a.current-stream');
+
+        if (currentStream.length > 0) {
+          let $firstCurrentStream = $(currentStream[0]);
+          let re = /\s*\(.*\)$/; // duration notation at end of section title ' (2:00)'
+          let structureTitle = $firstCurrentStream.text().replace(re,'').trim();
+          let parent = $firstCurrentStream.closest('ul').closest('li').prev();
+
+          while (parent.length > 0) {
+            structureTitle = parent.text().trim() + ' - ' + structureTitle;
+            parent = parent.closest('ul').closest('li').prev();
+          }
+          defaultTitle = defaultTitle + ' - ' + structureTitle;
+        }
+
+        return defaultTitle;
+      },
 
       /**
        * Handle the 'Add' button click; post form data via ajax and handle response
@@ -165,9 +215,9 @@ Object.assign(MediaElementPlayer.prototype, {
         const t = this;
         const addToPlayListObj = t.addToPlayListObj;
 
-        $(addToPlayListObj.alertEl).slideUp(() => {
-          $(addToPlayListObj.playlistEl).slideUp();
-        });
+        $(addToPlayListObj.alertEl).slideUp();
+        $(addToPlayListObj.playlistEl).slideUp();
+        addToPlayListObj.resetForm.apply(t);
       },
 
       /**
@@ -195,6 +245,25 @@ Object.assign(MediaElementPlayer.prototype, {
       },
 
       /**
+       * Handle click events on the Sections and structural metadata links.
+       * @param  {MouseEvent} e [description]
+       * @return {void}
+       */
+      handleSectionLinkClick: function (e) {
+        const addToPlayListObj = this.addToPlayListObj;
+
+        if (e.target.tagName.toLowerCase() === 'a') {
+          // Only populate new form values if the media player is the same type
+          // because if it's a different player type (ie. say audio, then the form
+          // will be reset automatically)
+          const incomingIsVideo = e.target.dataset['isVideo'] === 'true';
+          if (incomingIsVideo === addToPlayListObj.isVideo) {
+            addToPlayListObj.populateFormValues.apply(this);
+          }
+        }
+      },
+
+      /**
        * Populate all form fields with default values
        * @return {void}
        */
@@ -204,13 +273,13 @@ Object.assign(MediaElementPlayer.prototype, {
         let player = t.addToPlayListObj.player;
         let formInputs = t.addToPlayListObj.formInputs;
 
+        formInputs.title.value = t.addToPlayListObj.createDefaultPlaylistTitle.apply(t);
         formInputs.description.value = '';
         formInputs.start.value = mejs.Utils.secondsToTimeCode(player.getCurrentTime(), true);
-        formInputs.title.value = player.options.playlistItemDefaultTitle;
 
-        // Taken from previous coffee script file.  TODO: Verify logic here.
+        // Calculate end value
         if ($('a.current-stream').length > 0 && typeof $('a.current-stream')[0].dataset.fragmentend !== 'undefined') {
-          endTime = $('a.current-stream')[0].dataset.fragmentend;
+          endTime = parseFloat($('a.current-stream')[0].dataset.fragmentend);
         } else {
           endTime = player.media.duration;
         }

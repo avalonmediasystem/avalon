@@ -185,7 +185,7 @@ class MEJSPlayer {
     const target = e.target
     const dataset = e.target.dataset
 
-    // Did user click on Structured metadata link?// Did user click on Structured metadata link?
+    // Did user click on Structured metadata link?
     this.playRangeFlag = !!dataset.fragmentbegin
     if (this.playRangeFlag) {
       // Store temporarily range clip data
