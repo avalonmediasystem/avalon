@@ -71,3 +71,8 @@ $('#copy-playlist-form').bind('ajax:success',
         if ( $('#with_refresh').val() )
           location.reload()
 )
+$('input[name="playlist[visibility]"]').on('click', () ->
+  new_val = $(this).val()
+  new_text = $('.human_friendly_visibility_'+new_val).attr('title')
+  $('.visibility-help-text').text(new_text)
+)

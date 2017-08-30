@@ -40,12 +40,8 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="row">
       <div class="col-sm-2"><%= t("blacklight/folders/folder.visibility", scope: "helpers.label") %></div>
       <div class="col-sm-10">
-        <% if @playlist.visibility==Playlist::PUBLIC %>
-          <%= human_friendly_visibility Playlist::PUBLIC %>
-        <% elsif @playlist.visibility==Playlist::PRIVATE %>
-          <%= human_friendly_visibility Playlist::PRIVATE %>
-        <% else %>
-          <%= human_friendly_visibility Playlist::PRIVATE_WITH_TOKEN %>
+        <%= human_friendly_visibility @playlist.visibility %> - <i><%= visibility_description @playlist.visibility %></i>
+        <% if @playlist.visibility == Playlist::PRIVATE_WITH_TOKEN %>
           <div class="row" style="margin-top:9px;">
             <div class="col-xs-9">
               <div class="input-group">
