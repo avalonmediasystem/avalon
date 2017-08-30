@@ -18,5 +18,6 @@
 require 'acts_as_list'
 
 class BatchEntries < ActiveRecord::Base
+  belongs_to :batch_registries
   acts_as_list scope: :batch_registries
 end

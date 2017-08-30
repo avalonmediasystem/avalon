@@ -35,16 +35,97 @@ module Avalon
         logger.info "<< Found #{new_packages.count} new packages for collection #{@collection.name} >>" if new_packages.count > 0
         # For Each
         new_package.each do |package|
+          @previous_entries = nil #clear it out in case the last package set it
           @current_package = package
           package_validation
           package_valid = @current_package_errors.empty?
           send_invalid_package_email unless package_valid
           next unless package_valid
-          BatchRegistries.register_batch unless replay?
-          BatchRegistries.register_replay if replay?
+          br = BatchRegistries.register_batch unless replay?
+          br = BatchRegistries.register_replay if replay?
+          @current_batch_registry = br.reload
+          @previous_entries = fetch_previous_entries if replay?
+          register_entries
+          # Kick off a job for every entry in pending
+          # Unlock the table
         end
         # Return something about the new batches
+
       end
+
+      def register_entries
+        position = 1 #acts_as_list starts at 1, not 0
+        @current_package.entries.each do |entry|
+          new_entry(entry) if @previous_entries.nil?
+          replay_entry(entry, position) unless @previous_entries.nil?
+          position += 1
+        end
+      end
+
+      # Handles the issues involved in registering a replay entry
+      # Assumes @previous_entries is populated
+      # @param [Avalon::Batch::Entry] the entry to register
+      # @param [Integer] the position on the spreadsheet, starting from 1, not 0, since acts_as_list starts at 1
+      def replay_entry(entry, position)
+        previous_entry = @previous_entries[position]
+        # Case 0, determine if we even have an updated at all
+        # If the payload is the same it means no change and complete true means the migration ran
+        return nil if previous_entry.payload == entry.fields.to_json && complete
+
+        # Case 1, if there is a payload change and the item never completed, reset to pending
+        reset_to_pending(previous_entry, entry)
+      
+
+        # Case 1, if there is a published media object we cannot replay
+        unless previous_entry.media_object_pid.nil?
+          mo = MediaObject.find(previous_entry.media_object_pid)
+          unless mo.nil? #meaning the media_object has been deleted since last time this ran
+            if mo.published?
+              published_error(previous_entry)
+              return nil #no further action, break out
+          end
+        end
+
+        # Case 2
+
+
+      end
+
+      def reset_to_pending(previous_entry, entry)
+
+      # Set an error when a mediaobject has already been published and
+      # @param [BatchEntries] the entry to update
+      def published_error(previous_entry)
+        previous_entry.error = true
+        previous_entry.complete = false
+        previous_entry.current_status = 'Update Rejected'
+        previous_entry.error_message = 'Cannot update this item, it has already been published.'
+        previous_entry.save
+      end
+
+      # Registries a new entry for a manifest that has never been run before
+      # Assumes @current_batch_registry is set
+      # @param [Avalon::Batch::Entry] entry the entry to register
+      def new_entry(entry)
+        be = BatchEntries.new(
+                              batch_registries_id: @current_batch_registry.id,
+                              payload: entry.fields.to_json
+                              complete: false
+                              error: false
+                              current_status: 'registered'
+        )
+        be.save
+        #TODO: Kick off ActiveJob
+      end
+
+      # When replaying a manifest, fetch the previous entries for updating
+      # @return BatchEntries::ActiveRecord_Relation all of the entries for the current manifest
+      def fetch_previous_entries
+        batch_id = BatchRegistries.where(replay_name: @current_package.file_name).first.id
+        BatchEntries.where(batch_registries_id: batch_id)
+      end
+
+
 
       # Uses the filename to determine if a batch is a replay using the filename
       # @return Boolean whether or not the file is a replay
@@ -57,7 +138,7 @@ module Avalon
       # @param [Boolean] whether or not the manifest is valid, defaults to true
       def register_batch(valid: true)
         br = BatchRegistries.new(
-                        user_id: User.where(email: @current_package.user.email).first.id,
+                        user_id: @current_package.user.id,
                         file_name: @current_package.title,
                         collection: @current_package.collection.id,
                         valid_manifest: valid,
@@ -66,6 +147,7 @@ module Avalon
                         locked: true
         )
         br.save
+        br
       end
 
       # Registers a replay batch manifest and sets it to locked, locked manifests are not processed_email_sent
@@ -74,13 +156,14 @@ module Avalon
       def register_replay(valid: true)
         br = BatchRegistries.where(replay_name: @current_package.title).first
         fail ArgumentError, "Collections cannot change on replay, replay using #{@current_package.title} failed" if br.collection != @current_package.collection.id
-        br.user_id = User.where(email: @current_package.user.email).first.id
+        br.user_id = @current_package.user.id
         br.file_name = @current_package.title
         br.valid_manifest = valid,
         br.completed = false,
         br.email_sent = false,
         br.locked = true
         br.save
+        br
       end
 
 

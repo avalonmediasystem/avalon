@@ -43,11 +43,11 @@ ActiveRecord::Schema.define(version: 20170817195104) do
     t.string  "current_status"
     t.string  "error_message"
     t.string  "media_object_pid"
-    t.integer "posistion"
+    t.integer "position"
   end
 
   add_index "batch_entries", ["batch_registries_id"], name: "index_batch_entries_on_batch_registries_id"
-  add_index "batch_entries", ["posistion"], name: "index_batch_entries_on_posistion"
+  add_index "batch_entries", ["position"], name: "index_batch_entries_on_position"
 
   create_table "batch_registries", force: :cascade do |t|
     t.string   "file_name"
