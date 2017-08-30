@@ -185,12 +185,14 @@ en:
 
   playlist:
     ago: "%{time} ago"
-    lockAltText: "This playlist is private."
-    unlockAltText: "This playlist is public."
-    shareAltText: "This playlist is shared by link."
-    lockText: "Private"
-    unlockText: "Public"
-    shareText: "Share by link"
+
+    privateAltText: "This playlist can only be viewed by you."
+    publicAltText: "This playlist can be viewed by anyone on the web."
+    private-with-tokenAltText: "This playlist can only be viewed by users who have the unique link."
+
+    privateText: "Private"
+    publicText: "Public"
+    private-with-tokenText: "Share by link"
 
     new:
       action: "Create"

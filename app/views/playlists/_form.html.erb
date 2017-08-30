@@ -38,6 +38,9 @@ Unless required by applicable law or agreed to in writing, software distributed
           <%= f.radio_button(:visibility, Playlist::PRIVATE_WITH_TOKEN, class: 'share-playlist') %>
           <%= human_friendly_visibility Playlist::PRIVATE_WITH_TOKEN %>
         </label>
+        <p class="text-info visibility-help-text" style="padding-top:5px;font-style:italic;">
+          <%= visibility_description @playlist.visibility %>
+        </p>
       </div>
     </div>
     <div class="row">
