@@ -50,7 +50,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <div class="col-xs-9">
               <div class="input-group">
                 <input type="text" class="form-control" id="playlist-share-link" value="<%= access_token_url(@playlist) %>" placeholder="<%= access_token_url(@playlist) %>" onClick="this.select();" readonly="readonly">
-                <span class="input-group-btn">
+                <span class="input-group-btn" id="playlist-share-btn-result">
                   <%= button_tag "Copy", id: 'playlist-share-btn',
                     class: "btn btn-success" %>
                 </span>
@@ -75,6 +75,14 @@ Unless required by applicable law or agreed to in writing, software distributed
     content: 'Copy share link'
   });
 
+  var playlist_share_btn_result_content_default = "Copied to clipboard";
+  var playlist_share_btn_result_content_error = "Please press Ctrl/Cmd+C to copy";
+  $('#playlist-share-btn-result').popover({
+    trigger: 'manual',
+    placement: 'top',
+    content: playlist_share_btn_result_content_default
+  });
+
   $('#playlist-share-btn').click( function (event) {
     var copytarget = $('#playlist-share-link');
     $(this).popover('hide');
@@ -85,16 +93,15 @@ Unless required by applicable law or agreed to in writing, software distributed
       // copy text
       document.execCommand('copy');
       copytarget.blur();
-      $(this).attr('data-content', 'Copied');
+      $('#playlist-share-btn-result').attr('data-content', playlist_share_btn_result_content_default);
     }
     catch (err) {
-      $(this).attr('data-content', 'Please press Ctrl/Cmd+C to copy');
+      $('#playlist-share-btn-result').attr('data-content', playlist_share_btn_result_content_error);
     }
-    $(this).popover('show');
-    setTimeout((function () {
-        $(this).popover('hide');
-        $(this).attr('data-content', 'Copy share link');
-      }).bind(this), 3000);
+    $('#playlist-share-btn-result').popover('show');
+    setTimeout(function() {
+      $('#playlist-share-btn-result').popover('hide');
+    }, 3000);
   });
 
   var popover_content = '<p>If you get a new link, the previous link will stop working.<p>'+
