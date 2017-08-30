@@ -1057,12 +1057,14 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#add_to_playlist" do
-    let(:media_object) { FactoryGirl.create(:media_object, ordered_master_files: [FactoryGirl.create(:master_file), master_file_with_structure], title: 'Test Item') }
-    let(:master_file_with_structure) { FactoryGirl.create(:master_file, :with_structure) }
+    let(:media_object) { FactoryGirl.create(:media_object, title: 'Test Item') }
+    let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object, title: 'Test Section') }
+    let(:master_file_with_structure) { FactoryGirl.create(:master_file, :with_structure, media_object: media_object) }
     let(:playlist) { FactoryGirl.create(:playlist) }
 
     before do
       login_as 'administrator'
+      media_object.ordered_master_files = [master_file, master_file_with_structure]
     end
 
     it "should create a single playlist_item for a single master_file" do
@@ -1075,8 +1077,8 @@ describe MediaObjectsController, type: :controller do
       expect {
         post :add_to_playlist, id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.master_file_ids[1], playlistitem_scope: 'structure' }
       }.to change { playlist.items.count }.from(0).to(13)
-      expect(playlist.items[0].title).to eq("Test Item - CD 1 - Copland, Three Piano Excerpts from Our Town - Track 1. Story of Our Town")
-      expect(playlist.items[12].title).to eq("Test Item - CD 1 - Track 13. Copland, Danzon Cubano")
+      expect(playlist.items[0].title).to eq("Test Item - video.mp4 - Copland, Three Piano Excerpts from Our Town - Track 1. Story of Our Town")
+      expect(playlist.items[12].title).to eq("Test Item - video.mp4 - Track 13. Copland, Danzon Cubano")
     end
     it "should create a single playlist_item for each master_file in a media_object" do
       expect {
@@ -1091,7 +1093,7 @@ describe MediaObjectsController, type: :controller do
       }.to change { playlist.items.count }.from(0).to(14)
       expect(response.response_code).to eq(200)
       expect(playlist.items[0].title).to eq("#{media_object.title} - #{media_object.ordered_master_files.to_a[0].title}")
-      expect(playlist.items[13].title).to eq("Test Item - CD 1 - Track 13. Copland, Danzon Cubano")
+      expect(playlist.items[13].title).to eq("Test Item - video.mp4 - Track 13. Copland, Danzon Cubano")
     end
   end
 

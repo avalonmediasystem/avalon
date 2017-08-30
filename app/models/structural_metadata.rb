@@ -33,4 +33,8 @@ class StructuralMetadata < ActiveFedora::File
   def valid?
     self.class.schema.validate(self.ng_xml).empty?
   end
+
+  def section_title
+    xpath('/Item/@label').text()
+  end
 end
