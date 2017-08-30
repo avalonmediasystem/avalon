@@ -1052,7 +1052,7 @@ describe MediaObjectsController, type: :controller do
     end
     it "should render the correct label for scope=media_object" do
       get :add_to_playlist_form, id: media_object.id, scope: 'media_object', masterfile_id: media_object.master_file_ids[0]
-      expect(response.body).to include('Add Media Object to Playlist')
+      expect(response.body).to include('Add Item to Playlist')
     end
   end
 
