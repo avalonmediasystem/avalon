@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 volumes:
   database-test:
@@ -61,7 +61,7 @@ services:
       - solr
       - redis
     environment:
-      - APP_NAME=avalon
+      - APP_NAME=Avalon Media System
       - ASSET_HOST=http://test.host/
       - AVALON_BRANCH=develop
       - AVALON_DB_PASSWORD=avalondb
@@ -105,6 +105,9 @@ services:
       - Z3950_DATABASE
       - Z3950_HOST
       - Z3950_PORT
+      - FLASH_MESSAGE_TYPE=error
+      - FLASH_MESSAGE=<p>Test flash message configured in avalon.yml. Type can be success, notice, error, or alert.</p>
+
     volumes:
       - ./masterfiles:/masterfiles
       - ./gems:/gems
@@ -112,4 +115,4 @@ services:
     ports:
       - "3000:80"
     stdin_open: true
-    tty: true      
+    tty: true

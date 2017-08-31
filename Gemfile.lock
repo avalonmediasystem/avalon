@@ -197,6 +197,8 @@ GEM
     airbrussh (1.1.1)
       sshkit (>= 1.6.1, != 1.7.0)
     api-pagination (4.5.1)
+    archive-zip (0.7.0)
+      io-like (~> 0.3.0)
     arel (6.0.4)
     ast (2.3.0)
     autoparse (0.3.3)
@@ -275,8 +277,15 @@ GEM
       rack (>= 1.0.0)
       rack-test (>= 0.5.4)
       xpath (~> 2.0)
+    capybara-selenium (0.0.6)
+      capybara
+      selenium-webdriver
+    childprocess (0.7.1)
+      ffi (~> 1.0, >= 1.0.11)
+    chromedriver-helper (1.1.0)
+      archive-zip (~> 0.7.0)
+      nokogiri (~> 1.6)
     chronic (0.10.2)
-    cliver (0.3.2)
     coderay (1.1.1)
     coffee-rails (4.1.1)
       coffee-script (>= 2.2.0)
@@ -345,6 +354,7 @@ GEM
       rchardet
       rdf-rdfxml
       rubydora (~> 1.8)
+    ffi (1.9.18)
     flamegraph (0.9.5)
     font-awesome-rails (4.7.0.1)
       railties (>= 3.2, < 5.1)
@@ -411,6 +421,7 @@ GEM
     ims-lti (1.1.13)
       builder
       oauth (>= 0.4.5, < 0.6)
+    io-like (0.3.0)
     jbuilder (2.6.1)
       activesupport (>= 3.0.0, < 5.1)
       multi_json (~> 1.2)
@@ -507,10 +518,6 @@ GEM
     parser (2.3.3.1)
       ast (~> 2.2)
     pg (0.19.0)
-    poltergeist (1.15.0)
-      capybara (~> 2.1)
-      cliver (~> 0.3.1)
-      websocket-driver (>= 0.2.0)
     powerpack (0.1.1)
     pry (0.10.4)
       coderay (~> 1.1.0)
@@ -663,6 +670,9 @@ GEM
     sdoc (0.4.2)
       json (~> 1.7, >= 1.7.7)
       rdoc (~> 4.0)
+    selenium-webdriver (3.5.1)
+      childprocess (~> 0.5)
+      rubyzip (~> 1.0)
     shoulda-matchers (3.1.1)
       activesupport (>= 4.0.0)
     signet (0.7.3)
@@ -749,9 +759,6 @@ GEM
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
-    websocket-driver (0.6.5)
-      websocket-extensions (>= 0.1.0)
-    websocket-extensions (0.1.2)
     with_locking (1.0.2)
     xml-simple (1.1.5)
     xpath (2.0.0)
@@ -785,6 +792,8 @@ DEPENDENCIES
   capistrano-resque
   capistrano-rvm
   capybara
+  capybara-selenium
+  chromedriver-helper
   coffee-rails (~> 4.1.0)
   coveralls
   database_cleaner
@@ -824,7 +833,6 @@ DEPENDENCIES
   omniauth-lti!
   parallel
   pg
-  poltergeist
   pry-byebug
   pry-rails
   rack-mini-profiler
@@ -843,6 +851,7 @@ DEPENDENCIES
   rubyhorn!
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
+  selenium-webdriver
   shoulda-matchers
   simplecov
   solr_wrapper (>= 0.16)

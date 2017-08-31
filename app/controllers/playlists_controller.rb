@@ -70,7 +70,7 @@ class PlaylistsController < ApplicationController
           "<span class='fa fa-clone'> Copy </span>".html_safe
         end
         edit_button = view_context.link_to(edit_playlist_path(playlist), class: 'btn btn-default btn-xs') do
-          "<span class='fa fa-edit'> Edit</span>".html_safe
+          "<span class='fa fa-edit edit-playlist-button'> Edit</span>".html_safe
         end
         delete_button = view_context.link_to(playlist_path(playlist), method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'}) do
           "<span class='fa fa-times'> Delete</span>".html_safe

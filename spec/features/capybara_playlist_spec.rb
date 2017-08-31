@@ -13,8 +13,6 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'rails_helper'
-require 'capybara/poltergeist'
-Capybara.javascript_driver = :poltergeist
 
 describe 'Playlist' do
   after { Warden.test_reset! }
@@ -125,26 +123,31 @@ describe 'Playlist' do
     visit '/playlists'
     page.assert_text('Public')
   end
+
   it 'is able to edit playlist name and description', js: true, :retry => 3 do
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
-    click_on('Create New Playlist')
+    find('.create-new-playlist', match: :first).click
     fill_in('playlist_title', with: 'public_playlist')
     fill_in('playlist_comment', with: 'This is test')
     choose('Public')
-    click_on('Create')
+    find('.create-playlist-submit', match: :first).click
+    sleep 20
+    page.assert_text('Playlist was successfully created.', wait: 15)
     visit '/playlists'
-    click_on('Edit')
+    sleep 20
+    pry.debugger
+    find('.edit-playlist-button').click
     page.assert_text('Editing playlist')
-    page.assert_text('View Playlist')
-    page.assert_text('Delete Playlist')
+    page.has_link?('View Playlist')
+    page.has_link?('Delete Playlist')
     page.first("#playlist_edit_button").click
     page.has_button?('Save Changes')
     fill_in('playlist_title', with: 'edit_public_playlist')
     fill_in('playlist_comment', with: 'Name and description edited')
     click_button('Save Changes')
-    page.assert_text('Playlist was successfully updated', { wait: 10 }) #default is 2
+    page.assert_text('Playlist was successfully updated')
     page.assert_text('edit_public_playlist')
     page.assert_text('Name and description edited')
   end

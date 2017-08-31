@@ -18,6 +18,7 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 require 'capybara/rspec'
 require 'rspec/retry'
+require 'selenium/webdriver'
 
 RSpec.configure do |config|
   # show retry status in spec process
@@ -51,6 +52,26 @@ RSpec.configure do |config|
     # `true` in RSpec 4.
     mocks.verify_partial_doubles = true
   end
+
+
+  Capybara.register_driver :chrome do |app|
+    Capybara::Selenium::Driver.new(app,
+                                   browser: :chrome)
+  end
+
+  Capybara.register_driver :headless_chrome do |app|
+    capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
+      chromeOptions: { args: %w(headless no-sandbox disable-gpu log-level="all"),
+                        binary: '/usr/bin/google-chrome'}
+    )
+
+    Capybara::Selenium::Driver.new app,
+      browser: :chrome,
+      driver_opts: { log_path: 'chromedriver.out' },
+      desired_capabilities: capabilities
+    end
+  Capybara.default_driver = :headless_chrome # This is a faster driver
+  Capybara.javascript_driver = :headless_chrome # This is slower
 
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.

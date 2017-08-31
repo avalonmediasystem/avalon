@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -32,24 +32,24 @@ module Avalon
       'controlled_vocabulary' => {'path'=>'config/controlled_vocabulary.yml'},
       'master_file_management' => {'strategy'=>'none'}
     }
-    
+
     def initialize
       @config = DEFAULT_CONFIGURATION.deep_merge(load_configuration)
       ['dropbox','matterhorn','mediainfo','email','streaming'].each { |key| @config[key] ||= {} }
       begin
         mipath = lookup('mediainfo.path')
-        Mediainfo.path = mipath unless mipath.blank? 
+        Mediainfo.path = mipath unless mipath.blank?
       rescue Exception => e
         logger.fatal "Initialization failed"
         logger.fatal e.backtrace
         raise
       end
     end
-    
+
     def config_file
       Rails.root.join('config', 'avalon.yml')
     end
-    
+
     def load_configuration
       if File.exists?(config_file)
         load_configuration_from_file
@@ -57,7 +57,7 @@ module Avalon
         load_configuration_from_environment
       end
     end
-    
+
     ENVIRONMENT_MAP = {
       "BASE_URL" => { key: 'domain', read_proc: ->(v){read_avalon_url(v)}, write_proc: ->(v){write_avalon_url(v)} },
       "DROPBOX_PATH" => { key: "dropbox.path" },
@@ -95,14 +95,16 @@ module Avalon
       "Z3950_HOST" => { key: "bib_retriever.host", infer: { key: 'bib_retriever.protocol', value: 'zoom' } },
       "Z3950_PORT" => { key: "bib_retriever.port", read_proc: ->(v){coerce(v, :to_i)} },
       "Z3950_DATABASE" => { key: "bib_retriever.database" },
-      "Z3950_ATTRIBUTE" => { key: "bib_retriever.attribute", read_proc: ->(v){coerce(v, :to_i)} }
+      "Z3950_ATTRIBUTE" => { key: "bib_retriever.attribute", read_proc: ->(v){coerce(v, :to_i)} },
+      "FLASH_MESSAGE_TYPE" => { key: "flash_message.type" },
+      "FLASH_MESSAGE" => { key: "flash_message.message" }
     }
 
     ENV.keys.select { |k| k =~ /^AVALON_/ }.each do |key|
       ENV[key.split(/_/,2).last] = ENV[key]
     end
-    
-    
+
+
     def set(key, value, hash=@config_hash)
       this_key,sub_key = key.split(/\./,2)
       if sub_key.nil?
@@ -113,7 +115,7 @@ module Avalon
       end
       hash
     end
-    
+
     def from_env
       config_hash = {}
       ENVIRONMENT_MAP.each_pair do |key,spec|
@@ -128,7 +130,7 @@ module Avalon
       end
       config_hash
     end
-    
+
     def to_env
       result = {}
       ENVIRONMENT_MAP.each_pair do |key,spec|
@@ -159,15 +161,15 @@ module Avalon
       url = Addressable::URI.parse(URI::Generic.build(scheme: config[:adapter], host: config[:host], user: config[:username], password: config[:password], port: config[:port], path_key => config[:database]))
       url.query_values = config.reject { |k,v| [:adapter,:host,:username,:password,:port,:database].include?(k) }
       result['DATABASE_URL'] = url.to_s
-      
+
       result['SECRET_KEY_BASE'] = Avalon::Application.config.secret_key_base
       result.collect { |key,val| [key,val.to_s.inspect].join('=') }.join("\n")
     end
-    
+
     def load_configuration_from_environment
       deep_compact(from_env)
     end
-    
+
     def load_configuration_from_file
       env = ENV['RAILS_ENV'] || 'development'
       YAML::load(File.read(config_file))[env]
@@ -179,10 +181,10 @@ module Avalon
         location.respond_to?(:keys) ? location[key] : nil
       end
     end
-    
+
     def rehost(url, host=nil)
       if host.present?
-        url.sub(%r{/localhost([/:])},"/#{host}\\1") 
+        url.sub(%r{/localhost([/:])},"/#{host}\\1")
       else
         url
       end
@@ -192,24 +194,24 @@ module Avalon
       super(sym, *args, &block) unless @config.respond_to?(sym)
       @config.send(sym, *args, &block)
     end
-    
+
     private
     class << self
       def coerce(value, method)
         value.nil? ? nil : value.send(method)
       end
-      
+
       def read_avalon_url(v)
         return({}) if v.nil?
         avalon_url = URI.parse(v)
         { 'host'=>avalon_url.host, 'port'=>avalon_url.port, 'protocol'=>avalon_url.scheme }
       end
-      
+
       def write_avalon_url(v)
         URI::Generic.build(scheme: v.fetch('protocol','http'), host: v['host'], port: v['port']).to_s
       end
     end
-    
+
     def deep_compact(value)
       if value.is_a?(Hash)
         new_value = value.dup
