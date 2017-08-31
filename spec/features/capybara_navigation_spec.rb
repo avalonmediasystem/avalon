@@ -29,14 +29,14 @@ describe 'checks navigation after logging in' do
     visit '/'
     click_link('Manage Content')
     expect(page.current_url).to eq('http://www.example.com/admin/collections')
-    page.should have_content('Skip to main content')
-    page.should have_link('Manage Selected Items (0)')
-    page.should have_button('Create Collection')
-    page.should have_content('Name')
-    page.should have_content('Description')
-    page.should have_content('Unit')
-    page.should have_content('Default Unit')
-    page.should have_link('Cancel')
+    page.assert_text('Skip to main content')
+    page.has_link?('Manage Selected Items (0)')
+    page.has_button?('Create Collection')
+    page.assert_text('Name')
+    page.assert_text('Description')
+    page.assert_text('Unit')
+    page.assert_text('Default Unit')
+    page.has_link?('Cancel')
   end
   it 'checks naviagtion to Manage Groups' do
     user = FactoryGirl.create(:administrator)
@@ -44,12 +44,12 @@ describe 'checks navigation after logging in' do
     visit '/'
     click_link('Manage Groups')
     expect(page.current_url).to eq('http://www.example.com/admin/groups')
-    page.should have_content('System Groups')
-    page.should have_content('Additional Groups')
-    page.should have_content('Group Name')
-    page.should have_content('group_manager')
-    page.should have_content('administrator')
-    page.should have_content('manager')
+    page.assert_text('System Groups')
+    page.assert_text('Additional Groups')
+    page.assert_text('Group Name')
+    page.assert_text('group_manager')
+    page.assert_text('administrator')
+    page.assert_text('manager')
   end
   it 'checks naviagtion to Playlist' do
     user = FactoryGirl.create(:administrator)
@@ -57,15 +57,15 @@ describe 'checks navigation after logging in' do
     visit '/'
     click_link('Playlist')
     expect(page.current_url).to eq('http://www.example.com/playlists')
-    page.should have_content('Playlists')
-    page.should have_content('Create New Playlist')
+    page.assert_text('Playlists')
+    page.assert_text('Create New Playlist')
   end
   it 'is able to sign out' do
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
     visit '/'
     click_link('Sign out', match: :first)
-    page.should have_content('Signed out successfully')
+    page.assert_text('Signed out successfully')
   end
 end
 
@@ -80,9 +80,9 @@ describe 'Search' do
     visit '/'
     fill_in('Search', with: 'Video')
     click_button 'Search'
-    page.should have_content('No results found for your search')
-    page.should have_content('No entries found')
-    page.should have_content('Use fewer keywords to start, then refine your search using the links on the left')
-    page.should have_content('Try modifying your search')
+    page.assert_text('No results found for your search')
+    page.assert_text('No entries found')
+    page.assert_text('Use fewer keywords to start, then refine your search using the links on the left')
+    page.assert_text('Try modifying your search')
   end
 end
