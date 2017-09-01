@@ -1057,12 +1057,14 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#add_to_playlist" do
-    let(:media_object) { FactoryGirl.create(:media_object, ordered_master_files: [FactoryGirl.create(:master_file), master_file_with_structure], title: 'Test Item') }
-    let(:master_file_with_structure) { FactoryGirl.create(:master_file, :with_structure) }
+    let(:media_object) { FactoryGirl.create(:media_object, title: 'Test Item') }
+    let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object, title: 'Test Section') }
+    let(:master_file_with_structure) { FactoryGirl.create(:master_file, :with_structure, media_object: media_object) }
     let(:playlist) { FactoryGirl.create(:playlist) }
 
     before do
       login_as 'administrator'
+      media_object.ordered_master_files = [master_file, master_file_with_structure]
     end
 
     it "should create a single playlist_item for a single master_file" do

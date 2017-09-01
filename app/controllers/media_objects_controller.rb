@@ -87,8 +87,8 @@ class MediaObjectsController < ApplicationController
       if playlistitem_scope=='structure' && mf.has_structuralMetadata? && mf.structuralMetadata.xpath('//Span').present?
         #create individual items for spans within structure
         mf.structuralMetadata.xpath('//Span').each do |s|
-          labels = [@media_object.title, mf.title]
-          labels += s.xpath('ancestor::*[\'label\']').collect{|a|a.attribute('label').value.strip}
+          labels = [mf.embed_title]
+          labels += s.xpath('ancestor::Div[\'label\']').collect{|a|a.attribute('label').value.strip}
           labels << s.attribute('label')
           label = labels.reject(&:blank?).join(' - ')
           start_time = s.attribute('begin')
