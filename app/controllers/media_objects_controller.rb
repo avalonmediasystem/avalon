@@ -21,7 +21,7 @@ class MediaObjectsController < ApplicationController
 
   before_filter :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details]
   before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
-  load_and_authorize_resource except: [:destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details]
+  load_and_authorize_resource except: [:destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist]
   # authorize_resource only: [:create, :update]
 
   before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
@@ -67,15 +67,22 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects/avalon:1/add_to_playlist_form
   def add_to_playlist_form
+    @media_object = MediaObject.find(params[:id])
     respond_to do |format|
       format.html do
-        render partial: 'add_to_playlist_form', locals: { scope: params[:scope], masterfile_id: params[:masterfile_id] }
+        if can? :read, @media_object
+          render partial: 'add_to_playlist_form', locals: { scope: params[:scope], masterfile_id: params[:masterfile_id] }
+        else
+          render template: '500.html', status: 500
+        end
       end
     end
   end
 
   # POST /media_objects/avalon:1/add_to_playlist
   def add_to_playlist
+    @media_object = MediaObject.find(params[:id])
+    authorize! :read, @media_object
     masterfile_id = params[:post][:masterfile_id]
     playlist_id = params[:post][:playlist_id]
     playlist = Playlist.find(playlist_id)
