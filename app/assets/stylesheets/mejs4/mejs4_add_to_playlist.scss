@@ -52,7 +52,7 @@ $avalon-primary-color: #84a791;
 // Control button on MEJS player
 .mejs__add-to-playlist-button > button,
 .mejs-add-to-playlist-button > button {
-    background: url('add-to-playlist-control.png') transparent no-repeat;
+    background: image-url('./add-to-playlist-control.png') transparent no-repeat;
     background-size: contain;
 }
 
