@@ -33,6 +33,12 @@ class ApplicationController < ActionController::Base
     render inline: 'OK'
   end
 
+  def mejs
+    session['mejs_version'] = params[:version] === '4' ? 4 : 2
+    flash[:notice] = "Using MediaElement Player Version #{session['mejs_version']}"
+    redirect_to(root_path)
+  end
+
   def rewrite_v4_ids
     return if params[:controller] =~ /migration/
     new_id = ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:id]}"}, rows: 1, fl: 'id').first['id']

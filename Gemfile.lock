@@ -24,14 +24,15 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
-  revision: 77f26a3b47d1396d1b0173c9d41b3734ae38ca60
-  tag: avalon-r6.2
+  revision: caa1504664ee4b53a1bf21622ed5abd00b95ae7b
+  branch: no_invalid_objs
   specs:
     avalon-workflow (0.0.3)
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
   revision: 129f6bb1d05bd9cea5b359d25ccd2288f2336632
+  tag: avalon-r6.2
   specs:
     media_element_add_to_playlist (0.0.1)
       rails (~> 4.0)
@@ -214,18 +215,18 @@ GEM
     api-pagination (4.6.3)
     arel (6.0.4)
     ast (2.3.0)
-    autoprefixer-rails (7.1.3)
+    autoprefixer-rails (7.1.4)
       execjs
-    aws-sdk (2.10.37)
-      aws-sdk-resources (= 2.10.37)
-    aws-sdk-core (2.10.37)
+    aws-sdk (2.10.48)
+      aws-sdk-resources (= 2.10.48)
+    aws-sdk-core (2.10.48)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
     aws-sdk-rails (1.0.1)
       aws-sdk-resources (~> 2)
       railties (>= 3)
-    aws-sdk-resources (2.10.37)
-      aws-sdk-core (= 2.10.37)
+    aws-sdk-resources (2.10.48)
+      aws-sdk-core (= 2.10.48)
     aws-sigv4 (1.0.2)
     babel-source (5.8.35)
     babel-transpiler (0.7.0)
@@ -236,7 +237,7 @@ GEM
       bcrypt (>= 3.1.3)
     binding_of_caller (0.7.2)
       debug_inspector (>= 0.0.1)
-    blacklight (6.11.0)
+    blacklight (6.11.2)
       bootstrap-sass (~> 3.2)
       deprecation
       globalid
@@ -271,7 +272,7 @@ GEM
     builder (3.2.3)
     byebug (9.1.0)
     cancancan (1.17.0)
-    capistrano (3.9.0)
+    capistrano (3.9.1)
       airbrussh (>= 1.0.0)
       i18n
       rake (>= 10.0.0)
@@ -301,7 +302,7 @@ GEM
     chronic (0.10.2)
     cliver (0.3.2)
     cloudfront-signer (3.0.2)
-    coderay (1.1.1)
+    coderay (1.1.2)
     coffee-rails (4.1.1)
       coffee-script (>= 2.2.0)
       railties (>= 4.0.0, < 5.1.x)
@@ -324,7 +325,7 @@ GEM
     daemons (1.2.4)
     database_cleaner (1.6.1)
     debug_inspector (0.0.3)
-    declarative (0.0.9)
+    declarative (0.0.10)
     declarative-option (0.1.0)
     deep_merge (1.1.1)
     deprecation (1.0.0)
@@ -367,7 +368,7 @@ GEM
     factory_girl_rails (4.8.0)
       factory_girl (~> 4.8.0)
       railties (>= 3.0.0)
-    fakefs (0.11.1)
+    fakefs (0.11.2)
     faker (1.8.4)
       i18n (~> 0.5)
     faraday (0.12.2)
@@ -386,15 +387,15 @@ GEM
     globalid (0.4.0)
       activesupport (>= 4.2.0)
     google-analytics-rails (1.1.0)
-    google-api-client (0.12.0)
+    google-api-client (0.13.6)
       addressable (~> 2.5, >= 2.5.1)
       googleauth (~> 0.5)
       httpclient (>= 2.8.1, < 3.0)
       mime-types (~> 3.0)
       representable (~> 3.0)
       retriable (>= 2.0, < 4.0)
-    google_drive (2.1.5)
-      google-api-client (>= 0.11.0, < 0.13.0)
+    google_drive (2.1.6)
+      google-api-client (>= 0.11.0, < 0.14.0)
       googleauth (>= 0.5.0, < 1.0.0)
       nokogiri (>= 1.5.3, < 2.0.0)
     googleauth (0.5.3)
@@ -405,7 +406,7 @@ GEM
       multi_json (~> 1.11)
       os (~> 0.9)
       signet (~> 0.7)
-    haml (5.0.2)
+    haml (5.0.3)
       temple (>= 0.8.0)
       tilt
     hamster (3.0.0)
@@ -489,7 +490,7 @@ GEM
     logging (2.2.2)
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
-    lograge (0.6.0)
+    lograge (0.7.0)
       actionpack (>= 4, < 5.2)
       activesupport (>= 4, < 5.2)
       railties (>= 4, < 5.2)
@@ -514,7 +515,7 @@ GEM
     mini_portile2 (2.2.0)
     minitest (5.10.3)
     mono_logger (1.1.0)
-    multi_json (1.12.1)
+    multi_json (1.12.2)
     multi_xml (0.6.0)
     multipart-post (2.0.0)
     mysql2 (0.4.9)
@@ -522,7 +523,7 @@ GEM
     net-ldap (0.16.0)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
-    net-ssh (4.1.0)
+    net-ssh (4.2.0)
     netrc (0.11.0)
     noid (0.9.0)
     nokogiri (1.8.0)
@@ -607,7 +608,7 @@ GEM
       thor (>= 0.18.1, < 2.0)
     rainbow (2.2.2)
       rake
-    rake (12.0.0)
+    rake (12.1.0)
     rb-readline (0.5.5)
     rchardet (1.6.1)
     rdf (2.2.9)
@@ -714,7 +715,7 @@ GEM
       json
       multipart-post
       oauth2
-    ruby-progressbar (1.8.1)
+    ruby-progressbar (1.8.3)
     rubydora (1.9.1)
       activemodel
       activesupport
@@ -827,7 +828,7 @@ GEM
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
-    websocket-driver (0.6.5)
+    websocket-driver (0.7.0)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
     with_locking (1.0.2)
