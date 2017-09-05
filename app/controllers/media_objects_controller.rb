@@ -68,13 +68,10 @@ class MediaObjectsController < ApplicationController
   # POST /media_objects/avalon:1/add_to_playlist_form
   def add_to_playlist_form
     @media_object = MediaObject.find(params[:id])
+    authorize! :read, @media_object
     respond_to do |format|
       format.html do
-        if can? :read, @media_object
-          render partial: 'add_to_playlist_form', locals: { scope: params[:scope], masterfile_id: params[:masterfile_id] }
-        else
-          render template: '500.html', status: 500
-        end
+        render partial: 'add_to_playlist_form', locals: { scope: params[:scope], masterfile_id: params[:masterfile_id] }
       end
     end
   end
@@ -86,6 +83,9 @@ class MediaObjectsController < ApplicationController
     masterfile_id = params[:post][:masterfile_id]
     playlist_id = params[:post][:playlist_id]
     playlist = Playlist.find(playlist_id)
+    if current_ability.cannot? :update, playlist
+      render json: {message: "<p>You are not authorized to update this playlist.</p>", status: 403}, status: 403 and return
+    end
     playlistitem_scope = params[:post][:playlistitem_scope] #'section', 'structure'
     # If a single masterfile_id wasn't in the request, then create playlist_items for all masterfiles
     masterfile_ids = masterfile_id.present? ? [masterfile_id] : @media_object.ordered_master_file_ids
