@@ -58,6 +58,8 @@ describe MediaObjectsController, type: :controller do
           expect(get :tree, id: media_object.id).to redirect_to(new_user_session_path)
           expect(get :deliver_content, id: media_object.id, file: 'descMetadata').to redirect_to(new_user_session_path)
           expect(delete :destroy, id: media_object.id).to redirect_to(new_user_session_path)
+          expect(get :add_to_playlist_form, id: media_object.id).to redirect_to(new_user_session_path)
+          expect(post :add_to_playlist, id: media_object.id).to redirect_to(new_user_session_path)
         end
       end
       context 'with end-user' do
@@ -79,6 +81,8 @@ describe MediaObjectsController, type: :controller do
           expect(get :tree, id: media_object.id).to redirect_to(root_path)
           expect(get :deliver_content, id: media_object.id, file: 'descMetadata').to redirect_to(root_path)
           expect(delete :destroy, id: media_object.id).to redirect_to(root_path)
+          expect(get :add_to_playlist_form, id: media_object.id).to redirect_to(root_path)
+          expect(post :add_to_playlist, id: media_object.id).to redirect_to(root_path)
         end
       end
     end
@@ -1036,10 +1040,10 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#add_to_playlist_form" do
-    let(:media_object) { FactoryGirl.create(:media_object, :with_master_file) }
+    let(:media_object) { FactoryGirl.create(:fully_searchable_media_object, :with_master_file) }
 
     before do
-      login_as 'administrator'
+      login_as :user
     end
     it "should render add_to_playlist_form with correct masterfile_id" do
       get :add_to_playlist_form, id: media_object.id, scope: 'master_file', masterfile_id: media_object.master_file_ids[0]
@@ -1057,13 +1061,13 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#add_to_playlist" do
-    let(:media_object) { FactoryGirl.create(:media_object, title: 'Test Item') }
+    let(:media_object) { FactoryGirl.create(:fully_searchable_media_object, title: 'Test Item') }
     let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object, title: 'Test Section') }
     let(:master_file_with_structure) { FactoryGirl.create(:master_file, :with_structure, media_object: media_object) }
-    let(:playlist) { FactoryGirl.create(:playlist) }
+    let(:user) { login_as :user }
+    let(:playlist) { FactoryGirl.create(:playlist, user: user) }
 
     before do
-      login_as 'administrator'
       media_object.ordered_master_files = [master_file, master_file_with_structure]
     end
 
@@ -1094,6 +1098,13 @@ describe MediaObjectsController, type: :controller do
       expect(response.response_code).to eq(200)
       expect(playlist.items[0].title).to eq("#{media_object.title} - #{media_object.ordered_master_files.to_a[0].title}")
       expect(playlist.items[13].title).to eq("Test Item - CD 1 - Track 13. Copland, Danzon Cubano")
+    end
+    it 'redirects with flash message when playlist is owned by another user' do
+      login_as :user
+      other_playlist = FactoryGirl.create(:playlist)
+      post :add_to_playlist, id: media_object.id, post: { playlist_id: other_playlist.id, masterfile_id: media_object.master_file_ids[0], playlistitem_scope: 'section' }
+      expect(response).to have_http_status(403)
+      expect(JSON.parse(response.body).symbolize_keys).to eq({message: "<p>You are not authorized to update this playlist.</p>", status: 403})
     end
   end
 
