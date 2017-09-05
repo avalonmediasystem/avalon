@@ -35,7 +35,7 @@ module Avalon
         logger.info "<< Found #{new_packages.count} new packages for collection #{@collection.name} >>" if new_packages.count > 0
         # For Each
         new_package.each do |package|
-          @previous_entries = nil #clear it out in case the last package set it
+          @previous_entries = nil # clear it out in case the last package set it
           @current_package = package
           package_validation
           package_valid = @current_package_errors.empty?
@@ -50,11 +50,10 @@ module Avalon
           # Unlock the table
         end
         # Return something about the new batches
-
       end
 
       def register_entries
-        position = 1 #acts_as_list starts at 1, not 0
+        position = 1 # acts_as_list starts at 1, not 0
         @current_package.entries.each do |entry|
           new_entry(entry) if @previous_entries.nil?
           replay_entry(entry, position) unless @previous_entries.nil?
@@ -70,29 +69,38 @@ module Avalon
         previous_entry = @previous_entries[position]
         # Case 0, determine if we even have an updated at all
         # If the payload is the same it means no change and complete true means the migration ran
-        return nil if previous_entry.payload == entry.fields.to_json && complete
+        return nil if previous_entry.payload == entry.fields.to_json && previous_entry.complete
 
         # Case 1, if there is a payload change and the item never completed, reset to pending
-        reset_to_pending(previous_entry, entry)
+        # Also reset to pending if there is an error
+        reset_to_pending(previous_entry, entry) if !previous_entry.complete || previous_entry.error
 
-        # Case 1, if there is a published media object we cannot replay
+        # Case 2, if there is a published media object we cannot replay
         unless previous_entry.media_object_pid.nil?
           mo = MediaObject.find(previous_entry.media_object_pid)
           unless mo.nil? # meaning the media_object has been deleted since last time this ran
             if mo.published?
               published_error(previous_entry)
               return nil # no further action, break out
+            else
+              reset_to_pending(previous_entry, entry)
             end
           end
         end
-
-        # Case 2
-
-
       end
 
-      #
+      # Reset a row to pending status when replaying
+      # @param [Avalon::Batch::Entry] the entry to register
+      # @param [BatchEntries] the previous batch entry to reset_to_pending
+      # @return [BatchEntries] the reset entrt
       def reset_to_pending(previous_entry, entry)
+        previous_entry.payload = entry.fields.to_json
+        previous_entry.error = false
+        previous_entry.error_message = false
+        previous_entry.complete = false
+        previous_entry.current_status = 'registered'
+        previous_entry.save
+        previous_entry
       end
 
       # Set an error when a mediaobject has already been published and
@@ -108,13 +116,14 @@ module Avalon
       # Registries a new entry for a manifest that has never been run before
       # Assumes @current_batch_registry is set
       # @param [Avalon::Batch::Entry] entry the entry to register
+      # @return [BatchEntries] the ActiveRecord entry for the new entry
       def new_entry(entry)
         be = BatchEntries.new(
-                              batch_registries_id: @current_batch_registry.id,
-                              payload: entry.fields.to_json,
-                              complete: false,
-                              error: false,
-                              current_status: 'registered'
+          batch_registries_id: @current_batch_registry.id,
+          payload: entry.fields.to_json,
+          complete: false,
+          error: false,
+          current_status: 'registered'
         )
         be.save
         be
@@ -127,27 +136,26 @@ module Avalon
         BatchEntries.where(batch_registries_id: batch_id)
       end
 
-
-
       # Uses the filename to determine if a batch is a replay using the filename
       # @return Boolean whether or not the file is a replay
       def replay?
-        replay = BatchRegistries.exists?(replay_name: @current_package.title)
+        BatchRegistries.exists?(replay_name: @current_package.title)
       end
 
       # Registers a new batch manifest and sets it to locked, locked manifests are not proccessed
       # This is done so processing does not begin while individual lines are registered
       # @param [Boolean] whether or not the manifest is valid, defaults to true
       def register_batch(valid: true)
-        #TODO: Save dir
+        # TODO: Save dir
         br = BatchRegistries.new(
-                        user_id: @current_package.user.id,
-                        file_name: @current_package.title,
-                        collection: @current_package.collection.id,
-                        valid_manifest: valid,
-                        completed: false,
-                        email_sent: false,
-                        locked: true
+          user_id: @current_package.user.id,
+          dir: @current_packagey.dir,
+          file_name: @current_package.title,
+          collection: @current_package.collection.id,
+          valid_manifest: valid,
+          completed: false,
+          email_sent: false,
+          locked: true
         )
         br.save
         br
@@ -157,19 +165,19 @@ module Avalon
       # This is done so processing does not begin while individual lines are registered
       # @raise ArgumentError raised if the collection ids do not match
       def register_replay(valid: true)
-        #TODO: Save dir
+        # TODO: Save dir
         br = BatchRegistries.where(replay_name: @current_package.title).first
-        fail ArgumentError, "Collections cannot change on replay, replay using #{@current_package.title} failed" if br.collection != @current_package.collection.id
+        raise ArgumentError, "Collections cannot change on replay, replay using #{@current_package.title} failed" if br.collection != @current_package.collection.id
         br.user_id = @current_package.user.id
+        br.dir = @current_package.dir
         br.file_name = @current_package.title
-        br.valid_manifest = valid,
-        br.completed = false,
-        br.email_sent = false,
+        br.valid_manifest = valid
+        br.completed = false
+        br.email_sent = false
         br.locked = true
         br.save
         br
       end
-
 
       # Determines if @current_package is valid
       # Checks for user permissions and validity of the package file
@@ -177,7 +185,7 @@ module Avalon
       # @raise RuntimeError raised when @current_package is not sent
       # @return Array <String> an array of the errors
       def package_validation
-        fail RuntimeError, '@current_package is not set' unless @current_package.nil?
+        raise RuntimeError, '@current_package is not set' unless @current_package.nil?
         @current_package_errors = []
         @current_package_errors << user_checks
         @current_package_errors << file_checks
@@ -188,12 +196,12 @@ module Avalon
       # requires that @current_package and @collection be set
       # @return Array <String> an array of errors related to the user
       def user_checks
-          current_user = @current_package.user
-          current_ability = Ability.new(current_user)
-          errors = []
-          errors << "User does not exist in the system: #{package.manifest.email}." if current_user.nil?
-          errors << "User #{current_user.user_key} does not have permission to add items to collection: #{collection.name}." if !current_ability.can?(:read, collection)
-          errors
+        current_user = @current_package.user
+        current_ability = Ability.new(current_user)
+        errors = []
+        errors << "User does not exist in the system: #{package.manifest.email}." if current_user.nil?
+        errors << "User #{current_user.user_key} does not have permission to add items to collection: #{collection.name}." if !current_ability.can?(:read, collection)
+        errors
       end
 
       # Checks the manifest file in the package for validity
@@ -201,7 +209,7 @@ module Avalon
       # @return Array <String> an array of errors related to the user
       def files_checks
         errors = []
-        errors << "There are no entries in the manifest file." if @current_package.manifest.count==0
+        errors << 'There are no entries in the manifest file.' if @current_package.manifest.count == 0
         errors
       end
 
