@@ -3,6 +3,7 @@ class CreateBatchRegistries < ActiveRecord::Migration
     create_table :batch_registries do |t|
       t.string 'file_name'
       t.string 'replay_name'
+      t.string 'dir'
       t.integer 'user_id'
       t.string 'collection'
       t.boolean 'complete'

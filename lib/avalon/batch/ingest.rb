@@ -74,7 +74,7 @@ module Avalon
 
         # Case 1, if there is a payload change and the item never completed, reset to pending
         reset_to_pending(previous_entry, entry)
-      
+
 
         # Case 1, if there is a published media object we cannot replay
         unless previous_entry.media_object_pid.nil?
@@ -83,6 +83,7 @@ module Avalon
             if mo.published?
               published_error(previous_entry)
               return nil #no further action, break out
+            end
           end
         end
 
@@ -91,7 +92,9 @@ module Avalon
 
       end
 
+      #
       def reset_to_pending(previous_entry, entry)
+      end
 
       # Set an error when a mediaobject has already been published and
       # @param [BatchEntries] the entry to update
@@ -109,13 +112,13 @@ module Avalon
       def new_entry(entry)
         be = BatchEntries.new(
                               batch_registries_id: @current_batch_registry.id,
-                              payload: entry.fields.to_json
-                              complete: false
-                              error: false
+                              payload: entry.fields.to_json,
+                              complete: false,
+                              error: false,
                               current_status: 'registered'
         )
         be.save
-        #TODO: Kick off ActiveJob
+        be
       end
 
       # When replaying a manifest, fetch the previous entries for updating
@@ -137,6 +140,7 @@ module Avalon
       # This is done so processing does not begin while individual lines are registered
       # @param [Boolean] whether or not the manifest is valid, defaults to true
       def register_batch(valid: true)
+        #TODO: Save dir
         br = BatchRegistries.new(
                         user_id: @current_package.user.id,
                         file_name: @current_package.title,
@@ -154,6 +158,7 @@ module Avalon
       # This is done so processing does not begin while individual lines are registered
       # @raise ArgumentError raised if the collection ids do not match
       def register_replay(valid: true)
+        #TODO: Save dir
         br = BatchRegistries.where(replay_name: @current_package.title).first
         fail ArgumentError, "Collections cannot change on replay, replay using #{@current_package.title} failed" if br.collection != @current_package.collection.id
         br.user_id = @current_package.user.id
