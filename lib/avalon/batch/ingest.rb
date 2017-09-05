@@ -75,14 +75,13 @@ module Avalon
         # Case 1, if there is a payload change and the item never completed, reset to pending
         reset_to_pending(previous_entry, entry)
 
-
         # Case 1, if there is a published media object we cannot replay
         unless previous_entry.media_object_pid.nil?
           mo = MediaObject.find(previous_entry.media_object_pid)
-          unless mo.nil? #meaning the media_object has been deleted since last time this ran
+          unless mo.nil? # meaning the media_object has been deleted since last time this ran
             if mo.published?
               published_error(previous_entry)
-              return nil #no further action, break out
+              return nil # no further action, break out
             end
           end
         end
