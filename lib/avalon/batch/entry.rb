@@ -34,6 +34,16 @@ module Avalon
         @errors = ActiveModel::Errors.new(self)
       end
 
+      def to_json
+        json_hash = opts
+        json_hash[:fields] = fields
+        json_hash[:files] = files
+        json_hash[:position] = row
+        json_hash[:user_key] = user_key
+        json_hash[:collection] = collection.id
+        json_hash.to_json
+      end
+
       def user_key
         @user_key ||= @manifest.package.user.user_key
       end

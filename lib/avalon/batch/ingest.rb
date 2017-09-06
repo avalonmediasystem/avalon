@@ -120,15 +120,13 @@ module Avalon
       # @param [Avalon::Batch::Entry] entry the entry to register
       # @return [BatchEntries] the ActiveRecord entry for the new entry
       def new_entry(entry)
-        be = BatchEntries.new(
+        BatchEntries.create(
           batch_registries_id: @current_batch_registry.id,
-          payload: entry.fields.to_json,
+          payload: entry.to_json,
           complete: false,
           error: false,
           current_status: 'registered'
         )
-        be.save
-        be
       end
 
       # When replaying a manifest, fetch the previous entries for updating

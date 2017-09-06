@@ -18,7 +18,7 @@ describe Avalon::Batch::Entry do
   let(:testdir) {'spec/fixtures/'}
   let(:filename) {'videoshort.mp4'}
   let(:collection) {FactoryGirl.build(:collection)}
-  let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{DateTime.now.strftime('%F')}", collection: collection }}
+  let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{DateTime.now.strftime('%F')}" }}
   let(:entry_files) { [{ file: File.join(testdir, filename), skip_transcoding: false }] }
   let(:entry_opts) { {user_key: 'archivist1@example.org', collection: collection} }
   let(:entry) { Avalon::Batch::Entry.new(entry_fields, entry_files, entry_opts, nil, nil) }
@@ -87,7 +87,7 @@ describe Avalon::Batch::Entry do
 
     describe '#process' do
       let(:entry) do
-        Avalon::Batch::Entry.new({ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", collection: collection }, [{file: File.join(testdir, "videoshort.mp4"), skip_transcoding: true}], entry_opts, nil, nil)
+        Avalon::Batch::Entry.new({ title: Faker::Lorem.sentence, date_issued: "#{Time.now}" }, [{file: File.join(testdir, "videoshort.mp4"), skip_transcoding: true}], entry_opts, nil, nil)
       end
 
       it 'should call MasterFile.setContent with a hash of derivatives' do
@@ -137,7 +137,7 @@ describe Avalon::Batch::Entry do
     let(:bib_id) { '7763100' }
     let(:sru_url) { "http://zgate.example.edu:9000/exampledb?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id='{:bib_id=>\"#{bib_id}\"}'" }
     let(:sru_response) { File.read(File.expand_path("../../../../fixtures/#{bib_id}.xml",__FILE__)) }
-    let(:entry_fields) {{ bibliographic_id: [bib_id], bibliographic_id_label: ['local'], collection: collection }}
+    let(:entry_fields) {{ bibliographic_id: [bib_id], bibliographic_id_label: ['local'] }}
     before do
       stub_request(:get, sru_url).to_return(body: sru_response)
     end
@@ -148,14 +148,14 @@ describe Avalon::Batch::Entry do
   end
 
   describe 'other identifiers' do
-    let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", other_identifier: ['ABC123'], other_identifier_type: ['local'], collection: collection }}
+    let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", other_identifier: ['ABC123'], other_identifier_type: ['local'] }}
     it 'sets other identifers' do
       expect(entry.media_object.other_identifier).to eq([{:source=>"local", :id=>"ABC123"}])
     end
   end
 
   describe 'notes' do
-    let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", note: ["This is a test general note"], note_type: ['general'], collection: collection }}
+    let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", note: ["This is a test general note"], note_type: ['general'] }}
     it 'sets notes' do
       expect(entry.media_object.note.first).to eq({:note=>"This is a test general note", :type=>"general"})
     end
@@ -204,5 +204,18 @@ describe Avalon::Batch::Entry do
     it {expect(Avalon::Batch::Entry.offset_valid?(":66:33.12345")).to be false}
     it {expect(Avalon::Batch::Entry.offset_valid?("5:000")).to be false}
     it {expect(Avalon::Batch::Entry.offset_valid?("`5.000")).to be false}
+  end
+
+  describe '#to_json' do
+    subject { JSON.parse(entry.to_json).symbolize_keys }
+    it "returns json" do
+      expect(subject[:fields].symbolize_keys).to eq entry.fields
+      expect(subject[:files].map(&:symbolize_keys!)).to eq entry.files
+      expect(subject[:position]).to eq entry.row
+      expect(subject[:user_key]).to eq entry.user_key
+      expect(subject[:collection]).to eq entry.collection.id
+      expect(subject[:hidden]).to eq entry.opts[:hidden]
+      expect(subject[:publish]).to eq entry.opts[:publish]
+    end
   end
 end
