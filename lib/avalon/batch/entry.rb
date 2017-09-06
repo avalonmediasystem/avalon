@@ -18,23 +18,33 @@ require 'active_model'
 module Avalon
   module Batch
     class Entry
-    	extend ActiveModel::Translation
+      extend ActiveModel::Translation
 
-    	attr_reader :fields, :files, :opts, :row, :errors, :manifest, :collection
+      attr_reader :fields, :files, :opts, :row, :errors, :manifest, :collection
 
-    	def initialize(fields, files, opts, row, manifest)
-    	  @fields = fields
-    	  @files  = files
-    	  @opts   = opts
-    	  @row    = row
-    	  @manifest = manifest
-    	  @errors = ActiveModel::Errors.new(self)
-    	  @files.each { |file| file[:file] = File.join(@manifest.package.dir, file[:file]) }
+      def initialize(fields, files, opts, row, manifest)
+        @fields = fields || opts[:fields]
+        @files  = files || opts[:files]
+        @row    = row || opts[:position]
+        @manifest = manifest || opts[:manifest]
+        # The next two depend on the manifest but it isn't available until after initialization hence the accessors below.
+        @user_key = opts[:user_key]
+        @collection = opts[:collection]
+        @opts   = opts.except(:fields, :files, :position, :manifest, :user_key, :collection)
+        @errors = ActiveModel::Errors.new(self)
+      end
+
+      def user_key
+        @user_key ||= @manifest.package.user.user_key
+      end
+
+      def collection
+        @collection ||= @manifest.package.collection
       end
 
         def media_object
-          @media_object ||= MediaObject.new(avalon_uploader: @manifest.package.user.user_key,
-                                            collection: @manifest.package.collection).tap do |mo|
+          @media_object ||= MediaObject.new(avalon_uploader: user_key,
+                                            collection: collection).tap do |mo|
             mo.workflow.origin = 'batch'
             mo.workflow.last_completed_step = HYDRANT_STEPS.last.step
             if Avalon::BibRetriever.configured? and fields[:bibliographic_id].present?
@@ -193,7 +203,7 @@ module Avalon
         media_object.workflow.last_completed_step = 'access-control'
 
         if opts[:publish]
-          media_object.publish!(@manifest.package.user.user_key)
+          media_object.publish!(user_key)
           media_object.workflow.publish
         end
 

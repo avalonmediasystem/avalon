@@ -18,17 +18,10 @@ describe Avalon::Batch::Entry do
   let(:testdir) {'spec/fixtures/'}
   let(:filename) {'videoshort.mp4'}
   let(:collection) {FactoryGirl.build(:collection)}
-  let(:manifest) do
-    manifest = double()
-    allow(manifest).to receive_message_chain(:package, :dir).and_return(testdir)
-    allow(manifest).to receive_message_chain(:package, :user, :user_key).and_return('archivist1@example.org')
-    allow(manifest).to receive_message_chain(:package, :collection).and_return(collection)
-    manifest
-  end
   let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{DateTime.now.strftime('%F')}", collection: collection }}
-  let(:entry_files) { [{ file: filename, skip_transcoding: false }] }
-  let(:entry_opts) { {} }
-  let(:entry) { Avalon::Batch::Entry.new(entry_fields, entry_files, entry_opts, nil, manifest) }
+  let(:entry_files) { [{ file: File.join(testdir, filename), skip_transcoding: false }] }
+  let(:entry_opts) { {user_key: 'archivist1@example.org', collection: collection} }
+  let(:entry) { Avalon::Batch::Entry.new(entry_fields, entry_files, entry_opts, nil, nil) }
 
   describe '#file_valid?' do
     let(:filename) { 'spec/fixtures/dropbox/example_batch_ingest/assets/Vid1-1.mp4' }
@@ -94,7 +87,7 @@ describe Avalon::Batch::Entry do
 
     describe '#process' do
       let(:entry) do
-        Avalon::Batch::Entry.new({ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", collection: collection }, [{file: "videoshort.mp4", skip_transcoding: true}], {}, nil, manifest)
+        Avalon::Batch::Entry.new({ title: Faker::Lorem.sentence, date_issued: "#{Time.now}", collection: collection }, [{file: File.join(testdir, "videoshort.mp4"), skip_transcoding: true}], entry_opts, nil, nil)
       end
 
       it 'should call MasterFile.setContent with a hash of derivatives' do
@@ -125,7 +118,7 @@ describe Avalon::Batch::Entry do
   end
 
   describe 'hidden' do
-    let(:entry_hidden) { Avalon::Batch::Entry.new(entry_fields, entry_files, {hidden: true}, nil, manifest) }
+    let(:entry_hidden) { Avalon::Batch::Entry.new(entry_fields, entry_files, entry_opts.merge({hidden: true}), nil, nil) }
     it 'does not set hidden on the media objects if the entry is not hidden' do
       expect(entry.media_object).not_to be_hidden
     end
@@ -169,7 +162,7 @@ describe Avalon::Batch::Entry do
   end
 
   describe '#process!' do
-    let(:entry_files) { [{ file: filename, offset: '00:00:00.500', label: 'Quis quo', date_digitized: '2015-10-30', skip_transcoding: false }] }
+    let(:entry_files) { [{ file: File.join(testdir, filename), offset: '00:00:00.500', label: 'Quis quo', date_digitized: '2015-10-30', skip_transcoding: false }] }
     let(:master_file) { entry.media_object.master_files.first }
     before do
       entry.process!
