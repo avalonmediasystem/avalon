@@ -34,15 +34,17 @@ module Avalon
         new_packages = collection.dropbox.find_new_packages
         logger.info "<< Found #{new_packages.count} new packages for collection #{@collection.name} >>" if new_packages.count > 0
         # For Each
-        new_package.each do |package|
+        new_packages.each do |package|
           @previous_entries = nil # clear it out in case the last package set it
           @current_package = package
           package_validation
           package_valid = @current_package_errors.empty?
-          send_invalid_package_email unless package_valid
-          next unless package_valid
-          br = BatchRegistries.register_batch unless replay?
-          br = BatchRegistries.register_replay if replay?
+          unless package_valid
+            send_invalid_package_email
+            next
+          end
+          br = register_batch unless replay?
+          br = register_replay if replay?
           @current_batch_registry = br.reload
           @previous_entries = fetch_previous_entries if replay?
           register_entries
@@ -149,12 +151,11 @@ module Avalon
         # TODO: Save dir
         br = BatchRegistries.new(
           user_id: @current_package.user.id,
-          dir: @current_packagey.dir,
+          dir: @current_package.dir,
           file_name: @current_package.title,
           collection: @current_package.collection.id,
-          valid_manifest: valid,
-          completed: false,
-          email_sent: false,
+          error: !valid,
+          complete: false,
           locked: true
         )
         br.save
@@ -171,9 +172,11 @@ module Avalon
         br.user_id = @current_package.user.id
         br.dir = @current_package.dir
         br.file_name = @current_package.title
-        br.valid_manifest = valid
-        br.completed = false
-        br.email_sent = false
+        br.error = !valid
+        br.complete = false
+        br.processed_email_sent = false
+        br.completed_email_sent = false
+        br.error_email_sent = false
         br.locked = true
         br.save
         br
@@ -185,10 +188,10 @@ module Avalon
       # @raise RuntimeError raised when @current_package is not sent
       # @return Array <String> an array of the errors
       def package_validation
-        raise RuntimeError, '@current_package is not set' unless @current_package.nil?
+        raise RuntimeError, '@current_package is not set' if @current_package.nil?
         @current_package_errors = []
-        @current_package_errors << user_checks
-        @current_package_errors << file_checks
+        @current_package_errors += user_checks
+        @current_package_errors += file_checks
         @current_package_errors
       end
 
@@ -207,7 +210,7 @@ module Avalon
       # Checks the manifest file in the package for validity
       # Ensures there are entries in the file
       # @return Array <String> an array of errors related to the user
-      def files_checks
+      def file_checks
         errors = []
         errors << 'There are no entries in the manifest file.' if @current_package.manifest.count == 0
         errors
