@@ -27,24 +27,17 @@ class IngestBatchStatusEmail < ActiveJob::Base
       end
 
       next unless status[complete]
-        unless status[errors]
-          # TODO Send complete email
-          entry.completed_email_sent = true
-          entry.complete = true
-        end
-        if status [errors]
-          # TODO Send error email
-          entry.error_email_sent = true
-          entry.error = true
-        end
-        entry.save
+      unless status[errors]
+        # TODO Send complete email
+        entry.completed_email_sent = true
+        entry.complete = true
       end
-
-
-
-
-
-
+      if status [errors]
+        # TODO Send error email
+        entry.error_email_sent = true
+        entry.error = true
+      end
+      entry.save
     end
   end
 end
