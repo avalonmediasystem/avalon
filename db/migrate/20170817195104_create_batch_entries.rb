@@ -9,6 +9,7 @@ class CreateBatchEntries < ActiveRecord::Migration
       t.string 'error_message'
       t.string 'media_object_pid'
       t.integer 'position', index: true
+      t.timestamps
     end
   end
 end
