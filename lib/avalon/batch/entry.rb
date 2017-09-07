@@ -72,7 +72,7 @@ module Avalon
               end
             else
               begin
-                mo.update_attributes(media_object_fields)
+                mo.assign_attributes(media_object_fields)
               rescue ActiveFedora::UnknownAttributeError => e
                 @errors.add(e.attribute.to_sym, e.message)
               end
@@ -120,6 +120,7 @@ module Avalon
             @errors.messages[:collection] = ["Collection not found: #{@fields[:collection].first}"]
             @errors.messages.delete(:governing_policy)
           end
+          @errors.empty?
         end
 
         def file_valid?(file_spec)

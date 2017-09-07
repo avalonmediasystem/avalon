@@ -15,14 +15,12 @@
 require 'rails_helper'
 
 describe IngestBatchEntryJob do
-  let(:job) { IngestBatchEntryJob.new(payload: {}) }
-  describe "perform" do
-    # TODO Make a FactoryGirl factory for this?
-    let(:batch_entry) { BatchEntries.new }
+  let(:batch_entry) { FactoryGirl.create(:batch_entries) }
+  let!(:collection) { FactoryGirl.create(:collection, id: 'zc77sq08x') }
 
-    # TODO write real tests
-    xit 'runs' do
-      job.perform(batch_entry)
+  describe "perform" do
+    it 'runs' do
+      expect { described_class.perform_now(batch_entry) }.to change { MediaObject.count }.by(1)
     end
   end
 end

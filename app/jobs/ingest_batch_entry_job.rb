@@ -20,7 +20,7 @@ class IngestBatchEntryJob < ActiveJob::Base
     # TODO validation checking that it is okay to ingest this batch entry
     # TODO delete pre-existing media object
     # TODO Set to process status on the BatchEntries
-    entry = Avalon::Batch::Entry.new(nil, nil, batch_entry.payload, nil, nil)
+    entry = Avalon::Batch::Entry.from_json(batch_entry.payload)
     if entry.valid?
       entry.process!
     else
