@@ -70,10 +70,21 @@ class IngestBatchEntryJob < ActiveJob::Base
       MediaObject.find(old_media_object_id).destroy if old_media_object_id.present? && MediaObject.exists?(old_media_object_id)
     end
 
+    # Set an error when the entry is invalid
+    # @param [BatchEntries] the entry to update
+    # @param [Avalon::Batch::Entry] the entry to update
+    def invalid_error(batch_entry, entry)
+      batch_entry.error = true
+      batch_entry.complete = false
+      batch_entry.current_status = 'Invalid Entry'
+      batch_entry.error_message = entry.errors.full_messages.to_sentence
+      batch_entry.save
+    end
+
     # Set an error when an error occurs during processing
     # @param [BatchEntries] the entry to update
     # @param [RuntimeError] the error raised
-    def invalid_error(batch_entry, error)
+    def process_error(batch_entry, error)
       batch_entry.error = true
       batch_entry.complete = false
       batch_entry.current_status = 'Processing Error'
