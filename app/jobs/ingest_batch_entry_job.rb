@@ -23,6 +23,7 @@ class IngestBatchEntryJob < ActiveJob::Base
       return
     end
 
+
     entry = Avalon::Batch::Entry.from_json(batch_entry.payload)
     if entry.valid?
       # Set to process status on the BatchEntries

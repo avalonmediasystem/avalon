@@ -30,4 +30,47 @@ describe BatchEntries do
       expect(subject.error).not_to be_nil
     end
   end
+
+  describe 'validating payload' do
+    describe 'with sufficient metadata' do
+      it 'does not record an error when title and date_issued are present' do
+        payload = { fields: { title: 'foo', date_issued: Time.now.utc } }
+        be = BatchEntries.new(payload: payload.to_json)
+        be.save
+        be.reload
+        expect(be.error).to be_falsey
+      end
+
+      it 'does not record an error when bibliographic_id is present' do
+        payload = { fields: { bibliographic_id: 'foo' } }
+        be = BatchEntries.new(payload: payload.to_json)
+        be.save
+        be.reload
+        expect(be.error).to be_falsey
+      end
+    end
+    describe 'with insufficient metadata' do
+      it 'records an error when no required fields are present' do
+        payload = { fields: { author: 'foo' } }
+        be = BatchEntries.new(payload: payload.to_json)
+        be.save
+        be.reload
+        expect(be.error).to be_truthy
+      end
+      it 'records an error when only title is present' do
+        payload = { fields: { title: 'foo' } }
+        be = BatchEntries.new(payload: payload.to_json)
+        be.save
+        be.reload
+        expect(be.error).to be_truthy
+      end
+      it 'records an error when only date issued is present' do
+        payload = { fields: { date_issued: Time.now.utc } }
+        be = BatchEntries.new(payload: payload.to_json)
+        be.save
+        be.reload
+        expect(be.error).to be_truthy
+      end
+    end
+  end
 end

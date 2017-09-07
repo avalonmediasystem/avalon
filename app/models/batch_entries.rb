@@ -20,4 +20,15 @@ require 'acts_as_list'
 class BatchEntries < ActiveRecord::Base
   belongs_to :batch_registries
   acts_as_list scope: :batch_registries
+  before_save :mininum_viable_metadata
+
+  # Determines if we have the mininum viable metadata needed to ingest an object
+  # Sets an error on the row when we do not
+  def mininum_viable_metadata
+    fields = JSON.parse(payload)['fields']
+    return nil unless fields['date_issued'].nil? || fields['title'].nil?
+    return nil unless fields['bibliographic_id'].nil?
+    self.error = true
+    self.error_message = 'To successfully ingest, either title and date issued must be set or a bibliographic id must be provided'
+  end
 end
