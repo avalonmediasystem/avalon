@@ -149,7 +149,102 @@ describe Avalon::Batch::Ingest do
         expect(batch_ingest).not_to receive(:fetch_previous_entries)
       end
 
-      describe 'plays on entries' do
+      describe 'replays on entries' do
+        before :each do
+          # Set up a replay of the default batch
+          batch_ingest.scan_for_packages
+          br = BatchRegistries.first
+          br.replay_name = br.file_name
+          br.save
+          # Get the old timestamps
+          ts = []
+          BatchEntries.all do |be|
+            ts << be.updated_at
+          end
+        end
+
+        it 'does not change the entries if there are no changes' do
+          # Run the replay
+          batch_ingest.scan_for_packages
+
+          # Timestamps should not have changed
+          pos = 0
+          BatchEntries.all do |be|
+            expect(be.updated_at).to eq(ts[pos])
+            pos += 1
+          end
+        end
+
+        it 'changes the entries when if there are changes' do
+          BatchEntries.all do |be|
+            be.payload = 'foo'
+            be.save
+          end
+
+          # Timestamps should have changed and payload updated
+          pos = 0
+          BatchEntries.all do |be|
+            expect(be.payload).not_to eq('foo')
+            expect(be.updated_at).not_to eq(ts[pos])
+            pos += 1
+          end
+        end
+
+        it 'resets the entries when the entries are errored out' do
+          BatchEntries.all do |be|
+            be.error = true
+            be.payload = 'foo'
+            be.save
+          end
+
+          # Timestamps should have changed and errors cleared
+          pos = 0
+          BatchEntries.all do |be|
+            expect(be.payload).not_to eq('foo')
+            expect(be.error).to_be falsey
+            expect(be.updated_at).not_to eq(ts[pos])
+            pos += 1
+          end
+        end
+
+        it 'requeues completed objects when the MediaObject has not been published' do
+          allow(MediaObject).to receive(:exists?).with(anything).and_return(false)
+          BatchEntries.all do |be|
+            be.completed = true
+            be.payload = 'foo'
+            be.media_object_pid = 'foo'
+            be.save
+          end
+
+          # Timestamps should have changed and completed status removed
+          pos = 0
+          BatchEntries.all do |be|
+            expect(be.payload).not_to eq('foo')
+            expect(be.completed).to_be falsey
+            expect(be.updated_at).not_to eq(ts[pos])
+            pos += 1
+          end
+        end
+
+        it 'does not requeue jobs when the media objects are published' do
+          allow(MediaObject).to receive(:exists?).with(anything).and_return(true)
+          BatchEntries.all do |be|
+            be.completed = true
+            be.media_object_pid = 'foo'
+            be.save
+          end
+
+          # Timestamps should have changed and completed status removed
+          pos = 0
+          BatchEntries.all do |be|
+            expect(be.payload).not_to eq('foo')
+            expect(be.completed).to_be falsey
+            expect(be.error).to_be true
+            expect(be.updated_at).not_to eq(ts[pos])
+            pos += 1
+          end
+        end
+
 
       end
     end
