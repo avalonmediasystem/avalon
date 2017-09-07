@@ -67,7 +67,12 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'registers a new package' do
-      byebug
+      expect { batch_ingest.scan_for_packages }.to change { BatchRegistries.count }.by(1)
+    end
+
+    it 'does not persist anything to fedora' do
+      expect(collection).to be_persisted
+      expect { batch_ingest.scan_for_packages }.not_to change { ActiveFedora::Base.count }
     end
   end
 
