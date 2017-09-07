@@ -218,4 +218,20 @@ describe Avalon::Batch::Entry do
       expect(subject[:publish]).to eq entry.opts[:publish]
     end
   end
+
+  describe '#from_json' do
+    let(:collection) {FactoryGirl.create(:collection)}
+    subject { Avalon::Batch::Entry.from_json(entry.to_json) }
+    it "initializes a Avalon::Batch::Entry object from a json hash" do
+      expect(subject).to be_an Avalon::Batch::Entry
+      expect(subject.fields).to eq entry.fields
+      expect(subject.files).to eq entry.files
+      expect(subject.row).to eq entry.row
+      expect(subject.user_key).to eq entry.user_key
+      expect(subject.collection.id).to eq entry.collection.id
+      expect(subject.opts[:hidden]).to eq entry.opts[:hidden]
+      expect(subject.opts[:publish]).to eq entry.opts[:publish]
+    end
+  end
+
 end

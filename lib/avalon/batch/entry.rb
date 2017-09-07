@@ -44,6 +44,13 @@ module Avalon
         json_hash.to_json
       end
 
+      def self.from_json(json)
+        json_hash = JSON.parse(json)
+        opts = json_hash.except("fields", "files", "position")
+        opts[:collection] = Admin::Collection.find(json_hash["collection"])
+        self.new(json_hash["fields"].symbolize_keys, json_hash["files"].map(&:symbolize_keys!), opts.symbolize_keys, json_hash["position"], nil)
+      end
+
       def user_key
         @user_key ||= @manifest.package.user.user_key
       end
