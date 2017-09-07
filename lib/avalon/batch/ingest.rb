@@ -19,8 +19,8 @@ require 'avalon/dropbox'
 
 module Avalon
   module Batch
+    # Handles all activity relating to registering a batch registry and its batch entries
     class Ingest
-
       attr_reader :collection
 
       def initialize(collection)
@@ -190,7 +190,7 @@ module Avalon
       # @raise RuntimeError raised when @current_package is not sent
       # @return Array <String> an array of the errors
       def package_validation
-        raise RuntimeError, '@current_package is not set' if @current_package.nil?
+        raise '@current_package is not set' if @current_package.nil?
         @current_package_errors = []
         @current_package_errors += user_checks
         @current_package_errors += file_checks
@@ -232,54 +232,6 @@ module Avalon
       def send_invalid_package_email
         #TODO: Write me!
       end
-
-  #     def ingest
-  #       # Scans dropbox for new batch packages
-  #       new_packages = collection.dropbox.find_new_packages
-  #       logger.info "<< Found #{new_packages.count} new packages for collection #{collection.name} >>" if new_packages.count > 0
-  #       # Extract package and process
-  #       new_packages.each do |package|
-  #         begin
-  #           ingest_batch = ingest_package(package)
-  #         rescue Exception => ex
-  #           begin
-  #             package.manifest.error!
-  #           ensure
-  #             IngestBatchMailer.batch_ingest_validation_error( package, ["#{ex.class.name}: #{ex.message}"] ).deliver_now
-  #           end
-  #         end
-  #       end
-  #     end
-  #
-  #     def ingest_package(package)
-  #       base_errors = []
-  #       current_user = package.user
-  #       current_ability = Ability.new(current_user)
-  #       # Validate base package attributes: user, collection, and authorization
-  #       if current_user.nil?
-  #         base_errors << "User does not exist in the system: #{package.manifest.email}."
-  #       elsif !current_ability.can?(:read, collection)
-  #         base_errors << "User #{current_user.user_key} does not have permission to add items to collection: #{collection.name}."
-  #       elsif package.manifest.count==0
-  #         base_errors << "There are no entries in the manifest file."
-  #       end
-  #       package.entries.each do |entry|
-  #         if entry.fields.has_key?(:collection) && entry.fields[:collection].first!=collection.name
-  #           entry.errors.add(:collection, "Collection '#{entry.fields[:collection].first}' does not match ingest folder '#{collection.name}'")
-  #         end
-  #       end
-  #       if !base_errors.empty? || !package.valid?
-  #         package.manifest.error!
-  #         IngestBatchMailer.batch_ingest_validation_error( package, base_errors ).deliver_now
-  #         return nil
-  #       end
-  #       media_objects = package.process!
-  #       # send email confirming kickoff of batch
-  #       IngestBatchMailer.batch_ingest_validation_success( package ).deliver_now
-  #       # Create an ingest batch object for all of the media objects associated with this particular package
-  #       IngestBatch.create( media_object_ids: media_objects.map(&:id), name: package.manifest.name, email: current_user.email )
-  #     end
-  #
-     end
-   end
+    end
+  end
 end
