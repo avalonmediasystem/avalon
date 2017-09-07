@@ -103,7 +103,7 @@ describe Avalon::Batch::Ingest do
       mailer = double('mailer').as_null_object
       expect(IngestBatchMailer).to receive(:batch_ingest_validation_success).with(duck_type(:each)).and_return(mailer)
       expect(mailer).to receive(:deliver_now)
-      batch_ingest.ingest
+      batch_ingest.scan_for_packages
     end
 
     it 'should skip the corrupt manifest' do
@@ -111,7 +111,7 @@ describe Avalon::Batch::Ingest do
       batch = Avalon::Batch::Package.new(manifest_file, collection)
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
       expect { batch_ingest.scan_for_packages }.not_to raise_error
-      expect { batch_ingest.scan_for_packages }.not_to change{IngestBatch.count}
+      expect { batch_ingest.scan_for_packages }.not_to change{BatchRegistries.count}
       error_file = File.join(@dropbox_dir,'example_batch_ingest','bad_manifest.xlsx.error')
       expect(File.exists?(error_file)).to be true
       expect(File.read(error_file)).to match(/^Invalid manifest/)
@@ -153,85 +153,14 @@ describe Avalon::Batch::Ingest do
 
     it 'does not create an ingest batch object when there are zero packages' do
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return []
-      #expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(anything(), include("Expected error message"))
-      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
-    end
-
-    it 'should result in an error if a file is not found' do
-      batch = Avalon::Batch::Package.new( 'spec/fixtures/dropbox/example_batch_ingest/wrong_filename_manifest.xlsx', collection )
-      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      mailer = double('mailer').as_null_object
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver_now)
-      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
-      expect(batch.errors[3].messages).to have_key(:content)
-      expect(batch.errors[3].messages[:content]).to eq(["File not found: spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain_wrong.mov"])
-    end
-
-    it 'does not create an ingest batch object when there are no files' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/no_files.xlsx', collection)
-      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
+      expect { batch_ingest.scan_for_packages }.to_not change { BatchRegistries.count }
     end
 
     it 'should fail if the manifest specified a non-manager user' do
       batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/non_manager_manifest.xlsx', collection)
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      mailer = double('mailer').as_null_object
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(anything(), include("User jay@krajcik.org does not have permission to add items to collection: Ut minus ut accusantium odio autem odit..")).and_return(mailer)
-      expect(mailer).to receive(:deliver_now)
-      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
+      batch_ingest.should_receive(:send_invalid_package_email).once
+      expect { batch_ingest.scan_for_packages }.to_not change { BatchRegistries.count }
     end
-
-    it 'should fail if a bad offset is specified' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/bad_offset_manifest.xlsx', collection)
-      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      mailer = double('mailer').as_null_object
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver_now)
-      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
-      expect(batch.errors[4].messages).to have_key(:offset)
-      expect(batch.errors[4].messages[:offset]).to eq(['Invalid offset: 5:000'])
-    end
-
-    it 'should fail if missing required field' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/missing_required_field.xlsx', collection)
-      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      mailer = double('mailer').as_null_object
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver_now)
-      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
-      expect(batch.errors[4].messages).to have_key(:title)
-      expect(batch.errors[4].messages[:title]).to eq(['field is required.'])
-    end
-
-    it 'should fail if field is not in accepted metadata field list' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/badColumnName_nonRequired.xlsx', collection)
-      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      mailer = double('mailer').as_null_object
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver_now)
-      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
-      expect(batch.errors[4].messages).to have_key(:contributator)
-      expect(batch.errors[4].messages[:contributator]).to eq(["unknown attribute 'contributator' for MediaObject."])
-    end
-
-    it 'should fail if an unknown error occurs' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/badColumnName_nonRequired.xlsx', collection)
-      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      mailer = double('mailer').as_null_object
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(batch ,['RuntimeError: Foo']).and_return(mailer)
-      expect(mailer).to receive(:deliver_now)
-      expect(batch_ingest).to receive(:ingest_package) { raise "Foo" }
-      expect { batch_ingest.ingest }.to_not raise_error
-    end
-  end
-
-  it "should be able to default to public access" do
-    skip "[VOV-1348] Wait until implemented"
-  end
-
-  it "should be able to default to specific groups" do
-    skip "[VOV-1348] Wait until implemented"
   end
 end

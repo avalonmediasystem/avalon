@@ -57,6 +57,7 @@ module Avalon
         # Return something about the new batches
       end
 
+      # Register the individual rows on a spreadsheet for a valid package
       def register_entries
         position = 1 # acts_as_list starts at 1, not 0
         @current_package.entries.each do |entry|
