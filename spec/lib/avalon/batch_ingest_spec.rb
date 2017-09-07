@@ -101,13 +101,6 @@ describe Avalon::Batch::Ingest do
       BatchRegistries.delete_all
     end
 
-    xit 'should send unlock the batch when it finished loading entries' do
-      mailer = double('mailer').as_null_object
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_success).with(duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver_now)
-      batch_ingest.scan_for_packages
-    end
-
     it 'should skip the corrupt manifest' do
       manifest_file = File.join(@dropbox_dir,'example_batch_ingest','bad_manifest.xlsx')
       batch = Avalon::Batch::Package.new(manifest_file, collection)
@@ -157,7 +150,7 @@ describe Avalon::Batch::Ingest do
       end
 
       describe 'plays on entries' do
-        
+
       end
     end
 
