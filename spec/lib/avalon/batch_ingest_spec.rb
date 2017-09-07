@@ -99,7 +99,7 @@ describe Avalon::Batch::Ingest do
       end
     end
 
-    it 'should send email when batch finishes processing' do
+    xit 'should send unlock the batch when it finished loading entries' do
       mailer = double('mailer').as_null_object
       expect(IngestBatchMailer).to receive(:batch_ingest_validation_success).with(duck_type(:each)).and_return(mailer)
       expect(mailer).to receive(:deliver_now)
@@ -110,8 +110,8 @@ describe Avalon::Batch::Ingest do
       manifest_file = File.join(@dropbox_dir,'example_batch_ingest','bad_manifest.xlsx')
       batch = Avalon::Batch::Package.new(manifest_file, collection)
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      expect { batch_ingest.ingest }.not_to raise_error
-      expect { batch_ingest.ingest }.not_to change{IngestBatch.count}
+      expect { batch_ingest.scan_for_packages }.not_to raise_error
+      expect { batch_ingest.scan_for_packages }.not_to change{IngestBatch.count}
       error_file = File.join(@dropbox_dir,'example_batch_ingest','bad_manifest.xlsx.error')
       expect(File.exists?(error_file)).to be true
       expect(File.read(error_file)).to match(/^Invalid manifest/)
@@ -121,19 +121,18 @@ describe Avalon::Batch::Ingest do
       space_batch_path = File.join('spec/fixtures/dropbox/example batch ingest', 'batch manifest with spaces.xlsx')
       space_batch = Avalon::Batch::Package.new(space_batch_path, collection)
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [space_batch]
-      expect{batch_ingest.ingest}.to change{IngestBatch.count}.by(1)
+      expect{batch_ingest.scan_for_packages}.to change{BatchRegistries.count}.by(1)
     end
 
     it 'should ingest batch with skip-transcoding derivatives' do
       derivatives_batch_path = File.join('spec/fixtures/dropbox/pretranscoded_batch_ingest', 'batch_manifest_derivatives.xlsx')
       derivatives_batch = Avalon::Batch::Package.new(derivatives_batch_path, collection)
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [derivatives_batch]
-      expect_any_instance_of(MasterFile).to receive(:process).with(hash_including('quality-high', 'quality-medium', 'quality-low'))
-      expect{batch_ingest.ingest}.to change{IngestBatch.count}.by(1)
+      expect{batch_ingest.scan_for_packages}.to change{BatchRegistries.count}.by(1)
     end
 
     it 'creates an ingest batch object' do
-      expect{batch_ingest.ingest}.to change{IngestBatch.count}.by(1)
+      expect{batch_ingest.scan_for_packages}.to change{BatchRegistries.count}.by(1)
     end
   end
 

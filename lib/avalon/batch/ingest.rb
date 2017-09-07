@@ -33,7 +33,6 @@ module Avalon
         # Scan the dropbox
         new_packages = collection.dropbox.find_new_packages
         logger.info "<< Found #{new_packages.count} new packages for collection #{@collection.name} >>" if new_packages.count > 0
-        # For Each
         new_packages.each do |package|
           @previous_entries = nil # clear it out in case the last package set it
           @current_package = package
@@ -48,8 +47,12 @@ module Avalon
           @current_batch_registry = br.reload
           @previous_entries = fetch_previous_entries if replay?
           register_entries
-          # Kick off a job for every entry in pending
-          # Unlock the table
+          # TODO: Kick off a job for every entry in pending
+
+          # Now that everything is registered, unlock the batch entry
+          # TODO: Move these two lines to the model
+          @current_batch_registry.locked = false
+          @current_batch_registry.save
         end
         # Return something about the new batches
       end
@@ -200,8 +203,19 @@ module Avalon
         current_user = @current_package.user
         current_ability = Ability.new(current_user)
         errors = []
-        errors << "User does not exist in the system: #{package.manifest.email}." if current_user.nil?
-        errors << "User #{current_user.user_key} does not have permission to add items to collection: #{collection.name}." if !current_ability.can?(:read, collection)
+        errors = check_current_user(current_user, errors)
+        return errors unless errors.empty?
+        errors << "User does not exist in the system: #{@current_package.manifest.email}." if current_user.nil?
+        errors << "User #{current_user.user_key} does not have permission to add items to collection: #{collection.name}." unless current_ability.can?(:read, collection)
+        errors
+      end
+
+      # Determines if we have a valid ActiveRecord relation for current_user
+      # @param  [User] the user
+      # @param [Array <String>] an array to append any errors to
+      # @return [Array <String>] the array of errors with any new errors appended
+      def check_current_user(current_user, errors)
+        errors << "For #{@current_package.title}, a valid user cannot be found." if current_user.nil? || current_user.user_key.nil?
         errors
       end
 
