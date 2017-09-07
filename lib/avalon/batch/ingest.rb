@@ -72,7 +72,7 @@ module Avalon
       # @param [Avalon::Batch::Entry] the entry to register
       # @param [Integer] the position on the spreadsheet, starting from 1, not 0, since acts_as_list starts at 1
       def replay_entry(entry, position)
-        previous_entry = @previous_entries[position]
+        previous_entry = @previous_entries[position-1]
         # Case 0, determine if we even have an updated at all
         # If the payload is the same it means no change and complete true means the migration ran
         return nil if previous_entry.payload == entry.fields.to_json && previous_entry.complete
@@ -136,7 +136,7 @@ module Avalon
       # When replaying a manifest, fetch the previous entries for updating
       # @return BatchEntries::ActiveRecord_Relation all of the entries for the current manifest
       def fetch_previous_entries
-        batch_id = BatchRegistries.where(replay_name: @current_package.file_name).first.id
+        batch_id = BatchRegistries.where(replay_name: @current_package.title).first.id
         BatchEntries.where(batch_registries_id: batch_id)
       end
 

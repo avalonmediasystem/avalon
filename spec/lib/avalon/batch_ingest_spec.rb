@@ -97,6 +97,8 @@ describe Avalon::Batch::Ingest do
       if @dropbox_dir =~ %r{spec/fixtures/dropbox/Ut}
         FileUtils.rm_rf @dropbox_dir
       end
+      BatchEntries.delete_all
+      BatchRegistries.delete_all
     end
 
     xit 'should send unlock the batch when it finished loading entries' do
@@ -133,6 +135,55 @@ describe Avalon::Batch::Ingest do
 
     it 'creates an ingest batch object' do
       expect{batch_ingest.scan_for_packages}.to change{BatchRegistries.count}.by(1)
+    end
+
+    describe 'registering entries' do
+      it 'registers entries' do
+        expect { batch_ingest.scan_for_packages }.to change { BatchEntries.count }.by(3)
+      end
+
+      it 'gets previous entries when there is a replay' do
+        batch_ingest.scan_for_packages
+        # Fake the replay name for the test and rerun the same package
+        br = BatchRegistries.first
+        br.replay_name = br.file_name
+        br.save
+        expect(batch_ingest.fetch_previous_entries).not_to be_nil
+      end
+
+      it 'does not get previous when there is not a replay' do
+        batch_ingest.scan_for_packages
+        expect(batch_ingest).not_to receive(:fetch_previous_entries)
+      end
+
+      describe 'plays on entries' do
+        
+      end
+    end
+
+    describe 'registering batches' do
+      it 'registers a new package' do
+        expect(BatchRegistries.first).to be_nil
+        expect { batch_ingest.scan_for_packages }.to change { BatchRegistries.count }.by(1)
+        expect(batch_ingest).not_to receive(:register_replay)
+        expect(BatchRegistries.first.locked).to be_falsey
+      end
+
+      it 'registers a replay package' do
+        expect(BatchRegistries.first).to be_nil
+        # Set up the replay
+        batch_ingest.scan_for_packages
+        br = BatchRegistries.first
+        br.replay_name = br.file_name
+        br.save
+        expect(BatchRegistries.all.size).to eq(1)
+
+        # Run it with a replay, expect no size changes
+        expect { batch_ingest.scan_for_packages }.to change { BatchRegistries.count }.by(0)
+        expect { batch_ingest.scan_for_packages }.to change { BatchEntries.count }.by(0)
+        expect(batch_ingest).not_to receive(:register_batch)
+        expect(BatchRegistries.first.locked).to be_falsey
+      end
     end
   end
 
