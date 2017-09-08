@@ -230,7 +230,8 @@ module Avalon
       end
 
       def send_invalid_package_email
-        #TODO: Write me!
+        logger.warn "Could not register package #{@current_package.title} for Collection #{@collection.id}, sending email."
+        BatchRegistriesMailer.batch_ingest_validation_error(@current_package, @current_package_errors).deliver_later
       end
     end
   end
