@@ -142,6 +142,7 @@ describe Avalon::Batch::Entry do
       stub_request(:get, sru_url).to_return(body: sru_response)
     end
     it 'retrieves bib data' do
+      expect(entry.errors).to be_empty
       expect(entry.media_object.bibliographic_id).to eq({:source=>"local", :id=>bib_id})
       expect(entry.media_object.title).to eq('245 A : B F G K N P S')
     end
