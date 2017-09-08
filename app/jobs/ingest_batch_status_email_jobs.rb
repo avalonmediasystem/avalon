@@ -29,12 +29,12 @@ class IngestFinished < ActiveJob::Base
 
       next unless status[complete]
       unless status[errors]
-        # TODO Send complete email
+        BatchRegistriesMailer.batch_registration_finished_mailer(br).deliver_now
         entry.completed_email_sent = true
         entry.complete = true
       end
       if status [errors]
-        # TODO Send error email
+        BatchRegistriesMailer.batch_registration_finished_mailer(br).deliver_now
         entry.error_email_sent = true
         entry.error = true
       end
