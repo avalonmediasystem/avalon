@@ -14,7 +14,7 @@
 
 require 'rails_helper'
 
-describe "Secure Routes" do
+describe "Secure Routes", type: :feature do
   after { Warden.test_reset! }
   let!(:admin) { FactoryGirl.create(:administrator) }
   let!(:user)  { FactoryGirl.create(:user) }

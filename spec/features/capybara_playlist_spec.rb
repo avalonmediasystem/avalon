@@ -16,7 +16,7 @@ require 'rails_helper'
 require 'capybara/poltergeist'
 Capybara.javascript_driver = :poltergeist
 
-describe 'Playlist' do
+describe 'Playlist', type: :feature do
   after { Warden.test_reset! }
   it 'checks navigation when create new playlist is accessed' do
     user = FactoryGirl.create(:administrator)

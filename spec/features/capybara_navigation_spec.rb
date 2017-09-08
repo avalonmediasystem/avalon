@@ -14,7 +14,7 @@
 
 require 'rails_helper'
 
-describe 'checks navigation after logging in' do
+describe 'checks navigation after logging in', type: :feature do
   after { Warden.test_reset! }
   it 'checks navigation to Browse' do
     user = FactoryGirl.create(:administrator)

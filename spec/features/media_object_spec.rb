@@ -14,7 +14,7 @@
 
 require 'rails_helper'
 
-describe 'MediaObject' do
+describe 'MediaObject', type: :feature do
   after { Warden.test_reset! }
   let(:media_object) { FactoryGirl.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
   before :each do

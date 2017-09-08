@@ -14,7 +14,7 @@
 
 require 'rails_helper'
 
-describe 'homepage' do
+describe 'homepage', type: :feature do
   after { Warden.test_reset! }
   it 'validates presence of header and footer on homepage' do
     visit 'http://0.0.0.0:3000'
