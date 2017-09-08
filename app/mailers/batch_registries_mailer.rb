@@ -29,8 +29,19 @@ class BatchRegistriesMailer < ApplicationMailer
     @error_items = BatchEntries.where(batch_registries_id: @batch_registry.id, error: true)
     @completed_items = BatchEntries.where(batch_registries_id: @batch_registry.id, complete: true)
     prefix = "Success:"
-    prefix = "Errors:" unless @error_items.empty?
+    prefix = "Errors Present:" unless @error_items.empty?
 
+    mail(
+      to: email,
+      from: Avalon::Configuration.lookup('email.notification'),
+      subject: "#{prefix} Batch Registry #{@batch_registry.filename} for #{@batch_registry.collection_id} has completed"
+    )
+  end
+
+  # Used to send an email when a batch appears to be stalled
+  def batch_registration_stalled_mailer(batch_registry)
+    @batch_registry = batch_registry
+    email = Avalon::Configuration.lookup('email.notification')
     mail(
       to: email,
       from: Avalon::Configuration.lookup('email.notification'),
