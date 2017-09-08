@@ -55,7 +55,7 @@ module Avalon
           @current_batch_registry.locked = false
           if @current_batch_registry.save
             # Send email about successful registration
-            BatchRegistriesMailer.batch_ingest_validation_success(@current_package).deliver_later if @current_batch_registry.persisted?
+            BatchRegistriesMailer.batch_ingest_validation_success(@current_package).deliver_now if @current_batch_registry.persisted?
           else
             logger.error "Persisting BatchRegistry failed for package #{@current_package.title}"
           end
