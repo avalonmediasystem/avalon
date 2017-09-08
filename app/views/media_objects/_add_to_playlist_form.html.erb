@@ -34,7 +34,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <label class="col-sm-2 control-label">Playlist Item Scope</label>
             <div class="col-sm-10">
               <label class="radio-inline">
-                <input type="radio" value="section" name="post[playlistitem_scope]" id="playlistitem_scope_section">
+                <input type="radio" value="section" name="post[playlistitem_scope]" id="playlistitem_scope_section" checked="true">
                 Create single item for <%= 'each ' if scope != 'master_file' %>section<%= " (#{stream_label_for(MasterFile.find(masterfile_id))})" if scope == 'master_file' %>
               </label>
               <br>
