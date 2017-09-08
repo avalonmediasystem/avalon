@@ -60,7 +60,7 @@ class StalledJob < ActiveJob::Base
           break if batch_stalled
         end
       end
-      # TODO: Send stalled email if batch_stalled
+      BatchRegistriesMailer.batch_registration_stalled_mailer(br) if batch_stalled
     end
   end
 end
