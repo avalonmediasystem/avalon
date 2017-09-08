@@ -6,17 +6,17 @@ class BatchRegistriesMailer < ApplicationMailer
     email ||= Avalon::Configuration.lookup('email.notification')
     mail(
       to: email,
-      subject: "Failed batch ingest registration for: #{package.manifest.name}",
+      subject: "Failed batch ingest registration for: #{package.title}",
     )
   end
 
   def batch_ingest_validation_success( package )
     @package = package
-    email = package.manifest.email || Avalon::Configuration.lookup('email.notification')
+    email = package.user.email
     mail(
       to: email,
       from: Avalon::Configuration.lookup('email.notification'),
-      subject: "Successfully processed batch ingest: #{package.manifest.name}",
+      subject: "Successfully registered batch ingest: #{package.title}",
     )
   end
 end

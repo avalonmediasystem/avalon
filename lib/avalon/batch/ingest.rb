@@ -53,7 +53,12 @@ module Avalon
           # Now that everything is registered, unlock the batch entry
           # TODO: Move these two lines to the model
           @current_batch_registry.locked = false
-          @current_batch_registry.save
+          if @current_batch_registry.save
+            # Send email about successful registration
+            BatchRegistriesMailer.batch_ingest_validation_success(@current_package).deliver_later if @current_batch_registry.persisted?
+          else
+            logger.error "Persisting BatchRegistry failed for package #{@current_package.title}"
+          end
         end
         # Return something about the new batches
       end

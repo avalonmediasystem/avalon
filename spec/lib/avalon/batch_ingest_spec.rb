@@ -262,6 +262,11 @@ describe Avalon::Batch::Ingest do
         expect(BatchRegistries.first.locked).to be_falsey
       end
 
+      it 'sends a registration success email' do
+        expect(BatchRegistriesMailer).to receive(:batch_ingest_validation_success)
+        batch_ingest.scan_for_packages
+      end
+
       it 'registers a replay package' do
         expect(BatchRegistries.first).to be_nil
         # Set up the replay

@@ -18,6 +18,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <p>
     <%= "Manifest file: #{@package.title}" %>
   </p>
+  <p>
+    <%= "Collection: #{@package.collection.id}" %>
+  </p>
 <% end %>
 
 <% if @errors.present? %>
