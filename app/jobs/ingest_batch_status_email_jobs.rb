@@ -62,7 +62,5 @@ class StalledJob < ActiveJob::Base
       end
       # TODO: Send stalled email if batch_stalled
     end
-
-    BatchRegistries.where(locked: true )
   end
 end
