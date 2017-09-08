@@ -1,0 +1,2 @@
+class BatchRegistriesMailer < ApplicationMailer
+end
