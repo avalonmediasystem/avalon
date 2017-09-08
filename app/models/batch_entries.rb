@@ -33,6 +33,7 @@ class BatchEntries < ActiveRecord::Base
   private
 
   def minimal_viable_metadata?
+    return false if payload.nil? # nil guard
     fields = JSON.parse(payload)['fields']
     return false if fields.blank?
     return false if (fields['date_issued'].blank? || fields['title'].blank?) && fields['bibliographic_id'].blank?
