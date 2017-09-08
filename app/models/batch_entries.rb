@@ -30,6 +30,12 @@ class BatchEntries < ActiveRecord::Base
     self.error_message = 'To successfully ingest, either title and date issued must be set or a bibliographic id must be provided'
   end
 
+  def queue
+    IngestBatchEntryJob.perform_later(self)
+    self.current_status = 'Queued'
+    self.save
+  end
+
   private
 
   def minimal_viable_metadata?

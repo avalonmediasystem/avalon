@@ -47,7 +47,8 @@ module Avalon
           @current_batch_registry = br.reload
           @previous_entries = fetch_previous_entries if replay?
           register_entries
-          # TODO: Kick off a job for every entry in pending
+          # Queue all the entries
+          BatchEntries.where(batch_registries_id: @current_batch_registry.id, complete: false, error: false).map(&:queue)
 
           # Now that everything is registered, unlock the batch entry
           # TODO: Move these two lines to the model

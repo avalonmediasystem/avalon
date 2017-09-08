@@ -73,4 +73,14 @@ describe BatchEntries do
       end
     end
   end
+
+  describe '#queue' do
+    it 'queues the ingest job' do
+      subject.save
+      expect(IngestBatchEntryJob).to receive(:perform_later).once.with(subject)
+      subject.queue
+      subject.reload
+      expect(subject.current_status).to eq 'Queued'
+    end
+  end
 end

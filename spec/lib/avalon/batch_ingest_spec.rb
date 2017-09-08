@@ -145,8 +145,13 @@ describe Avalon::Batch::Ingest do
       end
 
       it 'does not get previous when there is not a replay' do
-        batch_ingest.scan_for_packages
         expect(batch_ingest).not_to receive(:fetch_previous_entries)
+        batch_ingest.scan_for_packages
+      end
+
+      it 'queues ingest jobs for newly registered entries' do
+        allow_any_instance_of(BatchEntries).to receive(:queue)
+        batch_ingest.scan_for_packages
       end
 
       describe 'replays on entries' do
