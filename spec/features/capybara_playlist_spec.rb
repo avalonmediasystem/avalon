@@ -125,7 +125,7 @@ describe 'Playlist' do
     visit '/playlists'
     page.should have_content('Public')
   end
-  it 'is able to edit playlist name and description', js: true, :retry => 3 do
+  it 'is able to edit playlist name and description', js: true, :retry => 5 do
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
@@ -149,7 +149,7 @@ describe 'Playlist' do
     page.should have_content('Name and description edited')
   end
 
-  it 'is able to change public playlist to private', js: true, :retry => 3 do
+  it 'is able to change public playlist to private', js: true, :retry => 5 do
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
@@ -170,7 +170,7 @@ describe 'Playlist' do
     page.should have_content('Playlist was successfully updated')
     page.should have_content('Private')
   end
-  it 'is able to change private playlist to public', js: true, :retry => 3 do
+  it 'is able to change private playlist to public', js: true, :retry => 5 do
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
