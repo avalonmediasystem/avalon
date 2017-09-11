@@ -144,6 +144,7 @@ describe 'Playlist' do
     fill_in('playlist_title', with: 'edit_public_playlist')
     fill_in('playlist_comment', with: 'Name and description edited')
     click_button('Save Changes')
+    page.find 'p', text: 'Playlist was successfully updated', wait: 15
     page.should have_content('Playlist was successfully updated')
     page.should have_content('edit_public_playlist')
     page.should have_content('Name and description edited')
