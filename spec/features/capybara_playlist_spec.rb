@@ -144,9 +144,9 @@ describe 'Playlist' do
     fill_in('playlist_title', with: 'edit_public_playlist')
     fill_in('playlist_comment', with: 'Name and description edited')
     click_button('Save Changes')
-    page.should have_content('Playlist was successfully updated')
-    page.should have_content('edit_public_playlist')
-    page.should have_content('Name and description edited')
+    expect(page).to have_content('Playlist was successfully updated', wait: 15)
+    expect(page).to have_content('edit_public_playlist', wait: 15)
+    expect(page).to have_content('Name and description edited', wait: 15)
   end
 
   it 'is able to change public playlist to private', js: true, :retry => 3 do
@@ -167,8 +167,8 @@ describe 'Playlist' do
     page.should have_button('Save Changes')
     choose('Private')
     click_button('Save Changes')
-    page.should have_content('Playlist was successfully updated')
-    page.should have_content('Private')
+    expect(page).to have_content('Playlist was successfully updated', wait: 15)
+    expect(page).to have_content('Private', wait: 15)
   end
   it 'is able to change private playlist to public', js: true, :retry => 3 do
     user = FactoryGirl.create(:administrator)
@@ -188,7 +188,7 @@ describe 'Playlist' do
     page.should have_button('Save Changes')
     choose('Public')
     click_button('Save Changes')
-    page.should have_content('Playlist was successfully updated')
-    page.should have_content('Public')
+    expect(page).to have_content('Playlist was successfully updated', wait: 15)
+    expect(page).to have_content('Public', wait: 15)
   end
 end
