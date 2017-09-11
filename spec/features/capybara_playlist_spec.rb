@@ -168,6 +168,7 @@ describe 'Playlist' do
     page.should have_button('Save Changes')
     choose('Private')
     click_button('Save Changes')
+    page.find 'p', text: 'Playlist was successfully updated', wait: 15
     page.should have_content('Playlist was successfully updated')
     page.should have_content('Private')
   end
@@ -189,6 +190,7 @@ describe 'Playlist' do
     page.should have_button('Save Changes')
     choose('Public')
     click_button('Save Changes')
+    page.find 'p', text: 'Playlist was successfully updated', wait: 15
     page.should have_content('Playlist was successfully updated')
     page.should have_content('Public')
   end
