@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class PlaylistItemsController < ApplicationController
-  before_action :set_playlist, only: [:create, :update]
+  before_action :set_playlist, only: [:create, :update, :show]
   before_action :authenticate_user!
 
   # POST /playlists/1/items
@@ -60,6 +60,27 @@ class PlaylistItemsController < ApplicationController
     end
   rescue StandardError => error
     render json: { message: "Item was not updated: #{error.message}" }, status: 500 and return
+  end
+
+  def show
+    playlistItem = PlaylistItem.find(params[:id])
+    itemMarkers = []
+    # Get markers for a playlist item
+    markers = playlistItem.marker.sort_by &:start_time
+    # Build an object array of only data we need
+    markers.each do |marker|
+      itemMarkers.push({
+        id: marker.id,
+        title: marker.title,
+        start_time: marker.start_time/1000
+      })
+    end
+    # Send back the json response
+    respond_to do |format|
+      format.json do
+        render json: itemMarkers.to_json
+      end
+    end
   end
 
   private

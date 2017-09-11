@@ -1,3 +1,4 @@
+//= require marker.js.coffee
 //= require mediaelement_rails
 //= require me-thumb-selector
 //= require me-add-to-playlist

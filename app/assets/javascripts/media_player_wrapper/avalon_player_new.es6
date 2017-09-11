@@ -3,13 +3,24 @@
  * @classdesc Wrapper for MediaElementPlayer interactions
  */
 class MEJSPlayer {
-  constructor(currentStreamInfo) {
+  /**
+   * Class constructor
+   * @param  {Object} currentStreamInfo JSON of current media stream info
+   * @param  {Object} customConfig      Custom configuration for player
+   * @return {void}                   [description]
+   */
+  constructor(configObj) {
+    // Unpack player configuration object for the new player.
+    // This allows for variable params to be sent in.
+    this.currentStreamInfo = configObj.currentStreamInfo || {},
+    this.features = configObj.features || {},
+    this.playlistItem = configObj.playlistItem || {},
+
     // Wrapper for MediaElement instance which interfaces with properties, events, etc.
     this.mediaElement = null
     // Actual MediaElement instance
     this.player = null
-    // Source file info from server
-    this.currentStreamInfo = currentStreamInfo
+    // Add click listeners on sections
     this.addSectionsClickListener()
     // audio or video file?
     this.mediaType = (this.currentStreamInfo.is_video === true) ? 'video' : 'audio'
@@ -18,6 +29,8 @@ class MEJSPlayer {
     this.playRangeFlag = false
     // Temporary holder for clip range data
     this.playRangeData = {}
+
+    // Initialize the player
     this.initializePlayer()
   }
 
@@ -105,19 +118,41 @@ class MEJSPlayer {
   }
 
   /**
-   * Configuration of the Markers plugin
+   * Get any playlist item markers if a playlist item is specified
    * @function getMarkers
    * @return {obj} obj - Markers plugin specific configuration
    */
-  getMarkers () {
-    let obj = {
+  getMarkers (resolve, reject) {
+    let returnObj = {}
+    let markersConfig = {
       markerColor: '#86ad96', // Optional : Specify the color of the marker
-      markers:['4','16','20','25','35','40'], // Specify marker times in seconds
-      markerCallback: function(media,time){
-          // Do something here
-      }
     }
-    return obj
+
+    // Check if a playlist item is specified, because playlist items use markers
+    // and we'll need to grab markers from the playlist item
+    if (Object.keys(this.playlistItem).length > 0) {
+      const playlistItem = this.playlistItem
+      let markers = []
+
+      $.ajax({
+        url: '/playlists/' + playlistItem.playlist_id + '/items/' + playlistItem.id + '.json',
+        dataType: 'json'
+      }).done((response) => {
+        if (response.length > 0) {
+          markers = response.map((marker) => {
+            return marker.start_time
+          })
+        }
+        // Array of marker time values in seconds
+        markersConfig.markers = markers
+        resolve(markersConfig)
+      }).fail((error) => {
+        reject({})
+      });
+    } else {
+      // No playlist item, therefore no markers needed
+      resolve({})
+    }
   }
 
   /**
@@ -222,10 +257,6 @@ class MEJSPlayer {
   handleSuccess (mediaElement, originalNode, instance) {
     this.mediaElement = mediaElement
     this.revealPlayer(instance)
-
-    // MediaElement doesn't set the instance when calling
-    // with ... = new MediaElement(...) for audio files.  Guessing because
-    // it's using the Flash player?
     if (!this.player) {
       this.player = mediaElement
     }
@@ -242,21 +273,24 @@ class MEJSPlayer {
     let defaults = {
       alwaysShowControls: true,
       pluginPath: "/assets/mediaelement/shims/",
-      features: ['playpause', 'current', 'progress', 'duration', 'volume', 'quality', 'addToPlaylist', 'fullscreen'],
+      features: this.features,
       success: this.handleSuccess.bind(this)
     }
-    // Get markers, playlists, etc. anything else here we'll
-    // need to configure the player instance
-    let markers = this.getMarkers()
+    let promises = []
 
-    // Combine all configurations
-    let fullConfiguration = Object.assign({}, defaults, markers)
+    // Get any asynchronous configuration data needed to
+    // create a new player instance
+    promises.push(new Promise(this.getMarkers.bind(this)))
+    Promise.all(promises).then((values) => {
+      const markerConfig = values[0]
 
-    // Create a MediaElement instance
-    this.player = new MediaElementPlayer(`mejs-avalon-${this.mediaType}`, fullConfiguration)
-
-    // Add default title from stream info which mejs plugins can access
-    this.player.options.playlistItemDefaultTitle = this.currentStreamInfo.embed_title;
+      // Combine all configurations
+      let fullConfiguration = Object.assign({}, defaults, markerConfig)
+      // Create a MediaElement instance
+      this.player = new MediaElementPlayer(`mejs-avalon-${this.mediaType}`, fullConfiguration)
+      // Add default title from stream info which mejs plugins can access
+      this.player.options.playlistItemDefaultTitle = this.currentStreamInfo.embed_title;
+    })
   }
 
   /**

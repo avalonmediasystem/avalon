@@ -6,9 +6,11 @@
 <% end %>
 
 <script>
-// Define MediaElement 4 configuration here
+var playlistItem = <%= current_playlist_item.to_json.html_safe %>;
+
 var mejs4AvalonPlayer = new MEJSPlayer({
   currentStreamInfo: <%= section_info.to_json.html_safe %>,
-  features: ['playpause', 'current', 'progress', 'duration', 'volume', 'quality', 'addToPlaylist', 'fullscreen']
+  features: ['playpause', 'current', 'progress', 'duration', 'volume', 'quality', 'markers', 'addMarkerToPlaylist', 'fullscreen'],
+  playlistItem: playlistItem
 });
 </script>
