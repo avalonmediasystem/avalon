@@ -272,14 +272,22 @@ class MEJSPlayer {
    * @return {void}
    */
   initializePlayer () {
+    let currentStreamInfo = this.currentStreamInfo;
     // Mediaelement default root level configuration
     let defaults = {
       alwaysShowControls: true,
       pluginPath: "/assets/mediaelement/shims/",
       features: this.features,
+      poster: currentStreamInfo.poster_image || null,
       success: this.handleSuccess.bind(this)
     }
     let promises = []
+
+    // Remove video player controls/plugins if it's not a video stream
+    if (!currentStreamInfo.is_video) {
+      defaults.features = defaults.features.filter(e => e !== 'createThumbnail');
+      delete defaults.poster;
+    }
 
     // Get any asynchronous configuration data needed to
     // create a new player instance
