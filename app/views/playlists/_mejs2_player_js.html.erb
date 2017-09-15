@@ -36,6 +36,7 @@
         displayTrackScrubber: true,
         autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
         success: function(mediaElement, domObject, player) {
+          avalonPlayer.player.domNode.dataset['currentPlaylistItem'] = '<%= @current_playlist_item.id %>';
           <%# turn off autoadvance if scrubber is clicked %>
           var scrubber =  $('.mejs-time-total')[0];
           var oldclick = scrubber.onmousedown;
