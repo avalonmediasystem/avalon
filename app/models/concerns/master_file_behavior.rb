@@ -67,11 +67,15 @@ module MasterFileBehavior
     })
   end
 
-  def embed_title
+  def display_title
     mf_title = self.structuralMetadata.section_title unless self.structuralMetadata.blank?
     mf_title ||= self.title if self.title.present?
     mf_title ||= self.file_location.split( "/" ).last if self.file_location.present?
-    [ self.media_object.title, mf_title ].compact.join(" - ")
+    mf_title.blank? ? nil : mf_title
+  end
+
+  def embed_title
+    [ self.media_object.title, display_title ].compact.join(" - ")
   end
 
   def embed_code(width, permalink_opts = {})
