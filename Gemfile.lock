@@ -24,7 +24,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
-  revision: 129f6bb1d05bd9cea5b359d25ccd2288f2336632
+  revision: 5585bd06178dee4dbd2f8ff64164aad803adeb43
   tag: avalon-r6.2
   specs:
     media_element_add_to_playlist (0.0.1)
@@ -464,7 +464,7 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
     mimemagic (0.3.2)
-    mini_portile2 (2.2.0)
+    mini_portile2 (2.3.0)
     minitest (5.10.3)
     mono_logger (1.1.0)
     multi_json (1.12.1)
@@ -478,8 +478,8 @@ GEM
     net-ssh (3.2.0)
     netrc (0.11.0)
     noid (0.9.0)
-    nokogiri (1.8.0)
-      mini_portile2 (~> 2.2.0)
+    nokogiri (1.8.1)
+      mini_portile2 (~> 2.3.0)
     nom-xml (0.6.0)
       activesupport (>= 3.2.18)
       i18n
@@ -555,7 +555,7 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rainbow (2.1.0)
-    rake (12.0.0)
+    rake (12.1.0)
     rb-readline (0.5.4)
     rchardet (1.6.1)
     rdf (2.2.6)
@@ -706,7 +706,7 @@ GEM
       babel-source (>= 5.8.11)
       babel-transpiler
       sprockets (>= 3.0.0)
-    sprockets-rails (3.2.0)
+    sprockets-rails (3.2.1)
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)

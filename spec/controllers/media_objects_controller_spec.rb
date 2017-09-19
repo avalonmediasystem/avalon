@@ -1088,8 +1088,8 @@ describe MediaObjectsController, type: :controller do
       expect {
         post :add_to_playlist, id: media_object.id, post: { playlist_id: playlist.id, playlistitem_scope: 'section' }
       }.to change { playlist.items.count }.from(0).to(2)
-      expect(playlist.items[0].title).to eq("#{media_object.title} - #{media_object.ordered_master_files.to_a[0].title}")
-      expect(playlist.items[1].title).to eq("#{media_object.title} - #{media_object.ordered_master_files.to_a[1].title}")
+      expect(playlist.items[0].title).to eq(media_object.ordered_master_files.to_a[0].embed_title)
+      expect(playlist.items[1].title).to eq(media_object.ordered_master_files.to_a[1].embed_title)
     end
     it "should create playlist_items for each span in a master_file structures in a media_object" do
       expect {
