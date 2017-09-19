@@ -85,6 +85,16 @@ class Playlist < ActiveRecord::Base
     clips
   end
 
+  def to_iiif_manifest
+    manifest = {}
+    manifest[:type] = "manifest"
+    manifest[:label] = title
+    manifest[:description] = comment
+    manifest[:sequences] = [{type: 'Sequence', canvases: clips.map {|c| c.master_file.to_iiif_canvas }}]
+    manifest[:structures] = []
+    manifest
+  end
+
   class << self
     # Find the playlists that belong to this user/ability
     def for_ability(ability)

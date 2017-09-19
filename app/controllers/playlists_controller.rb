@@ -19,7 +19,7 @@ class PlaylistsController < ApplicationController
 
   before_action :authenticate_user!, except: [:show, :refresh_info]
   load_and_authorize_resource except: [:import_variations_playlist, :refresh_info, :duplicate, :show]
-  load_resource only: [:show]
+  load_resource only: [:show, :manifest]
   before_action :get_all_other_playlists, only: [:edit]
 
   helper_method :access_token_url
@@ -219,6 +219,18 @@ class PlaylistsController < ApplicationController
   def destroy
     @playlist.destroy
     redirect_to playlists_url, notice: 'Playlist was successfully destroyed.'
+  end
+
+  # GET /playlists/1/manifest
+  def manifest
+    raise CanCan::AccessDenied unless can?(:read, @playlist) || token_matches?
+    headers['Access-Control-Allow-Origin'] = '*'
+    manifest = {}
+    manifest[:id] = manifest_playlist_url(@playlist, format: :json)
+    manifest.merge! @playlist.to_iiif_manifest
+    respond_to do |format|
+      format.json { render json: JSON.pretty_generate(manifest) }
+    end
   end
 
   def access_token_url(playlist)

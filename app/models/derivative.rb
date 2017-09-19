@@ -88,6 +88,14 @@ class Derivative < ActiveFedora::Base
     end
   end
 
+  def to_iiif_choice
+    choice = {}
+    choice[:type] = format.titlize
+    choice[:label] = quality
+    choice[:format] = mime_type
+    choice
+  end
+
   # TODO: move this into a service class along with master_file#update_progress_*
   def self.from_output(dists, managed = true)
     # output is an array of 1 or more distributions of the same derivative (e.g. file and HLS segmented file)

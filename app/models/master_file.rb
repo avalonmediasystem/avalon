@@ -475,6 +475,15 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
+  def to_iiif_canvas
+    canvas = {type: 'Canvas', duration: duration.to_i}
+    choice = {type: 'Choice', choiceHint: 'user', items: derivatives.map(&:to_iiif_choice)}
+    annotation = {type: 'Annotation', motivation: 'painting', body: [choice], target: choice[:id]}
+    anno_page = {type: 'AnnotationPage', items: [annotation]}
+    canvas[:content] = [anno_page]
+    canvas
+  end
+
   protected
 
   def mediainfo

@@ -128,6 +128,7 @@ Rails.application.routes.draw do
       patch 'update_multiple'
       delete 'update_multiple'
       patch 'regenerate_access_token'
+      get 'manifest'
     end
     collection do
       post 'duplicate'
