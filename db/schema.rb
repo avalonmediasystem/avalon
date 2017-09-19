@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170530173242) do
+ActiveRecord::Schema.define(version: 20170816135530) do
 
   create_table "annotations", force: :cascade do |t|
     t.string  "uuid"
@@ -112,11 +112,12 @@ ActiveRecord::Schema.define(version: 20170530173242) do
 
   create_table "playlists", force: :cascade do |t|
     t.string   "title"
-    t.integer  "user_id",    null: false
+    t.integer  "user_id",      null: false
     t.string   "comment"
     t.string   "visibility"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "access_token"
   end
 
   add_index "playlists", ["user_id"], name: "index_playlists_on_user_id"

@@ -85,12 +85,11 @@ class Playlist < ActiveRecord::Base
     clips
   end
 
-  class << self
-    # Find the playlists that belong to this user/ability
-    def for_ability(ability)
-      accessible_by(ability, :update).order('playlists.created_at DESC')
-    end
+  def valid_token?(token)
+    access_token == token && visibility == Playlist::PRIVATE_WITH_TOKEN
+  end
 
+  class << self
     # Find the i18n default playlist name
     def default_folder_name
       I18n.translate(:'playlists.default_playlist_name')

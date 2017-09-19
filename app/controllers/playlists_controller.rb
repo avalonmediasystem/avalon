@@ -18,8 +18,9 @@ class PlaylistsController < ApplicationController
   include ConditionalPartials
 
   before_action :authenticate_user!, except: [:show, :refresh_info]
-  load_and_authorize_resource except: [:import_variations_playlist, :refresh_info, :duplicate, :show]
+  load_and_authorize_resource except: [:import_variations_playlist, :refresh_info, :duplicate, :show, :index]
   load_resource only: [:show]
+  authorize_resource only: [:index]
   before_action :get_all_other_playlists, only: [:edit]
 
   helper_method :access_token_url
@@ -39,6 +40,8 @@ class PlaylistsController < ApplicationController
 
   # GET /playlists
   def index
+    # Cancan's load_resource doesn't work here anymore because we added a can with a block
+    @playlists = Playlist.where( user_id: current_user )
   end
 
   # POST /playlists/paged_index
@@ -94,7 +97,8 @@ class PlaylistsController < ApplicationController
 
   # GET /playlists/1
   def show
-    raise CanCan::AccessDenied unless can?(:read, @playlist) || token_matches?
+    current_ability.options[:playlist_token] = params[:token]
+    authorize! :read, @playlist
   end
 
   # GET /playlists/new
@@ -300,9 +304,5 @@ class PlaylistsController < ApplicationController
     respond_to do |format|
       format.js
     end
-  end
-
-  def token_matches?
-    @playlist.access_token == params[:token] && @playlist.visibility == Playlist::PRIVATE_WITH_TOKEN
   end
 end
