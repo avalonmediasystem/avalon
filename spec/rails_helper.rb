@@ -128,4 +128,5 @@ RSpec.configure do |config|
   config.include ControllerMacros, type: :controller
   config.include Warden::Test::Helpers,type: :feature
   config.include FixtureMacros, type: :controller
+  config.include OptionalExample
 end
