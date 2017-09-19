@@ -170,6 +170,9 @@ class Ability
     can :read, Playlist do |playlist|
       playlist.valid_token?(@options[:playlist_token])
     end
+    can :duplicate, Playlist do |playlist|
+      playlist.valid_token?(@options[:playlist_token])
+    end
   end
 
   def playlist_item_permissions
