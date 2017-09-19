@@ -46,7 +46,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="row">
       <div class="col-sm-offset-2 col-sm-10">
   <div>
-    <%= f.submit class: 'btn btn-primary btn-xs', value: t("playlist.#{params[:action]}.action") %>
+    <%= f.submit class: 'btn btn-primary btn-xs create-playlist-submit', value: t("playlist.#{params[:action]}.action") %>
           <% if params[:action] == "edit" || params[:action] == "update" %>
             <a id="playlist_edit_cancel" class="btn btn-default btn-xs" data-toggle="collapse" data-target="#playlist_edit_div, #playlist_view_div">Cancel</a>
           <% end %>

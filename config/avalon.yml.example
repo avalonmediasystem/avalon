@@ -75,6 +75,3 @@ test:
     protocol: sru
     url: http://zgate.example.edu:9000/exampledb
     query: rec.id='%s'
-  flash_message:
-    type: 'error'
-    message: '<p>Test flash message configured in avalon.yml. Type can be success, notice, error, or alert.</p>'

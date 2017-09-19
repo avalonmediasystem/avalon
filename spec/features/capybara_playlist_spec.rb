@@ -13,8 +13,6 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'rails_helper'
-require 'capybara/poltergeist'
-Capybara.javascript_driver = :poltergeist
 
 describe 'Playlist' do
   after { Warden.test_reset! }
@@ -36,16 +34,16 @@ describe 'Playlist' do
     fill_in('playlist_comment', with: 'This is test')
     click_on('Create')
     visit '/playlists'
-    page.should have_content('private_playlist')
-    page.should have_content('Name')
-    page.should have_content('Visibility')
-    page.should have_content('Created')
-    page.should have_content('Size')
-    page.should have_content('Updated')
-    page.should have_content('Actions')
-    page.should have_content('Private')
-    page.should have_link('Edit')
-    page.should have_link('Delete')
+    page.assert_text('private_playlist')
+    page.assert_text('Name')
+    page.assert_text('Visibility')
+    page.assert_text('Created')
+    page.assert_text('Size')
+    page.assert_text('Updated')
+    page.assert_text('Actions')
+    page.assert_text('Private')
+    page.has_link?('Edit')
+    page.has_link?('Delete')
   end
   it 'is able to view playlist by clicking on playlist name', js: true do
     hide_const('Avalon::GROUP_LDAP')
@@ -58,10 +56,10 @@ describe 'Playlist' do
     click_on('Create')
     visit '/playlists'
     click_on('private_playlist')
-    page.should have_content('private_playlist')
-    page.should have_button('Edit Playlist')
-    page.should have_content('This is test')
-    page.should have_content('This playlist currently has no playable items')
+    page.assert_text('private_playlist')
+    page.has_button?('Edit Playlist')
+    page.assert_text('This is test')
+    page.assert_text('This playlist currently has no playable items')
   end
   it 'is able to view playlist by accessing View Playlist', js: true do
     user = FactoryGirl.create(:administrator)
@@ -74,10 +72,10 @@ describe 'Playlist' do
     visit '/playlists'
     click_on('Edit')
     click_on('View Playlist')
-    page.should have_content('private_playlist')
-    page.should have_button('Edit Playlist')
-    page.should have_content('This is test')
-    page.should have_content('This playlist currently has no playable items')
+    page.assert_text('private_playlist')
+    page.has_button?('Edit Playlist')
+    page.assert_text('This is test')
+    page.assert_text('This playlist currently has no playable items')
   end
 
   it 'deletes playlist permanently from playlists page', js: true do
@@ -92,8 +90,8 @@ describe 'Playlist' do
     click_link('Delete')
     click_link('Yes, Delete')
     visit '/playlists'
-    page.should have_content('Playlist was successfully destroyed')
-    page.should have_no_link('private_playlist')
+    page.assert_text('Playlist was successfully destroyed')
+    page.has_no_link?('private_playlist')
   end
 
   it 'is able to delete playlist from edit playlist page', js: true do
@@ -109,8 +107,8 @@ describe 'Playlist' do
     click_on('Delete Playlist')
     click_on('Yes, Delete')
     visit '/playlists'
-    page.should have_content('Playlist was successfully destroyed')
-    page.should have_no_link('private_playlist')
+    page.assert_text('Playlist was successfully destroyed')
+    page.has_no_link?('private_playlist')
   end
 
   it 'is able to create public playlist', js: true do
@@ -123,31 +121,36 @@ describe 'Playlist' do
     choose('Public')
     click_on('Create')
     visit '/playlists'
-    page.should have_content('Public')
+    page.assert_text('Public')
   end
+
   it 'is able to edit playlist name and description', js: true, :retry => 3 do
     optional "Sometimes fails" if ENV['TRAVIS']
     user = FactoryGirl.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
-    click_on('Create New Playlist')
+    find('.create-new-playlist', match: :first).click
     fill_in('playlist_title', with: 'public_playlist')
     fill_in('playlist_comment', with: 'This is test')
     choose('Public')
-    click_on('Create')
+    find('.create-playlist-submit', match: :first).click
+    sleep 20
+    page.assert_text('Playlist was successfully created.', wait: 15)
     visit '/playlists'
-    click_on('Edit')
-    page.should have_content('Editing playlist')
-    page.should have_content('View Playlist')
-    page.should have_content('Delete Playlist')
+    sleep 20
+    pry.debugger
+    find('.edit-playlist-button').click
+    page.assert_text('Editing playlist')
+    page.has_link?('View Playlist')
+    page.has_link?('Delete Playlist')
     page.first("#playlist_edit_button").click
-    page.should have_button('Save Changes')
+    page.has_button?('Save Changes')
     fill_in('playlist_title', with: 'edit_public_playlist')
     fill_in('playlist_comment', with: 'Name and description edited')
     click_button('Save Changes')
-    page.should have_content('Playlist was successfully updated')
-    page.should have_content('edit_public_playlist')
-    page.should have_content('Name and description edited')
+    page.assert_text('Playlist was successfully updated')
+    page.assert_text('edit_public_playlist')
+    page.assert_text('Name and description edited')
   end
 
   it 'is able to change public playlist to private', js: true, :retry => 3 do
@@ -162,15 +165,15 @@ describe 'Playlist' do
     click_on('Create')
     visit '/playlists'
     click_on('Edit')
-    page.should have_content('Editing playlist')
-    page.should have_content('View Playlist')
-    page.should have_content('Delete Playlist')
+    page.assert_text('Editing playlist')
+    page.assert_text('View Playlist')
+    page.assert_text('Delete Playlist')
     page.first("#playlist_edit_button").click
-    page.should have_button('Save Changes')
+    page.has_button?('Save Changes')
     choose('Private')
     click_button('Save Changes')
-    page.should have_content('Playlist was successfully updated')
-    page.should have_content('Private')
+    page.assert_text('Playlist was successfully updated')
+    page.assert_text('Private')
   end
   it 'is able to change private playlist to public', js: true, :retry => 3 do
     optional "Sometimes fails" if ENV['TRAVIS']
@@ -184,14 +187,14 @@ describe 'Playlist' do
     click_on('Create')
     visit '/playlists'
     click_on('Edit')
-    page.should have_content('Editing playlist')
-    page.should have_content('View Playlist')
-    page.should have_content('Delete Playlist')
+    page.assert_text('Editing playlist')
+    page.assert_text('View Playlist')
+    page.assert_text('Delete Playlist')
     page.first("#playlist_edit_button").click
-    page.should have_button('Save Changes')
+    page.has_button?('Save Changes')
     choose('Public')
     click_button('Save Changes')
-    page.should have_content('Playlist was successfully updated')
-    page.should have_content('Public')
+    page.assert_text('Playlist was successfully updated')
+    page.assert_text('Public')
   end
 end

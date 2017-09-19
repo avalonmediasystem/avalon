@@ -23,19 +23,19 @@ describe "Secure Routes" do
     it "should provide access to admins" do
       login_as admin, scope: :user
       visit '/about'
-      page.should have_content('Environment')
+      page.assert_text('Environment')
     end
 
     it "should not provide access to regular users" do
       login_as user, scope: :user
       visit '/about'
-      page.should have_content('Sample Content')
+      page.assert_text('Sample Content')
     end
 
     it "should not provide access to anonymous users" do
       login_as user, scope: :user
       visit '/about'
-      page.should have_content('Sample Content')
+      page.assert_text('Sample Content')
     end
   end
 
@@ -43,19 +43,19 @@ describe "Secure Routes" do
     it "should provide access to admins" do
       login_as admin, scope: :user
       visit '/about/health'
-      page.should have_content('Service Health')
+      page.assert_text('Service Health')
     end
 
     it "should not provide access to regular users" do
       login_as user, scope: :user
       visit '/about/health'
-      page.should have_content('Sample Content')
+      page.assert_text('Sample Content')
     end
 
     it "should not provide access to anonymous users" do
       login_as user, scope: :user
       visit '/about/health'
-      page.should have_content('Sample Content')
+      page.assert_text('Sample Content')
     end
   end
 end
