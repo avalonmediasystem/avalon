@@ -42,4 +42,11 @@ class PlaylistItem < ActiveRecord::Base
     new_playlist_item.save!
     new_playlist_item
   end
+
+  def to_iiif_range
+    range_uri = Rails.application.routes.url_helpers.playlist_url(playlist) + "/range/#{position}"
+    clip_uri = Rails.application.routes.url_helpers.canvas_master_file_url(master_file) + "#t=#{start_time},#{end_time}"
+    clip = {id: clip_uri, type: "Canvas"}
+    range = {id: range_uri, type: "Range", label: title, members: [clip]}
+  end
 end

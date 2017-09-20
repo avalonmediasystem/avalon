@@ -94,7 +94,7 @@ class Playlist < ActiveRecord::Base
     manifest[:description] = comment
     # FIXME? Should sequences be "items" here?
     manifest[:sequences] = [{id: manifest_uri + "/sequence", type: 'Sequence', canvases: clips.map {|c| c.master_file.to_iiif_canvas }}]
-    manifest[:structures] = []
+    manifest[:structures] = items.map {|pi| pi.to_iiif_range}
     manifest
   end
 

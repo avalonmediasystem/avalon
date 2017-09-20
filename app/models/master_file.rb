@@ -478,6 +478,8 @@ class MasterFile < ActiveFedora::Base
   def to_iiif_canvas
     canvas_uri = Rails.application.routes.url_helpers.canvas_master_file_url(self)
     canvas = {id: canvas_uri, type: 'Canvas', duration: duration.to_i}
+    canvas[:height] = height if height.present?
+    canvas[:width] = width if width.present?
     choice = {type: 'Choice', choiceHint: 'user', items: derivatives.map(&:to_iiif_choice)}
     annotation = {id: canvas_uri + "/annotation_page/annotation", type: 'Annotation', motivation: 'painting', body: [choice], target: canvas[:id]}
     anno_page = {id: canvas_uri + "/annotation_page", type: 'AnnotationPage', items: [annotation]}
