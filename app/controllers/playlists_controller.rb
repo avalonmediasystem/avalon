@@ -225,12 +225,7 @@ class PlaylistsController < ApplicationController
   def manifest
     raise CanCan::AccessDenied unless can?(:read, @playlist) || token_matches?
     headers['Access-Control-Allow-Origin'] = '*'
-    manifest = {}
-    manifest[:id] = manifest_playlist_url(@playlist, format: :json)
-    manifest.merge! @playlist.to_iiif_manifest
-    respond_to do |format|
-      format.json { render json: JSON.pretty_generate(manifest) }
-    end
+    render json: JSON.pretty_generate(@playlist.to_iiif_manifest)
   end
 
   def access_token_url(playlist)

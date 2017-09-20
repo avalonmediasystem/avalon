@@ -86,11 +86,14 @@ class Playlist < ActiveRecord::Base
   end
 
   def to_iiif_manifest
+    manifest_uri = Rails.application.routes.url_helpers.manifest_playlist_url(self)
     manifest = {}
+    manifest[:id] = manifest_uri
     manifest[:type] = "manifest"
     manifest[:label] = title
     manifest[:description] = comment
-    manifest[:sequences] = [{type: 'Sequence', canvases: clips.map {|c| c.master_file.to_iiif_canvas }}]
+    # FIXME? Should sequences be "items" here?
+    manifest[:sequences] = [{id: manifest_uri + "/sequence", type: 'Sequence', canvases: clips.map {|c| c.master_file.to_iiif_canvas }}]
     manifest[:structures] = []
     manifest
   end

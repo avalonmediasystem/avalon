@@ -90,9 +90,10 @@ class Derivative < ActiveFedora::Base
 
   def to_iiif_choice
     choice = {}
-    choice[:type] = format.titlize
-    choice[:label] = quality
+    choice[:id] = hls_url
+    choice[:type] = format.titleize
     choice[:format] = mime_type
+    choice[:label] = quality
     choice
   end
 

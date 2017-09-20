@@ -476,10 +476,11 @@ class MasterFile < ActiveFedora::Base
   end
 
   def to_iiif_canvas
-    canvas = {type: 'Canvas', duration: duration.to_i}
+    canvas_uri = Rails.application.routes.url_helpers.canvas_master_file_url(self)
+    canvas = {id: canvas_uri, type: 'Canvas', duration: duration.to_i}
     choice = {type: 'Choice', choiceHint: 'user', items: derivatives.map(&:to_iiif_choice)}
-    annotation = {type: 'Annotation', motivation: 'painting', body: [choice], target: choice[:id]}
-    anno_page = {type: 'AnnotationPage', items: [annotation]}
+    annotation = {id: canvas_uri + "/annotation_page/annotation", type: 'Annotation', motivation: 'painting', body: [choice], target: canvas[:id]}
+    anno_page = {id: canvas_uri + "/annotation_page", type: 'AnnotationPage', items: [annotation]}
     canvas[:content] = [anno_page]
     canvas
   end

@@ -113,6 +113,7 @@ Rails.application.routes.draw do
       post 'attach_structure'
       post 'attach_captions'
       get :captions
+      get :canvas
     end
   end
 

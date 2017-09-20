@@ -311,6 +311,12 @@ class MasterFilesController < ApplicationController
     end
   end
 
+  def canvas
+    @master_file = MasterFile.find(params[:id])
+    authorize! :read, @master_file
+    render json: JSON.pretty_generate(@master_file.to_iiif_canvas)
+  end
+
 protected
   def create_upload_notice(format)
     case format
