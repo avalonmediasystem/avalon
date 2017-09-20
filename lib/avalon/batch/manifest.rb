@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -71,8 +71,8 @@ module Avalon
 
           header_row = @spreadsheet.row(@spreadsheet.first_row + 1)
 
-          @field_names = header_row.collect { |field| 
-            field.to_s.downcase.gsub(/\s/,'_').strip.to_sym 
+          @field_names = header_row.collect { |field|
+            field.to_s.downcase.gsub(/\s/,'_').strip.to_sym
           }
           create_entries!
         rescue Exception => err
@@ -85,7 +85,7 @@ module Avalon
       end
 
       def error! msg=nil
-        File.open("#{@file}.error",'a') do |f| 
+        File.open("#{@file}.error",'a') do |f|
           if msg.nil?
             entries.each do |entry|
               if entry.errors.count > 0
@@ -147,13 +147,13 @@ module Avalon
           content=[]
 
           fields = Hash.new { |h,k| h[k] = [] }
-          @field_names.each_with_index do |f,i| 
+          @field_names.each_with_index do |f,i|
             unless f.blank? || SKIP_FIELDS.include?(f) || values[i].blank?
               if FILE_FIELDS.include?(f)
                 content << {} if f == :file
                 content.last[f] = f == :skip_transcoding ? true?(values[i]) : values[i]
               else
-                fields[f] << values[i] 
+                fields[f] << values[i]
               end
             end
           end
@@ -166,7 +166,8 @@ module Avalon
               opts[opt] = val
             end
           }
-          entries << Entry.new(fields.select { |f| !FILE_FIELDS.include?(f) }, content, opts, index, self)
+          files = content.each { |file| file[:file] = File.join(package.dir, file[:file]) }
+          entries << Entry.new(fields.select { |f| !FILE_FIELDS.include?(f) }, files, opts, index, self)
         end
       end
 

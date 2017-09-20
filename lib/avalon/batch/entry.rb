@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -18,23 +18,50 @@ require 'active_model'
 module Avalon
   module Batch
     class Entry
-    	extend ActiveModel::Translation
+      extend ActiveModel::Translation
 
-    	attr_reader :fields, :files, :opts, :row, :errors, :manifest, :collection
+      attr_reader :fields, :files, :opts, :row, :errors, :manifest, :collection
 
-    	def initialize(fields, files, opts, row, manifest)
-    	  @fields = fields
-    	  @files  = files
-    	  @opts   = opts
-    	  @row    = row
-    	  @manifest = manifest
-    	  @errors = ActiveModel::Errors.new(self)
-    	  @files.each { |file| file[:file] = File.join(@manifest.package.dir, file[:file]) }
+      def initialize(fields, files, opts, row, manifest)
+        @fields = fields || opts[:fields]
+        @files  = files || opts[:files]
+        @row    = row || opts[:position]
+        @manifest = manifest || opts[:manifest]
+        # The next two depend on the manifest but it isn't available until after initialization hence the accessors below.
+        @user_key = opts[:user_key]
+        @collection = opts[:collection]
+        @opts   = opts.except(:fields, :files, :position, :manifest, :user_key, :collection)
+        @errors = ActiveModel::Errors.new(self)
+      end
+
+      def to_json
+        json_hash = opts
+        json_hash[:fields] = fields
+        json_hash[:files] = files
+        json_hash[:position] = row
+        json_hash[:user_key] = user_key
+        json_hash[:collection] = collection.id
+        json_hash.to_json
+      end
+
+      def self.from_json(json)
+        json_hash = JSON.parse(json)
+        opts = json_hash.except("fields", "files", "position")
+        opts[:collection] = Admin::Collection.find(json_hash["collection"])
+        self.new(json_hash["fields"].symbolize_keys, json_hash["files"].map(&:symbolize_keys!), opts.symbolize_keys, json_hash["position"], nil)
+      end
+
+      def user_key
+        @user_key ||= @manifest.package.user.user_key
+      end
+
+      def collection
+        @collection ||= @manifest.package.collection
       end
 
         def media_object
-          @media_object ||= MediaObject.new(avalon_uploader: @manifest.package.user.user_key,
-                                            collection: @manifest.package.collection).tap do |mo|
+          @media_object ||= MediaObject.new(avalon_uploader: user_key,
+                                            collection: collection).tap do |mo|
             mo.workflow.origin = 'batch'
             mo.workflow.last_completed_step = HYDRANT_STEPS.last.step
             if Avalon::BibRetriever.configured? and fields[:bibliographic_id].present?
@@ -45,12 +72,14 @@ module Avalon
               end
             else
               begin
-                mo.update_attributes(media_object_fields)
+                mo.assign_attributes(media_object_fields)
               rescue ActiveFedora::UnknownAttributeError => e
                 @errors.add(e.attribute.to_sym, e.message)
               end
             end
           end
+          # Not quite sure why this doesn't work within the tap and had to move it here
+          @media_object.hidden = hidden
           @media_object
         end
 
@@ -91,6 +120,7 @@ module Avalon
             @errors.messages[:collection] = ["Collection not found: #{@fields[:collection].first}"]
             @errors.messages.delete(:governing_policy)
           end
+          @errors.empty?
         end
 
         def file_valid?(file_spec)
@@ -186,12 +216,12 @@ module Avalon
             logger.error "Problem saving MasterFile(#{master_file.id}): #{master_file.errors.full_messages.to_sentence}"
           end
         end
-        context = { media_object: media_object, user: @manifest.package.user.user_key, hidden: opts[:hidden] ? '1' : nil }
-        HYDRANT_STEPS.get_step('access-control').execute context
+        # context = { media_object: media_object, user: @manifest.package.user.user_key, hidden: opts[:hidden] ? '1' : nil }
+        # HYDRANT_STEPS.get_step('access-control').execute context
         media_object.workflow.last_completed_step = 'access-control'
 
         if opts[:publish]
-          media_object.publish!(@manifest.package.user.user_key)
+          media_object.publish!(user_key)
           media_object.workflow.publish
         end
 
@@ -223,6 +253,11 @@ module Avalon
       def self.derivativePath(filename, quality)
         filename.dup.insert(filename.rindex('.'), ".#{quality}")
       end
+
+      private
+        def hidden
+          !!opts[:hidden]
+        end
     end
   end
 end
