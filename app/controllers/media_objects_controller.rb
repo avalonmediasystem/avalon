@@ -108,8 +108,7 @@ class MediaObjectsController < ApplicationController
         end
       else
         #create a single item for the entire masterfile
-        item_title = @media_object.title
-        item_title += " - #{mf.title}" if @media_object.master_file_ids.count>1
+        item_title = @media_object.master_file_ids.count>1? mf.embed_title : @media_object.title
         clip = AvalonClip.new(title: item_title, master_file: mf)
         playlist.items += [PlaylistItem.new(clip: clip, playlist: playlist)]
       end
