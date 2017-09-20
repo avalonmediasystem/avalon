@@ -177,10 +177,10 @@ class Ability
       can [:create, :update, :delete], PlaylistItem do |playlist_item|
         can? :manage, playlist_item.playlist
       end
-      can :read, PlaylistItem do |playlist_item|
-        (can? :read, playlist_item.playlist) &&
-        (can? :read, playlist_item.master_file)
-      end
+    end
+    can :read, PlaylistItem do |playlist_item|
+      (can? :read, playlist_item.playlist) &&
+      (can? :read, playlist_item.master_file)
     end
   end
 

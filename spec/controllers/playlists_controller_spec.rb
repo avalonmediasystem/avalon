@@ -52,7 +52,12 @@ RSpec.describe PlaylistsController, type: :controller do
   let(:user) { login_as :user }
 
   describe 'security' do
-    let(:playlist) { FactoryGirl.create(:playlist) }
+    let(:playlist) { FactoryGirl.create(:playlist, items: [playlist_item]) }
+    let(:playlist_item) { FactoryGirl.create(:playlist_item, clip: clip) }
+    let(:clip) { FactoryGirl.create(:avalon_clip, master_file: master_file) }
+    let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object) }
+    let(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
+
     context 'with unauthenticated user' do
       # New is isolated here due to issues caused by the controller instance not being regenerated
       it "should redirect to sign in" do
@@ -65,24 +70,28 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(put :update, id: playlist.id).to redirect_to(new_user_session_path)
         expect(put :update_multiple, id: playlist.id).to redirect_to(new_user_session_path)
         expect(delete :destroy, id: playlist.id).to redirect_to(new_user_session_path)
+        expect(xhr :get, :refresh_info, id: playlist.id, position: 1).to redirect_to(new_user_session_path)
       end
       context 'with a public playlist' do
-        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
+        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
         it "should return the playlist view page" do
           expect(get :show, id: playlist.id).not_to redirect_to(new_user_session_path)
           expect(get :show, id: playlist.id).to be_success
+          expect(xhr :get, :refresh_info, id: playlist.id, position: 1).to be_success
         end
       end
       context 'with a private playlist' do
         it "should NOT return the playlist view page" do
           expect(get :show, id: playlist.id).to redirect_to(new_user_session_path)
+          expect(xhr :get, :refresh_info, id: playlist.id, position: 1).to redirect_to(new_user_session_path)
         end
       end
       context 'with a private playlist and token' do
-        let(:playlist) { FactoryGirl.create(:playlist, :with_access_token) }
+        let(:playlist) { FactoryGirl.create(:playlist, :with_access_token, items: [playlist_item]) }
         it "should return the playlist view page" do
           expect(get :show, id: playlist.id, token: playlist.access_token).not_to redirect_to(root_path)
           expect(get :show, id: playlist.id, token: playlist.access_token).to be_success
+          expect(xhr :get, :refresh_info, id: playlist.id, position: 1, token: playlist.access_token).to be_success
         end
       end
     end
@@ -95,24 +104,28 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(put :update, id: playlist.id).to redirect_to(root_path)
         expect(put :update_multiple, id: playlist.id).to redirect_to(root_path)
         expect(delete :destroy, id: playlist.id).to redirect_to(root_path)
+        expect(xhr :get,  :refresh_info, id: playlist.id, position: 1).to redirect_to(root_path)
       end
       context 'with a public playlist' do
-        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
+        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
         it "should return the playlist view page" do
           expect(get :show, id: playlist.id).not_to redirect_to(root_path)
           expect(get :show, id: playlist.id).to be_success
+          expect(xhr :get, :refresh_info, id: playlist.id, position: 1).to be_success
         end
       end
       context 'with a private playlist' do
         it "should NOT return the playlist view page" do
           expect(get :show, id: playlist.id).to redirect_to(root_path)
+          expect(xhr :get, :refresh_info, id: playlist.id, position: 1).to redirect_to(root_path)
         end
       end
       context 'with a private playlist and token' do
-        let(:playlist) { FactoryGirl.create(:playlist, :with_access_token) }
+        let(:playlist) { FactoryGirl.create(:playlist, :with_access_token, items: [playlist_item]) }
         it "should return the playlist view page" do
           expect(get :show, id: playlist.id, token: playlist.access_token).not_to redirect_to(root_path)
           expect(get :show, id: playlist.id, token: playlist.access_token).to be_success
+          expect(xhr :get, :refresh_info, id: playlist.id, position: 1, token: playlist.access_token).to be_success
         end
       end
     end

@@ -19,7 +19,7 @@ class PlaylistsController < ApplicationController
 
   before_action :authenticate_user!, except: [:show, :refresh_info]
   load_and_authorize_resource except: [:import_variations_playlist, :refresh_info, :duplicate, :show, :index]
-  load_resource only: [:show]
+  load_resource only: [:show, :refresh_info]
   authorize_resource only: [:index]
   before_action :get_all_other_playlists, only: [:edit]
 
@@ -97,7 +97,8 @@ class PlaylistsController < ApplicationController
 
   # GET /playlists/1
   def show
-    current_ability.options[:playlist_token] = params[:token]
+    @playlist_token = params[:token]
+    current_ability.options[:playlist_token] = @playlist_token
     authorize! :read, @playlist
   end
 
@@ -248,6 +249,15 @@ class PlaylistsController < ApplicationController
     redirect_to playlists_url, flash: { error: "Import failed: #{e.message}" }
   end
 
+  def refresh_info
+    @playlist_token = params[:token]
+    current_ability.options[:playlist_token] = @playlist_token
+    @position = params[:position]
+    @playlist_item = @playlist.items.where(position: @position.to_i).first
+    authorize! :read, @playlist_item
+    render formats: :js
+  end
+
   private
 
   def get_all_other_playlists
@@ -297,12 +307,6 @@ class PlaylistsController < ApplicationController
     # items that have moved to another playlist
     changed_playlist.select {|item| item.playlist_id_was != item.playlist_id}.each do |item|
       item.position = nil
-    end
-  end
-
-  def refresh_info
-    respond_to do |format|
-      format.js
     end
   end
 end
