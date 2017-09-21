@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -78,6 +78,26 @@ class ApplicationController < ActionController::Base
     end
   end
   helper_method :get_user_collections
+
+  # Returns milliseconds from a time string of format h:m:s.s or m:s.s or s.s
+  # @param [String] The time string
+  # @return [float] the time string converted to milliseconds
+  def time_str_to_milliseconds(value)
+    if value.is_a?(Numeric)
+      value.floor
+    elsif value.is_a?(String)
+      result = 0
+      segments = value.split(/:/).reverse
+      begin
+        segments.each_with_index { |v, i| result += i > 0 ? Float(v) * (60**i) * 1000 : (Float(v) * 1000) }
+        result.to_i
+      rescue
+        return value
+      end
+    else
+      value
+    end
+  end
 
   def current_ability
     session_opts ||= user_session

@@ -1,0 +1,31 @@
+<div id="share-button">
+  <a data-toggle="collapse" href="#share-list" aria-expanded="false" aria-controls="collapseExample">
+    <i class="fa fa-share-alt"></i>
+    Share
+  </a>
+  <br class="clear"/>
+</div>
+
+<div id="share-list" class="collapse">
+  <ul class="nav nav-tabs share-tabs">
+    <%= render_conditional_partials :share, section:'share-tabs' %>
+  </ul>
+
+  <div class="tab-content">
+    <%= render_conditional_partials :share, section:'tab-content' %>
+  </div>
+</div>
+<% content_for :page_scripts do %>
+
+<script>
+  $(document).ready(function() {
+    $('.share-tabs a').click(function (e) {
+      e.preventDefault();
+      $(this).tab('show');
+    });
+    $('.share-tabs li').first().toggleClass('active')
+    $('.tab-content .tab-pane').first().toggleClass('active')
+  })
+</script>
+
+<% end %>

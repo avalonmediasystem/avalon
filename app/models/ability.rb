@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -32,7 +32,7 @@ class Ability
 
   def create_permissions(user=nil, session=nil)
     if full_login?
-      if @user_groups.include? "administrator"
+      if is_administrator?
         can :manage, MediaObject
         can :manage, MasterFile
         can :inspect, MediaObject
@@ -41,6 +41,9 @@ class Ability
         can :manage, Resque
         can :read, :about_page
         can :read, MigrationStatus
+        can :manage, Playlist
+        can :manage, PlaylistItem
+        can :manage, AvalonMarker
       end
 
       if @user_groups.include? "group_manager"
@@ -61,7 +64,7 @@ class Ability
 
   def custom_permissions(user=nil, session=nil)
 
-    unless full_login? and @user_groups.include? "administrator"
+    unless full_login? and is_administrator?
       cannot :read, MediaObject do |media_object|
         !(test_read(media_object.id) && media_object.published?) && !test_edit(media_object.id)
       end
@@ -161,8 +164,12 @@ class Ability
     if @user.id.present?
       can :manage, Playlist, user: @user
       # can :create, Playlist
+      can :duplicate, Playlist, visibility: Playlist::PUBLIC
     end
     can :read, Playlist, visibility: Playlist::PUBLIC
+    can :read, Playlist do |playlist|
+      playlist.valid_token?(@options[:playlist_token])
+    end
   end
 
   def playlist_item_permissions
@@ -170,10 +177,10 @@ class Ability
       can [:create, :update, :delete], PlaylistItem do |playlist_item|
         can? :manage, playlist_item.playlist
       end
-      can :read, PlaylistItem do |playlist_item|
-        (can? :read, playlist_item.playlist) &&
-        (can? :read, playlist_item.master_file)
-      end
+    end
+    can :read, PlaylistItem do |playlist_item|
+      (can? :read, playlist_item.playlist) &&
+      (can? :read, playlist_item.master_file)
     end
   end
 
@@ -189,13 +196,17 @@ class Ability
     end
   end
 
+  def is_administrator?
+    @user_groups.include?("administrator")
+  end
+
   def is_member_of?(collection)
-     @user_groups.include?("administrator") ||
+     is_administrator? ||
        @user.in?(collection.managers, collection.editors, collection.depositors)
   end
 
   def is_editor_of?(collection)
-     @user_groups.include?("administrator") ||
+     is_administrator? ||
        @user.in?(collection.managers, collection.editors)
   end
 

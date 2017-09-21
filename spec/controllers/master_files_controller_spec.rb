@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -33,6 +33,21 @@ describe MasterFilesController do
         file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
 
         expect { post :create, Filedata: [file], original: 'any'}.not_to change { MasterFile.count }
+      end
+    end
+
+    context "must provide a valid media object" do
+      before do
+        media_object.title = nil
+        media_object.date_issued = nil
+        media_object.workflow.last_completed_step = 'file-upload'
+        media_object.save(validate: false)
+      end
+      it "should fail if parent media object is invalid" do
+        request.env["HTTP_REFERER"] = "/"
+        file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+        expect(media_object.valid?).to be_falsey
+        expect { post :create, Filedata: [file], original: 'any', container_id: media_object.id}.not_to change { MasterFile.count }
       end
     end
 
@@ -128,13 +143,23 @@ describe MasterFilesController do
         expect(flash[:error]).to be_nil
       end
       it "should associate a dropbox file" do
-        skip
-        allow_any_instance_of(Avalon::Dropbox).to receive(:find).and_return "spec/fixtures/videoshort.mp4"
-        post :create, dropbox: [{id: 1}], original: 'any', container_id: media_object.id
+        selected_files = {'0':{url:"file://#{Rails.root.join 'spec/fixtures/videoshort.mp4'}", filename:'videoshort.mp4', filesize:'100000'}}
+        post :create, selected_files: selected_files, original: 'any', container_id: media_object.id
 
         master_file = MasterFile.all.last
         media_object.reload
-        expect(media_object.ordered_master_files).to include master_file
+        expect(media_object.ordered_master_files.to_a).to include master_file
+        expect(master_file.media_object.id).to eq(media_object.id)
+
+        expect(flash[:error]).to be_nil
+      end
+      it "should associate a dropbox file that has a space in its name" do
+        selected_files = {'0':{url:"file://#{Rails.root.join 'spec/fixtures/video short.mp4'}", filename:'video short.mp4', filesize:'100000'}}
+        post :create, selected_files: selected_files, original: 'any', container_id: media_object.id
+
+        master_file = MasterFile.all.last
+        media_object.reload
+        expect(media_object.ordered_master_files.to_a).to include master_file
         expect(master_file.media_object.id).to eq(media_object.id)
 
         expect(flash[:error]).to be_nil

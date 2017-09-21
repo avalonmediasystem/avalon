@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2011-2017, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -29,20 +29,17 @@
  * compiled file, but it's generally better to create a new file per style scope.
  *
  * Require stylesheets for our gems
- *= require mediaelement_rails
- *= require mediaelement_rails/mejs-skins
  *
- *= require mediaelement-skin-avalon/mejs-skin-avalon
- *= require mediaelement-qualityselector/mep-feature-qualities
- *= require mediaelement-title/mejs-title
- *= require me-logo
- *= require mediaelement-hd-toggle/mejs-hdtoggle
- *= require me-thumb-selector
- *= require me-add-to-playlist
- *= require me-track-scrubber
  *= require jquery-ui/datepicker
+ *= require datatables
+ *
  * Require all of our vendored stylesheets
  *= require_tree ../../../vendor/assets/stylesheets/.
+
+ * Exclude MediaElement4 CSS in /vendor as it collides w/ MEJS2 styles
+ *= stub mediaelement/mediaelementplayer.css
+ *= stub mediaelement/plugins/quality.css
+
  *= require_self
 */
 

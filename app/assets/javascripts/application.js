@@ -17,17 +17,17 @@
 //= require jquery-ui
 //= require blacklight/blacklight
 //= require browse_everything
-//= require mediaelement_rails
-//= require me-thumb-selector
-//= require me-add-to-playlist
 //= require modernizr
-//= require me-track-scrubber
-//= require mediaelement-qualityselector/mep-feature-qualities
-//= require mediaelement-title/mep-feature-title
-//= require mediaelement-hd-toggle/mep-feature-hdtoggle
-//= require me-logo
 //= require bootstrap-toggle
 
 // include all of our vendored js
 //= require_tree ../../../vendor/assets/javascripts/.
+
+// Exclude MediaElement 4 JS files in /vendor, as ME4 collides with the ME2 gem
+//= stub mediaelement/mediaelement-and-player
+//= stub mediaelement/plugins/markers
+//= stub mediaelement/plugins/quality
+//= stub mediaelement/plugins/quality-i18n
+//= stub media_player_wrapper/mejs4_add_to_playlist
+
 //= require_tree .

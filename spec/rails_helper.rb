@@ -70,7 +70,7 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = false
 
   config.before :suite do
-    WebMock.disable_net_connect!(allow: ['localhost', '127.0.0.1', 'fedora', 'solr'])
+    WebMock.disable_net_connect!(allow: ['localhost', '127.0.0.1', 'fedora', 'solr', 'matterhorn'])
     DatabaseCleaner.clean_with(:truncation)
     ActiveFedora::Cleaner.clean!
     disable_production_minter!
@@ -128,4 +128,5 @@ RSpec.configure do |config|
   config.include ControllerMacros, type: :controller
   config.include Warden::Test::Helpers,type: :feature
   config.include FixtureMacros, type: :controller
+  config.include OptionalExample
 end

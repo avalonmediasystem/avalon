@@ -1,0 +1,10 @@
+<% content_for :page_styles do %>
+<%= stylesheet_link_tag 'mejs4_player' %>
+<% end %>
+<% content_for :page_scripts do %>
+<%= javascript_include_tag "mejs4_player" %>
+<% end %>
+
+<script>
+var mejs4AvalonPlayer = new MEJSPlayer(<%= section_info.to_json.html_safe %>)
+</script>

@@ -13,9 +13,13 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div class="text-right">
+<div class="text-left" style="display:inline;">
+  <span>Autoplay</span>
+  <input type="checkbox" <%= 'checked' if params['autoadvance'].nil? or params['autoadvance']=='true' %> data-toggle="toggle" data-size="mini" name="autoadvance">
+</div>
+<div class="text-right" style="display:inline;">
   <% if current_ability.can? :edit, @playlist %>
-    <div class="btn-group pull-right" id="edit-playlist-button">
+    <div class="pull-right" id="edit-playlist-button">
       <%= link_to edit_playlist_path(@playlist) do %>
       <button type="button" class="btn btn-default btn-xs" style="display:block;" >
         <span class="fa fa-edit"> Edit Playlist</span>
@@ -23,17 +27,17 @@ Unless required by applicable law or agreed to in writing, software distributed
       <% end %>
     </div>
    <% end %>
-  <div>
-    <span>Autoplay</span>
-    <input type="checkbox" <%= 'checked' if params['autoadvance'].nil? or params['autoadvance']=='true' %> data-toggle="toggle" data-size="mini" name="autoadvance">
-  </div>
+   <% if current_ability.can? :duplicate, @playlist %>
+     <%= button_tag( type: 'button', data: { playlist: @playlist },
+       class: 'copy-playlist-button btn btn-default btn-xs pull-right') do
+       "<span class='fa fa-clone'> Copy Playlist </span>".html_safe
+      end
+      %>
+    <% end %>
+  <%= render 'share' if will_partial_list_render? :share %>
 </div>
 <h3 class="playlist-title">
-  <% if @playlist.visibility==Playlist::PRIVATE %>
-    <span class="fa fa-lock" alt="<%= t('playlist.lockAltText') %>" title="<%= t('playlist.lockAltText') %>"></span>
-  <% else %>
-    <span class="glyphicon glyphicon-unlock" alt="<%= t('playlist.unlockAltText') %>" title="<%= t('playlist.unlockAltText') %>"></span>
-  <% end %>
+  <%= icon_only_visibility @playlist.visibility %>
   <%= @playlist.title %>
 </h3>
 <% if @playlist.comment.present? %>
@@ -46,6 +50,10 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clip_map: clip_map } %>
 </ol>
 
+<% if current_ability.can? :duplicate, @playlist %>
+  <%= render partial: 'copy_playlist_modal', locals: { with_refresh: false } %>
+<% end %>
+
 <% content_for :page_scripts do %>
   <script>
     function reload_player(segment, nativeUrl, isVideo) {
@@ -56,8 +64,12 @@ Unless required by applicable law or agreed to in writing, software distributed
         params+='&'+splitUrl[1];
       }
       $.getJSON(uri, params, function(data){
-        avalonPlayer.setStreamInfo(data)
+        avalonPlayer.setStreamInfo(data);
       });
     }
+
+    $(document).ready( function () {
+         window.add_copy_button_event()
+    });
   </script>
 <% end %>

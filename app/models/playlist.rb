@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -18,9 +18,12 @@ class Playlist < ActiveRecord::Base
   validates :title, presence: true
   validates :comment, length: { maximum: 255 }
   validates :visibility, presence: true
-  validates :visibility, inclusion: { in: proc { [PUBLIC, PRIVATE] } }
+  validates :visibility, inclusion: { in: proc { [PUBLIC, PRIVATE, PRIVATE_WITH_TOKEN] } }
+
+  delegate :url_helpers, to: 'Rails.application.routes'
 
   after_initialize :default_values
+  before_save :generate_access_token, if: Proc.new{ |p| p.visibility == Playlist::PRIVATE_WITH_TOKEN && access_token.blank? }
 
   has_many :items, -> { order('position ASC') }, class_name: PlaylistItem, dependent: :destroy
   has_many :clips, -> { order('playlist_items.position ASC') }, class_name: AvalonClip, through: :items
@@ -29,10 +32,19 @@ class Playlist < ActiveRecord::Base
   # visibility
   PUBLIC = 'public'
   PRIVATE = 'private'
+  PRIVATE_WITH_TOKEN = 'private-with-token'
 
   # Default values to be applied after initialization
   def default_values
     self.visibility ||= Playlist::PRIVATE
+  end
+
+  def generate_access_token
+    # TODO Use ActiveRecord's secure_token when we move to Rails 5
+    self.access_token = loop do
+      random_token = SecureRandom.urlsafe_base64(nil, false)
+      break random_token unless self.class.exists?(access_token: random_token)
+    end
   end
 
   # Returns all other playlist items on the same playlist that share a master file
@@ -73,12 +85,11 @@ class Playlist < ActiveRecord::Base
     clips
   end
 
-  class << self
-    # Find the playlists that belong to this user/ability
-    def for_ability(ability)
-      accessible_by(ability, :update).order('playlists.created_at DESC')
-    end
+  def valid_token?(token)
+    access_token == token && visibility == Playlist::PRIVATE_WITH_TOKEN
+  end
 
+  class << self
     # Find the i18n default playlist name
     def default_folder_name
       I18n.translate(:'playlists.default_playlist_name')

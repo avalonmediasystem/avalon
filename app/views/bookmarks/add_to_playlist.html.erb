@@ -14,6 +14,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
+<script type="text/javascript">
+  $('#target_playlist_id').select2({
+    dropdownParent: $('.modal-dialog')
+  });
+</script>
+
 <% @candidates = Playlist.where(user: current_user) %>
 
 <div class="modal-header">
@@ -37,7 +43,7 @@ Unless required by applicable law or agreed to in writing, software distributed
           <div class="alert">
 	    <fieldset>
 	      <p><%= t('blacklight.add_to_playlist.confirm') %></p>
-	      <%= select_tag :target_playlist_id, options_from_collection_for_select(@candidates, "id", "title") %>
+	      <%= select_tag :target_playlist_id, options_from_collection_for_select(@candidates, "id", "title"), style: 'width:100%;' %>
 	    </fieldset>
           </div>
 	  <div class="modal-footer">

@@ -45,7 +45,9 @@ Docker provides an alternative way of setting up an Avalon Media System Developm
 * ```docker-compose up```
 * Try loading Avalon in your browser: ```localhost:3000```
 
-Avalon is served by Webrick in development mode so any changes will be picked up automatically. Running a Rails command inside the Avalon container is easy, for example, to run tests ```docker exec -it avalon_avalon_1 bash -c "RAILS_ENV=test bundle exec rspec"```
+Avalon is served by Webrick in development mode so any changes will be picked up automatically. Running a Rails command inside the Avalon container is easy, for example, to run tests ```docker exec -it avalon_avalon_1 bash -c "RAILS_ENV=test bundle exec rspec"```. Note: to avoid erasing development data, you should use the test stack to run tests```docker-compose -f test.yml up```.
+
+Rails debugging with Pry can be accessed by attaching to the docker container: ```docker attach container_name```. Now, when you reach a binding.pry breakpoint in rails, you can step through the breakpoint in that newly attached session.
 
 # Browser Testing
 Testing support for Avalon Media System is provided by [BrowserStack](https://www.browserstack.com).

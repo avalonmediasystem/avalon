@@ -13,76 +13,64 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div class="col-md-9">
-  <div class="row">
-    <div class="col-sm-12">
-      <%= link_to "View Playlist", @playlist, { class: 'btn btn-xs btn-primary'} %>
-      <% if can?(:destroy, @playlist) %>
-        <%= link_to "Delete Playlist", @playlist, method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'} %>
-      <% end %>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-sm-12">
-      <h3 style="display:inline-block">Playlist Details</h3>
-      <a id="playlist_edit_button" data-toggle="collapse" data-target="#playlist_edit_div, #playlist_view_div" class="fa fa-edit btn btn-sm"></a>
-    </div>
-  </div>
-  <div id="playlist_view_div" class="container collapse <%= 'in' if @playlist.errors.empty? %>">
-    <div class="row">
-      <div class="col-sm-2">Name</div>
-      <div class="col-sm-10"><%= @playlist.title %></div>
-    </div>
-    <div class="row">
-      <div class="col-sm-2">Description</div>
-      <div class="col-sm-10"><%= @playlist.comment %></div>
-    </div>
-    <div class="row">
-      <div class="col-sm-2"><%= t("blacklight/folders/folder.visibility", scope: "helpers.label") %></div>
-      <div class="col-sm-10">
-        <% if @playlist.visibility==Playlist::PUBLIC %>
-          <%= human_friendly_visibility Playlist::PUBLIC %>
-        <% else %>
-          <%= human_friendly_visibility Playlist::PRIVATE %>
-        <% end %>
-      </div>
-    </div>
-  </div>
- 
-  <%= render 'form' %> 
+  <%= render 'show_playlist_details' %>
+  <%= render 'form' %>
 
   <hr>
   <% if @playlist.items.empty? %>
     <div><p>There are currently no items in this playlist.</p></div>
   <% else %>
-    <%= form_for(@playlist,url: { action: "update_multiple" }, html: { class: 'form-horizontal playlist_actions' }) do |f| %>
+    <%= form_for(@playlist,
+      url: { action: "update_multiple" },
+      html: { class: 'form-horizontal playlist_actions' }) do |f| %>
     <div class="row">
-      <div class="col-sm-8">
+      <div class="col-sm-6">
         <h3>Playlist Items</h3>
       </div>
-      <div class="col-sm-3 text-right">
-        <div class="form-group select-delete" style="margin-top:20px">
-          <% if @playlists.present? %>
-            <div class="btn-group bootstrap-select" id="move_to">
-              <%= hidden_field_tag "new_playlist_id", @playlist.id, form:"edit_playlist_#{@playlist.id}" %>
-              <%= button_tag( { type: 'button', class: "btn btn-default btn-xs dropdown-toggle", data: { toggle: "dropdown"}, disabled:'disabled' } ) do %>
-                <span class="filter-option pull-left">Move to... </span><span class="fa fa-caret-down"></span>
-              <% end # button_tag %>
-              <ul class="dropdown-menu">
-                <% @playlists.each do |p| %>
-                <li><a data-id="<%= p.id %>" style="text-decoration:underline" class="move_to_playlist" form="edit_playlist_<%= @playlist.id %>"><%= p.title %></a></li>
-                <% end # @playlist.each%>
-              </ul>
-            </div>
-          <% end # playlists.prsent?%>
-          <%= f.submit "Delete Selected", class: 'btn btn-danger btn-confirmation btn-xs', form:"edit_playlist_#{@playlist.id}", data: { placement: 'bottom' }, disabled:'disabled' %>
-        </div>
-      </div>
-      <div class="col-sm-1 text-right">
-        <div class="form-group" style="margin-top:20px">
+      <div class="col-sm-6 form-group text-right manage-playlist-item">
+        <% if @playlists.present? %>
+          <%= hidden_field_tag "new_playlist_id", @playlist.id, form:"edit_playlist_#{@playlist.id}" %>
+          <%= hidden_field_tag "action_type", '', form:"edit_playlist_#{@playlist.id}" %>
+
+          <label for="select_all">
             <%= check_box_tag 'select_all', "Select All", false, form:"edit_playlist_#{@playlist.id}" %>
             Select All
-        </div>
+          </label>
+
+          <div class="dropdown" >
+            <%= button_tag( { type: 'button', class: "move_to btn btn-default btn-xs dropdown-toggle",
+              data: { toggle: "dropdown"}, disabled:'disabled' } ) do %>
+              <span class="filter-option">Move to... </span><span class="fa fa-caret-down"></span>
+            <% end # button_tag %>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <% @playlists.each do |p| %>
+              <li>
+                <a data-id="<%= p.id %>" style="text-decoration:underline"
+                  class="move_to_playlist" form="edit_playlist_<%= @playlist.id %>"><%= p.title %></a>
+              </li>
+              <% end # @playlist.each%>
+            </ul>
+          </div>
+
+          <div class="dropdown">
+            <%= button_tag( { type: 'button', class: "copy_to btn btn-default btn-xs dropdown-toggle",
+              data: { toggle: "dropdown"}, disabled:'disabled' } ) do %>
+              <span class="filter-option">Copy to... </span><span class="fa fa-caret-down"></span>
+            <% end # button_tag %>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <% @playlists.each do |p| %>
+              <li>
+                <a data-id="<%= p.id %>" style="text-decoration:underline"
+                  class="copy_to_playlist" form="edit_playlist_<%= @playlist.id %>"><%= p.title %></a>
+              </li>
+              <% end # @playlist.each%>
+            </ul>
+          </div>
+
+        <% end # playlists.present?%>
+        <%= f.submit "Delete Selected", id: 'delete_selected_playlist_items', class: 'btn btn-danger btn-confirmation btn-xs',
+          form:"edit_playlist_#{@playlist.id}", data: { placement: 'bottom' }, disabled:'disabled' %>
+
       </div>
     </div>
     <% end #form_for update_multiple %>
@@ -102,10 +90,8 @@ Unless required by applicable law or agreed to in writing, software distributed
               <div class="col-sm-8 title" style="margin-top:5px">
                 <%= link_to i.clip.title, i.clip.mediafragment_uri, id: "playlist_item_title_label_#{i.id}" %>
               </div>
-              <div class="col-sm-1 text-right" style="margin-top:5px">
+              <div class="col-sm-2 text-right" style="margin-top:5px">
                 <a id="playlist_item_edit_button" data-toggle="collapse" href="#playlist_item_edit_<%= i.id %>" aria-expanded="false" aria-controls="collapseExample" class="fa fa-edit btn btn-sm"></a>
-              </div>
-              <div class="col-sm-1 checkbox text-right">
                 <label>
                   <%= check_box_tag 'clip_ids[]', i.id, false, form:"edit_playlist_#{@playlist.id}", class:"playlist_item_select" %>
                   Select
@@ -114,10 +100,10 @@ Unless required by applicable law or agreed to in writing, software distributed
             <% else %>
               <div class="col-sm-9 title" style="margin-top:5px">
                 <% if i.clip.master_file.nil? %>
-                  <i class="fa fa-times-circle" title="The source for this item has been deleted"></i> 
+                  <i class="fa fa-times-circle" title="The source for this item has been deleted"></i>
                   <span class="playlist_item_denied">[deleted item]</span>
                 <% else %>
-                  <i class="fa fa-lock" title="You don't have permission to view this item"></i> 
+                  <i class="fa fa-lock" title="You don't have permission to view this item"></i>
                   <span class="playlist_item_denied">[inaccessible item] <%= i.clip.master_file.media_object.id %></span>
                 <% end %>
               </div>
@@ -184,19 +170,23 @@ Unless required by applicable law or agreed to in writing, software distributed
   <script>
 
     // Handle move selected items to new playlist
-    $('.move_to_playlist').click(function(event) {
+    $('.move_to_playlist, .copy_to_playlist').click(function(event) {
+      event.preventDefault();
       $('#new_playlist_id').val($(this).data('id'));
+      $('#action_type').val(event.target.getAttribute('class'));
       $('#'+$(this).attr('form')).submit();
     });
 
     // Handle playlist edit cancel
     $('#playlist_edit_cancel').click(function(event) {
-      $('#playlist_form #playlist_title').val('<%= @playlist.title %>');
-      $('#playlist_form #playlist_comment').val('<%= @playlist.comment %>');
+      $('#playlist_form #playlist_title').val('<%= j @playlist.title %>');
+      $('#playlist_form #playlist_comment').val('<%= j @playlist.comment %>');
       <% if @playlist.visibility==Playlist::PRIVATE %>
         $('#playlist_form #playlist_visibility_private').prop('checked', true);
-      <% else %>
+      <% elsif @playlist.visibility==Playlist::PUBLIC %>
         $('#playlist_form #playlist_visibility_public').prop('checked', true);
+      <% else %>
+        $('#playlist_form #playlist_visibility_private-with-token').prop('checked', true);
       <% end %>
     });
 
@@ -204,13 +194,13 @@ Unless required by applicable law or agreed to in writing, software distributed
     $('#select_all').click(function(event) {
       $('input:checkbox').prop('checked', $(this).prop('checked'))
       $('#edit_playlist_<%= @playlist.id %> :submit').prop('disabled', !$(this).prop('checked') );
-      $('#move_to button').prop('disabled', !$(this).prop('checked') )
+      $('.copy_to, .move_to').prop('disabled', !$(this).prop('checked') )
     });
 
     // Handle selection of playlist item (enable/disable move and delete buttons)
     $('.playlist_item_select').click(function(event) {
       $('#edit_playlist_<%= @playlist.id %> :submit').prop('disabled',  $( ".playlist_item_select:checked" ).length < 1  );
-      $('#move_to button').prop('disabled', $( ".playlist_item_select:checked" ).length < 1 );
+      $('.copy_to, .move_to').prop('disabled', $( ".playlist_item_select:checked" ).length < 1 );
       $('#select_all').prop('checked', $( ".playlist_item_select:checked" ).length == <%= @playlist.items.length %> );
     });
 

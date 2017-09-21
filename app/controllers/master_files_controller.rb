@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -179,6 +179,12 @@ class MasterFilesController < ApplicationController
     media_object = MediaObject.find(params[:container_id])
     authorize! :edit, media_object, message: "You do not have sufficient privileges to add files"
 
+    unless media_object.valid?
+      flash[:error] = "MediaObject is invalid.  Please add required fields."
+      redirect_to :back
+      return
+    end
+
     format_errors = "The file was not recognized as audio or video - "
 
     if params.has_key?(:Filedata) and params.has_key?(:original)
@@ -226,7 +232,7 @@ class MasterFilesController < ApplicationController
     elsif params.has_key?(:selected_files)
       @master_files = []
       params[:selected_files].each_value do |entry|
-        file_path = URI.parse(entry[:url]).path.gsub(/\+/,' ')
+        file_path = URI.decode(URI.parse(URI.encode(entry[:url])).path)
         master_file = MasterFile.new
         master_file.setContent(File.open(file_path, 'rb'))
         master_file.set_workflow(params[:workflow])
@@ -255,7 +261,8 @@ class MasterFilesController < ApplicationController
   def destroy
     master_file = MasterFile.find(params[:id])
     authorize! :destroy, master_file, message: "You do not have sufficient privileges to delete files"
-    filename = File.basename(master_file.file_location) || master_file.id
+    filename = File.basename(master_file.file_location) if master_file.file_location.present?
+    filename ||= master_file.id
     media_object = MediaObject.find(master_file.media_object_id)
     media_object.ordered_master_files.delete(master_file)
     media_object.master_files.delete(master_file)

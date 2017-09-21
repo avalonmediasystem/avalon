@@ -1,0 +1,37 @@
+<% content_for :page_styles do %>
+  <%= stylesheet_link_tag 'mejs2_player' %>
+<% end %>
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag "mejs2_player" %>
+<% end %>
+
+  <% features = ['playpause','current','progress','duration','tracks','volume','responsive', 'title'] %>
+
+  <% if section.is_video? %>
+    <% features << 'qualities' %>
+  <% else %>
+    <% features << 'hdtoggle' %>
+  <% end %>
+
+  <% features += ['logo', 'fullscreen'] %>
+
+  <script>
+    avalonPlayer = new AvalonPlayer($('#content').parent(), <%= section_info.to_json.html_safe %>, {
+      audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
+      mobileDisplayedDuration: <%= section ? (section.duration.to_f / 1000).round : -1 %>,
+      startQuality: '<%= current_quality(section_info) %>',
+      features: <%= features.inspect.html_safe %>,
+      videoWidth: '100%',
+      videoHeight: '100%',
+      enableAutosize: true,
+      iOSDisplayedDuration: <%= section ? section.duration.to_i / 1000 : -1 %>,
+      startQuality: '<%= current_quality(section_info) %>',
+      title: '<%= section.title %>',
+      titleLink: '<%= media_object_url(section.media_object) %>',
+      logoAction: 'popup',
+      logoURL: '<%= id_section_media_object_url(section.media_object.id, section.id).html_safe %>',
+      logoTitle: 'View in repository',
+      customError: '<%= t("media_objects.player.customError").html_safe %>'
+    })
+    currentPlayer = avalonPlayer.player;
+  </script>

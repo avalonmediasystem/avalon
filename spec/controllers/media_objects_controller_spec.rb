@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -58,6 +58,8 @@ describe MediaObjectsController, type: :controller do
           expect(get :tree, id: media_object.id).to redirect_to(new_user_session_path)
           expect(get :deliver_content, id: media_object.id, file: 'descMetadata').to redirect_to(new_user_session_path)
           expect(delete :destroy, id: media_object.id).to redirect_to(new_user_session_path)
+          expect(get :add_to_playlist_form, id: media_object.id).to redirect_to(new_user_session_path)
+          expect(post :add_to_playlist, id: media_object.id).to redirect_to(new_user_session_path)
         end
       end
       context 'with end-user' do
@@ -79,6 +81,8 @@ describe MediaObjectsController, type: :controller do
           expect(get :tree, id: media_object.id).to redirect_to(root_path)
           expect(get :deliver_content, id: media_object.id, file: 'descMetadata').to redirect_to(root_path)
           expect(delete :destroy, id: media_object.id).to redirect_to(root_path)
+          expect(get :add_to_playlist_form, id: media_object.id).to redirect_to(root_path)
+          expect(post :add_to_playlist, id: media_object.id).to redirect_to(root_path)
         end
       end
     end
@@ -384,6 +388,19 @@ describe MediaObjectsController, type: :controller do
         login_user media_object.collection.managers.first
         get :edit, {id: media_object.id, step: 'resource-description'}
         expect(response.response_code).to eq(200)
+      end
+      it "does not persist invalid media object after resource-description step" do
+        media_object.workflow.last_completed_step = 'resource-description'
+        media_object.save
+        login_user media_object.collection.managers.first
+
+        put :update, {id: media_object.id, step: 'resource-description', media_object: {title: '', date_issued: ''}}
+        expect(response.response_code).to eq(200)
+        expect(flash[:error]).not_to be_empty
+        media_object.reload
+        expect(media_object.valid?).to be_truthy
+        expect(media_object.title).not_to be_blank
+        expect(media_object.date_issued).not_to be_blank
       end
     end
 
@@ -875,7 +892,7 @@ describe MediaObjectsController, type: :controller do
       media_object = FactoryGirl.create(:media_object)
       media_object.ordered_master_files += [FactoryGirl.create(:master_file, :with_derivative)]
       media_object.set_media_types!
-      media_object.save( validate: false )
+      media_object.save
       media_object.reload
       expect(media_object.format).to eq(["video/mp4"])
     end
@@ -1021,4 +1038,74 @@ describe MediaObjectsController, type: :controller do
       expect(@request.session[:quality]).to eq('crazy_high')
     end
   end
+
+  describe "#add_to_playlist_form" do
+    let(:media_object) { FactoryGirl.create(:fully_searchable_media_object, :with_master_file) }
+
+    before do
+      login_as :user
+    end
+    it "should render add_to_playlist_form with correct masterfile_id" do
+      get :add_to_playlist_form, id: media_object.id, scope: 'master_file', masterfile_id: media_object.master_file_ids[0]
+      expect(response).to render_template(:_add_to_playlist_form)
+      expect(response.body).to include(media_object.master_file_ids[0])
+    end
+    it "should render the correct label for scope=master_file" do
+      get :add_to_playlist_form, id: media_object.id, scope: 'master_file', masterfile_id: media_object.master_file_ids[0]
+      expect(response.body).to include('Add Section to Playlist')
+    end
+    it "should render the correct label for scope=media_object" do
+      get :add_to_playlist_form, id: media_object.id, scope: 'media_object', masterfile_id: media_object.master_file_ids[0]
+      expect(response.body).to include('Add Item to Playlist')
+    end
+  end
+
+  describe "#add_to_playlist" do
+    let(:media_object) { FactoryGirl.create(:fully_searchable_media_object, title: 'Test Item') }
+    let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object, title: 'Test Section') }
+    let(:master_file_with_structure) { FactoryGirl.create(:master_file, :with_structure, media_object: media_object) }
+    let(:user) { login_as :user }
+    let(:playlist) { FactoryGirl.create(:playlist, user: user) }
+
+    before do
+      media_object.ordered_master_files = [master_file, master_file_with_structure]
+    end
+
+    it "should create a single playlist_item for a single master_file" do
+      expect {
+        post :add_to_playlist, id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.master_file_ids[0], playlistitem_scope: 'section' }
+      }.to change { playlist.items.count }.from(0).to(1)
+      expect(playlist.items[0].title).to eq("#{media_object.title} - #{media_object.ordered_master_files.to_a[0].title}")
+    end
+    it "should create playlist_items for each span in a single master_file's structure" do
+      expect {
+        post :add_to_playlist, id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.master_file_ids[1], playlistitem_scope: 'structure' }
+      }.to change { playlist.items.count }.from(0).to(13)
+      expect(playlist.items[0].title).to eq("Test Item - CD 1 - Copland, Three Piano Excerpts from Our Town - Track 1. Story of Our Town")
+      expect(playlist.items[12].title).to eq("Test Item - CD 1 - Track 13. Copland, Danzon Cubano")
+    end
+    it "should create a single playlist_item for each master_file in a media_object" do
+      expect {
+        post :add_to_playlist, id: media_object.id, post: { playlist_id: playlist.id, playlistitem_scope: 'section' }
+      }.to change { playlist.items.count }.from(0).to(2)
+      expect(playlist.items[0].title).to eq(media_object.ordered_master_files.to_a[0].embed_title)
+      expect(playlist.items[1].title).to eq(media_object.ordered_master_files.to_a[1].embed_title)
+    end
+    it "should create playlist_items for each span in a master_file structures in a media_object" do
+      expect {
+        post :add_to_playlist, id: media_object.id, post: { playlist_id: playlist.id, playlistitem_scope: 'structure' }
+      }.to change { playlist.items.count }.from(0).to(14)
+      expect(response.response_code).to eq(200)
+      expect(playlist.items[0].title).to eq("#{media_object.title} - #{media_object.ordered_master_files.to_a[0].title}")
+      expect(playlist.items[13].title).to eq("Test Item - CD 1 - Track 13. Copland, Danzon Cubano")
+    end
+    it 'redirects with flash message when playlist is owned by another user' do
+      login_as :user
+      other_playlist = FactoryGirl.create(:playlist)
+      post :add_to_playlist, id: media_object.id, post: { playlist_id: other_playlist.id, masterfile_id: media_object.master_file_ids[0], playlistitem_scope: 'section' }
+      expect(response).to have_http_status(403)
+      expect(JSON.parse(response.body).symbolize_keys).to eq({message: "<p>You are not authorized to update this playlist.</p>", status: 403})
+    end
+  end
+
 end

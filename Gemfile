@@ -11,7 +11,7 @@ gem 'blacklight', '~> 6.6'
 gem 'rdf', '~> 2.2'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.7.1'
+gem 'rails', '4.2.9'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 # Use SCSS for stylesheets
@@ -20,6 +20,8 @@ gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.1.0'
+# Babel transpiling - See https://babeljs.io/docs/setup/#installation
+gem 'sprockets-es6'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
@@ -47,7 +49,7 @@ gem 'devise'
 #gem 'devise-guests', '~> 0.3'
 
 # Avalon-specific
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.1'
+gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.2'
 gem 'active_encode', '~> 0.1.1'
 gem 'hooks'
 gem 'iconv'
@@ -70,7 +72,8 @@ gem 'whenever', git: "https://github.com/javan/whenever.git", require: false
 gem 'with_locking'
 gem 'parallel'
 gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git', tag: 'avalon-r6'
-gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6'
+gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.1'
+gem 'jquery-datatables'
 
 #MediaElement.js related
 gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r6_flash-fix'
@@ -80,7 +83,7 @@ gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediae
 gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r4'
 gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r4'
 gem 'media-element-logo-plugin'
-gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.1'
+gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.2'
 gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/mediaelement-track-scrubber.git', tag: 'avalon-r6'
 
 
@@ -96,7 +99,6 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'rb-readline'
   gem 'byebug'
-  gem 'rb-readline'
   gem 'pry-rails'
   gem 'pry-byebug'
   gem 'solr_wrapper', '>= 0.16'
@@ -108,6 +110,9 @@ end
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.0'
+
+  # ctrl+shift+x to see erb files rendered on page
+  gem 'xray-rails'
 
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   #gem 'spring'
@@ -137,6 +142,8 @@ group :test do
   gem 'fakefs', require: 'fakefs/safe'
   gem 'email_spec'
   gem 'capybara'
+  gem 'poltergeist'
+  gem 'rspec-retry'
   gem 'hashdiff'
   gem 'webmock'
 end

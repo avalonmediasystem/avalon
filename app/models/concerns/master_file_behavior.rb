@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -67,8 +67,15 @@ module MasterFileBehavior
     })
   end
 
+  def display_title
+    mf_title = self.structuralMetadata.section_title unless self.structuralMetadata.blank?
+    mf_title ||= self.title if self.title.present?
+    mf_title ||= self.file_location.split( "/" ).last if self.file_location.present?
+    mf_title.blank? ? nil : mf_title
+  end
+
   def embed_title
-    "#{ self.media_object.title } - #{ self.title || self.file_location.split( "/" ).last }"
+    [ self.media_object.title, display_title ].compact.join(" - ")
   end
 
   def embed_code(width, permalink_opts = {})

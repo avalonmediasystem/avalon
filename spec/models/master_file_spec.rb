@@ -380,16 +380,30 @@ describe MasterFile do
   end
 
   describe "#embed_title" do
-    subject { FactoryGirl.create( :master_file, { media_object: FactoryGirl.create( :media_object, { title: "test" })})}
+    context "with structure" do
+      subject { FactoryGirl.create( :master_file, :with_structure, { media_object: FactoryGirl.create( :media_object, { title: "test" })})}
 
-    it "should have an appropriate title for the embed code with no label" do
-      expect( subject.embed_title ).to eq( "test - video.mp4" )
+      it "should favor the structure item label" do
+        expect( subject.embed_title ).to eq( "test - CD 1" )
+      end
     end
 
-    it "should have an appropriate title for the embed code with a label" do
-      subject.title = "test"
+    context "without structure" do
+      subject { FactoryGirl.create( :master_file, { media_object: FactoryGirl.create( :media_object, { title: "test" })})}
 
-      expect( subject.embed_title ).to eq( "test - test" )
+      it "should have an appropriate title for the embed code with a label" do
+        subject.title = "test"
+        expect( subject.embed_title ).to eq( "test - test" )
+      end
+
+      it "should have an appropriate title for the embed code with no label" do
+        expect( subject.embed_title ).to eq( "test - video.mp4" )
+      end
+
+      it "should have an appropriate title for the embed code with no label or file_location" do
+        subject.file_location = nil
+        expect( subject.embed_title ).to eq( "test" )
+      end
     end
   end
 

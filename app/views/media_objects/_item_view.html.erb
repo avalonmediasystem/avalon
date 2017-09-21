@@ -13,6 +13,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+
 <% content_for :additional_head_content do %>
   <link rel="alternative" type="application/json+oembed" href="<%= "#{oembed_url(format: 'json', url: share_link_for(@currentStream))}" %>" />
   <link rel="alternative" type="application/xml+oembed" href="<%= "#{oembed_url(format: 'xml', url: share_link_for(@currentStream))}" %>" />
@@ -21,48 +22,20 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% f_start, f_end = parse_media_fragment params['t'] %>
 <div class="row">
   <div class="col-sm-8" id="left_column">
-    <section id="content" class="avalon-player" style="width: 100%; visibility: hidden;" tabIndex="-1">
-      <% if @currentStream.present? and @currentStream.derivatives.present? %>
-
-        <% if @currentStreamInfo[:is_video] %>
-          <%= master_file_meta_properties(@currentStream) do %>
-            <video class="mejs-avalon" controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] if f_start == 0 %>" preload="auto">
-              <% @currentStreamInfo[:stream_flash].each do |flash| %>
-                <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
-              <% end %>
-              <% @currentStreamInfo[:stream_hls].each do |hls| %>
-                <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
-              <% end %>
-              <% if @currentStreamInfo[:captions_path].present? %>
-                <track srclang="en" kind="subtitles" type="<%= @currentStreamInfo[:captions_format] %>" src="<%= @currentStreamInfo[:captions_path] %>"></track>
-              <% end %>
-            </video>
-          <% end %>
-        <% else %>
-          <%= master_file_meta_properties(@currentStream) do %>
-            <audio class="mejs-avalon" controls style="width: 100%;" id="video-tag" preload="true">
-              <% @currentStreamInfo[:stream_flash].each do |flash| %>
-                <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
-              <% end %>
-              <% @currentStreamInfo[:stream_hls].each do |hls| %>
-                <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
-              <% end %>
-            </audio>
-          <% end %>
-        <% end %>
-      <% end %>
-    </section>
+    <%= render partial: "modules/player/section", locals: {section: @currentStream, section_info: @currentStreamInfo, f_start: @f_start, f_end: @f_end} %>
 
     <%= render file: '_track_scrubber.html.erb' %>
-    <%= render file: '_add_to_playlist.html.erb' if current_user.present? %>
+    <%= render file: '_add_to_playlist.html.erb' if current_user.present? && is_mejs_2? %>
+    <%= render partial: 'mejs4_add_to_playlist' if current_user.present? && is_mejs_4? %>
     <%= render 'workflow_progress' %>
     <%= render 'share' if will_partial_list_render? :share %>
-    <%= render partial: 'sections',
-        locals: {mediaobject: @media_object,
-                 sections: @masterFiles,
-                 activeStream: @currentStream} %>
-  </div>
 
+    <!-- Sections -->
+    <%= render partial: 'sections',
+        locals: { mediaobject: @media_object,
+                 sections: @masterFiles,
+                 activeStream: @currentStream } %>
+  </div>
   <div class="col-sm-4" id="right-column">
     <div id="metadata_container" class="">
       <section id="metadata"><%= render "metadata_display" %></section>
@@ -73,32 +46,12 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
-  <script>
-    function advancePlaylist() {
-      $('div.panel-heading').has('a.current-section').nextAll('div[role="tab"]:first').find('a.playable').first().click();
-    }
 
-    avalonPlayer = new AvalonPlayer($('#left_column'), <%= @currentStreamInfo.to_json.html_safe %>, {
-      audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
-      mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
-      thumbnailSelector: <%= can?(:edit, @media_object) ? 'true' : 'false' %>,
-      //addToPlaylist: <%= can?(:create, Playlist) ? 'true' : 'false' %>,
-      addToPlaylist: <%= current_user.present? ? 'true' : 'false' %>,
-      startQuality: '<%= current_quality(@currentStreamInfo) %>',
-      customError: '<%= t("media_objects.player.customError").html_safe %>',
-      displayTrackScrubber: true,
-      playlistItemDefaultTitle: '<%= escape_javascript @currentStream.embed_title %>',
-      success: function(mediaElement, domObject, player) {
-	player.media.addEventListener('ended', function(e) {
-            player.options.autostart=true;
-            advancePlaylist();
-	}, false);
-	player.media.addEventListener('pause', function(e) {
-            player.options.autostart=false;
-	}, false);
-      }
-    });
-    currentPlayer = avalonPlayer.player;
-  </script>
+    <% if is_mejs_2? %>
+      <%= render partial: "mejs2_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
+    <% else %>
+      <%= render partial: "mejs4_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
+    <% end %>
+
   <% end %>
 <% end %>

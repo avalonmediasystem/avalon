@@ -6,7 +6,7 @@ volumes:
   fedora:
   work:
   solr:
-    
+
 services:
   db:
     image: avalonmediasystem/db:fedora4
@@ -121,3 +121,5 @@ services:
       - .:/home/app/avalon
     ports:
       - "3000:80"
+    stdin_open: true
+    tty: true

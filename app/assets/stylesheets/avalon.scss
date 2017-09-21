@@ -1,12 +1,12 @@
-/* 
+/*
  * Copyright 2011-2017, The Trustees of Indiana University and Northwestern
  *   University.  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
- * 
+ *
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed
  *   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  *   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -569,11 +569,6 @@ button.close {
   }
 }
 
-.fileinput-submit {
-  z-index: $zindex-modal !important;
-  #background-color: $gray;
-}
-
 .ev-browser {
   background-color: $white;
 }
@@ -687,9 +682,9 @@ a[data-trigger='submit'] {
   &:hover {
     background-color: darken($blue, 15%) !important;
   }
-  a[data-trigger='submit']{
-    color: $white !important;
-  }
+
+  color: $white !important;
+
 }
 
 .appliedFilter {
@@ -880,6 +875,15 @@ div.status-detail {
 }
 
 /* MediaObject structure page */
+.structure_add_to_playlist {
+  float: right;
+  height: 1.5em;
+  background: $blue image-url('add_to_playlist_icon.svg') no-repeat;
+  background-position: 3px 0px;
+  border-color: $blue !important;
+  margin-top: -2px;
+  margin-left: 2px;
+}
 
 #mediaobject_structure {
   a.structure_toggle, a.captions_toggle {
@@ -1100,32 +1104,49 @@ h5.panel-title {
     resize: vertical;
   }
 }
-.clip_title {
-   font-weight: bold;
-   left: 0 ;
-   position: absolute;
-}
-.clip_start_time {
-  position: absolute;
-  right: 240px;
-}
-.clip_end_time {
-  position: absolute;
-  right: 130px;
-}
-.clip_position {
-  position: absolute;
-  right: 0;
-}
-.related_item {
-  position: relative;
+#related_items {
+  .clip_title {
+     font-weight: bold;
+  }
+  .clip_start_time {
+  }
+  .clip_end_time {
+  }
+  .clip_position {
+    text-align: center;
+  }
+  tr {
+    height: 2em;
+  }
 }
 
+/* Playlist edit page */
+.manage-playlist-item {
+   margin-top:20px;
+   padding-right:0;
+
+  .dropdown{
+    float:right;
+    padding-right: 5px;
+  }
+  #delete_selected_playlist_items {
+    margin-right: 5px;
+  }
+  label {
+    padding-left:20px;
+    float:right;
+  }
+}
+
+/* Mediaelement styles */
 .mejs-time-clip {
   background: linear-gradient(#DDD,#DDD);
   opacity: .3;
   height: 14px !important;
   top: -3px !important;
+}
+.mejs__container {
+  z-index: 1000;
 }
 
 .playlist-description {

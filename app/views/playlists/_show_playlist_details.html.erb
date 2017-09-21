@@ -1,0 +1,141 @@
+<%#
+Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<div class="col-md-9">
+  <div class="row">
+    <div class="col-sm-12">
+      <%= link_to "View Playlist", @playlist, { class: 'btn btn-xs btn-primary'} %>
+      <% if can?(:destroy, @playlist) %>
+        <%= link_to "Delete Playlist", @playlist, method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'} %>
+      <% end %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">
+      <h3 style="display:inline-block">Playlist Details</h3>
+      <a id="playlist_edit_button" data-toggle="collapse" data-target="#playlist_edit_div, #playlist_view_div" class="fa fa-edit btn btn-sm"></a>
+    </div>
+  </div>
+  <div id="playlist_view_div" class="container collapse <%= 'in' if @playlist.errors.empty? %>">
+    <div class="row">
+      <div class="col-sm-2">Name</div>
+      <div class="col-sm-10"><%= @playlist.title %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-2">Description</div>
+      <div class="col-sm-10"><%= @playlist.comment %></div>
+    </div>
+    <div class="row">
+      <div class="col-sm-2"><%= t("blacklight/folders/folder.visibility", scope: "helpers.label") %></div>
+      <div class="col-sm-10">
+        <%= human_friendly_visibility @playlist.visibility %> - <i><%= visibility_description @playlist.visibility %></i>
+        <% if @playlist.visibility == Playlist::PRIVATE_WITH_TOKEN %>
+          <div class="row" style="margin-top:9px;">
+            <div class="col-xs-9">
+              <div class="input-group">
+                <input type="text" class="form-control" id="playlist-share-link" value="<%= access_token_url(@playlist) %>" placeholder="<%= access_token_url(@playlist) %>" onClick="this.select();" readonly="readonly">
+                <span class="input-group-btn" id="playlist-share-btn-result">
+                  <%= button_tag "Copy", id: 'playlist-share-btn',
+                    class: "btn btn-success" %>
+                </span>
+              </div>
+            </div>
+            <div class="col-xs-2">
+              <%= button_tag "Get new link", id: 'get-new-link',
+                class: 'btn btn-success', data: { 'playlist_id': @playlist.id } %>
+            </div>
+          </div>
+
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+<% content_for :page_scripts do %>
+  <script>
+  $('#playlist-share-btn').popover({
+    trigger: 'hover',
+    placement: 'top',
+    content: 'Copy share link'
+  });
+
+  var playlist_share_btn_result_content_default = "Copied to clipboard";
+  var playlist_share_btn_result_content_error = "Please press Ctrl/Cmd+C to copy";
+  $('#playlist-share-btn-result').popover({
+    trigger: 'manual',
+    placement: 'top',
+    content: playlist_share_btn_result_content_default
+  });
+
+  $('#playlist-share-btn').click( function (event) {
+    var copytarget = $('#playlist-share-link');
+    $(this).popover('hide');
+
+    // select text
+    copytarget.select();
+    try {
+      // copy text
+      document.execCommand('copy');
+      copytarget.blur();
+      $('#playlist-share-btn-result').attr('data-content', playlist_share_btn_result_content_default);
+    }
+    catch (err) {
+      $('#playlist-share-btn-result').attr('data-content', playlist_share_btn_result_content_error);
+    }
+    $('#playlist-share-btn-result').popover('show');
+    setTimeout(function() {
+      $('#playlist-share-btn-result').popover('hide');
+    }, 3000);
+  });
+
+  var popover_content = '<p>If you get a new link, the previous link will stop working.<p>'+
+          '<div>'+
+            '<button type="submit" onclick="new_link_confirm()" class="btn btn-danger btn-confirm" style="margin-right:5px;">Yes</button>' +
+            '<button type="submit" onclick="new_link_cancel()" class="btn btn-primary btn-confirm">Cancel</button>'+
+          '</div>'
+  var popover_template = '<div class="popover" role="tooltip" style="width: 12em;">'+
+      '<div class="arrow"></div>'+
+      '<h3 class="popover-title"></h3>'+
+      '<div class="popover-content"></div>'+
+    '</div>'
+
+  $('#get-new-link').popover({
+    trigger: 'click',
+    html: true,
+    placement: 'top',
+    title: 'Get a new link?',
+    template: popover_template,
+    content: popover_content,
+  });
+
+  var new_link_cancel = function (event) {
+    $('#get-new-link').popover('hide').click();
+  }
+
+  var new_link_confirm = function (event) {
+    $.ajax({
+      type: "PATCH",
+      url: '/playlists/' + $('#get-new-link').data().playlistId + '/regenerate_access_token',
+      success: function (data, status) {
+        $('#playlist-share-link').attr('value', data.access_token_url)
+      },
+      complete: function () {
+          $('#get-new-link').popover('hide').click();
+      }
+    });
+  }
+
+  </script>
+<% end %>

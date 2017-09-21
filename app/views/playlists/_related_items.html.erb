@@ -14,21 +14,24 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div id="related_items">
-  <ul>
-  <% @related_clips.sort_by { |hash| hash['start_time'].to_i}.each do |clip| %>
-    <% position = clip.playlist_position(@playlist.id) %>
-    <% if can? :read, clip.master_file %>
-      <li class='related_item'>
-        <%= link_to playlist_path(@playlist, position: position) do %>
-          <span class='clip_title'><%= clip.title %></span>
-          <span class='clip_start_time'>Start: <%= pretty_time(clip.start_time) %></span>
-          <span class='clip_end_time'>End: <%= pretty_time(clip.end_time) %></span>
-          <% unless position.nil? %>
-            <span class='clip_position'>Playlist Position: <%= position %></span>
-          <% end %>
-        <% end %>
-      </li>
+  <table class="table table-responsive">
+    <thead><tr><th>Title</th><th>Start</th><th>End</th><th>Position</th></tr></thead>
+    <tbody>
+      <% @related_clips.sort_by { |hash| hash['start_time'].to_i}.each do |clip| %>
+      <% if can? :read, clip.master_file %>
+        <tr>
+          <% position = clip.playlist_position(@playlist.id) %>
+          <td class='clip_title'>
+            <%= link_to playlist_path(@playlist, position: position) do %>
+              <%= clip.title %>
+            <% end %>
+          </td>
+          <td class='clip_start_time'><%= pretty_time(clip.start_time) %></td>
+          <td class='clip_end_time'><%= pretty_time(clip.end_time) %></td>
+          <td class='clip_position'><%= position %></td>
+        </tr>
+      <% end %>
     <% end %>
-  <% end %>
-  </ul>
+    </tbody>
+  </table>
 </div>

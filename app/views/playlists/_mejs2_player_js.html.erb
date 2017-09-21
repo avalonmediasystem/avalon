@@ -1,0 +1,63 @@
+<% content_for :page_styles do %>
+  <% stylesheet_link_tag 'mejs2_player' %>
+<% end %>
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag "mejs2_player" %>
+<% end %>
+
+  <script>
+     function advancePlaylist() {
+       nextUrl = $('.side-playlist li.now_playing').nextAll('li.queue:first').find('a');
+       if ($('input[name="autoadvance"]')[0].checked) {
+         currentPlayer.pause();
+         if (nextUrl.length) {
+           if ('remote' in nextUrl[0].dataset) {
+             currentPlayer.options['autostart']='true'
+             nextUrl.click();
+           } else {
+             window.location = nextUrl[0].href.replace('autoadvance=false','autoadvance=true');
+           }
+         } else {
+           currentPlayer.setCurrentTime(avalonPlayer.stream_info.t[0] || 0)
+         }
+       }
+     }
+    <% if can? :read, section %>
+      avalonPlayer = new AvalonPlayer($('#left_column'), <%= section_info.to_json.html_safe %>, {
+        audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
+        mobileDisplayedDuration: <%= section ? (section.duration.to_f / 1000).round : -1 %>,
+        thumbnailSelector: false,
+        addToPlaylist: false,
+        addMarker: <%= current_user.present? ? 'true' : 'false' %>,
+        startQuality: '<%= current_quality(section_info) %>',
+        customError: '<%= t("media_objects.player.customError").html_safe %>',
+        displayMediaFragment: true,
+        displayMarkers: true,
+        displayTrackScrubber: true,
+        autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
+        success: function(mediaElement, domObject, player) {
+          avalonPlayer.player.domNode.dataset['currentPlaylistItem'] = '<%= @current_playlist_item.id %>';
+          <%# turn off autoadvance if scrubber is clicked %>
+          var scrubber =  $('.mejs-time-total')[0];
+          var oldclick = scrubber.onmousedown;
+          scrubber.onmousedown = function(){
+            $('input[name="autoadvance"]').prop('checked',false).change();
+            if(oldclick){
+              oldclick();
+            }
+          }
+          player.media.addEventListener('timeupdate', function(e) {
+            <%# round times to nearest .1 second for derivative duration discrepancies %>
+            t = Math.round(avalonPlayer.player.getCurrentTime()*10)
+            <%# if players new currenttime is >= masterfile duration or end of playlist item advance to next playlist item %>
+            if (t >= Math.round(avalonPlayer.stream_info.duration*10) || t > Math.round(avalonPlayer.stream_info.t[1]*10)) {
+              advancePlaylist();
+            }
+          }, false);
+        }
+      });
+      currentPlayer = avalonPlayer.player;
+    <% else %>
+      window.setTimeout(advancePlaylist, 5000);
+    <% end %>
+  </script>

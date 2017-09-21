@@ -24,7 +24,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
     <% masterfile = clip.master_file %>
     <% if @current_masterfile.is_video? == masterfile.is_video? && can?(:read, @current_playlist_item.clip.master_file.media_object) %>
-      <%= link_to playlist_refresh_info_path(@playlist, position: item.position, autostart: true), remote: true do%>
+      <%= link_to refresh_info_playlist_path(@playlist, position: item.position, token: @playlist_token, autostart: true), remote: true do%>
         <%= clip.title %>
       <% end %>
     <% else %>

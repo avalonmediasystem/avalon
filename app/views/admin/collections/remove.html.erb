@@ -13,6 +13,14 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'select2.min' %>
+  <%= stylesheet_link_tag 'select2.min' %>
+  <script type="text/javascript">
+    $('#target_collection_id').select2();
+  </script>
+<% end %>
+
 <div class="container-fluid">
   <%
     item_count = "#{@objects.count} #{'item'.pluralize(@objects.count)}"
@@ -35,7 +43,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 	      delete it, you must select a new collection to move <%=content_pronoun%>
 	      into.
 	    </p>
-	    <%= select_tag :target_collection_id, options_from_collection_for_select(@candidates, "id", "name") %>
+	    <%= select_tag :target_collection_id, options_from_collection_for_select(@candidates, "id", "name"), style: 'width:50%;' %>
 	  </fieldset>
 	  </div>
 	</div>

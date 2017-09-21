@@ -21,37 +21,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% @currentStreamInfo = @currentStream.stream_details(@token, ApplicationController.default_url_options[:host]) %>
 <% @currentStreamInfo['t'] = [f_start,f_end] %>
 <% if can? :read, @current_masterfile %>
-    <section id="content" class="avalon-player" style="width: 100%; visibility: hidden;" tabIndex="-1">
-      <% if @currentStream.present? and @currentStream.derivatives.present? %>
-
-        <% if @currentStreamInfo[:is_video] %>
-          <%= master_file_meta_properties(@currentStream) do %>
-            <video class="mejs-avalon" controls width="450" height="309" style="width: 100%; height: 100%" id="video-tag" poster="<%= @currentStreamInfo[:poster_image] if f_start == 0 %>" preload="auto" data-current-playlist-item="<%= @current_playlist_item.id %>">
-              <% @currentStreamInfo[:stream_flash].each do |flash| %>
-                <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
-              <% end %>
-              <% @currentStreamInfo[:stream_hls].each do |hls| %>
-                <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
-              <% end %>
-              <% if @currentStreamInfo[:captions_path].present? %>
-                <track srclang="en" kind="subtitles" type="<%= @currentStreamInfo[:captions_format] %>" src="<%= @currentStreamInfo[:captions_path] %>"></track>
-              <% end %>
-            </video>
-          <% end %>
-        <% else %>
-          <%= master_file_meta_properties(@currentStream) do %>
-            <audio class="mejs-avalon" controls style="width: 100%;" id="video-tag" preload="true" data-current-playlist-item="<%= @current_playlist_item.id %>">
-              <% @currentStreamInfo[:stream_flash].each do |flash| %>
-                <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
-              <% end %>
-              <% @currentStreamInfo[:stream_hls].each do |hls| %>
-                <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
-              <% end %>
-            </audio>
-          <% end %>
-        <% end %>
-      <% end %>
-    </section>
+    <%= render partial: 'modules/player/section', locals: {section: @currentStream, section_info: @currentStreamInfo, f_start: @f_start, f_end: @f_end} %>
 <% end %>
 <% unless can? :read, @current_masterfile %>
   <span class = 'show_playlist_player_denied_title'><h2>Restricted Access</h2></span>
@@ -62,63 +32,13 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
   </span>
 <% end %>
-<% content_for :page_scripts do %>
 
+<% content_for :page_scripts do %>
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
-  <script>
-     function advancePlaylist() {
-       nextUrl = $('.side-playlist li.now_playing').nextAll('li.queue:first').find('a');
-       if ($('input[name="autoadvance"]')[0].checked) {
-         currentPlayer.pause();
-         if (nextUrl.length) {
-           if ('remote' in nextUrl[0].dataset) {
-             currentPlayer.options['autostart']='true'
-             nextUrl.click();
-           } else {
-             window.location = nextUrl[0].href.replace('autoadvance=false','autoadvance=true');
-           }
-         } else {
-           currentPlayer.setCurrentTime(avalonPlayer.stream_info.t[0] || 0)
-         }
-       }
-     }
-    <% if can? :read, @current_masterfile %>
-      avalonPlayer = new AvalonPlayer($('#left_column'), <%= @currentStreamInfo.to_json.html_safe %>, {
-        audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
-        mobileDisplayedDuration: <%= @currentStream ? (@currentStream.duration.to_f / 1000).round : -1 %>,
-        thumbnailSelector: false,
-        addToPlaylist: false,
-        addMarker: <%= current_user.present? ? 'true' : 'false' %>,
-        startQuality: '<%= current_quality(@currentStreamInfo) %>',
-        customError: '<%= t("media_objects.player.customError").html_safe %>',
-        displayMediaFragment: true,
-        displayMarkers: true,
-        displayTrackScrubber: true,
-        autostart: <%= params[:autostart] == 'true' ? 'true' : 'false' %>,
-        success: function(mediaElement, domObject, player) {
-          <%# turn off autoadvance if scrubber is clicked %>
-          var scrubber =  $('.mejs-time-total')[0];
-          var oldclick = scrubber.onmousedown;
-          scrubber.onmousedown = function(){
-            $('input[name="autoadvance"]').prop('checked',false).change();
-            if(oldclick){
-              oldclick();
-            }
-          }
-          player.media.addEventListener('timeupdate', function(e) {
-            <%# round times to nearest .1 second for derivative duration discrepancies %>
-            t = Math.round(avalonPlayer.player.getCurrentTime()*10)
-            <%# if players new currenttime is >= masterfile duration or end of playlist item advance to next playlist item %>
-            if (t >= Math.round(avalonPlayer.stream_info.duration*10) || t > Math.round(avalonPlayer.stream_info.t[1]*10)) {
-              advancePlaylist();
-            }
-          }, false);
-        }
-      });
-      currentPlayer = avalonPlayer.player;
+    <% if is_mejs_2? %>
+      <%= render partial: "mejs2_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
     <% else %>
-      window.setTimeout(advancePlaylist, 5000);
+      <%#= render partial: "mejs4_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
     <% end %>
-  </script>
   <% end %>
 <% end %>

@@ -35,42 +35,10 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <th>Visibility</th>
                 <th>Created</th>
                 <th>Updated</th>
-                <th class="text-right">Actions</th>
+                <th class="text-right" data-orderable="false">Actions</th>
               </tr>
             </thead>
             <tbody>
-              <% playlists.each do |playlist| %>
-              <tr>
-                <td>
-                  <%= link_to(playlist.title, playlist_path(playlist), title: playlist.comment)%>
-                </td>
-                <td class='nowrap'>
-                  <%= PlaylistItem.where(playlist_id: playlist.id).size %> items
-                </td>
-                <td class='nowrap'>
-                  <% if playlist.visibility =='private' %>
-                    <span class="fa fa-lock fa-lg"></span> Only me
-                  <% end %>
-                  <% if playlist.visibility !='private' %>
-                    <span class="fa fa-globe fa-lg"></span> Public
-                  <% end %>
-                </td>
-                <td class='nowrap'>
-                  <span title= <%= playlist.created_at.utc.iso8601%> ><%= time_ago_in_words(playlist.created_at)%></span>
-                </td>
-                <td class='nowrap'>
-                  <span title= <%= playlist.updated_at.utc.iso8601%> ><%= time_ago_in_words(playlist.updated_at)%></span>
-                </td>
-                <td align="right" class='nowrap'>
-                  <%= link_to(edit_playlist_path(playlist), class: 'btn btn-default btn-xs') do %>
-                    <span class='fa fa-edit'> Edit</span>
-                  <% end %>
-                  <%= link_to(playlist_path(playlist), method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'}) do %>
-                    <span class='fa fa-times'> Delete</span>
-                  <% end %>
-                </td>
-              </tr>
-              <%end%>
           </tbody>
         </table>
         <div> </div>
@@ -98,8 +66,32 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% end %>
 <% end %>
 
+<%= render partial: 'copy_playlist_modal', locals: { with_refresh: true } %>
+
 <% content_for :page_scripts do %>
 <script>
+$(document).ready( function () {
+ $('#Playlists').DataTable({
+    processing: true,
+    serverSide: true,
+    ajax: {
+      url: '/playlists/paged_index',
+      type: 'POST'
+    },
+    "columns": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      { className: "text-right" }
+    ]
+  }).on( 'draw', function () {
+    window.apply_button_confirmation()
+    window.add_copy_button_event()
+  });
+});
+
 $( '.filedata' ).change(function() {
   $(this).closest('form').submit();
 });

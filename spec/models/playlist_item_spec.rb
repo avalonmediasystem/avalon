@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -31,11 +31,22 @@ RSpec.describe PlaylistItem, type: :model do
 
     context 'when owner' do
       let(:playlist) { FactoryGirl.create(:playlist, user: user) }
+      let(:user) { FactoryGirl.create(:administrator) }
+
+      it{ is_expected.to be_able_to(:manage, playlist_item) }
+      it{ is_expected.to be_able_to(:create, playlist_item) }
+      it{ is_expected.to be_able_to(:read, playlist_item) }
+      it{ is_expected.to be_able_to(:update, playlist_item) }
+      it{ is_expected.to be_able_to(:delete, playlist_item) }
+    end
+
+    context 'when owner' do
+      let(:playlist) { FactoryGirl.create(:playlist, user: user) }
 
       it{ is_expected.to be_able_to(:create, playlist_item) }
       it{ is_expected.to be_able_to(:update, playlist_item) }
       it{ is_expected.to be_able_to(:delete, playlist_item) }
- 
+
       context 'when master file is NOT readable by user' do
         it{ is_expected.not_to be_able_to(:read, playlist_item) }
       end
@@ -85,6 +96,21 @@ RSpec.describe PlaylistItem, type: :model do
 
         it{ is_expected.to be_able_to(:read, playlist_item) }
       end
+    end
+  end
+
+  describe '#duplicate!' do
+    let(:master_file) { FactoryGirl.create(:master_file, :with_media_object) }
+    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: avalon_clip) }
+    let(:avalon_clip) { FactoryGirl.create(:avalon_clip, master_file: master_file) }
+    let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
+
+    it 'it duplicates an item' do
+      new_item = playlist_item.duplicate!
+      expect(new_item.id).not_to eq playlist_item.id
+      expect(new_item.playlist_id).to eq playlist_item.playlist_id
+      expect(new_item.clip_id).not_to eq playlist_item.clip_id
+      expect(new_item.persisted?).to eq true
     end
   end
 end

@@ -14,9 +14,18 @@
 
 FactoryGirl.define do
   factory :playlist do
-    user
+    user { FactoryGirl.create(:user) }
     title { Faker::Lorem.word }
     comment { Faker::Lorem.sentence }
     visibility { Playlist::PRIVATE }
+
+    trait :with_access_token do
+      visibility { Playlist::PRIVATE_WITH_TOKEN }
+      access_token { Faker::Lorem.characters(10) }
+    end
+
+    trait :with_playlist_item do
+      items { [FactoryGirl.create(:playlist_item)] }
+    end
   end
 end

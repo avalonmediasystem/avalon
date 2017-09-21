@@ -1,0 +1,147 @@
+/**
+ * Stylesheet for Avalon custom MediaElement 4 plugin: "Add To Playlist".
+ */
+
+$avalon-primary-color: #84a791;
+
+// Generic class applied to the Add To Playlist form elements
+.add_to_playlist,
+.add_marker_to_playlist_item {
+  max-width: 870px;
+  background: #696667;
+  color: white;
+  padding: 0 20px;
+  border: 1pt solid #353536;
+  border-bottom-right-radius: 6pt;
+  border-bottom-left-radius: 6pt;
+
+  table {
+    width: 100%;
+  }
+
+  th, td {
+    padding: 4pt;
+    text-align: right;
+  }
+
+  td {
+    padding-right: 5pt;
+  }
+
+  input {
+    height: 28px;
+    padding-top: 7px;
+  }
+
+  select, input, textarea {
+    width: 100%;
+    color: black;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  #select2-post_playlist_id-container {
+    color: black;
+    text-align: left;
+  }
+
+}
+
+// Control button on MEJS player
+.mejs__add-to-playlist-button > button,
+.mejs-add-to-playlist-button > button {
+    background: image-url('./add-to-playlist-control.png') transparent no-repeat;
+    background-size: contain;
+}
+
+.scrubber-marker {
+  width: 1em !important;
+  bottom: 0;
+  transform: translate(-50%,200%)
+}
+
+.mejs-time-marker-rail {
+  margin: 5px;
+}
+
+.mejs-time-float-marker {
+  background: #eee;
+  height: auto !important;
+  width: 100px !important;
+  border: solid 1px #333;
+  top: auto;
+  bottom: 8px;
+  transform: translate(-50%, 0);
+  text-align: center;
+  color: #111;
+  z-index: 1;
+}
+
+.mejs-time-float-current-marker {
+  position: relative !important;
+  left: 0;
+  height: auto !important;
+  width: 92px !important;
+  margin: 4px;
+  text-align: center;
+}
+
+.mejs-time-float-corner-marker {
+  display: block !important;
+  position: absolute !important;
+  bottom: -10px;
+  left: 50% !important;
+  width: 0 !important;
+  height: 0 !important;
+  line-height: 0;
+  border: solid 5px #eee;
+  border-color: #eee transparent transparent transparent;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  transform: translate(-50%,0);
+}
+
+.add_to_playlist_alert,
+.add_marker_to_playlist_item_alert {
+  max-width: 870px;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  margin-bottom: 0;
+
+  a {
+    font-weight: bold;
+    text-decoration: underline;
+  }
+}
+
+.add_to_playlist_alert_error,
+.add_marker_to_playlist_item_alert_error {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-bottom: 0;
+}
+
+.add_to_playlist_alert_close,
+.add_marker_to_playlist_item_alert_close {
+  float: right;
+  font-size: 21px;
+  font-weight: bold;
+  line-height: 1;
+  text-shadow: 0 1px 0 white;
+  opacity: 0.2;
+}
+
+.add_playlist_item_playlists_no_playlists_message {
+  a {
+    color: $avalon-primary-color !important;
+  }
+}
+
+.playlist-visibility-form-group {
+  > label:first-of-type {
+    display: block;
+  }
+}

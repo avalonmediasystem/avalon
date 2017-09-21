@@ -21,9 +21,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="panel-heading" role="tab" id="heading0" style="border-bottom: 1px solid #ddd;">
       <h4 class="panel-title">
         <span id="section-label">Sections</span>
-	<button class="btn btn-primary btn-xs" id="expand_button">Expand All</button>
-	<button class="btn btn-primary btn-xs hidden" id="collapse_button">Collapse All</button>
-	<br class="clear"/>
+        <button type="button" title="Add all sections to playlist" aria-label="Add all sections to playlist" class="structure_add_to_playlist outline_on btn btn-primary" data-scope="media_object"></button>
+	      <button class="btn btn-primary btn-xs" id="expand_button">Expand All</button>
+	      <button class="btn btn-primary btn-xs hidden" id="collapse_button">Collapse All</button>
+        <br class="clear"/>
       </h4>
     </div>
 
@@ -38,13 +39,16 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
 </div>
 
+<!-- add_to_playlist modal form ---->
+<div class="modal fade" id="add-to-playlist-modal" tabindex="-1" role="dialog"></div>
+
 <% content_for :page_scripts do %>
 <script>
   if ($('.fa-plus-square').length + $('.fa-minus-square').length <= 2){
     $('#collapse_button').addClass('hidden');
     $('#expand_button').addClass('hidden');
   } else {
-    $('.panel-title #section-label').addClass('hidden');
+    <!-- $('.panel-title #section-label').addClass('hidden'); -->
     $('#accordion.panel-group .panel-collapse').on('shown.bs.collapse', function() {
       if($('#accordion.panel-group .panel-collapse').length == $('#accordion.panel-group .panel-collapse.in').length) {
         $('#expand_button').addClass('hidden');
@@ -79,6 +83,33 @@ Unless required by applicable law or agreed to in writing, software distributed
     var sectiondiv = $(panelheader.find('.fa-plus-square').data('target'));
     if (!sectiondiv.hasClass('in')) panelheader.find('.fa-plus-square').click();
   });
+  $('.structure_add_to_playlist').on('click',function(){
+    $.ajax({
+        type: "GET",
+        url: "<%= add_to_playlist_form_media_object_path(@media_object) %>",
+        data: {
+          masterfile_id: $(this).data('masterfileId'),
+          scope: $(this).data('scope')
+         },
+        success: function(result) {
+          modal = $('#add-to-playlist-modal')
+          modal.html(result);
+          modal.find('#playlistitem_submit').on('click', function(){
+              $(this).button('loading')
+          })
+          modal.find('#add_to_playlist_form').on('ajax:success', function(e, data, status, xhr){
+            $('#add-to-playlist-modal .modal-body').html(data["message"]);
+          }).on('ajax:error',function(e, xhr, status, error){
+            $('#add-to-playlist-modal .modal-body').html(error);
+          });
+          modal.modal('show');
+        },
+        error: function(result) {
+            alert('error');
+        }
+    });
+  });
+
 </script>
 <% end %>
 <% end %>

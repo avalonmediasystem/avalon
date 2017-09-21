@@ -13,65 +13,20 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-    <section id="content" class="avalon-player" style="width: 100%" tabIndex="-1">
-      <% if @master_file.present? and @master_file.succeeded? %>
 
-        <% if @stream_info[:is_video] %>
-          <video class="mejs-avalon" controls id="video-tag" poster="<%= @stream_info[:poster_image] %>" preload="true">
-            <% @stream_info[:stream_flash].each do |flash| %>
-              <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>
-            <% end %>
-            <% @stream_info[:stream_hls].each do |hls| %>
-              <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
-            <% end %>
-            <% if @stream_info[:captions_path].present? %>
-              <track srclang="en" kind="subtitles" type="<%= @stream_info[:captions_format] %>" src="<%= @stream_info[:captions_path] %>"></track>
-            <% end %>
-          </video>
-        <% else %>
-          <audio class="mejs-avalon" controls style="width: 100%;" id="video-tag" preload="true">
-            <% @stream_info[:stream_flash].each do |flash| %>
-              <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="audio/rtmp"/>
-            <% end %>
-            <% @stream_info[:stream_hls].each do |hls| %>
-              <source src="<%= hls[:url] %>" data-quality="<%= hls[:quality] %>" data-plugin-type="native" type="application/vnd.apple.mpegURL"/>
-            <% end %>
-          </audio>
-        <% end %>
-	<button id="after-player" style="position:absolute;top:-1000px"></button>
-      <% end %>
-    </section>
+    <%= render partial: 'modules/player/section', locals: {section: @master_file, section_info: @stream_info, f_start: @f_start, f_end: @f_end} %>
 
 <% content_for :page_scripts do %>
-  <% features = ['playpause','current','progress','duration','tracks','volume','responsive', 'title'] %>
 
-  <% if @master_file.is_video? %>
-    <% features << 'qualities' %>
+  <% if is_mejs_2? %>
+    <%= render partial: "mejs2_player_js", locals: {section: @master_file, section_info: @stream_info} %>
   <% else %>
-    <% features << 'hdtoggle' %>
+    <%#= render partial: "mejs4_player_js", locals: {section: @master_file, section_info: @stream_info} %>
   <% end %>
 
-  <% features += ['logo', 'fullscreen'] %>
-
   <script>
-    avalonPlayer = new AvalonPlayer($('#content').parent(), <%= @stream_info.to_json.html_safe %>, {
-      audioHeight: <%= MasterFile::AUDIO_HEIGHT %>,
-      mobileDisplayedDuration: <%= @master_file ? (@master_file.duration.to_f / 1000).round : -1 %>,
-      startQuality: '<%= current_quality(@stream_info) %>',
-      features: <%= features.inspect.html_safe %>,
-      videoWidth: '100%',
-      videoHeight: '100%',
-      enableAutosize: true,
-      iOSDisplayedDuration: <%= @master_file ? @master_file.duration.to_i / 1000 : -1 %>,
-      startQuality: '<%= current_quality(@stream_info) %>',
-      title: '<%= @master_file.title %>',
-      titleLink: '<%= media_object_url(@master_file.media_object) %>',
-      logoAction: 'popup',
-      logoURL: '<%= id_section_media_object_url(@master_file.media_object.id, @master_file.id).html_safe %>',
-      logoTitle: 'View in repository',
-      customError: '<%= t("media_objects.player.customError").html_safe %>'
-    })
-    currentPlayer = avalonPlayer.player;
+    <%# Add an offscreen button to allow for proper keyboard navigation through player controls %>
+    $('#content').append('<button id="after-player" style="position:absolute;top:-1000px"></button>')
 
     window.addEventListener('message', function(event) {
       var command = event.data.command;

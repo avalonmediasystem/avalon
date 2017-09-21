@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -97,13 +97,28 @@ class AvalonPlayer
         if _this.player.options.displayMarkers
           duration = _this.stream_info.duration
           scrubber = $('.mejs-time-rail')
+          total = $('.mejs-time-total')
           scrubber.css('position', 'relative')
+          marker_rail = $('<span  class="mejs-time-marker-rail">')
           $('.row.marker').each (i,value) ->
             offset = $(this)[0].dataset['offset']
             marker_id = $(this)[0].dataset['marker']
             title = String($(this).find('.marker_title')[0].text).replace(/"/g, '&quot;') + " ["+mejs.Utility.secondsToTimeCode(offset)+"]"
             offset_percent = if isNaN(parseFloat(offset)) then 0 else Math.min(100,Math.round(100*offset / duration))
-            $('.mejs-time-total').append('<span class="fa fa-chevron-up scrubber-marker" style="left: '+offset_percent+'%" title="'+title+'" data-marker="'+marker_id+'"></span>')
+            marker = $('<span class="fa fa-chevron-up scrubber-marker" style="left: '+offset_percent+'%" data-marker="'+marker_id+'"></span>')
+            marker.click (e) ->
+              currentPlayer.setCurrentTime offset
+            marker_rail.append(marker)
+            marker_rail.append('<span class="mejs-time-float-marker" data-marker="'+marker_id+'" style="display: none; left: '+offset_percent+'%" ><span class="mejs-time-float-current-marker">'+title+'</span><span class="mejs-time-float-corner-marker"></span></span>')
+          scrubber.append(marker_rail)
+          _this.player.globalBind('resize', (e) ->
+            marker_rail.width(total.width())
+          )
+          marker_rail.width(total.width())
+          $('.scrubber-marker').bind('mouseenter', (e) ->
+            $('.mejs-time-float-marker[data-marker="'+this.dataset.marker+'"]').show()
+          ).bind 'mouseleave', (e) ->
+            $('.mejs-time-float-marker[data-marker="'+this.dataset.marker+'"]').hide()
         @player.setCurrentTime initialTime
 
       @player.options.playlistItemDefaultTitle = @stream_info.embed_title

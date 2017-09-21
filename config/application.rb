@@ -8,11 +8,11 @@ require 'resolv-replace'
 Bundler.require(*Rails.groups)
 
 module Avalon
-  VERSION = '6.1.0'
+  VERSION = '6.2.0'
 
   class Application < Rails::Application
     require 'avalon/configuration'
-    
+
     config.generators do |g|
       g.test_framework :rspec, :spec => true
     end

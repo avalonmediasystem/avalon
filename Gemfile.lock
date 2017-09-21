@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/avalonmediasystem/about_page.git
-  revision: e4a87a7aec112b1ccdfa8f4cc71e0ee7ccdf66a6
-  tag: avalon-r6
+  revision: d59bd65d5482f0b69c2ebf1acd60952ecd6b6fb3
+  tag: avalon-r6.1
   specs:
     about_page (0.3.1)
       rails (>= 3.2)
@@ -17,15 +17,15 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
-  revision: ce676ddcec233fb525305579f26142965691d2ba
-  tag: avalon-r6.1
+  revision: 77f26a3b47d1396d1b0173c9d41b3734ae38ca60
+  tag: avalon-r6.2
   specs:
     avalon-workflow (0.0.3)
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
-  revision: fd9c084cf9c39c05b96a5e4ecfb1b9bcfd5c883d
-  tag: avalon-r6.1
+  revision: 5585bd06178dee4dbd2f8ff64164aad803adeb43
+  tag: avalon-r6.2
   specs:
     media_element_add_to_playlist (0.0.1)
       rails (~> 4.0)
@@ -123,25 +123,25 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    actionmailer (4.2.7.1)
-      actionpack (= 4.2.7.1)
-      actionview (= 4.2.7.1)
-      activejob (= 4.2.7.1)
+    actionmailer (4.2.9)
+      actionpack (= 4.2.9)
+      actionview (= 4.2.9)
+      activejob (= 4.2.9)
       mail (~> 2.5, >= 2.5.4)
       rails-dom-testing (~> 1.0, >= 1.0.5)
-    actionpack (4.2.7.1)
-      actionview (= 4.2.7.1)
-      activesupport (= 4.2.7.1)
+    actionpack (4.2.9)
+      actionview (= 4.2.9)
+      activesupport (= 4.2.9)
       rack (~> 1.6)
       rack-test (~> 0.6.2)
       rails-dom-testing (~> 1.0, >= 1.0.5)
       rails-html-sanitizer (~> 1.0, >= 1.0.2)
-    actionview (4.2.7.1)
-      activesupport (= 4.2.7.1)
+    actionview (4.2.9)
+      activesupport (= 4.2.9)
       builder (~> 3.1)
       erubis (~> 2.7.0)
       rails-dom-testing (~> 1.0, >= 1.0.5)
-      rails-html-sanitizer (~> 1.0, >= 1.0.2)
+      rails-html-sanitizer (~> 1.0, >= 1.0.3)
     active-fedora (11.2.0)
       active-triples (~> 0.11.0)
       activemodel (>= 4.2, < 6)
@@ -170,15 +170,15 @@ GEM
       active-fedora (>= 9.7, < 12)
       noid (~> 0.9)
       rails (>= 4.2.7.1, < 6)
-    activejob (4.2.7.1)
-      activesupport (= 4.2.7.1)
+    activejob (4.2.9)
+      activesupport (= 4.2.9)
       globalid (>= 0.3.0)
-    activemodel (4.2.7.1)
-      activesupport (= 4.2.7.1)
+    activemodel (4.2.9)
+      activesupport (= 4.2.9)
       builder (~> 3.1)
-    activerecord (4.2.7.1)
-      activemodel (= 4.2.7.1)
-      activesupport (= 4.2.7.1)
+    activerecord (4.2.9)
+      activemodel (= 4.2.9)
+      activesupport (= 4.2.9)
       arel (~> 6.0)
     activerecord-session_store (1.0.0)
       actionpack (>= 4.0, < 5.1)
@@ -186,9 +186,8 @@ GEM
       multi_json (~> 1.11, >= 1.11.2)
       rack (>= 1.5.2, < 3)
       railties (>= 4.0, < 5.1)
-    activesupport (4.2.7.1)
+    activesupport (4.2.9)
       i18n (~> 0.7)
-      json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
@@ -207,6 +206,10 @@ GEM
       multi_json (>= 1.0.0)
     autoprefixer-rails (6.5.4)
       execjs
+    babel-source (5.8.35)
+    babel-transpiler (0.7.0)
+      babel-source (>= 4.0, < 6)
+      execjs (~> 2.0)
     bcrypt (3.1.11)
     bcrypt-ruby (3.1.5)
       bcrypt (>= 3.1.3)
@@ -274,6 +277,7 @@ GEM
       rack-test (>= 0.5.4)
       xpath (~> 2.0)
     chronic (0.10.2)
+    cliver (0.3.2)
     coderay (1.1.1)
     coffee-rails (4.1.1)
       coffee-script (>= 2.2.0)
@@ -403,7 +407,7 @@ GEM
       hydra-access-controls (= 10.3.4)
       hydra-core (= 10.3.4)
       rails (>= 3.2.6)
-    i18n (0.8.4)
+    i18n (0.8.6)
     iconv (1.0.4)
     ims-lti (1.1.13)
       builder
@@ -411,6 +415,7 @@ GEM
     jbuilder (2.6.1)
       activesupport (>= 3.0.0, < 5.1)
       multi_json (~> 1.2)
+    jquery-datatables (1.10.15)
     jquery-rails (4.2.1)
       rails-dom-testing (>= 1, < 3)
       railties (>= 4.2.0)
@@ -448,7 +453,7 @@ GEM
       railties (>= 4, < 5.1)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
-    mail (2.6.5)
+    mail (2.6.6)
       mime-types (>= 1.16, < 4)
     media-element-logo-plugin (0.0.2)
       rails (>= 3.2.3)
@@ -459,8 +464,8 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
     mimemagic (0.3.2)
-    mini_portile2 (2.1.0)
-    minitest (5.10.2)
+    mini_portile2 (2.3.0)
+    minitest (5.10.3)
     mono_logger (1.1.0)
     multi_json (1.12.1)
     multi_xml (0.6.0)
@@ -473,8 +478,8 @@ GEM
     net-ssh (3.2.0)
     netrc (0.11.0)
     noid (0.9.0)
-    nokogiri (1.7.2)
-      mini_portile2 (~> 2.1.0)
+    nokogiri (1.8.1)
+      mini_portile2 (~> 2.3.0)
     nom-xml (0.6.0)
       activesupport (>= 3.2.18)
       i18n
@@ -503,6 +508,10 @@ GEM
     parser (2.3.3.1)
       ast (~> 2.2)
     pg (0.19.0)
+    poltergeist (1.15.0)
+      capybara (~> 2.1)
+      cliver (~> 0.3.1)
+      websocket-driver (>= 0.2.0)
     powerpack (0.1.1)
     pry (0.10.4)
       coderay (~> 1.1.0)
@@ -521,16 +530,16 @@ GEM
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
-    rails (4.2.7.1)
-      actionmailer (= 4.2.7.1)
-      actionpack (= 4.2.7.1)
-      actionview (= 4.2.7.1)
-      activejob (= 4.2.7.1)
-      activemodel (= 4.2.7.1)
-      activerecord (= 4.2.7.1)
-      activesupport (= 4.2.7.1)
+    rails (4.2.9)
+      actionmailer (= 4.2.9)
+      actionpack (= 4.2.9)
+      actionview (= 4.2.9)
+      activejob (= 4.2.9)
+      activemodel (= 4.2.9)
+      activerecord (= 4.2.9)
+      activesupport (= 4.2.9)
       bundler (>= 1.3.0, < 2.0)
-      railties (= 4.2.7.1)
+      railties (= 4.2.9)
       sprockets-rails
     rails-deprecated_sanitizer (1.0.3)
       activesupport (>= 4.2.0.alpha)
@@ -540,14 +549,14 @@ GEM
       rails-deprecated_sanitizer (>= 1.0.1)
     rails-html-sanitizer (1.0.3)
       loofah (~> 2.0)
-    railties (4.2.7.1)
-      actionpack (= 4.2.7.1)
-      activesupport (= 4.2.7.1)
+    railties (4.2.9)
+      actionpack (= 4.2.9)
+      activesupport (= 4.2.9)
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rainbow (2.1.0)
-    rake (12.0.0)
-    rb-readline (0.5.3)
+    rake (12.1.0)
+    rb-readline (0.5.4)
     rchardet (1.6.1)
     rdf (2.2.6)
       hamster (~> 3.0)
@@ -617,6 +626,8 @@ GEM
       rspec-expectations (~> 3.5.0)
       rspec-mocks (~> 3.5.0)
       rspec-support (~> 3.5.0)
+    rspec-retry (0.5.4)
+      rspec-core (> 3.3, < 3.7)
     rspec-support (3.5.0)
     rubocop (0.40.0)
       parser (>= 2.3.1.0, < 3.0)
@@ -691,7 +702,11 @@ GEM
     sprockets (3.7.1)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
-    sprockets-rails (3.2.0)
+    sprockets-es6 (0.9.2)
+      babel-source (>= 5.8.11)
+      babel-transpiler
+      sprockets (>= 3.0.0)
+    sprockets-rails (3.2.1)
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
@@ -735,10 +750,15 @@ GEM
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
+    websocket-driver (0.6.5)
+      websocket-extensions (>= 0.1.0)
+    websocket-extensions (0.1.2)
     with_locking (1.0.2)
     xml-simple (1.1.5)
     xpath (2.0.0)
       nokogiri (~> 1.3)
+    xray-rails (0.3.1)
+      rails (>= 3.1.0)
 
 PLATFORMS
   ruby
@@ -785,6 +805,7 @@ DEPENDENCIES
   hydra-head (~> 10.3.4)
   iconv
   jbuilder (~> 2.0)
+  jquery-datatables
   jquery-rails
   jquery-ui-rails
   lograge
@@ -804,10 +825,11 @@ DEPENDENCIES
   omniauth-lti!
   parallel
   pg
+  poltergeist
   pry-byebug
   pry-rails
   rack-mini-profiler
-  rails (= 4.2.7.1)
+  rails (= 4.2.9)
   rb-readline
   rdf (~> 2.2)
   rdf-rdfxml
@@ -817,6 +839,7 @@ DEPENDENCIES
   roo
   rsolr (~> 1.0)
   rspec-rails
+  rspec-retry
   rubocop (~> 0.40.0)
   rubyhorn!
   sass-rails (~> 5.0)
@@ -825,6 +848,7 @@ DEPENDENCIES
   simplecov
   solr_wrapper (>= 0.16)
   speedy-af (~> 0.1.1)
+  sprockets-es6
   sqlite3
   stackprof
   uglifier (>= 1.3.0)
@@ -832,6 +856,7 @@ DEPENDENCIES
   webmock
   whenever!
   with_locking
+  xray-rails
 
 BUNDLED WITH
-   1.14.6
+   1.15.3

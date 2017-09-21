@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -21,7 +21,7 @@ class MediaObjectsController < ApplicationController
 
   before_filter :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details]
   before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
-  load_and_authorize_resource except: [:destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details]
+  load_and_authorize_resource except: [:destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist]
   # authorize_resource only: [:create, :update]
 
   before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
@@ -63,6 +63,58 @@ class MediaObjectsController < ApplicationController
     @media_object.save(:validate => false)
 
     redirect_to edit_media_object_path(@media_object)
+  end
+
+  # POST /media_objects/avalon:1/add_to_playlist_form
+  def add_to_playlist_form
+    @media_object = MediaObject.find(params[:id])
+    authorize! :read, @media_object
+    respond_to do |format|
+      format.html do
+        render partial: 'add_to_playlist_form', locals: { scope: params[:scope], masterfile_id: params[:masterfile_id] }
+      end
+    end
+  end
+
+  # POST /media_objects/avalon:1/add_to_playlist
+  def add_to_playlist
+    @media_object = MediaObject.find(params[:id])
+    authorize! :read, @media_object
+    masterfile_id = params[:post][:masterfile_id]
+    playlist_id = params[:post][:playlist_id]
+    playlist = Playlist.find(playlist_id)
+    if current_ability.cannot? :update, playlist
+      render json: {message: "<p>You are not authorized to update this playlist.</p>", status: 403}, status: 403 and return
+    end
+    playlistitem_scope = params[:post][:playlistitem_scope] #'section', 'structure'
+    # If a single masterfile_id wasn't in the request, then create playlist_items for all masterfiles
+    masterfile_ids = masterfile_id.present? ? [masterfile_id] : @media_object.ordered_master_file_ids
+    masterfile_ids.each do |mf_id|
+      mf = MasterFile.find(mf_id)
+      if playlistitem_scope=='structure' && mf.has_structuralMetadata? && mf.structuralMetadata.xpath('//Span').present?
+        #create individual items for spans within structure
+        mf.structuralMetadata.xpath('//Span').each do |s|
+          labels = [mf.embed_title]
+          labels += s.xpath('ancestor::Div[\'label\']').collect{|a|a.attribute('label').value.strip}
+          labels << s.attribute('label')
+          label = labels.reject(&:blank?).join(' - ')
+          start_time = s.attribute('begin')
+          end_time = s.attribute('end')
+          start_time = time_str_to_milliseconds(start_time.value) if start_time.present?
+          end_time = time_str_to_milliseconds(end_time.value) if end_time.present?
+          clip = AvalonClip.new(title: label, master_file: mf, start_time: start_time, end_time: end_time)
+          new_item = PlaylistItem.new(clip: clip, playlist: playlist)
+          playlist.items += [new_item]
+        end
+      else
+        #create a single item for the entire masterfile
+        item_title = @media_object.master_file_ids.count>1? mf.embed_title : @media_object.title
+        clip = AvalonClip.new(title: item_title, master_file: mf)
+        playlist.items += [PlaylistItem.new(clip: clip, playlist: playlist)]
+      end
+    end
+    link = view_context.link_to('View Playlist', playlist_path(playlist), class: "btn btn-primary btn-xs")
+    render json: {message: "<p>Playlist items created successfully.</p> #{link}", status: 200}
   end
 
   # POST /media_objects
