@@ -164,14 +164,10 @@ class Ability
     if @user.id.present?
       can :manage, Playlist, user: @user
       # can :create, Playlist
-      can :duplicate, Playlist, visibility: Playlist::PUBLIC
-      can :duplicate, Playlist do |playlist|
+      can [:read, :duplicate], Playlist, visibility: Playlist::PUBLIC
+      can [:read, :duplicate], Playlist do |playlist|
         playlist.valid_token?(@options[:playlist_token])
       end
-    end
-    can :read, Playlist, visibility: Playlist::PUBLIC
-    can :read, Playlist do |playlist|
-      playlist.valid_token?(@options[:playlist_token])
     end
   end
 
