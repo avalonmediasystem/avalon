@@ -96,7 +96,6 @@ class ApplicationController < ActionController::Base
   def current_ability
     session_opts ||= user_session
     session_opts ||= {}
-    session_opts = session_opts.merge(playlist_token: params[:playlist_token]) if params[:playlist_token]
     @current_ability ||= Ability.new(current_user, session_opts.merge(remote_ip: request.remote_ip))
   end
 
