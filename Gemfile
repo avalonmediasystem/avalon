@@ -135,9 +135,9 @@ end
 group :test do
   gem 'factory_girl_rails'
   gem 'simplecov'
+  gem 'codeclimate-test-reporter'
   gem 'faker'
   gem 'database_cleaner'
-  gem 'coveralls'
   gem 'shoulda-matchers'
   gem 'fakefs', require: 'fakefs/safe'
   gem 'email_spec'
