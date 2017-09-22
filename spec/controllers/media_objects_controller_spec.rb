@@ -539,16 +539,16 @@ describe MediaObjectsController, type: :controller do
       let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'private') }
       let!(:user) { FactoryGirl.create(:user) }
       before :each do
-        login_user user.username
+        login_user user.user_key
       end
       it "should not be available to a user on an inactive lease" do
-        media_object.governing_policies+=[Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, inherited_read_users: [user.username])]
+        media_object.governing_policies+=[Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, inherited_read_users: [user.user_key])]
         media_object.save!
         get 'show', id: media_object.id
         expect(response.response_code).not_to eq(200)
       end
       it "should be available to a user on an active lease" do
-        media_object.governing_policies+=[Lease.create(begin_time: Date.yesterday, end_time: Date.tomorrow, inherited_read_users: [user.username])]
+        media_object.governing_policies+=[Lease.create(begin_time: Date.yesterday, end_time: Date.tomorrow, inherited_read_users: [user.user_key])]
         media_object.save!
         get 'show', id: media_object.id
         expect(response.response_code).to eq(200)
@@ -664,7 +664,7 @@ describe MediaObjectsController, type: :controller do
       context 'After sign in' do
         before do
           @user = FactoryGirl.create(:user)
-          @media_object = FactoryGirl.create(:media_object, visibility: 'private', read_users: [@user.username] )
+          @media_object = FactoryGirl.create(:media_object, visibility: 'private', read_users: [@user.user_key] )
         end
         it 'redirects to the previous url' do
         end

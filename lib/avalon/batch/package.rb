@@ -35,7 +35,10 @@ module Avalon
       end
 
       def user
-        @user ||= User.where(username: @manifest.email).first || User.where(email: @manifest.email).first
+        @user ||=
+          User.where(Devise.authentication_keys.first => @manifest.email).first || 
+          User.where(username: @manifest.email).first || 
+          User.where(email: @manifest.email).first
         @user
       end
 
