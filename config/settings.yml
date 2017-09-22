@@ -1,4 +1,4 @@
-name: 'Avalon' # used in page titles
+name: 'Avalon Media System' # used in page titles
 domain:
   host: localhost
   port: 80
