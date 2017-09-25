@@ -53,7 +53,8 @@ class PlaylistsController < ApplicationController
     columns = ['title','size','visibility','created_at','updated_at','actions']
     playlistsFiltered = playlists.where("title LIKE ?", "%#{request.params['search']['value']}%")
     if columns[request.params['order']['0']['column'].to_i] != 'size'
-      playlistsFiltered = playlistsFiltered.order("lower(#{columns[request.params['order']['0']['column'].to_i]}) #{request.params['order']['0']['dir']}")
+      playlistsFiltered = playlistsFiltered
+                            .order(columns[request.params['order']['0']['column'].to_i].downcase => request.params['order']['0']['dir'])
       pagedPlaylists = playlistsFiltered.offset(request.params['start']).limit(request.params['length'])
     else
       # sort by size (item count): decorate list with playlistitem count then sort and undecorate
