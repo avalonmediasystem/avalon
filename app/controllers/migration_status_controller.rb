@@ -11,7 +11,6 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
-
 class MigrationStatusController < ApplicationController
 
   before_filter :auth
@@ -28,7 +27,10 @@ class MigrationStatusController < ApplicationController
       criteria[:status] = "migrate" if params[:status] == "in progress"
       criteria[:status] ||= params[:status]
     end
-    @statuses = MigrationStatus.where(criteria).order(params[:order] || :id).page(params[:page]).per(params[:per])
+    @statuses = MigrationStatus.where(criteria)
+                  .order(sanitize_order(params[:order]) || :id)
+                  .page(params[:page])
+                  .per(params[:per])
     render without_layout_if_xhr
   end
 
@@ -65,5 +67,17 @@ class MigrationStatusController < ApplicationController
 
   def without_layout_if_xhr
     request.xhr? ? { layout: false } : {}
+  end
+
+private
+
+  # Avoid SQL injection attack on ActiveRecord order method
+  # Input must be in format "column asc" or "column desc"
+  def sanitize_order(order_param)
+    if order_param.present?
+      { order_param.split.first => order_param.split.second }
+    else
+      nil
+    end
   end
 end
