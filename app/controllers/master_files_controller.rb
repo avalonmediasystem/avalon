@@ -120,7 +120,7 @@ class MasterFilesController < ApplicationController
     end
     respond_to do |format|
       format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'structure') }
-      format.json { render json: {structure: structure, flash: flash} }
+      format.json { render json: {structure: ERB::Util.html_escape(structure), flash: flash} }
     end
   end
 
