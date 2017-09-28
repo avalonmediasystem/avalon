@@ -28,6 +28,7 @@ submit_edit = null
       else
         modal.find('#playlist_visibility_private-with-token').prop('checked', true)
       modal.find('#old_playlist_id').val(playlist.id)
+      modal.find('#playlist_token').val(playlist.access_token)
       modal.find('#copy-playlist-submit').prop("disabled", false)
       modal.find('#copy-playlist-submit-edit').prop("disabled", false)
 

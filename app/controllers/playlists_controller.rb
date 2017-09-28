@@ -22,6 +22,7 @@ class PlaylistsController < ApplicationController
   load_resource only: [:show, :refresh_info]
   authorize_resource only: [:index]
   before_action :get_all_other_playlists, only: [:edit]
+  before_action :load_playlist_token, only: [:show, :refresh_info, :duplicate]
 
   helper_method :access_token_url
 
@@ -98,8 +99,6 @@ class PlaylistsController < ApplicationController
 
   # GET /playlists/1
   def show
-    @playlist_token = params[:token]
-    current_ability.options[:playlist_token] = @playlist_token
     authorize! :read, @playlist
   end
 
@@ -251,8 +250,6 @@ class PlaylistsController < ApplicationController
   end
 
   def refresh_info
-    @playlist_token = params[:token]
-    current_ability.options[:playlist_token] = @playlist_token
     @position = params[:position]
     @playlist_item = @playlist.items.where(position: @position.to_i).first
     authorize! :read, @playlist_item
@@ -263,6 +260,11 @@ class PlaylistsController < ApplicationController
 
   def get_all_other_playlists
     @playlists = Playlist.where( user_id: current_user ).where.not( id: @playlist )
+  end
+
+  def load_playlist_token
+    @playlist_token = params[:token]
+    current_ability.options[:playlist_token] = @playlist_token
   end
 
   # Only allow a trusted parameter "white list" through.
