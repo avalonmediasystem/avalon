@@ -295,14 +295,19 @@ class MasterFilesController < ApplicationController
     master_file = MasterFile.find(params[:id])
     mimeType = "image/jpeg"
     content = if params[:offset]
-      authorize! :edit, master_file, message: "You do not have sufficient privileges to view this file"
+      authorize! :edit, master_file, message: "You do not have sufficient privileges to edit this file"
       opts = { :type => params[:type], :size => params[:size], :offset => params[:offset].to_f*1000, :preview => true }
       master_file.extract_still(opts)
     else
       authorize! :read, master_file, message: "You do not have sufficient privileges to view this file"
-      ds = master_file.send(params[:type].to_sym)
-      mimeType = ds.mime_type
-      ds.content
+      whitelist = ["thumbnail", "poster"]
+      if whitelist.include? params[:type]
+        ds = master_file.send(params[:type].to_sym)
+        mimeType = ds.mime_type
+        ds.content
+      else
+        nil
+      end
     end
     unless content
       redirect_to ActionController::Base.helpers.asset_path('video_icon.png')
