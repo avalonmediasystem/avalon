@@ -195,7 +195,8 @@ class MediaObjectsController < ApplicationController
         if master_file.update_derivatives(file_spec[:files], false)
           @media_object.ordered_master_files += [master_file]
         else
-          error_messages += ["Problem saving MasterFile for #{file_spec[:file_location] rescue "<unknown>"}:"]+master_file.errors.full_messages
+          error_messages += ["Problem saving MasterFile for #{file_spec[:file_location] rescue "<unknown>"}:"]
+                            + master_file.errors.full_messages
           @media_object.destroy
           break
         end
@@ -501,12 +502,42 @@ class MediaObjectsController < ApplicationController
     note_type = mo_parameters.delete(:note_type) || []
     mo_parameters[:note] = note.zip(note_type).map{|a|{note: a[0],type: a[1]}}
 
-
     mo_parameters
   end
   def master_files_params
-    # TODO: Restrist permitted params!!!
-    params.permit!
-    params[:files]
+    params.permit(:files => [:file_location,
+                             :title,
+                             :label,
+                             :file_location,
+                             :file_checksum,
+                             :file_size,
+                             :duration,
+                             :display_aspect_ratio,
+                             :original_frame_size,
+                             :file_format,
+                             :poster_offset,
+                             :thumbnail_offset,
+                             :date_digitized,
+                             :structure,
+                             :captions,
+                             :captions_type,
+                             :workflow_name,
+                             :percent_complete,
+                             :percent_succeeded,
+                             :percent_failed,
+                             :status_code,
+                             :other_identifier,
+                             :structure,
+                             :files => [:label,
+                                       :id,
+                                       :url,
+                                       :duration,
+                                       :mime_type,
+                                       :audio_bitrate,
+                                       :audio_codec,
+                                       :video_bitrate,
+                                       :video_codec,
+                                       :width,
+                                       :height]])[:files]
   end
 end
