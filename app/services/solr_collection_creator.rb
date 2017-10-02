@@ -50,7 +50,7 @@ class SolrCollectionCreator
   private
 
     def client
-      Blacklight.default_index.connection
+      ActiveFedora.solr.conn
     end
 
     def collection_options

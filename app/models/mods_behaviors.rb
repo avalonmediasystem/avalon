@@ -87,6 +87,7 @@ module ModsBehaviors
     # For full text, we stuff it into the mods_tesim field which is already configured for Mods doucments
     solr_doc['mods_tesim'] = self.ng_xml.xpath('//text()').collect { |t| t.text }
 
+    # TODO: Find a better way to handle super long fields other than simply dropping them from the solr doc.
     solr_doc.delete_if do |field,value|
       case value
       when String
