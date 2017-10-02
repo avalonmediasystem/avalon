@@ -1,11 +1,4 @@
 GIT
-  remote: http://github.com/projecthydra-labs/active-encode.git
-  revision: 83d3bd1a8c3f262de7284c61bcd4285de3ef0c91
-  specs:
-    active_encode (0.1.1)
-      activesupport
-
-GIT
   remote: https://github.com/avalonmediasystem/about_page.git
   revision: d59bd65d5482f0b69c2ebf1acd60952ecd6b6fb3
   tag: avalon-r6.1
@@ -24,8 +17,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/avalon-workflow.git
-  revision: caa1504664ee4b53a1bf21622ed5abd00b95ae7b
-  branch: no_invalid_objs
+  revision: 77f26a3b47d1396d1b0173c9d41b3734ae38ca60
+  tag: avalon-r6.2
   specs:
     avalon-workflow (0.0.3)
 
@@ -109,6 +102,7 @@ GIT
 GIT
   remote: https://github.com/avalonmediasystem/rubyhorn.git
   revision: fd1e0ee2cca53df515f58690603e9a6351066106
+  tag: avalon-r6
   specs:
     rubyhorn (0.0.6)
       activesupport
@@ -125,12 +119,6 @@ GIT
   specs:
     whenever (0.9.7)
       chronic (>= 0.6.3)
-
-GIT
-  remote: https://github.com/rkallensee/bootstrap-toggle-rails.git
-  revision: 1eaf2b57b4e2fab387f913ef6833ab735eacb0d4
-  specs:
-    bootstrap-toggle-rails (2.2.1.0)
 
 GEM
   remote: https://rubygems.org/
@@ -176,6 +164,8 @@ GEM
     active_elastic_job (2.0.1)
       aws-sdk (~> 2)
       rails (>= 4.2)
+    active_encode (0.1.1)
+      activesupport
     active_fedora-datastreams (0.1.0)
       active-fedora (>= 11.0.0.pre, < 12)
       nom-xml (>= 0.5.1)
@@ -254,6 +244,7 @@ GEM
     bootstrap-sass (3.3.7)
       autoprefixer-rails (>= 5.2.1)
       sass (>= 3.3.4)
+    bootstrap-toggle-rails (2.2.1.0)
     bootstrap_form (2.7.0)
     browse-everything (0.13.1)
       addressable (~> 2.5)
@@ -843,7 +834,7 @@ DEPENDENCIES
   active-fedora (~> 11.2)
   active_annotations (~> 0.2.2)
   active_elastic_job (~> 2.0)
-  active_encode!
+  active_encode (~> 0.1.1)
   active_fedora-datastreams
   active_fedora-noid (~> 2.0.2)
   activerecord-session_store
@@ -854,7 +845,7 @@ DEPENDENCIES
   aws-sdk (~> 2.0)
   aws-sdk-rails
   blacklight (~> 6.6)
-  bootstrap-toggle-rails!
+  bootstrap-toggle-rails
   bootstrap_form
   browse-everything (~> 0.13.0)
   byebug

@@ -50,8 +50,8 @@ gem 'devise'
 #gem 'devise-guests', '~> 0.3'
 
 # Avalon-specific
-gem 'active_encode', git: "http://github.com/projecthydra-labs/active-encode.git"
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", branch: 'no_invalid_objs'
+gem 'active_encode', '~> 0.1.1'
+gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.2'
 gem 'hooks'
 gem 'iconv'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'remote_files'
@@ -67,8 +67,8 @@ gem 'acts_as_list'
 gem 'api-pagination'
 gem 'browse-everything', '~> 0.13.0'
 gem 'bootstrap_form'
-gem 'bootstrap-toggle-rails', git: "https://github.com/rkallensee/bootstrap-toggle-rails.git"
-gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git"
+gem 'bootstrap-toggle-rails'
+gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
 gem 'roo'
 gem 'activerecord-session_store'
 gem 'whenever', git: "https://github.com/javan/whenever.git", require: false
