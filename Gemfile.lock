@@ -24,7 +24,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
-  revision: 129f6bb1d05bd9cea5b359d25ccd2288f2336632
+  revision: 5585bd06178dee4dbd2f8ff64164aad803adeb43
   tag: avalon-r6.2
   specs:
     media_element_add_to_playlist (0.0.1)
@@ -85,8 +85,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediainfo.git
-  revision: f6d7a14c5035effc9eb9986ff56621b020ebc27f
-  branch: remote_files
+  revision: aaa6464976764857c2a9d178b12c70542b11a9b3
+  branch: avalon_fixes
   specs:
     mediainfo (0.7.1)
 
@@ -196,7 +196,7 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    acts_as_list (0.9.7)
+    acts_as_list (0.9.8)
       activerecord (>= 3.0)
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
@@ -205,18 +205,18 @@ GEM
     api-pagination (4.6.3)
     arel (6.0.4)
     ast (2.3.0)
-    autoprefixer-rails (7.1.4)
+    autoprefixer-rails (7.1.4.1)
       execjs
-    aws-sdk (2.10.48)
-      aws-sdk-resources (= 2.10.48)
-    aws-sdk-core (2.10.48)
+    aws-sdk (2.10.57)
+      aws-sdk-resources (= 2.10.57)
+    aws-sdk-core (2.10.57)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
     aws-sdk-rails (1.0.1)
       aws-sdk-resources (~> 2)
       railties (>= 3)
-    aws-sdk-resources (2.10.48)
-      aws-sdk-core (= 2.10.48)
+    aws-sdk-resources (2.10.57)
+      aws-sdk-core (= 2.10.57)
     aws-sigv4 (1.0.2)
     babel-source (5.8.35)
     babel-transpiler (0.7.0)
@@ -268,7 +268,7 @@ GEM
       i18n
       rake (>= 10.0.0)
       sshkit (>= 1.9.0)
-    capistrano-bundler (1.2.0)
+    capistrano-bundler (1.3.0)
       capistrano (~> 3.1)
       sshkit (~> 1.2)
     capistrano-passenger (0.2.0)
@@ -283,7 +283,7 @@ GEM
     capistrano-rvm (0.1.2)
       capistrano (~> 3.0)
       sshkit (~> 1.2)
-    capybara (2.15.1)
+    capybara (2.15.2)
       addressable
       mini_mime (>= 0.1.3)
       nokogiri (>= 1.3.3)
@@ -293,8 +293,8 @@ GEM
     chronic (0.10.2)
     cliver (0.3.2)
     cloudfront-signer (3.0.2)
-    codeclimate-test-reporter (1.0.7)
-      simplecov
+    codeclimate-test-reporter (1.0.8)
+      simplecov (<= 0.13)
     coderay (1.1.2)
     coffee-rails (4.1.1)
       coffee-script (>= 2.2.0)
@@ -309,6 +309,7 @@ GEM
       deep_merge (~> 1.1.1)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
+    crass (1.0.2)
     daemons (1.2.4)
     database_cleaner (1.6.1)
     debug_inspector (0.0.3)
@@ -336,7 +337,7 @@ GEM
     ebnf (1.1.1)
       rdf (~> 2.2)
       sxp (~> 1.0)
-    edtf (3.0.2)
+    edtf (3.0.4)
       activesupport (>= 3.0, < 6.0)
     email_spec (2.1.1)
       htmlentities (~> 4.3.3)
@@ -348,9 +349,7 @@ GEM
     et-orbi (1.0.5)
       tzinfo
     execjs (2.7.0)
-    ezid-client (1.7.1)
-      hashie (~> 3.4, >= 3.4.3)
-    factory_girl (4.8.0)
+    factory_girl (4.8.1)
       activesupport (>= 3.0.0)
     factory_girl_rails (4.8.0)
       factory_girl (~> 4.8.0)
@@ -368,7 +367,7 @@ GEM
       rchardet
       rdf-rdfxml
       rubydora (~> 1.8)
-    flamegraph (0.9.5)
+    ffi (1.9.18)
     font-awesome-rails (4.7.0.2)
       railties (>= 3.2, < 5.2)
     globalid (0.4.0)
@@ -443,10 +442,10 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (6.0.1)
       railties (>= 3.2.16)
-    json (1.8.6)
-    json-ld (2.1.5)
+    json (2.1.0)
+    json-ld (2.1.6)
       multi_json (~> 1.12)
-      rdf (~> 2.2)
+      rdf (~> 2.2, >= 2.2.8)
     jwt (1.5.6)
     kaminari (1.0.1)
       activesupport (>= 4.1.0)
@@ -477,12 +476,13 @@ GEM
     logging (2.2.2)
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
-    lograge (0.7.0)
+    lograge (0.7.1)
       actionpack (>= 4, < 5.2)
       activesupport (>= 4, < 5.2)
       railties (>= 4, < 5.2)
       request_store (~> 1.0)
-    loofah (2.0.3)
+    loofah (2.1.1)
+      crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.6.6)
       mime-types (>= 1.16, < 4)
@@ -493,19 +493,18 @@ GEM
       rails (>= 3.2.3)
     mediashelf-loggable (0.4.10)
     memoist (0.16.0)
-    method_source (0.8.2)
+    method_source (0.9.0)
     mime-types (3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2016.0521)
     mimemagic (0.3.2)
     mini_mime (0.1.4)
-    mini_portile2 (2.2.0)
+    mini_portile2 (2.3.0)
     minitest (5.10.3)
     mono_logger (1.1.0)
     multi_json (1.12.2)
     multi_xml (0.6.0)
     multipart-post (2.0.0)
-    mysql2 (0.4.9)
     net-http-digest_auth (1.4.1)
     net-ldap (0.16.0)
     net-scp (1.2.1)
@@ -513,8 +512,8 @@ GEM
     net-ssh (4.2.0)
     netrc (0.11.0)
     noid (0.9.0)
-    nokogiri (1.8.0)
-      mini_portile2 (~> 2.2.0)
+    nokogiri (1.8.1)
+      mini_portile2 (~> 2.3.0)
     nom-xml (0.6.0)
       activesupport (>= 3.2.18)
       i18n
@@ -531,14 +530,11 @@ GEM
       activesupport
       nokogiri (>= 1.4.2)
       solrizer (~> 3.3)
-    omniauth (1.6.1)
+    omniauth (1.7.1)
       hashie (>= 3.4.6, < 3.6.0)
       rack (>= 1.6.2, < 3)
     omniauth-identity (1.1.1)
       bcrypt-ruby (~> 3.0)
-      omniauth (~> 1.0)
-    omniauth-openam (1.1.0)
-      faraday
       omniauth (~> 1.0)
     orm_adapter (0.5.0)
     os (0.9.6)
@@ -551,20 +547,16 @@ GEM
       cliver (~> 0.3.1)
       websocket-driver (>= 0.2.0)
     powerpack (0.1.1)
-    pry (0.10.4)
+    pry (0.11.1)
       coderay (~> 1.1.0)
-      method_source (~> 0.8.1)
-      slop (~> 3.4)
+      method_source (~> 0.9.0)
     pry-byebug (3.5.0)
       byebug (~> 9.1)
       pry (~> 0.10)
     pry-rails (0.3.6)
       pry (>= 0.10.4)
     public_suffix (3.0.0)
-    puma (3.10.0)
     rack (1.6.8)
-    rack-mini-profiler (0.10.5)
-      rack (>= 1.2.0)
     rack-protection (1.5.3)
       rack
     rack-test (0.6.3)
@@ -596,9 +588,12 @@ GEM
     rainbow (2.2.2)
       rake
     rake (12.1.0)
+    rb-fsevent (0.10.2)
+    rb-inotify (0.9.10)
+      ffi (>= 0.5.0, < 2)
     rb-readline (0.5.5)
     rchardet (1.6.1)
-    rdf (2.2.9)
+    rdf (2.2.10)
       hamster (~> 3.0)
       link_header (~> 0.0, >= 0.0.8)
     rdf-aggregate-repo (2.2.0)
@@ -623,8 +618,7 @@ GEM
       rdf (~> 2.1)
     rdf-xsd (2.2.0)
       rdf (~> 2.1)
-    rdoc (4.3.0)
-    redis (3.3.3)
+    redis (3.3.5)
     redis-actionpack (5.0.1)
       actionpack (>= 4.0, < 6)
       redis-rack (>= 1, < 3)
@@ -702,7 +696,7 @@ GEM
       json
       multipart-post
       oauth2
-    ruby-progressbar (1.8.3)
+    ruby-progressbar (1.9.0)
     rubydora (1.9.1)
       activemodel
       activesupport
@@ -716,7 +710,11 @@ GEM
     rufus-scheduler (3.4.2)
       et-orbi (~> 1.0)
     safe_yaml (1.0.4)
-    sass (3.4.22)
+    sass (3.5.1)
+      sass-listen (~> 4.0.0)
+    sass-listen (4.0.0)
+      rb-fsevent (~> 0.9, >= 0.9.4)
+      rb-inotify (~> 0.9, >= 0.9.7)
     sass-rails (5.0.6)
       railties (>= 4.0.0, < 6)
       sass (~> 3.1)
@@ -724,9 +722,6 @@ GEM
       sprockets-rails (>= 2.0, < 4.0)
       tilt (>= 1.1, < 3)
     scrub_rb (1.0.1)
-    sdoc (0.4.2)
-      json (~> 1.7, >= 1.7.7)
-      rdoc (~> 4.0)
     shoulda-matchers (3.1.2)
       activesupport (>= 4.0.0)
     signet (0.7.3)
@@ -734,7 +729,7 @@ GEM
       faraday (~> 0.9)
       jwt (~> 1.5)
       multi_json (~> 1.10)
-    simplecov (0.14.1)
+    simplecov (0.13.0)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
@@ -748,7 +743,7 @@ GEM
       httmultiparty
       httparty (>= 0.11.0)
       oauth2 (>= 0.9.2)
-    slop (3.6.0)
+    slop (4.5.0)
     solr_wrapper (1.1.0)
       faraday
       retriable
@@ -778,12 +773,11 @@ GEM
     sshkit (1.14.0)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
-    stackprof (0.2.10)
     stomp (1.4.4)
     sxp (1.0.0)
       rdf (~> 2.0)
     temple (0.8.0)
-    thor (0.19.4)
+    thor (0.20.0)
     thread_safe (0.3.6)
     tilt (2.0.8)
     twitter-typeahead-rails (0.11.1.pre.corejavascript)
@@ -865,13 +859,11 @@ DEPENDENCIES
   edtf
   email_spec
   equivalent-xml
-  ezid-client
   factory_girl_rails
   fakefs
   faker
   fcrepo_wrapper
   fedora-migrate (~> 0.5.0)
-  flamegraph
   google-analytics-rails (= 1.1.0)
   hashdiff
   hooks
@@ -894,18 +886,14 @@ DEPENDENCIES
   mediaelement-track-scrubber!
   mediaelement_rails!
   mediainfo!
-  mysql2
   net-ldap
   omniauth-identity
   omniauth-lti!
-  omniauth-openam
   parallel
   pg
   poltergeist
   pry-byebug
   pry-rails
-  puma
-  rack-mini-profiler
   rails (= 4.2.9)
   rb-readline
   rdf (~> 2.2)
@@ -920,16 +908,13 @@ DEPENDENCIES
   rspec-retry
   rubocop (~> 0.40.0)
   rubyhorn!
-  sass (= 3.4.22)
   sass-rails (~> 5.0)
-  sdoc (~> 0.4.0)
   shoulda-matchers
   simplecov
   solr_wrapper (>= 0.16)
   speedy-af (~> 0.1.1)
   sprockets-es6
   sqlite3
-  stackprof
   uglifier (>= 1.3.0)
   web-console (~> 2.0)
   webmock
