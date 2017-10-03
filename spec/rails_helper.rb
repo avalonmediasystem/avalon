@@ -8,6 +8,10 @@ if ENV['COVERAGE'] || ENV['TRAVIS']
   SimpleCov.command_name 'spec'
 end
 
+# Stub out all AWS clients
+require 'aws-sdk'
+Aws.config[:stub_responses] = true
+
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path('../../config/environment', __FILE__)
