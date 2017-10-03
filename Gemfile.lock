@@ -40,8 +40,8 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediaelement-hd-toggle.git
-  revision: 102ad74ef5baef7b15983a9a49586da461fe1d32
-  tag: avalon-r4
+  revision: 2e91a467a1fc029991a9b6b37d271459fd33acaf
+  tag: avalon-r6.3
   specs:
     mediaelement-hd-toggle (0.0.1)
 
