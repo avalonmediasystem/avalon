@@ -63,7 +63,7 @@ class SecurityService
           when %r(^s3://)
             FileLocator::S3File.new(Settings.streaming.signing_key).object.get.body.read
           when nil
-            Logger.warn('No CloudFront signing key configured')
+            Rails.logger.warn('No CloudFront signing key configured')
           else
             File.read(Settings.streaming.signing_key)
           end
