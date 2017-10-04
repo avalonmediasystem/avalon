@@ -10,6 +10,8 @@ gem 'jquery-datatables'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'sass-rails', '~> 5.0'
+# Use the last known good version of sass
+gem 'sass', '3.4.22'
 gem 'sprockets-es6'
 gem 'uglifier', '>= 1.3.0'
 
