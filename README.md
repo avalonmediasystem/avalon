@@ -51,3 +51,5 @@ Rails debugging with Pry can be accessed by attaching to the docker container: `
 
 # Browser Testing
 Testing support for Avalon Media System is provided by [BrowserStack](https://www.browserstack.com).
+
+### Don't merge!
