@@ -18,11 +18,8 @@ describe DeleteCourseJob do
   let(:job) { DeleteCourseJob.new }
   describe 'perform' do
     it 'calls unlink_all when deleteing jobs' do
-      @course = Course.new
-      allow(Course).to receive(:new).and_return(@course)
+      expect(Course).to receive(:unlink_all).with('foo')
       DeleteCourseJob.perform_now('foo')
-      expect(@course).to receive(:unlink_all).with('foo')
-
     end
   end
 end

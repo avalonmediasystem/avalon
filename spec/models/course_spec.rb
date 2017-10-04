@@ -17,7 +17,6 @@ require 'rails_helper'
 describe Course do
   let(:first_media_object) { FactoryGirl.create(:media_object) }
   let(:second_media_object) { FactoryGirl.create(:media_object) }
-  let(:course) {Course.new}
 
   before :each do
     first_media_object.read_groups += ['english_101', 'sociology_101', 'underwater_basketweaving_302']
@@ -29,15 +28,15 @@ describe Course do
   end
 
   it 'removes a course from multiple media objects' do
-    course.unlink_all('english_101')
-    expect(first_media_object.reload.read_groups).should_not include('english_101')
-    expect(second_media_object.reload.read_groups).should_not include('english_101')
+    Course.unlink_all('english_101')
+    expect(first_media_object.reload.read_groups).not_to include('english_101')
+    expect(second_media_object.reload.read_groups).not_to include('english_101')
   end
 
   it 'does not remove courses not specified' do
-    course.unlink_all('english_101')
+    Course.unlink_all('english_101')
     first_media_object.reload
-    expect(first_media_object.read_groups).should include('sociology_101')
-    expect(first_media_object.read_groups).should include('underwater_basketweaving_302')
+    expect(first_media_object.read_groups).to include('sociology_101')
+    expect(first_media_object.read_groups).to include('underwater_basketweaving_302')
   end
 end
