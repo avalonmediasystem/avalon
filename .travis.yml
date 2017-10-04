@@ -1,7 +1,7 @@
 ---
 git:
   submodules: false
-bundler_args: --with mysql --with aws --without development debug
+bundler_args: --with mysql aws --without development debug
 services:
   - mysql2
 before_install:
