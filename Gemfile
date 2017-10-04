@@ -148,5 +148,10 @@ group :postgres, optional: true do
   gem 'pg'
 end
 
+# Install the bundle --with mysql if using mysql as the database backend
+group :mysql, optional: true do
+  gem 'mysql2'
+end
+
 extra_gems = File.expand_path("../Gemfile.local",__FILE__)
 eval File.read(extra_gems) if File.exists?(extra_gems)
