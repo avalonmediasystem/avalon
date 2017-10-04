@@ -14,7 +14,7 @@ class FileLocator
     end
 
     def object
-      Aws::S3::Object.new(bucket_name: bucket, key: key)
+      @object ||= Aws::S3::Object.new(bucket_name: bucket, key: key)
     end
   end
 
