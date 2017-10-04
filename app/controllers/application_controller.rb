@@ -22,7 +22,7 @@ class ApplicationController < ActionController::Base
 
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
-  protect_from_forgery unless: proc{|c| request.headers['Avalon-Api-Key'].present? }
+  protect_from_forgery with: :exception, unless: proc{|c| request.headers['Avalon-Api-Key'].present? }
 
   helper_method :render_bookmarks_control?
 
@@ -59,12 +59,6 @@ class ApplicationController < ActionController::Base
     else
       request.env['omniauth.origin'] || stored_location_for(resource) || session[:previous_url] || root_path
     end
-  end
-
-  def current_ability
-    session_opts ||= user_session
-    session_opts ||= {}
-    @current_ability ||= Ability.new(current_user, session_opts.merge(remote_ip: request.remote_ip))
   end
 
   def handle_api_request

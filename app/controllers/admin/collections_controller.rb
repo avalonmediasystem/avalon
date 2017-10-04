@@ -229,8 +229,6 @@ class Admin::CollectionsController < ApplicationController
   private
 
   def collection_params
-    # TODO: Restrist permitted params!!!
-    params.permit!
-    params[:admin_collection]
+    params.permit(:admin_collection => [:name, :description, :unit, :managers => []])[:admin_collection]
   end
 end

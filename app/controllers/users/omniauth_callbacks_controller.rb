@@ -71,7 +71,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       params_whitelist = %w{t position token}
       redirect_to objects_path(request['target_id'], params.slice(*params_whitelist))
     elsif params[:url]
-      redirect_to params[:url]
+      # Limit redirects to current host only
+      redirect_to URI.parse(params[:url]).path
     elsif session[:previous_url]
       redirect_to session.delete :previous_url
     elsif auth_type == 'lti' && user_session[:virtual_groups].present?

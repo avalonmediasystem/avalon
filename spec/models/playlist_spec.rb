@@ -85,7 +85,7 @@ RSpec.describe Playlist, type: :model do
         context('when token given') do
           let(:ability) { Ability.new(user, {playlist_token: playlist.access_token}) }
           it{ is_expected.not_to be_able_to(:manage, playlist) }
-          it{ is_expected.not_to be_able_to(:duplicate, playlist) }
+          it{ is_expected.to be_able_to(:duplicate, playlist) }
           it{ is_expected.not_to be_able_to(:create, playlist) }
           it{ is_expected.to be_able_to(:read, playlist) }
           it{ is_expected.not_to be_able_to(:update, playlist) }

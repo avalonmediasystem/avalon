@@ -52,6 +52,9 @@ class MigrationStatusController < ApplicationController
 
   def report
     filename = "#{params[:id].sub(/:/,'_')}.json"
+    # Sanitize filename for security
+    bar_chars = ['/', '\\']
+    filename.gsub!(bar_chars,'_')
     send_file File.join(Rails.root, 'migration_report', filename), type: 'application/json', disposition: 'inline'
   end
 

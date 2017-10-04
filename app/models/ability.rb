@@ -165,6 +165,9 @@ class Ability
       can :manage, Playlist, user: @user
       # can :create, Playlist
       can :duplicate, Playlist, visibility: Playlist::PUBLIC
+      can :duplicate, Playlist do |playlist|
+        playlist.valid_token?(@options[:playlist_token])
+      end
     end
     can :read, Playlist, visibility: Playlist::PUBLIC
     can :read, Playlist do |playlist|
