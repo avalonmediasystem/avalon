@@ -138,8 +138,11 @@ class MEJSPlayer {
         url: '/playlists/' + playlistItem.playlist_id + '/items/' + playlistItem.id + '.json',
         dataType: 'json'
       }).done((response) => {
-        if (response.length > 0) {
-          markers = response.map((marker) => {
+        if (response.message) {
+          //TODO: display error message somehow (500 or 401)
+        }
+        else if (response.markers && response.markers.length > 0) {
+          markers = response.markers.map((marker) => {
             return marker.start_time
           })
         }
