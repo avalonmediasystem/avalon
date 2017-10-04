@@ -29,10 +29,6 @@ class ApplicationController < ActionController::Base
   around_action :handle_api_request, if: proc{|c| request.format.json?}
   before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
 
-  def alive
-    render inline: 'OK'
-  end
-
   def mejs
     session['mejs_version'] = params[:version] === '4' ? 4 : 2
     flash[:notice] = "Using MediaElement Player Version #{session['mejs_version']}"

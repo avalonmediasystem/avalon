@@ -68,4 +68,27 @@ describe ApplicationController do
       expect(response).to render_template("errors/deleted_pid")
     end
   end
+
+  describe "rewrite_v4_ids" do
+    xit 'skips miration controllers' do
+      get :show, id: 'avalon:1234', controller: 'MigrationStatusController'
+      expect(response).to have_http_status(:ok)
+    end
+
+    it 'skips when id is not a Fedora 3 pid' do
+      get :show, id: 'abc1234'
+      expect(response).not_to have_http_status(304)
+    end
+
+    it 'skips post requests' do
+      post :create, id: 'avalon:1234'
+      expect(response).not_to have_http_status(304)
+    end
+
+    xit 'redirects' do
+      master_file = FactoryGirl.create(:master_file, identifier: ['avalon:1234'])
+      get :show, id: 'avalon:1234'
+      expect(response).to redirect_to(url_for(master_file.id))
+    end
+  end
 end
