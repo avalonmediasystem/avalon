@@ -338,7 +338,7 @@ Object.assign(MediaElementPlayer.prototype, {
         const t = this;
         const addMarkerObj = t.addMarkerObj;
         const $playlistItem = $('#right-column').find('li.now_playing');
-        const playlist_item_id = $playlistItem[0].dataset.id;
+        const playlist_item_id = $playlistItem[0].dataset.playlistItemId;
 
         // Clear out alerts
         addMarkerObj.clearAddAlert.apply(t);
@@ -482,7 +482,7 @@ Object.assign(MediaElementPlayer.prototype, {
         let markersPromise = new Promise(addMarkerObj.getMarkers.bind(t));
 
         markersPromise.then((response) => {
-          let tableRows = response.map((marker) => {
+          let tableRows = response.markers.map((marker) => {
             return addMarkerObj.constructTableRow.apply(t, [marker]);
           });
           // Clear out old table rows
