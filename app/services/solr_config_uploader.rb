@@ -1,5 +1,7 @@
 # Upload solr configuration from the local filesystem into the zookeeper configs path for solr
 # Taken from https://github.com/projecthydra-labs/hyku/blob/master/app/services/solr_config_uploader.rb
+require 'zk'
+
 class SolrConfigUploader
   attr_reader :collection_path
 
