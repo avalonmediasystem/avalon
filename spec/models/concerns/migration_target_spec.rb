@@ -16,11 +16,13 @@ require 'rails_helper'
 
 describe MigrationTarget do
 
-  before do
+  before(:all) do
     class Foo < ActiveFedora::Base
       include MigrationTarget
     end
   end
+
+  after(:all) { Object.send(:remove_const, :Foo) }
 
   subject { Foo.new }
 
