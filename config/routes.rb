@@ -123,7 +123,7 @@ Rails.application.routes.draw do
   match "/object/:id", to: 'objects#show', via: [:get]
 
   resources :playlists do
-    resources :playlist_items, path: 'items', only: [:create, :update]
+    resources :playlist_items, path: 'items', only: [:create, :update, :show]
     member do
       patch 'update_multiple'
       delete 'update_multiple'
