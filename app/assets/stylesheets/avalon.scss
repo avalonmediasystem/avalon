@@ -1013,6 +1013,36 @@ div.structure_edit {
   visibility: visible !important;
 }
 
+/* Playlist index page */
+#playlists_top {
+  text-align: right;
+}
+
+#Playlists_info {
+  float: left;
+}
+
+#Playlists_length {
+  display: inline-block;
+}
+
+#Playlists_paginate {
+  float: right;
+}
+
+#playlist_filter_container {
+  display: inline-block;
+  margin-left: 1em;
+}
+
+#tag_filter_container {
+  display: inline-block;
+}
+
+#tag_filter {
+  display: inline;
+  width: auto;
+}
 /* Playlist show page */
 .queue {
   opacity:.80;
@@ -1136,6 +1166,11 @@ h5.panel-title {
     padding-left:20px;
     float:right;
   }
+}
+
+.info-text-gray {
+  font-style:italic;
+  color: gray;
 }
 
 /* Mediaelement styles */

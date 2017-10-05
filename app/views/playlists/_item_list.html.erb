@@ -45,6 +45,13 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= @playlist.comment %>
   </div>
 <% end %>
+
+<div style="margin-bottom:.4em;">
+  <% @playlist.tags.each do |tag| %>
+    <span class="btn btn-xs btn-info"><%=tag%></span>
+  <% end %>
+</div>
+
 <ol class="side-playlist">
   <% clip_map = @playlist.clips.index_by{|c|c.id} %>
   <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clip_map: clip_map } %>
