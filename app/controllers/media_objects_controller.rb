@@ -18,6 +18,7 @@ class MediaObjectsController < ApplicationController
   include Avalon::Workflow::WorkflowControllerBehavior
   include Avalon::Controller::ControllerBehavior
   include ConditionalPartials
+  include SecurityHelper
 
   before_filter :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details]
   before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
@@ -436,7 +437,7 @@ class MediaObjectsController < ApplicationController
   def load_current_stream
     set_active_file
     set_player_token
-    @currentStreamInfo = @currentStream.nil? ? {} : @currentStream.stream_details(@token, default_url_options[:host])
+    @currentStreamInfo = @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details)
     @currentStreamInfo['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
   end
 
@@ -504,6 +505,7 @@ class MediaObjectsController < ApplicationController
 
     mo_parameters
   end
+
   def master_files_params
     params.permit(:files => [:file_location,
                              :title,
@@ -540,4 +542,5 @@ class MediaObjectsController < ApplicationController
                                        :width,
                                        :height]])[:files]
   end
+
 end

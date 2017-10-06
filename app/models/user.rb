@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -52,9 +52,10 @@ class User < ActiveRecord::Base
     self.find_or_create_by_username_or_email(token.username, token.email)
   end
 
-  def self.find_for_identity(access_token, signed_in_resource=nil)
-    username = access_token.info['email']
-    User.find_by_username(username) || User.find_by_email(username) || User.create(username: username, email: username)
+  def self.find_for_generic(access_token, signed_in_resource=nil)
+    username = access_token.uid
+    email = access_token.info.email
+    User.find_by_username(username) || User.find_by_email(email) || User.create(username: username, email: email)
   end
 
   def self.find_for_lti(auth_hash, signed_in_resource=nil)

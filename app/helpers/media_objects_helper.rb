@@ -47,7 +47,7 @@ module MediaObjectsHelper
      def dropbox_url collection
         ic = Iconv.new('UTF-8//IGNORE', 'UTF-8')
         path = URI::Parser.new.escape(collection.dropbox_directory_name || "", %r{[/\\%& #]})
-        url = File.join(Avalon::Configuration.lookup('dropbox.upload_uri'), path)
+        url = File.join(Settings.dropbox.upload_uri, path)
         ic.iconv(url)
      end
 
@@ -103,7 +103,7 @@ module MediaObjectsHelper
        available_qualities += Array(stream_info[:stream_hls]).collect {|s| s[:quality]}
        available_qualities.uniq!
        quality ||= session[:quality] if session['quality'].present? && available_qualities.include?(session[:quality])
-       quality ||= Avalon::Configuration.lookup('streaming.default_quality') if available_qualities.include?(Avalon::Configuration.lookup('streaming.default_quality'))
+       quality ||= Settings.streaming.default_quality if available_qualities.include?(Settings.streaming.default_quality)
        quality ||= available_qualities.first
        quality
      end

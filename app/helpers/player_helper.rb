@@ -18,6 +18,6 @@ module PlayerHelper
   end
 
   def is_mejs_4?
-    params['mejs4'] === 'true'
+    session['mejs_version'] == 4 || params['mejs4'] === 'true'
   end
 end

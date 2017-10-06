@@ -27,6 +27,20 @@ class ApplicationController < ActionController::Base
   helper_method :render_bookmarks_control?
 
   around_action :handle_api_request, if: proc{|c| request.format.json?}
+  before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
+
+  def mejs
+    session['mejs_version'] = params[:version] === '4' ? 4 : 2
+    flash[:notice] = "Using MediaElement Player Version #{session['mejs_version']}"
+    redirect_to(root_path)
+  end
+
+  def rewrite_v4_ids
+    return if params[:controller] =~ /migration/
+    new_id = ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:id]}"}, rows: 1, fl: 'id').first['id']
+    new_content_id = params[:content] ? ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:content]}"}, rows: 1, fl: 'id').first['id'] : nil
+    redirect_to(url_for(params.merge(id: new_id, content: new_content_id)))
+  end
 
   def store_location
     store_location_for(:user, request.url)

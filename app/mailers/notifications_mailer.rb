@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class NotificationsMailer < ActionMailer::Base
-  default from: Avalon::Configuration.lookup('email.notification')
+  default from: Settings.email.notification
 
   def new_collection( args = {} )
     @collection = Admin::Collection.find(args.delete(:collection_id))

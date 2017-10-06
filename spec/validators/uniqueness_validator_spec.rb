@@ -16,9 +16,12 @@ require 'rails_helper'
 
 describe "UniquenessValidator" do
 
-  class Foo < ActiveFedora::Base
-    property :title, predicate: ::RDF::Vocab::DC.title, multiple: false
+  before(:all) do
+    class Foo < ActiveFedora::Base
+      property :title, predicate: ::RDF::Vocab::DC.title, multiple: false
+    end
   end
+  after(:all) { Object.send(:remove_const, :Foo) }
 
   let(:solr_field) {"title_uniq_si"}
   let(:validator) {UniquenessValidator.new({:attributes => [:title], :solr_name => solr_field})}

@@ -46,6 +46,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def find_user(auth_type)
     auth_type.downcase!
     find_method = "find_for_#{auth_type}".to_sym
+    find_method = :find_for_generic unless User.respond_to?(find_method)
     logger.debug "#{auth_type} :: #{current_user.inspect}"
     @user = User.send(find_method,request.env["omniauth.auth"], current_user)
     if @user.persisted?
@@ -84,7 +85,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   protected :find_user
 
   rescue_from Avalon::MissingUserId do |exception|
-    support_email = Avalon::Configuration.lookup('email.support')
+    support_email = Settings.email.support
     notice_text = I18n.t('errors.lti_auth_error') % [support_email, support_email]
     redirect_to root_path, flash: { error: notice_text.html_safe }
   end

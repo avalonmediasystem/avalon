@@ -1,0 +1,8 @@
+version: 1
+cron:
+#  - name: "SolrBackupJob"
+#    url: "/periodic_tasks"
+#    schedule: "0 8,20 * * *"
+  - name: "DeleteOldSearchesJob"
+    url: "/periodic_tasks"
+    schedule: "0,20,40 * * * *"

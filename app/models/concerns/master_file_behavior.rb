@@ -29,7 +29,7 @@ module MasterFileBehavior
     status?('COMPLETED')
   end
 
-  def stream_details(token,host=nil)
+  def stream_details
     flash, hls = [], []
 
     common, poster_path, captions_path, captions_format = nil, nil, nil, nil, nil, nil
@@ -38,8 +38,8 @@ module MasterFileBehavior
       common = { quality: d.quality,
                  mimetype: d.mime_type,
                  format: d.format }
-      flash << common.merge(url: Avalon::Configuration.rehost(d.tokenized_url(token, false),host))
-      hls << common.merge(url: Avalon::Configuration.rehost(d.tokenized_url(token, true),host))
+      flash << common.merge(url: d.streaming_url(false))
+      hls << common.merge(url: d.streaming_url(true))
     end
 
     # Sorts the streams in order of quality, note: Hash order only works in Ruby 1.9 or later
