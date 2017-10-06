@@ -142,7 +142,9 @@ class PlaylistsController < ApplicationController
   # POST /playlists
   def duplicate
     old_playlist = Playlist.find(params['old_playlist_id'])
-    authorize! :duplicate, old_playlist, message: "You do not have sufficient privledges to copy this item"
+    unless can? :duplicate, old_playlist
+      render json: {errors: 'You do not have sufficient privileges to copy this item'}, status: 401 and return
+    end
     @playlist = Playlist.new(playlist_params.merge(user: current_user))
     if @playlist.save
 
