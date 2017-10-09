@@ -1014,7 +1014,7 @@ div.structure_edit {
 }
 
 /* Playlist index page */
-#playlists_top {
+.playlists_top {
   text-align: right;
 }
 
@@ -1030,22 +1030,27 @@ div.structure_edit {
   float: right;
 }
 
-#playlist_filter_container {
+.playlist_filter_container {
   display: inline-block;
   margin-left: 1em;
 }
 
-#tag_filter_container {
+.tag_filter_container {
   display: inline-block;
 }
 
-#tag_filter {
+.tag_filter {
   display: inline;
   width: auto;
 }
+
+.tag-button-wrapper {
+  margin-bottom:.4em;
+}
+
 /* Playlist show page */
 .queue {
-  opacity:.80;
+  opacity:.8;
   &:hover {
     opacity:1;
   }

@@ -24,17 +24,16 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="container">
   <div class="Playlist-index">
   <div class="row">
-    <div class="col-lg-10">
+    <div>
       <h1 class=>Playlists <small>(<%= playlists.size %> total)</small></h1>
       <% unless playlists.empty? %>
-        <div id="tag_filter_container">
-          <div>Filter: <select id="tag_filter" name="tag_filter" class="form-control input-sm" style="width:auto">
+        <div class="tag_filter_container">
+          Filter: <select name="tag_filter" class="tag_filter form-control input-sm" style="width:auto">
             <option value="" selected="selected"></option>
             <% current_user.playlist_tags.each do |tag| %>
               <option value="<%= tag %>"><%= tag %></option>
             <% end %>
           </select>
-          </div>
         </div>
         <table id="Playlists" class="table">
             <thead>
@@ -88,7 +87,7 @@ $(document).ready( function () {
       url: '/playlists/paged_index',
       type: 'POST'
     },
-    "sDom": '<"#playlists_top"i<"#playlist_filter_container"f>>tr<"#playlists_bottom"lp>',
+    "sDom": '<"playlists_top"i<"playlist_filter_container"f>>tr<"playlists_bottom"lp>',
     "columns": [
       null,
       null,
@@ -102,11 +101,11 @@ $(document).ready( function () {
     window.apply_button_confirmation()
     window.add_copy_button_event()
     // move the tag filter into the datatables layout
-    $('#tag_filter_container').insertBefore('#playlist_filter_container');
+    $('.tag_filter_container').insertBefore('.playlist_filter_container');
   });
 });
 
-$('#tag_filter').change(function() {
+$('.tag_filter').change(function() {
   $.fn.dataTable.tables( { api: true } ).columns(5).search( $(this).val() ).draw();
 })
 
