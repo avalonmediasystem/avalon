@@ -51,22 +51,24 @@ class PlaylistsController < ApplicationController
     # requests the html for only a limited set of rows at a time.
     playlists = Playlist.where(user_id: current_user.id)
     recordsTotal = playlists.count
-    columns = ['title','size','visibility','created_at','updated_at','actions']
-    playlistsFiltered = playlists.where("title LIKE ?", "%#{request.params['search']['value']}%")
+    columns = ['title','size','visibility','created_at','updated_at','tags','actions']
+    playlistsFiltered = playlists.where("title LIKE ?", "%#{params['search']['value']}%")
+    # Apply tag filter if requested
+    tag_filter = request.params['columns']['5']['search']['value']
+    playlistsFiltered = playlistsFiltered.where("tags LIKE ?", "%#{tag_filter}%") if tag_filter.present?
     if columns[request.params['order']['0']['column'].to_i] != 'size'
-      playlistsFiltered = playlistsFiltered
-                            .order(columns[request.params['order']['0']['column'].to_i].downcase => request.params['order']['0']['dir'])
-      pagedPlaylists = playlistsFiltered.offset(request.params['start']).limit(request.params['length'])
+      playlistsFiltered = playlistsFiltered.order("lower(#{columns[params['order']['0']['column'].to_i]}) #{params['order']['0']['dir']}")
+      pagedPlaylists = playlistsFiltered.offset(params['start']).limit(params['length'])
     else
       # sort by size (item count): decorate list with playlistitem count then sort and undecorate
       decorated = playlistsFiltered.collect{|p| [ p.items.size, p ]}
       decorated.sort!
       playlistsFiltered = decorated.collect{|p| p[1]}
-      playlistsFiltered.reverse! if request.params['order']['0']['dir']=='desc'
-      pagedPlaylists = playlistsFiltered.slice(request.params['start'].to_i, request.params['length'].to_i)
+      playlistsFiltered.reverse! if params['order']['0']['dir']=='desc'
+      pagedPlaylists = playlistsFiltered.slice(params['start'].to_i, params['length'].to_i)
     end
     response = {
-      "draw": request.parameters['draw'],
+      "draw": params['draw'],
       "recordsTotal": recordsTotal,
       "recordsFiltered": playlistsFiltered.count,
       "data": pagedPlaylists.collect do |playlist|
@@ -86,6 +88,7 @@ class PlaylistsController < ApplicationController
           view_context.human_friendly_visibility(playlist.visibility),
           "<span title='#{playlist.created_at.utc.iso8601}'>#{view_context.time_ago_in_words(playlist.created_at)} ago</span>",
           "<span title='#{playlist.updated_at.utc.iso8601}'>#{view_context.time_ago_in_words(playlist.updated_at)} ago</span>",
+          playlist.tags.join(', '),
           "#{copy_button} #{edit_button} #{delete_button}"
         ]
       end
@@ -139,7 +142,9 @@ class PlaylistsController < ApplicationController
   # POST /playlists
   def duplicate
     old_playlist = Playlist.find(params['old_playlist_id'])
-    authorize! :duplicate, old_playlist, message: "You do not have sufficient privledges to copy this item"
+    unless can? :duplicate, old_playlist
+      render json: {errors: 'You do not have sufficient privileges to copy this item'}, status: 401 and return
+    end
     @playlist = Playlist.new(playlist_params.merge(user: current_user))
     if @playlist.save
 
@@ -269,7 +274,11 @@ class PlaylistsController < ApplicationController
 
   # Only allow a trusted parameter "white list" through.
   def playlist_params
-    params.require(:playlist).permit(:title, :comment, :visibility, :clip_ids, items_attributes: [:id, :position])
+    new_params = params.require(:playlist).permit(:title, :comment,
+      :visibility, :clip_ids, :tags,
+      items_attributes: [:id, :position])
+    new_params[:tags] = JSON.parse(new_params[:tags]) if new_params[:tags].present?
+    new_params
   end
 
   def update_playlist(playlist)

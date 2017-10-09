@@ -42,6 +42,10 @@ class User < ActiveRecord::Base
     super
   end
 
+  def playlist_tags
+    Playlist.where(user_id:id).collect(&:tags).flatten.reject(&:blank?).uniq.sort
+  end
+
   def self.find_or_create_by_username_or_email(username, email)
     self.where(username: username).first ||
     self.where(email: email).first ||

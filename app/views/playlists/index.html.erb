@@ -24,9 +24,17 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="container">
   <div class="Playlist-index">
   <div class="row">
-    <div class="col-lg-10">
+    <div>
       <h1 class=>Playlists <small>(<%= playlists.size %> total)</small></h1>
       <% unless playlists.empty? %>
+        <div class="tag_filter_container">
+          Filter: <select name="tag_filter" class="tag_filter form-control input-sm" style="width:auto">
+            <option value="" selected="selected"></option>
+            <% current_user.playlist_tags.each do |tag| %>
+              <option value="<%= tag %>"><%= tag %></option>
+            <% end %>
+          </select>
+        </div>
         <table id="Playlists" class="table">
             <thead>
               <tr>
@@ -35,6 +43,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <th>Visibility</th>
                 <th>Created</th>
                 <th>Updated</th>
+                <th>Tags</th>
                 <th class="text-right" data-orderable="false">Actions</th>
               </tr>
             </thead>
@@ -71,14 +80,16 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% content_for :page_scripts do %>
 <script>
 $(document).ready( function () {
- $('#Playlists').DataTable({
+  $('#Playlists').DataTable({
     processing: true,
     serverSide: true,
     ajax: {
       url: '/playlists/paged_index',
       type: 'POST'
     },
+    "sDom": '<"playlists_top"i<"playlist_filter_container"f>>tr<"playlists_bottom"lp>',
     "columns": [
+      null,
       null,
       null,
       null,
@@ -89,8 +100,14 @@ $(document).ready( function () {
   }).on( 'draw', function () {
     window.apply_button_confirmation()
     window.add_copy_button_event()
+    // move the tag filter into the datatables layout
+    $('.tag_filter_container').insertBefore('.playlist_filter_container');
   });
 });
+
+$('.tag_filter').change(function() {
+  $.fn.dataTable.tables( { api: true } ).columns(5).search( $(this).val() ).draw();
+})
 
 $( '.filedata' ).change(function() {
   $(this).closest('form').submit();
