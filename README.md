@@ -40,7 +40,7 @@ Docker provides an alternative way of setting up an Avalon Media System Developm
 * Install [Docker](https://docs.docker.com/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/)
 * ```git clone https://github.com/avalonmediasystem/avalon```
 * ```cd avalon```
-* ```cp config/authentication.yml.example config/authentication.yml```
+* ```cp config/settings.yml.example config/settings.yml```
 * ```cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml```
 * ```docker-compose up```
 * Try loading Avalon in your browser: ```localhost:3000```
