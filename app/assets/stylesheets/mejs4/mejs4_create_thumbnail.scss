@@ -1,0 +1,16 @@
+/**
+ * Stylesheet for Avalon custom MediaElement 4 plugin: "Add Marker To Playlist".
+ */
+
+.mejs__create-thumbnail-button > button,
+.mejs-create-thumbnail-button > button {
+    background: transparent no-repeat url('thumbnail-selector-camera.png');
+    background-size: contain;
+    background-position: center;
+}
+
+#create-thumbnail-modal {
+  .alert {
+    padding-right: 35px;
+  }
+}

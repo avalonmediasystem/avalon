@@ -33,5 +33,6 @@
 //= stub mediaelement/plugins/quality-i18n
 //= stub media_player_wrapper/mejs4_add_to_playlist
 //= stub media_player_wrapper/mejs4_add_marker_to_playlist
+//= stub media_player_wrapper/mejs4_create_thumbnail
 
 //= require_tree .

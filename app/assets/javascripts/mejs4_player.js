@@ -4,3 +4,4 @@
 //= require mediaelement/plugins/quality-i18n
 //= require media_player_wrapper/mejs4_add_to_playlist
 //= require media_player_wrapper/mejs4_add_marker_to_playlist
+//= require media_player_wrapper/mejs4_create_thumbnail
