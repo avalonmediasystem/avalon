@@ -54,17 +54,20 @@ class PlaylistsController < ApplicationController
     columns = ['title','size','visibility','created_at','updated_at','tags','actions']
     playlistsFiltered = playlists.where("title LIKE ?", "%#{params['search']['value']}%")
     # Apply tag filter if requested
-    tag_filter = request.params['columns']['5']['search']['value']
+    tag_filter = params['columns']['5']['search']['value']
     playlistsFiltered = playlistsFiltered.where("tags LIKE ?", "%#{tag_filter}%") if tag_filter.present?
-    if columns[request.params['order']['0']['column'].to_i] != 'size'
-      playlistsFiltered = playlistsFiltered.order("lower(#{columns[params['order']['0']['column'].to_i]}) #{params['order']['0']['dir']}")
+    sort_column = params['order']['0']['column'].to_i rescue 0
+    sort_direction = params['order']['0']['dir'] rescue 'asc'
+    session[:playlist_sort] = [sort_column, sort_direction]
+    if columns[sort_column] != 'size'
+      playlistsFiltered = playlistsFiltered.order("lower(#{columns[sort_column]}) #{sort_direction}")
       pagedPlaylists = playlistsFiltered.offset(params['start']).limit(params['length'])
     else
       # sort by size (item count): decorate list with playlistitem count then sort and undecorate
       decorated = playlistsFiltered.collect{|p| [ p.items.size, p ]}
       decorated.sort!
       playlistsFiltered = decorated.collect{|p| p[1]}
-      playlistsFiltered.reverse! if params['order']['0']['dir']=='desc'
+      playlistsFiltered.reverse! if sort_direction=='desc'
       pagedPlaylists = playlistsFiltered.slice(params['start'].to_i, params['length'].to_i)
     end
     response = {
