@@ -1,8 +1,8 @@
 # Taken from https://raw.githubusercontent.com/samvera-labs/hyku/master/spec/services/solr_config_uploader_spec.rb
-
 require 'rails_helper'
+require 'avalon/solr_config_uploader'
 
-RSpec.describe SolrConfigUploader, :skip => true do
+RSpec.describe Avalon::SolrConfigUploader, :skip => true do
   let(:config_dir) { Rails.root.join('solr', 'config') }
   subject { described_class.new('solr_config_uploader_test') }
 
