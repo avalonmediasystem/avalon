@@ -3,7 +3,7 @@ class BatchRegistriesMailer < ApplicationMailer
     @package = package
     @errors = errors
     email = package.user.email if package.user
-    email ||= Avalon::Configuration.lookup('email.notification')
+    email ||= Settings.email.notification
     mail(
       to: email,
       subject: "Failed batch ingest registration for: #{package.title}",
@@ -15,7 +15,7 @@ class BatchRegistriesMailer < ApplicationMailer
     email = package.user.email
     mail(
       to: email,
-      from: Avalon::Configuration.lookup('email.notification'),
+      from: Settings.email.notification,
       subject: "Successfully registered batch ingest: #{package.title}",
     )
   end
@@ -25,7 +25,7 @@ class BatchRegistriesMailer < ApplicationMailer
     @batch_registry = batch_registry
     @user = User.find(@batch_registry.user_id)
     email = @user.email unless user.nil?
-    email ||= Avalon::Configuration.lookup('email.notification')
+    email ||= Settings.email.notification
     @error_items = BatchEntries.where(batch_registries_id: @batch_registry.id, error: true)
     @completed_items = BatchEntries.where(batch_registries_id: @batch_registry.id, complete: true)
     prefix = "Success:"
@@ -33,7 +33,7 @@ class BatchRegistriesMailer < ApplicationMailer
 
     mail(
       to: email,
-      from: Avalon::Configuration.lookup('email.notification'),
+      from: Settings.email.notification,
       subject: "#{prefix} Batch Registry #{@batch_registry.filename} for #{@batch_registry.collection_id} has completed"
     )
   end
@@ -41,10 +41,10 @@ class BatchRegistriesMailer < ApplicationMailer
   # Used to send an email when a batch appears to be stalled
   def batch_registration_stalled_mailer(batch_registry)
     @batch_registry = batch_registry
-    email = Avalon::Configuration.lookup('email.notification')
+    email = Settings.email.notification
     mail(
       to: email,
-      from: Avalon::Configuration.lookup('email.notification'),
+      from: Settings.email.notification,
       subject: "#{prefix} Batch Registry #{batch_registry.filename} for #{batch_registry.collection_id} has completed"
     )
   end

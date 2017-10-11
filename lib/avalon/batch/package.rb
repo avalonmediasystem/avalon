@@ -19,7 +19,7 @@ module Avalon
       extend Forwardable
 
       attr_reader :manifest, :collection
-      def_delegators :@manifest, :each
+      def_delegators :@manifest, :each, :dir
 
       def self.locate(root, collection)
         Avalon::Batch::Manifest.locate(root).collect { |f| self.new(f, collection) }
@@ -36,8 +36,8 @@ module Avalon
 
       def user
         @user ||=
-          User.where(Devise.authentication_keys.first => @manifest.email).first || 
-          User.where(username: @manifest.email).first || 
+          User.where(Devise.authentication_keys.first => @manifest.email).first ||
+          User.where(username: @manifest.email).first ||
           User.where(email: @manifest.email).first
         @user
       end

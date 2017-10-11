@@ -63,6 +63,10 @@ module Avalon
         File.join(File.dirname(@file),f)
       end
 
+      def dir
+        File.dirname(@file)
+      end
+
       def retrieve(f)
         File.open(f)
       end

@@ -7,7 +7,7 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
     let(:manifest_file) { File.new('spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx') }
     let(:package) { Avalon::Batch::Package.new(manifest_file, collection) }
     let(:errors) {['Michigan','Indiana','Illinios']}
-    let(:notification_email_address) { Avalon::Configuration.lookup('email.notification') }
+    let(:notification_email_address) { Settings.email.notification }
 
     it "sends to the user when package has a registered user's email" do
        email = BatchRegistriesMailer.batch_ingest_validation_error(package, errors)
@@ -33,7 +33,7 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
     let(:manifest_file) { File.new('spec/fixtures/dropbox/example_batch_ingest/batch_manifest.xlsx') }
     let(:package) { Avalon::Batch::Package.new(manifest_file, collection) }
     let(:errors) {['Michigan','Indiana','Illinios']}
-    let(:notification_email_address) { Avalon::Configuration.lookup('email.notification') }
+    let(:notification_email_address) { Settings.email.notification }
 
     it "sends an email when a batch is successfully registered" do
        email = BatchRegistriesMailer.batch_ingest_validation_success(package)

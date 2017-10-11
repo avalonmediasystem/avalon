@@ -53,7 +53,7 @@ describe Avalon::Batch::Ingest do
     before :each do
       @dropbox_dir = collection.dropbox.base_directory
       FileUtils.cp_r 'spec/fixtures/dropbox/example_batch_ingest', @dropbox_dir
-      Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+      Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
       #stub_request(:get, sru_url).to_return(body: sru_response)
       @manifest_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
       @batch = Avalon::Batch::Package.new(@manifest_file, collection)

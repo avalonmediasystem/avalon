@@ -69,6 +69,10 @@ module Avalon
         FileLocator.new(file).uri.join(f).to_s
       end
 
+      def dir
+        FileLocator.new(file).uri.to_s
+      end
+
       def retrieve(f)
         FileLocator::S3File.new(f).object.get.body
       end
