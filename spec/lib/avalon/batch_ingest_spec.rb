@@ -33,6 +33,7 @@ describe Avalon::Batch::Ingest do
     User.create(:username => 'jay@krajcik.org', :email => 'jay@krajcik.org')
     Avalon::RoleControls.add_user_role('frances.dickens@reichel.com','manager')
     Avalon::RoleControls.add_user_role('jay@krajcik.org','manager')
+    allow(IngestBatchEntryJob).to receive(:perform_later).and_return(nil)
   end
 
   after :each do
@@ -263,7 +264,7 @@ describe Avalon::Batch::Ingest do
       end
 
       it 'sends a registration success email' do
-        expect(BatchRegistriesMailer).to receive(:batch_ingest_validation_success)
+        expect(BatchRegistriesMailer).to receive(:batch_ingest_validation_success).and_call_original
         batch_ingest.scan_for_packages
       end
 

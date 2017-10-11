@@ -135,10 +135,11 @@ describe Avalon::Batch::Entry do
 
   describe 'bibliographic import' do
     let(:bib_id) { '7763100' }
-    let(:sru_url) { "http://zgate.example.edu:9000/exampledb?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id='{:bib_id=>\"#{bib_id}\"}'" }
+    let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
     let(:sru_response) { File.read(File.expand_path("../../../../fixtures/#{bib_id}.xml",__FILE__)) }
     let(:entry_fields) {{ bibliographic_id: [bib_id], bibliographic_id_label: ['local'] }}
     before do
+      Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
       stub_request(:get, sru_url).to_return(body: sru_response)
     end
     it 'retrieves bib data' do

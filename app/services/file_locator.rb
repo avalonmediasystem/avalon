@@ -24,20 +24,24 @@ class FileLocator
 
   def uri
     if @uri.nil?
-      encoded_source = source
-      begin
-        @uri = Addressable::URI.parse(encoded_source)
-      rescue URI::InvalidURIError
-        if encoded_source == source
-          encoded_source = URI.encode(encoded_source)
-          retry
-        else
-          raise
-        end
-      end
-
-      if @uri.scheme.nil?
+      if source.is_a? File
         @uri = Addressable::URI.parse("file://#{URI.encode(File.expand_path(source))}")
+      else
+        encoded_source = source
+        begin
+          @uri = Addressable::URI.parse(encoded_source)
+        rescue URI::InvalidURIError
+          if encoded_source == source
+            encoded_source = URI.encode(encoded_source)
+            retry
+          else
+            raise
+          end
+        end
+
+        if @uri.scheme.nil?
+          @uri = Addressable::URI.parse("file://#{URI.encode(File.expand_path(source))}")
+        end
       end
     end
     @uri
