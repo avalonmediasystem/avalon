@@ -75,6 +75,35 @@ module Avalon
         end
       end
 
+      def start!
+        File.open("#{@file}.processing",'w') { |f| f.puts Time.now.xmlschema }
+      end
+
+      def error! msg=nil
+        File.open("#{@file}.error",'a') do |f|
+          if msg.nil?
+            entries.each do |entry|
+              if entry.errors.count > 0
+                f.puts "Row #{entry.row}:"
+                entry.errors.messages.each { |k,m| f.puts %{  #{m.join("\n  ")}} }
+              end
+            end
+          else
+            f.puts msg
+          end
+        end
+        rollback! if processing?
+      end
+
+      def rollback!
+        File.unlink("#{@file}.processing")
+      end
+
+      def commit!
+        File.open("#{@file}.processed",'w') { |f| f.puts Time.now.xmlschema }
+        rollback! if processing?
+      end
+
       def error?
         result = self.class.error?(@file)
         load! unless result
@@ -132,7 +161,8 @@ module Avalon
               opts[opt] = val
             end
           }
-          entries << Entry.new(fields.select { |f| !FILE_FIELDS.include?(f) }, content, opts, index, self)
+          files = content.each { |file| file[:file] = path_to(file[:file]) }
+          entries << Entry.new(fields.select { |f| !FILE_FIELDS.include?(f) }, files, opts, index, self)
         end
       end
 
