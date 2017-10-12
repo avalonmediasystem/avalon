@@ -6,7 +6,7 @@ class CreateBatchEntries < ActiveRecord::Migration
       t.boolean 'complete'
       t.boolean 'error'
       t.string 'current_status'
-      t.string 'error_message', limit: 65_535
+      t.text 'error_message', limit: 65_535
       t.string 'media_object_pid'
       t.integer 'position', index: true
       t.timestamps
