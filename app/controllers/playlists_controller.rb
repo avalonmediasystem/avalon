@@ -55,12 +55,12 @@ class PlaylistsController < ApplicationController
     playlistsFiltered = playlists.where("title LIKE ?", "%#{params['search']['value']}%")
     # Apply tag filter if requested
     tag_filter = params['columns']['5']['search']['value']
-    playlistsFiltered = playlistsFiltered.where("tags LIKE ?", "%#{tag_filter}%") if tag_filter.present?
+    playlistsFiltered = playlistsFiltered.where("tags LIKE ?", "%\n- #{tag_filter}\n%") if tag_filter.present?
     sort_column = params['order']['0']['column'].to_i rescue 0
     sort_direction = params['order']['0']['dir'] rescue 'asc'
     session[:playlist_sort] = [sort_column, sort_direction]
     if columns[sort_column] != 'size'
-      playlistsFiltered = playlistsFiltered.order("lower(#{columns[sort_column]}) #{sort_direction}")
+      playlistsFiltered = playlistsFiltered.order({ columns[sort_column].downcase => sort_direction })
       pagedPlaylists = playlistsFiltered.offset(params['start']).limit(params['length'])
     else
       # sort by size (item count): decorate list with playlistitem count then sort and undecorate
