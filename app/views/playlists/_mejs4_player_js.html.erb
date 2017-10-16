@@ -11,6 +11,7 @@ var playlistItem = <%= current_playlist_item.to_json.html_safe %>;
 var mejs4AvalonPlayer = new MEJSPlayer({
   currentStreamInfo: <%= section_info.to_json.html_safe %>,
   features: ['playpause', 'current', 'progress', 'duration', 'volume', 'quality', 'markers', 'addMarkerToPlaylist', 'fullscreen'],
+  highlightRail: true,
   playlistItem: playlistItem
 });
 </script>

@@ -14,6 +14,7 @@ class MEJSPlayer {
     // This allows for variable params to be sent in.
     this.currentStreamInfo = configObj.currentStreamInfo || {},
     this.features = configObj.features || {},
+    this.highlightRail = configObj.highlightRail,
     this.playlistItem = configObj.playlistItem || {},
 
     // Wrapper for MediaElement instance which interfaces with properties, events, etc.
@@ -236,14 +237,18 @@ class MEJSPlayer {
       this.updateSectionLinks(target)
       // Current structure item clicked
       if (dataset.segment === this.currentStreamInfo.id) {
+        // Play a range of the media file
         if (this.playRangeFlag) {
           this.playRange()
+          if (this.highlightRail) {
+            this.highlightTimeRail()
+          }
         } else {
-          // Play from beginning
+          // Play media file from the beginning: time 0
           this.mediaElement.setCurrentTime(0)
         }
       } else {
-        // New structure item clicked
+        // New structure item clicked, go grab new media 
         this.getNewStreamAjax(target)
       }
     }
@@ -259,11 +264,66 @@ class MEJSPlayer {
    */
   handleSuccess (mediaElement, originalNode, instance) {
     this.mediaElement = mediaElement
+    // Show the player in success callback
     this.revealPlayer(instance)
+    // Grab instance of player
     if (!this.player) {
       this.player = mediaElement
     }
     mediaElement.addEventListener('canplay', this.handleCanPlay.bind(this))
+    // Show highlighted time in time rail
+    if (this.highlightRail) {
+      this.highlightTimeRail.apply(this)
+    }
+  }
+
+  /**
+   * Highlight a section of the Mediaelement player's time rail
+   * @function highlightTimeRail
+   * @return {void}
+   */
+  highlightTimeRail () {
+    let highlightSpanEl = document.getElementById('content').querySelector('.mejs-highlight-clip')
+    let styleAttribute = ''
+
+    // Create the highlight DOM element if doesn't exist
+    if (!highlightSpanEl) {
+      highlightSpanEl = document.createElement('span')
+      highlightSpanEl.classList.add('mejs-highlight-clip')
+      $('.mejs__time-total')[0].appendChild(highlightSpanEl)
+    }
+    // Update CSS to represent a highlighted section
+    styleAttribute = this.createTimeRailStyles()
+    highlightSpanEl.setAttribute('style', styleAttribute)
+  }
+
+  /**
+   * Create a CSS 'style' string to plug into an inline style attribute
+   * @function createTimeRailStyles
+   * @return {string} Ex. left: 10%; width: 50%;
+   */
+  createTimeRailStyles () {
+    const duration = this.currentStreamInfo.duration
+    const playRangeData = this.playRangeData
+    // Use the clicked section fragment if exists, otherwise 't' value from back end
+    let t = (playRangeData.fragmentbegin) ? [parseFloat(playRangeData.fragmentbegin), parseFloat(playRangeData.fragmentend)] : this.currentStreamInfo.t.slice(0)
+
+    // Ensure t range array has valid values
+    t[0] = (isNaN(parseFloat(t[0]))) ? 0 : t[0]
+    t[1] = (t.length < 2 || isNaN(parseFloat(t[1]))) ? 100 : t[1]
+
+    // Calculate start and end percentage values for the highlight style attribute
+    let startPercent = Math.round((t[0] / duration) * 100)
+    startPercent = Math.max(0, Math.min(100, startPercent))
+    let endPercent = Math.round((t[1] / duration) * 100)
+    endPercent = Math.max(0, Math.min(100, endPercent))
+
+    // Make the length of time highlight 0 if it would span the entire time length
+    if (startPercent === 0 && endPercent === 100) {
+      endPercent = 0
+    }
+
+    return 'left: ' + startPercent + '%; width: ' + (endPercent - startPercent) + '%;'
   }
 
   /**
@@ -305,7 +365,7 @@ class MEJSPlayer {
   }
 
   /**
-   * Play a range of a video
+   * Play a range of a media file from the start time
    * @return {void}
    */
   playRange () {
