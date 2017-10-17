@@ -28,7 +28,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <%= clip.title %>
       <% end %>
     <% else %>
-      <%= link_to playlist_path(@playlist, position: item.position, autostart: true, mejs4: is_mejs_4? ? true : false) do %>
+      <%= link_to playlist_path(@playlist, position: item.position, token: @playlist_token, autostart: true, mejs4: is_mejs_4? ? true : false) do %>
         <%= clip.title %>
       <% end %>
     <% end %>
