@@ -21,6 +21,7 @@ class PlaylistsController < ApplicationController
   load_and_authorize_resource except: [:import_variations_playlist, :refresh_info, :duplicate, :show, :index]
   load_resource only: [:show, :refresh_info]
   authorize_resource only: [:index]
+  before_action :get_user_playlists, only: [:index, :paged_index]
   before_action :get_all_other_playlists, only: [:edit]
   before_action :load_playlist_token, only: [:show, :refresh_info, :duplicate]
 
@@ -41,40 +42,43 @@ class PlaylistsController < ApplicationController
 
   # GET /playlists
   def index
-    # Cancan's load_resource doesn't work here anymore because we added a can with a block
-    @playlists = Playlist.where( user_id: current_user )
   end
 
   # POST /playlists/paged_index
   def paged_index
     # Playlists for index page are loaded dynamically by jquery datatables javascript which
     # requests the html for only a limited set of rows at a time.
-    playlists = Playlist.where(user_id: current_user.id)
-    recordsTotal = playlists.count
+    recordsTotal = @playlists.count
     columns = ['title','size','visibility','created_at','updated_at','tags','actions']
-    playlistsFiltered = playlists.where("title LIKE ?", "%#{params['search']['value']}%")
+
+    #Filter title
+    title_filter = params['search']['value']
+    @playlists = @playlists.title_like(title_filter) if title_filter.present?
+
     # Apply tag filter if requested
     tag_filter = params['columns']['5']['search']['value']
-    playlistsFiltered = playlistsFiltered.where("tags LIKE ?", "%#{tag_filter}%") if tag_filter.present?
+    @playlists = @playlists.with_tag(tag_filter) if tag_filter.present?
+    playlistsFilteredTotal = @playlists.count
+
     sort_column = params['order']['0']['column'].to_i rescue 0
     sort_direction = params['order']['0']['dir'] rescue 'asc'
     session[:playlist_sort] = [sort_column, sort_direction]
     if columns[sort_column] != 'size'
-      playlistsFiltered = playlistsFiltered.order("lower(#{columns[sort_column]}) #{sort_direction}")
-      pagedPlaylists = playlistsFiltered.offset(params['start']).limit(params['length'])
+      @playlists = @playlists.order({ columns[sort_column].downcase => sort_direction })
+      @playlists = @playlists.offset(params['start']).limit(params['length'])
     else
       # sort by size (item count): decorate list with playlistitem count then sort and undecorate
-      decorated = playlistsFiltered.collect{|p| [ p.items.size, p ]}
+      decorated = @playlists.collect{|p| [ p.items.size, p ]}
       decorated.sort!
-      playlistsFiltered = decorated.collect{|p| p[1]}
-      playlistsFiltered.reverse! if sort_direction=='desc'
-      pagedPlaylists = playlistsFiltered.slice(params['start'].to_i, params['length'].to_i)
+      @playlists = decorated.collect{|p| p[1]}
+      @playlists.reverse! if sort_direction=='desc'
+      @playlists = @playlists.slice(params['start'].to_i, params['length'].to_i)
     end
     response = {
       "draw": params['draw'],
       "recordsTotal": recordsTotal,
-      "recordsFiltered": playlistsFiltered.count,
-      "data": pagedPlaylists.collect do |playlist|
+      "recordsFiltered": playlistsFilteredTotal,
+      "data": @playlists.collect do |playlist|
         copy_button = view_context.button_tag( type: 'button', data: { playlist: playlist },
           class: 'copy-playlist-button btn btn-default btn-xs') do
           "<span class='fa fa-clone'> Copy </span>".html_safe
@@ -266,8 +270,12 @@ class PlaylistsController < ApplicationController
 
   private
 
+  def get_user_playlists
+    @playlists = Playlist.by_user(current_user)
+  end
+
   def get_all_other_playlists
-    @playlists = Playlist.where( user_id: current_user ).where.not( id: @playlist )
+    @playlists = Playlist.by_user(current_user).where.not( id: @playlist )
   end
 
   def load_playlist_token

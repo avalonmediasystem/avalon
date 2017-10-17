@@ -14,6 +14,9 @@
 
 class Playlist < ActiveRecord::Base
   belongs_to :user
+  scope :by_user, ->(user) { where(user_id: user.id) }
+  scope :title_like, ->(title_filter) { where("title LIKE ?", "%#{title_filter}%")}
+  scope :with_tag, ->(tag_filter) { where("tags LIKE ?", "%\n- #{tag_filter}\n%") }
 
   validates :user, presence: true
   validates :title, presence: true
