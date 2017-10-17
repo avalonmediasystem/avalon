@@ -1,0 +1,40 @@
+---
+engines:
+  brakeman:
+    enabled: true
+  duplication:
+    enabled: false
+  eslint:
+    enabled: true
+    config:
+      extensions:
+        - .es6
+      ignore_warnings: true
+  fixme:
+    enabled: false
+  rubocop:
+    enabled: true
+    checks:
+      Rubocop/Metrics/AbcSize:
+        enabled: false
+      Rubocop/Metrics/BlockLength:
+        enabled: false
+      Rubocop/Style/StringLiterals:
+        enabled: false        
+  coffeelint:
+    enabled: true
+ratings:
+  paths:
+  - Gemfile.lock
+  - "**.erb"
+  - "**.rb"
+  - "**.js"
+  - "**.es6"
+  - "**.coffee"
+  - "**.rake"
+  - "**.scss"
+exclude_paths:
+- config/
+- db/
+- spec/
+- vendor/
