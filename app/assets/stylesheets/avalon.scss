@@ -1233,3 +1233,49 @@ h5.panel-title {
 .twitter-typeahead {
   z-index: auto !important;
 }
+
+/**
+ * Associated Files - Edit - Manage Files
+ */
+#associated_files {
+ margin-bottom: 2rem;
+
+ label {
+   margin-bottom: 1px;
+ }
+
+ .associated-files-block {
+   background: #efefef;
+   margin-bottom: 20px;
+   padding: 10px 15px 10px 15px;
+ }
+
+ .associated-files-top-row {
+   display: flex;
+   justify-content: flex-start;
+   font-size: 18px;
+   padding-bottom: 10px;
+
+   > span {
+     padding: 0 5px;
+   }
+   .delete {
+     margin-left: auto;
+     padding: 0;
+   }
+ }
+
+ .associated-files-wrapper {
+   input {
+     @extend .form-control;
+     padding: 3px 6px;
+     height: auto;
+   }
+ }
+}
+
+// Fixes the input displaying over the dropdown datepicker calendar
+.fileinput {
+  position: relative;
+  z-index: 1;
+}
