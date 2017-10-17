@@ -51,11 +51,21 @@ $avalon-primary-color: #84a791;
   }
 }
 
+// MEJS4 custom highlight for a section within the MEJS time rail element
+.mejs-highlight-clip {
+  background: linear-gradient($avalon-primary-color, $avalon-primary-color);
+  opacity: 0.55;
+  height: 24px;
+  top: -7px;
+  display: block;
+  position: relative;
+  z-index: -1;
+}
+
 // Loading spinner
 @keyframes spinner {
   to {transform: rotate(360deg);}
 }
-
 .spinner {
   opacity: .6;
 
