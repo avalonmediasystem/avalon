@@ -120,6 +120,12 @@ GIT
     whenever (0.9.7)
       chronic (>= 0.6.3)
 
+GIT
+  remote: https://github.com/rkallensee/bootstrap-toggle-rails.git
+  revision: 1eaf2b57b4e2fab387f913ef6833ab735eacb0d4
+  specs:
+    bootstrap-toggle-rails (2.2.1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -244,7 +250,6 @@ GEM
     bootstrap-sass (3.3.7)
       autoprefixer-rails (>= 5.2.1)
       sass (>= 3.3.4)
-    bootstrap-toggle-rails (2.2.1.0)
     bootstrap_form (2.7.0)
     browse-everything (0.13.1)
       addressable (~> 2.5)
@@ -833,7 +838,7 @@ DEPENDENCIES
   aws-sdk (~> 2.0)
   aws-sdk-rails
   blacklight (= 6.11.0)
-  bootstrap-toggle-rails
+  bootstrap-toggle-rails!
   bootstrap_form
   browse-everything (~> 0.13.0)
   byebug
