@@ -28,6 +28,10 @@ module Avalon
         def processed?(file)
           File.file?("#{file}.processed")
         end
+
+        def delete(file)
+          FileUtils.rm(file, force: true)
+        end
       end
 
       def start!

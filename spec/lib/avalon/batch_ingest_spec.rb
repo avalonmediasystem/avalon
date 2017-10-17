@@ -73,7 +73,7 @@ describe Avalon::Batch::Ingest do
 
     it 'deletes the manifest after registering' do
        batch_ingest.scan_for_packages
-       expect(File.exist?(@batch.manifest.file)).to be_falsey
+       expect(FileLocator.new(@batch.manifest.file).exists?).to be_falsey
     end
 
     it 'does not persist anything to fedora' do

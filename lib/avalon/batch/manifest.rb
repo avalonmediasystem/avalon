@@ -122,6 +122,10 @@ module Avalon
         @errors ||= []
       end
 
+      def delete
+        self.class.delete(@file)
+      end
+
       private
       def true?(value)
         not (value.to_s =~ /^(y(es)?|t(rue)?)$/i).nil?

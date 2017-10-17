@@ -59,7 +59,7 @@ module Avalon
           else
             logger.error "Persisting BatchRegistry failed for package #{@current_package.title}"
           end
-          FileUtils.rm(@current_package.manifest.file, force: true)
+          @current_package.manifest.delete
         end
         # Return something about the new batches
       end
