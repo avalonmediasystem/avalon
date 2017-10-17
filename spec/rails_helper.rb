@@ -4,6 +4,7 @@ if ENV['COVERAGE'] || ENV['TRAVIS']
 
   SimpleCov.start('rails') do
     add_filter '/spec'
+    add_filter '/app/migration'    
   end
   SimpleCov.command_name 'spec'
 end
