@@ -1,10 +1,11 @@
 ---
 git:
   submodules: false
-bundler_args: --with mysql aws --without development debug
+bundler_args: --with postgres aws --without development debug
 services:
   - mysql2
 before_install:
+  - sudo rm -vf /etc/apt/sources.list.d/*riak*
   - sudo apt-get update
   - sudo apt-get install mediainfo
   - sudo ln -s /usr/bin/lsof /usr/sbin/lsof
@@ -14,7 +15,7 @@ before_install:
 before_script:
   - rm config/database.yml
   - cp config/database.travis.yml config/database.yml
-  - mysql -e 'create database avalon_test;'
+  - psql -c 'create database travis_ci_test;' -U postgres
   - bundle exec rake db:migrate
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
@@ -29,4 +30,5 @@ jdk:
 rvm:
   - 2.3
   - 2.4
-dist: precise
+dist: trusty
+sudo: required
