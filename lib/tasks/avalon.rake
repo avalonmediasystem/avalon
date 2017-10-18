@@ -223,6 +223,16 @@ EOC
         end
       end
     end
+
+    desc "Starts Status Checking and Email Notification of Existing Batches"
+    task :ingest_status_check => :environment do
+      IngestFinished.perform_later
+    end
+
+    desc "Status Checking and Email Notification for Stalled Batches"
+    task :ingest_stalled_check => :environment do
+      StalledJob.perform_later
+    end
   end
   namespace :user do
     desc "Create user (assumes identity authentication)"
