@@ -71,6 +71,11 @@ describe Avalon::Batch::Ingest do
       expect { batch_ingest.scan_for_packages }.to change { BatchRegistries.count }.by(1)
     end
 
+    it 'deletes the manifest after registering' do
+       batch_ingest.scan_for_packages
+       expect(FileLocator.new(@batch.manifest.file).exists?).to be_falsey
+    end
+
     it 'does not persist anything to fedora' do
       expect(collection).to be_persisted
       expect { batch_ingest.scan_for_packages }.not_to change { ActiveFedora::Base.count }
@@ -114,14 +119,16 @@ describe Avalon::Batch::Ingest do
     end
 
     it 'should ingest batch with spaces in name' do
-      space_batch_path = File.join('spec/fixtures/dropbox/example batch ingest', 'batch manifest with spaces.xlsx')
+      FileUtils.cp_r 'spec/fixtures/dropbox/example batch ingest', @dropbox_dir
+      space_batch_path = File.join(@dropbox_dir + '/example batch ingest', 'batch manifest with spaces.xlsx')
       space_batch = Avalon::Batch::Package.new(space_batch_path, collection)
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [space_batch]
       expect{batch_ingest.scan_for_packages}.to change{BatchRegistries.count}.by(1)
     end
 
     it 'should ingest batch with skip-transcoding derivatives' do
-      derivatives_batch_path = File.join('spec/fixtures/dropbox/pretranscoded_batch_ingest', 'batch_manifest_derivatives.xlsx')
+      FileUtils.cp_r 'spec/fixtures/dropbox/pretranscoded_batch_ingest', @dropbox_dir
+      derivatives_batch_path = File.join(@dropbox_dir + '/pretranscoded_batch_ingest', 'batch_manifest_derivatives.xlsx')
       derivatives_batch = Avalon::Batch::Package.new(derivatives_batch_path, collection)
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [derivatives_batch]
       expect{batch_ingest.scan_for_packages}.to change{BatchRegistries.count}.by(1)

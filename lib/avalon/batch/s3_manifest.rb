@@ -35,6 +35,10 @@ module Avalon
             metadata_directive: 'REPLACE'
           )
         end
+
+        def delete(file)
+          FileLocator::S3File.new(file).object.delete
+        end
       end
 
       def initialize(*args)
