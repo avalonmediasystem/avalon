@@ -25,11 +25,18 @@ class MEJSPlayer {
     this.addSectionsClickListener()
     // audio or video file?
     this.mediaType = (this.currentStreamInfo.is_video === true) ? 'video' : 'audio'
-    // Flag whether to play a specified range of media clip (ie. 00:15 - 1:23)
-    // Default 'false' indicates play from beginning (00:00)
-    this.playRangeFlag = false
-    // Temporary holder for clip range data
-    this.playRangeData = {}
+
+    // Helper object when loading a new MEJS player instance (ie. a different media object source section link clicked)
+    this.switchPlayerHelper = {
+      active: false,
+      data: {},
+      paused: false
+    }
+
+    // Array of all current segments for media object
+    this.segmentsMap = this.createSegmentsMap()
+    // Holder for currently active segment DOM element 'id' attribute
+    this.activeSegmentId = ''
 
     // Initialize the player
     this.initializePlayer()
@@ -46,6 +53,25 @@ class MEJSPlayer {
     if (accordionEl) {
       accordionEl.addEventListener('click', this.handleSectionClick.bind(this))
     }
+  }
+
+  /**
+   * Create a map object which represents clickable time range segments within the media object
+   * @function createSegmentsMap
+   * @return {Object} segmentsMap Mapping of all current segments, key'd on the
+   * <a> element's 'id' attribute
+   */
+  createSegmentsMap () {
+    const el = document.getElementById('accordion')
+    const segmentEls = [].slice.call(el.querySelectorAll('[data-segment="' + this.currentStreamInfo.id + '"]'))
+    let segmentsMap = {}
+
+    segmentEls.forEach((el) => {
+      if (el.id) {
+        segmentsMap[el.id] = Object.assign({}, el.dataset)
+      }
+    })
+    return segmentsMap
   }
 
   /**
@@ -108,7 +134,7 @@ class MEJSPlayer {
    * @function createNewPlayer
    * @return {void}
    */
-  createNewPlayer() {
+  createNewPlayer () {
     let itemScope = document.querySelector('[itemscope="itemscope"]')
     let node = this.createMarkup()
 
@@ -116,6 +142,63 @@ class MEJSPlayer {
     // a new MediaElement instance.
     itemScope.appendChild(node)
     this.initializePlayer()
+  }
+
+  /**
+   * Create an element representing highlighted segment area in MEJS's time rail
+   * and add it to the DOM
+   * @function createTimeHighlightEl
+   * @return {void}
+   */
+  createTimeHighlightEl () {
+    let highlightSpanEl = document.getElementById('content').querySelector('.mejs-highlight-clip')
+
+    // Create the highlight DOM element if doesn't exist
+    if (!highlightSpanEl) {
+      highlightSpanEl = document.createElement('span')
+      highlightSpanEl.classList.add('mejs-highlight-clip')
+      $('.mejs__time-total')[0].appendChild(highlightSpanEl)
+      this.highlightSpanEl = highlightSpanEl
+    }
+  }
+
+  /**
+   * Create a CSS 'style' string to plug into an inline style attribute
+   * @function createTimeRailStyles
+   * @return {string} Ex. left: 10%; width: 50%;
+   */
+  createTimeRailStyles (activeSegmentId) {
+    const duration = this.currentStreamInfo.duration
+    const segment = this.segmentsMap[activeSegmentId]
+    let t = []
+
+    // No active segment, remove highlight style
+    if (!activeSegmentId) {
+      return 'left: 0%; width: 0%;'
+    }
+
+    // Use the active segment fragment,
+    try {
+      t = [parseFloat(segment.fragmentbegin), parseFloat(segment.fragmentend)]
+    } catch(e) {
+      t = this.currentStreamInfo.t.slice(0)
+    }
+
+    // Ensure t range array has valid values
+    t[0] = (isNaN(parseFloat(t[0]))) ? 0 : t[0]
+    t[1] = (t.length < 2 || isNaN(parseFloat(t[1]))) ? duration : t[1]
+
+    // Calculate start and end percentage values for the highlight style attribute
+    let startPercent = Math.round((t[0] / duration) * 100)
+    startPercent = Math.max(0, Math.min(100, startPercent))
+    let endPercent = Math.round((t[1] / duration) * 100)
+    endPercent = Math.max(0, Math.min(100, endPercent))
+
+    // Make the length of time highlight 0 if it would span the entire time length
+    if (startPercent === 0 && endPercent === 100) {
+      endPercent = 0
+    }
+    return 'left: ' + startPercent + '%; width: ' + (endPercent - startPercent) + '%;'
   }
 
   /**
@@ -186,6 +269,7 @@ class MEJSPlayer {
 
   /**
    * Stub function to demonstrate future usage of MEJS4 playlist plugin
+   * @function getPlaylists
    * @return {void}
    */
   getPlaylists () {
@@ -204,53 +288,47 @@ class MEJSPlayer {
   /**
    * Event handler for MediaElement's 'canplay' event
    * At this point can play, pause, set time on player instance
+   * @function handleCanPlay
    * @return {void}
    */
   handleCanPlay () {
     this.mediaElement.removeEventListener('canplay')
 
     // Do we play a specified range of the media file?
-    if (this.playRangeFlag) {
+    if (this.switchPlayerHelper.active) {
       this.playRange()
     }
   }
 
   /**
    * Event handler for clicking on a section link
+   * @function handleSectionClick
    * @param  {Object} e - Event object
    * @return {void}
    */
   handleSectionClick (e) {
     const target = e.target
     const dataset = e.target.dataset
+    e.preventDefault()
 
-    // Did user click on Structured metadata link?
-    this.playRangeFlag = !!dataset.fragmentbegin
-    if (this.playRangeFlag) {
-      // Store temporarily range clip data
-      this.playRangeData = dataset
-    }
+    // Stop execution if a non-section link was clicked
+    if (!dataset.segment) { return }
 
-    // Only handle clicks on section links
-    if (dataset.segment) {
-      e.preventDefault()
-      this.updateSectionLinks(target)
-      // Current structure item clicked
-      if (dataset.segment === this.currentStreamInfo.id) {
-        // Play a range of the media file
-        if (this.playRangeFlag) {
-          this.playRange()
-          if (this.highlightRail) {
-            this.highlightTimeRail()
-          }
-        } else {
-          // Play media file from the beginning: time 0
-          this.mediaElement.setCurrentTime(0)
-        }
-      } else {
-        // New structure item clicked, go grab new media 
-        this.getNewStreamAjax(target)
+    // Clicked on a different section
+    if (dataset.segment !== this.currentStreamInfo.id) {
+      // Capture clicked segment or section element id
+      this.switchPlayerHelper = {
+        active: true,
+        data: dataset,
+        paused: this.mediaElement.paused
       }
+      this.getNewStreamAjax(target)
+    } else {
+      // Clicked within the same section...
+      const parentPanel = $(target).closest('div[class*=panel]')
+      const isHeader = parentPanel.hasClass('panel-heading') || parentPanel.hasClass('panel-title')
+      const time = (isHeader) ? 0 : parseFloat(this.segmentsMap[target.id].fragmentbegin)
+      this.mediaElement.setCurrentTime(time)
     }
   }
 
@@ -264,16 +342,90 @@ class MEJSPlayer {
    */
   handleSuccess (mediaElement, originalNode, instance) {
     this.mediaElement = mediaElement
+
     // Show the player in success callback
     this.revealPlayer(instance)
+
     // Grab instance of player
     if (!this.player) {
-      this.player = mediaElement
+      this.player = this.mediaElement
     }
-    mediaElement.addEventListener('canplay', this.handleCanPlay.bind(this))
+
+    // Handle 'canplay' events fired by player
+    this.mediaElement.addEventListener('canplay', this.handleCanPlay.bind(this))
+
     // Show highlighted time in time rail
     if (this.highlightRail) {
-      this.highlightTimeRail.apply(this)
+      // Create our custom time rail highlighter element
+      this.createTimeHighlightEl()
+      this.highlightTimeRail(this.activeSegmentId)
+    }
+
+    // Listen for timeupdate events in player, to show / hide highlighted sections, etc.
+    this.mediaElement.addEventListener('timeupdate', this.handleTimeUpdate.bind(this))
+  }
+
+  /**
+   * Callback function to handle MEJS's 'timeupdate' event
+   * Essentially this is a polling function to show/display a highlighted segment region
+   * in MEJS's UI time rail
+   * @function handleTimeUpdate
+   * @return {[type]} [description]
+   */
+  handleTimeUpdate () {
+    const segmentsMap = this.segmentsMap
+    const currentTime = this.player.getCurrentTime()
+    let activeId = ''
+
+    // Get the segment for player's current time value (if one exists)
+    for (let segmentId in segmentsMap) {
+      if (segmentsMap.hasOwnProperty(segmentId)) {
+        let begin = parseFloat(segmentsMap[segmentId].fragmentbegin)
+        let end = parseFloat(segmentsMap[segmentId].fragmentend)
+
+        if ( (segmentsMap.hasOwnProperty(segmentId)) && (currentTime >= begin && currentTime < end) ) {
+          activeId = segmentId
+        }
+      }
+    }
+
+    // Current active segment exists, and is different from before
+    if (activeId && activeId !== this.activeSegmentId) {
+      this.activeSegmentId = activeId
+      this.highlightTimeRail(this.activeSegmentId)
+      this.highlightSectionLink(this.activeSegmentId)
+    }
+    // No current segment, so remove highlighting
+    else if (!activeId) {
+      this.activeSegmentId = ''
+      this.highlightTimeRail()
+      this.highlightSectionLink()
+    }
+
+  }
+
+  /**
+   * Update section links to reflect active section playing
+   * @function highlightSectionLink
+   * @param  {Object} target - HTML node of section link clicked on <a>
+   * @return {void}
+   */
+  highlightSectionLink(segmentId) {
+    const accordionEl = document.getElementById('accordion')
+    const htmlCollection = accordionEl.getElementsByClassName('playable wrap')
+    let segmentLinks = Array.from(htmlCollection)
+    let segmentEl = document.getElementById(segmentId)
+
+    // Clear "active" style on all section links
+    segmentLinks.forEach((segmentLink) => {
+      segmentLink.classList.remove('current-stream')
+      segmentLink.classList.remove('current-section')
+    })
+    if (segmentEl) {
+      // Add style to clicked segment link
+      segmentEl.classList.add('current-stream')
+      // Add style to section title
+      document.getElementById('section-title-' + segmentEl.dataset.segment).classList.add('current-section')
     }
   }
 
@@ -282,48 +434,8 @@ class MEJSPlayer {
    * @function highlightTimeRail
    * @return {void}
    */
-  highlightTimeRail () {
-    let highlightSpanEl = document.getElementById('content').querySelector('.mejs-highlight-clip')
-    let styleAttribute = ''
-
-    // Create the highlight DOM element if doesn't exist
-    if (!highlightSpanEl) {
-      highlightSpanEl = document.createElement('span')
-      highlightSpanEl.classList.add('mejs-highlight-clip')
-      $('.mejs__time-total')[0].appendChild(highlightSpanEl)
-    }
-    // Update CSS to represent a highlighted section
-    styleAttribute = this.createTimeRailStyles()
-    highlightSpanEl.setAttribute('style', styleAttribute)
-  }
-
-  /**
-   * Create a CSS 'style' string to plug into an inline style attribute
-   * @function createTimeRailStyles
-   * @return {string} Ex. left: 10%; width: 50%;
-   */
-  createTimeRailStyles () {
-    const duration = this.currentStreamInfo.duration
-    const playRangeData = this.playRangeData
-    // Use the clicked section fragment if exists, otherwise 't' value from back end
-    let t = (playRangeData.fragmentbegin) ? [parseFloat(playRangeData.fragmentbegin), parseFloat(playRangeData.fragmentend)] : this.currentStreamInfo.t.slice(0)
-
-    // Ensure t range array has valid values
-    t[0] = (isNaN(parseFloat(t[0]))) ? 0 : t[0]
-    t[1] = (t.length < 2 || isNaN(parseFloat(t[1]))) ? 100 : t[1]
-
-    // Calculate start and end percentage values for the highlight style attribute
-    let startPercent = Math.round((t[0] / duration) * 100)
-    startPercent = Math.max(0, Math.min(100, startPercent))
-    let endPercent = Math.round((t[1] / duration) * 100)
-    endPercent = Math.max(0, Math.min(100, endPercent))
-
-    // Make the length of time highlight 0 if it would span the entire time length
-    if (startPercent === 0 && endPercent === 100) {
-      endPercent = 0
-    }
-
-    return 'left: ' + startPercent + '%; width: ' + (endPercent - startPercent) + '%;'
+  highlightTimeRail (activeSegmentId) {
+    this.highlightSpanEl.setAttribute('style', this.createTimeRailStyles(activeSegmentId))
   }
 
   /**
@@ -366,12 +478,18 @@ class MEJSPlayer {
 
   /**
    * Play a range of a media file from the start time
+   * @function playRange
    * @return {void}
    */
   playRange () {
+    const begin = parseFloat(this.switchPlayerHelper.data.fragmentbegin) || 0
     // Reset the flag to default 'off'
-    this.playRangeFlag = false
-    this.mediaElement.setCurrentTime(this.playRangeData.fragmentbegin)
+    this.switchPlayerHelper.active = false
+    this.mediaElement.setCurrentTime(begin)
+    // If the player was previously playing, continue playing.
+    if (!this.switchPlayerHelper.paused) {
+      this.mediaElement.play()
+    }
   }
 
   /**
@@ -422,26 +540,6 @@ class MEJSPlayer {
   setContextVars (currentStreamInfo) {
     this.currentStreamInfo = currentStreamInfo
     this.mediaType = (currentStreamInfo.is_video === true) ? 'video' : 'audio'
-  }
-
-  /**
-   * Update section links to reflect active section playing
-   * @function updateSectionLinks
-   * @param  {Object} target - HTML node of section link clicked on <a>
-   * @return {void}
-   */
-  updateSectionLinks(target) {
-    const accordionEl = document.getElementById('accordion')
-    const htmlCollection = accordionEl.getElementsByClassName('playable wrap')
-    const sectionLinks = Array.from(htmlCollection)
-
-    // Clear selected styles on all section links
-    sectionLinks.map((sectionLink) => {
-      sectionLink.classList.remove('current-stream')
-      sectionLink.classList.remove('current-section')
-    })
-    // Add selected style to clicked section link
-    target.classList.add('current-stream')
-    target.classList.add('current-section')
+    this.segmentsMap = this.createSegmentsMap()
   }
 }
