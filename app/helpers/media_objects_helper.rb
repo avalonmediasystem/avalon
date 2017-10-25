@@ -155,7 +155,7 @@ EOF
        # If there is no structural metadata associated with this master_file return the stream info
        if section.structuralMetadata.empty?
          label = "#{index+1}. #{stream_label_for(section)} #{duration}".html_safe
-         link = link_to label, share_link_for( section ), data: data, class: 'playable wrap' + (current ? ' current-stream current-section' : '')
+         link = link_to label, share_link_for( section ), id: 'section-title-' + section.id, data: data, class: 'playable wrap' + (current ? ' current-stream current-section' : '')
          return "#{headeropen}<ul><li class='stream-li'>#{link}</li></ul>#{headerclose}"
        end
 
@@ -165,7 +165,7 @@ EOF
        if sectionnode.children.present?
          tracknumber = 0
          label = "#{index+1}. #{sectionnode.attribute('label').value} #{duration}".html_safe
-         link = link_to label, share_link_for( section ), data: data, class: 'playable wrap' + (current ? ' current-stream current-section' : '')
+         link = link_to label, share_link_for( section ), id: 'section-title-' + section.id, data: data, class: 'playable wrap' + (current ? ' current-stream current-section' : '')
          wrapperopen = <<EOF
           #{headeropen}
           <button class="fa fa-minus-square #{current ? '' : 'hidden'}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
@@ -223,8 +223,9 @@ EOF
          start,stop = get_xml_media_fragment node, section
          native_url = "#{id_section_media_object_path(@media_object, section.id)}?t=#{start},#{stop}"
          url = "#{share_link_for( section )}?t=#{start},#{stop}"
-         data =  {segment: section.id, is_video: section.file_format != 'Sound', native_url: native_url, fragmentbegin: start, fragmentend: stop}
-         link = link_to label, url, data: data, class: 'playable wrap'+(is_current_section?(section) ? ' current-stream' : '' )
+         segment_id = "#{section.id}-#{tracknumber}"
+         data = {segment: section.id, is_video: section.file_format != 'Sound', native_url: native_url, fragmentbegin: start, fragmentend: stop}
+         link = link_to label, url, id: segment_id, data: data, class: 'playable wrap'+(is_current_section?(section) ? ' current-stream' : '' )
          return "<li class='stream-li'>#{link}</li>", tracknumber
        end
      end
