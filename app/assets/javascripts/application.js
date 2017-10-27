@@ -29,7 +29,7 @@
 // Exclude MediaElement 4 JS files in /vendor, as ME4 collides with the ME2 gem
 //= stub mediaelement/mediaelement-and-player
 //= stub mediaelement/plugins/markers
-//= stub mediaelement/plugins/quality
+//= stub mediaelement/plugins/quality-avalon
 //= stub mediaelement/plugins/quality-i18n
 //= stub media_player_wrapper/mejs4_add_to_playlist
 //= stub media_player_wrapper/mejs4_add_marker_to_playlist
