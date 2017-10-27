@@ -63,7 +63,7 @@ class MEJSPlayer {
    */
   createSegmentsMap () {
     const el = document.getElementById('accordion')
-    const segmentEls = [].slice.call(el.querySelectorAll('[data-segment="' + this.currentStreamInfo.id + '"]'))
+    const segmentEls = (el) ? [].slice.call(el.querySelectorAll('[data-segment="' + this.currentStreamInfo.id + '"]')) : []
     let segmentsMap = {}
 
     segmentEls.forEach((el) => {
@@ -373,6 +373,10 @@ class MEJSPlayer {
    * @return {[type]} [description]
    */
   handleTimeUpdate () {
+    // There is no segments map, which means we don't want to hightlight any segment
+    if (Object.keys(this.segmentsMap).length === 0) {
+      return;
+    }
     const segmentsMap = this.segmentsMap
     const currentTime = this.player.getCurrentTime()
     let activeId = ''
