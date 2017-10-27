@@ -4,9 +4,8 @@
 
 .mejs__add-marker-to-playlist-button > button,
 .mejs-add-marker-to-playlist-button > button {
-    background: transparent no-repeat url('add-marker-to-playlist-control.png');
-    background-size: contain;
-    background-position: center;
+  background-position: -100px 0px;
+  width: 20px;
 }
 
 #markers {

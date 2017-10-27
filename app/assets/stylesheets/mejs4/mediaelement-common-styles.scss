@@ -85,3 +85,50 @@ $avalon-primary-color: #84a791;
     animation: spinner .8s linear infinite;
   }
 }
+
+// Player Controls
+.mejs__button {
+  width: 30px;
+}
+
+.mejs__button > button {
+  background: transparent url(/assets/me_icons.svg) no-repeat;
+  background-size: 170px 40px;
+}
+
+.mejs__play > button {
+  background-position: 0px 0px;
+}
+
+.mejs__pause > button {
+  background-position: -20px 0px;
+}
+
+.mejs__fullscreen-button > button {
+    background-position: -60px 0px;
+}
+
+.mejs__unfullscreen > button {
+  background-position: -80px 0px;
+}
+
+.mejs__mute, .mejs__unmute {
+  width: 36px;
+}
+
+.mejs__mute > button {
+  background-position: 0px -20px;
+  width: 25px;
+}
+
+.mejs__unmute > button {
+  background-position: -25px -20px;
+  width: 25px;
+}
+
+.mejs__qualities-button > button {
+  background-position: -40px 0px;
+  text-indent: 200px; //hide standard text off to the side
+  margin: 10px 6px;
+  width: 20px;
+}
