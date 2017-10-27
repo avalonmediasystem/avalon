@@ -5,10 +5,10 @@
 $avalon-primary-color: #84a791;
 
 // Control button on MEJS player
-.mejs__add-to-playlist-button > button,
-.mejs-add-to-playlist-button > button {
-    background: image-url('./add-to-playlist-control.png') transparent no-repeat;
-    background-size: contain;
+.mejs-add-to-playlist-button > button,
+.mejs__add-to-playlist-button > button {
+  background-position: -50px -20px;
+  width: 25px;
 }
 
 .add_playlist_item_playlists_no_playlists_message {
