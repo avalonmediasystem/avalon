@@ -92,7 +92,8 @@ $avalon-primary-color: #84a791;
 }
 
 .mejs__button > button {
-  background: transparent url(/assets/me_icons.svg) no-repeat;
+  background: transparent image-url('/assets/mejs4_icons-01.svg');
+  background-repeat: none;
   background-size: 170px 40px;
 }
 

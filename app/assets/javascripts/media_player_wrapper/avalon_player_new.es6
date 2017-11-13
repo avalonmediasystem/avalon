@@ -202,6 +202,27 @@ class MEJSPlayer {
   }
 
   /**
+   * Get the segment for player's current time value (if one exists)
+   * @function getActiveSegmentId
+   * @return {string} the active segment id
+   */
+  getActiveSegmentId (segmentsMap, currentTime) {
+    let activeId = ''
+
+    for (let segmentId in segmentsMap) {
+      if (segmentsMap.hasOwnProperty(segmentId)) {
+        let begin = parseFloat(segmentsMap[segmentId].fragmentbegin)
+        let end = parseFloat(segmentsMap[segmentId].fragmentend)
+
+        if ( (segmentsMap.hasOwnProperty(segmentId)) && (currentTime >= begin && currentTime < end) ) {
+          activeId = segmentId
+        }
+      }
+    }
+    return activeId
+  }
+
+  /**
    * Get any playlist item markers if a playlist item is specified
    * @function getMarkers
    * @return {obj} obj - Markers plugin specific configuration
@@ -301,6 +322,21 @@ class MEJSPlayer {
   }
 
   /**
+   * Handle updating progress of the track scrubber, if the feature/plugin is enabled
+   * @function handleScrubberProgress
+   * @param activeId - current active segment id - the id of section playing
+   * @param currentTime - current player time value in seconds
+   * @return {void}
+   */
+  handleScrubberProgress (activeId, currentTime) {
+    const player = this.player
+    if (!player.trackScrubberObj) {
+      return
+    }
+    player.trackScrubberObj.updateTrackScrubberProgressBar(currentTime)
+  }
+
+  /**
    * Event handler for clicking on a section link
    * @function handleSectionClick
    * @param  {Object} e - Event object
@@ -329,6 +365,33 @@ class MEJSPlayer {
       const isHeader = parentPanel.hasClass('panel-heading') || parentPanel.hasClass('panel-title')
       const time = (isHeader) ? 0 : parseFloat(this.segmentsMap[target.id].fragmentbegin)
       this.mediaElement.setCurrentTime(time)
+    }
+  }
+
+  /**
+   * Show/display a highlighted segment region in MEJS's UI time rail
+   * @function handleSectionHighlighting
+   * @param {string} activeId - current active segment id - the id of section playing
+   * @param {number} currentTime - current player time value in seconds
+   * @return {void}
+   */
+  handleSectionHighlighting (activeId, currentTime) {
+    // There is no segments map, which means we don't want to hightlight any segment
+    if (Object.keys(this.segmentsMap).length === 0) {
+      return;
+    }
+
+    // Current active segment exists, and is different from before
+    if (activeId && activeId !== this.activeSegmentId) {
+      this.activeSegmentId = activeId
+      this.highlightTimeRail(this.activeSegmentId)
+      this.highlightSectionLink(this.activeSegmentId)
+    }
+    // No current segment, so remove highlighting
+    else if (!activeId) {
+      this.activeSegmentId = ''
+      this.highlightTimeRail()
+      this.highlightSectionLink()
     }
   }
 
@@ -366,58 +429,30 @@ class MEJSPlayer {
   }
 
   /**
-   * Callback function to handle MEJS's 'timeupdate' event
-   * Essentially this is a polling function to show/display a highlighted segment region
-   * in MEJS's UI time rail
+   * Callback function to handle MEJS's 'timeupdate' event, which happens continuously
    * @function handleTimeUpdate
-   * @return {[type]} [description]
+   * @return {void}
    */
   handleTimeUpdate () {
-    // There is no segments map, which means we don't want to hightlight any segment
-    if (Object.keys(this.segmentsMap).length === 0) {
-      return;
-    }
-    const segmentsMap = this.segmentsMap
     const currentTime = this.player.getCurrentTime()
-    let activeId = ''
+    const activeId = this.getActiveSegmentId(this.segmentsMap, currentTime)
 
-    // Get the segment for player's current time value (if one exists)
-    for (let segmentId in segmentsMap) {
-      if (segmentsMap.hasOwnProperty(segmentId)) {
-        let begin = parseFloat(segmentsMap[segmentId].fragmentbegin)
-        let end = parseFloat(segmentsMap[segmentId].fragmentend)
-
-        if ( (segmentsMap.hasOwnProperty(segmentId)) && (currentTime >= begin && currentTime < end) ) {
-          activeId = segmentId
-        }
-      }
-    }
-
-    // Current active segment exists, and is different from before
-    if (activeId && activeId !== this.activeSegmentId) {
-      this.activeSegmentId = activeId
-      this.highlightTimeRail(this.activeSegmentId)
-      this.highlightSectionLink(this.activeSegmentId)
-    }
-    // No current segment, so remove highlighting
-    else if (!activeId) {
-      this.activeSegmentId = ''
-      this.highlightTimeRail()
-      this.highlightSectionLink()
-    }
-
+    // Handle section highlighting
+    this.handleSectionHighlighting(activeId, currentTime)
+    // Handle updating the track scrubber, if enabled
+    this.handleScrubberProgress(activeId, currentTime)
   }
 
   /**
    * Update section links to reflect active section playing
    * @function highlightSectionLink
-   * @param  {Object} target - HTML node of section link clicked on <a>
+   * @param  {string} segmentId - HTML node of section link clicked on <a>
    * @return {void}
    */
-  highlightSectionLink(segmentId) {
+  highlightSectionLink (segmentId) {
     const accordionEl = document.getElementById('accordion')
     const htmlCollection = accordionEl.getElementsByClassName('playable wrap')
-    let segmentLinks = Array.from(htmlCollection)
+    let segmentLinks = [].slice.call(htmlCollection)
     let segmentEl = document.getElementById(segmentId)
 
     // Clear "active" style on all section links
@@ -436,10 +471,16 @@ class MEJSPlayer {
   /**
    * Highlight a section of the Mediaelement player's time rail
    * @function highlightTimeRail
+   * @param {string} activeSegmentId
    * @return {void}
    */
   highlightTimeRail (activeSegmentId) {
     this.highlightSpanEl.setAttribute('style', this.createTimeRailStyles(activeSegmentId))
+
+    // If track scrubber feature is active, initialize a new scrubber
+    if (this.player.trackScrubberObj) {
+      this.reInitializeScrubber(activeSegmentId)
+    }
   }
 
   /**
@@ -461,7 +502,7 @@ class MEJSPlayer {
 
     // Remove video player controls/plugins if it's not a video stream
     if (!currentStreamInfo.is_video) {
-      defaults.features = defaults.features.filter(e => e !== 'createThumbnail');
+      defaults.features = defaults.features.filter(e => e !== 'createThumbnail')
       delete defaults.poster;
     }
 
@@ -476,8 +517,10 @@ class MEJSPlayer {
       // Create a MediaElement instance
       this.player = new MediaElementPlayer(`mejs-avalon-${this.mediaType}`, fullConfiguration)
       // Add default title from stream info which mejs plugins can access
-      this.player.options.playlistItemDefaultTitle = this.currentStreamInfo.embed_title;
-    })
+      this.player.options.playlistItemDefaultTitle = this.currentStreamInfo.embed_title
+    }).catch((error) => {
+      console.log('Promise rejection error')
+    });
   }
 
   /**
@@ -494,6 +537,25 @@ class MEJSPlayer {
     if (!this.switchPlayerHelper.paused) {
       this.mediaElement.play()
     }
+  }
+
+  /**
+   * Re-initialize the track scrubber in player
+   * @function reInitializeScrubber
+   * @param {string} activeSegmentId - Active segment id
+   * @return {void}
+   */
+  reInitializeScrubber (activeSegmentId) {
+    const stream = this.currentStreamInfo
+    let start = stream.t[0] || 0
+    let end = stream.t[1] || stream.duration
+
+    // Feed the scrubber active section data, instead of default data
+    if (activeSegmentId && this.segmentsMap && this.segmentsMap.hasOwnProperty(activeSegmentId)) {
+      start = this.segmentsMap[activeSegmentId].fragmentbegin
+      end = this.segmentsMap[activeSegmentId].fragmentend
+    }
+    this.player.trackScrubberObj.initializeTrackScrubber(start, end, stream)
   }
 
   /**
@@ -546,4 +608,5 @@ class MEJSPlayer {
     this.mediaType = (currentStreamInfo.is_video === true) ? 'video' : 'audio'
     this.segmentsMap = this.createSegmentsMap()
   }
+
 }

@@ -25,6 +25,7 @@
 
 // Exclude MediaElement2 era default loaded files that are interferring
 //= stub marker.js.coffee
+//= stub me-track-scrubber
 
 // Exclude MediaElement 4 JS files in /vendor, as ME4 collides with the ME2 gem
 //= stub mediaelement/mediaelement-and-player
@@ -34,5 +35,6 @@
 //= stub media_player_wrapper/mejs4_add_to_playlist
 //= stub media_player_wrapper/mejs4_add_marker_to_playlist
 //= stub media_player_wrapper/mejs4_create_thumbnail
+//= stub media_player_wrapper/mejs4_track_scrubber
 
 //= require_tree .
