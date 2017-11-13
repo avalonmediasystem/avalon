@@ -16,6 +16,7 @@ require 'avalon/stream_mapper'
 
 class Derivative < ActiveFedora::Base
   include DerivativeBehavior
+  include DerivativeIntercom
   include FrameSize
   include MigrationTarget
 

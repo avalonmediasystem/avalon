@@ -23,6 +23,7 @@ class MediaObject < ActiveFedora::Base
   include Identifier
   include MigrationTarget
   include SpeedyAF::OrderedAggregationIndex
+  include MediaObjectIntercom
   require 'avalon/controlled_vocabulary'
 
   include Kaminari::ActiveFedoraModelExtension

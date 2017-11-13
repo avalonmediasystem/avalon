@@ -279,6 +279,38 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.other_identifier.find {|id_pair| id_pair[:source] == 'other'}).not_to be nil
           expect(new_media_object.other_identifier.find {|id_pair| id_pair[:source] == 'other'}[:id]).to eq('12345')
         end
+        it "should create a new media_object using ingest_api_hash of existing media_object" do
+          # master_file_obj = FactoryGirl.create(:master_file, master_file.slice(:files))
+          media_object = FactoryGirl.create(:fully_searchable_media_object)
+          master_file = FactoryGirl.create(:master_file, :with_derivative, :with_thumbnail, :with_poster, :with_structure, :with_captions)
+          media_object.ordered_master_files += [master_file]
+          media_object.workflow.last_completed_step = 'access-control'
+          media_object.update_dependent_properties!
+          api_hash = media_object.to_ingest_api_hash
+          post 'create', format: 'json', fields: api_hash[:fields], files: api_hash[:files], collection_id: media_object.collection_id
+          expect(response.status).to eq(200)
+          new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+          expect(new_media_object.title).to eq media_object.title
+          expect(new_media_object.creator).to eq media_object.creator
+          expect(new_media_object.date_issued).to eq media_object.date_issued
+          expect(new_media_object.ordered_master_files.to_a.map(&:id)).to match_array new_media_object.master_file_ids
+          expect(new_media_object.duration).to eq media_object.duration
+          expect(new_media_object.format).to eq media_object.format
+          expect(new_media_object.note).to eq media_object.note
+          expect(new_media_object.language).to eq media_object.language
+          expect(new_media_object.bibliographic_id).to eq media_object.bibliographic_id
+          expect(new_media_object.related_item_url).to eq media_object.related_item_url
+          expect(new_media_object.other_identifier).to eq media_object.other_identifier
+          expect(new_media_object.avalon_resource_type).to eq media_object.avalon_resource_type
+          expect(new_media_object.master_files.first.date_digitized).to eq(media_object.master_files.first.date_digitized)
+          expect(new_media_object.master_files.first.identifier).to eq(media_object.master_files.first.identifier)
+          expect(new_media_object.master_files.first.structuralMetadata.has_content?).to be_truthy
+          expect(new_media_object.master_files.first.captions.has_content?).to be_truthy
+          expect(new_media_object.master_files.first.captions.mime_type).to eq(media_object.master_files.first.captions.mime_type)
+          expect(new_media_object.master_files.first.derivatives.count).to eq(media_object.master_files.first.derivatives.count)
+          expect(new_media_object.master_files.first.derivatives.first.location_url).to eq(media_object.master_files.first.derivatives.first.location_url)
+          expect(new_media_object.workflow.last_completed_step).to eq(media_object.workflow.last_completed_step)
+        end
       end
     end
     describe "#update" do

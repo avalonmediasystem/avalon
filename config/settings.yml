@@ -58,6 +58,8 @@ bib_retriever:
   query: rec.id='%s'
 controlled_vocabulary:
   path: config/controlled_vocabulary.yml
+intercom:
+  path: config/intercom.yml
 auth:
   configuration:
     - :name: Avalon Test Auth
