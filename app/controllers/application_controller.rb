@@ -83,10 +83,14 @@ class ApplicationController < ActionController::Base
   # @return [Collection] Collections to which current_user or requested user has manage access
   def get_user_collections(user = nil)
     # return all collections to admin, unless specific user is passed in
-    if user.blank? && can?(:manage, Admin::Collection)
-      Admin::Collection.all
+    if can?(:manage, Admin::Collection)
+      if user.blank?
+        Admin::Collection.all
+      else
+        Admin::Collection.where("inheritable_edit_access_person_ssim" => user).to_a
+      end
     else
-      Admin::Collection.where("inheritable_edit_access_person_ssim" => user || user_key).to_a
+      Admin::Collection.where("inheritable_edit_access_person_ssim" => user_key).to_a
     end
   end
   helper_method :get_user_collections

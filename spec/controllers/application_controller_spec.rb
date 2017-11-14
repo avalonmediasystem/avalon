@@ -60,7 +60,11 @@ describe ApplicationController do
       login_as :user
       expect(controller.get_user_collections).to be_empty
     end
-    it 'returns only relevant collections for user parameter' do
+    it 'returns no collections to end-user, even when passing user param' do
+      login_as :user
+      expect(controller.get_user_collections collection1.managers.first).to be_empty
+    end
+    it 'returns requested user\'s collections for an administrator' do
       login_as :administrator
       expect(controller.get_user_collections collection1.managers.first).to include(collection1)
       expect(controller.get_user_collections collection1.managers.first).not_to include(collection2)
