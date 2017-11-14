@@ -164,15 +164,19 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def as_json(options={})
+    total_count = media_objects.count
+    pub_count = published_count
+    unpub_count = total_count - pub_count
+
     {
       id: id,
       name: name,
       unit: unit,
       description: description,
       object_count: {
-        total: media_objects.count,
-        published: media_objects.reject{|mo| !mo.published?}.count,
-        unpublished: media_objects.reject{|mo| mo.published?}.count
+        total: total_count,
+        published: pub_count,
+        unpublished: unpub_count
       },
       roles: {
         managers: managers,
@@ -324,4 +328,11 @@ class Admin::Collection < ActiveFedora::Base
       self.default_read_groups = self.default_read_groups.to_a - represented_default_visibility
     end
 
+    def published_count
+      media_objects.where('avalon_publisher_ssi:["" TO *]').count
+    end
+
+    def unpublished_count
+      media_objects.count - published_count
+    end
 end
