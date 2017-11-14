@@ -1,0 +1,164 @@
+/**
+ * Stylesheet for Avalon custom MediaElement 4 plugin: "Track Scrubber".
+ */
+
+.mejs-track-scrubber-button,
+.mejs__track-scrubber-button {
+  > button {
+    background-position: -98px -20px;
+  }
+
+  &.track-scrubber-hide {
+    > button {
+      background-position: -77px -20px;
+    }
+  }
+ }
+
+.mejs-time-clip {
+  background: linear-gradient(#DDD,#DDD);
+  opacity: .3;
+  height: 14px !important;
+  top: -3px !important;
+}
+
+.track_scrubber {
+    max-width: 870px;
+    background: #696667;
+    color: white;
+    padding: 0pt 10pt 10pt 10pt;
+    border: 1pt solid #353536;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    bottom: 0;
+    left: 0;
+    height: 36px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+
+    &.hidden {
+      display: none;
+    }
+
+    div {
+      list-style-type: none;
+      background-image: none;
+      margin: 0;
+      padding: 0;
+      width: 26px;
+      height: 26px;
+      font-size: 11px;
+      line-height: 11px;
+      font-family: Helvetica, Arial;
+      border: 0;
+    }
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .mejs-time {
+      color: #fff;
+      width: auto;
+      overflow: hidden;
+      padding: 0 5px;
+      text-align: center;
+      -moz-box-sizing: content-box;
+      -webkit-box-sizing: content-box;
+      box-sizing: content-box;
+      span {
+        color: #fff;
+        font-size: 11px;
+        line-height: 12px;
+        display: block;
+        margin: 1px 2px 0 2px;
+        width: auto;
+      }
+    }
+    /* Start: Progress Bar */
+    div.track-mejs-time-rail {
+      direction: ltr;
+      width: 80%;
+      span {
+      	display: block;
+        position: absolute;
+        height: 10px;
+        -webkit-border-radius: 2px;
+        -moz-border-radius: 2px;
+        border-radius: 1px;
+        cursor: pointer;
+      }
+      .track-mejs-time-total {
+        height: 20px;
+        background: #333;
+        background: rgba(50,50,50,0.8);
+        background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(30,30,30,0.8)), to(rgba(60,60,60,0.8)));
+        background: -webkit-linear-gradient(top, rgba(30,30,30,0.8), rgba(60,60,60,0.8));
+        background: -moz-linear-gradient(top, rgba(30,30,30,0.8), rgba(60,60,60,0.8));
+        background: -o-linear-gradient(top, rgba(30,30,30,0.8), rgba(60,60,60,0.8));
+        background: -ms-linear-gradient(top, rgba(30,30,30,0.8), rgba(60,60,60,0.8));
+        background: linear-gradient(rgba(30,30,30,0.8), rgba(60,60,60,0.8));
+      }
+      .track-mejs-time-current {
+        background: #84a791;
+        opacity: .8;
+        width: 0;
+        height: 20px;
+      }
+      .track-mejs-time-handle {
+      	display: none;
+        position: absolute;
+        margin: 0;
+        width: 10px;
+        background: #fff;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+        border: solid 2px #333;
+        top: -2px;
+        text-align: center;
+      }
+      .track-mejs-time-float {
+        position: absolute;
+        display: none;
+        background: #eee;
+        width: 36px;
+        height: 17px;
+        border: solid 1px #333;
+        top: -26px;
+        margin-left: -18px;
+        text-align: center;
+        color: #111;
+        z-index: 1001;
+      }
+      .track-mejs-time-float-current {
+        margin: 2px;
+        width: 30px;
+        display: block;
+        text-align: center;
+        left: 0;
+      }
+      .track-mejs-time-float-corner {
+        position: absolute;
+        display: block;
+        width: 0;
+        height: 0;
+        line-height: 0;
+        border: solid 5px #eee;
+        border-color: #eee transparent transparent transparent;
+        -webkit-border-radius: 0;
+        -moz-border-radius: 0;
+        border-radius: 0;
+        top: 15px;
+        left: 13px;
+      }
+    }
+    .track-mejs-time-rail:hover .track-mejs-time-handle {
+      visibility:visible;
+    }
+  }
