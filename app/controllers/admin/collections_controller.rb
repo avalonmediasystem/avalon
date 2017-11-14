@@ -19,7 +19,7 @@ class Admin::CollectionsController < ApplicationController
   respond_to :html
 
   def load_and_authorize_collections
-    @collections = get_user_collections
+    @collections = get_user_collections(params[:user])
     authorize!(params[:action].to_sym, Admin::Collection)
   end
 

@@ -162,6 +162,14 @@ describe Admin::CollectionsController, type: :controller do
       expect(json.first['roles']['editors']).to eq(collection.editors)
       expect(json.first['roles']['depositors']).to eq(collection.depositors)
     end
+    it "should return list of collections for good user" do
+      get 'index', user: collection.managers.first, format:'json'
+      expect(json.count).to eq(1)
+    end
+    it "should return no collections for bad user" do
+      get 'index', user: 'foobar', format:'json'
+      expect(json.count).to eq(0)
+    end
   end
 
   describe 'pagination' do
