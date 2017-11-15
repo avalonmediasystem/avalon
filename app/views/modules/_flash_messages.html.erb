@@ -40,3 +40,18 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% end %>
   </div>
 <% end %>
+
+<div class="alert alert-danger hidden" id="cookieless">
+  <p>Could not set cookie, this may happen if you've never visited this website before. If you see this message and cannot log in or see content, please open <%= link_to root_url, root_url, target: :_blank %> in a new window, then come back and refresh this page.</p>
+</div>
+
+<% content_for :page_scripts do %>
+<script>
+  document.cookie = 'test_cookie=true'
+  if(!document.cookie.match(/^(.*;)?\s*test_cookie\s*=\s*[^;]+(.*)?$/)){
+    $('#cookieless').removeClass('hidden');
+  } else{
+    document.cookie = 'test_cookie=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  }
+</script>
+<% end %>
