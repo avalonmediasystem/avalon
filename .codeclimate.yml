@@ -23,6 +23,8 @@ engines:
   rubocop:
     enabled: true
     channel: rubocop-0-50
+    config:
+      file: .rubocop.cc.yml
     checks:
       Rubocop/Metrics/AbcSize:
         enabled: false
