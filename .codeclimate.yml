@@ -1,4 +1,12 @@
 ---
+prepare:
+  fetch:
+  - url: "https://raw.githubusercontent.com/samvera-labs/bixby/master/bixby_default.yml"
+    path: "bixby_default.yml"
+  - url: "https://raw.githubusercontent.com/samvera-labs/bixby/master/bixby_rails_enabled.yml"
+    path: "bixby_rails_enabled.yml"
+  - url: "https://raw.githubusercontent.com/samvera-labs/bixby/master/bixby_rspec_enabled.yml"
+    path: "bixby_rspec_enabled.yml"
 engines:
   brakeman:
     enabled: true
@@ -14,6 +22,9 @@ engines:
     enabled: false
   rubocop:
     enabled: true
+    channel: rubocop-0-50
+    config:
+      file: .rubocop.cc.yml
     checks:
       Rubocop/Metrics/AbcSize:
         enabled: false

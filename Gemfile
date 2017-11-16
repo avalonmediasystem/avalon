@@ -93,7 +93,8 @@ group :development do
   gem 'capistrano-rvm', require: false
   gem 'capistrano-passenger', require: false
 
-  gem 'rubocop', '~> 0.40.0', require: false
+  # Use Bixby instead of rubocop directly
+  gem 'bixby', require: false
   gem 'web-console', '~> 2.0'
   gem 'xray-rails'
 end
