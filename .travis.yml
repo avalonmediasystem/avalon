@@ -6,6 +6,7 @@ services:
   - mysql2
 before_install:
   - sudo rm -vf /etc/apt/sources.list.d/*riak*
+  - sudo rm -vf /etc/apt/sources.list.d/*hhvm*
   - sudo apt-get update
   - sudo apt-get install mediainfo
   - sudo ln -s /usr/bin/lsof /usr/sbin/lsof
