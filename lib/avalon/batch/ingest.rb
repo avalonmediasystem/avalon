@@ -39,6 +39,7 @@ module Avalon
           package_validation
           package_valid = @current_package_errors.empty?
           unless package_valid
+            @current_package.manifest.error!
             send_invalid_package_email
             next
           end

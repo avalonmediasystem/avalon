@@ -318,6 +318,8 @@ describe Avalon::Batch::Ingest do
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
       batch_ingest.should_receive(:send_invalid_package_email).once
       expect { batch_ingest.scan_for_packages }.to_not change { BatchRegistries.count }
+      # it should create an error file and not attempt to reregister the package until user action
+      expect(batch.manifest.error?).to be true
     end
   end
 end
