@@ -24,7 +24,7 @@ class BatchRegistriesMailer < ApplicationMailer
   def batch_registration_finished_mailer(batch_registry)
     @batch_registry = batch_registry
     @user = User.find(@batch_registry.user_id)
-    email = @user.email unless user.nil?
+    email = @user.email unless @user.nil?
     email ||= Settings.email.notification
     @error_items = BatchEntries.where(batch_registries_id: @batch_registry.id, error: true)
     @completed_items = BatchEntries.where(batch_registries_id: @batch_registry.id, complete: true)
@@ -34,7 +34,7 @@ class BatchRegistriesMailer < ApplicationMailer
     mail(
       to: email,
       from: Settings.email.notification,
-      subject: "#{prefix} Batch Registry #{@batch_registry.filename} for #{@batch_registry.collection_id} has completed"
+      subject: "#{prefix} Batch Registry #{@batch_registry.file_name} for #{@batch_registry.collection} has completed"
     )
   end
 
@@ -45,7 +45,7 @@ class BatchRegistriesMailer < ApplicationMailer
     mail(
       to: email,
       from: Settings.email.notification,
-      subject: "#{prefix} Batch Registry #{batch_registry.filename} for #{batch_registry.collection_id} has completed"
+      subject: "Batch Registry #{@batch_registry.file_name} for #{@batch_registry.collection} has stalled"
     )
   end
 end
