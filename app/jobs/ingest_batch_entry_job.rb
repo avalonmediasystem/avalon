@@ -38,7 +38,7 @@ class IngestBatchEntryJob < ActiveJob::Base
     end
     # TODO any post processing to update status?
 
-  rescue RuntimeError => e
+  rescue StandardError => e
     process_error(batch_entry, e)
   end
 
