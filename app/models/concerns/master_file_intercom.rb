@@ -13,14 +13,14 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 module MasterFileIntercom
-  def to_ingest_api_hash
+  def to_ingest_api_hash(include_structure=true)
     {
       workflow_name: workflow_name,
       percent_complete: percent_complete,
       percent_succeeded: percent_succeeded,
       percent_failed: percent_failed,
       status_code: status_code,
-      structure:  structuralMetadata.content,
+      structure:  include_structure ? structuralMetadata.content : nil,
       label: title,
       thumbnail_offset: thumbnail_offset,
       poster_offset: poster_offset,
