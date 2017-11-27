@@ -15,7 +15,7 @@
   gem 'active-fedora', '~> 8.1.0'
   gem 'om', '~> 3.1.0'
   gem 'solrizer', '~> 3.3.0'
-  gem 'rsolr', '~> 1.1.2'
+  gem 'rsolr', '~> 1.0.13'
   gem 'blacklight', '~> 5.10'
   gem 'nokogiri', '~> 1.6.5'
   gem 'rubydora', '~> 1.8.1'

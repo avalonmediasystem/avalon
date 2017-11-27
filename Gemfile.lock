@@ -205,7 +205,7 @@ GEM
       nom-xml (>= 0.5.1)
       om (~> 3.1)
       rdf-rdfxml (~> 1.1.0)
-      rsolr (~> 1.1.2)
+      rsolr (~> 1.0.11)
       rubydora (~> 1.8)
     active-triples (0.4.0)
       activemodel (>= 3.0.0)
@@ -259,7 +259,7 @@ GEM
       kaminari (>= 0.15)
       nokogiri (~> 1.6)
       rails (>= 3.2.6, < 5)
-      rsolr (~> 1.1.2)
+      rsolr (~> 1.0.11)
     block_helpers (0.3.3)
       activesupport (>= 2.0)
     bootstrap-sass (3.3.3)
@@ -438,7 +438,7 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (5.0.0)
       railties (>= 3.2.16)
-    json (1.8.3)
+    json (1.8.6)
     json-ld (1.1.11.1)
       multi_json (~> 1.11)
       rdf (~> 1.1, >= 1.1.17, < 1.99)
@@ -551,8 +551,7 @@ GEM
       pry (>= 0.9.10, < 0.11.0)
     pry-rails (0.3.3)
       pry (>= 0.9.10)
-    puma (2.11.1)
-      rack (>= 1.1, < 2.0)
+    puma (3.11.0)
     rack (1.5.5)
     rack-contrib (1.2.0)
       rack (>= 0.9.1)
@@ -619,7 +618,7 @@ GEM
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
     retriable (1.4.1)
-    rsolr (1.1.2)
+    rsolr (1.0.13)
       builder (>= 2.1.2)
     rspec-core (3.4.1)
       rspec-support (~> 3.4.0)
@@ -856,7 +855,7 @@ DEPENDENCIES
   rb-fsevent (~> 0.9.1)
   red5wrapper!
   roo!
-  rsolr (~> 1.1.2)
+  rsolr (~> 1.0.13)
   rspec-rails
   rubocop (~> 0.40.0)
   ruby-duration
@@ -881,4 +880,4 @@ DEPENDENCIES
   xray-rails
 
 BUNDLED WITH
-   1.13.1
+   1.16.0
