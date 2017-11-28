@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171002182931) do
+ActiveRecord::Schema.define(version: 20171120190443) do
 
   create_table "annotations", force: :cascade do |t|
     t.string  "uuid"
@@ -38,8 +38,8 @@ ActiveRecord::Schema.define(version: 20171002182931) do
   create_table "batch_entries", force: :cascade do |t|
     t.integer  "batch_registries_id"
     t.text     "payload",             limit: 4294967295
-    t.boolean  "complete"
-    t.boolean  "error"
+    t.boolean  "complete",                               default: false, null: false
+    t.boolean  "error",                                  default: false, null: false
     t.string   "current_status"
     t.string   "error_message"
     t.string   "media_object_pid"
@@ -57,13 +57,13 @@ ActiveRecord::Schema.define(version: 20171002182931) do
     t.string   "dir"
     t.integer  "user_id"
     t.string   "collection"
-    t.boolean  "complete"
-    t.boolean  "processed_email_sent"
-    t.boolean  "completed_email_sent"
-    t.boolean  "error"
+    t.boolean  "complete",             default: false, null: false
+    t.boolean  "processed_email_sent", default: false, null: false
+    t.boolean  "completed_email_sent", default: false, null: false
+    t.boolean  "error",                default: false, null: false
     t.text     "error_message"
-    t.boolean  "error_email_sent"
-    t.boolean  "locked"
+    t.boolean  "error_email_sent",     default: false, null: false
+    t.boolean  "locked",               default: false, null: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

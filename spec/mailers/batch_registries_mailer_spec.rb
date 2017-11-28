@@ -17,7 +17,7 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
        expect(email).to have_body_text(collection.id)
        errors.each do |error|
          expect(email).to have_body_text(error)
-       end  
+       end
     end
 
     it "sends to notification email address if manifest's email does not belong to a registered user" do
@@ -40,6 +40,30 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
        expect(email.to).to include(manager.email)
        expect(email.subject).to include package.title
        expect(email).to have_body_text(package.title)
+    end
+  end
+
+  describe 'batch_registration_finished_mailer' do
+    let(:batch_registries) { FactoryGirl.create(:batch_registries, user_id: manager.id) }
+    let(:manager) { FactoryGirl.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
+
+    it "sends an email when a batch finishes processing" do
+       email = BatchRegistriesMailer.batch_registration_finished_mailer(batch_registries)
+       expect(email.to).to include(manager.email)
+       expect(email.subject).to include batch_registries.file_name
+       expect(email).to have_body_text(batch_registries.file_name)
+    end
+  end
+
+  describe 'batch_registration_stalled_mailer' do
+    let(:batch_registries) { FactoryGirl.create(:batch_registries) }
+    let(:notification_email_address) { Settings.email.notification }
+
+    it "sends an email when a batch has stalled" do
+       email = BatchRegistriesMailer.batch_registration_stalled_mailer(batch_registries)
+       expect(email.to).to include(notification_email_address)
+       expect(email.subject).to include batch_registries.file_name
+       expect(email).to have_body_text(batch_registries.id.to_s)
     end
   end
 end
