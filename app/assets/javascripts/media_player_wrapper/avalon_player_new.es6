@@ -289,24 +289,6 @@ class MEJSPlayer {
   }
 
   /**
-   * Stub function to demonstrate future usage of MEJS4 playlist plugin
-   * @function getPlaylists
-   * @return {void}
-   */
-  getPlaylists () {
-    const obj = {
-      playlist: [{
-        src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/CastVideos/mp4/BigBuckBunny.mp4',
-        title: 'Big Buck Bunny Test'
-      }, {
-        src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/CastVideos/mp4/BigBuckBunny.mp4',
-        title: 'Big Buck Bunny Test 2'
-      }]
-    }
-    return {}
-  }
-
-  /**
    * Event handler for MediaElement's 'canplay' event
    * At this point can play, pause, set time on player instance
    * @function handleCanPlay
