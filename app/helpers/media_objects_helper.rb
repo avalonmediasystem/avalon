@@ -131,11 +131,12 @@ module MediaObjectsHelper
      def structure_html section, index, show_progress
        current = is_current_section? section
        progress_div = show_progress ? '<div class="status-detail alert" style="display: none"></div>' : ''
+       playlist_btn = current_ability.can?(:create, Playlist) ? '<button type="button" title="Add section to playlist" aria-label="Add section to playlist" class="structure_add_to_playlist outline_on btn btn-primary" data-scope="master_file" data-masterfile-id="#{section.id}"></button>' : ''
 
        headeropen = <<EOF
     <div class="panel-heading" role="tab" id="heading#{index}">
       <h4 class="panel-title #{ 'progress-indented' if progress_div.present? }">
-      <button type="button" title="Add section to playlist" aria-label="Add section to playlist" class="structure_add_to_playlist outline_on btn btn-primary" data-scope="master_file" data-masterfile-id="#{section.id}"></button>
+      #{playlist_btn}
 EOF
        headerclose = <<EOF
       #{progress_div}
