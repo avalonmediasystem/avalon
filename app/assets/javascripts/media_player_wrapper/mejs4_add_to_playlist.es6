@@ -38,7 +38,7 @@ Object.assign(MediaElementPlayer.prototype, {
         const t = this;
         const addTitle = 'Add to Playlist';
         let addToPlayListObj = t.addToPlayListObj;
-        addToPlayListObj.hasPlaylists = addToPlayListObj.playlistEl.dataset.hasPlaylists === 'true';
+        addToPlayListObj.hasPlaylists = addToPlayListObj.playlistEl && addToPlayListObj.playlistEl.dataset.hasPlaylists === 'true';
         addToPlayListObj.isVideo = player.isVideo;
 
         // Make player instance available outside of this method
