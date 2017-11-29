@@ -10,6 +10,10 @@ class MEJSPlayer {
    * @return {void}                   [description]
    */
   constructor(configObj) {
+    this.mejsUtility = new MEJSUtility()
+    this.mejsTimeRailHelper = new MEJSTimeRailHelper()
+    this.mejsMarkersHelper = new MEJSMarkersHelper()
+
     // Unpack player configuration object for the new player.
     // This allows for variable params to be sent in.
     this.currentStreamInfo = configObj.currentStreamInfo || {},
@@ -34,7 +38,7 @@ class MEJSPlayer {
     }
 
     // Array of all current segments for media object
-    this.segmentsMap = this.createSegmentsMap()
+    this.segmentsMap = this.mejsUtility.createSegmentsMap(document.getElementById('accordion'), this.currentStreamInfo)
     // Holder for currently active segment DOM element 'id' attribute
     this.activeSegmentId = ''
 
@@ -56,211 +60,18 @@ class MEJSPlayer {
   }
 
   /**
-   * Create a map object which represents clickable time range segments within the media object
-   * @function createSegmentsMap
-   * @return {Object} segmentsMap Mapping of all current segments, key'd on the
-   * <a> element's 'id' attribute
-   */
-  createSegmentsMap () {
-    const el = document.getElementById('accordion')
-    const segmentEls = (el) ? [].slice.call(el.querySelectorAll('[data-segment="' + this.currentStreamInfo.id + '"]')) : []
-    let segmentsMap = {}
-
-    segmentEls.forEach((el) => {
-      if (el.id) {
-        segmentsMap[el.id] = Object.assign({}, el.dataset)
-      }
-    })
-    return segmentsMap
-  }
-
-  /**
-   * Create HTML markup for <audio> or <video> element
-   * @function createMarkup
-   * @return {string} markup - HTML markup containing <audio> or <video> and <source>s
-   */
-  createMarkup() {
-    let currentStreamInfo = this.currentStreamInfo
-    let markup = ''
-    let node = null
-
-    // Create <video> markup
-    if (this.mediaType === 'video') {
-      node = document.createElement('video')
-      node.setAttribute('id', 'mejs-avalon-video')
-      node.setAttribute('controls', '')
-      node.setAttribute('width', '450')
-      node.setAttribute('height', '309')
-      node.setAttribute('style', 'width: 100%; height: 100%')
-      if (currentStreamInfo.poster_image) {
-        node.setAttribute('poster', currentStreamInfo.poster_image)
-      }
-      node.setAttribute('preload', 'true')
-      node.classList.add('mejs-avalon')
-      node.classList.add('invisible')
-
-      // Add <source>s
-      currentStreamInfo.stream_hls.map((source) => {
-        markup += `<source src="${source.url}" type="application/x-mpegURL" data-quality="${source.quality}"/>`
-      })
-
-      // Add captions
-      if (currentStreamInfo.captions_path) {
-        markup += `<track srclang="en" kind="subtitles" type="${currentStreamInfo.captions_format}" src="${currentStreamInfo.captions_path}"></track>`
-      }
-    }
-    // Create <audio> markup
-    if (this.mediaType === 'audio') {
-      node = document.createElement('audio')
-      node.setAttribute('id', 'mejs-avalon-audio')
-      node.setAttribute('controls', '')
-      node.setAttribute('style', 'width: 100%;')
-      node.setAttribute('preload', 'true')
-      node.classList.add('mejs-avalon')
-      node.classList.add('invisible')
-
-      // Add <source>s
-      currentStreamInfo.stream_hls.map((source) => {
-        markup += `<source src="${source.url}" data-quality="${source.quality}" data-plugin-type="native" type="application/x-mpegURL" />`
-      })
-      markup += `</audio>`
-    }
-    node.innerHTML = markup
-    return node
-  }
-
-  /**
    * Create the pieces for a new MediaElement player
    * @function createNewPlayer
    * @return {void}
    */
   createNewPlayer () {
     let itemScope = document.querySelector('[itemscope="itemscope"]')
-    let node = this.createMarkup()
+    let node = this.mejsUtility.createHTML5MediaNode(this.mediaType, this.currentStreamInfo)
 
     // Mount new <audio> or <video> element to the DOM and initialize
     // a new MediaElement instance.
     itemScope.appendChild(node)
     this.initializePlayer()
-  }
-
-  /**
-   * Create an element representing highlighted segment area in MEJS's time rail
-   * and add it to the DOM
-   * @function createTimeHighlightEl
-   * @return {void}
-   */
-  createTimeHighlightEl () {
-    let highlightSpanEl = document.getElementById('content').querySelector('.mejs-highlight-clip')
-
-    // Create the highlight DOM element if doesn't exist
-    if (!highlightSpanEl) {
-      highlightSpanEl = document.createElement('span')
-      highlightSpanEl.classList.add('mejs-highlight-clip')
-      $('.mejs__time-total')[0].appendChild(highlightSpanEl)
-      this.highlightSpanEl = highlightSpanEl
-    }
-  }
-
-  /**
-   * Create a CSS 'style' string to plug into an inline style attribute
-   * @function createTimeRailStyles
-   * @return {string} Ex. left: 10%; width: 50%;
-   */
-  createTimeRailStyles (activeSegmentId) {
-    const duration = this.currentStreamInfo.duration
-    const segment = this.segmentsMap[activeSegmentId]
-    let t = []
-
-    // No active segment, remove highlight style
-    if (!activeSegmentId) {
-      return 'left: 0%; width: 0%;'
-    }
-
-    // Use the active segment fragment,
-    try {
-      t = [parseFloat(segment.fragmentbegin), parseFloat(segment.fragmentend)]
-    } catch(e) {
-      t = this.currentStreamInfo.t.slice(0)
-    }
-
-    // Ensure t range array has valid values
-    t[0] = (isNaN(parseFloat(t[0]))) ? 0 : t[0]
-    t[1] = (t.length < 2 || isNaN(parseFloat(t[1]))) ? duration : t[1]
-
-    // Calculate start and end percentage values for the highlight style attribute
-    let startPercent = Math.round((t[0] / duration) * 100)
-    startPercent = Math.max(0, Math.min(100, startPercent))
-    let endPercent = Math.round((t[1] / duration) * 100)
-    endPercent = Math.max(0, Math.min(100, endPercent))
-
-    // Make the length of time highlight 0 if it would span the entire time length
-    if (startPercent === 0 && endPercent === 100) {
-      endPercent = 0
-    }
-    return 'left: ' + startPercent + '%; width: ' + (endPercent - startPercent) + '%;'
-  }
-
-  /**
-   * Get the segment for player's current time value (if one exists)
-   * @function getActiveSegmentId
-   * @return {string} the active segment id
-   */
-  getActiveSegmentId (segmentsMap, currentTime) {
-    let activeId = ''
-
-    for (let segmentId in segmentsMap) {
-      if (segmentsMap.hasOwnProperty(segmentId)) {
-        let begin = parseFloat(segmentsMap[segmentId].fragmentbegin)
-        let end = parseFloat(segmentsMap[segmentId].fragmentend)
-
-        if ( (segmentsMap.hasOwnProperty(segmentId)) && (currentTime >= begin && currentTime < end) ) {
-          activeId = segmentId
-        }
-      }
-    }
-    return activeId
-  }
-
-  /**
-   * Get any playlist item markers if a playlist item is specified
-   * @function getMarkers
-   * @return {obj} obj - Markers plugin specific configuration
-   */
-  getMarkers (resolve, reject) {
-    let returnObj = {}
-    let markersConfig = {
-      markerColor: '#86ad96', // Optional : Specify the color of the marker
-    }
-
-    // Check if a playlist item is specified, because playlist items use markers
-    // and we'll need to grab markers from the playlist item
-    if (Object.keys(this.playlistItem).length > 0) {
-      const playlistItem = this.playlistItem
-      let markers = []
-
-      $.ajax({
-        url: '/playlists/' + playlistItem.playlist_id + '/items/' + playlistItem.id + '.json',
-        dataType: 'json'
-      }).done((response) => {
-        if (response.message) {
-          //TODO: display error message somehow (500 or 401)
-        }
-        else if (response.markers && response.markers.length > 0) {
-          markers = response.markers.map((marker) => {
-            return marker.start_time
-          })
-        }
-        // Array of marker time values in seconds
-        markersConfig.markers = markers
-        resolve(markersConfig)
-      }).fail((error) => {
-        reject({})
-      });
-    } else {
-      // No playlist item, therefore no markers needed
-      resolve({})
-    }
   }
 
   /**
@@ -296,7 +107,6 @@ class MEJSPlayer {
    */
   handleCanPlay () {
     this.mediaElement.removeEventListener('canplay')
-
     // Do we play a specified range of the media file?
     if (this.switchPlayerHelper.active) {
       this.playRange()
@@ -367,13 +177,13 @@ class MEJSPlayer {
     if (activeId && activeId !== this.activeSegmentId) {
       this.activeSegmentId = activeId
       this.highlightTimeRail(this.activeSegmentId)
-      this.highlightSectionLink(this.activeSegmentId)
+      this.mejsUtility.highlightSectionLink(this.activeSegmentId)
     }
     // No current segment, so remove highlighting
     else if (!activeId) {
       this.activeSegmentId = ''
       this.highlightTimeRail()
-      this.highlightSectionLink()
+      this.mejsUtility.highlightSectionLink()
     }
   }
 
@@ -402,7 +212,7 @@ class MEJSPlayer {
     // Show highlighted time in time rail
     if (this.highlightRail) {
       // Create our custom time rail highlighter element
-      this.createTimeHighlightEl()
+      this.highlightSpanEl = this.mejsTimeRailHelper.createTimeHighlightEl(document.getElementById('content'))
       this.highlightTimeRail(this.activeSegmentId)
     }
 
@@ -417,7 +227,7 @@ class MEJSPlayer {
    */
   handleTimeUpdate () {
     const currentTime = this.player.getCurrentTime()
-    const activeId = this.getActiveSegmentId(this.segmentsMap, currentTime)
+    const activeId = this.mejsUtility.getActiveSegmentId(this.segmentsMap, currentTime)
 
     // Handle section highlighting
     this.handleSectionHighlighting(activeId, currentTime)
@@ -457,7 +267,7 @@ class MEJSPlayer {
    * @return {void}
    */
   highlightTimeRail (activeSegmentId) {
-    this.highlightSpanEl.setAttribute('style', this.createTimeRailStyles(activeSegmentId))
+    this.highlightSpanEl.setAttribute('style', this.mejsTimeRailHelper.createTimeRailStyles(activeSegmentId, this.currentStreamInfo, this.segmentsMap))
 
     // If track scrubber feature is active, initialize a new scrubber
     if (this.player.trackScrubberObj) {
@@ -490,7 +300,7 @@ class MEJSPlayer {
 
     // Get any asynchronous configuration data needed to
     // create a new player instance
-    promises.push(new Promise(this.getMarkers.bind(this)))
+    promises.push(new Promise(this.mejsMarkersHelper.getMarkers.bind(this)))
     Promise.all(promises).then((values) => {
       const markerConfig = values[0]
 
@@ -588,7 +398,7 @@ class MEJSPlayer {
   setContextVars (currentStreamInfo) {
     this.currentStreamInfo = currentStreamInfo
     this.mediaType = (currentStreamInfo.is_video === true) ? 'video' : 'audio'
-    this.segmentsMap = this.createSegmentsMap()
+    this.segmentsMap = this.mejsUtility.createSegmentsMap(document.getElementById('accordion'), currentStreamInfo)
   }
 
 }
