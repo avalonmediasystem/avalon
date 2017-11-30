@@ -140,6 +140,7 @@ Object.assign(MediaElementPlayer.prototype, {
        * @param  {Object} stream_info Current stream object
        * @return {Object} HTML event binder
        */
+      /* eslint-disable max-statements, complexity */
       initializeTrackScrubber: function (trackstart, trackend, stream_info) {
         const t = this;
 
@@ -257,6 +258,7 @@ Object.assign(MediaElementPlayer.prototype, {
           }
         });
       },
+      /* eslint-enable max-statements, complexity */
 
       /**
        * Determine whether this is desktop or non-desktop

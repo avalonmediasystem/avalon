@@ -16,10 +16,10 @@ class MEJSPlayer {
 
     // Unpack player configuration object for the new player.
     // This allows for variable params to be sent in.
-    this.currentStreamInfo = configObj.currentStreamInfo || {},
-    this.features = configObj.features || {},
-    this.highlightRail = configObj.highlightRail,
-    this.playlistItem = configObj.playlistItem || {},
+    this.currentStreamInfo = configObj.currentStreamInfo || {}
+    this.features = configObj.features || {}
+    this.highlightRail = configObj.highlightRail
+    this.playlistItem = configObj.playlistItem || {}
 
     // Wrapper for MediaElement instance which interfaces with properties, events, etc.
     this.mediaElement = null

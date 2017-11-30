@@ -4,6 +4,29 @@
  */
 class MEJSTimeRailHelper {
   /**
+   * Calculate a time array based on segment and current stream info
+   * @param  {Object} segment           Segment object
+   * @param  {Object} currentStreamInfo Current stream information object
+   * @return {Array}                    Array used representing clip start/stop values
+   */
+  calculateT(segment, currentStreamInfo) {
+    let t = []
+
+    // Use the active segment fragment,
+    try {
+      t = [parseFloat(segment.fragmentbegin), parseFloat(segment.fragmentend)]
+    } catch(e) {
+      t = currentStreamInfo.t.slice(0)
+    }
+
+    // Ensure t range array has valid values
+    t[0] = (isNaN(parseFloat(t[0]))) ? 0 : t[0]
+    t[1] = (t.length < 2 || isNaN(parseFloat(t[1]))) ? duration : t[1]
+
+    return t
+  }
+
+  /**
    * Create an element representing highlighted segment area in MEJS's time rail
    * and add it to the DOM
    * @function createTimeHighlightEl
@@ -36,16 +59,7 @@ class MEJSTimeRailHelper {
       return 'left: 0%; width: 0%;'
     }
 
-    // Use the active segment fragment,
-    try {
-      t = [parseFloat(segment.fragmentbegin), parseFloat(segment.fragmentend)]
-    } catch(e) {
-      t = currentStreamInfo.t.slice(0)
-    }
-
-    // Ensure t range array has valid values
-    t[0] = (isNaN(parseFloat(t[0]))) ? 0 : t[0]
-    t[1] = (t.length < 2 || isNaN(parseFloat(t[1]))) ? duration : t[1]
+    t = this.calculateT(segment, currentStreamInfo)
 
     // Calculate start and end percentage values for the highlight style attribute
     let startPercent = Math.round((t[0] / duration) * 100)

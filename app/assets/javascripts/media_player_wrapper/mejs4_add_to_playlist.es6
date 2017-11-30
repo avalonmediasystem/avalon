@@ -49,7 +49,7 @@ Object.assign(MediaElementPlayer.prototype, {
         // outside of this scope
         player.addPlaylistButton = document.createElement('div');
     		player.addPlaylistButton.className = t.options.classPrefix + 'button ' + t.options.classPrefix + 'add-to-playlist-button';
-    		player.addPlaylistButton.innerHTML = '<button type="button" aria-controls="' + t.id + '" title="' + addTitle + '" ' + 'aria-label="' + addTitle + '" tabindex="0">' + addTitle + '</button>';
+    		player.addPlaylistButton.innerHTML = `<button type="button" aria-controls="${t.id}" title="${addTitle}" aria-label="${addTitle}" tabindex="0">${addTitle}</button>`;
 
         // Add control button to player
     		t.addControlElement(player.addPlaylistButton, 'addToPlaylist');

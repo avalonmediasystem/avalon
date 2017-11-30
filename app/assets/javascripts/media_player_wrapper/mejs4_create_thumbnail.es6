@@ -54,7 +54,7 @@ Object.assign(MediaElementPlayer.prototype, {
         // outside of this scope
         player.createThumbnailButton = document.createElement('div');
     		player.createThumbnailButton.className = t.options.classPrefix + 'button ' + t.options.classPrefix + 'create-thumbnail-button';
-    		player.createThumbnailButton.innerHTML = '<button type="button" aria-controls="' + t.id + '" title="' + addTitle + '" ' + 'aria-label="' + addTitle + '" tabindex="0">' + addTitle + '</button>';
+    		player.createThumbnailButton.innerHTML = `<button type="button" aria-controls="${t.id}" title="${addTitle}" aria-label="${addTitle}" tabindex="0">${addTitle}</button>`;
 
         // Add control button to player
     		t.addControlElement(player.createThumbnailButton, 'createThumbnail');
