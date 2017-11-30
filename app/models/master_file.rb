@@ -522,7 +522,7 @@ class MasterFile < ActiveFedora::Base
       Rails.logger.warn("Masterfile `#{file_location}` not found. Extracting via HLS.")
       begin
         playlist_url = self.stream_details[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
-        secure_url = SecurityHandler.secure_url(playlist_url, target: self.pid)
+        secure_url = SecurityHandler.secure_url(playlist_url, target: self.id)
         playlist = Avalon::M3U8Reader.read(secure_url)
         details = playlist.at(options[:offset])
         target = File.join(Dir.tmpdir,File.basename(details[:location]))
