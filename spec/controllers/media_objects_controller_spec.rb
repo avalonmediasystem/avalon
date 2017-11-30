@@ -497,6 +497,15 @@ describe MediaObjectsController, type: :controller do
     let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
 
     context "Known items should be retrievable" do
+      context 'with fedora 3 pid' do
+        let!(:media_object) {FactoryGirl.create(:published_media_object, visibility: 'public', identifier: [fedora3_pid])}
+        let(:fedora3_pid) { 'avalon:1234' }
+
+        it "should redirect" do
+          expect(get :show, id: fedora3_pid).to redirect_to(media_object_url(media_object.id))
+        end
+      end
+
       it "should be accesible by its PID" do
         get :show, id: media_object.id
         expect(response.response_code).to eq(200)
