@@ -43,6 +43,7 @@ EOC
       ids = Array(ids) | File.readlines(ENV['pidfile']).map(&:strip) unless ENV['pidfile'].nil?
       parallel_processes = ENV['parallel_processes']
       overwrite = !!ENV['overwrite']
+      skip_completed = !!ENV['skip_completed']
       namespace = ENV['namespace'] || Settings&.fedora&.namespace || 'avalon'
 
       #disable callbacks
@@ -53,7 +54,7 @@ EOC
 
       models = [Admin::Collection, ::Lease, ::MediaObject, ::MasterFile, ::Derivative]
       migrator = FedoraMigrate::ClassOrderedRepositoryMigrator.new(namespace, class_order: models, parallel_processes: parallel_processes)
-      migrator.migrate_objects(ids, overwrite)
+      migrator.migrate_objects(ids, overwrite, skip_completed)
       migrator
     end
 
