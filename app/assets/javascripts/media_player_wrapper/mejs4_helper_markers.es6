@@ -7,7 +7,7 @@ class MEJSMarkersHelper {
   getMarkers (resolve, reject) {
     let returnObj = {}
     let markersConfig = {
-      markerColor: '#fff', // Optional : Specify the color of the marker
+      markerColor: '#fff' // Optional : Specify the color of the marker
     }
 
     // Check if a playlist item is specified, because playlist items use markers

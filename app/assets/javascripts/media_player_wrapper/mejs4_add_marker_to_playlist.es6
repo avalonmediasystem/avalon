@@ -49,7 +49,7 @@ Object.assign(MediaElementPlayer.prototype, {
         // outside of this scope
         player.addMarkerToPlaylistButton = document.createElement('div');
     		player.addMarkerToPlaylistButton.className = t.options.classPrefix + 'button ' + t.options.classPrefix + 'add-marker-to-playlist-button';
-    		player.addMarkerToPlaylistButton.innerHTML = '<button type="button" aria-controls="' + t.id + '" title="' + addTitle + '" ' + 'aria-label="' + addTitle + '" tabindex="0">' + addTitle + '</button>';
+    		player.addMarkerToPlaylistButton.innerHTML = `<button type="button" aria-controls="${t.id}" title="${addTitle}" aria-label="${addTitle}" tabindex="0">${addTitle}</button>`;
 
         // Add control button to player
     		t.addControlElement(player.addMarkerToPlaylistButton, 'addMarkerToPlaylist');
@@ -177,7 +177,7 @@ Object.assign(MediaElementPlayer.prototype, {
             container: '#popover-container-' + $button[0].dataset.markerId,
             content: content,
             html: true,
-            placement: 'top',
+            placement: 'top'
           });
           $button.popover('show');
 
@@ -197,7 +197,7 @@ Object.assign(MediaElementPlayer.prototype, {
               // Remove from list
               row.parentNode.removeChild(row);
               // Update markers in player
-              addMarkerObj.updateVisualMarkers.apply(this, [null, parseInt(response.marker.start_time / 1000)]);
+              addMarkerObj.updateVisualMarkers.apply(this, [null, parseInt(response.marker.start_time / 1000, 10)]);
             }).fail((error) => {
               console.log('error', error);
             });
@@ -351,7 +351,7 @@ Object.assign(MediaElementPlayer.prototype, {
               master_file_id: mejs4AvalonPlayer.currentStreamInfo.id,
               playlist_item_id: playlist_item_id,
               start_time: $('#marker_start').val(),
-              title: $('#marker_title').val(),
+              title: $('#marker_title').val()
             }
           }
         })
@@ -465,10 +465,12 @@ Object.assign(MediaElementPlayer.prototype, {
         const t = this;
         let formInputs = t.addMarkerObj.formInputs;
 
+        /* eslint-disable guard-for-in */
         for (let prop in formInputs) {
           formInputs[prop].value = '';
         }
         t.addMarkerObj.active = false;
+        /* eslint-enable guard-for-in */
       },
 
       /**

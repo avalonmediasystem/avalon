@@ -49,5 +49,10 @@ Avalon is served by Webrick in development mode so any changes will be picked up
 
 Rails debugging with Pry can be accessed by attaching to the docker container: ```docker attach container_name```. Now, when you reach a binding.pry breakpoint in rails, you can step through the breakpoint in that newly attached session.
 
+# Javascript style checking (eslint)
+In order to run eslint on javascript files to check prior to creating a pull request do the following:
+1. Install eslint globally, locally on dev machine: `npm install -g eslint`
+1. Run `eslint app/assets/javascripts/ --ext .js,.es6`
+
 # Browser Testing
 Testing support for Avalon Media System is provided by [BrowserStack](https://www.browserstack.com).
