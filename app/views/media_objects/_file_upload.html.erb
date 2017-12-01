@@ -16,7 +16,7 @@ specific language governing permissions and limitations under the License.
 <%= form_for @media_object, html: { class: 'form-vertical', id: 'master_files_form' } do |media| %>
 <%= hidden_field_tag :donot_advance, true %>
 <%= hidden_field_tag :step, 'file-upload' %>
-<% unless @masterFiles.empty? %>
+<% unless @masterFiles.blank? %>
 <div id="associated_files">
   <legend>Associated files</legend>
   <p class="muted">For items with multiple files, enter a display label for each file. Users will click on these labels to switch between files.</p>
