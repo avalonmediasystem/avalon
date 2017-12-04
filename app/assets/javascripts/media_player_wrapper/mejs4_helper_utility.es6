@@ -96,6 +96,10 @@ class MEJSUtility {
     return activeId
   }
 
+  getMediaType (isVideo) {
+    return (isVideo === true ? 'video' : 'audio')
+  }
+
   /**
    * Update section links to reflect active section playing
    * @function highlightSectionLink
