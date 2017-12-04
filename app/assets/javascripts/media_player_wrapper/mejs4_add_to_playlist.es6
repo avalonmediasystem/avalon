@@ -225,7 +225,9 @@ Object.assign(MediaElementPlayer.prototype, {
       handleControlClick: function (e) {
         const t = this;
         let addToPlayListObj = t.addToPlayListObj;
-
+        if (addToPlayListObj.player.isFullScreen){
+          addToPlayListObj.player.exitFullScreen();
+        }
         if (!addToPlayListObj.active) {
           // Close any open alert displays
           $(t.addToPlayListObj.alertEl).slideUp();

@@ -128,6 +128,9 @@ Object.assign(MediaElementPlayer.prototype, {
        * @return {void}
        */
       handleControlClick: function (e) {
+        if (this.trackScrubberObj.player.isFullScreen){
+          this.trackScrubberObj.player.exitFullScreen();
+        }
         this.trackScrubberObj.showTrackScrubber(this.trackScrubberObj.scrubberEl.classList.contains('hidden'));
       },
 

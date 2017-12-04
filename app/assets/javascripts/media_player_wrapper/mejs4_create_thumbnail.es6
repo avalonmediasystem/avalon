@@ -171,6 +171,10 @@ Object.assign(MediaElementPlayer.prototype, {
        */
       handleControlClick: function (e) {
         let createThumbnailObj = this.createThumbnailObj;
+        if (createThumbnailObj.player.isFullScreen){
+          createThumbnailObj.player.exitFullScreen();
+        }
+
         const $modalEl = $(createThumbnailObj.modalEl);
         let $imgPolaroid = $modalEl.find('.img-polaroid');
 
