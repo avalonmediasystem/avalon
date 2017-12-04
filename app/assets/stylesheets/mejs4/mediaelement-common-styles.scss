@@ -133,3 +133,8 @@ $avalon-primary-color: #84a791;
   margin: 10px 6px;
   width: 20px;
 }
+
+// Accessibility
+.mejs__button > button:focus, .mejs__overlay-button:focus, .mejs__time-total:focus, .mejs__volume-slider:focus, .mejs__qualities-selector-input:focus {
+  outline: solid 2px yellow;
+}
