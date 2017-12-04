@@ -770,16 +770,10 @@ a[data-trigger='submit'] {
   margin-bottom: 0;
   a:link, a:visited, a:hover, a:active {
     text-decoration: none;
-    outline: 0;
   }
 }
 #share-list .tab-content {
   margin-bottom: 20px;
-}
-#share-list .share-tabs {
-  a:link, a:visited, a:hover, a:active {
-    outline: 0;
-  }
 }
 
 $accordionPadding: 20px;
@@ -793,7 +787,6 @@ $accordionPadding: 20px;
     display: inline-block;
     cursor: pointer;
     &:link, &:visited, &:hover, &:active {
-      outline: 0;
       text-decoration: none;
     }
   }
