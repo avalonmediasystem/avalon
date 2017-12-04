@@ -50,7 +50,11 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <ol class="side-playlist">
   <% clip_map = @playlist.clips.index_by{|c|c.id} %>
-  <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clip_map: clip_map } %>
+  <% if is_mejs_2? %>
+    <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clip_map: clip_map } %>
+  <% else %>
+    <%= render partial: 'mejs4_playlist_item', collection: @playlist.items, locals: { clip_map: clip_map } %>
+  <% end %>
 </ol>
 
 <% if current_ability.can? :duplicate, @playlist %>
