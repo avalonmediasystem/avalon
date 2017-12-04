@@ -16,7 +16,6 @@ class MEJSPlayer {
     this.mejsUtility = new MEJSUtility()
     this.mejsTimeRailHelper = new MEJSTimeRailHelper()
     this.mejsMarkersHelper = new MEJSMarkersHelper()
-    // this.mejsPlaylistsHelper = new MEJSPlaylistsHelper()
 
     // Unpack player configuration object for the new player.
     // This allows for variable params to be sent in.
@@ -31,7 +30,6 @@ class MEJSPlayer {
     this.player = null
     // Add click listeners
     this.addSectionsClickListener()
-    // this.mejsPlaylistsHelper.addClickListeners()
     // audio or video file?
     this.mediaType = this.mejsUtility.getMediaType(this.currentStreamInfo.is_video)
 
@@ -272,7 +270,7 @@ class MEJSPlayer {
   /**
    * Highlight a section of the Mediaelement player's time rail
    * @function highlightTimeRail
-   * @param {Object[]} t Start end time array 
+   * @param {Object[]} t Start end time array
    * @param {string} activeSegmentId
    * @return {void}
    */

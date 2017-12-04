@@ -39,6 +39,8 @@ Object.assign(MediaElementPlayer.prototype, {
         playlistItemsObj.addClickListeners();
         // Handle continuous MEJS time update event
         media.addEventListener('timeupdate', playlistItemsObj.handleTimeUpdate.bind(this));
+        // Set current playing item
+        playlistItemsObj.setCurrentPlayingItem();
     },
 
     // Optionally, each feature can be destroyed setting a `clean` method
@@ -65,56 +67,20 @@ Object.assign(MediaElementPlayer.prototype, {
      * @type {Object}
      */
     playlistItemsObj: {
+      /**
+       * Add click listener for the playlist items sidebar
+       * @function addClickListeners
+       * @return {void}
+       */
       addClickListeners() {
         if (this.$sidePlaylist) {
           // Handle click on entire Playlists right column area
           this.$sidePlaylist.on('click', (e) => {
             // Only handle clicks on <a> elements
             if (e.target.nodeName === 'A') {
-              this.handleClick(e)
+              this.handleClick(e.target)
             }
           });
-        }
-      },
-
-      currentStreamInfo: null,
-
-      getPlayer() {
-        let count = 0
-        const players = mejs.players
-        const player = Object.keys(players).map(k => {
-          if (k.indexOf('mep_') > -1) {
-            return players[k]
-          }
-        })
-        return player
-      },
-
-      getSourceId($el) {
-        const preText = 'master_files/'
-        const clipSource = $el.data('clipSource')
-        const sourceId = clipSource.substring(clipSource.indexOf(preText) + preText.length)
-        return sourceId
-      },
-
-      handleClick(e) {
-        const dataSet = e.target.dataset;
-
-        this.updateStyles(e.target);
-
-        // Same media object/file?
-        if (this.sameSource(e.target)) {
-          // Update playlist item start and end times
-          this.startEndTimes.start = parseInt(dataSet.clipStartTime, 10)/1000;
-          this.startEndTimes.end = parseInt(dataSet.clipEndTime, 10)/1000;
-          // Apply start time to player
-          this.player.setCurrentTime(this.startEndTimes.start);
-        } else {
-          console.log('not the same');
-          // Remove old player
-          mejs4AvalonPlayer.removePlayer()
-          // Instantiate new player
-          this.ajaxGetNewMedia(e.target)
         }
       },
 
@@ -134,13 +100,94 @@ Object.assign(MediaElementPlayer.prototype, {
         })
       },
 
-      handleTimeUpdate() {
-        console.log('time: ', this.playlistItemsObj.player.getCurrentTime());
-        // TODO: stop playback at stop time
+      currentStreamInfo: null,
+
+      goToNextItem() {
+        const $nextLi = this.$nowPlayingLi.next('li');
+        // If a next item in the list exists
+        if ($nextLi.length > 0) {
+          this.updateStyles($nextLi.find('a')[0]);
+          this.playNextItem(true);
+        }
       },
 
-      sameSource(el) {
-        return this.currentStreamInfo.id === this.getSourceId($(el))
+      /**
+       * Handle click event on a playlist item
+       * @param  {MouseEvent} e Mouse click event
+       * @return {void}   [description]
+       */
+      handleClick(el) {
+        const dataSet = el.dataset;
+
+        this.updateStyles(el);
+
+        // Same media object/file?
+        if (this.currentStreamInfo.id === el.dataset.masterFileId) {
+          this.playNextItem(!this.player.paused);
+        } else {
+          console.log('not the same');
+          // Remove old player
+          mejs4AvalonPlayer.removePlayer()
+          // Instantiate new player
+          this.ajaxGetNewMedia(el)
+        }
+      },
+
+      /**
+       * Handle MEJS's continuous time event
+       * @return {[type]} [description]
+       */
+      handleTimeUpdate() {
+        // Stop player when item's end time is reached
+        if (this.playlistItemsObj.itemEnded()) {
+          this.playlistItemsObj.player.pause();
+          this.playlistItemsObj.goToNextItem();
+        }
+      },
+
+      itemEnded() {
+        return this.player.getCurrentTime() > this.startEndTimes.end;
+      },
+
+      $nowPlayingLi: null,
+
+      /**
+       * Wrapper function for playing next item in the list
+       * @function playNextItem
+       * @param {boolean} autoPlay Whether the player should autoplay the new item
+       * @return {[type]} [description]
+       */
+      playNextItem(autoPlay) {
+        $.ajax({
+          url: `http://localhost:3000/playlists/1/refresh_info`,
+          data: {
+            autostart: true,
+            position: 2
+          },
+          dataType: 'json'
+        }).done((response) => {
+          console.log('done: ', response);
+        }).fail((error) => {
+          console.log('error:', error);
+        });
+
+        this.setCurrentPlayingItem();
+        this.player.setCurrentTime(this.startEndTimes.start);
+        mejs4AvalonPlayer.highlightTimeRail([
+          this.startEndTimes.start,
+          this.startEndTimes.end
+        ]);
+
+        if (autoPlay) {
+          this.player.play();
+        }
+      },
+
+      setCurrentPlayingItem() {
+        const t = this;
+        // Set current playing item
+        t.$nowPlayingLi = t.$sidePlaylist.find('li.now_playing');
+        t.updateStartEndTimes(t.$nowPlayingLi.find('a').data());
       },
 
       /**
@@ -158,6 +205,12 @@ Object.assign(MediaElementPlayer.prototype, {
         end: null
       },
 
+      updateStartEndTimes(dataSet) {
+        // Update playlist item start and end times
+        this.startEndTimes.start = parseInt(dataSet.clipStartTime, 10)/1000;
+        this.startEndTimes.end = parseInt(dataSet.clipEndTime, 10)/1000;
+      },
+
       /**
        * Update styles on the playlist items list
        * @function updateStyles
@@ -165,8 +218,8 @@ Object.assign(MediaElementPlayer.prototype, {
        * @return {void}
        */
       updateStyles(el) {
-        const nodeItems = this.$sidePlaylist[0].getElementsByTagName('li')
-        let array = [ ...nodeItems]
+        const liItems = this.$sidePlaylist[0].getElementsByTagName('li')
+        let array = [ ...liItems]
         let clickedEl = el.parentNode
         const arrowNode = document.createElement('i')
 
