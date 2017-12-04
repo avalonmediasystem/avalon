@@ -288,7 +288,9 @@ class MEJSPlayer {
       pluginPath: "/assets/mediaelement/shims/",
       features: this.features,
       poster: currentStreamInfo.poster_image || null,
-      success: this.handleSuccess.bind(this)
+      success: this.handleSuccess.bind(this),
+      embed_title: currentStreamInfo.embed_title,
+      link_back_url: currentStreamInfo.link_back_url
     }
     let promises = []
 

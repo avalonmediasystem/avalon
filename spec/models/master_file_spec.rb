@@ -523,4 +523,25 @@ describe MasterFile do
       expect { MasterFile.new(workflow_id: '1', status_code: 'RUNNING').send(:stop_processing!) }.not_to raise_error
     end
   end
+
+  describe 'stream_details' do
+    let(:media_object) { instance_double("media_object", title: 'Test') }
+    before do
+      allow(master_file).to receive(:media_object).and_return(media_object)
+    end
+    context 'with a permalink' do
+      let(:master_file) { FactoryGirl.build(:master_file, permalink: permalink) }
+      let(:permalink) { 'https://permalink.host/path/id' }
+      it 'returns the permalink as the link_back_url' do
+        expect(master_file.stream_details[:link_back_url]).to eq permalink
+      end
+    end
+    context 'without a permalink' do
+      # Have to create in order to get an id
+      let(:master_file) { FactoryGirl.create(:master_file) }
+      it 'returns the master file url as the link_back_url' do
+        expect(master_file.stream_details[:link_back_url]).to eq Rails.application.routes.url_helpers.master_file_url(master_file)
+      end
+    end
+  end
 end

@@ -1,0 +1,24 @@
+/**
+ * Stylesheet for Avalon custom MediaElement 4 plugin: "Title Link".
+ */
+
+.mejs__title-link {
+        width: 100%;
+        z-index: 999;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.35);
+}
+
+#mejs-title-link a {
+        color: white;
+        display: block;
+        font-size: 12pt;
+        margin: 10px 15px;
+}
+
+.mejs-link-back-button > button,
+.mejs__link-back-button > button {
+  background-position: -120px -20px;
+ }
