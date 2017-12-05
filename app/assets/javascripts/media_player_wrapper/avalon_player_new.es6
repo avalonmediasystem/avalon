@@ -25,10 +25,10 @@ class MEJSPlayer {
     this.mediaElement = null
     // Actual MediaElement instance
     this.player = null
-    // Add click listeners on sections
+    // Add click listeners
     this.addSectionsClickListener()
     // audio or video file?
-    this.mediaType = (this.currentStreamInfo.is_video === true) ? 'video' : 'audio'
+    this.mediaType = this.mejsUtility.getMediaType(this.currentStreamInfo.is_video)
 
     // Helper object when loading a new MEJS player instance (ie. a different media object source section link clicked)
     this.switchPlayerHelper = {
@@ -173,16 +173,18 @@ class MEJSPlayer {
       return;
     }
 
+    const t = this.mejsTimeRailHelper.calculateSegmentT(this.segmentsMap[activeId], this.currentStreamInfo)
+
     // Current active segment exists, and is different from before
     if (activeId && activeId !== this.activeSegmentId) {
       this.activeSegmentId = activeId
-      this.highlightTimeRail(this.activeSegmentId)
+      this.highlightTimeRail(t, this.activeSegmentId)
       this.mejsUtility.highlightSectionLink(this.activeSegmentId)
     }
     // No current segment, so remove highlighting
     else if (!activeId) {
       this.activeSegmentId = ''
-      this.highlightTimeRail()
+      this.highlightTimeRail(t)
       this.mejsUtility.highlightSectionLink()
     }
   }
@@ -198,7 +200,7 @@ class MEJSPlayer {
   handleSuccess (mediaElement, originalNode, instance) {
     this.mediaElement = mediaElement
 
-    // Show the player in success callback
+    // Make the player visible
     this.revealPlayer(instance)
 
     // Grab instance of player
@@ -211,9 +213,11 @@ class MEJSPlayer {
 
     // Show highlighted time in time rail
     if (this.highlightRail) {
+      const t = this.mejsTimeRailHelper.calculateSegmentT(this.segmentsMap[this.activeSegmentId], this.currentStreamInfo)
+
       // Create our custom time rail highlighter element
       this.highlightSpanEl = this.mejsTimeRailHelper.createTimeHighlightEl(document.getElementById('content'))
-      this.highlightTimeRail(this.activeSegmentId)
+      this.highlightTimeRail(t, this.activeSegmentId)
     }
 
     // Listen for timeupdate events in player, to show / hide highlighted sections, etc.
@@ -263,11 +267,14 @@ class MEJSPlayer {
   /**
    * Highlight a section of the Mediaelement player's time rail
    * @function highlightTimeRail
+   * @param {Object[]} t Start end time array
    * @param {string} activeSegmentId
    * @return {void}
    */
-  highlightTimeRail (activeSegmentId) {
-    this.highlightSpanEl.setAttribute('style', this.mejsTimeRailHelper.createTimeRailStyles(activeSegmentId, this.currentStreamInfo, this.segmentsMap))
+  highlightTimeRail (t, activeSegmentId) {
+    // const t = this.mejsTimeRailHelper.calculateSegmentT(this.segmentsMap[activeSegmentId], this.currentStreamInfo)
+
+    this.highlightSpanEl.setAttribute('style', this.mejsTimeRailHelper.createTimeRailStyles(t, this.currentStreamInfo))
 
     // If track scrubber feature is active, initialize a new scrubber
     if (this.player.trackScrubberObj) {

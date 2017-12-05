@@ -37,5 +37,6 @@
 //= stub media_player_wrapper/mejs4_create_thumbnail
 //= stub media_player_wrapper/mejs4_track_scrubber
 //= stub media_player_wrapper/mejs4_link_back
+//= stub media_player_wrapper/mejs4_plugin_playlist_items
 
 //= require_tree .
