@@ -84,6 +84,11 @@ Object.assign(MediaElementPlayer.prototype, {
         }
       },
 
+      /**
+       * Get new master file and tear down and build up a new MEJS player
+       * @param  {HTMLElement} el <a> anchor element of new playlist item being processed
+       * @return {void}
+       */
       ajaxGetNewMedia(el) {
         const dataSet = el.dataset;
 
@@ -92,6 +97,7 @@ Object.assign(MediaElementPlayer.prototype, {
           dataType: 'json'
         }).done((response) => {
           console.log('response', response);
+          mejs4AvalonPlayer.removePlayer();
           mejs4AvalonPlayer.currentStreamInfo = response;
           mejs4AvalonPlayer.mediaType = this.mejsUtility.getMediaType(response.is_video);
           mejs4AvalonPlayer.createNewPlayer();
@@ -100,15 +106,27 @@ Object.assign(MediaElementPlayer.prototype, {
         })
       },
 
+      /**
+       * Determine whether we need to grab a new master file, or can use the existing file
+       * @param  {HTMLElement} el <a> anchor element of the new playlist item being processed
+       * @return {void}
+       */
+      analyzeNewItemSource(el) {
+        this.updatePlaylistItemsList(el);
+        // Same media file?
+        if (this.currentStreamInfo.id === el.dataset.masterFileId) {
+          this.setupNextItem();
+        }
+        // Need to grab a new media file
+        else {
+          this.ajaxGetNewMedia(el)
+        }
+      },
+
       currentStreamInfo: null,
 
-      goToNextItem() {
-        const $nextLi = this.$nowPlayingLi.next('li');
-        // If a next item in the list exists
-        if ($nextLi.length > 0) {
-          this.updateStyles($nextLi.find('a')[0]);
-          this.playNextItem(true);
-        }
+      getNextItem() {
+        return this.$nowPlayingLi.next('li');
       },
 
       /**
@@ -117,77 +135,65 @@ Object.assign(MediaElementPlayer.prototype, {
        * @return {void}   [description]
        */
       handleClick(el) {
-        const dataSet = el.dataset;
-
-        this.updateStyles(el);
-
-        // Same media object/file?
-        if (this.currentStreamInfo.id === el.dataset.masterFileId) {
-          this.playNextItem(!this.player.paused);
-        } else {
-          console.log('not the same');
-          // Remove old player
-          mejs4AvalonPlayer.removePlayer()
-          // Instantiate new player
-          this.ajaxGetNewMedia(el)
-        }
+        this.analyzeNewItemSource(el);
       },
 
       /**
        * Handle MEJS's continuous time event
-       * @return {[type]} [description]
+       * @return {void}
        */
       handleTimeUpdate() {
-        // Stop player when item's end time is reached
+        // Playlist item's end time is reached
         if (this.playlistItemsObj.itemEnded()) {
           this.playlistItemsObj.player.pause();
-          this.playlistItemsObj.goToNextItem();
+
+          let $nextItem = this.playlistItemsObj.getNextItem();
+          if ($nextItem) {
+            let el = $nextItem.find('a')[0];
+            this.playlistItemsObj.analyzeNewItemSource(el);
+          }
         }
       },
 
+      isAutoplay() {
+        return !$('input[name="autoadvance"]').parent('.toggle').hasClass('off');
+      },
+
       itemEnded() {
+        console.log('this.player.getCurrentTime()', this.player.getCurrentTime());
         return this.player.getCurrentTime() > this.startEndTimes.end;
       },
 
       $nowPlayingLi: null,
 
       /**
-       * Wrapper function for playing next item in the list
-       * @function playNextItem
-       * @param {boolean} autoPlay Whether the player should autoplay the new item
-       * @return {[type]} [description]
+       * Set the now playing item helper variable, and update start end times for
+       * current playing item
+       * @function setCurrentPlayingItem
+       * @return {void}
        */
-      playNextItem(autoPlay) {
-        $.ajax({
-          url: `http://localhost:3000/playlists/1/refresh_info`,
-          data: {
-            autostart: true,
-            position: 2
-          },
-          dataType: 'json'
-        }).done((response) => {
-          console.log('done: ', response);
-        }).fail((error) => {
-          console.log('error:', error);
-        });
+      setCurrentPlayingItem() {
+        const t = this;
+        // Set current playing item
+        t.$nowPlayingLi = t.$sidePlaylist.find('li.now_playing');
+        t.updateStartEndTimes(t.$nowPlayingLi.find('a').data());
+      },
 
+      /**
+       * Wrapper function for playing next item in the list
+       * @function setupNextItem
+       * @return {void}
+       */
+      setupNextItem() {
         this.setCurrentPlayingItem();
         this.player.setCurrentTime(this.startEndTimes.start);
         mejs4AvalonPlayer.highlightTimeRail([
           this.startEndTimes.start,
           this.startEndTimes.end
         ]);
-
-        if (autoPlay) {
+        if (this.isAutoplay()) {
           this.player.play();
         }
-      },
-
-      setCurrentPlayingItem() {
-        const t = this;
-        // Set current playing item
-        t.$nowPlayingLi = t.$sidePlaylist.find('li.now_playing');
-        t.updateStartEndTimes(t.$nowPlayingLi.find('a').data());
       },
 
       /**
@@ -205,42 +211,47 @@ Object.assign(MediaElementPlayer.prototype, {
         end: null
       },
 
+      /**
+       * Update playlist item start and end times
+       * @function updateStartEndTimes
+       * @param  {Object} dataSet HTML element "dataset" property
+       * @return {void}
+       */
       updateStartEndTimes(dataSet) {
-        // Update playlist item start and end times
         this.startEndTimes.start = parseInt(dataSet.clipStartTime, 10)/1000;
         this.startEndTimes.end = parseInt(dataSet.clipEndTime, 10)/1000;
       },
 
       /**
        * Update styles on the playlist items list
-       * @function updateStyles
-       * @param  {HTMLElement} el The <a> item HTML element clicked
+       * @function updatePlaylistItemsList
+       * @param  {HTMLElement} el The <a> item HTML element which is the new item
        * @return {void}
        */
-      updateStyles(el) {
-        const liItems = this.$sidePlaylist[0].getElementsByTagName('li')
-        let array = [ ...liItems]
-        let clickedEl = el.parentNode
-        const arrowNode = document.createElement('i')
+      updatePlaylistItemsList(el) {
+        const liItems = this.$sidePlaylist[0].getElementsByTagName('li');
+        let array = [ ...liItems];
+        let clickedEl = el.parentNode;
+        const arrowNode = document.createElement('i');
 
-        arrowNode.className = `fa fa-arrow-circle-right`
+        arrowNode.className = `fa fa-arrow-circle-right`;
 
         // Loop through all children list items
         array.forEach(li => {
-          const children = [...li.children]
-          let arrow = children.find(e => e.nodeName === 'I')
+          const children = [...li.children];
+          let arrow = children.find(e => e.nodeName === 'I');
           // Remove styles
-          li.classList.remove('now_playing')
-          li.classList.remove('queue')
+          li.classList.remove('now_playing');
+          li.classList.remove('queue');
           if (arrow) {
-            li.removeChild(arrow)
+            li.removeChild(arrow);
           }
           // Conditionally add styles to the item clicked
           if (li === clickedEl) {
-            li.insertBefore(arrowNode, el)
-            li.classList.add('now_playing')
+            li.insertBefore(arrowNode, el);
+            li.classList.add('now_playing');
           } else {
-            li.classList.add('queue')
+            li.classList.add('queue');
           }
         })
       }
