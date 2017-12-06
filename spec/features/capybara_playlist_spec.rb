@@ -59,7 +59,7 @@ describe 'Playlist' do
     visit '/playlists'
     click_on('private_playlist')
     page.should have_content('private_playlist')
-    page.should have_button('Edit Playlist')
+    expect(page).to have_link('Edit Playlist')
     page.should have_content('This is test')
     page.should have_content('This playlist currently has no playable items')
   end
@@ -75,7 +75,7 @@ describe 'Playlist' do
     click_on('Edit')
     click_on('View Playlist')
     page.should have_content('private_playlist')
-    page.should have_button('Edit Playlist')
+    expect(page).to have_link('Edit Playlist')
     page.should have_content('This is test')
     page.should have_content('This playlist currently has no playable items')
   end
