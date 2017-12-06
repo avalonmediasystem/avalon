@@ -15,7 +15,7 @@
 module Avalon
   class ControlledVocabulary
 
-    @@path = Rails.root.join(Avalon::Configuration.lookup('controlled_vocabulary.path'))
+    @@path = Rails.root.join(Settings.controlled_vocabulary.path)
 
     def self.vocabulary
       vocabulary = {}

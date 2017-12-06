@@ -1,15 +1,17 @@
-require 'coveralls'
-Coveralls.wear!
-
 if ENV['COVERAGE'] || ENV['TRAVIS']
   require 'simplecov'
-  SimpleCov.root(File.expand_path('..', __FILE__))
-  SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+  require 'codeclimate-test-reporter'
+
   SimpleCov.start('rails') do
     add_filter '/spec'
+    add_filter '/app/migration'    
   end
   SimpleCov.command_name 'spec'
 end
+
+# Stub out all AWS clients
+require 'aws-sdk'
+Aws.config[:stub_responses] = true
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV['RAILS_ENV'] ||= 'test'
@@ -25,6 +27,8 @@ require 'database_cleaner'
 require 'active_fedora/cleaner'
 require 'webmock/rspec'
 require 'active_fedora/noid/rspec'
+require "email_spec"
+require "email_spec/rspec"
 # require 'equivalent-xml/rspec_matchers'
 # require 'fakefs/safe'
 # require 'fileutils'
@@ -76,19 +80,19 @@ RSpec.configure do |config|
     disable_production_minter!
 
     # Stub the entire dropbox
-    Avalon::Configuration['spec'] = {
-      'real_dropbox' => Avalon::Configuration.lookup('dropbox.path'),
+    Settings.spec = {
+      'real_dropbox' => Settings.dropbox.path,
       'fake_dropbox' => Dir.mktmpdir
     }
-    Avalon::Configuration['dropbox']['path'] = Avalon::Configuration.lookup('spec.fake_dropbox')
+    Settings.dropbox.path = Settings.spec['fake_dropbox']
     MasterFile.skip_callback(:save, :after, :update_stills_from_offset!)
   end
 
   config.after :suite do
-    if Avalon::Configuration.lookup('spec.fake_dropbox')
-      FileUtils.remove_dir Avalon::Configuration.lookup('spec.fake_dropbox'), true
-      Avalon::Configuration['dropbox']['path'] = Avalon::Configuration.lookup('spec.real_dropbox')
-      Avalon::Configuration.delete('spec')
+    if Settings.spec['fake_dropbox']
+      FileUtils.remove_dir Settings.spec['fake_dropbox'], true
+      Settings.dropbox.path = Settings.spec['real_dropbox']
+      Settings.spec = nil
     end
     enable_production_minter!
     WebMock.allow_net_connect!

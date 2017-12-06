@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -302,24 +302,24 @@ describe MasterFile do
         }
 
         before(:each) do
-          @old_media_path = Avalon::Configuration.lookup('matterhorn.media_path')
+          @old_media_path = Settings.matterhorn.media_path
           FileUtils.mkdir_p media_path
           FileUtils.cp fixture, tempfile
         end
 
         after(:each) do
-          Avalon::Configuration['matterhorn']['media_path'] = @old_media_path
+          Settings.matterhorn.media_path = @old_media_path
           File.unlink subject.file_location
           FileUtils.rm_rf media_path
         end
 
         it "should rename an uploaded file in place" do
-          Avalon::Configuration['matterhorn'].delete('media_path')
+          Settings.matterhorn.media_path = nil
           expect(subject.file_location).to eq(File.realpath(File.join(File.dirname(tempfile),original)))
         end
 
         it "should copy an uploaded file to the media path" do
-          Avalon::Configuration['matterhorn']['media_path'] = media_path
+          Settings.matterhorn.media_path = media_path
           expect(subject.file_location).to eq(File.join(media_path,original))
         end
       end
@@ -521,6 +521,27 @@ describe MasterFile do
     end
     it 'does not error if the master file has no encode' do
       expect { MasterFile.new(workflow_id: '1', status_code: 'RUNNING').send(:stop_processing!) }.not_to raise_error
+    end
+  end
+
+  describe 'stream_details' do
+    let(:media_object) { instance_double("media_object", title: 'Test') }
+    before do
+      allow(master_file).to receive(:media_object).and_return(media_object)
+    end
+    context 'with a permalink' do
+      let(:master_file) { FactoryGirl.build(:master_file, permalink: permalink) }
+      let(:permalink) { 'https://permalink.host/path/id' }
+      it 'returns the permalink as the link_back_url' do
+        expect(master_file.stream_details[:link_back_url]).to eq permalink
+      end
+    end
+    context 'without a permalink' do
+      # Have to create in order to get an id
+      let(:master_file) { FactoryGirl.create(:master_file) }
+      it 'returns the master file url as the link_back_url' do
+        expect(master_file.stream_details[:link_back_url]).to eq Rails.application.routes.url_helpers.master_file_url(master_file)
+      end
     end
   end
 end

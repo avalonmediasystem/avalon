@@ -16,12 +16,13 @@ require 'rails_helper'
 
 describe VirtualGroups do
 
-  before do
+  before(:all) do
     class Foo < ActiveFedora::Base
       include Hydra::AccessControls::Permissions
       include VirtualGroups
     end
   end
+  after(:all) { Object.send(:remove_const, :Foo) }
 
   subject { Foo.new }
 

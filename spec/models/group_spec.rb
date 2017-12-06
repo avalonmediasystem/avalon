@@ -27,7 +27,7 @@ describe Admin::Group do
   describe "non system groups" do
     it "should not have system groups" do
       groups = Admin::Group.non_system_groups
-      system_groups = Avalon::Configuration.lookup('groups.system_groups')
+      system_groups = Settings.groups.system_groups
       groups.each { |g| expect(system_groups).not_to include g.name }
     end
   end

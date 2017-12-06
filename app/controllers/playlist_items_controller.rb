@@ -13,8 +13,9 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class PlaylistItemsController < ApplicationController
-  before_action :set_playlist, only: [:create, :update]
+  before_action :set_playlist, only: [:create, :update, :show]
   before_action :authenticate_user!
+  load_resource only: [:show, :update]
 
   # POST /playlists/1/items
   def create
@@ -44,11 +45,10 @@ class PlaylistItemsController < ApplicationController
   end
 
   def update
-    playlist_item = PlaylistItem.find(params['id'])
-    unless (can? :update, playlist_item)
+    unless (can? :update, @playlist_item)
       render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return
     end
-    clip = AvalonClip.find(playlist_item.clip.id)
+    clip = AvalonClip.find(@playlist_item.clip.id)
     clip.title =  playlist_item_params[:title]
     clip.comment = playlist_item_params[:comment]
     clip.start_time = time_str_to_milliseconds playlist_item_params[:start_time]
@@ -60,6 +60,31 @@ class PlaylistItemsController < ApplicationController
     end
   rescue StandardError => error
     render json: { message: "Item was not updated: #{error.message}" }, status: 500 and return
+  end
+
+  def show
+    unless (can? :read, @playlist_item)
+      render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return
+    end
+    itemMarkers = []
+    # Get markers for a playlist item
+    markers = @playlist_item.marker.sort_by &:start_time
+    # Build an object array of only data we need
+    markers.each do |marker|
+      itemMarkers.push({
+        id: marker.id,
+        title: marker.title,
+        start_time: marker.start_time/1000
+      })
+    end
+    # Send back the json response
+    respond_to do |format|
+      format.json do
+        render json: { markers: itemMarkers }.to_json
+      end
+    end
+  rescue StandardError => error
+    render json: { message: "Server error: #{error.message}" }, status: 500 and return
   end
 
   private

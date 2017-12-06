@@ -401,7 +401,7 @@ RSpec.describe PlaylistsController, type: :controller do
           expect(response).to render_template(:_lti_url)
         end
         it "Playlist owner: should include lti and share" do
-          login_user playlist.user.username
+          login_user playlist.user.user_key
           get :show, id: playlist.id
           expect(response).to render_template(:_share_resource)
           expect(response).to render_template(:_lti_url)

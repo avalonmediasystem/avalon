@@ -24,8 +24,9 @@ Unless required by applicable law or agreed to in writing, software distributed
   <div class="col-sm-8" id="left_column">
     <%= render partial: "modules/player/section", locals: {section: @currentStream, section_info: @currentStreamInfo, f_start: @f_start, f_end: @f_end} %>
 
-    <%= render file: '_track_scrubber.html.erb' %>
+    <%= render file: '_track_scrubber.html.erb' if is_mejs_2? %>
     <%= render file: '_add_to_playlist.html.erb' if current_user.present? && is_mejs_2? %>
+    <%# Partial view for MEJS4 Add To Playlist plugin %>
     <%= render partial: 'mejs4_add_to_playlist' if current_user.present? && is_mejs_4? %>
     <%= render 'workflow_progress' %>
     <%= render 'share' if will_partial_list_render? :share %>
@@ -46,7 +47,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% content_for :page_scripts do %>
   <% if @currentStream.present? and @currentStream.derivatives.present? %>
-
     <% if is_mejs_2? %>
       <%= render partial: "mejs2_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
     <% else %>

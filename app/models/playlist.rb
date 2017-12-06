@@ -14,6 +14,10 @@
 
 class Playlist < ActiveRecord::Base
   belongs_to :user
+  scope :by_user, ->(user) { where(user_id: user.id) }
+  scope :title_like, ->(title_filter) { where("title LIKE ?", "%#{title_filter}%")}
+  scope :with_tag, ->(tag_filter) { where("tags LIKE ?", "%\n- #{tag_filter}\n%") }
+
   validates :user, presence: true
   validates :title, presence: true
   validates :comment, length: { maximum: 255 }
@@ -29,6 +33,8 @@ class Playlist < ActiveRecord::Base
   has_many :clips, -> { order('playlist_items.position ASC') }, class_name: AvalonClip, through: :items
   accepts_nested_attributes_for :items, allow_destroy: true
 
+  serialize :tags
+
   # visibility
   PUBLIC = 'public'
   PRIVATE = 'private'
@@ -37,6 +43,7 @@ class Playlist < ActiveRecord::Base
   # Default values to be applied after initialization
   def default_values
     self.visibility ||= Playlist::PRIVATE
+    self.tags ||= [];
   end
 
   def generate_access_token

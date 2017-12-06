@@ -1,0 +1,58 @@
+/**
+ * Stylesheet for Avalon custom MediaElement 4 plugin: "Add Marker To Playlist".
+ */
+
+.mejs__add-marker-to-playlist-button > button,
+.mejs-add-marker-to-playlist-button > button {
+  background-position: -100px 0px;
+  width: 20px;
+}
+
+.mejs__time-marker {
+  top: 0;
+}
+
+#markers {
+  table {
+    tr {
+      .display-item {
+        display: block;
+      }
+      button.display-item {
+        display: inline-block;
+      }
+      .edit-item {
+        display: none;
+      }
+      &.is-editing {
+        .display-item {
+          display: none;
+        }
+        .edit-item {
+          display: block;
+        }
+        button.edit-item {
+          display: inline-block;
+        }
+      }
+    }
+    th {
+      &:nth-child(1) {
+        width: 50%;
+      }
+      &:nth-child(2) {
+        width: 25%;
+      }
+    }
+    td {
+      // The Edit/Delte buttons column
+      &:last-of-type {
+        position: relative;
+
+        .popover {
+          min-width: 165px;
+        }
+      }
+    }
+  }
+}

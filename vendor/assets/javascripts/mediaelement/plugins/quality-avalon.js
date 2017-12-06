@@ -85,9 +85,10 @@ Object.assign(MediaElementPlayer.prototype, {
 			});
 		}
 
+		/** Customization added 2017-10-27 to fix mouseleave behavior **/
 		for (var _i3 = 0, _total3 = outEvents.length; _i3 < _total3; _i3++) {
-			selector.addEventListener(outEvents[_i3], function () {
-				mejs.Utils.addClass(this, t.options.classPrefix + "offscreen");
+			player.qualitiesButton.addEventListener(outEvents[_i3], function () {
+				mejs.Utils.addClass(selector, t.options.classPrefix + "offscreen");
 			});
 		}
 

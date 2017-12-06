@@ -1,5 +1,9 @@
 # https://github.com/bbatsov/rubocop/blob/master/config/default.yml
 # require: rubocop-rspec
+
+inherit_gem:
+  bixby: bixby_default.yml
+
 AllCops:
   DisplayCopNames: true
   Exclude:

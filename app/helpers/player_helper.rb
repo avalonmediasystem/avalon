@@ -14,10 +14,10 @@
 
 module PlayerHelper
   def is_mejs_2?
-    !is_mejs_4?
+    session['mejs_version'] == 2 || params['mejs4'] === 'false'
   end
 
   def is_mejs_4?
-    params['mejs4'] === 'true'
+    !is_mejs_2?
   end
 end

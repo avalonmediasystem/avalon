@@ -40,7 +40,7 @@ Unless required by applicable law or agreed to in writing, software distributed
             <%= section.title.blank? ? '&#8212;'.html_safe : section.title %>
 	  </li><li>
             <% if section.file_location.present? %>
-              <%= truncate_center(File.basename(section.file_location), 50, 20) %>
+              <%= truncate_center(File.basename(section.file_location.to_s), 50, 20) %>
             <% else %>
               -
             <% end %>

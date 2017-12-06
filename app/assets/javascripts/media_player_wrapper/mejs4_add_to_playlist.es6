@@ -38,7 +38,7 @@ Object.assign(MediaElementPlayer.prototype, {
         const t = this;
         const addTitle = 'Add to Playlist';
         let addToPlayListObj = t.addToPlayListObj;
-        addToPlayListObj.hasPlaylists = addToPlayListObj.playlistEl.dataset.hasPlaylists === 'true';
+        addToPlayListObj.hasPlaylists = addToPlayListObj.playlistEl && addToPlayListObj.playlistEl.dataset.hasPlaylists === 'true';
         addToPlayListObj.isVideo = player.isVideo;
 
         // Make player instance available outside of this method
@@ -49,7 +49,7 @@ Object.assign(MediaElementPlayer.prototype, {
         // outside of this scope
         player.addPlaylistButton = document.createElement('div');
     		player.addPlaylistButton.className = t.options.classPrefix + 'button ' + t.options.classPrefix + 'add-to-playlist-button';
-    		player.addPlaylistButton.innerHTML = '<button type="button" aria-controls="' + t.id + '" title="' + addTitle + '" ' + 'aria-label="' + addTitle + '" tabindex="0">' + addTitle + '</button>';
+    		player.addPlaylistButton.innerHTML = `<button type="button" aria-controls="${t.id}" title="${addTitle}" aria-label="${addTitle}" tabindex="0">${addTitle}</button>`;
 
         // Add control button to player
     		t.addControlElement(player.addPlaylistButton, 'addToPlaylist');
@@ -122,18 +122,15 @@ Object.assign(MediaElementPlayer.prototype, {
       createDefaultPlaylistTitle: function () {
         const t = this;
         let addToPlayListObj = t.addToPlayListObj;
-        let playlistItemDefaultTitle = addToPlayListObj.player.options.playlistItemDefaultTitle;
-
-        let defaultTitle = addToPlayListObj.hasSections
-          ? playlistItemDefaultTitle.slice(0, playlistItemDefaultTitle.lastIndexOf('-')).trim()
-          : playlistItemDefaultTitle.slice(playlistItemDefaultTitle.indexOf('-') + 1).trim();
+        let defaultTitle = addToPlayListObj.player.options.playlistItemDefaultTitle;
 
         const currentStream = $('#accordion li a.current-stream');
 
         if (currentStream.length > 0) {
           let $firstCurrentStream = $(currentStream[0]);
-          let re = /\s*\(.*\)$/; // duration notation at end of section title ' (2:00)'
-          let structureTitle = $firstCurrentStream.text().replace(re,'').trim();
+          let re1 = /^\s*\d\.\s*/; // index number in front of section title '1. '
+          let re2 = /\s*\(.*\)$/;  // duration notation at end of section title ' (2:00)'
+          let structureTitle = $firstCurrentStream.text().replace(re1,'').replace(re2,'').trim();
           let parent = $firstCurrentStream.closest('ul').closest('li').prev();
 
           while (parent.length > 0) {
@@ -228,7 +225,9 @@ Object.assign(MediaElementPlayer.prototype, {
       handleControlClick: function (e) {
         const t = this;
         let addToPlayListObj = t.addToPlayListObj;
-
+        if (addToPlayListObj.player.isFullScreen){
+          addToPlayListObj.player.exitFullScreen();
+        }
         if (!addToPlayListObj.active) {
           // Close any open alert displays
           $(t.addToPlayListObj.alertEl).slideUp();

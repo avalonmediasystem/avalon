@@ -3,21 +3,46 @@
  * @classdesc Wrapper for MediaElementPlayer interactions
  */
 class MEJSPlayer {
-  constructor(currentStreamInfo) {
+  /**
+   * Class constructor
+   * @param  {Object} currentStreamInfo JSON of current media stream info
+   * @param  {Object} customConfig      Custom configuration for player
+   * @return {void}                   [description]
+   */
+  constructor(configObj) {
+    this.mejsUtility = new MEJSUtility()
+    this.mejsTimeRailHelper = new MEJSTimeRailHelper()
+    this.mejsMarkersHelper = new MEJSMarkersHelper()
+
+    // Unpack player configuration object for the new player.
+    // This allows for variable params to be sent in.
+    this.currentStreamInfo = configObj.currentStreamInfo || {}
+    this.features = configObj.features || {}
+    this.highlightRail = configObj.highlightRail
+    this.playlistItem = configObj.playlistItem || {}
+
     // Wrapper for MediaElement instance which interfaces with properties, events, etc.
     this.mediaElement = null
     // Actual MediaElement instance
     this.player = null
-    // Source file info from server
-    this.currentStreamInfo = currentStreamInfo
+    // Add click listeners on sections
     this.addSectionsClickListener()
     // audio or video file?
     this.mediaType = (this.currentStreamInfo.is_video === true) ? 'video' : 'audio'
-    // Flag whether to play a specified range of media clip (ie. 00:15 - 1:23)
-    // Default 'false' indicates play from beginning (00:00)
-    this.playRangeFlag = false
-    // Temporary holder for clip range data
-    this.playRangeData = {}
+
+    // Helper object when loading a new MEJS player instance (ie. a different media object source section link clicked)
+    this.switchPlayerHelper = {
+      active: false,
+      data: {},
+      paused: false
+    }
+
+    // Array of all current segments for media object
+    this.segmentsMap = this.mejsUtility.createSegmentsMap(document.getElementById('accordion'), this.currentStreamInfo)
+    // Holder for currently active segment DOM element 'id' attribute
+    this.activeSegmentId = ''
+
+    // Initialize the player
     this.initializePlayer()
   }
 
@@ -35,89 +60,18 @@ class MEJSPlayer {
   }
 
   /**
-   * Create HTML markup for <audio> or <video> element
-   * @function createMarkup
-   * @return {string} markup - HTML markup containing <audio> or <video> and <source>s
-   */
-  createMarkup() {
-    let currentStreamInfo = this.currentStreamInfo
-    let markup = ''
-    let node = null
-
-    // Create <video> markup
-    if (this.mediaType === 'video') {
-      node = document.createElement('video')
-      node.setAttribute('id', 'mejs-avalon-video')
-      node.setAttribute('controls', '')
-      node.setAttribute('width', '450')
-      node.setAttribute('height', '309')
-      node.setAttribute('style', 'width: 100%; height: 100%')
-      if (currentStreamInfo.poster_image) {
-        node.setAttribute('poster', currentStreamInfo.poster_image)
-      }
-      node.setAttribute('preload', 'true')
-      node.classList.add('mejs-avalon')
-      node.classList.add('invisible')
-
-      // Add <source>s
-      currentStreamInfo.stream_hls.map((source) => {
-        markup += `<source src="${source.url}" type="application/x-mpegURL" data-quality="${source.quality}"/>`
-      })
-
-      // Add captions
-      if (currentStreamInfo.captions_path) {
-        markup += `<track srclang="en" kind="subtitles" type="${currentStreamInfo.captions_format}" src="${currentStreamInfo.captions_path}"></track>`
-      }
-    }
-    // Create <audio> markup
-    if (this.mediaType === 'audio') {
-      node = document.createElement('audio')
-      node.setAttribute('id', 'mejs-avalon-audio')
-      node.setAttribute('controls', '')
-      node.setAttribute('style', 'width: 100%;')
-      node.setAttribute('preload', 'true')
-      node.classList.add('mejs-avalon')
-      node.classList.add('invisible')
-
-      // Add <source>s
-      currentStreamInfo.stream_hls.map((source) => {
-        markup += `<source src="${source.url}" data-quality="${source.quality}" data-plugin-type="native" type="application/x-mpegURL" />`
-      })
-      markup += `</audio>`
-    }
-    node.innerHTML = markup
-    return node
-  }
-
-  /**
    * Create the pieces for a new MediaElement player
    * @function createNewPlayer
    * @return {void}
    */
-  createNewPlayer() {
+  createNewPlayer () {
     let itemScope = document.querySelector('[itemscope="itemscope"]')
-    let node = this.createMarkup()
+    let node = this.mejsUtility.createHTML5MediaNode(this.mediaType, this.currentStreamInfo)
 
     // Mount new <audio> or <video> element to the DOM and initialize
     // a new MediaElement instance.
     itemScope.appendChild(node)
     this.initializePlayer()
-  }
-
-  /**
-   * Configuration of the Markers plugin
-   * @function getMarkers
-   * @return {obj} obj - Markers plugin specific configuration
-   */
-  getMarkers () {
-    let obj = {
-      markerColor: '#86ad96', // Optional : Specify the color of the marker
-      markers:['4','16','20','25','35','40'], // Specify marker times in seconds
-      markerCallback: function(media,time){
-          // Do something here
-      }
-    }
-    return obj
   }
 
   /**
@@ -146,68 +100,90 @@ class MEJSPlayer {
   }
 
   /**
-   * Stub function to demonstrate future usage of MEJS4 playlist plugin
-   * @return {void}
-   */
-  getPlaylists () {
-    const obj = {
-      playlist: [{
-        src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/CastVideos/mp4/BigBuckBunny.mp4',
-        title: 'Big Buck Bunny Test'
-      }, {
-        src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/CastVideos/mp4/BigBuckBunny.mp4',
-        title: 'Big Buck Bunny Test 2'
-      }]
-    }
-    return {}
-  }
-
-  /**
    * Event handler for MediaElement's 'canplay' event
    * At this point can play, pause, set time on player instance
+   * @function handleCanPlay
    * @return {void}
    */
   handleCanPlay () {
     this.mediaElement.removeEventListener('canplay')
-
     // Do we play a specified range of the media file?
-    if (this.playRangeFlag) {
+    if (this.switchPlayerHelper.active) {
       this.playRange()
     }
   }
 
   /**
+   * Handle updating progress of the track scrubber, if the feature/plugin is enabled
+   * @function handleScrubberProgress
+   * @param activeId - current active segment id - the id of section playing
+   * @param currentTime - current player time value in seconds
+   * @return {void}
+   */
+  handleScrubberProgress (activeId, currentTime) {
+    const player = this.player
+    if (!player.trackScrubberObj) {
+      return
+    }
+    player.trackScrubberObj.updateTrackScrubberProgressBar(currentTime)
+  }
+
+  /**
    * Event handler for clicking on a section link
+   * @function handleSectionClick
    * @param  {Object} e - Event object
    * @return {void}
    */
   handleSectionClick (e) {
     const target = e.target
     const dataset = e.target.dataset
+    e.preventDefault()
 
-    // Did user click on Structured metadata link?
-    this.playRangeFlag = !!dataset.fragmentbegin
-    if (this.playRangeFlag) {
-      // Store temporarily range clip data
-      this.playRangeData = dataset
+    // Stop execution if a non-section link was clicked
+    if (!dataset.segment) { return }
+
+    // Clicked on a different section
+    if (dataset.segment !== this.currentStreamInfo.id) {
+      // Capture clicked segment or section element id
+      this.switchPlayerHelper = {
+        active: true,
+        data: dataset,
+        paused: this.mediaElement.paused
+      }
+      this.getNewStreamAjax(target)
+    } else {
+      // Clicked within the same section...
+      const parentPanel = $(target).closest('div[class*=panel]')
+      const isHeader = parentPanel.hasClass('panel-heading') || parentPanel.hasClass('panel-title')
+      const time = (isHeader) ? 0 : parseFloat(this.segmentsMap[target.id].fragmentbegin)
+      this.mediaElement.setCurrentTime(time)
+    }
+  }
+
+  /**
+   * Show/display a highlighted segment region in MEJS's UI time rail
+   * @function handleSectionHighlighting
+   * @param {string} activeId - current active segment id - the id of section playing
+   * @param {number} currentTime - current player time value in seconds
+   * @return {void}
+   */
+  handleSectionHighlighting (activeId, currentTime) {
+    // There is no segments map, which means we don't want to hightlight any segment
+    if (Object.keys(this.segmentsMap).length === 0) {
+      return;
     }
 
-    // Only handle clicks on section links
-    if (dataset.segment) {
-      e.preventDefault()
-      this.updateSectionLinks(target)
-      // Current structure item clicked
-      if (dataset.segment === this.currentStreamInfo.id) {
-        if (this.playRangeFlag) {
-          this.playRange()
-        } else {
-          // Play from beginning
-          this.mediaElement.setCurrentTime(0)
-        }
-      } else {
-        // New structure item clicked
-        this.getNewStreamAjax(target)
-      }
+    // Current active segment exists, and is different from before
+    if (activeId && activeId !== this.activeSegmentId) {
+      this.activeSegmentId = activeId
+      this.highlightTimeRail(this.activeSegmentId)
+      this.mejsUtility.highlightSectionLink(this.activeSegmentId)
+    }
+    // No current segment, so remove highlighting
+    else if (!activeId) {
+      this.activeSegmentId = ''
+      this.highlightTimeRail()
+      this.mejsUtility.highlightSectionLink()
     }
   }
 
@@ -221,15 +197,82 @@ class MEJSPlayer {
    */
   handleSuccess (mediaElement, originalNode, instance) {
     this.mediaElement = mediaElement
+
+    // Show the player in success callback
     this.revealPlayer(instance)
 
-    // MediaElement doesn't set the instance when calling
-    // with ... = new MediaElement(...) for audio files.  Guessing because
-    // it's using the Flash player?
+    // Grab instance of player
     if (!this.player) {
-      this.player = mediaElement
+      this.player = this.mediaElement
     }
-    mediaElement.addEventListener('canplay', this.handleCanPlay.bind(this))
+
+    // Handle 'canplay' events fired by player
+    this.mediaElement.addEventListener('canplay', this.handleCanPlay.bind(this))
+
+    // Show highlighted time in time rail
+    if (this.highlightRail) {
+      // Create our custom time rail highlighter element
+      this.highlightSpanEl = this.mejsTimeRailHelper.createTimeHighlightEl(document.getElementById('content'))
+      this.highlightTimeRail(this.activeSegmentId)
+    }
+
+    // Listen for timeupdate events in player, to show / hide highlighted sections, etc.
+    this.mediaElement.addEventListener('timeupdate', this.handleTimeUpdate.bind(this))
+  }
+
+  /**
+   * Callback function to handle MEJS's 'timeupdate' event, which happens continuously
+   * @function handleTimeUpdate
+   * @return {void}
+   */
+  handleTimeUpdate () {
+    const currentTime = this.player.getCurrentTime()
+    const activeId = this.mejsUtility.getActiveSegmentId(this.segmentsMap, currentTime)
+
+    // Handle section highlighting
+    this.handleSectionHighlighting(activeId, currentTime)
+    // Handle updating the track scrubber, if enabled
+    this.handleScrubberProgress(activeId, currentTime)
+  }
+
+  /**
+   * Update section links to reflect active section playing
+   * @function highlightSectionLink
+   * @param  {string} segmentId - HTML node of section link clicked on <a>
+   * @return {void}
+   */
+  highlightSectionLink (segmentId) {
+    const accordionEl = document.getElementById('accordion')
+    const htmlCollection = accordionEl.getElementsByClassName('playable wrap')
+    let segmentLinks = [].slice.call(htmlCollection)
+    let segmentEl = document.getElementById(segmentId)
+
+    // Clear "active" style on all section links
+    segmentLinks.forEach((segmentLink) => {
+      segmentLink.classList.remove('current-stream')
+      segmentLink.classList.remove('current-section')
+    })
+    if (segmentEl) {
+      // Add style to clicked segment link
+      segmentEl.classList.add('current-stream')
+      // Add style to section title
+      document.getElementById('section-title-' + segmentEl.dataset.segment).classList.add('current-section')
+    }
+  }
+
+  /**
+   * Highlight a section of the Mediaelement player's time rail
+   * @function highlightTimeRail
+   * @param {string} activeSegmentId
+   * @return {void}
+   */
+  highlightTimeRail (activeSegmentId) {
+    this.highlightSpanEl.setAttribute('style', this.mejsTimeRailHelper.createTimeRailStyles(activeSegmentId, this.currentStreamInfo, this.segmentsMap))
+
+    // If track scrubber feature is active, initialize a new scrubber
+    if (this.player.trackScrubberObj) {
+      this.reInitializeScrubber(activeSegmentId)
+    }
   }
 
   /**
@@ -238,35 +281,78 @@ class MEJSPlayer {
    * @return {void}
    */
   initializePlayer () {
+    let currentStreamInfo = this.currentStreamInfo;
     // Mediaelement default root level configuration
     let defaults = {
       alwaysShowControls: true,
       pluginPath: "/assets/mediaelement/shims/",
-      features: ['playpause', 'current', 'progress', 'duration', 'volume', 'quality', 'addToPlaylist', 'fullscreen'],
-      success: this.handleSuccess.bind(this)
+      features: this.features,
+      poster: currentStreamInfo.poster_image || null,
+      success: this.handleSuccess.bind(this),
+      embed_title: currentStreamInfo.embed_title,
+      link_back_url: currentStreamInfo.link_back_url
     }
-    // Get markers, playlists, etc. anything else here we'll
-    // need to configure the player instance
-    let markers = this.getMarkers()
+    let promises = []
 
-    // Combine all configurations
-    let fullConfiguration = Object.assign({}, defaults, markers)
+    // Remove video player controls/plugins if it's not a video stream
+    if (!currentStreamInfo.is_video) {
+      defaults.features = defaults.features.filter(e => e !== 'createThumbnail')
+      delete defaults.poster;
+    }
 
-    // Create a MediaElement instance
-    this.player = new MediaElementPlayer(`mejs-avalon-${this.mediaType}`, fullConfiguration)
+    // Get any asynchronous configuration data needed to
+    // create a new player instance
+    promises.push(new Promise(this.mejsMarkersHelper.getMarkers.bind(this)))
+    Promise.all(promises).then((values) => {
+      const markerConfig = values[0]
 
-    // Add default title from stream info which mejs plugins can access
-    this.player.options.playlistItemDefaultTitle = this.currentStreamInfo.embed_title;
+      // Combine all configurations
+      let fullConfiguration = Object.assign({}, defaults, markerConfig)
+      // Create a MediaElement instance
+      this.player = new MediaElementPlayer(`mejs-avalon-${this.mediaType}`, fullConfiguration)
+      // Add default title from stream info which mejs plugins can access
+      this.player.options.playlistItemDefaultTitle = this.currentStreamInfo.embed_title
+          
+	  // initialize global variable currentPlayer
+	  currentPlayer = this.player;
+    }).catch((error) => {
+      console.log('Promise rejection error')
+    });
   }
 
   /**
-   * Play a range of a video
+   * Play a range of a media file from the start time
+   * @function playRange
    * @return {void}
    */
   playRange () {
+    const begin = parseFloat(this.switchPlayerHelper.data.fragmentbegin) || 0
     // Reset the flag to default 'off'
-    this.playRangeFlag = false
-    this.mediaElement.setCurrentTime(this.playRangeData.fragmentbegin)
+    this.switchPlayerHelper.active = false
+    this.mediaElement.setCurrentTime(begin)
+    // If the player was previously playing, continue playing.
+    if (!this.switchPlayerHelper.paused) {
+      this.mediaElement.play()
+    }
+  }
+
+  /**
+   * Re-initialize the track scrubber in player
+   * @function reInitializeScrubber
+   * @param {string} activeSegmentId - Active segment id
+   * @return {void}
+   */
+  reInitializeScrubber (activeSegmentId) {
+    const stream = this.currentStreamInfo
+    let start = stream.t[0] || 0
+    let end = stream.t[1] || stream.duration
+
+    // Feed the scrubber active section data, instead of default data
+    if (activeSegmentId && this.segmentsMap && this.segmentsMap.hasOwnProperty(activeSegmentId)) {
+      start = this.segmentsMap[activeSegmentId].fragmentbegin
+      end = this.segmentsMap[activeSegmentId].fragmentend
+    }
+    this.player.trackScrubberObj.initializeTrackScrubber(start, end, stream)
   }
 
   /**
@@ -317,26 +403,7 @@ class MEJSPlayer {
   setContextVars (currentStreamInfo) {
     this.currentStreamInfo = currentStreamInfo
     this.mediaType = (currentStreamInfo.is_video === true) ? 'video' : 'audio'
+    this.segmentsMap = this.mejsUtility.createSegmentsMap(document.getElementById('accordion'), currentStreamInfo)
   }
 
-  /**
-   * Update section links to reflect active section playing
-   * @function updateSectionLinks
-   * @param  {Object} target - HTML node of section link clicked on <a>
-   * @return {void}
-   */
-  updateSectionLinks(target) {
-    const accordionEl = document.getElementById('accordion')
-    const htmlCollection = accordionEl.getElementsByClassName('playable wrap')
-    const sectionLinks = Array.from(htmlCollection)
-
-    // Clear selected styles on all section links
-    sectionLinks.map((sectionLink) => {
-      sectionLink.classList.remove('current-stream')
-      sectionLink.classList.remove('current-section')
-    })
-    // Add selected style to clicked section link
-    target.classList.add('current-stream')
-    target.classList.add('current-section')
-  }
 }

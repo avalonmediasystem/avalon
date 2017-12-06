@@ -15,7 +15,7 @@
 require 'rails_helper'
 
 describe FedoraMigrate::Lease::ObjectMover do
-  let(:lease) { FactoryGirl.create(:lease, inherited_read_users: [ FactoryGirl.create(:user).username ]) }
+  let(:lease) { FactoryGirl.create(:lease, inherited_read_users: [ FactoryGirl.create(:user).user_key ]) }
   describe 'empty?' do
     it 'returns true when the admin lease has been wiped' do
       described_class.wipeout!(lease)

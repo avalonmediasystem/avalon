@@ -15,12 +15,13 @@
 require 'rails_helper'
 
 describe Hidden do
-  before do
+  before(:all) do
     class Foo < ActiveFedora::Base
       include Hydra::AccessControls::Permissions
       include Hidden
     end
   end
+  after(:all) { Object.send(:remove_const, :Foo) }
 
   subject { Foo.new }
 

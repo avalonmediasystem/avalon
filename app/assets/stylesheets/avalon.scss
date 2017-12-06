@@ -770,16 +770,10 @@ a[data-trigger='submit'] {
   margin-bottom: 0;
   a:link, a:visited, a:hover, a:active {
     text-decoration: none;
-    outline: 0;
   }
 }
 #share-list .tab-content {
   margin-bottom: 20px;
-}
-#share-list .share-tabs {
-  a:link, a:visited, a:hover, a:active {
-    outline: 0;
-  }
 }
 
 $accordionPadding: 20px;
@@ -793,7 +787,6 @@ $accordionPadding: 20px;
     display: inline-block;
     cursor: pointer;
     &:link, &:visited, &:hover, &:active {
-      outline: 0;
       text-decoration: none;
     }
   }
@@ -1013,9 +1006,44 @@ div.structure_edit {
   visibility: visible !important;
 }
 
+/* Playlist index page */
+.playlists_top {
+  text-align: right;
+}
+
+#Playlists_info {
+  float: left;
+}
+
+#Playlists_length {
+  display: inline-block;
+}
+
+#Playlists_paginate {
+  float: right;
+}
+
+.playlist_filter_container {
+  display: inline-block;
+  margin-left: 1em;
+}
+
+.tag_filter_container {
+  display: inline-block;
+}
+
+.tag_filter {
+  display: inline;
+  width: auto;
+}
+
+.tag-button-wrapper {
+  margin-bottom:.4em;
+}
+
 /* Playlist show page */
 .queue {
-  opacity:.80;
+  opacity:.8;
   &:hover {
     opacity:1;
   }
@@ -1138,6 +1166,11 @@ h5.panel-title {
   }
 }
 
+.info-text-gray {
+  font-style:italic;
+  color: gray;
+}
+
 /* Mediaelement styles */
 .mejs-time-clip {
   background: linear-gradient(#DDD,#DDD);
@@ -1192,4 +1225,50 @@ h5.panel-title {
 
 .twitter-typeahead {
   z-index: auto !important;
+}
+
+/**
+ * Associated Files - Edit - Manage Files
+ */
+#associated_files {
+ margin-bottom: 2rem;
+
+ label {
+   margin-bottom: 1px;
+ }
+
+ .associated-files-block {
+   background: #efefef;
+   margin-bottom: 20px;
+   padding: 10px 15px 10px 15px;
+ }
+
+ .associated-files-top-row {
+   display: flex;
+   justify-content: flex-start;
+   font-size: 18px;
+   padding-bottom: 10px;
+
+   > span {
+     padding: 0 5px;
+   }
+   .delete {
+     margin-left: auto;
+     padding: 0;
+   }
+ }
+
+ .associated-files-wrapper {
+   input {
+     @extend .form-control;
+     padding: 3px 6px;
+     height: auto;
+   }
+ }
+}
+
+// Fixes the input displaying over the dropdown datepicker calendar
+.fileinput {
+  position: relative;
+  z-index: 1;
 }
