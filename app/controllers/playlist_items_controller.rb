@@ -13,9 +13,9 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class PlaylistItemsController < ApplicationController
-  before_action :set_playlist, only: [:create, :update, :show]
+  before_action :set_playlist, only: [:create, :update, :show, :markers, :related_items]
   before_action :authenticate_user!
-  load_resource only: [:show, :update]
+  load_resource only: [:show, :update, :markers]
 
   # POST /playlists/1/items
   def create
@@ -60,6 +60,41 @@ class PlaylistItemsController < ApplicationController
     end
   rescue StandardError => error
     render json: { message: "Item was not updated: #{error.message}" }, status: 500 and return
+  end
+
+  # GET /playlists/1/items/2/markers
+  def markers
+    @playlist_item = PlaylistItem.find(params['playlist_item_id'])
+    respond_to do |format|
+      format.html do
+        render partial: 'markers', locals: { markers: @playlist_item.marker || [] }
+      end
+    end
+  end
+
+  # GET /playlists/1/items/2/source_details
+  def source_details
+    @playlist_item = PlaylistItem.find(params['playlist_item_id'])
+    respond_to do |format|
+      format.html do
+        render partial: 'current_item'
+      end
+    end
+  end
+
+  # GET /playlists/1/items/2/related_items
+  def related_items
+    @playlist_item = PlaylistItem.find(params['playlist_item_id'])
+    @related_clips = @playlist.related_clips(@playlist_item)
+    respond_to do |format|
+      format.html do
+        unless @related_clips.blank?
+          render partial: 'related_items'
+        else
+          render partial: 'related_items'
+        end
+      end
+    end
   end
 
   def show

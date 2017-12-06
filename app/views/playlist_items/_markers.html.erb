@@ -1,0 +1,62 @@
+<%#
+Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<div id="markers" class="container">
+  <div id="marker_item_edit_alert" class="mejs-form-alert alert alert-danger" style="display: none;">
+  <p></p>
+  </div>
+
+  <table class="table table-condensed">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Time</th>
+      <th class="text-right">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% markers.sort_by(&:start_time).each do |marker| %>
+      <% if can? :read, marker %>
+        <% start = marker.start_time.to_f/1000 %>
+   <!-- Note this is for marker id "15", and where the "15" gets inserted below.  And the brackets {} are just used to highlight the dynamic insertion; not part of the actual HTML markup. -->
+    <tr data-offset="<%= start %>" data-marker-id="<%= marker.id %>">
+      <td>
+        <a class="marker_title display-item outline_on" data-offset="<%= start %>"><%= marker.title %></a>
+        <input name="title_<%= marker.id %>" type="text" class="form-control edit-item outline_on" value="<%= marker.title %>">
+      </td>
+      <td>
+        <span class="marker_start_time display-item"><%= pretty_time(marker.start_time) %></span>
+        <input name="offset_<%= marker.id %>" type="text" class="form-control edit-item outline_on" value="<%= pretty_time(marker.start_time) %>">
+      </td>
+      <td class="text-right" id="popover-container-<%= marker.id %>">
+        <button name="edit_marker" type="button" class="btn btn-default btn-xs edit_marker display-item outline_on">
+          <i class="fa fa-edit" title="Edit"></i> <span class="sm-hidden">Edit</span>
+        </button>
+        <button name="save_marker" type="button" class="btn btn-default btn-xs edit-item outline_on">
+          <i class="fa fa-check" title="Save"></i> <span class="sm-hidden">Save</span>
+        </button>
+        <button name="marker_edit_cancel" type="button" class="btn btn-danger btn-xs edit-item outline_on">
+          <i class="fa fa-times" title="Cancel"></i> <span class="sm-hidden">Cancel</span>
+        </button>
+        <button data-marker-id="<%= marker.id %>" name="delete_marker" class="btn btn-danger btn-xs display-item outline_on">
+          <i class="fa fa-times" title="Delete"></i> <span class="sm-hidden">Delete</span>
+        </button>
+      </td>
+    </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+  </table>
+</div>
