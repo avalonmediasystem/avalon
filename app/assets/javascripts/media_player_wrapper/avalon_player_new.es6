@@ -290,7 +290,8 @@ class MEJSPlayer {
       poster: currentStreamInfo.poster_image || null,
       success: this.handleSuccess.bind(this),
       embed_title: currentStreamInfo.embed_title,
-      link_back_url: currentStreamInfo.link_back_url
+      link_back_url: currentStreamInfo.link_back_url,
+      qualityText: 'Stream Quality'
     }
     let promises = []
 
