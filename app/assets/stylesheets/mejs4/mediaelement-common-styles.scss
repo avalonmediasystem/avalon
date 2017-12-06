@@ -138,3 +138,13 @@ $avalon-primary-color: #84a791;
 .mejs__button > button:focus, .mejs__overlay-button:focus, .mejs__time-total:focus, .mejs__volume-slider:focus, .mejs__qualities-selector-input:focus {
   outline: solid 2px yellow;
 }
+
+// Chrome hack from mejs4: prevent outlining buttons on a mouse click 
+.mejs__container-keyboard-inactive a,
+.mejs__container-keyboard-inactive a:focus,
+.mejs__container-keyboard-inactive button,
+.mejs__container-keyboard-inactive button:focus,
+.mejs__container-keyboard-inactive [role=slider],
+.mejs__container-keyboard-inactive [role=slider]:focus {
+  outline: 0;
+}
