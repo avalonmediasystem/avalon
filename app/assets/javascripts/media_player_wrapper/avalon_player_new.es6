@@ -1,3 +1,6 @@
+// declaring currentPlayer as global variable as it's used in multiple places outside the class
+var currentPlayer;
+
 /**
  * @class MEJSPlayer
  * @classdesc Wrapper for MediaElementPlayer interactions
@@ -313,8 +316,8 @@ class MEJSPlayer {
       // Add default title from stream info which mejs plugins can access
       this.player.options.playlistItemDefaultTitle = this.currentStreamInfo.embed_title
           
-	  // initialize global variable currentPlayer
-	  currentPlayer = this.player;
+      // initialize global variable currentPlayer
+      currentPlayer = this.player;
     }).catch((error) => {
       console.log('Promise rejection error')
     });
