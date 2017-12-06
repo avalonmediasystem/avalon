@@ -7,10 +7,10 @@
 
 <script>
 <!-- Missing title and logo features -->
+var currentPlayer;
 var mejs4AvalonPlayer = new MEJSPlayer({
   currentStreamInfo: <%= section_info.to_json.html_safe %>,
   features: ['playpause', 'current', 'progress', 'duration', 'volume', 'quality', 'linkBack', 'fullscreen'],
   highlightRail: true
 });
-currentPlayer = mejs4AvalonPlayer.player;
 </script>
