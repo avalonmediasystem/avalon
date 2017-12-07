@@ -33,6 +33,7 @@ Object.assign(MediaElementPlayer.prototype, {
     let playlistItemsObj = t.playlistItemsObj;
 
     playlistItemsObj.mejsUtility = new MEJSUtility();
+    playlistItemsObj.mejsMarkersHelper = new MEJSMarkersHelper();
     playlistItemsObj.player = player;
     playlistItemsObj.currentStreamInfo = mejs4AvalonPlayer.currentStreamInfo;
     // Click listeners for the DOM
@@ -103,23 +104,31 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     analyzeNewItemSource(el) {
       // Get new markers
+      this.mejsMarkersHelper.getMarkers(
+        +el.dataset.playlistId,
+        $(el).parent('li').data('playlistItemId')
+      )
+        .then(response => {
+          const markers = response;
 
-      this.updatePlaylistItemsList(el);
-      this.updatePanelsHTML(el);
+          this.mejsMarkersHelper.updateVisualMarkers.apply(this, [markers]);
+          this.updatePlaylistItemsList(el);
+          this.updatePanelsHTML(el);
 
-      // Same media file?
-      if (this.currentStreamInfo.id === el.dataset.masterFileId) {
-        this.setupNextItem();
-      }
-      // Need to grab a new media file
-      else {
-        const id = el.dataset.masterFileId;
-        const url = `/media_objects/${el.dataset.mediaObjectId}/section/${id}`;
+          // Same media file?
+          if (this.currentStreamInfo.id === el.dataset.masterFileId) {
+            this.setupNextItem();
+          }
+          // Need to grab a new media file
+          else {
+            const id = el.dataset.masterFileId;
+            const url = `/media_objects/${el.dataset.mediaObjectId}/section/${id}`;
 
-        // TODO: Update markers before new media loads
+            // TODO: Update mejs4AvalonPlayer.playlistItem with ids here
 
-        mejs4AvalonPlayer.getNewStreamAjax(id, url);
-      }
+            mejs4AvalonPlayer.getNewStreamAjax(id, url);
+          }
+        })
     },
 
     currentStreamInfo: null,

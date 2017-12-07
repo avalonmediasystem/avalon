@@ -122,6 +122,7 @@ Object.assign(MediaElementPlayer.prototype, {
 
       /**
        * Add event listeners for elements in Markers table rows
+       * @function addMarkersTableListeners
        * @return {void}
        */
       addMarkersTableListeners: function () {
@@ -475,6 +476,7 @@ Object.assign(MediaElementPlayer.prototype, {
 
       /**
        * Re-build the markers table after an add or edit
+       * @function rebuildMarkersTable
        * @return {void}
        */
       rebuildMarkersTable: function () {

@@ -307,6 +307,7 @@ class MEJSPlayer {
       toggleCaptionsButtonWhenOnlyOne: true
     }
     let promises = []
+    const playlistIds = (this.playlistItem ? [this.playlistItem.playlist_id, this.playlistItem.id] : [])
 
     // Remove video player controls/plugins if it's not a video stream
     if (!currentStreamInfo.is_video) {
@@ -315,9 +316,11 @@ class MEJSPlayer {
     }
 
     // Get any asynchronous configuration data needed to build the player instance
-    promises.push(new Promise(this.mejsMarkersHelper.getMarkers.bind(this)))
+    // Markers
+    promises.push(this.mejsMarkersHelper.getMarkers(...playlistIds))
     Promise.all(promises).then((values) => {
-      const markerConfig = values[0]
+      const markers = values[0]
+      const markerConfig = (markers.length > 0 ? this.mejsMarkersHelper.buildMarkersConfig(markers) : {})
 
       // Combine all configurations
       let fullConfiguration = Object.assign({}, defaults, markerConfig)
