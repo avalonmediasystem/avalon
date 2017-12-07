@@ -80,18 +80,16 @@ class MEJSPlayer {
   /**
    * Make AJAX request for clicked item's stream data
    * @function getNewStreamAjax
-   * @param  {Object} target - node <a> element clicked
+   * @param  {string} id - id of master file id
+   * @param {string} url Url to get stream data ie. /media_objects/xg94hp52v/section/bc386j20b
    * @return {void}
    */
-  getNewStreamAjax (target) {
-    const segment = target.dataset.segment
-    const nativeUrl = target.dataset.nativeUrl.split('?')[0]
-
+  getNewStreamAjax (id, url) {
     $.ajax({
-      url: nativeUrl + '/stream',
+      url: url + '/stream',
       dataType: 'json',
       data: {
-        content: segment
+        content: id
       }
     }).done((response) => {
       this.removePlayer()
@@ -147,13 +145,16 @@ class MEJSPlayer {
 
     // Clicked on a different section
     if (dataset.segment !== this.currentStreamInfo.id) {
+      let id = target.dataset.segment
+      let url = target.dataset.nativeUrl.split('?')[0]
+
       // Capture clicked segment or section element id
       this.switchPlayerHelper = {
         active: true,
         data: dataset,
         paused: this.mediaElement.paused
       }
-      this.getNewStreamAjax(target)
+      this.getNewStreamAjax(id, url)
     } else {
       // Clicked within the same section...
       const parentPanel = $(target).closest('div[class*=panel]')
@@ -233,6 +234,7 @@ class MEJSPlayer {
    * @return {void}
    */
   handleTimeUpdate () {
+    if (!this.player) { return }
     const currentTime = this.player.getCurrentTime()
     const activeId = this.mejsUtility.getActiveSegmentId(this.segmentsMap, currentTime)
 
@@ -312,8 +314,7 @@ class MEJSPlayer {
       delete defaults.poster;
     }
 
-    // Get any asynchronous configuration data needed to
-    // create a new player instance
+    // Get any asynchronous configuration data needed to build the player instance
     promises.push(new Promise(this.mejsMarkersHelper.getMarkers.bind(this)))
     Promise.all(promises).then((values) => {
       const markerConfig = values[0]
