@@ -50,6 +50,9 @@ class MasterFilesController < ApplicationController
     if can? :read, @master_file
       @stream_info = secure_streams(@master_file.stream_details)
     end
+
+    @player_width = "100%"
+    @player_height = "100%"
     respond_to do |format|
       format.html do
         response.headers.delete "X-Frame-Options"
