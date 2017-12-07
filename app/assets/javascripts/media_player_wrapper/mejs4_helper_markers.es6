@@ -1,4 +1,17 @@
 class MEJSMarkersHelper {
+
+  ajaxPlaylistItemsHTML(playlistId, playlistItemId, panelSection) {
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: `/playlists/${playlistId}/items/${playlistItemId}/${panelSection}`
+      }).done((response) => {
+        resolve(response);
+      }).fail((error) => {
+        reject({});
+      });
+    });
+  }
+
   /**
    * Build the markers config object which the Mediaelement Markers plugin requires
    * when building an instance of the player.

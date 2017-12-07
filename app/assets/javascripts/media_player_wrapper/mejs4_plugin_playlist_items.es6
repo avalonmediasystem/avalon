@@ -85,18 +85,6 @@ Object.assign(MediaElementPlayer.prototype, {
       }
     },
 
-    ajaxPlaylistItemsHTML(playlistId, playlistItemId, panelSection) {
-      return new Promise((resolve, reject) => {
-        $.ajax({
-          url: `/playlists/${playlistId}/items/${playlistItemId}/${panelSection}`
-        }).done((response) => {
-          resolve(response);
-        }).fail((error) => {
-          reject({});
-        });
-      });
-    },
-
     /**
      * Determine whether we need to grab a new master file, or can use the existing file
      * @param  {HTMLElement} el <a> anchor element of the new playlist item being processed
@@ -118,6 +106,8 @@ Object.assign(MediaElementPlayer.prototype, {
           // Same media file?
           if (this.currentStreamInfo.id === el.dataset.masterFileId) {
             this.setupNextItem();
+            // Add event listeners to new #markers markup
+            this.player.addMarkerObj.addMarkersTableListeners();
           }
           // Need to grab a new media file
           else {
@@ -239,6 +229,11 @@ Object.assign(MediaElementPlayer.prototype, {
       this.startEndTimes.end = parseInt(dataSet.clipEndTime, 10)/1000;
     },
 
+    /**
+     * Update the panel sections "Markers", "Source Item Details", and "Related"
+     * @param  {HTMLElement} el <a> playlist list element
+     * @return {void}
+     */
     updatePanelsHTML(el) {
       let promises = [];
       const playlistId = +el.dataset.playlistId;
@@ -246,7 +241,7 @@ Object.assign(MediaElementPlayer.prototype, {
       // These are the endpoint params ie. # GET /playlists/1/items/2/markers
       const endPointParams = ['markers', 'source_details', 'related_items'];
       // Stack promises in array
-      endPointParams.forEach(param => promises.push(this.ajaxPlaylistItemsHTML(playlistId, playlistItemId, param)));
+      endPointParams.forEach(param => promises.push(this.mejsMarkersHelper.ajaxPlaylistItemsHTML(playlistId, playlistItemId, param)));
 
       Promise.all(promises)
         .then(values => {
@@ -264,7 +259,7 @@ Object.assign(MediaElementPlayer.prototype, {
     },
 
     /**
-     * Update styles on the playlist items list
+     * Update styles on the playlist items list in right sidebar
      * @function updatePlaylistItemsList
      * @param  {HTMLElement} el The <a> item HTML element which is the new item
      * @return {void}
