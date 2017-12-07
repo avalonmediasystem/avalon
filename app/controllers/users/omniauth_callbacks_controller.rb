@@ -21,7 +21,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     begin
       render "modules/#{params[:provider]}_auth_form"
     rescue ActionView::MissingTemplate
-      super
+      redirect_to new_user_session_path, flash: { alert: I18n.t('devise.failure.invalid') }
     end
   end
 
