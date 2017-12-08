@@ -80,7 +80,7 @@ module MasterFileBehavior
   end
 
   def embed_title
-    [ media_object.title, display_title ].compact.join(" - ")
+    [media_object.title, display_title].compact.join(" - ")
   end
 
   def embed_code(width, permalink_opts = {})

@@ -396,8 +396,13 @@ describe MasterFile do
         expect( subject.embed_title ).to eq( "test - test" )
       end
 
-      it "should have an appropriate title for the embed code with no label" do
-        expect( subject.embed_title ).to eq( "test - video.mp4" )
+      it "should have an appropriate title for the embed code with no label (only one section)" do
+        expect( subject.embed_title ).to eq( "test" )
+      end
+
+      it 'should have an appropriate title for the embed code with no label (more than 1 section)' do
+        allow(subject.media_object).to receive(:ordered_master_files).and_return([subject,subject])
+        expect( subject.embed_title ).to eq( 'test - video.mp4' )
       end
 
       it "should have an appropriate title for the embed code with no label or file_location" do
@@ -528,6 +533,7 @@ describe MasterFile do
     let(:media_object) { instance_double("media_object", title: 'Test') }
     before do
       allow(master_file).to receive(:media_object).and_return(media_object)
+      allow(media_object).to receive(:ordered_master_files).and_return([master_file])
     end
     context 'with a permalink' do
       let(:master_file) { FactoryGirl.build(:master_file, permalink: permalink) }
