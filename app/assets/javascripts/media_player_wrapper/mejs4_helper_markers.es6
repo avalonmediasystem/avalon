@@ -1,3 +1,7 @@
+/**
+ * Markers helper class...currently being defined.
+ * @class MEJSMarkersHelper
+ */
 class MEJSMarkersHelper {
 
   /**
@@ -116,14 +120,18 @@ class MEJSMarkersHelper {
         }
       })
       .done((response) => {
-        const offset = response.marker.start_time/1000;
-        const startDisplayTime = mejs.Utils.secondsToTimeCode(offset);
+        const playlistIds = this.getCurrentPlaylistIds();
 
-        // Update markers in player
-        // TODO: Fix visual updates
-        // t.updateVisualMarkers.apply(t, [offset, originalMarkerValues[markerId]]);
+        // Update visual markers in player's time rail
+        this.getMarkers(playlistIds.playlistId, playlistIds.playlistItemId)
+          .then((response) => {
+            this.updateVisualMarkers(response);
+          });
+
         // Remove original marker offset value
+        // TODO: Remember why I originally did this?
         delete(originalMarkerValues[markerId]);
+
         // Rebuild markers table with updated values
         t.rebuildMarkersTable(t);
       })
@@ -139,7 +147,41 @@ class MEJSMarkersHelper {
   }
 
   /**
+   * Get HTML markup for accordion panel sections on Playlist Items page
+   * @param  {number} playlistId
+   * @param  {number} playlistItemId
+   * @param  {string} panelSection Panel section string corresponding to the endpoint ie. ('markers', 'source_details', 'related_items')
+   * @return {Promise} Resolves to either a block of markup or an empty string.
+   */
+  ajaxPlaylistItemsHTML(playlistId, playlistItemId, panelSection) {
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: `/playlists/${playlistId}/items/${playlistItemId}/${panelSection}`
+      }).done((response) => {
+        resolve(response);
+      }).fail((error) => {
+        reject('');
+      });
+    });
+  }
+
+  /**
+   * Build the markers config object which the Mediaelement Markers plugin requires
+   * when building an instance of the player.
+   * @function buildMarkersConfig
+   * @param  {Array} markers Array of marker start times
+   * @return {Object} Configuration object (https://github.com/mediaelement/mediaelement-plugins/blob/master/docs/markers.md)
+   */
+  buildMarkersConfig (markers) {
+    return {
+      markerColor: '#fff',
+      markers: markers
+    }
+  }
+
+  /**
    * Disable sibling table row buttons when editing a row
+   * @function disableButtons
    * @param  {Object} $row jQuery object of current table row being edited
    * @param  {boolean} doDisable Enable or disable sibling buttons?
    * @return {void}
@@ -150,59 +192,6 @@ class MEJSMarkersHelper {
 
     $siblings.find('button[name="edit_marker"]').prop({ disabled: doDisable });
     $siblings.find('button[name="delete_marker"]').prop({ disabled: doDisable });
-  }
-
-  /**
-   * Re-build the markers table after an add or edit
-   * @function rebuildMarkersTable
-   * @return {void}
-   */
-  rebuildMarkersTable() {
-    const t = this;
-    const $nowPlaying = $('#right-column').find('.side-playlist li.now_playing');
-    const playlistItemId = $nowPlaying.data('playlistItemId');
-    const playlistId = $nowPlaying.find('a').data('playlistId');
-
-    // Grab new html to use
-    t.ajaxPlaylistItemsHTML(playlistId, playlistItemId, 'markers')
-      .then((response) => {
-        // Insert the fresh HTML table
-        $('#markers').replaceWith(response);
-        // Add event listeners to newly created row
-        t.addMarkersTableListeners();
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
-
-
-
-
-
-  ajaxPlaylistItemsHTML(playlistId, playlistItemId, panelSection) {
-    return new Promise((resolve, reject) => {
-      $.ajax({
-        url: `/playlists/${playlistId}/items/${playlistItemId}/${panelSection}`
-      }).done((response) => {
-        resolve(response);
-      }).fail((error) => {
-        reject({});
-      });
-    });
-  }
-
-  /**
-   * Build the markers config object which the Mediaelement Markers plugin requires
-   * when building an instance of the player.
-   * @param  {Array} markers Array of marker start times
-   * @return {Object} Configuration object (https://github.com/mediaelement/mediaelement-plugins/blob/master/docs/markers.md)
-   */
-  buildMarkersConfig (markers) {
-    return {
-      markerColor: '#fff',
-      markers: markers
-    }
   }
 
   /**
@@ -245,23 +234,60 @@ class MEJSMarkersHelper {
   }
 
   /**
-   * Update markers in the UI on the player by hooking into Mediaelement Markers plugin
+   * Helper method to get current playlist id and current playlist item id
+   * as currently represented in the DOM (playlist items list)
+   * @function getCurrentPlaylistIds
+   * @return {[type]} [description]
+   */
+  getCurrentPlaylistIds() {
+    const $nowPlaying = $('#right-column').find('.side-playlist li.now_playing');
+    return {
+      playlistId: $nowPlaying.find('a').data('playlistId'),
+      playlistItemId: $nowPlaying.data('playlistItemId')
+    }
+  }
+
+  /**
+   * Re-build the markers table after an add or edit
+   * @function rebuildMarkersTable
+   * @return {void}
+   */
+  rebuildMarkersTable() {
+    const t = this;
+    const playlistIds = this.getCurrentPlaylistIds();
+
+    // Grab new html to use
+    t.ajaxPlaylistItemsHTML(playlistIds.playlistId, playlistIds.playlistItemId, 'markers')
+      .then((response) => {
+        // Insert the fresh HTML table
+        $('#markers').replaceWith(response);
+        // Add event listeners to newly created row
+        t.addMarkersTableListeners();
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  /**
+   * Update markers in Mediaelement player's time rail by hooking into the Mediaelement Markers plugin
    * @function updateVisualMarkers
    * @param {Array} markers Array of marker start times
    * @return {void}
    */
   updateVisualMarkers (markers) {
     const t = this;
-    t.player.options.markers = markers;
+    const player = mejs4AvalonPlayer.player;
+    player.options.markers = markers;
 
     // Directly delete current markers from the player UI
-    let currentMarkerEls = t.player.controls.getElementsByClassName(t.player.options.classPrefix + 'time-marker');
+    let currentMarkerEls = player.controls.getElementsByClassName(player.options.classPrefix + 'time-marker');
     while(currentMarkerEls[0]) {
       currentMarkerEls[0].parentNode.removeChild(currentMarkerEls[0]);
     }
 
     // Call methods on the MEJS4 markers plugin to re-build markers and apply to the player
-    t.player.buildmarkers(t.player, t.player.controls, undefined, t.player.media);
-    t.player.setmarkers(t.player.controls);
+    player.buildmarkers(player, player.controls, undefined, player.media);
+    player.setmarkers(player.controls);
   }
 }

@@ -41,7 +41,7 @@ Object.assign(MediaElementPlayer.prototype, {
     // Handle continuous MEJS time update event
     media.addEventListener('timeupdate', playlistItemsObj.handleTimeUpdate.bind(this));
     // Set current playing item
-    playlistItemsObj.setCurrentPlayingItem();
+    playlistItemsObj.setCurrentItemInternally();
   },
 
   // Optionally, each feature can be destroyed setting a `clean` method
@@ -76,8 +76,8 @@ Object.assign(MediaElementPlayer.prototype, {
     addClickListeners() {
       if (this.$sidePlaylist) {
         // Handle click on entire Playlists right column area
+        // Filter only <a> element clicks; disregard all others
         this.$sidePlaylist.on('click', (e) => {
-          // Only handle clicks on <a> elements
           if (e.target.nodeName === 'A') {
             this.handleClick(e.target)
           }
@@ -86,16 +86,16 @@ Object.assign(MediaElementPlayer.prototype, {
     },
 
     /**
-     * Determine whether we need to grab a new master file, or can use the existing file
+     * Analyze the new playlist item and determine how to proceed...
      * @param  {HTMLElement} el <a> anchor element of the new playlist item being processed
      * @return {void}
      */
     analyzeNewItemSource(el) {
+      const playlistId = +el.dataset.playlistId;
+      const playlistItemId = $(el).parent('li').data('playlistItemId');
+
       // Get new markers
-      this.mejsMarkersHelper.getMarkers(
-        +el.dataset.playlistId,
-        $(el).parent('li').data('playlistItemId')
-      )
+      this.mejsMarkersHelper.getMarkers(playlistId, playlistItemId)
         .then(response => {
           const markers = response;
 
@@ -177,10 +177,10 @@ Object.assign(MediaElementPlayer.prototype, {
     /**
      * Set the now playing item helper variable, and update start end times for
      * current playing item
-     * @function setCurrentPlayingItem
+     * @function setCurrentItemInternally
      * @return {void}
      */
-    setCurrentPlayingItem() {
+    setCurrentItemInternally() {
       const t = this;
       // Set current playing item
       t.$nowPlayingLi = t.$sidePlaylist.find('li.now_playing');
@@ -193,7 +193,7 @@ Object.assign(MediaElementPlayer.prototype, {
      * @return {void}
      */
     setupNextItem() {
-      this.setCurrentPlayingItem();
+      this.setCurrentItemInternally();
       this.player.setCurrentTime(this.startEndTimes.start);
       mejs4AvalonPlayer.highlightTimeRail([
         this.startEndTimes.start,
@@ -205,7 +205,7 @@ Object.assign(MediaElementPlayer.prototype, {
     },
 
     /**
-     * Helper jQuery object for side playlist element which is used a few times in this class
+     * Helper jQuery object reference for side playlist element. Used multile times in this class.
      * @type {Object}
      */
     $sidePlaylist: $('#right-column').find('.side-playlist') || null,
@@ -228,35 +228,6 @@ Object.assign(MediaElementPlayer.prototype, {
     updateStartEndTimes(dataSet) {
       this.startEndTimes.start = parseInt(dataSet.clipStartTime, 10)/1000;
       this.startEndTimes.end = parseInt(dataSet.clipEndTime, 10)/1000;
-    },
-
-    /**
-     * Update the panel sections "Markers", "Source Item Details", and "Related"
-     * @param  {HTMLElement} el <a> playlist list element
-     * @return {void}
-     */
-    updatePanelsHTML(el) {
-      let promises = [];
-      const playlistId = +el.dataset.playlistId;
-      const playlistItemId = $(el).parent('li').data('playlistItemId');
-      // These are the endpoint params ie. # GET /playlists/1/items/2/markers
-      const endPointParams = ['markers', 'source_details', 'related_items'];
-      // Stack promises in array
-      endPointParams.forEach(param => promises.push(this.mejsMarkersHelper.ajaxPlaylistItemsHTML(playlistId, playlistItemId, param)));
-
-      Promise.all(promises)
-        .then(values => {
-          const markersHTML = values[0];
-          const sourceDetailsHTML = values[1];
-          const relatedItemsHTML = values[2];
-
-          $('#markers').replaceWith(markersHTML);
-          $('#metadata').replaceWith(sourceDetailsHTML);
-          $('#related_items').replaceWith(relatedItemsHTML);
-        })
-        .catch(err => {
-          console.log('Promise rejection error: ', err);
-        });
     },
 
     /**
