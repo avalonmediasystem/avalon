@@ -101,13 +101,14 @@ Object.assign(MediaElementPlayer.prototype, {
 
           this.mejsMarkersHelper.updateVisualMarkers.apply(this, [markers]);
           this.updatePlaylistItemsList(el);
-          this.updatePanelsHTML(el);
 
           // Same media file?
           if (this.currentStreamInfo.id === el.dataset.masterFileId) {
             this.setupNextItem();
-            // Add event listeners to new #markers markup
-            this.player.addMarkerObj.addMarkersTableListeners();
+            // Rebuild markers table
+            this.mejsMarkersHelper.rebuildMarkersTable();
+            // TODO: Rebuild the Source Item Details html
+            // TODO: Rebuild the Related html
           }
           // Need to grab a new media file
           else {
