@@ -187,22 +187,22 @@ module ModsBehaviors
     parsed = Date.edtf(date)
     return Array.new if parsed.nil?
     years =
-    if parsed.respond_to?(:unknown?) && parsed.unknown?
-      ['Unknown']
-    elsif parsed.respond_to?(:map)
-      parsed.map(&:year_precision!)
-      parsed.map(&:year)
-    elsif parsed.unspecified?(:year)
-      parsed.precision = :year
-      if parsed.unspecified.year[2]
-	EDTF::Interval.new(parsed, parsed.next(99).last).map(&:year)
-      elsif parsed.unspecified.year[3]
-	EDTF::Interval.new(parsed, parsed.next(9).last).map(&:year)
+      if (parsed.respond_to?(:unknown?) && parsed.unknown?) || (parsed.class == EDTF::Unknown)
+        ['Unknown']
+      elsif parsed.respond_to?(:map)
+        parsed.map(&:year_precision!)
+        parsed.map(&:year)
+      elsif parsed.unspecified?(:year)
+        parsed.precision = :year
+        if parsed.unspecified.year[2]
+          EDTF::Interval.new(parsed, parsed.next(99).last).map(&:year)
+        elsif parsed.unspecified.year[3]
+          EDTF::Interval.new(parsed, parsed.next(9).last).map(&:year)
+        end
+      else
+        parsed.year_precision!
+        Array(parsed.year)
       end
-    else
-      parsed.year_precision!
-      Array(parsed.year)
-    end
     years.map(&:to_s).uniq
   end
 
