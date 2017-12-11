@@ -134,12 +134,24 @@ $avalon-primary-color: #84a791;
   width: 20px;
 }
 
+.mejs__captions-button > button {
+  width: 22px;
+  background-position: -140px -20px;
+  filter: invert(40%);
+  -webkit-filter: invert(40%);
+}
+
+.mejs__captions-enabled > button {
+  filter: none;
+  -webkit-filter: none;
+}
+
 // Accessibility
 .mejs__button > button:focus, .mejs__overlay-button:focus, .mejs__time-total:focus, .mejs__volume-slider:focus, .mejs__qualities-selector-input:focus {
   outline: solid 2px yellow;
 }
 
-// Chrome hack from mejs4: prevent outlining buttons on a mouse click 
+// Chrome hack from mejs4: prevent outlining buttons on a mouse click
 .mejs__container-keyboard-inactive a,
 .mejs__container-keyboard-inactive a:focus,
 .mejs__container-keyboard-inactive button,
