@@ -11,7 +11,6 @@ before_install:
   - sudo apt-get install mediainfo
   - sudo ln -s /usr/bin/lsof /usr/sbin/lsof
   - cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
-  - cp config/settings.yml.example config/settings.yml
   - bundle config without development:production
 before_script:
   - rm config/database.yml

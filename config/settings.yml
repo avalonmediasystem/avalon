@@ -3,7 +3,9 @@ domain:
   host: localhost
   port: 80
   protocol: http
-dropbox: {}
+dropbox:
+  path: /srv/avalon/dropbox
+  upload_uri: sftp://avalon.example.edu
 encoding:
   engine_adapter: matterhorn
 matterhorn:
