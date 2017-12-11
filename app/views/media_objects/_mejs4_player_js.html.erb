@@ -5,7 +5,7 @@
 <%= javascript_include_tag "mejs4_player" %>
 <% end %>
 <script>
-var mejs4ConfigFeatures = ['playpause', 'current', 'progress', 'duration', 'trackScrubber', 'volume', 'quality', 'createThumbnail', 'addToPlaylist', 'fullscreen'];
+var mejs4ConfigFeatures = ['playpause', 'current', 'progress', 'duration', 'trackScrubber', 'volume', 'tracks', 'quality', 'createThumbnail', 'addToPlaylist', 'fullscreen'];
 
 if (<%= cannot? :create, Playlist %>) {
   mejs4ConfigFeatures.splice(mejs4ConfigFeatures.indexOf('addToPlaylist'), 1);
