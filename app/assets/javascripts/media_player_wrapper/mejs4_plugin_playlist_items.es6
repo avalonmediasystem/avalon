@@ -99,23 +99,27 @@ Object.assign(MediaElementPlayer.prototype, {
         .then(response => {
           const markers = response;
 
-          this.mejsMarkersHelper.updateVisualMarkers.apply(this, [markers]);
+          this.mejsMarkersHelper.updateVisualMarkers(markers);
           this.updatePlaylistItemsList(el);
+
+          // Rebuild markers table
+          this.mejsMarkersHelper.rebuildMarkersTable();
+          // Rebuild source item details panel section
+          this.rebuildPanelMarkup(playlistId, playlistItemId, 'source_details');
+          // Rebuild the related items panel section
+          this.rebuildPanelMarkup(playlistId, playlistItemId, 'related_items');
 
           // Same media file?
           if (this.currentStreamInfo.id === el.dataset.masterFileId) {
             this.setupNextItem();
-            // Rebuild markers table
-            this.mejsMarkersHelper.rebuildMarkersTable();
-            // TODO: Rebuild the Source Item Details html
-            // TODO: Rebuild the Related html
           }
-          // Need to grab a new media file
+          // Need a new Mediaelement player and media file
           else {
             const id = el.dataset.masterFileId;
             const url = `/media_objects/${el.dataset.mediaObjectId}/section/${id}`;
 
-            // TODO: Update mejs4AvalonPlayer.playlistItem with ids here
+            // Update mejs4AvalonPlayer.playlistItem with ids here
+            mejs4AvalonPlayer.playlistItem = { ...mejs4AvalonPlayer.playlistItem, id: playlistItemId, playlist_id: playlistId, position: null };
 
             mejs4AvalonPlayer.getNewStreamAjax(id, url);
           }
@@ -173,6 +177,27 @@ Object.assign(MediaElementPlayer.prototype, {
     },
 
     $nowPlayingLi: null,
+
+    /**
+     * Re-build item details page panel HTML sections
+     * @function rebuildPanelMarkup
+     * @param playlistId
+     * TODO: finish these
+     * @return {void}
+     */
+    rebuildPanelMarkup(playlistId, playlistItemId, panel) {
+      const t = this;
+
+      // Grab new html to use
+      t.mejsMarkersHelper.ajaxPlaylistItemsHTML(playlistId, playlistItemId, panel)
+        .then((response) => {
+          // Insert the fresh HTML table
+          $('#' + panel).replaceWith(response);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
 
     /**
      * Set the now playing item helper variable, and update start end times for

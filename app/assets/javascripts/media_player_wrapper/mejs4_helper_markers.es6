@@ -10,7 +10,6 @@ class MEJSMarkersHelper {
    * @return {void}
    */
   addMarkersTableListeners() {
-    console.log('HITS addMarkersTableListeners');
     const t = this;
     let addMarkerObj = t.addMarkerObj;
     const $markers = $('#markers');
@@ -79,13 +78,16 @@ class MEJSMarkersHelper {
           }
         }).done((response) => {
           const row = $('#markers')[0].querySelector('tr[data-marker-id="' + response.id + '"]');
+          const playlistIds = this.getCurrentPlaylistIds();
 
           $button.popover('destroy');
           // Remove from list
           row.parentNode.removeChild(row);
-          // Update markers in player
-          // TODO: Fix visual updates below
-          //t.updateVisualMarkers.apply(this, [null, parseInt(response.marker.start_time / 1000, 10)]);
+          // Update visual markers in player's time rail
+          this.getMarkers(playlistIds.playlistId, playlistIds.playlistItemId)
+            .then((response) => {
+              this.updateVisualMarkers(response);
+            });
         }).fail((error) => {
           console.log('error', error);
         });
@@ -207,8 +209,8 @@ class MEJSMarkersHelper {
       // Check if a playlist item is specified, because playlist items use markers
       // and we'll need to grab markers from the playlist item
       if (playlistId && playlistItemId) {
-        const playlistItem = this.playlistItem
-        let markers = []
+        const playlistItem = this.playlistItem;
+        let markers = [];
 
         $.ajax({
           url: '/playlists/' + playlistId + '/items/' + playlistItemId + '.json',
@@ -222,13 +224,13 @@ class MEJSMarkersHelper {
               return marker.start_time
             })
           }
-          resolve(markers)
+          resolve(markers);
         }).fail((error) => {
-          reject([])
+          reject([]);
         });
       } else {
         // No playlist item, therefore no markers needed
-        resolve([])
+        resolve([]);
       }
     })
   }
@@ -237,14 +239,14 @@ class MEJSMarkersHelper {
    * Helper method to get current playlist id and current playlist item id
    * as currently represented in the DOM (playlist items list)
    * @function getCurrentPlaylistIds
-   * @return {[type]} [description]
+   * @return {Object} Helper object returning playlist id and playlist item id as key/value pairs
    */
   getCurrentPlaylistIds() {
     const $nowPlaying = $('#right-column').find('.side-playlist li.now_playing');
     return {
       playlistId: $nowPlaying.find('a').data('playlistId'),
       playlistItemId: $nowPlaying.data('playlistItemId')
-    }
+    };
   }
 
   /**

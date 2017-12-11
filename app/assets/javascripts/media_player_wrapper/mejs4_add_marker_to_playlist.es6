@@ -57,6 +57,9 @@ Object.assign(MediaElementPlayer.prototype, {
     // and closes the Add Marker to Playlist form
     player.addMarkerToPlaylistButton.addEventListener('click', addMarkerObj.handleControlClick.bind(t));
 
+    // Variable reference to the click event listener callback.  Pass this to avoid duplicate "adds"
+    addMarkerObj.binder = addMarkerObj.handleAdd.bind(addMarkerObj);
+
     // Add all other Markers related event listeners
     addMarkerObj.addEventListeners();
   },
@@ -75,9 +78,11 @@ Object.assign(MediaElementPlayer.prototype, {
   cleanaddMarkerToPlaylist (player, controls, layers, media) {
     const t = this;
 
+    t.addMarkerObj.addButton.removeEventListener('click', t.addMarkerObj.binder);
     $(t.addMarkerObj.alertEl).hide();
     $(t.addMarkerObj.formWrapperEl).hide();
     t.addMarkerObj.resetForm();
+
   },
 
   // Other optional public methods (all documented according to JSDoc specifications)
@@ -91,6 +96,7 @@ Object.assign(MediaElementPlayer.prototype, {
     active: false,
     addButton: document.getElementById('add_marker_submit'),
     alertEl: document.getElementById('add_marker_to_playlist_item_alert'),
+    binder: null,
     cancelButton: document.getElementById('add_marker_cancel'),
     formInputs: {
       offset: document.getElementById('marker_start'),
@@ -105,11 +111,10 @@ Object.assign(MediaElementPlayer.prototype, {
      * @return {void}
      */
     addEventListeners: function () {
-      const t = this;
-      const markersEl = document.getElementById('markers');
+      let t = this;
 
       // Set click listeners for Add Marker to Playlist form elements
-      t.addButton.addEventListener('click', t.handleAdd.bind(t));
+      t.addButton.addEventListener('click', t.binder);
       t.cancelButton.addEventListener('click', t.handleCancel.bind(t));
 
       // Set click listeners on the current markers UI table
@@ -137,8 +142,7 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     handleAdd: function (e) {
       const t = this;
-      const $playlistItem = $('#right-column').find('li.now_playing');
-      const playlist_item_id = $playlistItem[0].dataset.playlistItemId;
+      const playlistIds = t.mejsMarkersHelper.getCurrentPlaylistIds();
 
       // Clear out alerts
       t.clearAddAlert();
@@ -149,13 +153,13 @@ Object.assign(MediaElementPlayer.prototype, {
         data: {
           marker: {
             master_file_id: mejs4AvalonPlayer.currentStreamInfo.id,
-            playlist_item_id: playlist_item_id,
+            playlist_item_id: playlistIds.playlistItemId,
             start_time: $('#marker_start').val(),
             title: $('#marker_title').val()
           }
         }
       })
-      .done(t.handleAddSuccess.bind(t, $('#marker_start').val()))
+      .done(t.handleAddSuccess.bind(t, $('#marker_start').val(), playlistIds))
       .fail(t.handleAddError.bind(t));
     },
 
@@ -184,7 +188,7 @@ Object.assign(MediaElementPlayer.prototype, {
      * @param  {Object} response AJAX response
      * @return {void}
      */
-    handleAddSuccess: function(startTime, response) {
+    handleAddSuccess: function(startTime, playlistIds, response) {
       const t = this;
       const alertEl = t.alertEl;
       let $alertEl = $(alertEl);
@@ -200,9 +204,11 @@ Object.assign(MediaElementPlayer.prototype, {
       $(t.formWrapperEl).slideUp();
       t.resetForm();
 
-      // Update visual markers in the player UI
-      // TODO: Update visual markers
-      // t.updateVisualMarkers([offset]);
+      // Update visual markers in player's time rail
+      t.mejsMarkersHelper.getMarkers(playlistIds.playlistId, playlistIds.playlistItemId)
+        .then((response) => {
+          t.mejsMarkersHelper.updateVisualMarkers(response);
+        });
 
       if (t.markersEl) {
         // Rebuild Markers table
@@ -276,36 +282,6 @@ Object.assign(MediaElementPlayer.prototype, {
       }
       t.active = false;
       /* eslint-enable guard-for-in */
-    },
-
-    /**
-     * Update markers in the UI on the player
-     * @function updateVisualMarkers
-     * @return {void}
-     */
-    // TODO: abstract this to the markers helper class 
-    updateVisualMarkers: function (newOffset, oldOffset) {
-      const t = this;
-      // const addMarkerObj = t.addMarkerObj;
-      let markers = t.player.options.markers;
-
-      // Remove old marker data on the player instance
-      if (markers.indexOf(oldOffset) > -1 ) {
-        markers.splice(markers.indexOf(oldOffset), 1);
-      }
-
-      // Add new marker data on the player instance
-      markers.push(newOffset);
-
-      // Directly delete current markers from the player UI
-      let currentMarkerEls = t.controls.getElementsByClassName(t.player.options.classPrefix + 'time-marker');
-      while(currentMarkerEls[0]) {
-        currentMarkerEls[0].parentNode.removeChild(currentMarkerEls[0]);
-      }
-
-      // Call methods on the MEJS4 markers plugin to re-build markers and apply to the player
-      t.player.buildmarkers(t.player, t.controls, undefined, t.media);
-      t.player.setmarkers(t.controls);
     }
   }
 
