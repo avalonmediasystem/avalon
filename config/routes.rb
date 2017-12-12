@@ -126,7 +126,11 @@ Rails.application.routes.draw do
   match "/object/:id", to: 'objects#show', via: [:get]
 
   resources :playlists do
-    resources :playlist_items, path: 'items', only: [:create, :update, :show]
+    resources :playlist_items, path: 'items', only: [:create, :update, :show] do
+      get 'markers'
+      get 'source_details'
+      get 'related_items'
+    end
     member do
       patch 'update_multiple'
       delete 'update_multiple'

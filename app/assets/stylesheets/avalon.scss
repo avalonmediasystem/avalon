@@ -783,6 +783,8 @@ $accordionPadding: 20px;
 
 #accordion.panel-group {
   margin-top: 10px;
+  position: relative;
+  
   a {
     display: inline-block;
     cursor: pointer;
@@ -1077,10 +1079,18 @@ h5.panel-title {
 .side-playlist{
   border-top:1px solid $gray;
   padding-top: .6em;
+  padding-left: 2rem;
   li {
     margin-top: .2em;
     float: left;
     width:100%;
+
+    i {
+      margin-right: 3px;
+    }
+  }
+  a {
+    cursor: pointer;
   }
   .pull-right {
     text-align:right;

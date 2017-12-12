@@ -9,7 +9,7 @@ class MEJSTimeRailHelper {
    * @param  {Object} currentStreamInfo Current stream information object
    * @return {Array}                    Array used representing clip start/stop values
    */
-  calculateT(segment, currentStreamInfo) {
+  calculateSegmentT(segment, currentStreamInfo) {
     let t = []
 
     // Use the active segment fragment,
@@ -21,7 +21,7 @@ class MEJSTimeRailHelper {
 
     // Ensure t range array has valid values
     t[0] = (isNaN(parseFloat(t[0]))) ? 0 : t[0]
-    t[1] = (t.length < 2 || isNaN(parseFloat(t[1]))) ? duration : t[1]
+    t[1] = (t.length < 2 || isNaN(parseFloat(t[1]))) ? currentStreamInfo.duration : t[1]
 
     return t
   }
@@ -49,17 +49,13 @@ class MEJSTimeRailHelper {
    * @function createTimeRailStyles
    * @return {string} Ex. left: 10%; width: 50%;
    */
-  createTimeRailStyles (activeSegmentId, currentStreamInfo, segmentsMap) {
+  createTimeRailStyles (t, currentStreamInfo) {
     const duration = currentStreamInfo.duration
-    const segment = segmentsMap[activeSegmentId]
-    let t = []
 
     // No active segment, remove highlight style
-    if (!activeSegmentId) {
-      return 'left: 0%; width: 0%;'
-    }
-
-    t = this.calculateT(segment, currentStreamInfo)
+    // if (!activeSegmentId) {
+    //   return 'left: 0%; width: 0%;'
+    // }
 
     // Calculate start and end percentage values for the highlight style attribute
     let startPercent = Math.round((t[0] / duration) * 100)
