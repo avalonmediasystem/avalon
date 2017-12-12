@@ -295,7 +295,7 @@ class MEJSPlayer {
       embed_title: currentStreamInfo.embed_title,
       link_back_url: currentStreamInfo.link_back_url,
       qualityText: 'Stream Quality',
-      toggleCaptionsButtonWhenOnlyOne: 'true'
+      toggleCaptionsButtonWhenOnlyOne: true
     }
     let promises = []
 
