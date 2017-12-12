@@ -88,8 +88,8 @@ class PlaylistItemsController < ApplicationController
     @related_clips = @playlist.related_clips(@playlist_item)
     respond_to do |format|
       format.html do
-        unless @related_clips.blank?
-          render partial: 'related_items'
+        if @related_clips.blank?
+          head 200, content_type: "text/html"
         else
           render partial: 'related_items'
         end
