@@ -85,7 +85,7 @@ GIT
 
 GIT
   remote: https://github.com/avalonmediasystem/mediainfo.git
-  revision: aaa6464976764857c2a9d178b12c70542b11a9b3
+  revision: 788d7f268168e45961d2303e729d1ced71f93f58
   branch: avalon_fixes
   specs:
     mediainfo (0.7.1)
@@ -932,4 +932,4 @@ DEPENDENCIES
   zoom
 
 BUNDLED WITH
-   1.15.4
+   1.16.0
