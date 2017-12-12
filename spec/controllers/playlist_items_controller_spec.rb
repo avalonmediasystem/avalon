@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -46,19 +46,20 @@ RSpec.describe PlaylistItemsController, type: :controller do
       it "all routes should redirect to sign in" do
         expect(post :create, playlist_id: playlist.to_param, playlist_item: valid_attributes).to redirect_to(new_user_session_path)
         expect(put :update, playlist_id: playlist.to_param, id: playlist_item.id).to redirect_to(new_user_session_path)
+        expect(get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to redirect_to(new_user_session_path)
       end
     end
     context 'with end-user' do
       before do
         login_as :user
       end
-      it "all routes should redirect to /" do
+      it "all routes should return 401" do
         expect(post :create, playlist_id: playlist.to_param, playlist_item: valid_attributes).to have_http_status(:unauthorized)
         expect(put :update, playlist_id: playlist.to_param, id: playlist_item.id).to have_http_status(:unauthorized)
+        expect(get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to have_http_status(:unauthorized)
       end
     end
   end
-
 
   describe 'POST #create' do
 
@@ -121,5 +122,9 @@ RSpec.describe PlaylistItemsController, type: :controller do
         end.not_to change{ playlist_item.reload.title }
       end
     end
+  end
+
+  describe 'GET #source_details' do
+    # TODO implement me!
   end
 end

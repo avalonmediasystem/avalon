@@ -77,7 +77,11 @@ class PlaylistItemsController < ApplicationController
     @playlist_item = PlaylistItem.find(params['playlist_item_id'])
     respond_to do |format|
       format.html do
-        render partial: 'current_item'
+        if can? :read, @playlist_item
+          render partial: 'current_item'
+        else
+          head :unauthorized, content_type: "text/html"
+        end
       end
     end
   end
@@ -89,7 +93,7 @@ class PlaylistItemsController < ApplicationController
     respond_to do |format|
       format.html do
         if @related_clips.blank?
-          head 200, content_type: "text/html"
+          head :ok, content_type: "text/html"
         else
           render partial: 'related_items'
         end
