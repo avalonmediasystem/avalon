@@ -17,9 +17,7 @@ Object.assign(mejs.MepDefaults, {
   // Add comments about the nature of each of these variables.
 });
 
-
 Object.assign(MediaElementPlayer.prototype, {
-
   // Public variables (also documented according to JSDoc specifications)
 
   /**
@@ -31,7 +29,7 @@ Object.assign(MediaElementPlayer.prototype, {
    * @param {HTMLElement} layers
    * @param {HTMLElement} media
    */
-  buildaddMarkerToPlaylist (player, controls, layers, media) {
+  buildaddMarkerToPlaylist(player, controls, layers, media) {
     // This allows us to access options and other useful elements already set.
     // Adding variables to the object is a good idea if you plan to reuse
     // those variables in further operations.
@@ -47,19 +45,33 @@ Object.assign(MediaElementPlayer.prototype, {
 
     // Configure player control button to toggle plugin Adding Marker functionality
     player.addMarkerToPlaylistButton = document.createElement('div');
-		player.addMarkerToPlaylistButton.className = t.options.classPrefix + 'button ' + t.options.classPrefix + 'add-marker-to-playlist-button';
-		player.addMarkerToPlaylistButton.innerHTML = `<button type="button" aria-controls="${t.id}" title="${addTitle}" aria-label="${addTitle}" tabindex="0">${addTitle}</button>`;
+    player.addMarkerToPlaylistButton.className =
+      t.options.classPrefix +
+      'button ' +
+      t.options.classPrefix +
+      'add-marker-to-playlist-button';
+    player.addMarkerToPlaylistButton.innerHTML = `<button type="button" aria-controls="${
+      t.id
+    }" title="${addTitle}" aria-label="${addTitle}" tabindex="0">${addTitle}</button>`;
 
     // Add control button to player
-		t.addControlElement(player.addMarkerToPlaylistButton, 'addMarkerToPlaylist');
+    t.addControlElement(
+      player.addMarkerToPlaylistButton,
+      'addMarkerToPlaylist'
+    );
 
     // Set up click listener for the control button which opens
     // and closes the Add Marker to Playlist form
-    player.addMarkerToPlaylistButton.addEventListener('click', addMarkerObj.handleControlClick.bind(t));
+    player.addMarkerToPlaylistButton.addEventListener(
+      'click',
+      addMarkerObj.handleControlClick.bind(t)
+    );
 
     // Variable references to the click event listener callback.  Pass this to avoid duplicate event processing
     addMarkerObj.bindHandleAdd = addMarkerObj.handleAdd.bind(addMarkerObj);
-    addMarkerObj.bindHandleCancel = addMarkerObj.handleCancel.bind(addMarkerObj);
+    addMarkerObj.bindHandleCancel = addMarkerObj.handleCancel.bind(
+      addMarkerObj
+    );
 
     // Add all other Markers related event listeners
     addMarkerObj.addEventListeners();
@@ -76,16 +88,21 @@ Object.assign(MediaElementPlayer.prototype, {
    * @param {HTMLElement} layers
    * @param {HTMLElement} media
    */
-  cleanaddMarkerToPlaylist (player, controls, layers, media) {
+  cleanaddMarkerToPlaylist(player, controls, layers, media) {
     const t = this;
 
-    t.addMarkerObj.addButton.removeEventListener('click', t.addMarkerObj.bindHandleAdd);
-    t.addMarkerObj.cancelButton.removeEventListener('click', t.addMarkerObj.bindHandleCancel);
+    t.addMarkerObj.addButton.removeEventListener(
+      'click',
+      t.addMarkerObj.bindHandleAdd
+    );
+    t.addMarkerObj.cancelButton.removeEventListener(
+      'click',
+      t.addMarkerObj.bindHandleCancel
+    );
 
     $(t.addMarkerObj.alertEl).hide();
     $(t.addMarkerObj.formWrapperEl).hide();
     t.addMarkerObj.resetForm();
-
   },
 
   // Other optional public methods (all documented according to JSDoc specifications)
@@ -114,7 +131,7 @@ Object.assign(MediaElementPlayer.prototype, {
      * Add event (mostly click) listeners for marker interaction elements
      * @return {void}
      */
-    addEventListeners: function () {
+    addEventListeners: function() {
       let t = this;
 
       // Set click listeners for Add Marker to Playlist form elements
@@ -130,7 +147,7 @@ Object.assign(MediaElementPlayer.prototype, {
      * @function clearAddAlert
      * @return {void}
      */
-    clearAddAlert: function () {
+    clearAddAlert: function() {
       let alertEl = this.alertEl;
 
       alertEl.classList.remove('alert-success');
@@ -144,7 +161,7 @@ Object.assign(MediaElementPlayer.prototype, {
      * @param  {MouseEvent} e Event generated when Cancel form button clicked
      * @return {void}
      */
-    handleAdd: function (e) {
+    handleAdd: function(e) {
       const t = this;
       const playlistIds = t.mejsMarkersHelper.getCurrentPlaylistIds();
 
@@ -163,8 +180,8 @@ Object.assign(MediaElementPlayer.prototype, {
           }
         }
       })
-      .done(t.handleAddSuccess.bind(t, $('#marker_start').val(), playlistIds))
-      .fail(t.handleAddError.bind(t));
+        .done(t.handleAddSuccess.bind(t, $('#marker_start').val(), playlistIds))
+        .fail(t.handleAddError.bind(t));
     },
 
     /**
@@ -179,7 +196,7 @@ Object.assign(MediaElementPlayer.prototype, {
 
       alertEl.classList.add('alert-danger');
       alertEl.classList.add('add_to_playlist_alert_error');
-      error.responseJSON.message.forEach((message) => {
+      error.responseJSON.message.forEach(message => {
         $(alertEl).append('<p>' + message + '</p>');
       });
       $(alertEl).slideDown();
@@ -209,8 +226,9 @@ Object.assign(MediaElementPlayer.prototype, {
       t.resetForm();
 
       // Update visual markers in player's time rail
-      t.mejsMarkersHelper.getMarkers(playlistIds.playlistId, playlistIds.playlistItemId)
-        .then((response) => {
+      t.mejsMarkersHelper
+        .getMarkers(playlistIds.playlistId, playlistIds.playlistItemId)
+        .then(response => {
           t.mejsMarkersHelper.updateVisualMarkers(response);
         });
 
@@ -230,7 +248,7 @@ Object.assign(MediaElementPlayer.prototype, {
      * @param  {MouseEvent} e Event generated when Cancel form button clicked
      * @return {void}
      */
-    handleCancel: function (e) {
+    handleCancel: function(e) {
       const t = this;
 
       $(t.alertEl).slideUp();
@@ -244,7 +262,7 @@ Object.assign(MediaElementPlayer.prototype, {
      * @param  {MouseEvent} e Event generated when Add to Playlist control button clicked
      * @return {void}
      */
-    handleControlClick: function (e) {
+    handleControlClick: function(e) {
       const t = this;
       let addMarkerObj = t.addMarkerObj;
 
@@ -265,10 +283,13 @@ Object.assign(MediaElementPlayer.prototype, {
      * @function populateFormValues
      * @return {void}
      */
-    populateFormValues: function () {
+    populateFormValues: function() {
       let addMarkerObj = this.addMarkerObj;
 
-      addMarkerObj.formInputs.offset.value = mejs.Utils.secondsToTimeCode(addMarkerObj.player.getCurrentTime(), true);
+      addMarkerObj.formInputs.offset.value = mejs.Utils.secondsToTimeCode(
+        addMarkerObj.player.getCurrentTime(),
+        true
+      );
     },
 
     /**
@@ -276,7 +297,7 @@ Object.assign(MediaElementPlayer.prototype, {
      * @function resetForm
      * @return {void}
      */
-    resetForm: function () {
+    resetForm: function() {
       const t = this;
       let formInputs = t.formInputs;
 
@@ -288,5 +309,4 @@ Object.assign(MediaElementPlayer.prototype, {
       /* eslint-enable guard-for-in */
     }
   }
-
 });

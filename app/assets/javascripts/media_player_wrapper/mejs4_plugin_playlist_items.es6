@@ -13,9 +13,7 @@ Object.assign(mejs.MepDefaults, {
   // Add comments about the nature of each of these variables.
 });
 
-
 Object.assign(MediaElementPlayer.prototype, {
-
   /**
    * Feature constructor.
    *
@@ -25,7 +23,7 @@ Object.assign(MediaElementPlayer.prototype, {
    * @param {HTMLElement} layers
    * @param {HTMLElement} media
    */
-  buildplaylistItems (player, controls, layers, media) {
+  buildplaylistItems(player, controls, layers, media) {
     // This allows us to access options and other useful elements already set.
     // Adding variables to the object is a good idea if you plan to reuse
     // those variables in further operations.
@@ -42,11 +40,17 @@ Object.assign(MediaElementPlayer.prototype, {
     playlistItemsObj.mejsMarkersHelper.addMarkersTableListeners();
 
     // Handle continuous MEJS time update event
-    media.addEventListener('timeupdate', playlistItemsObj.handleTimeUpdate.bind(this));
+    media.addEventListener(
+      'timeupdate',
+      playlistItemsObj.handleTimeUpdate.bind(this)
+    );
     // Set current playing item in this class context
     playlistItemsObj.setCurrentItemInternally();
     // Handle canplay event, start the player at the playlist item start time
-    media.addEventListener('canplay', playlistItemsObj.goToPlaylistItemStartTime.bind(playlistItemsObj) );
+    media.addEventListener(
+      'canplay',
+      playlistItemsObj.goToPlaylistItemStartTime.bind(playlistItemsObj)
+    );
   },
 
   // Optionally, each feature can be destroyed setting a `clean` method
@@ -60,9 +64,11 @@ Object.assign(MediaElementPlayer.prototype, {
    * @param {HTMLElement} layers
    * @param {HTMLElement} media
    */
-  cleanplaylistItems (player, controls, layers, media) {
+  cleanplaylistItems(player, controls, layers, media) {
     // Remove click listener on playlist items
-    $('#right-column').find('.side-playlist').off('click');
+    $('#right-column')
+      .find('.side-playlist')
+      .off('click');
   },
 
   // Other optional public methods (all documented according to JSDoc specifications)
@@ -82,9 +88,9 @@ Object.assign(MediaElementPlayer.prototype, {
       // Handle click on entire Playlists right column area
       // Filter only <a> element clicks; disregard all others
       if (this.$sidePlaylist) {
-        this.$sidePlaylist.on('click', (e) => {
+        this.$sidePlaylist.on('click', e => {
           if (e.target.nodeName === 'A') {
-            this.handleClick(e.target)
+            this.handleClick(e.target);
           }
         });
       }
@@ -97,14 +103,20 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     analyzeNewItemSource(el) {
       const playlistId = +el.dataset.playlistId;
-      const playlistItemId = $(el).parent('li').data('playlistItemId');
-      const playlistItemT = [el.dataset.clipStartTime/1000, el.dataset.clipEndTime/1000];
+      const playlistItemId = $(el)
+        .parent('li')
+        .data('playlistItemId');
+      const playlistItemT = [
+        el.dataset.clipStartTime / 1000,
+        el.dataset.clipEndTime / 1000
+      ];
 
       // Show spinner
       this.mejsMarkersHelper.spinnerToggle(true);
 
       // Get new markers
-      this.mejsMarkersHelper.getMarkers(playlistId, playlistItemId)
+      this.mejsMarkersHelper
+        .getMarkers(playlistId, playlistItemId)
         .then(response => {
           const markers = response;
 
@@ -122,20 +134,25 @@ Object.assign(MediaElementPlayer.prototype, {
           // Same media file?
           if (this.currentStreamInfo.id === el.dataset.masterFileId) {
             this.setupNextItem();
-          }
-          // Need a new Mediaelement player and media file
-          else {
+          } else {
+            // Need a new Mediaelement player and media file
             const id = el.dataset.masterFileId;
-            const url = `/media_objects/${el.dataset.mediaObjectId}/section/${id}`;
+            const url = `/media_objects/${
+              el.dataset.mediaObjectId
+            }/section/${id}`;
 
             // Update mejs4AvalonPlayer.playlistItem with ids here
             // mejs4AvalonPlayer.playlistItem = { ...mejs4AvalonPlayer.playlistItem, id: playlistItemId, playlist_id: playlistId, position: null };
-            mejs4AvalonPlayer.playlistItem = Object.assign({}, mejs4AvalonPlayer.playlistItem, { id: playlistItemId, playlist_id: playlistId, position: null });
+            mejs4AvalonPlayer.playlistItem = Object.assign(
+              {},
+              mejs4AvalonPlayer.playlistItem,
+              { id: playlistItemId, playlist_id: playlistId, position: null }
+            );
 
             // Get new data and create new player instance
             mejs4AvalonPlayer.getNewStreamAjax(id, url, playlistItemT);
           }
-        })
+        });
     },
 
     currentStreamInfo: null,
@@ -190,11 +207,17 @@ Object.assign(MediaElementPlayer.prototype, {
     },
 
     isAutoplay() {
-      return !$('input[name="autoadvance"]').parent('.toggle').hasClass('off');
+      return !$('input[name="autoadvance"]')
+        .parent('.toggle')
+        .hasClass('off');
     },
 
     isSamePlaylistItem(el) {
-      return $(el).parent('li').data('playlistItemId') === this.$nowPlayingLi.data('playlistItemId');
+      return (
+        $(el)
+          .parent('li')
+          .data('playlistItemId') === this.$nowPlayingLi.data('playlistItemId')
+      );
     },
 
     itemEnded() {
@@ -215,8 +238,9 @@ Object.assign(MediaElementPlayer.prototype, {
       const t = this;
 
       // Grab new html to use
-      t.mejsMarkersHelper.ajaxPlaylistItemsHTML(playlistId, playlistItemId, panel)
-        .then((response) => {
+      t.mejsMarkersHelper
+        .ajaxPlaylistItemsHTML(playlistId, playlistItemId, panel)
+        .then(response => {
           // Insert the fresh HTML table
           $('#' + panel).replaceWith(response);
         })
@@ -277,8 +301,8 @@ Object.assign(MediaElementPlayer.prototype, {
      * @return {void}
      */
     updateStartEndTimes(dataSet) {
-      this.startEndTimes.start = parseInt(dataSet.clipStartTime, 10)/1000;
-      this.startEndTimes.end = parseInt(dataSet.clipEndTime, 10)/1000;
+      this.startEndTimes.start = parseInt(dataSet.clipStartTime, 10) / 1000;
+      this.startEndTimes.end = parseInt(dataSet.clipEndTime, 10) / 1000;
     },
 
     /**
@@ -289,7 +313,7 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     updatePlaylistItemsList(el) {
       const liItems = this.$sidePlaylist[0].getElementsByTagName('li');
-      let array = [ ...liItems];
+      let array = [...liItems];
       let clickedEl = el.parentNode;
       const arrowNode = document.createElement('i');
 
@@ -312,7 +336,7 @@ Object.assign(MediaElementPlayer.prototype, {
         } else {
           li.classList.add('queue');
         }
-      })
+      });
     }
   }
 });
