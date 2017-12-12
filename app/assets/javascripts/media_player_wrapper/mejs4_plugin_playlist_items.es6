@@ -42,6 +42,8 @@ Object.assign(MediaElementPlayer.prototype, {
     media.addEventListener('timeupdate', playlistItemsObj.handleTimeUpdate.bind(this));
     // Set current playing item
     playlistItemsObj.setCurrentItemInternally();
+    // Handle canplay event, start the player at the playlist item start time
+    media.addEventListener('canplay', playlistItemsObj.goToPlaylistItemStartTime.bind(playlistItemsObj) );
   },
 
   // Optionally, each feature can be destroyed setting a `clean` method
@@ -93,12 +95,14 @@ Object.assign(MediaElementPlayer.prototype, {
     analyzeNewItemSource(el) {
       const playlistId = +el.dataset.playlistId;
       const playlistItemId = $(el).parent('li').data('playlistItemId');
+      const playlistItemT = [el.dataset.clipStartTime/1000, el.dataset.clipEndTime/1000];
 
       // Get new markers
       this.mejsMarkersHelper.getMarkers(playlistId, playlistItemId)
         .then(response => {
           const markers = response;
 
+          // Update markers in time rail, and update right column playlist items list
           this.mejsMarkersHelper.updateVisualMarkers(markers);
           this.updatePlaylistItemsList(el);
 
@@ -121,7 +125,8 @@ Object.assign(MediaElementPlayer.prototype, {
             // Update mejs4AvalonPlayer.playlistItem with ids here
             mejs4AvalonPlayer.playlistItem = { ...mejs4AvalonPlayer.playlistItem, id: playlistItemId, playlist_id: playlistId, position: null };
 
-            mejs4AvalonPlayer.getNewStreamAjax(id, url);
+            // Get new data and create new player instance
+            mejs4AvalonPlayer.getNewStreamAjax(id, url, playlistItemT);
           }
         })
     },
@@ -130,6 +135,19 @@ Object.assign(MediaElementPlayer.prototype, {
 
     getNextItem() {
       return this.$nowPlayingLi.next('li');
+    },
+
+    /**
+     * Go to the playlist item's start time in player, and play file if configured to autoplay
+     * @function goToPlaylistItemStartTime
+     * @return {void}
+     */
+    goToPlaylistItemStartTime() {
+      console.log('goToPlaylistItemStartTime()');
+      this.player.setCurrentTime(this.startEndTimes.start);
+      if (this.isAutoplay()) {
+        this.player.play();
+      }
     },
 
     /**
@@ -152,14 +170,15 @@ Object.assign(MediaElementPlayer.prototype, {
      * @return {void}
      */
     handleTimeUpdate() {
+      const t = this;
       // Playlist item's end time is reached
-      if (this.playlistItemsObj.itemEnded()) {
-        this.playlistItemsObj.player.pause();
+      if (t.playlistItemsObj.itemEnded()) {
+        t.playlistItemsObj.player.pause();
 
-        let $nextItem = this.playlistItemsObj.getNextItem();
-        if ($nextItem) {
-          let el = $nextItem.find('a')[0];
-          this.playlistItemsObj.analyzeNewItemSource(el);
+        const $nextItem = t.playlistItemsObj.getNextItem();
+        if ($nextItem.length > 0) {
+          const el = $nextItem.find('a')[0];
+          t.playlistItemsObj.analyzeNewItemSource(el);
         }
       }
     },
@@ -182,7 +201,8 @@ Object.assign(MediaElementPlayer.prototype, {
      * Re-build item details page panel HTML sections
      * @function rebuildPanelMarkup
      * @param playlistId
-     * TODO: finish these
+     * @param playlistItemId,
+     * @param panel String for endpoint title which correspondes to Playlist Items page panel section id
      * @return {void}
      */
     rebuildPanelMarkup(playlistId, playlistItemId, panel) {

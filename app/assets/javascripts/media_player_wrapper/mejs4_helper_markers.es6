@@ -19,6 +19,7 @@ class MEJSMarkersHelper {
     // Marker title click; play from marker offset time
     $markers.find('a.marker_title').on('click', (e) => {
       const offset = $(e.target).parents('tr').data('offset');
+      // TODO: Fix this reference to 'player'
       t.player.setCurrentTime(offset);
     });
 

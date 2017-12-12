@@ -9,7 +9,14 @@
 }
 
 .mejs__time-marker {
-  top: 0;
+  background: none !important;
+  top: -1px;
+}
+.mejs__time-marker:before {
+  content: "\2b27";
+  width: 1em;
+  transform: translate(-50%, 0);
+  color: white;
 }
 
 #markers {

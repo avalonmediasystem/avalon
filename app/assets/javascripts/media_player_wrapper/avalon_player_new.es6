@@ -78,13 +78,28 @@ class MEJSPlayer {
   }
 
   /**
+   * Emit custom event signaling Mediaelement new instance success callback has fired
+   * @return {void}
+   */
+  emitSuccessEvent () {
+    console.log('emitSuccessEvent ()');
+    const myEvent = new CustomEvent('mejs4handleSuccess', {
+      detail: {
+        foo: 'bar'
+      }
+    });
+    document.getElementById('content').dispatchEvent(myEvent);
+  }
+
+  /**
    * Make AJAX request for clicked item's stream data
    * @function getNewStreamAjax
    * @param  {string} id - id of master file id
    * @param {string} url Url to get stream data ie. /media_objects/xg94hp52v/section/bc386j20b
+   * @param {Array} playlistItemT Array which contains playlist item clip start and end times.  This is sent in from playlist items plugin, when creating a new instance of the player.
    * @return {void}
    */
-  getNewStreamAjax (id, url) {
+  getNewStreamAjax (id, url, playlistItemsT) {
     $.ajax({
       url: url + '/stream',
       dataType: 'json',
@@ -93,7 +108,7 @@ class MEJSPlayer {
       }
     }).done((response) => {
       this.removePlayer()
-      this.setContextVars(response)
+      this.setContextVars(response, playlistItemsT)
       this.createNewPlayer()
     }).fail((error) => {
       console.log('error', error)
@@ -212,6 +227,9 @@ class MEJSPlayer {
       this.player = this.mediaElement
     }
 
+    // TESTING
+    this.emitSuccessEvent()
+
     // Handle 'canplay' events fired by player
     this.mediaElement.addEventListener('canplay', this.handleCanPlay.bind(this))
 
@@ -283,6 +301,7 @@ class MEJSPlayer {
 
     // If track scrubber feature is active, initialize a new scrubber
     if (this.player.trackScrubberObj) {
+      //TODO: Figure this out when not tracking by segment id
       this.reInitializeScrubber(activeSegmentId)
     }
   }
@@ -414,10 +433,15 @@ class MEJSPlayer {
    * Update class vars with new stream data
    * @function setContextVars
    * @param  {Object} currentStreamInfo - New stream information returned from AJAX request
+   * @param {Array} playlistItemT - Array of start / end times for a playlist item
    * @return {void}
    */
-  setContextVars (currentStreamInfo) {
+  setContextVars (currentStreamInfo, playlistItemT) {
     this.currentStreamInfo = currentStreamInfo
+
+    if (playlistItemT) {
+      this.currentStreamInfo.t = playlistItemT
+    }
     this.mediaType = (currentStreamInfo.is_video === true) ? 'video' : 'audio'
     this.segmentsMap = this.mejsUtility.createSegmentsMap(document.getElementById('accordion'), currentStreamInfo)
   }
