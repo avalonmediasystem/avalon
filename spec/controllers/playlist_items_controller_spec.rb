@@ -37,7 +37,8 @@ RSpec.describe PlaylistItemsController, type: :controller do
 
   let(:user) { login_as :user }
   let(:playlist) { FactoryGirl.create(:playlist, user: user) }
-  let(:master_file) { FactoryGirl.create(:master_file, :with_media_object, duration: "100000") }
+  let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object, duration: "100000") }
+  let(:media_object) { FactoryGirl.create(:published_media_object, read_users: [user]) }
 
   describe 'security' do
     let(:playlist) { FactoryGirl.create(:playlist) }
@@ -127,6 +128,11 @@ RSpec.describe PlaylistItemsController, type: :controller do
   end
 
   describe 'GET #source_details' do
-    # TODO implement me!
+    let(:clip) { AvalonClip.create(master_file: master_file) }
+    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: clip) }
+    it 'returns HTML' do
+      expect(get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to have_http_status(:ok)
+      expect(response.content_type).to render_template(:_current_item)
+    end
   end
 end
