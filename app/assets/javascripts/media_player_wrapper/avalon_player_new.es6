@@ -315,7 +315,6 @@ class MEJSPlayer {
     let currentStreamInfo = this.currentStreamInfo;
     // Mediaelement default root level configuration
     let defaults = {
-      alwaysShowControls: true,
       pluginPath: "/assets/mediaelement/shims/",
       features: this.features,
       poster: currentStreamInfo.poster_image || null,
