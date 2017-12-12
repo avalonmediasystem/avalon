@@ -28,6 +28,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% if can?(:read, @current_playlist_item.clip.master_file.media_object) %>
       <a
         data-playlist-id="<%= item.playlist_id %>"
+        data-playlist-item-id="<%= item.id %>"
         data-clip-start-time="<%= clip.start_time %>"
         data-clip-end-time="<%= clip.end_time %>"
         data-clip-source="<%= clip.source %>"
