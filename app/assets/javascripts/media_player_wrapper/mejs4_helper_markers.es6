@@ -4,14 +4,20 @@
  */
 class MEJSMarkersHelper {
 
+  constructor() {
+    this.$accordion = $('#accordion');
+  }
+
   /**
    * Add event listeners for elements in Markers table rows
    * @function addMarkersTableListeners
+   * @param player Instance of player
    * @return {void}
    */
   addMarkersTableListeners() {
     const t = this;
     let addMarkerObj = t.addMarkerObj;
+    const player = mejs4AvalonPlayer.player;
     const $markers = $('#markers');
     const $alertError = $('#marker_item_edit_alert');
     let originalMarkerValues = {};
@@ -19,18 +25,16 @@ class MEJSMarkersHelper {
     // Marker title click; play from marker offset time
     $markers.find('a.marker_title').on('click', (e) => {
       const offset = $(e.target).parents('tr').data('offset');
-      // TODO: Fix this reference to 'player'
-      t.player.setCurrentTime(offset);
+      player.setCurrentTime(offset);
     });
 
     // Edit button click
     $markers.find('button[name="edit_marker"]').on('click', (e) => {
-      console.log('edit button clicked');
       const $row = $(e.target).parents('tr');
       const markerId = $row.data('markerId');
       const offset = mejs.Utils.convertSMPTEtoSeconds($row.find('input[name="offset_' + markerId + '"]').val());
 
-      t.disableButtons.apply(t, [$row, true]);
+      t.disableButtons($row, true);
       $(e.target).parents('tr').addClass('is-editing');
       // Track original marker offset value of edited row
       originalMarkerValues[markerId] = offset;
@@ -41,7 +45,7 @@ class MEJSMarkersHelper {
       let $row = $(e.target).parents('tr');
       const markerId = $row.data('markerId');
 
-      t.disableButtons.apply(t, [$row, false]);
+      t.disableButtons($row, false);
       $alertError.slideUp();
       $row.removeClass('is-editing');
 
@@ -136,7 +140,7 @@ class MEJSMarkersHelper {
         delete(originalMarkerValues[markerId]);
 
         // Rebuild markers table with updated values
-        t.rebuildMarkersTable(t);
+        t.rebuildMarkersTable();
       })
       .fail((error) => {
         // Display error message
@@ -164,6 +168,9 @@ class MEJSMarkersHelper {
         resolve(response);
       }).fail((error) => {
         reject('');
+      }).always(() => {
+        // Turn off spinner
+        this.spinnerToggle();
       });
     });
   }
@@ -177,7 +184,7 @@ class MEJSMarkersHelper {
    */
   buildMarkersConfig (markers) {
     return {
-      markerColor: '#fff',
+      markerColor: '#777',
       markers: markers
     }
   }
@@ -270,6 +277,14 @@ class MEJSMarkersHelper {
       .catch(err => {
         console.log(err);
       });
+  }
+
+  spinnerToggle(on) {
+    if (on) {
+      this.$accordion.addClass('spinner');
+    } else {
+      this.$accordion.removeClass('spinner');
+    }
   }
 
   /**

@@ -36,11 +36,14 @@ Object.assign(MediaElementPlayer.prototype, {
     playlistItemsObj.mejsMarkersHelper = new MEJSMarkersHelper();
     playlistItemsObj.player = player;
     playlistItemsObj.currentStreamInfo = mejs4AvalonPlayer.currentStreamInfo;
-    // Click listeners for the DOM
-    playlistItemsObj.addClickListeners();
+
+    // Click listeners
+    playlistItemsObj.addSidebarListeners();
+    playlistItemsObj.mejsMarkersHelper.addMarkersTableListeners();
+
     // Handle continuous MEJS time update event
     media.addEventListener('timeupdate', playlistItemsObj.handleTimeUpdate.bind(this));
-    // Set current playing item
+    // Set current playing item in this class context
     playlistItemsObj.setCurrentItemInternally();
     // Handle canplay event, start the player at the playlist item start time
     media.addEventListener('canplay', playlistItemsObj.goToPlaylistItemStartTime.bind(playlistItemsObj) );
@@ -72,13 +75,13 @@ Object.assign(MediaElementPlayer.prototype, {
   playlistItemsObj: {
     /**
      * Add click listener for the playlist items sidebar
-     * @function addClickListeners
+     * @function addSidebarListeners
      * @return {void}
      */
-    addClickListeners() {
+    addSidebarListeners() {
+      // Handle click on entire Playlists right column area
+      // Filter only <a> element clicks; disregard all others
       if (this.$sidePlaylist) {
-        // Handle click on entire Playlists right column area
-        // Filter only <a> element clicks; disregard all others
         this.$sidePlaylist.on('click', (e) => {
           if (e.target.nodeName === 'A') {
             this.handleClick(e.target)
@@ -96,6 +99,9 @@ Object.assign(MediaElementPlayer.prototype, {
       const playlistId = +el.dataset.playlistId;
       const playlistItemId = $(el).parent('li').data('playlistItemId');
       const playlistItemT = [el.dataset.clipStartTime/1000, el.dataset.clipEndTime/1000];
+
+      // Show spinner
+      this.mejsMarkersHelper.spinnerToggle(true);
 
       // Get new markers
       this.mejsMarkersHelper.getMarkers(playlistId, playlistItemId)
@@ -123,7 +129,8 @@ Object.assign(MediaElementPlayer.prototype, {
             const url = `/media_objects/${el.dataset.mediaObjectId}/section/${id}`;
 
             // Update mejs4AvalonPlayer.playlistItem with ids here
-            mejs4AvalonPlayer.playlistItem = { ...mejs4AvalonPlayer.playlistItem, id: playlistItemId, playlist_id: playlistId, position: null };
+            // mejs4AvalonPlayer.playlistItem = { ...mejs4AvalonPlayer.playlistItem, id: playlistItemId, playlist_id: playlistId, position: null };
+            mejs4AvalonPlayer.playlistItem = Object.assign({}, mejs4AvalonPlayer.playlistItem, { id: playlistItemId, playlist_id: playlistId, position: null });
 
             // Get new data and create new player instance
             mejs4AvalonPlayer.getNewStreamAjax(id, url, playlistItemT);
@@ -143,7 +150,6 @@ Object.assign(MediaElementPlayer.prototype, {
      * @return {void}
      */
     goToPlaylistItemStartTime() {
-      console.log('goToPlaylistItemStartTime()');
       this.player.setCurrentTime(this.startEndTimes.start);
       if (this.isAutoplay()) {
         this.player.play();

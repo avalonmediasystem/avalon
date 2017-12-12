@@ -57,8 +57,9 @@ Object.assign(MediaElementPlayer.prototype, {
     // and closes the Add Marker to Playlist form
     player.addMarkerToPlaylistButton.addEventListener('click', addMarkerObj.handleControlClick.bind(t));
 
-    // Variable reference to the click event listener callback.  Pass this to avoid duplicate "adds"
-    addMarkerObj.binder = addMarkerObj.handleAdd.bind(addMarkerObj);
+    // Variable references to the click event listener callback.  Pass this to avoid duplicate event processing
+    addMarkerObj.bindHandleAdd = addMarkerObj.handleAdd.bind(addMarkerObj);
+    addMarkerObj.bindHandleCancel = addMarkerObj.handleCancel.bind(addMarkerObj);
 
     // Add all other Markers related event listeners
     addMarkerObj.addEventListeners();
@@ -78,7 +79,9 @@ Object.assign(MediaElementPlayer.prototype, {
   cleanaddMarkerToPlaylist (player, controls, layers, media) {
     const t = this;
 
-    t.addMarkerObj.addButton.removeEventListener('click', t.addMarkerObj.binder);
+    t.addMarkerObj.addButton.removeEventListener('click', t.addMarkerObj.bindHandleAdd);
+    t.addMarkerObj.cancelButton.removeEventListener('click', t.addMarkerObj.bindHandleCancel);
+
     $(t.addMarkerObj.alertEl).hide();
     $(t.addMarkerObj.formWrapperEl).hide();
     t.addMarkerObj.resetForm();
@@ -96,7 +99,8 @@ Object.assign(MediaElementPlayer.prototype, {
     active: false,
     addButton: document.getElementById('add_marker_submit'),
     alertEl: document.getElementById('add_marker_to_playlist_item_alert'),
-    binder: null,
+    bindHandleCancel: null,
+    bindHandleAdd: null,
     cancelButton: document.getElementById('add_marker_cancel'),
     formInputs: {
       offset: document.getElementById('marker_start'),
@@ -114,11 +118,11 @@ Object.assign(MediaElementPlayer.prototype, {
       let t = this;
 
       // Set click listeners for Add Marker to Playlist form elements
-      t.addButton.addEventListener('click', t.binder);
-      t.cancelButton.addEventListener('click', t.handleCancel.bind(t));
+      t.addButton.addEventListener('click', t.bindHandleAdd);
+      t.cancelButton.addEventListener('click', t.bindHandleCancel);
 
       // Set click listeners on the current markers UI table
-      t.mejsMarkersHelper.addMarkersTableListeners();
+      // t.mejsMarkersHelper.addMarkersTableListeners();
     },
 
     /**

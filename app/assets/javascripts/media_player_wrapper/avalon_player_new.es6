@@ -79,10 +79,11 @@ class MEJSPlayer {
 
   /**
    * Emit custom event signaling Mediaelement new instance success callback has fired
+   * @function emitSuccessEvent
    * @return {void}
    */
   emitSuccessEvent () {
-    console.log('emitSuccessEvent ()');
+    // TODO: This is an example of something we could hook into.  Don't need quite yet but might...
     const myEvent = new CustomEvent('mejs4handleSuccess', {
       detail: {
         foo: 'bar'
@@ -227,7 +228,6 @@ class MEJSPlayer {
       this.player = this.mediaElement
     }
 
-    // TESTING
     this.emitSuccessEvent()
 
     // Handle 'canplay' events fired by player
@@ -243,7 +243,9 @@ class MEJSPlayer {
     }
 
     // Listen for timeupdate events in player, to show / hide highlighted sections, etc.
-    this.mediaElement.addEventListener('timeupdate', this.handleTimeUpdate.bind(this))
+    if (Object.keys(this.playlistItem).length === 0) {
+      this.mediaElement.addEventListener('timeupdate', this.handleTimeUpdate.bind(this))
+    }
   }
 
   /**
@@ -295,8 +297,6 @@ class MEJSPlayer {
    * @return {void}
    */
   highlightTimeRail (t, activeSegmentId) {
-    // const t = this.mejsTimeRailHelper.calculateSegmentT(this.segmentsMap[activeSegmentId], this.currentStreamInfo)
-
     this.highlightSpanEl.setAttribute('style', this.mejsTimeRailHelper.createTimeRailStyles(t, this.currentStreamInfo))
 
     // If track scrubber feature is active, initialize a new scrubber
