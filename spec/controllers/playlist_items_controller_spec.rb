@@ -43,6 +43,8 @@ RSpec.describe PlaylistItemsController, type: :controller do
   describe 'security' do
     let(:playlist) { FactoryGirl.create(:playlist) }
     let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist) }
+    let(:master_file) { FactoryGirl.create(:master_file, :with_media_object, duration: "100000") }
+
     context 'with unauthenticated user' do
       it "all routes should redirect to sign in" do
         expect(post :create, playlist_id: playlist.to_param, playlist_item: valid_attributes).to redirect_to(new_user_session_path)
