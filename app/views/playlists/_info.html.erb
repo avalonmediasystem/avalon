@@ -32,8 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
     </div>
     <% @markers = @current_playlist_item.marker %>
-    <% unless @markers.empty? %>
-    <div class="panel-heading" role="tab" id="markers_heading">
+    <div class="panel-heading <%= "hidden" if @markers.empty? %>" role="tab" id="markers_heading">
       <h5 class="panel-title ">
         <a href="#markers_section" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
           Markers</a>
@@ -44,11 +43,10 @@ Unless required by applicable law or agreed to in writing, software distributed
           <% if is_mejs_2? %>
             <%= render 'markers' %>
           <% else %>
-            <%= render 'mejs4_markers' %>
+            <%= render 'playlist_items/markers' locals: { markers: @markers || [] } %>
           <% end %>
         </div>
       </div>
-      <% end %>
       <div class="panel-heading">
         <h5 class="panel-title">
           <a href="#source_details_section" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
