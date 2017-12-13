@@ -15,7 +15,7 @@
 $ ->
   refreshToken = ->
     token = currentPlayer.media.src.split('?')[1]
-    if token.match(/^token=/)
+    if token && token.match(/^token=/)
       mount_point = $('body').data('mountpoint')
       $.get("#{mount_point}authorize.txt?#{token}")
         .done -> console.log("Token refreshed")
