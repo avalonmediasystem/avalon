@@ -88,13 +88,14 @@ Object.assign(MediaElementPlayer.prototype, {
     addRelatedItemListeners() {
       // Handle click on entire RelatedItems area
       // Filter only <a> element clicks; disregard all others
-      if (this.$relatedItems) {
+      if (this.$relatedItems.length > 0) {
         this.$relatedItems.on('click', (e) => {
           if (e.target.nodeName === 'A') {
+            e.preventDefault()
             // find correct playlist item in sidebar and click it.
-            let playlist_id  = e.target.dataset.playlistId
-            let playlist_item_id = e.target.dataset.playlistItemId
-            let related = this.$sidePlaylist.find('a[data-playlist-id='+playlist_id+'][data-playlist-item-id='+playlist_item_id+']')
+            let playlistId  = e.target.dataset.playlistId
+            let playlistItemId = e.target.dataset.playlistItemId
+            let related = this.$sidePlaylist.find('a[data-playlist-id='+playlistId+'][data-playlist-item-id='+playlistItemId+']')
             related.click()
           }
         });
@@ -109,9 +110,10 @@ Object.assign(MediaElementPlayer.prototype, {
     addSidebarListeners() {
       // Handle click on entire Playlists right column area
       // Filter only <a> element clicks; disregard all others
-      if (this.$sidePlaylist) {
+      if (this.$sidePlaylist.length > 0) {
         this.$sidePlaylist.on('click', e => {
           if (e.target.nodeName === 'A') {
+            e.preventDefault()
             this.handleClick(e.target);
           }
         });
