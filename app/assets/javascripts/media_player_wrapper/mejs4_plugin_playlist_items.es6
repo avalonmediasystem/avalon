@@ -32,6 +32,7 @@ Object.assign(MediaElementPlayer.prototype, {
 
     playlistItemsObj.mejsUtility = new MEJSUtility();
     playlistItemsObj.mejsMarkersHelper = new MEJSMarkersHelper();
+    playlistItemsObj.mejsTimeRailHelper = new MEJSTimeRailHelper();
     playlistItemsObj.player = player;
     playlistItemsObj.currentStreamInfo = mejs4AvalonPlayer.currentStreamInfo;
 
@@ -39,6 +40,11 @@ Object.assign(MediaElementPlayer.prototype, {
     playlistItemsObj.addSidebarListeners();
     playlistItemsObj.addRelatedItemListeners();
     playlistItemsObj.mejsMarkersHelper.addMarkersTableListeners();
+
+    // Turn off autoplay on seek
+    playlistItemsObj.mejsTimeRailHelper.getTimeRail().addEventListener('click', playlistItemsObj.handleUserSeeking.bind(this))
+    let scrubberRail = $(playlistItemsObj.player.trackScrubberObj.scrubberEl).find('.track-mejs-time-total')[0]
+    scrubberRail.addEventListener('click', playlistItemsObj.handleUserSeeking.bind(this))
 
     // Handle continuous MEJS time update event
     media.addEventListener(
@@ -222,12 +228,14 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     handleRangeEndTimeReached() {
       const t = this;
-      const $nextItem = t.getNextItem();
 
       t.player.pause();
-      if ($nextItem.length > 0) {
-        const el = $nextItem.find('a')[0];
-        t.analyzeNewItemSource(el);
+      if (t.playlistItemsObj.isAutoplay()) {
+        const $nextItem = t.getNextItem();
+        if ($nextItem.length > 0) {
+          const el = $nextItem.find('a')[0];
+          t.analyzeNewItemSource(el);
+        }
       }
     },
 
@@ -254,6 +262,15 @@ Object.assign(MediaElementPlayer.prototype, {
         playlistItemsObj.handleRangeEndTimeReached();
         return;
       }
+    },
+
+    /**
+     * Handle user's manual seeking
+     * Always turn off Autoplay when user starts seeking around
+     * @return {void}
+     */
+    handleUserSeeking(e) {
+      $('input[name="autoadvance"]').prop('checked',false).change()
     },
 
     isAutoplay() {
@@ -324,13 +341,13 @@ Object.assign(MediaElementPlayer.prototype, {
      * @return {void}
      */
     setupNextItem() {
-      this.setCurrentItemInternally();
-      this.player.setCurrentTime(this.startEndTimes.start);
-      mejs4AvalonPlayer.highlightTimeRail([
-        this.startEndTimes.start,
-        this.startEndTimes.end
-      ]);
       if (this.isAutoplay()) {
+        this.setCurrentItemInternally();
+        this.player.setCurrentTime(this.startEndTimes.start);
+        mejs4AvalonPlayer.highlightTimeRail([
+          this.startEndTimes.start,
+          this.startEndTimes.end
+        ]);
         this.player.play();
       }
     },

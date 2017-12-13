@@ -351,7 +351,7 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     resizeTrackScrubber: function() {
       let scrubberEl = this.scrubberEl;
-      let $timeTotal = $('.track-mejs-time-total');
+      let $timeTotal = $(scrubberEl).find('.track-mejs-time-total');
       const totalWidth = scrubberEl.offsetWidth;
       const timeWidth = $(scrubberEl)
         .find('.track-mejs-currenttime-container')
