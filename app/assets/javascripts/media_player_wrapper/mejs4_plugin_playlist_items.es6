@@ -259,8 +259,15 @@ Object.assign(MediaElementPlayer.prototype, {
       t.mejsMarkersHelper
         .ajaxPlaylistItemsHTML(playlistId, playlistItemId, panel)
         .then(response => {
-          // Insert the fresh HTML table
+          // Insert the fresh HTML content
           $('#' + panel).replaceWith(response);
+          // Hide the entire panel if new content is blank
+          if (response === '') {
+            $('#' + panel + '_section').collapse('hide')
+            $('#' + panel + '_heading').hide()
+          } else {
+            $('#' + panel + '_heading').show()
+          }
         })
         .catch(err => {
           console.log(err);

@@ -16,6 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div id="markers" class="container">
   <%# Alert error container %>
   <div id="marker_item_edit_alert" class="mejs-form-alert alert alert-danger" style="display: none;">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
     <p></p>
   </div>
 
@@ -28,7 +29,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       </tr>
     </thead>
     <tbody>
-      <% markers.sort_by(&:start_time).each do |marker| %>
+      <% @markers.sort_by(&:start_time).each do |marker| %>
         <% if can? :read, marker %>
           <% start = marker.start_time.to_f/1000 %>
           <!-- Note this is for marker id "15", and where the "15" gets inserted below.  And the brackets {} are just used to highlight the dynamic insertion; not part of the actual HTML markup. -->
