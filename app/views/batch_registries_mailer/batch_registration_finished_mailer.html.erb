@@ -29,8 +29,10 @@ prefix = "Errors:" unless @no_errors
       <th>Error</th>
     </tr>
     <% @error_items.each do |be_error| %>
-      <tr> <%= be_error.position + 2 %> </tr>
-      <tr> <%= be_error.error_message %> </tr>
+      <tr>
+        <td> <%= be_error.position + 2 %> </td>
+        <td> <%= be_error.error_message %> </td>
+      </tr>
     <% end %>
   </table>
 <% end %>
@@ -44,8 +46,10 @@ prefix = "Errors:" unless @no_errors
       <th>Media Object ID</th>
     </tr>
     <% @completed_items.each do |be_completed| %>
-      <tr> <%= be_completed.position + 2 %> </tr>
-      <tr> <%= be_completed.media_object_pid %> </tr>
+      <tr>
+        <td> <%= be_completed.position + 2 %> </td>
+        <td> <%= be_completed.media_object_pid %> </td>
+      </tr>
     <% end %>
   </table>
 <% end %>
