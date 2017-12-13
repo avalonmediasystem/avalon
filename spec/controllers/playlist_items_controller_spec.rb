@@ -60,6 +60,8 @@ RSpec.describe PlaylistItemsController, type: :controller do
         expect(post :create, playlist_id: playlist.to_param, playlist_item: valid_attributes).to have_http_status(:unauthorized)
         expect(put :update, playlist_id: playlist.to_param, id: playlist_item.id).to have_http_status(:unauthorized)
         expect(get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to have_http_status(:unauthorized)
+        expect(get :markers, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to have_http_status(:unauthorized)
+        expect(get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to have_http_status(:unauthorized)
       end
     end
   end
@@ -136,4 +138,25 @@ RSpec.describe PlaylistItemsController, type: :controller do
       expect(response).to render_template(:_current_item)
     end
   end
+
+  describe 'GET #markers' do
+    let(:clip) { AvalonClip.create(master_file: master_file) }
+    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: clip) }
+    it 'returns HTML' do
+      get :markers, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id
+      expect(response).to have_http_status(:ok)
+      expect(response).to render_template(:_markers)
+    end
+  end
+
+  describe 'GET #related_items' do
+    let(:clip) { AvalonClip.create(master_file: master_file) }
+    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: clip) }
+    it 'returns HTML' do
+      get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id
+      expect(response).to have_http_status(:ok)
+      expect(response).to render_template(:_related_items)
+    end
+  end
+  
 end
