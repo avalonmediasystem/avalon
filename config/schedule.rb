@@ -7,7 +7,7 @@ every 1.minute do
 end
 
 every 15.minutes do
-  locking_rake "avalon:batch:ingest_status_check ", :lock_name => "batch_ingest", :environment => ENV['RAILS_ENV'] || 'production'
+  locking_rake "avalon:batch:ingest_status_check", :lock_name => "batch_ingest", :environment => ENV['RAILS_ENV'] || 'production'
 end
 
 every 1.day do
