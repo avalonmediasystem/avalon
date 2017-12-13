@@ -60,6 +60,11 @@ Object.assign(MediaElementPlayer.prototype, {
     trackScrubberObj.addScrubberToDOM();
     trackScrubberObj.addEventListeners();
 
+    // Need the 'canplay' event first before we can start listening to 'timeupdate' event
+    media.addEventListener('canplay', e => {
+      trackScrubberObj.handleCanPlay(media);
+    });
+
     // Set up click listener for the control button
     player.trackScrubberButton.addEventListener(
       'click',
@@ -151,11 +156,36 @@ Object.assign(MediaElementPlayer.prototype, {
     },
 
     /**
+     * Handle Mediaelements 'canplay' event in this plugin
+     * @function handleCanPlay
+     * @param  {Object} media media object provided to the plugin
+     * @return {void}
+     */
+    handleCanPlay: function(media) {
+      media.addEventListener('timeupdate', () => {
+        this.handleTimeUpdate();
+      });
+    },
+
+    /**
+     * Handle Mediaelement 'timeupdate' event in this plugin
+     * @function handleTimeUpdate
+     * @return {void}
+     */
+    handleTimeUpdate: function() {
+      if (!this.player || this.player === null) {
+        return;
+      }
+      const currentTime = this.player.getCurrentTime();
+      this.updateTrackScrubberProgressBar(currentTime);
+    },
+
+    /**
      * Initialize the track scrubber setup.  This could be for the entire track, or it could be
      * just for a section (segment) of time within the track.
      * @function initializeTrackScrubber
-     * @param  {number} trackstart  Start time of the scrubber
-     * @param  {number} trackend    End time of the scrubber
+     * @param  {number} trackstart  Start time of the scrubber in seconds
+     * @param  {number} trackend    End time of the scrubber in seconds
      * @param  {Object} stream_info Current stream object
      * @return {Object} HTML event binder
      */
@@ -386,6 +416,7 @@ Object.assign(MediaElementPlayer.prototype, {
         100,
         Math.max(0, 100 * trackoffset / this.trackdata['trackduration'])
       );
+
       $('.track-mejs-time-current').width(Math.round(trackpercent) + '%');
       $('.track-mejs-currenttime').text(
         mejs.Utils.secondsToTimeCode(trackoffset, false)

@@ -164,7 +164,6 @@ Object.assign(MediaElementPlayer.prototype, {
             }/section/${id}`;
 
             // Update mejs4AvalonPlayer.playlistItem with ids here
-            // mejs4AvalonPlayer.playlistItem = { ...mejs4AvalonPlayer.playlistItem, id: playlistItemId, playlist_id: playlistId, position: null };
             mejs4AvalonPlayer.playlistItem = Object.assign(
               {},
               mejs4AvalonPlayer.playlistItem,
@@ -196,7 +195,8 @@ Object.assign(MediaElementPlayer.prototype, {
     },
 
     /**
-     * Handle click event on a playlist item
+     * Handle click event on a playlist item in the right sidebar
+     * @function handleClick
      * @param  {HTMLElement} el <a> html element of playlist item
      * @return {void}
      */
@@ -211,20 +211,42 @@ Object.assign(MediaElementPlayer.prototype, {
     },
 
     /**
+     * Playlist item time range has ended. Handle next steps here.
+     * @return {[type]} [description]
+     */
+    handleRangeEndTimeReached() {
+      const t = this;
+      const $nextItem = t.getNextItem();
+
+      t.player.pause();
+      if ($nextItem.length > 0) {
+        const el = $nextItem.find('a')[0];
+        t.analyzeNewItemSource(el);
+      }
+    },
+
+    /**
      * Handle MEJS's continuous time event
+     * @function handleTimeUpdate
      * @return {void}
      */
     handleTimeUpdate() {
       const t = this;
-      // Playlist item's end time is reached
-      if (t.playlistItemsObj.itemEnded()) {
-        t.playlistItemsObj.player.pause();
+      const playlistItemsObj = t.playlistItemsObj;
+      const currentTime = playlistItemsObj.player.getCurrentTime();
 
-        const $nextItem = t.playlistItemsObj.getNextItem();
-        if ($nextItem.length > 0) {
-          const el = $nextItem.find('a')[0];
-          t.playlistItemsObj.analyzeNewItemSource(el);
-        }
+      // Current time is within range of playlist item's start / end times
+      if (
+        currentTime >= playlistItemsObj.startEndTimes.start &&
+        currentTime < playlistItemsObj.startEndTimes.end
+      ) {
+        return;
+      }
+
+      // Playlist item's end time is reached
+      if (playlistItemsObj.itemEnded()) {
+        playlistItemsObj.handleRangeEndTimeReached();
+        return;
       }
     },
 

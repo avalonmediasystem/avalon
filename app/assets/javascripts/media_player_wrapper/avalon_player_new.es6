@@ -141,21 +141,6 @@ class MEJSPlayer {
   }
 
   /**
-   * Handle updating progress of the track scrubber, if the feature/plugin is enabled
-   * @function handleScrubberProgress
-   * @param activeId - current active segment id - the id of section playing
-   * @param currentTime - current player time value in seconds
-   * @return {void}
-   */
-  handleScrubberProgress(activeId, currentTime) {
-    const player = this.player;
-    if (!player.trackScrubberObj) {
-      return;
-    }
-    player.trackScrubberObj.updateTrackScrubberProgressBar(currentTime);
-  }
-
-  /**
    * Event handler for clicking on a section link
    * @function handleSectionClick
    * @param  {Object} e - Event object
@@ -214,14 +199,16 @@ class MEJSPlayer {
       this.currentStreamInfo
     );
 
-    // Current active segment exists, and is different from before
+    // A new section is now active
     if (activeId && activeId !== this.activeSegmentId) {
       this.activeSegmentId = activeId;
+      // Need to update time rail highlighting
       this.highlightTimeRail(t, this.activeSegmentId);
       this.mejsUtility.highlightSectionLink(this.activeSegmentId);
     } else if (!activeId) {
       // No current segment, so remove highlighting
       this.activeSegmentId = '';
+      // Need to update time rail highlighting
       this.highlightTimeRail(t);
       this.mejsUtility.highlightSectionLink();
     }
@@ -268,8 +255,9 @@ class MEJSPlayer {
       this.highlightTimeRail(t, this.activeSegmentId);
     }
 
-    // Listen for timeupdate events in player, to show / hide highlighted sections, etc.
+    // Filter playlist item player from handling MEJS's time update event
     if (Object.keys(this.playlistItem).length === 0) {
+      // Listen for timeupdate events in player, to show / hide highlighted sections, etc.
       this.mediaElement.addEventListener(
         'timeupdate',
         this.handleTimeUpdate.bind(this)
@@ -294,8 +282,6 @@ class MEJSPlayer {
 
     // Handle section highlighting
     this.handleSectionHighlighting(activeId, currentTime);
-    // Handle updating the track scrubber, if enabled
-    this.handleScrubberProgress(activeId, currentTime);
   }
 
   /**
@@ -326,9 +312,9 @@ class MEJSPlayer {
   }
 
   /**
-   * Highlight a section of the Mediaelement player's time rail
+   * Highlight a range of the Mediaelement player's time rail
    * @function highlightTimeRail
-   * @param {Object[]} t Start end time array
+   * @param {Array} t Start end time array
    * @param {string} activeSegmentId
    * @return {void}
    */
@@ -338,10 +324,19 @@ class MEJSPlayer {
       this.mejsTimeRailHelper.createTimeRailStyles(t, this.currentStreamInfo)
     );
 
-    // If track scrubber feature is active, initialize a new scrubber
+    // If track scrubber feature is active, grab new start / end values
+    // and initialize a new scrubber
     if (this.player.trackScrubberObj) {
-      //TODO: Figure this out when not tracking by segment id
-      this.reInitializeScrubber(activeSegmentId);
+      let updatedStartEndTimes = this.mejsTimeRailHelper.getUpdatedRangeTimes(
+        t,
+        activeSegmentId,
+        this.currentStreamInfo
+      );
+
+      this.player.trackScrubberObj.initializeTrackScrubber(
+        ...updatedStartEndTimes,
+        this.currentStreamInfo
+      );
     }
   }
 
@@ -354,7 +349,7 @@ class MEJSPlayer {
     let currentStreamInfo = this.currentStreamInfo;
     // Mediaelement default root level configuration
     let defaults = {
-      pluginPath: "/assets/mediaelement/shims/",
+      pluginPath: '/assets/mediaelement/shims/',
       features: this.features,
       poster: currentStreamInfo.poster_image || null,
       success: this.handleSuccess.bind(this),
@@ -419,29 +414,6 @@ class MEJSPlayer {
     if (!this.switchPlayerHelper.paused) {
       this.mediaElement.play();
     }
-  }
-
-  /**
-   * Re-initialize the track scrubber in player
-   * @function reInitializeScrubber
-   * @param {string} activeSegmentId - Active segment id
-   * @return {void}
-   */
-  reInitializeScrubber(activeSegmentId) {
-    const stream = this.currentStreamInfo;
-    let start = stream.t[0] || 0;
-    let end = stream.t[1] || stream.duration;
-
-    // Feed the scrubber active section data, instead of default data
-    if (
-      activeSegmentId &&
-      this.segmentsMap &&
-      this.segmentsMap.hasOwnProperty(activeSegmentId)
-    ) {
-      start = this.segmentsMap[activeSegmentId].fragmentbegin;
-      end = this.segmentsMap[activeSegmentId].fragmentend;
-    }
-    this.player.trackScrubberObj.initializeTrackScrubber(start, end, stream);
   }
 
   /**
