@@ -26,12 +26,10 @@ prefix = "Errors:" unless @no_errors
   <table>
     <tr>
       <th>Row</th>
-      <th>Title</th>
       <th>Error</th>
     </tr>
     <% @error_items.each do |be_error| %>
       <tr> <%= be_error.position + 2 %> </tr>
-      <tr> <%= be_error.title %> </tr> <%# Add two since the first row entry of the excel sheet is 3 due to the headers %>
       <tr> <%= be_error.error_message %> </tr>
     <% end %>
   </table>
@@ -43,12 +41,10 @@ prefix = "Errors:" unless @no_errors
   <table>
     <tr>
       <th>Row</th>
-      <th>Title</th>
       <th>Media Object ID</th>
     </tr>
     <% @completed_items.each do |be_completed| %>
       <tr> <%= be_completed.position + 2 %> </tr>
-      <tr> <%= be_completed.title %> </tr> <%# Add two since the first row entry of the excel sheet is 3 due to the headers %>
       <tr> <%= be_completed.media_object_pid %> </tr>
     <% end %>
   </table>
