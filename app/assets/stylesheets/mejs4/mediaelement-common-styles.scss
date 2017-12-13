@@ -137,13 +137,11 @@ $avalon-primary-color: #84a791;
 .mejs__captions-button > button {
   width: 22px;
   background-position: -140px -20px;
-  filter: invert(40%);
-  -webkit-filter: invert(40%);
 }
 
 .mejs__captions-enabled > button {
-  filter: none;
-  -webkit-filter: none;
+  border-bottom: 2px solid red;
+  padding: 11px;
 }
 
 // Accessibility
