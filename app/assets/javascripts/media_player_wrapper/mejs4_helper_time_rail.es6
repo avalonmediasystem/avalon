@@ -80,4 +80,40 @@ class MEJSTimeRailHelper {
       '%;'
     );
   }
+
+  /**
+   * Helper function which handles re-initializing a track scrubber
+   * @function getUpdatedRangeTimes
+   * @param {Array} t Start end time array
+   * @param {string} activeSegmentId - Active segment id
+   * @return {void}
+   */
+  /* eslint-disable complexity */
+  getUpdatedRangeTimes(t, activeSegmentId, stream) {
+    let start = null;
+    let end = null;
+
+    // If there's an active section, update start / end values to active section values
+    if (
+      activeSegmentId &&
+      this.segmentsMap &&
+      this.segmentsMap.hasOwnProperty(activeSegmentId)
+    ) {
+      start = this.segmentsMap[activeSegmentId].fragmentbegin;
+      end = this.segmentsMap[activeSegmentId].fragmentend;
+      return [start, end];
+    }
+
+    // If t array start / end values are passed in, use these
+    if (t.length > 0) {
+      start = t[0] || 0;
+      end = t[1] || 0;
+    } else {
+      // Next option, use starting values on the stream object as default values
+      start = stream.t[0] || 0;
+      end = stream.t[1] || stream.duration;
+    }
+    return [start, end];
+  }
+  /* eslint-enable complexity */
 }
