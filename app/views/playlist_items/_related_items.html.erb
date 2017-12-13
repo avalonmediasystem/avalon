@@ -22,7 +22,14 @@ Unless required by applicable law or agreed to in writing, software distributed
         <tr>
           <% position = clip.playlist_position(@playlist.id) %>
           <td class='clip_title'>
-            <%= link_to playlist_path(@playlist, position: position) do %>
+            <% dataset = { 'playlist-id' => @playlist.id,
+                           'playlist-item-id' => PlaylistItem.where(clip: clip)[0].id,
+                           'clip-start-time' => clip.start_time,
+                           'clip-end-time' => clip.end_time,
+                           'clip-source' => clip.source,
+                           'media-object-id' => clip.master_file.media_object_id,
+                           'master-file-id' => clip.master_file.id } %>
+            <%= link_to playlist_path(@playlist, position: position), data: dataset do %>
               <%= clip.title %>
             <% end %>
           </td>

@@ -37,6 +37,7 @@ Object.assign(MediaElementPlayer.prototype, {
 
     // Click listeners
     playlistItemsObj.addSidebarListeners();
+    playlistItemsObj.addRelatedItemListeners();
     playlistItemsObj.mejsMarkersHelper.addMarkersTableListeners();
 
     // Handle continuous MEJS time update event
@@ -80,6 +81,28 @@ Object.assign(MediaElementPlayer.prototype, {
    */
   playlistItemsObj: {
     /**
+     * Add click listeners forplaylist item links
+     * @function addRelatedItemListeners
+     * @return {void}
+     */
+    addRelatedItemListeners() {
+      // Handle click on entire RelatedItems area
+      // Filter only <a> element clicks; disregard all others
+      if (this.$relatedItems.length > 0) {
+        this.$relatedItems.on('click', (e) => {
+          if (e.target.nodeName === 'A') {
+            e.preventDefault()
+            // find correct playlist item in sidebar and click it.
+            let playlistId  = e.target.dataset.playlistId
+            let playlistItemId = e.target.dataset.playlistItemId
+            let related = this.$sidePlaylist.find('a[data-playlist-id='+playlistId+'][data-playlist-item-id='+playlistItemId+']')
+            related.click()
+          }
+        });
+      }
+    },
+
+    /**
      * Add click listener for the playlist items sidebar
      * @function addSidebarListeners
      * @return {void}
@@ -87,9 +110,10 @@ Object.assign(MediaElementPlayer.prototype, {
     addSidebarListeners() {
       // Handle click on entire Playlists right column area
       // Filter only <a> element clicks; disregard all others
-      if (this.$sidePlaylist) {
+      if (this.$sidePlaylist.length > 0) {
         this.$sidePlaylist.on('click', e => {
           if (e.target.nodeName === 'A') {
+            e.preventDefault()
             this.handleClick(e.target);
           }
         });
@@ -103,9 +127,7 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     analyzeNewItemSource(el) {
       const playlistId = +el.dataset.playlistId;
-      const playlistItemId = $(el)
-        .parent('li')
-        .data('playlistItemId');
+      const playlistItemId = el.dataset.playlistItemId;
       const playlistItemT = [
         el.dataset.clipStartTime / 1000,
         el.dataset.clipEndTime / 1000
@@ -213,11 +235,7 @@ Object.assign(MediaElementPlayer.prototype, {
     },
 
     isSamePlaylistItem(el) {
-      return (
-        $(el)
-          .parent('li')
-          .data('playlistItemId') === this.$nowPlayingLi.data('playlistItemId')
-      );
+      return $(el).data('playlistItemId') === this.$nowPlayingLi.data('playlistItemId');
     },
 
     itemEnded() {
@@ -284,6 +302,12 @@ Object.assign(MediaElementPlayer.prototype, {
      * @type {Object}
      */
     $sidePlaylist: $('#right-column').find('.side-playlist') || null,
+
+    /**
+     * Helper jQuery object reference for related item list element. Used multile times in this class.
+     * @type {Object}
+     */
+    $relatedItems: $('#related_items_section') || null,
 
     /**
      * Helper object initializer to store current playlist item's start and stop times
