@@ -47,6 +47,8 @@ RSpec.describe PlaylistItemsController, type: :controller do
         expect(post :create, playlist_id: playlist.to_param, playlist_item: valid_attributes).to redirect_to(new_user_session_path)
         expect(put :update, playlist_id: playlist.to_param, id: playlist_item.id).to redirect_to(new_user_session_path)
         expect(get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to redirect_to(new_user_session_path)
+        expect(get :markers, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to redirect_to(new_user_session_path)
+        expect(get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to redirect_to(new_user_session_path)
       end
     end
     context 'with end-user' do

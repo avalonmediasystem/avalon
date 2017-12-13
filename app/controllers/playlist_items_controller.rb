@@ -67,7 +67,11 @@ class PlaylistItemsController < ApplicationController
     @playlist_item = PlaylistItem.find(params['playlist_item_id'])
     respond_to do |format|
       format.html do
-        render partial: 'markers', locals: { markers: @playlist_item.marker || [] }
+        if can? :read, @playlist_item
+          render partial: 'markers', locals: { markers: @playlist_item.marker || [] }
+        else
+          head :unauthorized, content_type: "text/html"
+        end
       end
     end
   end
@@ -92,10 +96,14 @@ class PlaylistItemsController < ApplicationController
     @related_clips = @playlist.related_clips(@playlist_item)
     respond_to do |format|
       format.html do
-        if @related_clips.blank?
-          head :ok, content_type: "text/html"
+        if can? :read, @playlist_item
+          if @related_clips.blank?
+            head :ok, content_type: "text/html"
+          else
+            render partial: 'related_items'
+          end
         else
-          render partial: 'related_items'
+          head :unauthorized, content_type: "text/html"
         end
       end
     end
