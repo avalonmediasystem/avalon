@@ -153,6 +153,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
     let(:clip) { AvalonClip.create(master_file: master_file) }
     let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: clip) }
     it 'returns HTML' do
+      allow_any_instance_of(Playlist).to receive(:related_clips).and_return([clip]);
       get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id
       expect(response).to have_http_status(:ok)
       expect(response).to render_template(:_related_items)
