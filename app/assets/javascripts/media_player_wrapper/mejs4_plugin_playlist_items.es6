@@ -155,7 +155,7 @@ Object.assign(MediaElementPlayer.prototype, {
           // Rebuild markers table
           this.mejsMarkersHelper.rebuildMarkersTable();
           // Rebuild source item details panel section
-          this.rebuildPanelMarkup(playlistId, playlistItemId, 'metadata');
+          this.rebuildPanelMarkup(playlistId, playlistItemId, 'source_details');
           // Rebuild the related items panel section
           this.rebuildPanelMarkup(playlistId, playlistItemId, 'related_items');
 
