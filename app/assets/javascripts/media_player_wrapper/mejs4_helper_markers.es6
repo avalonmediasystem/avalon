@@ -236,6 +236,8 @@ class MEJSMarkersHelper {
    * @return {Array} Array of marker start times
    */
   getMarkers(playlistId, playlistItemId) {
+    const t = this;
+
     return new Promise((resolve, reject) => {
       // Check if a playlist item is specified, because playlist items use markers
       // and we'll need to grab markers from the playlist item
@@ -246,6 +248,7 @@ class MEJSMarkersHelper {
         $.ajax({
           url:
             '/playlists/' + playlistId + '/items/' + playlistItemId + '.json',
+          data: { token: t.mejsUtility.getUrlParameter("token") },
           dataType: 'json'
         })
           .done(response => {

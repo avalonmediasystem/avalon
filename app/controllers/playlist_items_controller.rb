@@ -111,7 +111,6 @@ class PlaylistItemsController < ApplicationController
   end
 
   def show
-    authorize! :read, @playlist_item
     unless (can? :read, @playlist_item)
       render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return
     end
