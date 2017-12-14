@@ -24,6 +24,9 @@ class MEJSPlayer {
     this.highlightRail = configObj.highlightRail;
     this.playlistItem = configObj.playlistItem || {};
 
+    // Tracks whether we're loading the page or just reloading player
+    this.isFirstLoad = true;
+
     // Wrapper for MediaElement instance which interfaces with properties, events, etc.
     this.mediaElement = null;
     // Actual MediaElement instance
@@ -447,6 +450,9 @@ class MEJSPlayer {
 
         // initialize global variable currentPlayer
         currentPlayer = this.player;
+
+        // Add a reference to this wrapper class for ease of access from inside Avalon-created plugins
+        this.player.avalonWrapper = this;
       })
       .catch(error => {
         console.log('Promise rejection error');

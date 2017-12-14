@@ -152,7 +152,9 @@ Object.assign(MediaElementPlayer.prototype, {
 
       alertEl.classList.remove('alert-success');
       alertEl.classList.remove('alert-danger');
-      $(alertEl).find('p').remove();
+      $(alertEl)
+        .find('p')
+        .remove();
     },
 
     /**

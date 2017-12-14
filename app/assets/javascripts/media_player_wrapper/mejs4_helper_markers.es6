@@ -303,10 +303,10 @@ class MEJSMarkersHelper {
         t.addMarkersTableListeners();
         // hide marker sections if no markers (first row is header)
         if ($('#markers').find('tr').length === 1) {
-          $('#markers_section').collapse('hide')
-          $('#markers_heading').hide()
+          $('#markers_section').collapse('hide');
+          $('#markers_heading').hide();
         } else {
-          $('#markers_heading').show()
+          $('#markers_heading').show();
         }
       })
       .catch(err => {

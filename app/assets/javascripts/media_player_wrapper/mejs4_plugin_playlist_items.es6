@@ -32,6 +32,7 @@ Object.assign(MediaElementPlayer.prototype, {
 
     playlistItemsObj.mejsUtility = new MEJSUtility();
     playlistItemsObj.mejsMarkersHelper = new MEJSMarkersHelper();
+    playlistItemsObj.mejsTimeRailHelper = new MEJSTimeRailHelper();
     playlistItemsObj.player = player;
     playlistItemsObj.currentStreamInfo = mejs4AvalonPlayer.currentStreamInfo;
 
@@ -39,6 +40,18 @@ Object.assign(MediaElementPlayer.prototype, {
     playlistItemsObj.addSidebarListeners();
     playlistItemsObj.addRelatedItemListeners();
     playlistItemsObj.mejsMarkersHelper.addMarkersTableListeners();
+
+    // Turn off autoplay on seek
+    playlistItemsObj.mejsTimeRailHelper
+      .getTimeRail()
+      .addEventListener('click', playlistItemsObj.handleUserSeeking.bind(this));
+    let scrubberRail = $(
+      playlistItemsObj.player.trackScrubberObj.scrubberEl
+    ).find('.track-mejs-time-total')[0];
+    scrubberRail.addEventListener(
+      'click',
+      playlistItemsObj.handleUserSeeking.bind(this)
+    );
 
     // Handle continuous MEJS time update event
     media.addEventListener(
@@ -195,9 +208,10 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     goToPlaylistItemStartTime() {
       this.player.setCurrentTime(this.startEndTimes.start);
-      if (this.isAutoplay()) {
+      if (this.isAutoplay() && !this.player.avalonWrapper.isFirstLoad) {
         this.player.play();
       }
+      this.player.avalonWrapper.isFirstLoad = false;
     },
 
     /**
@@ -207,6 +221,8 @@ Object.assign(MediaElementPlayer.prototype, {
      * @return {void}
      */
     handleClick(el) {
+      this.turnOffAutoplay();
+
       // Clicked same item. Play from item start time and return
       if (this.isSamePlaylistItem(el)) {
         this.player.setCurrentTime(this.startEndTimes.start);
@@ -222,12 +238,14 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     handleRangeEndTimeReached() {
       const t = this;
-      const $nextItem = t.getNextItem();
 
       t.player.pause();
-      if ($nextItem.length > 0) {
-        const el = $nextItem.find('a')[0];
-        t.analyzeNewItemSource(el);
+      if (t.isAutoplay()) {
+        const $nextItem = t.getNextItem();
+        if ($nextItem.length > 0) {
+          const el = $nextItem.find('a')[0];
+          t.analyzeNewItemSource(el);
+        }
       }
     },
 
@@ -254,6 +272,25 @@ Object.assign(MediaElementPlayer.prototype, {
         playlistItemsObj.handleRangeEndTimeReached();
         return;
       }
+    },
+
+    /**
+     * Handle user's manual seeking
+     * @return {void}
+     */
+    handleUserSeeking(e) {
+      // Always turn off Autoplay when user starts seeking around
+      this.playlistItemsObj.turnOffAutoplay();
+    },
+
+    /**
+     * Turn off Autoplay (auto advancing to next item)
+     * @return {void}
+     */
+    turnOffAutoplay() {
+      $('input[name="autoadvance"]')
+        .prop('checked', false)
+        .change();
     },
 
     isAutoplay() {
@@ -294,10 +331,10 @@ Object.assign(MediaElementPlayer.prototype, {
           $('#' + panel).replaceWith(response);
           // Hide the entire panel if new content is blank
           if (response === '') {
-            $('#' + panel + '_section').collapse('hide')
-            $('#' + panel + '_heading').hide()
+            $('#' + panel + '_section').collapse('hide');
+            $('#' + panel + '_heading').hide();
           } else {
-            $('#' + panel + '_heading').show()
+            $('#' + panel + '_heading').show();
           }
         })
         .catch(err => {
@@ -324,13 +361,13 @@ Object.assign(MediaElementPlayer.prototype, {
      * @return {void}
      */
     setupNextItem() {
-      this.setCurrentItemInternally();
-      this.player.setCurrentTime(this.startEndTimes.start);
-      mejs4AvalonPlayer.highlightTimeRail([
-        this.startEndTimes.start,
-        this.startEndTimes.end
-      ]);
       if (this.isAutoplay()) {
+        this.setCurrentItemInternally();
+        this.player.setCurrentTime(this.startEndTimes.start);
+        mejs4AvalonPlayer.highlightTimeRail([
+          this.startEndTimes.start,
+          this.startEndTimes.end
+        ]);
         this.player.play();
       }
     },
