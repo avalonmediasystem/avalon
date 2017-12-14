@@ -89,14 +89,20 @@ Object.assign(MediaElementPlayer.prototype, {
       // Handle click on entire RelatedItems area
       // Filter only <a> element clicks; disregard all others
       if (this.$relatedItems.length > 0) {
-        this.$relatedItems.on('click', (e) => {
+        this.$relatedItems.on('click', e => {
           if (e.target.nodeName === 'A') {
-            e.preventDefault()
+            e.preventDefault();
             // find correct playlist item in sidebar and click it.
-            let playlistId  = e.target.dataset.playlistId
-            let playlistItemId = e.target.dataset.playlistItemId
-            let related = this.$sidePlaylist.find('a[data-playlist-id='+playlistId+'][data-playlist-item-id='+playlistItemId+']')
-            related.click()
+            let playlistId = e.target.dataset.playlistId;
+            let playlistItemId = e.target.dataset.playlistItemId;
+            let related = this.$sidePlaylist.find(
+              'a[data-playlist-id=' +
+                playlistId +
+                '][data-playlist-item-id=' +
+                playlistItemId +
+                ']'
+            );
+            related.click();
           }
         });
       }
@@ -113,7 +119,7 @@ Object.assign(MediaElementPlayer.prototype, {
       if (this.$sidePlaylist.length > 0) {
         this.$sidePlaylist.on('click', e => {
           if (e.target.nodeName === 'A') {
-            e.preventDefault()
+            e.preventDefault();
             this.handleClick(e.target);
           }
         });
@@ -257,7 +263,10 @@ Object.assign(MediaElementPlayer.prototype, {
     },
 
     isSamePlaylistItem(el) {
-      return $(el).data('playlistItemId') === this.$nowPlayingLi.data('playlistItemId');
+      return (
+        $(el).data('playlistItemId') ===
+        this.$nowPlayingLi.data('playlistItemId')
+      );
     },
 
     itemEnded() {
