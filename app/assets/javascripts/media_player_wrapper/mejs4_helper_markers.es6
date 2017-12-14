@@ -301,6 +301,13 @@ class MEJSMarkersHelper {
         $('#markers').replaceWith(response);
         // Add event listeners to newly created row
         t.addMarkersTableListeners();
+        // hide marker sections if no markers (first row is header)
+        if ($('#markers').find('tr').length === 1) {
+          $('#markers_section').collapse('hide')
+          $('#markers_heading').hide()
+        } else {
+          $('#markers_heading').show()
+        }
       })
       .catch(err => {
         console.log(err);

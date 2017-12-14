@@ -65,9 +65,10 @@ class PlaylistItemsController < ApplicationController
   # GET /playlists/1/items/2/markers
   def markers
     @playlist_item = PlaylistItem.find(params['playlist_item_id'])
+    @markers = @playlist_item.marker
     respond_to do |format|
       format.html do
-        render partial: 'markers', locals: { markers: @playlist_item.marker || [] }
+        render partial: 'markers'
       end
     end
   end
