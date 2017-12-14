@@ -483,6 +483,9 @@ class MEJSPlayer {
   removePlayer() {
     let tagEls = null;
 
+    if (!this.player) { return; }
+
+    // Pause the player
     if (!this.player.paused) {
       this.player.pause();
     }

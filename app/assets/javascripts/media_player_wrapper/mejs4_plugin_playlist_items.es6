@@ -361,13 +361,13 @@ Object.assign(MediaElementPlayer.prototype, {
      * @return {void}
      */
     setupNextItem() {
+      this.setCurrentItemInternally();
+      this.player.setCurrentTime(this.startEndTimes.start);
+      mejs4AvalonPlayer.highlightTimeRail([
+        this.startEndTimes.start,
+        this.startEndTimes.end
+      ]);
       if (this.isAutoplay()) {
-        this.setCurrentItemInternally();
-        this.player.setCurrentTime(this.startEndTimes.start);
-        mejs4AvalonPlayer.highlightTimeRail([
-          this.startEndTimes.start,
-          this.startEndTimes.end
-        ]);
         this.player.play();
       }
     },
