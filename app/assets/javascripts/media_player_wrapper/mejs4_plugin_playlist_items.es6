@@ -201,9 +201,10 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     goToPlaylistItemStartTime() {
       this.player.setCurrentTime(this.startEndTimes.start);
-      if (this.isAutoplay()) {
+      if (this.isAutoplay() && !this.player.avalonWrapper.isFirstLoad) {
         this.player.play();
       }
+      this.player.avalonWrapper.isFirstLoad = false;
     },
 
     /**
@@ -213,6 +214,8 @@ Object.assign(MediaElementPlayer.prototype, {
      * @return {void}
      */
     handleClick(el) {
+      this.turnOffAutoplay();
+
       // Clicked same item. Play from item start time and return
       if (this.isSamePlaylistItem(el)) {
         this.player.setCurrentTime(this.startEndTimes.start);
@@ -230,7 +233,7 @@ Object.assign(MediaElementPlayer.prototype, {
       const t = this;
 
       t.player.pause();
-      if (t.playlistItemsObj.isAutoplay()) {
+      if (t.isAutoplay()) {
         const $nextItem = t.getNextItem();
         if ($nextItem.length > 0) {
           const el = $nextItem.find('a')[0];
@@ -266,11 +269,19 @@ Object.assign(MediaElementPlayer.prototype, {
 
     /**
      * Handle user's manual seeking
-     * Always turn off Autoplay when user starts seeking around
      * @return {void}
      */
     handleUserSeeking(e) {
-      $('input[name="autoadvance"]').prop('checked',false).change()
+      // Always turn off Autoplay when user starts seeking around
+      this.playlistItemsObj.turnOffAutoplay();
+    },
+
+    /**
+     * Turn off Autoplay (auto advancing to next item)
+     * @return {void}
+     */
+    turnOffAutoplay() {
+      $('input[name="autoadvance"]').prop('checked',false).change();
     },
 
     isAutoplay() {
