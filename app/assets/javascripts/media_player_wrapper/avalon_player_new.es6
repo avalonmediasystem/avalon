@@ -13,40 +13,45 @@ class MEJSPlayer {
    * @return {void}                   [description]
    */
   constructor(configObj) {
-    this.mejsUtility = new MEJSUtility()
-    this.mejsTimeRailHelper = new MEJSTimeRailHelper()
-    this.mejsMarkersHelper = new MEJSMarkersHelper()
+    this.mejsUtility = new MEJSUtility();
+    this.mejsTimeRailHelper = new MEJSTimeRailHelper();
+    this.mejsMarkersHelper = new MEJSMarkersHelper();
 
     // Unpack player configuration object for the new player.
     // This allows for variable params to be sent in.
-    this.currentStreamInfo = configObj.currentStreamInfo || {}
-    this.features = configObj.features || {}
-    this.highlightRail = configObj.highlightRail
-    this.playlistItem = configObj.playlistItem || {}
+    this.currentStreamInfo = configObj.currentStreamInfo || {};
+    this.features = configObj.features || {};
+    this.highlightRail = configObj.highlightRail;
+    this.playlistItem = configObj.playlistItem || {};
 
     // Wrapper for MediaElement instance which interfaces with properties, events, etc.
-    this.mediaElement = null
+    this.mediaElement = null;
     // Actual MediaElement instance
-    this.player = null
+    this.player = null;
     // Add click listeners
-    this.addSectionsClickListener()
+    this.addSectionsClickListener();
     // audio or video file?
-    this.mediaType = this.mejsUtility.getMediaType(this.currentStreamInfo.is_video)
+    this.mediaType = this.mejsUtility.getMediaType(
+      this.currentStreamInfo.is_video
+    );
 
     // Helper object when loading a new MEJS player instance (ie. a different media object source section link clicked)
     this.switchPlayerHelper = {
       active: false,
       data: {},
       paused: false
-    }
+    };
 
     // Array of all current segments for media object
-    this.segmentsMap = this.mejsUtility.createSegmentsMap(document.getElementById('accordion'), this.currentStreamInfo)
+    this.segmentsMap = this.mejsUtility.createSegmentsMap(
+      document.getElementById('accordion'),
+      this.currentStreamInfo
+    );
     // Holder for currently active segment DOM element 'id' attribute
-    this.activeSegmentId = ''
+    this.activeSegmentId = '';
 
     // Initialize the player
-    this.initializePlayer()
+    this.initializePlayer();
   }
 
   /**
@@ -55,10 +60,10 @@ class MEJSPlayer {
    * @return {void}
    */
   addSectionsClickListener() {
-    const accordionEl = document.getElementById('accordion')
+    const accordionEl = document.getElementById('accordion');
 
     if (accordionEl) {
-      accordionEl.addEventListener('click', this.handleSectionClick.bind(this))
+      accordionEl.addEventListener('click', this.handleSectionClick.bind(this));
     }
   }
 
@@ -67,14 +72,17 @@ class MEJSPlayer {
    * @function createNewPlayer
    * @return {void}
    */
-  createNewPlayer () {
-    let itemScope = document.querySelector('[itemscope="itemscope"]')
-    let node = this.mejsUtility.createHTML5MediaNode(this.mediaType, this.currentStreamInfo)
+  createNewPlayer() {
+    let itemScope = document.querySelector('[itemscope="itemscope"]');
+    let node = this.mejsUtility.createHTML5MediaNode(
+      this.mediaType,
+      this.currentStreamInfo
+    );
 
     // Mount new <audio> or <video> element to the DOM and initialize
     // a new MediaElement instance.
-    itemScope.appendChild(node)
-    this.initializePlayer()
+    itemScope.appendChild(node);
+    this.initializePlayer();
   }
 
   /**
@@ -82,7 +90,7 @@ class MEJSPlayer {
    * @function emitSuccessEvent
    * @return {void}
    */
-  emitSuccessEvent () {
+  emitSuccessEvent() {
     // TODO: This is an example of something we could hook into.  Don't need quite yet but might...
     const myEvent = new CustomEvent('mejs4handleSuccess', {
       detail: {
@@ -100,20 +108,22 @@ class MEJSPlayer {
    * @param {Array} playlistItemT Array which contains playlist item clip start and end times.  This is sent in from playlist items plugin, when creating a new instance of the player.
    * @return {void}
    */
-  getNewStreamAjax (id, url, playlistItemsT) {
+  getNewStreamAjax(id, url, playlistItemsT) {
     $.ajax({
       url: url + '/stream',
       dataType: 'json',
       data: {
         content: id
       }
-    }).done((response) => {
-      this.removePlayer()
-      this.setContextVars(response, playlistItemsT)
-      this.createNewPlayer()
-    }).fail((error) => {
-      console.log('error', error)
     })
+      .done(response => {
+        this.removePlayer();
+        this.setContextVars(response, playlistItemsT);
+        this.createNewPlayer();
+      })
+      .fail(error => {
+        console.log('error', error);
+      });
   }
 
   /**
@@ -122,27 +132,12 @@ class MEJSPlayer {
    * @function handleCanPlay
    * @return {void}
    */
-  handleCanPlay () {
-    this.mediaElement.removeEventListener('canplay')
+  handleCanPlay() {
+    this.mediaElement.removeEventListener('canplay');
     // Do we play a specified range of the media file?
     if (this.switchPlayerHelper.active) {
-      this.playRange()
+      this.playRange();
     }
-  }
-
-  /**
-   * Handle updating progress of the track scrubber, if the feature/plugin is enabled
-   * @function handleScrubberProgress
-   * @param activeId - current active segment id - the id of section playing
-   * @param currentTime - current player time value in seconds
-   * @return {void}
-   */
-  handleScrubberProgress (activeId, currentTime) {
-    const player = this.player
-    if (!player.trackScrubberObj) {
-      return
-    }
-    player.trackScrubberObj.updateTrackScrubberProgressBar(currentTime)
   }
 
   /**
@@ -151,32 +146,38 @@ class MEJSPlayer {
    * @param  {Object} e - Event object
    * @return {void}
    */
-  handleSectionClick (e) {
-    const target = e.target
-    const dataset = e.target.dataset
-    e.preventDefault()
+  handleSectionClick(e) {
+    const target = e.target;
+    const dataset = e.target.dataset;
+    e.preventDefault();
 
     // Stop execution if a non-section link was clicked
-    if (!dataset.segment) { return }
+    if (!dataset.segment) {
+      return;
+    }
 
     // Clicked on a different section
     if (dataset.segment !== this.currentStreamInfo.id) {
-      let id = target.dataset.segment
-      let url = target.dataset.nativeUrl.split('?')[0]
+      let id = target.dataset.segment;
+      let url = target.dataset.nativeUrl.split('?')[0];
 
       // Capture clicked segment or section element id
       this.switchPlayerHelper = {
         active: true,
         data: dataset,
         paused: this.mediaElement.paused
-      }
-      this.getNewStreamAjax(id, url)
+      };
+      this.getNewStreamAjax(id, url);
     } else {
       // Clicked within the same section...
-      const parentPanel = $(target).closest('div[class*=panel]')
-      const isHeader = parentPanel.hasClass('panel-heading') || parentPanel.hasClass('panel-title')
-      const time = (isHeader) ? 0 : parseFloat(this.segmentsMap[target.id].fragmentbegin)
-      this.mediaElement.setCurrentTime(time)
+      const parentPanel = $(target).closest('div[class*=panel]');
+      const isHeader =
+        parentPanel.hasClass('panel-heading') ||
+        parentPanel.hasClass('panel-title');
+      const time = isHeader
+        ? 0
+        : parseFloat(this.segmentsMap[target.id].fragmentbegin);
+      this.mediaElement.setCurrentTime(time);
     }
   }
 
@@ -187,25 +188,29 @@ class MEJSPlayer {
    * @param {number} currentTime - current player time value in seconds
    * @return {void}
    */
-  handleSectionHighlighting (activeId, currentTime) {
+  handleSectionHighlighting(activeId, currentTime) {
     // There is no segments map, which means we don't want to hightlight any segment
     if (Object.keys(this.segmentsMap).length === 0) {
       return;
     }
 
-    const t = this.mejsTimeRailHelper.calculateSegmentT(this.segmentsMap[activeId], this.currentStreamInfo)
+    const t = this.mejsTimeRailHelper.calculateSegmentT(
+      this.segmentsMap[activeId],
+      this.currentStreamInfo
+    );
 
-    // Current active segment exists, and is different from before
+    // A new section is now active
     if (activeId && activeId !== this.activeSegmentId) {
-      this.activeSegmentId = activeId
-      this.highlightTimeRail(t, this.activeSegmentId)
-      this.mejsUtility.highlightSectionLink(this.activeSegmentId)
-    }
-    // No current segment, so remove highlighting
-    else if (!activeId) {
-      this.activeSegmentId = ''
-      this.highlightTimeRail(t)
-      this.mejsUtility.highlightSectionLink()
+      this.activeSegmentId = activeId;
+      // Need to update time rail highlighting
+      this.highlightTimeRail(t, this.activeSegmentId);
+      this.mejsUtility.highlightSectionLink(this.activeSegmentId);
+    } else if (!activeId) {
+      // No current segment, so remove highlighting
+      this.activeSegmentId = '';
+      // Need to update time rail highlighting
+      this.highlightTimeRail(t);
+      this.mejsUtility.highlightSectionLink();
     }
   }
 
@@ -217,34 +222,46 @@ class MEJSPlayer {
    * @param  {Object} instance - The instance object
    * @return {void}
    */
-  handleSuccess (mediaElement, originalNode, instance) {
-    this.mediaElement = mediaElement
+  handleSuccess(mediaElement, originalNode, instance) {
+    this.mediaElement = mediaElement;
 
     // Make the player visible
-    this.revealPlayer(instance)
+    this.revealPlayer(instance);
 
     // Grab instance of player
     if (!this.player) {
-      this.player = this.mediaElement
+      this.player = this.mediaElement;
     }
 
-    this.emitSuccessEvent()
+    this.emitSuccessEvent();
 
     // Handle 'canplay' events fired by player
-    this.mediaElement.addEventListener('canplay', this.handleCanPlay.bind(this))
+    this.mediaElement.addEventListener(
+      'canplay',
+      this.handleCanPlay.bind(this)
+    );
 
     // Show highlighted time in time rail
     if (this.highlightRail) {
-      const t = this.mejsTimeRailHelper.calculateSegmentT(this.segmentsMap[this.activeSegmentId], this.currentStreamInfo)
+      const t = this.mejsTimeRailHelper.calculateSegmentT(
+        this.segmentsMap[this.activeSegmentId],
+        this.currentStreamInfo
+      );
 
       // Create our custom time rail highlighter element
-      this.highlightSpanEl = this.mejsTimeRailHelper.createTimeHighlightEl(document.getElementById('content'))
-      this.highlightTimeRail(t, this.activeSegmentId)
+      this.highlightSpanEl = this.mejsTimeRailHelper.createTimeHighlightEl(
+        document.getElementById('content')
+      );
+      this.highlightTimeRail(t, this.activeSegmentId);
     }
 
-    // Listen for timeupdate events in player, to show / hide highlighted sections, etc.
+    // Filter playlist item player from handling MEJS's time update event
     if (Object.keys(this.playlistItem).length === 0) {
-      this.mediaElement.addEventListener('timeupdate', this.handleTimeUpdate.bind(this))
+      // Listen for timeupdate events in player, to show / hide highlighted sections, etc.
+      this.mediaElement.addEventListener(
+        'timeupdate',
+        this.handleTimeUpdate.bind(this)
+      );
     }
   }
 
@@ -253,15 +270,18 @@ class MEJSPlayer {
    * @function handleTimeUpdate
    * @return {void}
    */
-  handleTimeUpdate () {
-    if (!this.player) { return }
-    const currentTime = this.player.getCurrentTime()
-    const activeId = this.mejsUtility.getActiveSegmentId(this.segmentsMap, currentTime)
+  handleTimeUpdate() {
+    if (!this.player) {
+      return;
+    }
+    const currentTime = this.player.getCurrentTime();
+    const activeId = this.mejsUtility.getActiveSegmentId(
+      this.segmentsMap,
+      currentTime
+    );
 
     // Handle section highlighting
-    this.handleSectionHighlighting(activeId, currentTime)
-    // Handle updating the track scrubber, if enabled
-    this.handleScrubberProgress(activeId, currentTime)
+    this.handleSectionHighlighting(activeId, currentTime);
   }
 
   /**
@@ -270,39 +290,53 @@ class MEJSPlayer {
    * @param  {string} segmentId - HTML node of section link clicked on <a>
    * @return {void}
    */
-  highlightSectionLink (segmentId) {
-    const accordionEl = document.getElementById('accordion')
-    const htmlCollection = accordionEl.getElementsByClassName('playable wrap')
-    let segmentLinks = [].slice.call(htmlCollection)
-    let segmentEl = document.getElementById(segmentId)
+  highlightSectionLink(segmentId) {
+    const accordionEl = document.getElementById('accordion');
+    const htmlCollection = accordionEl.getElementsByClassName('playable wrap');
+    let segmentLinks = [].slice.call(htmlCollection);
+    let segmentEl = document.getElementById(segmentId);
 
     // Clear "active" style on all section links
-    segmentLinks.forEach((segmentLink) => {
-      segmentLink.classList.remove('current-stream')
-      segmentLink.classList.remove('current-section')
-    })
+    segmentLinks.forEach(segmentLink => {
+      segmentLink.classList.remove('current-stream');
+      segmentLink.classList.remove('current-section');
+    });
     if (segmentEl) {
       // Add style to clicked segment link
-      segmentEl.classList.add('current-stream')
+      segmentEl.classList.add('current-stream');
       // Add style to section title
-      document.getElementById('section-title-' + segmentEl.dataset.segment).classList.add('current-section')
+      document
+        .getElementById('section-title-' + segmentEl.dataset.segment)
+        .classList.add('current-section');
     }
   }
 
   /**
-   * Highlight a section of the Mediaelement player's time rail
+   * Highlight a range of the Mediaelement player's time rail
    * @function highlightTimeRail
-   * @param {Object[]} t Start end time array
+   * @param {Array} t Start end time array
    * @param {string} activeSegmentId
    * @return {void}
    */
-  highlightTimeRail (t, activeSegmentId) {
-    this.highlightSpanEl.setAttribute('style', this.mejsTimeRailHelper.createTimeRailStyles(t, this.currentStreamInfo))
+  highlightTimeRail(t, activeSegmentId) {
+    this.highlightSpanEl.setAttribute(
+      'style',
+      this.mejsTimeRailHelper.createTimeRailStyles(t, this.currentStreamInfo)
+    );
 
-    // If track scrubber feature is active, initialize a new scrubber
+    // If track scrubber feature is active, grab new start / end values
+    // and initialize a new scrubber
     if (this.player.trackScrubberObj) {
-      //TODO: Figure this out when not tracking by segment id
-      this.reInitializeScrubber(activeSegmentId)
+      let updatedStartEndTimes = this.mejsTimeRailHelper.getUpdatedRangeTimes(
+        t,
+        activeSegmentId,
+        this.currentStreamInfo
+      );
+
+      this.player.trackScrubberObj.initializeTrackScrubber(
+        ...updatedStartEndTimes,
+        this.currentStreamInfo
+      );
     }
   }
 
@@ -311,12 +345,11 @@ class MEJSPlayer {
    * @function initializePlayer
    * @return {void}
    */
-  initializePlayer () {
+  initializePlayer() {
     let currentStreamInfo = this.currentStreamInfo;
     // Mediaelement default root level configuration
     let defaults = {
-      alwaysShowControls: true,
-      pluginPath: "/assets/mediaelement/shims/",
+      pluginPath: '/assets/mediaelement/shims/',
       features: this.features,
       poster: currentStreamInfo.poster_image || null,
       success: this.handleSuccess.bind(this),
@@ -324,35 +357,47 @@ class MEJSPlayer {
       link_back_url: currentStreamInfo.link_back_url,
       qualityText: 'Stream Quality',
       toggleCaptionsButtonWhenOnlyOne: true
-    }
-    let promises = []
-    const playlistIds = (this.playlistItem ? [this.playlistItem.playlist_id, this.playlistItem.id] : [])
+    };
+    let promises = [];
+    const playlistIds = this.playlistItem
+      ? [this.playlistItem.playlist_id, this.playlistItem.id]
+      : [];
 
     // Remove video player controls/plugins if it's not a video stream
     if (!currentStreamInfo.is_video) {
-      defaults.features = defaults.features.filter(e => e !== 'createThumbnail')
+      defaults.features = defaults.features.filter(
+        e => e !== 'createThumbnail'
+      );
       delete defaults.poster;
     }
 
     // Get any asynchronous configuration data needed to build the player instance
     // Markers
-    promises.push(this.mejsMarkersHelper.getMarkers(...playlistIds))
-    Promise.all(promises).then((values) => {
-      const markers = values[0]
-      const markerConfig = (markers.length > 0 ? this.mejsMarkersHelper.buildMarkersConfig(markers) : {})
+    promises.push(this.mejsMarkersHelper.getMarkers(...playlistIds));
+    Promise.all(promises)
+      .then(values => {
+        const markers = values[0];
+        const markerConfig =
+          markers.length > 0
+            ? this.mejsMarkersHelper.buildMarkersConfig(markers)
+            : {};
 
-      // Combine all configurations
-      let fullConfiguration = Object.assign({}, defaults, markerConfig)
-      // Create a MediaElement instance
-      this.player = new MediaElementPlayer(`mejs-avalon-${this.mediaType}`, fullConfiguration)
-      // Add default title from stream info which mejs plugins can access
-      this.player.options.playlistItemDefaultTitle = this.currentStreamInfo.embed_title
+        // Combine all configurations
+        let fullConfiguration = Object.assign({}, defaults, markerConfig);
+        // Create a MediaElement instance
+        this.player = new MediaElementPlayer(
+          `mejs-avalon-${this.mediaType}`,
+          fullConfiguration
+        );
+        // Add default title from stream info which mejs plugins can access
+        this.player.options.playlistItemDefaultTitle = this.currentStreamInfo.embed_title;
 
-      // initialize global variable currentPlayer
-      currentPlayer = this.player;
-    }).catch((error) => {
-      console.log('Promise rejection error')
-    });
+        // initialize global variable currentPlayer
+        currentPlayer = this.player;
+      })
+      .catch(error => {
+        console.log('Promise rejection error');
+      });
   }
 
   /**
@@ -360,34 +405,15 @@ class MEJSPlayer {
    * @function playRange
    * @return {void}
    */
-  playRange () {
-    const begin = parseFloat(this.switchPlayerHelper.data.fragmentbegin) || 0
+  playRange() {
+    const begin = parseFloat(this.switchPlayerHelper.data.fragmentbegin) || 0;
     // Reset the flag to default 'off'
-    this.switchPlayerHelper.active = false
-    this.mediaElement.setCurrentTime(begin)
+    this.switchPlayerHelper.active = false;
+    this.mediaElement.setCurrentTime(begin);
     // If the player was previously playing, continue playing.
     if (!this.switchPlayerHelper.paused) {
-      this.mediaElement.play()
+      this.mediaElement.play();
     }
-  }
-
-  /**
-   * Re-initialize the track scrubber in player
-   * @function reInitializeScrubber
-   * @param {string} activeSegmentId - Active segment id
-   * @return {void}
-   */
-  reInitializeScrubber (activeSegmentId) {
-    const stream = this.currentStreamInfo
-    let start = stream.t[0] || 0
-    let end = stream.t[1] || stream.duration
-
-    // Feed the scrubber active section data, instead of default data
-    if (activeSegmentId && this.segmentsMap && this.segmentsMap.hasOwnProperty(activeSegmentId)) {
-      start = this.segmentsMap[activeSegmentId].fragmentbegin
-      end = this.segmentsMap[activeSegmentId].fragmentend
-    }
-    this.player.trackScrubberObj.initializeTrackScrubber(start, end, stream)
   }
 
   /**
@@ -395,19 +421,19 @@ class MEJSPlayer {
    * @function removePlayer
    * @return {void}
    */
-  removePlayer () {
-    let tagEls = null
+  removePlayer() {
+    let tagEls = null;
 
     if (!this.player.paused) {
-    	this.player.pause()
+      this.player.pause();
     }
-    this.player.remove()
-    delete this.player
+    this.player.remove();
+    delete this.player;
     // Grab either the <audio> or <video> element
-    tagEls = document.getElementsByTagName(this.mediaType)
+    tagEls = document.getElementsByTagName(this.mediaType);
     if (tagEls.length > 0) {
-      const tagEl = tagEls[0]
-      tagEl.parentNode.removeChild(tagEl)
+      const tagEl = tagEls[0];
+      tagEl.parentNode.removeChild(tagEl);
     }
   }
 
@@ -418,14 +444,14 @@ class MEJSPlayer {
    * @param  {Object} instance - MediaElement instance
    * @return {void}
    */
-  revealPlayer (instance) {
-    let container = instance.container
-    let sourceEls = []
+  revealPlayer(instance) {
+    let container = instance.container;
+    let sourceEls = [];
 
-    container.classList.remove('invisible')
-    sourceEls = container.getElementsByClassName('mejs-avalon')
+    container.classList.remove('invisible');
+    sourceEls = container.getElementsByClassName('mejs-avalon');
     for (let i = 0, count = sourceEls.length; i < count; i++) {
-      sourceEls[i].classList.remove('invisible')
+      sourceEls[i].classList.remove('invisible');
     }
   }
 
@@ -436,14 +462,16 @@ class MEJSPlayer {
    * @param {Array} playlistItemT - Array of start / end times for a playlist item
    * @return {void}
    */
-  setContextVars (currentStreamInfo, playlistItemT) {
-    this.currentStreamInfo = currentStreamInfo
+  setContextVars(currentStreamInfo, playlistItemT) {
+    this.currentStreamInfo = currentStreamInfo;
 
     if (playlistItemT) {
-      this.currentStreamInfo.t = playlistItemT
+      this.currentStreamInfo.t = playlistItemT;
     }
-    this.mediaType = (currentStreamInfo.is_video === true) ? 'video' : 'audio'
-    this.segmentsMap = this.mejsUtility.createSegmentsMap(document.getElementById('accordion'), currentStreamInfo)
+    this.mediaType = currentStreamInfo.is_video === true ? 'video' : 'audio';
+    this.segmentsMap = this.mejsUtility.createSegmentsMap(
+      document.getElementById('accordion'),
+      currentStreamInfo
+    );
   }
-
 }

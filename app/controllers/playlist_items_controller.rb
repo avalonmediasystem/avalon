@@ -65,10 +65,11 @@ class PlaylistItemsController < ApplicationController
   # GET /playlists/1/items/2/markers
   def markers
     @playlist_item = PlaylistItem.find(params['playlist_item_id'])
+    @markers = @playlist_item.marker
     respond_to do |format|
       format.html do
         if can? :read, @playlist_item
-          render partial: 'markers', locals: { markers: @playlist_item.marker || [] }
+          render partial: 'markers'
         else
           head :unauthorized, content_type: "text/html"
         end

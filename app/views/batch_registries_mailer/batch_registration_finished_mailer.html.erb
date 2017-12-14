@@ -13,26 +13,26 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-prefix = "Errors:" unless @no_errors
-<% unless @no_errors %>
+
+<% unless @error_items.empty? %>
 <p>Initial processing of your batch ingest failed. Details are below. Please see the <a href="https://wiki.dlib.indiana.edu/display/VarVideo/Batch+Ingest+Package+Format">Batch Ingest Package Format</a> for further help.</p>
 <% end %>
 <p>To replay this batch, please rename your spreadsheet to <%= @batch_registry.replay_name %> and reupload it after making desired changes.  Only unpublished items can be updated via this method.  Retain all rows in the spreadsheet including those that have no changes.</p>
 
-<% unless @no_errors %>
+<% unless @error_items.empty? %>
   <div class="alert alert-danger">
     The following rows of your spreadsheet failed:
   </div>
   <table>
     <tr>
       <th>Row</th>
-      <th>Title</th>
       <th>Error</th>
     </tr>
     <% @error_items.each do |be_error| %>
-      <tr> <%= be_error.position + 2 %> </tr>
-      <tr> <%= be_error.title %> </tr> <%# Add two since the first row entry of the excel sheet is 3 due to the headers %>
-      <tr> <%= be_error.error_message %> </tr>
+      <tr>
+        <td> <%= be_error.position + 2 %> </td>
+        <td> <%= be_error.error_message %> </td>
+      </tr>
     <% end %>
   </table>
 <% end %>
@@ -43,13 +43,13 @@ prefix = "Errors:" unless @no_errors
   <table>
     <tr>
       <th>Row</th>
-      <th>Title</th>
       <th>Media Object ID</th>
     </tr>
     <% @completed_items.each do |be_completed| %>
-      <tr> <%= be_completed.position + 2 %> </tr>
-      <tr> <%= be_completed.title %> </tr> <%# Add two since the first row entry of the excel sheet is 3 due to the headers %>
-      <tr> <%= be_completed.media_object_pid %> </tr>
+      <tr>
+        <td> <%= be_completed.position + 2 %> </td>
+        <td> <%= be_completed.media_object_pid %> </td>
+      </tr>
     <% end %>
   </table>
 <% end %>

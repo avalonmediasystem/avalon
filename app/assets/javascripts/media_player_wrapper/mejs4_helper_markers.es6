@@ -3,7 +3,6 @@
  * @class MEJSMarkersHelper
  */
 class MEJSMarkersHelper {
-
   constructor() {
     this.$accordion = $('#accordion');
   }
@@ -23,25 +22,31 @@ class MEJSMarkersHelper {
     let originalMarkerValues = {};
 
     // Marker title click; play from marker offset time
-    $markers.find('a.marker_title').on('click', (e) => {
-      const offset = $(e.target).parents('tr').data('offset');
+    $markers.find('a.marker_title').on('click', e => {
+      const offset = $(e.target)
+        .parents('tr')
+        .data('offset');
       player.setCurrentTime(offset);
     });
 
     // Edit button click
-    $markers.find('button[name="edit_marker"]').on('click', (e) => {
+    $markers.find('button[name="edit_marker"]').on('click', e => {
       const $row = $(e.target).parents('tr');
       const markerId = $row.data('markerId');
-      const offset = mejs.Utils.convertSMPTEtoSeconds($row.find('input[name="offset_' + markerId + '"]').val());
+      const offset = mejs.Utils.convertSMPTEtoSeconds(
+        $row.find('input[name="offset_' + markerId + '"]').val()
+      );
 
       t.disableButtons($row, true);
-      $(e.target).parents('tr').addClass('is-editing');
+      $(e.target)
+        .parents('tr')
+        .addClass('is-editing');
       // Track original marker offset value of edited row
       originalMarkerValues[markerId] = offset;
     });
 
     // Cancel button click
-    $markers.find('button[name="marker_edit_cancel"]').on('click', (e) => {
+    $markers.find('button[name="marker_edit_cancel"]').on('click', e => {
       let $row = $(e.target).parents('tr');
       const markerId = $row.data('markerId');
 
@@ -50,11 +55,11 @@ class MEJSMarkersHelper {
       $row.removeClass('is-editing');
 
       // Remove original marker offset value
-      delete(originalMarkerValues[markerId]);
+      delete originalMarkerValues[markerId];
     });
 
     // Delete button click
-    $markers.find('button[name="delete_marker"]').on('click', (e) => {
+    $markers.find('button[name="delete_marker"]').on('click', e => {
       let $button = $(e.currentTarget);
       let markerId = $button[0].dataset.markerId;
       let confirmButtonId = 'delete_marker_confirm_' + markerId;
@@ -73,7 +78,7 @@ class MEJSMarkersHelper {
       $button.popover('show');
 
       // Delete confirm click
-      $('#' + confirmButtonId).on('click', (e) => {
+      $('#' + confirmButtonId).on('click', e => {
         $.ajax({
           url: '/avalon_marker/' + markerId,
           type: 'POST',
@@ -81,38 +86,44 @@ class MEJSMarkersHelper {
             utf: '✓',
             _method: 'delete'
           }
-        }).done((response) => {
-          const row = $('#markers')[0].querySelector('tr[data-marker-id="' + response.id + '"]');
-          const playlistIds = this.getCurrentPlaylistIds();
+        })
+          .done(response => {
+            const row = $('#markers')[0].querySelector(
+              'tr[data-marker-id="' + response.id + '"]'
+            );
+            const playlistIds = this.getCurrentPlaylistIds();
 
-          $button.popover('destroy');
-          // Remove from list
-          row.parentNode.removeChild(row);
-          // Update visual markers in player's time rail
-          this.getMarkers(playlistIds.playlistId, playlistIds.playlistItemId)
-            .then((response) => {
+            $button.popover('destroy');
+            // Remove from list
+            row.parentNode.removeChild(row);
+            // Update visual markers in player's time rail
+            this.getMarkers(
+              playlistIds.playlistId,
+              playlistIds.playlistItemId
+            ).then(response => {
               this.updateVisualMarkers(response);
             });
-        }).fail((error) => {
-          console.log('error', error);
-        });
+          })
+          .fail(error => {
+            console.log('error', error);
+          });
       });
 
       // Delete cancel click
-      $('#' + cancelButtonId).on('click', (e) => {
+      $('#' + cancelButtonId).on('click', e => {
         $button.popover('destroy');
       });
     });
 
     // Save button click
-    $markers.find('button[name="save_marker"]').on('click', (e) => {
+    $markers.find('button[name="save_marker"]').on('click', e => {
       const $tr = $(e.target).parents('tr');
       const markerId = $tr.data('markerId');
       const marker = {
         title: $tr.find('input[name="title_' + markerId + '"]').val(),
         start_time: $tr.find('input[name="offset_' + markerId + '"]').val(),
         marker_edit_save: ''
-      }
+      };
 
       // Hide old error messages
       $alertError.hide();
@@ -126,30 +137,34 @@ class MEJSMarkersHelper {
           marker: marker
         }
       })
-      .done((response) => {
-        const playlistIds = this.getCurrentPlaylistIds();
+        .done(response => {
+          const playlistIds = this.getCurrentPlaylistIds();
 
-        // Update visual markers in player's time rail
-        this.getMarkers(playlistIds.playlistId, playlistIds.playlistItemId)
-          .then((response) => {
+          // Update visual markers in player's time rail
+          this.getMarkers(
+            playlistIds.playlistId,
+            playlistIds.playlistItemId
+          ).then(response => {
             this.updateVisualMarkers(response);
           });
 
-        // Remove original marker offset value
-        // TODO: Remember why I originally did this?
-        delete(originalMarkerValues[markerId]);
+          // Remove original marker offset value
+          // TODO: Remember why I originally did this?
+          delete originalMarkerValues[markerId];
 
-        // Rebuild markers table with updated values
-        t.rebuildMarkersTable();
-      })
-      .fail((error) => {
-        // Display error message
-        const responseText = JSON.parse(error.responseText);
-        const msg = responseText.errors[0] || "There was an unknown error updating marker";
+          // Rebuild markers table with updated values
+          t.rebuildMarkersTable();
+        })
+        .fail(error => {
+          // Display error message
+          const responseText = JSON.parse(error.responseText);
+          const msg =
+            responseText.errors[0] ||
+            'There was an unknown error updating marker';
 
-        $alertError.find('p').text(msg);
-        $alertError.slideDown();
-      });
+          $alertError.find('p').text(msg);
+          $alertError.slideDown();
+        });
     });
   }
 
@@ -164,14 +179,17 @@ class MEJSMarkersHelper {
     return new Promise((resolve, reject) => {
       $.ajax({
         url: `/playlists/${playlistId}/items/${playlistItemId}/${panelSection}`
-      }).done((response) => {
-        resolve(response);
-      }).fail((error) => {
-        reject('');
-      }).always(() => {
-        // Turn off spinner
-        this.spinnerToggle();
-      });
+      })
+        .done(response => {
+          resolve(response);
+        })
+        .fail(error => {
+          reject('');
+        })
+        .always(() => {
+          // Turn off spinner
+          this.spinnerToggle();
+        });
     });
   }
 
@@ -182,11 +200,11 @@ class MEJSMarkersHelper {
    * @param  {Array} markers Array of marker start times
    * @return {Object} Configuration object (https://github.com/mediaelement/mediaelement-plugins/blob/master/docs/markers.md)
    */
-  buildMarkersConfig (markers) {
+  buildMarkersConfig(markers) {
     return {
       markerColor: '#777',
       markers: markers
-    }
+    };
   }
 
   /**
@@ -201,7 +219,9 @@ class MEJSMarkersHelper {
     let $siblings = $row.siblings();
 
     $siblings.find('button[name="edit_marker"]').prop({ disabled: doDisable });
-    $siblings.find('button[name="delete_marker"]').prop({ disabled: doDisable });
+    $siblings
+      .find('button[name="delete_marker"]')
+      .prop({ disabled: doDisable });
   }
 
   /**
@@ -211,9 +231,8 @@ class MEJSMarkersHelper {
    * @param {number} playlistItemId Id of playlist item
    * @return {Array} Array of marker start times
    */
-  getMarkers (playlistId, playlistItemId) {
+  getMarkers(playlistId, playlistItemId) {
     return new Promise((resolve, reject) => {
-
       // Check if a playlist item is specified, because playlist items use markers
       // and we'll need to grab markers from the playlist item
       if (playlistId && playlistItemId) {
@@ -221,26 +240,28 @@ class MEJSMarkersHelper {
         let markers = [];
 
         $.ajax({
-          url: '/playlists/' + playlistId + '/items/' + playlistItemId + '.json',
+          url:
+            '/playlists/' + playlistId + '/items/' + playlistItemId + '.json',
           dataType: 'json'
-        }).done((response) => {
-          if (response.message) {
-            //TODO: display error message somehow (500 or 401)
-          }
-          else if (response.markers && response.markers.length > 0) {
-            markers = response.markers.map((marker) => {
-              return marker.start_time
-            })
-          }
-          resolve(markers);
-        }).fail((error) => {
-          reject([]);
-        });
+        })
+          .done(response => {
+            if (response.message) {
+              //TODO: display error message somehow (500 or 401)
+            } else if (response.markers && response.markers.length > 0) {
+              markers = response.markers.map(marker => {
+                return marker.start_time;
+              });
+            }
+            resolve(markers);
+          })
+          .fail(error => {
+            reject([]);
+          });
       } else {
         // No playlist item, therefore no markers needed
         resolve([]);
       }
-    })
+    });
   }
 
   /**
@@ -250,7 +271,9 @@ class MEJSMarkersHelper {
    * @return {Object} Helper object returning playlist id and playlist item id as key/value pairs
    */
   getCurrentPlaylistIds() {
-    const $nowPlaying = $('#right-column').find('.side-playlist li.now_playing');
+    const $nowPlaying = $('#right-column').find(
+      '.side-playlist li.now_playing'
+    );
     return {
       playlistId: $nowPlaying.find('a').data('playlistId'),
       playlistItemId: $nowPlaying.data('playlistItemId')
@@ -267,12 +290,24 @@ class MEJSMarkersHelper {
     const playlistIds = this.getCurrentPlaylistIds();
 
     // Grab new html to use
-    t.ajaxPlaylistItemsHTML(playlistIds.playlistId, playlistIds.playlistItemId, 'markers')
-      .then((response) => {
+    t
+      .ajaxPlaylistItemsHTML(
+        playlistIds.playlistId,
+        playlistIds.playlistItemId,
+        'markers'
+      )
+      .then(response => {
         // Insert the fresh HTML table
         $('#markers').replaceWith(response);
         // Add event listeners to newly created row
         t.addMarkersTableListeners();
+        // hide marker sections if no markers (first row is header)
+        if ($('#markers').find('tr').length === 1) {
+          $('#markers_section').collapse('hide')
+          $('#markers_heading').hide()
+        } else {
+          $('#markers_heading').show()
+        }
       })
       .catch(err => {
         console.log(err);
@@ -293,14 +328,16 @@ class MEJSMarkersHelper {
    * @param {Array} markers Array of marker start times
    * @return {void}
    */
-  updateVisualMarkers (markers) {
+  updateVisualMarkers(markers) {
     const t = this;
     const player = mejs4AvalonPlayer.player;
     player.options.markers = markers;
 
     // Directly delete current markers from the player UI
-    let currentMarkerEls = player.controls.getElementsByClassName(player.options.classPrefix + 'time-marker');
-    while(currentMarkerEls[0]) {
+    let currentMarkerEls = player.controls.getElementsByClassName(
+      player.options.classPrefix + 'time-marker'
+    );
+    while (currentMarkerEls[0]) {
       currentMarkerEls[0].parentNode.removeChild(currentMarkerEls[0]);
     }
 

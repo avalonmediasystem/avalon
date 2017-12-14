@@ -32,48 +32,47 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
     </div>
     <% @markers = @current_playlist_item.marker %>
-    <% unless @markers.empty? %>
-    <div class="panel-heading" role="tab" id="markers_heading">
+    <div class="panel-heading <%= 'hidden' if @markers.empty? %>" role="tab" id="markers_heading">
       <h5 class="panel-title ">
         <a href="#markers_section" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
-          Markers</a>
-        </h5>
+          Markers
+        </a>
+      </h5>
+    </div>
+    <div id="markers_section" class="panel-collapse collapse" role="tabpanel">
+      <div class="panel-body">
+        <% if is_mejs_2? %>
+          <%= render 'markers' %>
+        <% else %>
+          <%= render 'playlist_items/markers' %>
+        <% end %>
       </div>
-      <div id="markers_section" class="panel-collapse collapse" role="tabpanel">
-        <div class="panel-body">
-          <% if is_mejs_2? %>
-            <%= render 'markers' %>
-          <% else %>
-            <%= render 'mejs4_markers' %>
-          <% end %>
-        </div>
+    </div>
+    <div class="panel-heading" id="source_details_heading">
+      <h5 class="panel-title">
+        <a href="#source_details_section" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
+          Source Item Details
+        </a>
+      </h5>
+    </div>
+    <div id="source_details_section" class="panel-collapse collapse collapsed" role="tabpanel">
+      <div class="panel-body">
+        <%= render 'current_item' %>
       </div>
-      <% end %>
-      <div class="panel-heading">
-        <h5 class="panel-title">
-          <a href="#section1" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
-            Source Item Details</a>
-          </h5>
-        </div>
-        <div id="section1" class="panel-collapse collapse collapsed" role="tabpanel">
-          <div class="panel-body">
-            <%= render 'current_item' %>
-          </div>
-        </div>
-        <% @related_clips = @playlist.related_clips(@current_playlist_item)%>
-        <% unless @related_clips.empty? %>
-        <div class="panel-heading" role="tab" id="heading1">
-          <h5 class="panel-title ">
-            <a href="#section2" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
-              Related</a>
-            </h5>
-          </div>
-          <div id="section2" class="panel-collapse collapse" role="tabpanel">
-            <div class="panel-body">
-              <%= render 'related_items' %>
-            </div>
-          </div>
-          <% end %>
-        </div>
+    </div>
+    <% @related_clips = @playlist.related_clips(@current_playlist_item)%>
+    <div class="panel-heading <%= 'hidden' if @related_clips.empty? %>" role="tab" id="related_items_heading">
+      <h5 class="panel-title ">
+        <a href="#related_items_section" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
+          Related
+        </a>
+      </h5>
+    </div>
+    <div id="related_items_section" class="panel-collapse collapse" role="tabpanel">
+      <div class="panel-body">
+        <%= render 'playlist_items/related_items' %>
       </div>
-      <% end %>
+    </div>
+  </div>
+</div>
+<% end %>
