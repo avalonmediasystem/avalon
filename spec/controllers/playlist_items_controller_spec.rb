@@ -1,11 +1,11 @@
 # Copyright 2011-2017, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -35,30 +35,38 @@ RSpec.describe PlaylistItemsController, type: :controller do
   # PlaylistsController. Be sure to keep this updated too.
   let(:valid_session) { {} }
 
-  let(:user) { login_as :user }
-  let(:playlist) { FactoryGirl.create(:playlist, user: user) }
-  let(:master_file) { FactoryGirl.create(:master_file, :with_media_object, duration: "100000") }
+  let(:playlist_owner) { login_as :user }
+  let(:playlist) { FactoryGirl.create(:playlist, user: playlist_owner) }
+  let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object, duration: "100000") }
+  let(:media_object) { FactoryGirl.create(:published_media_object, read_users: [playlist_owner]) }
 
   describe 'security' do
     let(:playlist) { FactoryGirl.create(:playlist) }
     let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist) }
+    let(:master_file) { FactoryGirl.create(:master_file, :with_media_object, duration: "100000") }
+
     context 'with unauthenticated user' do
       it "all routes should redirect to sign in" do
         expect(post :create, playlist_id: playlist.to_param, playlist_item: valid_attributes).to redirect_to(new_user_session_path)
         expect(put :update, playlist_id: playlist.to_param, id: playlist_item.id).to redirect_to(new_user_session_path)
+        expect(get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to redirect_to(new_user_session_path)
+        expect(get :markers, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to redirect_to(new_user_session_path)
+        expect(get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to redirect_to(new_user_session_path)
       end
     end
     context 'with end-user' do
       before do
         login_as :user
       end
-      it "all routes should redirect to /" do
+      it "all routes should return 401" do
         expect(post :create, playlist_id: playlist.to_param, playlist_item: valid_attributes).to have_http_status(:unauthorized)
         expect(put :update, playlist_id: playlist.to_param, id: playlist_item.id).to have_http_status(:unauthorized)
+        expect(get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to have_http_status(:unauthorized)
+        expect(get :markers, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to have_http_status(:unauthorized)
+        expect(get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to have_http_status(:unauthorized)
       end
     end
   end
-
 
   describe 'POST #create' do
 
@@ -122,4 +130,36 @@ RSpec.describe PlaylistItemsController, type: :controller do
       end
     end
   end
+
+  describe 'GET #source_details' do
+    let(:clip) { AvalonClip.create(master_file: master_file) }
+    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: clip) }
+    it 'returns HTML' do
+      get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id
+      expect(response).to have_http_status(:ok)
+      expect(response).to render_template(:_current_item)
+    end
+  end
+
+  describe 'GET #markers' do
+    let(:clip) { AvalonClip.create(master_file: master_file) }
+    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: clip) }
+    it 'returns HTML' do
+      get :markers, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id
+      expect(response).to have_http_status(:ok)
+      expect(response).to render_template(:_markers)
+    end
+  end
+
+  describe 'GET #related_items' do
+    let(:clip) { AvalonClip.create(master_file: master_file) }
+    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: clip) }
+    it 'returns HTML' do
+      allow_any_instance_of(Playlist).to receive(:related_clips).and_return([clip]);
+      get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id
+      expect(response).to have_http_status(:ok)
+      expect(response).to render_template(:_related_items)
+    end
+  end
+  
 end
