@@ -42,9 +42,16 @@ Object.assign(MediaElementPlayer.prototype, {
     playlistItemsObj.mejsMarkersHelper.addMarkersTableListeners();
 
     // Turn off autoplay on seek
-    playlistItemsObj.mejsTimeRailHelper.getTimeRail().addEventListener('click', playlistItemsObj.handleUserSeeking.bind(this))
-    let scrubberRail = $(playlistItemsObj.player.trackScrubberObj.scrubberEl).find('.track-mejs-time-total')[0]
-    scrubberRail.addEventListener('click', playlistItemsObj.handleUserSeeking.bind(this))
+    playlistItemsObj.mejsTimeRailHelper
+      .getTimeRail()
+      .addEventListener('click', playlistItemsObj.handleUserSeeking.bind(this));
+    let scrubberRail = $(
+      playlistItemsObj.player.trackScrubberObj.scrubberEl
+    ).find('.track-mejs-time-total')[0];
+    scrubberRail.addEventListener(
+      'click',
+      playlistItemsObj.handleUserSeeking.bind(this)
+    );
 
     // Handle continuous MEJS time update event
     media.addEventListener(
@@ -281,7 +288,9 @@ Object.assign(MediaElementPlayer.prototype, {
      * @return {void}
      */
     turnOffAutoplay() {
-      $('input[name="autoadvance"]').prop('checked',false).change();
+      $('input[name="autoadvance"]')
+        .prop('checked', false)
+        .change();
     },
 
     isAutoplay() {
@@ -322,10 +331,10 @@ Object.assign(MediaElementPlayer.prototype, {
           $('#' + panel).replaceWith(response);
           // Hide the entire panel if new content is blank
           if (response === '') {
-            $('#' + panel + '_section').collapse('hide')
-            $('#' + panel + '_heading').hide()
+            $('#' + panel + '_section').collapse('hide');
+            $('#' + panel + '_heading').hide();
           } else {
-            $('#' + panel + '_heading').show()
+            $('#' + panel + '_heading').show();
           }
         })
         .catch(err => {

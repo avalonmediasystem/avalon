@@ -44,7 +44,7 @@ class MEJSTimeRailHelper {
     if (!highlightSpanEl) {
       highlightSpanEl = document.createElement('span');
       highlightSpanEl.classList.add('mejs-highlight-clip');
-      this.getTimeRail().appendChild(highlightSpanEl)
+      this.getTimeRail().appendChild(highlightSpanEl);
     }
     return highlightSpanEl;
   }
@@ -117,7 +117,7 @@ class MEJSTimeRailHelper {
   }
   /* eslint-enable complexity */
 
-  getTimeRail () {
+  getTimeRail() {
     return $('.mejs__time-total')[0];
   }
 }

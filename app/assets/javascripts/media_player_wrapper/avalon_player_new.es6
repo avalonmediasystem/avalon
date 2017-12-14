@@ -427,7 +427,6 @@ class MEJSPlayer {
       delete defaults.poster;
     }
 
-
     // Get any asynchronous configuration data needed to build the player instance
     // Markers
     promises.push(this.mejsMarkersHelper.getMarkers(...playlistIds));
