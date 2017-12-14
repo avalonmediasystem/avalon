@@ -141,6 +141,47 @@ class MEJSPlayer {
   }
 
   /**
+   * Handle Mediaelement's 'ended' event
+   * @function handleEnded
+   * @return {void}
+   */
+  handleEnded() {
+    const t = this;
+
+    // No sections content on this page, go no further
+    if (!t.hasSections()) {
+      return;
+    }
+
+    const $sections = $('#accordion').find('.panel-heading[data-section-id]');
+    const sectionsIdArray = $sections.map((index, item) =>
+      $(item).data('sectionId')
+    );
+    const currentIdIndex = [...sectionsIdArray].indexOf(t.currentStreamInfo.id);
+
+    // Another section exists; process it
+    if (currentIdIndex > -1 && currentIdIndex + 1 < sectionsIdArray.length) {
+      const sectionId = sectionsIdArray[currentIdIndex + 1];
+      const mediaObjectId = $('#accordion')
+        .find(`.panel-heading[data-section-id="${sectionId}"]`)
+        .data('mediaObjectId');
+
+      // Update helper object noting we want the new media clip to auto start
+      this.switchPlayerHelper = {
+        active: true,
+        data: {},
+        paused: false
+      };
+
+      // Go to next section
+      this.getNewStreamAjax(
+        sectionId,
+        `/media_objects/${mediaObjectId}/section/${sectionId}`
+      );
+    }
+  }
+
+  /**
    * Event handler for clicking on a section link
    * @function handleSectionClick
    * @param  {Object} e - Event object
@@ -190,7 +231,7 @@ class MEJSPlayer {
    */
   handleSectionHighlighting(activeId, currentTime) {
     // There is no segments map, which means we don't want to hightlight any segment
-    if (Object.keys(this.segmentsMap).length === 0) {
+    if (!this.hasSections()) {
       return;
     }
 
@@ -241,6 +282,9 @@ class MEJSPlayer {
       this.handleCanPlay.bind(this)
     );
 
+    // Handle 'ended' event fired by player
+    this.mediaElement.addEventListener('ended', this.handleEnded.bind(this));
+
     // Show highlighted time in time rail
     if (this.highlightRail) {
       const t = this.mejsTimeRailHelper.calculateSegmentT(
@@ -282,6 +326,15 @@ class MEJSPlayer {
 
     // Handle section highlighting
     this.handleSectionHighlighting(activeId, currentTime);
+  }
+
+  /**
+   * Helper function which deterimines whether the current UI has navigatable "Sections"
+   * @function hasSections
+   * @return {Boolean} Boolean value whether the UI has navigatable "Sections" content
+   */
+  hasSections() {
+    return Object.keys(this.segmentsMap).length > 0;
   }
 
   /**
