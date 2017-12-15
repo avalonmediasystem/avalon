@@ -36,6 +36,9 @@ Object.assign(MediaElementPlayer.prototype, {
     playlistItemsObj.player = player;
     playlistItemsObj.currentStreamInfo = mejs4AvalonPlayer.currentStreamInfo;
 
+    // Show/hide add marker button on player
+    playlistItemsObj.mejsMarkersHelper.showHideAddMarkerButton();
+
     // Click listeners
     playlistItemsObj.addSidebarListeners();
     playlistItemsObj.addRelatedItemListeners();
@@ -173,6 +176,9 @@ Object.assign(MediaElementPlayer.prototype, {
           this.rebuildPanelMarkup(playlistId, playlistItemId, 'source_details');
           // Rebuild the related items panel section
           this.rebuildPanelMarkup(playlistId, playlistItemId, 'related_items');
+
+          // Show/hide add marker button on player
+          this.mejsMarkersHelper.showHideAddMarkerButton();
 
           // Same media file?
           if (this.currentStreamInfo.id === el.dataset.masterFileId) {

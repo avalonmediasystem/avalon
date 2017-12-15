@@ -248,7 +248,7 @@ class MEJSMarkersHelper {
         $.ajax({
           url:
             '/playlists/' + playlistId + '/items/' + playlistItemId + '.json',
-          data: { token: t.mejsUtility.getUrlParameter("token") },
+          data: { token: t.mejsUtility.getUrlParameter('token') },
           dataType: 'json'
         })
           .done(response => {
@@ -351,5 +351,22 @@ class MEJSMarkersHelper {
     // Call methods on the MEJS4 markers plugin to re-build markers and apply to the player
     player.buildmarkers(player, player.controls, undefined, player.media);
     player.setmarkers(player.controls);
+  }
+
+  /**
+   * Show or hide the button for Add Marker to Playlist Item
+   * @function showHideAddMarkerButton
+   * @return {void}
+   */
+  showHideAddMarkerButton() {
+    const canEditPlaylistItem = $('#right-column')
+      .find('.side-playlist li.now_playing')
+      .find('a')
+      .data('canEditPlaylistItem');
+    if (canEditPlaylistItem) {
+      $('.mejs__add-marker-to-playlist-button').show();
+    } else {
+      $('.mejs__add-marker-to-playlist-button').hide();
+    }
   }
 }
