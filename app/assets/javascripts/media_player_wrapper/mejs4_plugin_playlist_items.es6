@@ -36,6 +36,10 @@ Object.assign(MediaElementPlayer.prototype, {
     playlistItemsObj.player = player;
     playlistItemsObj.currentStreamInfo = mejs4AvalonPlayer.currentStreamInfo;
 
+    // Rebuild playlist info panels
+    const currentPlaylistIds = playlistItemsObj.mejsMarkersHelper.getCurrentPlaylistIds();
+    playlistItemsObj.rebuildPlaylistInfoPanels(currentPlaylistIds['playlistId'], currentPlaylistIds['playlistItemId']);
+
     // Click listeners
     playlistItemsObj.addSidebarListeners();
     playlistItemsObj.addRelatedItemListeners();
@@ -165,12 +169,8 @@ Object.assign(MediaElementPlayer.prototype, {
           this.mejsMarkersHelper.updateVisualMarkers(markers);
           this.updatePlaylistItemsList(el);
 
-          // Rebuild markers table
-          this.mejsMarkersHelper.rebuildMarkersTable();
-          // Rebuild source item details panel section
-          this.rebuildPanelMarkup(playlistId, playlistItemId, 'source_details');
-          // Rebuild the related items panel section
-          this.rebuildPanelMarkup(playlistId, playlistItemId, 'related_items');
+          // Rebuild playlist info panels
+          this.rebuildPlaylistInfoPanels(playlistId, playlistItemId);
 
           // Same media file?
           if (this.currentStreamInfo.id === el.dataset.masterFileId) {
@@ -311,6 +311,24 @@ Object.assign(MediaElementPlayer.prototype, {
     },
 
     $nowPlayingLi: null,
+
+    /**
+     * Re-build playlist item info page panel HTML sections
+     * @function rebuildPlaylistInfoPanels
+     * @param playlistId
+     * @param playlistItemId,
+     * @return {void}
+     */
+    rebuildPlaylistInfoPanels(playlistId, playlistItemId) {
+      const t = this;
+
+      // Rebuild markers table
+      t.mejsMarkersHelper.rebuildMarkersTable();
+      // Rebuild source item details panel section
+      t.rebuildPanelMarkup(playlistId, playlistItemId, 'source_details');
+      // Rebuild the related items panel section
+      t.rebuildPanelMarkup(playlistId, playlistItemId, 'related_items');
+    },
 
     /**
      * Re-build item details page panel HTML sections
