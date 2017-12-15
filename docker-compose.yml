@@ -75,7 +75,7 @@ services:
       - ASSET_HOST=http://localhost:3000
       - AVALON_BRANCH=develop
       - AVALON_DB_PASSWORD=avalondb
-      - BASE_URL=http://localhost:3000
+      - SETTINGS__DOMAIN=http://localhost:3000
       - CONTROLLED_VOCABULARY=config/controlled_vocabulary.yml
       - DATABASE_URL=postgres://avalon:${AVALON_DB_PASSWORD}@db/avalon
       - DROPBOX_PATH=/masterfiles/dropbox

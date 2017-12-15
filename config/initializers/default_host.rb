@@ -2,7 +2,7 @@ server_options = Settings.domain
 server_options = case server_options
 when String
   uri = URI.parse(server_options)
-  { host: uri.host, port: uri.port, procotol: uri.scheme }
+  { host: uri.host, port: uri.port, protocol: uri.scheme }
 when Hash
   server_options
 else
