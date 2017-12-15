@@ -19,13 +19,16 @@ Unless required by applicable law or agreed to in writing, software distributed
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     <p></p>
   </div>
-
+  <% @playlist_item = @current_playlist_item %>
+  <% showActions = can? :edit, @playlist_item %>
   <table class="table table-condensed">
     <thead>
       <tr>
         <th>Name</th>
         <th>Time</th>
-        <th class="text-right">Actions</th>
+        <% if showActions %>
+          <th class="text-right">Actions</th>
+        <% end %>
       </tr>
     </thead>
     <tbody>
@@ -43,7 +46,7 @@ Unless required by applicable law or agreed to in writing, software distributed
               <input name="offset_<%= marker.id %>" type="text" class="form-control edit-item outline_on" value="<%= pretty_time(marker.start_time) %>">
             </td>
             <td class="text-right" id="popover-container-<%= marker.id %>">
-              <% if can? :edit, marker %>
+              <% if showActions %>
                 <%# Edit button %>
                 <%= button_tag name: 'edit_marker', class:'btn btn-default btn-xs edit_marker display-item outline_on', type: 'button' do %>
                   <i class="fa fa-edit" title="Edit"></i> <span class="sm-hidden">Edit</span>
@@ -58,7 +61,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <% end %>
               <% end %>
               <%# Delete button %>
-              <% if can? :delete, marker %>
+              <% if showActions %>
                 <button data-marker-id="<%= marker.id %>" name="delete_marker" class="btn btn-danger btn-xs display-item outline_on">
                   <i class="fa fa-times" title="Delete"></i> <span class="sm-hidden">Delete</span>
                 </button>
@@ -70,3 +73,4 @@ Unless required by applicable law or agreed to in writing, software distributed
     </tbody>
   </table>
 </div>
+
