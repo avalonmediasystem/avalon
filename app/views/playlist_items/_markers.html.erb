@@ -59,9 +59,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <%= button_tag name: 'marker_edit_cancel', class:'btn btn-danger btn-xs edit-item outline_on', type: 'button' do%>
                   <i class="fa fa-times" title="Cancel"></i> <span class="sm-hidden">Cancel</span>
                 <% end %>
-              <% end %>
               <%# Delete button %>
-              <% if showActions %>
                 <button data-marker-id="<%= marker.id %>" name="delete_marker" class="btn btn-danger btn-xs display-item outline_on">
                   <i class="fa fa-times" title="Delete"></i> <span class="sm-hidden">Delete</span>
                 </button>
