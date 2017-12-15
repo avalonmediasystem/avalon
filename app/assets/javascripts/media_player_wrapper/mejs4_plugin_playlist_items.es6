@@ -60,6 +60,7 @@ Object.assign(MediaElementPlayer.prototype, {
       playlistItemsObj.handleUserSeeking.bind(this)
     );
 
+    // Set default values for helper boolean flags
     playlistItemsObj.refreshInProgress = false;
 
     // Handle continuous MEJS time update event
@@ -150,6 +151,7 @@ Object.assign(MediaElementPlayer.prototype, {
 
     /**
      * Analyze the new playlist item and determine how to proceed...
+     * @function analyzeNewItemSource
      * @param  {HTMLElement} el <a> anchor element of the new playlist item being processed
      * @return {void}
      */
@@ -204,8 +206,17 @@ Object.assign(MediaElementPlayer.prototype, {
         });
     },
 
+    /**
+     * Local reference to currentStreamInfo, set in parent wrapper js file
+     * @type {Object}
+     */
     currentStreamInfo: null,
 
+    /**
+     * Returns the next playlist list (<li>) item in sidebar
+     * @function getNextItem
+     * @return {Object} jQuery object
+     */
     getNextItem() {
       return this.$nowPlayingLi.next('li');
     },
@@ -243,20 +254,26 @@ Object.assign(MediaElementPlayer.prototype, {
 
     /**
      * Playlist item time range has ended. Handle next steps here.
+     * @function handleRangeEndTimeReached
      * @return {void}
      */
     handleRangeEndTimeReached() {
       const t = this;
+      const $nextItem = t.getNextItem();
 
       t.player.pause();
 
+      // Return playlist head to item's start time
+      if ($nextItem.length === 0 || !t.isAutoplay()) {
+        t.player.setCurrentTime(t.startEndTimes.start);
+        return;
+      }
+
+      // Autoplay is 'On'
       if (t.isAutoplay()) {
-        const $nextItem = t.getNextItem();
-        if ($nextItem.length > 0) {
-          const el = $nextItem.find('a')[0];
-          t.refreshInProgress = true;
-          t.analyzeNewItemSource(el);
-        }
+        const el = $nextItem.find('a')[0];
+        t.refreshInProgress = true;
+        t.analyzeNewItemSource(el);
       }
     },
 
@@ -270,15 +287,23 @@ Object.assign(MediaElementPlayer.prototype, {
       const plo = t.playlistItemsObj;
       const currentTime = plo.player.getCurrentTime();
 
-      // Current time is within range of playlist item's start / end times
-      if (
-        currentTime >= plo.startEndTimes.start &&
-        currentTime < plo.startEndTimes.end
-      ) {
+      // The player currentTime is less than item end time, so revert to regular behavior
+      // of playing through time ranges
+      if (currentTime < plo.startEndTimes.end) {
+        plo.seekPastEnd = false;
+      }
+
+      // Do nothing, current time is within playlist item start / end range
+      if (plo.isCurrentTimeInRange(currentTime)) {
         return;
       }
+
       // Playlist item's end time is reached
-      if (plo.itemEnded() && !plo.refreshInProgress) {
+      if (
+        plo.isItemEnded(currentTime) &&
+        !plo.refreshInProgress &&
+        !plo.seekPastEnd
+      ) {
         plo.handleRangeEndTimeReached();
         return;
       }
@@ -286,31 +311,56 @@ Object.assign(MediaElementPlayer.prototype, {
 
     /**
      * Handle user's manual seeking
+     * @function handleUserSeeking
+     * @param {MouseEvent} e Event emitted from the 'seeking'
      * @return {void}
      */
     handleUserSeeking(e) {
-      // Always turn off Autoplay when user starts seeking around
-      this.playlistItemsObj.turnOffAutoplay();
-    },
+      const plo = this.playlistItemsObj;
+      const currentTime = plo.player.getCurrentTime();
 
-    refreshInProgress: false,
+      // Always turn off Autoplay when user starts seeking around
+      plo.turnOffAutoplay();
+      // User seeked past the item end point
+      if (plo.isItemEnded(currentTime)) {
+        plo.seekPastEnd = true;
+      }
+    },
 
     /**
-     * Turn off Autoplay (auto advancing to next item)
-     * @return {void}
+     * Does the DOM reflect that Autoplay is 'On'? (Note: DOM checkbox value is the source of truth)
+     * @function isAutoplay
+     * @return {Boolean} [description]
      */
-    turnOffAutoplay() {
-      $('input[name="autoadvance"]')
-        .prop('checked', false)
-        .change();
-    },
-
     isAutoplay() {
       return !$('input[name="autoadvance"]')
         .parent('.toggle')
         .hasClass('off');
     },
 
+    /**
+     * Helper function: is the player's current time within the playlist items start / end time range?
+     * Note the 'threshold' helper variable, and see description below for why it's needed.
+     * @function isCurrentTimeInRange
+     * @param  {number}  currentTime Current time of Mediaelement player
+     * @return {Boolean}
+     */
+    isCurrentTimeInRange(currentTime) {
+      const t = this;
+      const currentTimeAdjusted = currentTime + t.threshold;
+      const startEndTimes = t.startEndTimes;
+      return (
+        currentTime >= startEndTimes.start &&
+        !t.isItemEnded(currentTime)
+      );
+    },
+
+    /**
+     * Helper function: is the argument element passed into this function the current playlist item?
+     * @function isSamePlaylistItem
+     * @param  {HTMLElement}  el
+     * @return {Boolean}
+     */
     isSamePlaylistItem(el) {
       return (
         $(el).data('playlistItemId') ===
@@ -318,10 +368,21 @@ Object.assign(MediaElementPlayer.prototype, {
       );
     },
 
-    itemEnded() {
-      return this.player.getCurrentTime() > this.startEndTimes.end;
+    /**
+     * Helper function: has the playlist item's time time range ended?
+     * @function isItemEnded
+     * @param  {number}  currentTime Current time of Mediaelement player
+     * @return {Boolean}
+     */
+    isItemEnded(currentTime) {
+      const t = this;
+      return t.startEndTimes.end - currentTime < t.threshold;
     },
 
+    /**
+     * Reference to jQuery variable for the currently playing <li> in sidebar
+     * @type {Object}
+     */
     $nowPlayingLi: null,
 
     /**
@@ -373,6 +434,20 @@ Object.assign(MediaElementPlayer.prototype, {
     },
 
     /**
+     * Helper jQuery object reference for related item list element. Used multile times in this class.
+     * @type {Object}
+     */
+    $relatedItems: $('#related_items_section') || null,
+
+    refreshInProgress: false,
+
+    /**
+     * Helper variable specifying whether the user has clicked in the time rail past the playlist item end time.
+     * @type {Boolean}
+     */
+    seekPastEnd: false,
+
+    /**
      * Set the now playing item helper variable, and update start end times for
      * current playing item
      * @function setCurrentItemInternally
@@ -409,18 +484,25 @@ Object.assign(MediaElementPlayer.prototype, {
     $sidePlaylist: $('#right-column').find('.side-playlist') || null,
 
     /**
-     * Helper jQuery object reference for related item list element. Used multile times in this class.
-     * @type {Object}
-     */
-    $relatedItems: $('#related_items_section') || null,
-
-    /**
      * Helper object initializer to store current playlist item's start and stop times
      * @type {Object}
      */
     startEndTimes: {
       start: null,
       end: null
+    },
+
+    threshold: 0.25,
+
+    /**
+     * Turn off Autoplay (auto advancing to next item)
+     * @function turnOffAutoplay
+     * @return {void}
+     */
+    turnOffAutoplay() {
+      $('input[name="autoadvance"]')
+        .prop('checked', false)
+        .change();
     },
 
     /**
