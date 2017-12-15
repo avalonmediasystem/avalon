@@ -32,7 +32,8 @@ Unless required by applicable law or agreed to in writing, software distributed
                      'clip-end-time' => clip.end_time,
                      'clip-source' => clip.source,
                      'media-object-id' => masterfile.media_object_id,
-                     'master-file-id' => masterfile.id } %>
+                     'master-file-id' => masterfile.id,
+                     'can-edit-playlist-item' => (can? :edit, item) } %>
       <%= link_to playlist_path(@playlist, position: clip.playlist_position(@playlist)), data: dataset do %>
         <%= clip.title %>
       <% end %>

@@ -359,7 +359,10 @@ class MEJSMarkersHelper {
    * @return {void}
    */
   showHideAddMarkerButton() {
-    const canEditPlaylistItem = $('#markers').data('canEditPlaylistItem');
+    const canEditPlaylistItem = $('#right-column')
+      .find('.side-playlist li.now_playing')
+      .find('a')
+      .data('canEditPlaylistItem');
     if (canEditPlaylistItem) {
       $('.mejs__add-marker-to-playlist-button').show();
     } else {
