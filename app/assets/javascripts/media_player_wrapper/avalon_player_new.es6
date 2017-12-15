@@ -63,10 +63,9 @@ class MEJSPlayer {
    * @return {void}
    */
   addSectionsClickListener() {
-    const accordionEl = document.getElementById('accordion');
-
-    if (accordionEl) {
-      accordionEl.addEventListener('click', this.handleSectionClick.bind(this));
+    const click_sections = $('#markers_section, #related_items_section');
+    if (click_sections.length > 0) {
+      click_sections.click(this.handleSectionClick.bind(this));
     }
   }
 
@@ -483,7 +482,9 @@ class MEJSPlayer {
   removePlayer() {
     let tagEls = null;
 
-    if (!this.player) { return; }
+    if (!this.player) {
+      return;
+    }
 
     // Pause the player
     if (!this.player.paused) {
