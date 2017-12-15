@@ -17,6 +17,12 @@ require 'active_encode'
 module ActiveEncodeJob
   module Core
     def error(master_file, exception)
+      unless master_file
+        Rails.logger.error exception.message
+        Rails.logger.error exception.backtrace.join("\n")
+        return
+      end
+
       # add message here to update master file
       master_file.status_code = 'FAILED'
       master_file.error = exception.message
