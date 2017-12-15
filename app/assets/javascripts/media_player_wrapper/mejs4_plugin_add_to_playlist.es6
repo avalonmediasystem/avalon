@@ -6,10 +6,6 @@
  * A custom Avalon MediaElement 4 plugin for adding to a playlist
  */
 
-// If plugin needs translations, put here English one in this format:
-// mejs.i18n.en["mejs.id1"] = "String 1";
-// mejs.i18n.en["mejs.id2"] = "String 2";
-
 // Feature configuration
 Object.assign(mejs.MepDefaults, {
   // Any variable that can be configured by the end user belongs here.
@@ -30,23 +26,19 @@ Object.assign(MediaElementPlayer.prototype, {
    * @param {HTMLElement} media
    */
   buildaddToPlaylist(player, controls, layers, media) {
-    // This allows us to access options and other useful elements already set.
-    // Adding variables to the object is a good idea if you plan to reuse
-    // those variables in further operations.
     const t = this;
     const addTitle = 'Add to Playlist';
     let addToPlayListObj = t.addToPlayListObj;
+
+    addToPlayListObj.player = player;
+
     addToPlayListObj.hasPlaylists =
       addToPlayListObj.playlistEl &&
       addToPlayListObj.playlistEl.dataset.hasPlaylists === 'true';
+
     addToPlayListObj.isVideo = player.isVideo;
 
-    // Make player instance available outside of this method
-    addToPlayListObj.player = player;
-
-    // All code required inside here to keep it private;
-    // otherwise, you can create more methods or add variables
-    // outside of this scope
+    // Create plugin control button for player
     player.addPlaylistButton = document.createElement('div');
     player.addPlaylistButton.className =
       t.options.classPrefix +
@@ -67,16 +59,13 @@ Object.assign(MediaElementPlayer.prototype, {
     );
 
     // Set click listeners for form elements
-    if (addToPlayListObj.hasPlaylists) {
-      addToPlayListObj.addButton.addEventListener(
-        'click',
-        addToPlayListObj.handleAddClick.bind(t)
-      );
-      addToPlayListObj.cancelButton.addEventListener(
-        'click',
-        addToPlayListObj.handleCancelClick.bind(t)
-      );
-    }
+    addToPlayListObj.bindHandleAdd = addToPlayListObj.handleAddClick.bind(
+      addToPlayListObj
+    );
+    addToPlayListObj.bindHandleCancel = addToPlayListObj.handleCancelClick.bind(
+      addToPlayListObj
+    );
+    addToPlayListObj.addFormClickListeners();
 
     // Set up click listener for Sections
     $('#accordion').on(
@@ -98,12 +87,24 @@ Object.assign(MediaElementPlayer.prototype, {
    */
   cleanaddToPlaylist(player, controls, layers, media) {
     const t = this;
-    // Remove the click listener on accordion, which captures all
-    // section link clicks
+    let addToPlayListObj = t.addToPlayListObj;
+
+    // Remove the click listener on accordion, which captures all section link clicks
     $('#accordion').off('click');
-    $(t.addToPlayListObj.alertEl).hide();
-    $(t.addToPlayListObj.playlistEl).hide();
-    t.addToPlayListObj.resetForm.apply(t);
+
+    $(addToPlayListObj.alertEl).hide();
+    $(addToPlayListObj.playlistEl).hide();
+    addToPlayListObj.resetForm.apply(t);
+
+    // Remove Add / Cancel button event listeners
+    addToPlayListObj.addButton.removeEventListener(
+      'click',
+      addToPlayListObj.bindHandleAdd
+    );
+    addToPlayListObj.cancelButton.removeEventListener(
+      'click',
+      addToPlayListObj.bindHandleCancel
+    );
   },
 
   // Other optional public methods (all documented according to JSDoc specifications)
@@ -117,6 +118,8 @@ Object.assign(MediaElementPlayer.prototype, {
     active: false,
     addButton: document.getElementById('add_playlist_item_submit'),
     alertEl: document.getElementById('add_to_playlist_alert'),
+    bindHandleAdd: null,
+    bindHandleCancel: null,
     cancelButton: document.getElementById('add_playlist_item_cancel'),
     formInputs: {
       description: document.getElementById('playlist_item_description'),
@@ -131,10 +134,25 @@ Object.assign(MediaElementPlayer.prototype, {
     playlistEl: document.getElementById('add_to_playlist'),
 
     /**
+     * Add click listeners to the Add Playlists form buttons
+     * @function addFormClickListeners
+     * @return {void}
+     */
+    addFormClickListeners: function() {
+      const t = this;
+
+      if (t.hasPlaylists) {
+        t.addButton.addEventListener('click', t.bindHandleAdd);
+        t.cancelButton.addEventListener('click', t.bindHandleCancel);
+      }
+    },
+
+    /**
      * Create a default add to playlist title from @currentStreamInfo
      * Note there is some massaging of the data to get it into place based on whether
      * sections and structural metadata exist.  Perhaps server side could pre-parse the
      * default title to account for scenarios in the future.
+     * @function createDefaultPlaylistTitle
      * @return {string} defaultTitle
      */
     createDefaultPlaylistTitle: function() {
@@ -174,6 +192,7 @@ Object.assign(MediaElementPlayer.prototype, {
 
     /**
      * Handle the 'Add' button click; post form data via ajax and handle response
+     * @function handleAddClick
      * @param  {MouseEvent} e Event generated when Cancel form button clicked
      * @return {void}
      */
@@ -194,60 +213,64 @@ Object.assign(MediaElementPlayer.prototype, {
           }
         }
       })
-        .done(t.addToPlayListObj.handleAddClickSuccess.bind(t))
-        .fail(t.addToPlayListObj.handleAddClickError.bind(t));
+        .done(t.handleAddClickSuccess.bind(t))
+        .fail(t.handleAddClickError.bind(t));
     },
 
     /**
      * Add to playlist AJAX error handler
+     * @function handleAddClickError
      * @param  {Object} error AJAX response
      * @return {void}
      */
     handleAddClickError: function(error) {
       const t = this;
-      let alertEl = t.addToPlayListObj.alertEl;
+      let alertEl = t.alertEl;
+      const message =
+        'ERROR: ' + error.statusText || 'There was an error adding to playlist';
 
       alertEl.classList.remove('alert-success');
       alertEl.classList.add('alert-danger');
       alertEl.classList.add('add_to_playlist_alert_error');
-      alertEl.querySelector('p').innerHTML = error.responseJSON.message;
+      alertEl.querySelector('p').innerHTML = message;
       $(alertEl).slideDown();
     },
 
     /**
      * Add to playlist AJAX success handler
+     * @function handleAddClickSuccess
      * @param  {Object} response AJAX response
      * @return {void}
      */
     handleAddClickSuccess: function(response) {
       const t = this;
-      let alertEl = t.addToPlayListObj.alertEl;
-      let addToPlayListObj = t.addToPlayListObj;
+      let alertEl = t.alertEl;
 
       alertEl.classList.remove('alert-danger');
       alertEl.classList.add('alert-success');
       alertEl.querySelector('p').innerHTML = response.message;
       $(alertEl).slideDown();
-      $(addToPlayListObj.playlistEl).slideUp();
-      addToPlayListObj.resetForm.apply(this);
+      $(t.playlistEl).slideUp();
+      t.resetForm();
     },
 
     /**
      * Handle cancel button click; hide form and alert windows.
+     * @function handleCancelClick
      * @param  {MouseEvent} e Event generated when Cancel form button clicked
      * @return {void}
      */
     handleCancelClick: function(e) {
       const t = this;
-      const addToPlayListObj = t.addToPlayListObj;
 
-      $(addToPlayListObj.alertEl).slideUp();
-      $(addToPlayListObj.playlistEl).slideUp();
-      addToPlayListObj.resetForm.apply(t);
+      $(t.alertEl).slideUp();
+      $(t.playlistEl).slideUp();
+      t.resetForm();
     },
 
     /**
      * Handle control button click to toggle Add Playlist display
+     * @function handleControlClick
      * @param  {MouseEvent} e Event generated when Add to Playlist control button clicked
      * @return {void}
      */
@@ -274,6 +297,7 @@ Object.assign(MediaElementPlayer.prototype, {
 
     /**
      * Handle click events on the Sections and structural metadata links.
+     * @function handleSectionLinkClick
      * @param  {MouseEvent} e [description]
      * @return {void}
      */
@@ -293,6 +317,7 @@ Object.assign(MediaElementPlayer.prototype, {
 
     /**
      * Populate all form fields with default values
+     * @function populateFormValues
      * @return {void}
      */
     populateFormValues: function() {
@@ -324,18 +349,19 @@ Object.assign(MediaElementPlayer.prototype, {
 
     /**
      * Reset all form fields to initial values
+     * @function resetForm
      * @return {void}
      */
     resetForm: function() {
       const t = this;
-      let formInputs = t.addToPlayListObj.formInputs;
+      let formInputs = t.formInputs;
 
       for (let prop in formInputs) {
         if (prop !== 'playlist') {
           formInputs[prop].value = '';
         }
       }
-      t.addToPlayListObj.active = false;
+      t.active = false;
     }
   }
 });
