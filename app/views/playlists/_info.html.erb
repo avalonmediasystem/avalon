@@ -32,7 +32,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
     </div>
     <% @markers = @current_playlist_item.marker %>
-    <div class="panel-heading <%= 'hidden' if @markers.empty? %>" role="tab" id="markers_heading">
+    <div class="panel-heading" role="tab" id="markers_heading" <%= "style=display:none" if @markers.empty? %>>
       <h5 class="panel-title ">
         <a href="#markers_section" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
           Markers
@@ -44,7 +44,7 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% if is_mejs_2? %>
           <%= render 'markers' %>
         <% else %>
-          <%= render 'playlist_items/markers' %>
+          <div id="markers" class="container"></div>
         <% end %>
       </div>
     </div>
@@ -57,7 +57,11 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
     <div id="source_details_section" class="panel-collapse collapse collapsed" role="tabpanel">
       <div class="panel-body">
-        <%= render 'current_item' %>
+        <% if is_mejs_2? %>
+          <%= render 'current_item' %>
+        <% else %>
+          <section id="source_details"></section>
+        <% end %>
       </div>
     </div>
     <% @related_clips = @playlist.related_clips(@current_playlist_item)%>
@@ -70,7 +74,11 @@ Unless required by applicable law or agreed to in writing, software distributed
     </div>
     <div id="related_items_section" class="panel-collapse collapse" role="tabpanel">
       <div class="panel-body">
-        <%= render 'playlist_items/related_items' %>
+        <% if is_mejs_2? %>
+          <%= render 'playlist_items/related_items' %>
+        <% else %>
+          <div id="related_items"></div>
+        <% end %>
       </div>
     </div>
   </div>
