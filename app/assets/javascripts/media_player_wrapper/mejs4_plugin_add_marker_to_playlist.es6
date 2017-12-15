@@ -135,9 +135,12 @@ Object.assign(MediaElementPlayer.prototype, {
       let t = this;
 
       // Set click listeners for Add Marker to Playlist form elements
-      t.addButton.addEventListener('click', t.bindHandleAdd);
-      t.cancelButton.addEventListener('click', t.bindHandleCancel);
-
+      if (t.addButton) {
+        t.addButton.addEventListener('click', t.bindHandleAdd);
+      }
+      if (t.cancelButton) {
+        t.cancelButton.addEventListener('click', t.bindHandleCancel);
+      }
       // Set click listeners on the current markers UI table
       // t.mejsMarkersHelper.addMarkersTableListeners();
     },

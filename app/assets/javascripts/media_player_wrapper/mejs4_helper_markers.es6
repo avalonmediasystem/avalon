@@ -5,6 +5,7 @@
 class MEJSMarkersHelper {
   constructor() {
     this.$accordion = $('#accordion');
+    this.mejsUtility = new MEJSUtility();
   }
 
   /**
@@ -176,9 +177,12 @@ class MEJSMarkersHelper {
    * @return {Promise} Resolves to either a block of markup or an empty string.
    */
   ajaxPlaylistItemsHTML(playlistId, playlistItemId, panelSection) {
+    const t = this;
+
     return new Promise((resolve, reject) => {
       $.ajax({
-        url: `/playlists/${playlistId}/items/${playlistItemId}/${panelSection}`
+        url: `/playlists/${playlistId}/items/${playlistItemId}/${panelSection}`,
+        data: { token: t.mejsUtility.getUrlParameter('token') }
       })
         .done(response => {
           resolve(response);
@@ -232,6 +236,8 @@ class MEJSMarkersHelper {
    * @return {Array} Array of marker start times
    */
   getMarkers(playlistId, playlistItemId) {
+    const t = this;
+
     return new Promise((resolve, reject) => {
       // Check if a playlist item is specified, because playlist items use markers
       // and we'll need to grab markers from the playlist item
@@ -242,6 +248,7 @@ class MEJSMarkersHelper {
         $.ajax({
           url:
             '/playlists/' + playlistId + '/items/' + playlistItemId + '.json',
+          data: { token: t.mejsUtility.getUrlParameter("token") },
           dataType: 'json'
         })
           .done(response => {

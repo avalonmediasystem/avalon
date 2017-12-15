@@ -14,7 +14,7 @@
 
 class PlaylistItemsController < ApplicationController
   before_action :set_playlist, only: [:create, :update, :show, :markers, :related_items]
-  before_action :authenticate_user!
+  before_action :load_playlist_token, only: [:show, :markers, :related_items, :source_details]
   load_resource only: [:show, :update, :markers]
 
   # POST /playlists/1/items
@@ -140,6 +140,11 @@ class PlaylistItemsController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_playlist
     @playlist = Playlist.find(params[:playlist_id])
+  end
+
+  def load_playlist_token
+    @playlist_token = params[:token]
+    current_ability.options[:playlist_token] = @playlist_token
   end
 
   def playlist_item_params

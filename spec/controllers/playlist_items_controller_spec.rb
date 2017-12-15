@@ -37,33 +37,75 @@ RSpec.describe PlaylistItemsController, type: :controller do
 
   let(:playlist_owner) { login_as :user }
   let(:playlist) { FactoryGirl.create(:playlist, user: playlist_owner) }
-  let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object, duration: "100000") }
-  let(:media_object) { FactoryGirl.create(:published_media_object, read_users: [playlist_owner]) }
+  let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: clip) }
+  let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object) }
+  let(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
+  let(:clip) { AvalonClip.create(master_file: master_file) }
 
   describe 'security' do
     let(:playlist) { FactoryGirl.create(:playlist) }
-    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist) }
-    let(:master_file) { FactoryGirl.create(:master_file, :with_media_object, duration: "100000") }
 
     context 'with unauthenticated user' do
-      it "all routes should redirect to sign in" do
-        expect(post :create, playlist_id: playlist.to_param, playlist_item: valid_attributes).to redirect_to(new_user_session_path)
-        expect(put :update, playlist_id: playlist.to_param, id: playlist_item.id).to redirect_to(new_user_session_path)
-        expect(get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to redirect_to(new_user_session_path)
-        expect(get :markers, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to redirect_to(new_user_session_path)
-        expect(get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to redirect_to(new_user_session_path)
+      it "all return 401 unauthorized" do
+        expect(post :create, playlist_id: playlist.to_param, playlist_item: valid_attributes).to have_http_status(:unauthorized)
+        expect(put :update, playlist_id: playlist.to_param, id: playlist_item.id).to have_http_status(:unauthorized)
+        expect(xhr :get, :show, playlist_id: playlist.to_param, id: playlist_item.id).to have_http_status(:unauthorized)
+        expect(get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to have_http_status(:unauthorized)
+        expect(get :markers, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to have_http_status(:unauthorized)
+        expect(get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to have_http_status(:unauthorized)
+      end
+      context 'with a public playlist' do
+        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
+
+        it "returns the playlist item info snippets" do
+          expect(xhr :get, :show, playlist_id: playlist.to_param, id: playlist_item.id).to be_success
+          expect(get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to be_success
+          expect(get :markers, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to be_success
+          expect(get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to be_success
+        end
+      end
+      context 'with a private playlist and token' do
+        let(:playlist) { FactoryGirl.create(:playlist, :with_access_token) }
+
+        it "returns the playlist item info page snippets" do
+          expect(xhr :get, :show, playlist_id: playlist.to_param, id: playlist_item.id, token: playlist.access_token).to be_success
+          expect(get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token).to be_success
+          expect(get :markers, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token).to be_success
+          expect(get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token).to be_success
+        end
       end
     end
     context 'with end-user' do
       before do
         login_as :user
       end
-      it "all routes should return 401" do
+      it "all return 401 unauthorized" do
         expect(post :create, playlist_id: playlist.to_param, playlist_item: valid_attributes).to have_http_status(:unauthorized)
         expect(put :update, playlist_id: playlist.to_param, id: playlist_item.id).to have_http_status(:unauthorized)
+        expect(xhr :get, :show, playlist_id: playlist.to_param, id: playlist_item.id).to have_http_status(:unauthorized)
         expect(get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to have_http_status(:unauthorized)
         expect(get :markers, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to have_http_status(:unauthorized)
         expect(get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to have_http_status(:unauthorized)
+      end
+      context 'with a public playlist' do
+        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
+
+        it "returns the playlist item info snippets" do
+          expect(xhr :get, :show, playlist_id: playlist.to_param, id: playlist_item.id).to be_success
+          expect(get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to be_success
+          expect(get :markers, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to be_success
+          expect(get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id).to be_success
+        end
+      end
+      context 'with a private playlist and token' do
+        let(:playlist) { FactoryGirl.create(:playlist, :with_access_token) }
+
+        it "returns the playlist item info page snippets" do
+          expect(xhr :get, :show, playlist_id: playlist.to_param, id: playlist_item.id, token: playlist.access_token).to be_success
+          expect(get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token).to be_success
+          expect(get :markers, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token).to be_success
+          expect(get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token).to be_success
+        end
       end
     end
   end
@@ -132,8 +174,6 @@ RSpec.describe PlaylistItemsController, type: :controller do
   end
 
   describe 'GET #source_details' do
-    let(:clip) { AvalonClip.create(master_file: master_file) }
-    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: clip) }
     it 'returns HTML' do
       get :source_details, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id
       expect(response).to have_http_status(:ok)
@@ -142,8 +182,6 @@ RSpec.describe PlaylistItemsController, type: :controller do
   end
 
   describe 'GET #markers' do
-    let(:clip) { AvalonClip.create(master_file: master_file) }
-    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: clip) }
     it 'returns HTML' do
       get :markers, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id
       expect(response).to have_http_status(:ok)
@@ -152,8 +190,6 @@ RSpec.describe PlaylistItemsController, type: :controller do
   end
 
   describe 'GET #related_items' do
-    let(:clip) { AvalonClip.create(master_file: master_file) }
-    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: clip) }
     it 'returns HTML' do
       allow_any_instance_of(Playlist).to receive(:related_clips).and_return([clip]);
       get :related_items, playlist_id: playlist.to_param, playlist_item_id: playlist_item.id
@@ -161,5 +197,4 @@ RSpec.describe PlaylistItemsController, type: :controller do
       expect(response).to render_template(:_related_items)
     end
   end
-  
 end
