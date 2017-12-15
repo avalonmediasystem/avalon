@@ -40,6 +40,9 @@ Object.assign(MediaElementPlayer.prototype, {
     const currentPlaylistIds = playlistItemsObj.mejsMarkersHelper.getCurrentPlaylistIds();
     playlistItemsObj.rebuildPlaylistInfoPanels(currentPlaylistIds['playlistId'], currentPlaylistIds['playlistItemId']);
 
+    // Show/hide add marker button on player
+    playlistItemsObj.mejsMarkersHelper.showHideAddMarkerButton();
+
     // Click listeners
     playlistItemsObj.addSidebarListeners();
     playlistItemsObj.addRelatedItemListeners();
@@ -56,6 +59,8 @@ Object.assign(MediaElementPlayer.prototype, {
       'click',
       playlistItemsObj.handleUserSeeking.bind(this)
     );
+
+    playlistItemsObj.refreshInProgress = false;
 
     // Handle continuous MEJS time update event
     media.addEventListener(
@@ -172,8 +177,12 @@ Object.assign(MediaElementPlayer.prototype, {
           // Rebuild playlist info panels
           this.rebuildPlaylistInfoPanels(playlistId, playlistItemId);
 
+          // Show/hide add marker button on player
+          this.mejsMarkersHelper.showHideAddMarkerButton();
+
           // Same media file?
           if (this.currentStreamInfo.id === el.dataset.masterFileId) {
+            this.refreshInProgress = false;
             this.setupNextItem();
           } else {
             // Need a new Mediaelement player and media file
@@ -234,16 +243,18 @@ Object.assign(MediaElementPlayer.prototype, {
 
     /**
      * Playlist item time range has ended. Handle next steps here.
-     * @return {[type]} [description]
+     * @return {void}
      */
     handleRangeEndTimeReached() {
       const t = this;
 
       t.player.pause();
+
       if (t.isAutoplay()) {
         const $nextItem = t.getNextItem();
         if ($nextItem.length > 0) {
           const el = $nextItem.find('a')[0];
+          t.refreshInProgress = true;
           t.analyzeNewItemSource(el);
         }
       }
@@ -256,20 +267,19 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     handleTimeUpdate() {
       const t = this;
-      const playlistItemsObj = t.playlistItemsObj;
-      const currentTime = playlistItemsObj.player.getCurrentTime();
+      const plo = t.playlistItemsObj;
+      const currentTime = plo.player.getCurrentTime();
 
       // Current time is within range of playlist item's start / end times
       if (
-        currentTime >= playlistItemsObj.startEndTimes.start &&
-        currentTime < playlistItemsObj.startEndTimes.end
+        currentTime >= plo.startEndTimes.start &&
+        currentTime < plo.startEndTimes.end
       ) {
         return;
       }
-
       // Playlist item's end time is reached
-      if (playlistItemsObj.itemEnded()) {
-        playlistItemsObj.handleRangeEndTimeReached();
+      if (plo.itemEnded() && !plo.refreshInProgress) {
+        plo.handleRangeEndTimeReached();
         return;
       }
     },
@@ -282,6 +292,8 @@ Object.assign(MediaElementPlayer.prototype, {
       // Always turn off Autoplay when user starts seeking around
       this.playlistItemsObj.turnOffAutoplay();
     },
+
+    refreshInProgress: false,
 
     /**
      * Turn off Autoplay (auto advancing to next item)
