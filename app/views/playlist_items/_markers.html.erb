@@ -45,8 +45,8 @@ Unless required by applicable law or agreed to in writing, software distributed
               <span class="marker_start_time display-item"><%= pretty_time(marker.start_time) %></span>
               <input name="offset_<%= marker.id %>" type="text" class="form-control edit-item outline_on" value="<%= pretty_time(marker.start_time) %>">
             </td>
-            <td class="text-right" id="popover-container-<%= marker.id %>">
-              <% if showActions %>
+            <% if showActions %>
+              <td class="text-right" id="popover-container-<%= marker.id %>">
                 <%# Edit button %>
                 <%= button_tag name: 'edit_marker', class:'btn btn-default btn-xs edit_marker display-item outline_on', type: 'button' do %>
                   <i class="fa fa-edit" title="Edit"></i> <span class="sm-hidden">Edit</span>
@@ -63,8 +63,8 @@ Unless required by applicable law or agreed to in writing, software distributed
                 <button data-marker-id="<%= marker.id %>" name="delete_marker" class="btn btn-danger btn-xs display-item outline_on">
                   <i class="fa fa-times" title="Delete"></i> <span class="sm-hidden">Delete</span>
                 </button>
-              <% end %>
-            </td>
+              </td>
+            <% end %>
           </tr>
         <% end %>
       <% end %>
