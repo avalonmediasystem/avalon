@@ -14,7 +14,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 <div id="related_items">
-  <table class="table table-responsive">
+  <table class="table table-condensed">
     <thead><tr><th>Title</th><th>Start</th><th>End</th><th>Position</th></tr></thead>
     <tbody>
       <% @related_clips.sort_by { |hash| hash['start_time'].to_i}.each do |clip| %>
