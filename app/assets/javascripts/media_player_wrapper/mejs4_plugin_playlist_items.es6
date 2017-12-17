@@ -38,7 +38,10 @@ Object.assign(MediaElementPlayer.prototype, {
 
     // Rebuild playlist info panels
     const currentPlaylistIds = playlistItemsObj.mejsMarkersHelper.getCurrentPlaylistIds();
-    playlistItemsObj.rebuildPlaylistInfoPanels(currentPlaylistIds['playlistId'], currentPlaylistIds['playlistItemId']);
+    playlistItemsObj.rebuildPlaylistInfoPanels(
+      currentPlaylistIds['playlistId'],
+      currentPlaylistIds['playlistItemId']
+    );
 
     // Show/hide add marker button on player
     playlistItemsObj.mejsMarkersHelper.showHideAddMarkerButton();
@@ -60,8 +63,8 @@ Object.assign(MediaElementPlayer.prototype, {
       playlistItemsObj.handleUserSeeking.bind(this)
     );
 
-    // Set default values for helper boolean flags
-    playlistItemsObj.refreshInProgress = false;
+    // Track the number of MEJS 'timeupdate' events which fire after the end time of a playlist item
+    playlistItemsObj.endTimeCount = 0;
 
     // Handle continuous MEJS time update event
     media.addEventListener(
@@ -162,6 +165,8 @@ Object.assign(MediaElementPlayer.prototype, {
         el.dataset.clipStartTime / 1000,
         el.dataset.clipEndTime / 1000
       ];
+      const isSameMediaFile =
+        this.currentStreamInfo.id === el.dataset.masterFileId;
 
       // Show spinner
       this.mejsMarkersHelper.spinnerToggle(true);
@@ -183,8 +188,9 @@ Object.assign(MediaElementPlayer.prototype, {
           this.mejsMarkersHelper.showHideAddMarkerButton();
 
           // Same media file?
-          if (this.currentStreamInfo.id === el.dataset.masterFileId) {
-            this.refreshInProgress = false;
+          if (isSameMediaFile) {
+            // Set the endTimeCount back to 0
+            this.endTimeCount = 0;
             this.setupNextItem();
           } else {
             // Need a new Mediaelement player and media file
@@ -211,6 +217,12 @@ Object.assign(MediaElementPlayer.prototype, {
      * @type {Object}
      */
     currentStreamInfo: null,
+
+    /**
+     * Helper variable to track the number of times the playlist item's end time handler function has been called
+     * @type {Number}
+     */
+    endTimeCount: 0,
 
     /**
      * Returns the next playlist list (<li>) item in sidebar
@@ -261,18 +273,19 @@ Object.assign(MediaElementPlayer.prototype, {
       const t = this;
       const $nextItem = t.getNextItem();
 
+      t.endTimeCount++;
       t.player.pause();
 
       // Return playlist head to item's start time
       if ($nextItem.length === 0 || !t.isAutoplay()) {
         t.player.setCurrentTime(t.startEndTimes.start);
+        t.endTimeCount = 0;
         return;
       }
 
       // Autoplay is 'On'
       if (t.isAutoplay()) {
         const el = $nextItem.find('a')[0];
-        t.refreshInProgress = true;
         t.analyzeNewItemSource(el);
       }
     },
@@ -286,6 +299,7 @@ Object.assign(MediaElementPlayer.prototype, {
       const t = this;
       const plo = t.playlistItemsObj;
       const currentTime = plo.player.getCurrentTime();
+      const isEnded = plo.isItemEnded(currentTime);
 
       // The player currentTime is less than item end time, so revert to regular behavior
       // of playing through time ranges
@@ -299,11 +313,7 @@ Object.assign(MediaElementPlayer.prototype, {
       }
 
       // Playlist item's end time is reached
-      if (
-        plo.isItemEnded(currentTime) &&
-        !plo.refreshInProgress &&
-        !plo.seekPastEnd
-      ) {
+      if (isEnded && plo.endTimeCount < 1 && !plo.seekPastEnd) {
         plo.handleRangeEndTimeReached();
         return;
       }
@@ -438,8 +448,6 @@ Object.assign(MediaElementPlayer.prototype, {
      * @type {Object}
      */
     $relatedItems: $('#related_items_section') || null,
-
-    refreshInProgress: false,
 
     /**
      * Helper variable specifying whether the user has clicked in the time rail past the playlist item end time.

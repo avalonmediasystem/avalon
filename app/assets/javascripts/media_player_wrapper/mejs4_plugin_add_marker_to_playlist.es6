@@ -91,14 +91,18 @@ Object.assign(MediaElementPlayer.prototype, {
   cleanaddMarkerToPlaylist(player, controls, layers, media) {
     const t = this;
 
-    t.addMarkerObj.addButton.removeEventListener(
-      'click',
-      t.addMarkerObj.bindHandleAdd
-    );
-    t.addMarkerObj.cancelButton.removeEventListener(
-      'click',
-      t.addMarkerObj.bindHandleCancel
-    );
+    if (t.addMarkerObj.addButton) {
+      t.addMarkerObj.addButton.removeEventListener(
+        'click',
+        t.addMarkerObj.bindHandleAdd
+      );
+    }
+    if (t.addMarkerObj.cancelButton) {
+      t.addMarkerObj.cancelButton.removeEventListener(
+        'click',
+        t.addMarkerObj.bindHandleCancel
+      );
+    }
 
     $(t.addMarkerObj.alertEl).hide();
     $(t.addMarkerObj.formWrapperEl).hide();
@@ -306,12 +310,12 @@ Object.assign(MediaElementPlayer.prototype, {
       const t = this;
       let formInputs = t.formInputs;
 
-      /* eslint-disable guard-for-in */
-      for (let prop in formInputs) {
-        formInputs[prop].value = '';
+      for (const prop in formInputs) {
+        if (formInputs.hasOwnProperty(prop) && formInputs[prop]) {
+          formInputs[prop].value = '';
+        }
       }
       t.active = false;
-      /* eslint-enable guard-for-in */
     }
   }
 });
