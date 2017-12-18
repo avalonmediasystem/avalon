@@ -167,45 +167,46 @@ Object.assign(MediaElementPlayer.prototype, {
       ];
       const isSameMediaFile =
         this.currentStreamInfo.id === el.dataset.masterFileId;
+      
+      // Update right column playlist items list
+      this.updatePlaylistItemsList(el);
 
-      // Get new markers
-      this.mejsMarkersHelper
-        .getMarkers(playlistId, playlistItemId)
-        .then(response => {
-          const markers = response;
+      // Show/hide add marker button on player
+      this.mejsMarkersHelper.showHideAddMarkerButton();
 
-          // Update markers in time rail, and update right column playlist items list
-          this.mejsMarkersHelper.updateVisualMarkers(markers);
-          this.updatePlaylistItemsList(el);
+      // Update markers in time rail
+      this.mejsMarkersHelper.updateVisualMarkers();
 
-          // Show/hide add marker button on player
-          this.mejsMarkersHelper.showHideAddMarkerButton();
+      // Same media file?
+      if (isSameMediaFile) {
+        // Set the endTimeCount back to 0
+        this.endTimeCount = 0;
+        this.setupNextItem();
+        // Rebuild playlist info panels
+        this.rebuildPlaylistInfoPanels(playlistId, playlistItemId);
 
-          // Same media file?
-          if (isSameMediaFile) {
-            // Set the endTimeCount back to 0
-            this.endTimeCount = 0;
-            this.setupNextItem();
-            // Rebuild playlist info panels
-            this.rebuildPlaylistInfoPanels(playlistId, playlistItemId);
-          } else {
-            // Need a new Mediaelement player and media file
-            const id = el.dataset.masterFileId;
-            const url = `/media_objects/${
-              el.dataset.mediaObjectId
-            }/section/${id}`;
+      } else {
+        // Need a new Mediaelement player and media file
+        const id = el.dataset.masterFileId;
+        const url = `/media_objects/${el.dataset.mediaObjectId}/section/${id}`;
 
-            // Update mejs4AvalonPlayer.playlistItem with ids here
-            mejs4AvalonPlayer.playlistItem = Object.assign(
-              {},
-              mejs4AvalonPlayer.playlistItem,
-              { id: playlistItemId, playlist_id: playlistId, position: null }
-            );
+        // Update mejs4AvalonPlayer.playlistItem with ids here
+        mejs4AvalonPlayer.playlistItem = Object.assign(
+          {},
+          mejs4AvalonPlayer.playlistItem,
+          { id: playlistItemId, playlist_id: playlistId, position: null }
+        );
 
-            // Get new data and create new player instance
-            mejs4AvalonPlayer.getNewStreamAjax(id, url, playlistItemT);
-          }
-        });
+        // Update mejs4AvalonPlayer.playlistItem with ids here
+        mejs4AvalonPlayer.playlistItem = Object.assign(
+          {},
+          mejs4AvalonPlayer.playlistItem,
+          { id: playlistItemId, playlist_id: playlistId, position: null }
+        );
+
+        // Get new data and create new player instance
+        mejs4AvalonPlayer.getNewStreamAjax(id, url, playlistItemT);
+      }
     },
 
     /**
@@ -399,7 +400,7 @@ Object.assign(MediaElementPlayer.prototype, {
       const t = this;
 
       // Rebuild markers table
-      t.mejsMarkersHelper.rebuildMarkersTable();
+      t.mejsMarkersHelper.rebuildMarkers();
       // Rebuild source item details panel section
       t.rebuildPanelMarkup(playlistId, playlistItemId, 'source_details');
       // Rebuild the related items panel section

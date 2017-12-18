@@ -92,18 +92,12 @@ class MEJSMarkersHelper {
             const row = $('#markers')[0].querySelector(
               'tr[data-marker-id="' + response.id + '"]'
             );
-            const playlistIds = this.getCurrentPlaylistIds();
 
             $button.popover('destroy');
             // Remove from list
             row.parentNode.removeChild(row);
             // Update visual markers in player's time rail
-            this.getMarkers(
-              playlistIds.playlistId,
-              playlistIds.playlistItemId
-            ).then(response => {
-              this.updateVisualMarkers(response);
-            });
+            this.updateVisualMarkers();
           })
           .fail(error => {
             console.log('error', error);
@@ -139,22 +133,15 @@ class MEJSMarkersHelper {
         }
       })
         .done(response => {
-          const playlistIds = this.getCurrentPlaylistIds();
-
           // Update visual markers in player's time rail
-          this.getMarkers(
-            playlistIds.playlistId,
-            playlistIds.playlistItemId
-          ).then(response => {
-            this.updateVisualMarkers(response);
-          });
+          this.updateVisualMarkers();
 
           // Remove original marker offset value
           // TODO: Remember why I originally did this?
           delete originalMarkerValues[markerId];
 
           // Rebuild markers table with updated values
-          t.rebuildMarkersTable();
+          t.rebuildMarkers();
         })
         .fail(error => {
           // Display error message
@@ -229,7 +216,7 @@ class MEJSMarkersHelper {
    * @function getMarkers
    * @param {number} playlistId Id of playlist
    * @param {number} playlistItemId Id of playlist item
-   * @return {Array} Array of marker start times
+   * @return {Array} Array of markers
    */
   getMarkers(playlistId, playlistItemId) {
     const t = this;
@@ -251,9 +238,7 @@ class MEJSMarkersHelper {
             if (response.message) {
               //TODO: display error message somehow (500 or 401)
             } else if (response.markers && response.markers.length > 0) {
-              markers = response.markers.map(marker => {
-                return marker.start_time;
-              });
+              markers = response.markers;
             }
             resolve(markers);
           })
@@ -304,13 +289,13 @@ class MEJSMarkersHelper {
       .then(response => {
         // Insert the fresh HTML table
         $('#markers').replaceWith(response);
-        // Add event listeners to newly created row
-        t.addMarkersTableListeners();
         // hide marker sections if no markers (first row is header)
         if ($('#markers').find('tr').length === 1) {
           $('#markers_section').collapse('hide');
           $('#markers_heading').hide();
         } else {
+          // Add event listeners to newly created row
+          t.addMarkersTableListeners();
           $('#markers_heading').show();
         }
         t.spinnerToggle('markers');
@@ -359,26 +344,90 @@ class MEJSMarkersHelper {
   }
 
   /**
+   * Re-build the markers table and player markers
+   * @function rebuildMarkers
+   * @return {void}
+   */
+  rebuildMarkers() {
+    this.rebuildMarkersTable();
+    this.updateVisualMarkers();
+  }
+
+  /**
    * Update markers in Mediaelement player's time rail by hooking into the Mediaelement Markers plugin
    * @function updateVisualMarkers
    * @param {Array} markers Array of marker start times
    * @return {void}
    */
-  updateVisualMarkers(markers) {
-    const t = this;
-    const player = mejs4AvalonPlayer.player;
-    player.options.markers = markers;
+  updateVisualMarkers() {
+    const playlistIds = this.getCurrentPlaylistIds();
 
-    // Directly delete current markers from the player UI
-    let currentMarkerEls = player.controls.getElementsByClassName(
-      player.options.classPrefix + 'time-marker'
+    this.getMarkers(playlistIds.playlistId, playlistIds.playlistItemId).then(
+      response => {
+        const markers = response;
+        const t = this;
+        const player = mejs4AvalonPlayer.player;
+        const duration = player.duration;
+
+        // Build out marker marker_rail
+        let scrubber = $('.mejs__time-rail');
+        let total = $('.mejs__time-total');
+        scrubber.css('position', 'relative');
+        $('.mejs__time-rail-marker').remove();
+        const marker_rail = $('<span class="mejs__time-rail-marker">');
+        markers.forEach(marker => {
+          const offset = marker['start_time'];
+          const title = marker['title'];
+          const marker_id = marker['id'];
+          const offset_percent = isNaN(parseFloat(offset))
+            ? 0
+            : Math.min(100, Math.round(100 * offset / duration));
+          const new_marker = $(
+            '<span class="fa fa-chevron-up scrubber-marker" style="left: ' +
+              offset_percent +
+              '%" data-marker="' +
+              marker_id +
+              '"></span>'
+          );
+          new_marker.bind('click', e => {
+            player.setCurrentTime(offset);
+          });
+          marker_rail.append(new_marker);
+          marker_rail.append(
+            '<span class="mejs__time-float-marker" data-marker="' +
+              marker_id +
+              '" style="display: none; left: ' +
+              offset_percent +
+              '%" ><span class="mejs__time-float-current-marker">' +
+              title +
+              ' [' +
+              mejs.Utils.secondsToTimeCode(offset) +
+              ']' +
+              '</span><span class="mejs__time-float-corner-marker"></span></span>'
+          );
+        });
+        marker_rail.width(total.width());
+        scrubber.append(marker_rail);
+        player.globalBind('resize', e => {
+          marker_rail.width(total.width());
+        });
+        $('.scrubber-marker').on('mouseenter', e => {
+          console.log('mouseenter');
+          $(
+            '.mejs__time-float-marker[data-marker="' +
+              e.target.dataset.marker +
+              '"]'
+          ).show();
+        });
+        $('.scrubber-marker').on('mouseleave', e => {
+          console.log('mouseleave');
+          $(
+            '.mejs__time-float-marker[data-marker="' +
+              e.target.dataset.marker +
+              '"]'
+          ).hide();
+        });
+      }
     );
-    while (currentMarkerEls[0]) {
-      currentMarkerEls[0].parentNode.removeChild(currentMarkerEls[0]);
-    }
-
-    // Call methods on the MEJS4 markers plugin to re-build markers and apply to the player
-    player.buildmarkers(player, player.controls, undefined, player.media);
-    player.setmarkers(player.controls);
   }
 }
