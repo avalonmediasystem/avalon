@@ -189,10 +189,6 @@ class MEJSMarkersHelper {
         })
         .fail(error => {
           reject('');
-        })
-        .always(() => {
-          // Turn off spinner
-          this.spinnerToggle();
         });
     });
   }
@@ -296,6 +292,8 @@ class MEJSMarkersHelper {
     const t = this;
     const playlistIds = this.getCurrentPlaylistIds();
 
+    t.spinnerToggle('markers', true);
+
     // Grab new html to use
     t
       .ajaxPlaylistItemsHTML(
@@ -315,17 +313,48 @@ class MEJSMarkersHelper {
         } else {
           $('#markers_heading').show();
         }
+        t.spinnerToggle('markers');
       })
       .catch(err => {
         console.log(err);
+        t.spinnerToggle('markers');
       });
   }
 
-  spinnerToggle(on) {
-    if (on) {
-      this.$accordion.addClass('spinner');
+  /**
+   * Show or hide the button for Add Marker to Playlist Item
+   * @function showHideAddMarkerButton
+   * @return {void}
+   */
+  showHideAddMarkerButton() {
+    const canEditPlaylistItem = $('#right-column')
+      .find('.side-playlist li.now_playing')
+      .find('a')
+      .data('canEditPlaylistItem');
+    if (canEditPlaylistItem) {
+      $('.mejs__add-marker-to-playlist-button').show();
     } else {
-      this.$accordion.removeClass('spinner');
+      $('.mejs__add-marker-to-playlist-button').hide();
+    }
+  }
+
+  /**
+   * Toggle the spinner class on or off
+   * @function spinnerToggle
+   * @param  {string} panel Attribute id value of element to apply the spinner class on
+   * @param  {boolean} on  If set, this means turn the spinner on; else turn off
+   * @return {void}
+   */
+  spinnerToggle(panel, on) {
+    let $panel = $(`#${panel}`);
+    if ($panel.length === 0) {
+      return;
+    }
+
+    if (on) {
+      $panel.addClass('spinner');
+    } else {
+      $panel.removeClass('spinner');
     }
   }
 
@@ -351,22 +380,5 @@ class MEJSMarkersHelper {
     // Call methods on the MEJS4 markers plugin to re-build markers and apply to the player
     player.buildmarkers(player, player.controls, undefined, player.media);
     player.setmarkers(player.controls);
-  }
-
-  /**
-   * Show or hide the button for Add Marker to Playlist Item
-   * @function showHideAddMarkerButton
-   * @return {void}
-   */
-  showHideAddMarkerButton() {
-    const canEditPlaylistItem = $('#right-column')
-      .find('.side-playlist li.now_playing')
-      .find('a')
-      .data('canEditPlaylistItem');
-    if (canEditPlaylistItem) {
-      $('.mejs__add-marker-to-playlist-button').show();
-    } else {
-      $('.mejs__add-marker-to-playlist-button').hide();
-    }
   }
 }
