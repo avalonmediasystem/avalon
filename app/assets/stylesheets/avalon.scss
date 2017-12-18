@@ -784,7 +784,7 @@ $accordionPadding: 20px;
 #accordion.panel-group {
   margin-top: 10px;
   position: relative;
-  
+
   a {
     display: inline-block;
     cursor: pointer;
@@ -827,6 +827,7 @@ $accordionPadding: 20px;
   }
   .panel-body {
     border-top: none;
+    position: relative;
     ul {
       padding-left: $accordionPadding;
       i.now-playing {

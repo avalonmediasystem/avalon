@@ -168,9 +168,6 @@ Object.assign(MediaElementPlayer.prototype, {
       const isSameMediaFile =
         this.currentStreamInfo.id === el.dataset.masterFileId;
 
-      // Show spinner
-      this.mejsMarkersHelper.spinnerToggle(true);
-
       // Get new markers
       this.mejsMarkersHelper
         .getMarkers(playlistId, playlistItemId)
@@ -181,9 +178,6 @@ Object.assign(MediaElementPlayer.prototype, {
           this.mejsMarkersHelper.updateVisualMarkers(markers);
           this.updatePlaylistItemsList(el);
 
-          // Rebuild playlist info panels
-          this.rebuildPlaylistInfoPanels(playlistId, playlistItemId);
-
           // Show/hide add marker button on player
           this.mejsMarkersHelper.showHideAddMarkerButton();
 
@@ -192,6 +186,8 @@ Object.assign(MediaElementPlayer.prototype, {
             // Set the endTimeCount back to 0
             this.endTimeCount = 0;
             this.setupNextItem();
+            // Rebuild playlist info panels
+            this.rebuildPlaylistInfoPanels(playlistId, playlistItemId);
           } else {
             // Need a new Mediaelement player and media file
             const id = el.dataset.masterFileId;
@@ -359,10 +355,7 @@ Object.assign(MediaElementPlayer.prototype, {
       const t = this;
       const currentTimeAdjusted = currentTime + t.threshold;
       const startEndTimes = t.startEndTimes;
-      return (
-        currentTime >= startEndTimes.start &&
-        !t.isItemEnded(currentTime)
-      );
+      return currentTime >= startEndTimes.start && !t.isItemEnded(currentTime);
     },
 
     /**
@@ -424,6 +417,9 @@ Object.assign(MediaElementPlayer.prototype, {
     rebuildPanelMarkup(playlistId, playlistItemId, panel) {
       const t = this;
 
+      // Add loading spinner
+      t.mejsMarkersHelper.spinnerToggle(panel, true);
+
       // Grab new html to use
       t.mejsMarkersHelper
         .ajaxPlaylistItemsHTML(playlistId, playlistItemId, panel)
@@ -437,9 +433,11 @@ Object.assign(MediaElementPlayer.prototype, {
           } else {
             $('#' + panel + '_heading').show();
           }
+          t.mejsMarkersHelper.spinnerToggle(panel);
         })
         .catch(err => {
           console.log(err);
+          t.mejsMarkersHelper.spinnerToggle(panel);
         });
     },
 
