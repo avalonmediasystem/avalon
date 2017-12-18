@@ -63,9 +63,9 @@ class MEJSPlayer {
    * @return {void}
    */
   addSectionsClickListener() {
-    const click_sections = $('#markers_section, #related_items_section');
-    if (click_sections.length > 0) {
-      click_sections.click(this.handleSectionClick.bind(this));
+    const $accordionEl = $('#accordion.media-show-page');
+    if ($accordionEl.length > 0) {
+      $accordionEl[0].addEventListener('click', this.handleSectionClick.bind(this));
     }
   }
 
