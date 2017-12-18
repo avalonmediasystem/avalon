@@ -27,7 +27,14 @@ class MEJSMarkersHelper {
       const offset = $(e.target)
         .parents('tr')
         .data('offset');
-      player.setCurrentTime(offset);
+      const event = new CustomEvent('markerTitleClicked', {
+        detail: {
+          offset: +offset
+        }
+      });
+      
+      player.setCurrentTime(+offset);
+      document.dispatchEvent(event);
     });
 
     // Edit button click
