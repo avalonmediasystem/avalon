@@ -235,11 +235,7 @@ Object.assign(MediaElementPlayer.prototype, {
       t.resetForm();
 
       // Update visual markers in player's time rail
-      t.mejsMarkersHelper
-        .getMarkers(playlistIds.playlistId, playlistIds.playlistItemId)
-        .then(response => {
-          t.mejsMarkersHelper.updateVisualMarkers(response);
-        });
+      t.mejsMarkersHelper.updateVisualMarkers();
 
       if (t.markersEl) {
         // Rebuild Markers table
