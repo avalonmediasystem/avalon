@@ -294,7 +294,7 @@ class MEJSMarkersHelper {
           $('#markers_section').collapse('hide');
           $('#markers_heading').hide();
         } else {
-          // Add event listeners to newly created row
+          // Add event listeners to markers
           t.addMarkersTableListeners();
           $('#markers_heading').show();
         }
@@ -354,9 +354,8 @@ class MEJSMarkersHelper {
   }
 
   /**
-   * Update markers in Mediaelement player's time rail by hooking into the Mediaelement Markers plugin
+   * Update markers in Mediaelement player's time rail
    * @function updateVisualMarkers
-   * @param {Array} markers Array of marker start times
    * @return {void}
    */
   updateVisualMarkers() {
@@ -365,15 +364,12 @@ class MEJSMarkersHelper {
     this.getMarkers(playlistIds.playlistId, playlistIds.playlistItemId).then(
       response => {
         const markers = response;
-        const t = this;
-        const player = mejs4AvalonPlayer.player;
-        const duration = player.duration;
-
-        // Build out marker marker_rail
-        let scrubber = $('.mejs__time-rail');
-        let total = $('.mejs__time-total');
-        scrubber.css('position', 'relative');
+        const duration = mejs4AvalonPlayer.player.duration;
+        const scrubber = $('.mejs__time-rail').css('position', 'relative');
+        const total = $('.mejs__time-total');
+        // remove the existing marker rail and all it children/event
         $('.mejs__time-rail-marker').remove();
+        // create a new marker rail
         const marker_rail = $('<span class="mejs__time-rail-marker">');
         markers.forEach(marker => {
           const offset = marker['start_time'];
@@ -382,52 +378,94 @@ class MEJSMarkersHelper {
           const offset_percent = isNaN(parseFloat(offset))
             ? 0
             : Math.min(100, Math.round(100 * offset / duration));
-          const new_marker = $(
-            '<span class="fa fa-chevron-up scrubber-marker" style="left: ' +
-              offset_percent +
-              '%" data-marker="' +
-              marker_id +
-              '"></span>'
-          );
-          new_marker.bind('click', e => {
-            player.setCurrentTime(offset);
-          });
-          marker_rail.append(new_marker);
+          // attach new marker to rail
           marker_rail.append(
-            '<span class="mejs__time-float-marker" data-marker="' +
-              marker_id +
-              '" style="display: none; left: ' +
-              offset_percent +
-              '%" ><span class="mejs__time-float-current-marker">' +
-              title +
-              ' [' +
-              mejs.Utils.secondsToTimeCode(offset) +
-              ']' +
-              '</span><span class="mejs__time-float-corner-marker"></span></span>'
+            this.newMarkerElement(marker_id, offset, offset_percent)
+          );
+          // attach popover for new marker
+          marker_rail.append(
+            this.newMarkerFloatElement(marker_id, title, offset, offset_percent)
           );
         });
-        marker_rail.width(total.width());
+        // set width of marker rail equal to mejs time rail
+        this.resizeMarkerRail(marker_rail, total);
         scrubber.append(marker_rail);
-        player.globalBind('resize', e => {
-          marker_rail.width(total.width());
-        });
-        $('.scrubber-marker').on('mouseenter', e => {
-          console.log('mouseenter');
-          $(
-            '.mejs__time-float-marker[data-marker="' +
-              e.target.dataset.marker +
-              '"]'
-          ).show();
-        });
-        $('.scrubber-marker').on('mouseleave', e => {
-          console.log('mouseleave');
-          $(
-            '.mejs__time-float-marker[data-marker="' +
-              e.target.dataset.marker +
-              '"]'
-          ).hide();
+        // handle rezising of window by resetting width of marker rail
+        mejs4AvalonPlayer.player.globalBind('resize', e => {
+          this.resizeMarkerRail(marker_rail, total);
         });
       }
+    );
+  }
+
+  /**
+   * Set the width of the marker rail
+   * @function resizeMarkerRail
+   * @param {jquery_object} marker_rail The marker_rail element
+   * @param {jquery_object} total The mejs time rail element
+   * @return {void}
+   */
+  resizeMarkerRail(marker_rail, total) {
+    marker_rail.width(total.width());
+  }
+
+  /**
+   * Get jquery element with markup for a new marker and click handler applied
+   * @function newMarkerElement
+   * @param {String} marker_id Id to use for new marker
+   * @param {Float} offset StartTime of the marker
+   * @param {Float} offset_percent StartTime as percentage of total timerail
+   * @return {jquery_object} New jquery object representing the marker
+   */
+  newMarkerElement(marker_id, offset, offset_percent) {
+    const new_marker = $(
+      '<span class="fa fa-chevron-up scrubber-marker" style="left: ' +
+        offset_percent +
+        '%" data-marker="' +
+        marker_id +
+        '"></span>'
+    )
+      .bind('click', e => {
+        mejs4AvalonPlayer.player.setCurrentTime(offset);
+      })
+      .bind('mouseenter', e => {
+        $(
+          '.mejs__time-float-marker[data-marker="' +
+            e.target.dataset.marker +
+            '"]'
+        ).show();
+      })
+      .bind('mouseleave', e => {
+        $(
+          '.mejs__time-float-marker[data-marker="' +
+            e.target.dataset.marker +
+            '"]'
+        ).hide();
+      });
+    return new_marker;
+  }
+
+  /**
+   * Get jquery element with markup for a new marker popover
+   * @function newMarkerFloatElement
+   * @param {String} marker_id Id to use for new marker float
+   * @param {String} title Title to use for new marker float
+   * @param {Float} offset StartTime of the marker
+   * @param {Float} offset_percent StartTime as percentage of total timerail
+   * @return {jquery_object} New jquery object representing the marker popover
+   */
+  newMarkerFloatElement(marker_id, title, offset, offset_percent) {
+    return $(
+      '<span class="mejs__time-float-marker" data-marker="' +
+        marker_id +
+        '" style="display: none; left: ' +
+        offset_percent +
+        '%" ><span class="mejs__time-float-current-marker">' +
+        title +
+        ' [' +
+        mejs.Utils.secondsToTimeCode(offset) +
+        ']' +
+        '</span><span class="mejs__time-float-corner-marker"></span></span>'
     );
   }
 }

@@ -167,7 +167,7 @@ Object.assign(MediaElementPlayer.prototype, {
       ];
       const isSameMediaFile =
         this.currentStreamInfo.id === el.dataset.masterFileId;
-      
+
       // Update right column playlist items list
       this.updatePlaylistItemsList(el);
 
@@ -184,18 +184,10 @@ Object.assign(MediaElementPlayer.prototype, {
         this.setupNextItem();
         // Rebuild playlist info panels
         this.rebuildPlaylistInfoPanels(playlistId, playlistItemId);
-
       } else {
         // Need a new Mediaelement player and media file
         const id = el.dataset.masterFileId;
         const url = `/media_objects/${el.dataset.mediaObjectId}/section/${id}`;
-
-        // Update mejs4AvalonPlayer.playlistItem with ids here
-        mejs4AvalonPlayer.playlistItem = Object.assign(
-          {},
-          mejs4AvalonPlayer.playlistItem,
-          { id: playlistItemId, playlist_id: playlistId, position: null }
-        );
 
         // Update mejs4AvalonPlayer.playlistItem with ids here
         mejs4AvalonPlayer.playlistItem = Object.assign(
