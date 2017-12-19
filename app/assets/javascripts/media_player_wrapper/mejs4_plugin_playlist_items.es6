@@ -417,12 +417,35 @@ Object.assign(MediaElementPlayer.prototype, {
     rebuildPlaylistInfoPanels(playlistId, playlistItemId) {
       const t = this;
 
+      // Rebuild playlistItem heading
+      t.rebuildHeading(playlistId, playlistItemId);
       // Rebuild markers table
       t.mejsMarkersHelper.rebuildMarkers();
       // Rebuild source item details panel section
       t.rebuildPanelMarkup(playlistId, playlistItemId, 'source_details');
       // Rebuild the related items panel section
       t.rebuildPanelMarkup(playlistId, playlistItemId, 'related_items');
+    },
+
+    /**
+     * Re-build item details page panel HTML sections
+     * @function rebuildHeading
+     * @param playlistId
+     * @param playlistItemId,
+     * @return {void}
+     */
+    rebuildHeading(playlistId, playlistItemId) {
+      const $nowPlaying = this.$sidePlaylist.find(
+        'a[data-playlist-id=' +
+          playlistId +
+          '][data-playlist-item-id=' +
+          playlistItemId +
+          ']'
+      );
+      const duration = $nowPlaying.next('span').text();
+      const $headingTitle = $('#heading0 h4 span:first');
+      $headingTitle.text($.trim($nowPlaying.text()));
+      $headingTitle.next().text('[' + $.trim(duration) + ']');
     },
 
     /**
