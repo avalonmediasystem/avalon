@@ -8,7 +8,7 @@
 var mejs4ConfigFeatures = ['playpause', 'current', 'progress', 'duration', 'trackScrubber', 'volume', 'tracks', 'quality', 'createThumbnail', 'addToPlaylist', 'fullscreen'];
 
 // do not show createThumbnail button if current user can't edit mediaObject
-if (<%= cannot? :edit, MediaObject %>) {
+if (<%= cannot? :edit, @media_object %>) {
     mejs4ConfigFeatures.splice(mejs4ConfigFeatures.indexOf('createThumbnail'), 1);
 }
 
