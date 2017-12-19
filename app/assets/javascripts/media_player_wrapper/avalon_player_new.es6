@@ -65,7 +65,10 @@ class MEJSPlayer {
   addSectionsClickListener() {
     const $accordionEl = $('#accordion.media-show-page');
     if ($accordionEl.length > 0) {
-      $accordionEl[0].addEventListener('click', this.handleSectionClick.bind(this));
+      $accordionEl[0].addEventListener(
+        'click',
+        this.handleSectionClick.bind(this)
+      );
     }
   }
 
@@ -93,13 +96,8 @@ class MEJSPlayer {
    * @return {void}
    */
   emitSuccessEvent() {
-    // TODO: This is an example of something we could hook into.  Don't need quite yet but might...
-    const myEvent = new CustomEvent('mejs4handleSuccess', {
-      detail: {
-        foo: 'bar'
-      }
-    });
-    document.getElementById('content').dispatchEvent(myEvent);
+    const event = new CustomEvent('mejs4handleSuccess');
+    document.dispatchEvent(event);
   }
 
   /**
