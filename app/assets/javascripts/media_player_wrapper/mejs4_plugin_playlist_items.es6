@@ -40,13 +40,6 @@ Object.assign(MediaElementPlayer.prototype, {
     // Track the number of MEJS 'timeupdate' events which fire after the end time of a playlist item
     playlistItemsObj.endTimeCount = 0;
 
-    // Rebuild playlist info panels
-    const currentPlaylistIds = playlistItemsObj.mejsMarkersHelper.getCurrentPlaylistIds();
-    playlistItemsObj.rebuildPlaylistInfoPanels(
-      currentPlaylistIds['playlistId'],
-      currentPlaylistIds['playlistItemId']
-    );
-
     // Show/hide add marker button on player
     playlistItemsObj.mejsMarkersHelper.showHideAddMarkerButton();
 
@@ -77,10 +70,10 @@ Object.assign(MediaElementPlayer.prototype, {
     // Set current playing item in this class context
     playlistItemsObj.setCurrentItemInternally();
 
-    // Handle canplay event, start the player at the playlist item start time
+    // Handle canplay event, which defines a 'state' needed before we can call other setup functions
     media.addEventListener(
       'canplay',
-      playlistItemsObj.goToPlaylistItemStartTime.bind(playlistItemsObj)
+      playlistItemsObj.handleCanPlay.bind(playlistItemsObj)
     );
   },
 
@@ -148,11 +141,7 @@ Object.assign(MediaElementPlayer.prototype, {
             let playlistId = e.target.dataset.playlistId;
             let playlistItemId = e.target.dataset.playlistItemId;
             let related = this.$sidePlaylist.find(
-              'a[data-playlist-id=' +
-                playlistId +
-                '][data-playlist-item-id=' +
-                playlistItemId +
-                ']'
+              `a[data-playlist-id="${playlistId}"][data-playlist-item-id="${playlistItemId}"]`
             );
             related.click();
           }
@@ -259,6 +248,22 @@ Object.assign(MediaElementPlayer.prototype, {
         this.player.play();
       }
       this.player.avalonWrapper.isFirstLoad = false;
+    },
+
+    /**
+     * Handle Mediaelement 'canplay' event in this plugin file.
+     * When 'canplay' fires, then we have the information on the player we need to execute
+     * the internal functions defined below.
+     * @return {void}
+     */
+    handleCanPlay() {
+      const t = this;
+      const currentPlaylistIds = t.mejsMarkersHelper.getCurrentPlaylistIds();
+      t.rebuildPlaylistInfoPanels(
+        currentPlaylistIds['playlistId'],
+        currentPlaylistIds['playlistItemId']
+      );
+      t.goToPlaylistItemStartTime();
     },
 
     /**
