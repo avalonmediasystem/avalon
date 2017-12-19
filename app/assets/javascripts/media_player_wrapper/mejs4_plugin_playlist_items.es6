@@ -30,11 +30,15 @@ Object.assign(MediaElementPlayer.prototype, {
     const t = this;
     let playlistItemsObj = t.playlistItemsObj;
 
+    // Helper classes
     playlistItemsObj.mejsUtility = new MEJSUtility();
     playlistItemsObj.mejsMarkersHelper = new MEJSMarkersHelper();
     playlistItemsObj.mejsTimeRailHelper = new MEJSTimeRailHelper();
+
     playlistItemsObj.player = player;
     playlistItemsObj.currentStreamInfo = mejs4AvalonPlayer.currentStreamInfo;
+    // Track the number of MEJS 'timeupdate' events which fire after the end time of a playlist item
+    playlistItemsObj.endTimeCount = 0;
 
     // Rebuild playlist info panels
     const currentPlaylistIds = playlistItemsObj.mejsMarkersHelper.getCurrentPlaylistIds();
@@ -50,6 +54,7 @@ Object.assign(MediaElementPlayer.prototype, {
     playlistItemsObj.addSidebarListeners();
     playlistItemsObj.addRelatedItemListeners();
     playlistItemsObj.mejsMarkersHelper.addMarkersTableListeners();
+    playlistItemsObj.addMarkerTitleListener();
 
     // Turn off autoplay on seek
     playlistItemsObj.mejsTimeRailHelper
@@ -63,16 +68,15 @@ Object.assign(MediaElementPlayer.prototype, {
       playlistItemsObj.handleUserSeeking.bind(this)
     );
 
-    // Track the number of MEJS 'timeupdate' events which fire after the end time of a playlist item
-    playlistItemsObj.endTimeCount = 0;
-
     // Handle continuous MEJS time update event
     media.addEventListener(
       'timeupdate',
       playlistItemsObj.handleTimeUpdate.bind(this)
     );
+
     // Set current playing item in this class context
     playlistItemsObj.setCurrentItemInternally();
+
     // Handle canplay event, start the player at the playlist item start time
     media.addEventListener(
       'canplay',
@@ -107,7 +111,29 @@ Object.assign(MediaElementPlayer.prototype, {
    */
   playlistItemsObj: {
     /**
-     * Add click listeners forplaylist item links
+     * Custom event listener for clicks on marker title (which are currently handled
+     * in app/assets/javascripts/media_player_wrapper/mejs4_helper_markers.es6)
+     *
+     * This function determines whether marker time clicked is past playlist item end time,
+     * and takes action if so.
+     * @function addMarkerTitleListener
+     * @return {void}
+     */
+    addMarkerTitleListener() {
+      const t = this;
+      // This custom event is fired from the click listener in addMarkersTableListeners()
+      // in app/assets/javascripts/media_player_wrapper/mejs4_helper_markers.es6.
+      document.addEventListener('markerTitleClicked', e => {
+        const markerTime = e.detail.offset;
+        if (markerTime > t.startEndTimes.end) {
+          t.turnOffAutoplay();
+          t.seekPastEnd = true;
+        }
+      });
+    },
+
+    /**
+     * Add click listeners for playlist item links
      * @function addRelatedItemListeners
      * @return {void}
      */
