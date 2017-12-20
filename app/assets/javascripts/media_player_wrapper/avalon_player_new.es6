@@ -381,8 +381,8 @@ class MEJSPlayer {
       this.mejsTimeRailHelper.createTimeRailStyles(t, this.currentStreamInfo)
     );
 
-    // If track scrubber feature is active, grab new start / end values
-    // and initialize a new scrubber
+    // This is a way to piggyback updating the track scrubber based on Sections highlighting
+    // calculations.
     if (this.player.trackScrubberObj) {
       let updatedStartEndTimes = this.mejsTimeRailHelper.getUpdatedRangeTimes(
         t,
