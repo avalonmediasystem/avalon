@@ -104,7 +104,7 @@ Object.assign(MediaElementPlayer.prototype, {
       titleLinkEl.innerHTML =
         '<a href="' +
         linkBackObj.player.options.link_back_url +
-        '">' +
+        '" target="_blank">' +
         linkBackObj.player.options.embed_title +
         '</a>';
       linkBackObj.controls.parentNode.insertBefore(

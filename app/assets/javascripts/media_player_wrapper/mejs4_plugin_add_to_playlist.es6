@@ -226,13 +226,14 @@ Object.assign(MediaElementPlayer.prototype, {
     handleAddClickError: function(error) {
       const t = this;
       let alertEl = t.alertEl;
-      const message =
-        'ERROR: ' + error.statusText || 'There was an error adding to playlist';
-
+      let message = error.statusText || 'There was an error adding to playlist';
+      if (error.responseJSON && error.responseJSON.message) {
+        message = error.responseJSON.message.join('<br/>');
+      }
       alertEl.classList.remove('alert-success');
       alertEl.classList.add('alert-danger');
       alertEl.classList.add('add_to_playlist_alert_error');
-      alertEl.querySelector('p').innerHTML = message;
+      alertEl.querySelector('p').innerHTML = 'ERROR: ' + message;
       $(alertEl).slideDown();
     },
 
