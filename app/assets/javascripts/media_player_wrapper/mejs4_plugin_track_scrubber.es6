@@ -84,8 +84,12 @@ Object.assign(MediaElementPlayer.prototype, {
    * @param {HTMLElement} media
    */
   cleantrackScrubber(player, controls, layers, media) {
-    const scrubberEl = this.trackScrubberObj.scrubberEl;
+    const t = this;
+    const scrubberEl = t.trackScrubberObj.scrubberEl;
     scrubberEl.parentNode.removeChild(scrubberEl);
+
+    // Remove this helper object to make sure we get fresh data next time the plugin file loads
+    delete t.trackScrubberObj.trackdata;
   },
 
   // Other optional public methods (all documented according to JSDoc specifications)
@@ -408,6 +412,8 @@ Object.assign(MediaElementPlayer.prototype, {
     updateTrackScrubberProgressBar: function(currentTime) {
       // Handle Safari which emits the timeupdate event really quickly
       if (!this.trackdata) {
+        const currentStream = this.player.avalonWrapper.currentStreamInfo;
+        this.initializeTrackScrubber(currentStream.t[0], currentStream.t[1], currentStream);
         return;
       }
 
