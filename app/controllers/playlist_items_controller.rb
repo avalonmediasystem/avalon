@@ -26,22 +26,23 @@ class PlaylistItemsController < ApplicationController
     comment = playlist_item_params[:comment]
     start_time = time_str_to_milliseconds playlist_item_params[:start_time]
     end_time = time_str_to_milliseconds playlist_item_params[:end_time]
-    clip = AvalonClip.new(master_file: MasterFile.find(playlist_item_params[:master_file_id]))
-    clip.title = title
-    clip.comment = comment
-    clip.start_time = start_time
-    clip.end_time = end_time
+    master_file = MasterFile.find(playlist_item_params[:master_file_id])
+    # if end_time exceeds master_file.duration by less than .5 seconds, round it down
+    end_time = master_file.duration if (Float(end_time) rescue false) && end_time.between?(master_file.duration.to_i, master_file.duration.to_i + 500)
+    clip = AvalonClip.new(master_file: master_file, title: title, comment: comment, start_time: start_time, end_time: end_time)
     unless clip.valid?
       render json: { message: clip.errors.full_messages }, status: 400 and return
     end
     unless clip.save
-      render json: { message: "Item was not created: #{clip.errors.full_messages}" }, status: 500 and return
+      render json: { message: ["Item was not created: #{clip.errors.full_messages}"] }, status: 500 and return
     end
     if PlaylistItem.create(playlist: @playlist, clip: clip)
       render json: { message: "Add to playlist was successful. See it: #{view_context.link_to("here", playlist_url(@playlist))}" }, status: 201 and return
     end
   rescue StandardError => error
-    render json: { message: "Item was not created: #{error.message}"}, status: 500 and return
+    logger.warn("Error creating playlist item: #{error.message}")
+    logger.warn(error.backtrace.join("\n"))
+    render json: { message: ["Item was not created: #{error.message}"]}, status: 500 and return
   end
 
   def update
