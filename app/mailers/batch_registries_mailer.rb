@@ -34,7 +34,7 @@ class BatchRegistriesMailer < ApplicationMailer
     mail(
       to: email,
       from: Settings.email.notification,
-      subject: "#{prefix} Batch Registry #{@batch_registry.file_name} for #{@batch_registry.collection} has completed"
+      subject: "#{prefix} Batch Registry #{@batch_registry.file_name} for #{Admin::Collection.find(@batch_registry.collection).name} has completed"
     )
   end
 
@@ -45,7 +45,7 @@ class BatchRegistriesMailer < ApplicationMailer
     mail(
       to: email,
       from: Settings.email.notification,
-      subject: "Batch Registry #{@batch_registry.file_name} for #{@batch_registry.collection} has stalled"
+      subject: "Batch Registry #{@batch_registry.file_name} for #{Admin::Collection.find(@batch_registry.collection).name} has stalled"
     )
   end
 end
