@@ -275,10 +275,6 @@ class MEJSPlayer {
       this.player = this.mediaElement;
     }
 
-    // Replace resize event handler with custom handler
-    this.player.globalUnbind('resize', this.player.globalResizeCallback);
-    this.player.globalBind('resize', this.customGlobalResizeCallback);
-
     this.emitSuccessEvent();
 
     // Handle 'canplay' events fired by player
@@ -493,10 +489,6 @@ class MEJSPlayer {
     if (!this.player.paused) {
       this.player.pause();
     }
-
-    // Unbind custom resize event handler
-    this.player.globalUnbind('resize', this.customGlobalResizeCallback)
-
     this.player.remove();
     delete this.player;
     // Grab either the <audio> or <video> element
@@ -566,24 +558,5 @@ class MEJSPlayer {
       .val(sectionShareLink)
       .attr('placeholder', sectionShareLink);
     $('#embed-part').val(embedCode);
-  }
-    
-  /**
-   * Resize event handler copied from mediaelement
-   * which skips player resize if embedded in an iframe
-   */
-  customGlobalResizeCallback() {
-    const t = this.player;
-
-    // don't resize inside a frame/iframe
-    if (window.top === window.self) {
-      // don't resize for fullscreen mode
-      if (!(t.isFullScreen || (HAS_TRUE_NATIVE_FULLSCREEN && document.webkitIsFullScreen))) {
-        t.setPlayerSize(t.width, t.height);
-      }
-    }
-
-    // always adjust controls
-    t.setControlsSize();
   }
 }
