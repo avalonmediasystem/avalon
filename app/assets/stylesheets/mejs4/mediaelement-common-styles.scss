@@ -144,6 +144,22 @@ $avalon-primary-color: #84a791;
   padding: 11px;
 }
 
+.mejs__hd-toggle-button {
+  width: 35px;
+}
+
+.mejs__hd-toggle-button > button {
+  width: 27px;
+  background-position: -141px -2px;
+  filter: brightness(60%);
+  -webkit-filter: brightness(60%);
+}
+
+.mejs__hdtoggle-on > button {
+  filter: none;
+  -webkit-filter: none;
+}
+
 // Accessibility
 .mejs__button > button:focus, .mejs__overlay-button:focus, .mejs__time-total:focus, .mejs__volume-slider:focus, .mejs__qualities-selector-input:focus {
   outline: solid 2px yellow;
