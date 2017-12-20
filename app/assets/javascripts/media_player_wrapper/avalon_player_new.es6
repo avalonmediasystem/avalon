@@ -543,11 +543,15 @@ class MEJSPlayer {
    * @return {void}
    */
   updateShareLinks() {
-    const currentLink = $('a[data-segment=' + this.currentStreamInfo.id + ']');
-    const objectShareLink = currentLink.prop('href');
-    const sectionShareLink = currentLink.data()['shareLink'];
-    const ltiShareLink = currentLink.data()['ltiShareLink'];
     const embedCode = this.currentStreamInfo.embed_code;
+    const $currentLink = $(`a[data-segment="${this.currentStreamInfo.id}"]`);
+    if ($currentLink.length === 0) {
+      return;
+    }
+    const objectShareLink = $currentLink.prop('href');
+    const sectionShareLink = $currentLink.data()['shareLink'];
+    const ltiShareLink = $currentLink.data()['ltiShareLink'];
+
     $('#link-object')
       .val(objectShareLink)
       .attr('placeholder', objectShareLink);
