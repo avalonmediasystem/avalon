@@ -120,6 +120,7 @@ class MEJSPlayer {
         this.removePlayer();
         this.setContextVars(response, playlistItemsT);
         this.createNewPlayer();
+        this.updateShareLinks();
       })
       .fail(error => {
         console.log('error', error);
@@ -534,5 +535,28 @@ class MEJSPlayer {
       document.getElementById('accordion'),
       currentStreamInfo
     );
+  }
+
+  /**
+   * Update share links when switching sections
+   * @function updateShareLinks
+   * @return {void}
+   */
+  updateShareLinks() {
+    const currentLink = $('a[data-segment=' + this.currentStreamInfo.id + ']');
+    const objectShareLink = currentLink.prop('href');
+    const sectionShareLink = currentLink.data()['shareLink'];
+    const ltiShareLink = currentLink.data()['ltiShareLink'];
+    const embedCode = this.currentStreamInfo.embed_code;
+    $('#link-object')
+      .val(objectShareLink)
+      .attr('placeholder', objectShareLink);
+    $('#ltilink-object')
+      .val(ltiShareLink)
+      .attr('placeholder', ltiShareLink);
+    $('#share-link-section')
+      .val(sectionShareLink)
+      .attr('placeholder', sectionShareLink);
+    $('#embed-part').val(embedCode);
   }
 }
