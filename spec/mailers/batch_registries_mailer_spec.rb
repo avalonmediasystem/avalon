@@ -46,6 +46,7 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
   describe 'batch_registration_finished_mailer' do
     let(:batch_registries) { FactoryGirl.create(:batch_registries, user_id: manager.id) }
     let(:manager) { FactoryGirl.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
+    let!(:collection) { FactoryGirl.create(:collection, id: 'k32jf0kw') }
 
     it "sends an email when a batch finishes processing" do
        email = BatchRegistriesMailer.batch_registration_finished_mailer(batch_registries)
@@ -58,6 +59,7 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
   describe 'batch_registration_stalled_mailer' do
     let(:batch_registries) { FactoryGirl.create(:batch_registries) }
     let(:notification_email_address) { Settings.email.notification }
+    let!(:collection) { FactoryGirl.create(:collection, id: 'k32jf0kw') }
 
     it "sends an email when a batch has stalled" do
        email = BatchRegistriesMailer.batch_registration_stalled_mailer(batch_registries)
