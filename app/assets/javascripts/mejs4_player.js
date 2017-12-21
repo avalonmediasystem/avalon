@@ -9,3 +9,4 @@
 //= require media_player_wrapper/mejs4_link_back
 //= require media_player_wrapper/mejs4_plugin_playlist_items
 //= require media_player_wrapper/mejs4_plugin_hd_toggle
+//= require media_player_wrapper/mejs4_plugin_no_resize
