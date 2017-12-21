@@ -11,7 +11,6 @@ class MEJSMarkersHelper {
   /**
    * Add event listeners for elements in Markers table rows
    * @function addMarkersTableListeners
-   * @param player Instance of player
    * @return {void}
    */
   addMarkersTableListeners() {
@@ -27,14 +26,14 @@ class MEJSMarkersHelper {
       const offset = $(e.target)
         .parents('tr')
         .data('offset');
-      const event = new CustomEvent('markerTitleClicked', {
+      const event = new CustomEvent('markerClicked', {
         detail: {
           offset: +offset
         }
       });
 
-      player.setCurrentTime(+offset);
       document.dispatchEvent(event);
+      player.setCurrentTime(+offset);
     });
 
     // Edit button click
@@ -292,14 +291,14 @@ class MEJSMarkersHelper {
         '"></span>'
     )
       .bind('click', e => {
-        const event = new CustomEvent('markerTitleClicked', {
+        const event = new CustomEvent('markerClicked', {
           detail: {
             offset: +offset
           }
         });
 
-        mejs4AvalonPlayer.player.setCurrentTime(offset);
         document.dispatchEvent(event);
+        mejs4AvalonPlayer.player.setCurrentTime(offset);
       })
       .bind('mouseenter', e => {
         $(
