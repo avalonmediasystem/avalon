@@ -39,5 +39,6 @@
 //= stub media_player_wrapper/mejs4_link_back
 //= stub media_player_wrapper/mejs4_plugin_playlist_items
 //= stub media_player_wrapper/mejs4_plugin_hd_toggle
+//= stub media_player_wrapper/mejs4_plugin_no_resize
 
 //= require_tree .
