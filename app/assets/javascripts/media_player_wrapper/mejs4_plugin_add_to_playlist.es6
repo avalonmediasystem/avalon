@@ -94,7 +94,7 @@ Object.assign(MediaElementPlayer.prototype, {
 
     $(addToPlayListObj.alertEl).hide();
     $(addToPlayListObj.playlistEl).hide();
-    addToPlayListObj.resetForm.apply(t);
+    addToPlayListObj.resetForm.apply(addToPlayListObj);
 
     // Remove Add / Cancel button event listeners
     addToPlayListObj.addButton.removeEventListener(
