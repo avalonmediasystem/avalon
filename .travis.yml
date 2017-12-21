@@ -32,3 +32,4 @@ rvm:
   - 2.4
 dist: trusty
 sudo: required
+group: deprecated-2017Q4
