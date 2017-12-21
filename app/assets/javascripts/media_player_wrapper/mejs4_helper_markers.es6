@@ -292,7 +292,14 @@ class MEJSMarkersHelper {
         '"></span>'
     )
       .bind('click', e => {
+        const event = new CustomEvent('markerTitleClicked', {
+          detail: {
+            offset: +offset
+          }
+        });
+
         mejs4AvalonPlayer.player.setCurrentTime(offset);
+        document.dispatchEvent(event);
       })
       .bind('mouseenter', e => {
         $(
