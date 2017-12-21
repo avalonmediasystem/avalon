@@ -49,7 +49,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <tr>
         <% media_object = MediaObject.find(be_completed.media_object_pid) %>
         <% link_url = media_object.permalink %>
-        <% link_url = media_object_url(media_object) if link_url.empty? %>
+        <% link_url = media_object_url(media_object) if link_url.blank? %>
         <td> <%= be_completed.position + 2 %> </td>
         <td> <% content_tag(:a, href: link_url) do %><span><%=be_completed.media_object_pid%></span><%end%></td>
       </tr>
