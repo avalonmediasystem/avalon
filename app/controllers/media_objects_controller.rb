@@ -439,6 +439,7 @@ class MediaObjectsController < ApplicationController
     set_player_token
     @currentStreamInfo = @currentStream.nil? ? {} : secure_streams(@currentStream.stream_details)
     @currentStreamInfo['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
+    @currentStreamInfo['lti_share_link'] = view_context.lti_share_url_for(@currentStream)
   end
 
   def load_player_context
