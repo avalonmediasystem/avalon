@@ -114,6 +114,15 @@ class MEJSUtility {
   }
 
   /**
+   * Helper function - is current environment mobile?
+   * @return {Boolean}
+   */
+  isMobile() {
+    const features = mejs.Features;
+    return features.isAndroid || features.isiOS;
+  }
+
+  /**
    * Update section links to reflect active section playing
    * @function highlightSectionLink
    * @param  {string} segmentId - HTML node of section link clicked on <a>
