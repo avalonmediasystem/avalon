@@ -4141,11 +4141,14 @@ var MediaElementPlayer = function () {
 				}, 0);
 
 				t.globalResizeCallback = function () {
+                                    // don't resize inside a frame/iframe
+                                    if (window.top === window.self) {
 					if (!(t.isFullScreen || _constants.HAS_TRUE_NATIVE_FULLSCREEN && _document2.default.webkitIsFullScreen)) {
 						t.setPlayerSize(t.width, t.height);
 					}
 
 					t.setControlsSize();
+                                    }
 				};
 
 				t.globalBind('resize', t.globalResizeCallback);
