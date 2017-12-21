@@ -52,9 +52,6 @@ module MasterFileBehavior
       captions_format = self.captions.mime_type
     end
 
-    link_back_url = permalink unless permalink.blank?
-    link_back_url ||= Rails.application.routes.url_helpers.master_file_url(self)
-
     # Returns the hash
     return({
       id: self.id,
@@ -67,8 +64,7 @@ module MasterFileBehavior
       captions_path: captions_path,
       captions_format: captions_format,
       duration: (duration.to_f / 1000),
-      embed_title: embed_title,
-      link_back_url: link_back_url
+      embed_title: embed_title
     })
   end
 
