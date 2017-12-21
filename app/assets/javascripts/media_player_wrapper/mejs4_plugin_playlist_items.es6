@@ -47,7 +47,7 @@ Object.assign(MediaElementPlayer.prototype, {
     playlistItemsObj.addSidebarListeners();
     playlistItemsObj.addRelatedItemListeners();
     playlistItemsObj.mejsMarkersHelper.addMarkersTableListeners();
-    playlistItemsObj.addMarkerTitleListener();
+    playlistItemsObj.addMarkerClickListener();
 
     // Turn off autoplay on seek
     playlistItemsObj.mejsTimeRailHelper
@@ -104,19 +104,19 @@ Object.assign(MediaElementPlayer.prototype, {
    */
   playlistItemsObj: {
     /**
-     * Custom event listener for clicks on marker title (which are currently handled
+     * Custom event listener for clicks on markers (which are currently handled
      * in app/assets/javascripts/media_player_wrapper/mejs4_helper_markers.es6)
      *
      * This function determines whether marker time clicked is past playlist item end time,
      * and takes action if so.
-     * @function addMarkerTitleListener
+     * @function addMarkerClickListener
      * @return {void}
      */
-    addMarkerTitleListener() {
+    addMarkerClickListener() {
       const t = this;
-      // This custom event is fired from the click listener in addMarkersTableListeners()
+      // This custom event is fired when a marker is clicked
       // in app/assets/javascripts/media_player_wrapper/mejs4_helper_markers.es6.
-      document.addEventListener('markerTitleClicked', e => {
+      document.addEventListener('markerClicked', e => {
         const markerTime = e.detail.offset;
         if (markerTime > t.startEndTimes.end) {
           t.turnOffAutoplay();
