@@ -75,6 +75,10 @@ Object.assign(MediaElementPlayer.prototype, {
       'canplay',
       playlistItemsObj.handleCanPlay.bind(playlistItemsObj)
     );
+
+    if (playlistItemsObj.mejsUtility.isMobile()) {
+      playlistItemsObj.handleCanPlayMobile();
+    }
   },
 
   // Optionally, each feature can be destroyed setting a `clean` method
@@ -259,11 +263,34 @@ Object.assign(MediaElementPlayer.prototype, {
     handleCanPlay() {
       const t = this;
       const currentPlaylistIds = t.mejsMarkersHelper.getCurrentPlaylistIds();
+
       t.rebuildPlaylistInfoPanels(
         currentPlaylistIds['playlistId'],
         currentPlaylistIds['playlistItemId']
       );
       t.goToPlaylistItemStartTime();
+    },
+
+    /**
+     * Helper function for mobile/iOS as the 'canplay' event never reaches this plugin for some reason.
+     * @function handleCanPlayMobile
+     * @return {void}
+     */
+    handleCanPlayMobile() {
+      const t = this;
+
+      // Custom poller function which checks if currentPlaylistIds are ready yet, every 1 second until they are.
+      const poller = () => {
+        setTimeout(() => {
+          const currentPlaylistIds = t.mejsMarkersHelper.getCurrentPlaylistIds();
+          if (!currentPlaylistIds) {
+            poller();
+          } else {
+            t.handleCanPlay();
+          }
+        }, 1000);
+      };
+      poller();
     },
 
     /**
