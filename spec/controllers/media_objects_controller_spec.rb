@@ -529,7 +529,7 @@ describe MediaObjectsController, type: :controller do
           xhr :get, :show_stream_details, id: media_object.id, content: part.id
           json_obj = JSON.parse(response.body)
           expect(json_obj['is_video']).to eq(part.is_video?)
-          expect(json_obj['link_back_url']).to eq(Rails.application.routes.url_helpers.master_file_url(part))
+          expect(json_obj['link_back_url']).to eq(Rails.application.routes.url_helpers.id_section_media_object_url(media_object, part))
         }
       end
 
