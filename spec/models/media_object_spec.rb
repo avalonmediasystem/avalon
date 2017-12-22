@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -129,7 +129,7 @@ describe MediaObject do
 
     context 'when manager' do
       subject{ ability}
-      let(:ability){ Ability.new(User.where(username: collection.managers.first).first) }
+      let(:ability){ Ability.new(User.where(Devise.authentication_keys.first => collection.managers.first).first) }
 
       it{ is_expected.to be_able_to(:create, MediaObject) }
       it{ is_expected.to be_able_to(:read, media_object) }
@@ -143,7 +143,7 @@ describe MediaObject do
       end
 
       context 'and logged in through LTI' do
-        let(:ability){ Ability.new(User.where(username: collection.managers.first).first, {full_login: false, virtual_groups: [Faker::Lorem.word]}) }
+        let(:ability){ Ability.new(User.where(Devise.authentication_keys.first => collection.managers.first).first, {full_login: false, virtual_groups: [Faker::Lorem.word]}) }
 
         it{ is_expected.not_to be_able_to(:share, MediaObject) }
         it{ is_expected.not_to be_able_to(:update, media_object) }
@@ -153,7 +153,7 @@ describe MediaObject do
 
     context 'when editor' do
       subject{ ability}
-      let(:ability){ Ability.new(User.where(username: collection.editors.first).first) }
+      let(:ability){ Ability.new(User.where(Devise.authentication_keys.first => collection.editors.first).first) }
 
       it{ is_expected.to be_able_to(:create, MediaObject) }
       it{ is_expected.to be_able_to(:read, media_object) }
@@ -171,7 +171,7 @@ describe MediaObject do
 
     context 'when depositor' do
       subject{ ability }
-      let(:ability){ Ability.new(User.where(username: collection.depositors.first).first) }
+      let(:ability){ Ability.new(User.where(Devise.authentication_keys.first => collection.depositors.first).first) }
 
       it{ is_expected.to be_able_to(:create, MediaObject) }
       it{ is_expected.to be_able_to(:read, media_object) }
@@ -580,6 +580,10 @@ describe MediaObject do
       Permalink.on_generate{ |obj,target| 'http://www.example.com/perma-url' }
     }
 
+    after(:each) do
+      Permalink.on_generate { nil }
+    end
+
     context 'unpublished' do
       it 'is empty when unpublished' do
         expect(media_object.permalink).to be_blank
@@ -687,7 +691,7 @@ describe MediaObject do
       let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
 
       it 'should strip whitespace off bib_id parameter' do
-        Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
         expect { media_object.descMetadata.populate_from_catalog!(" #{bib_id} ", 'local') }.to change { media_object.title }.to "245 A : B F G K N P S"
         expect(request).to have_been_requested
       end

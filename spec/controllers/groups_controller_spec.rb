@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -78,7 +78,7 @@ describe Admin::GroupsController do
 
       it "should be able to change group users when authenticated and authorized" do
         login_as('group_manager')
-        new_user = FactoryGirl.build(:user).username
+        new_user = FactoryGirl.build(:user).user_key
 
         put 'update', group_name: group.name, id: group.name, new_user: new_user
 
@@ -135,7 +135,7 @@ describe Admin::GroupsController do
       ['administrator','group_manager'].each do |g|
         it "should be able to manage #{g} group as an administrator" do
           login_as('administrator')
-          new_user = FactoryGirl.build(:user).username
+          new_user = FactoryGirl.build(:user).user_key
 
           put 'update', id: g, new_user: new_user
           group = Admin::Group.find(g)
@@ -146,7 +146,7 @@ describe Admin::GroupsController do
 
         it "should not be able to manage #{g} group as a group_manager" do
           login_as('group_manager')
-          new_user = FactoryGirl.build(:user).username
+          new_user = FactoryGirl.build(:user).user_key
 
           put 'update', id: g, new_user: new_user
           group = Admin::Group.find(g)

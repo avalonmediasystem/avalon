@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+Copyright 2011-2018, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -18,17 +18,17 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% clip = clip_map[item.clip_id] %>
 <% if clip.master_file.present? && can?(:read, clip.master_file.media_object) %>
   <% item_type = (clip.master_file.file_format=='Moving image')? 'fa-film' : 'fa-music' %>
-  <li class="<%= item_class %>" is_video="<%= clip.master_file.is_video? %>">
+  <li class="<%= item_class %>" is_video="<%= clip.master_file.is_video? %>" data-playlist-item-id="<%= item.id %>">
     <% if item_class == 'now_playing' %>
       <i class="fa fa-arrow-circle-right"></i>
     <% end %>
     <% masterfile = clip.master_file %>
     <% if @current_masterfile.is_video? == masterfile.is_video? && can?(:read, @current_playlist_item.clip.master_file.media_object) %>
-      <%= link_to refresh_info_playlist_path(@playlist, position: item.position, token: @playlist_token, autostart: true), remote: true do%>
+      <%= link_to refresh_info_playlist_path(@playlist, position: item.position, token: @playlist_token, autostart: true, mejs4: is_mejs_4? ? true : false), remote: true do%>
         <%= clip.title %>
       <% end %>
     <% else %>
-      <%= link_to playlist_path(@playlist, position: item.position, autostart: true) do %>
+      <%= link_to playlist_path(@playlist, position: item.position, token: @playlist_token, autostart: true, mejs4: is_mejs_4? ? true : false) do %>
         <%= clip.title %>
       <% end %>
     <% end %>

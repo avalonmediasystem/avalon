@@ -194,6 +194,7 @@ en:
     publicText: "Public"
     private-with-tokenText: "Share by link"
 
+    details: "Playlist Details"
     new:
       action: "Create"
     create:
@@ -204,6 +205,8 @@ en:
       action: "Save Changes"
     update:
       action: "Save Changes"
+    tags:
+      label: "Tags"
 
   activerecord:
     attributes:

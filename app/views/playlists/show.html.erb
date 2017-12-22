@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+Copyright 2011-2018, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -18,30 +18,33 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="playlist-view container-fluid" >
   <div class="container-fluid" >
     <div class="row">
-<%# Try to find next playable item, if none look from the beginning of the playlist %>
-<% first_playable_item = @playlist.items.find {|i| (i.position >= position) && i.clip.master_file.present? } %>
-<% first_playable_item = @playlist.items.find {|i| i.clip.master_file.present? } if first_playable_item.nil? %>
-<% if first_playable_item.nil? %>
-      <div class="col-sm-4" id="left_column">
-        <%= render 'item_list' %>
-        This playlist currently has no playable items.
-      </div>
-<% else %>
-  <% position = first_playable_item.position %>
-  <% @current_playlist_item = first_playable_item %>
-  <% @current_clip = @current_playlist_item.clip %>
-  <% @current_masterfile = @current_playlist_item.clip.master_file %>
-  <% @current_mediaobject = @current_masterfile.media_object %>
-      <div class="col-sm-8" id="left_column">
-        <%= render 'player' %>
-        <%= render file: '_track_scrubber.html.erb' %>
-        <%= render file: '_add_to_playlist.html.erb' if current_user.present? %>
-        <%= render 'info' %>
-      </div>
-      <div class="col-sm-4" id="right-column">
-        <%= render 'item_list' %>
-      </div>
-<% end %>
+      <%# Try to find next playable item, if none look from the beginning of the playlist %>
+      <% first_playable_item = @playlist.items.find {|i| (i.position >= position) && i.clip.master_file.present? } %>
+      <% first_playable_item = @playlist.items.find {|i| i.clip.master_file.present? } if first_playable_item.nil? %>
+      <% if first_playable_item.nil? %>
+        <div class="col-sm-4" id="left_column">
+          <%= render 'item_list' %>
+          This playlist currently has no playable items.
+        </div>
+      <% else %>
+        <% position = first_playable_item.position %>
+        <% @current_playlist_item = first_playable_item %>
+        <% @current_clip = @current_playlist_item.clip %>
+        <% @current_masterfile = @current_playlist_item.clip.master_file %>
+        <% @current_mediaobject = @current_masterfile.media_object %>
+        <div class="col-sm-8" id="left_column">
+          <%= render 'player' %>
+          <%= render file: '_track_scrubber.html.erb' %>
+          <%# MediaElement 2 %>
+          <%= render file: '_add_to_playlist.html.erb' if current_user.present? && is_mejs_2? %>
+          <%# MediaElement 4 %>
+          <%= render partial: 'mejs4_add_marker_to_playlist' if current_user.present? && is_mejs_4? %>
+          <%= render 'info' %>
+        </div>
+        <div class="col-sm-4" id="right-column">
+          <%= render 'item_list' %>
+        </div>
+      <% end %>
 
     </div>
   </div>

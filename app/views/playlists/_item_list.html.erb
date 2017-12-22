@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+Copyright 2011-2018, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -20,19 +20,15 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="text-right" style="display:inline;">
   <% if current_ability.can? :edit, @playlist %>
     <div class="pull-right" id="edit-playlist-button">
-      <%= link_to edit_playlist_path(@playlist) do %>
-      <button type="button" class="btn btn-default btn-xs" style="display:block;" >
-        <span class="fa fa-edit"> Edit Playlist</span>
-      </button>
+      <%= link_to edit_playlist_path(@playlist), class: "btn btn-default btn-xs" do %>
+        <i class="fa fa-edit" aria-hidden="true"></i> Edit Playlist
       <% end %>
     </div>
    <% end %>
    <% if current_ability.can? :duplicate, @playlist %>
-     <%= button_tag( type: 'button', data: { playlist: @playlist },
-       class: 'copy-playlist-button btn btn-default btn-xs pull-right') do
-       "<span class='fa fa-clone'> Copy Playlist </span>".html_safe
-      end
-      %>
+     <%= button_tag( type: 'button', data: { playlist: @playlist }, class: 'copy-playlist-button btn btn-default btn-xs pull-right') do %>
+       <i class="fa fa-clone" aria-hidden="true"></i> Copy Playlist
+     <% end %>
     <% end %>
   <%= render 'share' if will_partial_list_render? :share %>
 </div>
@@ -45,9 +41,20 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= @playlist.comment %>
   </div>
 <% end %>
+
+<div class="tag-button-wrapper">
+  <% @playlist.tags.each do |tag| %>
+    <span class="btn btn-xs btn-info"><%=tag%></span>
+  <% end %>
+</div>
+
 <ol class="side-playlist">
   <% clip_map = @playlist.clips.index_by{|c|c.id} %>
-  <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clip_map: clip_map } %>
+  <% if is_mejs_2? %>
+    <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clip_map: clip_map } %>
+  <% else %>
+    <%= render partial: 'mejs4_playlist_item', collection: @playlist.items, locals: { clip_map: clip_map } %>
+  <% end %>
 </ol>
 
 <% if current_ability.can? :duplicate, @playlist %>

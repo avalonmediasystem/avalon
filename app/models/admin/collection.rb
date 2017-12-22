@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -21,6 +21,7 @@ class Admin::Collection < ActiveFedora::Base
   include Hydra::AdminPolicyBehavior
   include ActiveFedora::Associations
   include Identifier
+  include MigrationTarget
 
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
@@ -163,15 +164,19 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def as_json(options={})
+    total_count = media_objects.count
+    pub_count = published_count
+    unpub_count = total_count - pub_count
+
     {
       id: id,
       name: name,
       unit: unit,
       description: description,
       object_count: {
-        total: media_objects.count,
-        published: media_objects.reject{|mo| !mo.published?}.count,
-        unpublished: media_objects.reject{|mo| mo.published?}.count
+        total: total_count,
+        published: pub_count,
+        unpublished: unpub_count
       },
       roles: {
         managers: managers,
@@ -186,7 +191,7 @@ class Admin::Collection < ActiveFedora::Base
   end
 
   def dropbox_absolute_path( name = nil )
-    File.join(Avalon::Configuration.lookup('dropbox.path'), name || dropbox_directory_name)
+    File.join(Settings.dropbox.path, name || dropbox_directory_name)
   end
 
   def media_objects_to_json
@@ -245,17 +250,43 @@ class Admin::Collection < ActiveFedora::Base
     end
 
     def create_dropbox_directory!
+      if Settings.dropbox.path =~ %r(^s3://)
+        create_s3_dropbox_directory!
+      else
+        create_fs_dropbox_directory!
+      end
+    end
+
+    def calculate_dropbox_directory_name
       name = self.dropbox_directory_name
 
       if name.blank?
         name = Avalon::Sanitizer.sanitize(self.name)
         iter = 2
         original_name = name.dup.freeze
-
-        while File.exist? dropbox_absolute_path(name)
+        while yield(name)
           name = "#{original_name}_#{iter}"
           iter += 1
         end
+      end
+      name
+    end
+
+    def create_s3_dropbox_directory!
+      base_uri = Addressable::URI.parse(Settings.dropbox.path)
+      name = calculate_dropbox_directory_name do |n|
+        obj = FileLocator::S3File.new(base_uri.join(n).to_s + '/').object
+        obj.exists?
+      end
+      absolute_path = base_uri.join(name).to_s + '/'
+      obj = FileLocator::S3File.new(absolute_path).object
+      Aws::S3::Client.new.put_object(bucket: obj.bucket_name, key: obj.key)
+      self.dropbox_directory_name = name
+    end
+
+    def create_fs_dropbox_directory!
+      name = calculate_dropbox_directory_name do |n|
+        File.exist? dropbox_absolute_path(n)
       end
 
       absolute_path = dropbox_absolute_path(name)
@@ -297,4 +328,11 @@ class Admin::Collection < ActiveFedora::Base
       self.default_read_groups = self.default_read_groups.to_a - represented_default_visibility
     end
 
+    def published_count
+      media_objects.where('avalon_publisher_ssi:["" TO *]').count
+    end
+
+    def unpublished_count
+      media_objects.count - published_count
+    end
 end

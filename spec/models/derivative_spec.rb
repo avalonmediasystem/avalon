@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -66,9 +66,9 @@ describe Derivative do
   end
 
   describe "streaming" do
-    let(:rtmp_base)  { Avalon::Configuration.lookup('streaming.rtmp_base')    }
-    let(:http_base)  { Avalon::Configuration.lookup('streaming.http_base')    }
-    let(:root)       { Avalon::Configuration.lookup('streaming.content_path') }
+    let(:rtmp_base)  { Settings.streaming.rtmp_base    }
+    let(:http_base)  { Settings.streaming.http_base    }
+    let(:root)       { Settings.streaming.content_path }
     let(:location)   { "file://#{root}/c5e0f8b8-3f69-40de-9524-604f03b5f867/8c871d4b-a9a6-4841-8e2a-dd98cf2ee625/content.mp4" }
     let(:audio_derivative) { Derivative.new(audio_codec: 'AAC').tap { |d| d.absolute_location = location } }
     let(:video_derivative) { Derivative.new(video_codec: 'AVC').tap { |d| d.absolute_location = location } }

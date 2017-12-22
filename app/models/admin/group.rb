@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -31,7 +31,7 @@ module Admin
 
     def self.non_system_groups
       groups = all
-      if system_groups = Avalon::Configuration.lookup('groups.system_groups')
+      if system_groups = Settings.groups.system_groups
         groups.reject! { |g| system_groups.include? g.name }
       end
       groups
@@ -213,7 +213,7 @@ module Admin
     # group. This is a workaround for the bug that breaks the system whenever
     # a system group is renamed.
     def self.name_is_static? group_name
-      Avalon::Configuration.lookup('groups.system_groups').include? group_name
+      Settings.groups.system_groups.include? group_name
     end
   end
 end

@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+Copyright 2011-2018, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -24,17 +24,17 @@ Unless required by applicable law or agreed to in writing, software distributed
   </div>
   <div class="row">
     <div class="col-sm-12">
-      <h3 style="display:inline-block">Playlist Details</h3>
+      <h3 style="display:inline-block"><%= t("playlist.details") %></h3>
       <a id="playlist_edit_button" data-toggle="collapse" data-target="#playlist_edit_div, #playlist_view_div" class="fa fa-edit btn btn-sm"></a>
     </div>
   </div>
   <div id="playlist_view_div" class="container collapse <%= 'in' if @playlist.errors.empty? %>">
     <div class="row">
-      <div class="col-sm-2">Name</div>
+      <div class="col-sm-2"><%=t("activerecord.attributes.playlist.title")%></div>
       <div class="col-sm-10"><%= @playlist.title %></div>
     </div>
     <div class="row">
-      <div class="col-sm-2">Description</div>
+      <div class="col-sm-2"><%= t("activerecord.attributes.playlist.comment") %></div>
       <div class="col-sm-10"><%= @playlist.comment %></div>
     </div>
     <div class="row">
@@ -58,6 +58,15 @@ Unless required by applicable law or agreed to in writing, software distributed
             </div>
           </div>
 
+        <% end %>
+      </div>
+      <div class="col-sm-2"><%= t("playlist.tags.label") %></div>
+      <div class="col-sm-10">
+        <% if @playlist.tags.empty? %>
+          <p class="info-text-gray">No tags</p>
+        <% end %>
+        <% @playlist.tags.each do |tag| %>
+          <span class="btn btn-xs btn-info"><%=tag%></span>
         <% end %>
       </div>
     </div>

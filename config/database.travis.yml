@@ -1,5 +1,3 @@
 test:
-  adapter: mysql2
-  database: avalon_test
-  username: travis
-  encoding: utf8
+  adapter: postgresql
+  database: travis_ci_test

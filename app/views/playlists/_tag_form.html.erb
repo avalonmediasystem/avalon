@@ -1,0 +1,31 @@
+<% user_tags = current_user.playlist_tags %>
+<select name="tagcollection[]" id="tag-select" class="form-control form-model" multiple="multiple" style="width: 100%;" >
+  <% user_tags.each do |tag| %>
+    <% selected = @playlist.tags.include?(tag) ? ' selected="selected"' : '' %>
+    <option value="<%= tag %>" <%= selected %>><%= tag %></option>
+  <% end %>
+</select>
+<p class="text-info" style="padding-top:5px;font-style:italic;">Separate multiple tags with commas.</p>
+<input id="taglist" name="playlist[tags]" type="hidden" />
+
+<% content_for :page_scripts do %>
+  <%= javascript_include_tag 'select2.min' %>
+  <%= stylesheet_link_tag 'select2.min' %>
+  <script>
+    $('#tag-select').select2( {
+      tags: true,
+      tokenSeparators: [',']
+    });
+
+    $('#submit-playlist-form').click( function (e) {
+      e.preventDefault();
+      taglist = [];
+      $.each($('#tag-select').select2('data'), function (i, tag) {
+        taglist.push(tag.text);
+      });
+      $('#taglist').val(JSON.stringify(taglist));
+      $('#playlist_form').submit();
+    });
+
+  </script>
+<% end %>

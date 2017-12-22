@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -21,7 +21,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     begin
       render "modules/#{params[:provider]}_auth_form"
     rescue ActionView::MissingTemplate
-      super
+      redirect_to new_user_session_path, flash: { alert: I18n.t('devise.failure.invalid') }
     end
   end
 
@@ -46,6 +46,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def find_user(auth_type)
     auth_type.downcase!
     find_method = "find_for_#{auth_type}".to_sym
+    find_method = :find_for_generic unless User.respond_to?(find_method)
     logger.debug "#{auth_type} :: #{current_user.inspect}"
     @user = User.send(find_method,request.env["omniauth.auth"], current_user)
     if @user.persisted?
@@ -70,8 +71,9 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       params_whitelist = %w{t position token}
       redirect_to objects_path(request['target_id'], params.slice(*params_whitelist))
     elsif params[:url]
-      redirect_to params[:url]
-    elsif session[:previous_url] 
+      # Limit redirects to current host only
+      redirect_to URI.parse(params[:url]).path
+    elsif session[:previous_url]
       redirect_to session.delete :previous_url
     elsif auth_type == 'lti' && user_session[:virtual_groups].present?
       redirect_to search_catalog_path('f[read_access_virtual_group_ssim][]' => user_session[:lti_group])
@@ -83,7 +85,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   protected :find_user
 
   rescue_from Avalon::MissingUserId do |exception|
-    support_email = Avalon::Configuration.lookup('email.support')
+    support_email = Settings.email.support
     notice_text = I18n.t('errors.lti_auth_error') % [support_email, support_email]
     redirect_to root_path, flash: { error: notice_text.html_safe }
   end

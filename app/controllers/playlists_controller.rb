@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -21,7 +21,9 @@ class PlaylistsController < ApplicationController
   load_and_authorize_resource except: [:import_variations_playlist, :refresh_info, :duplicate, :show, :index]
   load_resource only: [:show, :refresh_info]
   authorize_resource only: [:index]
+  before_action :get_user_playlists, only: [:index, :paged_index]
   before_action :get_all_other_playlists, only: [:edit]
+  before_action :load_playlist_token, only: [:show, :refresh_info, :duplicate]
 
   helper_method :access_token_url
 
@@ -40,43 +42,52 @@ class PlaylistsController < ApplicationController
 
   # GET /playlists
   def index
-    # Cancan's load_resource doesn't work here anymore because we added a can with a block
-    @playlists = Playlist.where( user_id: current_user )
   end
 
   # POST /playlists/paged_index
   def paged_index
     # Playlists for index page are loaded dynamically by jquery datatables javascript which
     # requests the html for only a limited set of rows at a time.
-    playlists = Playlist.where(user_id: current_user.id)
-    recordsTotal = playlists.count
-    columns = ['title','size','visibility','created_at','updated_at','actions']
-    playlistsFiltered = playlists.where("title LIKE ?", "%#{request.params['search']['value']}%")
-    if columns[request.params['order']['0']['column'].to_i] != 'size'
-      playlistsFiltered = playlistsFiltered.order("lower(#{columns[request.params['order']['0']['column'].to_i]}) #{request.params['order']['0']['dir']}")
-      pagedPlaylists = playlistsFiltered.offset(request.params['start']).limit(request.params['length'])
+    recordsTotal = @playlists.count
+    columns = ['title','size','visibility','created_at','updated_at','tags','actions']
+
+    #Filter title
+    title_filter = params['search']['value']
+    @playlists = @playlists.title_like(title_filter) if title_filter.present?
+
+    # Apply tag filter if requested
+    tag_filter = params['columns']['5']['search']['value']
+    @playlists = @playlists.with_tag(tag_filter) if tag_filter.present?
+    playlistsFilteredTotal = @playlists.count
+
+    sort_column = params['order']['0']['column'].to_i rescue 0
+    sort_direction = params['order']['0']['dir'] rescue 'asc'
+    session[:playlist_sort] = [sort_column, sort_direction]
+    if columns[sort_column] != 'size'
+      @playlists = @playlists.order({ columns[sort_column].downcase => sort_direction })
+      @playlists = @playlists.offset(params['start']).limit(params['length'])
     else
       # sort by size (item count): decorate list with playlistitem count then sort and undecorate
-      decorated = playlistsFiltered.collect{|p| [ p.items.size, p ]}
+      decorated = @playlists.collect{|p| [ p.items.size, p ]}
       decorated.sort!
-      playlistsFiltered = decorated.collect{|p| p[1]}
-      playlistsFiltered.reverse! if request.params['order']['0']['dir']=='desc'
-      pagedPlaylists = playlistsFiltered.slice(request.params['start'].to_i, request.params['length'].to_i)
+      @playlists = decorated.collect{|p| p[1]}
+      @playlists.reverse! if sort_direction=='desc'
+      @playlists = @playlists.slice(params['start'].to_i, params['length'].to_i)
     end
     response = {
-      "draw": request.parameters['draw'],
+      "draw": params['draw'],
       "recordsTotal": recordsTotal,
-      "recordsFiltered": playlistsFiltered.count,
-      "data": pagedPlaylists.collect do |playlist|
+      "recordsFiltered": playlistsFilteredTotal,
+      "data": @playlists.collect do |playlist|
         copy_button = view_context.button_tag( type: 'button', data: { playlist: playlist },
           class: 'copy-playlist-button btn btn-default btn-xs') do
-          "<span class='fa fa-clone'> Copy </span>".html_safe
+          "<i class='fa fa-clone' aria-hidden='true'></i> Copy".html_safe
         end
         edit_button = view_context.link_to(edit_playlist_path(playlist), class: 'btn btn-default btn-xs') do
-          "<span class='fa fa-edit'> Edit</span>".html_safe
+          "<i class='fa fa-edit' aria-hidden='true'></i> Edit".html_safe
         end
         delete_button = view_context.link_to(playlist_path(playlist), method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'}) do
-          "<span class='fa fa-times'> Delete</span>".html_safe
+          "<i class='fa fa-times' aria-hidden='true'></i> Delete".html_safe
         end
         [
           view_context.link_to(playlist.title, playlist_path(playlist), title: playlist.comment),
@@ -84,6 +95,7 @@ class PlaylistsController < ApplicationController
           view_context.human_friendly_visibility(playlist.visibility),
           "<span title='#{playlist.created_at.utc.iso8601}'>#{view_context.time_ago_in_words(playlist.created_at)} ago</span>",
           "<span title='#{playlist.updated_at.utc.iso8601}'>#{view_context.time_ago_in_words(playlist.updated_at)} ago</span>",
+          playlist.tags.join(', '),
           "#{copy_button} #{edit_button} #{delete_button}"
         ]
       end
@@ -97,8 +109,6 @@ class PlaylistsController < ApplicationController
 
   # GET /playlists/1
   def show
-    @playlist_token = params[:token]
-    current_ability.options[:playlist_token] = @playlist_token
     authorize! :read, @playlist
   end
 
@@ -139,7 +149,9 @@ class PlaylistsController < ApplicationController
   # POST /playlists
   def duplicate
     old_playlist = Playlist.find(params['old_playlist_id'])
-    authorize! :duplicate, old_playlist, message: "You do not have sufficient privledges to copy this item"
+    unless can? :duplicate, old_playlist
+      render json: {errors: 'You do not have sufficient privileges to copy this item'}, status: 401 and return
+    end
     @playlist = Playlist.new(playlist_params.merge(user: current_user))
     if @playlist.save
 
@@ -250,8 +262,6 @@ class PlaylistsController < ApplicationController
   end
 
   def refresh_info
-    @playlist_token = params[:token]
-    current_ability.options[:playlist_token] = @playlist_token
     @position = params[:position]
     @playlist_item = @playlist.items.where(position: @position.to_i).first
     authorize! :read, @playlist_item
@@ -260,13 +270,26 @@ class PlaylistsController < ApplicationController
 
   private
 
+  def get_user_playlists
+    @playlists = Playlist.by_user(current_user)
+  end
+
   def get_all_other_playlists
-    @playlists = Playlist.where( user_id: current_user ).where.not( id: @playlist )
+    @playlists = Playlist.by_user(current_user).where.not( id: @playlist )
+  end
+
+  def load_playlist_token
+    @playlist_token = params[:token]
+    current_ability.options[:playlist_token] = @playlist_token
   end
 
   # Only allow a trusted parameter "white list" through.
   def playlist_params
-    params.require(:playlist).permit(:title, :comment, :visibility, :clip_ids, items_attributes: [:id, :position])
+    new_params = params.require(:playlist).permit(:title, :comment,
+      :visibility, :clip_ids, :tags,
+      items_attributes: [:id, :position])
+    new_params[:tags] = JSON.parse(new_params[:tags]) if new_params[:tags].present?
+    new_params
   end
 
   def update_playlist(playlist)

@@ -1,0 +1,24 @@
+/**
+ * Stylesheet for Avalon custom MediaElement 4 plugin: "Add To Playlist".
+ */
+
+$avalon-primary-color: #84a791;
+
+// Control button on MEJS player
+.mejs-add-to-playlist-button > button,
+.mejs__add-to-playlist-button > button {
+  background-position: -50px -20px;
+  width: 25px;
+}
+
+.add_playlist_item_playlists_no_playlists_message {
+  a {
+    color: $avalon-primary-color !important;
+  }
+}
+
+.playlist-visibility-form-group {
+  > label:first-of-type {
+    display: block;
+  }
+}

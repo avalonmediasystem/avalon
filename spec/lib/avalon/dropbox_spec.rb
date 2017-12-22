@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -24,7 +24,7 @@ describe Avalon::Dropbox do
       Avalon::RoleControls.add_user_role('frances.dickens@reichel.com','manager')
     end
     let(:collection) { FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
-    subject { Avalon::Dropbox.new(Avalon::Configuration.lookup('dropbox.path'),collection) }
+    subject { Avalon::Dropbox.new(Settings.dropbox.path,collection) }
     it 'returns true if the file is found' do
       allow(File).to receive(:delete).and_return true
       subject.delete('some_file.mov')

@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -37,7 +37,7 @@ require 'avalon/dropbox'
 
     def execute context
        deleted_master_files = update_master_files context
-       context[:notice] = "Several clean up jobs have been sent out. Their statuses can be viewed by your sysadmin at #{ Avalon::Configuration.lookup('matterhorn.cleanup_log') }" unless deleted_master_files.empty?
+       context[:notice] = "Several clean up jobs have been sent out. Their statuses can be viewed by your sysadmin at #{ Settings.matterhorn.cleanup_log }" unless deleted_master_files.empty?
 
        # Reloads media_object.master_files, should use .reload when we update hydra-head
        media = MediaObject.find(context[:media_object].id)

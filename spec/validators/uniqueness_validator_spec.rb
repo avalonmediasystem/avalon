@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -16,9 +16,12 @@ require 'rails_helper'
 
 describe "UniquenessValidator" do
 
-  class Foo < ActiveFedora::Base
-    property :title, predicate: ::RDF::Vocab::DC.title, multiple: false
+  before(:all) do
+    class Foo < ActiveFedora::Base
+      property :title, predicate: ::RDF::Vocab::DC.title, multiple: false
+    end
   end
+  after(:all) { Object.send(:remove_const, :Foo) }
 
   let(:solr_field) {"title_uniq_si"}
   let(:validator) {UniquenessValidator.new({:attributes => [:title], :solr_name => solr_field})}

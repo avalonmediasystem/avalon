@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -18,40 +18,42 @@ module Avalon
       include Enumerable
       extend Forwardable
 
-      attr_reader :dir, :manifest, :collection
-      def_delegators :@manifest, :each
+      attr_reader :manifest, :collection
+      def_delegators :@manifest, :each, :dir
 
       def self.locate(root, collection)
         Avalon::Batch::Manifest.locate(root).collect { |f| self.new(f, collection) }
       end
 
       def initialize(manifest, collection)
-        @dir = File.dirname(manifest)
-        @manifest = Avalon::Batch::Manifest.new(manifest, self)
+        @manifest = Avalon::Batch::Manifest.load(manifest, self)
         @collection = collection
       end
-      
+
       def title
         File.basename(@manifest.file)
       end
 
       def user
-        @user ||= User.where(username: @manifest.email).first || User.where(email: @manifest.email).first
+        @user ||=
+          User.where(Devise.authentication_keys.first => @manifest.email).first ||
+          User.where(username: @manifest.email).first ||
+          User.where(email: @manifest.email).first
         @user
       end
 
       def file_list
-        @manifest.collect { |entry| entry.files }.flatten.collect { |f| File.join(@dir,f[:file]) }
+        @manifest.collect { |entry| entry.files }.flatten.collect { |f| @manifest.path_to(f[:file]) }
       end
 
       def complete?
-        file_list.all? { |f| File.file?(f) }
+        file_list.all? { |f| FileLocator.new(f).exist? }
       end
 
       def each_entry
         @manifest.each_with_index do |entry, index|
           files = entry.files.dup
-          files.each { |file| file[:file] = File.join(@dir,file[:file]) }
+          files.each { |file| file[:file] = @manifest.path_to(file[:file]) }
           yield(entry.fields, files, entry.opts, entry, index)
         end
       end

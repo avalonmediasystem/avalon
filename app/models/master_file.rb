@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -27,6 +27,7 @@ class MasterFile < ActiveFedora::Base
   include Permalink
   include FrameSize
   include Identifier
+  include MigrationTarget
   include MasterFileBehavior
 
   belongs_to :media_object, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
@@ -56,9 +57,7 @@ class MasterFile < ActiveFedora::Base
   property :file_checksum, predicate: ::RDF::Vocab::NFO.hashValue, multiple: false do |index|
     index.as :stored_sortable
   end
-  property :file_size, predicate: ::RDF::Vocab::EBUCore.fileSize, multiple: false do |index|
-    index.as :stored_sortable
-  end
+  property :file_size, predicate: ::RDF::Vocab::EBUCore.fileSize, multiple: false # indexed in to_solr
   property :duration, predicate: ::RDF::Vocab::EBUCore.duration, multiple: false do |index|
     index.as :stored_sortable
   end
@@ -168,7 +167,15 @@ class MasterFile < ActiveFedora::Base
       file.each_value {|f| f.close unless f.closed? }
     when ActionDispatch::Http::UploadedFile #Web upload
       saveOriginal(file, file.original_filename)
-    else #Batch or dropbox
+    when URI, Addressable::URI
+      case file.scheme
+      when 'file'
+        saveOriginal(File.open(file.path), File.basename(file.path))
+      when 's3'
+        self.file_location = file.to_s
+        self.file_size = FileLocator::S3File.new(file).object.size
+      end
+    else #Batch
       saveOriginal(file)
     end
     reloadTechnicalMetadata!
@@ -238,14 +245,14 @@ class MasterFile < ActiveFedora::Base
 
     #Build hash for single file skip transcoding
     if !file.is_a?(Hash) && (self.workflow_name == 'avalon-skip-transcoding' || self.workflow_name == 'avalon-skip-transcoding-audio')
-      file = {'quality-high' => File.new(file_location)}
+      file = {'quality-high' => FileLocator.new(file_location).attachment}
     end
 
     input = if file.is_a? Hash
       file_dup = file.dup
-      file_dup.each_pair {|quality, f| file_dup[quality] = "file://" + URI.escape(File.realpath(f.to_path))}
+      file_dup.each_pair {|quality, f| file_dup[quality] = FileLocator.new(f.to_path).uri.to_s }
     else
-      "file://" + URI.escape(file_location)
+      FileLocator.new(file_location).uri.to_s
     end
 
     ActiveEncodeJob::Create.perform_later(self.id, input, {preset: self.workflow_name})
@@ -404,7 +411,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def encoder_class
-    find_encoder_class(encoder_classname) || find_encoder_class(workflow_name.to_s.classify) || ActiveEncode::Base
+    find_encoder_class(encoder_classname) || find_encoder_class(workflow_name.to_s.classify) || MasterFile.default_encoder_class || ActiveEncode::Base
   end
 
   def encoder_class=(value)
@@ -414,6 +421,20 @@ class MasterFile < ActiveFedora::Base
       self.encoder_classname = value.name
     else
       raise ArgumentError, '#encoder_class must be a descendant of ActiveEncode::Base'
+    end
+  end
+
+  def self.default_encoder_class
+    @@default_encoder_class ||= nil
+  end
+
+  def self.default_encoder_class=(value)
+    if value.nil?
+      @@default_encoder_class = nil
+    elsif value.is_a?(Class) and value.ancestors.include?(ActiveEncode::Base)
+      @@default_encoder_class = value
+    else
+      raise ArgumentError, '#default_encoder_class must be a descendant of ActiveEncode::Base'
     end
   end
 
@@ -466,6 +487,7 @@ class MasterFile < ActiveFedora::Base
 
   def to_solr *args
     super.tap do |solr_doc|
+      solr_doc['file_size_ltsi'] = file_size
       solr_doc['has_captions?_bs'] = has_captions?
       solr_doc['has_poster?_bs'] = has_poster?
       solr_doc['has_thumbnail?_bs'] = has_thumbnail?
@@ -478,25 +500,34 @@ class MasterFile < ActiveFedora::Base
   protected
 
   def mediainfo
-    @mediainfo ||= Mediainfo.new file_location
+    if @mediainfo.nil?
+      @mediainfo = Mediainfo.new(FileLocator.new(file_location).location)
+    end
+    @mediainfo
   end
 
   def find_frame_source(options={})
     options[:offset] ||= 2000
 
-    response = { source: file_location, offset: options[:offset], master: true }
+    source = FileLocator.new(file_location)
+    options[:master] = true
+    if source.source.nil? or (source.uri.scheme == 's3' and not source.exist?)
+      source = FileLocator.new(self.derivatives.where(quality_ssi: 'high').first.absolute_location)
+      options[:master] = false
+    end
+    response = { source: source&.location }.merge(options)
+    return response if response[:source].to_s =~ %r(^https?://)
+
     unless File.exists?(response[:source])
       Rails.logger.warn("Masterfile `#{file_location}` not found. Extracting via HLS.")
       begin
-        token = StreamToken.find_or_create_session_token({media_token:nil}, self.id)
-        playlist_url = self.stream_details(token)[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
-        playlist = Avalon::M3U8Reader.read(playlist_url)
+        playlist_url = self.stream_details[:stream_hls].find { |d| d[:quality] == 'high' }[:url]
+        secure_url = SecurityHandler.secure_url(playlist_url, target: self.id)
+        playlist = Avalon::M3U8Reader.read(secure_url)
         details = playlist.at(options[:offset])
         target = File.join(Dir.tmpdir,File.basename(details[:location]))
         File.open(target,'wb') { |f| open(details[:location]) { |io| f.write(io.read) } }
         response = { source: target, offset: details[:offset], master: false }
-      ensure
-        StreamToken.find_by_token(token).destroy
       end
     end
     return response
@@ -511,10 +542,10 @@ class MasterFile < ActiveFedora::Base
       raise RangeError, "Offset #{offset} not in range 0..#{self.duration}"
     end
 
-    ffmpeg = Avalon::Configuration.lookup('ffmpeg.path')
+    ffmpeg = Settings.ffmpeg.path
     frame_size = (options[:size].nil? or options[:size] == 'auto') ? self.original_frame_size : options[:size]
 
-    (new_width,new_height) = frame_size.split(/x/).collect &:to_f
+    (new_width,new_height) = frame_size.split(/x/).collect(&:to_f)
     new_height = (new_width/self.display_aspect_ratio.to_f).floor
     new_height += 1 if new_height.odd?
     aspect = new_width/new_height
@@ -522,8 +553,11 @@ class MasterFile < ActiveFedora::Base
     frame_source = find_frame_source(offset: offset)
     data = nil
     Tempfile.open([base,'.jpg']) do |jpeg|
-      file_source = File.join(File.dirname(jpeg.path),"#{File.basename(jpeg.path,File.extname(jpeg.path))}#{File.extname(frame_source[:source])}")
-      File.symlink(frame_source[:source],file_source)
+      file_source = frame_source[:source]
+      unless file_source =~ %r(https?://)
+        file_source = File.join(File.dirname(jpeg.path),"#{File.basename(jpeg.path,File.extname(jpeg.path))}#{File.extname(frame_source[:source])}")
+        File.symlink(frame_source[:source],file_source)
+      end
       begin
         options = [
           '-i',       file_source,
@@ -552,7 +586,7 @@ class MasterFile < ActiveFedora::Base
         end
         data
       ensure
-        File.unlink(file_source)
+        File.unlink(file_source) unless file_source =~ %r(https?://)
       end
     end
     raise RuntimeError, "Frame extraction failed. See log for details." if data.empty?
@@ -591,7 +625,7 @@ class MasterFile < ActiveFedora::Base
   def saveOriginal(file, original_name=nil)
     realpath = File.realpath(file.path)
     if original_name.present?
-      config_path = Avalon::Configuration.lookup('matterhorn.media_path')
+      config_path = Settings.matterhorn.media_path
       newpath = nil
       if config_path.present? and File.directory?(config_path)
         newpath = File.join(config_path, original_name)
@@ -644,11 +678,11 @@ class MasterFile < ActiveFedora::Base
   def post_processing_file_management
     logger.debug "Finished processing"
 
-    case Avalon::Configuration.lookup('master_file_management.strategy')
+    case Settings.master_file_management.strategy
     when 'delete'
       MasterFileManagementJobs::Delete.perform_now self.id
     when 'move'
-      move_path = Avalon::Configuration.lookup('master_file_management.path')
+      move_path = Settings.master_file_management.path
       raise '"path" configuration missing for master_file_management strategy "move"' if move_path.blank?
       newpath = File.join(move_path, MasterFile.post_processing_move_filename(file_location, id: id))
       MasterFileManagementJobs::Move.perform_later self.id, newpath

@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -22,12 +22,13 @@
 #                  Always set to the supplied date and 23:59:59 UTC for the time on save (end of the day).
 class Lease < ActiveFedora::Base
   include Hydra::AdminPolicyBehavior
+  include MigrationTarget
 
   scope :local,    -> { where(lease_type_ssi: "local")    }
   scope :user,     -> { where(lease_type_ssi: "user")     }
   scope :external, -> { where(lease_type_ssi: "external") }
   scope :ip,       -> { where(lease_type_ssi: "ip")       }
-  
+
   before_save :apply_default_begin_time, :ensure_end_time_present, :validate_dates#, :format_times
 
   has_many :media_objects, class_name: 'MediaObject', predicate: ActiveFedora::RDF::ProjectHydra.isGovernedBy
@@ -159,7 +160,7 @@ private
     return "local" if Admin::Group.exists? group
     return "external"
   end
-  
+
   def set_lease_type
     self.lease_type = determine_lease_type
   end

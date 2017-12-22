@@ -1,0 +1,14 @@
+/**
+ * Stylesheet for Avalon custom MediaElement 4 plugin: "Create Thumbnail".
+ */
+
+.mejs-create-thumbnail-button > button,
+.mejs__create-thumbnail-button > button {
+  background-position: -120px 0px;
+ }
+
+#create-thumbnail-modal {
+  .alert {
+    padding-right: 35px;
+  }
+}

@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -86,6 +86,18 @@ module ModsBehaviors
 
     # For full text, we stuff it into the mods_tesim field which is already configured for Mods doucments
     solr_doc['mods_tesim'] = self.ng_xml.xpath('//text()').collect { |t| t.text }
+
+    # TODO: Find a better way to handle super long fields other than simply dropping them from the solr doc.
+    solr_doc.delete_if do |field,value|
+      case value
+      when String
+        value.length > 32000
+      when Array
+        value.reject! { |t| t.length > 32000 }
+        false
+      else false
+      end
+    end
 
     return solr_doc
   end
@@ -175,22 +187,22 @@ module ModsBehaviors
     parsed = Date.edtf(date)
     return Array.new if parsed.nil?
     years =
-    if parsed.respond_to?(:unknown?) && parsed.unknown?
-      ['Unknown']
-    elsif parsed.respond_to?(:map)
-      parsed.map(&:year_precision!)
-      parsed.map(&:year)
-    elsif parsed.unspecified?(:year)
-      parsed.precision = :year
-      if parsed.unspecified.year[2]
-	EDTF::Interval.new(parsed, parsed.next(99).last).map(&:year)
-      elsif parsed.unspecified.year[3]
-	EDTF::Interval.new(parsed, parsed.next(9).last).map(&:year)
+      if (parsed.respond_to?(:unknown?) && parsed.unknown?) || (parsed.class == EDTF::Unknown)
+        ['Unknown']
+      elsif parsed.respond_to?(:map)
+        parsed.map(&:year_precision!)
+        parsed.map(&:year)
+      elsif parsed.unspecified?(:year)
+        parsed.precision = :year
+        if parsed.unspecified.year[2]
+          EDTF::Interval.new(parsed, parsed.next(99).last).map(&:year)
+        elsif parsed.unspecified.year[3]
+          EDTF::Interval.new(parsed, parsed.next(9).last).map(&:year)
+        end
+      else
+        parsed.year_precision!
+        Array(parsed.year)
       end
-    else
-      parsed.year_precision!
-      Array(parsed.year)
-    end
     years.map(&:to_s).uniq
   end
 

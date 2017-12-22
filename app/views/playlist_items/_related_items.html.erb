@@ -1,0 +1,42 @@
+<%#
+Copyright 2011-2018, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+<table class="table table-condensed">
+  <thead><tr><th>Title</th><th>Start</th><th>End</th><th>Position</th></tr></thead>
+  <tbody>
+    <% @related_clips.sort_by { |hash| hash['start_time'].to_i}.each do |clip| %>
+    <% if can? :read, clip.master_file %>
+      <tr>
+        <% position = clip.playlist_position(@playlist.id) %>
+        <td class='clip_title'>
+          <% dataset = { 'playlist-id' => @playlist.id,
+                         'playlist-item-id' => PlaylistItem.where(clip: clip)[0].id,
+                         'clip-start-time' => clip.start_time,
+                         'clip-end-time' => clip.end_time,
+                         'clip-source' => clip.source,
+                         'media-object-id' => clip.master_file.media_object_id,
+                         'master-file-id' => clip.master_file.id } %>
+          <%= link_to playlist_path(@playlist, position: position), data: dataset do %>
+            <%= clip.title %>
+          <% end %>
+        </td>
+        <td class='clip_start_time'><%= pretty_time(clip.start_time) %></td>
+        <td class='clip_end_time'><%= pretty_time(clip.end_time) %></td>
+        <td class='clip_position'><%= position %></td>
+      </tr>
+    <% end %>
+  <% end %>
+  </tbody>
+</table>

@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -19,9 +19,9 @@ require 'fileutils'
 
 describe Avalon::Batch::Ingest do
   before :each do
-    @saved_dropbox_path = Avalon::Configuration.lookup('dropbox.path')
-    Avalon::Configuration['dropbox']['path'] = 'spec/fixtures/dropbox'
-    Avalon::Configuration['email']['notification'] = 'frances.dickens@reichel.com'
+    @saved_dropbox_path = Settings.dropbox.path
+    Settings.dropbox.path = File.join(Rails.root, 'spec/fixtures/dropbox')
+    Settings.email.notification = 'frances.dickens@reichel.com'
     # Dirty hack is to remove the .processed files both before and after the
     # test. Need to look closer into the ideal timing for where this should take
     # place
@@ -33,10 +33,11 @@ describe Avalon::Batch::Ingest do
     User.create(:username => 'jay@krajcik.org', :email => 'jay@krajcik.org')
     Avalon::RoleControls.add_user_role('frances.dickens@reichel.com','manager')
     Avalon::RoleControls.add_user_role('jay@krajcik.org','manager')
+    allow(IngestBatchEntryJob).to receive(:perform_later).and_return(nil)
   end
 
   after :each do
-    Avalon::Configuration['dropbox']['path'] = @saved_dropbox_path
+    Settings.dropbox.path = @saved_dropbox_path
     Dir['spec/fixtures/**/*.xlsx.process*','spec/fixtures/**/*.xlsx.error'].each { |file| File.delete(file) }
     Avalon::RoleControls.remove_user_role('frances.dickens@reichel.com','manager')
     Avalon::RoleControls.remove_user_role('jay@krajcik.org','manager')
@@ -44,6 +45,41 @@ describe Avalon::Batch::Ingest do
     # this is a test environment, we don't want to kick off
     # generation jobs if possible
     allow_any_instance_of(MasterFile).to receive(:save).and_return(true)
+  end
+
+  describe 'scanning and registering new packages' do
+    let(:collection) { FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
+    let(:batch_ingest) { Avalon::Batch::Ingest.new(collection) }
+
+    before :each do
+      @dropbox_dir = collection.dropbox.base_directory
+      FileUtils.cp_r 'spec/fixtures/dropbox/example_batch_ingest', @dropbox_dir
+      Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+      #stub_request(:get, sru_url).to_return(body: sru_response)
+      @manifest_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
+      @batch = Avalon::Batch::Package.new(@manifest_file, collection)
+      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [@batch]
+    end
+
+    after :each do
+      if @dropbox_dir =~ %r{spec/fixtures/dropbox/Ut}
+        FileUtils.rm_rf @dropbox_dir
+      end
+    end
+
+    it 'registers a new package' do
+      expect { batch_ingest.scan_for_packages }.to change { BatchRegistries.count }.by(1)
+    end
+
+    it 'deletes the manifest after registering' do
+       batch_ingest.scan_for_packages
+       expect(FileLocator.new(@batch.manifest.file).exists?).to be_falsey
+    end
+
+    it 'does not persist anything to fedora' do
+      expect(collection).to be_persisted
+      expect { batch_ingest.scan_for_packages }.not_to change { ActiveFedora::Base.count }
+    end
   end
 
   describe 'valid manifest' do
@@ -56,7 +92,7 @@ describe Avalon::Batch::Ingest do
     before :each do
       @dropbox_dir = collection.dropbox.base_directory
       FileUtils.cp_r 'spec/fixtures/dropbox/example_batch_ingest', @dropbox_dir
-      Avalon::Configuration['bib_retriever'] = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+      Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
       stub_request(:get, sru_url).to_return(body: sru_response)
       manifest_file = File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx')
       batch = Avalon::Batch::Package.new(manifest_file, collection)
@@ -67,133 +103,194 @@ describe Avalon::Batch::Ingest do
       if @dropbox_dir =~ %r{spec/fixtures/dropbox/Ut}
         FileUtils.rm_rf @dropbox_dir
       end
-    end
-
-    it 'should send email when batch finishes processing' do
-      mailer = double('mailer').as_null_object
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_success).with(duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver_now)
-      batch_ingest.ingest
+      BatchEntries.delete_all
+      BatchRegistries.delete_all
     end
 
     it 'should skip the corrupt manifest' do
       manifest_file = File.join(@dropbox_dir,'example_batch_ingest','bad_manifest.xlsx')
       batch = Avalon::Batch::Package.new(manifest_file, collection)
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      expect { batch_ingest.ingest }.not_to raise_error
-      expect { batch_ingest.ingest }.not_to change{IngestBatch.count}
+      expect { batch_ingest.scan_for_packages }.not_to raise_error
+      expect { batch_ingest.scan_for_packages }.not_to change{BatchRegistries.count}
       error_file = File.join(@dropbox_dir,'example_batch_ingest','bad_manifest.xlsx.error')
       expect(File.exists?(error_file)).to be true
       expect(File.read(error_file)).to match(/^Invalid manifest/)
     end
 
     it 'should ingest batch with spaces in name' do
-      space_batch_path = File.join('spec/fixtures/dropbox/example batch ingest', 'batch manifest with spaces.xlsx')
+      FileUtils.cp_r 'spec/fixtures/dropbox/example batch ingest', @dropbox_dir
+      space_batch_path = File.join(@dropbox_dir + '/example batch ingest', 'batch manifest with spaces.xlsx')
       space_batch = Avalon::Batch::Package.new(space_batch_path, collection)
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [space_batch]
-      expect{batch_ingest.ingest}.to change{IngestBatch.count}.by(1)
+      expect{batch_ingest.scan_for_packages}.to change{BatchRegistries.count}.by(1)
     end
 
     it 'should ingest batch with skip-transcoding derivatives' do
-      derivatives_batch_path = File.join('spec/fixtures/dropbox/pretranscoded_batch_ingest', 'batch_manifest_derivatives.xlsx')
+      FileUtils.cp_r 'spec/fixtures/dropbox/pretranscoded_batch_ingest', @dropbox_dir
+      derivatives_batch_path = File.join(@dropbox_dir + '/pretranscoded_batch_ingest', 'batch_manifest_derivatives.xlsx')
       derivatives_batch = Avalon::Batch::Package.new(derivatives_batch_path, collection)
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [derivatives_batch]
-      expect_any_instance_of(MasterFile).to receive(:process).with(hash_including('quality-high', 'quality-medium', 'quality-low'))
-      expect{batch_ingest.ingest}.to change{IngestBatch.count}.by(1)
+      expect{batch_ingest.scan_for_packages}.to change{BatchRegistries.count}.by(1)
     end
 
     it 'creates an ingest batch object' do
-      expect{batch_ingest.ingest}.to change{IngestBatch.count}.by(1)
+      expect{batch_ingest.scan_for_packages}.to change{BatchRegistries.count}.by(1)
     end
 
-    context '#attach_datastreams_to_master_file' do
-      let(:master_file) { FactoryGirl.build(:master_file) }
-      let(:filename) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov') }
-      before do
-        Avalon::Batch::Entry.attach_datastreams_to_master_file(master_file, filename)
+    describe 'registering entries' do
+      it 'registers entries' do
+        expect { batch_ingest.scan_for_packages }.to change { BatchEntries.count }.by(3)
       end
 
-      it 'should attach structural metadata' do
-        expect(master_file.structuralMetadata.has_content?).to be_truthy
+      it 'gets previous entries when there is a replay' do
+        batch_ingest.scan_for_packages
+        # Fake the replay name for the test and rerun the same package
+        br = BatchRegistries.first
+        br.replay_name = br.file_name
+        br.save
+        expect(batch_ingest.fetch_previous_entries).not_to be_nil
       end
-      it 'should attach captions' do
-        expect(master_file.captions.has_content?).to be_truthy
+
+      it 'does not get previous when there is not a replay' do
+        expect(batch_ingest).not_to receive(:fetch_previous_entries)
+        batch_ingest.scan_for_packages
+      end
+
+      it 'queues ingest jobs for newly registered entries' do
+        allow_any_instance_of(BatchEntries).to receive(:queue)
+        batch_ingest.scan_for_packages
+      end
+
+      describe 'replays on entries' do
+        before :each do
+          # Set up a replay of the default batch
+          batch_ingest.scan_for_packages
+          br = BatchRegistries.first
+          br.replay_name = br.file_name
+          br.save
+          # Get the old timestamps
+          ts = []
+          BatchEntries.all do |be|
+            ts << be.updated_at
+          end
+        end
+
+        it 'does not change the entries if there are no changes' do
+          # Run the replay
+          batch_ingest.scan_for_packages
+
+          # Timestamps should not have changed
+          pos = 0
+          BatchEntries.all do |be|
+            expect(be.updated_at).to eq(ts[pos])
+            pos += 1
+          end
+        end
+
+        it 'changes the entries when if there are changes' do
+          BatchEntries.all do |be|
+            be.payload = 'foo'
+            be.save
+          end
+
+          # Timestamps should have changed and payload updated
+          pos = 0
+          BatchEntries.all do |be|
+            expect(be.payload).not_to eq('foo')
+            expect(be.updated_at).not_to eq(ts[pos])
+            pos += 1
+          end
+        end
+
+        it 'resets the entries when the entries are errored out' do
+          BatchEntries.all do |be|
+            be.error = true
+            be.payload = 'foo'
+            be.save
+          end
+
+          # Timestamps should have changed and errors cleared
+          pos = 0
+          BatchEntries.all do |be|
+            expect(be.payload).not_to eq('foo')
+            expect(be.error).to_be falsey
+            expect(be.updated_at).not_to eq(ts[pos])
+            pos += 1
+          end
+        end
+
+        it 'requeues completed objects when the MediaObject has not been published' do
+          allow(MediaObject).to receive(:exists?).with(anything).and_return(false)
+          BatchEntries.all do |be|
+            be.completed = true
+            be.payload = 'foo'
+            be.media_object_pid = 'foo'
+            be.save
+          end
+
+          # Timestamps should have changed and completed status removed
+          pos = 0
+          BatchEntries.all do |be|
+            expect(be.payload).not_to eq('foo')
+            expect(be.completed).to_be falsey
+            expect(be.updated_at).not_to eq(ts[pos])
+            pos += 1
+          end
+        end
+
+        it 'does not requeue jobs when the media objects are published' do
+          allow(MediaObject).to receive(:exists?).with(anything).and_return(true)
+          BatchEntries.all do |be|
+            be.completed = true
+            be.media_object_pid = 'foo'
+            be.save
+          end
+
+          # Timestamps should have changed and completed status removed
+          pos = 0
+          BatchEntries.all do |be|
+            expect(be.payload).not_to eq('foo')
+            expect(be.completed).to_be falsey
+            expect(be.error).to_be true
+            expect(be.updated_at).not_to eq(ts[pos])
+            pos += 1
+          end
+        end
+
+
       end
     end
 
-    context 'should set details correctly' do
-      let(:manifest_file) { File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx') }
-      let(:package) { Avalon::Batch::Package.new(manifest_file, collection) }
-      let(:media_object) { package.manifest.entries.first.process! }
-      let(:media_object_last) { package.manifest.entries.last.process! }
-
-      it 'should set avalon_uploader' do
-        expect(media_object.avalon_uploader).to eq('frances.dickens@reichel.com')
+    describe 'registering batches' do
+      it 'registers a new package' do
+        expect(BatchRegistries.first).to be_nil
+        expect { batch_ingest.scan_for_packages }.to change { BatchRegistries.count }.by(1)
+        expect(batch_ingest).not_to receive(:register_replay)
+        expect(BatchRegistries.first.locked).to be_falsey
       end
 
-      it 'should set MasterFile details' do
-        master_file = media_object.ordered_master_files.to_a.first
-
-        expect(master_file.title).to eq('Quis quo')
-        expect(master_file.poster_offset.to_i).to eq(500)
-        expect(master_file.workflow_name).to eq('avalon')
-        expect(master_file.absolute_location).to eq(Avalon::FileResolver.new.path_to(master_file.file_location))
-        expect(master_file.date_digitized).to eq('2015-10-30T00:00:00Z')
-        # if a master file is saved on a media object
-        # it should have workflow name set
-        # master_file.workflow_name.should be_nil
-
-        master_file = media_object.ordered_master_files.to_a[1]
-        expect(master_file.title).to eq('Unde aliquid')
-        expect(master_file.poster_offset.to_i).to eq(500)
-        expect(master_file.workflow_name).to eq('avalon-skip-transcoding')
-        expect(master_file.absolute_location).to eq('file:///tmp/sheephead_mountain_master.mov')
-        expect(master_file.date_digitized).to eq('2015-10-31T00:00:00Z')
-
-        master_file = media_object.ordered_master_files.to_a[2]
-        expect(master_file.title).to eq('Audio')
-        expect(master_file.workflow_name).to eq('fullaudio')
-        expect(master_file.absolute_location).to eq(Avalon::FileResolver.new.path_to(master_file.file_location))
+      it 'sends a registration success email' do
+        expect(BatchRegistriesMailer).to receive(:batch_ingest_validation_success).and_call_original
+        batch_ingest.scan_for_packages
       end
 
-      it 'should correctly set bibliographic_id' do
-        expect(media_object_last.bibliographic_id).to eq({:source=>"local", :id=>"7763100"})
-      end
+      it 'registers a replay package' do
+        expect(BatchRegistries.first).to be_nil
+        # Set up the replay
+        batch_ingest.scan_for_packages
+        br = BatchRegistries.first
+        br.replay_name = br.file_name
+        br.save
+        expect(BatchRegistries.all.size).to eq(1)
 
-      it 'should correctly set other identifiers' do
-        expect(media_object.other_identifier).to eq([{:source=>"local", :id=>"ABC123"}])
-      end
-
-      it 'should correctly set notes' do
-        expect(media_object.note.first).to eq({:note=>"This is a test general note", :type=>"general"})
-      end
-
-      it 'should retrieve bib data' do
-        expect(media_object_last.bibliographic_id).to eq({:source=>"local", :id=>"7763100"})
-        expect(media_object_last.title).to eq('245 A : B F G K N P S')
+        # Run it with a replay, expect no size changes
+        expect { batch_ingest.scan_for_packages }.to change { BatchRegistries.count }.by(0)
+        expect { batch_ingest.scan_for_packages }.to change { BatchEntries.count }.by(0)
+        expect(batch_ingest).not_to receive(:register_batch)
+        expect(BatchRegistries.first.locked).to be_falsey
       end
     end
-
-    context 'should set hidden' do
-      let(:manifest_file) { File.join(@dropbox_dir,'example_batch_ingest','batch_manifest.xlsx') }
-      let(:package) { Avalon::Batch::Package.new(manifest_file, collection) }
-      let(:entry) { package.manifest.entries.first }
-      let(:entry_hidden) { package.manifest.entries.second }
-
-      it 'correctly reads hidden from the manifest' do
-        expect(entry.opts[:hidden]).to be_falsey
-        expect(entry_hidden.opts[:hidden]).to be_truthy
-      end
-      it 'does not set hidden on the media objects if the entry is not hidden' do
-        media_object = entry.process!
-        expect(media_object).not_to be_hidden
-      end
-      it 'sets hidden on the media objects if the entry is hidden' do
-        media_object = entry_hidden.process!
-        expect(media_object).to be_hidden
-      end
-    end
-
   end
 
   describe 'invalid manifest' do
@@ -213,99 +310,16 @@ describe Avalon::Batch::Ingest do
 
     it 'does not create an ingest batch object when there are zero packages' do
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return []
-      #expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(anything(), include("Expected error message"))
-      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
-    end
-
-    it 'should result in an error if a file is not found' do
-      batch = Avalon::Batch::Package.new( 'spec/fixtures/dropbox/example_batch_ingest/wrong_filename_manifest.xlsx', collection )
-      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      mailer = double('mailer').as_null_object
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver_now)
-      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
-      expect(batch.errors[3].messages).to have_key(:content)
-      expect(batch.errors[3].messages[:content]).to eq(["File not found: spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain_wrong.mov"])
-    end
-
-    it 'does not create an ingest batch object when there are no files' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/no_files.xlsx', collection)
-      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
+      expect { batch_ingest.scan_for_packages }.to_not change { BatchRegistries.count }
     end
 
     it 'should fail if the manifest specified a non-manager user' do
       batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/non_manager_manifest.xlsx', collection)
       allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      mailer = double('mailer').as_null_object
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(anything(), include("User jay@krajcik.org does not have permission to add items to collection: Ut minus ut accusantium odio autem odit..")).and_return(mailer)
-      expect(mailer).to receive(:deliver_now)
-      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
+      batch_ingest.should_receive(:send_invalid_package_email).once
+      expect { batch_ingest.scan_for_packages }.to_not change { BatchRegistries.count }
+      # it should create an error file and not attempt to reregister the package until user action
+      expect(batch.manifest.error?).to be true
     end
-
-    it 'should fail if a bad offset is specified' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/bad_offset_manifest.xlsx', collection)
-      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      mailer = double('mailer').as_null_object
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver_now)
-      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
-      expect(batch.errors[4].messages).to have_key(:offset)
-      expect(batch.errors[4].messages[:offset]).to eq(['Invalid offset: 5:000'])
-    end
-
-    it 'should fail if missing required field' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/missing_required_field.xlsx', collection)
-      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      mailer = double('mailer').as_null_object
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver_now)
-      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
-      expect(batch.errors[4].messages).to have_key(:title)
-      expect(batch.errors[4].messages[:title]).to eq(['field is required.'])
-    end
-
-    it 'should fail if field is not in accepted metadata field list' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/badColumnName_nonRequired.xlsx', collection)
-      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      mailer = double('mailer').as_null_object
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(duck_type(:each),duck_type(:each)).and_return(mailer)
-      expect(mailer).to receive(:deliver_now)
-      expect{batch_ingest.ingest}.to_not change{IngestBatch.count}
-      expect(batch.errors[4].messages).to have_key(:contributator)
-      expect(batch.errors[4].messages[:contributator]).to eq(["unknown attribute 'contributator' for MediaObject."])
-    end
-
-    it 'should fail if an unknown error occurs' do
-      batch = Avalon::Batch::Package.new('spec/fixtures/dropbox/example_batch_ingest/badColumnName_nonRequired.xlsx', collection)
-      allow_any_instance_of(Avalon::Dropbox).to receive(:find_new_packages).and_return [batch]
-      mailer = double('mailer').as_null_object
-      expect(IngestBatchMailer).to receive(:batch_ingest_validation_error).with(batch ,['RuntimeError: Foo']).and_return(mailer)
-      expect(mailer).to receive(:deliver_now)
-      expect(batch_ingest).to receive(:ingest_package) { raise "Foo" }
-      expect { batch_ingest.ingest }.to_not raise_error
-    end
-  end
-
-  it "should be able to default to public access" do
-    skip "[VOV-1348] Wait until implemented"
-  end
-
-  it "should be able to default to specific groups" do
-    skip "[VOV-1348] Wait until implemented"
-  end
-
-  describe "#offset_valid?" do
-    it {expect(Avalon::Batch::Entry.offset_valid?("33.12345")).to be true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("21:33.12345")).to be true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("125:21:33.12345")).to be true}
-    it {expect(Avalon::Batch::Entry.offset_valid?("63.12345")).to be false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("66:33.12345")).to be false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(".12345")).to be false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":.12345")).to be false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":33.12345")).to be false}
-    it {expect(Avalon::Batch::Entry.offset_valid?(":66:33.12345")).to be false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("5:000")).to be false}
-    it {expect(Avalon::Batch::Entry.offset_valid?("`5.000")).to be false}
   end
 end

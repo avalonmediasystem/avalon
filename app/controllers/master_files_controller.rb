@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 # require 'avalon/controller/controller_behavior'
+
+include SecurityHelper
 
 class MasterFilesController < ApplicationController
   # include Avalon::Controller::ControllerBehavior
@@ -46,9 +48,11 @@ class MasterFilesController < ApplicationController
   def embed
     @master_file = MasterFile.find(params[:id])
     if can? :read, @master_file
-      @token = @master_file.nil? ? "" : StreamToken.find_or_create_session_token(session, @master_file.id)
-      @stream_info = @master_file.stream_details(@token, default_url_options[:host])
+      @stream_info = secure_streams(@master_file.stream_details)
     end
+
+    @player_width = "100%"
+    @player_height = "100%"
     respond_to do |format|
       format.html do
         response.headers.delete "X-Frame-Options"
@@ -60,7 +64,7 @@ class MasterFilesController < ApplicationController
   def oembed
     if params[:url].present?
       id = params[:url].split('?')[0].split('/').last
-      mf = MasterFile.where("identifier_ssim:\"#{id.downcase}\"").first
+      mf = MasterFile.where(identifier_ssim: id.downcase).first
       mf ||= MasterFile.find(id) rescue nil
       if mf.present?
         width = params[:maxwidth] || MasterFile::EMBED_SIZE[:medium]
@@ -74,7 +78,7 @@ class MasterFilesController < ApplicationController
         hash = {
           "version" => "1.0",
           "type" => mf.is_video? ? "video" : "rich",
-          "provider_name" => Avalon::Configuration.lookup('name') || 'Avalon Media System',
+          "provider_name" => Settings.name || 'Avalon Media System',
           "provider_url" => request.base_url,
           "width" => width,
           "height" => height,
@@ -120,7 +124,7 @@ class MasterFilesController < ApplicationController
     end
     respond_to do |format|
       format.html { redirect_to edit_media_object_path(@master_file.media_object_id, step: 'structure') }
-      format.json { render json: {structure: structure, flash: flash} }
+      format.json { render json: {structure: ERB::Util.html_escape(structure), flash: flash} }
     end
   end
 
@@ -185,70 +189,13 @@ class MasterFilesController < ApplicationController
       return
     end
 
-    format_errors = "The file was not recognized as audio or video - "
-
-    if params.has_key?(:Filedata) and params.has_key?(:original)
-      @master_files = []
-      params[:Filedata].each do |file|
-        if (file.size > MasterFile::MAXIMUM_UPLOAD_SIZE)
-          # Use the errors key to signal that it should be a red notice box rather
-          # than the default
-          flash[:error] = "The file you have uploaded is too large"
-          return redirect_to :back
-        end
-
-        unless file.original_filename.valid_encoding? && file.original_filename.ascii_only?
-          flash[:error] = 'The file you have uploaded has non-ASCII characters in its name.'
-          return redirect_to :back
-        end
-
-        master_file = MasterFile.new()
-        master_file.setContent(file)
-        master_file.set_workflow(params[:workflow])
-        # master_file.media_object = media_object
-        # master_file.save!
-
-        if 'Unknown' == master_file.file_format
-          flash[:error] = [] if flash[:error].nil?
-          error = format_errors
-          error << file.original_filename
-          error << " (" << file.content_type << ")"
-          flash[:error].push error
-          next
-        else
-          flash[:notice] = create_upload_notice(master_file.file_format)
-        end
-
-        master_file.media_object = media_object
-        unless master_file.save
-          flash[:error] = "There was a problem storing the file"
-        else
-          media_object.save
-          master_file.process
-          @master_files << master_file
-        end
-
-      end
-    elsif params.has_key?(:selected_files)
-      @master_files = []
-      params[:selected_files].each_value do |entry|
-        file_path = URI.decode(URI.parse(URI.encode(entry[:url])).path)
-        master_file = MasterFile.new
-        master_file.setContent(File.open(file_path, 'rb'))
-        master_file.set_workflow(params[:workflow])
-        master_file.save( validate: false )
-        master_file.media_object = media_object
-
-        unless master_file.save
-          flash[:error] = "There was a problem storing the file"
-        else
-          media_object.save
-          master_file.process
-          @master_files << master_file
-        end
-      end
-    else
-      flash[:notice] = "You must specify a file to upload"
+    begin
+      result = MasterFileBuilder.build(media_object, params)
+      @master_files = result[:master_files]
+      [:notice, :error].each { |type| flash[type] = result[:flash][type] }
+    rescue MasterFileBuilder::BuildError => err
+      flash[:error] = err.message
+      return redirect_to :back
     end
 
     respond_to do |format|
@@ -295,14 +242,19 @@ class MasterFilesController < ApplicationController
     master_file = MasterFile.find(params[:id])
     mimeType = "image/jpeg"
     content = if params[:offset]
-      authorize! :edit, master_file, message: "You do not have sufficient privileges to view this file"
+      authorize! :edit, master_file, message: "You do not have sufficient privileges to edit this file"
       opts = { :type => params[:type], :size => params[:size], :offset => params[:offset].to_f*1000, :preview => true }
       master_file.extract_still(opts)
     else
       authorize! :read, master_file, message: "You do not have sufficient privileges to view this file"
-      ds = master_file.send(params[:type].to_sym)
-      mimeType = ds.mime_type
-      ds.content
+      whitelist = ["thumbnail", "poster"]
+      if whitelist.include? params[:type]
+        ds = master_file.send(params[:type].to_sym)
+        mimeType = ds.mime_type
+        ds.content
+      else
+        nil
+      end
     end
     unless content
       redirect_to ActionController::Base.helpers.asset_path('video_icon.png')
@@ -312,18 +264,6 @@ class MasterFilesController < ApplicationController
   end
 
 protected
-  def create_upload_notice(format)
-    case format
-      when /^Sound$/
-       text = 'The uploaded content appears to be audio';
-      when /^Moving image$/
-       text = 'The uploaded content appears to be video';
-      else
-       text = 'The uploaded content could not be identified';
-      end
-    return text
-  end
-
   def ensure_readable_filedata
     if params[:Filedata].present?
       params[:Filedata].each do |file|

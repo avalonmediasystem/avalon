@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -15,7 +15,7 @@
 module Avalon
   class ControlledVocabulary
 
-    @@path = Rails.root.join(Avalon::Configuration.lookup('controlled_vocabulary.path'))
+    @@path = Rails.root.join(Settings.controlled_vocabulary.path)
 
     def self.vocabulary
       vocabulary = {}

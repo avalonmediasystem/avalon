@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+Copyright 2011-2018, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -14,8 +14,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 ---  END LICENSE_HEADER BLOCK  ---
 %>
 
-<% if Avalon::Configuration.has_key?('flash_message') && Avalon::Configuration.lookup('flash_message.message') %>
-  <% flash[Avalon::Configuration.lookup('flash_message.type').to_sym || :error] = Avalon::Configuration.lookup('flash_message.message').html_safe %>
+<% if Settings&.flash_message&.message %>
+  <% flash[Settings.flash_message.type || :error] = Settings.flash_message.message.html_safe %>
 <% end %>
 
 <% if defined? flash and !flash.empty? %>
@@ -39,4 +39,19 @@ Unless required by applicable law or agreed to in writing, software distributed
     <% end %>
   <% end %>
   </div>
+<% end %>
+
+<div class="alert alert-danger hidden" id="cookieless">
+  <p>Could not set cookie, this may happen if you've never visited this website before. If you see this message and cannot log in or see content, please open <%= link_to root_url, root_url, target: :_blank %> in a new window, then come back and refresh this page.</p>
+</div>
+
+<% content_for :page_scripts do %>
+<script>
+  document.cookie = 'test_cookie=true'
+  if(!document.cookie.match(/^(.*;)?\s*test_cookie\s*=\s*[^;]+(.*)?$/)){
+    $('#cookieless').removeClass('hidden');
+  } else{
+    document.cookie = 'test_cookie=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+  }
+</script>
 <% end %>

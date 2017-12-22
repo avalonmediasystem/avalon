@@ -26,10 +26,11 @@ This view file goes with the custom 'Add To Playlist' MediaElement 4 plugin.
 <% # Get users playlists %>
 <% @add_playlist_item_playlists = Playlist.where(user: current_user).sort_by(&:title) %>
 
-<div id="add_to_playlist_alert" class="add_to_playlist_alert alert" style="display: none;">
-    <p id='add_to_playlist_result_message' style="width:100%"></p>
+<div id="add_to_playlist_alert" class="mejs-form-alert alert" style="display: none;">
+  <button type="button" class="close" data-dismiss="alert">&times;</button>
+  <p id="add_to_playlist_result_message"></p>
 </div>
-<div id="add_to_playlist" class="add_to_playlist" data-has-playlists="<%= !@add_playlist_item_playlists.empty? %>" style="display: none;">
+<div id="add_to_playlist" class="mejs-form-wrapper" data-has-playlists="<%= !@add_playlist_item_playlists.empty? %>" style="display: none;">
   <h3>Add to playlist:</h3>
   <% unless @add_playlist_item_playlists.empty? %>
     <%= form_tag do %>
@@ -74,32 +75,6 @@ This view file goes with the custom 'Add To Playlist' MediaElement 4 plugin.
   <% if @add_playlist_item_playlists.empty? %>
     <span class='add_playlist_item_playlists_no_playlists_message'>You have no playlists, <%= link_to('create a playlist.', new_playlist_path) %></span>
   <% end %>
-</div>
-
-<div id="add_marker_to_playlist_item_alert" class="add_marker_to_playlist_item add_marker_to_playlist_item_alert" style="display:none">
-    <p id='add_marker_to_playlist_item_result_message' style="width:100%">
-    </p>
-</div>
-<div id="add_marker_to_playlist_item" class="add_marker_to_playlist_item" style="display:none" >
-  <h3>Add marker to playlist item:</h3>
-    <%= form_tag do %>
-      <table>
-        <tr>
-          <td><%= label_tag(:title_label, "Title") %>
-          <td><%= text_field_tag(:marker_title, nil, class:"form-control form-model") %>
-        </tr>
-        <tr>
-          <td><%= label_tag(:start_label, "Offset") %>
-          <td><%= text_field_tag(:marker_start, nil, class:"form-control form-model") %>
-        </tr>
-        <tr>
-          <td colspan="2">
-              <%= button_tag("Add", type:"button", class:"btn btn-primary add_marker_submit") %>
-              <%= button_tag("Cancel", type:"button", class:"btn btn-default add_marker_cancel") %>
-          </td>
-        </tr>
-      </table>
-    <% end %>
 </div>
 
 <!-- new playlist modal form --->

@@ -1,29 +1,34 @@
 ---
 git:
   submodules: false
-bundler_args: --with mysql --without development debug
+bundler_args: --with postgres aws --without development debug
 services:
   - mysql2
 before_install:
+  - sudo rm -vf /etc/apt/sources.list.d/*riak*
+  - sudo rm -vf /etc/apt/sources.list.d/*hhvm*
   - sudo apt-get update
   - sudo apt-get install mediainfo
   - sudo ln -s /usr/bin/lsof /usr/sbin/lsof
-  - cp config/authentication.yml.example config/authentication.yml
   - cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml
-  - cp config/avalon.yml.example config/avalon.yml
   - bundle config without development:production
 before_script:
   - rm config/database.yml
   - cp config/database.travis.yml config/database.yml
-  - mysql -e 'create database avalon_test;'
+  - psql -c 'create database travis_ci_test;' -U postgres
   - bundle exec rake db:migrate
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+script:
+  - bundle exec rake
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 language: ruby
 jdk:
   - oraclejdk8
 rvm:
   - 2.3
   - 2.4
-addons:
-  code_climate:
-    repo_token: 1fb78f221b36e5615428f2ada12950b39a3b702b23fdd41e1b980dc4b47d0233
-dist: precise
+dist: trusty
+sudo: required

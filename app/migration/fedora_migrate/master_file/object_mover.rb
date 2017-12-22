@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -59,7 +59,11 @@ module FedoraMigrate
       def migrate_transcoding_metadata
         return unless source.datastreams.keys.include?(MH_METADATA_DATASTREAM)
         mover = FedoraMigrate::MasterFile::MhMetadataDatastreamMover.new(source.datastreams[MH_METADATA_DATASTREAM], target)
-        mover.migrate
+        result = mover.migrate
+        if target.workflow_name.nil? || (not ::MasterFile::WORKFLOWS.include?(target.workflow_name))
+          target.workflow_name = target.file_format == 'Sound' ? 'fullaudio' : 'avalon'
+        end
+        result
       end
 
       def migrate_poster_and_thumbnail

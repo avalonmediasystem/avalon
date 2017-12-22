@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -17,6 +17,12 @@ require 'active_encode'
 module ActiveEncodeJob
   module Core
     def error(master_file, exception)
+      unless master_file
+        Rails.logger.error exception.message
+        Rails.logger.error exception.backtrace.join("\n")
+        return
+      end
+
       # add message here to update master file
       master_file.status_code = 'FAILED'
       master_file.error = exception.message
@@ -29,7 +35,7 @@ module ActiveEncodeJob
     queue_as :active_encode_create
     def perform(master_file_id, input, options)
       mf = MasterFile.find(master_file_id)
-      encode = mf.encoder_class.new(input, options)
+      encode = mf.encoder_class.new(input, options.merge({output_key_prefix: "#{mf.id}/"}))
       unless encode.created?
         Rails.logger.info "Creating! #{encode.inspect} for MasterFile #{master_file_id}"
         encode_job = encode.create!

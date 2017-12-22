@@ -1,0 +1,176 @@
+$avalon-primary-color: #84a791;
+
+// Generic class applied to the Add To Playlist form elements
+.mejs-form-wrapper {
+  max-width: 870px;
+  background: #696667;
+  color: white;
+  padding: 0 20px;
+  border: 1pt solid #353536;
+  border-bottom-right-radius: 6pt;
+  border-bottom-left-radius: 6pt;
+
+  input {
+    height: 28px;
+    padding-top: 7px;
+  }
+
+  select, input, textarea {
+    width: 100%;
+    color: black;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  #select2-post_playlist_id-container {
+    color: black;
+    text-align: left;
+  }
+
+}
+
+.mejs-form-alert {
+  width: 100%;
+  border-radius: 0;
+  margin-bottom: 0;
+
+  a {
+    font-weight: bold;
+    text-decoration: underline;
+  }
+  // TODO: Add a close button to alerts?
+  .close {
+    float: right;
+    font-size: 21px;
+    font-weight: bold;
+    line-height: 1;
+    text-shadow: 0 1px 0 white;
+    opacity: 0.2;
+  }
+}
+
+// MEJS4 custom highlight for a section within the MEJS time rail element
+.mejs-highlight-clip {
+  background: linear-gradient($avalon-primary-color, $avalon-primary-color);
+  opacity: 0.55;
+  height: 24px;
+  top: -7px;
+  display: block;
+  position: relative;
+  z-index: -1;
+}
+
+// Loading spinner
+@keyframes spinner {
+  to {transform: rotate(360deg);}
+}
+.spinner {
+  opacity: .6;
+
+  &::before {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    margin-top: -50px;
+    margin-left: -50px;
+    border-radius: 50%;
+    border: 10px solid #fff;
+    border-top-color: #84a791;
+    animation: spinner .8s linear infinite;
+  }
+}
+
+// Player Controls
+.mejs__button {
+  width: 30px;
+}
+
+.mejs__button > button {
+  background: transparent image-url('/assets/mejs4_icons-01.svg');
+  background-repeat: none;
+  background-size: 170px 40px;
+}
+
+.mejs__play > button {
+  background-position: 0px 0px;
+}
+
+.mejs__pause > button {
+  background-position: -20px 0px;
+}
+
+.mejs__fullscreen-button > button {
+    background-position: -60px 0px;
+}
+
+.mejs__unfullscreen > button {
+  background-position: -80px 0px;
+}
+
+.mejs__mute, .mejs__unmute {
+  width: 36px;
+}
+
+.mejs__mute > button {
+  background-position: 0px -20px;
+  width: 25px;
+}
+
+.mejs__unmute > button {
+  background-position: -25px -20px;
+  width: 25px;
+}
+
+.mejs__qualities-button > button {
+  background-position: -40px 0px;
+  text-indent: 200px; //hide standard text off to the side
+  margin: 10px 6px;
+  width: 20px;
+}
+
+.mejs__captions-button > button {
+  width: 22px;
+  background-position: -140px -20px;
+}
+
+.mejs__captions-enabled > button {
+  border-bottom: 2px solid red;
+  padding: 11px;
+}
+
+.mejs__hd-toggle-button {
+  width: 35px;
+}
+
+.mejs__hd-toggle-button > button {
+  width: 27px;
+  background-position: -141px -2px;
+  filter: brightness(60%);
+  -webkit-filter: brightness(60%);
+}
+
+.mejs__hdtoggle-on > button {
+  filter: none;
+  -webkit-filter: none;
+}
+
+// Accessibility
+.mejs__button > button:focus, .mejs__overlay-button:focus, .mejs__time-total:focus, .mejs__volume-slider:focus, .mejs__qualities-selector-input:focus {
+  outline: solid 2px yellow;
+}
+
+// Chrome hack from mejs4: prevent outlining buttons on a mouse click
+.mejs__container-keyboard-inactive a,
+.mejs__container-keyboard-inactive a:focus,
+.mejs__container-keyboard-inactive button,
+.mejs__container-keyboard-inactive button:focus,
+.mejs__container-keyboard-inactive [role=slider],
+.mejs__container-keyboard-inactive [role=slider]:focus {
+  outline: 0;
+}

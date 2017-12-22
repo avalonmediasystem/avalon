@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -14,10 +14,10 @@
 
 module PlayerHelper
   def is_mejs_2?
-    !is_mejs_4?
+    session['mejs_version'] == 2 || params['mejs4'] === 'false'
   end
 
   def is_mejs_4?
-    params['mejs4'] === 'true'
+    !is_mejs_2?
   end
 end

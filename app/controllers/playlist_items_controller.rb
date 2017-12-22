@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -13,8 +13,9 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class PlaylistItemsController < ApplicationController
-  before_action :set_playlist, only: [:create, :update]
-  before_action :authenticate_user!
+  before_action :set_playlist, only: [:create, :update, :show, :markers, :related_items]
+  before_action :load_playlist_token, only: [:show, :markers, :related_items, :source_details]
+  load_resource only: [:show, :update, :markers]
 
   # POST /playlists/1/items
   def create
@@ -25,30 +26,30 @@ class PlaylistItemsController < ApplicationController
     comment = playlist_item_params[:comment]
     start_time = time_str_to_milliseconds playlist_item_params[:start_time]
     end_time = time_str_to_milliseconds playlist_item_params[:end_time]
-    clip = AvalonClip.new(master_file: MasterFile.find(playlist_item_params[:master_file_id]))
-    clip.title = title
-    clip.comment = comment
-    clip.start_time = start_time
-    clip.end_time = end_time
+    master_file = MasterFile.find(playlist_item_params[:master_file_id])
+    # if end_time exceeds master_file.duration by less than .5 seconds, round it down
+    end_time = master_file.duration if (Float(end_time) rescue false) && end_time.between?(master_file.duration.to_i, master_file.duration.to_i + 500)
+    clip = AvalonClip.new(master_file: master_file, title: title, comment: comment, start_time: start_time, end_time: end_time)
     unless clip.valid?
       render json: { message: clip.errors.full_messages }, status: 400 and return
     end
     unless clip.save
-      render json: { message: "Item was not created: #{clip.errors.full_messages}" }, status: 500 and return
+      render json: { message: ["Item was not created: #{clip.errors.full_messages}"] }, status: 500 and return
     end
     if PlaylistItem.create(playlist: @playlist, clip: clip)
       render json: { message: "Add to playlist was successful. See it: #{view_context.link_to("here", playlist_url(@playlist))}" }, status: 201 and return
     end
   rescue StandardError => error
-    render json: { message: "Item was not created: #{error.message}"}, status: 500 and return
+    logger.warn("Error creating playlist item: #{error.message}")
+    logger.warn(error.backtrace.join("\n"))
+    render json: { message: ["Item was not created: #{error.message}"]}, status: 500 and return
   end
 
   def update
-    playlist_item = PlaylistItem.find(params['id'])
-    unless (can? :update, playlist_item)
+    unless (can? :update, @playlist_item)
       render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return
     end
-    clip = AvalonClip.find(playlist_item.clip.id)
+    clip = AvalonClip.find(@playlist_item.clip.id)
     clip.title =  playlist_item_params[:title]
     clip.comment = playlist_item_params[:comment]
     clip.start_time = time_str_to_milliseconds playlist_item_params[:start_time]
@@ -62,11 +63,89 @@ class PlaylistItemsController < ApplicationController
     render json: { message: "Item was not updated: #{error.message}" }, status: 500 and return
   end
 
+  # GET /playlists/1/items/2/markers
+  def markers
+    @playlist_item = PlaylistItem.find(params['playlist_item_id'])
+    @markers = @playlist_item.marker
+    respond_to do |format|
+      format.html do
+        if can? :read, @playlist_item
+          render partial: 'markers'
+        else
+          head :unauthorized, content_type: "text/html"
+        end
+      end
+    end
+  end
+
+  # GET /playlists/1/items/2/source_details
+  def source_details
+    @playlist_item = PlaylistItem.find(params['playlist_item_id'])
+    respond_to do |format|
+      format.html do
+        if can? :read, @playlist_item
+          render partial: 'current_item'
+        else
+          head :unauthorized, content_type: "text/html"
+        end
+      end
+    end
+  end
+
+  # GET /playlists/1/items/2/related_items
+  def related_items
+    @playlist_item = PlaylistItem.find(params['playlist_item_id'])
+    @related_clips = @playlist.related_clips(@playlist_item)
+    respond_to do |format|
+      format.html do
+        if can? :read, @playlist_item
+          if @related_clips.blank?
+            head :ok, content_type: "text/html"
+          else
+            render partial: 'related_items'
+          end
+        else
+          head :unauthorized, content_type: "text/html"
+        end
+      end
+    end
+  end
+
+  def show
+    unless (can? :read, @playlist_item)
+      render json: { message: 'You are not authorized to perform this action.' }, status: 401 and return
+    end
+    itemMarkers = []
+    # Get markers for a playlist item
+    markers = @playlist_item.marker.sort_by &:start_time
+    # Build an object array of only data we need
+    markers.each do |marker|
+      itemMarkers.push({
+        id: marker.id,
+        title: marker.title,
+        start_time: marker.start_time/1000
+      })
+    end
+    # Send back the json response
+    respond_to do |format|
+      format.json do
+        render json: { markers: itemMarkers }.to_json
+      end
+    end
+  rescue StandardError => error
+    render json: { message: "Server error: #{error.message}" }, status: 500 and return
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
   def set_playlist
     @playlist = Playlist.find(params[:playlist_id])
+  end
+
+  def load_playlist_token
+    @playlist_token = params[:token]
+    current_ability.options[:playlist_token] = @playlist_token
   end
 
   def playlist_item_params

@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+Copyright 2011-2018, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -17,15 +17,18 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% f_start = @current_clip.start_time / 1000.0 %>
 <% f_end = @current_clip.end_time / 1000.0 %>
 <% @currentStream = @current_masterfile %>
-<% @token = StreamToken.find_or_create_session_token(session, @currentStream.id) %>
-<% @currentStreamInfo = @currentStream.stream_details(@token, ApplicationController.default_url_options[:host]) %>
+<% @currentStreamInfo = secure_streams(@currentStream.stream_details) %>
 <% @currentStreamInfo['t'] = [f_start,f_end] %>
+
 <% if can? :read, @current_masterfile %>
-    <%= render partial: 'modules/player/section', locals: {section: @currentStream, section_info: @currentStreamInfo, f_start: @f_start, f_end: @f_end} %>
+  <%= render partial: 'modules/player/section', locals: {section: @currentStream, section_info: @currentStreamInfo, f_start: @f_start, f_end: @f_end} %>
 <% end %>
+
 <% unless can? :read, @current_masterfile %>
-  <span class = 'show_playlist_player_denied_title'><h2>Restricted Access</h2></span>
-  <span class = 'playlist_item_denied'>
+  <span class="show_playlist_player_denied_title">
+    <h2>Restricted Access</h2>
+  </span>
+  <span class="playlist_item_denied">
     You do not have permission to playback item <%= @current_masterfile.media_object_id %>.
     <% if !user_signed_in? %>
       <br>Have you tried <%= link_to 'logging in', new_user_session_path %>?
@@ -34,11 +37,15 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% end %>
 
 <% content_for :page_scripts do %>
-  <% if @currentStream.present? and @currentStream.derivatives.present? %>
-    <% if is_mejs_2? %>
-      <%= render partial: "mejs2_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
-    <% else %>
-      <%#= render partial: "mejs4_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
-    <% end %>
+<% if @currentStream.present? and @currentStream.derivatives.present? %>
+  <% if is_mejs_2? %>
+    <%= render partial: "mejs2_player_js", locals: {section: @currentStream, section_info: @currentStreamInfo} %>
+  <% else %>
+    <%= render partial: "mejs4_player_js", locals: {
+      section: @currentStream,
+      section_info: @currentStreamInfo,
+      current_playlist_item: @current_playlist_item
+      } %>
   <% end %>
+<% end %>
 <% end %>
