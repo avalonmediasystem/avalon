@@ -13,32 +13,30 @@ Unless required by applicable law or agreed to in writing, software distributed
   specific language governing permissions and limitations under the License.
 ---  END LICENSE_HEADER BLOCK  ---
 %>
-<div id="related_items">
-  <table class="table table-condensed">
-    <thead><tr><th>Title</th><th>Start</th><th>End</th><th>Position</th></tr></thead>
-    <tbody>
-      <% @related_clips.sort_by { |hash| hash['start_time'].to_i}.each do |clip| %>
-      <% if can? :read, clip.master_file %>
-        <tr>
-          <% position = clip.playlist_position(@playlist.id) %>
-          <td class='clip_title'>
-            <% dataset = { 'playlist-id' => @playlist.id,
-                           'playlist-item-id' => PlaylistItem.where(clip: clip)[0].id,
-                           'clip-start-time' => clip.start_time,
-                           'clip-end-time' => clip.end_time,
-                           'clip-source' => clip.source,
-                           'media-object-id' => clip.master_file.media_object_id,
-                           'master-file-id' => clip.master_file.id } %>
-            <%= link_to playlist_path(@playlist, position: position), data: dataset do %>
-              <%= clip.title %>
-            <% end %>
-          </td>
-          <td class='clip_start_time'><%= pretty_time(clip.start_time) %></td>
-          <td class='clip_end_time'><%= pretty_time(clip.end_time) %></td>
-          <td class='clip_position'><%= position %></td>
-        </tr>
-      <% end %>
+<table class="table table-condensed">
+  <thead><tr><th>Title</th><th>Start</th><th>End</th><th>Position</th></tr></thead>
+  <tbody>
+    <% @related_clips.sort_by { |hash| hash['start_time'].to_i}.each do |clip| %>
+    <% if can? :read, clip.master_file %>
+      <tr>
+        <% position = clip.playlist_position(@playlist.id) %>
+        <td class='clip_title'>
+          <% dataset = { 'playlist-id' => @playlist.id,
+                         'playlist-item-id' => PlaylistItem.where(clip: clip)[0].id,
+                         'clip-start-time' => clip.start_time,
+                         'clip-end-time' => clip.end_time,
+                         'clip-source' => clip.source,
+                         'media-object-id' => clip.master_file.media_object_id,
+                         'master-file-id' => clip.master_file.id } %>
+          <%= link_to playlist_path(@playlist, position: position), data: dataset do %>
+            <%= clip.title %>
+          <% end %>
+        </td>
+        <td class='clip_start_time'><%= pretty_time(clip.start_time) %></td>
+        <td class='clip_end_time'><%= pretty_time(clip.end_time) %></td>
+        <td class='clip_position'><%= position %></td>
+      </tr>
     <% end %>
-    </tbody>
-  </table>
-</div>
+  <% end %>
+  </tbody>
+</table>

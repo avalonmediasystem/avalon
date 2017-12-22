@@ -65,7 +65,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       </div>
     </div>
     <% @related_clips = @playlist.related_clips(@current_playlist_item)%>
-    <div class="panel-heading <%= 'hidden' if @related_clips.empty? %>" role="tab" id="related_items_heading">
+    <div class="panel-heading" role="tab" id="related_items_heading">
       <h5 class="panel-title ">
         <a href="#related_items_section" class="accordion-toggle collapsed pull-left" data-toggle="collapse">
           Related
