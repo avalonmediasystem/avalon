@@ -95,13 +95,17 @@ class MEJSUtility {
 
     for (let segmentId in segmentsMap) {
       if (segmentsMap.hasOwnProperty(segmentId)) {
-        let begin = parseFloat(segmentsMap[segmentId].fragmentbegin);
-        let end = parseFloat(segmentsMap[segmentId].fragmentend);
-
         if (
-          segmentsMap.hasOwnProperty(segmentId) &&
-          (currentTime >= begin && currentTime < end)
+          segmentsMap[segmentId].hasOwnProperty('fragmentbegin') ||
+          segmentsMap[segmentId].hasOwnProperty('fragmentend')
         ) {
+          let begin = parseFloat(segmentsMap[segmentId].fragmentbegin);
+          let end = parseFloat(segmentsMap[segmentId].fragmentend);
+
+          if (currentTime >= begin && currentTime < end) {
+            activeId = segmentId;
+          }
+        } else {
           activeId = segmentId;
         }
       }
