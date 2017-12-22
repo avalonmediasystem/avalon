@@ -48,8 +48,12 @@ describe BookmarksController, type: :controller do
 
   describe "#update_status" do
     context 'publishing' do
-      before(:each) do
+      before(:all) do
         Permalink.on_generate { |obj| "http://example.edu/permalink" }
+      end
+
+      after(:all) do
+        Permalink.on_generate { nil }
       end
 
       it "should publish multiple items" do

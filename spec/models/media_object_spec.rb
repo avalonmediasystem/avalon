@@ -580,6 +580,10 @@ describe MediaObject do
       Permalink.on_generate{ |obj,target| 'http://www.example.com/perma-url' }
     }
 
+    after(:each) do
+      Permalink.on_generate { nil }
+    end
+
     context 'unpublished' do
       it 'is empty when unpublished' do
         expect(media_object.permalink).to be_blank
