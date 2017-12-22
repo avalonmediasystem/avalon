@@ -478,6 +478,8 @@ Object.assign(MediaElementPlayer.prototype, {
       const $headingTitle = $('#heading0 h4 span:first');
       $headingTitle.text($.trim($nowPlaying.text()));
       $headingTitle.next().text('[' + $.trim(duration) + ']');
+      const $headingComment = $('#heading0 h4').next('div');
+      $headingComment.text($nowPlaying.data('clipComment'));
     },
 
     /**
