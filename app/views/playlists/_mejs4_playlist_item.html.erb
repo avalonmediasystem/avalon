@@ -35,7 +35,7 @@ Unless required by applicable law or agreed to in writing, software distributed
                      'master-file-id' => master_file.id,
                      'can-edit-playlist-item' => (can? :edit, item),
                      'clip-comment' => clip.content } %>
-      <%= link_to playlist_path(@playlist, position: clip.playlist_position(@playlist)), data: dataset do %>
+      <%= link_to playlist_path(@playlist, position: clip.playlist_position(@playlist), token: @playlist_token), data: dataset do %>
         <%= clip.title %>
       <% end %>
     <% end %>
