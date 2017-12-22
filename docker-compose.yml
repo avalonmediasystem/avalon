@@ -78,8 +78,8 @@ services:
       - SETTINGS__DOMAIN=http://localhost:3000
       - CONTROLLED_VOCABULARY=config/controlled_vocabulary.yml
       - DATABASE_URL=postgres://avalon:${AVALON_DB_PASSWORD}@db/avalon
-      - DROPBOX_PATH=/masterfiles/dropbox
-      - DROPBOX_URI=./masterfiles/dropbox
+      - SETTINGS__DROPBOX__PATH=/masterfiles
+      - SETTINGS__DROPBOX__UPLOAD_URI=./masterfiles
       - EMAIL_COMMENTS
       - EMAIL_NOTIFICATION
       - EMAIL_SUPPORT
