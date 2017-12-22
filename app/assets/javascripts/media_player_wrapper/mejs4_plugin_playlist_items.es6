@@ -514,7 +514,7 @@ Object.assign(MediaElementPlayer.prototype, {
         .ajaxPlaylistItemsHTML(playlistId, playlistItemId, panel)
         .then(response => {
           // Insert the fresh HTML content
-          $('#' + panel).replaceWith(response);
+          $('#' + panel).html(response);
           // Hide the entire panel if new content is blank
           if (response === '') {
             $('#' + panel + '_section').collapse('hide');
