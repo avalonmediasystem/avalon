@@ -55,9 +55,8 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
        expect(email.to).to include(manager.email)
        expect(email.subject).to include batch_registries.file_name
        expect(email).to have_body_text(batch_registries.file_name)
+       expect(email).to have_body_text("<a href=\"#{media_object.permalink}\">")
        expect(email).to have_body_text(media_object.id)
-       expect(email).to have_body_text("href")
-       expect(email).to have_body_text(media_object.permalink)
     end
   end
 
