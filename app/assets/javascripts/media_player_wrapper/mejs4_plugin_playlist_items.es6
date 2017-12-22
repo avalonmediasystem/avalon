@@ -72,7 +72,7 @@ Object.assign(MediaElementPlayer.prototype, {
 
     // Handle canplay event, which defines a 'state' needed before we can call other setup functions
     media.addEventListener(
-      'canplay',
+      'durationchange',
       playlistItemsObj.handleCanPlay.bind(playlistItemsObj)
     );
 
