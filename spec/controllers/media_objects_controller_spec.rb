@@ -817,9 +817,14 @@ describe MediaObjectsController, type: :controller do
     end
 
     context 'publishing' do
-      before(:each) do
+      before(:all) do
         Permalink.on_generate { |obj| "http://example.edu/permalink" }
       end
+
+      after(:all) do
+        Permalink.on_generate { nil }
+      end
+
       it 'publishes media object' do
         media_object = FactoryGirl.create(:media_object, collection: collection)
         get 'update_status', id: media_object.id, status: 'publish'
@@ -913,8 +918,12 @@ describe MediaObjectsController, type: :controller do
     end
 
     context 'large objects' do
-      before(:each) do
+      before(:all) do
         Permalink.on_generate { |obj| sleep(0.5); "http://example.edu/permalink" }
+      end
+
+      after(:all) do
+        Permalink.on_generate { nil }
       end
 
       let!(:media_object) do
