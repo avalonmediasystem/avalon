@@ -47,12 +47,17 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
     let(:batch_registries) { FactoryGirl.create(:batch_registries, user_id: manager.id) }
     let(:manager) { FactoryGirl.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
     let!(:collection) { FactoryGirl.create(:collection, id: 'k32jf0kw') }
+    let!(:batch_entries) { FactoryGirl.create(:batch_entries, batch_registries: batch_registries, media_object_pid: media_object.id, complete: true) }
+    let(:media_object) { FactoryGirl.create(:media_object, collection: collection, permalink: "http://localhost:3000/media_objects/kfd39dnw") }
 
     it "sends an email when a batch finishes processing" do
        email = BatchRegistriesMailer.batch_registration_finished_mailer(batch_registries)
        expect(email.to).to include(manager.email)
        expect(email.subject).to include batch_registries.file_name
        expect(email).to have_body_text(batch_registries.file_name)
+       expect(email).to have_body_text(media_object.id)
+       expect(email).to have_body_text("href")
+       expect(email).to have_body_text(media_object.permalink)
     end
   end
 
