@@ -188,7 +188,6 @@
               );
 
             for (var _i = 0, _total = inEvents.length; _i < _total; _i++) {
-              const evt = inEvents[_i];
               player.qualitiesButton.addEventListener(inEvents[_i], function() {
                 mejs.Utils.removeClass(
                   selector,
