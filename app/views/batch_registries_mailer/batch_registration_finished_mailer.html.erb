@@ -1,0 +1,58 @@
+<%#
+Copyright 2011-2018, The Trustees of Indiana University and Northwestern
+  University.  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+  CONDITIONS OF ANY KIND, either express or implied. See the License for the
+  specific language governing permissions and limitations under the License.
+---  END LICENSE_HEADER BLOCK  ---
+%>
+
+<% unless @error_items.empty? %>
+<p>Initial processing of your batch ingest failed. Details are below. Please see the <a href="https://wiki.dlib.indiana.edu/display/VarVideo/Batch+Ingest+Package+Format">Batch Ingest Package Format</a> for further help.</p>
+<% end %>
+<p>To replay this batch, please rename your spreadsheet to <%= @batch_registry.replay_name %> and reupload it after making desired changes.  Only unpublished items can be updated via this method.  Retain all rows in the spreadsheet including those that have no changes.</p>
+
+<% unless @error_items.empty? %>
+  <div class="alert alert-danger">
+    The following rows of your spreadsheet failed:
+  </div>
+  <table>
+    <tr>
+      <th>Row</th>
+      <th>Error</th>
+    </tr>
+    <% @error_items.each do |be_error| %>
+      <tr>
+        <td> <%= be_error.position + 2 %> </td>
+        <td> <%= be_error.error_message %> </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
+<% unless @completed_items.empty? %>
+  <div class="alert">
+    The following rows of your spreadsheet successfully completed
+  </div>
+  <table>
+    <tr>
+      <th>Row</th>
+      <th>Media Object ID</th>
+    </tr>
+    <% @completed_items.each do |be_completed| %>
+      <tr>
+        <% media_object = MediaObject.find(be_completed.media_object_pid) %>
+        <% link_url = media_object.permalink %>
+        <% link_url = media_object_url(media_object) if link_url.blank? %>
+        <td> <%= be_completed.position + 2 %> </td>
+        <td> <%= link_to(be_completed.media_object_pid, link_url) %></td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>

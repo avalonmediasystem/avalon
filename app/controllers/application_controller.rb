@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -22,11 +22,25 @@ class ApplicationController < ActionController::Base
 
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
-  protect_from_forgery unless: proc{|c| request.headers['Avalon-Api-Key'].present? }
+  protect_from_forgery with: :exception, unless: proc{|c| request.headers['Avalon-Api-Key'].present? }
 
   helper_method :render_bookmarks_control?
 
   around_action :handle_api_request, if: proc{|c| request.format.json?}
+  before_action :rewrite_v4_ids, if: proc{|c| request.method_symbol == :get && [params[:id], params[:content]].compact.any? { |i| i =~ /^[a-z]+:[0-9]+$/}}
+
+  def mejs
+    session['mejs_version'] = params[:version] === '4' ? 4 : 2
+    flash[:notice] = "Using MediaElement Player Version #{session['mejs_version']}"
+    redirect_to(root_path)
+  end
+
+  def rewrite_v4_ids
+    return if params[:controller] =~ /migration/
+    new_id = ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:id]}"}, rows: 1, fl: 'id').first['id']
+    new_content_id = params[:content] ? ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:content]}"}, rows: 1, fl: 'id').first['id'] : nil
+    redirect_to(url_for(params.merge(id: new_id, content: new_content_id)))
+  end
 
   def store_location
     store_location_for(:user, request.url)
@@ -41,12 +55,6 @@ class ApplicationController < ActionController::Base
     else
       request.env['omniauth.origin'] || stored_location_for(resource) || session[:previous_url] || root_path
     end
-  end
-
-  def current_ability
-    session_opts ||= user_session
-    session_opts ||= {}
-    @current_ability ||= Ability.new(current_user, session_opts.merge(remote_ip: request.remote_ip))
   end
 
   def handle_api_request
@@ -70,9 +78,17 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  def get_user_collections
-    if can? :manage, Admin::Collection
-      Admin::Collection.all
+  # Returns collections for current_user or requested user
+  # @param [String] The user to match against (optional)
+  # @return [Collection] Collections to which current_user or requested user has manage access
+  def get_user_collections(user = nil)
+    # return all collections to admin, unless specific user is passed in
+    if can?(:manage, Admin::Collection)
+      if user.blank?
+        Admin::Collection.all
+      else
+        Admin::Collection.where("inheritable_edit_access_person_ssim" => user).to_a
+      end
     else
       Admin::Collection.where("inheritable_edit_access_person_ssim" => user_key).to_a
     end

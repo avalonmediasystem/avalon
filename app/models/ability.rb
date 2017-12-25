@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -165,6 +165,9 @@ class Ability
       can :manage, Playlist, user: @user
       # can :create, Playlist
       can :duplicate, Playlist, visibility: Playlist::PUBLIC
+      can :duplicate, Playlist do |playlist|
+        playlist.valid_token?(@options[:playlist_token])
+      end
     end
     can :read, Playlist, visibility: Playlist::PUBLIC
     can :read, Playlist do |playlist|

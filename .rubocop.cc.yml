@@ -1,0 +1,48 @@
+# https://github.com/bbatsov/rubocop/blob/master/config/default.yml
+# require: rubocop-rspec
+
+inherit_from:
+  - bixby_default.yml
+
+AllCops:
+  DisplayCopNames: true
+  Exclude:
+    - 'db/**/*'
+    - 'spec/fixtures/**/*'
+    - 'vendor/**/*'
+    - 'red5/**/*'
+    - 'jetty/**/*'
+    - 'fedora_conf/**/*'
+    - 'felix/**/*'
+    - 'felix_conf/**/*'
+    - 'log/**/*'
+    - 'solr_conf/**/*'
+    - 'tmp/**/*'
+    - '.gitignore'
+    - 'coverage/**/*'
+    
+Rails:
+  Enabled: true
+
+Metrics/LineLength:
+  Enabled: false
+
+Metrics/ClassLength:
+  CountComments: false
+  Enabled: false
+
+Metrics/ModuleLength:
+  CountComments: false
+  Enabled: false
+
+Metrics/MethodLength:
+  CountComments: false
+  Max: 15
+
+Style/HashSyntax:
+  EnforcedStyle: ruby19
+  SupportedStyles:
+    - ruby19
+    - ruby19_no_mixed_keys
+  # Force hashes that have a symbol value to use hash rockets
+  UseHashRocketsWithSymbolValues: false

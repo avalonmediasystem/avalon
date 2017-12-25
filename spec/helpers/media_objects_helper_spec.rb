@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -17,11 +17,11 @@ require 'rails_helper'
 describe MediaObjectsHelper do
   describe "#current_quality" do
     before(:all) do
-      @streaming_config = Avalon::Configuration["streaming"]
-      Avalon::Configuration["streaming"] = {"default_quality" => "low"}
+      @streaming_config = Settings.streaming
+      Settings.streaming.default_quality = "low"
     end
     after(:all) do
-      Avalon::Configuration["streaming"] = @streaming_config
+      Settings.streaming = @streaming_config
     end
     let(:stream_info) {{stream_flash: [{quality: 'high'}, {quality: 'medium'}, {quality: 'low'}], stream_hls: [{quality: 'high'}, {quality: 'medium'}, {quality: 'low'}]}}
     let(:skip_transcoded_stream_info) {{stream_flash: [{quality: 'high'}], stream_hls: [{quality: 'high'}]}}

@@ -1,0 +1,15 @@
+<% content_for :page_styles do %>
+<%= stylesheet_link_tag 'mejs4_player' %>
+<% end %>
+<% content_for :page_scripts do %>
+<%= javascript_include_tag "mejs4_player" %>
+<% end %>
+
+<script>
+<!-- Missing title and logo features -->
+var mejs4AvalonPlayer = new MEJSPlayer({
+  currentStreamInfo: <%= section_info.to_json.html_safe %>,
+  features: ['playpause', 'current', 'progress', 'duration', 'volume', 'tracks', '<%= section_info[:is_video] ? "quality" : "hdToggle" %>', 'linkBack', 'fullscreen'],
+  highlightRail: true
+});
+</script>

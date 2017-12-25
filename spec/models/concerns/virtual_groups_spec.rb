@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -16,12 +16,13 @@ require 'rails_helper'
 
 describe VirtualGroups do
 
-  before do
+  before(:all) do
     class Foo < ActiveFedora::Base
       include Hydra::AccessControls::Permissions
       include VirtualGroups
     end
   end
+  after(:all) { Object.send(:remove_const, :Foo) }
 
   subject { Foo.new }
 

@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -71,25 +71,25 @@ describe Admin::CollectionsController, type: :controller do
 
     it "should add users to manager role" do
       manager = FactoryGirl.create(:manager)
-      put 'update', id: collection.id, submit_add_manager: 'Add', add_manager: manager.username
+      put 'update', id: collection.id, submit_add_manager: 'Add', add_manager: manager.user_key
       collection.reload
       expect(manager).to be_in(collection.managers)
     end
 
     it "should not add users to manager role" do
       user = FactoryGirl.create(:user)
-      put 'update', id: collection.id, submit_add_manager: 'Add', add_manager: user.username
+      put 'update', id: collection.id, submit_add_manager: 'Add', add_manager: user.user_key
       collection.reload
       expect(user).not_to be_in(collection.managers)
       expect(flash[:error]).not_to be_empty
     end
 
     it "should remove users from manager role" do
-      #initial_manager = FactoryGirl.create(:manager).username
-      collection.managers += [FactoryGirl.create(:manager).username, FactoryGirl.create(:manager).username]
+      #initial_manager = FactoryGirl.create(:manager).user_key
+      collection.managers += [FactoryGirl.create(:manager).user_key, FactoryGirl.create(:manager).user_key]
       collection.save!
-      manager = User.where(username: collection.managers.first).first
-      put 'update', id: collection.id, remove_manager: manager.username
+      manager = User.where(Devise.authentication_keys.first => collection.managers.first).first
+      put 'update', id: collection.id, remove_manager: manager.user_key
       collection.reload
       expect(manager).not_to be_in(collection.managers)
     end
@@ -104,15 +104,15 @@ describe Admin::CollectionsController, type: :controller do
     it "should add users to editor role" do
       login_as(:administrator)
       editor = FactoryGirl.build(:user)
-      put 'update', id: collection.id, submit_add_editor: 'Add', add_editor: editor.username
+      put 'update', id: collection.id, submit_add_editor: 'Add', add_editor: editor.user_key
       collection.reload
       expect(editor).to be_in(collection.editors)
     end
 
     it "should remove users from editor role" do
       login_as(:administrator)
-      editor = User.where(username: collection.editors.first).first
-      put 'update', id: collection.id, remove_editor: editor.username
+      editor = User.where(Devise.authentication_keys.first => collection.editors.first).first
+      put 'update', id: collection.id, remove_editor: editor.user_key
       collection.reload
       expect(editor).not_to be_in(collection.editors)
     end
@@ -127,15 +127,15 @@ describe Admin::CollectionsController, type: :controller do
     it "should add users to depositor role" do
       login_as(:administrator)
       depositor = FactoryGirl.build(:user)
-      put 'update', id: collection.id, submit_add_depositor: 'Add', add_depositor: depositor.username
+      put 'update', id: collection.id, submit_add_depositor: 'Add', add_depositor: depositor.user_key
       collection.reload
       expect(depositor).to be_in(collection.depositors)
     end
 
     it "should remove users from depositor role" do
       login_as(:administrator)
-      depositor = User.where(username: collection.depositors.first).first
-      put 'update', id: collection.id, remove_depositor: depositor.username
+      depositor = User.where(Devise.authentication_keys.first => collection.depositors.first).first
+      put 'update', id: collection.id, remove_depositor: depositor.user_key
       collection.reload
       expect(depositor).not_to be_in(collection.depositors)
     end
@@ -161,6 +161,14 @@ describe Admin::CollectionsController, type: :controller do
       expect(json.first['roles']['managers']).to eq(collection.managers)
       expect(json.first['roles']['editors']).to eq(collection.editors)
       expect(json.first['roles']['depositors']).to eq(collection.depositors)
+    end
+    it "should return list of collections for good user" do
+      get 'index', user: collection.managers.first, format:'json'
+      expect(json.count).to eq(1)
+    end
+    it "should return no collections for bad user" do
+      get 'index', user: 'foobar', format:'json'
+      expect(json.count).to eq(0)
     end
   end
 

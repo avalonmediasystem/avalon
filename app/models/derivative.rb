@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -17,6 +17,7 @@ require 'avalon/stream_mapper'
 class Derivative < ActiveFedora::Base
   include DerivativeBehavior
   include FrameSize
+  include MigrationTarget
 
   belongs_to :master_file, class_name: 'MasterFile', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf
 
@@ -34,7 +35,9 @@ class Derivative < ActiveFedora::Base
   property :managed, predicate: Avalon::RDFVocab::Derivative.isManaged, multiple: false do |index|
     index.as Solrizer::Descriptor.new(:boolean, :stored, :indexed)
   end
-  property :derivativeFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false
+  property :derivativeFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false do |index|
+    index.as :stored_sortable
+  end
 
   # Encoding datastream properties
   property :quality, predicate: ::RDF::Vocab::EBUCore.encodingLevel, multiple: false do |index|
@@ -95,7 +98,7 @@ class Derivative < ActiveFedora::Base
     output = dists.first || hls_output
 
     derivative = Derivative.new
-    derivative.managed = managed
+    derivative.managed = output.key?(:managed) ? output[:managed] : managed
     derivative.track_id = output[:id]
     derivative.duration = output[:duration]
     derivative.mime_type = output[:mime_type]

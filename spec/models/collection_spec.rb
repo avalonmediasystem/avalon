@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -32,7 +32,7 @@ describe Admin::Collection do
     context 'when manager' do
       subject{ ability}
       let(:ability){ Ability.new(user) }
-      let(:user){ User.where(username: collection.managers.first).first }
+      let(:user){ User.where(Devise.authentication_keys.first => collection.managers.first).first }
 
       it{ is_expected.to be_able_to(:create, Admin::Collection) }
       it{ is_expected.to be_able_to(:read, Admin::Collection) }
@@ -49,7 +49,7 @@ describe Admin::Collection do
     context 'when editor' do
       subject{ ability}
       let(:ability){ Ability.new(user) }
-      let(:user){ User.where(username: collection.editors.first).first }
+      let(:user){ User.where(Devise.authentication_keys.first => collection.editors.first).first }
 
       #Will need to define new action that covers just the things that an editor is allowed to edit
       it{ is_expected.to be_able_to(:read, Admin::Collection) }
@@ -67,7 +67,7 @@ describe Admin::Collection do
     context 'when depositor' do
       subject{ ability}
       let(:ability){ Ability.new(user) }
-      let(:user){ User.where(username: collection.depositors.first).first }
+      let(:user){ User.where(Devise.authentication_keys.first => collection.depositors.first).first }
 
       it{ is_expected.to be_able_to(:read, Admin::Collection) }
       it{ is_expected.to be_able_to(:read, collection) }
@@ -118,7 +118,7 @@ describe Admin::Collection do
 
   describe 'validations' do
     subject {wells_collection}
-    let(:wells_collection) {FactoryGirl.create(:collection, name: 'Herman B. Wells Collection', unit: "Default Unit", description: "Collection about our 11th university president, 1938-1962", managers: [manager.username], editors: [editor.username], depositors: [depositor.username])}
+    let(:wells_collection) {FactoryGirl.create(:collection, name: 'Herman B. Wells Collection', unit: "Default Unit", description: "Collection about our 11th university president, 1938-1962", managers: [manager.user_key], editors: [editor.user_key], depositors: [depositor.user_key])}
     let(:manager) {FactoryGirl.create(:manager)}
     let(:editor) {FactoryGirl.create(:user)}
     let(:depositor) {FactoryGirl.create(:user)}
@@ -154,9 +154,9 @@ describe Admin::Collection do
       expect(subject.unit).to eq("Default Unit")
       expect(subject.description).to eq("Collection about our 11th university president, 1938-1962")
       expect(subject.created_at).to eq(wells_collection.create_date)
-      expect(subject.managers).to eq([manager.username])
-      expect(subject.editors).to eq([editor.username])
-      expect(subject.depositors).to eq([depositor.username])
+      expect(subject.managers).to eq([manager.user_key])
+      expect(subject.editors).to eq([editor.user_key])
+      expect(subject.depositors).to eq([depositor.user_key])
       # expect(subject.rightsMetadata).to be_kind_of Hydra::Datastream::RightsMetadata
       # expect(subject.inheritedRights).to be_kind_of Hydra::Datastream::InheritableRightsMetadata
       # expect(subject.defaultRights).to be_kind_of Hydra::Datastream::NonIndexedRightsMetadata
@@ -185,38 +185,38 @@ describe Admin::Collection do
 
     describe "#managers" do
       it "should return the intersection of edit_users and managers role" do
-        collection.edit_users = [user.username, "pdinh"]
-        expect(Avalon::RoleControls).to receive("users").with("manager").and_return([user.username, "atomical"])
+        collection.edit_users = [user.user_key, "pdinh"]
+        expect(Avalon::RoleControls).to receive("users").with("manager").and_return([user.user_key, "atomical"])
         expect(Avalon::RoleControls).to receive("users").with("administrator").and_return([])
-        expect(collection.managers).to eq([user.username])  #collection.edit_users & RoleControls.users("manager")
+        expect(collection.managers).to eq([user.user_key])  #collection.edit_users & RoleControls.users("manager")
       end
     end
     describe "#managers=" do
       it "should add managers to the collection" do
-        manager_list = [FactoryGirl.create(:manager).username, FactoryGirl.create(:manager).username]
+        manager_list = [FactoryGirl.create(:manager).user_key, FactoryGirl.create(:manager).user_key]
         collection.managers = manager_list
         expect(collection.managers).to eq(manager_list)
       end
       it "should call add_manager" do
-        manager_list = [FactoryGirl.create(:manager).username, FactoryGirl.create(:manager).username]
+        manager_list = [FactoryGirl.create(:manager).user_key, FactoryGirl.create(:manager).user_key]
         expect(collection).to receive("add_manager").with(manager_list[0])
         expect(collection).to receive("add_manager").with(manager_list[1])
         collection.managers = manager_list
       end
       it "should remove managers from the collection" do
-        manager_list = [FactoryGirl.create(:manager).username, FactoryGirl.create(:manager).username]
+        manager_list = [FactoryGirl.create(:manager).user_key, FactoryGirl.create(:manager).user_key]
         collection.managers = manager_list
         expect(collection.managers).to eq(manager_list)
         collection.managers -= [manager_list[1]]
         expect(collection.managers).to eq([manager_list[0]])
       end
       it "should call remove_manager" do
-        collection.managers = [user.username]
-        expect(collection).to receive("remove_manager").with(user.username)
-        collection.managers = [FactoryGirl.create(:manager).username]
+        collection.managers = [user.user_key]
+        expect(collection).to receive("remove_manager").with(user.user_key)
+        collection.managers = [FactoryGirl.create(:manager).user_key]
       end
       it "should fail to remove only manager" do
-        manager_list = [FactoryGirl.create(:manager).username]
+        manager_list = [FactoryGirl.create(:manager).user_key]
         collection.managers = manager_list
         expect(collection.managers).to eq(manager_list)
         expect{collection.managers=[]}.to raise_error(ArgumentError)
@@ -224,43 +224,43 @@ describe Admin::Collection do
     end
     describe "#add_manager" do
       it "should give edit access to the collection" do
-        collection.add_manager(user.username)
-        expect(collection.edit_users).to include(user.username)
-        expect(collection.inherited_edit_users).to include(user.username)
-        expect(collection.managers).to include(user.username)
+        collection.add_manager(user.user_key)
+        expect(collection.edit_users).to include(user.user_key)
+        expect(collection.inherited_edit_users).to include(user.user_key)
+        expect(collection.managers).to include(user.user_key)
       end
       it "should add users who have the administrator role" do
         administrator = FactoryGirl.create(:administrator)
-        collection.add_manager(administrator.username)
-        expect(collection.edit_users).to include(administrator.username)
-        expect(collection.inherited_edit_users).to include(administrator.username)
-        expect(collection.managers).to include(administrator.username)
+        collection.add_manager(administrator.user_key)
+        expect(collection.edit_users).to include(administrator.user_key)
+        expect(collection.inherited_edit_users).to include(administrator.user_key)
+        expect(collection.managers).to include(administrator.user_key)
       end
       it "should not add administrators to editors role" do
         administrator = FactoryGirl.create(:administrator)
-        collection.add_manager(administrator.username)
-        expect(collection.editors).not_to include(administrator.username)
+        collection.add_manager(administrator.user_key)
+        expect(collection.editors).not_to include(administrator.user_key)
       end
       it "should not add users who do not have the manager role" do
         not_manager = FactoryGirl.create(:user)
-        expect {collection.add_manager(not_manager.username)}.to raise_error(ArgumentError)
-        expect(collection.managers).not_to include(not_manager.username)
+        expect {collection.add_manager(not_manager.user_key)}.to raise_error(ArgumentError)
+        expect(collection.managers).not_to include(not_manager.user_key)
       end
     end
     describe "#remove_manager" do
       it "should revoke edit access to the collection" do
-        collection.remove_manager(user.username)
-        expect(collection.edit_users).not_to include(user.username)
-        expect(collection.inherited_edit_users).not_to include(user.username)
-        expect(collection.managers).not_to include(user.username)
+        collection.remove_manager(user.user_key)
+        expect(collection.edit_users).not_to include(user.user_key)
+        expect(collection.inherited_edit_users).not_to include(user.user_key)
+        expect(collection.managers).not_to include(user.user_key)
       end
       it "should not remove users who do not have the manager role" do
         not_manager = FactoryGirl.create(:user)
-        collection.edit_users = [not_manager.username]
-        collection.inherited_edit_users = [not_manager.username]
-        collection.remove_manager(not_manager.username)
-        expect(collection.edit_users).to include(not_manager.username)
-        expect(collection.inherited_edit_users).to include(not_manager.username)
+        collection.edit_users = [not_manager.user_key]
+        collection.inherited_edit_users = [not_manager.user_key]
+        collection.remove_manager(not_manager.user_key)
+        expect(collection.edit_users).to include(not_manager.user_key)
+        expect(collection.inherited_edit_users).to include(not_manager.user_key)
       end
     end
   end
@@ -270,59 +270,59 @@ describe Admin::Collection do
 
     describe "#editors" do
       it "should not return managers" do
-        collection.edit_users = [user.username, FactoryGirl.create(:manager).username]
-        expect(collection.editors).to eq([user.username])
+        collection.edit_users = [user.user_key, FactoryGirl.create(:manager).user_key]
+        expect(collection.editors).to eq([user.user_key])
       end
     end
     describe "#editors=" do
       it "should add editors to the collection" do
-        editor_list = [FactoryGirl.create(:user).username, FactoryGirl.create(:user).username]
+        editor_list = [FactoryGirl.create(:user).user_key, FactoryGirl.create(:user).user_key]
         collection.editors = editor_list
         expect(collection.editors).to eq(editor_list)
       end
       it "should call add_editor" do
-        editor_list = [FactoryGirl.create(:user).username, FactoryGirl.create(:user).username]
+        editor_list = [FactoryGirl.create(:user).user_key, FactoryGirl.create(:user).user_key]
         expect(collection).to receive("add_editor").with(editor_list[0])
         expect(collection).to receive("add_editor").with(editor_list[1])
         collection.editors = editor_list
       end
       it "should remove editors from the collection" do
-        name = user.username
+        name = user.user_key
         collection.editors = [name]
         expect(collection.editors).to eq([name])
         collection.editors -= [name]
         expect(collection.editors).to eq([])
       end
       it "should call remove_editor" do
-        collection.editors = [user.username]
-        expect(collection).to receive("remove_editor").with(user.username)
-        collection.editors = [FactoryGirl.create(:user).username]
+        collection.editors = [user.user_key]
+        expect(collection).to receive("remove_editor").with(user.user_key)
+        collection.editors = [FactoryGirl.create(:user).user_key]
       end
     end
     describe "#add_editor" do
       it "should give edit access to the collection" do
         not_editor = FactoryGirl.create(:user)
-        collection.add_editor(not_editor.username)
-        expect(collection.edit_users).to include(not_editor.username)
-        expect(collection.inherited_edit_users).to include(not_editor.username)
-        expect(collection.editors).to include(not_editor.username)
+        collection.add_editor(not_editor.user_key)
+        expect(collection.edit_users).to include(not_editor.user_key)
+        expect(collection.inherited_edit_users).to include(not_editor.user_key)
+        expect(collection.editors).to include(not_editor.user_key)
       end
     end
     describe "#remove_editor" do
       it "should revoke edit access to the collection" do
-        collection.add_editor(user.username)
-        collection.remove_editor(user.username)
-        expect(collection.edit_users).not_to include(user.username)
-        expect(collection.inherited_edit_users).not_to include(user.username)
-        expect(collection.editors).not_to include(user.username)
+        collection.add_editor(user.user_key)
+        collection.remove_editor(user.user_key)
+        expect(collection.edit_users).not_to include(user.user_key)
+        expect(collection.inherited_edit_users).not_to include(user.user_key)
+        expect(collection.editors).not_to include(user.user_key)
       end
       it "should not remove users who do not have the editor role" do
         not_editor = FactoryGirl.create(:manager)
-        collection.edit_users = [not_editor.username]
-        collection.inherited_edit_users = [not_editor.username]
-        collection.remove_editor(not_editor.username)
-        expect(collection.edit_users).to include(not_editor.username)
-        expect(collection.inherited_edit_users).not_to include(user.username)
+        collection.edit_users = [not_editor.user_key]
+        collection.inherited_edit_users = [not_editor.user_key]
+        collection.remove_editor(not_editor.user_key)
+        expect(collection.edit_users).to include(not_editor.user_key)
+        expect(collection.inherited_edit_users).not_to include(user.user_key)
       end
     end
   end
@@ -333,55 +333,55 @@ describe Admin::Collection do
 
     describe "#depositors" do
       it "should return the read_users" do
-        collection.read_users = [user.username]
-        expect(collection.depositors).to eq([user.username])
+        collection.read_users = [user.user_key]
+        expect(collection.depositors).to eq([user.user_key])
       end
     end
     describe "#depositors=" do
       it "should add depositors to the collection" do
-        depositor_list = [FactoryGirl.create(:user).username, FactoryGirl.create(:user).username]
+        depositor_list = [FactoryGirl.create(:user).user_key, FactoryGirl.create(:user).user_key]
         collection.depositors = depositor_list
         expect(collection.depositors).to eq(depositor_list)
       end
       it "should call add_depositor" do
-        depositor_list = [FactoryGirl.create(:user).username, FactoryGirl.create(:user).username]
+        depositor_list = [FactoryGirl.create(:user).user_key, FactoryGirl.create(:user).user_key]
         expect(collection).to receive("add_depositor").with(depositor_list[0])
         expect(collection).to receive("add_depositor").with(depositor_list[1])
         collection.depositors = depositor_list
       end
       it "should remove depositors from the collection" do
-        name = user.username
+        name = user.user_key
         collection.depositors = [name]
         expect(collection.depositors).to eq([name])
         collection.depositors -= [name]
         expect(collection.depositors).to eq([])
       end
       it "should call remove_depositor" do
-        collection.add_depositor(user.username)
-        expect(collection).to receive("remove_depositor").with(user.username)
-        collection.depositors = [FactoryGirl.create(:user).username]
+        collection.add_depositor(user.user_key)
+        expect(collection).to receive("remove_depositor").with(user.user_key)
+        collection.depositors = [FactoryGirl.create(:user).user_key]
       end
     end
     describe "#add_depositor" do
       it "should give edit access to the collection" do
         not_depositor = FactoryGirl.create(:user)
-        collection.add_depositor(not_depositor.username)
-        expect(collection.inherited_edit_users).to include(not_depositor.username)
-        expect(collection.depositors).to include(not_depositor.username)
+        collection.add_depositor(not_depositor.user_key)
+        expect(collection.inherited_edit_users).to include(not_depositor.user_key)
+        expect(collection.depositors).to include(not_depositor.user_key)
       end
     end
     describe "#remove_depositor" do
       it "should revoke edit access to the collection" do
-        collection.add_depositor(user.username)
-        collection.remove_depositor(user.username)
-        expect(collection.inherited_edit_users).not_to include(user.username)
-        expect(collection.depositors).not_to include(user.username)
+        collection.add_depositor(user.user_key)
+        collection.remove_depositor(user.user_key)
+        expect(collection.inherited_edit_users).not_to include(user.user_key)
+        expect(collection.depositors).not_to include(user.user_key)
       end
       it "should not remove users who do not have the depositor role" do
         not_depositor = FactoryGirl.create(:manager)
-        collection.inherited_edit_users = [not_depositor.username]
-        collection.remove_depositor(not_depositor.username)
-        expect(collection.inherited_edit_users).to include(not_depositor.username)
+        collection.inherited_edit_users = [not_depositor.user_key]
+        collection.remove_depositor(not_depositor.user_key)
+        expect(collection.inherited_edit_users).to include(not_depositor.user_key)
       end
     end
   end
@@ -513,7 +513,7 @@ describe Admin::Collection do
 
     it 'removes bad characters from collection name' do
       collection.name = '../../secret.rb'
-      expect(Dir).to receive(:mkdir).with( File.join(Avalon::Configuration.lookup('dropbox.path'), '______secret_rb') )
+      expect(Dir).to receive(:mkdir).with( File.join(Settings.dropbox.path, '______secret_rb') )
       allow(Dir).to receive(:mkdir) # stubbing this out in a before(:each) block will effect where mkdir is used elsewhere (i.e. factories)
       collection.send(:create_dropbox_directory!)
     end
@@ -526,9 +526,9 @@ describe Admin::Collection do
     it 'uses a different directory name if the directory exists' do
       collection.name = 'african art'
       FakeFS.activate!
-      FileUtils.mkdir_p(File.join(Avalon::Configuration.lookup('dropbox.path'), 'african_art'))
-      FileUtils.mkdir_p(File.join(Avalon::Configuration.lookup('dropbox.path'), 'african_art_2'))
-      expect(Dir).to receive(:mkdir).with(File.join(Avalon::Configuration.lookup('dropbox.path'), 'african_art_3'))
+      FileUtils.mkdir_p(File.join(Settings.dropbox.path, 'african_art'))
+      FileUtils.mkdir_p(File.join(Settings.dropbox.path, 'african_art_2'))
+      expect(Dir).to receive(:mkdir).with(File.join(Settings.dropbox.path, 'african_art_3'))
       collection.send(:create_dropbox_directory!)
       FakeFS.deactivate!
     end
@@ -541,7 +541,7 @@ describe Admin::Collection do
 
     it 'handles Unicode collection names correctly' do
       collection.name = collection_name
-      expect(Dir).to receive(:mkdir).with( File.join(Avalon::Configuration.lookup('dropbox.path'), collection_dir) )
+      expect(Dir).to receive(:mkdir).with( File.join(Settings.dropbox.path, collection_dir) )
       allow(Dir).to receive(:mkdir)
       collection.send(:create_dropbox_directory!)
     end

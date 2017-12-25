@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -29,7 +29,7 @@ module MasterFileBehavior
     status?('COMPLETED')
   end
 
-  def stream_details(token,host=nil)
+  def stream_details
     flash, hls = [], []
 
     common, poster_path, captions_path, captions_format = nil, nil, nil, nil, nil, nil
@@ -38,8 +38,8 @@ module MasterFileBehavior
       common = { quality: d.quality,
                  mimetype: d.mime_type,
                  format: d.format }
-      flash << common.merge(url: Avalon::Configuration.rehost(d.tokenized_url(token, false),host))
-      hls << common.merge(url: Avalon::Configuration.rehost(d.tokenized_url(token, true),host))
+      flash << common.merge(url: d.streaming_url(false))
+      hls << common.merge(url: d.streaming_url(true))
     end
 
     # Sorts the streams in order of quality, note: Hash order only works in Ruby 1.9 or later
@@ -51,6 +51,7 @@ module MasterFileBehavior
       captions_path = Rails.application.routes.url_helpers.captions_master_file_path(self)
       captions_format = self.captions.mime_type
     end
+
     # Returns the hash
     return({
       id: self.id,
@@ -68,14 +69,14 @@ module MasterFileBehavior
   end
 
   def display_title
-    mf_title = self.structuralMetadata.section_title unless self.structuralMetadata.blank?
-    mf_title ||= self.title if self.title.present?
-    mf_title ||= self.file_location.split( "/" ).last if self.file_location.present?
+    mf_title = structuralMetadata.section_title unless structuralMetadata.blank?
+    mf_title ||= title if title.present?
+    mf_title ||= file_location.split("/").last if file_location.present? && (media_object.ordered_master_files.to_a.size > 1)
     mf_title.blank? ? nil : mf_title
   end
 
   def embed_title
-    [ self.media_object.title, display_title ].compact.join(" - ")
+    [media_object.title, display_title].compact.join(" - ")
   end
 
   def embed_code(width, permalink_opts = {})

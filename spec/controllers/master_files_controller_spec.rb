@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -213,18 +213,33 @@ describe MasterFilesController do
       get :show, id: master_file.id, t:'10'
       expect(response).to redirect_to("#{id_section_media_object_path(master_file.media_object.id, master_file.id)}?t=10")
     end
+    context 'with fedora 3 pid' do
+      let!(:master_file) {FactoryGirl.create(:master_file, identifier: [fedora3_pid])}
+      let(:fedora3_pid) { 'avalon:1234' }
+
+      it "should redirect" do
+        expect(get :show, id: fedora3_pid).to redirect_to(master_file_url(master_file.id))
+      end
+    end
   end
 
   describe "#embed" do
-    let(:master_file) {FactoryGirl.create(:master_file)}
-    let(:media_object) { double }
+    let!(:master_file) {FactoryGirl.create(:master_file)}
+    let(:media_object) { instance_double('MediaObject', title: 'Media Object', ordered_master_files: [master_file]) }
     before do
       allow_any_instance_of(MasterFile).to receive(:media_object).and_return(media_object)
-      allow(media_object).to receive(:title).and_return("Media Object")
       disableCanCan!
     end
     it "should render embed layout" do
       expect(get :embed, id: master_file.id).to render_template(layout: 'embed')
+    end
+    context 'with fedora 3 pid' do
+      let!(:master_file) {FactoryGirl.create(:master_file, identifier: [fedora3_pid])}
+      let(:fedora3_pid) { 'avalon:1234' }
+
+      it "should redirect" do
+        expect(get :embed, id: fedora3_pid).to redirect_to(embed_master_file_url(master_file.id))
+      end
     end
   end
 

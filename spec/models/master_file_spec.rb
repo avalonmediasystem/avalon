@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -302,24 +302,24 @@ describe MasterFile do
         }
 
         before(:each) do
-          @old_media_path = Avalon::Configuration.lookup('matterhorn.media_path')
+          @old_media_path = Settings.matterhorn.media_path
           FileUtils.mkdir_p media_path
           FileUtils.cp fixture, tempfile
         end
 
         after(:each) do
-          Avalon::Configuration['matterhorn']['media_path'] = @old_media_path
+          Settings.matterhorn.media_path = @old_media_path
           File.unlink subject.file_location
           FileUtils.rm_rf media_path
         end
 
         it "should rename an uploaded file in place" do
-          Avalon::Configuration['matterhorn'].delete('media_path')
+          Settings.matterhorn.media_path = nil
           expect(subject.file_location).to eq(File.realpath(File.join(File.dirname(tempfile),original)))
         end
 
         it "should copy an uploaded file to the media path" do
-          Avalon::Configuration['matterhorn']['media_path'] = media_path
+          Settings.matterhorn.media_path = media_path
           expect(subject.file_location).to eq(File.join(media_path,original))
         end
       end
@@ -396,8 +396,13 @@ describe MasterFile do
         expect( subject.embed_title ).to eq( "test - test" )
       end
 
-      it "should have an appropriate title for the embed code with no label" do
-        expect( subject.embed_title ).to eq( "test - video.mp4" )
+      it "should have an appropriate title for the embed code with no label (only one section)" do
+        expect( subject.embed_title ).to eq( "test" )
+      end
+
+      it 'should have an appropriate title for the embed code with no label (more than 1 section)' do
+        allow(subject.media_object).to receive(:ordered_master_files).and_return([subject,subject])
+        expect( subject.embed_title ).to eq( 'test - video.mp4' )
       end
 
       it "should have an appropriate title for the embed code with no label or file_location" do

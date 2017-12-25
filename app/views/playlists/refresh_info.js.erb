@@ -1,5 +1,5 @@
 <%#
-Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+Copyright 2011-2018, The Trustees of Indiana University and Northwestern
   University.  Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
 
@@ -22,8 +22,14 @@ Unless required by applicable law or agreed to in writing, software distributed
 <% clip_frag = "?t=#{clip_start},#{clip_end}" %>
 <% link = section_stream_media_object_path(@current_mediaobject, @current_masterfile.id) + clip_frag %>
 <% target_href = "a[href*='position=#{@position}']".html_safe%>
+
+// Replace accordion html markup
 $('#accordion').replaceWith("<%= escape_javascript(render partial: 'info') %>");
+
+// Reload player
 reload_player('<%= @current_masterfile.id %>', '<%= link %>', <%= @current_masterfile.is_video? %>);
+
+// Update playlist items
 $('.fa-arrow-circle-right').remove();
 $('.now_playing').addClass('queue').removeClass('now_playing');
 new_now_playing=$($("<%=target_href%>").first().closest('li'));
@@ -32,6 +38,8 @@ new_now_playing.prepend("<i class='fa fa-arrow-circle-right'></i>");
 
 // Initialize marker functionality for playlist item loaded by ajax
 currentPlayer.domNode.dataset['currentPlaylistItem']='<%= @current_playlist_item.id %>';
+
+// Handle editing of the markers
 $('button.edit_marker').click(enableMarkerEditForm);
 $('.marker_title').click(function(e) {
   if (typeof currentPlayer !== typeof void 0) {

@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -18,10 +18,10 @@ class IngestBatchMailer < ActionMailer::Base
   def status_email( ingest_batch_id )
     @ingest_batch = IngestBatch.find(ingest_batch_id)
     @media_objects = @ingest_batch.media_objects
-    @email = @ingest_batch.email || Avalon::Configuration.lookup('email.notification')
+    @email = @ingest_batch.email || Settings.email.notification
     mail(
       to: @email, 
-      from: Avalon::Configuration.lookup('email.notification'), 
+      from: Settings.email.notification, 
       subject: "Batch ingest status for: #{@ingest_batch.name}"
     )
   end
@@ -29,20 +29,20 @@ class IngestBatchMailer < ActionMailer::Base
   def batch_ingest_validation_error( package, base_errors )
     @package = package
     @base_errors = base_errors
-    email = package.manifest.email || Avalon::Configuration.lookup('email.notification')
+    email = package.manifest.email || Settings.email.notification
     mail(
       to: email,
-      from: Avalon::Configuration.lookup('email.notification'),
+      from: Settings.email.notification,
       subject: "Failed batch ingest processing errors for: #{package.manifest.name}",
     )
   end
 
   def batch_ingest_validation_success( package )
     @package = package
-    email = package.manifest.email || Avalon::Configuration.lookup('email.notification')
+    email = package.manifest.email || Settings.email.notification
     mail(
       to: email,
-      from: Avalon::Configuration.lookup('email.notification'),
+      from: Settings.email.notification,
       subject: "Successfully processed batch ingest: #{package.manifest.name}",
     )
   end

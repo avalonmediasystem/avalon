@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -16,6 +16,8 @@ require 'active_support/core_ext/array'
 require "avalon/batch/entry"
 require "avalon/batch/ingest"
 require "avalon/batch/manifest"
+require "avalon/batch/file_manifest"
+require "avalon/batch/s3_manifest"
 require "avalon/batch/package"
 require "timeout"
 
@@ -34,9 +36,9 @@ module Avalon
             statuses = status.split(/[\u0000\n]+/)
             statuses.in_groups_of(4) do |group|
               file_status = Hash[group.compact.collect { |s| [s[0].to_sym,s[1..-1]] }]
-              if file_status.has_key?(:n) and File.file?(file_status[:n]) and 
+              if file_status.has_key?(:n) and File.file?(file_status[:n]) and
                 (file_status[:a] =~ /w/ or file_status[:c] == 'scp')
-                  result << file_status[:n] 
+                  result << file_status[:n]
               end
             end
           end

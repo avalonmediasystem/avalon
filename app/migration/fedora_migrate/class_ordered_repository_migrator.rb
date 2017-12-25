@@ -1,11 +1,11 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -15,16 +15,11 @@
 module FedoraMigrate
   class ClassOrderedRepositoryMigrator < RepositoryMigrator
 
-    def migrate_objects(pids = nil, overwrite = false)
+    def migrate_objects(pids = nil, overwrite = false, skip_completed = false)
       @pids_whitelist = pids
       @overwrite = overwrite
+      @skip_completed = skip_completed
       class_order.each do |klass|
-        klass.class_eval do
-          # We don't really need multiple true but there is a bug with indexing single valued URI objects
-          property :migrated_from, predicate: RDF::URI("http://www.w3.org/ns/prov#wasDerivedFrom"), multiple: true do |index|
-            index.as :symbol
-          end
-        end
         ::MediaObject.skip_callback(:save, :before, :update_dependent_properties!) if klass == ::MediaObject
         Parallel.map_with_index(gather_pids_for_class(klass), in_processes: parallel_processes, progress: "Migrating #{klass.to_s}") do |pid, i|
           next unless qualifying_pid?(pid, klass)
@@ -55,7 +50,7 @@ module FedoraMigrate
       status_report.nil? ||
         (status_report.status != 'completed' && status_report.status != 'waiting' && method == :migrate) ||
         (status_report.status != 'completed' && method == :second_pass) ||
-        overwrite?
+        (!skip_completed? && overwrite?)
     end
 
     private
@@ -65,7 +60,14 @@ module FedoraMigrate
         query = "SELECT ?pid WHERE { ?pid <info:fedora/fedora-system:def/model#hasModel> <#{class_to_model_name(klass)}> }"
         # Query and filter using pids whitelist
         pids = FedoraMigrate.source.connection.sparql(query)["pid"].collect {|pid| pid.split('/').last}
-        @pids_whitelist.blank? ? pids : pids & @pids_whitelist
+        gathered_pids = @pids_whitelist.blank? ? pids : pids & @pids_whitelist
+
+        if skip_completed?
+          completed_pids = MigrationStatus.where(source_class: klass, status: 'completed', datastream: nil).pluck(:f3_pid)
+          gathered_pids - completed_pids
+        else
+          gathered_pids
+        end
       end
 
       def source_object(pid)
@@ -97,6 +99,10 @@ module FedoraMigrate
 
       def overwrite?
         !!@overwrite
+      end
+
+      def skip_completed?
+        !!@skip_completed
       end
 
       def migrate_object(source, klass, method=:migrate)
@@ -133,7 +139,7 @@ module FedoraMigrate
           end
         end
       end
-      
+
       def end_status(result, method, klass)
         if result.status
           if method == :migrate and second_pass_needed?(klass)
@@ -144,7 +150,7 @@ module FedoraMigrate
         end
         return 'failed'
       end
-      
+
       def second_pass_needed?(klass)
         object_mover(klass).instance_methods.include?(:second_pass)
       end

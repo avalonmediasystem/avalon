@@ -63,7 +63,7 @@ services:
     ports:
       - "6379:6379"
   avalon:
-    image: avalonmediasystem/avalon:6.0-dev
+    image: avalonmediasystem/avalon:6.x-dev
     command: "/rails_init-dev.sh"
     depends_on:
       - db
@@ -75,11 +75,11 @@ services:
       - ASSET_HOST=http://localhost:3000
       - AVALON_BRANCH=develop
       - AVALON_DB_PASSWORD=avalondb
-      - BASE_URL=http://localhost:3000
+      - SETTINGS__DOMAIN=http://localhost:3000
       - CONTROLLED_VOCABULARY=config/controlled_vocabulary.yml
       - DATABASE_URL=postgres://avalon:${AVALON_DB_PASSWORD}@db/avalon
-      - DROPBOX_PATH=/masterfiles/dropbox
-      - DROPBOX_URI=./masterfiles/dropbox
+      - SETTINGS__DROPBOX__PATH=/masterfiles
+      - SETTINGS__DROPBOX__UPLOAD_URI=./masterfiles
       - EMAIL_COMMENTS
       - EMAIL_NOTIFICATION
       - EMAIL_SUPPORT
@@ -90,7 +90,7 @@ services:
       - MASTER_FILE_PATH
       - MASTER_FILE_STRATEGY=delete
       - MATTERHORN_URL=http://matterhorn_system_account:CHANGE_ME@matterhorn:8080/
-      - MEDIA_PATH=/masterfiles
+      - SETTINGS__MATTERHORN__MEDIA_PATH=/masterfiles
       - MEDIAINFO_PATH=/usr/bin/mediainfo
       - RAILS_ENV=development
       - REDIS_SERVER=redis:6379
@@ -104,12 +104,12 @@ services:
       - SMTP_PORT
       - SMTP_USER_NAME
       - SOLR_URL=http://solr:8983/solr/avalon
-      - STREAM_BASE=/streamfiles
-      - STREAM_DEFAULT_QUALITY=medium
-      - STREAM_HTTP_BASE=http://localhost:8880/avalon
-      - STREAM_RTMP_BASE=rtmp://localhost/avalon
-      - STREAM_SERVER=nginx
-      - STREAM_TOKEN_TTL=20
+      - SETTINGS__STREAMING__CONTENT_PATH=/streamfiles
+      - SETTINGS__STREAMING__STREAM_DEFAULT_QUALITY=medium
+      - SETTINGS__STREAMING__HTTP_BASE=http://localhost:8880/avalon
+      - SETTINGS__STREAMING__RTMP_BASE=rtmp://localhost/avalon
+      - SETTINGS__STREAMING__SERVER=nginx
+      - SETTINGS__STREAMING__STREAM_TOKEN_TTL=20
       - SYSTEM_GROUPS=administrator,group_manager,manager
       - Z3950_ATTRIBUTE
       - Z3950_DATABASE

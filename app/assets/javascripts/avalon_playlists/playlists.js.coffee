@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 #
@@ -28,6 +28,7 @@ submit_edit = null
       else
         modal.find('#playlist_visibility_private-with-token').prop('checked', true)
       modal.find('#old_playlist_id').val(playlist.id)
+      modal.find('#token').val(playlist.access_token)
       modal.find('#copy-playlist-submit').prop("disabled", false)
       modal.find('#copy-playlist-submit-edit').prop("disabled", false)
 
@@ -70,9 +71,18 @@ $('#copy-playlist-form').bind('ajax:success',
       else
         if ( $('#with_refresh').val() )
           location.reload()
+).bind('ajax:error',
+  (e, xhr, status, error) ->
+    console.log(xhr.responseJSON.errors)
 )
 $('input[name="playlist[visibility]"]').on('click', () ->
   new_val = $(this).val()
   new_text = $('.human_friendly_visibility_'+new_val).attr('title')
   $('.visibility-help-text').text(new_text)
+)
+
+# Hide instead of delete Bootstrap's dismissable alerts
+$('.mejs-form-alert').on('close.bs.alert', (e) ->
+  e.preventDefault()
+  $(this).slideUp()
 )

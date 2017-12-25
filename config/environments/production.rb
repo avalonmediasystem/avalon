@@ -40,9 +40,6 @@ Rails.application.configure do
   # Specifies the header that your server uses for sending files.
   # config.action_dispatch.x_sendfile_header = 'X-Sendfile' # for Apache
   # config.action_dispatch.x_sendfile_header = 'X-Accel-Redirect' # for NGINX
-  config.action_dispatch.default_headers = {
-    'X-Frame-Options' => ''
-  }
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
@@ -87,6 +84,6 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
 
-  # Suppress deprecation warnings
-  Deprecation.default_deprecation_behavior = :silence
+  config.active_job.queue_adapter     = Settings&.active_job&.queue_adapter || :resque
+  require 'active_job/queue_adapters/better_active_elastic_job_adapter' if config.active_job.queue_adapter == :active_elastic_job
 end

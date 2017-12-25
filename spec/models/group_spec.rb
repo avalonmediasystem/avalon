@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -27,7 +27,7 @@ describe Admin::Group do
   describe "non system groups" do
     it "should not have system groups" do
       groups = Admin::Group.non_system_groups
-      system_groups = Avalon::Configuration.lookup('groups.system_groups')
+      system_groups = Settings.groups.system_groups
       groups.each { |g| expect(system_groups).not_to include g.name }
     end
   end

@@ -1,4 +1,4 @@
-# Copyright 2011-2017, The Trustees of Indiana University and Northwestern
+# Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
 # 
@@ -15,7 +15,7 @@
 
 module ApplicationHelper
   def application_name
-    Avalon::Configuration.lookup('name') || 'Avalon Media System'
+    Settings.name || 'Avalon Media System'
   end
 
   def release_text

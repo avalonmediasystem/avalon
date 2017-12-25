@@ -1,4 +1,13 @@
-server_options = Avalon::Configuration.lookup('domain').dup
+server_options = Settings.domain
+server_options = case server_options
+when String
+  uri = URI.parse(server_options)
+  { host: uri.host, port: uri.port, protocol: uri.scheme }
+when Hash
+  server_options
+else
+  server_options.to_hash
+end
 
 if server_options
   server_options.symbolize_keys!
