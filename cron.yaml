@@ -6,3 +6,11 @@ cron:
   - name: "DeleteOldSearchesJob"
     url: "/periodic_tasks"
     schedule: "0,20,40 * * * *"
+
+  - name: "IngestBatchStatusEmailJobs::IngestFinished"
+    url: "/periodic_tasks"
+    schedule: 0,5,10,15,20,25,30,35,40,45,50,55 * * * *
+
+  - name: "IngestBatchStatusEmailJobs::StalledJob"
+    url: "/periodic_tasks"
+    schedule: 0 0 * * *
