@@ -75,7 +75,7 @@ gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/me
 
 # Jobs
 gem 'redis-rails'
-gem 'resque', '~> 1.26.0'
+gem 'resque', '~> 1.27.0'
 gem 'resque-scheduler', '~> 4.3.0'
 
 # Coding Patterns
