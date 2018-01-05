@@ -425,7 +425,10 @@ class MEJSPlayer {
       embed_title: currentStreamInfo.embed_title,
       link_back_url: currentStreamInfo.link_back_url,
       qualityText: 'Stream Quality',
-      toggleCaptionsButtonWhenOnlyOne: true
+      toggleCaptionsButtonWhenOnlyOne: true,
+      hls: {
+        xhrSetup: (xhr, url) => { xhr.withCredentials = true; }
+      }
     };
     let promises = [];
     const playlistIds = this.playlistItem
