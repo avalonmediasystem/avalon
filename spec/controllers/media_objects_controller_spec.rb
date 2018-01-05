@@ -52,7 +52,7 @@ describe MediaObjectsController, type: :controller do
           expect(get :show_progress, id: media_object.id, format: 'json').to have_http_status(401)
           expect(get :edit, id: media_object.id).to redirect_to(new_user_session_path)
           expect(get :confirm_remove, id: media_object.id).to redirect_to(new_user_session_path)
-          expect(post :create).to redirect_to(new_user_session_path)
+          #expect(post :create).to redirect_to(new_user_session_path) # route accessible by json only
           expect(put :update, id: media_object.id).to redirect_to(new_user_session_path)
           expect(put :update_status, id: media_object.id).to redirect_to(new_user_session_path)
           expect(get :tree, id: media_object.id).to redirect_to(new_user_session_path)
@@ -75,7 +75,7 @@ describe MediaObjectsController, type: :controller do
           expect(get :show_progress, id: media_object.id, format: 'json').to redirect_to(root_path)
           expect(get :edit, id: media_object.id).to redirect_to(root_path)
           expect(get :confirm_remove, id: media_object.id).to redirect_to(root_path)
-          expect(post :create).to redirect_to(root_path)
+          #expect(post :create).to redirect_to(root_path) # route accessible by json only
           expect(put :update, id: media_object.id).to redirect_to(root_path)
           expect(put :update_status, id: media_object.id).to redirect_to(root_path)
           expect(get :tree, id: media_object.id).to redirect_to(root_path)
@@ -210,7 +210,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.master_files.first.derivatives.count).to eq(2)
           expect(new_media_object.master_files.first.derivatives.first.location_url).to eq(absolute_location)
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
-       end
+        end
         it "should create a new published media_object" do
           media_object = FactoryGirl.create(:published_media_object)
           fields = {}
@@ -221,7 +221,7 @@ describe MediaObjectsController, type: :controller do
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.published?).to be_truthy
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
-       end
+        end
         it "should create a new media_object with successful bib import" do
           Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           stub_request(:get, sru_url).to_return(body: sru_response)
