@@ -24,7 +24,7 @@ gem 'fedora-migrate', '~> 0.5.0'
 gem 'rdf-rdfxml'
 
 # Samvera version pins
-gem 'blacklight', '=6.11.0'
+gem 'blacklight', '=6.13.0'
 gem 'rdf', '~> 2.2'
 gem 'rsolr', '~> 1.0'
 

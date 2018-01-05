@@ -212,7 +212,7 @@ GEM
     api-pagination (4.6.3)
     arel (6.0.4)
     ast (2.3.0)
-    autoprefixer-rails (7.1.5)
+    autoprefixer-rails (7.2.4)
       execjs
     aws-sdk (2.10.57)
       aws-sdk-resources (= 2.10.57)
@@ -237,7 +237,7 @@ GEM
     bixby (0.3.1)
       rubocop (~> 0.49, <= 0.50.0)
       rubocop-rspec (~> 1.15, <= 1.18.0)
-    blacklight (6.11.0)
+    blacklight (6.13.0)
       bootstrap-sass (~> 3.2)
       deprecation
       globalid
@@ -378,7 +378,7 @@ GEM
       rubydora (~> 1.8)
     font-awesome-rails (4.7.0.2)
       railties (>= 3.2, < 5.2)
-    globalid (0.4.0)
+    globalid (0.4.1)
       activesupport (>= 4.2.0)
     google-analytics-rails (1.1.0)
     google-api-client (0.13.6)
@@ -456,18 +456,18 @@ GEM
       multi_json (~> 1.12)
       rdf (~> 2.2, >= 2.2.8)
     jwt (1.5.6)
-    kaminari (1.1.0)
+    kaminari (1.1.1)
       activesupport (>= 4.1.0)
-      kaminari-actionview (= 1.1.0)
-      kaminari-activerecord (= 1.1.0)
-      kaminari-core (= 1.1.0)
-    kaminari-actionview (1.1.0)
+      kaminari-actionview (= 1.1.1)
+      kaminari-activerecord (= 1.1.1)
+      kaminari-core (= 1.1.1)
+    kaminari-actionview (1.1.1)
       actionview
-      kaminari-core (= 1.1.0)
-    kaminari-activerecord (1.1.0)
+      kaminari-core (= 1.1.1)
+    kaminari-activerecord (1.1.1)
       activerecord
-      kaminari-core (= 1.1.0)
-    kaminari-core (1.1.0)
+      kaminari-core (= 1.1.1)
+    kaminari-core (1.1.1)
     launchy (2.4.3)
       addressable (~> 2.3)
     ldp (0.7.0)
@@ -493,8 +493,8 @@ GEM
     loofah (2.1.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
-    mail (2.6.6)
-      mime-types (>= 1.16, < 4)
+    mail (2.7.0)
+      mini_mime (>= 0.1.1)
     marc (1.0.2)
       scrub_rb (>= 1.0.1, < 2)
       unf
@@ -509,7 +509,7 @@ GEM
     mimemagic (0.3.2)
     mini_mime (0.1.4)
     mini_portile2 (2.3.0)
-    minitest (5.11.0)
+    minitest (5.11.1)
     mono_logger (1.1.0)
     multi_json (1.12.2)
     multi_xml (0.6.0)
@@ -845,7 +845,7 @@ DEPENDENCIES
   aws-sdk (~> 2.0)
   aws-sdk-rails
   bixby
-  blacklight (= 6.11.0)
+  blacklight (= 6.13.0)
   bootstrap-toggle-rails!
   bootstrap_form
   browse-everything (~> 0.13.0)
