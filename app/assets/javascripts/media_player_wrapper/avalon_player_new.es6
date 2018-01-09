@@ -234,6 +234,10 @@ class MEJSPlayer {
         : parseFloat(this.segmentsMap[target.id].fragmentbegin);
       this.mediaElement.setCurrentTime(time);
     }
+    
+    // Briefly show controls so users can see highlighted section on the scrubber
+    this.player.showControls();
+    this.player.startControlsTimer();
   }
 
   /**
