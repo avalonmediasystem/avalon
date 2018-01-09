@@ -235,9 +235,7 @@ class MEJSPlayer {
       this.mediaElement.setCurrentTime(time);
     }
     
-    // Briefly show controls so users can see highlighted section on the scrubber
-    this.player.showControls();
-    this.player.startControlsTimer();
+    this.mejsUtility.showControlsBriefly(this.player);
   }
 
   /**

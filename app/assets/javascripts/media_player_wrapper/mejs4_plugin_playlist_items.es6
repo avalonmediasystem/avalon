@@ -314,6 +314,7 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     handleClick(el) {
       this.turnOffAutoplay();
+      this.mejsUtility.showControlsBriefly(this.player);
 
       // Clicked same item. Play from item start time and return
       if (this.isSamePlaylistItem(el)) {

@@ -174,4 +174,14 @@ class MEJSUtility {
       ? ''
       : decodeURIComponent(results[1].replace(/\+/g, ' '));
   }
+
+  /**
+   * Briefly show controls so users can see the scrubber
+   */
+  showControlsBriefly(player) {
+    if (player.isVideo) {
+      player.showControls();
+      player.startControlsTimer();
+    }
+  }
 }
