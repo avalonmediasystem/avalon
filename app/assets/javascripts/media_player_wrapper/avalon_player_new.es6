@@ -236,8 +236,11 @@ class MEJSPlayer {
     }
     
     // Briefly show controls so users can see highlighted section on the scrubber
-    this.player.showControls();
-    this.player.startControlsTimer();
+    // Only do this on videos
+    if (this.player.isVideo) {
+      this.player.showControls();
+      this.player.startControlsTimer();
+    }
   }
 
   /**
