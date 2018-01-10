@@ -48,7 +48,7 @@ class MEJSMarkersHelper {
       document.dispatchEvent(event);
       player.setCurrentTime(+offset);
 
-      t.showControlsBriefly(player);
+      t.mejsUtility.showControlsBriefly(player);
     });
 
     // Edit button click
