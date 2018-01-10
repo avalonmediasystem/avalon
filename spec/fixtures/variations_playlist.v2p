@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?><!--To open this file with Variations2, download the file to your local computer on your desktop or other location. Then start Variations2 and pick "Open Playlist..." from the File menu. Locate your saved copy of this file and open it.)--><Playlist label="Simple Playlist" version="1">
+   <ContainerStructure label="Simple Playlist">
+      <Item label="">
+         <Chunk label="Audio Clip">
+<!-- You will need to edit the mediaRef or variations_media_object_id_map.yml and ensure that the master file has the value in the map in its identifier -->
+            <ContentInterval begin="1000" end="10000" mediaRef="IU/MediaObject/1"/>
+         </Chunk>
+      </Item>
+   </ContainerStructure>
+   <BookmarkTree/>
+</Playlist>

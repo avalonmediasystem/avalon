@@ -20,13 +20,13 @@ class MediaObjectsController < ApplicationController
   include ConditionalPartials
   include SecurityHelper
 
-  before_filter :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details]
-  before_filter :authenticate_api!, only: [:show], if: proc{|c| request.format.json?}
-  load_and_authorize_resource except: [:destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist]
+  before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details]
+  before_action :authenticate_api!, only: [:show, :create, :json_update], if: proc { request.format.json? }
+  load_and_authorize_resource except: [:create, :json_update, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist]
   # authorize_resource only: [:create, :update]
 
-  before_filter :inject_workflow_steps, only: [:edit, :update], unless: proc{|c| request.format.json?}
-  before_filter :load_player_context, only: [:show]
+  before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
+  before_action :load_player_context, only: [:show]
 
   def self.is_editor ctx
     ctx.current_ability.is_editor_of?(ctx.instance_variable_get('@media_object').collection)
@@ -120,7 +120,7 @@ class MediaObjectsController < ApplicationController
 
   # POST /media_objects
   def create
-    # @media_object = initialize_media_object
+    @media_object = MediaObjectsController.initialize_media_object(user_key)
     # Preset the workflow to the last workflow step to ensure validators run
     @media_object.workflow.last_completed_step = HYDRANT_STEPS.last.step
     update_media_object
@@ -128,6 +128,7 @@ class MediaObjectsController < ApplicationController
 
   # PUT /media_objects/avalon:1.json
   def json_update
+    @media_object = MediaObject.find(params[:id])
     # Preset the workflow to the last workflow step to ensure validators run
     @media_object.workflow.last_completed_step = HYDRANT_STEPS.last.step
     update_media_object
@@ -135,26 +136,28 @@ class MediaObjectsController < ApplicationController
 
   def update_media_object
     begin
-      collection = Admin::Collection.find(params[:collection_id])
+      collection = Admin::Collection.find(api_params[:collection_id])
     rescue ActiveFedora::ObjectNotFoundError
-      render json: {errors: ["Collection not found for #{params[:collection_id]}"]}, status: 422
+      render json: { errors: ["Collection not found for #{api_params[:collection_id]}"] }, status: 422
       return
     end
 
     @media_object.collection = collection
     @media_object.avalon_uploader = 'REST API'
 
-    populate_from_catalog = !!params[:import_bib_record]
+    populate_from_catalog = (!!api_params[:import_bib_record] && media_object_parameters[:bibliographic_id].present?)
     if populate_from_catalog and Avalon::BibRetriever.configured?
       begin
         # Set other identifiers
         # FIXME: The ordering in the slice is important
         @media_object.update_attributes(media_object_parameters.slice(:other_identifier, :other_identifier_type))
         # Try to use Bib Import
-        @media_object.descMetadata.populate_from_catalog!(Array(params[:fields][:bibliographic_id]).first,
-                                                         Array(params[:fields][:bibliographic_id_label]).first)
+        @media_object.descMetadata.populate_from_catalog!(media_object_parameters[:bibliographic_id][:id],
+                                                          media_object_parameters[:bibliographic_id][:source])
       rescue
-        logger.warn "Failed bib import using bibID #{Array(params[:fields][:bibliographic_id]).first}, #{Array(params[:fields][:bibliographic_id_label]).first}"
+        bib_id = media_object_parameters.dig(:bibliographic_id, :id) || ''
+        bib_source = media_object_parameters.dig(:bibliographic_id, :source) || ''
+        logger.warn "Failed bib import using bibID #{bib_id}, #{bib_source}"
       ensure
         if !@media_object.valid?
           # Fall back to MODS as sent if Bib Import fails
@@ -166,45 +169,51 @@ class MediaObjectsController < ApplicationController
     end
 
     error_messages = []
-    if !@media_object.valid?
+    unless @media_object.valid?
       invalid_fields = @media_object.errors.keys
       required_fields = [:title, :date_issued]
-      if !required_fields.any? { |f| invalid_fields.include? f }
+      unless required_fields.any? { |f| invalid_fields.include? f }
         invalid_fields.each do |field|
           #NOTE this will erase all values for fields with multiple values
-          logger.warn "Erasing field #{field} with bad value, bibID: #{Array(params[:fields][:bibliographic_id]).first}, avalon ID: #{@media_object.id}"
+          bib_id = media_object_parameters.dig(:bibliographic_id, :id) || ''
+          logger.warn "Erasing field #{field} with bad value, bibID: #{bib_id}, avalon ID: #{@media_object.id}"
           @media_object.send("#{field}=", nil)
         end
       end
     end
     if !@media_object.save
       error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
-    elsif params[:files].respond_to?('each')
+    elsif master_files_params.respond_to?('each')
       old_ordered_master_files = @media_object.ordered_master_files.to_a.collect(&:id)
       master_files_params.each do |file_spec|
-        master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier))
+        master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier, :label))
         # master_file.media_object = @media_object
         master_file.structuralMetadata.content = file_spec[:structure] if file_spec[:structure].present?
         if file_spec[:captions].present?
           master_file.captions.content = file_spec[:captions]
           master_file.captions.mime_type = file_spec[:captions_type]
         end
-        # TODO: Document this API change!
-        master_file.title = file_spec[:title] if file_spec[:title].present?
+        # TODO: This inconsistency should eventually be addressed by updating the API
+        master_file.title = file_spec[:label] if file_spec[:label].present?
         master_file.date_digitized = DateTime.parse(file_spec[:date_digitized]).to_time.utc.iso8601 if file_spec[:date_digitized].present?
         master_file.identifier += Array(file_spec[:other_identifier])
-        if master_file.update_derivatives(file_spec[:files], false)
-          @media_object.ordered_master_files += [master_file]
-        else
-          error_messages += ["Problem saving MasterFile for #{file_spec[:file_location] rescue "<unknown>"}:"]
-                            + master_file.errors.full_messages
-          @media_object.destroy
-          break
+        master_file._media_object = @media_object
+        if file_spec[:files].present?
+          if master_file.update_derivatives(file_spec[:files], false)
+            @media_object.ordered_master_files += [master_file]
+          else
+            file_location = file_spec.dig(:file_location) || '<unknown>'
+            message = "Problem saving MasterFile for #{file_location}:"
+            error_messages += [message]
+            error_messages += master_file.errors.full_messages
+            @media_object.destroy
+            break
+          end
         end
       end
 
       if error_messages.empty?
-        if params[:replace_master_files]
+        if api_params[:replace_master_files]
           old_ordered_master_files.each do |mf|
             p = MasterFile.find(mf)
             @media_object.master_files.delete(p)
@@ -221,7 +230,7 @@ class MediaObjectsController < ApplicationController
         if !@media_object.save
           error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
           @media_object.destroy
-        elsif !!params[:publish]
+        elsif !!api_params[:publish]
           @media_object.publish!('REST API')
           @media_object.workflow.publish
         end
@@ -532,17 +541,27 @@ class MediaObjectsController < ApplicationController
                              :status_code,
                              :other_identifier,
                              :structure,
+                             :physical_description,
                              :files => [:label,
-                                       :id,
-                                       :url,
-                                       :duration,
-                                       :mime_type,
-                                       :audio_bitrate,
-                                       :audio_codec,
-                                       :video_bitrate,
-                                       :video_codec,
-                                       :width,
-                                       :height]])[:files]
+                                        :id,
+                                        :url,
+                                        :hls_url,
+                                        :duration,
+                                        :mime_type,
+                                        :audio_bitrate,
+                                        :audio_codec,
+                                        :video_bitrate,
+                                        :video_codec,
+                                        :width,
+                                        :height,
+                                        :location,
+                                        :track_id,
+                                        :hls_track_id,
+                                        :managed,
+                                        :derivativeFile]])[:files]
   end
 
+  def api_params
+    params.permit(:collection_id, :publish, :import_bib_record, :replace_master_files)
+  end
 end
