@@ -6,7 +6,7 @@
                 width="<%= @player_width || 450 %>"
                 height="<%= @player_height || 309 %>"
                 poster="<%= section_info[:poster_image] if f_start == 0 %>"
-                preload="true">
+                preload="auto">
           <% if is_mejs_2? %>
             <% section_info[:stream_flash].each do |flash| %>
               <source src="<%= flash[:url] %>" data-quality="<%= flash[:quality] %>" data-plugin-type="flash" type="video/rtmp"/>

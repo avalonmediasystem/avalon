@@ -234,6 +234,8 @@ class MEJSPlayer {
         : parseFloat(this.segmentsMap[target.id].fragmentbegin);
       this.mediaElement.setCurrentTime(time);
     }
+    
+    this.mejsUtility.showControlsBriefly(this.player);
   }
 
   /**
