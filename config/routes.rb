@@ -116,6 +116,7 @@ Rails.application.routes.draw do
       post 'attach_structure'
       post 'attach_captions'
       get :captions
+      get 'adaptive', to: 'master_files#hls_adaptive_manifest'
     end
   end
 

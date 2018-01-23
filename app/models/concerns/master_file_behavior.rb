@@ -36,6 +36,7 @@ module MasterFileBehavior
 
     derivatives.each do |d|
       common = { quality: d.quality,
+                 bitrate: d.bitrate,
                  mimetype: d.mime_type,
                  format: d.format }
       flash << common.merge(url: d.streaming_url(false))
