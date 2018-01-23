@@ -120,6 +120,10 @@ class Derivative < ActiveFedora::Base
     derivative
   end
 
+  def bitrate
+    audio_bitrate.to_i + video_bitrate.to_i
+  end
+
   private
 
   # TODO: move this into a service class
