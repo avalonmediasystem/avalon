@@ -266,7 +266,8 @@ class MasterFilesController < ApplicationController
   def hls_adaptive_manifest
     master_file = MasterFile.find(params[:id])
     authorize! :read, master_file
-    @stream_info = secure_streams(master_file.stream_details)
+    stream_info = secure_streams(master_file.stream_details)
+    @hls_streams = stream_info[:stream_hls].reject { |stream| stream[:quality] == 'auto' }
   end
 
 protected
