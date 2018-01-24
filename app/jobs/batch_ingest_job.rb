@@ -25,7 +25,7 @@ class BatchIngestJob < ActiveJob::Base
     ingest = Avalon::Batch::Ingest.new(collection)
     begin
       package = Avalon::Batch::Package.new(filename, collection)
-      ingest.ingest_package(package)
+      ingest.process_valid_package(package: package)
     rescue Exception => ex
       begin
         package.manifest.error!

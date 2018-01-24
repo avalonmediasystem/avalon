@@ -43,26 +43,35 @@ module Avalon
             send_invalid_package_email
             next
           end
-          br = register_batch unless replay?
-          br = register_replay if replay?
-          @current_batch_registry = br.reload
-          @previous_entries = fetch_previous_entries if replay?
-          register_entries
-          # Queue all the entries
-          BatchEntries.where(batch_registries_id: @current_batch_registry.id, complete: false, error: false).map(&:queue)
-
-          # Now that everything is registered, unlock the batch entry
-          # TODO: Move these two lines to the model
-          @current_batch_registry.locked = false
-          if @current_batch_registry.save
-            # Send email about successful registration
-            BatchRegistriesMailer.batch_ingest_validation_success(@current_package).deliver_now if @current_batch_registry.persisted?
-          else
-            logger.error "Persisting BatchRegistry failed for package #{@current_package.title}"
-          end
-          @current_package.manifest.delete
+          process_valid_package
         end
-        # Return something about the new batches
+      end
+
+      # Given a valid package you have obtained via some means, such as scan_for_packages
+      # or passed in via the batch_ingest_job, process it
+      def process_valid_package(package: nil)
+        # If we're calling this via a side job, we'll be passing in a package here
+        # Otherwise this should be set
+        @current_package = package unless package.nil?
+
+        br = register_batch unless replay?
+        br = register_replay if replay?
+        @current_batch_registry = br.reload
+        @previous_entries = fetch_previous_entries if replay?
+        register_entries
+        # Queue all the entries
+        BatchEntries.where(batch_registries_id: @current_batch_registry.id, complete: false, error: false).map(&:queue)
+
+        # Now that everything is registered, unlock the batch entry
+        # TODO: Move these two lines to the model
+        @current_batch_registry.locked = false
+        if @current_batch_registry.save
+          # Send email about successful registration
+          BatchRegistriesMailer.batch_ingest_validation_success(@current_package).deliver_now if @current_batch_registry.persisted?
+        else
+          logger.error "Persisting BatchRegistry failed for package #{@current_package.title}"
+        end
+        @current_package.manifest.delete
       end
 
       # Register the individual rows on a spreadsheet for a valid package
