@@ -1,5 +1,6 @@
-default:
-  url: https://some.avalon.com/
-  api_token: a_valid_token
-  import_bib_record: true
-  publish: false
+intercom:
+  default:
+    url: https://some.avalon.com/
+    api_token: a_valid_token
+    import_bib_record: true
+    publish: false

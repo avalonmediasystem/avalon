@@ -281,10 +281,9 @@ describe MediaObjectsController, type: :controller do
         end
         it "should create a new media_object using ingest_api_hash of existing media_object" do
           # master_file_obj = FactoryGirl.create(:master_file, master_file.slice(:files))
-          media_object = FactoryGirl.create(:fully_searchable_media_object)
+          media_object = FactoryGirl.create(:fully_searchable_media_object, :with_completed_workflow)
           master_file = FactoryGirl.create(:master_file, :with_derivative, :with_thumbnail, :with_poster, :with_structure, :with_captions)
           media_object.ordered_master_files += [master_file]
-          media_object.workflow.last_completed_step = 'access-control'
           media_object.update_dependent_properties!
           api_hash = media_object.to_ingest_api_hash
           post 'create', format: 'json', fields: api_hash[:fields], files: api_hash[:files], collection_id: media_object.collection_id

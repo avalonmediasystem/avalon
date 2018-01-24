@@ -56,21 +56,22 @@ class MediaObjectsController < ApplicationController
   end
 
   def intercom_collections
+    intercom = Avalon::Intercom.new(user_key)
     respond_to do |format|
       format.json do
-        render json: Avalon::Intercom.user_collections(user_key).to_json
+        render json: intercom.user_collections.to_json
       end
     end
   end
 
   def intercom_push
-    result = Avalon::Intercom.push_media_object(@media_object, params[:collection_id], params[:include_structure] == 'true')
-    if result['id'].present?
-      target_url = URI.join(Avalon::Intercom.avalons['default']['url'], 'media_objects/', result['id'])
-      target_link = link_to "See it here", target_url, target: "_blank"
-      flash[:success] = "The item was pushed successfully. #{target_link}"
-    else
+    intercom = Avalon::Intercom.new(user_key)
+    result = intercom.push_media_object(@media_object, params[:collection_id], params[:include_structure] == 'true')
+    if result[:message].present?
       flash[:alert] = "There was an error pushing the item. (#{result[:status]}: #{result[:message]})"
+    else
+      target_link = link_to "See it here", result, target: "_blank"
+      flash[:success] = "The item was pushed successfully. #{target_link}"
     end
     redirect_to media_object_path(@media_object.id)
   end

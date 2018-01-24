@@ -11,53 +11,58 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
-# require 'rest-client'
 
 module Avalon
   class Intercom
-    @path = Rails.root.join(Settings.intercom.path) if Settings.intercom
 
     def self.avalons
-      avalons = {}
-      if File.file?(@path)
-        yaml = YAML.safe_load(File.read(@path))
-        avalons = yaml if yaml.present?
-      end
-      avalons
+      Settings.intercom
     end
 
-    def self.user_collections(user, avalon = "default")
-      target = avalons[avalon]
-      return [] unless target.present?
-      target.symbolize_keys!
-      uri = URI.join(target[:url], 'admin/collections.json')
-      uri.query = "user=#{user}"
-      resp = RestClient::Request.execute(
-        method: :get,
-        url: uri.to_s,
-        timeout: nil,
-        open_timeout: nil,
-        headers: { content_type: :json, accept: :json, :'Avalon-Api-Key' => target[:api_token] },
-        verify_ssl: false
-      )
-      JSON.parse(resp.body)
+    def initialize(user, avalon = "default")
+      @user = user
+      @avalon = avalons[avalon].symbolize_keys!
+      @user_collections = nil
     end
 
-    def self.push_media_object(media_object, collection_id, avalon = "default")
-      target = avalons[avalon].symbolize_keys
-      uri = URI.join(target[:url], 'media_objects.json')
+    def user_collections
+      @user_collections ||= get_user_collections
+    end
+
+    def push_media_object(media_object, collection_id)
+      return [] unless @avalon.present?
+      uri = URI.join(@avalon[:url], 'media_objects.json')
       payload = media_object.to_ingest_api_hash
       payload[:collection_id] = collection_id
-      payload[:import_bib_record] = target[:import_bib_record]
-      payload[:publish] = target[:publish]
+      payload[:import_bib_record] = @avalon[:import_bib_record]
+      payload[:publish] = @avalon[:publish]
       resp = RestClient::Request.execute(
         method: :post,
         url: uri.to_s,
         payload: payload.to_json,
-        headers: { content_type: :json, accept: :json, :'Avalon-Api-Key' => target[:api_token] },
+        headers: { content_type: :json, accept: :json, :'Avalon-Api-Key' => @avalon[:api_token] },
         verify_ssl: false
       )
-      JSON.parse(resp.body)
+      result = JSON.parse(resp.body)
+      result['id'].present? ? URI.join(Avalon::Intercom.avalons['default']['url'], 'media_objects/', result['id']) : result
     end
   end
+
+  private
+
+  def get_user_collections
+    return [] unless @avalon.present?
+    uri = URI.join(@avalon[:url], 'admin/collections.json')
+    uri.query = "user=#{@user}"
+    resp = RestClient::Request.execute(
+      method: :get,
+      url: uri.to_s,
+      timeout: nil,
+      open_timeout: nil,
+      headers: { content_type: :json, accept: :json, :'Avalon-Api-Key' => target[:api_token] },
+      verify_ssl: false
+    )
+    JSON.parse(resp.body)
+  end
+
 end
