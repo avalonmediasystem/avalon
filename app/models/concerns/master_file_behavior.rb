@@ -78,7 +78,7 @@ module MasterFileBehavior
   def display_title
     mf_title = structuralMetadata.section_title unless structuralMetadata.blank?
     mf_title ||= title if title.present?
-    mf_title ||= file_location.split("/").last if file_location.present? && (media_object.ordered_master_files.to_a.size > 1)
+    mf_title ||= file_location.split("/").last if file_location.present? && (media_object.master_file_ids.size > 1)
     mf_title.blank? ? nil : mf_title
   end
 

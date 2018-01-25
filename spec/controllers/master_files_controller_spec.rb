@@ -225,7 +225,8 @@ describe MasterFilesController do
 
   describe "#embed" do
     let!(:master_file) {FactoryGirl.create(:master_file)}
-    let(:media_object) { instance_double('MediaObject', title: 'Media Object', ordered_master_files: [master_file]) }
+    let(:media_object) { instance_double('MediaObject', title: 'Media Object',
+      ordered_master_files: [master_file], master_file_ids: [master_file.id]) }
     before do
       allow_any_instance_of(MasterFile).to receive(:media_object).and_return(media_object)
       disableCanCan!
