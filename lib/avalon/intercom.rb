@@ -14,7 +14,6 @@
 
 module Avalon
   class Intercom
-
     def initialize(user, avalon = 'default')
       @user = user
       @avalon = Settings.intercom[avalon]
@@ -22,47 +21,48 @@ module Avalon
     end
 
     def user_collections
-      @user_collections ||= get_user_collections
+      @user_collections ||= fetch_user_collections
     end
 
     def push_media_object(media_object, collection_id, include_structure = true)
       return [] unless @avalon.present?
-      uri = URI.join(@avalon[:url], 'media_objects.json')
-      payload = media_object.to_ingest_api_hash(include_structure)
-      payload[:collection_id] = collection_id
-      payload[:import_bib_record] = @avalon[:import_bib_record]
-      payload[:publish] = @avalon[:publish]
       begin
         resp = RestClient::Request.execute(
           method: :post,
-          url: uri.to_s,
-          payload: payload.to_json,
+          url: URI.join(@avalon[:url], 'media_objects.json').to_s,
+          payload: build_payload(media_object, collection_id, include_structure),
           headers: { content_type: :json, accept: :json, :'Avalon-Api-Key' => @avalon[:api_token] },
           verify_ssl: false
         )
-        result = { link: URI.join(@avalon[:url], 'media_objects/', JSON.parse(resp.body)['id']).to_s }
+        { link: URI.join(@avalon[:url], 'media_objects/', JSON.parse(resp.body)['id']).to_s }
       rescue StandardError => e
-        result = { status: e.response.code, message: e.message }
+        { status: e.response.code, message: e.message }
       end
-      result
     end
 
     private
 
-    def get_user_collections
-      return [] unless @avalon.present?
-      uri = URI.join(@avalon[:url], 'admin/collections.json')
-      uri.query = "user=#{@user}"
-      resp = RestClient::Request.execute(
-        method: :get,
-        url: uri.to_s,
-        timeout: nil,
-        open_timeout: nil,
-        headers: { content_type: :json, accept: :json, :'Avalon-Api-Key' => @avalon[:api_token] },
-        verify_ssl: false
-      )
-      JSON.parse(resp.body).map{ |c| c.slice('id', 'name') }.sort_by{ |c| c["name"] }
-    end
-  end
+      def build_payload(media_object, collection_id, include_structure)
+        payload = media_object.to_ingest_api_hash(include_structure)
+        payload[:collection_id] = collection_id
+        payload[:import_bib_record] = @avalon[:import_bib_record]
+        payload[:publish] = @avalon[:publish]
+        payload.to_json
+      end
 
+      def fetch_user_collections
+        return [] unless @avalon.present?
+        uri = URI.join(@avalon[:url], 'admin/collections.json')
+        uri.query = "user=#{@user}"
+        resp = RestClient::Request.execute(
+          method: :get,
+          url: uri.to_s,
+          timeout: nil,
+          open_timeout: nil,
+          headers: { content_type: :json, accept: :json, :'Avalon-Api-Key' => @avalon[:api_token] },
+          verify_ssl: false
+        )
+        JSON.parse(resp.body).map { |c| c.slice('id', 'name') }.sort_by { |c| c["name"] }
+      end
+  end
 end

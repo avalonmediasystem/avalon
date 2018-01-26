@@ -13,9 +13,9 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 module MediaObjectIntercom
-  def to_ingest_api_hash(include_structure=true)
+  def to_ingest_api_hash(include_structure = true)
     {
-      files: ordered_master_files.to_a.collect{ |mf| mf.to_ingest_api_hash include_structure },
+      files: ordered_master_files.to_a.collect { |mf| mf.to_ingest_api_hash include_structure },
       fields:
         {
           duration: duration,

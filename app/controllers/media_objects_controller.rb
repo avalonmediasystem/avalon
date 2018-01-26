@@ -64,7 +64,7 @@ class MediaObjectsController < ApplicationController
       session[:intercom_collections] = collections
     end
     collections.each do |c|
-      c['default'] = c['id']==session[:intercom_collection]
+      c['default'] = c['id'] == session[:intercom_collection]
     end
     respond_to do |format|
       format.json do
@@ -78,12 +78,12 @@ class MediaObjectsController < ApplicationController
       intercom = Avalon::Intercom.new(user_key)
       collections = intercom.user_collections
       session[:intercom_collections] = collections
-      if collections.collect{ |c| c['id'] }.include? params[:collection_id]
+      if collections.collect { |c| c['id'] }.include? params[:collection_id]
         session[:intercom_collection] = params[:collection_id]
         result = intercom.push_media_object(@media_object, params[:collection_id], params[:include_structure] == 'true')
         if result[:link].present?
           target_link = view_context.link_to('See it here.', result[:link], target: '_blank')
-          flash[:success] = "The item was pushed successfully. #{target_link}".html_safe
+          flash[:success] = view_context.safe_join(["The item was pushed successfully. ", target_link])
         else
           flash[:alert] = "There was an error pushing the item. (#{result[:status]}: #{result[:message]})"
         end
