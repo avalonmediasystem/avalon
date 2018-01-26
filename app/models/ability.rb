@@ -157,6 +157,11 @@ class Ability
       cannot :destroy, Admin::Collection do |collection, other_user_collections=[]|
         (not full_login?) || !@user.in?(collection.managers)
       end
+
+      can :intercom_push, MediaObject do |media_object|
+        # anyone who can read a media_object can also push it
+        can? :read, media_object
+      end
     end
   end
 

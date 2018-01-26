@@ -19,31 +19,36 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h3 class='modal-title'><%= Avalon::Intercom.get_avalons['default']['push_label'] %></h3>
+        <h3 class='modal-title'><%= Settings.intercom['default']['push_label'] %></h3>
       </div>
       <div class="modal-body">
-        <%= form_for @media_object, url: {action: "intercom_push"} do |f| %>
-          <div class="form-group">
-            <label for "collection_id">Choose Target Collection:</label>
-            <select required name="collection_id" id="collection_id" class="form-control"></select>
+        <div class="form-group">
+          <label for "collection_id">Choose Target Collection:</label>
+          <div class="input-group">
+            <select required name="collection_id" id="collection_id" class="form-control" form="intercom_push_form"></select>
+            <span class="input-group-btn">
+              <button class="btn btn-secondary" title="Refresh list" onclick="getCollections(true);"><i class="fa fa-refresh"></i></button>
+            </span>
           </div>
+        </div>
+        <%= form_for @media_object, url: {action: "intercom_push"}, html: { id: 'intercom_push_form' } do |f| %>
           <div class="form-group">
             <label for "include_structure_1">Include Structural Metadata?</label>
             <div class="form-check">
               <label class="form-check-label">
-                <input class="form-check-input" type="radio" name="include_structure" id="include_structure_1" value="true" checked>
+                <input class="form-check-input" type="radio" name="include_structure" id="include_structure_1" value="true" checked form="intercom_push_form">
                 Yes, include structure.
               </label>
             </div>
             <div class="form-check">
               <label class="form-check-label">
-                <input class="form-check-input" type="radio" name="include_structure" id="include_structure_2" value="false">
+                <input class="form-check-input" type="radio" name="include_structure" id="include_structure_2" value="false" form="intercom_push_form">
                 No, do not include structure.
               </label>
             </div>
           </div>
           <div class="form-group">
-            <button class="btn btn-primary">Push</button>
+            <button class="btn btn-primary" form="intercom_push_form" data-loading-text="<i class='fa fa-spinner fa-spin '></i> Pushing" id="intercom_push_submit_button">Push</button>
 	          <button data-dismiss="modal" aria-hidden="true" class="btn btn-danger">Cancel</button>
         <% end %>
       </div>
@@ -52,28 +57,42 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 <% content_for :page_scripts do %>
   <script>
+    $('#intercom_push_submit_button').click( function (e) {
+      $(e.target).button('loading');
+    })
     $('#intercom_push').on('shown.bs.modal', function(e){
+      getCollections(false);
+    })
+    function getCollections(force){
       modal = $('#intercom_push')
       select = modal.find('#collection_id')
-      select.find("option").remove();
-      select.append('<option value="" disabled="disabled" selected="selected">Fetching Collections from Target...</option>')
-      $.ajax({
-        type: "GET",
-        url: "<%= intercom_collections_media_objects_path %>",
-        format: 'json',
-        data: {},
-        success: function(result) {
-          select.find("option").remove();
-          $.each(result, function(i,c){
-            select.append($('<option></option')
-                  .attr("value",c['id'])
-                  .text(c['name']))
-          })
-        },
-        error: function(result) {
-          $('#intercom_push #collection_id').find('option').text('There was an error communicating with the target.')
-        }
-      });
-    })
+      if (force || select.find('option').length === 0) {
+        $('#intercom_push_submit_button').prop('disabled',true)
+        select.find("option").remove();
+        select.append('<option value="" disabled="disabled" selected="selected">Fetching Collections from Target...</option>')
+        $.ajax({
+          type: "GET",
+          url: "<%= intercom_collections_media_objects_path %>",
+          format: 'json',
+          data: { 'reload': force },
+          success: function(result) {
+            select.find("option").remove();
+            $.each(result, function(i,c){
+              var option = $('<option></option')
+                    .attr("value",c['id'])
+                    .text(c['name'])
+              if (c['default']){
+                option.prop('selected',true);
+              }
+              select.append(option)
+            })
+            $('#intercom_push_submit_button').prop('disabled',false)
+          },
+          error: function(result) {
+            $('#intercom_push #collection_id').find('option').text('There was an error communicating with the target.')
+          }
+        });
+      }
+    }
   </script>
 <% end %>
