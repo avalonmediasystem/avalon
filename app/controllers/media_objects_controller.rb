@@ -64,7 +64,7 @@ class MediaObjectsController < ApplicationController
       session[:intercom_collections] = collections
     end
     collections.each do |c|
-      c['default'] = c['id'] == session[:intercom_collection]
+      c['default'] = c['id'] == session[:intercom_default_collection]
     end
     respond_to do |format|
       format.json do
@@ -76,19 +76,17 @@ class MediaObjectsController < ApplicationController
   def intercom_push
     if can? :intercom_push, @media_object
       intercom = Avalon::Intercom.new(user_key)
-      collections = intercom.user_collections
+      collections = intercom.user_collections(true)
       session[:intercom_collections] = collections
-      if collections.collect { |c| c['id'] }.include? params[:collection_id]
-        session[:intercom_collection] = params[:collection_id]
-        result = intercom.push_media_object(@media_object, params[:collection_id], params[:include_structure] == 'true')
-        if result[:link].present?
-          target_link = view_context.link_to('See it here.', result[:link], target: '_blank')
-          flash[:success] = view_context.safe_join(["The item was pushed successfully. ", target_link])
-        else
-          flash[:alert] = "There was an error pushing the item. (#{result[:status]}: #{result[:message]})"
-        end
+      result = intercom.push_media_object(@media_object, params[:collection_id], params[:include_structure] == 'true')
+      if result[:link].present?
+        session[:intercom_default_collection] = params[:collection_id]
+        target_link = view_context.link_to('See it here.', result[:link], target: '_blank')
+        flash[:success] = view_context.safe_join(["The item was pushed successfully. ", target_link])
+      elsif result[:status].present?
+        flash[:alert] = "There was an error pushing the item. (#{result[:status]}: #{result[:message]})"
       else
-        flash[:alert] = 'You do not have permission to push to this collection.'
+        flash[:alert] = result[:mesage]
       end
     else
       flash[:alert] = 'You do not have permission to push this media object.'

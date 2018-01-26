@@ -88,6 +88,23 @@ describe MediaObjectsController, type: :controller do
     end
   end
 
+  context "Avalon Intercom methods" do
+    let!(:user_collections) { [{'id' => 'abc123', 'name' => 'Test Collection'}] }
+    describe "#intercom_collections" do
+      before do
+        login_as :user
+      end
+      it "should return collections as json from target" do
+        allow_any_instance_of(Avalon::Intercom).to receive(:user_collections).and_return user_collections
+        get 'intercom_collections', format: 'json'
+        expect(response.status).to eq(200)
+        expect(JSON.parse(response.body)).to eq(user_collections)
+        expect(session['intercom_collections']).to eq(user_collections)
+        expect(session['intercom_default_collection']).to be nil
+      end
+    end
+  end
+
   context "JSON API methods" do
     let!(:collection) { FactoryGirl.create(:collection) }
     let!(:testdir) {'spec/fixtures/'}

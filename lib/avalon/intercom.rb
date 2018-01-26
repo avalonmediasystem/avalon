@@ -20,12 +20,20 @@ module Avalon
       @user_collections = nil
     end
 
-    def user_collections
-      @user_collections ||= fetch_user_collections
+    def user_collections(reload = false)
+      if reload || @user_collections.nil?
+        @user_collections = fetch_user_collections
+      end
+      @user_collections
+    end
+
+    def collection_valid?(collection)
+      @user_collections.collect { |c| c['id'] }.include? collection
     end
 
     def push_media_object(media_object, collection_id, include_structure = true)
-      return [] unless @avalon.present?
+      return { message: 'You are not autorized to push to this collection.' } unless collection_valid? collection_id
+      return { message: 'Avalon intercom target is not configured.'} unless @avalon.present?
       begin
         resp = RestClient::Request.execute(
           method: :post,
@@ -36,7 +44,7 @@ module Avalon
         )
         { link: URI.join(@avalon[:url], 'media_objects/', JSON.parse(resp.body)['id']).to_s }
       rescue StandardError => e
-        { status: e.response.code, message: e.message }
+        { message: e.message, status: e.response.code }
       end
     end
 

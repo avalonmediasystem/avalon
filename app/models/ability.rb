@@ -160,7 +160,7 @@ class Ability
 
       can :intercom_push, MediaObject do |media_object|
         # anyone who can read a media_object can also push it
-        can? :read, media_object
+        can? :edit, media_object
       end
     end
   end
