@@ -86,7 +86,7 @@ class MediaObjectsController < ApplicationController
       elsif result[:status].present?
         flash[:alert] = "There was an error pushing the item. (#{result[:status]}: #{result[:message]})"
       else
-        flash[:alert] = result[:mesage]
+        flash[:alert] = result[:message]
       end
     else
       flash[:alert] = 'You do not have permission to push this media object.'

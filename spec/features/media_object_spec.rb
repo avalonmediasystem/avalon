@@ -1,11 +1,11 @@
 # Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -20,6 +20,17 @@ describe 'MediaObject' do
   before :each do
     @user = FactoryGirl.create(:administrator)
     login_as @user, scope: :user
+  end
+  before :all do
+    Settings.intercom = {
+      'default' => {
+        'url' => 'https://target.avalon.com/',
+        'api_token' => 'a_valid_token',
+        'import_bib_record' => true,
+        'publish' => false,
+        'push_label' => 'Push to Target'
+      }
+    }
   end
   it 'can visit a media object' do
     media_object.save

@@ -88,19 +88,74 @@ describe MediaObjectsController, type: :controller do
     end
   end
 
-  context "Avalon Intercom methods" do
-    let!(:user_collections) { [{'id' => 'abc123', 'name' => 'Test Collection'}] }
-    describe "#intercom_collections" do
+  context 'Avalon Intercom methods' do
+    let!(:target_collections) { [{'id' => 'abc123', 'name' => 'Test Collection'}] }
+    before :all do
+      Settings.intercom = {
+        'default' => {
+          'url' => 'https://target.avalon.com/',
+          'api_token' => 'a_valid_token',
+          'import_bib_record' => true,
+          'publish' => false,
+          'push_label' => 'Push to Target'
+        }
+      }
+    end
+
+    describe '#intercom_collections' do
       before do
         login_as :user
+        allow_any_instance_of(Avalon::Intercom).to receive(:user_collections).and_return target_collections
       end
-      it "should return collections as json from target" do
-        allow_any_instance_of(Avalon::Intercom).to receive(:user_collections).and_return user_collections
+      it 'should return collections as json from target' do
         get 'intercom_collections', format: 'json'
         expect(response.status).to eq(200)
-        expect(JSON.parse(response.body)).to eq(user_collections)
-        expect(session['intercom_collections']).to eq(user_collections)
+        expect(JSON.parse(response.body)).to eq([{'id'=>'abc123', 'name'=>'Test Collection', 'default'=>false}])
+        expect(session['intercom_collections']).to eq(target_collections)
         expect(session['intercom_default_collection']).to be nil
+      end
+      it 'should return collections with default set from session' do
+        session[:intercom_default_collection] = 'abc123'
+        get 'intercom_collections', format: 'json'
+        expect(JSON.parse(response.body)).to eq([{'id'=>'abc123', 'name'=>'Test Collection', 'default'=>true}])
+      end
+    end
+
+    describe '#intercom_push' do
+      let(:media_object) { FactoryGirl.create(:media_object) }
+      let(:master_file_with_structure) { FactoryGirl.create(:master_file, :with_structure, media_object: media_object) }
+      let(:target_link) { { link: 'http://link.to/media_object' } }
+      let(:error_status) { { message: 'Not authorized', status: 401 } }
+      let(:media_object_permission) { 'You do not have permission to push this media object.' }
+      let(:collection_permission) { 'You are not autorized to push to this collection.' }
+      before do
+        login_as(:administrator)
+        session[:intercom_collections] = {}
+        session[:intercom_default_collection] = ''
+        media_object.ordered_master_files = [master_file_with_structure]
+        allow_any_instance_of(Avalon::Intercom).to receive(:fetch_user_collections).and_return target_collections
+      end
+      it 'should refetch user collections from target and set session' do
+        allow_any_instance_of(Avalon::Intercom).to receive(:push_media_object).and_return target_link
+        expect_any_instance_of(Avalon::Intercom).to receive(:fetch_user_collections).once
+        patch :intercom_push, id: media_object.id, collection_id: target_collections.first['id']
+        expect(session[:intercom_collections]).to eq(target_collections)
+        expect(session[:intercom_default_collection]).to eq(target_collections.first['id'])
+      end
+      it 'should return error message' do
+        allow_any_instance_of(Avalon::Intercom).to receive(:push_media_object).and_return error_status
+        patch :intercom_push, id: media_object.id, collection_id: target_collections.first['id']
+        expect(flash[:alert]).to eq('There was an error pushing the item. (401: Not authorized)')
+      end
+      it 'should return no permission for item' do
+        allow_any_instance_of(Avalon::Intercom).to receive(:push_media_object).and_return({ message: media_object_permission })
+        patch :intercom_push, id: media_object.id, collection_id: target_collections.first['id']
+        expect(flash[:alert]).to eq(media_object_permission)
+      end
+      it 'should return no permission for collection' do
+        allow_any_instance_of(Avalon::Intercom).to receive(:push_media_object).and_return({ message: collection_permission })
+        patch :intercom_push, id: media_object.id, collection_id: target_collections.first['id']
+        expect(flash[:alert]).to eq(collection_permission)
       end
     end
   end
@@ -543,6 +598,17 @@ describe MediaObjectsController, type: :controller do
 
   describe "#show" do
     let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
+    before :all do
+      Settings.intercom = {
+        'default' => {
+          'url' => 'https://target.avalon.com/',
+          'api_token' => 'a_valid_token',
+          'import_bib_record' => true,
+          'publish' => false,
+          'push_label' => 'Push to Target'
+        }
+      }
+    end
 
     context "Known items should be retrievable" do
       context 'with fedora 3 pid' do
