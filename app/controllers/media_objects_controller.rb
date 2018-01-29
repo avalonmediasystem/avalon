@@ -432,7 +432,8 @@ class MediaObjectsController < ApplicationController
 
   def master_file_presenter
     SpeedyAF::Base.where("isPartOf_ssim:#{@media_object.id}",
-      order: -> { @media_object.indexed_master_file_ids }, defaults: { permalink: nil })
+                         order: -> { @media_object.indexed_master_file_ids },
+                         defaults: { permalink: nil, title: nil })
   end
 
   def load_master_files(mode = :rw)

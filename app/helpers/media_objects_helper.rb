@@ -125,7 +125,7 @@ module MediaObjectsHelper
      end
 
      def hide_sections? sections
-       sections.blank? or (sections.length == 1 and sections.first.structuralMetadata.empty?)
+       sections.blank? or (sections.length == 1 and !sections.first.has_structuralMetadata?)
      end
 
      def structure_html section, index, show_progress
@@ -154,7 +154,7 @@ EOF
        duration = section.duration.blank? ? '' : " (#{milliseconds_to_formatted_time(section.duration.to_i)})"
 
        # If there is no structural metadata associated with this master_file return the stream info
-       if section.structuralMetadata.empty?
+       unless section.has_structuralMetadata?
          label = "#{index+1}. #{stream_label_for(section)} #{duration}".html_safe
          link = link_to label, share_link_for( section ), id: 'section-title-' + section.id, data: data, class: 'playable wrap' + (current ? ' current-stream current-section' : '')
          return "#{headeropen}<ul><li class='stream-li'>#{link}</li></ul>#{headerclose}"
