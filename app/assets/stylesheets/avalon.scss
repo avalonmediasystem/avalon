@@ -853,10 +853,10 @@ $accordionPadding: 20px;
   }
 }
 
-@mixin current-stream-indicator($margin) {
+@mixin current-stream-indicator($margin, $left: -6px) {
   @extend #{'.fa','.fa-arrow-circle-right'};
   position: relative;
-  left: -6px;
+  left: $left;
   margin-left: $margin;
 }
 
@@ -1103,8 +1103,12 @@ h5.panel-title {
   padding-left: 2rem;
   li {
     margin-top: .2em;
+    margin-left: 21px;
     float: left;
     width:100%;
+    &.now_playing:before {
+      @include current-stream-indicator(-16px, -24px);
+    }
 
     i {
       margin-right: 3px;
@@ -1115,6 +1119,7 @@ h5.panel-title {
   }
   .pull-right {
     text-align:right;
+    margin-right: 21px;
   }
 }
 #section-label {
