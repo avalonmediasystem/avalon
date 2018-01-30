@@ -108,10 +108,16 @@ module MediaObjectsHelper
        quality
      end
 
-     def parse_hour_min_sec s
+     FLOAT_PATTERN = Regexp.new(/^\d+([.]\d*)?$/).freeze
+
+     def parse_hour_min_sec(s)
        return nil if s.nil?
        smh = s.split(':').reverse
-       (Float(smh[0]) rescue 0) + 60*(Float(smh[1]) rescue 0) + 3600*(Float(smh[2]) rescue 0)
+       (0..2).each do |i|
+         # Use Regexp.match? when we drop ruby 2.3 support
+         smh[i] = smh[i] =~ FLOAT_PATTERN ? Float(smh[i]) : 0
+       end
+       smh[0] + (60 * smh[1]) + (3600 * smh[2])
      end
 
      def parse_media_fragment fragment
@@ -220,8 +226,8 @@ EOF
          return "<li>#{node.attribute('label')}</li><li><ul>#{contents}</ul></li>", tracknumber
        elsif ['SPAN','ITEM'].include? node.name.upcase
          tracknumber += 1
-         label = "#{tracknumber}. #{node.attribute('label').value} (#{get_duration node, section})"
-         start,stop = get_xml_media_fragment node, section
+         start, stop = get_xml_media_fragment node, section
+         label = "#{tracknumber}. #{node.attribute('label').value} (#{get_duration_from_fragment(start, stop)})"
          native_url = "#{id_section_media_object_path(@media_object, section.id)}?t=#{start},#{stop}"
          url = "#{share_link_for( section )}?t=#{start},#{stop}"
          segment_id = "#{section.id}-#{tracknumber}"
@@ -240,5 +246,9 @@ EOF
      def get_duration node, section
        start,stop = get_xml_media_fragment node, section
        milliseconds_to_formatted_time((stop.to_i-start.to_i)*1000)
+     end
+
+     def get_duration_from_fragment(start, stop)
+       milliseconds_to_formatted_time((stop.to_i - start.to_i) * 1000)
      end
 end
