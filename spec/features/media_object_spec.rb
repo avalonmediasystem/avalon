@@ -21,17 +21,6 @@ describe 'MediaObject' do
     @user = FactoryGirl.create(:administrator)
     login_as @user, scope: :user
   end
-  before :all do
-    Settings.intercom = {
-      'default' => {
-        'url' => 'https://target.avalon.com/',
-        'api_token' => 'a_valid_token',
-        'import_bib_record' => true,
-        'publish' => false,
-        'push_label' => 'Push to Target'
-      }
-    }
-  end
   it 'can visit a media object' do
     media_object.save
     visit media_object_url(media_object)

@@ -27,6 +27,10 @@ describe Avalon::Intercom do
       }
     }
   end
+  after :each do
+    Settings.intercom = nil
+  end
+
   let!(:username) { 'test_username' }
   let!(:user_collections) {
     [{"id"=>"cupcake_collection",

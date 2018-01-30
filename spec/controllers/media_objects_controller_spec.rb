@@ -101,6 +101,9 @@ describe MediaObjectsController, type: :controller do
         }
       }
     end
+    after :all do
+      Settings.intercom = nil
+    end
 
     describe '#intercom_collections' do
       before do
@@ -598,17 +601,6 @@ describe MediaObjectsController, type: :controller do
 
   describe "#show" do
     let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
-    before :all do
-      Settings.intercom = {
-        'default' => {
-          'url' => 'https://target.avalon.com/',
-          'api_token' => 'a_valid_token',
-          'import_bib_record' => true,
-          'publish' => false,
-          'push_label' => 'Push to Target'
-        }
-      }
-    end
 
     context "Known items should be retrievable" do
       context 'with fedora 3 pid' do
