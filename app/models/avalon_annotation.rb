@@ -1,11 +1,11 @@
 # Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -21,9 +21,9 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
   alias_method :title=, :label=
 
   validates :master_file, :title, :start_time, presence: true
-  validates :start_time, numericality: { 
-    greater_than_or_equal_to: 0, 
-    less_than_or_equal_to: Proc.new { |a| a.max_time }, 
+  validates :start_time, numericality: {
+    greater_than_or_equal_to: 0,
+    less_than_or_equal_to: Proc.new { |a| a.max_time },
     message: "must be between 0 and end of section"
   }
 
@@ -58,11 +58,16 @@ class AvalonAnnotation < ActiveAnnotations::Annotation
 
   # Sets the class variable @master_file by finding the master referenced in the source uri
   def master_file
-    @master_file ||= MasterFile.find(CGI::unescape(self.source.split('/').last)) rescue nil if self.source
+    @master_file ||= MasterFile.find(master_file_id) if master_file_id
+  end
+
+  def master_file_id
+    @master_file_id ||= CGI::unescape(self.source.split('/').last) rescue nil if self.source
   end
 
   def master_file=(value)
     @master_file = value
+    @master_file_id = @master_file.id
     self.source = @master_file
     @master_file
   end

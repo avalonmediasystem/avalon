@@ -110,6 +110,8 @@ class PlaylistsController < ApplicationController
   # GET /playlists/1
   def show
     authorize! :read, @playlist
+    @clip_map = @playlist.clips.index_by{ |c|c.id }
+    @master_file_map =  Hash[@clip_map.map { |clip_id, clip| [clip_id, SpeedyAF::Base.find(clip.master_file_id)] }]
   end
 
   # GET /playlists/new

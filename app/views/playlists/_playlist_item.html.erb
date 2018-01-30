@@ -15,7 +15,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 %>
 <% item = @playlist.items[playlist_item_counter] %>
 <% item_class = (item == @current_playlist_item)? 'now_playing' : 'queue' %>
-<% clip = clip_map[item.clip_id] %>
+<% clip = @clip_map[item.clip_id] %>
 <% if clip.master_file.present? && can?(:read, clip.master_file.media_object) %>
   <% item_type = (clip.master_file.file_format=='Moving image')? 'fa-film' : 'fa-music' %>
   <li class="<%= item_class %>" is_video="<%= clip.master_file.is_video? %>" data-playlist-item-id="<%= item.id %>">

@@ -49,11 +49,10 @@ Unless required by applicable law or agreed to in writing, software distributed
 </div>
 
 <ol class="side-playlist">
-  <% clip_map = @playlist.clips.index_by{|c|c.id} %>
   <% if is_mejs_2? %>
-    <%= render partial: 'playlist_item', collection: @playlist.items, locals: { clip_map: clip_map } %>
+    <%= render partial: 'playlist_item', collection: @playlist.items %>
   <% else %>
-    <%= render partial: 'mejs4_playlist_item', collection: @playlist.items, locals: { clip_map: clip_map } %>
+    <%= render partial: 'mejs4_playlist_item', collection: @playlist.items %>
   <% end %>
 </ol>
 
