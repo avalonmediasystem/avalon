@@ -122,6 +122,7 @@ class MEJSPlayer {
    * @return {void}
    */
   getNewStreamAjax(id, url, playlistItemsT) {
+    $('.media-show-page').removeClass('ready-to-play')
     $.ajax({
       url: url + '/stream',
       dataType: 'json',
@@ -149,6 +150,7 @@ class MEJSPlayer {
   handleCanPlay() {
     this.mediaElement.removeEventListener('canplay');
     // Do we play a specified range of the media file?
+    $('.media-show-page').addClass('ready-to-play')
     if (this.switchPlayerHelper.active) {
       this.playRange();
     }
@@ -234,7 +236,7 @@ class MEJSPlayer {
         : parseFloat(this.segmentsMap[target.id].fragmentbegin);
       this.mediaElement.setCurrentTime(time);
     }
-    
+
     this.mejsUtility.showControlsBriefly(this.player);
   }
 

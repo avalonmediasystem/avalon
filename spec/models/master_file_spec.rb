@@ -402,6 +402,7 @@ describe MasterFile do
 
       it 'should have an appropriate title for the embed code with no label (more than 1 section)' do
         allow(subject.media_object).to receive(:ordered_master_files).and_return([subject,subject])
+        allow(subject.media_object).to receive(:master_file_ids).and_return([subject.id,subject.id])
         expect( subject.embed_title ).to eq( 'test - video.mp4' )
       end
 

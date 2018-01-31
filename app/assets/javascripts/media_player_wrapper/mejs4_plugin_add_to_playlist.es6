@@ -110,14 +110,18 @@ Object.assign(MediaElementPlayer.prototype, {
     addToPlayListObj.resetForm.apply(addToPlayListObj);
 
     // Remove Add / Cancel button event listeners
-    addToPlayListObj.addButton.removeEventListener(
-      'click',
-      addToPlayListObj.bindHandleAdd
-    );
-    addToPlayListObj.cancelButton.removeEventListener(
-      'click',
-      addToPlayListObj.bindHandleCancel
-    );
+    if (addToPlayListObj.addButton !== null) {
+      addToPlayListObj.addButton.removeEventListener(
+        'click',
+        addToPlayListObj.bindHandleAdd
+      );
+    }
+    if (addToPlayListObj.cancelButton !== null) {
+      addToPlayListObj.cancelButton.removeEventListener(
+        'click',
+        addToPlayListObj.bindHandleCancel
+      );
+    }
   },
 
   // Other optional public methods (all documented according to JSDoc specifications)
@@ -201,6 +205,25 @@ Object.assign(MediaElementPlayer.prototype, {
       }
 
       return defaultTitle;
+    },
+
+    /**
+     * Checks whether the form elements which make up the Add To Playlist form are
+     * present in the DOM.  If no playlists have been created, the values will be 'null'.
+     * If playlists have been created, then the values will be DOM element references.
+     * @function formHasDefinedInputs
+     * @return {Boolean} Does the Add to Playlist form have DOM element inputs?
+     */
+    formHasDefinedInputs: function() {
+      let hasInputs = true;
+      const formInputs = this.formInputs;
+
+      for (let prop in formInputs) {
+        if (!formInputs[prop]) {
+          hasInputs = false;
+        }
+      }
+      return hasInputs;
     },
 
     /**
@@ -312,7 +335,7 @@ Object.assign(MediaElementPlayer.prototype, {
     /**
      * Handle click events on the Sections and structural metadata links.
      * @function handleSectionLinkClick
-     * @param  {MouseEvent} e [description]
+     * @param  {MouseEvent} e
      * @return {void}
      */
     handleSectionLinkClick: function(e) {
@@ -323,7 +346,7 @@ Object.assign(MediaElementPlayer.prototype, {
         // because if it's a different player type (ie. say audio, then the form
         // will be reset automatically)
         const incomingIsVideo = e.target.dataset['isVideo'] === 'true';
-        if (incomingIsVideo === addToPlayListObj.isVideo) {
+        if (addToPlayListObj.formHasDefinedInputs() && incomingIsVideo === addToPlayListObj.isVideo) {
           addToPlayListObj.populateFormValues.apply(this);
         }
       }
@@ -371,7 +394,7 @@ Object.assign(MediaElementPlayer.prototype, {
       let formInputs = t.formInputs;
 
       for (let prop in formInputs) {
-        if (prop !== 'playlist') {
+        if (formInputs[prop] !== null && prop !== 'playlist') {
           formInputs[prop].value = '';
         }
       }

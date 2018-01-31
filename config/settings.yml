@@ -46,7 +46,7 @@ streaming:
   content_path: '/srv/avalon/content'
   rtmp_base: 'rtmp://localhost/avalon'
   http_base: 'http://localhost:3000/streams'
-  default_quality: 'low'
+  default_quality: 'auto'
 groups:
   system_groups: [administrator, group_manager, manager]
 master_file_management:
