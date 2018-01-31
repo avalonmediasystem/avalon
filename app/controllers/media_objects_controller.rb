@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'avalon/controller/controller_behavior'
+require 'avalon/intercom'
 
 class MediaObjectsController < ApplicationController
   include Avalon::Workflow::WorkflowControllerBehavior
@@ -22,7 +23,7 @@ class MediaObjectsController < ApplicationController
 
   before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details]
   before_action :authenticate_api!, only: [:show, :create, :json_update], if: proc { request.format.json? }
-  load_and_authorize_resource except: [:create, :json_update, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist]
+  load_and_authorize_resource except: [:create, :json_update, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections]
   # authorize_resource only: [:create, :update]
 
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
@@ -52,6 +53,45 @@ class MediaObjectsController < ApplicationController
 
   def confirm_remove
     raise CanCan::AccessDenied unless Array(params[:id]).any? { |id| current_ability.can? :destroy, MediaObject.find(id) }
+  end
+
+  def intercom_collections
+    reload = params['reload'] == 'true'
+    collections = session[:intercom_collections]
+    if reload || collections.blank?
+      intercom = Avalon::Intercom.new(user_key)
+      collections = intercom.user_collections
+      session[:intercom_collections] = collections
+    end
+    collections.each do |c|
+      c['default'] = c['id'] == session[:intercom_default_collection]
+    end
+    respond_to do |format|
+      format.json do
+        render json: collections.to_json
+      end
+    end
+  end
+
+  def intercom_push
+    if can? :intercom_push, @media_object
+      intercom = Avalon::Intercom.new(user_key)
+      collections = intercom.user_collections(true)
+      session[:intercom_collections] = collections
+      result = intercom.push_media_object(@media_object, params[:collection_id], params[:include_structure] == 'true')
+      if result[:link].present?
+        session[:intercom_default_collection] = params[:collection_id]
+        target_link = view_context.link_to('See it here.', result[:link], target: '_blank')
+        flash[:success] = view_context.safe_join(["The item was pushed successfully. ", target_link])
+      elsif result[:status].present?
+        flash[:alert] = "There was an error pushing the item. (#{result[:status]}: #{result[:message]})"
+      else
+        flash[:alert] = result[:message]
+      end
+    else
+      flash[:alert] = 'You do not have permission to push this media object.'
+    end
+    redirect_to media_object_path(@media_object.id)
   end
 
   def new

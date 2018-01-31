@@ -29,6 +29,7 @@ class MasterFile < ActiveFedora::Base
   include Identifier
   include MigrationTarget
   include MasterFileBehavior
+  include MasterFileIntercom
 
   belongs_to :media_object, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
   has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf, dependent: :destroy
