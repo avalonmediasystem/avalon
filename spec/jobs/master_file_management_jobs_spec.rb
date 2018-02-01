@@ -47,6 +47,17 @@ describe MasterFileManagementJobs do
       end
     end
 
+    describe "move_masterfile with space in filename" do
+      let(:location) { "/path/to/old/file with space.mp4" }
+      it "should move masterfile with space in filename" do
+        newpath = "/path/to/new/file with space.mp4"
+        MasterFileManagementJobs::Move.perform_now(master_file.id, newpath)
+        expect(File.exists? location).to be false
+        expect(File.exists? newpath).to be true
+        expect(newpath).to eq MasterFile.find(master_file.id).file_location
+      end
+    end
+
     after :each do
       FakeFS.deactivate!
     end
