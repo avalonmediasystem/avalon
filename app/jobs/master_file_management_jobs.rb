@@ -43,7 +43,6 @@ module MasterFileManagementJobs
 
     def file_to_file(source, dest)
     	FileUtils.mkdir_p File.dirname(dest.location) unless File.exist? File.dirname(dest.location)
-#      byebug
     	FileUtils.mv source.location, dest.location
     end
 
@@ -56,7 +55,6 @@ module MasterFileManagementJobs
       if old_locator.exists?
         new_locator = FileLocator.new(newpath)
         copy_method = "#{old_locator.uri.scheme}_to_#{new_locator.uri.scheme}".to_sym
-#        byebug
         send(copy_method, old_locator, new_locator)
         masterfile.file_location = newpath
       	masterfile.save
