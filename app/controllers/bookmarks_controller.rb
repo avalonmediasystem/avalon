@@ -1,11 +1,11 @@
 # Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -37,6 +37,8 @@ class BookmarksController < CatalogController
 
   self.add_show_tools_partial( :add_to_playlist, callback: :add_to_playlist_action )
 
+  self.add_show_tools_partial( :intercom_push, callback: :intercom_push_action, if: Proc.new { |context, config, options| context.user_can? :intercom_push } )
+
   before_filter :verify_permissions, only: :index
 
   #HACK next two methods are a hack for problems in the puppet VM tomcat/solr
@@ -63,6 +65,7 @@ class BookmarksController < CatalogController
   def verify_permissions
     @response, @documents = action_documents
     @valid_user_actions = [:delete, :unpublish, :publish, :move, :update_access_control, :add_to_playlist]
+    @valid_user_actions += [:intercom_push] if Settings.intercom.present?
     mos = @documents.collect { |doc| MediaObject.find( doc.id ) }
     @documents.each do |doc|
       mo = MediaObject.find(doc.id)
@@ -71,6 +74,7 @@ class BookmarksController < CatalogController
       @valid_user_actions.delete :publish if @valid_user_actions.include? :publish and cannot? :update, mo
       @valid_user_actions.delete :move if @valid_user_actions.include? :move and cannot? :update, mo
       @valid_user_actions.delete :update_access_control if @valid_user_actions.include? :update_access_control and cannot? :update_access_control, mo
+      @valid_user_actions.delete :intercom_push if @valid_user_actions.include? :intercom_push and cannot? :intercom_push, mo
     end
   end
 
@@ -194,6 +198,32 @@ class BookmarksController < CatalogController
       flash[:success] = t("blacklight.move.success", count: success_ids.count, collection_name: collection.name) if success_ids.count > 0
       flash[:alert] = "#{t('blacklight.move.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
       BulkActionJobs::Move.perform_later success_ids, params
+    end
+  end
+
+  def intercom_push_action documents
+    errors = []
+    success_ids = []
+    intercom = Avalon::Intercom.new(current_user.user_key)
+    collections = intercom.user_collections(true)
+    session[:intercom_collections] = collections
+    if intercom.collection_valid?(params[:collection_id])
+      Array(documents.map(&:id)).each do |id|
+        media_object = MediaObject.find(id)
+        if cannot? :intercom_push, media_object
+          errors += ["#{media_object.title} (#{id}) #{t('blacklight.messages.permission_denied')}."]
+        else
+          success_ids << id
+        end
+      end
+      if success_ids.present?
+        session[:intercom_default_collection] = params[:collection_id]
+        BulkActionJobs::IntercomPush.perform_later success_ids, current_user.user_key, params
+        flash[:success] = "Sucessfully started push of #{success_ids.count} media objects."
+      end
+      flash[:alert] = "Failed to push #{errors.count} media objects.</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
+    else
+      flash[:alert] = "You do not have permission to push to this collection."
     end
   end
 end

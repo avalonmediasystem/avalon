@@ -33,6 +33,8 @@ Rails.application.routes.draw do
       post 'unpublish'#, as: :unpublish_bookmarks
       get 'add_to_playlist'
       post 'add_to_playlist'
+      get 'intercom_push'
+      post 'intercom_push'
     end
   end
 
