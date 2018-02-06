@@ -58,6 +58,11 @@ bib_retriever:
   query: rec.id='%s'
 controlled_vocabulary:
   path: config/controlled_vocabulary.yml
+encode_throttling:
+  create_jobs_throttle_threshold: 2
+  create_jobs_spacing: 5
+  update_jobs_throttle_threshold: 3
+  update_jobs_spacing: 10
 auth:
   configuration:
     - :name: Avalon Test Auth

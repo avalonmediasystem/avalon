@@ -4,6 +4,7 @@ git:
 bundler_args: --with postgres aws --without development debug
 services:
   - mysql2
+  - redis-server
 before_install:
   - sudo rm -vf /etc/apt/sources.list.d/*riak*
   - sudo rm -vf /etc/apt/sources.list.d/*hhvm*

@@ -33,6 +33,8 @@ module ActiveEncodeJob
   class Create < ActiveJob::Base
     include ActiveEncodeJob::Core
     queue_as :active_encode_create
+    throttle threshold: Settings.encode_throttling.create_jobs_throttle_threshold, period: Settings.encode_throttling.create_jobs_spacing, drop: false
+
     def perform(master_file_id, input, options)
       mf = MasterFile.find(master_file_id)
       encode = mf.encoder_class.new(input, options.merge({output_key_prefix: "#{mf.id}/"}))
@@ -51,6 +53,8 @@ module ActiveEncodeJob
   class Update < ActiveJob::Base
     include ActiveEncodeJob::Core  #I'm not sure if the error callback is really makes sense here!
     queue_as :active_encode_update
+    throttle threshold: Settings.encode_throttling.update_jobs_throttle_threshold, period: Settings.encode_throttling.update_jobs_spacing, drop: false
+
     def perform(master_file_id)
       Rails.logger.info "Updating encode progress for MasterFile: #{master_file_id}"
       mf = MasterFile.find(master_file_id)
