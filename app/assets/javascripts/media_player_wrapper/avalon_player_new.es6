@@ -36,6 +36,7 @@ class MEJSPlayer {
     this.features = configObj.features || {};
     this.highlightRail = configObj.highlightRail;
     this.playlistItem = configObj.playlistItem || {};
+    this.defaultQuality = configObj.defaultQuality || 'auto';
 
     // Tracks whether we're loading the page or just reloading player
     this.isFirstLoad = true;
@@ -272,7 +273,17 @@ class MEJSPlayer {
       this.mejsUtility.highlightSectionLink();
     }
   }
-
+  /**
+   * MediaElement render error callback function
+   * @function handleError
+   * @param  {Object} error - The error object
+   * @param  {Object} mediaElement - The wrapper that mimics all the native events/properties/methods for all renderers
+   * @param  {Object} originalNode - The original HTML video, audio or iframe tag where the media was loaded originally
+   * @return {void}
+   */
+  handleError(error, mediaElement, originalNode) {
+    console.log("MEJS CREATE ERROR: "+error);
+  }
   /**
    * MediaElement render success callback function
    * @function handleSuccess
@@ -424,9 +435,11 @@ class MEJSPlayer {
       features: this.features,
       poster: currentStreamInfo.poster_image || null,
       success: this.handleSuccess.bind(this),
+      error: this.handleError.bind(this),
       embed_title: currentStreamInfo.embed_title,
       link_back_url: currentStreamInfo.link_back_url,
       qualityText: 'Stream Quality',
+      defaultQuality: this.defaultQuality,
       toggleCaptionsButtonWhenOnlyOne: true
     };
     let promises = [];

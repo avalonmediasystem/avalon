@@ -10,6 +10,7 @@
 var mejs4AvalonPlayer = new MEJSPlayer({
   currentStreamInfo: <%= section_info.to_json.html_safe %>,
   features: ['playpause', 'current', 'progress', 'duration', 'volume', 'tracks', '<%= section_info[:is_video] ? "quality" : "hdToggle" %>', 'linkBack', 'fullscreen'],
-  highlightRail: true
+  highlightRail: true,
+  defaultQuality: '<%= current_quality(section_info) %>'
 });
 </script>

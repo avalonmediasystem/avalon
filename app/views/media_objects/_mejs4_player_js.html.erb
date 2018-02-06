@@ -21,6 +21,7 @@ if (<%= cannot? :create, Playlist %>) {
 var mejs4AvalonPlayer = new MEJSPlayer({
   currentStreamInfo: <%= section_info.to_json.html_safe %>,
   features: mejs4ConfigFeatures,
-  highlightRail: true
+  highlightRail: true,
+  defaultQuality: '<%= current_quality(section_info) %>'
 });
 </script>
