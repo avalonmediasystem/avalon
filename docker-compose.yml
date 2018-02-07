@@ -87,7 +87,8 @@ services:
       - SETTINGS__MATTERHORN__MEDIA_PATH=/masterfiles
       - MEDIAINFO_PATH=/usr/bin/mediainfo
       - RAILS_ENV=development
-      - REDIS_SERVER=redis:6379
+      - SETTINGS__REDIS__HOST=redis
+      - SETTINGS__REDIS__PORT=6379
       - SECRET_KEY_BASE=abcd
       - SMTP_ADDRESS
       - SMTP_AUTHENTICATION
