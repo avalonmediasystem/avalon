@@ -29,6 +29,7 @@ class MEJSPlayer {
     this.mejsUtility = new MEJSUtility();
     this.mejsTimeRailHelper = new MEJSTimeRailHelper();
     this.mejsMarkersHelper = new MEJSMarkersHelper();
+    this.mejsQualityHelper = new MEJSQualityHelper();
 
     // Unpack player configuration object for the new player.
     // This allows for variable params to be sent in.
