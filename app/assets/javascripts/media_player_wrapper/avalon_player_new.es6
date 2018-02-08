@@ -447,6 +447,13 @@ class MEJSPlayer {
       ? [this.playlistItem.playlist_id, this.playlistItem.id]
       : [];
 
+    // Remove quality feature for IE
+    if (!!navigator.userAgent.match(/MSIE /) || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+      defaults.features = defaults.features.filter(
+        e => e !== 'quality'
+      );
+    }
+
     // Remove video player controls/plugins if it's not a video stream
     if (!currentStreamInfo.is_video) {
       defaults.features = defaults.features.filter(
