@@ -35,18 +35,15 @@ module Avalon
 
     config.active_job.queue_adapter = :resque
 
-    if ENV['REDIS_HOST']
-      redis_host = ENV['REDIS_HOST']
-      redis_port = ENV['REDIS_PORT'] || 6379
-
-      config.cache_store = :redis_store, {
-        host: redis_host,
-        port: redis_port,
-        db: 0,
-        namespace: 'avalon'
-      }
-      ActiveJob::TrafficControl.client = Redis.new(config.cache_store[1])
-    end
+    redis_host = Settings.redis.host
+    redis_port = Settings.redis.port || 6379
+    config.cache_store = :redis_store, {
+      host: redis_host,
+      port: redis_port,
+      db: 0,
+      namespace: 'avalon'
+    }
+    ActiveJob::TrafficControl.client = Redis.new(config.cache_store[1])
 
     config.action_dispatch.default_headers = { 'X-Frame-Options' => 'ALLOWALL' }
   end
