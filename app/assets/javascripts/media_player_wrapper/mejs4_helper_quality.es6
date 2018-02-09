@@ -44,7 +44,7 @@ class MEJSQualityHelper {
     $.ajax({
       type: 'POST',
       url: '/media_objects/set_session_quality',
-      data: { quality: e.target.quality },
+      data: { quality: e.target.value },
       dataType: 'json'
     });
   }
