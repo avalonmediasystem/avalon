@@ -17,7 +17,10 @@
  */
 class MEJSQualityHelper {
   constructor() {
-    $(document).on('mejs4handleSuccess', this.addQualitySelectorListeners);
+    $(document).on(
+      'mejs4handleSuccess',
+      this.addQualitySelectorListeners.bind(this)
+    );
   }
 
   /**
@@ -33,18 +36,21 @@ class MEJSQualityHelper {
 
     for (let i = 0, total = radios.length; i < total; i++) {
       const radio = radios[i];
-      radio.addEventListener(
-        'change',
-        mejs4AvalonPlayer.mejsQualityHelper.sendQualitySelection
-      );
+      radio.addEventListener('change', this.updateQualitySelection.bind(this));
     }
   }
 
-  sendQualitySelection(e) {
+  updateQualitySelection(e) {
+    const quality = e.target.value;
+    mejs4AvalonPlayer.defaultQuality = quality;
+    this.sendQualitySelection(quality);
+  }
+
+  sendQualitySelection(quality) {
     $.ajax({
       type: 'POST',
       url: '/media_objects/set_session_quality',
-      data: { quality: e.target.value },
+      data: { quality: quality },
       dataType: 'json'
     });
   }
