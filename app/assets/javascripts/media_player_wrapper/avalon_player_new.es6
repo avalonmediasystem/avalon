@@ -60,6 +60,16 @@ class MEJSPlayer {
       paused: false
     };
 
+    // Initialize switchPlayerHelper for mediafragment, if one exists
+    if (this.currentStreamInfo.t[0] > 0) {
+      this.switchPlayerHelper.active = true;
+      this.switchPlayerHelper.data = {
+        fragmentbegin: this.currentStreamInfo.t[0],
+        fragmentend: this.currentStreamInfo.t[1]
+      };
+      this.switchPlayerHelper.paused = true;
+    }
+
     // Array of all current segments for media object
     this.segmentsMap = this.mejsUtility.createSegmentsMap(
       document.getElementById('accordion'),
@@ -124,7 +134,7 @@ class MEJSPlayer {
    * @return {void}
    */
   getNewStreamAjax(id, url, playlistItemsT) {
-    $('.media-show-page').removeClass('ready-to-play')
+    $('.media-show-page').removeClass('ready-to-play');
     $.ajax({
       url: url + '/stream',
       dataType: 'json',
@@ -152,7 +162,7 @@ class MEJSPlayer {
   handleCanPlay() {
     this.mediaElement.removeEventListener('canplay');
     // Do we play a specified range of the media file?
-    $('.media-show-page').addClass('ready-to-play')
+    $('.media-show-page').addClass('ready-to-play');
     if (this.switchPlayerHelper.active) {
       this.playRange();
     }
@@ -283,7 +293,7 @@ class MEJSPlayer {
    * @return {void}
    */
   handleError(error, mediaElement, originalNode) {
-    console.log("MEJS CREATE ERROR: "+error);
+    console.log('MEJS CREATE ERROR: ' + error);
   }
   /**
    * MediaElement render success callback function
@@ -449,10 +459,11 @@ class MEJSPlayer {
       : [];
 
     // Remove quality feature for IE
-    if (!!navigator.userAgent.match(/MSIE /) || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
-      defaults.features = defaults.features.filter(
-        e => e !== 'quality'
-      );
+    if (
+      !!navigator.userAgent.match(/MSIE /) ||
+      !!navigator.userAgent.match(/Trident.*rv\:11\./)
+    ) {
+      defaults.features = defaults.features.filter(e => e !== 'quality');
     }
 
     // Remove video player controls/plugins if it's not a video stream
