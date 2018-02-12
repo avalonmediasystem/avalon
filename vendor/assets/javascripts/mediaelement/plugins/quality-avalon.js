@@ -16,7 +16,7 @@
   function s(o, u) {
     if (!n[o]) {
       if (!t[o]) {
-        var a = typeof require == 'function' && require;
+        var a = typeof require === 'function' && require;
         if (!u && a) return a(o, !0);
         if (i) return i(o, !0);
         var f = new Error("Cannot find module '" + o + "'");
@@ -39,10 +39,10 @@
     }
     return n[o].exports;
   }
-  var i = typeof require == 'function' && require;
+  var i = typeof require === 'function' && require;
   for (var o = 0; o < r.length; o++) s(r[o]);
   return s;
-})(
+}(
   {
     1: [
       function(_dereq_, module, exports) {
@@ -92,16 +92,12 @@
                 value
               ) {
                 var label = void 0;
-                if (value === 'auto') {
-                  var keyExist = t.keyExist(qualityMap, value);
-                  if (keyExist) {
-                    label = value;
-                  } else {
-                    var keyValue = t.getMapIndex(qualityMap, 0);
-                    label = keyValue.key;
-                  }
-                } else {
+                var keyExist = t.keyExist(qualityMap, value);
+                if (keyExist) {
                   label = value;
+                } else {
+                  var keyValue = t.getMapIndex(qualityMap, 0);
+                  label = keyValue.key;
                 }
                 return label;
               },
@@ -176,7 +172,6 @@
             var inEvents = ['mouseenter', 'focusin'],
               /* Note this line is customized from original plugin - 2017-12-18 */
               outEvents = ['mouseleave', 'blur'],
-
               radios = player.qualitiesButton.querySelectorAll(
                 'input[type="radio"]'
               ),
@@ -364,4 +359,4 @@
   },
   {},
   [1]
-);
+));
