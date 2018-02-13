@@ -49,6 +49,7 @@ class MasterFilesController < ApplicationController
     @master_file = MasterFile.find(params[:id])
     if can? :read, @master_file
       @stream_info = secure_streams(@master_file.stream_details)
+      @stream_info['t'] = view_context.parse_media_fragment(params[:t]) # add MediaFragment from params
     end
 
     @player_width = "100%"

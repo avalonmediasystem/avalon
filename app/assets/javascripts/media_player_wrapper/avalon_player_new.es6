@@ -61,7 +61,7 @@ class MEJSPlayer {
     };
 
     // Initialize switchPlayerHelper for mediafragment, if one exists
-    if (this.currentStreamInfo.t[0] > 0) {
+    if (this.currentStreamInfo.t && this.currentStreamInfo.t[0] > 0) {
       this.switchPlayerHelper.active = true;
       this.switchPlayerHelper.data = {
         fragmentbegin: this.currentStreamInfo.t[0],
