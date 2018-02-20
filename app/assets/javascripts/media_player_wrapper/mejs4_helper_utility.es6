@@ -83,6 +83,7 @@ class MEJSUtility {
    * <a> element's 'id' attribute
    */
   createSegmentsMap(el, currentStreamInfo) {
+    if (!el) { return }
     let segmentsMap = {};
     const segmentEls = el
       ? [].slice.call(
