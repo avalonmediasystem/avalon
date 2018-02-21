@@ -30,6 +30,7 @@ class MEJSQualityHelper {
    */
   addQualitySelectorListeners() {
     const player = mejs4AvalonPlayer.player;
+    if (!player.qualitiesButton) { return }
     const radios = player.qualitiesButton.querySelectorAll(
       'input[type="radio"]'
     );
