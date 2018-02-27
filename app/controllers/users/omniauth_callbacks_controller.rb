@@ -72,7 +72,13 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_to objects_path(request['target_id'], params.slice(*params_whitelist))
     elsif params[:url]
       # Limit redirects to current host only
-      redirect_to URI.parse(params[:url]).path
+      # Fixes bug https://bugs.dlib.indiana.edu/browse/VOV-5662
+      uri = URI.parse(params[:url])
+      if request.host == uri.host
+        redirect_to uri.path
+      else
+	redirect_to root_path
+      end
     elsif session[:previous_url]
       redirect_to session.delete :previous_url
     elsif auth_type == 'lti' && user_session[:virtual_groups].present?
