@@ -49,7 +49,6 @@ module Avalon
         unless package_valid
           @current_package.manifest.error!
           send_invalid_package_email
-          next
         end
         package_valid
       end
