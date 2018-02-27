@@ -36,15 +36,22 @@ module Avalon
         new_packages.each do |package|
           @previous_entries = nil # clear it out in case the last package set it
           @current_package = package
-          package_validation
-          package_valid = @current_package_errors.empty?
-          unless package_valid
-            @current_package.manifest.error!
-            send_invalid_package_email
-            next
-          end
-          process_valid_package
+          process_valid_package if valid_package?
         end
+      end
+
+      # Given a package, this will validate the structure of the package
+      # and send an error email if the package is not valid
+      # @return Boolean if the package is valid or not
+      def valid_package?
+        package_validation
+        package_valid = @current_package_errors.empty?
+        unless package_valid
+          @current_package.manifest.error!
+          send_invalid_package_email
+          next
+        end
+        package_valid
       end
 
       # Given a valid package you have obtained via some means, such as scan_for_packages
@@ -52,7 +59,11 @@ module Avalon
       def process_valid_package(package: nil)
         # If we're calling this via a side job, we'll be passing in a package here
         # Otherwise this should be set
-        @current_package = package unless package.nil?
+        # Validate the package if a side package is passed in
+        unless package.nil?
+          return unless valid_package?
+          @current_package = package
+        end
 
         br = register_batch unless replay?
         br = register_replay if replay?
