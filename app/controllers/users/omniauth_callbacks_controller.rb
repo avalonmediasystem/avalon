@@ -77,7 +77,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       if request.host == uri.host
         redirect_to uri.path
       else
-	redirect_to root_path
+        redirect_to root_path
       end
     elsif session[:previous_url]
       redirect_to session.delete :previous_url
