@@ -87,6 +87,9 @@ class MasterFile < ActiveFedora::Base
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
     index.as :symbol
   end
+  property :comment, predicate: ::RDF::Vocab::EBUCore.comments, multiple: true do |index|
+    index.as :stored_searchable
+  end
 
   # Workflow status properties
   property :workflow_id, predicate: Avalon::RDFVocab::Transcoding.workflowId, multiple: false do |index|
