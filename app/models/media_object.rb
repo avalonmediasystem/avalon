@@ -102,6 +102,9 @@ class MediaObject < ActiveFedora::Base
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
     index.as :symbol
   end
+  property :comment, predicate: ::RDF::Vocab::EBUCore.comments, multiple: true do |index|
+    index.as :stored_searchable
+  end
 
   ordered_aggregation :master_files, class_name: 'MasterFile', through: :list_source
   # ordered_aggregation gives you accessors media_obj.master_files and media_obj.ordered_master_files
@@ -189,6 +192,14 @@ class MediaObject < ActiveFedora::Base
     self.set_resource_types!
   end
 
+  def all_comments
+    comment.sort + ordered_master_files.to_a.collect do |mf|
+      mf.comment.reject(&:blank?).collect do |c|
+        mf.display_title.present? ? "[#{mf.display_title}] #{c}" : c
+      end.sort
+    end.flatten.uniq
+  end
+
   def section_labels
     all_labels = master_files.collect{|mf|mf.structural_metadata_labels << mf.title}
     all_labels.flatten.uniq.compact
@@ -225,7 +236,7 @@ class MediaObject < ActiveFedora::Base
       solr_doc['section_physical_description_ssim'] = section_physical_descriptions
       solr_doc['avalon_resource_type_ssim'] = self.avalon_resource_type.map(&:titleize)
       solr_doc['identifier_ssim'] = self.identifier.map(&:downcase)
-
+      solr_doc['all_comments_sim'] = all_comments
       #Add all searchable fields to the all_text_timv field
       all_text_values = []
       all_text_values << solr_doc["title_tesi"]
