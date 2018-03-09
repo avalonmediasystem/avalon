@@ -34,6 +34,7 @@ module MasterFileIntercom
       other_identifier: identifier,
       captions: captions.content,
       captions_type: caption_type,
+      comment: comment,
       files: derivatives.collect(&:to_ingest_api_hash)
     }
   end

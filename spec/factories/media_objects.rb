@@ -45,6 +45,7 @@ FactoryGirl.define do
         language { ['eng'] }
         related_item_url { [{ url: Faker::Internet.url, label: Faker::Lorem.sentence }]}
         bibliographic_id { { id: Faker::Lorem.word, source: 'local' } }
+        comment { ['MO comment'] }
         # after(:create) do |mo|
         #   mo.update_datastream(:descMetadata, {
         #     note: {note[Faker::Lorem.paragraph],

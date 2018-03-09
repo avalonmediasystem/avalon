@@ -46,6 +46,7 @@ module MediaObjectIntercom
           table_of_contents: table_of_contents,
           physical_description: physical_description,
           record_identifier: record_identifier,
+          comment: comment,
           bibliographic_id: (bibliographic_id.present? ? bibliographic_id[:id] : nil),
           bibliographic_id_label: (bibliographic_id.present? ? bibliographic_id[:source] : nil),
           note: (note.present? ? note.collect { |n| n[:note] } : nil),
