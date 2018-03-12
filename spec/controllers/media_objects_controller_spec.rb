@@ -357,8 +357,7 @@ describe MediaObjectsController, type: :controller do
         it "should create a new media_object using ingest_api_hash of existing media_object" do
           # master_file_obj = FactoryGirl.create(:master_file, master_file.slice(:files))
           media_object = FactoryGirl.create(:fully_searchable_media_object, :with_completed_workflow)
-          master_file = FactoryGirl.create(:master_file, :with_derivative, :with_thumbnail, :with_poster, :with_structure, :with_captions)
-          media_object.ordered_master_files += [master_file]
+          master_file = FactoryGirl.create(:master_file, :with_derivative, :with_thumbnail, :with_poster, :with_structure, :with_captions, :with_comments, media_object: media_object)
           media_object.update_dependent_properties!
           api_hash = media_object.to_ingest_api_hash
           post 'create', format: 'json', fields: api_hash[:fields], files: api_hash[:files], collection_id: media_object.collection_id
@@ -372,6 +371,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.format).to eq media_object.format
           expect(new_media_object.note).to eq media_object.note
           expect(new_media_object.language).to eq media_object.language
+          expect(new_media_object.all_comments).to eq media_object.all_comments
           expect(new_media_object.bibliographic_id).to eq media_object.bibliographic_id
           expect(new_media_object.related_item_url).to eq media_object.related_item_url
           expect(new_media_object.other_identifier).to eq media_object.other_identifier

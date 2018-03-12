@@ -19,6 +19,7 @@ FactoryGirl.define do
     percent_complete {"#{rand(100)}"}
     workflow_name 'avalon'
     duration {'200000'}
+    identifier ['other identifier']
 
     trait :with_media_object do
       association :media_object #, factory: :media_object
@@ -56,6 +57,9 @@ FactoryGirl.define do
         mf.captions.content = File.read('spec/fixtures/captions.vtt')
         mf.save
       end
+    end
+    trait :with_comments do
+      comment ['MF Comment 1', 'MF Comment 2']
     end
   end
 end

@@ -225,7 +225,7 @@ class MediaObjectsController < ApplicationController
       error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
     elsif master_files_params.respond_to?('each')
       old_ordered_master_files = @media_object.ordered_master_files.to_a.collect(&:id)
-      master_files_params.each do |file_spec|
+      master_files_params.each_with_index do |file_spec, index|
         master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier, :label))
         # master_file.media_object = @media_object
         master_file.structuralMetadata.content = file_spec[:structure] if file_spec[:structure].present?
@@ -236,7 +236,8 @@ class MediaObjectsController < ApplicationController
         # TODO: This inconsistency should eventually be addressed by updating the API
         master_file.title = file_spec[:label] if file_spec[:label].present?
         master_file.date_digitized = DateTime.parse(file_spec[:date_digitized]).to_time.utc.iso8601 if file_spec[:date_digitized].present?
-        master_file.identifier += Array(file_spec[:other_identifier])
+        master_file.identifier += Array(params[:files][index][:other_identifier])
+        master_file.comment += Array(params[:files][index][:comment])
         master_file._media_object = @media_object
         if file_spec[:files].present?
           if master_file.update_derivatives(file_spec[:files], false)
@@ -583,23 +584,23 @@ class MediaObjectsController < ApplicationController
                              :other_identifier,
                              :structure,
                              :physical_description,
-                             :files => [:label,
-                                        :id,
-                                        :url,
-                                        :hls_url,
-                                        :duration,
-                                        :mime_type,
-                                        :audio_bitrate,
-                                        :audio_codec,
-                                        :video_bitrate,
-                                        :video_codec,
-                                        :width,
-                                        :height,
-                                        :location,
-                                        :track_id,
-                                        :hls_track_id,
-                                        :managed,
-                                        :derivativeFile]])[:files]
+                             files: [:label,
+                                     :id,
+                                     :url,
+                                     :hls_url,
+                                     :duration,
+                                     :mime_type,
+                                     :audio_bitrate,
+                                     :audio_codec,
+                                     :video_bitrate,
+                                     :video_codec,
+                                     :width,
+                                     :height,
+                                     :location,
+                                     :track_id,
+                                     :hls_track_id,
+                                     :managed,
+                                     :derivativeFile]])[:files]
   end
 
   def api_params
