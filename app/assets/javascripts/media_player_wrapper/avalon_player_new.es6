@@ -29,6 +29,7 @@ class MEJSPlayer {
     this.mejsUtility = new MEJSUtility();
     this.mejsTimeRailHelper = new MEJSTimeRailHelper();
     this.mejsMarkersHelper = new MEJSMarkersHelper();
+    this.mejsQualityHelper = new MEJSQualityHelper();
 
     // Unpack player configuration object for the new player.
     // This allows for variable params to be sent in.
@@ -36,6 +37,7 @@ class MEJSPlayer {
     this.features = configObj.features || {};
     this.highlightRail = configObj.highlightRail;
     this.playlistItem = configObj.playlistItem || {};
+    this.defaultQuality = configObj.defaultQuality || 'auto';
 
     // Tracks whether we're loading the page or just reloading player
     this.isFirstLoad = true;
@@ -57,6 +59,16 @@ class MEJSPlayer {
       data: {},
       paused: false
     };
+
+    // Initialize switchPlayerHelper for mediafragment, if one exists
+    if (this.currentStreamInfo.t && this.currentStreamInfo.t[0] > 0) {
+      this.switchPlayerHelper.active = true;
+      this.switchPlayerHelper.data = {
+        fragmentbegin: this.currentStreamInfo.t[0],
+        fragmentend: this.currentStreamInfo.t[1]
+      };
+      this.switchPlayerHelper.paused = true;
+    }
 
     // Array of all current segments for media object
     this.segmentsMap = this.mejsUtility.createSegmentsMap(
@@ -122,6 +134,7 @@ class MEJSPlayer {
    * @return {void}
    */
   getNewStreamAjax(id, url, playlistItemsT) {
+    $('.media-show-page').removeClass('ready-to-play');
     $.ajax({
       url: url + '/stream',
       dataType: 'json',
@@ -149,6 +162,7 @@ class MEJSPlayer {
   handleCanPlay() {
     this.mediaElement.removeEventListener('canplay');
     // Do we play a specified range of the media file?
+    $('.media-show-page').addClass('ready-to-play');
     if (this.switchPlayerHelper.active) {
       this.playRange();
     }
@@ -234,7 +248,7 @@ class MEJSPlayer {
         : parseFloat(this.segmentsMap[target.id].fragmentbegin);
       this.mediaElement.setCurrentTime(time);
     }
-    
+
     this.mejsUtility.showControlsBriefly(this.player);
   }
 
@@ -270,7 +284,17 @@ class MEJSPlayer {
       this.mejsUtility.highlightSectionLink();
     }
   }
-
+  /**
+   * MediaElement render error callback function
+   * @function handleError
+   * @param  {Object} error - The error object
+   * @param  {Object} mediaElement - The wrapper that mimics all the native events/properties/methods for all renderers
+   * @param  {Object} originalNode - The original HTML video, audio or iframe tag where the media was loaded originally
+   * @return {void}
+   */
+  handleError(error, mediaElement, originalNode) {
+    console.log('MEJS CREATE ERROR: ' + error);
+  }
   /**
    * MediaElement render success callback function
    * @function handleSuccess
@@ -422,15 +446,25 @@ class MEJSPlayer {
       features: this.features,
       poster: currentStreamInfo.poster_image || null,
       success: this.handleSuccess.bind(this),
+      error: this.handleError.bind(this),
       embed_title: currentStreamInfo.embed_title,
       link_back_url: currentStreamInfo.link_back_url,
       qualityText: 'Stream Quality',
+      defaultQuality: this.defaultQuality,
       toggleCaptionsButtonWhenOnlyOne: true
     };
     let promises = [];
     const playlistIds = this.playlistItem
       ? [this.playlistItem.playlist_id, this.playlistItem.id]
       : [];
+
+    // Remove quality feature for IE
+    if (
+      !!navigator.userAgent.match(/MSIE /) ||
+      !!navigator.userAgent.match(/Trident.*rv\:11\./)
+    ) {
+      defaults.features = defaults.features.filter(e => e !== 'quality');
+    }
 
     // Remove video player controls/plugins if it's not a video stream
     if (!currentStreamInfo.is_video) {

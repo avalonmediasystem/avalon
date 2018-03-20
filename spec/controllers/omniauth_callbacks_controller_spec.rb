@@ -12,9 +12,26 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class UpdateDependentPermalinksJob < ActiveJob::Base
-  queue_as :update_dependent_permalinks
-  def perform(media_object_id)
-    MediaObject.find(media_object_id).update_dependent_permalinks if MediaObject.exists?(media_object_id)
+require 'rails_helper'
+
+describe Users::OmniauthCallbacksController, type: :controller do
+  before do
+    @request.env["devise.mapping"] = Devise.mappings[:user]
+  end
+
+  describe '#find_user' do
+    context 'when url param is present' do
+      let(:user) { FactoryGirl.create(:user) }
+      let(:params) {{ url: "http://other.host.com/a/sub/page" }}
+
+      before do
+        allow(User).to receive(:find_for_identity).and_return(user)
+      end
+
+      it 'redirects to homepage if url host does not match app host' do
+        post :identity, params
+        expect(response).to redirect_to(root_path)
+      end
+    end
   end
 end

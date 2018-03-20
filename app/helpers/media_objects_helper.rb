@@ -108,10 +108,16 @@ module MediaObjectsHelper
        quality
      end
 
-     def parse_hour_min_sec s
+     FLOAT_PATTERN = Regexp.new(/^\d+([.]\d*)?$/).freeze
+
+     def parse_hour_min_sec(s)
        return nil if s.nil?
        smh = s.split(':').reverse
-       (Float(smh[0]) rescue 0) + 60*(Float(smh[1]) rescue 0) + 3600*(Float(smh[2]) rescue 0)
+       (0..2).each do |i|
+         # Use Regexp.match? when we drop ruby 2.3 support
+         smh[i] = smh[i] =~ FLOAT_PATTERN ? Float(smh[i]) : 0
+       end
+       smh[0] + (60 * smh[1]) + (3600 * smh[2])
      end
 
      def parse_media_fragment fragment
@@ -125,7 +131,7 @@ module MediaObjectsHelper
      end
 
      def hide_sections? sections
-       sections.blank? or (sections.length == 1 and sections.first.structuralMetadata.empty?)
+       sections.blank? or (sections.length == 1 and !sections.first.has_structuralMetadata?)
      end
 
      def structure_html section, index, show_progress
@@ -154,7 +160,7 @@ EOF
        duration = section.duration.blank? ? '' : " (#{milliseconds_to_formatted_time(section.duration.to_i)})"
 
        # If there is no structural metadata associated with this master_file return the stream info
-       if section.structuralMetadata.empty?
+       unless section.has_structuralMetadata?
          label = "#{index+1}. #{stream_label_for(section)} #{duration}".html_safe
          link = link_to label, share_link_for( section ), id: 'section-title-' + section.id, data: data, class: 'playable wrap' + (current ? ' current-stream current-section' : '')
          return "#{headeropen}<ul><li class='stream-li'>#{link}</li></ul>#{headerclose}"
@@ -220,13 +226,13 @@ EOF
          return "<li>#{node.attribute('label')}</li><li><ul>#{contents}</ul></li>", tracknumber
        elsif ['SPAN','ITEM'].include? node.name.upcase
          tracknumber += 1
-         label = "#{tracknumber}. #{node.attribute('label').value} (#{get_duration node, section})"
-         start,stop = get_xml_media_fragment node, section
+         start, stop = get_xml_media_fragment node, section
+         label = "#{tracknumber}. #{node.attribute('label').value} (#{get_duration_from_fragment(start, stop)})"
          native_url = "#{id_section_media_object_path(@media_object, section.id)}?t=#{start},#{stop}"
          url = "#{share_link_for( section )}?t=#{start},#{stop}"
          segment_id = "#{section.id}-#{tracknumber}"
          data = {segment: section.id, is_video: section.file_format != 'Sound', native_url: native_url, fragmentbegin: start, fragmentend: stop}
-         link = link_to label, url, id: segment_id, data: data, class: 'playable wrap'+(is_current_section?(section) ? ' current-stream' : '' )
+         link = link_to label, url, id: segment_id, data: data, class: 'playable structure wrap'
          return "<li class='stream-li'>#{link}</li>", tracknumber
        end
      end
@@ -240,5 +246,9 @@ EOF
      def get_duration node, section
        start,stop = get_xml_media_fragment node, section
        milliseconds_to_formatted_time((stop.to_i-start.to_i)*1000)
+     end
+
+     def get_duration_from_fragment(start, stop)
+       milliseconds_to_formatted_time((stop.to_i - start.to_i) * 1000)
      end
 end

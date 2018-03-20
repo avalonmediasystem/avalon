@@ -29,6 +29,7 @@ class MasterFile < ActiveFedora::Base
   include Identifier
   include MigrationTarget
   include MasterFileBehavior
+  include MasterFileIntercom
 
   belongs_to :media_object, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
   has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf, dependent: :destroy
@@ -85,6 +86,9 @@ class MasterFile < ActiveFedora::Base
   property :masterFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
     index.as :symbol
+  end
+  property :comment, predicate: ::RDF::Vocab::EBUCore.comments, multiple: true do |index|
+    index.as :stored_searchable
   end
 
   # Workflow status properties

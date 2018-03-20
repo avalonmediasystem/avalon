@@ -88,6 +88,81 @@ describe MediaObjectsController, type: :controller do
     end
   end
 
+  context 'Avalon Intercom methods' do
+    let!(:target_collections) { [{'id' => 'abc123', 'name' => 'Test Collection'}] }
+    before :all do
+      Settings.intercom = {
+        'default' => {
+          'url' => 'https://target.avalon.com/',
+          'api_token' => 'a_valid_token',
+          'import_bib_record' => true,
+          'publish' => false,
+          'push_label' => 'Push to Target'
+        }
+      }
+    end
+    after :all do
+      Settings.intercom = nil
+    end
+
+    describe '#intercom_collections' do
+      before do
+        login_as :user
+        allow_any_instance_of(Avalon::Intercom).to receive(:user_collections).and_return target_collections
+      end
+      it 'should return collections as json from target' do
+        get 'intercom_collections', format: 'json'
+        expect(response.status).to eq(200)
+        expect(JSON.parse(response.body)).to eq([{'id'=>'abc123', 'name'=>'Test Collection', 'default'=>false}])
+        expect(session['intercom_collections']).to eq(target_collections)
+        expect(session['intercom_default_collection']).to be nil
+      end
+      it 'should return collections with default set from session' do
+        session[:intercom_default_collection] = 'abc123'
+        get 'intercom_collections', format: 'json'
+        expect(JSON.parse(response.body)).to eq([{'id'=>'abc123', 'name'=>'Test Collection', 'default'=>true}])
+      end
+    end
+
+    describe '#intercom_push' do
+      let(:media_object) { FactoryGirl.create(:media_object) }
+      let(:master_file_with_structure) { FactoryGirl.create(:master_file, :with_structure, media_object: media_object) }
+      let(:target_link) { { link: 'http://link.to/media_object' } }
+      let(:error_status) { { message: 'Not authorized', status: 401 } }
+      let(:media_object_permission) { 'You do not have permission to push this media object.' }
+      let(:collection_permission) { 'You are not autorized to push to this collection.' }
+      before do
+        login_as(:administrator)
+        session[:intercom_collections] = {}
+        session[:intercom_default_collection] = ''
+        media_object.ordered_master_files = [master_file_with_structure]
+        allow_any_instance_of(Avalon::Intercom).to receive(:fetch_user_collections).and_return target_collections
+      end
+      it 'should refetch user collections from target and set session' do
+        allow_any_instance_of(Avalon::Intercom).to receive(:push_media_object).and_return target_link
+        expect_any_instance_of(Avalon::Intercom).to receive(:fetch_user_collections).once
+        patch :intercom_push, id: media_object.id, collection_id: target_collections.first['id']
+        expect(session[:intercom_collections]).to eq(target_collections)
+        expect(session[:intercom_default_collection]).to eq(target_collections.first['id'])
+      end
+      it 'should return error message' do
+        allow_any_instance_of(Avalon::Intercom).to receive(:push_media_object).and_return error_status
+        patch :intercom_push, id: media_object.id, collection_id: target_collections.first['id']
+        expect(flash[:alert]).to eq('There was an error pushing the item. (401: Not authorized)')
+      end
+      it 'should return no permission for item' do
+        allow_any_instance_of(Avalon::Intercom).to receive(:push_media_object).and_return({ message: media_object_permission })
+        patch :intercom_push, id: media_object.id, collection_id: target_collections.first['id']
+        expect(flash[:alert]).to eq(media_object_permission)
+      end
+      it 'should return no permission for collection' do
+        allow_any_instance_of(Avalon::Intercom).to receive(:push_media_object).and_return({ message: collection_permission })
+        patch :intercom_push, id: media_object.id, collection_id: target_collections.first['id']
+        expect(flash[:alert]).to eq(collection_permission)
+      end
+    end
+  end
+
   context "JSON API methods" do
     let!(:collection) { FactoryGirl.create(:collection) }
     let!(:testdir) {'spec/fixtures/'}
@@ -278,6 +353,37 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.bibliographic_id).to eq({source: "local", id: bib_id})
           expect(new_media_object.other_identifier.find {|id_pair| id_pair[:source] == 'other'}).not_to be nil
           expect(new_media_object.other_identifier.find {|id_pair| id_pair[:source] == 'other'}[:id]).to eq('12345')
+        end
+        it "should create a new media_object using ingest_api_hash of existing media_object" do
+          # master_file_obj = FactoryGirl.create(:master_file, master_file.slice(:files))
+          media_object = FactoryGirl.create(:fully_searchable_media_object, :with_completed_workflow)
+          master_file = FactoryGirl.create(:master_file, :with_derivative, :with_thumbnail, :with_poster, :with_structure, :with_captions, :with_comments, media_object: media_object)
+          media_object.update_dependent_properties!
+          api_hash = media_object.to_ingest_api_hash
+          post 'create', format: 'json', fields: api_hash[:fields], files: api_hash[:files], collection_id: media_object.collection_id
+          expect(response.status).to eq(200)
+          new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+          expect(new_media_object.title).to eq media_object.title
+          expect(new_media_object.creator).to eq media_object.creator
+          expect(new_media_object.date_issued).to eq media_object.date_issued
+          expect(new_media_object.ordered_master_files.to_a.map(&:id)).to match_array new_media_object.master_file_ids
+          expect(new_media_object.duration).to eq media_object.duration
+          expect(new_media_object.format).to eq media_object.format
+          expect(new_media_object.note).to eq media_object.note
+          expect(new_media_object.language).to eq media_object.language
+          expect(new_media_object.all_comments).to eq media_object.all_comments
+          expect(new_media_object.bibliographic_id).to eq media_object.bibliographic_id
+          expect(new_media_object.related_item_url).to eq media_object.related_item_url
+          expect(new_media_object.other_identifier).to eq media_object.other_identifier
+          expect(new_media_object.avalon_resource_type).to eq media_object.avalon_resource_type
+          expect(new_media_object.master_files.first.date_digitized).to eq(media_object.master_files.first.date_digitized)
+          expect(new_media_object.master_files.first.identifier).to eq(media_object.master_files.first.identifier)
+          expect(new_media_object.master_files.first.structuralMetadata.has_content?).to be_truthy
+          expect(new_media_object.master_files.first.captions.has_content?).to be_truthy
+          expect(new_media_object.master_files.first.captions.mime_type).to eq(media_object.master_files.first.captions.mime_type)
+          expect(new_media_object.master_files.first.derivatives.count).to eq(media_object.master_files.first.derivatives.count)
+          expect(new_media_object.master_files.first.derivatives.first.location_url).to eq(media_object.master_files.first.derivatives.first.location_url)
+          expect(new_media_object.workflow.last_completed_step).to eq(media_object.workflow.last_completed_step)
         end
       end
     end

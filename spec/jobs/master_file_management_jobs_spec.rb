@@ -1,11 +1,11 @@
 # Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -14,36 +14,47 @@
 
 require 'rails_helper'
 require 'fakefs/safe'
+require 'file_locator'
 
 describe MasterFileManagementJobs do
 
   context "fakefs" do
 
+    let(:location) { "/path/to/old/file.mp4" }
+    let!(:master_file) { FactoryGirl.create(:master_file, file_location: location) }
+
     before :each do
-      @oldpath = "/path/to/old/file.mp4"
-      @mf = FactoryGirl.build(:master_file)
-      @mf.file_location = @oldpath
-      @mf.save
       FakeFS.activate!
-      FileUtils.mkdir_p File.dirname(@oldpath)
-      File.open(@oldpath, 'w'){}
+      FileUtils.mkdir_p File.dirname(location)
+      File.open(location, 'w'){}
     end
 
     describe "delete_masterfile" do
       it "should delete masterfile" do
-        MasterFileManagementJobs::Delete.perform_now(@mf.id)
-        expect(File.exists? @oldpath).to be false
-        expect(MasterFile.find(@mf.id).file_location).to be_blank
+        MasterFileManagementJobs::Delete.perform_now(master_file.id)
+        expect(File.exists? location).to be false
+        expect(MasterFile.find(master_file.id).file_location).to be_blank
       end
     end
 
     describe "move_masterfile" do
       it "should move masterfile" do
         newpath = "/path/to/new/file.mp4"
-        MasterFileManagementJobs::Move.perform_now(@mf.id, newpath)
-        expect(File.exists? @oldpath).to be false
+        MasterFileManagementJobs::Move.perform_now(master_file.id, newpath)
+        expect(File.exists? location).to be false
         expect(File.exists? newpath).to be true
-        expect(newpath).to eq MasterFile.find(@mf.id).file_location
+        expect(newpath).to eq MasterFile.find(master_file.id).file_location
+      end
+    end
+
+    describe "move_masterfile with space in filename" do
+      let(:location) { "/path/to/old/file with space.mp4" }
+      it "should move masterfile with space in filename" do
+        newpath = "/path/to/new/file with space.mp4"
+        MasterFileManagementJobs::Move.perform_now(master_file.id, newpath)
+        expect(File.exists? location).to be false
+        expect(File.exists? newpath).to be true
+        expect(newpath).to eq MasterFile.find(master_file.id).file_location
       end
     end
 

@@ -13,8 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 module MasterFileBehavior
-  QUALITY_ORDER = { "high" => 1, "medium" => 2, "low" => 3 }
-  EMBED_SIZE = {:medium => 600}
+  QUALITY_ORDER = { "auto" => 1, "high" => 2, "medium" => 3, "low" => 4 }.freeze
+  EMBED_SIZE = { medium: 600 }.freeze
   AUDIO_HEIGHT = 50
 
   def status?(value)
@@ -36,10 +36,17 @@ module MasterFileBehavior
 
     derivatives.each do |d|
       common = { quality: d.quality,
+                 bitrate: d.bitrate,
                  mimetype: d.mime_type,
                  format: d.format }
       flash << common.merge(url: d.streaming_url(false))
       hls << common.merge(url: d.streaming_url(true))
+    end
+    if hls.length > 1
+      hls << { quality: 'auto',
+               mimetype: hls.first[:mimetype],
+               format: hls.first[:format],
+               url: adaptive_master_file_url(id: id, format: :m3u8) }
     end
 
     # Sorts the streams in order of quality, note: Hash order only works in Ruby 1.9 or later
@@ -71,7 +78,7 @@ module MasterFileBehavior
   def display_title
     mf_title = structuralMetadata.section_title unless structuralMetadata.blank?
     mf_title ||= title if title.present?
-    mf_title ||= file_location.split("/").last if file_location.present? && (media_object.ordered_master_files.to_a.size > 1)
+    mf_title ||= file_location.split("/").last if file_location.present? && (media_object.master_file_ids.size > 1)
     mf_title.blank? ? nil : mf_title
   end
 

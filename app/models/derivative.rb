@@ -16,6 +16,7 @@ require 'avalon/stream_mapper'
 
 class Derivative < ActiveFedora::Base
   include DerivativeBehavior
+  include DerivativeIntercom
   include FrameSize
   include MigrationTarget
 
@@ -118,6 +119,10 @@ class Derivative < ActiveFedora::Base
     derivative.absolute_location = output[:url]
 
     derivative
+  end
+
+  def bitrate
+    audio_bitrate.to_i + video_bitrate.to_i
   end
 
   private

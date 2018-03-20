@@ -33,6 +33,8 @@ Rails.application.routes.draw do
       post 'unpublish'#, as: :unpublish_bookmarks
       get 'add_to_playlist'
       post 'add_to_playlist'
+      get 'intercom_push'
+      post 'intercom_push'
     end
   end
 
@@ -93,6 +95,7 @@ Rails.application.routes.draw do
       get :confirm_remove
       get :add_to_playlist_form
       post :add_to_playlist
+      patch :intercom_push
     end
     collection do
       post :create, action: :create, constraints: { format: 'json' }
@@ -101,6 +104,7 @@ Rails.application.routes.draw do
       put :update_status
       # 'delete' has special signifigance so use 'remove' for now
       delete :remove, :action => :destroy
+      get :intercom_collections
     end
   end
 
@@ -116,6 +120,7 @@ Rails.application.routes.draw do
       post 'attach_structure'
       post 'attach_captions'
       get :captions
+      get 'adaptive', to: 'master_files#hls_adaptive_manifest'
     end
   end
 

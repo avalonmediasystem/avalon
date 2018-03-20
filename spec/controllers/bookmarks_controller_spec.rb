@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'rails_helper'
+require 'avalon/intercom'
 
 describe BookmarksController, type: :controller do
   render_views
@@ -119,6 +120,63 @@ describe BookmarksController, type: :controller do
           mo.reload
           expect(mo.collection).to eq(collection2)
         end
+      end
+    end
+  end
+
+  describe "#intercom_push" do
+    before :each do
+      Settings.intercom = {
+        'default' => {
+          'url' => 'https://target.avalon.com/',
+          'api_token' => 'a_valid_token',
+          'import_bib_record' => true,
+          'publish' => false,
+          'push_label' => 'Push to Target'
+        }
+      }
+    end
+    after :each do
+      Settings.intercom = nil
+    end
+    let!(:current_user) {  controller.current_user.user_key }
+    let!(:user_collections) {
+      [{"id"=>"cupcake_collection",
+        "name"=>"The Art and History of Cupcakes",
+        "unit"=>"Default Unit",
+        "description"=>"",
+        "object_count"=>{"total"=>9, "published"=>2, "unpublished"=>7},
+        "roles"=>{"managers"=>["archivist1@example.com"], "editors"=>[], "depositors"=>[]}
+      }]
+    }
+    let!(:intercom) { Avalon::Intercom.new(current_user) }
+    let!(:intercom_request) {
+      stub_request(:get, "https://target.avalon.com/admin/collections.json?user=#{current_user}").to_return(
+          status: 200,
+          body: user_collections.to_json,
+          headers: { content_type: 'application/json;' }
+        )
+    }
+
+    context 'user has no permission on target collection' do
+      it 'responds with error message' do
+        post 'intercom_push', collection_id: 'brocolli_collection'
+        expect(flash[:alert]).to eq("You do not have permission to push to this collection.")
+      end
+    end
+
+    context 'user has permission on target collection' do
+      it 'pushes items to selected collection on target' do
+        media_objects.each do |mo|
+          body = mo.to_ingest_api_hash(false)
+            .merge({ 'collection_id' => 'cupcake_collection', 'import_bib_record' => true, 'publish' => false })
+            .to_json
+          stub_request(:post, "https://target.avalon.com/media_objects.json")
+            .with(body: body).to_return(status: 200, body: { 'id' => 'def456' }.to_json, headers: {})
+        end
+        expect_any_instance_of(Avalon::Intercom).to receive(:push_media_object).exactly(3).times.and_call_original
+        post 'intercom_push', collection_id: 'cupcake_collection'
+        expect(flash[:success]).to eq('Sucessfully started push of 3 media objects.')
       end
     end
   end
