@@ -783,4 +783,27 @@ describe MediaObject do
       expect(media_object.workflow.original_name).to eq 'workflow.xml'
     end
   end
+
+  describe '#related_item_url' do
+    let(:media_object) { FactoryGirl.build(:media_object) }
+    let(:url) { 'http://example.com/' }
+
+    before do
+      media_object.descMetadata.content = <<~EOF
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+          <relatedItem displayLabel="Program">
+            <location>
+              <url>
+                http://example.com/
+              </url>
+            </location>
+          </relatedItem>
+        </mods>
+      EOF
+    end
+
+    it 'strips trailing new line characters' do
+      expect(media_object.related_item_url.first[:url]).to eq url
+    end
+  end
 end
