@@ -241,8 +241,8 @@ class MediaObjectsController < ApplicationController
         master_file._media_object = @media_object
         if file_spec[:files].present?
           if master_file.update_derivatives(file_spec[:files], false)
-            @media_object.ordered_master_files += [master_file]
             master_file.update_stills_from_offset!
+            @media_object.ordered_master_files += [master_file]
           else
             file_location = file_spec.dig(:file_location) || '<unknown>'
             message = "Problem saving MasterFile for #{file_location}:"

@@ -253,6 +253,7 @@ describe MediaObjectsController, type: :controller do
         before do
            ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
            request.headers['Avalon-Api-Key'] = 'secret_token'
+           allow_any_instance_of(MasterFile).to receive(:get_ffmpeg_frame_data).and_return('some data')
         end
         it "should respond with 422 if collection not found" do
           post 'create', format: 'json', collection_id: "doesnt_exist"
@@ -358,6 +359,7 @@ describe MediaObjectsController, type: :controller do
           # master_file_obj = FactoryGirl.create(:master_file, master_file.slice(:files))
           media_object = FactoryGirl.create(:fully_searchable_media_object, :with_completed_workflow)
           master_file = FactoryGirl.create(:master_file, :with_derivative, :with_thumbnail, :with_poster, :with_structure, :with_captions, :with_comments, media_object: media_object)
+          allow_any_instance_of(MasterFile).to receive(:extract_frame).and_return('some data')
           media_object.update_dependent_properties!
           api_hash = media_object.to_ingest_api_hash
           post 'create', format: 'json', fields: api_hash[:fields], files: api_hash[:files], collection_id: media_object.collection_id
@@ -392,6 +394,7 @@ describe MediaObjectsController, type: :controller do
         before do
           ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
           request.headers['Avalon-Api-Key'] = 'secret_token'
+          allow_any_instance_of(MasterFile).to receive(:get_ffmpeg_frame_data).and_return('some data')
         end
         let!(:media_object) { FactoryGirl.create(:media_object, :with_master_file) }
         it "should route json format to #json_update" do
@@ -416,6 +419,15 @@ describe MediaObjectsController, type: :controller do
           expect(JSON.parse(response.body)).not_to include('errors')
           media_object.reload
           expect(media_object.master_files.to_a.size).to eq 2
+        end
+        it "should update the poster and thumbnail for it masterfile" do
+          ActiveJob::Base.queue_adapter = :test
+          media_object = FactoryGirl.create(:media_object)
+          put 'json_update', format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id
+          media_object.reload
+          expect(media_object.master_files.to_a.size).to eq 1
+          expect(ExtractStillJob).to have_been_enqueued.with(media_object.master_files.first.id,{type:'both',offset:2000})
+          ActiveJob::Base.queue_adapter = :inline
         end
         it "should delete existing master_files and add a new master_file to a media_object" do
           put 'json_update', format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id, replace_master_files: true
