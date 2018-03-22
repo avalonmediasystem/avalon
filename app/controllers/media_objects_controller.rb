@@ -241,6 +241,7 @@ class MediaObjectsController < ApplicationController
         master_file._media_object = @media_object
         if file_spec[:files].present?
           if master_file.update_derivatives(file_spec[:files], false)
+            master_file.update_stills_from_offset!
             @media_object.ordered_master_files += [master_file]
           else
             file_location = file_spec.dig(:file_location) || '<unknown>'
@@ -584,6 +585,8 @@ class MediaObjectsController < ApplicationController
                              :other_identifier,
                              :structure,
                              :physical_description,
+                             :width,
+                             :height,
                              files: [:label,
                                      :id,
                                      :url,

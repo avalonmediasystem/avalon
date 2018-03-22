@@ -35,6 +35,10 @@ module MasterFileIntercom
       captions: captions.content,
       captions_type: caption_type,
       comment: comment,
+      display_aspect_ratio: display_aspect_ratio,
+      original_frame_size: original_frame_size,
+      width: width,
+      height: height,
       files: derivatives.collect(&:to_ingest_api_hash)
     }
   end
