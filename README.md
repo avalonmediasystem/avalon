@@ -24,7 +24,7 @@ explore the out-of-the-box functionality or do basic development.
 
 * Ensure that you're running one of the Ruby versions listed in under rvm in ".travis.yml".
 * Install [Mediainfo cli](http://mediainfo.sourceforge.net)
-* Copy config/avalon.yml.example to config/avalon.yml and [change](https://wiki.dlib.indiana.edu/display/VarVideo/Configuration+Files#ConfigurationFiles-config%2Favalon.yml) as necessary
+* Create config overwrites in [``config/settings/development.local.yml``](https://wiki.dlib.indiana.edu/display/VarVideo/Configuration+Files#ConfigurationFiles-config/settings.yml) if necessary
 * ```cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml```
 * Install [cmake](https://cmake.org/) if necessary.  This can typically be installed via package manager
 * ```bundle install```
