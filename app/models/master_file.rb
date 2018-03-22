@@ -583,7 +583,7 @@ class MasterFile < ActiveFedora::Base
         jpeg.rewind
         data = jpeg.read
         Rails.logger.debug("Generated #{data.length} bytes of data")
-        if (!frame_source[:master]) or data.length == 0
+        if (!frame_source[:master]) and data.length == 0
           # -ss before -i is faster, but fails on some files.
           Rails.logger.warn("No data received. Swapping -ss and -i options")
           options[0..3] = options.values_at(2,3,0,1)

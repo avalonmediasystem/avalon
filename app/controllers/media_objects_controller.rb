@@ -585,6 +585,8 @@ class MediaObjectsController < ApplicationController
                              :other_identifier,
                              :structure,
                              :physical_description,
+                             :width,
+                             :height,
                              files: [:label,
                                      :id,
                                      :url,

@@ -420,7 +420,7 @@ describe MediaObjectsController, type: :controller do
           media_object.reload
           expect(media_object.master_files.to_a.size).to eq 2
         end
-        it "should update the poster and thumbnail for it masterfile" do
+        it "should update the poster and thumbnail for its masterfile" do
           ActiveJob::Base.queue_adapter = :test
           media_object = FactoryGirl.create(:media_object)
           put 'json_update', format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id
