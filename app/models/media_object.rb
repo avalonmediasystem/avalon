@@ -193,7 +193,7 @@ class MediaObject < ActiveFedora::Base
   end
 
   def all_comments
-    comment.sort + ordered_master_files.to_a.collect do |mf|
+    comment.sort + ordered_master_files.to_a.compact.collect do |mf|
       mf.comment.reject(&:blank?).collect do |c|
         mf.display_title.present? ? "[#{mf.display_title}] #{c}" : c
       end.sort
