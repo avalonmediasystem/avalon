@@ -27,12 +27,21 @@ module Avalon
     class IncompletePackageError < Error; end
 
     def self.find_open_files(files, base_directory = '.')
+      result = []
+      lsof = (['/usr/sbin', '/usr/bin'] + ENV['PATH'].split(File::PATH_SEPARATOR)).
+               map { |path| "#{path}/lsof" }.find do |executable|
+        File.executable?(executable)
+      end
+      unless lsof
+        Rails.logger.warn('lsof missing; continuing without open file checking')
+        return result
+      end
+
       args = files.collect { |p| %{"#{p}"} }.join(' ')
       Dir.chdir(base_directory) do
-        result = []
         begin
           Timeout.timeout(5) do
-            status = `/usr/sbin/lsof -Fcpan0 #{args}`
+            status = `#{lsof} -Fcpan0 #{args}`
             statuses = status.split(/[\u0000\n]+/)
             statuses.in_groups_of(4) do |group|
               file_status = Hash[group.compact.collect { |s| [s[0].to_sym,s[1..-1]] }]
@@ -42,9 +51,6 @@ module Avalon
               end
             end
           end
-        rescue Errno::ENOENT
-          # lsof doesn't exist so bail
-          Rails.logger.warn('lsof missing; continuing without open file checking')
         rescue Timeout::Error
           # lsof didn't return so bail
           Rails.logger.warn('lsof blocking; continuing without open file checking')
