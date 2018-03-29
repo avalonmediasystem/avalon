@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 # Core rails
 gem 'rails', '4.2.9'
 gem 'sqlite3'
+gem 'bootsnap', require: false
 
 # Assets
 gem 'coffee-rails', '~> 4.1.0'
