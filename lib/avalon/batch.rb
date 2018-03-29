@@ -23,41 +23,49 @@ require "timeout"
 
 module Avalon
   module Batch
-    class Error < ::Exception; end
-    class IncompletePackageError < Error; end
+    class Error < StandardError; end
+    class IncompletePackageError < StandardError; end
 
     def self.find_open_files(files, base_directory = '.')
-      result = []
-      lsof = (['/usr/sbin', '/usr/bin'] + ENV['PATH'].split(File::PATH_SEPARATOR)).
-               map { |path| "#{path}/lsof" }.find do |executable|
-        File.executable?(executable)
-      end
+      found_files = []
+      lsof = find_lsof
       unless lsof
         Rails.logger.warn('lsof missing; continuing without open file checking')
-        return result
+        return found_files
       end
 
-      args = files.collect { |p| %{"#{p}"} }.join(' ')
+      args = files.collect { |p| %("#{p}") }.join(' ')
       Dir.chdir(base_directory) do
         begin
           Timeout.timeout(5) do
-            status = `#{lsof} -Fcpan0 #{args}`
-            statuses = status.split(/[\u0000\n]+/)
-            statuses.in_groups_of(4) do |group|
-              file_status = Hash[group.compact.collect { |s| [s[0].to_sym,s[1..-1]] }]
-              if file_status.has_key?(:n) and File.file?(file_status[:n]) and
-                (file_status[:a] =~ /w/ or file_status[:c] == 'scp')
-                  result << file_status[:n]
-              end
-            end
+            output = `#{lsof} -Fcpan0 #{args}`
+            found_files = extract_files_from_lsof_output(output)
           end
         rescue Timeout::Error
-          # lsof didn't return so bail
           Rails.logger.warn('lsof blocking; continuing without open file checking')
         end
-        result
+        found_files
       end
     end
 
+    def self.find_lsof
+      (['/usr/sbin', '/usr/bin'] + ENV['PATH'].split(File::PATH_SEPARATOR))
+        .map { |path| "#{path}/lsof" }.find do |executable|
+        File.executable?(executable)
+      end
+    end
+
+    def self.extract_files_from_lsof_output(output)
+      found_files = []
+      statuses = output.split(/[\u0000\n]+/)
+      statuses.in_groups_of(4) do |group|
+        file_status = Hash[group.compact.collect { |s| [s[0].to_sym, s[1..-1]] }]
+        if file_status.key?(:n) && File.file?(file_status[:n]) &&
+           (file_status[:a] =~ /w/ || file_status[:c] == 'scp')
+          found_files << file_status[:n]
+        end
+      end
+      found_files
+    end
   end
 end
