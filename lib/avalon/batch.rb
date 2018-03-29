@@ -23,6 +23,8 @@ require "timeout"
 
 module Avalon
   module Batch
+    # Breaking the next method up further would only obscure logic
+    # rubocop:disable Metrics/MethodLength
     def self.find_open_files(files, base_directory = '.')
       found_files = []
       lsof = find_lsof
@@ -41,9 +43,10 @@ module Avalon
         rescue Timeout::Error
           Rails.logger.warn('lsof blocking; continuing without open file checking')
         end
-        found_files
       end
+      found_files
     end
+    # rubocop:enable Metrics/MethodLength
 
     def self.find_lsof
       (['/usr/sbin', '/usr/bin'] + ENV['PATH'].split(File::PATH_SEPARATOR))
