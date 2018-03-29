@@ -23,9 +23,6 @@ require "timeout"
 
 module Avalon
   module Batch
-    class Error < StandardError; end
-    class IncompletePackageError < StandardError; end
-
     def self.find_open_files(files, base_directory = '.')
       found_files = []
       lsof = find_lsof
