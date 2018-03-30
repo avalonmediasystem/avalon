@@ -29,6 +29,7 @@ class MasterFile < ActiveFedora::Base
   include Identifier
   include MigrationTarget
   include MasterFileBehavior
+  include MasterFileIntercom
 
   belongs_to :media_object, class_name: 'MediaObject', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isPartOf
   has_many :derivatives, class_name: 'Derivative', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isDerivationOf, dependent: :destroy
@@ -85,6 +86,9 @@ class MasterFile < ActiveFedora::Base
   property :masterFile, predicate: ::RDF::Vocab::EBUCore.filename, multiple: false
   property :identifier, predicate: ::RDF::Vocab::Identifiers.local, multiple: true do |index|
     index.as :symbol
+  end
+  property :comment, predicate: ::RDF::Vocab::EBUCore.comments, multiple: true do |index|
+    index.as :stored_searchable
   end
 
   # Workflow status properties
@@ -536,22 +540,26 @@ class MasterFile < ActiveFedora::Base
   def extract_frame(options={})
     return unless is_video?
 
-    base = id.gsub(/\//,'_')
     offset = options[:offset].to_i
     unless offset.between?(0,self.duration.to_i)
       raise RangeError, "Offset #{offset} not in range 0..#{self.duration}"
     end
 
-    ffmpeg = Settings.ffmpeg.path
     frame_size = (options[:size].nil? or options[:size] == 'auto') ? self.original_frame_size : options[:size]
 
     (new_width,new_height) = frame_size.split(/x/).collect(&:to_f)
     new_height = (new_width/self.display_aspect_ratio.to_f).floor
     new_height += 1 if new_height.odd?
-    aspect = new_width/new_height
-
     frame_source = find_frame_source(offset: offset)
-    data = nil
+    data = get_ffmpeg_frame_data(frame_source, new_width, new_height)
+    raise RuntimeError, "Frame extraction failed. See log for details." if data.empty?
+    data
+  end
+
+  def get_ffmpeg_frame_data frame_source, new_width, new_height
+    ffmpeg = Settings.ffmpeg.path
+    base = id.gsub(/\//,'_')
+    aspect = new_width/new_height
     Tempfile.open([base,'.jpg']) do |jpeg|
       file_source = frame_source[:source]
       unless file_source =~ %r(https?://)
@@ -589,8 +597,6 @@ class MasterFile < ActiveFedora::Base
         File.unlink(file_source) unless file_source =~ %r(https?://)
       end
     end
-    raise RuntimeError, "Frame extraction failed. See log for details." if data.empty?
-    data
   end
 
   def calculate_percent_complete matterhorn_response

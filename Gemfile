@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 # Core rails
 gem 'rails', '4.2.9'
 gem 'sqlite3'
+gem 'bootsnap', require: false
 
 # Assets
 gem 'coffee-rails', '~> 4.1.0'
@@ -77,6 +78,7 @@ gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/me
 gem 'redis-rails'
 gem 'resque', '~> 1.27.0'
 gem 'resque-scheduler', '~> 4.3.0'
+gem 'activejob-traffic_control'
 
 # Coding Patterns
 gem 'config'

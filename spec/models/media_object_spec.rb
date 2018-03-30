@@ -559,6 +559,16 @@ describe MediaObject do
       expect(solr_doc['section_label_tesim']).to include('CD 1')
       expect(solr_doc['section_label_tesim']).to include('Test Label')
     end
+    it 'should index comments for master files' do
+      FactoryGirl.create(:master_file, media_object: media_object, title: 'Test Label', comment: ['MF Comment 1', 'MF Comment 2'])
+      media_object.comment = ['MO Comment']
+      media_object.save!
+      media_object.reload
+      solr_doc = media_object.to_solr
+      expect(solr_doc['all_comments_sim']).to include('MO Comment')
+      expect(solr_doc['all_comments_sim']).to include('[Test Label] MF Comment 1')
+      expect(solr_doc['all_comments_sim']).to include('[Test Label] MF Comment 2')
+    end
     it 'includes virtual group leases in external group facet' do
       media_object.governing_policies += [FactoryGirl.create(:lease, inherited_read_groups: ['TestGroup'])]
       media_object.save!
@@ -771,6 +781,29 @@ describe MediaObject do
   describe 'workflow' do
     it 'sets original_name to default value' do
       expect(media_object.workflow.original_name).to eq 'workflow.xml'
+    end
+  end
+
+  describe '#related_item_url' do
+    let(:media_object) { FactoryGirl.build(:media_object) }
+    let(:url) { 'http://example.com/' }
+
+    before do
+      media_object.descMetadata.content = <<~EOF
+        <mods xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.loc.gov/mods/v3" xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-4.xsd">
+          <relatedItem displayLabel="Program">
+            <location>
+              <url>
+                http://example.com/
+              </url>
+            </location>
+          </relatedItem>
+        </mods>
+      EOF
+    end
+
+    it 'strips trailing new line characters' do
+      expect(media_object.related_item_url.first[:url]).to eq url
     end
   end
 end

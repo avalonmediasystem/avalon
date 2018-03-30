@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'avalon/controller/controller_behavior'
+require 'avalon/intercom'
 
 class MediaObjectsController < ApplicationController
   include Avalon::Workflow::WorkflowControllerBehavior
@@ -22,7 +23,7 @@ class MediaObjectsController < ApplicationController
 
   before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details]
   before_action :authenticate_api!, only: [:show, :create, :json_update], if: proc { request.format.json? }
-  load_and_authorize_resource except: [:create, :json_update, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist]
+  load_and_authorize_resource except: [:create, :json_update, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections]
   # authorize_resource only: [:create, :update]
 
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
@@ -52,6 +53,45 @@ class MediaObjectsController < ApplicationController
 
   def confirm_remove
     raise CanCan::AccessDenied unless Array(params[:id]).any? { |id| current_ability.can? :destroy, MediaObject.find(id) }
+  end
+
+  def intercom_collections
+    reload = params['reload'] == 'true'
+    collections = session[:intercom_collections]
+    if reload || collections.blank?
+      intercom = Avalon::Intercom.new(user_key)
+      collections = intercom.user_collections
+      session[:intercom_collections] = collections
+    end
+    collections.each do |c|
+      c['default'] = c['id'] == session[:intercom_default_collection]
+    end
+    respond_to do |format|
+      format.json do
+        render json: collections.to_json
+      end
+    end
+  end
+
+  def intercom_push
+    if can? :intercom_push, @media_object
+      intercom = Avalon::Intercom.new(user_key)
+      collections = intercom.user_collections(true)
+      session[:intercom_collections] = collections
+      result = intercom.push_media_object(@media_object, params[:collection_id], params[:include_structure] == 'true')
+      if result[:link].present?
+        session[:intercom_default_collection] = params[:collection_id]
+        target_link = view_context.link_to('See it here.', result[:link], target: '_blank')
+        flash[:success] = view_context.safe_join(["The item was pushed successfully. ", target_link])
+      elsif result[:status].present?
+        flash[:alert] = "There was an error pushing the item. (#{result[:status]}: #{result[:message]})"
+      else
+        flash[:alert] = result[:message]
+      end
+    else
+      flash[:alert] = 'You do not have permission to push this media object.'
+    end
+    redirect_to media_object_path(@media_object.id)
   end
 
   def new
@@ -185,7 +225,7 @@ class MediaObjectsController < ApplicationController
       error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
     elsif master_files_params.respond_to?('each')
       old_ordered_master_files = @media_object.ordered_master_files.to_a.collect(&:id)
-      master_files_params.each do |file_spec|
+      master_files_params.each_with_index do |file_spec, index|
         master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier, :label))
         # master_file.media_object = @media_object
         master_file.structuralMetadata.content = file_spec[:structure] if file_spec[:structure].present?
@@ -196,10 +236,12 @@ class MediaObjectsController < ApplicationController
         # TODO: This inconsistency should eventually be addressed by updating the API
         master_file.title = file_spec[:label] if file_spec[:label].present?
         master_file.date_digitized = DateTime.parse(file_spec[:date_digitized]).to_time.utc.iso8601 if file_spec[:date_digitized].present?
-        master_file.identifier += Array(file_spec[:other_identifier])
+        master_file.identifier += Array(params[:files][index][:other_identifier])
+        master_file.comment += Array(params[:files][index][:comment])
         master_file._media_object = @media_object
         if file_spec[:files].present?
           if master_file.update_derivatives(file_spec[:files], false)
+            master_file.update_stills_from_offset!
             @media_object.ordered_master_files += [master_file]
           else
             file_location = file_spec.dig(:file_location) || '<unknown>'
@@ -432,7 +474,8 @@ class MediaObjectsController < ApplicationController
 
   def master_file_presenter
     SpeedyAF::Base.where("isPartOf_ssim:#{@media_object.id}",
-      order: -> { @media_object.indexed_master_file_ids }, defaults: { permalink: nil })
+                         order: -> { @media_object.indexed_master_file_ids },
+                         defaults: { permalink: nil, title: nil })
   end
 
   def load_master_files(mode = :rw)
@@ -542,23 +585,25 @@ class MediaObjectsController < ApplicationController
                              :other_identifier,
                              :structure,
                              :physical_description,
-                             :files => [:label,
-                                        :id,
-                                        :url,
-                                        :hls_url,
-                                        :duration,
-                                        :mime_type,
-                                        :audio_bitrate,
-                                        :audio_codec,
-                                        :video_bitrate,
-                                        :video_codec,
-                                        :width,
-                                        :height,
-                                        :location,
-                                        :track_id,
-                                        :hls_track_id,
-                                        :managed,
-                                        :derivativeFile]])[:files]
+                             :width,
+                             :height,
+                             files: [:label,
+                                     :id,
+                                     :url,
+                                     :hls_url,
+                                     :duration,
+                                     :mime_type,
+                                     :audio_bitrate,
+                                     :audio_codec,
+                                     :video_bitrate,
+                                     :video_codec,
+                                     :width,
+                                     :height,
+                                     :location,
+                                     :track_id,
+                                     :hls_track_id,
+                                     :managed,
+                                     :derivativeFile]])[:files]
   end
 
   def api_params

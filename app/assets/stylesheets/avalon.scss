@@ -853,12 +853,32 @@ $accordionPadding: 20px;
   }
 }
 
+@mixin current-stream-indicator($margin, $left: -6px) {
+  @extend #{'.fa','.fa-arrow-circle-right'};
+  position: relative;
+  left: $left;
+  margin-left: $margin;
+}
+
+.ready-to-play {
+  .structure.current-stream:before {
+    @include current-stream-indicator(-12px);
+  }
+
+  .current-section:before {
+    @include current-stream-indicator(-15px);
+  }
+
+  .current-section, .current-stream {
+    font-weight: bold;
+    border-radius: 3px;
+    margin-left: -5px;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+}
+
 .current-section, .current-stream {
-  font-weight: bold;
-  border-radius: 3px;
-  margin-left: -5px;
-  padding-left: 5px;
-  padding-right: 5px;
   &:link { @hidden-disabled-link }
   &:hover { @hidden-disabled-link }
   &:active { @hidden-disabled-link }
@@ -1083,8 +1103,12 @@ h5.panel-title {
   padding-left: 2rem;
   li {
     margin-top: .2em;
+    margin-left: 21px;
     float: left;
     width:100%;
+    &.now_playing:before {
+      @include current-stream-indicator(-16px, -24px);
+    }
 
     i {
       margin-right: 3px;
@@ -1095,6 +1119,7 @@ h5.panel-title {
   }
   .pull-right {
     text-align:right;
+    margin-right: 21px;
   }
 }
 #section-label {

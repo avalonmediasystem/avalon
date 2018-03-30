@@ -44,12 +44,17 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 
         <%= link_to 'Edit', edit_media_object_path(@media_object), class: 'btn btn-default' %>
-        <%# This might not be the best approach because it makes accidental 
+        <%# This might not be the best approach because it makes accidental
             deletion possible just by following a link. Need to revisit when
             extra cycles are available %>
 
         <% if can? :destroy, @media_object %>
           <%= link_to 'Delete', confirm_remove_media_object_path(@media_object), class: 'btn btn-danger' %>
+        <% end %>
+
+        <% if Settings.intercom.present? and can? :intercom_push, @media_object %>
+          <%= button_tag(Settings.intercom['default']['push_label'], class: 'btn btn-default', data: {toggle:"modal", target:"#intercom_push"}) %>
+          <%= render "intercom_push_modal" %>
         <% end %>
       </div>
   </div>

@@ -6,10 +6,13 @@
 <% end %>
 
 <script>
+<%# Do not include quality or HDtoggle feature for embedded audio because adaptive streaming %>
+<% quality_feature = section_info[:is_video] ? "'quality', " : '' %>
 <!-- Missing title and logo features -->
 var mejs4AvalonPlayer = new MEJSPlayer({
   currentStreamInfo: <%= section_info.to_json.html_safe %>,
-  features: ['playpause', 'current', 'progress', 'duration', 'volume', 'tracks', '<%= section_info[:is_video] ? "quality" : "hdToggle" %>', 'linkBack', 'fullscreen'],
-  highlightRail: true
+  features: ['playpause', 'current', 'progress', 'duration', 'volume', 'tracks', <%= quality_feature.html_safe %>'linkBack', 'fullscreen'],
+  highlightRail: true,
+  defaultQuality: '<%= current_quality(section_info) %>'
 });
 </script>

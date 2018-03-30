@@ -12,20 +12,25 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-FactoryGirl.define do
-  factory :derivative do
-    duration "21575"
-    location_url "rtmp://localhost/vod/mp4:6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning"
-    track_id "track-6"
-    hls_url "http://localhost:3000/6f69c008-06a4-4bad-bb60-26297f0b4c06/35bddaa0-fbb4-404f-ab76-58f22921529c/warning.mp4.m3u8"
-    hls_track_id "track-8"
-    width '1024'
-    height '768'
+require 'rails_helper'
 
-    trait :with_master_file do
-      after(:create) do |d|
-        d.master_file = FactoryGirl.create(:master_file)
-        d.save
+describe Users::OmniauthCallbacksController, type: :controller do
+  before do
+    @request.env["devise.mapping"] = Devise.mappings[:user]
+  end
+
+  describe '#find_user' do
+    context 'when url param is present' do
+      let(:user) { FactoryGirl.create(:user) }
+      let(:params) {{ url: "http://other.host.com/a/sub/page" }}
+
+      before do
+        allow(User).to receive(:find_for_identity).and_return(user)
+      end
+
+      it 'redirects to homepage if url host does not match app host' do
+        post :identity, params
+        expect(response).to redirect_to(root_path)
       end
     end
   end

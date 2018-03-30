@@ -19,6 +19,11 @@ FactoryGirl.define do
     percent_complete {"#{rand(100)}"}
     workflow_name 'avalon'
     duration {'200000'}
+    identifier ['other identifier']
+    display_aspect_ratio '1.7777777777777777'
+    original_frame_size '1024X768'
+    width '1024'
+    height '768'
 
     trait :with_media_object do
       association :media_object #, factory: :media_object
@@ -27,7 +32,7 @@ FactoryGirl.define do
     trait :with_derivative do
       status_code 'COMPLETED'
       after(:create) do |mf|
-        mf.derivatives += [FactoryGirl.create(:derivative)]
+        mf.derivatives += [FactoryGirl.create(:derivative, quality: 'high')]
         mf.save
       end
     end
@@ -56,6 +61,9 @@ FactoryGirl.define do
         mf.captions.content = File.read('spec/fixtures/captions.vtt')
         mf.save
       end
+    end
+    trait :with_comments do
+      comment ['MF Comment 1', 'MF Comment 2']
     end
   end
 end

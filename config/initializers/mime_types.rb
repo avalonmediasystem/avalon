@@ -8,3 +8,4 @@ Mime::Type.register "text/turtle", :ttl
 Mime::Type.register "application/x-www-urlform-encoded", :urlencoded
 Mime::Type.register "text/vtt", :vtt
 Mime::Type.register "text/srt", :srt
+Mime::Type.register "application/x-mpegURL", :m3u8

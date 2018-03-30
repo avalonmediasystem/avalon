@@ -36,33 +36,52 @@ module Avalon
         new_packages.each do |package|
           @previous_entries = nil # clear it out in case the last package set it
           @current_package = package
-          package_validation
-          package_valid = @current_package_errors.empty?
-          unless package_valid
-            @current_package.manifest.error!
-            send_invalid_package_email
-            next
-          end
-          br = register_batch unless replay?
-          br = register_replay if replay?
-          @current_batch_registry = br.reload
-          @previous_entries = fetch_previous_entries if replay?
-          register_entries
-          # Queue all the entries
-          BatchEntries.where(batch_registries_id: @current_batch_registry.id, complete: false, error: false).map(&:queue)
-
-          # Now that everything is registered, unlock the batch entry
-          # TODO: Move these two lines to the model
-          @current_batch_registry.locked = false
-          if @current_batch_registry.save
-            # Send email about successful registration
-            BatchRegistriesMailer.batch_ingest_validation_success(@current_package).deliver_now if @current_batch_registry.persisted?
-          else
-            logger.error "Persisting BatchRegistry failed for package #{@current_package.title}"
-          end
-          @current_package.manifest.delete
+          process_valid_package if valid_package?
         end
-        # Return something about the new batches
+      end
+
+      # Given a package, this will validate the structure of the package
+      # and send an error email if the package is not valid
+      # @return Boolean if the package is valid or not
+      def valid_package?
+        package_validation
+        package_valid = @current_package_errors.empty?
+        unless package_valid
+          @current_package.manifest.error!
+          send_invalid_package_email
+        end
+        package_valid
+      end
+
+      # Given a valid package you have obtained via some means, such as scan_for_packages
+      # or passed in via the batch_ingest_job, process it
+      def process_valid_package(package: nil)
+        # If we're calling this via a side job, we'll be passing in a package here
+        # Otherwise this should be set
+        # Validate the package if a side package is passed in
+        unless package.nil?
+          return unless valid_package?
+          @current_package = package
+        end
+
+        br = register_batch unless replay?
+        br = register_replay if replay?
+        @current_batch_registry = br.reload
+        @previous_entries = fetch_previous_entries if replay?
+        register_entries
+        # Queue all the entries
+        BatchEntries.where(batch_registries_id: @current_batch_registry.id, complete: false, error: false).map(&:queue)
+
+        # Now that everything is registered, unlock the batch entry
+        # TODO: Move these two lines to the model
+        @current_batch_registry.locked = false
+        if @current_batch_registry.save
+          # Send email about successful registration
+          BatchRegistriesMailer.batch_ingest_validation_success(@current_package).deliver_now if @current_batch_registry.persisted?
+        else
+          logger.error "Persisting BatchRegistry failed for package #{@current_package.title}"
+        end
+        @current_package.manifest.delete
       end
 
       # Register the individual rows on a spreadsheet for a valid package
@@ -80,7 +99,7 @@ module Avalon
       # @param [Avalon::Batch::Entry] the entry to register
       # @param [Integer] the position on the spreadsheet, starting from 1, not 0, since acts_as_list starts at 1
       def replay_entry(entry, position)
-        previous_entry = @previous_entries[position-1]
+        previous_entry = @previous_entries[position - 1]
         # Case 0, determine if we even have an updated at all
         # If the payload is the same it means no change and complete true means the migration ran
         return nil if previous_entry.payload == entry.fields.to_json && previous_entry.complete

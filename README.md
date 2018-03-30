@@ -24,8 +24,7 @@ explore the out-of-the-box functionality or do basic development.
 
 * Ensure that you're running one of the Ruby versions listed in under rvm in ".travis.yml".
 * Install [Mediainfo cli](http://mediainfo.sourceforge.net)
-* Copy config/avalon.yml.example to config/avalon.yml and [change](https://wiki.dlib.indiana.edu/display/VarVideo/Configuration+Files#ConfigurationFiles-config%2Favalon.yml) as necessary
-* ```cp config/authentication.yml.example config/authentication.yml```
+* Create config overwrites in [``config/settings/development.local.yml``](https://wiki.dlib.indiana.edu/display/VarVideo/Configuration+Files#ConfigurationFiles-config/settings.yml) if necessary
 * ```cp config/controlled_vocabulary.yml.example config/controlled_vocabulary.yml```
 * Install [cmake](https://cmake.org/) if necessary.  This can typically be installed via package manager
 * ```bundle install```
@@ -35,7 +34,7 @@ explore the out-of-the-box functionality or do basic development.
 * ```rake db:test:prepare```
 * ``bundle exec rake server:development`` or ``bundle exec rake server:test`` Note: This process will not background itself, it will occupy the terminal you run it in
 
-# Quickstart development with Docker (experimental)
+# Quickstart development with Docker
 Docker provides an alternative way of setting up an Avalon Media System Development Environment in minutes without installing any dependencies beside Docker itself. It should be noted that the docker-compose.yml provided here is for development only and will be updated continually.
 * Install [Docker](https://docs.docker.com/engine/installation/) and [docker-compose](https://docs.docker.com/compose/install/)
 * ```git clone https://github.com/avalonmediasystem/avalon```
@@ -44,7 +43,7 @@ Docker provides an alternative way of setting up an Avalon Media System Developm
 * ```docker-compose up```
 * Try loading Avalon in your browser: ```localhost:3000```
 
-Avalon is served by Webrick in development mode so any changes will be picked up automatically. Running a Rails command inside the Avalon container is easy, for example, to run tests ```docker exec -it avalon_avalon_1 bash -c "RAILS_ENV=test bundle exec rspec"```. Note: to avoid erasing development data, you should use the test stack to run tests```docker-compose -f test.yml up```.
+Avalon is served by Webrick in development mode so any changes will be picked up automatically. Running a Rails command inside the Avalon container is easy, for example, to run tests ```docker-compose exec avalon bash -c "RAILS_ENV=test bundle exec rspec"```. Note: to avoid erasing development data, you should use the test stack to run tests```docker-compose -f test.yml up```.
 
 Rails debugging with Pry can be accessed by attaching to the docker container: ```docker attach container_name```. Now, when you reach a binding.pry breakpoint in rails, you can step through the breakpoint in that newly attached session.
 

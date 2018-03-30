@@ -42,8 +42,8 @@ module MasterFileManagementJobs
     end
 
     def file_to_file(source, dest)
-    	FileUtils.mkdir_p File.dirname(dest.uri.path) unless File.exist? File.dirname(dest.uri.path)
-    	FileUtils.mv source.uri.path, dest.uri.path
+    	FileUtils.mkdir_p File.dirname(dest.location) unless File.exist? File.dirname(dest.location)
+    	FileUtils.mv source.location, dest.location
     end
 
     def perform(id, newpath)

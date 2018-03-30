@@ -202,8 +202,10 @@ Object.assign(MediaElementPlayer.prototype, {
      */
     handleControlClick: function(e) {
       let createThumbnailObj = this.createThumbnailObj;
-      if (createThumbnailObj.player.isFullScreen) {
-        createThumbnailObj.player.exitFullScreen();
+      let player = createThumbnailObj.player;
+
+      if (player.isFullScreen) {
+        player.exitFullScreen();
       }
 
       const $modalEl = $(createThumbnailObj.modalEl);
@@ -211,13 +213,8 @@ Object.assign(MediaElementPlayer.prototype, {
 
       // Grab environmental variables
       createThumbnailObj.baseUrl =
-        $('#content')
-          .find('.mejs__poster-img')
-          .attr('src')
-          .split('/')
-          .slice(0, -1)
-          .join('/') || '';
-      createThumbnailObj.offset = createThumbnailObj.player.getCurrentTime();
+        '/master_files/' + player.avalonWrapper.currentStreamInfo.id;
+      createThumbnailObj.offset = player.getCurrentTime();
 
       if ($imgPolaroid.length > 0) {
         let src =
