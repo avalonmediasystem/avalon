@@ -15,6 +15,13 @@
 require 'rails_helper'
 
 describe MasterFilesController do
+  before do
+    ActiveJob::Base.queue_adapter = :test
+  end
+  after do
+    ActiveJob::Base.queue_adapter = :inline
+  end
+
   describe "#create" do
     let(:media_object) { FactoryGirl.create(:media_object) }
     # TODO: fill in the lets below with a legitimate values from mediainfo
