@@ -6,6 +6,9 @@ describe SolrCollectionAdmin do
   let(:solr_conn) { spy('solr_conn') }
   let(:collection) { subject.instance_variable_get(:@collection) }
   let(:location) { '/path/to/my/shared/drive' }
+  let(:solr_core) do
+    ActiveFedora.solr_config.fetch(:url, nil)&.split('/').last || 'hydra-test'
+  end
 
   before do
     subject.instance_variable_set(:@conn, solr_conn)
@@ -13,7 +16,7 @@ describe SolrCollectionAdmin do
 
   describe 'backup' do
     it 'optimizes first if optimize option passed' do
-      expect(solr_conn).to receive(:get).with("hydra-test/update", optimize: 'true')
+      expect(solr_conn).to receive(:get).with("#{solr_core}/update", optimize: 'true')
       subject.backup(location, {optimize: true})
     end
 

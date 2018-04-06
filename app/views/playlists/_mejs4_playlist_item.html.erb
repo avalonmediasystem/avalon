@@ -22,9 +22,6 @@ Unless required by applicable law or agreed to in writing, software distributed
   <% item_type = (master_file.file_format=='Moving image')? 'fa-film' : 'fa-music' %>
 
   <li class="<%= item_class %>" data-is-video="<%= clip.master_file.is_video? %>" data-playlist-item-id="<%= item.id %>">
-    <% if item_class == 'now_playing' %>
-      <i class="fa fa-arrow-circle-right"></i>
-    <% end %>
     <% if can?(:read, master_file.media_object) %>
       <% dataset = { 'playlist-id' => item.playlist_id,
                      'playlist-item-id' => item.id,

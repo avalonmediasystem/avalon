@@ -15,11 +15,20 @@
 require 'rails_helper'
 
 describe MasterFilesController do
+  before do
+    ActiveJob::Base.queue_adapter = :test
+  end
+
+  after do
+    ActiveJob::Base.queue_adapter = :inline
+  end
+
   describe "#create" do
     let(:media_object) { FactoryGirl.create(:media_object) }
     # TODO: fill in the lets below with a legitimate values from mediainfo
     # let(:mediainfo_video) {  }
     # let(:mediainfo_audio) {  }
+
     before do
       # login_user media_object.collection.managers.first
       login_as :administrator
@@ -28,11 +37,11 @@ describe MasterFilesController do
     end
 
     context "must provide a container id" do
-      it "should fail if no container id provided" do
+      it "fails if no container id provided" do
         request.env["HTTP_REFERER"] = "/"
         file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
 
-        expect { post :create, Filedata: [file], original: 'any'}.not_to change { MasterFile.count }
+        expect { post :create, Filedata: [file], original: 'any' }.not_to change { MasterFile.count }
       end
     end
 
@@ -43,47 +52,45 @@ describe MasterFilesController do
         media_object.workflow.last_completed_step = 'file-upload'
         media_object.save(validate: false)
       end
-      it "should fail if parent media object is invalid" do
+
+      it "fails if parent media object is invalid" do
         request.env["HTTP_REFERER"] = "/"
         file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
         expect(media_object.valid?).to be_falsey
-        expect { post :create, Filedata: [file], original: 'any', container_id: media_object.id}.not_to change { MasterFile.count }
+        expect { post :create, Filedata: [file], original: 'any', container_id: media_object.id }.not_to change { MasterFile.count }
       end
     end
 
     context "cannot upload a file over the defined limit" do
-      it "should provide a warning about the file size" do
+      it "provides a warning about the file size" do
         request.env["HTTP_REFERER"] = "/"
 
         file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-        allow(file).to receive(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2^21)
+        allow(file).to receive(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2 ^ 21)
 
-        expect { post :create, Filedata: [file], original: 'any', container_id: media_object.id}.not_to change { MasterFile.count }
+        expect { post :create, Filedata: [file], original: 'any', container_id: media_object.id }.not_to change { MasterFile.count }
 
         expect(flash[:error]).not_to be_nil
       end
     end
 
     context "cannot upload a file with a non-ascii character in the filename" do
-      it "should provide a warning about the invalid filename" do
+      it "provides a warning about the invalid filename" do
         request.env["HTTP_REFERER"] = "/"
 
         file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
         allow(file).to receive(:original_filename).and_return("videoshort_é.mp4")
 
-        expect { post :create, Filedata: [file], original: 'any', container_id: media_object.id}.not_to change { MasterFile.count }
+        expect { post :create, Filedata: [file], original: 'any', container_id: media_object.id }.not_to change { MasterFile.count }
 
         expect(flash[:error]).not_to be_nil
       end
     end
 
     context "must be a valid MIME type" do
-      it "should recognize a video format" do
+      it "recognizes a video format" do
         file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-        post :create,
-          Filedata: [file],
-          original: 'any',
-          container_id: media_object.id
+        post :create, Filedata: [file], original: 'any', container_id: media_object.id
 
         master_file = media_object.reload.ordered_master_files.to_a.first
         expect(master_file.file_format).to eq "Moving image"
@@ -91,45 +98,40 @@ describe MasterFilesController do
         expect(flash[:error]).to be_nil
       end
 
-     it "should recognize an audio format" do
-       file = fixture_file_upload('/jazz-performance.mp3', 'audio/mp3')
-       post :create,
-         Filedata: [file],
-         original: 'any',
-         container_id: media_object.id
+      it "recognizes an audio format" do
+        file = fixture_file_upload('/jazz-performance.mp3', 'audio/mp3')
+        post :create, Filedata: [file], original: 'any', container_id: media_object.id
 
-       master_file = media_object.reload.ordered_master_files.to_a.first
-       expect(master_file.file_format).to eq "Sound"
-     end
+        master_file = media_object.reload.ordered_master_files.to_a.first
+        expect(master_file.file_format).to eq "Sound"
+      end
 
-     it "should reject non audio/video format" do
-       request.env["HTTP_REFERER"] = "/"
+      it "rejects non audio/video format" do
+        request.env["HTTP_REFERER"] = "/"
 
-       file = fixture_file_upload('/public-domain-book.txt', 'application/json')
+        file = fixture_file_upload('/public-domain-book.txt', 'application/json')
 
-       expect { post :create, Filedata: [file], original: 'any', container_id: media_object.id }.not_to change { MasterFile.count }
+        expect { post :create, Filedata: [file], original: 'any', container_id: media_object.id }.not_to change { MasterFile.count }
 
-       expect(flash[:error]).not_to be_nil
-     end
+        expect(flash[:error]).not_to be_nil
+      end
 
-     it "should recognize audio/video based on extension when MIMETYPE is of unknown format" do
-       file = fixture_file_upload('/videoshort.mp4', 'application/octet-stream')
+      it "recognizes audio/video based on extension when MIMETYPE is of unknown format" do
+        file = fixture_file_upload('/videoshort.mp4', 'application/octet-stream')
 
-       post :create,
-         Filedata: [file],
-         original: 'any',
-         container_id: media_object.id
-       master_file = MasterFile.all.last
-       expect(master_file.file_format).to eq "Moving image"
+        post :create, Filedata: [file], original: 'any', container_id: media_object.id
+        master_file = MasterFile.all.last
+        expect(master_file.file_format).to eq "Moving image"
 
-       expect(flash[:error]).to be_nil
-     end
+        expect(flash[:error]).to be_nil
+      end
     end
 
-    context "should process file successfully" do
-      it "should associate with a MediaObject" do
+    # rubocop:disable RSpec/ExampleLength
+    context "processes a file successfully" do
+      it "associates with a MediaObject" do
         file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-        #Work-around for a Rails bug
+        # Work-around for a Rails bug
         class << file
           attr_reader :tempfile
         end
@@ -142,8 +144,9 @@ describe MasterFilesController do
 
         expect(flash[:error]).to be_nil
       end
-      it "should associate a dropbox file" do
-        selected_files = {'0':{url:"file://#{Rails.root.join 'spec/fixtures/videoshort.mp4'}", filename:'videoshort.mp4', filesize:'100000'}}
+
+      it "associates a dropbox file" do
+        selected_files = { '0' => { url: 'file://' + Rails.root.join('spec', 'fixtures', 'videoshort.mp4').to_s, filename: 'videoshort.mp4', filesize: '100000' } }
         post :create, selected_files: selected_files, original: 'any', container_id: media_object.id
 
         master_file = MasterFile.all.last
@@ -153,8 +156,9 @@ describe MasterFilesController do
 
         expect(flash[:error]).to be_nil
       end
-      it "should associate a dropbox file that has a space in its name" do
-        selected_files = {'0':{url:"file://#{Rails.root.join 'spec/fixtures/video short.mp4'}", filename:'video short.mp4', filesize:'100000'}}
+
+      it "associates a dropbox file that has a space in its name" do
+        selected_files = { '0' => { url: 'file://' + Rails.root.join('spec', 'fixtures', 'video short.mp4').to_s, filename: 'video short.mp4', filesize: '100000' } }
         post :create, selected_files: selected_files, original: 'any', container_id: media_object.id
 
         master_file = MasterFile.all.last
@@ -164,16 +168,17 @@ describe MasterFilesController do
 
         expect(flash[:error]).to be_nil
       end
-      it "should not fail when associating with a published media_object" do
+
+      it "does not fail when associating with a published media_object" do
         media_object = FactoryGirl.create(:published_media_object)
         login_user media_object.collection.managers.first
-        @file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-        #Work-around for a Rails bug
-        class << @file
+        file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
+        # Work-around for a Rails bug
+        class << file
           attr_reader :tempfile
         end
 
-        post :create, Filedata: [@file], original: 'any', container_id: media_object.id
+        post :create, Filedata: [file], original: 'any', container_id: media_object.id
 
         master_file = MasterFile.all.last
         expect(media_object.reload.ordered_master_files.to_a).to include master_file
@@ -182,85 +187,101 @@ describe MasterFilesController do
         expect(flash[:error]).to be_nil
       end
     end
+    # rubocop:enable RSpec/ExampleLength
   end
 
   describe "#destroy" do
-    let!(:master_file) {FactoryGirl.create(:master_file, :with_media_object)}
+    let!(:master_file) { FactoryGirl.create(:master_file, :with_media_object) }
 
     it "deletes a master file as administrator" do
       login_as :administrator
-      expect(controller.current_ability.can? :destroy, master_file).to be_truthy
+      expect(controller.current_ability.can?(:destroy, master_file)).to be_truthy
       expect { post :destroy, id: master_file.id }.to change { MasterFile.count }.by(-1)
       expect(master_file.media_object.reload.ordered_master_files.to_a).not_to include master_file
     end
+
     it "deletes a master file as manager of owning collection" do
       login_user master_file.media_object.collection.managers.first
-      expect(controller.current_ability.can? :destroy, master_file).to be_truthy
-      expect { post :destroy, id: master_file.id }.to change { MasterFile.count }.by(-1)
+      expect(controller.current_ability.can?(:destroy, master_file)).to be_truthy
+      expect { post(:destroy, id: master_file.id) }.to change { MasterFile.count }.by(-1)
       expect(master_file.media_object.reload.ordered_master_files.to_a).not_to include master_file
     end
+
     it "redirects with a flash warning for end users" do
       login_as :user
-      expect(controller.current_ability.can? :destroy, master_file).to be_falsey
-      expect(post :destroy, id: master_file.id).to redirect_to(root_path)
+      expect(controller.current_ability.can?(:destroy, master_file)).to be_falsey
+      expect(post(:destroy, id: master_file.id)).to redirect_to(root_path)
       expect(flash[:notice]).not_to be_empty
     end
   end
 
   describe "#show" do
-    let(:master_file) {FactoryGirl.create(:master_file, :with_media_object)}
-    it "should redirect you to the media object page with the correct section" do
-      get :show, id: master_file.id, t:'10'
+    let(:master_file) { FactoryGirl.create(:master_file, :with_media_object) }
+
+    it "redirects you to the media object page with the correct section" do
+      get :show, id: master_file.id, t: '10'
       expect(response).to redirect_to("#{id_section_media_object_path(master_file.media_object.id, master_file.id)}?t=10")
     end
+
     context 'with fedora 3 pid' do
-      let!(:master_file) {FactoryGirl.create(:master_file, identifier: [fedora3_pid])}
+      let!(:master_file) { FactoryGirl.create(:master_file, identifier: [fedora3_pid]) }
       let(:fedora3_pid) { 'avalon:1234' }
 
-      it "should redirect" do
-        expect(get :show, id: fedora3_pid).to redirect_to(master_file_url(master_file.id))
+      it "redirects" do
+        expect(get(:show, id: fedora3_pid)).to redirect_to(master_file_url(master_file.id))
       end
     end
   end
 
   describe "#embed" do
-    let!(:master_file) {FactoryGirl.create(:master_file)}
-    let(:media_object) { instance_double('MediaObject', title: 'Media Object', id: 'avalon:1234',
-      ordered_master_files: [master_file], master_file_ids: [master_file.id]) }
+    let!(:master_file) { FactoryGirl.create(:master_file) }
+    let(:media_object) do
+      instance_double('MediaObject', title: 'Media Object', id: 'avalon:1234',
+                                     ordered_master_files: [master_file], master_file_ids: [master_file.id])
+    end
+
     before do
       allow_any_instance_of(MasterFile).to receive(:media_object).and_return(media_object)
       allow_any_instance_of(MasterFile).to receive(:media_object_id).and_return(media_object.id)
       disableCanCan!
     end
-    it "should render embed layout" do
-      expect(get :embed, id: master_file.id).to render_template(layout: 'embed')
+
+    it "renders the embed layout" do
+      expect(get(:embed, id: master_file.id)).to render_template(layout: 'embed')
     end
+
     context 'with fedora 3 pid' do
-      let!(:master_file) {FactoryGirl.create(:master_file, identifier: [fedora3_pid])}
+      let!(:master_file) { FactoryGirl.create(:master_file, identifier: [fedora3_pid]) }
       let(:fedora3_pid) { 'avalon:1234' }
 
-      it "should redirect" do
-        expect(get :embed, id: fedora3_pid).to redirect_to(embed_master_file_url(master_file.id))
+      it "redirects" do
+        expect(get(:embed, id: fedora3_pid)).to redirect_to(embed_master_file_url(master_file.id))
       end
     end
   end
 
   describe "#set_frame" do
-    subject(:mf){FactoryGirl.create(:master_file, :with_thumbnail, :with_media_object)}
-    it "should redirect to sign in when not logged in" do
-      expect(get :set_frame, id: mf.id ).to redirect_to new_user_session_path
+    subject(:mf) { FactoryGirl.create(:master_file, :with_thumbnail, :with_media_object) }
+
+    it "redirects to sign in when not logged in" do
+      expect(get(:set_frame, id: mf.id)).to redirect_to new_user_session_path
     end
-    it "should redirect to home when logged in and not authorized" do
+
+    it "redirects to home when logged in and not authorized" do
       login_as :user
-      expect(get :set_frame, id: mf.id ).to redirect_to root_path
+      expect(get(:set_frame, id: mf.id)).to redirect_to root_path
     end
+
     context "authorized" do
       before { disableCanCan! }
-      it "should redirect to edit_media_object" do
-        expect(get :set_frame, id: mf.id, type: 'thumbnail', offset: '10').to redirect_to edit_media_object_path(mf.media_object_id, step: 'file-upload')
+
+      it "redirects to edit_media_object" do
+        expect(get(:set_frame, id: mf.id, type: 'thumbnail', offset: '10')).to redirect_to edit_media_object_path(mf.media_object_id, step: 'file-upload')
       end
-      it "should return thumbnail" do
-        expect_any_instance_of(MasterFile).to receive(:extract_still) {'fake image content'}
+
+      it "returns thumbnail" do
+        expect_any_instance_of(MasterFile).to receive(:extract_still) { 'fake image content' }
+
         get :set_frame, format: 'jpeg', id: mf.id, type: 'thumbnail', offset: '10'
         expect(response.body).to eq('fake image content')
         expect(response.headers['Content-Type']).to eq('image/jpeg')
@@ -269,25 +290,30 @@ describe MasterFilesController do
   end
 
   describe "#get_frame" do
-    subject(:mf){FactoryGirl.create(:master_file, :with_thumbnail, :with_media_object)}
+    subject(:mf) { FactoryGirl.create(:master_file, :with_thumbnail, :with_media_object) }
+
     context "not authorized" do
-      it "should redirect to sign in when not logged in" do
-        expect(get :get_frame, id: mf.id ).to redirect_to new_user_session_path
+      it "redirects to sign in when not logged in" do
+        expect(get(:get_frame, id: mf.id)).to redirect_to new_user_session_path
       end
-      it "should redirect to home when logged in and not authorized" do
+
+      it "redirects to home when logged in and not authorized" do
         login_as :user
-        expect(get :get_frame, id: mf.id ).to redirect_to root_path
+        expect(get(:get_frame, id: mf.id)).to redirect_to root_path
       end
+
     end
     context "authorized" do
       before { disableCanCan! }
-      it "should return thumbnail" do
+
+      it "returns thumbnail" do
         get :get_frame, id: mf.id, type: 'thumbnail', size: 'bar'
         expect(response.body).to eq('fake image content')
         expect(response.headers['Content-Type']).to eq('image/jpeg')
       end
-      it "should return offset thumbnail" do
-        expect_any_instance_of(MasterFile).to receive(:extract_still) {'fake image content'}
+
+      it "returns offset thumbnail" do
+        expect_any_instance_of(MasterFile).to receive(:extract_still) { 'fake image content' }
         get :get_frame, id: mf.id, type: 'thumbnail', size: 'bar', offset: '1'
         expect(response.body).to eq('fake image content')
         expect(response.headers['Content-Type']).to eq('image/jpeg')
@@ -295,24 +321,26 @@ describe MasterFilesController do
     end
   end
 
+  # rubocop:disable RSpec/ExampleLength
   describe "#attach_structure" do
     let(:master_file) { FactoryGirl.create(:master_file, :with_media_object) }
     let(:file) { fixture_file_upload('/structure.xml', 'text/xml') }
 
-    before(:each) do
+    before do
       disableCanCan!
       # populate the structuralMetadata datastream with an uploaded xml file
-      post 'attach_structure', master_file: {structure: file}, id: master_file.id
+      post 'attach_structure', master_file: { structure: file }, id: master_file.id
       master_file.reload
     end
 
-    it "should populate structuralMetadata datastream with xml" do
+    it "populates structuralMetadata datastream with xml" do
       expect(master_file.structuralMetadata.xpath('//Item').length).to be(1)
       expect(master_file.structuralMetadata.valid?).to be true
       expect(flash[:error]).to be_nil
       expect(flash[:notice]).to be_nil
     end
-    it "should remove contents of structuralMetadata" do
+
+    it "removes contents of structuralMetadata" do
       # remove the contents of the datastream
       post 'attach_structure', id: master_file.id
       master_file.reload
@@ -322,8 +350,10 @@ describe MasterFilesController do
       expect(flash[:error]).to be_nil
       expect(flash[:notice]).to be_nil
     end
+
     context "with invalid XML file" do
       let(:file) { fixture_file_upload('/7763100.xml', 'text/xml') }
+
       it "gracefully handles an invalid file" do
         expect(master_file.structuralMetadata.content.nil?).to be_truthy
         expect(master_file.structuralMetadata.valid?).to be false
@@ -331,8 +361,10 @@ describe MasterFilesController do
         expect(flash[:notice]).to be_nil
       end
     end
+
     context "with invalid binary file" do
       let(:file) { fixture_file_upload('/videoshort.mp4', 'video/mp4') }
+
       it "gracefully handles an invalid file" do
         expect(master_file.structuralMetadata.content.nil?).to be_truthy
         expect(master_file.structuralMetadata.valid?).to be false
@@ -344,14 +376,14 @@ describe MasterFilesController do
   describe "#attach_captions" do
     let(:master_file) { FactoryGirl.create(:master_file, :with_media_object) }
 
-    before(:each) do
+    before do
       disableCanCan!
     end
 
-    it "should populate captions datastream with text" do
+    it "populates captions datastream with text" do
       # populate the captions datastream with an uploaded vtt file
       file = fixture_file_upload('/captions.vtt', 'text/vtt')
-      post 'attach_captions', master_file: {captions: file}, id: master_file.id
+      post 'attach_captions', master_file: { captions: file }, id: master_file.id
       master_file.reload
       expect(master_file.captions.has_content?).to be_truthy
       expect(master_file.captions.original_name).to eq('captions.vtt')
@@ -360,10 +392,11 @@ describe MasterFilesController do
       expect(flash[:notice]).to be_nil
       expect(flash[:success]).not_to be_nil
     end
+
     it "works with bad mime types from the browser" do
       # populate the captions datastream with an uploaded vtt file
       file = fixture_file_upload('/captions.vtt', 'application/octet-stream')
-      post 'attach_captions', master_file: {captions: file}, id: master_file.id
+      post 'attach_captions', master_file: { captions: file }, id: master_file.id
       master_file.reload
       expect(master_file.captions.has_content?).to be_truthy
       expect(master_file.captions.original_name).to eq('captions.vtt')
@@ -372,7 +405,8 @@ describe MasterFilesController do
       expect(flash[:notice]).to be_nil
       expect(flash[:success]).not_to be_nil
     end
-    it "should remove contents of captions datastream" do
+
+    it "removes contents of captions datastream" do
       # remove the contents of the datastream
       post 'attach_captions', id: master_file.id
       master_file.reload
@@ -381,10 +415,12 @@ describe MasterFilesController do
       expect(flash[:notice]).to be_nil
       expect(flash[:success]).not_to be_nil
     end
+
     context "with invalid file" do
       let(:file) { fixture_file_upload('/videoshort.mp4', 'video/mp4') }
+
       it "gracefully handles an invalid file" do
-        post 'attach_captions', master_file: {captions: file}, id: master_file.id
+        post 'attach_captions', master_file: { captions: file }, id: master_file.id
         master_file.reload
         expect(master_file.captions.has_content?).to be_falsey
         expect(flash[:error]).not_to be_blank
@@ -393,11 +429,14 @@ describe MasterFilesController do
       end
     end
   end
+  # rubocop:enable RSpec/ExampleLength
+
   describe "#captions" do
     let(:master_file) { FactoryGirl.create(:master_file, :with_media_object, :with_captions) }
-    it "should return contents of the captions attached file" do
+
+    it "returns contents of the captions attached file" do
       login_as :administrator
-      expect(get 'captions', id: master_file.id).to have_http_status(:ok)
+      expect(get('captions', id: master_file.id)).to have_http_status(:ok)
     end
   end
 end
