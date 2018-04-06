@@ -1,4 +1,10 @@
-class Integer
+int_class = if RUBY_VERSION < "2.4"
+              Fixnum # rubocop:disable Lint/UnifiedInteger
+            else
+              Integer
+            end
+
+int_class.class_eval do
   def to_hms
     h = 1.hour * 1000
     m = 1.minute * 1000
