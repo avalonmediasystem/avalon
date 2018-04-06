@@ -39,6 +39,21 @@ Metrics/MethodLength:
   CountComments: false
   Max: 15
 
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*_spec.rb'
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+Rails/HttpPositionalArguments:
+  # Only works with Rails 5
+  Enabled: false
+
+RSpec/AnyInstance:
+  Exclude:
+    - 'spec/**/*_controller_spec.rb'
+
 Style/HashSyntax:
   EnforcedStyle: ruby19
   SupportedStyles:
