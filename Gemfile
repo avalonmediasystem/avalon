@@ -17,7 +17,7 @@ gem 'sprockets-es6'
 gem 'uglifier', '>= 1.3.0'
 
 # Core Samvera
-gem 'hydra-head', '~> 10.3.4'
+gem 'hydra-head', github: 'samvera/hydra-head', branch: '10.x'
 gem 'active-fedora', '~> 11.2'
 gem 'active_fedora-datastreams'
 gem 'active_fedora-noid', '~> 2.0.2'
