@@ -1,11 +1,11 @@
 # Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -20,23 +20,23 @@ module Avalon
 
     attr_reader :playlist
 
-    def self.read(io)
+    def self.read(io, recursive: true)
       if io.is_a?(IO)
-        self.new(io.read)
+        self.new(io.read, recursive: recursive)
       elsif io.is_a?(String)
         if io =~ /^https?:/
-          open(io) { |resp| self.new(resp, URI.parse(io)) }
+          open(io) { |resp| self.new(resp, URI.parse(io), recursive: recursive) }
         elsif io =~ /\.m3u8?$/i
-          self.new(File.read(io), io)
+          self.new(File.read(io), io, recursive: recursive)
         else
-          self.new(io)
+          self.new(io, recursive: recursive)
         end
       end
     end
 
-    def initialize(playlist, base='')
+    def initialize(playlist, base='', recursive: true)
       @base = base
-      @playlist = { files: [] }
+      @playlist = { files: [], playlists: [] }
       tags = {}
       playlist.lines.each { |l|
         line = l.chomp
@@ -49,9 +49,12 @@ module Avalon
         elsif line =~ /^#EXTINF:(.+),(.*)$/
           tags[:duration] = $1.to_f
           tags[:title] = $2
-        elsif line =~ /\.m3u8?.*$/i
+        elsif line =~ /\.m3u8?.*$/i && recursive
           url = @base.is_a?(URI) ? @base.merge(line).to_s : File.expand_path(line,@base.to_s)
           @playlist.merge!(Avalon::M3U8Reader.read(url).playlist)
+        elsif line =~ /\.m3u8?.*$/i
+          url = @base.is_a?(URI) ? @base.merge(line).to_s : File.expand_path(line,@base.to_s)
+          @playlist[:playlists] << url
         elsif line =~ /^[^#]/
           tags[:filename] = line
           @playlist[:files] << tags
