@@ -558,6 +558,9 @@ class MasterFile < ActiveFedora::Base
 
   def get_ffmpeg_frame_data frame_source, new_width, new_height
     ffmpeg = Settings.ffmpeg.path
+    unless File.executable?(ffmpeg)
+      raise RuntimeError, "FFMPEG not at configured location: #{ffmpeg}"
+    end
     base = id.gsub(/\//,'_')
     aspect = new_width/new_height
     Tempfile.open([base,'.jpg']) do |jpeg|
