@@ -59,4 +59,21 @@ describe MediaObjectsHelper do
       expect(helper.get_duration_from_fragment(100, 20000)).to eq "5:31:40"
     end
   end
+
+  describe '#gather_all_comments' do
+    let(:media_object) { instance_double("MediaObject", comment: ['MO Comment']) }
+    let(:master_files) { [instance_double("MasterFile", comment: [])] }
+
+    it 'returns a list of unique comment strings' do
+      expect(helper.gather_all_comments(media_object, master_files)).to eq ["MO Comment"]
+    end
+
+    context 'with a master file comment' do
+      let(:master_files) { [instance_double("MasterFile", comment: ["MF Comment"], display_title: "MF1")] }
+
+      it 'returns a list of unique comment strings' do
+        expect(helper.gather_all_comments(media_object, master_files)).to eq ["MO Comment", "[MF1] MF Comment"]
+      end
+    end
+  end
 end
