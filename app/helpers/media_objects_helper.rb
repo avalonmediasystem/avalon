@@ -172,7 +172,9 @@ EOF
        if sectionnode.children.present?
          tracknumber = 0
          label = "#{index+1}. #{sectionnode.attribute('label').value} #{duration}".html_safe
-         link = link_to label, share_link_for( section ), id: 'section-title-' + section.id, data: data, class: 'playable wrap' + (current ? ' current-stream current-section' : '')
+         link = link_to label, share_link_for(section, only_path: true),
+                        id: 'section-title-' + section.id, data: data,
+                        class: 'playable wrap' + (current ? ' current-stream current-section' : '')
          wrapperopen = <<EOF
           #{headeropen}
           <button class="fa fa-minus-square #{current ? '' : 'hidden'}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
