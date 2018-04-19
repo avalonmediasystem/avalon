@@ -22,15 +22,25 @@ module ApplicationHelper
     "#{application_name} #{t(:release_label)} #{Avalon::VERSION}"
   end
 
-  def share_link_for(obj)
+  def share_link_for(obj, only_path: false)
     if obj.nil?
       I18n.t('media_object.empty_share_link')
     elsif obj.permalink.present?
       obj.permalink
     else
       case obj
-      when MediaObject then media_object_url(obj)
-      when MasterFileBehavior then id_section_media_object_url(obj.media_object_id, obj.id)
+      when MediaObject
+        if only_path
+          media_object_path(obj)
+        else
+          media_object_url(obj)
+        end
+      when MasterFileBehavior
+        if only_path
+          id_section_media_object_path(obj.media_object_id, obj.id)
+        else
+          id_section_media_object_url(obj.media_object_id, obj.id)
+        end
       end
     end
   end

@@ -172,7 +172,9 @@ EOF
        if sectionnode.children.present?
          tracknumber = 0
          label = "#{index+1}. #{sectionnode.attribute('label').value} #{duration}".html_safe
-         link = link_to label, share_link_for( section ), id: 'section-title-' + section.id, data: data, class: 'playable wrap' + (current ? ' current-stream current-section' : '')
+         link = link_to label, share_link_for(section, only_path: true),
+                        id: 'section-title-' + section.id, data: data,
+                        class: 'playable wrap' + (current ? ' current-stream current-section' : '')
          wrapperopen = <<EOF
           #{headeropen}
           <button class="fa fa-minus-square #{current ? '' : 'hidden'}" data-toggle="collapse" data-target="#section#{index}" aria-expanded="#{current ? 'true' : 'false' }" aria-controls="collapse#{index}"></button>
@@ -250,5 +252,15 @@ EOF
 
      def get_duration_from_fragment(start, stop)
        milliseconds_to_formatted_time((stop.to_i - start.to_i) * 1000)
+     end
+
+     # This method mirrors the one in the MediaObject model but makes use of the master files passed in which can be SpeedyAF Objects
+     # This would be good to refactor in the future but speeds things up considerably for now
+     def gather_all_comments(media_object, master_files)
+       media_object.comment.sort + master_files.collect do |mf|
+         mf.comment.reject(&:blank?).collect do |c|
+           mf.display_title.present? ? "[#{mf.display_title}] #{c}" : c
+         end.sort
+       end.flatten.uniq
      end
 end

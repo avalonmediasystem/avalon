@@ -47,7 +47,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <%= display_metadata('Related Item', display_related_item(@media_object)) %>
   <%= display_metadata('Notes', display_notes(@media_object)) %>
   <%= display_metadata('Other Identifier', display_other_identifiers(@media_object)) %>
-  <%= display_metadata('Comments', @media_object.all_comments) %>
+  <%= display_metadata('Comments', gather_all_comments(@media_object, @masterFiles)) %>
 
 </dl>
 <% if can? :inspect, @media_object %>

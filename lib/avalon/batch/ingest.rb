@@ -64,6 +64,9 @@ module Avalon
           @current_package = package
         end
 
+        # We have a valid batch so we can go ahead and delete the manifest file
+        @current_package.manifest.delete
+
         br = register_batch unless replay?
         br = register_replay if replay?
         @current_batch_registry = br.reload
@@ -81,7 +84,6 @@ module Avalon
         else
           logger.error "Persisting BatchRegistry failed for package #{@current_package.title}"
         end
-        @current_package.manifest.delete
       end
 
       # Register the individual rows on a spreadsheet for a valid package
