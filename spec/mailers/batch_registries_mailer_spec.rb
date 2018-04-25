@@ -58,6 +58,18 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
        expect(email).to have_body_text("<a href=\"#{media_object.permalink}\">")
        expect(email).to have_body_text(media_object.id)
     end
+
+    it 'indicates when media objects have been deleted already' do
+      deleted_media_object = FactoryGirl.create(:media_object).destroy
+      FactoryGirl.create(:batch_entries, batch_registries: batch_registries, media_object_pid: deleted_media_object.id, complete: true)
+      email = BatchRegistriesMailer.batch_registration_finished_mailer(batch_registries)
+      expect(email.to).to include(manager.email)
+      expect(email.subject).to include batch_registries.file_name
+      expect(email).to have_body_text(batch_registries.file_name)
+      expect(email).to have_body_text("<a href=\"#{media_object.permalink}\">")
+      expect(email).to have_body_text(media_object.id)
+      expect(email).to have_body_text("Item (#{deleted_media_object.id}) was created but no longer exists")
+    end
   end
 
   describe 'batch_registration_stalled_mailer' do
