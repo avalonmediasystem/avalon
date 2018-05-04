@@ -54,6 +54,7 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
        email = BatchRegistriesMailer.batch_registration_finished_mailer(batch_registries)
        expect(email.to).to include(manager.email)
        expect(email.subject).to include batch_registries.file_name
+       expect(email.subject).to include collection.name
        expect(email).to have_body_text(batch_registries.file_name)
        expect(email).to have_body_text("<a href=\"#{media_object.permalink}\">")
        expect(email).to have_body_text(media_object.id)
@@ -65,10 +66,21 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
       email = BatchRegistriesMailer.batch_registration_finished_mailer(batch_registries)
       expect(email.to).to include(manager.email)
       expect(email.subject).to include batch_registries.file_name
+      expect(email.subject).to include collection.name
       expect(email).to have_body_text(batch_registries.file_name)
       expect(email).to have_body_text("<a href=\"#{media_object.permalink}\">")
       expect(email).to have_body_text(media_object.id)
       expect(email).to have_body_text("Item (#{deleted_media_object.id}) was created but no longer exists")
+    end
+
+    it 'works when the collection has been deleted already' do
+      collection.destroy
+      email = BatchRegistriesMailer.batch_registration_finished_mailer(batch_registries)
+      expect(email.to).to include(manager.email)
+      expect(email.subject).to include batch_registries.file_name
+      expect(email).to have_body_text(batch_registries.file_name)
+      expect(email).to have_body_text("<a href=\"#{media_object.permalink}\">")
+      expect(email).to have_body_text(media_object.id)
     end
   end
 
@@ -81,7 +93,16 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
        email = BatchRegistriesMailer.batch_registration_stalled_mailer(batch_registries)
        expect(email.to).to include(notification_email_address)
        expect(email.subject).to include batch_registries.file_name
+       expect(email.subject).to include collection.name
        expect(email).to have_body_text(batch_registries.id.to_s)
+    end
+
+    it 'works when the collection has been deleted already' do
+      collection.destroy
+      email = BatchRegistriesMailer.batch_registration_stalled_mailer(batch_registries)
+      expect(email.to).to include(notification_email_address)
+      expect(email.subject).to include batch_registries.file_name
+      expect(email).to have_body_text(batch_registries.id.to_s)
     end
   end
 end
