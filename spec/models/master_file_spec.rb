@@ -484,6 +484,35 @@ describe MasterFile do
     end
   end
 
+  context 'with a working directory' do
+    subject(:master_file) { FactoryGirl.create(:master_file) }
+    let(:working_dir) {'/path/to/working_dir/'}
+    before do
+      ActiveJob::Base.queue_adapter = :test
+      Settings.matterhorn.media_path = working_dir
+    end
+
+    after do
+      Settings.matterhorn.media_path = nil
+    end
+    describe 'post_processing_working_directory_file_management' do
+      it 'enqueues the working directory cleanup job' do
+        master_file.send(:post_processing_file_management)
+        expect(CleanupWorkingFileJob).to have_been_enqueued.with(master_file.id)
+      end
+    end
+    describe '#working_file_path' do
+      it 'returns nil when the working directory is invalid' do
+        expect(master_file.working_file_path).to be_nil
+      end
+
+      it 'returns a path when the working directory is valid' do
+        allow(File).to receive(:directory?).and_return(true)
+        expect(master_file.working_file_path).to include(working_dir)
+      end
+    end
+  end
+
   describe '#extract_frame' do
     subject(:video_master_file) { FactoryGirl.create(:master_file, :with_media_object, :with_derivative, display_aspect_ratio: '1') }
     before do
