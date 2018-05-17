@@ -320,7 +320,7 @@ describe MasterFile do
 
         it "should copy an uploaded file to the media path" do
           Settings.matterhorn.media_path = media_path
-          expect(subject.file_location).to eq(File.join(media_path,original))
+          expect(subject.working_file_path).to eq(File.join(media_path,original))
         end
       end
     end

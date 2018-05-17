@@ -15,7 +15,6 @@
 require 'rails_helper'
 
 describe CleanupWorkingFileJob do
-  let(:job) { CleanupWorkingFileJob.new }
   let(:working_file) {'/temp/working_file.mp4'}
   let(:master_file) {instance_double('MasterFile')}
   describe "perform" do
@@ -24,6 +23,7 @@ describe CleanupWorkingFileJob do
       allow(master_file).to receive(:working_file_path).and_return(working_file)
       allow(File).to receive(:exist?).and_return(true)
       expect(File).to receive(:delete).with(working_file).once
+      CleanupWorkingFileJob.perform_now('abc123')
     end
   end
 end
