@@ -773,8 +773,13 @@ describe MediaObject do
     end
     it 'is a valid MODS document' do
       media_object = FactoryGirl.create(:media_object, :with_master_file)
-      xsd = Nokogiri::XML::Schema(File.read('spec/fixtures/mods-3-6.xsd'))
-      expect(xsd.valid?(media_object.descMetadata.ng_xml)).to be_truthy
+      xsd_path = File.join(Rails.root, 'spec', 'fixtures', 'mods-3-6.xsd')
+      # Note: we instantiate Schema with a file handle so that relative paths
+      # to included schema definitions can be resolved
+      File.open(xsd_path) do |f|
+        xsd = Nokogiri::XML::Schema(f)
+        expect(xsd.valid?(media_object.descMetadata.ng_xml)).to be_truthy
+      end
     end
   end
 
