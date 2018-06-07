@@ -38,7 +38,7 @@ Unless required by applicable law or agreed to in writing, software distributed
       <div class="col-sm-10"><%= @playlist.comment %></div>
     </div>
     <div class="row">
-      <div class="col-sm-2"><%= t("blacklight/folders/folder.visibility", scope: "helpers.label") %></div>
+      <div class="col-sm-2"><%= t("playlist.visibility") %></div>
       <div class="col-sm-10">
         <%= human_friendly_visibility @playlist.visibility %> - <i><%= visibility_description @playlist.visibility %></i>
         <% if @playlist.visibility == Playlist::PRIVATE_WITH_TOKEN %>

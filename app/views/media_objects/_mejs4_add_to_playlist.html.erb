@@ -96,7 +96,7 @@ This view file goes with the custom 'Add To Playlist' MediaElement 4 plugin.
             <%= f.text_area :comment, class: 'form-control' %>
           </div>
           <div class="form-group playlist-visibility-form-group">
-            <%= label_tag nil, t("blacklight/folders/folder.visibility", scope: "helpers.label") %>
+            <%= label_tag nil, t("playlist.visibility") %>
             <label class="radio-inline">
               <%= f.radio_button(:visibility, Playlist::PUBLIC) %>
               <%= human_friendly_visibility Playlist::PUBLIC %>
