@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 gem 'rails', '4.2.9'
 gem 'sqlite3'
 gem 'bootsnap', require: false
+gem 'sprockets', '~>3.7.2'
 
 # Assets
 gem 'coffee-rails', '~> 4.1.0'
