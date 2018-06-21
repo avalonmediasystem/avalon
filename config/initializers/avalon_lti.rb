@@ -5,7 +5,7 @@ module Avalon
   module Lti
     begin
       Configuration =
-        YAML.safe_load(ERB.new(File.read(File.expand_path('../../lti.yml', __FILE__))).result)
+        YAML.load(ERB.new(File.read(File.expand_path('../../lti.yml', __FILE__))).result)
     rescue
       Configuration = {}
     end
