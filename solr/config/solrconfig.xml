@@ -282,7 +282,7 @@
       -->
   </searchComponent>
 
-  <searchComponent name="suggest" class="solr.SuggestComponent">
+  <!--searchComponent name="suggest" class="solr.SuggestComponent">
     <lst name="suggester">
       <str name="name">mySuggester</str>
       <str name="lookupImpl">FuzzyLookupFactory</str>
@@ -301,7 +301,7 @@
     <arr name="components">
       <str>suggest</str>
     </arr>
-  </requestHandler>
+  </requestHandler-->
 
   <requestHandler name="/update/extract" class="org.apache.solr.handler.extraction.ExtractingRequestHandler">
     <lst name="defaults">
