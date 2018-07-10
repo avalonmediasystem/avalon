@@ -31,6 +31,9 @@ class MediaObject < ActiveFedora::Base
   has_and_belongs_to_many :governing_policies, class_name: 'ActiveFedora::Base', predicate: ActiveFedora::RDF::ProjectHydra.isGovernedBy
   belongs_to :collection, class_name: 'Admin::Collection', predicate: ActiveFedora::RDF::Fcrepo::RelsExt.isMemberOfCollection
 
+  before_validation :terms_of_use_set_to_before_validation_bogus
+  before_save :terms_of_use_set_to_before_save_bogus
+
   before_save :update_dependent_properties!, prepend: true
   before_save :update_permalink, if: Proc.new { |mo| mo.persisted? && mo.published? }, prepend: true
   before_save :assign_id!, prepend: true
@@ -55,6 +58,14 @@ class MediaObject < ActiveFedora::Base
   validate  :validate_dates, if: :resource_description_active?
   validate  :validate_note_type, if: :resource_description_active?
   validate  :report_missing_attributes, if: :resource_description_active?
+
+  def terms_of_use_set_to_before_validation_bogus
+    self.terms_of_use = 'Bogus before_valdiation terms of use!'
+  end
+
+  def terms_of_use_set_to_before_save_bogus
+    self.terms_of_use = 'Bogus before_save terms of use!'
+  end
 
   def resource_description_active?
     workflow.completed?("file-upload")
