@@ -22,6 +22,29 @@ describe MediaObject do
     # Force the validations to run by being on the resource-description workflow step
     let(:media_object) { FactoryGirl.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
 
+    describe 'before_validation does not work' do
+      it 'does not modify terms of use before validation ... why?' do
+        media_object.terms_of_use = 'I should ideally get modified'
+        # before_validation callback should get run here:
+        media_object.valid?
+        # What we expect ...
+        # expect(media_object.terms_of_use).to eq('Bogus before_validation terms of use!')
+        # What really happens ...
+        expect(media_object.terms_of_use).to eq('I should ideally get modified')
+      end
+
+      it 'does however modify terms of use during save via before save' do
+        media_object.terms_of_use = 'I should ideally get modified'
+        media_object.valid?
+        # Because before_validation is broken we get...
+        expect(media_object.terms_of_use).to eq('I should ideally get modified')
+        media_object.save
+        # But the before_save callback does actually gets run ...
+        expect(media_object.terms_of_use).to eq('Bogus before_save terms of use!')
+      end
+
+    end
+
     describe 'collection' do
       it 'has errors when not present' do
         expect{media_object.collection = nil}.to raise_error(ActiveFedora::AssociationTypeMismatch)
