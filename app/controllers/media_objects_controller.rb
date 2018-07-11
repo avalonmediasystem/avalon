@@ -190,7 +190,7 @@ class MediaObjectsController < ApplicationController
       begin
         # Set other identifiers
         # FIXME: The ordering in the slice is important
-        @media_object.update_attributes(media_object_parameters.slice(:other_identifier, :other_identifier_type))
+        @media_object.update_attributes(media_object_parameters.slice(:other_identifier, :other_identifier_type, :identifier))
         # Try to use Bib Import
         @media_object.descMetadata.populate_from_catalog!(media_object_parameters[:bibliographic_id][:id],
                                                           media_object_parameters[:bibliographic_id][:source])
