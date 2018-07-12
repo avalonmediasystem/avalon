@@ -190,6 +190,7 @@ en:
     publicAltText: "This playlist can be viewed by anyone on the web."
     private-with-tokenAltText: "This playlist can only be viewed by users who have the unique link."
 
+    visibility: "Visibility"
     privateText: "Private"
     publicText: "Public"
     private-with-tokenText: "Share by link"

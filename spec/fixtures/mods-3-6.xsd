@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  Editor:  Ray Denenberg, Library of Congress; rden@loc.gov -->
 <xs:schema xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.loc.gov/mods/v3" targetNamespace="http://www.loc.gov/mods/v3" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<!-- -->
-	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.loc.gov/mods/xml.xsd"/>
-	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="http://www.loc.gov/standards/xlink/xlink.xsd"/>
+	<!-- Load downloaded file rather than from http://www.loc.gov/mods/xml.xsd -->
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+	<!-- Load downloaded file rather than from http://www.loc.gov/standards/xlink/xlink.xsd -->
+	<xs:import namespace="http://www.w3.org/1999/xlink" schemaLocation="xlink.xsd"/>
 	<!-- 
 MODS: Metadata Object Description Schema. See http://www.loc.gov/standards/mods/
 

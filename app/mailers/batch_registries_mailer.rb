@@ -30,11 +30,13 @@ class BatchRegistriesMailer < ApplicationMailer
     @completed_items = BatchEntries.where(batch_registries_id: @batch_registry.id, complete: true).order(position: :asc)
     prefix = "Success:"
     prefix = "Errors Present:" unless @error_items.empty?
+    collection_text = Admin::Collection.find(@batch_registry.collection).name if Admin::Collection.exists?(@batch_registry.collection)
+    collection_text ||= "Collection"
 
     mail(
       to: email,
       from: Settings.email.notification,
-      subject: "#{prefix} Batch Registry #{@batch_registry.file_name} for #{Admin::Collection.find(@batch_registry.collection).name} has completed"
+      subject: "#{prefix} Batch Registry #{@batch_registry.file_name} for #{collection_text} has completed"
     )
   end
 
@@ -42,10 +44,13 @@ class BatchRegistriesMailer < ApplicationMailer
   def batch_registration_stalled_mailer(batch_registry)
     @batch_registry = batch_registry
     email = Settings.email.notification
+    collection_text = Admin::Collection.find(@batch_registry.collection).name if Admin::Collection.exists?(@batch_registry.collection)
+    collection_text ||= "Collection"
+
     mail(
       to: email,
       from: Settings.email.notification,
-      subject: "Batch Registry #{@batch_registry.file_name} for #{Admin::Collection.find(@batch_registry.collection).name} has stalled"
+      subject: "Batch Registry #{@batch_registry.file_name} for #{collection_text} has stalled"
     )
   end
 end

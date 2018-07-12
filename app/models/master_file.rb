@@ -501,6 +501,13 @@ class MasterFile < ActiveFedora::Base
     end
   end
 
+  def working_file_path
+    path = nil
+    config_path = Settings.matterhorn.media_path
+    path = File.join(config_path, File.basename(self.file_location)) if config_path.present? && File.directory?(config_path)
+    path
+  end
+
   protected
 
   def mediainfo
@@ -633,20 +640,20 @@ class MasterFile < ActiveFedora::Base
 
   def saveOriginal(file, original_name=nil)
     realpath = File.realpath(file.path)
+
     if original_name.present?
-      config_path = Settings.matterhorn.media_path
-      newpath = nil
-      if config_path.present? and File.directory?(config_path)
-        newpath = File.join(config_path, original_name)
-        FileUtils.cp(realpath, newpath)
-      else
-        newpath = File.join(File.dirname(realpath), original_name)
-        File.rename(realpath, newpath)
+      # If we have a temp name from an upload, rename to the original name supplied by the user
+      unless File.basename(realpath) == original_name
+        path = File.join(File.dirname(realpath), original_name)
+        File.rename(realpath, path)
+        realpath = path
+        self.file_location = realpath
       end
-      self.file_location = newpath
-    else
-      self.file_location = realpath
+
+      newpath = working_file_path
+      FileUtils.cp(realpath, newpath) unless newpath.blank?
     end
+    self.file_location = realpath
     self.file_size = file.size.to_s
   ensure
     file.close
@@ -698,6 +705,7 @@ class MasterFile < ActiveFedora::Base
     else
       # Do nothing
     end
+    CleanupWorkingFileJob.perform_later(self.id) unless Settings.matterhorn.media_path.blank?
   end
 
   def update_ingest_batch

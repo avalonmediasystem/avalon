@@ -47,11 +47,16 @@ Unless required by applicable law or agreed to in writing, software distributed
     </tr>
     <% @completed_items.each do |be_completed| %>
       <tr>
-        <% media_object = MediaObject.find(be_completed.media_object_pid) %>
-        <% link_url = media_object.permalink %>
-        <% link_url = media_object_url(media_object) if link_url.blank? %>
-        <td> <%= be_completed.position + 2 %> </td>
-        <td> <%= link_to(be_completed.media_object_pid, link_url) %></td>
+        <% if MediaObject.exists? be_completed.media_object_pid %>
+          <% media_object = MediaObject.find(be_completed.media_object_pid) %>
+          <% link_url = media_object.permalink %>
+          <% link_url = media_object_url(media_object) if link_url.blank? %>
+          <td> <%= be_completed.position + 2 %> </td>
+          <td> <%= link_to(be_completed.media_object_pid, link_url) %></td>
+        <% else %>
+          <td> <%= be_completed.position + 2 %> </td>
+          <td> Item (<%= be_completed.media_object_pid %>) was created but no longer exists </td>
+        <% end %>
       </tr>
     <% end %>
   </table>
