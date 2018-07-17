@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # Core rails
-gem 'rails', '4.2.9'
+gem 'rails', '=5.0.7'
 gem 'sqlite3'
 gem 'bootsnap', require: false
 gem 'sprockets', '~>3.7.2'
@@ -22,7 +22,7 @@ gem 'hydra-head', '~> 10.3.4'
 gem 'active-fedora', '~> 11.2'
 gem 'active_fedora-datastreams'
 gem 'active_fedora-noid', '~> 2.0.2'
-gem 'fedora-migrate', '~> 0.5.0'
+gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', branch: 'optional_rake_tasks'
 gem 'rdf-rdfxml'
 
 # Samvera version pins
@@ -65,17 +65,6 @@ gem 'wavefile'
 gem 'edtf'
 gem 'iconv'
 gem 'marc'
-
-# MediaElement.js & Plugins
-gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r6_flash-fix'
-gem 'media-element-logo-plugin'
-gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.2'
-gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r4'
-gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r6.3'
-gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r4'
-gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'avalon-r5'
-gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r4'
-gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/mediaelement-track-scrubber.git', tag: 'avalon-r6'
 
 # Jobs
 gem 'redis-rails'
@@ -126,6 +115,7 @@ group :test do
   gem 'faker'
   gem 'hashdiff'
   gem 'poltergeist'
+  gem 'rails-controller-testing'
   gem 'rspec-retry'
   gem 'shoulda-matchers'
   gem 'simplecov'

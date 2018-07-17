@@ -256,8 +256,9 @@ Devise.setup do |config|
 
     if provider[:provider] == :identity
       provider[:params].merge!({
-        on_login: AuthFormsController.action(:render_form, AuthFormsController.dispatcher(:identity, :request_phase)),
-        on_registration: AuthFormsController.action(:render_form, AuthFormsController.dispatcher(:identity, :registration_form))
+        # FIXME This breaks in Rails 5+ due to https://github.com/rails/rails/commit/4485351501d39280102ea1b8db270a5a27ed7b63
+        # on_login: AuthFormsController.action(:render_form, AuthFormsController.dispatcher(:identity, :request_phase)),
+        # on_registration: AuthFormsController.action(:render_form, AuthFormsController.dispatcher(:identity, :registration_form))
       })
     end
 
