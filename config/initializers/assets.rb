@@ -16,6 +16,4 @@ Rails.application.config.assets.tap do |assets|
   # MediaElement 4 files
   assets.precompile += %w( mejs4_player.js mejs4_player.scss )
   assets.precompile += Dir[Rails.root + 'vendor/assets/stylesheets/mediaelement/mejs-controls.*']
-  # MediaElement 2 files
-  assets.precompile += %w( mejs2_player.js mejs2_player.scss )
 end
