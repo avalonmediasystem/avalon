@@ -30,15 +30,14 @@ module IngestBatchStatusEmailJobs
         end
 
         next unless complete
-        unless errors
-          BatchRegistriesMailer.batch_registration_finished_mailer(br).deliver_now
-          br.completed_email_sent = true
-          br.complete = true
-        end
+
+        BatchRegistriesMailer.batch_registration_finished_mailer(br).deliver_now
         if errors
-          BatchRegistriesMailer.batch_registration_finished_mailer(br).deliver_now
           br.error_email_sent = true
           br.error = true
+        else
+          br.completed_email_sent = true
+          br.complete = true
         end
         br.save
       end

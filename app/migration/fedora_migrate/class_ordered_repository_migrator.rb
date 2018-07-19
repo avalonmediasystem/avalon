@@ -50,7 +50,8 @@ module FedoraMigrate
       status_report.nil? ||
         (status_report.status != 'completed' && status_report.status != 'waiting' && method == :migrate) ||
         (status_report.status != 'completed' && method == :second_pass) ||
-        (!skip_completed? && overwrite?)
+        (!skip_completed? && overwrite? && method == :second_pass) ||
+        (!skip_completed? && overwrite? && method == :migrate && status_report.status != 'waiting')
     end
 
     private

@@ -4,7 +4,8 @@ AUTH_10_SUPPORT = true
 module Avalon
   module Lti
     begin
-      Configuration = YAML.load(File.read(File.expand_path('../../lti.yml',__FILE__)))
+      Configuration =
+        YAML.load(ERB.new(File.read(File.expand_path('../../lti.yml', __FILE__))).result)
     rescue
       Configuration = {}
     end

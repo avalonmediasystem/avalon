@@ -355,6 +355,15 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.other_identifier.find {|id_pair| id_pair[:source] == 'other'}).not_to be nil
           expect(new_media_object.other_identifier.find {|id_pair| id_pair[:source] == 'other'}[:id]).to eq('12345')
         end
+        it "should merge supplied DC identifiers after bib import" do
+          Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+          stub_request(:get, sru_url).to_return(body: sru_response)
+          fields = { bibliographic_id: bib_id, identifier: ['ABC1234'] }
+          post 'create', format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id
+          expect(response.status).to eq(200)
+          new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
+          expect(new_media_object.identifier).to eq(['ABC1234'])
+        end
         it "should create a new media_object using ingest_api_hash of existing media_object" do
           # master_file_obj = FactoryGirl.create(:master_file, master_file.slice(:files))
           media_object = FactoryGirl.create(:fully_searchable_media_object, :with_completed_workflow)
