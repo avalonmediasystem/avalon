@@ -647,9 +647,9 @@ class MasterFile < ActiveFedora::Base
         path = File.join(File.dirname(realpath), original_name)
         File.rename(realpath, path)
         realpath = path
-        self.file_location = realpath
       end
 
+      self.file_location = realpath
       newpath = working_file_path
       FileUtils.cp(realpath, newpath) unless newpath.blank?
     end
