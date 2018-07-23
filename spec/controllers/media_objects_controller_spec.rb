@@ -439,7 +439,7 @@ describe MediaObjectsController, type: :controller do
           ActiveJob::Base.queue_adapter = :inline
         end
         it "should delete existing master_files and add a new master_file to a media_object" do
-          put 'json_update', format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id, replace_master_files: true
+          put 'json_update', format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id, replace_masterfiles: true
           expect(JSON.parse(response.body)['id'].class).to eq String
           expect(JSON.parse(response.body)).not_to include('errors')
           media_object.reload

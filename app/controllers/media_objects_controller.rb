@@ -255,7 +255,7 @@ class MediaObjectsController < ApplicationController
       end
 
       if error_messages.empty?
-        if api_params[:replace_master_files]
+        if api_params[:replace_masterfiles]
           old_ordered_master_files.each do |mf|
             p = MasterFile.find(mf)
             @media_object.master_files.delete(p)
@@ -607,6 +607,6 @@ class MediaObjectsController < ApplicationController
   end
 
   def api_params
-    params.permit(:collection_id, :publish, :import_bib_record, :replace_master_files)
+    params.permit(:collection_id, :publish, :import_bib_record, :replace_masterfiles)
   end
 end
