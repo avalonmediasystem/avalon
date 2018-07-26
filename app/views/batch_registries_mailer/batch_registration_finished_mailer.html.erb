@@ -47,8 +47,8 @@ Unless required by applicable law or agreed to in writing, software distributed
     </tr>
     <% @completed_items.each do |be_completed| %>
       <tr>
-        <% if MediaObject.exists? be_completed.media_object_pid %>
-          <% media_object = MediaObject.find(be_completed.media_object_pid) %>
+        <% media_object = MediaObject.where(id: be_completed.media_object_pid).first %>
+        <% if media_object %>
           <% link_url = media_object.permalink %>
           <% link_url = media_object_url(media_object) if link_url.blank? %>
           <td> <%= be_completed.position + 2 %> </td>
