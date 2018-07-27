@@ -23,7 +23,6 @@ class MediaObjectsController < ApplicationController
   include SecurityHelper
 
   before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details]
-  before_action :authenticate_api!, only: [:show, :create, :json_update], if: proc { request.format.json? }
   load_and_authorize_resource except: [:create, :json_update, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections]
   # authorize_resource only: [:create, :update]
 
@@ -46,10 +45,6 @@ class MediaObjectsController < ApplicationController
 
   def can_embed?
     params[:action] == 'show'
-  end
-
-  def authenticate_api!
-    return head :unauthorized if !signed_in?
   end
 
   def confirm_remove
