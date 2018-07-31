@@ -49,6 +49,10 @@ class MasterFile < ActiveFedora::Base
   # Don't pass the block here since we save the original_name when the user uploads the captions file
   has_subresource 'captions', class_name: 'IndexedFile'
 
+  has_subresource 'waveform', class_name: 'IndexedFile' do |f|
+    f.original_name = 'waveform.json'
+  end
+
   property :title, predicate: ::RDF::Vocab::EBUCore.title, multiple: false do |index|
     index.as :stored_searchable
   end
