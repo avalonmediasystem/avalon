@@ -1,4 +1,5 @@
 require 'audio_waveform'
+require 'wavefile'
 
 class WaveformService
 
@@ -14,7 +15,7 @@ class WaveformService
       bits: @bit_res
     )
     get_normalized_peaks(uri).each {|peak| waveform.append(peak[0], peak[1]) }
-    waveform
+    waveform.to_json
   end
 
 private
@@ -22,15 +23,22 @@ private
     peaks = get_peaks(uri)
     max_peak = peaks.flatten.map(&:abs).max
     res = 2**(@bit_res-1)
-    factor = (res/max_peak).to_i
+    factor = res/max_peak.to_f
     peaks.map {|peak| peak.collect {|num| (num*factor).to_i }}
   end
 
   def get_peaks(uri)
-    temp_file = "/tmp/#{SecureRandom.uuid}.mp4"
-    `ffmpeg -i #{uri} -c copy -bsf:a aac_adtstoasc #{temp_file} 2> /dev/null`
-    raw_peaks = `ffprobe -f lavfi -i amovie=#{temp_file},astats=metadata=1:reset=1 -show_entries frame_tags=lavfi.astats.Overall.Min_level,lavfi.astats.Overall.Max_level -of csv=p=0 2> /dev/null`
-    raw_peaks.split("\n").map {|o| o.split(",").map(&:to_f)}
+    # headers = "-headers $'Referer: https://media.dlib.indiana.edu\r\n'" if uri.starts_with? "http"
+    headers = "-headers $'Referer: #{Rails.application.routes.url_helpers.root_url}\r\n'" if uri.starts_with? "http"
+    cmd = "ffmpeg #{headers} -i #{uri} -f wav - 2> /dev/null"
+    return gather_peaks(IO.popen(cmd))
   end
 
+  def gather_peaks(wav_file)
+    peaks = []
+    WaveFile::Reader.new(wav_file).each_buffer(@samples_per_pixel) do |buffer|
+      peaks << [buffer.samples.flatten.min, buffer.samples.flatten.max]
+    end
+    peaks
+  end
 end
