@@ -59,6 +59,7 @@ gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", bran
 gem 'rest-client'
 gem 'roo'
 gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
+gem 'audio_waveform-ruby', :require => 'audio_waveform', :git => 'https://github.com/bbc/audio_waveform-ruby.git'
 
 # Data Translation & Normalization
 gem 'edtf'
