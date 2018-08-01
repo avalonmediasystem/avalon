@@ -114,6 +114,13 @@ GIT
       rest-client
 
 GIT
+  remote: https://github.com/bbc/audio_waveform-ruby.git
+  revision: 6d2699489f5ce29a40874a936fc581182c87ca69
+  specs:
+    audio_waveform-ruby (1.0.4)
+      json (~> 2.1.0)
+
+GIT
   remote: https://github.com/javan/whenever.git
   revision: b4f61737b89bf5a0b699989dc1bceb50cdb258c1
   specs:
@@ -855,6 +862,7 @@ DEPENDENCIES
   activerecord-session_store
   acts_as_list
   api-pagination
+  audio_waveform-ruby!
   avalon-about!
   avalon-workflow!
   aws-sdk (~> 2.0)
@@ -951,4 +959,4 @@ DEPENDENCIES
   zoom
 
 BUNDLED WITH
-   1.16.1
+   1.16.2
