@@ -118,10 +118,13 @@ describe MasterFile do
       # allow(ActiveEncodeJob::Create).to receive(:new).and_return(encode_job)
       # allow(encode_job).to receive(:perform)
     end
-    it 'starts an ActiveEncode workflow' do
+    it 'enqueues an ActiveEncode job' do
       master_file.process
       expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, "file://" + URI.escape(master_file.file_location), {preset: master_file.workflow_name})
-      # expect(encode_job).to have_received(:perform)
+    end
+    it 'enqueues a Waveform job' do
+      master_file.process
+      expect(WaveformJob).to have_been_enqueued.with(master_file.id)
     end
     describe 'already processing' do
       before do
@@ -130,7 +133,6 @@ describe MasterFile do
       it 'should not start an ActiveEncode workflow' do
         expect{master_file.process}.to raise_error(RuntimeError)
         expect(ActiveEncodeJob::Create).not_to have_been_enqueued
-        # expect(encode_job).not_to have_received(:perform)
       end
     end
   end
