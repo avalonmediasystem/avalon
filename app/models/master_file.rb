@@ -274,6 +274,7 @@ class MasterFile < ActiveFedora::Base
     end
 
     ActiveEncodeJob::Create.perform_later(self.id, input, {preset: self.workflow_name})
+    WaveformJob.perform_later(self.id)
   end
 
   def finished_processing?
