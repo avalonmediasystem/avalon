@@ -36,6 +36,19 @@ class MasterFilesController < ApplicationController
     end
   end
 
+  # Renders the waveform data for an object or alerts the user that no waveform data is present with html present
+  # @return [String] The rendered template
+  def waveform
+    @master_file = MasterFile.find(params[:id])
+    authorize! :read, @master_file
+    ds = @master_file.waveform
+    if ds.nil? or ds.empty?
+      render :text => 'Not Found', :status => :not_found
+    else
+      send_data ds.content, type: ds.mime_type, filename: ds.original_name
+    end
+  end
+
   def can_embed?
     params[:action] == 'embed'
   end
