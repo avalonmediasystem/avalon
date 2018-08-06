@@ -62,6 +62,13 @@ FactoryGirl.define do
         mf.save
       end
     end
+    trait :with_waveform do
+      after(:create) do |mf|
+        mf.waveform.mime_type = 'application/json'
+        mf.waveform.content = File.read('spec/fixtures/waveform.json')
+        mf.save
+      end
+    end
     trait :with_comments do
       comment ['MF Comment 1', 'MF Comment 2']
     end
