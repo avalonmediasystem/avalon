@@ -547,7 +547,7 @@ describe MasterFile do
   describe 'captions' do
     let(:master_file) { FactoryGirl.create(:master_file) }
     it 'has a caption' do
-      expect(master_file.caption).to exist
+      expect(master_file.captions).to be_kind_of IndexedFile
     end
   end
 
