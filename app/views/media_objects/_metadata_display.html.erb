@@ -52,9 +52,6 @@ Unless required by applicable law or agreed to in writing, software distributed
 </dl>
 <% if can? :inspect, @media_object %>
   <%= link_to 'View Raw Metadata', inspect_media_object_path(@media_object.id, 'descMetadata'), :target => 'blank', :class => "btn btn-default btn-small" %>
-  <%# TODO 3006 move this to structure metadata page
-  <%= link_to 'View Waveform', inspect_media_object_path(@media_object.id, 'waveform'), :target => 'blank', :class => "btn btn-default btn-small" %>
-  %>
   <%= link_to 'View Fedora Objects', tree_media_object_path(@media_object.id), :id => 'show_object_tree', :target => 'blank', :class => "btn btn-default btn-small" %>
   <div id="object_tree" data-src="<%=tree_media_object_path(@media_object.id)%>">
   </div>

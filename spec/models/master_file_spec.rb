@@ -554,6 +554,7 @@ describe MasterFile do
   describe 'waveforms' do
     let(:master_file) { FactoryGirl.create(:master_file) }
     it 'sets original_name to default value' do
+      expect(master_file.waveform).to be_kind_of IndexedFile
       expect(master_file.waveform.original_name).to eq 'waveform.json'
     end
   end
