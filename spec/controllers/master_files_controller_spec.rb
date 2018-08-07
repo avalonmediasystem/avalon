@@ -438,4 +438,14 @@ describe MasterFilesController do
       expect(get('captions', id: master_file.id)).to have_http_status(:ok)
     end
   end
+
+  describe "#waveform" do
+    let(:master_file) { FactoryGirl.create(:master_file, :with_media_object, :with_waveform) }
+
+    it "returns contents of the waveform attached file" do
+      login_as :administrator
+      expect(get('waveform', id: master_file.id)).to have_http_status(:ok)
+    end
+  end
+
 end
