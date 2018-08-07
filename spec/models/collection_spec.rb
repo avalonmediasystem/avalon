@@ -500,7 +500,6 @@ describe Admin::Collection do
   describe "reindex_members" do
     before do
       @collection = FactoryGirl.create(:collection, items: 3)
-      ActiveJob::Base.queue_adapter = :test
     end
     it 'should queue a reindex job for all member objects' do
       @collection.reindex_members {}
