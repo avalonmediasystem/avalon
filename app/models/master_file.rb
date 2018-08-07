@@ -49,6 +49,10 @@ class MasterFile < ActiveFedora::Base
   # Don't pass the block here since we save the original_name when the user uploads the captions file
   has_subresource 'captions', class_name: 'IndexedFile'
 
+  has_subresource 'waveform', class_name: 'IndexedFile' do |f|
+    f.original_name = 'waveform.json'
+  end
+
   property :title, predicate: ::RDF::Vocab::EBUCore.title, multiple: false do |index|
     index.as :stored_searchable
   end
@@ -485,6 +489,14 @@ class MasterFile < ActiveFedora::Base
     has_captions? ? captions.mime_type : nil
   end
 
+  def has_waveform?
+    !waveform.empty?
+  end
+
+  def waveform_type
+    has_waveform? ? waveform.mime_type : nil
+  end
+
   def has_structuralMetadata?
     !structuralMetadata.empty?
   end
@@ -493,6 +505,7 @@ class MasterFile < ActiveFedora::Base
     super.tap do |solr_doc|
       solr_doc['file_size_ltsi'] = file_size
       solr_doc['has_captions?_bs'] = has_captions?
+      solr_doc['has_waveform?_bs'] = has_waveform?
       solr_doc['has_poster?_bs'] = has_poster?
       solr_doc['has_thumbnail?_bs'] = has_thumbnail?
       solr_doc['has_structuralMetadata?_bs'] = has_structuralMetadata?

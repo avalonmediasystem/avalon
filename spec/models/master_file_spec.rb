@@ -544,6 +544,21 @@ describe MasterFile do
     end
   end
 
+  describe 'captions' do
+    let(:master_file) { FactoryGirl.create(:master_file) }
+    it 'has a caption' do
+      expect(master_file.captions).to be_kind_of IndexedFile
+    end
+  end
+
+  describe 'waveforms' do
+    let(:master_file) { FactoryGirl.create(:master_file) }
+    it 'sets original_name to default value' do
+      expect(master_file.waveform).to be_kind_of IndexedFile
+      expect(master_file.waveform.original_name).to eq 'waveform.json'
+    end
+  end
+
   describe 'update_parent!' do
     it 'does not error if the master file has no parent' do
       expect { MasterFile.new.send(:update_parent!) }.not_to raise_error
