@@ -26,7 +26,7 @@ gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.
 gem 'rdf-rdfxml'
 
 # Samvera version pins
-gem 'blacklight', '=6.11.0'
+gem 'blacklight', '< 7.0'
 gem 'rdf', '~> 2.2'
 gem 'rsolr', '~> 1.0'
 

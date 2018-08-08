@@ -175,7 +175,7 @@ GEM
     api-pagination (4.8.1)
     arel (7.1.4)
     ast (2.4.0)
-    autoprefixer-rails (9.0.0)
+    autoprefixer-rails (9.1.0)
       execjs
     aws-sdk (2.11.89)
       aws-sdk-resources (= 2.11.89)
@@ -200,7 +200,7 @@ GEM
     bixby (1.0.0)
       rubocop (~> 0.50, <= 0.52.1)
       rubocop-rspec (~> 1.22, <= 1.22.2)
-    blacklight (6.11.0)
+    blacklight (6.15.0)
       bootstrap-sass (~> 3.2)
       deprecation
       globalid
@@ -427,7 +427,7 @@ GEM
       hydra-access-controls (= 10.3.4)
       hydra-core (= 10.3.4)
       rails (>= 3.2.6)
-    i18n (1.0.1)
+    i18n (1.1.0)
       concurrent-ruby (~> 1.0)
     iconv (1.0.5)
     ims-lti (1.1.13)
@@ -851,7 +851,7 @@ DEPENDENCIES
   aws-sdk (~> 2.0)
   aws-sdk-rails
   bixby
-  blacklight (= 6.11.0)
+  blacklight (< 7.0)
   bootsnap
   bootstrap-toggle-rails!
   bootstrap_form
