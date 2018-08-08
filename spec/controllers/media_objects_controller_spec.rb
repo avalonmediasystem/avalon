@@ -618,7 +618,7 @@ describe MediaObjectsController, type: :controller do
         5.times { FactoryGirl.create(:published_media_object, visibility: 'public', collection: collection) }
         ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
         request.headers['Avalon-Api-Key'] = 'secret_token'
-        get 'index', format:'json', per_page: '2'
+        get 'index', params: { format:'json', per_page: '2' }
       end
       it 'should paginate' do
         expect(json.count).to eq(2)
