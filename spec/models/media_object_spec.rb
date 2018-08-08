@@ -366,8 +366,8 @@ describe MediaObject do
       expect(media_object.table_of_contents).to eq([])
       expect(media_object.physical_description).to eq([])
       expect(media_object.record_identifier).to eq([])
-      expect(media_object.note).to be_nil
-      expect(media_object.other_identifier).to be_nil
+      expect(media_object.note).to eq([])
+      expect(media_object.other_identifier).to eq([])
    end
   end
 
