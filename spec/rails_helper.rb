@@ -4,7 +4,7 @@ if ENV['COVERAGE'] || ENV['TRAVIS']
 
   SimpleCov.start('rails') do
     add_filter '/spec'
-    add_filter '/app/migration'    
+    add_filter '/app/migration'
   end
   SimpleCov.command_name 'spec'
 end
@@ -54,6 +54,8 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 ActiveRecord::Migration.maintain_test_schema!
 
 ActiveJob::Base.queue_adapter = :test
+
+Capybara.server = :webrick
 
 Shoulda::Matchers.configure do |config|
   config.integrate do |with|
