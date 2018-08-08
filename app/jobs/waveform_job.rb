@@ -35,9 +35,15 @@ class WaveformJob < ActiveJob::Base
       path = master_file.file_location
       return path if path.present? && File.exist?(path)
 
+      playlist_url = playlist_url(master_file)
+      if playlist_url
+        SecurityHandler.secure_url(playlist_url, target: master_file.id)
+      end
+    end
+
+    def playlist_url(master_file)
       quality = master_file.is_video? ? 'low' : 'medium'
-      playlist_url = master_file.stream_details[:stream_hls].find { |d| d[:quality] == quality }[:url]
-      return null unless playlist_url
-      SecurityHandler.secure_url(playlist_url, target: master_file.id)
+      quality_details = master_file.stream_details[:stream_hls].find { |d| d[:quality] == quality }
+      quality_details.present? ? quality_details[:url] : nil
     end
 end
