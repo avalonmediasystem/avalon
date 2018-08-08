@@ -54,6 +54,7 @@ class MasterFilesController < ApplicationController
   end
 
   def show
+    params.permit!
     master_file = MasterFile.find(params[:id])
     redirect_to id_section_media_object_path(master_file.media_object_id, master_file.id, params.except(:id, :action, :controller))
   end

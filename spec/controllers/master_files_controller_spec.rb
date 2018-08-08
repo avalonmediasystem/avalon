@@ -59,7 +59,7 @@ describe MasterFilesController do
         request.env["HTTP_REFERER"] = "/"
 
         file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
-        allow(file).to receive(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2 ^ 21)
+        allow_any_instance_of(ActionDispatch::Http::UploadedFile).to receive(:size).and_return(MasterFile::MAXIMUM_UPLOAD_SIZE + 2 ^ 21)
 
         expect { post :create, Filedata: [file], original: 'any', container_id: media_object.id }.not_to change { MasterFile.count }
 

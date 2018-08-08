@@ -20,11 +20,13 @@ services:
     ports:
       - "5432:5432"
   fedora:
-    image: avalonmediasystem/fedora:4.x
+    image: avalonmediasystem/fedora:4.7.x
     environment:
       - FEDORA_DB_PASSWORD=fedoradb
     volumes:
       - fedora-test:/data
+    environment:
+      - JAVA_OPTIONS=${JAVA_OPTIONS} -Dfcrepo.postgresql.password=${FEDORA_DB_PASSWORD} -Dfcrepo.postgresql.username=fedora -Dfcrepo.postgresql.host=db -Dfcrepo.modeshape.configuration=classpath:/config/jdbc-postgresql/repository.json
     ports:
       - "8984:8080"
     depends_on:
@@ -105,6 +107,7 @@ services:
       - Z3950_DATABASE
       - Z3950_HOST
       - Z3950_PORT
+      - DATABASE_CLEANER_ALLOW_REMOTE_DATABASE_URL=true
     volumes:
       - ./masterfiles:/masterfiles
       - ./gems:/gems
