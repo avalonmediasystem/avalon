@@ -21,6 +21,11 @@ FactoryGirl.define do
     hls_track_id "track-8"
     width '1024'
     height '768'
+    quality 'high'
+    video_codec 'AVC'
+    video_bitrate '4000000.0'
+    audio_codec 'AAC'
+    audio_bitrate '163842.0'
 
     trait :with_master_file do
       after(:create) do |d|

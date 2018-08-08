@@ -258,7 +258,7 @@ describe MediaObjectsController, type: :controller do
            allow_any_instance_of(MasterFile).to receive(:get_ffmpeg_frame_data).and_return('some data')
         end
         it "should respond with 422 if collection not found" do
-          post 'create', format: 'json', collection_id: "doesnt_exist"
+          post 'create', params: { format: 'json', collection_id: "doesnt_exist" }
           expect(response.status).to eq(422)
           expect(JSON.parse(response.body)).to include('errors')
           expect(JSON.parse(response.body)["errors"].class).to eq Array
@@ -267,10 +267,10 @@ describe MediaObjectsController, type: :controller do
         it "should create a new media_object" do
           # master_file_obj = FactoryGirl.create(:master_file, master_file.slice(:files))
           media_object = FactoryGirl.create(:media_object)#, master_files: [master_file_obj])
-          fields = {}
+          fields = {other_identifier_type: []}
           descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
           # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
-          post 'create', format: 'json', fields: fields, files: [master_file], collection_id: collection.id
+          post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id }
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.title).to eq media_object.title
@@ -294,7 +294,7 @@ describe MediaObjectsController, type: :controller do
           fields = {}
           descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
           # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
-          post 'create', format: 'json', fields: fields, files: [master_file], collection_id: collection.id, publish: true
+          post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id, publish: true }
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.published?).to be_truthy
@@ -304,7 +304,7 @@ describe MediaObjectsController, type: :controller do
           Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           stub_request(:get, sru_url).to_return(body: sru_response)
           fields = { bibliographic_id: bib_id }
-          post 'create', format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id
+          post 'create', params: { format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id }
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.bibliographic_id).to eq({source: "local", id: bib_id})
@@ -317,7 +317,7 @@ describe MediaObjectsController, type: :controller do
           fields = {}
           descMetadata_fields.each {|f| fields[f] = ex_media_object.send(f) }
           fields[:bibliographic_id] = bib_id
-          post 'create', format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id
+          post 'create', params: { format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id }
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.bibliographic_id).to eq({source: "local", id: bib_id})
@@ -336,13 +336,13 @@ describe MediaObjectsController, type: :controller do
           fields[:note_type] = ['???']
           fields[:date_created] = '???'
           fields[:copyright_date] = '???'
-          post 'create', format: 'json', fields: fields, files: [master_file], collection_id: collection.id
+          post 'create', params: { format: 'json', fields: fields, files: [master_file], collection_id: collection.id }
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.title).to eq media_object.title
           expect(new_media_object.language).to eq []
           expect(new_media_object.related_item_url).to eq []
-          expect(new_media_object.note).to eq nil
+          expect(new_media_object.note).to eq []
           expect(new_media_object.date_created).to eq nil
           expect(new_media_object.copyright_date).to eq nil
         end
@@ -350,7 +350,7 @@ describe MediaObjectsController, type: :controller do
           Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           stub_request(:get, sru_url).to_return(body: sru_response)
           fields = { bibliographic_id: bib_id, other_identifier_type: ['other'], other_identifier: ['12345'] }
-          post 'create', format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id
+          post 'create', params: { format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id }
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.bibliographic_id).to eq({source: "local", id: bib_id})
@@ -361,7 +361,7 @@ describe MediaObjectsController, type: :controller do
           Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           stub_request(:get, sru_url).to_return(body: sru_response)
           fields = { bibliographic_id: bib_id, identifier: ['ABC1234'] }
-          post 'create', format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id
+          post 'create', params: { format: 'json', import_bib_record: true, fields: fields, files: [master_file], collection_id: collection.id }
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.identifier).to eq(['ABC1234'])
@@ -373,7 +373,7 @@ describe MediaObjectsController, type: :controller do
           allow_any_instance_of(MasterFile).to receive(:extract_frame).and_return('some data')
           media_object.update_dependent_properties!
           api_hash = media_object.to_ingest_api_hash
-          post 'create', format: 'json', fields: api_hash[:fields], files: api_hash[:files], collection_id: media_object.collection_id
+          post 'create', params: { format: 'json', fields: api_hash[:fields], files: api_hash[:files], collection_id: media_object.collection_id }
           expect(response.status).to eq(200)
           new_media_object = MediaObject.find(JSON.parse(response.body)['id'])
           expect(new_media_object.title).to eq media_object.title

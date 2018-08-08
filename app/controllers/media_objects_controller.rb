@@ -227,7 +227,7 @@ class MediaObjectsController < ApplicationController
     elsif master_files_params.respond_to?('each')
       old_ordered_master_files = @media_object.ordered_master_files.to_a.collect(&:id)
       master_files_params.each_with_index do |file_spec, index|
-        master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier, :label))
+        master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier, :label, :date_digitized))
         # master_file.media_object = @media_object
         master_file.structuralMetadata.content = file_spec[:structure] if file_spec[:structure].present?
         if file_spec[:captions].present?
