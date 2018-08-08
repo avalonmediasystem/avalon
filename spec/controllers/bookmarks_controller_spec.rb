@@ -16,7 +16,14 @@ require 'rails_helper'
 require 'avalon/intercom'
 
 describe BookmarksController, type: :controller do
+  include ActiveJob::TestHelper
+
   render_views
+
+  around(:example) do |example|
+    # In Rails 5.1+ this can be restricted to whitelist jobs allowed to be performed
+    perform_enqueued_jobs { example.run }
+  end
 
   let!(:collection) { FactoryGirl.create(:collection) }
   let!(:media_objects) { [] }

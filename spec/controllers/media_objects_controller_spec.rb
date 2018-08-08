@@ -15,6 +15,8 @@
 require 'rails_helper'
 
 describe MediaObjectsController, type: :controller do
+  include ActiveJob::TestHelper
+
   render_views
 
   before(:each) do
@@ -866,6 +868,11 @@ describe MediaObjectsController, type: :controller do
     let!(:collection) { FactoryGirl.create(:collection) }
     before(:each) do
       login_user collection.managers.first
+    end
+
+    around(:example) do |example|
+      # In Rails 5.1+ this can be restricted to whitelist jobs allowed to be performed
+      perform_enqueued_jobs { example.run }
     end
 
     it "should remove a MediaObject with a single MasterFiles" do
