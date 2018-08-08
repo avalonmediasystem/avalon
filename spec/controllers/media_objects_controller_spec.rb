@@ -15,6 +15,8 @@
 require 'rails_helper'
 
 describe MediaObjectsController, type: :controller do
+  include ActiveJob::TestHelper
+
   render_views
 
   before(:each) do
@@ -430,13 +432,11 @@ describe MediaObjectsController, type: :controller do
           expect(media_object.master_files.to_a.size).to eq 2
         end
         it "should update the poster and thumbnail for its masterfile" do
-          ActiveJob::Base.queue_adapter = :test
           media_object = FactoryGirl.create(:media_object)
           put 'json_update', format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id
           media_object.reload
           expect(media_object.master_files.to_a.size).to eq 1
           expect(ExtractStillJob).to have_been_enqueued.with(media_object.master_files.first.id,{type:'both',offset:2000})
-          ActiveJob::Base.queue_adapter = :inline
         end
         it "should delete existing master_files and add a new master_file to a media_object" do
           put 'json_update', format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id, replace_masterfiles: true
@@ -868,6 +868,11 @@ describe MediaObjectsController, type: :controller do
     let!(:collection) { FactoryGirl.create(:collection) }
     before(:each) do
       login_user collection.managers.first
+    end
+
+    around(:example) do |example|
+      # In Rails 5.1+ this can be restricted to whitelist jobs allowed to be performed
+      perform_enqueued_jobs { example.run }
     end
 
     it "should remove a MediaObject with a single MasterFiles" do

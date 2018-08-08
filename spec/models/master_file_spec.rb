@@ -115,7 +115,6 @@ describe MasterFile do
     let!(:master_file) { FactoryGirl.create(:master_file) }
     # let(:encode_job) { ActiveEncodeJob::Create.new(master_file.id, nil, {}) }
     before do
-      ActiveJob::Base.queue_adapter = :test
       # allow(ActiveEncodeJob::Create).to receive(:new).and_return(encode_job)
       # allow(encode_job).to receive(:perform)
     end
@@ -194,11 +193,9 @@ describe MasterFile do
 
     describe "update images" do
       before do
-        ActiveJob::Base.queue_adapter = :test
         MasterFile.set_callback(:save, :after, :update_stills_from_offset!)
       end
       after do
-        ActiveJob::Base.queue_adapter = :inline
         MasterFile.skip_callback(:save, :after, :update_stills_from_offset!)
       end
       it "should update on save" do
@@ -488,7 +485,6 @@ describe MasterFile do
     subject(:master_file) { FactoryGirl.create(:master_file) }
     let(:working_dir) {'/path/to/working_dir/'}
     before do
-      ActiveJob::Base.queue_adapter = :test
       Settings.matterhorn.media_path = working_dir
     end
 
