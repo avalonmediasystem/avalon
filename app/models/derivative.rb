@@ -99,7 +99,7 @@ class Derivative < ActiveFedora::Base
     output = dists.first || hls_output
 
     derivative = Derivative.new
-    derivative.managed = output.key?(:managed) ? output[:managed] : managed
+    derivative.managed = output.key?(:managed) ? ActiveModel::Type::Boolean.new.cast(output[:managed]) : managed
     derivative.track_id = output[:id]
     derivative.duration = output[:duration]
     derivative.mime_type = output[:mime_type]
