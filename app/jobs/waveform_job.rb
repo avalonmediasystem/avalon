@@ -36,9 +36,7 @@ class WaveformJob < ActiveJob::Base
       return path if path.present? && File.exist?(path)
 
       playlist_url = playlist_url(master_file)
-      if playlist_url
-        SecurityHandler.secure_url(playlist_url, target: master_file.id)
-      end
+      SecurityHandler.secure_url(playlist_url, target: master_file.id) if playlist_url
     end
 
     def playlist_url(master_file)
