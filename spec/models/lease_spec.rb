@@ -1,11 +1,11 @@
 # Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -168,28 +168,28 @@ describe Lease do
   end
   describe '#lease_type' do
     it 'identifies user lease_type' do
-      expect { 
+      expect {
         lease.inherited_read_users = [Faker::Internet.email]
         lease.save
       }.to change{Lease.user.count}.by(1)
       expect(lease.lease_type).to eq "user"
     end
     it 'identifies group lease_type' do
-      expect { 
+      expect {
         lease.inherited_read_groups = [FactoryGirl.create(:group).name]
         lease.save
       }.to change{Lease.local.count}.by(1)
       expect(lease.lease_type).to eq "local"
     end
     it 'identifies external_group lease_type' do
-      expect { 
+      expect {
         lease.inherited_read_groups = ["ExternalGroup"]
         lease.save
       }.to change{Lease.external.count}.by(1)
       expect(lease.lease_type).to eq "external"
     end
     it 'identifies ip lease_type' do
-      expect { 
+      expect {
         lease.inherited_read_groups = [Faker::Internet.ip_v4_address]
         lease.save
       }.to change{Lease.ip.count}.by(1)

@@ -33,7 +33,7 @@ describe BookmarksController, type: :controller do
     login_user collection.managers.first
     3.times do
       media_objects << mo = FactoryGirl.create(:media_object, collection: collection)
-      post :create, id: mo.id
+      post :create, params: { id: mo.id }
     end
   end
 
@@ -46,7 +46,7 @@ describe BookmarksController, type: :controller do
     it "should remove more than the blacklight default number of items (>10)" do
       8.times do
         media_objects << mo = FactoryGirl.create(:media_object, collection: collection)
-        post :create, id: mo.id
+        post :create, params: { id: mo.id }
       end
       post :delete
       expect(flash[:success]).to eq(I18n.t("blacklight.delete.success", count: 11))
@@ -113,7 +113,7 @@ describe BookmarksController, type: :controller do
 
     context 'user has no permission on target collection' do
       it 'responds with error message' do
-        post 'move', target_collection_id: collection2.id
+        post 'move', params: { target_collection_id: collection2.id }
       	expect(flash[:error]).to eq( I18n.t("blacklight.move.error", collection_name: collection2.name))
       end
     end
@@ -121,7 +121,7 @@ describe BookmarksController, type: :controller do
       it 'moves items to selected collection' do
         collection2.managers = collection.managers
         collection2.save
-        post 'move', target_collection_id: collection2.id
+        post 'move', params: { target_collection_id: collection2.id }
         expect(flash[:success]).to eq( I18n.t("blacklight.move.success", count: 3, collection_name: collection2.name))
         media_objects.each do |mo|
           mo.reload
@@ -167,7 +167,7 @@ describe BookmarksController, type: :controller do
 
     context 'user has no permission on target collection' do
       it 'responds with error message' do
-        post 'intercom_push', collection_id: 'brocolli_collection'
+        post 'intercom_push', params: { collection_id: 'brocolli_collection' }
         expect(flash[:alert]).to eq("You do not have permission to push to this collection.")
       end
     end
@@ -182,7 +182,7 @@ describe BookmarksController, type: :controller do
             .with(body: body).to_return(status: 200, body: { 'id' => 'def456' }.to_json, headers: {})
         end
         expect_any_instance_of(Avalon::Intercom).to receive(:push_media_object).exactly(3).times.and_call_original
-        post 'intercom_push', collection_id: 'cupcake_collection'
+        post 'intercom_push', params: { collection_id: 'cupcake_collection' }
         expect(flash[:success]).to eq('Sucessfully started push of 3 media objects.')
       end
     end
@@ -190,7 +190,7 @@ describe BookmarksController, type: :controller do
 
   describe '#update_access_control' do
     it 'changes to hidden' do
-      post 'update_access_control', hidden: "true"
+      post 'update_access_control', params: { hidden: "true" }
       expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
       media_objects.each do |mo|
         mo.reload
@@ -198,7 +198,7 @@ describe BookmarksController, type: :controller do
       end
     end
     it 'changes to shown' do
-      post 'update_access_control', hidden: "false"
+      post 'update_access_control', params: { hidden: "false" }
       expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
       media_objects.each do |mo|
         mo.reload
@@ -206,7 +206,7 @@ describe BookmarksController, type: :controller do
       end
     end
     it 'changes the visibility' do
-      post 'update_access_control', visibility: 'public'
+      post 'update_access_control', params: { visibility: 'public' }
       expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
       media_objects.each do |mo|
         mo.reload
@@ -216,7 +216,7 @@ describe BookmarksController, type: :controller do
     context 'Limited access' do
       context 'users' do
 	      it 'adds a user to the selected items' do
-          post 'update_access_control', submit_add_user: 'Add', user: 'cjcolvar'
+          post 'update_access_control', params: { submit_add_user: 'Add', user: 'cjcolvar' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -224,7 +224,7 @@ describe BookmarksController, type: :controller do
           end
         end
 	      it 'adds a time-based user to the selected items' do
-          post 'update_access_control', submit_add_user: 'Add', add_user_begin: Date.yesterday, add_user_end: Date.today, user: 'cjcolvar'
+          post 'update_access_control', params: { submit_add_user: 'Add', add_user_begin: Date.yesterday, add_user_end: Date.today, user: 'cjcolvar' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -241,7 +241,7 @@ describe BookmarksController, type: :controller do
             mo.save
             mo.reload
           end
-          post 'update_access_control', submit_remove_user: 'Remove', user: 'john.doe'
+          post 'update_access_control', params: { submit_remove_user: 'Remove', user: 'john.doe' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -254,7 +254,7 @@ describe BookmarksController, type: :controller do
             mo.save
             mo.reload
           end
-          post 'update_access_control', submit_remove_user: 'Remove', user: 'john.doe'
+          post 'update_access_control', params: { submit_remove_user: 'Remove', user: 'john.doe' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -264,7 +264,7 @@ describe BookmarksController, type: :controller do
       end
       context 'groups' do
 	      it 'adds a group to the selected items' do
-          post 'update_access_control', submit_add_group: 'Add', group: 'students'
+          post 'update_access_control', params: { submit_add_group: 'Add', group: 'students' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -272,7 +272,7 @@ describe BookmarksController, type: :controller do
           end
         end
 	      it 'adds a time-based group to the selected items' do
-          post 'update_access_control', submit_add_group: 'Add', add_group_begin: Date.yesterday, add_group_end: Date.today, group: 'students'
+          post 'update_access_control', params: { submit_add_group: 'Add', add_group_begin: Date.yesterday, add_group_end: Date.today, group: 'students' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -288,7 +288,7 @@ describe BookmarksController, type: :controller do
             mo.save
             mo.reload
           end
-          post 'update_access_control', submit_remove_group: 'Remove', group: 'test-group'
+          post 'update_access_control', params: { submit_remove_group: 'Remove', group: 'test-group' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -301,7 +301,7 @@ describe BookmarksController, type: :controller do
             mo.save
             mo.reload
           end
-          post 'update_access_control', submit_remove_group: 'Remove', group: 'test-group'
+          post 'update_access_control', params: { submit_remove_group: 'Remove', group: 'test-group' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -311,7 +311,7 @@ describe BookmarksController, type: :controller do
       end
       context 'external groups' do
 	      it 'adds an external group to the selected items' do
-          post 'update_access_control', submit_add_class: 'Add', class: 'ECON-101'
+          post 'update_access_control', params: { submit_add_class: 'Add', class: 'ECON-101' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -319,7 +319,7 @@ describe BookmarksController, type: :controller do
           end
         end
 	      it 'adds a time-based external group to the selected items' do
-          post 'update_access_control', submit_add_class: 'Add', add_class_begin: Date.yesterday, add_class_end: Date.today, class: 'ECON-101'
+          post 'update_access_control', params: { submit_add_class: 'Add', add_class_begin: Date.yesterday, add_class_end: Date.today, class: 'ECON-101' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -335,7 +335,7 @@ describe BookmarksController, type: :controller do
             mo.save
             mo.reload
           end
-          post 'update_access_control', submit_remove_class: 'Remove', class: 'MUSIC-101'
+          post 'update_access_control', params: { submit_remove_class: 'Remove', class: 'MUSIC-101' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -348,7 +348,7 @@ describe BookmarksController, type: :controller do
             mo.save
             mo.reload
           end
-          post 'update_access_control', submit_remove_class: 'Remove', class: 'MUSIC-101'
+          post 'update_access_control', params: { submit_remove_class: 'Remove', class: 'MUSIC-101' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -358,7 +358,7 @@ describe BookmarksController, type: :controller do
       end
       context 'ip groups' do
       	it 'adds an ip group to the selected items' do
-          post 'update_access_control', submit_add_ipaddress: 'Add', ipaddress: '127.0.0.127'
+          post 'update_access_control', params: { submit_add_ipaddress: 'Add', ipaddress: '127.0.0.127' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -366,7 +366,7 @@ describe BookmarksController, type: :controller do
           end
         end
       	it 'adds a time-based ip group to the selected items' do
-          post 'update_access_control', submit_add_ipaddress: 'Add', add_ipaddress_begin: Date.yesterday, add_ipaddress_end: Date.today, ipaddress: '127.0.0.127'
+          post 'update_access_control', params: { submit_add_ipaddress: 'Add', add_ipaddress_begin: Date.yesterday, add_ipaddress_end: Date.today, ipaddress: '127.0.0.127' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -382,7 +382,7 @@ describe BookmarksController, type: :controller do
             mo.save
             mo.reload
           end
-          post 'update_access_control', submit_remove_ipaddress: 'Remove', ipaddress: '127.0.0.127'
+          post 'update_access_control', params: { submit_remove_ipaddress: 'Remove', ipaddress: '127.0.0.127' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
@@ -395,7 +395,7 @@ describe BookmarksController, type: :controller do
             mo.save
             mo.reload
           end
-          post 'update_access_control', submit_remove_ipaddress: 'Remove', ipaddress: '127.0.0.127'
+          post 'update_access_control', params: { submit_remove_ipaddress: 'Remove', ipaddress: '127.0.0.127' }
           expect(flash[:success]).to eq( I18n.t("blacklight.update_access_control.success", count: 3))
           media_objects.each do |mo|
             mo.reload
