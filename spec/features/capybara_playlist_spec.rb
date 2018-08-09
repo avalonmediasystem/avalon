@@ -36,16 +36,16 @@ describe 'Playlist' do
     fill_in('playlist_comment', with: 'This is test')
     click_on('Create')
     visit '/playlists'
-    page.should have_content('private_playlist')
-    page.should have_content('Name')
-    page.should have_content('Visibility')
-    page.should have_content('Created')
-    page.should have_content('Size')
-    page.should have_content('Updated')
-    page.should have_content('Actions')
-    page.should have_content('Private')
-    page.should have_link('Edit')
-    page.should have_link('Delete')
+    expect(page).to have_content('private_playlist')
+    expect(page).to have_content('Name')
+    expect(page).to have_content('Visibility')
+    expect(page).to have_content('Created')
+    expect(page).to have_content('Size')
+    expect(page).to have_content('Updated')
+    expect(page).to have_content('Actions')
+    expect(page).to have_content('Private')
+    expect(page).to have_link('Edit')
+    expect(page).to have_link('Delete')
   end
   it 'is able to view playlist by clicking on playlist name', js: true do
     hide_const('Avalon::GROUP_LDAP')
@@ -58,10 +58,10 @@ describe 'Playlist' do
     click_on('Create')
     visit '/playlists'
     click_on('private_playlist')
-    page.should have_content('private_playlist')
+    expect(page).to have_content('private_playlist')
     expect(page).to have_link('Edit Playlist')
-    page.should have_content('This is test')
-    page.should have_content('This playlist currently has no playable items')
+    expect(page).to have_content('This is test')
+    expect(page).to have_content('This playlist currently has no playable items')
   end
   it 'is able to view playlist by accessing View Playlist', js: true do
     user = FactoryGirl.create(:administrator)
@@ -74,10 +74,10 @@ describe 'Playlist' do
     visit '/playlists'
     click_on('Edit')
     click_on('View Playlist')
-    page.should have_content('private_playlist')
+    expect(page).to have_content('private_playlist')
     expect(page).to have_link('Edit Playlist')
-    page.should have_content('This is test')
-    page.should have_content('This playlist currently has no playable items')
+    expect(page).to have_content('This is test')
+    expect(page).to have_content('This playlist currently has no playable items')
   end
 
   it 'deletes playlist permanently from playlists page', js: true do
@@ -92,8 +92,8 @@ describe 'Playlist' do
     click_link('Delete')
     click_link('Yes, Delete')
     visit '/playlists'
-    page.should have_content('Playlist was successfully destroyed')
-    page.should have_no_link('private_playlist')
+    expect(page).to have_content('Playlist was successfully destroyed')
+    expect(page).to have_no_link('private_playlist')
   end
 
   it 'is able to delete playlist from edit playlist page', js: true do
@@ -109,8 +109,8 @@ describe 'Playlist' do
     click_on('Delete Playlist')
     click_on('Yes, Delete')
     visit '/playlists'
-    page.should have_content('Playlist was successfully destroyed')
-    page.should have_no_link('private_playlist')
+    expect(page).to have_content('Playlist was successfully destroyed')
+    expect(page).to have_no_link('private_playlist')
   end
 
   it 'is able to create public playlist', js: true do
@@ -123,7 +123,7 @@ describe 'Playlist' do
     choose('Public')
     click_on('Create')
     visit '/playlists'
-    page.should have_content('Public')
+    expect(page).to have_content('Public')
   end
   it 'is able to edit playlist name and description', js: true, :retry => 3 do
     optional "Sometimes fails" if ENV['TRAVIS']
@@ -137,17 +137,17 @@ describe 'Playlist' do
     click_on('Create')
     visit '/playlists'
     click_on('Edit')
-    page.should have_content('Editing playlist')
-    page.should have_content('View Playlist')
-    page.should have_content('Delete Playlist')
+    expect(page).to have_content('Editing playlist')
+    expect(page).to have_content('View Playlist')
+    expect(page).to have_content('Delete Playlist')
     page.first("#playlist_edit_button").click
-    page.should have_button('Save Changes')
+    expect(page).to have_button('Save Changes')
     fill_in('playlist_title', with: 'edit_public_playlist')
     fill_in('playlist_comment', with: 'Name and description edited')
     click_button('Save Changes')
-    page.should have_content('Playlist was successfully updated')
-    page.should have_content('edit_public_playlist')
-    page.should have_content('Name and description edited')
+    expect(page).to have_content('Playlist was successfully updated')
+    expect(page).to have_content('edit_public_playlist')
+    expect(page).to have_content('Name and description edited')
   end
 
   it 'is able to change public playlist to private', js: true, :retry => 3 do
@@ -162,15 +162,15 @@ describe 'Playlist' do
     click_on('Create')
     visit '/playlists'
     click_on('Edit')
-    page.should have_content('Editing playlist')
-    page.should have_content('View Playlist')
-    page.should have_content('Delete Playlist')
+    expect(page).to have_content('Editing playlist')
+    expect(page).to have_content('View Playlist')
+    expect(page).to have_content('Delete Playlist')
     page.first("#playlist_edit_button").click
-    page.should have_button('Save Changes')
+    expect(page).to have_button('Save Changes')
     choose('Private')
     click_button('Save Changes')
-    page.should have_content('Playlist was successfully updated')
-    page.should have_content('Private')
+    expect(page).to have_content('Playlist was successfully updated')
+    expect(page).to have_content('Private')
   end
   it 'is able to change private playlist to public', js: true, :retry => 3 do
     optional "Sometimes fails" if ENV['TRAVIS']
@@ -184,14 +184,14 @@ describe 'Playlist' do
     click_on('Create')
     visit '/playlists'
     click_on('Edit')
-    page.should have_content('Editing playlist')
-    page.should have_content('View Playlist')
-    page.should have_content('Delete Playlist')
+    expect(page).to have_content('Editing playlist')
+    expect(page).to have_content('View Playlist')
+    expect(page).to have_content('Delete Playlist')
     page.first("#playlist_edit_button").click
-    page.should have_button('Save Changes')
+    expect(page).to have_button('Save Changes')
     choose('Public')
     click_button('Save Changes')
-    page.should have_content('Playlist was successfully updated')
-    page.should have_content('Public')
+    expect(page).to have_content('Playlist was successfully updated')
+    expect(page).to have_content('Public')
   end
 end
