@@ -654,7 +654,7 @@ describe MediaObjectsController, type: :controller do
 
       it "should provide a JSON stream description to the client" do
         part = FactoryGirl.create(:master_file, media_object: media_object)
-        xhr :get, :show_stream_details, id: media_object.id, content: part.id
+        get :show_stream_details, params: { id: media_object.id, content: part.id }, xhr: true
         json_obj = JSON.parse(response.body)
         expect(json_obj['is_video']).to eq(part.is_video?)
         expect(json_obj['link_back_url']).to eq(Rails.application.routes.url_helpers.id_section_media_object_url(media_object, part))
@@ -662,7 +662,7 @@ describe MediaObjectsController, type: :controller do
 
       it "should provide a JSON stream description with permalink to the client" do
         part = FactoryGirl.create(:master_file, media_object: media_object, permalink: 'https://permalink.host/path/id')
-        xhr :get, :show_stream_details, id: media_object.id, content: part.id
+        get :show_stream_details, params: { id: media_object.id, content: part.id }, xhr: true
         json_obj = JSON.parse(response.body)
         expect(json_obj['link_back_url']).to eq('https://permalink.host/path/id')
       end
