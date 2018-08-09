@@ -869,7 +869,7 @@ DEPENDENCIES
   aws-sdk (~> 2.0)
   aws-sdk-rails
   bixby
-  blacklight (= 6.11.0)
+  blacklight (< 7.0)
   bootsnap
   bootstrap-toggle-rails!
   bootstrap_form
