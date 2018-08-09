@@ -30,7 +30,7 @@ class MasterFilesController < ApplicationController
     authorize! :read, @master_file
     ds = @master_file.captions
     if ds.nil? || ds.empty?
-      render text: 'Not Found', status: :not_found
+      render plain: 'Not Found', status: :not_found
     else
       send_data ds.content, type: ds.mime_type, filename: ds.original_name
     end
@@ -43,7 +43,7 @@ class MasterFilesController < ApplicationController
     authorize! :read, @master_file
     ds = @master_file.waveform
     if ds.nil? || ds.empty?
-      render text: 'Not Found', status: :not_found
+      render plain: 'Not Found', status: :not_found
     else
       send_data ds.content, type: ds.mime_type, filename: ds.original_name
     end
