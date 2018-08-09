@@ -49,7 +49,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
       it "all return 401 unauthorized" do
         expect(post :create, params: { playlist_id: playlist.to_param, playlist_item: valid_attributes }).to have_http_status(:unauthorized)
         expect(put :update, params: { playlist_id: playlist.to_param, id: playlist_item.id }).to have_http_status(:unauthorized)
-        expect(xhr :get, :show, playlist_id: playlist.to_param, id: playlist_item.id).to have_http_status(:unauthorized)
+        expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id }, xhr: true).to have_http_status(:unauthorized)
         expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to have_http_status(:unauthorized)
         expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to have_http_status(:unauthorized)
         expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to have_http_status(:unauthorized)
@@ -58,7 +58,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
         let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
 
         it "returns the playlist item info snippets" do
-          expect(xhr :get, :show, playlist_id: playlist.to_param, id: playlist_item.id).to be_success
+          expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id }, xhr: true).to be_success
           expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_success
           expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_success
           expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_success
@@ -68,7 +68,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
         let(:playlist) { FactoryGirl.create(:playlist, :with_access_token) }
 
         it "returns the playlist item info page snippets" do
-          expect(xhr :get, :show, playlist_id: playlist.to_param, id: playlist_item.id, token: playlist.access_token).to be_success
+          expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id, token: playlist.access_token }, xhr: true).to be_success
           expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_success
           expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_success
           expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_success
@@ -82,7 +82,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
       it "all return 401 unauthorized" do
         expect(post :create, params: { playlist_id: playlist.to_param, playlist_item: valid_attributes }).to have_http_status(:unauthorized)
         expect(put :update, params: { playlist_id: playlist.to_param, id: playlist_item.id }).to have_http_status(:unauthorized)
-        expect(xhr :get, :show, playlist_id: playlist.to_param, id: playlist_item.id).to have_http_status(:unauthorized)
+        expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id }, xhr: true).to have_http_status(:unauthorized)
         expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to have_http_status(:unauthorized)
         expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to have_http_status(:unauthorized)
         expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to have_http_status(:unauthorized)
@@ -91,7 +91,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
         let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
 
         it "returns the playlist item info snippets" do
-          expect(xhr :get, :show, playlist_id: playlist.to_param, id: playlist_item.id).to be_success
+          expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id }, xhr: true).to be_success
           expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_success
           expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_success
           expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to be_success
@@ -101,7 +101,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
         let(:playlist) { FactoryGirl.create(:playlist, :with_access_token) }
 
         it "returns the playlist item info page snippets" do
-          expect(xhr :get, :show, playlist_id: playlist.to_param, id: playlist_item.id, token: playlist.access_token).to be_success
+          expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id, token: playlist.access_token }, xhr: true).to be_success
           expect(get :source_details, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_success
           expect(get :markers, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_success
           expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id, token: playlist.access_token }).to be_success
