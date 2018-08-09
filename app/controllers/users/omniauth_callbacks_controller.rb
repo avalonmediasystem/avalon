@@ -15,7 +15,7 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   # The default OmniAuth forms don't provide CSRF tokens, so we can't verify
   # them. Trying to verify results in a cleared session.
-  skip_before_filter :verify_authenticity_token
+  skip_before_action :verify_authenticity_token
 
   def passthru
     begin

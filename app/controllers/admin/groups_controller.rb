@@ -15,7 +15,7 @@
 # -*- encoding : utf-8 -*-
 require "avalon/role_controls"
 class Admin::GroupsController < ApplicationController
-  before_filter :auth
+  before_action :auth
 
   # Currently assumes that to do anything you have to be able to manage Group
   # TODO: finer controls

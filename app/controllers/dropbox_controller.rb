@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class DropboxController < ApplicationController
-  before_filter :authenticate_user!
+  before_action :authenticate_user!
 
   def bulk_delete
     @collection = Admin::Collection.find(params[:collection_id])

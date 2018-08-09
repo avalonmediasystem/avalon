@@ -15,9 +15,9 @@
 class Admin::CollectionsController < ApplicationController
   include Rails::Pagination
 
-  before_filter :authenticate_user!
+  before_action :authenticate_user!
   load_and_authorize_resource except: [:index, :remove]
-  before_filter :load_and_authorize_collections, only: [:index]
+  before_action :load_and_authorize_collections, only: [:index]
   respond_to :html
 
   def load_and_authorize_collections
