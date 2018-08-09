@@ -438,6 +438,13 @@ describe MediaObjectsController, type: :controller do
           expect(media_object.master_files.to_a.size).to eq 1
           expect(ExtractStillJob).to have_been_enqueued.with(media_object.master_files.first.id,{type:'both',offset:2000})
         end
+        it "should update the waveform for its masterfile" do
+          media_object = FactoryGirl.create(:media_object)
+          put 'json_update', format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id
+          media_object.reload
+          expect(media_object.master_files.to_a.size).to eq 1
+          expect(WaveformJob).to have_been_enqueued.with(media_object.master_files.first.id)
+        end
         it "should delete existing master_files and add a new master_file to a media_object" do
           put 'json_update', format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id, replace_masterfiles: true
           expect(JSON.parse(response.body)['id'].class).to eq String
