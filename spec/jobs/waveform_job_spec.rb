@@ -16,12 +16,14 @@ require 'rails_helper'
 
 describe WaveformJob do
   let(:job) { WaveformJob.new }
-  let(:master_file) { FactoryGirl.create(:master_file, :with_media_object) }
+  let(:master_file) { FactoryGirl.create(:master_file_with_media_object_and_derivative) }
   let(:waveform_json) { File.read('spec/fixtures/waveform.json') }
+  let(:service) { instance_double("WaveformService") }
 
   describe "perform" do
     before do
-      allow_any_instance_of(WaveformService).to receive(:get_waveform_json).and_return(waveform_json)
+      allow(service).to receive(:get_waveform_json).and_return(waveform_json)
+      allow(WaveformService).to receive(:new).and_return(service)
     end
 
     it 'calls the waveform service and stores the result' do
@@ -32,11 +34,30 @@ describe WaveformJob do
     end
 
     context 'when on disk' do
-      xit 'calls the waveform service with the file location'
+      before do
+        allow(File).to receive(:exist?).and_call_original
+        allow(File).to receive(:exist?).with(master_file.file_location).and_return(true)
+      end
+
+      it 'calls the waveform service with the file location' do
+        job.perform(master_file.id)
+        expect(service).to have_received(:get_waveform_json).with(master_file.file_location)
+      end
     end
 
     context 'when not on disk' do
-      xit 'calls the waveform service with the playlist url'
+      let(:secure_hls_url) { "https://path/to/mp4:video.mp4/playlist.m3u8?token=abc" }
+
+      before do
+        allow(File).to receive(:exist?).and_call_original
+        allow(File).to receive(:exist?).with(master_file.file_location).and_return(false)
+        allow(SecurityHandler).to receive(:secure_url).and_return(secure_hls_url)
+      end
+
+      it 'calls the waveform service with the playlist url' do
+        job.perform(master_file.id)
+        expect(service).to have_received(:get_waveform_json).with(secure_hls_url)
+      end
     end
   end
 end

@@ -72,5 +72,7 @@ FactoryGirl.define do
     trait :with_comments do
       comment ['MF Comment 1', 'MF Comment 2']
     end
+
+    factory :master_file_with_media_object_and_derivative, traits: [:with_media_object, :with_derivative]
   end
 end
