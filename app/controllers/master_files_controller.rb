@@ -192,7 +192,7 @@ class MasterFilesController < ApplicationController
   def create
     if params[:container_id].blank? || (not MediaObject.exists?(params[:container_id]))
       flash[:notice] = "MediaObject #{params[:container_id]} does not exist"
-      redirect_to :back
+      redirect_back(fallback_location: edit_media_object_path(params[:container_id], step: 'file-upload'))
       return
     end
 
@@ -201,7 +201,7 @@ class MasterFilesController < ApplicationController
 
     unless media_object.valid?
       flash[:error] = "MediaObject is invalid.  Please add required fields."
-      redirect_to :back
+      redirect_back(fallback_location: edit_media_object_path(params[:container_id], step: 'file-upload'))
       return
     end
 
@@ -211,7 +211,7 @@ class MasterFilesController < ApplicationController
       [:notice, :error].each { |type| flash[type] = result[:flash][type] }
     rescue MasterFileBuilder::BuildError => err
       flash[:error] = err.message
-      return redirect_to :back
+      redirect_back(fallback_location: edit_media_object_path(params[:container_id], step: 'file-upload'))
     end
 
     respond_to do |format|

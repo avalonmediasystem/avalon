@@ -434,7 +434,7 @@ class MediaObjectsController < ApplicationController
     end
     message = "#{success_count} #{'media object'.pluralize(success_count)} successfully #{status}ed."
     message += "These objects were not #{status}ed:</br> #{ errors.join('<br/> ') }" if errors.count > 0
-    redirect_to :back, flash: {notice: message.html_safe}
+    redirect_back(fallback_location: root_path, flash: {notice: message.html_safe})
   end
 
   # Sets the published status for the object. If no argument is given then
