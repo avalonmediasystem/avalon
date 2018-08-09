@@ -42,7 +42,7 @@ gem 'bootstrap_form'
 gem 'speedy-af', '~> 0.1.1'
 
 # Avalon Components
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.2'
+gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", branch: 'rails5'
 
 # Authentication & Authorization
 gem 'devise', '~> 4.4'
