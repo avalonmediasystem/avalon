@@ -52,8 +52,7 @@ module ApplicationHelper
              when MasterFile then obj.id
              when Playlist then obj.to_gid_param
              end
-    opts.merge!(action: 'lti', target_id: target)
-    user_omniauth_callback_url(opts)
+    user_omniauth_callback_lti_url(target_id: target)
   end
 
   # TODO: Fix me with latest changes from 5.1.4
