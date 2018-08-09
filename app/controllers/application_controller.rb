@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class ApplicationController < ActionController::Base
-  before_filter :store_location, unless: :devise_controller?
+  before_action :store_location, unless: :devise_controller?
 
   # Adds a few additional behaviors into the application controller
   include Blacklight::Controller

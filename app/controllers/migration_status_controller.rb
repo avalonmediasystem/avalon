@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 class MigrationStatusController < ApplicationController
 
-  before_filter :auth
+  before_action :auth
   layout 'migration_report'
 
   def index
