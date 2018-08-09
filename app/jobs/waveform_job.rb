@@ -21,7 +21,8 @@ class WaveformJob < ActiveJob::Base
     master_file = MasterFile.find(master_file_id)
 
     service = WaveformService.new(8, SAMPLES_PER_FRAME)
-    json = service.get_waveform_json(file_uri(master_file))
+    uri = file_uri(master_file) || playlist_url(master_file)
+    json = service.get_waveform_json(uri)
     return unless json.present?
 
     master_file.waveform.content = json
@@ -33,15 +34,20 @@ class WaveformJob < ActiveJob::Base
 
     def file_uri(master_file)
       path = master_file.file_location
-      return path if path.present? && File.exist?(path)
-
-      playlist_url = playlist_url(master_file)
-      SecurityHandler.secure_url(playlist_url, target: master_file.id) if playlist_url
+      path_usable = path.present? && File.exist?(path)
+      path_usable ? path : nil
     end
 
     def playlist_url(master_file)
-      quality = master_file.is_video? ? 'low' : 'medium'
-      quality_details = master_file.stream_details[:stream_hls].find { |d| d[:quality] == quality }
-      quality_details.present? ? quality_details[:url] : nil
+      streams = master_file.stream_details[:stream_hls]
+      hls_url = nil
+
+      # Find the lowest quality stream
+      ['high', 'medium', 'low'].each do |quality|
+        quality_details = streams.find { |d| d[:quality] == quality }
+        hls_url = quality_details[:url] if quality_details.present? && quality_details[:url]
+      end
+
+      hls_url.present? ? SecurityHandler.secure_url(hls_url, target: master_file.id) : nil
     end
 end
