@@ -31,16 +31,16 @@ describe MediaObjectsController, type: :controller do
       end
       it "all routes should return 401 when no token is present" do
         expect(get :index, format: 'json').to have_http_status(401)
-        expect(get :show, id: media_object.id, format: 'json').to have_http_status(401)
+        expect(get :show, params: { id: media_object.id, format: 'json' }).to have_http_status(401)
         expect(post :create, format: 'json').to have_http_status(401)
-        expect(put :update, id: media_object.id, format: 'json').to have_http_status(401)
+        expect(put :update, params: { id: media_object.id, format: 'json' }).to have_http_status(401)
       end
       it "all routes should return 403 when a bad token in present" do
         request.headers['Avalon-Api-Key'] = 'badtoken'
         expect(get :index, format: 'json').to have_http_status(403)
-        expect(get :show, id: media_object.id, format: 'json').to have_http_status(403)
+        expect(get :show, params: { id: media_object.id, format: 'json' }).to have_http_status(403)
         expect(post :create, format: 'json').to have_http_status(403)
-        expect(put :update, id: media_object.id, format: 'json').to have_http_status(403)
+        expect(put :update, params: { id: media_object.id, format: 'json' }).to have_http_status(403)
       end
     end
     describe 'normal auth' do
@@ -50,18 +50,18 @@ describe MediaObjectsController, type: :controller do
           expect(get :new).to redirect_to(new_user_session_path)
         end
         it "all routes should redirect to sign in" do
-          expect(get :show, id: media_object.id).to redirect_to(new_user_session_path)
-          expect(get :show_progress, id: media_object.id, format: 'json').to have_http_status(401)
-          expect(get :edit, id: media_object.id).to redirect_to(new_user_session_path)
-          expect(get :confirm_remove, id: media_object.id).to redirect_to(new_user_session_path)
+          expect(get :show, params: { id: media_object.id }).to redirect_to(new_user_session_path)
+          expect(get :show_progress, params: { id: media_object.id, format: 'json' }).to have_http_status(401)
+          expect(get :edit, params: { id: media_object.id }).to redirect_to(new_user_session_path)
+          expect(get :confirm_remove, params: { id: media_object.id }).to redirect_to(new_user_session_path)
           #expect(post :create).to redirect_to(new_user_session_path) # route accessible by json only
-          expect(put :update, id: media_object.id).to redirect_to(new_user_session_path)
-          expect(put :update_status, id: media_object.id).to redirect_to(new_user_session_path)
-          expect(get :tree, id: media_object.id).to redirect_to(new_user_session_path)
-          expect(get :deliver_content, id: media_object.id, file: 'descMetadata').to redirect_to(new_user_session_path)
-          expect(delete :destroy, id: media_object.id).to redirect_to(new_user_session_path)
-          expect(get :add_to_playlist_form, id: media_object.id).to redirect_to(new_user_session_path)
-          expect(post :add_to_playlist, id: media_object.id).to redirect_to(new_user_session_path)
+          expect(put :update, params: { id: media_object.id }).to redirect_to(new_user_session_path)
+          expect(put :update_status, params: { id: media_object.id }).to redirect_to(new_user_session_path)
+          expect(get :tree, params: { id: media_object.id }).to redirect_to(new_user_session_path)
+          expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to redirect_to(new_user_session_path)
+          expect(delete :destroy, params: { id: media_object.id }).to redirect_to(new_user_session_path)
+          expect(get :add_to_playlist_form, params: { id: media_object.id }).to redirect_to(new_user_session_path)
+          expect(post :add_to_playlist, params: { id: media_object.id }).to redirect_to(new_user_session_path)
         end
       end
       context 'with end-user' do
@@ -73,18 +73,18 @@ describe MediaObjectsController, type: :controller do
           expect(get :new).to redirect_to(root_path)
         end
         it "all routes should redirect to /" do
-          expect(get :show, id: media_object.id).to redirect_to(root_path)
-          expect(get :show_progress, id: media_object.id, format: 'json').to redirect_to(root_path)
-          expect(get :edit, id: media_object.id).to redirect_to(root_path)
-          expect(get :confirm_remove, id: media_object.id).to redirect_to(root_path)
+          expect(get :show, params: { id: media_object.id }).to redirect_to(root_path)
+          expect(get :show_progress, params: { id: media_object.id, format: 'json' }).to redirect_to(root_path)
+          expect(get :edit, params: { id: media_object.id }).to redirect_to(root_path)
+          expect(get :confirm_remove, params: { id: media_object.id }).to redirect_to(root_path)
           #expect(post :create).to redirect_to(root_path) # route accessible by json only
-          expect(put :update, id: media_object.id).to redirect_to(root_path)
-          expect(put :update_status, id: media_object.id).to redirect_to(root_path)
-          expect(get :tree, id: media_object.id).to redirect_to(root_path)
-          expect(get :deliver_content, id: media_object.id, file: 'descMetadata').to redirect_to(root_path)
-          expect(delete :destroy, id: media_object.id).to redirect_to(root_path)
-          expect(get :add_to_playlist_form, id: media_object.id).to redirect_to(root_path)
-          expect(post :add_to_playlist, id: media_object.id).to redirect_to(root_path)
+          expect(put :update, params: { id: media_object.id }).to redirect_to(root_path)
+          expect(put :update_status, params: { id: media_object.id }).to redirect_to(root_path)
+          expect(get :tree, params: { id: media_object.id }).to redirect_to(root_path)
+          expect(get :deliver_content, params: { id: media_object.id, file: 'descMetadata' }).to redirect_to(root_path)
+          expect(delete :destroy, params: { id: media_object.id }).to redirect_to(root_path)
+          expect(get :add_to_playlist_form, params: { id: media_object.id }).to redirect_to(root_path)
+          expect(post :add_to_playlist, params: { id: media_object.id }).to redirect_to(root_path)
         end
       end
     end
@@ -143,23 +143,23 @@ describe MediaObjectsController, type: :controller do
       it 'should refetch user collections from target and set session' do
         allow_any_instance_of(Avalon::Intercom).to receive(:push_media_object).and_return target_link
         expect_any_instance_of(Avalon::Intercom).to receive(:fetch_user_collections).once
-        patch :intercom_push, id: media_object.id, collection_id: target_collections.first['id']
+        patch :intercom_push, params: { id: media_object.id, collection_id: target_collections.first['id'] }
         expect(session[:intercom_collections]).to eq(target_collections)
         expect(session[:intercom_default_collection]).to eq(target_collections.first['id'])
       end
       it 'should return error message' do
         allow_any_instance_of(Avalon::Intercom).to receive(:push_media_object).and_return error_status
-        patch :intercom_push, id: media_object.id, collection_id: target_collections.first['id']
+        patch :intercom_push, params: { id: media_object.id, collection_id: target_collections.first['id'] }
         expect(flash[:alert]).to eq('There was an error pushing the item. (401: Not authorized)')
       end
       it 'should return no permission for item' do
         allow_any_instance_of(Avalon::Intercom).to receive(:push_media_object).and_return({ message: media_object_permission })
-        patch :intercom_push, id: media_object.id, collection_id: target_collections.first['id']
+        patch :intercom_push, params: { id: media_object.id, collection_id: target_collections.first['id'] }
         expect(flash[:alert]).to eq(media_object_permission)
       end
       it 'should return no permission for collection' do
         allow_any_instance_of(Avalon::Intercom).to receive(:push_media_object).and_return({ message: collection_permission })
-        patch :intercom_push, id: media_object.id, collection_id: target_collections.first['id']
+        patch :intercom_push, params: { id: media_object.id, collection_id: target_collections.first['id'] }
         expect(flash[:alert]).to eq(collection_permission)
       end
     end
@@ -418,14 +418,14 @@ describe MediaObjectsController, type: :controller do
         end
         it "should update a media_object's metadata" do
           old_title = media_object.title
-          put 'json_update', format: 'json', id: media_object.id, fields: {title: old_title+'new'}, collection_id: media_object.collection_id
+          put 'json_update', params: { format: 'json', id: media_object.id, fields: {title: old_title+'new'}, collection_id: media_object.collection_id }
           expect(JSON.parse(response.body)['id'].class).to eq String
           expect(JSON.parse(response.body)).not_to include('errors')
           media_object.reload
           expect(media_object.title).to eq old_title+'new'
         end
         it "should add a master_file to a media_object" do
-          put 'json_update', format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id
+          put 'json_update', params: { format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id }
           expect(JSON.parse(response.body)['id'].class).to eq String
           expect(JSON.parse(response.body)).not_to include('errors')
           media_object.reload
@@ -433,7 +433,7 @@ describe MediaObjectsController, type: :controller do
         end
         it "should update the poster and thumbnail for its masterfile" do
           media_object = FactoryGirl.create(:media_object)
-          put 'json_update', format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id
+          put 'json_update', params: { format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id }
           media_object.reload
           expect(media_object.master_files.to_a.size).to eq 1
           expect(ExtractStillJob).to have_been_enqueued.with(media_object.master_files.first.id,{type:'both',offset:2000})
@@ -446,7 +446,7 @@ describe MediaObjectsController, type: :controller do
           expect(WaveformJob).to have_been_enqueued.with(media_object.master_files.first.id)
         end
         it "should delete existing master_files and add a new master_file to a media_object" do
-          put 'json_update', format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id, replace_masterfiles: true
+          put 'json_update', params: { format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id, replace_masterfiles: true }
           expect(JSON.parse(response.body)['id'].class).to eq String
           expect(JSON.parse(response.body)).not_to include('errors')
           media_object.reload
@@ -454,12 +454,12 @@ describe MediaObjectsController, type: :controller do
         end
         it "should return 404 if media object doesn't exist" do
           allow_any_instance_of(MediaObject).to receive(:save).and_return false
-          put 'json_update', format: 'json', id: 'doesnt_exist', fields: {}, collection_id: media_object.collection_id
+          put 'json_update', params: { format: 'json', id: 'doesnt_exist', fields: {}, collection_id: media_object.collection_id }
           expect(response.status).to eq(404)
         end
         it "should return 422 if media object update failed" do
           allow_any_instance_of(MediaObject).to receive(:save).and_return false
-          put 'json_update', format: 'json', id: media_object.id, fields: {}, collection_id: media_object.collection_id
+          put 'json_update', params: { format: 'json', id: media_object.id, fields: {}, collection_id: media_object.collection_id }
           expect(response.status).to eq(422)
           expect(JSON.parse(response.body)).to include('errors')
           expect(JSON.parse(response.body)["errors"].class).to eq Array
@@ -479,7 +479,7 @@ describe MediaObjectsController, type: :controller do
     context "Default permissions should be applied" do
       it "should be editable by the creator" do
         login_user collection.managers.first
-        expect { get 'new', collection_id: collection.id }.to change { MediaObject.count }
+        expect { get 'new', params: { collection_id: collection.id } }.to change { MediaObject.count }
         id = MediaObject.all.last.id
         expect(response).to redirect_to(edit_media_object_path(id: id))
       end
@@ -487,7 +487,7 @@ describe MediaObjectsController, type: :controller do
       it "should copy default permissions from its owning collection" do
         login_user collection.depositors.first
 
-        get 'new', collection_id: collection.id
+        get 'new', params: { collection_id: collection.id }
 
         #MediaObject.all.last.edit_users.should include(collection.managers)
         #MediaObject.all.last.edit_users.should include(collection.depositors)
@@ -502,7 +502,7 @@ describe MediaObjectsController, type: :controller do
     it "should redirect to first workflow step if authorized to edit" do
        login_user media_object.collection.managers.first
 
-       get 'edit', id: media_object.id
+       get 'edit', params: { id: media_object.id }
        expect(response).to be_success
        expect(response).to render_template "_#{HYDRANT_STEPS.first.template}"
      end
@@ -520,7 +520,7 @@ describe MediaObjectsController, type: :controller do
 
         # Set the task so that it can get to the resource-description step
         login_user media_object.collection.managers.first
-        get :edit, {id: media_object.id, step: 'resource-description'}
+        get :edit, params: { id: media_object.id, step: 'resource-description' }
         expect(response.response_code).to eq(200)
       end
       it "does not persist invalid media object after resource-description step" do
@@ -528,7 +528,7 @@ describe MediaObjectsController, type: :controller do
         media_object.save
         login_user media_object.collection.managers.first
 
-        put :update, {id: media_object.id, step: 'resource-description', media_object: {title: '', date_issued: ''}}
+        put :update, params: { id: media_object.id, step: 'resource-description', media_object: {title: '', date_issued: ''} }
         expect(response.response_code).to eq(200)
         expect(flash[:error]).not_to be_empty
         media_object.reload
@@ -543,16 +543,14 @@ describe MediaObjectsController, type: :controller do
       context "Persisting Permalinks on unpublished media_object" do
         subject(:mo) { media_object }
         it "should persist new permalink on unpublished media_object" do
-          expect { put 'update', id: mo.id, step: 'resource-description',
-                   media_object: { permalink: 'newpermalink', title: 'newtitle',
-                                   creator: 'newcreator', date_issued: 'newdateissued' }}
+          expect { put 'update', params: { id: mo.id, step: 'resource-description', media_object: { permalink: 'newpermalink', title: 'newtitle',
+                                   creator: 'newcreator', date_issued: 'newdateissued' } }}
             .to change { MediaObject.find(mo.id).permalink }
             .to('newpermalink')
         end
         it "should persist new permalink on unpublished media_object part" do
           part1 = FactoryGirl.create(:master_file, media_object: mo)
-          expect {put 'update', id: mo.id, step: 'file-upload',
-                  master_files: { part1.id => { permalink: 'newpermalinkpart' }}}
+          expect {put 'update', params: { id: mo.id, step: 'file-upload', master_files: { part1.id => { permalink: 'newpermalinkpart' }} }}
             .to change { MasterFile.find(part1.id).permalink }
             .to('newpermalinkpart')
         end
@@ -560,16 +558,14 @@ describe MediaObjectsController, type: :controller do
       context "Persisting Permalinks on published media_object" do
         subject(:mo) { FactoryGirl.create(:published_media_object, permalink: 'oldpermalink') }
         it "should persist updated permalink on published media_object" do
-          expect { put 'update', id: mo.id, step: 'resource-description',
-                   media_object: { permalink: 'newpermalink', title: mo.title,
-                                   creator: mo.creator, date_issued: mo.date_issued }}
+          expect { put 'update', params: { id: mo.id, step: 'resource-description', media_object: { permalink: 'newpermalink', title: mo.title,
+                                   creator: mo.creator, date_issued: mo.date_issued } }}
             .to change { MediaObject.find(mo.id).permalink }
             .to('newpermalink')
         end
         it "should persist updated permalink on published media_object part" do
           part1 = FactoryGirl.create(:master_file, permalink: 'oldpermalinkpart1', media_object: mo)
-          expect { put 'update', id: mo.id, step: 'file-upload',
-                   master_files: { part1.id => { permalink: 'newpermalinkpart' }}}
+          expect { put 'update', params: { id: mo.id, step: 'file-upload', master_files: { part1.id => { permalink: 'newpermalinkpart' }} }}
             .to change { MasterFile.find(part1.id).permalink }
             .to('newpermalinkpart')
         end
@@ -582,8 +578,7 @@ describe MediaObjectsController, type: :controller do
       before(:each) { login_user mo.collection.managers.first }
 
       it "should retain the hidden status of an object when other access control settings change" do
-        expect { put 'update', id: mo.id, step: 'access-control', donot_advance: 'true',
-                 add_user: user, add_user_display: user, submit_add_user: 'Add' }
+        expect { put 'update', params: { id: mo.id, step: 'access-control', donot_advance: 'true', add_user: user, add_user_display: user, submit_add_user: 'Add' } }
           .not_to change { MediaObject.find(mo.id).hidden? }
       end
     end
@@ -636,24 +631,24 @@ describe MediaObjectsController, type: :controller do
         let(:fedora3_pid) { 'avalon:1234' }
 
         it "should redirect" do
-          expect(get :show, id: fedora3_pid).to redirect_to(media_object_url(media_object.id))
+          expect(get :show, params: { id: fedora3_pid }).to redirect_to(media_object_url(media_object.id))
         end
       end
 
       it "should be accesible by its PID" do
-        get :show, id: media_object.id
+        get :show, params: { id: media_object.id }
         expect(response.response_code).to eq(200)
       end
 
       it "should return an error if the PID does not exist" do
         expect(MediaObject).to receive(:find).with('no-such-object') { raise ActiveFedora::ObjectNotFoundError }
-        get :show, id: 'no-such-object'
+        get :show, params: { id: 'no-such-object' }
         expect(response.response_code).to eq(404)
       end
 
       it "should be available to a manager when unpublished" do
         login_user media_object.collection.managers.first
-        get 'show', id: media_object.id
+        get 'show', params: { id: media_object.id }
         expect(response).not_to redirect_to new_user_session_path
       end
 
@@ -693,13 +688,13 @@ describe MediaObjectsController, type: :controller do
       it "should not be available to a user on an inactive lease" do
         media_object.governing_policies+=[Lease.create(begin_time: Date.today-2.day, end_time: Date.yesterday, inherited_read_users: [user.user_key])]
         media_object.save!
-        get 'show', id: media_object.id
+        get 'show', params: { id: media_object.id }
         expect(response.response_code).not_to eq(200)
       end
       it "should be available to a user on an active lease" do
         media_object.governing_policies+=[Lease.create(begin_time: Date.yesterday, end_time: Date.tomorrow, inherited_read_users: [user.user_key])]
         media_object.save!
-        get 'show', id: media_object.id
+        get 'show', params: { id: media_object.id }
         expect(response.response_code).to eq(200)
       end
     end
@@ -708,28 +703,28 @@ describe MediaObjectsController, type: :controller do
       context "Normal login" do
         it "administrators: should include lti, embed, and share" do
           login_as(:administrator)
-          get :show, id: media_object.id
+          get :show, params: { id: media_object.id }
           expect(response).to render_template(:_share_resource)
           expect(response).to render_template(:_embed_resource)
           expect(response).to render_template(:_lti_url)
         end
         it "managers: should include lti, embed, and share" do
           login_user media_object.collection.managers.first
-          get :show, id: media_object.id
+          get :show, params: { id: media_object.id }
           expect(response).to render_template(:_share_resource)
           expect(response).to render_template(:_embed_resource)
           expect(response).to render_template(:_lti_url)
         end
         it "editors: should include lti, embed, and share" do
           login_user media_object.collection.editors.first
-          get :show, id: media_object.id
+          get :show, params: { id: media_object.id }
           expect(response).to render_template(:_share_resource)
           expect(response).to render_template(:_embed_resource)
           expect(response).to render_template(:_lti_url)
         end
         it "others: should include embed and share and NOT lti" do
           login_as(:user)
-          get :show, id: media_object.id
+          get :show, params: { id: media_object.id }
           expect(response).to render_template(:_share_resource)
           expect(response).to render_template(:_embed_resource)
           expect(response).to_not render_template(:_lti_url)
@@ -740,7 +735,7 @@ describe MediaObjectsController, type: :controller do
           login_lti 'administrator'
           lti_group = @controller.user_session[:virtual_groups].first
           FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
-          get :show, id: media_object.id
+          get :show, params: { id: media_object.id }
           expect(response).to render_template(:_share_resource)
           expect(response).to render_template(:_embed_resource)
           expect(response).to render_template(:_lti_url)
@@ -749,7 +744,7 @@ describe MediaObjectsController, type: :controller do
           login_lti 'student'
           lti_group = @controller.user_session[:virtual_groups].first
           FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
-          get :show, id: media_object.id
+          get :show, params: { id: media_object.id }
           expect(response).to_not render_template(:_share_resource)
           expect(response).to_not render_template(:_embed_resource)
           expect(response).to render_template(:_lti_url)
@@ -778,7 +773,7 @@ describe MediaObjectsController, type: :controller do
         end
         it "should not include lti" do
           login_as(:administrator)
-          get :show, id: media_object.id
+          get :show, params: { id: media_object.id }
           expect(response).to render_template(:_share_resource)
           expect(response).to render_template(:_embed_resource)
           expect(response).to_not render_template(:_lti_url)
@@ -792,10 +787,10 @@ describe MediaObjectsController, type: :controller do
         login_user mo.collection.managers.first
       end
       it "redirects to first stream when currentStream is bad" do
-        expect(get 'show', id: mo.id, content: 'foo').to redirect_to(media_object_path(id: mo.id))
+        expect(get 'show', params: { id: mo.id, content: 'foo' }).to redirect_to(media_object_path(id: mo.id))
       end
       it "responds with 404 when non-existant section is requested" do
-        get 'show', id: mo.id, part: 100
+        get 'show', params: { id: mo.id, part: 100 }
         expect(response.code).to eq('404')
       end
     end
@@ -805,7 +800,7 @@ describe MediaObjectsController, type: :controller do
 
       context 'Before sign in' do
         it 'persists the current url on the session' do
-          get 'show', id: media_object.id
+          get 'show', params: { id: media_object.id }
           expect(session[:previous_url]).to eql media_object_path(media_object)
         end
       end
@@ -826,7 +821,7 @@ describe MediaObjectsController, type: :controller do
       it "should redirect to sign in when not logged in and item is unpublished" do
         media_object.publish!(nil)
         expect(media_object).not_to be_published
-        get 'show', id: media_object.id
+        get 'show', params: { id: media_object.id }
         expect(response).to redirect_to new_user_session_path
       end
 
@@ -834,7 +829,7 @@ describe MediaObjectsController, type: :controller do
         media_object.publish!(nil)
         expect(media_object).not_to be_published
         login_as :user
-        get 'show', id: media_object.id
+        get 'show', params: { id: media_object.id }
         expect(response).to redirect_to root_path
       end
     end
@@ -849,7 +844,7 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should return json for specific media_object" do
-        get 'show', id: media_object.id, format:'json'
+        get 'show', params: { id: media_object.id, format:'json' }
         expect(json['id']).to eq(media_object.id)
         expect(json['title']).to eq(media_object.title)
         expect(json['collection']).to eq(media_object.collection.name)
@@ -862,7 +857,7 @@ describe MediaObjectsController, type: :controller do
 
       it "should return 404 if requested media_object not present" do
         login_as(:administrator)
-        get 'show', id: 'doesnt_exist', format: 'json'
+        get 'show', params: { id: 'doesnt_exist', format: 'json' }
         expect(response.status).to eq(404)
         expect(JSON.parse(response.body)["errors"].class).to eq Array
         expect(JSON.parse(response.body)["errors"].first.class).to eq String
@@ -884,7 +879,7 @@ describe MediaObjectsController, type: :controller do
 
     it "should remove a MediaObject with a single MasterFiles" do
       media_object = FactoryGirl.create(:media_object, :with_master_file, collection: collection)
-      delete :destroy, id: media_object.id
+      delete :destroy, params: { id: media_object.id }
       expect(flash[:notice]).to include("being deleted")
       expect(MediaObject.exists?(media_object.id)).to be_falsey
       expect(MasterFile.exists?(media_object.master_files.first.id)).to be_falsey
@@ -895,21 +890,21 @@ describe MediaObjectsController, type: :controller do
       FactoryGirl.create(:master_file, media_object: media_object)
       master_file_ids = media_object.master_files.map(&:id)
       media_object.reload
-      delete :destroy, id: media_object.id
+      delete :destroy, params: { id: media_object.id }
       expect(flash[:notice]).to include("being deleted")
       expect(MediaObject.exists?(media_object.id)).to be_falsey
       master_file_ids.each { |mf_id| expect(MasterFile.exists?(mf_id)).to be_falsey }
     end
 
     it "should fail when id doesn't exist" do
-      delete :destroy, id: 'this-id-is-fake'
+      delete :destroy, params: { id: 'this-id-is-fake' }
       expect(response.code).to eq '404'
     end
 
     it "should remove multiple items" do
       media_objects = []
       3.times { media_objects << FactoryGirl.create(:media_object, collection: collection) }
-      delete :destroy, id: media_objects.map(&:id)
+      delete :destroy, params: { id: media_objects.map(&:id) }
       expect(flash[:notice]).to include('3 media objects')
       media_objects.each {|mo| expect(MediaObject.exists?(mo.id)).to be_falsey }
     end
@@ -924,26 +919,26 @@ describe MediaObjectsController, type: :controller do
     it "redirects with message when user does not have ability to delete all items" do
       media_object = FactoryGirl.create(:media_object)
       expect(controller.current_ability.can? :destroy, media_object).to be_falsey
-      expect(get :confirm_remove, id: media_object.id).to redirect_to(root_path)
+      expect(get :confirm_remove, params: { id: media_object.id }).to redirect_to(root_path)
       expect(flash[:notice]).not_to be_empty
     end
     it "displays confirmation form" do
       media_object = FactoryGirl.create(:media_object, collection: collection)
       expect(controller.current_ability.can? :destroy, media_object).to be_truthy
-      expect(get :confirm_remove, id: media_object.id).to render_template(:confirm_remove)
+      expect(get :confirm_remove, params: { id: media_object.id }).to render_template(:confirm_remove)
     end
     it "displays confirmation form even if user does not have ability to delete some items" do
       media_object1 = FactoryGirl.create(:media_object)
       media_object2 = FactoryGirl.create(:media_object, collection: collection)
       expect(controller.current_ability.can? :destroy, media_object1).to be_falsey
       expect(controller.current_ability.can? :destroy, media_object2).to be_truthy
-      expect(get :confirm_remove, id: [media_object1.id, media_object2.id]).to render_template(:confirm_remove)
+      expect(get :confirm_remove, params: { id: [media_object1.id, media_object2.id] }).to render_template(:confirm_remove)
     end
     it "displays confirmation form for administrators" do
       login_as :administrator
       media_object = FactoryGirl.create(:media_object, collection: collection)
       expect(controller.current_ability.can? :destroy, media_object).to be_truthy
-      expect(get :confirm_remove, id: media_object.id).to render_template(:confirm_remove)
+      expect(get :confirm_remove, params: { id: media_object.id }).to render_template(:confirm_remove)
     end
   end
 
@@ -966,21 +961,21 @@ describe MediaObjectsController, type: :controller do
 
       it 'publishes media object' do
         media_object = FactoryGirl.create(:media_object, collection: collection)
-        get 'update_status', id: media_object.id, status: 'publish'
+        get 'update_status', params: { id: media_object.id, status: 'publish' }
         media_object.reload
         expect(media_object).to be_published
         expect(media_object.permalink).to be_present
       end
 
       it "should fail when id doesn't exist" do
-        get 'update_status', id: 'this-id-is-fake', status: 'publish'
+        get 'update_status', params: { id: 'this-id-is-fake', status: 'publish' }
         expect(response.code).to eq '404'
       end
 
       it "should publish multiple items" do
         media_objects = []
         3.times { media_objects << FactoryGirl.create(:media_object, collection: collection) }
-        get 'update_status', id: media_objects.map(&:id), status: 'publish'
+        get 'update_status', params: { id: media_objects.map(&:id), status: 'publish' }
         expect(flash[:notice]).to include('3 media objects')
         media_objects.each do |mo|
           mo.reload
@@ -993,20 +988,20 @@ describe MediaObjectsController, type: :controller do
     context 'unpublishing' do
       it 'unpublishes media object' do
         media_object = FactoryGirl.create(:published_media_object, collection: collection)
-        get 'update_status', :id => media_object.id, :status => 'unpublish'
+        get 'update_status', params: { :id => media_object.id, :status => 'unpublish' }
         media_object.reload
         expect(media_object).not_to be_published
       end
 
       it "should fail when id doesn't exist" do
-        get 'update_status', id: 'this-id-is-fake', status: 'unpublish'
+        get 'update_status', params: { id: 'this-id-is-fake', status: 'unpublish' }
         expect(response.code).to eq '404'
       end
 
       it "should unpublish multiple items" do
         media_objects = []
         3.times { media_objects << FactoryGirl.create(:published_media_object, collection: collection) }
-        get 'update_status', id: media_objects.map(&:id), status: 'unpublish'
+        get 'update_status', params: { id: media_objects.map(&:id), status: 'unpublish' }
         expect(flash[:notice]).to include('3 media objects')
         media_objects.each do |mo|
           mo.reload
@@ -1024,7 +1019,7 @@ describe MediaObjectsController, type: :controller do
       login_user media_object.collection.managers.first
       request.env["HTTP_REFERER"] = '/'
       expect {
-        get 'update_status', id: media_object.id, status: 'unpublish'
+        get 'update_status', params: { id: media_object.id, status: 'unpublish' }
       }.to change { Bookmark.exists? bookmark.id }.from( true ).to( false )
     end
   end
@@ -1043,7 +1038,7 @@ describe MediaObjectsController, type: :controller do
 
       login_user media_object.collection.managers.first
 
-      put 'update', :id => media_object.id, :master_file_ids => master_file_ids.reverse, :step => 'structure'
+      put 'update', params: { :id => media_object.id, :master_file_ids => master_file_ids.reverse, :step => 'structure' }
       media_object.reload
       expect(media_object.ordered_master_files.to_a.collect(&:id)).to eq master_file_ids.reverse
     end
@@ -1076,7 +1071,7 @@ describe MediaObjectsController, type: :controller do
         part_params = {}
         media_object.ordered_master_files.to_a.each_with_index { |mf,i| part_params[mf.id] = { id: mf.id, title: "Part #{i}", permalink: '', poster_offset: '00:00:00.000' } }
         params = { id: media_object.id, master_files: part_params, save: 'Save', step: 'file-upload', donot_advance: 'true' }
-        patch 'update', params
+        patch 'update', params: params
         media_object.reload
         media_object.ordered_master_files.to_a.each_with_index do |mf,i|
           expect(mf.title).to eq "Part #{i}"
@@ -1094,33 +1089,33 @@ describe MediaObjectsController, type: :controller do
 
       context "grant and revoke special read access" do
         it "grants and revokes special read access to users" do
-          expect { put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add' }.to change { media_object.reload.read_users }.from([]).to([user])
-          expect {put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', remove_user: user, submit_remove_user: 'Remove' }.to change { media_object.reload.read_users }.from([user]).to([])
+          expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add' } }.to change { media_object.reload.read_users }.from([]).to([user])
+          expect {put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', remove_user: user, submit_remove_user: 'Remove' } }.to change { media_object.reload.read_users }.from([user]).to([])
         end
         it "grants and revokes special read access to groups" do
-          expect { put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_group: group, submit_add_group: 'Add' }.to change { media_object.reload.read_groups }.from([]).to([group])
-          expect { put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', remove_group: group, submit_remove_group: 'Remove' }.to change { media_object.reload.read_groups }.from([group]).to([])
+          expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_group: group, submit_add_group: 'Add' } }.to change { media_object.reload.read_groups }.from([]).to([group])
+          expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', remove_group: group, submit_remove_group: 'Remove' } }.to change { media_object.reload.read_groups }.from([group]).to([])
         end
         it "grants and revokes special read access to external groups" do
-          expect { put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_class: classname, submit_add_class: 'Add' }.to change { media_object.reload.read_groups }.from([]).to([classname])
-          expect { put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', remove_class: classname, submit_remove_class: 'Remove' }.to change { media_object.reload.read_groups }.from([classname]).to([])
+          expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_class: classname, submit_add_class: 'Add' } }.to change { media_object.reload.read_groups }.from([]).to([classname])
+          expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', remove_class: classname, submit_remove_class: 'Remove' } }.to change { media_object.reload.read_groups }.from([classname]).to([])
         end
         it "grants and revokes special read access to ips" do
-          expect { put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_ipaddress: ipaddr, submit_add_ipaddress: 'Add' }.to change { media_object.reload.read_groups }.from([]).to([ipaddr])
-          expect { put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', remove_ipaddress: ipaddr, submit_remove_ipaddress: 'Remove' }.to change { media_object.reload.read_groups }.from([ipaddr]).to([])
+          expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_ipaddress: ipaddr, submit_add_ipaddress: 'Add' } }.to change { media_object.reload.read_groups }.from([]).to([ipaddr])
+          expect { put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', remove_ipaddress: ipaddr, submit_remove_ipaddress: 'Remove' } }.to change { media_object.reload.read_groups }.from([ipaddr]).to([])
         end
       end
 
       context "grant and revoke time-based special read access" do
         it "should grant and revoke time-based access for users" do
           expect {
-            put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.yesterday, add_user_end: Date.tomorrow
+            put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.yesterday, add_user_end: Date.tomorrow }
             media_object.reload
           }.to change{media_object.leases.count}.by(1)
           expect(media_object.leases).not_to be_empty
           lease_id = media_object.reload.leases.first.id
           expect {
-            put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', remove_lease: lease_id
+            put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', remove_lease: lease_id }
             media_object.reload
           }.to change{media_object.leases.count}.by(-1)
         end
@@ -1129,26 +1124,26 @@ describe MediaObjectsController, type: :controller do
       context "must validate lease date ranges" do
         it "should accept valid date range for lease" do
           expect {
-            put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.today, add_user_end: Date.tomorrow
+            put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.today, add_user_end: Date.tomorrow }
             media_object.reload
           }.to change{media_object.leases.count}.by(1)
         end
         it "should reject reverse date range for lease" do
           expect {
-            put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.tomorrow, add_user_end: Date.today
+            put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.tomorrow, add_user_end: Date.today }
             media_object.reload
           }.not_to change{media_object.leases.count}
         end
         it "should accept missing begin date and set it to today" do
           expect {
-            put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: '', add_user_end: Date.tomorrow
+            put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: '', add_user_end: Date.tomorrow }
             media_object.reload
           }.to change{media_object.leases.count}.by(1)
           expect(media_object.leases.first.begin_time).to eq(Date.today)
         end
         it "should reject missing end date" do
           expect {
-            put :update, id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.tomorrow, add_user_end: ''
+            put :update, params: { id: media_object.id, step: 'access-control', donot_advance: 'true', add_user: user, submit_add_user: 'Add', add_user_begin: Date.tomorrow, add_user_end: '' }
             media_object.reload
           }.not_to change{media_object.leases.count}
         end
@@ -1167,7 +1162,7 @@ describe MediaObjectsController, type: :controller do
           dbl = double("BibRetriever")
           allow(Avalon::BibRetriever).to receive(:instance).and_return(dbl)
           expect(dbl).not_to receive(:get_record)
-          put :update, id: media_object.id, step: 'resource-description', media_object: { import_bib_record: 'yes', bibliographic_id: ' ', bibliographic_id_label: 'local' }
+          put :update, params: { id: media_object.id, step: 'resource-description', media_object: { import_bib_record: 'yes', bibliographic_id: ' ', bibliographic_id_label: 'local' } }
         end
       end
     end
@@ -1177,19 +1172,19 @@ describe MediaObjectsController, type: :controller do
     it "should return information about the processing state of the media object's master_files" do
       media_object =  FactoryGirl.create(:media_object, :with_master_file)
       login_as 'administrator'
-      get :show_progress, id: media_object.id, format: 'json'
+      get :show_progress, params: { id: media_object.id, format: 'json' }
       expect(JSON.parse(response.body)["overall"]).to_not be_empty
     end
     it "should return information about the processing state of the media object's master_files for managers" do
       media_object =  FactoryGirl.create(:media_object, :with_master_file)
       login_user media_object.collection.managers.first
-      get :show_progress, id: media_object.id, format: 'json'
+      get :show_progress, params: { id: media_object.id, format: 'json' }
       expect(JSON.parse(response.body)["overall"]).to_not be_empty
     end
     it "should return something even if the media object has no master_files" do
       media_object = FactoryGirl.create(:media_object)
       login_as 'administrator'
-      get :show_progress, id: media_object.id, format: 'json'
+      get :show_progress, params: { id: media_object.id, format: 'json' }
       expect(JSON.parse(response.body)["overall"]).to_not be_empty
     end
   end
@@ -1197,7 +1192,7 @@ describe MediaObjectsController, type: :controller do
   describe "#set_session_quality" do
     it "should set the posted quality in the session" do
       login_as 'administrator'
-      post :set_session_quality, quality: 'crazy_high'
+      post :set_session_quality, params: { quality: 'crazy_high' }
       expect(@request.session[:quality]).to eq('crazy_high')
     end
   end
@@ -1209,16 +1204,16 @@ describe MediaObjectsController, type: :controller do
       login_as :user
     end
     it "should render add_to_playlist_form with correct masterfile_id" do
-      get :add_to_playlist_form, id: media_object.id, scope: 'master_file', masterfile_id: media_object.master_file_ids[0]
+      get :add_to_playlist_form, params: { id: media_object.id, scope: 'master_file', masterfile_id: media_object.master_file_ids[0] }
       expect(response).to render_template(:_add_to_playlist_form)
       expect(response.body).to include(media_object.master_file_ids[0])
     end
     it "should render the correct label for scope=master_file" do
-      get :add_to_playlist_form, id: media_object.id, scope: 'master_file', masterfile_id: media_object.master_file_ids[0]
+      get :add_to_playlist_form, params: { id: media_object.id, scope: 'master_file', masterfile_id: media_object.master_file_ids[0] }
       expect(response.body).to include('Add Section to Playlist')
     end
     it "should render the correct label for scope=media_object" do
-      get :add_to_playlist_form, id: media_object.id, scope: 'media_object', masterfile_id: media_object.master_file_ids[0]
+      get :add_to_playlist_form, params: { id: media_object.id, scope: 'media_object', masterfile_id: media_object.master_file_ids[0] }
       expect(response.body).to include('Add Item to Playlist')
     end
   end
@@ -1236,27 +1231,27 @@ describe MediaObjectsController, type: :controller do
 
     it "should create a single playlist_item for a single master_file" do
       expect {
-        post :add_to_playlist, id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.master_file_ids[0], playlistitem_scope: 'section' }
+        post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.master_file_ids[0], playlistitem_scope: 'section' } }
       }.to change { playlist.items.count }.from(0).to(1)
       expect(playlist.items[0].title).to eq("#{media_object.title} - #{media_object.ordered_master_files.to_a[0].title}")
     end
     it "should create playlist_items for each span in a single master_file's structure" do
       expect {
-        post :add_to_playlist, id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.master_file_ids[1], playlistitem_scope: 'structure' }
+        post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: playlist.id, masterfile_id: media_object.master_file_ids[1], playlistitem_scope: 'structure' } }
       }.to change { playlist.items.count }.from(0).to(13)
       expect(playlist.items[0].title).to eq("Test Item - CD 1 - Copland, Three Piano Excerpts from Our Town - Track 1. Story of Our Town")
       expect(playlist.items[12].title).to eq("Test Item - CD 1 - Track 13. Copland, Danzon Cubano")
     end
     it "should create a single playlist_item for each master_file in a media_object" do
       expect {
-        post :add_to_playlist, id: media_object.id, post: { playlist_id: playlist.id, playlistitem_scope: 'section' }
+        post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: playlist.id, playlistitem_scope: 'section' } }
       }.to change { playlist.items.count }.from(0).to(2)
       expect(playlist.items[0].title).to eq(media_object.ordered_master_files.to_a[0].embed_title)
       expect(playlist.items[1].title).to eq(media_object.ordered_master_files.to_a[1].embed_title)
     end
     it "should create playlist_items for each span in a master_file structures in a media_object" do
       expect {
-        post :add_to_playlist, id: media_object.id, post: { playlist_id: playlist.id, playlistitem_scope: 'structure' }
+        post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: playlist.id, playlistitem_scope: 'structure' } }
       }.to change { playlist.items.count }.from(0).to(14)
       expect(response.response_code).to eq(200)
       expect(playlist.items[0].title).to eq("#{media_object.title} - #{media_object.ordered_master_files.to_a[0].title}")
@@ -1265,7 +1260,7 @@ describe MediaObjectsController, type: :controller do
     it 'redirects with flash message when playlist is owned by another user' do
       login_as :user
       other_playlist = FactoryGirl.create(:playlist)
-      post :add_to_playlist, id: media_object.id, post: { playlist_id: other_playlist.id, masterfile_id: media_object.master_file_ids[0], playlistitem_scope: 'section' }
+      post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: other_playlist.id, masterfile_id: media_object.master_file_ids[0], playlistitem_scope: 'section' } }
       expect(response).to have_http_status(403)
       expect(JSON.parse(response.body).symbolize_keys).to eq({message: "<p>You are not authorized to update this playlist.</p>", status: 403})
     end
