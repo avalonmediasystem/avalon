@@ -73,19 +73,19 @@ describe ApplicationController do
 
   describe "exceptions handling" do
     it "renders deleted_pid template" do
-      get :show, id: 'deleted-id'
+      get :show, params: { id: 'deleted-id' }
       expect(response).to render_template("errors/deleted_pid")
     end
   end
 
   describe "rewrite_v4_ids" do
     it 'skips when id is not a Fedora 3 pid' do
-      get :show, id: 'abc1234'
+      get :show, params: { id: 'abc1234' }
       expect(response).not_to have_http_status(304)
     end
 
     it 'skips post requests' do
-      post :create, id: 'avalon:1234'
+      post :create, params: { id: 'avalon:1234' }
       expect(response).not_to have_http_status(304)
     end
   end

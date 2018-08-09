@@ -27,13 +27,13 @@ describe MigrationStatusController do
   describe '#detail' do
     context 'with a Fedora 3 pid' do
       it 'returns the details' do
-        get :detail, id: fedora3_pid
+        get :detail, params: { id: fedora3_pid }
         expect(response).to have_http_status(:ok)
       end
     end
     context 'with an Avalon noid' do
       it 'returns the details' do
-        get :detail, id: avalon_noid
+        get :detail, params: { id: avalon_noid }
         expect(response).to have_http_status(:ok)
       end
     end
