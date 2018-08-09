@@ -29,7 +29,7 @@ describe Users::OmniauthCallbacksController, type: :controller do
       end
 
       it 'redirects to homepage if url host does not match app host' do
-        post :identity, params
+        post :identity, params: params
         expect(response).to redirect_to(root_path)
       end
     end

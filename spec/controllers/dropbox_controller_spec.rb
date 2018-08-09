@@ -32,20 +32,20 @@ describe DropboxController do
 
   it 'deletes video/audio files' do
     expect(@dropbox).to receive(:delete).exactly(@temp_files.count).times
-    delete :bulk_delete, { :collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name] } }
+    delete :bulk_delete, params: { :collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name] } }
   end
 
   it "should allow the collection manager to delete" do
     login_user @collection.managers.first
     expect(@dropbox).to receive(:delete).exactly(@temp_files.count).times
-    delete :bulk_delete, {:collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name]}}
+    delete :bulk_delete, params: { :collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name]} }
     expect(response.status).to be(200)
   end
 
   [:group_manager, :student].each do |group|
     it "should not allow #{group} to delete" do
       login_as group
-      delete :bulk_delete, {:collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name]}}
+      delete :bulk_delete, params: { :collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name]} }
       expect(response.status).to redirect_to(root_path)
     end
   end
