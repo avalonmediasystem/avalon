@@ -473,7 +473,7 @@ class MediaObjectsController < ApplicationController
 
   def set_session_quality
     session[:quality] = params[:quality] if params[:quality].present?
-    render nothing: true
+    head :ok
   end
 
   protected
