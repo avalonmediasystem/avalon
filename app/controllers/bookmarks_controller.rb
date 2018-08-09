@@ -39,7 +39,7 @@ class BookmarksController < CatalogController
 
   self.add_show_tools_partial( :intercom_push, callback: :intercom_push_action, if: Proc.new { |context, config, options| context.user_can? :intercom_push } )
 
-  before_filter :verify_permissions, only: :index
+  before_action :verify_permissions, only: :index
 
   #HACK next two methods are a hack for problems in the puppet VM tomcat/solr
   # def rewrite_bookmarks_search(solr_parameters, user_parameters)

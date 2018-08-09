@@ -19,8 +19,8 @@ include SecurityHelper
 class MasterFilesController < ApplicationController
   # include Avalon::Controller::ControllerBehavior
 
-  before_filter :authenticate_user!, :only => [:create]
-  before_filter :ensure_readable_filedata, :only => [:create]
+  before_action :authenticate_user!, :only => [:create]
+  before_action :ensure_readable_filedata, :only => [:create]
 
 
   # Renders the captions content for an object or alerts the user that no caption content is present with html present
