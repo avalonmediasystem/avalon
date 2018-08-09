@@ -110,7 +110,7 @@ class BookmarksController < CatalogController
   end
 
   def access_control_action documents
-    params.permit! # FIXME lock this down eventually
+    params.permit! # FIXME: lock this down eventually
     errors = []
     success_ids = []
     Array(documents.map(&:id)).each do |id|
