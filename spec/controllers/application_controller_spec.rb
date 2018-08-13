@@ -21,7 +21,7 @@ describe ApplicationController do
     end
 
     def create
-      render nothing: true
+      head :ok
     end
 
     def show
