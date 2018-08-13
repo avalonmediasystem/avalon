@@ -544,7 +544,11 @@ class MediaObjectsController < ApplicationController
     # TODO: Restrist permitted params!!!
     # params.require(:fields).permit!
     # params.permit!
-    mo_parameters = ActionController::Parameters.new(Hash(params[:fields]).merge(Hash(params[:media_object]))).permit!
+    params[:fields] ||= {}
+    params[:fields].permit!
+    params[:media_object] ||= {}
+    params[:media_object].permit!
+    mo_parameters = params[:fields].merge(params[:media_object])
     # NOTE: Deal with multi-part fields
     #Bib ids
     bib_id = mo_parameters.delete(:bibliographic_id)
