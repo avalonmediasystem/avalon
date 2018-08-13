@@ -17,7 +17,7 @@ require 'rails_helper'
 describe ApplicationController do
   controller do
     def create
-      render nothing: true
+      head :ok
     end
 
     def show
