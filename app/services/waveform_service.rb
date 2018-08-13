@@ -20,18 +20,18 @@ class WaveformService
 private
 
   def get_normalized_peaks(uri)
-    peaks = get_peaks(uri)
+    wave_io = get_wave_io(uri)
+    peaks = gather_peaks(wave_io)
     max_peak = peaks.flatten.map(&:abs).max
     res = 2**(@bit_res - 1)
     factor = res / max_peak.to_f
     peaks.map { |peak| peak.collect { |num| (num * factor).to_i } }
   end
 
-  def get_peaks(uri)
-    # headers = "-headers $'Referer: https://media.dlib.indiana.edu\r\n'" if uri.starts_with? "http"
+  def get_wave_io(uri)
     headers = "-headers $'Referer: #{Rails.application.routes.url_helpers.root_url}\r\n'" if uri.starts_with? "http"
     cmd = "ffmpeg #{headers} -i #{uri} -f wav - 2> /dev/null"
-    gather_peaks(IO.popen(cmd))
+    IO.popen(cmd)
   end
 
   def gather_peaks(wav_file)
