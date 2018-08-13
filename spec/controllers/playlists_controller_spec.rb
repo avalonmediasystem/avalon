@@ -135,7 +135,7 @@ RSpec.describe PlaylistsController, type: :controller do
     it 'assigns accessible playlists as @playlists' do
       # TODO: test non-accessible playlists not appearing
       playlist = Playlist.create! valid_attributes
-      get :index, headers: valid_session
+      get :index, params: {}, headers: valid_session
       expect(assigns(:playlists)).to eq([playlist])
     end
   end
@@ -154,7 +154,7 @@ RSpec.describe PlaylistsController, type: :controller do
       login_as :user
     end
     it 'assigns a new playlist as @playlist' do
-      get :new, headers: valid_session
+      get :new, params: {}, headers: valid_session
       expect(assigns(:playlist)).to be_a_new(Playlist)
     end
   end
