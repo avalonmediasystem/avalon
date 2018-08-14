@@ -1,13 +1,14 @@
 source 'https://rubygems.org'
 
 # Core rails
-gem 'rails', '=5.0.7'
+gem 'rails', '=5.1.6'
 gem 'sqlite3'
 gem 'bootsnap', require: false
 gem 'sprockets', '~>3.7.2'
+gem 'listen'
 
 # Assets
-gem 'coffee-rails', '~> 4.1.0'
+gem 'coffee-rails', '~> 4.2.0'
 gem 'jquery-datatables'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
