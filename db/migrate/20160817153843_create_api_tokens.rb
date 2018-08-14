@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class CreateApiTokens < ActiveRecord::Migration
+class CreateApiTokens < ActiveRecord::Migration[5.1]
   def change
     create_table :api_tokens do |t|
       t.string :token, null: false

@@ -1,4 +1,4 @@
-class CreateBatchEntries < ActiveRecord::Migration
+class CreateBatchEntries < ActiveRecord::Migration[5.1]
   def change
     create_table :batch_entries do |t|
       t.belongs_to :batch_registries, index: true

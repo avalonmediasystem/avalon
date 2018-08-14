@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class AddAnnotationsClipsMarkers < ActiveRecord::Migration
+class AddAnnotationsClipsMarkers < ActiveRecord::Migration[5.1]
   def change
     create_table :annotations do |t|
       t.string :uuid

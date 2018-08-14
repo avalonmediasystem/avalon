@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class CreateMigrationStatuses < ActiveRecord::Migration
+class CreateMigrationStatuses < ActiveRecord::Migration[5.1]
   def change
     create_table :migration_statuses do |t|
       t.string :source_class, null: false
