@@ -15,7 +15,7 @@
 require 'rails_helper'
 
 describe Lease do
-  let!(:lease) {FactoryGirl.create(:lease)}
+  let!(:lease) {FactoryBot.create(:lease)}
 
   describe 'Valid Lease Term' do
     it 'should return true when the date is between the lease periods' do
@@ -176,7 +176,7 @@ describe Lease do
     end
     it 'identifies group lease_type' do
       expect {
-        lease.inherited_read_groups = [FactoryGirl.create(:group).name]
+        lease.inherited_read_groups = [FactoryBot.create(:group).name]
         lease.save
       }.to change{Lease.local.count}.by(1)
       expect(lease.lease_type).to eq "local"
@@ -197,7 +197,7 @@ describe Lease do
     end
   end
   describe '#media_objects' do
-    let(:media_object) { FactoryGirl.create(:media_object) }
+    let(:media_object) { FactoryBot.create(:media_object) }
     before do
       media_object.governing_policies += [ lease ]
       media_object.save!

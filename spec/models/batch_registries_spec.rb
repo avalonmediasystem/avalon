@@ -15,11 +15,11 @@
 require 'rails_helper'
 
 describe BatchRegistries do
-  subject { FactoryGirl.build(:batch_registries) }
+  subject { FactoryBot.build(:batch_registries) }
 
   describe '#save' do
     it "persists an error when the user doesn't exist" do
-      batch_registries = FactoryGirl.build(:batch_registries, user_id: 10000)
+      batch_registries = FactoryBot.build(:batch_registries, user_id: 10000)
       batch_registries.save
       expect(batch_registries.error).to be true
       expect(batch_registries.error_message).to be_present

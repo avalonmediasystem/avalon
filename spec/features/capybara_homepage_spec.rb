@@ -66,7 +66,7 @@ describe 'checks navigation to external links' do
     expect(page).to have_button('Submit comments')
   end
   it 'verifies presence of features after login' do
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit'/'
     expect(page).to have_link('Manage Content')

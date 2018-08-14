@@ -24,7 +24,7 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe 'security' do
-    let(:media_object) { FactoryGirl.create(:media_object) }
+    let(:media_object) { FactoryBot.create(:media_object) }
     describe 'ingest api' do
       before do
         ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
@@ -127,8 +127,8 @@ describe MediaObjectsController, type: :controller do
     end
 
     describe '#intercom_push' do
-      let(:media_object) { FactoryGirl.create(:media_object) }
-      let(:master_file_with_structure) { FactoryGirl.create(:master_file, :with_structure, media_object: media_object) }
+      let(:media_object) { FactoryBot.create(:media_object) }
+      let(:master_file_with_structure) { FactoryBot.create(:master_file, :with_structure, media_object: media_object) }
       let(:target_link) { { link: 'http://link.to/media_object' } }
       let(:error_status) { { message: 'Not authorized', status: 401 } }
       let(:media_object_permission) { 'You do not have permission to push this media object.' }
@@ -166,7 +166,7 @@ describe MediaObjectsController, type: :controller do
   end
 
   context "JSON API methods" do
-    let!(:collection) { FactoryGirl.create(:collection) }
+    let!(:collection) { FactoryBot.create(:collection) }
     let!(:testdir) {'spec/fixtures/'}
     let!(:filename) {'videoshort.high.mp4'}
     let!(:absolute_location) {Rails.root.join(File.join(testdir, filename)).to_s}
@@ -265,8 +265,8 @@ describe MediaObjectsController, type: :controller do
           expect(JSON.parse(response.body)["errors"].first.class).to eq String
         end
         it "should create a new media_object" do
-          # master_file_obj = FactoryGirl.create(:master_file, master_file.slice(:files))
-          media_object = FactoryGirl.create(:media_object)#, master_files: [master_file_obj])
+          # master_file_obj = FactoryBot.create(:master_file, master_file.slice(:files))
+          media_object = FactoryBot.create(:media_object)#, master_files: [master_file_obj])
           fields = {other_identifier_type: []}
           descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
           # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
@@ -290,7 +290,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.workflow.last_completed_step).to eq([HYDRANT_STEPS.last.step])
         end
         it "should create a new published media_object" do
-          media_object = FactoryGirl.create(:published_media_object)
+          media_object = FactoryBot.create(:published_media_object)
           fields = {}
           descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
           # fields = media_object.attributes.select {|k,v| descMetadata_fields.include? k.to_sym }
@@ -313,7 +313,7 @@ describe MediaObjectsController, type: :controller do
         it "should create a new media_object with supplied fields when bib import fails" do
           Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
           stub_request(:get, sru_url).to_return(body: nil)
-          ex_media_object = FactoryGirl.create(:media_object)
+          ex_media_object = FactoryBot.create(:media_object)
           fields = {}
           descMetadata_fields.each {|f| fields[f] = ex_media_object.send(f) }
           fields[:bibliographic_id] = bib_id
@@ -326,7 +326,7 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.date_issued).to eq ex_media_object.date_issued
         end
         it "should create a new media_object, removing invalid data for non-required fields" do
-          media_object = FactoryGirl.create(:media_object)
+          media_object = FactoryBot.create(:media_object)
           fields = {}
           descMetadata_fields.each {|f| fields[f] = media_object.send(f) }
           fields[:language] = ['???']
@@ -367,9 +367,9 @@ describe MediaObjectsController, type: :controller do
           expect(new_media_object.identifier).to eq(['ABC1234'])
         end
         it "should create a new media_object using ingest_api_hash of existing media_object" do
-          # master_file_obj = FactoryGirl.create(:master_file, master_file.slice(:files))
-          media_object = FactoryGirl.create(:fully_searchable_media_object, :with_completed_workflow)
-          master_file = FactoryGirl.create(:master_file, :with_derivative, :with_thumbnail, :with_poster, :with_structure, :with_captions, :with_comments, media_object: media_object)
+          # master_file_obj = FactoryBot.create(:master_file, master_file.slice(:files))
+          media_object = FactoryBot.create(:fully_searchable_media_object, :with_completed_workflow)
+          master_file = FactoryBot.create(:master_file, :with_derivative, :with_thumbnail, :with_poster, :with_structure, :with_captions, :with_comments, media_object: media_object)
           allow_any_instance_of(MasterFile).to receive(:extract_frame).and_return('some data')
           media_object.update_dependent_properties!
           api_hash = media_object.to_ingest_api_hash
@@ -407,7 +407,7 @@ describe MediaObjectsController, type: :controller do
           request.headers['Avalon-Api-Key'] = 'secret_token'
           allow_any_instance_of(MasterFile).to receive(:get_ffmpeg_frame_data).and_return('some data')
         end
-        let!(:media_object) { FactoryGirl.create(:media_object, :with_master_file) }
+        let!(:media_object) { FactoryBot.create(:media_object, :with_master_file) }
         it "should route json format to #json_update" do
           assert_routing({ path: 'media_objects/1.json', method: :put },
              { controller: 'media_objects', action: 'json_update', id: '1', format: 'json' })
@@ -432,7 +432,7 @@ describe MediaObjectsController, type: :controller do
           expect(media_object.master_files.to_a.size).to eq 2
         end
         it "should update the poster and thumbnail for its masterfile" do
-          media_object = FactoryGirl.create(:media_object)
+          media_object = FactoryBot.create(:media_object)
           put 'json_update', params: { format: 'json', id: media_object.id, files: [master_file], collection_id: media_object.collection_id }
           media_object.reload
           expect(media_object.master_files.to_a.size).to eq 1
@@ -470,7 +470,7 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#new" do
-    let!(:collection) { FactoryGirl.create(:collection) }
+    let!(:collection) { FactoryBot.create(:collection) }
 
     it "should not let manager of other collections create an item in this collection" do
       skip
@@ -497,7 +497,7 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#edit" do
-    let!(:media_object) { FactoryGirl.create(:media_object) }
+    let!(:media_object) { FactoryBot.create(:media_object) }
 
     it "should redirect to first workflow step if authorized to edit" do
        login_user media_object.collection.managers.first
@@ -549,14 +549,14 @@ describe MediaObjectsController, type: :controller do
             .to('newpermalink')
         end
         it "should persist new permalink on unpublished media_object part" do
-          part1 = FactoryGirl.create(:master_file, media_object: mo)
+          part1 = FactoryBot.create(:master_file, media_object: mo)
           expect {put 'update', params: { id: mo.id, step: 'file-upload', master_files: { part1.id => { permalink: 'newpermalinkpart' }} }}
             .to change { MasterFile.find(part1.id).permalink }
             .to('newpermalinkpart')
         end
       end
       context "Persisting Permalinks on published media_object" do
-        subject(:mo) { FactoryGirl.create(:published_media_object, permalink: 'oldpermalink') }
+        subject(:mo) { FactoryBot.create(:published_media_object, permalink: 'oldpermalink') }
         it "should persist updated permalink on published media_object" do
           expect { put 'update', params: { id: mo.id, step: 'resource-description', media_object: { permalink: 'newpermalink', title: mo.title,
                                    creator: mo.creator, date_issued: mo.date_issued } }}
@@ -564,7 +564,7 @@ describe MediaObjectsController, type: :controller do
             .to('newpermalink')
         end
         it "should persist updated permalink on published media_object part" do
-          part1 = FactoryGirl.create(:master_file, permalink: 'oldpermalinkpart1', media_object: mo)
+          part1 = FactoryBot.create(:master_file, permalink: 'oldpermalinkpart1', media_object: mo)
           expect { put 'update', params: { id: mo.id, step: 'file-upload', master_files: { part1.id => { permalink: 'newpermalinkpart' }} }}
             .to change { MasterFile.find(part1.id).permalink }
             .to('newpermalinkpart')
@@ -573,7 +573,7 @@ describe MediaObjectsController, type: :controller do
     end
 
     context "Hidden Items" do
-      subject(:mo) { FactoryGirl.create(:media_object, :with_completed_workflow, hidden: true) }
+      subject(:mo) { FactoryBot.create(:media_object, :with_completed_workflow, hidden: true) }
       let!(:user) { Faker::Internet.email }
       before(:each) { login_user mo.collection.managers.first }
 
@@ -585,7 +585,7 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#index" do
-    let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
+    let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
     subject(:json) { JSON.parse(response.body) }
     before do
       ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
@@ -607,10 +607,10 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe 'pagination' do
-      let(:collection) { FactoryGirl.create(:collection) }
+      let(:collection) { FactoryBot.create(:collection) }
       subject(:json) { JSON.parse(response.body) }
       before do
-        5.times { FactoryGirl.create(:published_media_object, visibility: 'public', collection: collection) }
+        5.times { FactoryBot.create(:published_media_object, visibility: 'public', collection: collection) }
         ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
         request.headers['Avalon-Api-Key'] = 'secret_token'
         get 'index', params: { format:'json', per_page: '2' }
@@ -623,11 +623,11 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#show" do
-    let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
+    let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
 
     context "Known items should be retrievable" do
       context 'with fedora 3 pid' do
-        let!(:media_object) {FactoryGirl.create(:published_media_object, visibility: 'public', identifier: [fedora3_pid])}
+        let!(:media_object) {FactoryBot.create(:published_media_object, visibility: 'public', identifier: [fedora3_pid])}
         let(:fedora3_pid) { 'avalon:1234' }
 
         it "should redirect" do
@@ -653,7 +653,7 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should provide a JSON stream description to the client" do
-        part = FactoryGirl.create(:master_file, media_object: media_object)
+        part = FactoryBot.create(:master_file, media_object: media_object)
         get :show_stream_details, params: { id: media_object.id, content: part.id }, xhr: true
         json_obj = JSON.parse(response.body)
         expect(json_obj['is_video']).to eq(part.is_video?)
@@ -661,15 +661,15 @@ describe MediaObjectsController, type: :controller do
       end
 
       it "should provide a JSON stream description with permalink to the client" do
-        part = FactoryGirl.create(:master_file, media_object: media_object, permalink: 'https://permalink.host/path/id')
+        part = FactoryBot.create(:master_file, media_object: media_object, permalink: 'https://permalink.host/path/id')
         get :show_stream_details, params: { id: media_object.id, content: part.id }, xhr: true
         json_obj = JSON.parse(response.body)
         expect(json_obj['link_back_url']).to eq('https://permalink.host/path/id')
       end
 
       it "should choose the correct default master_file" do
-        mf1 = FactoryGirl.create(:master_file, media_object: media_object)
-        mf2 = FactoryGirl.create(:master_file, media_object: media_object)
+        mf1 = FactoryBot.create(:master_file, media_object: media_object)
+        mf2 = FactoryBot.create(:master_file, media_object: media_object)
         media_object.ordered_master_files = media_object.ordered_master_files.to_a.reverse
         media_object.save!
         controller.instance_variable_set('@media_object', media_object)
@@ -680,8 +680,8 @@ describe MediaObjectsController, type: :controller do
 
     end
     context "Test lease access control" do
-      let!(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'private') }
-      let!(:user) { FactoryGirl.create(:user) }
+      let!(:media_object) { FactoryBot.create(:published_media_object, visibility: 'private') }
+      let!(:user) { FactoryBot.create(:user) }
       before :each do
         login_user user.user_key
       end
@@ -734,7 +734,7 @@ describe MediaObjectsController, type: :controller do
         it "administrators/managers/editors: should include lti, embed, and share" do
           login_lti 'administrator'
           lti_group = @controller.user_session[:virtual_groups].first
-          FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
+          FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
           get :show, params: { id: media_object.id }
           expect(response).to render_template(:_share_resource)
           expect(response).to render_template(:_embed_resource)
@@ -743,7 +743,7 @@ describe MediaObjectsController, type: :controller do
         it "others: should include only lti" do
           login_lti 'student'
           lti_group = @controller.user_session[:virtual_groups].first
-          FactoryGirl.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
+          FactoryBot.create(:published_media_object, visibility: 'private', read_groups: [lti_group])
           get :show, params: { id: media_object.id }
           expect(response).to_not render_template(:_share_resource)
           expect(response).to_not render_template(:_embed_resource)
@@ -782,7 +782,7 @@ describe MediaObjectsController, type: :controller do
     end
 
     context "correctly handle unfound streams/sections" do
-      subject(:mo){FactoryGirl.create(:media_object, :with_master_file)}
+      subject(:mo){FactoryBot.create(:media_object, :with_master_file)}
       before do
         login_user mo.collection.managers.first
       end
@@ -796,7 +796,7 @@ describe MediaObjectsController, type: :controller do
     end
 
     describe 'Redirect back to media object after sign in' do
-      let(:media_object){ FactoryGirl.create(:media_object, visibility: 'private') }
+      let(:media_object){ FactoryBot.create(:media_object, visibility: 'private') }
 
       context 'Before sign in' do
         it 'persists the current url on the session' do
@@ -807,8 +807,8 @@ describe MediaObjectsController, type: :controller do
 
       context 'After sign in' do
         before do
-          @user = FactoryGirl.create(:user)
-          @media_object = FactoryGirl.create(:media_object, visibility: 'private', read_users: [@user.user_key] )
+          @user = FactoryBot.create(:user)
+          @media_object = FactoryBot.create(:media_object, visibility: 'private', read_users: [@user.user_key] )
         end
         it 'redirects to the previous url' do
         end
@@ -836,7 +836,7 @@ describe MediaObjectsController, type: :controller do
 
     context "with json format" do
       subject(:json) { JSON.parse(response.body) }
-      let!(:media_object) { FactoryGirl.create(:media_object) }
+      let!(:media_object) { FactoryBot.create(:media_object) }
 
       before do
         ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
@@ -867,7 +867,7 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#destroy" do
-    let!(:collection) { FactoryGirl.create(:collection) }
+    let!(:collection) { FactoryBot.create(:collection) }
     before(:each) do
       login_user collection.managers.first
     end
@@ -878,7 +878,7 @@ describe MediaObjectsController, type: :controller do
     end
 
     it "should remove a MediaObject with a single MasterFiles" do
-      media_object = FactoryGirl.create(:media_object, :with_master_file, collection: collection)
+      media_object = FactoryBot.create(:media_object, :with_master_file, collection: collection)
       delete :destroy, params: { id: media_object.id }
       expect(flash[:notice]).to include("being deleted")
       expect(MediaObject.exists?(media_object.id)).to be_falsey
@@ -886,8 +886,8 @@ describe MediaObjectsController, type: :controller do
     end
 
     it "should remove a MediaObject with multiple MasterFiles" do
-      media_object = FactoryGirl.create(:media_object, :with_master_file, collection: collection)
-      FactoryGirl.create(:master_file, media_object: media_object)
+      media_object = FactoryBot.create(:media_object, :with_master_file, collection: collection)
+      FactoryBot.create(:master_file, media_object: media_object)
       master_file_ids = media_object.master_files.map(&:id)
       media_object.reload
       delete :destroy, params: { id: media_object.id }
@@ -903,7 +903,7 @@ describe MediaObjectsController, type: :controller do
 
     it "should remove multiple items" do
       media_objects = []
-      3.times { media_objects << FactoryGirl.create(:media_object, collection: collection) }
+      3.times { media_objects << FactoryBot.create(:media_object, collection: collection) }
       delete :destroy, params: { id: media_objects.map(&:id) }
       expect(flash[:notice]).to include('3 media objects')
       media_objects.each {|mo| expect(MediaObject.exists?(mo.id)).to be_falsey }
@@ -911,32 +911,32 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#confirm_remove" do
-    let!(:collection) { FactoryGirl.create(:collection) }
+    let!(:collection) { FactoryBot.create(:collection) }
     before(:each) do
       login_user collection.managers.first
     end
 
     it "redirects with message when user does not have ability to delete all items" do
-      media_object = FactoryGirl.create(:media_object)
+      media_object = FactoryBot.create(:media_object)
       expect(controller.current_ability.can? :destroy, media_object).to be_falsey
       expect(get :confirm_remove, params: { id: media_object.id }).to redirect_to(root_path)
       expect(flash[:notice]).not_to be_empty
     end
     it "displays confirmation form" do
-      media_object = FactoryGirl.create(:media_object, collection: collection)
+      media_object = FactoryBot.create(:media_object, collection: collection)
       expect(controller.current_ability.can? :destroy, media_object).to be_truthy
       expect(get :confirm_remove, params: { id: media_object.id }).to render_template(:confirm_remove)
     end
     it "displays confirmation form even if user does not have ability to delete some items" do
-      media_object1 = FactoryGirl.create(:media_object)
-      media_object2 = FactoryGirl.create(:media_object, collection: collection)
+      media_object1 = FactoryBot.create(:media_object)
+      media_object2 = FactoryBot.create(:media_object, collection: collection)
       expect(controller.current_ability.can? :destroy, media_object1).to be_falsey
       expect(controller.current_ability.can? :destroy, media_object2).to be_truthy
       expect(get :confirm_remove, params: { id: [media_object1.id, media_object2.id] }).to render_template(:confirm_remove)
     end
     it "displays confirmation form for administrators" do
       login_as :administrator
-      media_object = FactoryGirl.create(:media_object, collection: collection)
+      media_object = FactoryBot.create(:media_object, collection: collection)
       expect(controller.current_ability.can? :destroy, media_object).to be_truthy
       expect(get :confirm_remove, params: { id: media_object.id }).to render_template(:confirm_remove)
     end
@@ -944,7 +944,7 @@ describe MediaObjectsController, type: :controller do
 
   describe "#update_status" do
 
-    let!(:collection) { FactoryGirl.create(:collection) }
+    let!(:collection) { FactoryBot.create(:collection) }
     before(:each) do
       login_user collection.managers.first
       request.env["HTTP_REFERER"] = '/'
@@ -960,7 +960,7 @@ describe MediaObjectsController, type: :controller do
       end
 
       it 'publishes media object' do
-        media_object = FactoryGirl.create(:media_object, collection: collection)
+        media_object = FactoryBot.create(:media_object, collection: collection)
         get 'update_status', params: { id: media_object.id, status: 'publish' }
         media_object.reload
         expect(media_object).to be_published
@@ -974,7 +974,7 @@ describe MediaObjectsController, type: :controller do
 
       it "should publish multiple items" do
         media_objects = []
-        3.times { media_objects << FactoryGirl.create(:media_object, collection: collection) }
+        3.times { media_objects << FactoryBot.create(:media_object, collection: collection) }
         get 'update_status', params: { id: media_objects.map(&:id), status: 'publish' }
         expect(flash[:notice]).to include('3 media objects')
         media_objects.each do |mo|
@@ -987,7 +987,7 @@ describe MediaObjectsController, type: :controller do
 
     context 'unpublishing' do
       it 'unpublishes media object' do
-        media_object = FactoryGirl.create(:published_media_object, collection: collection)
+        media_object = FactoryBot.create(:published_media_object, collection: collection)
         get 'update_status', params: { :id => media_object.id, :status => 'unpublish' }
         media_object.reload
         expect(media_object).not_to be_published
@@ -1000,7 +1000,7 @@ describe MediaObjectsController, type: :controller do
 
       it "should unpublish multiple items" do
         media_objects = []
-        3.times { media_objects << FactoryGirl.create(:published_media_object, collection: collection) }
+        3.times { media_objects << FactoryBot.create(:published_media_object, collection: collection) }
         get 'update_status', params: { id: media_objects.map(&:id), status: 'unpublish' }
         expect(flash[:notice]).to include('3 media objects')
         media_objects.each do |mo|
@@ -1013,8 +1013,8 @@ describe MediaObjectsController, type: :controller do
 
   describe "#save" do
     it 'removes bookmarks that are no longer viewable' do
-      media_object = FactoryGirl.create(:published_media_object)
-      user = FactoryGirl.create(:public)
+      media_object = FactoryBot.create(:published_media_object)
+      user = FactoryBot.create(:public)
       bookmark = Bookmark.create(document_id: media_object.id, user_id: user.id)
       login_user media_object.collection.managers.first
       request.env["HTTP_REFERER"] = '/'
@@ -1027,9 +1027,9 @@ describe MediaObjectsController, type: :controller do
   describe "#update" do
     it 'updates the order' do
 
-      media_object = FactoryGirl.create(:media_object)
+      media_object = FactoryBot.create(:media_object)
       2.times do
-        mf = FactoryGirl.create(:master_file)
+        mf = FactoryBot.create(:master_file)
         mf.media_object = media_object
         mf.save
       end
@@ -1043,8 +1043,8 @@ describe MediaObjectsController, type: :controller do
       expect(media_object.ordered_master_files.to_a.collect(&:id)).to eq master_file_ids.reverse
     end
     it 'sets the MIME type' do
-      media_object = FactoryGirl.create(:media_object)
-      media_object.ordered_master_files += [FactoryGirl.create(:master_file, :with_derivative)]
+      media_object = FactoryBot.create(:media_object)
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, :with_derivative)]
       media_object.set_media_types!
       media_object.save
       media_object.reload
@@ -1061,8 +1061,8 @@ describe MediaObjectsController, type: :controller do
       end
 
       let!(:media_object) do
-        mo = FactoryGirl.create(:published_media_object)
-        10.times { FactoryGirl.create(:master_file, :with_derivative, media_object: mo) }
+        mo = FactoryBot.create(:published_media_object)
+        10.times { FactoryBot.create(:master_file, :with_derivative, media_object: mo) }
         mo
       end
 
@@ -1080,7 +1080,7 @@ describe MediaObjectsController, type: :controller do
     end
 
     context "access controls" do
-      let!(:media_object) { FactoryGirl.create(:media_object) }
+      let!(:media_object) { FactoryBot.create(:media_object) }
       let!(:user) { Faker::Internet.email }
       let!(:group) { Faker::Lorem.word }
       let!(:classname) { Faker::Lorem.word }
@@ -1153,7 +1153,7 @@ describe MediaObjectsController, type: :controller do
     context 'resource description' do
       context 'bib import' do
         require 'avalon/bib_retriever'
-        let(:media_object) { FactoryGirl.create(:media_object) }
+        let(:media_object) { FactoryBot.create(:media_object) }
         before do
           login_as 'administrator'
         end
@@ -1170,19 +1170,19 @@ describe MediaObjectsController, type: :controller do
 
   describe "#show_progress" do
     it "should return information about the processing state of the media object's master_files" do
-      media_object =  FactoryGirl.create(:media_object, :with_master_file)
+      media_object =  FactoryBot.create(:media_object, :with_master_file)
       login_as 'administrator'
       get :show_progress, params: { id: media_object.id, format: 'json' }
       expect(JSON.parse(response.body)["overall"]).to_not be_empty
     end
     it "should return information about the processing state of the media object's master_files for managers" do
-      media_object =  FactoryGirl.create(:media_object, :with_master_file)
+      media_object =  FactoryBot.create(:media_object, :with_master_file)
       login_user media_object.collection.managers.first
       get :show_progress, params: { id: media_object.id, format: 'json' }
       expect(JSON.parse(response.body)["overall"]).to_not be_empty
     end
     it "should return something even if the media object has no master_files" do
-      media_object = FactoryGirl.create(:media_object)
+      media_object = FactoryBot.create(:media_object)
       login_as 'administrator'
       get :show_progress, params: { id: media_object.id, format: 'json' }
       expect(JSON.parse(response.body)["overall"]).to_not be_empty
@@ -1198,7 +1198,7 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#add_to_playlist_form" do
-    let(:media_object) { FactoryGirl.create(:fully_searchable_media_object, :with_master_file) }
+    let(:media_object) { FactoryBot.create(:fully_searchable_media_object, :with_master_file) }
 
     before do
       login_as :user
@@ -1219,11 +1219,11 @@ describe MediaObjectsController, type: :controller do
   end
 
   describe "#add_to_playlist" do
-    let(:media_object) { FactoryGirl.create(:fully_searchable_media_object, title: 'Test Item') }
-    let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object, title: 'Test Section') }
-    let(:master_file_with_structure) { FactoryGirl.create(:master_file, :with_structure, media_object: media_object) }
+    let(:media_object) { FactoryBot.create(:fully_searchable_media_object, title: 'Test Item') }
+    let(:master_file) { FactoryBot.create(:master_file, media_object: media_object, title: 'Test Section') }
+    let(:master_file_with_structure) { FactoryBot.create(:master_file, :with_structure, media_object: media_object) }
     let(:user) { login_as :user }
-    let(:playlist) { FactoryGirl.create(:playlist, user: user) }
+    let(:playlist) { FactoryBot.create(:playlist, user: user) }
 
     before do
       media_object.ordered_master_files = [master_file, master_file_with_structure]
@@ -1259,7 +1259,7 @@ describe MediaObjectsController, type: :controller do
     end
     it 'redirects with flash message when playlist is owned by another user' do
       login_as :user
-      other_playlist = FactoryGirl.create(:playlist)
+      other_playlist = FactoryBot.create(:playlist)
       post :add_to_playlist, params: { id: media_object.id, post: { playlist_id: other_playlist.id, masterfile_id: media_object.master_file_ids[0], playlistitem_scope: 'section' } }
       expect(response).to have_http_status(403)
       expect(JSON.parse(response.body).symbolize_keys).to eq({message: "<p>You are not authorized to update this playlist.</p>", status: 403})

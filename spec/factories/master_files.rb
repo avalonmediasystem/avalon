@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :master_file do
     file_location {'/path/to/video.mp4'}
     file_format {'Moving image'}
@@ -32,7 +32,7 @@ FactoryGirl.define do
     trait :with_derivative do
       status_code 'COMPLETED'
       after(:create) do |mf|
-        mf.derivatives += [FactoryGirl.create(:derivative, quality: 'high')]
+        mf.derivatives += [FactoryBot.create(:derivative, quality: 'high')]
         mf.save
       end
     end

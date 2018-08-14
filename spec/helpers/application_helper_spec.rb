@@ -34,19 +34,19 @@ describe ApplicationHelper do
 
   describe "#stream_label_for" do
     it "should return the label first if it is available" do
-      master_file = FactoryGirl.build(:master_file, title: 'Label')
+      master_file = FactoryBot.build(:master_file, title: 'Label')
       expect(master_file.file_location).not_to be_nil
       expect(master_file.title).not_to be_nil
       expect(helper.stream_label_for(master_file)).to eq('Label')
     end
     it "should return the filename second if it is available" do
-      master_file = FactoryGirl.build(:master_file, title: nil)
+      master_file = FactoryBot.build(:master_file, title: nil)
       expect(master_file.file_location).not_to be_nil
       expect(master_file.title).to be_nil
       expect(helper.stream_label_for(master_file)).to eq(File.basename(master_file.file_location))
     end
     it "should handle empty file_locations and labels" do
-      master_file = FactoryGirl.build(:master_file, file_location: nil, title: nil)
+      master_file = FactoryBot.build(:master_file, file_location: nil, title: nil)
       expect(master_file.file_location).to be_nil
       expect(master_file.title).to be_nil
       expect(helper.stream_label_for(master_file)).to eq(master_file.id)
@@ -55,15 +55,15 @@ describe ApplicationHelper do
 
   describe '.lti_share_url_for' do
     it 'forms a proper lti share url for media objects' do
-      media_object = FactoryGirl.create(:media_object)
+      media_object = FactoryBot.create(:media_object)
       expect(helper.lti_share_url_for(media_object)).to eq "http://test.host/users/auth/lti/callback?target_id=#{media_object.id}"
     end
     it 'forms a proper lti share url for master files' do
-      master_file = FactoryGirl.create(:master_file)
+      master_file = FactoryBot.create(:master_file)
       expect(helper.lti_share_url_for(master_file)).to eq "http://test.host/users/auth/lti/callback?target_id=#{master_file.id}"
     end
     it 'forms a proper lti share url for playlists' do
-      playlist = FactoryGirl.create(:playlist)
+      playlist = FactoryBot.create(:playlist)
       expect(helper.lti_share_url_for(playlist)).to eq "http://test.host/users/auth/lti/callback?target_id=#{playlist.to_gid_param}"
     end
   end

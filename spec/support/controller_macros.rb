@@ -14,7 +14,7 @@
 
 module ControllerMacros
   def login_as(factory_model = 'student', options = {})
-    user = FactoryGirl.create(factory_model, options)
+    user = FactoryBot.create(factory_model, options)
     @request.env["devise.mapping"] = Devise.mappings[:user]
     Rails.logger.debug "Attempting to sign in user: #{user}"
     sign_in user
@@ -29,7 +29,7 @@ module ControllerMacros
     user
   end
   def login_lti(factory_model = 'student', lti_class = Faker::Lorem.word, options = {})
-    user = FactoryGirl.create(factory_model, options)
+    user = FactoryBot.create(factory_model, options)
     @request.env["devise.mapping"] = Devise.mappings[:user]
     Rails.logger.debug "Attempting to sign in user: #{user}"
     sign_in user

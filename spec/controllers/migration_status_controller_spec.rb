@@ -15,7 +15,7 @@
 require 'rails_helper'
 
 describe MigrationStatusController do
-  let(:obj) { FactoryGirl.create(:master_file, migrated_from: [fedora3_pid]) }
+  let(:obj) { FactoryBot.create(:master_file, migrated_from: [fedora3_pid]) }
   let(:fedora3_pid) { 'avalon:12345' }
   let(:avalon_noid) { obj.id }
 

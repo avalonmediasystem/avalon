@@ -19,7 +19,7 @@ Capybara.javascript_driver = :poltergeist
 describe 'Playlist' do
   after { Warden.test_reset! }
   it 'checks navigation when create new playlist is accessed' do
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/'
     click_link('Playlists')
@@ -28,7 +28,7 @@ describe 'Playlist' do
   end
   it 'is able to create private (default) playlist', js: true do
     hide_const('Avalon::GROUP_LDAP')
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
     click_on('Create New Playlist')
@@ -49,7 +49,7 @@ describe 'Playlist' do
   end
   it 'is able to view playlist by clicking on playlist name', js: true do
     hide_const('Avalon::GROUP_LDAP')
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
     click_on('Create New Playlist')
@@ -64,7 +64,7 @@ describe 'Playlist' do
     expect(page).to have_content('This playlist currently has no playable items')
   end
   it 'is able to view playlist by accessing View Playlist', js: true do
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
     click_on('Create New Playlist')
@@ -81,7 +81,7 @@ describe 'Playlist' do
   end
 
   it 'deletes playlist permanently from playlists page', js: true do
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
     click_on('Create New Playlist')
@@ -97,7 +97,7 @@ describe 'Playlist' do
   end
 
   it 'is able to delete playlist from edit playlist page', js: true do
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
     click_on('Create New Playlist')
@@ -114,7 +114,7 @@ describe 'Playlist' do
   end
 
   it 'is able to create public playlist', js: true do
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
     click_on('Create New Playlist')
@@ -127,7 +127,7 @@ describe 'Playlist' do
   end
   it 'is able to edit playlist name and description', js: true, :retry => 3 do
     optional "Sometimes fails" if ENV['TRAVIS']
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
     click_on('Create New Playlist')
@@ -152,7 +152,7 @@ describe 'Playlist' do
 
   it 'is able to change public playlist to private', js: true, :retry => 3 do
     optional "Sometimes fails" if ENV['TRAVIS']
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
     click_on('Create New Playlist')
@@ -174,7 +174,7 @@ describe 'Playlist' do
   end
   it 'is able to change private playlist to public', js: true, :retry => 3 do
     optional "Sometimes fails" if ENV['TRAVIS']
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/playlists'
     click_on('Create New Playlist')

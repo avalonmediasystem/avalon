@@ -12,14 +12,14 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :media_object do
     title { Faker::Lorem.sentence }
-    creator { [FactoryGirl.create(:user).user_key] }
+    creator { [FactoryBot.create(:user).user_key] }
     date_issued { Time.zone.today.edtf.to_s }
 
     # trait :with_collection do
-      collection { FactoryGirl.create(:collection) }
+      collection { FactoryBot.create(:collection) }
       governing_policies { [collection] }
     # end
 
@@ -60,7 +60,7 @@ FactoryGirl.define do
     end
     trait :with_master_file do
       after(:create) do |mo|
-        mf = FactoryGirl.create(:master_file)
+        mf = FactoryBot.create(:master_file)
         mf.media_object = mo
         mf.save
         # mo.ordered_master_files += [mf]

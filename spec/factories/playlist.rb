@@ -12,9 +12,9 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :playlist do
-    user { FactoryGirl.create(:user) }
+    user { FactoryBot.create(:user) }
     title { Faker::Lorem.word }
     comment { Faker::Lorem.sentence }
     visibility { Playlist::PRIVATE }
@@ -25,7 +25,7 @@ FactoryGirl.define do
     end
 
     trait :with_playlist_item do
-      items { [FactoryGirl.create(:playlist_item)] }
+      items { [FactoryBot.create(:playlist_item)] }
     end
   end
 end

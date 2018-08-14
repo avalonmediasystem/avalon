@@ -36,14 +36,14 @@ RSpec.describe PlaylistItemsController, type: :controller do
   let(:valid_session) { {} }
 
   let(:playlist_owner) { login_as :user }
-  let(:playlist) { FactoryGirl.create(:playlist, user: playlist_owner) }
-  let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: clip) }
-  let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object) }
-  let(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
+  let(:playlist) { FactoryBot.create(:playlist, user: playlist_owner) }
+  let(:playlist_item) { FactoryBot.create(:playlist_item, playlist: playlist, clip: clip) }
+  let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
+  let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
   let(:clip) { AvalonClip.create(master_file: master_file) }
 
   describe 'security' do
-    let(:playlist) { FactoryGirl.create(:playlist) }
+    let(:playlist) { FactoryBot.create(:playlist) }
 
     context 'with unauthenticated user' do
       it "all return 401 unauthorized" do
@@ -55,7 +55,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
         expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to have_http_status(:unauthorized)
       end
       context 'with a public playlist' do
-        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
+        let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC) }
 
         it "returns the playlist item info snippets" do
           expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id }, xhr: true).to be_success
@@ -65,7 +65,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
         end
       end
       context 'with a private playlist and token' do
-        let(:playlist) { FactoryGirl.create(:playlist, :with_access_token) }
+        let(:playlist) { FactoryBot.create(:playlist, :with_access_token) }
 
         it "returns the playlist item info page snippets" do
           expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id, token: playlist.access_token }, xhr: true).to be_success
@@ -88,7 +88,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
         expect(get :related_items, params: { playlist_id: playlist.to_param, playlist_item_id: playlist_item.id }).to have_http_status(:unauthorized)
       end
       context 'with a public playlist' do
-        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
+        let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC) }
 
         it "returns the playlist item info snippets" do
           expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id }, xhr: true).to be_success
@@ -98,7 +98,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
         end
       end
       context 'with a private playlist and token' do
-        let(:playlist) { FactoryGirl.create(:playlist, :with_access_token) }
+        let(:playlist) { FactoryBot.create(:playlist, :with_access_token) }
 
         it "returns the playlist item info page snippets" do
           expect(get :show, params: { playlist_id: playlist.to_param, id: playlist_item.id, token: playlist.access_token }, xhr: true).to be_success
@@ -153,7 +153,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
     end
   end
   describe 'PATCH #update' do
-    let!(:video_master_file) { FactoryGirl.create(:master_file, duration: "200000") }
+    let!(:video_master_file) { FactoryBot.create(:master_file, duration: "200000") }
     let!(:clip) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.word, comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
     let!(:playlist_item) { PlaylistItem.create!(playlist: playlist, clip: clip) }
 

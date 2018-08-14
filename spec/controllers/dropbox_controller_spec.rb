@@ -23,7 +23,7 @@ describe DropboxController do
     # a database backed model SOON so testing of permissions/abilities is more granular
 
     login_as :administrator
-    @collection = FactoryGirl.create(:collection)
+    @collection = FactoryBot.create(:collection)
     @temp_files = (0..20).map{|index| { name: "a_movie_#{index}.mov" } }
     @dropbox = double(Avalon::Dropbox)
     allow(@dropbox).to receive(:all).and_return @temp_files
