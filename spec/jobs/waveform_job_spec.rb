@@ -16,7 +16,7 @@ require 'rails_helper'
 
 describe WaveformJob do
   let(:job) { WaveformJob.new }
-  let(:master_file) { FactoryGirl.create(:master_file_with_media_object_and_derivative) }
+  let(:master_file) { FactoryBot.create(:master_file_with_media_object_and_derivative) }
   let(:waveform_json) { File.read('spec/fixtures/waveform.json') }
   let(:service) { instance_double("WaveformService") }
 
