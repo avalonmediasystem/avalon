@@ -31,7 +31,7 @@ gem 'rdf', '~> 2.2'
 gem 'rsolr', '~> 1.0'
 
 # Rails & Samvera Plugins
-gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.1'
+gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', branch: 'master'
 gem 'active_annotations', '~> 0.2.2'
 gem 'activerecord-session_store'
 gem 'acts_as_list'
