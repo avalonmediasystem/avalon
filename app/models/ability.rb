@@ -219,7 +219,7 @@ class Ability
   end
 
   def is_member_of_any_collection?
-    @user.id.present? && Admin::Collection.where("inheritable_edit_access_person_ssim" => @user.user_key).first.present?
+    @user.id.present? && Admin::Collection.exists?("inheritable_edit_access_person_ssim" => @user.user_key)
   end
 
   def full_login?
