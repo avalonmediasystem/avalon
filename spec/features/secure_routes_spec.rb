@@ -16,8 +16,8 @@ require 'rails_helper'
 
 describe "Secure Routes" do
   after { Warden.test_reset! }
-  let!(:admin) { FactoryGirl.create(:administrator) }
-  let!(:user)  { FactoryGirl.create(:user) }
+  let!(:admin) { FactoryBot.create(:administrator) }
+  let!(:user)  { FactoryBot.create(:user) }
 
   describe "/about" do
     it "should provide access to admins" do

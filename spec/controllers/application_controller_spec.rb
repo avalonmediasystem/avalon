@@ -43,8 +43,8 @@ describe ApplicationController do
   end
 
   describe '#get_user_collections' do
-    let(:collection1) { FactoryGirl.create(:collection) }
-    let(:collection2) { FactoryGirl.create(:collection) }
+    let(:collection1) { FactoryBot.create(:collection) }
+    let(:collection2) { FactoryBot.create(:collection) }
 
     it 'returns all collections for an administrator' do
       login_as :administrator

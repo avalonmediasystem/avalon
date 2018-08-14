@@ -16,11 +16,11 @@ require 'rails_helper'
 require 'cancan/matchers'
 
 describe MediaObject do
-  let(:media_object) { FactoryGirl.create(:media_object) }
+  let(:media_object) { FactoryBot.create(:media_object) }
 
   describe 'validations' do
     # Force the validations to run by being on the resource-description workflow step
-    let(:media_object) { FactoryGirl.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
+    let(:media_object) { FactoryBot.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
 
     describe 'collection' do
       it 'has errors when not present' do
@@ -188,7 +188,7 @@ describe MediaObject do
     context 'when end-user' do
       subject{ ability }
       let(:ability){ Ability.new(user) }
-      let(:user){FactoryGirl.create(:user)}
+      let(:user){FactoryBot.create(:user)}
       before do
         media_object.save!
       end
@@ -216,7 +216,7 @@ describe MediaObject do
 
     context 'when lti user' do
       subject{ ability }
-      let(:user){ FactoryGirl.create(:user_lti) }
+      let(:user){ FactoryBot.create(:user_lti) }
       let(:ability){ Ability.new(user, {full_login: false, virtual_groups: [Faker::Lorem.word]}) }
 
       it{ is_expected.not_to be_able_to(:share, MediaObject) }
@@ -224,7 +224,7 @@ describe MediaObject do
 
     context 'when ip address' do
       subject{ ability }
-      let(:user) { FactoryGirl.create(:user) }
+      let(:user) { FactoryBot.create(:user) }
       let(:ip_addr) { Faker::Internet.ip_v4_address }
       let(:ability) { Ability.new(user, {remote_ip: ip_addr}) }
       before do
@@ -254,7 +254,7 @@ describe MediaObject do
 
   describe "Required metadata is present" do
     # Force the validations to run by being on the resource-description workflow step
-    subject(:media_object) { FactoryGirl.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
+    subject(:media_object) { FactoryBot.build(:media_object).tap {|mo| mo.workflow.last_completed_step = "resource-description"} }
 
     it {is_expected.to validate_presence_of(:date_issued)}
     it {is_expected.to validate_presence_of(:title)}
@@ -328,7 +328,7 @@ describe MediaObject do
 
   describe "Update datastream with empty strings" do
     it "should remove pre-existing values" do
-      media_object = FactoryGirl.create( :fully_searchable_media_object )
+      media_object = FactoryBot.create( :fully_searchable_media_object )
       params = {
         'alternative_title' => [''],
         'translated_title' => [''],
@@ -438,13 +438,13 @@ describe MediaObject do
 
   describe '#finished_processing?' do
     it 'returns true if the statuses indicate processing is finished' do
-      media_object.ordered_master_files += [FactoryGirl.create(:master_file, status_code: 'CANCELLED')]
-      media_object.ordered_master_files += [FactoryGirl.create(:master_file, status_code: 'COMPLETED')]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, status_code: 'CANCELLED')]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, status_code: 'COMPLETED')]
       expect(media_object.finished_processing?).to be true
     end
     it 'returns true if the statuses indicate processing is not finished' do
-      media_object.ordered_master_files += [FactoryGirl.create(:master_file, status_code: 'CANCELLED')]
-      media_object.ordered_master_files += [FactoryGirl.create(:master_file, status_code: 'RUNNING')]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, status_code: 'CANCELLED')]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, status_code: 'RUNNING')]
       expect(media_object.finished_processing?).to be false
     end
   end
@@ -454,23 +454,23 @@ describe MediaObject do
       expect(media_object.send(:calculate_duration)).to eq(0)
     end
     it 'returns the correct duration with two master files' do
-      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration: '40')]
-      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration: '40')]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, duration: '40')]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, duration: '40')]
       expect(media_object.send(:calculate_duration)).to eq(80)
     end
     it 'returns the correct duration with two master files one nil' do
-      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration: '40')]
-      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration:nil)]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, duration: '40')]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, duration:nil)]
       expect(media_object.send(:calculate_duration)).to eq(40)
     end
     it 'returns the correct duration with one master file that is nil' do
-      media_object.ordered_master_files += [FactoryGirl.create(:master_file, duration:nil)]
+      media_object.ordered_master_files += [FactoryBot.create(:master_file, duration:nil)]
       expect(media_object.send(:calculate_duration)).to eq(0)
     end
   end
 
   describe '#destroy' do
-    let(:media_object) { FactoryGirl.create(:media_object, :with_master_file) }
+    let(:media_object) { FactoryBot.create(:media_object, :with_master_file) }
     let(:master_file) { media_object.master_files.first }
 
     it 'destroys related master_files' do
@@ -478,7 +478,7 @@ describe MediaObject do
     end
 
     it 'destroys multiple sections' do
-      FactoryGirl.create(:master_file, media_object: media_object)
+      FactoryBot.create(:master_file, media_object: media_object)
       media_object.reload
       expect(media_object.master_files.size).to eq 2
       expect { media_object.destroy }.to change { MasterFile.count }.from(2).to(0)
@@ -495,7 +495,7 @@ describe MediaObject do
     end
 
     describe '#set_media_types!' do
-      let(:media_object) { FactoryGirl.create(:media_object, :with_master_file) }
+      let(:media_object) { FactoryBot.create(:media_object, :with_master_file) }
       it 'sets format on the model' do
         media_object.format = nil
         expect(media_object.format).to be_empty
@@ -505,7 +505,7 @@ describe MediaObject do
     end
 
     describe '#set_resource_types!' do
-      let!(:master_file) { FactoryGirl.create(:master_file, media_object: media_object) }
+      let!(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
       before do
         media_object.reload
       end
@@ -547,20 +547,20 @@ describe MediaObject do
       expect(solr_doc['other_identifier_sim']).not_to include('123456788675309 testing')
     end
     it 'should index identifier for master files' do
-      master_file = FactoryGirl.create(:master_file, identifier: ['TestOtherID'], media_object: media_object)
+      master_file = FactoryBot.create(:master_file, identifier: ['TestOtherID'], media_object: media_object)
       media_object.reload
       solr_doc = media_object.to_solr
       expect(solr_doc['other_identifier_sim']).to include('TestOtherID')
     end
     it 'should index labels for master files' do
-      FactoryGirl.create(:master_file, :with_structure, media_object: media_object, title: 'Test Label')
+      FactoryBot.create(:master_file, :with_structure, media_object: media_object, title: 'Test Label')
       media_object.reload
       solr_doc = media_object.to_solr
       expect(solr_doc['section_label_tesim']).to include('CD 1')
       expect(solr_doc['section_label_tesim']).to include('Test Label')
     end
     it 'should index comments for master files' do
-      FactoryGirl.create(:master_file, media_object: media_object, title: 'Test Label', comment: ['MF Comment 1', 'MF Comment 2'])
+      FactoryBot.create(:master_file, media_object: media_object, title: 'Test Label', comment: ['MF Comment 1', 'MF Comment 2'])
       media_object.comment = ['MO Comment']
       media_object.save!
       media_object.reload
@@ -570,13 +570,13 @@ describe MediaObject do
       expect(solr_doc['all_comments_sim']).to include('[Test Label] MF Comment 2')
     end
     it 'includes virtual group leases in external group facet' do
-      media_object.governing_policies += [FactoryGirl.create(:lease, inherited_read_groups: ['TestGroup'])]
+      media_object.governing_policies += [FactoryBot.create(:lease, inherited_read_groups: ['TestGroup'])]
       media_object.save!
       expect(media_object.to_solr['read_access_virtual_group_ssim']).to include('TestGroup')
     end
     it 'includes ip group leases in ip group facet' do
       ip_addr = Faker::Internet.ip_v4_address
-      media_object.governing_policies += [FactoryGirl.create(:lease, inherited_read_groups: [ip_addr])]
+      media_object.governing_policies += [FactoryBot.create(:lease, inherited_read_groups: [ip_addr])]
       media_object.save!
       expect(media_object.to_solr['read_access_ip_group_ssim']).to include(ip_addr)
     end
@@ -584,7 +584,7 @@ describe MediaObject do
 
   describe 'permalink' do
 
-    let(:media_object){ FactoryGirl.create(:media_object) }
+    let(:media_object){ FactoryBot.create(:media_object) }
 
     before(:each) {
       Permalink.on_generate{ |obj,target| 'http://www.example.com/perma-url' }
@@ -710,7 +710,7 @@ describe MediaObject do
 
   describe '#section_labels' do
     before do
-      mf = FactoryGirl.create(:master_file, :with_structure, title: 'Test Label', media_object: media_object)
+      mf = FactoryBot.create(:master_file, :with_structure, title: 'Test Label', media_object: media_object)
       media_object.reload
     end
     it 'should return correct list of labels' do
@@ -721,20 +721,20 @@ describe MediaObject do
 
   describe '#physical_description' do
     it 'should return a list of physical descriptions' do
-      mf = FactoryGirl.create(:master_file, title: 'Test Label', physical_description: 'stone tablet', media_object: media_object)
+      mf = FactoryBot.create(:master_file, title: 'Test Label', physical_description: 'stone tablet', media_object: media_object)
       media_object.reload
       expect(media_object.section_physical_descriptions).to match(['stone tablet'])
     end
 
     it 'should not return nil physical descriptions' do
-      mf = FactoryGirl.create(:master_file, title: 'Test Label', media_object: media_object)
+      mf = FactoryBot.create(:master_file, title: 'Test Label', media_object: media_object)
       media_object.reload
       expect(media_object.section_physical_descriptions).to match([])
     end
 
     it 'should return a unique list of physical descriptions' do
-      mf = FactoryGirl.create(:master_file, title: 'Test Label', physical_description: 'cave paintings', media_object: media_object)
-      mf2 = FactoryGirl.create(:master_file, title: 'Test Label2', physical_description: 'cave paintings', media_object: media_object)
+      mf = FactoryBot.create(:master_file, title: 'Test Label', physical_description: 'cave paintings', media_object: media_object)
+      mf2 = FactoryBot.create(:master_file, title: 'Test Label2', physical_description: 'cave paintings', media_object: media_object)
       media_object.reload
 
       #expect(media_object.ordered_master_files.size).to eq(2)
@@ -744,7 +744,7 @@ describe MediaObject do
 
   describe '#collection=' do
     let(:new_media_object) { MediaObject.new }
-    let(:collection) { FactoryGirl.create(:collection, default_hidden: true, default_read_users: ['archivist1@example.com'], default_read_groups: ['TestGroup', 'public'])}
+    let(:collection) { FactoryBot.create(:collection, default_hidden: true, default_read_users: ['archivist1@example.com'], default_read_groups: ['TestGroup', 'public'])}
 
     it 'sets hidden based upon collection for new media objects' do
       expect {new_media_object.collection = collection}.to change {new_media_object.hidden?}.to(true).from(false)
@@ -772,7 +772,7 @@ describe MediaObject do
       expect(media_object.descMetadata.original_name).to eq 'descMetadata.xml'
     end
     it 'is a valid MODS document' do
-      media_object = FactoryGirl.create(:media_object, :with_master_file)
+      media_object = FactoryBot.create(:media_object, :with_master_file)
       xsd_path = File.join(Rails.root, 'spec', 'fixtures', 'mods-3-6.xsd')
       # Note: we instantiate Schema with a file handle so that relative paths
       # to included schema definitions can be resolved
@@ -790,7 +790,7 @@ describe MediaObject do
   end
 
   describe '#related_item_url' do
-    let(:media_object) { FactoryGirl.build(:media_object) }
+    let(:media_object) { FactoryBot.build(:media_object) }
     let(:url) { 'http://example.com/' }
 
     before do

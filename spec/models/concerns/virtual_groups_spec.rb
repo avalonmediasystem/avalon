@@ -27,7 +27,7 @@ describe VirtualGroups do
   subject { Foo.new }
 
   describe 'virtual groups' do
-    let!(:local_groups) {[FactoryGirl.create(:group).name, FactoryGirl.create(:group).name]}
+    let!(:local_groups) {[FactoryBot.create(:group).name, FactoryBot.create(:group).name]}
     let(:virtual_groups) {["vgroup1", "vgroup2"]}
     let(:ip_groups) {[Faker::Internet.ip_v4_address, Faker::Internet.ip_v6_address, Faker::Internet.ip_v4_address + "/24"]}
     before(:each) do

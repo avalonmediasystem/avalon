@@ -33,14 +33,14 @@ describe 'Batch Ingest Email' do
   end
 
   it 'shows the title of one media object' do
-    media_object = FactoryGirl.create(:media_object)
+    media_object = FactoryBot.create(:media_object)
     ingest_batch = IngestBatch.create(media_object_ids: [media_object.id])
     @email = IngestBatchMailer.status_email(ingest_batch.id)
     expect(@email).to have_body_text(media_object.title)
   end
 
   it 'has the status of the master file in a first row' do
-    master_file = FactoryGirl.create(:master_file, :with_media_object, status_code: 'COMPLETED', percent_complete: '100')
+    master_file = FactoryBot.create(:master_file, :with_media_object, status_code: 'COMPLETED', percent_complete: '100')
     media_object = master_file.media_object.reload
 
     ingest_batch = IngestBatch.create( media_object_ids: [media_object.id])

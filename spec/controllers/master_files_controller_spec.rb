@@ -17,7 +17,7 @@ require 'rails_helper'
 describe MasterFilesController do
 
   describe "#create" do
-    let(:media_object) { FactoryGirl.create(:media_object) }
+    let(:media_object) { FactoryBot.create(:media_object) }
     # TODO: fill in the lets below with a legitimate values from mediainfo
     # let(:mediainfo_video) {  }
     # let(:mediainfo_audio) {  }
@@ -163,7 +163,7 @@ describe MasterFilesController do
       end
 
       it "does not fail when associating with a published media_object" do
-        media_object = FactoryGirl.create(:published_media_object)
+        media_object = FactoryBot.create(:published_media_object)
         login_user media_object.collection.managers.first
         file = fixture_file_upload('/videoshort.mp4', 'video/mp4')
         # Work-around for a Rails bug
@@ -184,7 +184,7 @@ describe MasterFilesController do
   end
 
   describe "#destroy" do
-    let!(:master_file) { FactoryGirl.create(:master_file, :with_media_object) }
+    let!(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
 
     it "deletes a master file as administrator" do
       login_as :administrator
@@ -209,7 +209,7 @@ describe MasterFilesController do
   end
 
   describe "#show" do
-    let(:master_file) { FactoryGirl.create(:master_file, :with_media_object) }
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
 
     it "redirects you to the media object page with the correct section" do
       get :show, params: { id: master_file.id, t: '10' }
@@ -217,7 +217,7 @@ describe MasterFilesController do
     end
 
     context 'with fedora 3 pid' do
-      let!(:master_file) { FactoryGirl.create(:master_file, identifier: [fedora3_pid]) }
+      let!(:master_file) { FactoryBot.create(:master_file, identifier: [fedora3_pid]) }
       let(:fedora3_pid) { 'avalon:1234' }
 
       it "redirects" do
@@ -227,7 +227,7 @@ describe MasterFilesController do
   end
 
   describe "#embed" do
-    let!(:master_file) { FactoryGirl.create(:master_file) }
+    let!(:master_file) { FactoryBot.create(:master_file) }
     let(:media_object) do
       instance_double('MediaObject', title: 'Media Object', id: 'avalon:1234',
                                      ordered_master_files: [master_file], master_file_ids: [master_file.id])
@@ -244,7 +244,7 @@ describe MasterFilesController do
     end
 
     context 'with fedora 3 pid' do
-      let!(:master_file) { FactoryGirl.create(:master_file, identifier: [fedora3_pid]) }
+      let!(:master_file) { FactoryBot.create(:master_file, identifier: [fedora3_pid]) }
       let(:fedora3_pid) { 'avalon:1234' }
 
       it "redirects" do
@@ -254,7 +254,7 @@ describe MasterFilesController do
   end
 
   describe "#set_frame" do
-    subject(:mf) { FactoryGirl.create(:master_file, :with_thumbnail, :with_media_object) }
+    subject(:mf) { FactoryBot.create(:master_file, :with_thumbnail, :with_media_object) }
 
     it "redirects to sign in when not logged in" do
       expect(get(:set_frame, params: { id: mf.id })).to redirect_to new_user_session_path
@@ -283,7 +283,7 @@ describe MasterFilesController do
   end
 
   describe "#get_frame" do
-    subject(:mf) { FactoryGirl.create(:master_file, :with_thumbnail, :with_media_object) }
+    subject(:mf) { FactoryBot.create(:master_file, :with_thumbnail, :with_media_object) }
 
     context "not authorized" do
       it "redirects to sign in when not logged in" do
@@ -316,7 +316,7 @@ describe MasterFilesController do
 
   # rubocop:disable RSpec/ExampleLength
   describe "#attach_structure" do
-    let(:master_file) { FactoryGirl.create(:master_file, :with_media_object) }
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
     let(:file) { fixture_file_upload('/structure.xml', 'text/xml') }
 
     before do
@@ -367,7 +367,7 @@ describe MasterFilesController do
     end
   end
   describe "#attach_captions" do
-    let(:master_file) { FactoryGirl.create(:master_file, :with_media_object) }
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
 
     before do
       disableCanCan!
@@ -425,7 +425,7 @@ describe MasterFilesController do
   # rubocop:enable RSpec/ExampleLength
 
   describe "#captions" do
-    let(:master_file) { FactoryGirl.create(:master_file, :with_media_object, :with_captions) }
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object, :with_captions) }
 
     it "returns contents of the captions attached file" do
       login_as :administrator
@@ -434,7 +434,7 @@ describe MasterFilesController do
   end
 
   describe "#waveform" do
-    let(:master_file) { FactoryGirl.create(:master_file, :with_media_object, :with_waveform) }
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object, :with_waveform) }
 
     it "returns contents of the waveform attached file" do
       login_as :administrator

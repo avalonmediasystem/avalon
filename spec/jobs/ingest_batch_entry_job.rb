@@ -15,8 +15,8 @@
 require 'rails_helper'
 
 describe IngestBatchEntryJob do
-  let(:batch_entry) { FactoryGirl.create(:batch_entries) }
-  let!(:collection) { FactoryGirl.create(:collection, id: 'zc77sq08x') }
+  let(:batch_entry) { FactoryBot.create(:batch_entries) }
+  let!(:collection) { FactoryBot.create(:collection, id: 'zc77sq08x') }
 
   describe "perform" do
     it 'runs' do

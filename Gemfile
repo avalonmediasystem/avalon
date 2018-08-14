@@ -110,7 +110,7 @@ group :test do
   gem 'codeclimate-test-reporter'
   gem 'database_cleaner'
   gem 'email_spec'
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'fakefs', require: 'fakefs/safe'
   gem 'faker'
   gem 'hashdiff'

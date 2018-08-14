@@ -37,7 +37,7 @@ describe Derivative do
   end
 
   describe "#destroy" do
-    let(:derivative) {FactoryGirl.create(:derivative)}
+    let(:derivative) {FactoryBot.create(:derivative)}
     let(:master_file) { double }
     before do
       allow(derivative).to receive(:master_file).and_return(master_file)

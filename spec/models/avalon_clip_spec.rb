@@ -15,8 +15,8 @@
 require 'rails_helper'
 
 describe AvalonClip do
-  subject(:video_master_file) { FactoryGirl.create(:master_file, :with_media_object, duration: "1") }
-  #subject(:sound_master_file) { FactoryGirl.create(:master_file_sound) }
+  subject(:video_master_file) { FactoryBot.create(:master_file, :with_media_object, duration: "1") }
+  #subject(:sound_master_file) { FactoryBot.create(:master_file_sound) }
   let(:clip) { AvalonClip.new(master_file: video_master_file) }
 
   describe 'creating a clip' do
@@ -134,9 +134,9 @@ describe AvalonClip do
       end
     end
     describe 'duration' do
-      subject(:video_master_file) { FactoryGirl.create(:master_file, :with_media_object, duration: "8", derivatives: [derivative, derivative2]) }
-      let(:derivative) { FactoryGirl.create(:derivative, duration: "12") }
-      let(:derivative2) { FactoryGirl.create(:derivative, duration: "10") }
+      subject(:video_master_file) { FactoryBot.create(:master_file, :with_media_object, duration: "8", derivatives: [derivative, derivative2]) }
+      let(:derivative) { FactoryBot.create(:derivative, duration: "12") }
+      let(:derivative2) { FactoryBot.create(:derivative, duration: "10") }
       it 'raises an error when end time exceeds the duration' do
         clip.end_time = 60
         expect(clip).not_to be_valid
@@ -149,7 +149,7 @@ describe AvalonClip do
   end
   describe 'related clips' do
     let(:second_clip) { AvalonClip.new(master_file: video_master_file) }
-    let!(:user) {FactoryGirl.build(:user)}
+    let!(:user) {FactoryBot.build(:user)}
     it 'returns nil when there are no related clips' do
       allow(PlaylistItem).to receive(:where).and_return([])
       expect(clip.playlist_position(1)).to be_nil

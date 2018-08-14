@@ -48,7 +48,7 @@ describe Avalon::Batch::Ingest do
   end
 
   describe 'scanning and registering new packages' do
-    let(:collection) { FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
+    let(:collection) { FactoryBot.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
     let(:batch_ingest) { Avalon::Batch::Ingest.new(collection) }
 
     before :each do
@@ -83,7 +83,7 @@ describe Avalon::Batch::Ingest do
   end
 
   describe 'valid manifest' do
-    let(:collection) { FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
+    let(:collection) { FactoryBot.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
     let(:batch_ingest) { Avalon::Batch::Ingest.new(collection) }
     let(:bib_id) { '7763100' }
     let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
@@ -294,7 +294,7 @@ describe Avalon::Batch::Ingest do
   end
 
   describe 'invalid manifest' do
-    let(:collection) { FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
+    let(:collection) { FactoryBot.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
     let(:batch_ingest) { Avalon::Batch::Ingest.new(collection) }
     let(:dropbox) { collection.dropbox }
 

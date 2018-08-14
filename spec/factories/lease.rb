@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :lease, class: Lease do
     begin_time { Date.yesterday }
     end_time { Date.tomorrow }

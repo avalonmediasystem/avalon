@@ -35,7 +35,7 @@ describe Admin::GroupsController do
     end
 
     it "should redirect to group index page with a notice when group name is already taken" do
-      group = FactoryGirl.create(:group)
+      group = FactoryBot.create(:group)
       login_as('group_manager')
       expect { post 'create', params: { admin_group: group.name } }.not_to change {Admin::Group.all.count }
       expect(response).to redirect_to(admin_groups_path)
@@ -59,7 +59,7 @@ describe Admin::GroupsController do
   end
 
   describe "Modifying a group: " do
-    let!(:group) {Admin::Group.find(FactoryGirl.create(:group).name)}
+    let!(:group) {Admin::Group.find(FactoryBot.create(:group).name)}
 
     context "editing a group" do
       it "should redirect to sign in page with a notice on when unauthenticated" do
@@ -78,7 +78,7 @@ describe Admin::GroupsController do
 
       it "should be able to change group users when authenticated and authorized" do
         login_as('group_manager')
-        new_user = FactoryGirl.build(:user).user_key
+        new_user = FactoryBot.build(:user).user_key
 
         put 'update', params: { group_name: group.name, id: group.name, new_user: new_user }
 
@@ -124,7 +124,7 @@ describe Admin::GroupsController do
         login_as('group_manager')
         request.env["HTTP_REFERER"] = '/admin/groups/manager/edit'
 
-        collection = FactoryGirl.create(:collection)
+        collection = FactoryBot.create(:collection)
         manager_name = collection.managers.first
         put 'update_users', params: { id: 'manager', user_ids: [manager_name] }
 
@@ -135,7 +135,7 @@ describe Admin::GroupsController do
       ['administrator','group_manager'].each do |g|
         it "should be able to manage #{g} group as an administrator" do
           login_as('administrator')
-          new_user = FactoryGirl.build(:user).user_key
+          new_user = FactoryBot.build(:user).user_key
 
           put 'update', params: { id: g, new_user: new_user }
           group = Admin::Group.find(g)
@@ -146,7 +146,7 @@ describe Admin::GroupsController do
 
         it "should not be able to manage #{g} group as a group_manager" do
           login_as('group_manager')
-          new_user = FactoryGirl.build(:user).user_key
+          new_user = FactoryBot.build(:user).user_key
 
           put 'update', params: { id: g, new_user: new_user }
           group = Admin::Group.find(g)

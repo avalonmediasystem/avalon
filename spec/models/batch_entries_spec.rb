@@ -15,7 +15,7 @@
 require 'rails_helper'
 
 describe BatchEntries do
-  subject { FactoryGirl.build(:batch_entries) }
+  subject { FactoryBot.build(:batch_entries) }
 
   describe '#save' do
     it 'persists' do

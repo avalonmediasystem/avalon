@@ -17,16 +17,16 @@ require 'rails_helper'
 describe AvalonMarkerController, type: :controller do
 
   let(:valid_session) { {} }
-  let(:master_file) { FactoryGirl.create(:master_file, :with_media_object, :with_derivative, duration: "200000") }
-  let(:avalon_clip) { FactoryGirl.create(:avalon_clip, master_file: master_file) }
+  let(:master_file) { FactoryBot.create(:master_file, :with_media_object, :with_derivative, duration: "200000") }
+  let(:avalon_clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
   let(:user) { login_as :user }
-  let(:playlist) { FactoryGirl.create(:playlist, user: user) }
-  let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist, clip: avalon_clip) }
-  let(:avalon_marker) { FactoryGirl.create(:avalon_marker, playlist_item: playlist_item, master_file: master_file) }
+  let(:playlist) { FactoryBot.create(:playlist, user: user) }
+  let(:playlist_item) { FactoryBot.create(:playlist_item, playlist: playlist, clip: avalon_clip) }
+  let(:avalon_marker) { FactoryBot.create(:avalon_marker, playlist_item: playlist_item, master_file: master_file) }
 
   describe 'security' do
-    let(:playlist) { FactoryGirl.create(:playlist) }
-    let(:playlist_item) { FactoryGirl.create(:playlist_item, playlist: playlist) }
+    let(:playlist) { FactoryBot.create(:playlist) }
+    let(:playlist_item) { FactoryBot.create(:playlist_item, playlist: playlist) }
     context 'with unauthenticated user' do
       it "all routes should redirect to sign in" do
         expect(post :create, params: { marker: { playlist_item_id: playlist_item.id, master_file_id: master_file.id, title: Faker::Lorem.word, start_time: 0.0 } }).to redirect_to(new_user_session_path)
