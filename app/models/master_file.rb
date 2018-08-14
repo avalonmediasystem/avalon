@@ -782,6 +782,8 @@ class MasterFile < ActiveFedora::Base
     media_object.ordered_master_files.delete(self)
     media_object.set_media_types!
     media_object.set_duration!
-    media_object.save
+    if !media_object.save
+      logger.error "Failed when updating media object #{media_object.id} while destroying master file #{self.id}"
+    end
   end
 end
