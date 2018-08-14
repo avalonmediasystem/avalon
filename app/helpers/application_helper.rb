@@ -45,7 +45,7 @@ module ApplicationHelper
     end
   end
 
-  def lti_share_url_for(obj, opts = {})
+  def lti_share_url_for(obj, _opts = {})
     return I18n.t('share.empty_lti_share_url') if obj.nil?
     target = case obj
              when MediaObject then obj.id
