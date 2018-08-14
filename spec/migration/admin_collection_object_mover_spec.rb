@@ -15,7 +15,7 @@
 require 'rails_helper'
 
 describe FedoraMigrate::AdminCollection::ObjectMover do
-  let(:collection) { FactoryGirl.create(:collection) }
+  let(:collection) { FactoryBot.create(:collection) }
   describe 'empty?' do
     it 'returns true when the admin collection has been wiped' do
       described_class.wipeout!(collection)

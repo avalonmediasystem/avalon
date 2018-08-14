@@ -21,7 +21,7 @@ describe Users::OmniauthCallbacksController, type: :controller do
 
   describe '#find_user' do
     context 'when url param is present' do
-      let(:user) { FactoryGirl.create(:user) }
+      let(:user) { FactoryBot.create(:user) }
       let(:params) {{ url: "http://other.host.com/a/sub/page" }}
 
       before do

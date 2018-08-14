@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :user do
     email { Faker::Internet.email }
     username { [Faker::Name.last_name.gsub("'",""),Faker::Name.first_name.gsub("'","")].join('.').downcase }

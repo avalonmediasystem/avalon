@@ -22,25 +22,25 @@ describe ObjectsController do
     end
 
     it "should redirect you to the object show page" do
-      obj = FactoryGirl.create(:media_object)
+      obj = FactoryBot.create(:media_object)
       get :show, params: { id: obj.id }
       expect(response).to redirect_to(media_object_path(obj))
     end
 
     it "should pass along request params" do
-      obj = FactoryGirl.create(:media_object)
+      obj = FactoryBot.create(:media_object)
       get :show, params: { id: obj.id, foo: 'bar' }
       expect(response).to redirect_to(media_object_path(obj, {foo: 'bar'}))
     end
 
     it "should redirect to appended url" do
-      obj = FactoryGirl.create(:media_object)
+      obj = FactoryBot.create(:media_object)
       get :show, params: { id: obj.id, urlappend: 'test' }
       expect(response).to redirect_to(media_object_path(obj)+"/test")
     end
 
     it "works for global ids" do
-      obj = FactoryGirl.create(:playlist)
+      obj = FactoryBot.create(:playlist)
       get :show, params: { id: obj.to_gid_param }
       expect(response).to redirect_to(playlist_path(obj))
     end
@@ -48,7 +48,7 @@ describe ObjectsController do
 
   describe "#autocomplete" do
     it "should call autocomplete on the specified model" do
-      user = FactoryGirl.create(:user, email: "test@example.com")
+      user = FactoryBot.create(:user, email: "test@example.com")
       get :autocomplete, params: { t: 'user', q: 'test' }
       expect(response.body).to include user.user_key
     end

@@ -12,19 +12,19 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :collection, class: Admin::Collection do
     sequence(:name) {|n| "Collection #{n}" }
     unit {"Default Unit"}
     description {Faker::Lorem.sentence}
-    managers {[FactoryGirl.create(:manager).user_key]}
-    editors {[FactoryGirl.create(:user).user_key]}
-    depositors {[FactoryGirl.create(:user).user_key]}
+    managers {[FactoryBot.create(:manager).user_key]}
+    editors {[FactoryBot.create(:user).user_key]}
+    depositors {[FactoryBot.create(:user).user_key]}
     media_objects {[]}
 
     transient { items 0 }
     after(:create) do |c, env|
-      1.upto(env.items) { FactoryGirl.create(:media_object, collection: c) }
+      1.upto(env.items) { FactoryBot.create(:media_object, collection: c) }
       c.reload
     end
   end

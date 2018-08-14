@@ -18,7 +18,7 @@ describe Admin::CollectionsController, type: :controller do
   render_views
 
   describe 'security' do
-    let(:collection) { FactoryGirl.create(:collection) }
+    let(:collection) { FactoryBot.create(:collection) }
     before do
       ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
     end
@@ -63,21 +63,21 @@ describe Admin::CollectionsController, type: :controller do
   end
 
   describe "#manage" do
-    let!(:collection) { FactoryGirl.create(:collection) }
+    let!(:collection) { FactoryBot.create(:collection) }
     before(:each) do
       request.env["HTTP_REFERER"] = '/'
       login_as(:administrator)
     end
 
     it "should add users to manager role" do
-      manager = FactoryGirl.create(:manager)
+      manager = FactoryBot.create(:manager)
       put 'update', params: { id: collection.id, submit_add_manager: 'Add', add_manager: manager.user_key }
       collection.reload
       expect(manager).to be_in(collection.managers)
     end
 
     it "should not add users to manager role" do
-      user = FactoryGirl.create(:user)
+      user = FactoryBot.create(:user)
       put 'update', params: { id: collection.id, submit_add_manager: 'Add', add_manager: user.user_key }
       collection.reload
       expect(user).not_to be_in(collection.managers)
@@ -85,8 +85,8 @@ describe Admin::CollectionsController, type: :controller do
     end
 
     it "should remove users from manager role" do
-      #initial_manager = FactoryGirl.create(:manager).user_key
-      collection.managers += [FactoryGirl.create(:manager).user_key, FactoryGirl.create(:manager).user_key]
+      #initial_manager = FactoryBot.create(:manager).user_key
+      collection.managers += [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
       collection.save!
       manager = User.where(Devise.authentication_keys.first => collection.managers.first).first
       put 'update', params: { id: collection.id, remove_manager: manager.user_key }
@@ -96,14 +96,14 @@ describe Admin::CollectionsController, type: :controller do
   end
 
   describe "#edit" do
-    let!(:collection) { FactoryGirl.create(:collection) }
+    let!(:collection) { FactoryBot.create(:collection) }
     before(:each) do
       request.env["HTTP_REFERER"] = '/'
     end
 
     it "should add users to editor role" do
       login_as(:administrator)
-      editor = FactoryGirl.build(:user)
+      editor = FactoryBot.build(:user)
       put 'update', params: { id: collection.id, submit_add_editor: 'Add', add_editor: editor.user_key }
       collection.reload
       expect(editor).to be_in(collection.editors)
@@ -119,14 +119,14 @@ describe Admin::CollectionsController, type: :controller do
   end
 
   describe "#deposit" do
-    let!(:collection) { FactoryGirl.create(:collection) }
+    let!(:collection) { FactoryBot.create(:collection) }
     before(:each) do
       request.env["HTTP_REFERER"] = '/'
     end
 
     it "should add users to depositor role" do
       login_as(:administrator)
-      depositor = FactoryGirl.build(:user)
+      depositor = FactoryBot.build(:user)
       put 'update', params: { id: collection.id, submit_add_depositor: 'Add', add_depositor: depositor.user_key }
       collection.reload
       expect(depositor).to be_in(collection.depositors)
@@ -142,7 +142,7 @@ describe Admin::CollectionsController, type: :controller do
   end
 
   describe "#index" do
-    let!(:collection) { FactoryGirl.create(:collection) }
+    let!(:collection) { FactoryBot.create(:collection) }
     subject(:json) { JSON.parse(response.body) }
     before do
       ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
@@ -179,14 +179,14 @@ describe Admin::CollectionsController, type: :controller do
       request.headers['Avalon-Api-Key'] = 'secret_token'
     end
     it 'should paginate index' do
-      5.times { FactoryGirl.create(:collection) }
+      5.times { FactoryBot.create(:collection) }
       get 'index', params: { format:'json', per_page: '2' }
       expect(json.count).to eq(2)
       expect(response.headers['Per-Page']).to eq('2')
       expect(response.headers['Total']).to eq('5')
     end
     it 'should paginate collection/items' do
-      collection = FactoryGirl.create(:collection, items: 5)
+      collection = FactoryBot.create(:collection, items: 5)
       get 'items', params: { id: collection.id, format: 'json', per_page: '2' }
       expect(json.count).to eq(2)
       expect(response.headers['Per-Page']).to eq('2')
@@ -195,7 +195,7 @@ describe Admin::CollectionsController, type: :controller do
   end
 
   describe "#show" do
-    let!(:collection) { FactoryGirl.create(:collection) }
+    let!(:collection) { FactoryBot.create(:collection) }
 
     it "should allow access to managers" do
       login_user(collection.managers.first)
@@ -234,7 +234,7 @@ describe Admin::CollectionsController, type: :controller do
   end
 
   describe "#items" do
-    let!(:collection) { FactoryGirl.create(:collection, items: 2) }
+    let!(:collection) { FactoryBot.create(:collection, items: 2) }
 
     it "should return json for specific collection's media objects" do
       ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
@@ -247,7 +247,7 @@ describe Admin::CollectionsController, type: :controller do
   end
 
   describe "#create" do
-    let!(:collection) { FactoryGirl.build(:collection) }
+    let!(:collection) { FactoryBot.build(:collection) }
     before do
       ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
       request.headers['Avalon-Api-Key'] = 'secret_token'
@@ -283,13 +283,13 @@ describe Admin::CollectionsController, type: :controller do
       # mock_delay = double('mock_delay').as_null_object
       # allow(NotificationsMailer).to receive(:deliver_later).and_return(mock_delay)
       # expect(mock_delay).to receive(:update_collection)
-      @collection = FactoryGirl.create(:collection)
+      @collection = FactoryBot.create(:collection)
       # put 'update', id: @collection.id, admin_collection: {name: "#{@collection.name}-new", description: @collection.description, unit: @collection.unit}
       expect {put 'update', params: { id: @collection.id, admin_collection: {name: "#{@collection.name}-new", description: @collection.description, unit: @collection.unit} }}.to have_enqueued_job(ActionMailer::DeliveryJob).once
     end
 
     context "update REST API" do
-      let!(:collection) { FactoryGirl.create(:collection)}
+      let!(:collection) { FactoryBot.create(:collection)}
       before do
         ApiToken.create token: 'secret_token', username: 'archivist1@example.com', email: 'archivist1@example.com'
         request.headers['Avalon-Api-Key'] = 'secret_token'
@@ -314,7 +314,7 @@ describe Admin::CollectionsController, type: :controller do
     end
 
     context "access controls" do
-      let!(:collection) { FactoryGirl.create(:collection)}
+      let!(:collection) { FactoryBot.create(:collection)}
 
       it "should not allow empty user" do
         expect{ put 'update', params: { id: collection.id, submit_add_user: "Add", add_user: "", add_user_display: "" }}.not_to change{ collection.reload.default_read_users.size }
@@ -328,7 +328,7 @@ describe Admin::CollectionsController, type: :controller do
   end
 
   describe "#remove" do
-    let!(:collection) { FactoryGirl.create(:collection) }
+    let!(:collection) { FactoryBot.create(:collection) }
 
     it "redirects with message when user does not have ability to delete collection" do
       login_as :user

@@ -23,7 +23,7 @@ describe IngestBatch do
   end
   describe '#finished?' do
     it 'returns true when all the master files are finished' do
-      media_object = FactoryGirl.create(:media_object, master_files: [FactoryGirl.create(:master_file, status_code: 'CANCELLED'), FactoryGirl.create(:master_file, status_code: 'COMPLETED')])
+      media_object = FactoryBot.create(:media_object, master_files: [FactoryBot.create(:master_file, status_code: 'CANCELLED'), FactoryBot.create(:master_file, status_code: 'COMPLETED')])
       ingest_batch = IngestBatch.new(media_object_ids: [media_object.id], email: 'email@something.com')
       expect(ingest_batch.finished?).to be true
     end
@@ -48,7 +48,7 @@ describe IngestBatch do
     end
 
     it 'returns an array of media objects based on ids passed in' do
-      media_objects = Array.new(3) { FactoryGirl.create(:media_object) }
+      media_objects = Array.new(3) { FactoryBot.create(:media_object) }
       ingest_batch = IngestBatch.new(media_object_ids:media_objects.map(&:id))
       expect(ingest_batch.media_objects).to eq(media_objects)
     end

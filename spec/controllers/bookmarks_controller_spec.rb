@@ -25,14 +25,14 @@ describe BookmarksController, type: :controller do
     perform_enqueued_jobs { example.run }
   end
 
-  let!(:collection) { FactoryGirl.create(:collection) }
+  let!(:collection) { FactoryBot.create(:collection) }
   let!(:media_objects) { [] }
 
   before(:each) do
     request.env["HTTP_REFERER"] = '/'
     login_user collection.managers.first
     3.times do
-      media_objects << mo = FactoryGirl.create(:media_object, collection: collection)
+      media_objects << mo = FactoryBot.create(:media_object, collection: collection)
       post :create, params: { id: mo.id }
     end
   end
@@ -45,7 +45,7 @@ describe BookmarksController, type: :controller do
     end
     it "should remove more than the blacklight default number of items (>10)" do
       8.times do
-        media_objects << mo = FactoryGirl.create(:media_object, collection: collection)
+        media_objects << mo = FactoryBot.create(:media_object, collection: collection)
         post :create, params: { id: mo.id }
       end
       post :delete
@@ -97,7 +97,7 @@ describe BookmarksController, type: :controller do
         expect(response.body).to have_css('#deleteLink')
       end
       it 'are not displayed for unauthorized user' do
-        collection.managers = [FactoryGirl.create(:manager).user_key]
+        collection.managers = [FactoryBot.create(:manager).user_key]
         collection.save
         get 'index'
         expect(response.body).not_to have_css('#moveLink')
@@ -109,7 +109,7 @@ describe BookmarksController, type: :controller do
   end
 
   describe "#move" do
-    let!(:collection2) { FactoryGirl.create(:collection) }
+    let!(:collection2) { FactoryBot.create(:collection) }
 
     context 'user has no permission on target collection' do
       it 'responds with error message' do

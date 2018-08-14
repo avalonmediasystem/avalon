@@ -17,7 +17,7 @@ require 'rails_helper'
 describe Avalon::Batch::Entry do
   let(:testdir) {'spec/fixtures/'}
   let(:filename) {'videoshort.mp4'}
-  let(:collection) {FactoryGirl.build(:collection)}
+  let(:collection) {FactoryBot.build(:collection)}
   let(:entry_fields) {{ title: Faker::Lorem.sentence, date_issued: "#{DateTime.now.strftime('%F')}" }}
   let(:entry_files) { [{ file: File.join(testdir, filename), skip_transcoding: false }] }
   let(:entry_opts) { {user_key: 'archivist1@example.org', collection: collection} }
@@ -180,7 +180,7 @@ describe Avalon::Batch::Entry do
   end
 
   describe '#attach_datastreams_to_master_file' do
-    let(:master_file) { FactoryGirl.build(:master_file) }
+    let(:master_file) { FactoryBot.build(:master_file) }
     let(:filename) { File.join(Rails.root, 'spec/fixtures/dropbox/example_batch_ingest/assets/sheephead_mountain.mov') }
     before do
       Avalon::Batch::Entry.attach_datastreams_to_master_file(master_file, filename)
@@ -222,7 +222,7 @@ describe Avalon::Batch::Entry do
   end
 
   describe '#from_json' do
-    let(:collection) {FactoryGirl.create(:collection)}
+    let(:collection) {FactoryBot.create(:collection)}
     subject { Avalon::Batch::Entry.from_json(entry.to_json) }
     it "initializes a Avalon::Batch::Entry object from a json hash" do
       expect(subject).to be_an Avalon::Batch::Entry

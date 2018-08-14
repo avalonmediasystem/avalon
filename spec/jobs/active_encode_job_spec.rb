@@ -22,7 +22,7 @@ describe ActiveEncodeJob do
         before do
           allow_any_instance_of(ActiveEncode::Base).to receive(:create!).and_raise(StandardError)
         end
-        let(:master_file) { FactoryGirl.create(:master_file) }
+        let(:master_file) { FactoryBot.create(:master_file) }
         it "sets the status of the master file to FAILED" do
           job.perform(master_file.id, nil, {})
           master_file.reload
@@ -35,7 +35,7 @@ describe ActiveEncodeJob do
           allow_any_instance_of(ActiveEncode::Base).to receive(:create!).and_return(encode_job)
         end
         let(:encode_job) { ActiveEncode::Base.new(nil) }
-        let(:master_file) { FactoryGirl.create(:master_file) }
+        let(:master_file) { FactoryBot.create(:master_file) }
         it "sets the status of the master file to FAILED" do
           job.perform(master_file.id, nil, {})
           master_file.reload

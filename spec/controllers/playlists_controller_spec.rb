@@ -52,11 +52,11 @@ RSpec.describe PlaylistsController, type: :controller do
   let(:user) { login_as :user }
 
   describe 'security' do
-    let(:playlist) { FactoryGirl.create(:playlist, items: [playlist_item]) }
-    let(:playlist_item) { FactoryGirl.create(:playlist_item, clip: clip) }
-    let(:clip) { FactoryGirl.create(:avalon_clip, master_file: master_file) }
-    let(:master_file) { FactoryGirl.create(:master_file, media_object: media_object) }
-    let(:media_object) { FactoryGirl.create(:published_media_object, visibility: 'public') }
+    let(:playlist) { FactoryBot.create(:playlist, items: [playlist_item]) }
+    let(:playlist_item) { FactoryBot.create(:playlist_item, clip: clip) }
+    let(:clip) { FactoryBot.create(:avalon_clip, master_file: master_file) }
+    let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
+    let(:media_object) { FactoryBot.create(:published_media_object, visibility: 'public') }
 
     context 'with unauthenticated user' do
       # New is isolated here due to issues caused by the controller instance not being regenerated
@@ -73,7 +73,7 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(new_user_session_path)
       end
       context 'with a public playlist' do
-        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
+        let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
         it "should return the playlist view page" do
           expect(get :show, params: { id: playlist.id }).not_to redirect_to(new_user_session_path)
           expect(get :show, params: { id: playlist.id }).to be_success
@@ -87,7 +87,7 @@ RSpec.describe PlaylistsController, type: :controller do
         end
       end
       context 'with a private playlist and token' do
-        let(:playlist) { FactoryGirl.create(:playlist, :with_access_token, items: [playlist_item]) }
+        let(:playlist) { FactoryBot.create(:playlist, :with_access_token, items: [playlist_item]) }
         it "should return the playlist view page" do
           expect(get :show, params: { id: playlist.id, token: playlist.access_token }).not_to redirect_to(root_path)
           expect(get :show, params: { id: playlist.id, token: playlist.access_token }).to be_success
@@ -107,7 +107,7 @@ RSpec.describe PlaylistsController, type: :controller do
         expect(get :refresh_info, params: { id: playlist.id, position: 1 }, xhr: true).to redirect_to(root_path)
       end
       context 'with a public playlist' do
-        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
+        let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC, items: [playlist_item]) }
         it "should return the playlist view page" do
           expect(get :show, params: { id: playlist.id }).not_to redirect_to(root_path)
           expect(get :show, params: { id: playlist.id }).to be_success
@@ -121,7 +121,7 @@ RSpec.describe PlaylistsController, type: :controller do
         end
       end
       context 'with a private playlist and token' do
-        let(:playlist) { FactoryGirl.create(:playlist, :with_access_token, items: [playlist_item]) }
+        let(:playlist) { FactoryBot.create(:playlist, :with_access_token, items: [playlist_item]) }
         it "should return the playlist view page" do
           expect(get :show, params: { id: playlist.id, token: playlist.access_token }).not_to redirect_to(root_path)
           expect(get :show, params: { id: playlist.id, token: playlist.access_token }).to be_success
@@ -215,7 +215,7 @@ RSpec.describe PlaylistsController, type: :controller do
     let(:new_attributes) do
       { title: Faker::Lorem.word, visibility: Playlist::PUBLIC, comment: Faker::Lorem.sentence, user: user }
     end
-    let(:playlist) { FactoryGirl.create(:playlist, new_attributes) }
+    let(:playlist) { FactoryBot.create(:playlist, new_attributes) }
 
     context 'blank playlist' do
       it 'duplicate a blank playlist' do
@@ -235,8 +235,8 @@ RSpec.describe PlaylistsController, type: :controller do
 
     context 'non-blank playlist' do
 
-      let(:media_object) { FactoryGirl.create(:media_object, visibility: 'public') }
-      let!(:video_master_file) { FactoryGirl.create(:master_file, media_object: media_object, duration: "200000") }
+      let(:media_object) { FactoryBot.create(:media_object, visibility: 'public') }
+      let!(:video_master_file) { FactoryBot.create(:master_file, media_object: media_object, duration: "200000") }
       let!(:clip) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.word,
         comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
       let!(:playlist_item) { PlaylistItem.create!(playlist: playlist, clip: clip) }
@@ -313,11 +313,11 @@ RSpec.describe PlaylistsController, type: :controller do
         login_as :user
       end
 
-      let!(:playlist) { FactoryGirl.create(:playlist, valid_attributes) }
-      let!(:new_playlist) { FactoryGirl.create(:playlist, valid_attributes) }
+      let!(:playlist) { FactoryBot.create(:playlist, valid_attributes) }
+      let!(:new_playlist) { FactoryBot.create(:playlist, valid_attributes) }
 
-      let(:media_object) { FactoryGirl.create(:media_object, visibility: 'public') }
-      let!(:video_master_file) { FactoryGirl.create(:master_file, media_object: media_object, duration: "200000") }
+      let(:media_object) { FactoryBot.create(:media_object, visibility: 'public') }
+      let!(:video_master_file) { FactoryBot.create(:master_file, media_object: media_object, duration: "200000") }
       let!(:clip) { AvalonClip.create(master_file: video_master_file, title: Faker::Lorem.word,
         comment: Faker::Lorem.sentence, start_time: 1000, end_time: 2000) }
       let!(:playlist_item) { PlaylistItem.create!(playlist: playlist, clip: clip) }
@@ -388,7 +388,7 @@ RSpec.describe PlaylistsController, type: :controller do
 
     context "Conditional Share partials should be rendered" do
       render_views
-      let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
+      let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC) }
       context "Normal login" do
         it "administrators: should include lti and share" do
           login_as(:administrator)

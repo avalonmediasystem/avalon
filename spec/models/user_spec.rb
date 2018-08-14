@@ -16,7 +16,7 @@ require 'rails_helper'
 
 describe User do
   subject {user}
-  let!(:user) {FactoryGirl.build(:user)}
+  let!(:user) {FactoryBot.build(:user)}
   let!(:list) {0.upto(rand(5)).collect { Faker::Internet.email }}
 
   describe "validations" do
@@ -71,7 +71,7 @@ describe User do
 
   describe "#destroy" do
     it 'removes bookmarks for user' do
-      user = FactoryGirl.create(:public)
+      user = FactoryBot.create(:public)
       bookmark = Bookmark.create(document_id: Faker::Number.digit, user_id: user.id)
       expect { user.destroy }.to change { Bookmark.exists? bookmark.id }.from( true ).to( false )
     end

@@ -16,7 +16,7 @@ require 'rails_helper'
 
 describe DerivativesController, type: :controller do
   describe 'authorize' do
-    let(:derivative) { FactoryGirl.create(:derivative, :with_master_file) }
+    let(:derivative) { FactoryBot.create(:derivative, :with_master_file) }
     let(:auth_path) { derivative.location_url.split(/:/).last }
     let(:target) { derivative.master_file.id }
     let(:session) { { } }

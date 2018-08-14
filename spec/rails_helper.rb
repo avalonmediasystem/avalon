@@ -21,7 +21,7 @@ abort('The Rails environment is running in production mode!') if Rails.env.produ
 require 'spec_helper'
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
-# require 'factory_girl'
+# require 'factory_bot'
 require 'capybara/rails'
 require 'database_cleaner'
 require 'active_fedora/cleaner'
@@ -129,7 +129,7 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-  # config.include FactoryGirl::Syntax::Methods
+  # config.include FactoryBot::Syntax::Methods
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include ControllerMacros, type: :controller
   config.include Warden::Test::Helpers,type: :feature

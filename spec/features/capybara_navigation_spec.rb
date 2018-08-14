@@ -17,14 +17,14 @@ require 'rails_helper'
 describe 'checks navigation after logging in' do
   after { Warden.test_reset! }
   it 'checks navigation to Browse' do
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/'
     click_link('Browse')
     expect(page.current_url).to eq('http://www.example.com/catalog?q=&search_field=all_fields&utf8=%E2%9C%93')
   end
   it 'checks navigation to Manage Content' do
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/'
     click_link('Manage Content')
@@ -39,7 +39,7 @@ describe 'checks navigation after logging in' do
     expect(page).to have_link('Cancel')
   end
   it 'checks naviagtion to Manage Groups' do
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/'
     click_link('Manage Groups')
@@ -52,7 +52,7 @@ describe 'checks navigation after logging in' do
     expect(page).to have_content('manager')
   end
   it 'checks naviagtion to Playlist' do
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/'
     click_link('Playlist')
@@ -61,7 +61,7 @@ describe 'checks navigation after logging in' do
     expect(page).to have_content('Create New Playlist')
   end
   it 'is able to sign out' do
-    user = FactoryGirl.create(:administrator)
+    user = FactoryBot.create(:administrator)
     login_as user, scope: :user
     visit '/'
     click_link('Sign out', match: :first)
