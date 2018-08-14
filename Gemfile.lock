@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/avalonmediasystem/about_page.git
-  revision: 2a71b40360d800c5a978fc0944e7b74121f1e7bc
+  revision: 1b920619cc54fdc99f1cb4da26c18818c1156070
   branch: master
   specs:
     about_page (0.3.1)
