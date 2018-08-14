@@ -1,4 +1,4 @@
-class AddDefaultBooleanValuesToBatchRegistriesAndBatchEntries < ActiveRecord::Migration
+class AddDefaultBooleanValuesToBatchRegistriesAndBatchEntries < ActiveRecord::Migration[5.1]
   def change
     change_column :batch_registries, :complete, :boolean, null: false, default: false
     change_column :batch_registries, :error, :boolean, null: false, default: false

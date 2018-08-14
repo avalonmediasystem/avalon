@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class CreateIdentities < ActiveRecord::Migration
+class CreateIdentities < ActiveRecord::Migration[5.1]
   def change
     create_table :identities do |t|
       t.string :email
