@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class CreateStreamTokens < ActiveRecord::Migration
+class CreateStreamTokens < ActiveRecord::Migration[5.1]
   def change
     create_table :stream_tokens do |t|
     	t.string   :token

@@ -1,4 +1,4 @@
-class CreateBatchRegistries < ActiveRecord::Migration
+class CreateBatchRegistries < ActiveRecord::Migration[5.1]
   def change
     create_table :batch_registries do |t|
       t.string 'file_name'
