@@ -15,7 +15,8 @@
 require 'rails_helper'
 
 describe BatchEntries do
-  subject { FactoryBot.build(:batch_entries) }
+  let(:batch_registry) { FactoryBot.build(:batch_registries) }
+  subject { FactoryBot.build(:batch_entries, batch_registries: batch_registry) }
 
   describe '#save' do
     it 'persists' do
@@ -35,7 +36,7 @@ describe BatchEntries do
     describe 'with sufficient metadata' do
       it 'does not record an error when title and date_issued are present' do
         payload = { fields: { title: 'foo', date_issued: Time.now.utc } }
-        be = BatchEntries.new(payload: payload.to_json)
+        be = BatchEntries.new(payload: payload.to_json, batch_registries: batch_registry)
         be.save
         be.reload
         expect(be.error).to be_falsey
@@ -43,7 +44,7 @@ describe BatchEntries do
 
       it 'does not record an error when bibliographic_id is present' do
         payload = { fields: { bibliographic_id: 'foo' } }
-        be = BatchEntries.new(payload: payload.to_json)
+        be = BatchEntries.new(payload: payload.to_json, batch_registries: batch_registry)
         be.save
         be.reload
         expect(be.error).to be_falsey
@@ -52,21 +53,21 @@ describe BatchEntries do
     describe 'with insufficient metadata' do
       it 'records an error when no required fields are present' do
         payload = { fields: { author: 'foo' } }
-        be = BatchEntries.new(payload: payload.to_json)
+        be = BatchEntries.new(payload: payload.to_json, batch_registries: batch_registry)
         be.save
         be.reload
         expect(be.error).to be_truthy
       end
       it 'records an error when only title is present' do
         payload = { fields: { title: 'foo' } }
-        be = BatchEntries.new(payload: payload.to_json)
+        be = BatchEntries.new(payload: payload.to_json, batch_registries: batch_registry)
         be.save
         be.reload
         expect(be.error).to be_truthy
       end
       it 'records an error when only date issued is present' do
         payload = { fields: { date_issued: Time.now.utc } }
-        be = BatchEntries.new(payload: payload.to_json)
+        be = BatchEntries.new(payload: payload.to_json, batch_registries: batch_registry)
         be.save
         be.reload
         expect(be.error).to be_truthy
