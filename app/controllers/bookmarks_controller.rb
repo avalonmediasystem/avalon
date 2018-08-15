@@ -162,7 +162,7 @@ class BookmarksController < CatalogController
     end
     flash[:success] = t("blacklight.status.success", count: success_ids.count, status: status) if success_ids.count > 0
     flash[:alert] = "#{t('blacklight.status.alert', count: errors.count, status: status)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
-    BulkActionJobs::UpdateStatus.perform_later success_ids, current_user.user_key, params.to_h
+    BulkActionJobs::UpdateStatus.perform_later success_ids, current_user.user_key, params.permit('action').to_h
   end
 
   def delete_action documents
@@ -178,7 +178,7 @@ class BookmarksController < CatalogController
     end
     flash[:success] = t("blacklight.delete.success", count: success_ids.count) if success_ids.count > 0
     flash[:alert] = "#{t('blacklight.delete.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
-    BulkActionJobs::Delete.perform_later success_ids, params.to_h
+    BulkActionJobs::Delete.perform_later success_ids, nil
   end
 
   def move_action documents

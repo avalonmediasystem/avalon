@@ -129,7 +129,7 @@ module BulkActionJobs
   end
 
   class Delete < ActiveJob::Base
-    def perform documents, params
+    def perform documents, _params
       errors = []
       successes = []
       documents.each do |id|
