@@ -135,7 +135,7 @@ RSpec.describe PlaylistsController, type: :controller do
     it 'assigns accessible playlists as @playlists' do
       # TODO: test non-accessible playlists not appearing
       playlist = Playlist.create! valid_attributes
-      get :index, params: {}, headers: valid_session
+      get :index, params: {}, session: valid_session
       expect(assigns(:playlists)).to eq([playlist])
     end
   end
@@ -143,7 +143,7 @@ RSpec.describe PlaylistsController, type: :controller do
   describe 'GET #show' do
     it 'assigns the requested playlist as @playlist' do
       playlist = Playlist.create! valid_attributes
-      get :show, params: { id: playlist.to_param }, headers: valid_session
+      get :show, params: { id: playlist.to_param }, session: valid_session
       expect(assigns(:playlist)).to eq(playlist)
     end
     # TODO: write tests for public/private playists
@@ -154,7 +154,7 @@ RSpec.describe PlaylistsController, type: :controller do
       login_as :user
     end
     it 'assigns a new playlist as @playlist' do
-      get :new, params: {}, headers: valid_session
+      get :new, params: {}, session: valid_session
       expect(assigns(:playlist)).to be_a_new(Playlist)
     end
   end
@@ -162,7 +162,7 @@ RSpec.describe PlaylistsController, type: :controller do
   describe 'GET #edit' do
     it 'assigns the requested playlist as @playlist' do
       playlist = Playlist.create! valid_attributes
-      get :edit, params: { id: playlist.to_param }, headers: valid_session
+      get :edit, params: { id: playlist.to_param }, session: valid_session
       expect(assigns(:playlist)).to eq(playlist)
     end
   end
@@ -171,23 +171,23 @@ RSpec.describe PlaylistsController, type: :controller do
     context 'with valid params' do
       it 'creates a new Playlist' do
         expect do
-          post :create, params: { playlist: valid_attributes }, headers: valid_session
+          post :create, params: { playlist: valid_attributes }, session: valid_session
         end.to change(Playlist, :count).by(1)
       end
 
       it 'assigns a newly created playlist as @playlist' do
-        post :create, params: { playlist: valid_attributes }, headers: valid_session
+        post :create, params: { playlist: valid_attributes }, session: valid_session
         expect(assigns(:playlist)).to be_a(Playlist)
         expect(assigns(:playlist)).to be_persisted
       end
 
       it 'redirects to the created playlist' do
-        post :create, params: { playlist: valid_attributes }, headers: valid_session
+        post :create, params: { playlist: valid_attributes }, session: valid_session
         expect(response).to redirect_to(Playlist.last)
       end
 
       it 'generates a token if visibility is private-with-token' do
-        post :create, params: { playlist: valid_attributes.merge(visibility: Playlist::PRIVATE_WITH_TOKEN) }, headers: valid_session
+        post :create, params: { playlist: valid_attributes.merge(visibility: Playlist::PRIVATE_WITH_TOKEN) }, session: valid_session
         expect(assigns(:playlist).access_token).not_to be_blank
       end
     end
@@ -197,12 +197,12 @@ RSpec.describe PlaylistsController, type: :controller do
         login_as :user
       end
       it 'assigns a newly created but unsaved playlist as @playlist' do
-        post :create, params: { playlist: invalid_attributes }, headers: valid_session
+        post :create, params: { playlist: invalid_attributes }, session: valid_session
         expect(assigns(:playlist)).to be_a_new(Playlist)
       end
 
       it "re-renders the 'new' template" do
-        post :create, params: { playlist: invalid_attributes }, headers: valid_session
+        post :create, params: { playlist: invalid_attributes }, session: valid_session
         expect(response).to render_template('new')
       end
     end
@@ -266,7 +266,7 @@ RSpec.describe PlaylistsController, type: :controller do
 
         it 'updates the requested playlist' do
           playlist = Playlist.create! valid_attributes
-          put :update, params: { id: playlist.to_param, playlist: new_attributes }, headers: valid_session
+          put :update, params: { id: playlist.to_param, playlist: new_attributes }, session: valid_session
           playlist.reload
           expect(playlist.title).to eq new_attributes[:title]
           expect(playlist.visibility).to eq new_attributes[:visibility]
@@ -275,19 +275,19 @@ RSpec.describe PlaylistsController, type: :controller do
 
         it 'assigns the requested playlist as @playlist' do
           playlist = Playlist.create! valid_attributes
-          put :update, params: { id: playlist.to_param, playlist: new_attributes }, headers: valid_session
+          put :update, params: { id: playlist.to_param, playlist: new_attributes }, session: valid_session
           expect(assigns(:playlist)).to eq(playlist)
         end
 
         it 'redirects to edit playlist' do
           playlist = Playlist.create! valid_attributes
-          put :update, params: { id: playlist.to_param, playlist: new_attributes }, headers: valid_session
+          put :update, params: { id: playlist.to_param, playlist: new_attributes }, session: valid_session
           expect(response).to redirect_to(edit_playlist_path(playlist))
         end
 
         it 'generates a token if visibility is private-with-token' do
           playlist = Playlist.create! valid_attributes
-          put :update, params: { id: playlist.to_param, playlist: { visibility: Playlist::PRIVATE_WITH_TOKEN } }, headers: valid_session
+          put :update, params: { id: playlist.to_param, playlist: { visibility: Playlist::PRIVATE_WITH_TOKEN } }, session: valid_session
           playlist.reload
           expect(playlist.access_token).not_to be_blank
         end
@@ -296,13 +296,13 @@ RSpec.describe PlaylistsController, type: :controller do
       context 'with invalid params' do
         it 'assigns the playlist as @playlist' do
           playlist = Playlist.create! valid_attributes
-          put :update, params: { id: playlist.to_param, playlist: invalid_attributes }, headers: valid_session
+          put :update, params: { id: playlist.to_param, playlist: invalid_attributes }, session: valid_session
           expect(assigns(:playlist)).to eq(playlist)
         end
 
         it "re-renders the 'edit' template" do
           playlist = Playlist.create! valid_attributes
-          put :update, params: { id: playlist.to_param, playlist: invalid_attributes }, headers: valid_session
+          put :update, params: { id: playlist.to_param, playlist: invalid_attributes }, session: valid_session
           expect(response).to render_template('edit')
         end
       end
@@ -326,7 +326,7 @@ RSpec.describe PlaylistsController, type: :controller do
       context 'delete' do
 
         it 'redirects to edit playlist' do
-          put :update_multiple, params: { id: playlist.to_param, clip_ids: ["1"] }, headers: valid_session
+          put :update_multiple, params: { id: playlist.to_param, clip_ids: ["1"] }, session: valid_session
           expect(response).to redirect_to(edit_playlist_path(playlist))
         end
 
@@ -335,7 +335,7 @@ RSpec.describe PlaylistsController, type: :controller do
           expect(playlist.items.count).to eq(1)
           expect do
             # maybe request headers, run delete to see what gets pushed through.
-            delete :update_multiple, params: { id: playlist.to_param, clip_ids:[ playlist_item.to_param ] }, headers: valid_session
+            delete :update_multiple, params: { id: playlist.to_param, clip_ids:[ playlist_item.to_param ] }, session: valid_session
           end.to change(playlist.items, :count).by(-1)
         end
       end
@@ -345,7 +345,7 @@ RSpec.describe PlaylistsController, type: :controller do
           playlist.items << playlist_item
           expect(playlist.items.count).to eq(1)
           expect do
-            put :update_multiple, params: { id: playlist.id, clip_ids:[ playlist_item.to_param ], new_playlist_id: new_playlist.id, action_type: 'copy_to_playlist' }, headers: valid_session
+            put :update_multiple, params: { id: playlist.id, clip_ids:[ playlist_item.to_param ], new_playlist_id: new_playlist.id, action_type: 'copy_to_playlist' }, session: valid_session
           end.to change(new_playlist.items, :count).by(+1)
           expect(playlist.items.count).to eq(1)
         end
@@ -356,7 +356,7 @@ RSpec.describe PlaylistsController, type: :controller do
           playlist.items << playlist_item
           expect(playlist.items.count).to eq(1)
           expect do
-            put :update_multiple, params: { id: playlist.id, clip_ids:[ playlist_item.to_param ], new_playlist_id: new_playlist.id, action_type: 'move_to_playlist' }, headers: valid_session
+            put :update_multiple, params: { id: playlist.id, clip_ids:[ playlist_item.to_param ], new_playlist_id: new_playlist.id, action_type: 'move_to_playlist' }, session: valid_session
           end.to change(new_playlist.items, :count).by(+1)
           expect(playlist.items.count).to eq(0)
         end
@@ -367,13 +367,13 @@ RSpec.describe PlaylistsController, type: :controller do
       it 'destroys the requested playlist' do
         playlist = Playlist.create! valid_attributes
         expect do
-          delete :destroy, params: { id: playlist.to_param }, headers: valid_session
+          delete :destroy, params: { id: playlist.to_param }, session: valid_session
         end.to change(Playlist, :count).by(-1)
       end
 
       it 'redirects to the playlists list' do
         playlist = Playlist.create! valid_attributes
-        delete :destroy, params: { id: playlist.to_param }, headers: valid_session
+        delete :destroy, params: { id: playlist.to_param }, session: valid_session
         expect(response).to redirect_to(playlists_url)
       end
     end
@@ -381,7 +381,7 @@ RSpec.describe PlaylistsController, type: :controller do
     describe 'GET #edit' do
       it 'assigns the requested playlist as @playlist' do
         playlist = Playlist.create! valid_attributes
-        get :edit, params: { id: playlist.to_param }, headers: valid_session
+        get :edit, params: { id: playlist.to_param }, session: valid_session
         expect(assigns(:playlist)).to eq(playlist)
       end
     end

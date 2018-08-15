@@ -115,13 +115,13 @@ RSpec.describe PlaylistItemsController, type: :controller do
     context 'with valid params' do
       it 'creates a new Playlist Item' do
         expect do
-          post :create, params: { playlist_id: playlist.to_param, playlist_item: valid_attributes }, headers: valid_session
+          post :create, params: { playlist_id: playlist.to_param, playlist_item: valid_attributes }, session: valid_session
         end.to change(PlaylistItem, :count).by(1)
       end
 
       it 'creates a new AvalonAnnotation' do
         expect do
-          post :create, params: { playlist_id: playlist.to_param, playlist_item: valid_attributes }, headers: valid_session
+          post :create, params: { playlist_id: playlist.to_param, playlist_item: valid_attributes }, session: valid_session
         end.to change(AvalonAnnotation, :count).by(1)
         expect(AvalonAnnotation.last.start_time).to eq (0.0)
         expect(AvalonAnnotation.last.end_time).to eq (97000.0)
@@ -129,17 +129,17 @@ RSpec.describe PlaylistItemsController, type: :controller do
 
       it 'adds the Playlist Item to the playlist' do
         expect do
-          post :create, params: { playlist_id: playlist.to_param, playlist_item: valid_attributes }, headers: valid_session
+          post :create, params: { playlist_id: playlist.to_param, playlist_item: valid_attributes }, session: valid_session
         end.to change { playlist.reload.items.size }.by(1)
       end
 
       it 'responds with 201 CREATED status code' do
-        post :create, params: { playlist_id: playlist.to_param, playlist_item: valid_attributes }, headers: valid_session
+        post :create, params: { playlist_id: playlist.to_param, playlist_item: valid_attributes }, session: valid_session
         expect(response).to have_http_status(:created)
       end
 
       it 'responds with a flash message with link to playlist' do
-        post :create, params: { playlist_id: playlist.to_param, playlist_item: valid_attributes }, headers: valid_session
+        post :create, params: { playlist_id: playlist.to_param, playlist_item: valid_attributes }, session: valid_session
         expect(JSON.parse(response.body)['message']).to include('Add to playlist was successful.')
         expect(JSON.parse(response.body)['message']).to include(playlist_url(playlist))
       end
@@ -147,7 +147,7 @@ RSpec.describe PlaylistItemsController, type: :controller do
 
     context 'with invalid params' do
       it 'invalid times respond with a 400 BAD REQUEST' do
-        post :create, params: { playlist_id: playlist.to_param, playlist_item: invalid_times }, headers: valid_session
+        post :create, params: { playlist_id: playlist.to_param, playlist_item: invalid_times }, session: valid_session
         expect(response).to have_http_status(:bad_request)
       end
     end
@@ -160,14 +160,14 @@ RSpec.describe PlaylistItemsController, type: :controller do
     context 'with valid params' do
       it 'updates Playlist Item' do
         expect do
-          patch :update, params: { playlist_id: playlist.id, id: playlist_item.id, playlist_item: { title: Faker::Lorem.word, start_time:'00:20', end_time:'1:20' } }, headers: valid_session
+          patch :update, params: { playlist_id: playlist.id, id: playlist_item.id, playlist_item: { title: Faker::Lorem.word, start_time:'00:20', end_time:'1:20' } }, session: valid_session
         end.to change{ playlist_item.reload.title }
       end
     end
     context 'with invalid params' do
       it 'fails to update Playlist Item' do
         expect do
-          patch :update, params: { playlist_id: playlist.id, id: playlist_item.id, playlist_item: { title: Faker::Lorem.word, start_time:'00:20', end_time:'not-a-time' } }, headers: valid_session
+          patch :update, params: { playlist_id: playlist.id, id: playlist_item.id, playlist_item: { title: Faker::Lorem.word, start_time:'00:20', end_time:'not-a-time' } }, session: valid_session
         end.not_to change{ playlist_item.reload.title }
       end
     end
