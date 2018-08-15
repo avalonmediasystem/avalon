@@ -33,6 +33,14 @@ GIT
       rubydora (~> 1.8)
 
 GIT
+  remote: https://github.com/avalonmediasystem/media-element-add-to-playlist.git
+  revision: 3de6ea5886598910e080bcd1920043e487589954
+  branch: rails5
+  specs:
+    media_element_add_to_playlist (0.0.1)
+      rails (> 4.0)
+
+GIT
   remote: https://github.com/avalonmediasystem/mediainfo.git
   revision: 788d7f268168e45961d2303e729d1ced71f93f58
   branch: avalon_fixes
@@ -900,6 +908,7 @@ DEPENDENCIES
   listen
   lograge
   marc
+  media_element_add_to_playlist!
   mediainfo!
   mysql2
   net-ldap
