@@ -29,8 +29,8 @@ class Playlist < ActiveRecord::Base
   after_initialize :default_values
   before_save :generate_access_token, if: Proc.new{ |p| p.visibility == Playlist::PRIVATE_WITH_TOKEN && access_token.blank? }
 
-  has_many :items, -> { order('position ASC') }, class_name: PlaylistItem, dependent: :destroy
-  has_many :clips, -> { order('playlist_items.position ASC') }, class_name: AvalonClip, through: :items
+  has_many :items, -> { order('position ASC') }, class_name: 'PlaylistItem', dependent: :destroy
+  has_many :clips, -> { order('playlist_items.position ASC') }, class_name: 'AvalonClip', through: :items
   accepts_nested_attributes_for :items, allow_destroy: true
 
   serialize :tags
