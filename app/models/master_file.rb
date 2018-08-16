@@ -263,8 +263,8 @@ class MasterFile < ActiveFedora::Base
       FileLocator.new(file_location).uri.to_s
     end
 
+    # WaveformJob is performed in a before_perform callback on ActiveEncodeJob::Create
     ActiveEncodeJob::Create.perform_later(self.id, input, {preset: self.workflow_name})
-    WaveformJob.perform_later(self.id)
   end
 
   def finished_processing?
