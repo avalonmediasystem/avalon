@@ -40,7 +40,7 @@ module ActiveEncodeJob
         WaveformJob.perform_now(job.arguments.first)
       rescue StandardError => e
         logger.warn("WaveformJob failed: #{e.message}")
-        logger.warn("#{e.backtrace}")
+        logger.warn(e.backtrace.to_s)
       end
     end
 
