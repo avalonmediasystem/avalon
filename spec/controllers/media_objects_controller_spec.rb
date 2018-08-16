@@ -1015,7 +1015,7 @@ describe MediaObjectsController, type: :controller do
     it 'removes bookmarks that are no longer viewable' do
       media_object = FactoryBot.create(:published_media_object)
       user = FactoryBot.create(:public)
-      bookmark = Bookmark.create(document_id: media_object.id, user_id: user.id)
+      bookmark = Bookmark.create(document_id: media_object.id, user: user)
       login_user media_object.collection.managers.first
       request.env["HTTP_REFERER"] = '/'
       expect {
