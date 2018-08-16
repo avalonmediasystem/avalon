@@ -15,7 +15,7 @@
 module BulkActionJobs
   class AccessControl < ActiveJob::Base
     queue_as :bulk_access_control
-    def perform documents, params
+    def perform(documents, params)
       errors = []
       successes = []
       documents.each do |id|
@@ -101,7 +101,7 @@ module BulkActionJobs
   end
 
   class UpdateStatus < ActiveJob::Base
-    def perform documents, user_key, params
+    def perform(documents, user_key, params)
       errors = []
       successes = []
       status = params['action']
@@ -129,7 +129,7 @@ module BulkActionJobs
   end
 
   class Delete < ActiveJob::Base
-    def perform documents, _params
+    def perform(documents, _params)
       errors = []
       successes = []
       documents.each do |id|
@@ -145,7 +145,7 @@ module BulkActionJobs
   end
 
   class Move < ActiveJob::Base
-    def perform documents, params
+    def perform(documents, params)
       collection = Admin::Collection.find( params[:target_collection_id] )
       errors = []
       successes = []
@@ -163,7 +163,7 @@ module BulkActionJobs
   end
 
   class IntercomPush < ActiveJob::Base
-    def perform documents, user_key, params
+    def perform(documents, user_key, params)
       errors = []
       successes = []
       intercom = Avalon::Intercom.new(user_key)
