@@ -122,10 +122,6 @@ describe MasterFile do
       master_file.process
       expect(ActiveEncodeJob::Create).to have_been_enqueued.with(master_file.id, "file://" + URI.escape(master_file.file_location), {preset: master_file.workflow_name})
     end
-    it 'enqueues a Waveform job' do
-      master_file.process
-      expect(WaveformJob).to have_been_enqueued.with(master_file.id)
-    end
     describe 'already processing' do
       before do
         master_file.status_code = 'RUNNING'
