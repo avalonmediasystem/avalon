@@ -1,11 +1,11 @@
 # Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -15,7 +15,7 @@
 # An AvalonAnnotation that represents a 'marker', an annotated time-point on a masterfile
 # @since 5.0.1
 class AvalonMarker < AvalonAnnotation
-  belongs_to :playlist_item, class_name: PlaylistItem
+  belongs_to :playlist_item, class_name: 'PlaylistItem'
 
   validates :playlist_item, :master_file, presence: true
 
