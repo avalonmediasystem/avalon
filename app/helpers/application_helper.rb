@@ -46,7 +46,9 @@ module ApplicationHelper
   end
 
   def lti_share_url_for(obj, _opts = {})
-    return I18n.t('share.empty_lti_share_url') if obj.nil?
+    if obj.nil? || Avalon::Authentication::Providers.none? {|p| p[:provider] == :lti }
+      return I18n.t('share.empty_lti_share_url')
+    end
     target = case obj
              when MediaObject then obj.id
              when MasterFile then obj.id
