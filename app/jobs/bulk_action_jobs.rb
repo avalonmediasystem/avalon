@@ -162,6 +162,8 @@ module BulkActionJobs
     end
   end
 
+  require 'avalon/intercom'
+
   class IntercomPush < ActiveJob::Base
     def perform documents, user_key, params
       errors = []
