@@ -56,12 +56,12 @@ gem 'omniauth-lti', git: "https://github.com/avalonmediasystem/omniauth-lti.git"
 gem 'active_encode', '~> 0.1.1'
 gem 'browse-everything', '~> 0.13.0'
 gem 'mediainfo', git: "https://github.com/avalonmediasystem/mediainfo.git", branch: 'avalon_fixes'
+gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', branch: 'rails5'
 gem 'rest-client'
 gem 'roo'
 gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
 gem 'audio_waveform-ruby', :require => 'audio_waveform', :git => 'https://github.com/bbc/audio_waveform-ruby.git'
 gem 'wavefile'
-gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', branch: 'rails5'
 
 # Data Translation & Normalization
 gem 'edtf'
@@ -71,7 +71,6 @@ gem 'marc'
 # MediaElement.js & Plugins
 gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r6_flash-fix'
 gem 'media-element-logo-plugin'
-gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.2'
 gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r4'
 gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r6.3'
 gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r4'
@@ -102,7 +101,7 @@ group :development do
 
   # Use Bixby instead of rubocop directly
   gem 'bixby', require: false
-  gem 'web-console', '~> 2.0'
+  gem 'web-console'
   gem 'xray-rails'
 end
 
