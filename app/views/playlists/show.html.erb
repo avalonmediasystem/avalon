@@ -34,7 +34,6 @@ Unless required by applicable law or agreed to in writing, software distributed
         <% @current_mediaobject = @current_masterfile.media_object %>
         <div class="col-sm-8" id="left_column">
           <%= render 'player' %>
-          <%= render file: '_track_scrubber.html.erb' %>
           <%# MediaElement 2 %>
           <%= render file: '_add_to_playlist.html.erb' if current_user.present? && is_mejs_2? %>
           <%# MediaElement 4 %>
