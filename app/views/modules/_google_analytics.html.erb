@@ -1,0 +1,9 @@
+<% if Settings.google_analytics_tracking_id.present? %>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=<%= Settings.google_analytics_tracking_id %>"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '<%= Settings.google_analytics_tracking_id %>');
+  </script>
+<% end %>
