@@ -26,6 +26,10 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= stylesheet_link_tag "application", media: "all" %>
     <%= yield :page_styles %>
     <%= yield :additional_head_content %>
+<<<<<<< HEAD
+=======
+    <%= render "modules/google_analytics" %>
+>>>>>>> c2f1f12a... DRY up analytics code
   </head>
 
   <body data-mountpoint="<%=root_path%>">
