@@ -46,7 +46,7 @@ module ApplicationHelper
   end
 
   def lti_share_url_for(obj, _opts = {})
-    if obj.nil? || Avalon::Authentication::Providers.none? {|p| p[:provider] == :lti }
+    if obj.nil? || Avalon::Authentication::Providers.none? { |p| p[:provider] == :lti }
       return I18n.t('share.empty_lti_share_url')
     end
     target = case obj
