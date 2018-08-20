@@ -19,8 +19,8 @@ include SecurityHelper
 class MasterFilesController < ApplicationController
   # include Avalon::Controller::ControllerBehavior
 
-  before_filter :authenticate_user!, :only => [:create]
-  before_filter :ensure_readable_filedata, :only => [:create]
+  before_action :authenticate_user!, :only => [:create]
+  before_action :ensure_readable_filedata, :only => [:create]
 
 
   # Renders the captions content for an object or alerts the user that no caption content is present with html present
@@ -30,7 +30,7 @@ class MasterFilesController < ApplicationController
     authorize! :read, @master_file
     ds = @master_file.captions
     if ds.nil? || ds.empty?
-      render text: 'Not Found', status: :not_found
+      render plain: 'Not Found', status: :not_found
     else
       send_data ds.content, type: ds.mime_type, filename: ds.original_name
     end
@@ -43,7 +43,7 @@ class MasterFilesController < ApplicationController
     authorize! :read, @master_file
     ds = @master_file.waveform
     if ds.nil? || ds.empty?
-      render text: 'Not Found', status: :not_found
+      render plain: 'Not Found', status: :not_found
     else
       send_data ds.content, type: ds.mime_type, filename: ds.original_name
     end
@@ -54,6 +54,7 @@ class MasterFilesController < ApplicationController
   end
 
   def show
+    params.permit!
     master_file = MasterFile.find(params[:id])
     redirect_to id_section_media_object_path(master_file.media_object_id, master_file.id, params.except(:id, :action, :controller))
   end
@@ -191,7 +192,7 @@ class MasterFilesController < ApplicationController
   def create
     if params[:container_id].blank? || (not MediaObject.exists?(params[:container_id]))
       flash[:notice] = "MediaObject #{params[:container_id]} does not exist"
-      redirect_to :back
+      redirect_back(fallback_location: root_path)
       return
     end
 
@@ -200,7 +201,7 @@ class MasterFilesController < ApplicationController
 
     unless media_object.valid?
       flash[:error] = "MediaObject is invalid.  Please add required fields."
-      redirect_to :back
+      redirect_back(fallback_location: edit_media_object_path(params[:container_id], step: 'file-upload'))
       return
     end
 
@@ -210,7 +211,8 @@ class MasterFilesController < ApplicationController
       [:notice, :error].each { |type| flash[type] = result[:flash][type] }
     rescue MasterFileBuilder::BuildError => err
       flash[:error] = err.message
-      return redirect_to :back
+      redirect_back(fallback_location: edit_media_object_path(params[:container_id], step: 'file-upload'))
+      return
     end
 
     respond_to do |format|

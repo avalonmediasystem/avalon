@@ -13,7 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class ApplicationController < ActionController::Base
-  before_filter :store_location, unless: :devise_controller?
+  before_action :store_location, unless: :devise_controller?
 
   # Adds a few additional behaviors into the application controller
   include Blacklight::Controller
@@ -37,6 +37,8 @@ class ApplicationController < ActionController::Base
 
   def rewrite_v4_ids
     return if params[:controller] =~ /migration/
+
+    params.permit!
     new_id = ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:id]}"}, rows: 1, fl: 'id').first['id']
     new_content_id = params[:content] ? ActiveFedora::SolrService.query(%{identifier_ssim:"#{params[:content]}"}, rows: 1, fl: 'id').first['id'] : nil
     redirect_to(url_for(params.merge(id: new_id, content: new_content_id)))

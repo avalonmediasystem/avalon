@@ -17,14 +17,14 @@ require 'cancan/matchers'
 
 describe Admin::Collection do
   subject {collection}
-  let(:collection) {FactoryGirl.create(:collection)}
+  let(:collection) {FactoryBot.create(:collection)}
 
   describe 'abilities' do
 
     context 'when administrator' do
       subject{ ability }
       let(:ability){ Ability.new(user) }
-      let(:user){ FactoryGirl.create(:administrator) }
+      let(:user){ FactoryBot.create(:administrator) }
 
       it{ is_expected.to be_able_to(:manage, collection) }
     end
@@ -84,7 +84,7 @@ describe Admin::Collection do
     context 'when end user' do
       subject{ ability}
       let(:ability){ Ability.new(user) }
-      let(:user){ FactoryGirl.create(:user) }
+      let(:user){ FactoryBot.create(:user) }
 
       it{ is_expected.not_to be_able_to(:read, Admin::Collection) }
       it{ is_expected.not_to be_able_to(:read, collection) }
@@ -101,7 +101,7 @@ describe Admin::Collection do
     context 'when lti user' do
       subject { ability }
       let(:ability){ Ability.new(user) }
-      let(:user){ FactoryGirl.create(:user_lti) }
+      let(:user){ FactoryBot.create(:user_lti) }
 
       it{ is_expected.not_to be_able_to(:read, Admin::Collection) }
       it{ is_expected.not_to be_able_to(:read, collection) }
@@ -118,10 +118,10 @@ describe Admin::Collection do
 
   describe 'validations' do
     subject {wells_collection}
-    let(:wells_collection) {FactoryGirl.create(:collection, name: 'Herman B. Wells Collection', unit: "Default Unit", description: "Collection about our 11th university president, 1938-1962", managers: [manager.user_key], editors: [editor.user_key], depositors: [depositor.user_key])}
-    let(:manager) {FactoryGirl.create(:manager)}
-    let(:editor) {FactoryGirl.create(:user)}
-    let(:depositor) {FactoryGirl.create(:user)}
+    let(:wells_collection) {FactoryBot.create(:collection, name: 'Herman B. Wells Collection', unit: "Default Unit", description: "Collection about our 11th university president, 1938-1962", managers: [manager.user_key], editors: [editor.user_key], depositors: [depositor.user_key])}
+    let(:manager) {FactoryBot.create(:manager)}
+    let(:editor) {FactoryBot.create(:user)}
+    let(:depositor) {FactoryBot.create(:user)}
 
     it {is_expected.to validate_presence_of(:name)}
     context 'validate uniqueness of name' do
@@ -129,21 +129,21 @@ describe Admin::Collection do
         subject
       end
       it "same name should be invalid" do
-        expect { FactoryGirl.create(:collection, name: 'Herman B. Wells Collection') }.to raise_error(ActiveFedora::RecordInvalid, 'Validation failed: Name is taken.')
+        expect { FactoryBot.create(:collection, name: 'Herman B. Wells Collection') }.to raise_error(ActiveFedora::RecordInvalid, 'Validation failed: Name is taken.')
       end
       it "same name with different case should be invalid" do
-        expect { FactoryGirl.create(:collection, name: 'herman b. wells COLLECTION') }.to raise_error(ActiveFedora::RecordInvalid, 'Validation failed: Name is taken.')
+        expect { FactoryBot.create(:collection, name: 'herman b. wells COLLECTION') }.to raise_error(ActiveFedora::RecordInvalid, 'Validation failed: Name is taken.')
       end
       it "same name with whitespace changes should be invalid" do
-        expect { FactoryGirl.create(:collection, name: 'HermanB.WellsCollection') }.to raise_error(ActiveFedora::RecordInvalid, 'Validation failed: Name is taken.')
+        expect { FactoryBot.create(:collection, name: 'HermanB.WellsCollection') }.to raise_error(ActiveFedora::RecordInvalid, 'Validation failed: Name is taken.')
       end
       it "starts with same name should be valid" do
-        expect(FactoryGirl.build(:collection, name: 'Herman B. Wells Collection Highlights')).to be_valid
+        expect(FactoryBot.build(:collection, name: 'Herman B. Wells Collection Highlights')).to be_valid
       end
     end
     it "shouldn't complain about partial name matches" do
-      FactoryGirl.create(:collection, name: "This little piggy went to market")
-      expect { FactoryGirl.create(:collection, name: "This little piggy") }.not_to raise_error
+      FactoryBot.create(:collection, name: "This little piggy went to market")
+      expect { FactoryBot.create(:collection, name: "This little piggy") }.not_to raise_error
     end
     it {is_expected.to validate_presence_of(:unit)}
     it {is_expected.to validate_inclusion_of(:unit).in_array(Admin::Collection.units)}
@@ -180,7 +180,7 @@ describe Admin::Collection do
   end
 
   describe "managers" do
-    let!(:user) {FactoryGirl.create(:manager)}
+    let!(:user) {FactoryBot.create(:manager)}
     let!(:collection) {Admin::Collection.new}
 
     describe "#managers" do
@@ -193,18 +193,18 @@ describe Admin::Collection do
     end
     describe "#managers=" do
       it "should add managers to the collection" do
-        manager_list = [FactoryGirl.create(:manager).user_key, FactoryGirl.create(:manager).user_key]
+        manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
         collection.managers = manager_list
         expect(collection.managers).to eq(manager_list)
       end
       it "should call add_manager" do
-        manager_list = [FactoryGirl.create(:manager).user_key, FactoryGirl.create(:manager).user_key]
+        manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
         expect(collection).to receive("add_manager").with(manager_list[0])
         expect(collection).to receive("add_manager").with(manager_list[1])
         collection.managers = manager_list
       end
       it "should remove managers from the collection" do
-        manager_list = [FactoryGirl.create(:manager).user_key, FactoryGirl.create(:manager).user_key]
+        manager_list = [FactoryBot.create(:manager).user_key, FactoryBot.create(:manager).user_key]
         collection.managers = manager_list
         expect(collection.managers).to eq(manager_list)
         collection.managers -= [manager_list[1]]
@@ -213,10 +213,10 @@ describe Admin::Collection do
       it "should call remove_manager" do
         collection.managers = [user.user_key]
         expect(collection).to receive("remove_manager").with(user.user_key)
-        collection.managers = [FactoryGirl.create(:manager).user_key]
+        collection.managers = [FactoryBot.create(:manager).user_key]
       end
       it "should fail to remove only manager" do
-        manager_list = [FactoryGirl.create(:manager).user_key]
+        manager_list = [FactoryBot.create(:manager).user_key]
         collection.managers = manager_list
         expect(collection.managers).to eq(manager_list)
         expect{collection.managers=[]}.to raise_error(ArgumentError)
@@ -230,19 +230,19 @@ describe Admin::Collection do
         expect(collection.managers).to include(user.user_key)
       end
       it "should add users who have the administrator role" do
-        administrator = FactoryGirl.create(:administrator)
+        administrator = FactoryBot.create(:administrator)
         collection.add_manager(administrator.user_key)
         expect(collection.edit_users).to include(administrator.user_key)
         expect(collection.inherited_edit_users).to include(administrator.user_key)
         expect(collection.managers).to include(administrator.user_key)
       end
       it "should not add administrators to editors role" do
-        administrator = FactoryGirl.create(:administrator)
+        administrator = FactoryBot.create(:administrator)
         collection.add_manager(administrator.user_key)
         expect(collection.editors).not_to include(administrator.user_key)
       end
       it "should not add users who do not have the manager role" do
-        not_manager = FactoryGirl.create(:user)
+        not_manager = FactoryBot.create(:user)
         expect {collection.add_manager(not_manager.user_key)}.to raise_error(ArgumentError)
         expect(collection.managers).not_to include(not_manager.user_key)
       end
@@ -255,7 +255,7 @@ describe Admin::Collection do
         expect(collection.managers).not_to include(user.user_key)
       end
       it "should not remove users who do not have the manager role" do
-        not_manager = FactoryGirl.create(:user)
+        not_manager = FactoryBot.create(:user)
         collection.edit_users = [not_manager.user_key]
         collection.inherited_edit_users = [not_manager.user_key]
         collection.remove_manager(not_manager.user_key)
@@ -265,23 +265,23 @@ describe Admin::Collection do
     end
   end
   describe "editors" do
-    let!(:user) {FactoryGirl.create(:user)}
+    let!(:user) {FactoryBot.create(:user)}
     let!(:collection) {Admin::Collection.new}
 
     describe "#editors" do
       it "should not return managers" do
-        collection.edit_users = [user.user_key, FactoryGirl.create(:manager).user_key]
+        collection.edit_users = [user.user_key, FactoryBot.create(:manager).user_key]
         expect(collection.editors).to eq([user.user_key])
       end
     end
     describe "#editors=" do
       it "should add editors to the collection" do
-        editor_list = [FactoryGirl.create(:user).user_key, FactoryGirl.create(:user).user_key]
+        editor_list = [FactoryBot.create(:user).user_key, FactoryBot.create(:user).user_key]
         collection.editors = editor_list
         expect(collection.editors).to eq(editor_list)
       end
       it "should call add_editor" do
-        editor_list = [FactoryGirl.create(:user).user_key, FactoryGirl.create(:user).user_key]
+        editor_list = [FactoryBot.create(:user).user_key, FactoryBot.create(:user).user_key]
         expect(collection).to receive("add_editor").with(editor_list[0])
         expect(collection).to receive("add_editor").with(editor_list[1])
         collection.editors = editor_list
@@ -296,12 +296,12 @@ describe Admin::Collection do
       it "should call remove_editor" do
         collection.editors = [user.user_key]
         expect(collection).to receive("remove_editor").with(user.user_key)
-        collection.editors = [FactoryGirl.create(:user).user_key]
+        collection.editors = [FactoryBot.create(:user).user_key]
       end
     end
     describe "#add_editor" do
       it "should give edit access to the collection" do
-        not_editor = FactoryGirl.create(:user)
+        not_editor = FactoryBot.create(:user)
         collection.add_editor(not_editor.user_key)
         expect(collection.edit_users).to include(not_editor.user_key)
         expect(collection.inherited_edit_users).to include(not_editor.user_key)
@@ -317,7 +317,7 @@ describe Admin::Collection do
         expect(collection.editors).not_to include(user.user_key)
       end
       it "should not remove users who do not have the editor role" do
-        not_editor = FactoryGirl.create(:manager)
+        not_editor = FactoryBot.create(:manager)
         collection.edit_users = [not_editor.user_key]
         collection.inherited_edit_users = [not_editor.user_key]
         collection.remove_editor(not_editor.user_key)
@@ -328,7 +328,7 @@ describe Admin::Collection do
   end
 
   describe "depositors" do
-    let!(:user) {FactoryGirl.create(:user)}
+    let!(:user) {FactoryBot.create(:user)}
     let!(:collection) {Admin::Collection.new}
 
     describe "#depositors" do
@@ -339,12 +339,12 @@ describe Admin::Collection do
     end
     describe "#depositors=" do
       it "should add depositors to the collection" do
-        depositor_list = [FactoryGirl.create(:user).user_key, FactoryGirl.create(:user).user_key]
+        depositor_list = [FactoryBot.create(:user).user_key, FactoryBot.create(:user).user_key]
         collection.depositors = depositor_list
         expect(collection.depositors).to eq(depositor_list)
       end
       it "should call add_depositor" do
-        depositor_list = [FactoryGirl.create(:user).user_key, FactoryGirl.create(:user).user_key]
+        depositor_list = [FactoryBot.create(:user).user_key, FactoryBot.create(:user).user_key]
         expect(collection).to receive("add_depositor").with(depositor_list[0])
         expect(collection).to receive("add_depositor").with(depositor_list[1])
         collection.depositors = depositor_list
@@ -359,12 +359,12 @@ describe Admin::Collection do
       it "should call remove_depositor" do
         collection.add_depositor(user.user_key)
         expect(collection).to receive("remove_depositor").with(user.user_key)
-        collection.depositors = [FactoryGirl.create(:user).user_key]
+        collection.depositors = [FactoryBot.create(:user).user_key]
       end
     end
     describe "#add_depositor" do
       it "should give edit access to the collection" do
-        not_depositor = FactoryGirl.create(:user)
+        not_depositor = FactoryBot.create(:user)
         collection.add_depositor(not_depositor.user_key)
         expect(collection.inherited_edit_users).to include(not_depositor.user_key)
         expect(collection.depositors).to include(not_depositor.user_key)
@@ -378,7 +378,7 @@ describe Admin::Collection do
         expect(collection.depositors).not_to include(user.user_key)
       end
       it "should not remove users who do not have the depositor role" do
-        not_depositor = FactoryGirl.create(:manager)
+        not_depositor = FactoryBot.create(:manager)
         collection.inherited_edit_users = [not_depositor.user_key]
         collection.remove_depositor(not_depositor.user_key)
         expect(collection.inherited_edit_users).to include(not_depositor.user_key)
@@ -394,13 +394,13 @@ describe Admin::Collection do
 
   describe "#reassign_media_objects" do
     before do
-      @source_collection = FactoryGirl.create(:collection)
-      @media_objects = (1..3).map{ FactoryGirl.build(:media_object, collection: @source_collection)}
+      @source_collection = FactoryBot.create(:collection)
+      @media_objects = (1..3).map{ FactoryBot.build(:media_object, collection: @source_collection)}
       # TODO: Fix handling of invalid objects
       # incomplete_object = MediaObject.new(collection: @source_collection)
       # @media_objects << incomplete_object
       @media_objects.map { |mo| mo.save }
-      @target_collection = FactoryGirl.create(:collection)
+      @target_collection = FactoryBot.create(:collection)
       Admin::Collection.reassign_media_objects(@media_objects, @source_collection, @target_collection)
     end
 
@@ -418,7 +418,7 @@ describe Admin::Collection do
   end
 
   describe "default rights delegators" do
-    let(:collection) {FactoryGirl.create(:collection)}
+    let(:collection) {FactoryBot.create(:collection)}
 
     describe "users" do
       let(:users) {(1..3).map {Faker::Internet.email}}
@@ -463,7 +463,7 @@ describe Admin::Collection do
         expect(collection.default_visibility).to eq 'private'
       end
       it 'should not override on create' do
-        c = FactoryGirl.create(:collection, default_visibility: 'public')
+        c = FactoryBot.create(:collection, default_visibility: 'public')
         expect(c.default_visibility).to eq 'public'
       end
     end
@@ -471,7 +471,7 @@ describe Admin::Collection do
 
   describe "callbacks" do
     describe "after_save reindex if name or unit has changed" do
-      let!(:collection) {FactoryGirl.create(:collection)}
+      let!(:collection) {FactoryBot.create(:collection)}
       it 'should call reindex_members if name has changed' do
         collection.name = "New name"
         expect(collection).to be_name_changed
@@ -499,7 +499,7 @@ describe Admin::Collection do
 
   describe "reindex_members" do
     before do
-      @collection = FactoryGirl.create(:collection, items: 3)
+      @collection = FactoryBot.create(:collection, items: 3)
     end
     it 'should queue a reindex job for all member objects' do
       @collection.reindex_members {}
@@ -508,7 +508,7 @@ describe Admin::Collection do
   end
 
   describe '#create_dropbox_directory!' do
-    let(:collection){ FactoryGirl.build(:collection) }
+    let(:collection){ FactoryBot.build(:collection) }
 
     it 'removes bad characters from collection name' do
       collection.name = '../../secret.rb'
@@ -536,7 +536,7 @@ describe Admin::Collection do
   describe 'Unicode' do
     let(:collection_name) { "Collections & Favorites / \u6211\u7684\u6536\u85cf / \u03a4\u03b1 \u03b1\u03b3\u03b1\u03c0\u03b7\u03bc\u03ad\u03bd\u03b1 \u03bc\u03bf\u03c5" }
     let(:collection_dir)  { "Collections___Favorites___\u6211\u7684\u6536\u85cf___\u03a4\u03b1_\u03b1\u03b3\u03b1\u03c0\u03b7\u03bc\u03ad\u03bd\u03b1_\u03bc\u03bf\u03c5" }
-    let(:collection)      { FactoryGirl.build(:collection) }
+    let(:collection)      { FactoryBot.build(:collection) }
 
     it 'handles Unicode collection names correctly' do
       collection.name = collection_name

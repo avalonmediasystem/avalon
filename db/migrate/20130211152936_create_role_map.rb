@@ -12,7 +12,7 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-class CreateRoleMap < ActiveRecord::Migration
+class CreateRoleMap < ActiveRecord::Migration[5.1]
   def change
     create_table :role_maps do |t|
       t.string :entry

@@ -23,7 +23,7 @@ describe DropboxController do
     # a database backed model SOON so testing of permissions/abilities is more granular
 
     login_as :administrator
-    @collection = FactoryGirl.create(:collection)
+    @collection = FactoryBot.create(:collection)
     @temp_files = (0..20).map{|index| { name: "a_movie_#{index}.mov" } }
     @dropbox = double(Avalon::Dropbox)
     allow(@dropbox).to receive(:all).and_return @temp_files
@@ -32,20 +32,20 @@ describe DropboxController do
 
   it 'deletes video/audio files' do
     expect(@dropbox).to receive(:delete).exactly(@temp_files.count).times
-    delete :bulk_delete, { :collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name] } }
+    delete :bulk_delete, params: { :collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name] } }
   end
 
   it "should allow the collection manager to delete" do
     login_user @collection.managers.first
     expect(@dropbox).to receive(:delete).exactly(@temp_files.count).times
-    delete :bulk_delete, {:collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name]}}
+    delete :bulk_delete, params: { :collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name]} }
     expect(response.status).to be(200)
   end
 
   [:group_manager, :student].each do |group|
     it "should not allow #{group} to delete" do
       login_as group
-      delete :bulk_delete, {:collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name]}}
+      delete :bulk_delete, params: { :collection_id => @collection.id, :filenames => @temp_files.map{|f| f[:name]} }
       expect(response.status).to redirect_to(root_path)
     end
   end

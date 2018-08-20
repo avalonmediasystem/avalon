@@ -4,7 +4,7 @@ if ENV['COVERAGE'] || ENV['TRAVIS']
 
   SimpleCov.start('rails') do
     add_filter '/spec'
-    add_filter '/app/migration'    
+    add_filter '/app/migration'
   end
   SimpleCov.command_name 'spec'
 end
@@ -21,7 +21,7 @@ abort('The Rails environment is running in production mode!') if Rails.env.produ
 require 'spec_helper'
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
-# require 'factory_girl'
+# require 'factory_bot'
 require 'capybara/rails'
 require 'database_cleaner'
 require 'active_fedora/cleaner'
@@ -54,6 +54,8 @@ Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
 ActiveRecord::Migration.maintain_test_schema!
 
 ActiveJob::Base.queue_adapter = :test
+
+Capybara.server = :webrick
 
 Shoulda::Matchers.configure do |config|
   config.integrate do |with|
@@ -127,7 +129,7 @@ RSpec.configure do |config|
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
 
-  # config.include FactoryGirl::Syntax::Methods
+  # config.include FactoryBot::Syntax::Methods
   config.include Devise::Test::ControllerHelpers, type: :controller
   config.include ControllerMacros, type: :controller
   config.include Warden::Test::Helpers,type: :feature

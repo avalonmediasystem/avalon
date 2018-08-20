@@ -38,16 +38,16 @@ describe VocabularyController, type: :controller do
       it "all routes should return 401 when no token is present" do
         request.headers['Avalon-Api-Key'] = nil
         expect(get :index, format: 'json').to have_http_status(401)
-        expect(get :show, id: vocab, format: 'json').to have_http_status(401)
-        expect(put :update, id: vocab, format: 'json').to have_http_status(401)
-        expect(patch :update, id: vocab, format: 'json').to have_http_status(401)
+        expect(get :show, params: { id: vocab, format: 'json' }).to have_http_status(401)
+        expect(put :update, params: { id: vocab, format: 'json' }).to have_http_status(401)
+        expect(patch :update, params: { id: vocab, format: 'json' }).to have_http_status(401)
       end
       it "all routes should return 403 when a bad token in present" do
         request.headers['Avalon-Api-Key'] = 'badtoken'
         expect(get :index, format: 'json').to have_http_status(403)
-        expect(get :show, id: vocab, format: 'json').to have_http_status(403)
-        expect(put :update, id: vocab, format: 'json').to have_http_status(403)
-        expect(patch :update, id: vocab, format: 'json').to have_http_status(403)
+        expect(get :show, params: { id: vocab, format: 'json' }).to have_http_status(403)
+        expect(put :update, params: { id: vocab, format: 'json' }).to have_http_status(403)
+        expect(patch :update, params: { id: vocab, format: 'json' }).to have_http_status(403)
       end
     end
     describe 'normal auth' do
@@ -58,9 +58,9 @@ describe VocabularyController, type: :controller do
         end
         it "all routes should redirect to /" do
           expect(get :index, format: 'json').to redirect_to(root_path)
-          expect(get :show, id: vocab, format: 'json').to redirect_to(root_path)
-          expect(put :update, id: vocab, format: 'json').to redirect_to(root_path)
-          expect(patch :update, id: vocab, format: 'json').to redirect_to(root_path)
+          expect(get :show, params: { id: vocab, format: 'json' }).to redirect_to(root_path)
+          expect(put :update, params: { id: vocab, format: 'json' }).to redirect_to(root_path)
+          expect(patch :update, params: { id: vocab, format: 'json' }).to redirect_to(root_path)
         end
       end
     end
@@ -74,11 +74,11 @@ describe VocabularyController, type: :controller do
   end
   describe "#show" do
     it "should return a particular vocabulary" do
-      get 'show', format:'json', id: :units
+      get 'show', params: { format:'json', id: :units }
       expect(JSON.parse(response.body)).to include('Default Unit')
     end
     it "should return 404 if requested vocabulary not present" do
-      get 'show', format:'json', id: :doesnt_exist
+      get 'show', params: { format:'json', id: :doesnt_exist }
       expect(response.status).to eq(404)
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String
@@ -86,24 +86,24 @@ describe VocabularyController, type: :controller do
   end
   describe "#update" do
     it "should add unit to controlled vocabulary" do
-      put 'update', format:'json', id: :units, entry: 'New Unit'
+      put 'update', params: { format:'json', id: :units, entry: 'New Unit' }
       expect(Avalon::ControlledVocabulary.vocabulary[:units]).to include("New Unit")
     end
     it "should return 404 if requested vocabulary not present" do
-      put 'update', format:'json', id: :doesnt_exist, entry: 'test'
+      put 'update', params: { format:'json', id: :doesnt_exist, entry: 'test' }
       expect(response.status).to eq(404)
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String
     end
     it "should return 422 if no new value sent" do
-      put 'update', format:'json', id: :units
+      put 'update', params: { format:'json', id: :units }
       expect(response.status).to eq(422)
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String
     end
     it "should return 422 if update fails" do
       allow(Avalon::ControlledVocabulary).to receive(:vocabulary=).and_return(false)
-      put 'update', format:'json', id: :units
+      put 'update', params: { format:'json', id: :units }
       expect(response.status).to eq(422)
       expect(JSON.parse(response.body)["errors"].class).to eq Array
       expect(JSON.parse(response.body)["errors"].first.class).to eq String

@@ -27,7 +27,7 @@ class ObjectsController < ApplicationController
       end
 
       newparams = params.except(:controller, :action, :id, :urlappend)
-      url.query = newparams.to_query if newparams.present?
+      url.query = newparams.permit!.to_query if newparams.present?
       redirect_to url.to_s
     end
   end

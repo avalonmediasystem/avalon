@@ -12,11 +12,11 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :avalon_marker do
-    master_file { FactoryGirl.create(:master_file) }
+    master_file { FactoryBot.create(:master_file) }
     title { Faker::Lorem.word }
     start_time { 0.0 }
-    playlist_item { FactoryGirl.create(:playlist_item) }
+    playlist_item { FactoryBot.create(:playlist_item) }
   end
 end

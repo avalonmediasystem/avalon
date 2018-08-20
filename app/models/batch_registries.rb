@@ -19,7 +19,7 @@ class BatchRegistries < ActiveRecord::Base
   validates :file_name, :user_id, :collection, presence: true
   has_many :batch_entries, -> { order(position: :asc) }
 
-  # For FactoryGirl's taps, document more TODO
+  # For FactoryBot's taps, document more TODO
   def file_name=(fn)
     super
     ensure_replay_id

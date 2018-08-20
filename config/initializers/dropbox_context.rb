@@ -1,4 +1,4 @@
-BrowseEverythingController.before_filter do
+BrowseEverythingController.before_action do
   if params[:context]
     collection = Admin::Collection.find(params[:context])
     if browser.providers['file_system'].present?

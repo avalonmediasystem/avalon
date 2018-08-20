@@ -15,8 +15,8 @@
 require 'rails_helper'
 
 describe Course do
-  let(:first_media_object) { FactoryGirl.create(:media_object) }
-  let(:second_media_object) { FactoryGirl.create(:media_object) }
+  let(:first_media_object) { FactoryBot.create(:media_object) }
+  let(:second_media_object) { FactoryBot.create(:media_object) }
 
   before :each do
     first_media_object.read_groups += ['english_101', 'sociology_101', 'underwater_basketweaving_302']

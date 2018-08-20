@@ -39,7 +39,7 @@ class BookmarksController < CatalogController
 
   self.add_show_tools_partial( :intercom_push, callback: :intercom_push_action, if: Proc.new { |context, config, options| context.user_can? :intercom_push } )
 
-  before_filter :verify_permissions, only: :index
+  before_action :verify_permissions, only: :index
 
   #HACK next two methods are a hack for problems in the puppet VM tomcat/solr
   # def rewrite_bookmarks_search(solr_parameters, user_parameters)
@@ -110,6 +110,7 @@ class BookmarksController < CatalogController
   end
 
   def access_control_action documents
+    params.permit! # FIXME: lock this down eventually
     errors = []
     success_ids = []
     Array(documents.map(&:id)).each do |id|
@@ -124,7 +125,7 @@ class BookmarksController < CatalogController
     flash[:alert] = "#{t('blacklight.update_access_control.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
 
     params[:hidden] = params[:hidden] == "true" if params[:hidden].present?
-    BulkActionJobs::AccessControl.perform_later success_ids, params
+    BulkActionJobs::AccessControl.perform_later success_ids, params.to_h
   end
 
   def add_to_playlist_action documents
@@ -161,7 +162,7 @@ class BookmarksController < CatalogController
     end
     flash[:success] = t("blacklight.status.success", count: success_ids.count, status: status) if success_ids.count > 0
     flash[:alert] = "#{t('blacklight.status.alert', count: errors.count, status: status)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
-    BulkActionJobs::UpdateStatus.perform_later success_ids, current_user.user_key, params
+    BulkActionJobs::UpdateStatus.perform_later success_ids, current_user.user_key, params.permit('action').to_h
   end
 
   def delete_action documents
@@ -177,7 +178,7 @@ class BookmarksController < CatalogController
     end
     flash[:success] = t("blacklight.delete.success", count: success_ids.count) if success_ids.count > 0
     flash[:alert] = "#{t('blacklight.delete.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
-    BulkActionJobs::Delete.perform_later success_ids, params
+    BulkActionJobs::Delete.perform_later success_ids, nil
   end
 
   def move_action documents
@@ -197,7 +198,7 @@ class BookmarksController < CatalogController
       end
       flash[:success] = t("blacklight.move.success", count: success_ids.count, collection_name: collection.name) if success_ids.count > 0
       flash[:alert] = "#{t('blacklight.move.alert', count: errors.count)}</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0
-      BulkActionJobs::Move.perform_later success_ids, params
+      BulkActionJobs::Move.perform_later success_ids, params.permit(:target_collection_id).to_h
     end
   end
 
@@ -218,7 +219,7 @@ class BookmarksController < CatalogController
       end
       if success_ids.present?
         session[:intercom_default_collection] = params[:collection_id]
-        BulkActionJobs::IntercomPush.perform_later success_ids, current_user.user_key, params
+        BulkActionJobs::IntercomPush.perform_later success_ids, current_user.user_key, params.permit(:collection_id, :include_structure).to_h
         flash[:success] = "Sucessfully started push of #{success_ids.count} media objects."
       end
       flash[:alert] = "Failed to push #{errors.count} media objects.</br> #{ errors.join('<br/> ') }".html_safe if errors.count > 0

@@ -26,11 +26,11 @@ RSpec.describe Playlist, type: :model do
   describe 'abilities' do
     subject{ ability }
     let(:ability){ Ability.new(user) }
-    let(:user){ FactoryGirl.create(:user) }
+    let(:user){ FactoryBot.create(:user) }
 
     context 'when administrator' do
-      let(:playlist) { FactoryGirl.create(:playlist) }
-      let(:user) { FactoryGirl.create(:administrator) }
+      let(:playlist) { FactoryBot.create(:playlist) }
+      let(:user) { FactoryBot.create(:administrator) }
 
       it{ is_expected.to be_able_to(:manage, playlist) }
       it{ is_expected.to be_able_to(:create, playlist) }
@@ -40,7 +40,7 @@ RSpec.describe Playlist, type: :model do
     end
 
     context 'when owner' do
-      let(:playlist) { FactoryGirl.create(:playlist, user: user) }
+      let(:playlist) { FactoryBot.create(:playlist, user: user) }
 
       it{ is_expected.to be_able_to(:manage, playlist) }
       it{ is_expected.to be_able_to(:duplicate, playlist)}
@@ -52,7 +52,7 @@ RSpec.describe Playlist, type: :model do
 
     context 'when other user' do
       context('playlist public') do
-        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
+        let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC) }
 
         it{ is_expected.not_to be_able_to(:manage, playlist) }
         it{ is_expected.to be_able_to(:duplicate, playlist) }
@@ -62,7 +62,7 @@ RSpec.describe Playlist, type: :model do
         it{ is_expected.not_to be_able_to(:delete, playlist) }
       end
       context('playlist private') do
-        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PRIVATE) }
+        let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PRIVATE) }
 
         it{ is_expected.not_to be_able_to(:manage, playlist) }
         it{ is_expected.not_to be_able_to(:duplicate, playlist) }
@@ -72,7 +72,7 @@ RSpec.describe Playlist, type: :model do
         it{ is_expected.not_to be_able_to(:delete, playlist) }
       end
       context('playlist private with token') do
-        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PRIVATE_WITH_TOKEN) }
+        let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PRIVATE_WITH_TOKEN) }
         context('when no token given') do
           it{ is_expected.not_to be_able_to(:manage, playlist) }
           it{ is_expected.not_to be_able_to(:duplicate, playlist) }
@@ -96,7 +96,7 @@ RSpec.describe Playlist, type: :model do
     context 'when not logged in' do
       let(:ability) { Ability.new(nil) }
       context('playlist public') do
-        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PUBLIC) }
+        let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PUBLIC) }
 
         it{ is_expected.not_to be_able_to(:manage, playlist) }
         it{ is_expected.not_to be_able_to(:duplicate, playlist) }
@@ -106,7 +106,7 @@ RSpec.describe Playlist, type: :model do
         it{ is_expected.not_to be_able_to(:delete, playlist) }
       end
       context('playlist private') do
-        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PRIVATE) }
+        let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PRIVATE) }
 
         it{ is_expected.not_to be_able_to(:manage, playlist) }
         it{ is_expected.not_to be_able_to(:duplicate, playlist) }
@@ -116,7 +116,7 @@ RSpec.describe Playlist, type: :model do
         it{ is_expected.not_to be_able_to(:delete, playlist) }
       end
       context('playlist private with token') do
-        let(:playlist) { FactoryGirl.create(:playlist, visibility: Playlist::PRIVATE_WITH_TOKEN) }
+        let(:playlist) { FactoryBot.create(:playlist, visibility: Playlist::PRIVATE_WITH_TOKEN) }
         context('when no token given') do
           it{ is_expected.not_to be_able_to(:manage, playlist) }
           it{ is_expected.not_to be_able_to(:duplicate, playlist) }
@@ -141,9 +141,9 @@ RSpec.describe Playlist, type: :model do
 
   describe 'scopes' do
     describe 'by_user' do
-      let(:user){ FactoryGirl.create(:user) }
-      let(:playlist_owner) { FactoryGirl.create(:playlist, user: user) }
-      let(:playlist) { FactoryGirl.create(:playlist) }
+      let(:user){ FactoryBot.create(:user) }
+      let(:playlist_owner) { FactoryBot.create(:playlist, user: user) }
+      let(:playlist) { FactoryBot.create(:playlist) }
       it 'returns playlists by user' do
         expect(Playlist.by_user(user)).to include(playlist_owner)
       end
@@ -152,9 +152,9 @@ RSpec.describe Playlist, type: :model do
       end
     end
     describe 'title_like' do
-      let(:playlist1) { FactoryGirl.create(:playlist, title: 'Moose tunes') }
-      let(:playlist2) { FactoryGirl.create(:playlist, title: 'My favorite by smoose') }
-      let(:playlist3) { FactoryGirl.create(:playlist, title: 'Favorites') }
+      let(:playlist1) { FactoryBot.create(:playlist, title: 'Moose tunes') }
+      let(:playlist2) { FactoryBot.create(:playlist, title: 'My favorite by smoose') }
+      let(:playlist3) { FactoryBot.create(:playlist, title: 'Favorites') }
       let(:title_filter) { 'moose' }
       it 'returns playlists with matching titles' do
         # Commented out since case insensitivity is default for mysql but not postgres
@@ -166,10 +166,10 @@ RSpec.describe Playlist, type: :model do
       end
     end
     describe 'with_tag' do
-      let(:playlist1) { FactoryGirl.create(:playlist, tags: ['Moose']) }
-      let(:playlist2) { FactoryGirl.create(:playlist, tags: ['Goose', 'moose']) }
-      let(:playlist3) { FactoryGirl.create(:playlist, tags: ['smoose', 'Goose']) }
-      let(:playlist4) { FactoryGirl.create(:playlist, tags: ['Goose']) }
+      let(:playlist1) { FactoryBot.create(:playlist, tags: ['Moose']) }
+      let(:playlist2) { FactoryBot.create(:playlist, tags: ['Goose', 'moose']) }
+      let(:playlist3) { FactoryBot.create(:playlist, tags: ['smoose', 'Goose']) }
+      let(:playlist4) { FactoryBot.create(:playlist, tags: ['Goose']) }
       let(:tag_filter) { 'moose' }
       it 'returns playlists with exact matching tags' do
         # Commented out since case insensitivity is default for mysql but not postgres
@@ -186,9 +186,9 @@ RSpec.describe Playlist, type: :model do
   end
 
   describe 'related items' do
-    let(:user){ FactoryGirl.create(:user) }
-    subject(:video_master_file) { FactoryGirl.create(:master_file, :with_media_object) }
-    subject(:sound_master_file) { FactoryGirl.create(:master_file, :with_media_object, file_format:'Sound') }
+    let(:user){ FactoryBot.create(:user) }
+    subject(:video_master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    subject(:sound_master_file) { FactoryBot.create(:master_file, :with_media_object, file_format:'Sound') }
     let(:v_one_clip) { AvalonClip.new(master_file: video_master_file) }
     let(:v_two_clip) { AvalonClip.new(master_file: video_master_file) }
     let(:s_one_clip) { AvalonClip.new(master_file: sound_master_file) }
@@ -232,7 +232,7 @@ RSpec.describe Playlist, type: :model do
   end
 
   describe 'access_token' do
-    let(:playlist) { FactoryGirl.build(:playlist, visibility: Playlist::PRIVATE_WITH_TOKEN, access_token: nil) }
+    let(:playlist) { FactoryBot.build(:playlist, visibility: Playlist::PRIVATE_WITH_TOKEN, access_token: nil) }
 
     it 'generates an access token on save if visibility is private-with-token and no access token exists' do
       expect(playlist.visibility).to eq Playlist::PRIVATE_WITH_TOKEN
@@ -243,7 +243,7 @@ RSpec.describe Playlist, type: :model do
   end
 
   describe '#valid_token?' do
-    let(:playlist) { FactoryGirl.build(:playlist, visibility: Playlist::PRIVATE_WITH_TOKEN) }
+    let(:playlist) { FactoryBot.build(:playlist, visibility: Playlist::PRIVATE_WITH_TOKEN) }
     let(:token) { playlist.access_token }
 
     it 'returns true for a valid token' do

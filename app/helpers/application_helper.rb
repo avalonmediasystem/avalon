@@ -45,15 +45,16 @@ module ApplicationHelper
     end
   end
 
-  def lti_share_url_for(obj, opts = {})
-    return I18n.t('share.empty_lti_share_url') if obj.nil?
+  def lti_share_url_for(obj, _opts = {})
+    if obj.nil? || Avalon::Authentication::Providers.none? { |p| p[:provider] == :lti }
+      return I18n.t('share.empty_lti_share_url')
+    end
     target = case obj
              when MediaObject then obj.id
              when MasterFile then obj.id
              when Playlist then obj.to_gid_param
              end
-    opts.merge!(action: 'lti', target_id: target)
-    user_omniauth_callback_url(opts)
+    user_omniauth_callback_lti_url(target_id: target)
   end
 
   # TODO: Fix me with latest changes from 5.1.4

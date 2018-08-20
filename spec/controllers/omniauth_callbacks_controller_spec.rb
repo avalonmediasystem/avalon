@@ -21,7 +21,7 @@ describe Users::OmniauthCallbacksController, type: :controller do
 
   describe '#find_user' do
     context 'when url param is present' do
-      let(:user) { FactoryGirl.create(:user) }
+      let(:user) { FactoryBot.create(:user) }
       let(:params) {{ url: "http://other.host.com/a/sub/page" }}
 
       before do
@@ -29,7 +29,7 @@ describe Users::OmniauthCallbacksController, type: :controller do
       end
 
       it 'redirects to homepage if url host does not match app host' do
-        post :identity, params
+        post :identity, params: params
         expect(response).to redirect_to(root_path)
       end
     end

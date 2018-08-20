@@ -23,7 +23,7 @@ describe Avalon::Dropbox do
       User.create(:username => 'frances.dickens@reichel.com', :email => 'frances.dickens@reichel.com')
       Avalon::RoleControls.add_user_role('frances.dickens@reichel.com','manager')
     end
-    let(:collection) { FactoryGirl.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
+    let(:collection) { FactoryBot.create(:collection, name: 'Ut minus ut accusantium odio autem odit.', managers: ['frances.dickens@reichel.com']) }
     subject { Avalon::Dropbox.new(Settings.dropbox.path,collection) }
     it 'returns true if the file is found' do
       allow(File).to receive(:delete).and_return true

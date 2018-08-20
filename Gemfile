@@ -1,13 +1,14 @@
 source 'https://rubygems.org'
 
 # Core rails
-gem 'rails', '4.2.9'
+gem 'rails', '=5.1.6'
 gem 'sqlite3'
 gem 'bootsnap', require: false
 gem 'sprockets', '~>3.7.2'
+gem 'listen'
 
 # Assets
-gem 'coffee-rails', '~> 4.1.0'
+gem 'coffee-rails', '~> 4.2.0'
 gem 'jquery-datatables'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
@@ -22,16 +23,16 @@ gem 'hydra-head', '~> 10.3.4'
 gem 'active-fedora', '~> 11.2'
 gem 'active_fedora-datastreams'
 gem 'active_fedora-noid', '~> 2.0.2'
-gem 'fedora-migrate', '~> 0.5.0'
+gem 'fedora-migrate', git: 'https://github.com/avalonmediasystem/fedora-migrate.git', branch: 'optional_rake_tasks'
 gem 'rdf-rdfxml'
 
 # Samvera version pins
-gem 'blacklight', '=6.11.0'
+gem 'blacklight', '< 7.0'
 gem 'rdf', '~> 2.2'
 gem 'rsolr', '~> 1.0'
 
 # Rails & Samvera Plugins
-gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', tag: 'avalon-r6.1'
+gem 'about_page', git: 'https://github.com/avalonmediasystem/about_page.git', branch: 'master'
 gem 'active_annotations', '~> 0.2.2'
 gem 'activerecord-session_store'
 gem 'acts_as_list'
@@ -42,7 +43,7 @@ gem 'bootstrap_form'
 gem 'speedy-af', '~> 0.1.1'
 
 # Avalon Components
-gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.2'
+gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", branch: 'rails5'
 
 # Authentication & Authorization
 gem 'devise', '~> 4.4'
@@ -60,22 +61,12 @@ gem 'roo'
 gem 'rubyhorn', git: "https://github.com/avalonmediasystem/rubyhorn.git", tag: 'avalon-r6'
 gem 'audio_waveform-ruby', :require => 'audio_waveform', :git => 'https://github.com/bbc/audio_waveform-ruby.git'
 gem 'wavefile'
+gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', branch: 'rails5'
 
 # Data Translation & Normalization
 gem 'edtf'
 gem 'iconv'
 gem 'marc'
-
-# MediaElement.js & Plugins
-gem 'mediaelement_rails', git: 'https://github.com/avalonmediasystem/mediaelement_rails.git', tag: 'avalon-r6_flash-fix'
-gem 'media-element-logo-plugin'
-gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/media-element-add-to-playlist.git', tag: 'avalon-r6.2'
-gem 'media_element_thumbnail_selector', git: 'https://github.com/avalonmediasystem/media-element-thumbnail-selector', tag: 'avalon-r4'
-gem 'mediaelement-hd-toggle', git:'https://github.com/avalonmediasystem/mediaelement-hd-toggle.git', tag: 'avalon-r6.3'
-gem 'mediaelement-qualityselector', git:'https://github.com/avalonmediasystem/mediaelement-qualityselector.git', tag: 'avalon-r4'
-gem 'mediaelement-skin-avalon', git:'https://github.com/avalonmediasystem/mediaelement-skin-avalon.git', tag: 'avalon-r5'
-gem 'mediaelement-title', git:'https://github.com/avalonmediasystem/mediaelement-title.git', tag: 'avalon-r4'
-gem 'mediaelement-track-scrubber', git: 'https://github.com/avalonmediasystem/mediaelement-track-scrubber.git', tag: 'avalon-r6'
 
 # Jobs
 gem 'redis-rails'
@@ -100,7 +91,7 @@ group :development do
 
   # Use Bixby instead of rubocop directly
   gem 'bixby', require: false
-  gem 'web-console', '~> 2.0'
+  gem 'web-console'
   gem 'xray-rails'
 end
 
@@ -121,11 +112,12 @@ group :test do
   gem 'codeclimate-test-reporter'
   gem 'database_cleaner'
   gem 'email_spec'
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'fakefs', require: 'fakefs/safe'
   gem 'faker'
   gem 'hashdiff'
   gem 'poltergeist'
+  gem 'rails-controller-testing'
   gem 'rspec-retry'
   gem 'shoulda-matchers'
   gem 'simplecov'

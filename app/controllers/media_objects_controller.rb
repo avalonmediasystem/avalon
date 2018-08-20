@@ -16,6 +16,7 @@ require 'avalon/controller/controller_behavior'
 require 'avalon/intercom'
 
 class MediaObjectsController < ApplicationController
+  include Rails::Pagination
   include Avalon::Workflow::WorkflowControllerBehavior
   include Avalon::Controller::ControllerBehavior
   include ConditionalPartials
@@ -37,7 +38,7 @@ class MediaObjectsController < ApplicationController
   end
 
   is_editor_or_not_lti = proc { |ctx| self.is_editor(ctx) || !self.is_lti_session(ctx) }
-  is_editor_or_lti = proc { |ctx| (Avalon::Authentication::Providers.any? {|p| p[:provider] == :lti } &&self.is_editor(ctx)) || self.is_lti_session(ctx) }
+  is_editor_or_lti = proc { |ctx| (Avalon::Authentication::Providers.any? {|p| p[:provider] == :lti } && self.is_editor(ctx)) || self.is_lti_session(ctx) }
 
   add_conditional_partial :share, :share, partial: 'share_resource', if: is_editor_or_not_lti
   add_conditional_partial :share, :embed, partial: 'embed_resource', if: is_editor_or_not_lti
@@ -226,7 +227,7 @@ class MediaObjectsController < ApplicationController
     elsif master_files_params.respond_to?('each')
       old_ordered_master_files = @media_object.ordered_master_files.to_a.collect(&:id)
       master_files_params.each_with_index do |file_spec, index|
-        master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier, :label))
+        master_file = MasterFile.new(file_spec.except(:structure, :captions, :captions_type, :files, :other_identifier, :label, :date_digitized))
         # master_file.media_object = @media_object
         master_file.structuralMetadata.content = file_spec[:structure] if file_spec[:structure].present?
         if file_spec[:captions].present?
@@ -433,7 +434,7 @@ class MediaObjectsController < ApplicationController
     end
     message = "#{success_count} #{'media object'.pluralize(success_count)} successfully #{status}ed."
     message += "These objects were not #{status}ed:</br> #{ errors.join('<br/> ') }" if errors.count > 0
-    redirect_to :back, flash: {notice: message.html_safe}
+    redirect_back(fallback_location: root_path, flash: {notice: message.html_safe})
   end
 
   # Sets the published status for the object. If no argument is given then
@@ -468,7 +469,7 @@ class MediaObjectsController < ApplicationController
 
   def set_session_quality
     session[:quality] = params[:quality] if params[:quality].present?
-    render nothing: true
+    head :ok
   end
 
   protected
@@ -539,7 +540,11 @@ class MediaObjectsController < ApplicationController
     # TODO: Restrist permitted params!!!
     # params.require(:fields).permit!
     # params.permit!
-    mo_parameters = ActionController::Parameters.new(Hash(params[:fields]).merge(Hash(params[:media_object]))).permit!
+    params[:fields] ||= {}
+    params[:fields].permit!
+    params[:media_object] ||= {}
+    params[:media_object].permit!
+    mo_parameters = params[:fields].merge(params[:media_object])
     # NOTE: Deal with multi-part fields
     #Bib ids
     bib_id = mo_parameters.delete(:bibliographic_id)

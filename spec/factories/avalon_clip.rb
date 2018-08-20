@@ -12,9 +12,9 @@
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
 
-FactoryGirl.define do
+FactoryBot.define do
   factory :avalon_clip do
-    master_file { FactoryGirl.create(:master_file) }
+    master_file { FactoryBot.create(:master_file) }
     title { Faker::Lorem.word }
     comment { Faker::Lorem.sentence }
     start_time { 0.0 }

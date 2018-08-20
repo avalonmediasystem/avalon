@@ -43,7 +43,9 @@ Rails.application.routes.draw do
     match '/users/sign_in', :to => "users/sessions#new", :as => :new_user_session, via: [:get]
     match '/users/sign_out', :to => "users/sessions#destroy", :as => :destroy_user_session, via: [:get]
     match '/users/auth/:provider', to: 'users/omniauth_callbacks#passthru', as: :user_omniauth_authorize, via: [:get, :post]
-    match '/users/auth/:action/callback', controller: "users/omniauth_callbacks", as: :user_omniauth_callback, via: [:get, :post]
+    Avalon::Authentication::Providers.collect { |provider| provider[:provider] }.uniq.each do |provider_name|
+      match "/users/auth/#{provider_name}/callback", to: "users/omniauth_callbacks##{provider_name}", as: "user_omniauth_callback_#{provider_name}".to_sym, via: [:get, :post]
+    end
   end
 
   mount BrowseEverything::Engine => '/browse'
