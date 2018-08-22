@@ -19,7 +19,7 @@ describe "modules/_google_analytics.html.erb", type: :view do
 
     it 'does not include GA code' do
       render
-      expect(rendered).not_to have_selector(:css, "script[src='https://www.googletagmanager.com/gtag/js?id=arandomid']", visible: false)
+      expect(rendered).to have_none_of_selectors(:css, "script[src='https://www.googletagmanager.com/gtag/js?id=arandomid']", visible: false)
     end
   end
 end
