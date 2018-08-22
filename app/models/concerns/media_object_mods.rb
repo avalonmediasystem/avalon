@@ -315,7 +315,7 @@ module MediaObjectMods
   end
   def terms_of_use=(value)
     delete_all_values(:terms_of_use)
-    descMetadata.add_terms_of_use(value) if value.present?
+    descMetadata.add_terms_of_use(Array(value).first) if value.present?
   end
 
   # has_attributes :table_of_contents, datastream: :descMetadata, at: [:table_of_contents], multiple: true
