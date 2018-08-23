@@ -15,7 +15,10 @@
 class CleanupWorkingFileJob < ActiveJob::Base
   def perform(masterfile_id)
     masterfile = MasterFile.find(masterfile_id)
-    path = masterfile.working_file_path
-    File.delete(path) if path.present? && File.exist?(path)
+    masterfile.working_file_path.map do |path|
+      File.delete(path) if File.exist?(path)
+    end
+    masterfile.working_file_path = nil
+    masterfile.save!
   end
 end
