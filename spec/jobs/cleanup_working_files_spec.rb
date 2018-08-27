@@ -21,11 +21,13 @@ describe CleanupWorkingFileJob do
   before do
     allow(MasterFile).to receive(:find).and_return(master_file)
     allow(File).to receive(:exist?).and_return(true)
+    allow(Dir).to receive(:exist?).and_return(true)
   end
 
   describe "perform" do
     it 'calls file delete when there is file to cleanup' do
       expect(File).to receive(:delete).with(working_file).once
+      expect(Dir).to receive(:delete).with(File.dirname(working_file)).once
       CleanupWorkingFileJob.perform_now('abc123')
     end
   end
