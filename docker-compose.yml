@@ -6,6 +6,7 @@ volumes:
   fedora:
   work:
   solr:
+  gems:
 
 services:
   db:
@@ -113,7 +114,7 @@ services:
       - Z3950_PORT
     volumes:
       - ./masterfiles:/masterfiles
-      - ./gems:/gems
+      - gems:/home/app/gems
       - .:/home/app/avalon
     ports:
       - "3000:80"
