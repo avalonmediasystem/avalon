@@ -501,8 +501,6 @@ describe MasterFile do
       end
 
       it 'returns a path when the working directory is valid' do
-        # allow(File).to receive(:directory?).and_call_original
-        # allow(File).to receive(:directory?).with(Settings.matterhorn.media_path).and_return(true)
         file = File.new(Rails.root.join('spec', 'fixtures', 'videoshort.mp4'))
         master_file.setContent(file)
         expect(master_file.working_file_path.first).to include(Settings.matterhorn.media_path)

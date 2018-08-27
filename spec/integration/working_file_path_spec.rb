@@ -10,10 +10,9 @@ require 'rails_helper'
 # batch ingest with pre-transcoded derivatives
 # web upload
 # web upload skip transcoding
-# BE dropbox upload
-# BE dropbox skip transcoding
+# web dropbox upload
+# web dropbox skip transcoding
 # Repeat all of these with and without media path set.
-# Also with dropbox mounted on matterhorn and not.?
 #
 # Pre-existing tests that are related (or duplicative)
 # spec/models/master_file_spec.rb:262
