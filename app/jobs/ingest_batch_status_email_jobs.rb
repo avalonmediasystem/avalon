@@ -24,7 +24,7 @@ module IngestBatchStatusEmailJobs
         # Get the entries for the batch and see if they all complete
         complete = true
         errors = false
-        BatchEntries.where(batch_registries_id: br.id).each do |entry|
+        br.batch_entries.each do |entry|
           complete = false unless entry.complete || entry.error
           errors = true if entry.error
         end
