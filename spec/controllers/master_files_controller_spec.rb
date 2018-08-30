@@ -246,7 +246,7 @@ describe MasterFilesController do
     end
 
     it "renders the Google Analytics partial" do
-      expect(get(:embed, params: { id: master_file.id })).to render_template('modules/_google_analytics')
+      expect(get(:embed, id: master_file.id )).to render_template('modules/_google_analytics')
     end
 
     context 'with fedora 3 pid' do
