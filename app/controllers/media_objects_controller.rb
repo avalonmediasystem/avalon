@@ -272,9 +272,13 @@ class MediaObjectsController < ApplicationController
         if !@media_object.save
           error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
           @media_object.destroy
-        elsif !!api_params[:publish]
-          @media_object.publish!('REST API')
-          @media_object.workflow.publish
+        else
+          if !!api_params[:publish]
+            @media_object.publish!('REST API')
+            @media_object.workflow.publish
+          else
+            @media_object.publish!('')
+          end
         end
       end
     end

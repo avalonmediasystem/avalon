@@ -33,7 +33,7 @@ module Avalon
 
     def push_media_object(media_object, collection_id, include_structure = true)
       return { message: 'Avalon intercom target is not configured.' } unless @avalon.present?
-      return { message: 'You are not autorized to push to this collection.' } unless collection_valid? collection_id
+      return { message: 'You are not authorized to push to this collection.' } unless collection_valid? collection_id
       begin
         resp = RestClient::Request.execute(
           method: :post,

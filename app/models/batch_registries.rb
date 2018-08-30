@@ -17,7 +17,7 @@
 class BatchRegistries < ActiveRecord::Base
   before_save :check_user
   validates :file_name, :user_id, :collection, presence: true
-  has_many :batch_entries, -> { order(position: :asc) }
+  has_many :batch_entries, -> { order(position: :asc) }, class_name: BatchEntries
 
   # For FactoryGirl's taps, document more TODO
   def file_name=(fn)

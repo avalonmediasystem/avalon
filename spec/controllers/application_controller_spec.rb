@@ -16,6 +16,10 @@ require 'rails_helper'
 
 describe ApplicationController do
   controller do
+    def index
+
+    end
+
     def create
       render nothing: true
     end
@@ -87,6 +91,20 @@ describe ApplicationController do
     it 'skips post requests' do
       post :create, id: 'avalon:1234'
       expect(response).not_to have_http_status(304)
+    end
+  end
+
+  describe "layout" do
+    render_views
+
+    it 'renders avalon layout' do
+      get :show, id: 'abc1234'
+      expect(response).to render_template("layouts/avalon")
+    end
+
+    it 'renders google analytics partial' do
+      get :show, id: 'abc1234'
+      expect(response).to render_template("modules/_google_analytics")
     end
   end
 end

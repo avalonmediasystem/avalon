@@ -132,7 +132,7 @@ describe MediaObjectsController, type: :controller do
       let(:target_link) { { link: 'http://link.to/media_object' } }
       let(:error_status) { { message: 'Not authorized', status: 401 } }
       let(:media_object_permission) { 'You do not have permission to push this media object.' }
-      let(:collection_permission) { 'You are not autorized to push to this collection.' }
+      let(:collection_permission) { 'You are not authorized to push to this collection.' }
       before do
         login_as(:administrator)
         session[:intercom_collections] = {}
