@@ -30,6 +30,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <%= stylesheet_link_tag "application", media: "all" %>
     <%= yield :page_styles %>
     <%= yield :additional_head_content %>
+    <%= render "modules/google_analytics" %>
   </head>
 
   <body>
