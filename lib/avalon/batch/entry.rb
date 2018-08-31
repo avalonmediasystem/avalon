@@ -201,6 +201,15 @@ module Avalon
           files = self.class.gatherFiles(file_spec[:file])
           self.class.attach_datastreams_to_master_file(master_file, file_spec[:file])
           master_file.setContent(files)
+
+          # Overwrite files hash with working file paths to pass to matterhorn
+          if files.is_a?(Hash) && master_file.working_file_path.present?
+            files.each do |quality, file|
+              working_path = master_file.working_file_path.find { |path| File.basename(file) == File.basename(path) }
+              files[quality] = File.new(working_path)
+            end
+          end
+
           master_file.absolute_location = file_spec[:absolute_location] if file_spec[:absolute_location].present?
           master_file.title = file_spec[:label] if file_spec[:label].present?
           master_file.poster_offset = file_spec[:offset] if file_spec[:offset].present?
