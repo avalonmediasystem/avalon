@@ -1,0 +1,11 @@
+<tr>
+  <td> <%= batch_entry.position + 2 %> </td>
+  <% media_object = MediaObject.where(id: batch_entry.media_object_pid).first %>
+  <% if media_object %>
+    <% link_url = media_object.permalink %>
+    <% link_url = media_object_url(media_object) if link_url.blank? %>
+    <td> <%= link_to(batch_entry.media_object_pid, link_url) %></td>
+  <% else %>
+    <td> Item (<%= batch_entry.media_object_pid %>) was created but no longer exists </td>
+  <% end %>
+</tr>

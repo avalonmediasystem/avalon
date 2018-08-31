@@ -84,4 +84,92 @@ describe BatchEntries do
       expect(subject.current_status).to eq 'Queued'
     end
   end
+
+  describe 'encoding tracking' do
+    it 'records an encoding error if the media_object_pid is blank' do
+      batch_entry = FactoryBot.build(:batch_entries, media_object_pid: nil)
+
+      expect(batch_entry.encoding_finished?).to be_truthy
+      expect(batch_entry.encoding_success?).to be_falsey
+      expect(batch_entry.encoding_error?).to be_truthy
+    end
+
+    it 'records an encoding error if the MediaObject is not in Fedora' do
+      batch_entry = FactoryBot.build(:batch_entries, media_object_pid: 'nope')
+
+      expect(batch_entry.encoding_finished?).to be_truthy
+      expect(batch_entry.encoding_success?).to be_falsey
+      expect(batch_entry.encoding_error?).to be_truthy
+    end
+
+    it 'records an encoding error if the MediaObject does not have enough MasterFiles' do
+      media_object = FactoryBot.create(:media_object)
+      batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
+
+      expect(media_object.master_files.to_a.count).to eq(0)
+      expect(JSON.parse(batch_entry.payload)['files'].count).to eq(1)
+
+      expect(batch_entry.encoding_finished?).to be_truthy
+      expect(batch_entry.encoding_success?).to be_falsey
+      expect(batch_entry.encoding_error?).to be_truthy
+    end
+
+    it 'records an encoding success if the MediaObject has MasterFiles that are complete' do
+      master_file = FactoryBot.create(:master_file, :with_media_object,
+                                       status_code: 'COMPLETED')
+      media_object = master_file.media_object
+      batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
+
+      expect(media_object.master_files.to_a.count).to eq(1)
+      expect(JSON.parse(batch_entry.payload)['files'].count).to eq(1)
+
+      expect(batch_entry.encoding_finished?).to be_truthy
+      expect(batch_entry.encoding_success?).to be_truthy
+      expect(batch_entry.encoding_error?).to be_falsey
+    end
+
+    it 'records an encoding error if the MediaObject has MasterFiles that have errored' do
+      master_file = FactoryBot.create(:master_file, :with_media_object,
+                                       status_code: 'FAILED')
+      media_object = master_file.media_object
+      batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
+
+      expect(media_object.master_files.to_a.count).to eq(1)
+      expect(JSON.parse(batch_entry.payload)['files'].count).to eq(1)
+
+      expect(batch_entry.encoding_finished?).to be_truthy
+      expect(batch_entry.encoding_success?).to be_falsey
+      expect(batch_entry.encoding_error?).to be_truthy
+    end
+
+    it 'records an encoding error if the MediaObject has MasterFiles that are cancelled' do
+      master_file = FactoryBot.create(:master_file, :with_media_object,
+                                       status_code: 'CANCELLED')
+      media_object = master_file.media_object
+      batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
+
+      expect(media_object.master_files.to_a.count).to eq(1)
+      expect(JSON.parse(batch_entry.payload)['files'].count).to eq(1)
+
+      expect(batch_entry.encoding_finished?).to be_truthy
+      expect(batch_entry.encoding_success?).to be_falsey
+      expect(batch_entry.encoding_error?).to be_truthy
+    end
+
+    it 'records neither error nor success nor finished if MediaObject has MasterFiles that are not errored or successful' do
+      master_file = FactoryBot.create(:master_file, :with_media_object,
+                                       status_code: 'RUNNING')
+      media_object = master_file.media_object
+      batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
+
+      expect(media_object.master_files.to_a.count).to eq(1)
+      expect(JSON.parse(batch_entry.payload)['files'].count).to eq(1)
+
+      expect(batch_entry.encoding_finished?).to be_falsey
+      expect(batch_entry.encoding_success?).to be_falsey
+      expect(batch_entry.encoding_error?).to be_falsey
+    end
+
+  end
+
 end
