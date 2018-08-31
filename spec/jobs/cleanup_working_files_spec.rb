@@ -16,7 +16,7 @@ require 'rails_helper'
 
 describe CleanupWorkingFileJob do
   let(:working_file) { '/temp/working_file.mp4' }
-  let(:master_file) { FactoryGirl.build(:master_file, working_file_path: [working_file]) }
+  let(:master_file) { FactoryBot.build(:master_file, working_file_path: [working_file]) }
 
   before do
     allow(MasterFile).to receive(:find).and_return(master_file)

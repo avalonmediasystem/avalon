@@ -20,8 +20,8 @@ require 'rails_helper'
 # spec/lib/avalon/batch/entry_spec.rb:80
 #
 describe "MasterFile#working_file_path" do
-  let(:master_file) { FactoryGirl.build(:master_file) }
-  let(:media_object) { FactoryGirl.create(:media_object) }
+  let(:master_file) { FactoryBot.build(:master_file) }
+  let(:media_object) { FactoryBot.create(:media_object) }
   let(:workflow) { 'avalon' }
 
   context "with Settings.matterhorn.media_path set" do
@@ -115,7 +115,7 @@ describe "MasterFile#working_file_path" do
 
     context "using batch ingest" do
       let(:file) { fixture_file_upload('spec/fixtures/videoshort.mp4', 'video/mp4') }
-      let(:collection) { FactoryGirl.build(:collection) }
+      let(:collection) { FactoryBot.build(:collection) }
       let(:entry_fields) { { title: Faker::Lorem.sentence, date_issued: "#{DateTime.now.strftime('%F')}" } }
       let(:entry_files) { [{ file: File.absolute_path(file), skip_transcoding: false }] }
       let(:entry_opts) { {user_key: 'archivist1@example.org', collection: collection} }
@@ -237,7 +237,7 @@ describe "MasterFile#working_file_path" do
 
     context "using batch ingest" do
       let(:file) { fixture_file_upload('spec/fixtures/videoshort.mp4', 'video/mp4') }
-      let(:collection) { FactoryGirl.build(:collection) }
+      let(:collection) { FactoryBot.build(:collection) }
       let(:entry_fields) { { title: Faker::Lorem.sentence, date_issued: "#{DateTime.now.strftime('%F')}" } }
       let(:entry_files) { [{ file: File.absolute_path(file), skip_transcoding: false }] }
       let(:entry_opts) { {user_key: 'archivist1@example.org', collection: collection} }
