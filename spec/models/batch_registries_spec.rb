@@ -61,10 +61,10 @@ describe BatchRegistries do
 
  describe 'encoding tracking' do
    it 'records encoding success if all of the BatchEntries are successful' do
-     batch_registry = FactoryGirl.create(:batch_registries)
-     batch_entry1 = FactoryGirl.create(:batch_entries,
+     batch_registry = FactoryBot.create(:batch_registries)
+     batch_entry1 = FactoryBot.create(:batch_entries,
                                        batch_registries_id: batch_registry.id)
-     batch_entry2 = FactoryGirl.create(:batch_entries,
+     batch_entry2 = FactoryBot.create(:batch_entries,
                                        batch_registries_id: batch_registry.id)
      allow(batch_entry1).to receive(:encoding_success?).and_return(true)
      allow(batch_entry1).to receive(:encoding_error?).and_return(false)
@@ -81,10 +81,10 @@ describe BatchRegistries do
    end
 
    it 'records an encoding error if one of the BatchEntries has an encoding error' do
-     batch_registry = FactoryGirl.create(:batch_registries)
-     batch_entry1 = FactoryGirl.create(:batch_entries,
+     batch_registry = FactoryBot.create(:batch_registries)
+     batch_entry1 = FactoryBot.create(:batch_entries,
                                        batch_registries_id: batch_registry.id)
-     batch_entry2 = FactoryGirl.create(:batch_entries,
+     batch_entry2 = FactoryBot.create(:batch_entries,
                                        batch_registries_id: batch_registry.id)
 
      # Cheat a little to avoid database fetch
@@ -102,10 +102,10 @@ describe BatchRegistries do
    end
 
    it 'records as not finished if one of the BatchEntries is not finished' do
-     batch_registry = FactoryGirl.create(:batch_registries)
-     batch_entry1 = FactoryGirl.create(:batch_entries,
+     batch_registry = FactoryBot.create(:batch_registries)
+     batch_entry1 = FactoryBot.create(:batch_entries,
                                        batch_registries_id: batch_registry.id)
-     batch_entry2 = FactoryGirl.create(:batch_entries,
+     batch_entry2 = FactoryBot.create(:batch_entries,
                                        batch_registries_id: batch_registry.id)
 
      # Cheat a little to avoid database fetch
