@@ -17,7 +17,7 @@ require 'rails_helper'
 describe IngestBatchStatusEmailJobs do
   describe IngestBatchStatusEmailJobs::IngestFinished do
     let(:batch_registry) { FactoryBot.create(:batch_registries, user_id: manager.id) }
-    let(:completed_batch_registry) { FactoryGirl.create(:batch_registries, user_id: manager.id, complete: true, completed_email_sent: true) }
+    let(:completed_batch_registry) { FactoryBot.create(:batch_registries, user_id: manager.id, complete: true, completed_email_sent: true) }
     let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
     let(:batch_mailer) { double }
 
