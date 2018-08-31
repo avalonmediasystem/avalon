@@ -41,6 +41,21 @@ module IngestBatchStatusEmailJobs
         end
         br.save
       end
+
+      # Done encoding? (either successfully or with error)
+      BatchRegistries.where(processed_email_sent: false,
+                            error: false,
+                            complete: true).each do |br|
+        if br.encoding_finished?
+          BatchRegistriesMailer.batch_encoding_finished(br).deliver_now
+          br.processed_email_sent = true
+          if br.encoding_error?
+            br.error = true
+          end
+          br.save
+        end
+      end
+
     end
   end
 

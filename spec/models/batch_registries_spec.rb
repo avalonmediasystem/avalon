@@ -58,4 +58,69 @@ describe BatchRegistries do
       expect { subject.file_name = "file.mp4" }.not_to change { subject.replay_name }
     end
   end
+
+ describe 'encoding tracking' do
+   it 'records encoding success if all of the BatchEntries are successful' do
+     batch_registry = FactoryBot.create(:batch_registries)
+     batch_entry1 = FactoryBot.create(:batch_entries,
+                                       batch_registries_id: batch_registry.id)
+     batch_entry2 = FactoryBot.create(:batch_entries,
+                                       batch_registries_id: batch_registry.id)
+     allow(batch_entry1).to receive(:encoding_success?).and_return(true)
+     allow(batch_entry1).to receive(:encoding_error?).and_return(false)
+
+     allow(batch_entry2).to receive(:encoding_success?).and_return(true)
+     allow(batch_entry2).to receive(:encoding_error?).and_return(false)
+
+     # Cheat a little to avoid database fetch
+     allow(batch_registry).to receive(:batch_entries).and_return([batch_entry1, batch_entry2])
+
+     expect(batch_registry.encoding_finished?).to eq(true)
+     expect(batch_registry.encoding_success?).to eq(true)
+     expect(batch_registry.encoding_error?).to eq(false)
+   end
+
+   it 'records an encoding error if one of the BatchEntries has an encoding error' do
+     batch_registry = FactoryBot.create(:batch_registries)
+     batch_entry1 = FactoryBot.create(:batch_entries,
+                                       batch_registries_id: batch_registry.id)
+     batch_entry2 = FactoryBot.create(:batch_entries,
+                                       batch_registries_id: batch_registry.id)
+
+     # Cheat a little to avoid database fetch
+     allow(batch_registry).to receive(:batch_entries).and_return([batch_entry1, batch_entry2])
+
+     allow(batch_entry1).to receive(:encoding_success?).and_return(true)
+     allow(batch_entry1).to receive(:encoding_error?).and_return(false)
+
+     allow(batch_entry2).to receive(:encoding_success?).and_return(false)
+     allow(batch_entry2).to receive(:encoding_error?).and_return(true)
+
+     expect(batch_registry.encoding_finished?).to eq(true)
+     expect(batch_registry.encoding_success?).to eq(false)
+     expect(batch_registry.encoding_error?).to eq(true)
+   end
+
+   it 'records as not finished if one of the BatchEntries is not finished' do
+     batch_registry = FactoryBot.create(:batch_registries)
+     batch_entry1 = FactoryBot.create(:batch_entries,
+                                       batch_registries_id: batch_registry.id)
+     batch_entry2 = FactoryBot.create(:batch_entries,
+                                       batch_registries_id: batch_registry.id)
+
+     # Cheat a little to avoid database fetch
+     allow(batch_registry).to receive(:batch_entries).and_return([batch_entry1, batch_entry2])
+
+     allow(batch_entry1).to receive(:encoding_success?).and_return(true)
+     allow(batch_entry1).to receive(:encoding_error?).and_return(false)
+
+     allow(batch_entry2).to receive(:encoding_success?).and_return(false)
+     allow(batch_entry2).to receive(:encoding_error?).and_return(false)
+
+     expect(batch_registry.encoding_finished?).to eq(false)
+     expect(batch_registry.encoding_success?).to eq(false)
+     expect(batch_registry.encoding_error?).to eq(false)
+   end
+
+ end
 end
