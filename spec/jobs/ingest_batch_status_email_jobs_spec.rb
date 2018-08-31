@@ -55,7 +55,7 @@ describe IngestBatchStatusEmailJobs do
     end
 
     it 'sends an email when encoding is complete with success' do
-      FactoryGirl.create(:batch_entries, batch_registries: completed_batch_registry, complete: true)
+      FactoryBot.create(:batch_entries, batch_registries: completed_batch_registry, complete: true)
       allow_any_instance_of(BatchEntries).to receive(:encoding_success?).and_return(true)
       allow_any_instance_of(BatchEntries).to receive(:encoding_error?).and_return(false)
 
@@ -67,7 +67,7 @@ describe IngestBatchStatusEmailJobs do
     end
 
     it 'sends an email when encoding is complete with error' do
-      FactoryGirl.create(:batch_entries, batch_registries: completed_batch_registry, complete: true)
+      FactoryBot.create(:batch_entries, batch_registries: completed_batch_registry, complete: true)
       allow_any_instance_of(BatchEntries).to receive(:encoding_success?).and_return(false)
       allow_any_instance_of(BatchEntries).to receive(:encoding_error?).and_return(true)
 

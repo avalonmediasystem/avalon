@@ -85,11 +85,11 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
   end
 
   describe 'batch_encoding_finished' do
-    let(:batch_registries) { FactoryGirl.create(:batch_registries, user_id: manager.id) }
-    let(:manager) { FactoryGirl.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
-    let!(:collection) { FactoryGirl.create(:collection, id: 'k32jf0kw') }
-    let!(:batch_entries) { FactoryGirl.create(:batch_entries, batch_registries: batch_registries, media_object_pid: media_object.id, complete: true) }
-    let(:media_object) { FactoryGirl.create(:media_object, collection: collection, permalink: "http://localhost:3000/media_objects/kfd39dnw") }
+    let(:batch_registries) { FactoryBot.create(:batch_registries, user_id: manager.id) }
+    let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
+    let!(:collection) { FactoryBot.create(:collection, id: 'k32jf0kw') }
+    let!(:batch_entries) { FactoryBot.create(:batch_entries, batch_registries: batch_registries, media_object_pid: media_object.id, complete: true) }
+    let(:media_object) { FactoryBot.create(:media_object, collection: collection, permalink: "http://localhost:3000/media_objects/kfd39dnw") }
 
     it "correctly sets up the email indicating that encoding is successful" do
       allow_any_instance_of(BatchEntries).to receive(:encoding_success?).and_return(true)
