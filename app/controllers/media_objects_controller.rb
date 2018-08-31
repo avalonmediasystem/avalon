@@ -23,8 +23,8 @@ class MediaObjectsController < ApplicationController
   include SecurityHelper
 
   before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details]
-  load_and_authorize_resource except: [:create, :json_update, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections]
-  # authorize_resource only: [:create, :update]
+  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections]
+  authorize_resource only: [:create]
 
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
   before_action :load_player_context, only: [:show]
@@ -164,7 +164,6 @@ class MediaObjectsController < ApplicationController
 
   # PUT /media_objects/avalon:1.json
   def json_update
-    @media_object = MediaObject.find(params[:id])
     # Preset the workflow to the last workflow step to ensure validators run
     @media_object.workflow.last_completed_step = HYDRANT_STEPS.last.step
     update_media_object

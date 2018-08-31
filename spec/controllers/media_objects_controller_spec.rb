@@ -35,16 +35,17 @@ describe MediaObjectsController, type: :controller do
         expect(get :index, format: 'json').to have_http_status(401)
         expect(post :create, format: 'json').to have_http_status(401)
         expect(put :update, params: { id: media_object.id, format: 'json' }).to have_http_status(401)
+        expect(put :json_update, params: { id: media_object.id, format: 'json' }).to have_http_status(401)
       end
       describe '#show' do
         it "returns 401 when no token is present, and unpublished" do
-          expect(get :show, id: media_object.id, format: 'json').to have_http_status(401)
+          expect(get :show, params: { id: media_object.id, format: 'json' }).to have_http_status(401)
         end
         it "returns 401 for published private items when no token is present" do
-          expect(get :show, id: private_media_object.id, format: 'json').to have_http_status(401)
+          expect(get :show, params: { id: private_media_object.id, format: 'json' }).to have_http_status(401)
         end
         it "permits published public items when no token is present" do
-          expect(get :show, id: published_media_object.id, format: 'json').to have_http_status(200)
+          expect(get :show, params: { id: published_media_object.id, format: 'json' }).to have_http_status(200)
         end
       end
       it "all routes should return 403 when a bad token in present" do
@@ -53,6 +54,7 @@ describe MediaObjectsController, type: :controller do
         expect(get :show, params: { id: media_object.id, format: 'json' }).to have_http_status(403)
         expect(post :create, format: 'json').to have_http_status(403)
         expect(put :update, params: { id: media_object.id, format: 'json' }).to have_http_status(403)
+        expect(put :json_update, params: { id: media_object.id, format: 'json' }).to have_http_status(403)
       end
     end
     describe 'normal auth' do
@@ -63,10 +65,8 @@ describe MediaObjectsController, type: :controller do
         end
         it "all routes should redirect to sign in" do
           expect(get :show, params: { id: media_object.id }).to redirect_to(new_user_session_path)
-          expect(get :show_progress, params: { id: media_object.id, format: 'json' }).to have_http_status(401)
           expect(get :edit, params: { id: media_object.id }).to redirect_to(new_user_session_path)
           expect(get :confirm_remove, params: { id: media_object.id }).to redirect_to(new_user_session_path)
-          #expect(post :create).to redirect_to(new_user_session_path) # route accessible by json only
           expect(put :update, params: { id: media_object.id }).to redirect_to(new_user_session_path)
           expect(put :update_status, params: { id: media_object.id }).to redirect_to(new_user_session_path)
           expect(get :tree, params: { id: media_object.id }).to redirect_to(new_user_session_path)
@@ -74,6 +74,11 @@ describe MediaObjectsController, type: :controller do
           expect(delete :destroy, params: { id: media_object.id }).to redirect_to(new_user_session_path)
           expect(get :add_to_playlist_form, params: { id: media_object.id }).to redirect_to(new_user_session_path)
           expect(post :add_to_playlist, params: { id: media_object.id }).to redirect_to(new_user_session_path)
+        end
+        it "json routes should return 401" do
+          expect(post :create, format: 'json').to have_http_status(401)
+          expect(put :json_update, params: { id: media_object.id, format: 'json' }).to have_http_status(401)
+          expect(get :show_progress, params: { id: media_object.id, format: 'json' }).to have_http_status(401)
         end
       end
       context 'with end-user' do
@@ -88,7 +93,6 @@ describe MediaObjectsController, type: :controller do
           expect(get :show, params: { id: media_object.id }).to redirect_to(root_path)
           expect(get :edit, params: { id: media_object.id }).to redirect_to(root_path)
           expect(get :confirm_remove, params: { id: media_object.id }).to redirect_to(root_path)
-          #expect(post :create).to redirect_to(root_path) # route accessible by json only
           expect(put :update, params: { id: media_object.id }).to redirect_to(root_path)
           expect(put :update_status, params: { id: media_object.id }).to redirect_to(root_path)
           expect(get :tree, params: { id: media_object.id }).to redirect_to(root_path)
@@ -97,8 +101,10 @@ describe MediaObjectsController, type: :controller do
           expect(get :add_to_playlist_form, params: { id: media_object.id }).to redirect_to(root_path)
           expect(post :add_to_playlist, params: { id: media_object.id }).to redirect_to(root_path)
         end
-        it "show progress should return 401" do
-          expect(get :show_progress, id: media_object.id, format: 'json').to have_http_status(401)
+        it "json routes should return 401" do
+          expect(post :create, format: 'json').to have_http_status(401)
+          expect(put :json_update, params: { id: media_object.id, format: 'json' }).to have_http_status(401)
+          expect(get :show_progress, params: { id: media_object.id, format: 'json' }).to have_http_status(401)
         end
       end
     end
