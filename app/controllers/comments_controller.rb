@@ -29,7 +29,7 @@ class CommentsController < ApplicationController
     @comment.subject = params[:comment][:subject]
     @comment.comment = params[:comment][:comment]
 
-    if @comment.valid? and (Settings.recaptcha.blank? or verify_recaptcha(model: @comment))
+    if @comment.valid? && (Settings.recaptcha.blank? || verify_recaptcha(model: @comment))
       begin
         CommentsMailer.contact_email(@comment.to_h).deliver_later
       rescue Errno::ECONNRESET => e
