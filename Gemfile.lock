@@ -633,6 +633,8 @@ GEM
       rdf (~> 2.1)
     rdf-xsd (2.2.0)
       rdf (~> 2.1)
+    recaptcha (4.12.0)
+      json
     redis (3.3.5)
     redis-actionpack (5.0.2)
       actionpack (>= 4.0, < 6)
@@ -920,6 +922,7 @@ DEPENDENCIES
   rb-readline
   rdf (~> 2.2)
   rdf-rdfxml
+  recaptcha
   redis-rails
   resque (~> 1.27.0)
   resque-scheduler (~> 4.3.0)

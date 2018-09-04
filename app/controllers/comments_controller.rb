@@ -29,17 +29,16 @@ class CommentsController < ApplicationController
     @comment.subject = params[:comment][:subject]
     @comment.comment = params[:comment][:comment]
 
-    if (@comment.valid?)
+    if @comment.valid? and (Settings.recaptcha.blank? or verify_recaptcha(model: @comment))
       begin
         CommentsMailer.contact_email(@comment.to_h).deliver_later
       rescue Errno::ECONNRESET => e
         logger.warn "The mail server does not appear to be responding \n #{e}"
-
-	flash[:notice] = "The message could not be sent in a timely fashion. Contact us at #{Settings.email.support} to report the problem."
-	render action: "index"
+        flash[:notice] = "The message could not be sent in a timely fashion. Contact us at #{Settings.email.support} to report the problem."
+        render action: "index"
       end
     else
-      flash[:error] = "There were problems submitting your comment. Please correct the errors and try again."
+      flash[:error] = "Your comment was missing required information. Please complete all fields and resubmit."
       render action: "index"
     end
   end
