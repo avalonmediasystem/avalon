@@ -124,7 +124,9 @@ class ApplicationController < ActionController::Base
   end
 
   rescue_from CanCan::AccessDenied do |exception|
-    if current_user
+    if request.format == :json
+      head :unauthorized
+    elsif current_user
       redirect_to root_path, flash: { notice: 'You are not authorized to perform this action.' }
     else
       session[:previous_url] = request.fullpath unless request.xhr?
