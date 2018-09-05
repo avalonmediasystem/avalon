@@ -1,11 +1,11 @@
 # Copyright 2011-2018, The Trustees of Indiana University and Northwestern
 #   University.  Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
-# 
+#
 # You may obtain a copy of the License at
-# 
+#
 # http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software distributed
 #   under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
@@ -57,10 +57,10 @@ describe VocabularyController, type: :controller do
           login_as :user
         end
         it "all routes should redirect to /" do
-          expect(get :index, format: 'json').to redirect_to(root_path)
-          expect(get :show, params: { id: vocab, format: 'json' }).to redirect_to(root_path)
-          expect(put :update, params: { id: vocab, format: 'json' }).to redirect_to(root_path)
-          expect(patch :update, params: { id: vocab, format: 'json' }).to redirect_to(root_path)
+          expect(get :index, format: 'json').to have_http_status(401)
+          expect(get :show, params: { id: vocab, format: 'json' }).to have_http_status(401)
+          expect(put :update, params: { id: vocab, format: 'json' }).to have_http_status(401)
+          expect(patch :update, params: { id: vocab, format: 'json' }).to have_http_status(401)
         end
       end
     end
