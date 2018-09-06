@@ -726,7 +726,7 @@ GEM
       mime-types
       nokogiri
       rest-client
-    rubyzip (1.2.1)
+    rubyzip (1.2.2)
     rufus-scheduler (3.4.2)
       et-orbi (~> 1.0)
     safe_yaml (1.0.4)
