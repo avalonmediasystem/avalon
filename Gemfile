@@ -40,6 +40,7 @@ gem 'avalon-about', git: 'https://github.com/avalonmediasystem/avalon-about.git'
 gem 'bootstrap-toggle-rails', git: 'https://github.com/rkallensee/bootstrap-toggle-rails.git', tag: 'v2.2.1.0'
 gem 'bootstrap_form'
 gem 'speedy-af', '~> 0.1.1'
+gem 'recaptcha', require: 'recaptcha/rails'
 
 # Avalon Components
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", tag: 'avalon-r6.2'

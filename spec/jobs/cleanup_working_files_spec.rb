@@ -15,14 +15,19 @@
 require 'rails_helper'
 
 describe CleanupWorkingFileJob do
-  let(:working_file) {'/temp/working_file.mp4'}
-  let(:master_file) {instance_double('MasterFile')}
+  let(:working_file) { '/temp/working_file.mp4' }
+  let(:master_file) { FactoryGirl.build(:master_file, working_file_path: [working_file]) }
+
+  before do
+    allow(MasterFile).to receive(:find).and_return(master_file)
+    allow(File).to receive(:exist?).and_return(true)
+    allow(Dir).to receive(:exist?).and_return(true)
+  end
+
   describe "perform" do
     it 'calls file delete when there is file to cleanup' do
-      allow(MasterFile).to receive(:find).and_return(master_file)
-      allow(master_file).to receive(:working_file_path).and_return(working_file)
-      allow(File).to receive(:exist?).and_return(true)
       expect(File).to receive(:delete).with(working_file).once
+      expect(Dir).to receive(:delete).with(File.dirname(working_file)).once
       CleanupWorkingFileJob.perform_now('abc123')
     end
   end

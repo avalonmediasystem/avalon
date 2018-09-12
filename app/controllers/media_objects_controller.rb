@@ -255,7 +255,7 @@ class MediaObjectsController < ApplicationController
       end
 
       if error_messages.empty?
-        if api_params[:replace_master_files]
+        if api_params[:replace_masterfiles]
           old_ordered_master_files.each do |mf|
             p = MasterFile.find(mf)
             @media_object.master_files.delete(p)
@@ -272,9 +272,13 @@ class MediaObjectsController < ApplicationController
         if !@media_object.save
           error_messages += ['Failed to create media object:']+@media_object.errors.full_messages
           @media_object.destroy
-        elsif !!api_params[:publish]
-          @media_object.publish!('REST API')
-          @media_object.workflow.publish
+        else
+          if !!api_params[:publish]
+            @media_object.publish!('REST API')
+            @media_object.workflow.publish
+          else
+            @media_object.publish!('')
+          end
         end
       end
     end
@@ -607,6 +611,6 @@ class MediaObjectsController < ApplicationController
   end
 
   def api_params
-    params.permit(:collection_id, :publish, :import_bib_record, :replace_master_files)
+    params.permit(:collection_id, :publish, :import_bib_record, :replace_masterfiles)
   end
 end

@@ -15,13 +15,6 @@
 require 'rails_helper'
 
 describe MasterFilesController do
-  before do
-    ActiveJob::Base.queue_adapter = :test
-  end
-
-  after do
-    ActiveJob::Base.queue_adapter = :inline
-  end
 
   describe "#create" do
     let(:media_object) { FactoryGirl.create(:media_object) }
@@ -240,6 +233,8 @@ describe MasterFilesController do
                                      ordered_master_files: [master_file], master_file_ids: [master_file.id])
     end
 
+    render_views
+
     before do
       allow_any_instance_of(MasterFile).to receive(:media_object).and_return(media_object)
       allow_any_instance_of(MasterFile).to receive(:media_object_id).and_return(media_object.id)
@@ -248,6 +243,10 @@ describe MasterFilesController do
 
     it "renders the embed layout" do
       expect(get(:embed, id: master_file.id)).to render_template(layout: 'embed')
+    end
+
+    it "renders the Google Analytics partial" do
+      expect(get(:embed, id: master_file.id )).to render_template('modules/_google_analytics')
     end
 
     context 'with fedora 3 pid' do
