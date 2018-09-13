@@ -72,7 +72,7 @@ describe Avalon::Intercom do
 
     it "should respond to unpermitted collection with error" do
       response = intercom.push_media_object(media_object, 'invalid_collection', false)
-      expect(response[:message]).to eq('You are not autorized to push to this collection.')
+      expect(response[:message]).to eq('You are not authorized to push to this collection.')
     end
     it "should respond to unconfigured intercom with error" do
       Settings.intercom = {}
