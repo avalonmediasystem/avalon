@@ -5,6 +5,13 @@
 
 SEMAPHORE=$1
 LOCKFILE=tmp/pids/$SEMAPHORE
+
+if ( [ -e $LOCKFILE ] && ! kill -0 $(< $LOCKFILE) ) 2> /dev/null;
+then
+  echo "$0: Deleting stale lock file: $LOCKFILE"
+  rm -f "$LOCKFILE";
+fi
+
 shift
 
 if ( set -o noclobber; echo "$$" > "$LOCKFILE") 2> /dev/null; 
