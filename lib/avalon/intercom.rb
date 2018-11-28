@@ -61,7 +61,7 @@ module Avalon
       def fetch_user_collections
         return [] unless @avalon.present?
         uri = URI.join(@avalon['url'], 'admin/collections.json')
-        uri.query = "user=#{@user}"
+        uri.query = "user=#{@user}&per_page=#{Integer::EXABYTE}"
         resp = RestClient::Request.execute(
           method: :get,
           url: uri.to_s,

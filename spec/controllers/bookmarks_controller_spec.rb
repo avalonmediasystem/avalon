@@ -158,7 +158,7 @@ describe BookmarksController, type: :controller do
     }
     let!(:intercom) { Avalon::Intercom.new(current_user) }
     let!(:intercom_request) {
-      stub_request(:get, "https://target.avalon.com/admin/collections.json?user=#{current_user}").to_return(
+      stub_request(:get, "https://target.avalon.com/admin/collections.json?user=#{current_user}&per_page=1152921504606846976").to_return(
           status: 200,
           body: user_collections.to_json,
           headers: { content_type: 'application/json;' }

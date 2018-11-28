@@ -43,7 +43,7 @@ describe Avalon::Intercom do
   }
   let!(:intercom) { Avalon::Intercom.new(username) }
   let!(:request) {
-    stub_request(:get, "https://target.avalon.com/admin/collections.json?user=test_username").to_return(
+    stub_request(:get, "https://target.avalon.com/admin/collections.json?user=test_username&per_page=1152921504606846976").to_return(
         status: 200,
         body: user_collections.to_json,
         headers: { content_type: 'application/json;' }
