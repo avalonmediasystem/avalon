@@ -84,6 +84,44 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
     end
   end
 
+  describe 'batch_encoding_finished' do
+    let(:batch_registries) { FactoryBot.create(:batch_registries, user_id: manager.id) }
+    let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
+    let!(:collection) { FactoryBot.create(:collection, id: 'k32jf0kw') }
+    let!(:batch_entries) { FactoryBot.create(:batch_entries, batch_registries: batch_registries, media_object_pid: media_object.id, complete: true) }
+    let(:media_object) { FactoryBot.create(:media_object, collection: collection, permalink: "http://localhost:3000/media_objects/kfd39dnw") }
+
+    it "correctly sets up the email indicating that encoding is successful" do
+      allow_any_instance_of(BatchEntries).to receive(:encoding_success?).and_return(true)
+      allow_any_instance_of(BatchEntries).to receive(:encoding_error?).and_return(false)
+      email = BatchRegistriesMailer.batch_encoding_finished(batch_registries)
+      expect(email.to).to include(manager.email)
+      expect(email.subject).to include batch_registries.file_name
+      expect(email.subject).to include collection.name
+
+      expect(email.subject).to include 'Success'
+
+      expect(email).to have_body_text(batch_registries.file_name)
+      expect(email).to have_body_text("<a href=\"#{media_object.permalink}\">")
+      expect(email).to have_body_text(media_object.id)
+    end
+
+    it "correctly sets up the email indicating that encoding has errors" do
+      allow_any_instance_of(BatchEntries).to receive(:encoding_success?).and_return(false)
+      allow_any_instance_of(BatchEntries).to receive(:encoding_error?).and_return(true)
+      email = BatchRegistriesMailer.batch_encoding_finished(batch_registries)
+      expect(email.to).to include(manager.email)
+      expect(email.subject).to include batch_registries.file_name
+      expect(email.subject).to include collection.name
+
+      expect(email.subject).to include 'Errors Present'
+
+      expect(email).to have_body_text(batch_registries.file_name)
+      expect(email).to have_body_text("<a href=\"#{media_object.permalink}\">")
+      expect(email).to have_body_text(media_object.id)
+    end
+  end
+
   describe 'batch_registration_stalled_mailer' do
     let(:batch_registries) { FactoryBot.create(:batch_registries) }
     let(:notification_email_address) { Settings.email.notification }

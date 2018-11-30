@@ -53,4 +53,23 @@ class BatchRegistriesMailer < ApplicationMailer
       subject: "Batch Registry #{@batch_registry.file_name} for #{collection_text} has stalled"
     )
   end
+
+  # Update the progress of finished (success or error) batch encoding
+  def batch_encoding_finished(batch_registry)
+    @batch_registry = batch_registry
+    @user = User.find(@batch_registry.user_id)
+    @email = @user.email unless @user.nil?
+    @email ||= Settings.email.notification
+    @collection_text = Admin::Collection.find(@batch_registry.collection).name if Admin::Collection.exists?(@batch_registry.collection)
+    @collection_text ||= "Collection"
+
+    @status = @batch_registry.encoding_success? ? "Success" : "Errors Present"
+
+    mail(
+      to: @email,
+      from: Settings.email.notification,
+      subject: "#{@status}: Batch Registry #{@batch_registry.file_name} for #{@collection_text} has finished encoding"
+    )
+  end
+
 end

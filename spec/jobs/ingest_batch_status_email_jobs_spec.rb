@@ -17,6 +17,7 @@ require 'rails_helper'
 describe IngestBatchStatusEmailJobs do
   describe IngestBatchStatusEmailJobs::IngestFinished do
     let(:batch_registry) { FactoryBot.create(:batch_registries, user_id: manager.id) }
+    let(:completed_batch_registry) { FactoryBot.create(:batch_registries, user_id: manager.id, complete: true, completed_email_sent: true) }
     let(:manager) { FactoryBot.create(:manager, username: 'frances.dickens@reichel.com', email: 'frances.dickens@reichel.com') }
     let(:batch_mailer) { double }
 
@@ -51,6 +52,42 @@ describe IngestBatchStatusEmailJobs do
       expect(batch_registry.reload.error).to be false
       expect(batch_registry.reload.completed_email_sent).to be false
       expect(batch_registry.reload.complete).to be false
+    end
+
+    it 'sends an email when encoding is complete with success' do
+      FactoryBot.create(:batch_entries, batch_registries: completed_batch_registry, complete: true)
+      allow_any_instance_of(BatchEntries).to receive(:encoding_success?).and_return(true)
+      allow_any_instance_of(BatchEntries).to receive(:encoding_error?).and_return(false)
+
+      expect(BatchRegistriesMailer).to receive(:batch_registration_finished_mailer).once.with(batch_registry).and_return(batch_mailer)
+      described_class.perform_now
+      completed_batch_registry.reload
+      expect(completed_batch_registry.processed_email_sent).to be true
+      expect(completed_batch_registry.error).to be false
+    end
+
+    it 'sends an email when encoding is complete with error' do
+      FactoryBot.create(:batch_entries, batch_registries: completed_batch_registry, complete: true)
+      allow_any_instance_of(BatchEntries).to receive(:encoding_success?).and_return(false)
+      allow_any_instance_of(BatchEntries).to receive(:encoding_error?).and_return(true)
+
+      expect(BatchRegistriesMailer).to receive(:batch_registration_finished_mailer).once.with(batch_registry).and_return(batch_mailer)
+      described_class.perform_now
+      completed_batch_registry.reload
+      expect(completed_batch_registry.processed_email_sent).to be true
+      expect(completed_batch_registry.error).to be true
+    end
+
+    it 'does not send an email when encoding is in progress' do
+      FactoryBot.create(:batch_entries, batch_registries: completed_batch_registry, complete: true)
+      allow_any_instance_of(BatchEntries).to receive(:encoding_success?).and_return(false)
+      allow_any_instance_of(BatchEntries).to receive(:encoding_error?).and_return(false)
+
+      expect(BatchRegistriesMailer).not_to receive(:batch_registration_finished_mailer)
+      described_class.perform_now
+      completed_batch_registry.reload
+      expect(completed_batch_registry.processed_email_sent).to be false
+      expect(completed_batch_registry.error).to be false
     end
 
     context 'with locked batch' do
