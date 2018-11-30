@@ -38,13 +38,11 @@ class BatchRegistries < ActiveRecord::Base
   end
 
   def batch_entries_with_encoding_error
-    @batch_entries_with_encoding_error ||=
-      batch_entries.select { |batch_entry| batch_entry.encoding_error? }
+    @batch_entries_with_encoding_error ||= batch_entries.select(&:encoding_error?)
   end
 
   def batch_entries_with_encoding_success
-    @batch_entries_with_encoding_success ||=
-      batch_entries.select { |batch_entry| batch_entry.encoding_success? }
+    @batch_entries_with_encoding_success ||= batch_entries.select(&:encoding_success?)
   end
 
   private
@@ -61,17 +59,21 @@ class BatchRegistries < ActiveRecord::Base
     end
   end
 
+  # Returns :success, :error, or :in_progress
+  # Only return success if all BatchEntries report encoding success
   def encoding_status
-    # Returns :success, :error, or :in_progress
-
-    # Only return success if all BatchEntries report encoding success
     return @encoding_status if @encoding_status.present?
-    @encoding_status = :success
+    status = :success
     batch_entries.each do |batch_entry|
-      return (@encoding_status = :error) if batch_entry.encoding_error?
-      @encoding_status = :in_progress unless batch_entry.encoding_success?
+      next if batch_entry.encoding_success?
+      if batch_entry.encoding_error?
+        status = :error
+      else
+        status = :in_progress
+        break
+      end
     end
+    @encoding_status = status
     @encoding_status
   end
-
 end

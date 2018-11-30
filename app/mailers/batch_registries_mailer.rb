@@ -63,12 +63,12 @@ class BatchRegistriesMailer < ApplicationMailer
     @collection_text = Admin::Collection.find(@batch_registry.collection).name if Admin::Collection.exists?(@batch_registry.collection)
     @collection_text ||= "Collection"
 
-    @status = @batch_registry.encoding_success? ? "Success" : "Errors present"
+    @status = @batch_registry.encoding_success? ? "Success" : "Errors Present"
 
     mail(
       to: @email,
       from: Settings.email.notification,
-      subject: "#{@status}: Batch encoding #{@batch_registry.file_name} for #{@collection_text}"
+      subject: "#{@status}: Batch Registry #{@batch_registry.file_name} for #{@collection_text} has finished encoding"
     )
   end
 

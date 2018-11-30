@@ -114,7 +114,7 @@ RSpec.describe BatchRegistriesMailer, type: :mailer do
       expect(email.subject).to include batch_registries.file_name
       expect(email.subject).to include collection.name
 
-      expect(email.subject).to include 'Errors present'
+      expect(email.subject).to include 'Errors Present'
 
       expect(email).to have_body_text(batch_registries.file_name)
       expect(email).to have_body_text("<a href=\"#{media_object.permalink}\">")

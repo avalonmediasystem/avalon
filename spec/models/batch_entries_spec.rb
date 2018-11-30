@@ -170,6 +170,23 @@ describe BatchEntries do
       expect(batch_entry.encoding_error?).to be_falsey
     end
 
-  end
+    it 'records neither error nor success nor finished if MediaObject has any MasterFiles that are not errored or successful' do
+      master_file1 = FactoryBot.create(:master_file, :with_media_object,
+                                       status_code: 'COMPLETED')
+      media_object = master_file1.media_object
+      master_file2 = FactoryBot.create(:master_file, media_object: media_object,
+                                       status_code: 'FAILED')
+      master_file3 = FactoryBot.create(:master_file, media_object: media_object,
+                                       status_code: 'RUNNING')
 
+      batch_entry = FactoryBot.build(:batch_entries, media_object_pid: media_object.id)
+      files = double()
+      allow(batch_entry).to receive(:files).and_return(files)
+      allow(files).to receive(:count).and_return(3)
+
+      expect(batch_entry.encoding_finished?).to be_falsey
+      expect(batch_entry.encoding_success?).to be_falsey
+      expect(batch_entry.encoding_error?).to be_falsey
+    end
+  end
 end
