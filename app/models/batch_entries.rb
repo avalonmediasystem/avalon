@@ -62,13 +62,13 @@ class BatchEntries < ActiveRecord::Base
     @files ||= JSON.parse(payload)['files']
   end
 
+  # Returns :success, :error, or :in_progress
   def encoding_status
-    # Returns :success, :error, or :in_progress
-
     return @encoding_status if @encoding_status.present?
 
     # Issues with the MediaObject are treated as encoding errors
-    return :error if media_object_pid.blank?
+    return (@encoding_status = :error) if media_object_pid.blank?
+    # Using where instead of find to avoid throwing a not found exception
     media_object = MediaObject.where(id: media_object_pid).first
     return (@encoding_status = :error) unless media_object
 
@@ -78,14 +78,18 @@ class BatchEntries < ActiveRecord::Base
     end
 
     # Only return success if all MasterFiles have status 'COMPLETED'
-    @encoding_status = :success
+    status = :success
     media_object.master_files.each do |master_file|
+      next if master_file.status_code == 'COMPLETED'
       # TODO: explore border cases
-      return (@encoding_status = :error) if ['FAILED',
-                                             'CANCELLED'].include?(master_file.status_code)
-      @encoding_status = :in_progress unless master_file.status_code == 'COMPLETED'
+      if master_file.status_code == 'FAILED' || master_file.status_code == 'CANCELLED'
+        status = :error
+      else
+        status = :in_progress
+        break
+      end
     end
+    @encoding_status = status
     @encoding_status
   end
-
 end

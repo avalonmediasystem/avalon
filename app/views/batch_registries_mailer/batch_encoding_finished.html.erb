@@ -12,7 +12,9 @@ Batch encoding complete!
 </dl>
 
 <% if @batch_registry.encoding_error? %>
-  <h2>Spreadsheet rows with encoding errors</h2>
+  <div class="alert alert-danger">
+    The following rows of your spreadsheet had encoding errors:
+  </div>
   <table>
     <tr>
       <th>Row</th>
@@ -25,7 +27,9 @@ Batch encoding complete!
 <% end %>
 
 <% if @batch_registry.batch_entries_with_encoding_success.any? %>
-  <h2>Successfully encoded spreadsheet rows</h2>
+  <div class="alert">
+    The following rows of your spreadsheet successfully finished encoding:
+  </div>
   <table>
     <tr>
       <th>Row</th>
