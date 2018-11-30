@@ -107,12 +107,17 @@ describe BatchRegistries do
                                        batch_registries_id: batch_registry.id)
      batch_entry2 = FactoryBot.create(:batch_entries,
                                        batch_registries_id: batch_registry.id)
+     batch_entry3 = FactoryBot.create(:batch_entries,
+                                       batch_registries_id: batch_registry.id)
 
      # Cheat a little to avoid database fetch
-     allow(batch_registry).to receive(:batch_entries).and_return([batch_entry1, batch_entry2])
+     allow(batch_registry).to receive(:batch_entries).and_return([batch_entry1, batch_entry2, batch_entry3])
 
      allow(batch_entry1).to receive(:encoding_success?).and_return(true)
      allow(batch_entry1).to receive(:encoding_error?).and_return(false)
+
+     allow(batch_entry2).to receive(:encoding_success?).and_return(false)
+     allow(batch_entry2).to receive(:encoding_error?).and_return(true)
 
      allow(batch_entry2).to receive(:encoding_success?).and_return(false)
      allow(batch_entry2).to receive(:encoding_error?).and_return(false)
@@ -121,6 +126,5 @@ describe BatchRegistries do
      expect(batch_registry.encoding_success?).to eq(false)
      expect(batch_registry.encoding_error?).to eq(false)
    end
-
  end
 end
