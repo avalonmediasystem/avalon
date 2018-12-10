@@ -706,6 +706,23 @@ describe MediaObject do
         expect(request).to have_been_requested
       end
     end
+    describe 'nil date_issued fromm bib_import' do
+      let(:sru_url) { "http://zgate.example.edu:9000/db?version=1.1&operation=searchRetrieve&maximumRecords=1&recordSchema=marcxml&query=rec.id=#{bib_id}" }
+      let(:sru_response) { File.read(File.expand_path("../../fixtures/#{bib_id}-unknown.xml",__FILE__)) }
+      let!(:request) { stub_request(:get, sru_url).to_return(body: sru_response) }
+      it 'should not replace the previous value if there is one' do
+        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+        expect { media_object.descMetadata.populate_from_catalog!(" #{bib_id} ", 'local') }.to_not change { media_object.date_issued }
+        expect(request).to have_been_requested
+      end
+      it 'should replace missing value with unknown/unknown' do
+        Settings.bib_retriever = { 'protocol' => 'sru', 'url' => 'http://zgate.example.edu:9000/db' }
+        media_object.date_issued = ''
+        expect { media_object.descMetadata.populate_from_catalog!(" #{bib_id} ", 'local') }.to change { media_object.date_issued }.to 'unknown/unknown'
+        expect(request).to have_been_requested
+      end
+    end
+
   end
 
   describe '#section_labels' do
