@@ -509,7 +509,7 @@ class MasterFile < ActiveFedora::Base
   end
 
   def has_structuralMetadata?
-    !structuralMetadata.empty?
+    structuralMetadata.present? && Nokogiri::XML(structuralMetadata.content).xpath('//Item').present?
   end
 
   def to_solr *args
