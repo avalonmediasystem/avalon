@@ -38,9 +38,10 @@ describe User do
   end
 
   describe "#groups" do
-    let(:groups)  { ["foorole"] }
+    let(:groups) { ["foorole"] }
+    let(:role_map) { { "foorole" => [user.user_key] } }
     it "should return groups from the role map" do
-      expect(RoleMapper).to receive(:roles).and_return(groups)
+      allow(RoleMapper).to receive(:map).and_return(role_map)
       expect(user.groups).to eq(groups)
     end
   end
