@@ -437,6 +437,8 @@ GEM
     i18n (1.1.0)
       concurrent-ruby (~> 1.0)
     iconv (1.0.5)
+    iiif_manifest (0.5.0)
+      activesupport (>= 4)
     ims-lti (1.1.13)
       builder
       oauth (>= 0.4.5, < 0.6)
@@ -573,6 +575,7 @@ GEM
     public_suffix (3.0.2)
     raabro (1.1.6)
     rack (2.0.6)
+    rack-cors (1.0.2)
     rack-protection (2.0.3)
       rack
     rack-test (1.1.0)
@@ -900,6 +903,7 @@ DEPENDENCIES
   hooks
   hydra-head (~> 10.6)
   iconv
+  iiif_manifest
   ims-lti (~> 1.1.13)
   jbuilder (~> 2.0)
   jquery-datatables
@@ -919,6 +923,7 @@ DEPENDENCIES
   poltergeist
   pry-byebug
   pry-rails
+  rack-cors
   rails (= 5.1.6)
   rails-controller-testing
   rb-readline

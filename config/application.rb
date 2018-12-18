@@ -35,5 +35,13 @@ module Avalon
     config.active_job.queue_adapter = :resque
 
     config.action_dispatch.default_headers = { 'X-Frame-Options' => 'ALLOWALL' }
+
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins '*'
+        resource '/media_objects/*/manifest', headers: :any, methods: [:get]
+        resource '/master_files/*/thumbnail', headers: :any, methods: [:get]
+      end
+    end
   end
 end
