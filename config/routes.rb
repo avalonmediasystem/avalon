@@ -98,6 +98,7 @@ Rails.application.routes.draw do
       get :add_to_playlist_form
       post :add_to_playlist
       patch :intercom_push
+      get :manifest
     end
     collection do
       post :create, action: :create, constraints: { format: 'json' }
