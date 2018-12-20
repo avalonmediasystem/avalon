@@ -22,8 +22,8 @@ class MediaObjectsController < ApplicationController
   include ConditionalPartials
   include SecurityHelper
 
-  before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details]
-  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections]
+  before_action :authenticate_user!, except: [:show, :set_session_quality, :show_stream_details, :manifest]
+  load_and_authorize_resource except: [:create, :destroy, :update_status, :set_session_quality, :tree, :deliver_content, :confirm_remove, :show_stream_details, :add_to_playlist_form, :add_to_playlist, :intercom_collections, :manifest]
   authorize_resource only: [:create]
 
   before_action :inject_workflow_steps, only: [:edit, :update], unless: proc { request.format.json? }
@@ -452,6 +452,27 @@ class MediaObjectsController < ApplicationController
         end
         render :json => result
       }
+    end
+  end
+
+  def manifest
+    @media_object = MediaObject.find(params[:id])
+    authorize! :read, @media_object
+
+    master_files = master_file_presenter
+    canvas_presenters = master_files.collect do |mf|
+      stream_info = secure_streams(mf.stream_details)
+      IiifCanvasPresenter.new(master_file: mf, stream_info: stream_info)
+    end
+    presenter = IiifManifestPresenter.new(media_object: @media_object, master_files: canvas_presenters)
+
+    manifest = IIIFManifest::V3::ManifestFactory.new(presenter).to_h
+    # TODO: implement thumbnail in iiif_manifest
+    manifest["thumbnail"] = [{ "id" => presenter.thumbnail, "type" => 'Image' }] if presenter.thumbnail
+
+    respond_to do |wants|
+      wants.json { render json: manifest.to_json }
+      wants.html { render json: manifest.to_json }
     end
   end
 

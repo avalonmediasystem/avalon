@@ -42,6 +42,8 @@ gem 'bootstrap-toggle-rails', git: 'https://github.com/rkallensee/bootstrap-togg
 gem 'bootstrap_form'
 gem 'speedy-af', '~> 0.1.1'
 gem 'recaptcha', require: 'recaptcha/rails'
+gem 'iiif_manifest'
+gem 'rack-cors', require: 'rack/cors'
 
 # Avalon Components
 gem 'avalon-workflow', git: "https://github.com/avalonmediasystem/avalon-workflow.git", branch: 'rails5'
