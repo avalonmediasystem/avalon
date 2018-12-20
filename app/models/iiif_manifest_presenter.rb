@@ -8,7 +8,7 @@ class IiifManifestPresenter
 
   def file_set_presenters
     # Only return master files that have derivatives to avoid oddities in the manifest and failures in iiif_manifest
-    master_files.select { |mf| mf.derivative_ids.size > 0 }
+    master_files.select { |mf| !mf.derivative_ids.empty? }
   end
 
   def work_presenters
@@ -59,27 +59,21 @@ class IiifManifestPresenter
     def image_for(document)
       master_file_id = document["section_id_ssim"].try :first
 
-      video_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('moving image'.titleize) } rescue 0
-      audio_count = document["avalon_resource_type_ssim"].count{|m| m.start_with?('sound recording'.titleize) } rescue 0
+      video_count = document["avalon_resource_type_ssim"].count { |m| m.start_with?('moving image'.titleize) } rescue 0
+      audio_count = document["avalon_resource_type_ssim"].count { |m| m.start_with?('sound recording'.titleize) } rescue 0
 
       if master_file_id
         if video_count > 0
-         Rails.application.routes.url_helpers.thumbnail_master_file_url(master_file_id)
+          Rails.application.routes.url_helpers.thumbnail_master_file_url(master_file_id)
         elsif audio_count > 0
           ActionController::Base.helpers.asset_url('audio_icon.png')
-        else
-          nil
         end
-      else
-        if video_count > 0 && audio_count > 0
-          ActionController::Base.helpers.asset_url('hybrid_icon.png')
-        elsif video_count > audio_count
-          ActionController::Base.helpers.asset_url('video_icon.png')
-        elsif audio_count > video_count
-          ActionController::Base.helpers.asset_url('audio_icon.png')
-        else
-          nil
-        end
+      elsif video_count > 0 && audio_count > 0
+        ActionController::Base.helpers.asset_url('hybrid_icon.png')
+      elsif video_count > audio_count
+        ActionController::Base.helpers.asset_url('video_icon.png')
+      elsif audio_count > video_count
+        ActionController::Base.helpers.asset_url('audio_icon.png')
       end
     end
 end
