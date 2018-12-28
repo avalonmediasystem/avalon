@@ -286,6 +286,26 @@ class MasterFilesController < ApplicationController
     @hls_streams = gather_hls_streams(master_file)
   end
 
+  def get_structure
+    authorize! :read, @master_file, message: "You do not have sufficient privileges"
+    @master_file = MasterFile.find(params[:id])
+    render json: @master_file.structuralMetadata.as_json
+  end
+
+  def set_structure
+    authorize! :edit, @master_file, message: "You do not have sufficient privileges"
+    @master_file = MasterFile.find(params[:id])
+    @master_file.structuralMetadata.content = StructuralMetadata.from_json(params[:json])
+    @master_file.save
+  end
+
+  def delete_structure
+    authorize! :edit, @master_file, message: "You do not have sufficient privileges"
+    @master_file = MasterFile.find(params[:id])
+    @master_file.structuralMetadata.content = ''
+    @master_file.save
+  end
+
 protected
   def ensure_readable_filedata
     if params[:Filedata].present?
