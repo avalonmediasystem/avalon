@@ -374,13 +374,13 @@ describe MasterFilesController do
     end
   end
 
-  describe "#get_structure" do
+  describe "#structure" do
     let(:master_file) { FactoryBot.create(:master_file, :with_media_object, :with_structure) }
     let(:structure_json) { File.read('spec/fixtures/structure.json') }
 
     before do
       disableCanCan!
-      get 'get_structure', params: { id: master_file.id }
+      get 'structure', params: { id: master_file.id }
     end
 
     it "returns structuralMetadata datastream as JSON" do
