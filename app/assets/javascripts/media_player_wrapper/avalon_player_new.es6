@@ -183,7 +183,7 @@ class MEJSPlayer {
 
     const $sections = $('#accordion').find('.panel-heading[data-section-id]');
     const sectionsIdArray = $sections.map((index, item) =>
-      $(item).data('sectionId')
+      $(item).data('sectionId').toString()
     );
     const currentIdIndex = [...sectionsIdArray].indexOf(t.currentStreamInfo.id);
 
