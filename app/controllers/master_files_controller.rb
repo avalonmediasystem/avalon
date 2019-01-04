@@ -287,21 +287,21 @@ class MasterFilesController < ApplicationController
   end
 
   def structure
-    authorize! :read, @master_file, message: "You do not have sufficient privileges"
     @master_file = MasterFile.find(params[:id])
+    authorize! :read, @master_file, message: "You do not have sufficient privileges"
     render json: @master_file.structuralMetadata.as_json
   end
 
   def set_structure
-    authorize! :edit, @master_file, message: "You do not have sufficient privileges"
     @master_file = MasterFile.find(params[:id])
+    authorize! :edit, @master_file, message: "You do not have sufficient privileges"
     @master_file.structuralMetadata.content = StructuralMetadata.from_json(params[:json])
     @master_file.save
   end
 
   def delete_structure
-    authorize! :edit, @master_file, message: "You do not have sufficient privileges"
     @master_file = MasterFile.find(params[:id])
+    authorize! :edit, @master_file, message: "You do not have sufficient privileges"
     @master_file.structuralMetadata.content = ''
     @master_file.save
   end
