@@ -13,6 +13,7 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'rails_helper'
+require 'equivalent-xml'
 
 describe MasterFilesController do
 
@@ -372,6 +373,54 @@ describe MasterFilesController do
       end
     end
   end
+
+  describe "#structure" do
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object, :with_structure) }
+    let(:structure_json) { File.read('spec/fixtures/structure.json') }
+
+    before do
+      disableCanCan!
+      get 'structure', params: { id: master_file.id }
+    end
+
+    it "returns structuralMetadata datastream as JSON" do
+      expect(JSON.parse(response.body)).to eq(JSON.parse(structure_json))
+      expect(response.headers['Content-Type']).to eq('application/json; charset=utf-8')
+    end
+  end
+
+  describe "#set_structure" do
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
+    let(:structure_json) { JSON.parse(File.read('spec/fixtures/structure.json')) }
+    let(:structure_xml) { File.read('spec/fixtures/structure.xml') }
+
+    before do
+      disableCanCan!
+      @request.headers['Content-Type'] = 'application/json'
+      patch 'set_structure', params: { id: master_file.id, json: structure_json }
+      master_file.reload
+    end
+
+    it "populates structuralMetadata datastream with xml translated from JSON" do
+      expect(Nokogiri::XML(master_file.structuralMetadata.content).root).to be_equivalent_to(Nokogiri::XML(structure_xml).root)
+    end
+  end
+
+  describe "#delete_structure" do
+    let(:master_file) { FactoryBot.create(:master_file, :with_media_object, :with_structure) }
+
+    before do
+      disableCanCan!
+      delete 'delete_structure', params: { id: master_file.id }
+      master_file.reload
+    end
+
+    it "returns structuralMetadata datastream as JSON" do
+      expect(master_file.structuralMetadata.content).to eq('')
+    end
+  end
+
+
   describe "#attach_captions" do
     let(:master_file) { FactoryBot.create(:master_file, :with_media_object) }
 

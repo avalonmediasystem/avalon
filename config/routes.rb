@@ -125,11 +125,13 @@ Rails.application.routes.draw do
       get :captions
       get :waveform
       get 'adaptive', to: 'master_files#hls_adaptive_manifest'
+      get 'structure', to: 'master_files#structure', constraints: { format: 'json' }
+      post 'structure', to: 'master_files#set_structure', constraints: { format: 'json' }
+      delete 'structure', to: 'master_files#delete_structure', constraints: { format: 'json' }
     end
   end
 
   resources :derivatives, only: [:create]
-
   match "/autocomplete", to: 'objects#autocomplete', via: [:get]
   match "/objects/:id", to: 'objects#show', via: [:get], :as => :objects
   match "/object/:id", to: 'objects#show', via: [:get]
