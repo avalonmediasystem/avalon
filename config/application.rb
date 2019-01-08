@@ -39,10 +39,10 @@ module Avalon
     config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins '*'
-        resource '/media_objects/*/manifest', headers: :any, methods: [:get]
+        resource '/media_objects/*/manifest.json', headers: :any, methods: [:get]
         resource '/master_files/*/thumbnail', headers: :any, methods: [:get]
-        resource '/master_files/*/structure', headers: :any, methods: [:get, :post, :delete]
-        resource '/master_files/*/waveform', headers: :any, methods: [:get]
+        resource '/master_files/*/structure.json', headers: :any, methods: [:get, :post, :delete]
+        resource '/master_files/*/waveform.json', headers: :any, methods: [:get]
       end
     end
   end
