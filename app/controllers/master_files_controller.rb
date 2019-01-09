@@ -21,6 +21,7 @@ class MasterFilesController < ApplicationController
 
   before_action :authenticate_user!, :only => [:create]
   before_action :ensure_readable_filedata, :only => [:create]
+  skip_before_action :verify_authenticity_token, only: [:set_structure, :delete_structure]
 
 
   # Renders the captions content for an object or alerts the user that no caption content is present with html present
