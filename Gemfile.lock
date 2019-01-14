@@ -832,7 +832,7 @@ GEM
       activemodel (>= 5.0)
       bindex (>= 0.4.0)
       railties (>= 5.0)
-    webmock (3.4.2)
+    webmock (3.5.1)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
@@ -951,7 +951,7 @@ DEPENDENCIES
   uglifier (>= 1.3.0)
   wavefile
   web-console
-  webmock
+  webmock (~> 3.5.1)
   whenever!
   with_locking
   xray-rails
