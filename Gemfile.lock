@@ -736,7 +736,7 @@ GEM
     rubyzip (1.2.2)
     rufus-scheduler (3.4.2)
       et-orbi (~> 1.0)
-    safe_yaml (1.0.4)
+    safe_yaml (1.0.5)
     sass (3.4.22)
     sass-rails (5.0.6)
       railties (>= 4.0.0, < 6)
@@ -830,7 +830,7 @@ GEM
       binding_of_caller (>= 0.7.2)
       railties (>= 4.0)
       sprockets-rails (>= 2.0, < 4.0)
-    webmock (3.0.1)
+    webmock (3.5.1)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
@@ -953,7 +953,7 @@ DEPENDENCIES
   uglifier (>= 1.3.0)
   wavefile
   web-console
-  webmock
+  webmock (~> 3.5.1)
   whenever!
   with_locking
   xray-rails
