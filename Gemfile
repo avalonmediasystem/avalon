@@ -130,7 +130,7 @@ group :test do
   gem 'rspec-retry'
   gem 'shoulda-matchers'
   gem 'simplecov'
-  gem 'webmock'
+  gem 'webmock', '~> 3.5.1'
 end
 
 group :production do
