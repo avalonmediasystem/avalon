@@ -68,7 +68,7 @@ gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/
 
 # Data Translation & Normalization
 gem 'edtf'
-gem 'iconv'
+gem 'iconv', '~> 1.0.6'
 gem 'marc'
 
 # Jobs
