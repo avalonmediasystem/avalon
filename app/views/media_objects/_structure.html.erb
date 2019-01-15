@@ -64,7 +64,8 @@ Unless required by applicable law or agreed to in writing, software distributed
 	    <%= form_for section, :url => attach_structure_master_file_path(section.id), html: {method: "post"} do |form| %>
 	      <%= form.file_field :structure, class: "filedata", style: "height:0px;width:0px;" %>
 	      <input type="button" class="btn btn-primary btn-xs" onclick="$('#structure_<%= index %> .filedata').click();" value="Upload" />
-	      <input type="button" class='btn btn-primary btn-xs' value="Edit" data-toggle="modal" data-target="#edit_structure_<%= index %>" />
+        <input type="button" class='btn btn-primary btn-xs' value="Edit Structure" data-toggle="modal" data-target="#edit_structure_<%= index %>" />
+	      <input type="button" class='btn btn-primary btn-xs' value="Advanced Edit" data-toggle="modal" data-target="#advanced_edit_structure_<%= index %>" />
               <input type="submit" class="btn btn-danger btn-xs" value="Remove" />
 	    <% end %>
           </div>
@@ -96,7 +97,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 
 <% @masterFiles.each_with_index do |section, index| %>
   <% default_structure="<Item label='#{html_escape(stream_label_for(section))}'></Item>" %>
-  <div id="edit_structure_<%= index %>" class="structure_edit modal fade" data-backdrop="false" data-submit_url="<%= attach_structure_master_file_path(section.id) %>">
+  <div id="edit_structure_<%= index %>" class="structure_edit modal fade" data-backdrop="false">
     <div class="modal-dialog modal-lg">
       <div class="modal-content col-md-12">
         <div class="modal-header">
@@ -104,7 +105,20 @@ Unless required by applicable law or agreed to in writing, software distributed
           <h4 class="modal-title">Edit Structure</h4>
         </div>
         <div class="modal-body structure_edit col-md-12">
-	  <textarea rows=20 class="col-md-12 original_textarea" id="structure_<%= index %>" style="visibility:hidden"><%= section.structuralMetadata.valid? ? section.structuralMetadata.to_xml : default_structure %></textarea>
+          <!-- Put SME react component here using react_component helper -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="advanced_edit_structure_<%= index %>" class="structure_edit modal fade" data-backdrop="false" data-submit_url="<%= attach_structure_master_file_path(section.id) %>">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content col-md-12">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Advanced Edit Structure</h4>
+        </div>
+        <div class="modal-body structure_edit col-md-12">
+    <textarea rows=20 class="col-md-12 original_textarea" id="structure_<%= index %>" style="visibility:hidden"><%= section.structuralMetadata.valid? ? section.structuralMetadata.to_xml : default_structure %></textarea>
         </div>
       </div>
     </div>
