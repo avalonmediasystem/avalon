@@ -17,6 +17,8 @@ gem 'sass-rails', '~> 5.0'
 gem 'sass', '3.4.22'
 gem 'sprockets-es6'
 gem 'uglifier', '>= 1.3.0'
+gem 'webpacker'
+gem 'react-rails'
 
 # Core Samvera
 gem 'hydra-head', '~> 10.6'
