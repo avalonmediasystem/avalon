@@ -2,6 +2,8 @@
 git:
   submodules: false
 bundler_args: --with postgres aws --without development debug
+addons:
+  chrome: stable
 services:
   - mysql2
   - redis-server

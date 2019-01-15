@@ -114,6 +114,7 @@ end
 
 group :test do
   gem 'capybara'
+  gem 'chromedriver-helper'
   gem 'codeclimate-test-reporter'
   gem 'database_cleaner'
   gem 'email_spec'
@@ -121,9 +122,9 @@ group :test do
   gem 'fakefs', require: 'fakefs/safe'
   gem 'faker'
   gem 'hashdiff'
-  gem 'poltergeist'
   gem 'rails-controller-testing'
   gem 'rspec-retry'
+  gem 'selenium-webdriver'
   gem 'shoulda-matchers'
   gem 'simplecov'
   gem 'webmock'
