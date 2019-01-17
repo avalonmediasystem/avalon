@@ -60,3 +60,6 @@ docker-compose.override.yml
 /node_modules
 yarn-debug.log*
 .yarn-integrity
+
+# IDE stuff
+.vscode/

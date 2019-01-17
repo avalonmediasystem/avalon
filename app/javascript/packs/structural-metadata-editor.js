@@ -1,0 +1,1 @@
+import 'structural-metadata-editor';
