@@ -5,6 +5,8 @@ inherit_from:
   - bixby_default.yml
 
 AllCops:
+  TargetRubyVersion: 2.5
+  TargetRailsVersion: 5.1
   DisplayCopNames: true
   Exclude:
     - 'db/**/*'
