@@ -436,7 +436,7 @@ GEM
       rails (>= 3.2.6)
     i18n (1.5.2)
       concurrent-ruby (~> 1.0)
-    iconv (1.0.5)
+    iconv (1.0.6)
     iiif_manifest (0.5.0)
       activesupport (>= 4)
     ims-lti (1.1.13)
@@ -832,7 +832,7 @@ GEM
       activemodel (>= 5.0)
       bindex (>= 0.4.0)
       railties (>= 5.0)
-    webmock (3.4.2)
+    webmock (3.5.1)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
@@ -902,7 +902,7 @@ DEPENDENCIES
   hashdiff
   hooks
   hydra-head (~> 10.6)
-  iconv
+  iconv (~> 1.0.6)
   iiif_manifest
   ims-lti (~> 1.1.13)
   jbuilder (~> 2.0)
@@ -951,7 +951,7 @@ DEPENDENCIES
   uglifier (>= 1.3.0)
   wavefile
   web-console
-  webmock
+  webmock (~> 3.5.1)
   whenever!
   with_locking
   xray-rails
@@ -959,4 +959,4 @@ DEPENDENCIES
   zoom
 
 BUNDLED WITH
-   1.17.1
+   1.17.2
