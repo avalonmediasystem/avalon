@@ -56,6 +56,9 @@ ActiveRecord::Migration.maintain_test_schema!
 ActiveJob::Base.queue_adapter = :test
 
 Capybara.server = :webrick
+# eg `SHOW_BROWSER=true ./bin/rspec` will show you an actual chrome browser
+# being operated by capybara.
+Capybara.javascript_driver = ENV['SHOW_BROWSER'] ? :selenium_chrome : :selenium_chrome_headless
 
 Shoulda::Matchers.configure do |config|
   config.integrate do |with|
