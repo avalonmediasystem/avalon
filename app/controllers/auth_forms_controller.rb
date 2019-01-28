@@ -54,6 +54,6 @@ class AuthFormsController < ApplicationController
       end
       form.at_xpath('//input[last()]').add_next_sibling view_context.hidden_field_tag(:authenticity_token, view_context.form_authenticity_token)
       form.xpath('button').each { |btn| btn['class'] = 'btn btn-primary' }
-      yield(%{<div class="omniauth-form container">#{form.to_html}</div>})
+      yield(%(<div class="omniauth-form container">#{form.to_html}</div>))
     end
 end
