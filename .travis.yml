@@ -32,8 +32,8 @@ language: ruby
 jdk:
   - oraclejdk8
 rvm:
-  - 2.3
   - 2.4
   - 2.5
+  - 2.6
 dist: trusty
 sudo: required

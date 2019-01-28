@@ -70,7 +70,7 @@ gem 'media_element_add_to_playlist', git: 'https://github.com/avalonmediasystem/
 
 # Data Translation & Normalization
 gem 'edtf'
-gem 'iconv'
+gem 'iconv', '~> 1.0.6'
 gem 'marc'
 
 # Jobs
@@ -127,7 +127,7 @@ group :test do
   gem 'selenium-webdriver'
   gem 'shoulda-matchers'
   gem 'simplecov'
-  gem 'webmock'
+  gem 'webmock', '~> 3.5.1'
 end
 
 group :production do
