@@ -13,8 +13,6 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 require 'rails_helper'
-require 'capybara/poltergeist'
-Capybara.javascript_driver = :poltergeist
 
 describe 'Playlist' do
   after { Warden.test_reset! }

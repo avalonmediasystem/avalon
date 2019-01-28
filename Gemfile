@@ -17,6 +17,8 @@ gem 'sass-rails', '~> 5.0'
 gem 'sass', '3.4.22'
 gem 'sprockets-es6'
 gem 'uglifier', '>= 1.3.0'
+gem 'webpacker'
+gem 'react-rails'
 
 # Core Samvera
 gem 'hydra-head', '~> 10.6'
@@ -112,6 +114,7 @@ end
 
 group :test do
   gem 'capybara'
+  gem 'chromedriver-helper'
   gem 'codeclimate-test-reporter'
   gem 'database_cleaner'
   gem 'email_spec'
@@ -119,9 +122,9 @@ group :test do
   gem 'fakefs', require: 'fakefs/safe'
   gem 'faker'
   gem 'hashdiff'
-  gem 'poltergeist'
   gem 'rails-controller-testing'
   gem 'rspec-retry'
+  gem 'selenium-webdriver'
   gem 'shoulda-matchers'
   gem 'simplecov'
   gem 'webmock', '~> 3.5.1'
