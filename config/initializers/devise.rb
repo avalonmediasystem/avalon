@@ -257,7 +257,8 @@ Devise.setup do |config|
     if provider[:provider] == :identity
       provider[:params].merge!({
         on_login: AuthFormsController.action(:render_identity_request_form),
-        on_registration: AuthFormsController.action(:render_identity_registration_form)
+        on_registration: AuthFormsController.action(:render_identity_registration_form),
+        on_failed_registration: AuthFormsController.action(:render_form_with_errors)
       })
     end
 
