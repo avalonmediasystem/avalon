@@ -7,6 +7,7 @@ volumes:
   work:
   solr:
   gems:
+  npms:
 
 services:
   db:
@@ -61,6 +62,8 @@ services:
       - "6379:6379"
   avalon:
     image: avalonmediasystem/avalon:6.x-dev
+    build:
+      context: ./docker
     command: "/rails_init-dev.sh"
     depends_on:
       - db
@@ -113,9 +116,10 @@ services:
       - Z3950_HOST
       - Z3950_PORT
     volumes:
+      - .:/home/app/avalon
       - ./masterfiles:/masterfiles
       - gems:/home/app/gems
-      - .:/home/app/avalon
+      - npms:/home/app/node_modules
     ports:
       - "3000:80"
     stdin_open: true
