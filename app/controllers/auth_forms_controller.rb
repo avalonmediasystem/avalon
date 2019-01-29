@@ -13,6 +13,8 @@
 # ---  END LICENSE_HEADER BLOCK  ---
 
 class AuthFormsController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: [:render_form_with_errors]
+
   def render_identity_request_form
     render html: omniauth_form(:identity, :request_phase).html_safe, layout: true
   end
@@ -21,19 +23,29 @@ class AuthFormsController < ApplicationController
     render html: omniauth_form(:identity, :registration_form).html_safe, layout: true
   end
 
-  private
-  def omniauth_form(strategy_name, phase=:request_phase)
-    opts = Devise.omniauth_configs[strategy_name].options
-    strategy_class = Devise.omniauth_configs[strategy_name].strategy_class
-    strategy = strategy_class.new(opts)
-    html = strategy.send(phase).last.body.first.strip
-    doc = Nokogiri::HTML(html)
-    form = doc.at_xpath('//form')
-    form.xpath('label|input').to_a.in_groups_of(2).each do |label, input|
-      input['class'] = 'form-control'
-      label.replace('<div class="form-group"/>').first.add_child(label).add_next_sibling(input)
-    end
-    form.xpath('button').each { |btn| btn['class'] = 'btn btn-primary' }
-    %{<div class="omniauth-form container">#{form.to_html}</div>}
+  def render_form_with_errors
+    add_errors_to_flash
+    render html: omniauth_form(:identity, :registration_form).html_safe, layout: true
   end
+
+  private
+    def add_errors_to_flash
+      model = request.env["omniauth.identity"]
+      flash[:error] = model.errors.to_a
+    end
+
+    def omniauth_form(strategy_name, phase=:request_phase)
+      opts = Devise.omniauth_configs[strategy_name].options
+      strategy_class = Devise.omniauth_configs[strategy_name].strategy_class
+      strategy = strategy_class.new(opts)
+      html = strategy.send(phase).last.body.first.strip
+      doc = Nokogiri::HTML(html)
+      form = doc.at_xpath('//form')
+      form.xpath('label|input').to_a.in_groups_of(2).each do |label, input|
+        input['class'] = 'form-control'
+        label.replace('<div class="form-group"/>').first.add_child(label).add_next_sibling(input)
+      end
+      form.xpath('button').each { |btn| btn['class'] = 'btn btn-primary' }
+      %{<div class="omniauth-form container">#{form.to_html}</div>}
+    end
 end
