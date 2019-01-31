@@ -1,6 +1,7 @@
+# frozen_string_literal: true
 wb_path = '/srv/avalon/scriptdata/waveform_backfill.txt'
 start_index = ARGV[0] || 1
-row_max = ARGV[1] || 1000000
+row_max = ARGV[1] || 1_000_000
 
 # record all master files needing waveform back-fill in a file, so if the script fails we can restart from the last processed master file
 # without this file, we will solely rely on the has_waveform?_bs field, and we could run into a situation when the waveform backfill is scheduled
@@ -15,7 +16,7 @@ unless File.exist? wb_path
   count = 0
   result["response"]["docs"].each do |doc|
     next if doc['has_waveform?_bs']
-    id = "#{doc['id']}"
+    id = (doc['id']).to_s
     wb_file.puts id
     mf_ids << id
     count += 1
@@ -34,7 +35,7 @@ if mf_ids.empty?
 end
 
 mf_ids.each_with_index do |id, i|
-  next if i+1 < start_index
+  next if i + 1 < start_index
   WaveformJob.perform_later(id)
-  Rails.logger.info "Scheduled WavefromJob for master file #{id} on line #{i+1}"
+  Rails.logger.info "Scheduled WavefromJob for master file #{id} on line #{i + 1}"
 end
