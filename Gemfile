@@ -21,7 +21,8 @@ gem 'webpacker'
 gem 'react-rails'
 
 # Core Samvera
-gem 'hydra-head', '~> 10.6'
+#gem 'hydra-head', '~> 10.6'
+gem 'hydra-head', git: 'https://github.com/samvera/hydra-head.git', branch: 'no-extra-acls'
 gem 'active-fedora', '~> 11.2'
 gem 'active_fedora-datastreams'
 gem 'active_fedora-noid', '~> 2.0.2'
