@@ -11,6 +11,7 @@
 #   CONDITIONS OF ANY KIND, either express or implied. See the License for the
 #   specific language governing permissions and limitations under the License.
 # ---  END LICENSE_HEADER BLOCK  ---
+require 'htmlentities'
 
 module MasterFileBehavior
   QUALITY_ORDER = { "auto" => 1, "high" => 2, "medium" => 3, "low" => 4 }.freeze
@@ -94,7 +95,7 @@ module MasterFileBehavior
         embed_master_file_url(self.id, only_path: false, protocol: '//')
       end
       height = is_video? ? (width/display_aspect_ratio.to_f).floor : AUDIO_HEIGHT
-      "<iframe title=\"#{ embed_title }\" src=\"#{url}\" width=\"#{width}\" height=\"#{height}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
+      "<iframe title=\"#{HTMLEntities.new.encode(embed_title)}\" src=\"#{url}\" width=\"#{width}\" height=\"#{height}\" frameborder=\"0\" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>"
     rescue
       ""
     end
