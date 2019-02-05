@@ -19,7 +19,7 @@ include SecurityHelper
 class MasterFilesController < ApplicationController
   # include Avalon::Controller::ControllerBehavior
 
-  before_action :authenticate_user!, :only => [:create]
+  before_action :authenticate_user!, :only => [:create, :auth_token]
   before_action :ensure_readable_filedata, :only => [:create]
   skip_before_action :verify_authenticity_token, only: [:set_structure, :delete_structure]
 
@@ -306,6 +306,13 @@ class MasterFilesController < ApplicationController
     authorize! :edit, @master_file, message: "You do not have sufficient privileges"
     @master_file.structuralMetadata.content = ''
     @master_file.save
+  end
+
+  def auth_token
+    messageId = params[:messageId]
+    origin = params[:origin]
+    accessToken = 'a'
+    render 'auth_token', :layout => false, locals: { messageId: messageId, origin: origin, accessToken: accessToken }
   end
 
 protected
