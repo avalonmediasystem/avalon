@@ -19,7 +19,7 @@ include SecurityHelper
 class MasterFilesController < ApplicationController
   # include Avalon::Controller::ControllerBehavior
 
-  before_action :authenticate_user!, :only => [:create, :auth_token]
+  before_action :authenticate_user!, :only => [:create]
   before_action :ensure_readable_filedata, :only => [:create]
   skip_before_action :verify_authenticity_token, only: [:set_structure, :delete_structure]
 
@@ -309,10 +309,19 @@ class MasterFilesController < ApplicationController
   end
 
   def auth_token
-    messageId = params[:messageId]
-    origin = params[:origin]
-    accessToken = 'a'
-    render 'auth_token', :layout => false, locals: { messageId: messageId, origin: origin, accessToken: accessToken }
+    @master_file = MasterFile.find(params[:id])
+    if cannot? :read, @master_file
+      if !user_signed_in?
+        redirect_to new_user_session_path, url: request.fullpath
+      else
+        head :unauthorized
+      end
+    else
+      messageId = params[:messageId]
+      origin = params[:origin]
+      accessToken = 'a'
+      render 'auth_token', :layout => false, locals: { messageId: messageId, origin: origin, accessToken: accessToken }
+    end
   end
 
 protected
