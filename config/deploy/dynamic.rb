@@ -9,6 +9,7 @@ set :branch, ENV['BRANCH']
 set :deploy_to, ENV['DEPLOY_TO']
 set :hls_dir, ENV['HLS_DIR']
 set :user, ENV['USER']
+set :yarn_flags, "--#{ENV['RAILS_ENV']}"
 server ENV['APP_HOST'], roles: %w{web app db}, user: ENV['USER'] || 'avalon'
 server ENV['RESQUE_HOST'] || ENV['APP_HOST'], roles: %w{resque_worker resque_scheduler}, user: ENV['RESQUE_USER'] || 'avalon'
 append :linked_files, ENV['LINKED_FILES'] if ENV['LINKED_FILES'] 
