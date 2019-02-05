@@ -312,7 +312,8 @@ class MasterFilesController < ApplicationController
     @master_file = MasterFile.find(params[:id])
     if cannot? :read, @master_file
       if !user_signed_in?
-        redirect_to new_user_session_path, url: request.fullpath
+        session[:previous_url] = request.fullpath
+        redirect_to new_user_session_path
       else
         head :unauthorized
       end
