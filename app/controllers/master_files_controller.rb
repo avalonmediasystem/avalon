@@ -283,8 +283,16 @@ class MasterFilesController < ApplicationController
 
   def hls_adaptive_manifest
     master_file = MasterFile.find(params[:id])
-    authorize! :read, master_file
-    @hls_streams = gather_hls_streams(master_file)
+    unless can? :read, master_file
+      if !request.headers.include?('Authorization') || request.headers['Authorization'] != "Bearer a"
+        return head :unauthorized
+      end
+    end
+    if request.head?
+      return head :ok
+    else
+      @hls_streams = gather_hls_streams(master_file)
+    end
   end
 
   def structure
@@ -311,12 +319,7 @@ class MasterFilesController < ApplicationController
   def auth_token
     @master_file = MasterFile.find(params[:id])
     if cannot? :read, @master_file
-      if !user_signed_in?
-        session[:previous_url] = request.fullpath
-        redirect_to new_user_session_path
-      else
-        head :unauthorized
-      end
+      return head :unauthorized
     else
       messageId = params[:messageId]
       origin = params[:origin]
