@@ -283,14 +283,17 @@ class MasterFilesController < ApplicationController
 
   def hls_adaptive_manifest
     master_file = MasterFile.find(params[:id])
-    unless can? :read, master_file
-      if !request.headers.include?('Authorization') || !StreamToken.valid_token?(request.headers['Authorization'].sub('Bearer ', ''), master_file.id)
+    if request.head?
+      auth_token = request.headers['Authorization']&.sub('Bearer ', '')
+      if StreamToken.valid_token?(auth_token, master_file.id)
+        return head :ok
+      else
         return head :unauthorized
       end
-    end
-    if request.head?
-      return head :ok
     else
+      if cannot? :read, master_file
+        return head :unauthorized
+      end
       @hls_streams = gather_hls_streams(master_file)
     end
   end
