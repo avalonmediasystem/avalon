@@ -284,7 +284,7 @@ class MasterFilesController < ApplicationController
   def hls_adaptive_manifest
     master_file = MasterFile.find(params[:id])
     unless can? :read, master_file
-      if !request.headers.include?('Authorization') || request.headers['Authorization'] != "Bearer a"
+      if !request.headers.include?('Authorization') || !StreamToken.valid_token?(request.headers['Authorization'].sub('Bearer ', ''), master_file.id)
         return head :unauthorized
       end
     end
@@ -323,7 +323,7 @@ class MasterFilesController < ApplicationController
     else
       messageId = params[:messageId]
       origin = params[:origin]
-      accessToken = 'a'
+      accessToken = StreamToken.find_or_create_session_token(session, @master_file.id)
       render 'auth_token', :layout => false, locals: { messageId: messageId, origin: origin, accessToken: accessToken }
     end
   end
