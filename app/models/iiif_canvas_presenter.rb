@@ -36,7 +36,8 @@ class IiifCanvasPresenter
                                            width: master_file.width.to_i,
                                            height: master_file.height.to_i,
                                            duration: stream_info[:duration],
-                                           type: 'Video')
+                                           type: 'Video',
+                                           auth_service: auth_service)
     end
 
     def audio_content
@@ -47,7 +48,8 @@ class IiifCanvasPresenter
       IIIFManifest::V3::DisplayContent.new(url,
                                            label: label,
                                            duration: stream_info[:duration],
-                                           type: 'Sound')
+                                           type: 'Sound',
+                                           auth_service: auth_service)
     end
 
     def stream_urls
@@ -118,5 +120,33 @@ class IiifCanvasPresenter
       # This can be done by defining some XML schema to require that at least one Div/Span child node exists
       # under root or each Div node, otherwise Nokogiri::XML parser will report error, and raise exception here.
       @structure_ng_xml ||= (s = master_file.structuralMetadata.content).nil? ? Nokogiri::XML(nil) : Nokogiri::XML(s)
+    end
+
+    def auth_service
+      {
+        "context": "http://iiif.io/api/auth/1/context.json",
+        "@id": Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1),
+        "@type": "AuthCookieService1",
+        "confirmLabel": "Login",
+        "description": "Avalon Application requires that you log in with your account to view this content.",
+        "failureDescription": "<a href=\"http://example.org/policy\">Access Policy</a>",
+        "failureHeader": "Authentication Failed",
+        "header": "Please Log In",
+        "label": "Login Required",
+        "profile": "http://iiif.io/api/auth/1/login",
+        "service": [
+          {
+            "@id": Rails.application.routes.url_helpers.auth_token_master_file_url(master_file.id),
+            "@type": "AuthTokenService1",
+            "profile": "http://iiif.io/api/auth/1/token"
+          },
+          {
+            "@id": Rails.application.routes.url_helpers.destroy_user_session_url,
+            "@type": "AuthLogoutService1",
+            "label": "Log out",
+            "profile": "http://iiif.io/api/auth/1/logout"
+          }
+        ]
+      }
     end
 end
