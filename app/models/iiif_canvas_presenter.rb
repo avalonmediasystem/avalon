@@ -31,8 +31,8 @@ class IiifCanvasPresenter
     end
 
     def video_display_content(quality)
-      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(quality),
-                                           label: label,
+      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
+                                           label: quality,
                                            width: master_file.width.to_i,
                                            height: master_file.height.to_i,
                                            duration: stream_info[:duration],
@@ -45,8 +45,8 @@ class IiifCanvasPresenter
     end
 
     def audio_display_content(quality)
-      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(quality),
-                                           label: label,
+      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(master_file.id, quality: quality),
+                                           label: quality,
                                            duration: stream_info[:duration],
                                            type: 'Sound',
                                            auth_service: auth_service)
