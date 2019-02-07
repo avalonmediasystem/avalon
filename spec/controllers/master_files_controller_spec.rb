@@ -509,7 +509,7 @@ describe MasterFilesController do
       login_as :administrator
       get('auth_token', params: { id: master_file.id, messageId: 1, origin: "https://example.com" })
       expect(response).to have_http_status(:ok)
-      expect(response.body.gsub(/\s+/,'')).to match /window.parent.postMessage\({"expiresIn":600,"accessToken":".*","messageId":"1"},"https:\/\/example.com"\);/
+      expect(response.body.gsub(/\s+/,'')).to match /window.parent.postMessage\({"expiresIn":\d+,"accessToken":".+","messageId":"1"},"https:\/\/example.com"\);/
     end
   end
 
