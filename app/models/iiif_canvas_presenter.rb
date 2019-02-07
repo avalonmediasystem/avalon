@@ -127,12 +127,12 @@ class IiifCanvasPresenter
         "context": "http://iiif.io/api/auth/1/context.json",
         "@id": Rails.application.routes.url_helpers.new_user_session_url(login_popup: 1),
         "@type": "AuthCookieService1",
-        "confirmLabel": "Login",
-        "description": "Avalon Application requires that you log in with your account to view this content.",
-        "failureDescription": "<a href=\"http://example.org/policy\">Access Policy</a>",
-        "failureHeader": "Authentication Failed",
-        "header": "Please Log In",
-        "label": "Login Required",
+        "confirmLabel": I18n.t('iiif.auth.confirmLabel'),
+        "description": I18n.t('iiif.auth.description'),
+        "failureDescription": I18n.t('iiif.auth.failureDescription'),
+        "failureHeader": I18n.t('iiif.auth.failureHeader'),
+        "header": I18n.t('iiif.auth.header'),
+        "label": I18n.t('iiif.auth.label'),
         "profile": "http://iiif.io/api/auth/1/login",
         "service": [
           {
