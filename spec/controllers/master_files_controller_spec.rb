@@ -513,30 +513,30 @@ describe MasterFilesController do
     end
   end
 
-  describe '#hls_adaptive_manifest' do
+  describe '#hls_manifest' do
     let(:media_object) { FactoryBot.create(:published_media_object) }
     let(:master_file) { FactoryBot.create(:master_file, media_object: media_object) }
 
     context 'with head request' do
       it 'returns unauthorized (401) with invalid auth token' do
         request.headers['Authorization'] = "Bearer bad-token"
-        expect(head('hls_adaptive_manifest', params: { id: master_file.id, format: :m3u8 })).to have_http_status(:unauthorized)
+        expect(head('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:unauthorized)
       end
 
       it 'returns ok (200) with valid auth token' do
         token = StreamToken.find_or_create_session_token(session, master_file.id)
         request.headers['Authorization'] = "Bearer #{token.to_s}"
-        expect(head('hls_adaptive_manifest', params: { id: master_file.id, format: :m3u8 })).to have_http_status(:ok)
+        expect(head('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:ok)
       end
     end
 
     it 'returns unauthorized (401) if cannot read the master file' do
-      expect(get('hls_adaptive_manifest', params: { id: master_file.id, format: :m3u8 })).to have_http_status(:unauthorized)
+      expect(get('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:unauthorized)
     end
 
     it 'returns the HLS manifest' do
       login_as :administrator
-      expect(get('hls_adaptive_manifest', params: { id: master_file.id, format: :m3u8 })).to have_http_status(:ok)
+      expect(get('hls_manifest', params: { id: master_file.id, quality: 'auto' })).to have_http_status(:ok)
     end
   end
 end

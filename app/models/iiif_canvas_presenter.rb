@@ -27,11 +27,11 @@ class IiifCanvasPresenter
 
     def video_content
       # @see https://github.com/samvera-labs/iiif_manifest
-      stream_urls.collect { |label, url| video_display_content(url, label) }
+      stream_urls.collect { |quality, url| video_display_content(quality) }
     end
 
-    def video_display_content(url, label = '')
-      IIIFManifest::V3::DisplayContent.new(url,
+    def video_display_content(quality)
+      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(quality),
                                            label: label,
                                            width: master_file.width.to_i,
                                            height: master_file.height.to_i,
@@ -41,11 +41,11 @@ class IiifCanvasPresenter
     end
 
     def audio_content
-      stream_urls.collect { |label, url| audio_display_content(url, label) }
+      stream_urls.collect { |quality, url| audio_display_content(quality) }
     end
 
-    def audio_display_content(url, label = '')
-      IIIFManifest::V3::DisplayContent.new(url,
+    def audio_display_content(quality)
+      IIIFManifest::V3::DisplayContent.new(Rails.application.routes.url_helpers.hls_manifest_master_file_url(quality),
                                            label: label,
                                            duration: stream_info[:duration],
                                            type: 'Sound',

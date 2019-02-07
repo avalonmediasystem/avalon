@@ -281,8 +281,9 @@ class MasterFilesController < ApplicationController
     end
   end
 
-  def hls_adaptive_manifest
+  def hls_manifest
     master_file = MasterFile.find(params[:id])
+    quality = params[:quality]
     if request.head?
       auth_token = request.headers['Authorization']&.sub('Bearer ', '')
       if StreamToken.valid_token?(auth_token, master_file.id)
@@ -294,7 +295,11 @@ class MasterFilesController < ApplicationController
       if cannot? :read, master_file
         return head :unauthorized
       end
-      @hls_streams = gather_hls_streams(master_file)
+      if quality == "auto"
+        @hls_streams = gather_hls_streams(master_file)
+      else
+        @hls_streams = hls_stream(master_file, quality)
+      end
     end
   end
 
@@ -351,6 +356,13 @@ protected
     hls_streams = stream_info[:stream_hls].reject { |stream| stream[:quality] == 'auto' }
     hls_streams.each { |stream| unnest_wowza_stream(stream) } if Settings.streaming.server == "wowza"
     hls_streams
+  end
+
+  def hls_stream(master_file, quality)
+    stream_info = secure_streams(master_file.stream_details)
+    hls_stream = stream_info[:stream_hls].select { |stream| stream[:quality] == quality }
+    unnest_wowza_stream(hls_stream) if Settings.streaming.server == "wowza"
+    hls_stream
   end
 
   def unnest_wowza_stream(stream)
