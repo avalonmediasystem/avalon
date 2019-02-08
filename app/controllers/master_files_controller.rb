@@ -330,7 +330,7 @@ class MasterFilesController < ApplicationController
       message_id = params[:messageId]
       origin = params[:origin]
       access_token = StreamToken.find_or_create_session_token(session, @master_file.id)
-      expires = (StreamToken.find_by(token: accessToken).expires - Time.now.utc).to_i
+      expires = (StreamToken.find_by(token: access_token).expires - Time.now.utc).to_i
       render 'auth_token', layout: false, locals: { message_id: message_id, origin: origin, access_token: access_token, expires: expires }
     end
   end
