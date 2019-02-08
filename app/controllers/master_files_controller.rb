@@ -292,13 +292,11 @@ class MasterFilesController < ApplicationController
         return head :unauthorized
       end
     else
-      if cannot? :read, master_file
-        return head :unauthorized
-      end
-      if quality == "auto"
-        @hls_streams = gather_hls_streams(master_file)
+      return head :unauthorized if cannot?(:read, master_file)
+      @hls_streams = if quality == "auto"
+        gather_hls_streams(master_file)
       else
-        @hls_streams = hls_stream(master_file, quality)
+        hls_stream(master_file, quality)
       end
     end
   end
@@ -329,11 +327,11 @@ class MasterFilesController < ApplicationController
     if cannot? :read, @master_file
       return head :unauthorized
     else
-      messageId = params[:messageId]
+      message_id = params[:messageId]
       origin = params[:origin]
-      accessToken = StreamToken.find_or_create_session_token(session, @master_file.id)
+      access_token = StreamToken.find_or_create_session_token(session, @master_file.id)
       expires = (StreamToken.find_by(token: accessToken).expires - Time.now.utc).to_i
-      render 'auth_token', :layout => false, locals: { messageId: messageId, origin: origin, accessToken: accessToken, expires: expires }
+      render 'auth_token', layout: false, locals: { message_id: message_id, origin: origin, access_token: access_token, expires: expires }
     end
   end
 

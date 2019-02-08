@@ -17,7 +17,7 @@ Unless required by applicable law or agreed to in writing, software distributed
   <body>
     <script>
     window.parent.postMessage(
-      {"expiresIn": <%= expires %>, "accessToken": "<%= accessToken %>", "messageId": "<%= messageId %>"},
+      {"expiresIn": <%= expires %>, "accessToken": "<%= access_token %>", "messageId": "<%= message_id %>"},
       "<%= origin %>"
     );
     </script>
