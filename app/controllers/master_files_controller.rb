@@ -294,10 +294,10 @@ class MasterFilesController < ApplicationController
     else
       return head :unauthorized if cannot?(:read, master_file)
       @hls_streams = if quality == "auto"
-        gather_hls_streams(master_file)
-      else
-        hls_stream(master_file, quality)
-      end
+                       gather_hls_streams(master_file)
+                     else
+                       hls_stream(master_file, quality)
+                     end
     end
   end
 

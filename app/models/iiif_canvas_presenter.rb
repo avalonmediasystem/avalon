@@ -27,7 +27,7 @@ class IiifCanvasPresenter
 
     def video_content
       # @see https://github.com/samvera-labs/iiif_manifest
-      stream_urls.collect { |quality, url| video_display_content(quality) }
+      stream_urls.collect { |quality, _url| video_display_content(quality) }
     end
 
     def video_display_content(quality)
@@ -41,7 +41,7 @@ class IiifCanvasPresenter
     end
 
     def audio_content
-      stream_urls.collect { |quality, url| audio_display_content(quality) }
+      stream_urls.collect { |quality, _url| audio_display_content(quality) }
     end
 
     def audio_display_content(quality)
