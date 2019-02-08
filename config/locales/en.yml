@@ -223,3 +223,4 @@ en:
       failureHeader: "Authentication Failed"
       header: "Please Log In"
       label: "Login Required"
+      logoutLabel: "Log out"

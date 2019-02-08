@@ -143,7 +143,7 @@ class IiifCanvasPresenter
           {
             "@id": Rails.application.routes.url_helpers.destroy_user_session_url,
             "@type": "AuthLogoutService1",
-            "label": "Log out",
+            "label": I18n.t('iiif.auth.logoutLabel'),
             "profile": "http://iiif.io/api/auth/1/logout"
           }
         ]
