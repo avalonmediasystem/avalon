@@ -264,7 +264,8 @@ describe MasterFilesController do
     subject(:mf) { FactoryBot.create(:master_file, :with_thumbnail, :with_media_object) }
 
     it "redirects to sign in when not logged in" do
-      expect(get(:set_frame, params: { id: mf.id })).to redirect_to new_user_session_path
+      get(:set_frame, params: { id: mf.id })
+      expect(request).to redirect_to new_user_session_path(url: request.url)
     end
 
     it "redirects to home when logged in and not authorized" do
@@ -294,7 +295,8 @@ describe MasterFilesController do
 
     context "not authorized" do
       it "redirects to sign in when not logged in" do
-        expect(get(:get_frame, params: { id: mf.id })).to redirect_to new_user_session_path
+        get(:get_frame, params: { id: mf.id })
+        expect(request).to redirect_to new_user_session_path(url: request.url)
       end
 
       it "redirects to home when logged in and not authorized" do
