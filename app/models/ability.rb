@@ -17,7 +17,7 @@ class Ability
   include Hydra::Ability
   include Hydra::MultiplePolicyAwareAbility
 
-  self.ability_logic += [ :playlist_permissions, :playlist_item_permissions, :marker_permissions ]
+  self.ability_logic += [ :playlist_permissions, :playlist_item_permissions, :marker_permissions, :timeline_permissions ]
 
   def user_groups
     return @user_groups if @user_groups
@@ -201,6 +201,21 @@ class Ability
     can :read, AvalonMarker do |marker|
       (can? :read, marker.playlist_item.playlist) &&
       (can? :read, marker.playlist_item.master_file)
+    end
+  end
+
+  def timeline_permissions
+    if @user.id.present?
+      can :manage, Timeline, user: @user
+      # Commented out duplicate ability for now
+      # can :duplicate, Timeline, visibility: Timeline::PUBLIC
+      # can :duplicate, Timeline do |timeline|
+      #   timeline.valid_token?(@options[:timeline_token])
+      # end
+    end
+    can :read, Timeline, visibility: Timeline::PUBLIC
+    can :read, Timeline do |timeline|
+      timeline.valid_token?(@options[:timeline_token])
     end
   end
 

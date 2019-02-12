@@ -1,0 +1,57 @@
+<%= form_with(model: timeline, local: true) do |form| %>
+  <% if timeline.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(timeline.errors.count, "error") %> prohibited this timeline from being saved:</h2>
+
+      <ul>
+      <% timeline.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :title %>
+    <%= form.text_field :title, id: :timeline_title %>
+  </div>
+
+  <div class="field">
+    <%= form.label :user_id %>
+    <%= form.text_field :user_id, id: :timeline_user_id %>
+  </div>
+
+  <div class="field">
+    <%= form.label :visibility %>
+    <%= form.text_field :visibility, id: :timeline_visibility %>
+  </div>
+
+  <div class="field">
+    <%= form.label :description %>
+    <%= form.text_area :description, id: :timeline_description %>
+  </div>
+
+  <div class="field">
+    <%= form.label :access_token %>
+    <%= form.text_field :access_token, id: :timeline_access_token %>
+  </div>
+
+  <div class="field">
+    <%= form.label :tags %>
+    <%= form.text_field :tags, id: :timeline_tags %>
+  </div>
+
+  <div class="field">
+    <%= form.label :source %>
+    <%= form.text_field :source, id: :timeline_source %>
+  </div>
+
+  <div class="field">
+    <%= form.label :manifest %>
+    <%= form.text_area :manifest, id: :timeline_manifest %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
