@@ -16,7 +16,7 @@ Unless required by applicable law or agreed to in writing, software distributed
 <div class="col-md-9">
   <div class="row">
     <div class="col-sm-12">
-      <%= link_to "View Playlist", @timeline, { class: 'btn btn-xs btn-primary'} %>
+      <%= link_to "View Timeline", @timeline, { class: 'btn btn-xs btn-primary'} %>
       <% if can?(:destroy, @timeline) %>
         <%= link_to "Delete Timeline", @timeline, method: :delete, class: 'btn btn-xs btn-danger btn-confirmation', data: {placement: 'bottom'} %>
       <% end %>
@@ -40,7 +40,7 @@ Unless required by applicable law or agreed to in writing, software distributed
     <div class="row">
       <div class="col-sm-2"><%= t("timeline.visibility") %></div>
       <div class="col-sm-10">
-        <%= human_friendly_visibility @timeline.visibility %> - <i><%= visibility_description @timeline.visibility %></i>
+        <%= timeline_human_friendly_visibility @timeline.visibility %> - <i><%= timeline_visibility_description @timeline.visibility %></i>
         <% if @timeline.visibility == Playlist::PRIVATE_WITH_TOKEN %>
           <div class="row" style="margin-top:9px;">
             <div class="col-xs-9">
